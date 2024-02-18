@@ -3048,6 +3048,32 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
                Doc.rbrace;
              ])
       | extension -> printExtension ~state ~atModuleLvl:false extension cmtTbl)
+    | Pexp_apply (dictFromArray, [(Nolabel, dictEntries)])
+      when ParsetreeViewer.isDictFromArray dictFromArray ->
+      let rows =
+        match dictEntries.pexp_desc with
+        | Pexp_apply (e, [(Nolabel, {pexp_desc = Pexp_array rows})])
+          when ParsetreeViewer.isSpreadBeltArrayConcat e ->
+          (*
+            There are one or more spreads in the dict
+            and the rows are nested in Belt.Array.concatMany
+            ie. dict{...otherDict, "first": 1, "second": 2 }
+          *)
+          rows
+        | Pexp_array rows ->
+          (*
+           There is only an array of key value paires defined in the dict
+            ie. dict{"first": 1, "second": 2 }
+           *)
+          rows
+        | _ ->
+          (*
+            This case only happens when there is a single spread dict inside an empty
+            ie. dict{...otherDict }
+          *)
+          [dictEntries]
+      in
+      printDictExpression ~state ~loc:dictEntries.pexp_loc ~rows cmtTbl
     | Pexp_apply (e, [(Nolabel, {pexp_desc = Pexp_array subLists})])
       when ParsetreeViewer.isSpreadBeltArrayConcat e ->
       printBeltArrayConcatApply ~state subLists cmtTbl
@@ -5270,6 +5296,73 @@ and printDirectionFlag flag =
   match flag with
   | Asttypes.Downto -> Doc.text " downto "
   | Asttypes.Upto -> Doc.text " to "
+
+and printExpressionDictRow ~state cmtTbl (expr : Parsetree.expression) =
+  match expr with
+  | {
+   pexp_loc = lbl_loc;
+   pexp_desc = Pexp_tuple [{pexp_desc = Pexp_constant field}; rowExpr];
+  } ->
+    let cmtLoc = {lbl_loc with loc_end = rowExpr.pexp_loc.loc_end} in
+    let doc =
+      Doc.group
+        (Doc.concat
+           [
+             printConstant field;
+             Doc.text ": ";
+             (let doc = printExpressionWithComments ~state rowExpr cmtTbl in
+              match Parens.exprRecordRowRhs rowExpr with
+              | Parens.Parenthesized -> addParens doc
+              | Braced braces -> printBraces doc rowExpr braces
+              | Nothing -> doc);
+           ])
+    in
+    printComments doc cmtTbl cmtLoc
+  | {pexp_desc = Pexp_apply ({pexp_attributes}, [(_, expr)])}
+    when Res_parsetree_viewer.hasDictAttr pexp_attributes ->
+    Doc.concat
+      [
+        Doc.dotdotdot;
+        (let doc = printExpressionWithComments ~state expr cmtTbl in
+         match Parens.expr expr with
+         | Parens.Parenthesized -> addParens doc
+         | Braced braces -> printBraces doc expr braces
+         | Nothing -> doc);
+      ]
+  | {pexp_desc = Pexp_array rows} ->
+    printDictExpressionInner ~state ~rows cmtTbl
+  | _ -> Doc.nil
+
+and printDictExpressionInner ~state ~rows cmtTbl =
+  Doc.concat
+    [
+      Doc.join
+        ~sep:(Doc.concat [Doc.text ","; Doc.line])
+        (List.map (printExpressionDictRow ~state cmtTbl) rows);
+    ]
+
+and printDictExpression ~state ~loc ~rows cmtTbl =
+  if rows = [] then
+    Doc.concat [Doc.text "dict{"; printCommentsInside cmtTbl loc; Doc.rbrace]
+  else
+    (* If the dict is written over multiple lines, break automatically
+     * `let x = dict{"a": 1, "b": 3}` -> same line, break when line-width exceeded
+     * `let x = dict{
+     *   "a": 1,
+     *   "b": 2,
+     *  }` -> record is written on multiple lines, break the group *)
+    let forceBreak = loc.loc_start.pos_lnum < loc.loc_end.pos_lnum in
+    Doc.breakableGroup ~forceBreak
+      (Doc.concat
+         [
+           Doc.text "dict{";
+           Doc.indent
+             (Doc.concat
+                [Doc.softLine; printDictExpressionInner ~state ~rows cmtTbl]);
+           Doc.trailingComma;
+           Doc.softLine;
+           Doc.rbrace;
+         ])
 
 and printExpressionRecordRow ~state (lbl, expr) cmtTbl punningAllowed =
   let cmtLoc = {lbl.loc with loc_end = expr.pexp_loc.loc_end} in

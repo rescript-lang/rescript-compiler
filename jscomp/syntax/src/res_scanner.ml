@@ -179,6 +179,8 @@ let digitValue ch =
 
 (* scanning helpers *)
 
+let objectLiterals = ["list"; "dict"]
+
 let scanIdentifier scanner =
   let startOff = scanner.offset in
   let rec skipGoodChars scanner =
@@ -195,11 +197,14 @@ let scanIdentifier scanner =
   let str =
     (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff)
   in
-  if '{' == scanner.ch && str = "list" then (
-    next scanner;
-    (* TODO: this isn't great *)
-    Token.lookupKeyword "list{")
-  else Token.lookupKeyword str
+  (if '{' == scanner.ch && objectLiterals |> List.mem str then (
+     (*If string is an object literal ie list{.. or dict{..
+       forward the scanner to include the opening '{' and
+       lookup including the '{'*)
+     next scanner;
+     str ^ "{")
+   else str)
+  |> Token.lookupKeyword
 
 let scanDigits scanner ~base =
   if base <= 10 then
