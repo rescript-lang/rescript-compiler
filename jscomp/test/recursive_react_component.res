@@ -1,4 +1,4 @@
-@@bs.config({
+@@config({
   flags: [
     "-bs-jsx",
     "3", // "-dsource",

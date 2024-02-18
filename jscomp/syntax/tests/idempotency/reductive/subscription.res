@@ -1,4 +1,4 @@
-@@bs.config({jsx: 3})
+@@config({jsx: 3})
 
 @deriving({jsConverter: newType})
 type source<'a> = {

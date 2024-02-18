@@ -1,4 +1,4 @@
-@@bs.config(no_export)
+@@config(no_export)
 
 let f = x =>
   switch x {

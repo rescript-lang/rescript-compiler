@@ -467,7 +467,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) :
           Pstr_value
             (Nonrecursive, [{pvb_pat; pvb_expr; pvb_attributes; pvb_loc}]);
       })
-  | Pstr_attribute ({txt = "bs.config" | "config"}, _) -> str
+  | Pstr_attribute ({txt = "config"}, _) -> str
   | _ -> default_mapper.structure_item self str
 
 let local_module_name =

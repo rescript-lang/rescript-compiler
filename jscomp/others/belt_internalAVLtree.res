@@ -13,7 +13,7 @@
 
 /* Almost rewritten  by authors of ReScript */
 
-@@bs.config({flags: ["-bs-noassertfalse"]})
+@@config({flags: ["-bs-noassertfalse"]})
 type rec node<'k, 'v> = {
   @as("k") mutable key: 'k,
   @as("v") mutable value: 'v,

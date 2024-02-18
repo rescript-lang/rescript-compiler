@@ -1,4 +1,4 @@
-@@bs.config({no_export: true})
+@@config({no_export: true})
 type value =
   | Natural(int)
   | Symbol(string)

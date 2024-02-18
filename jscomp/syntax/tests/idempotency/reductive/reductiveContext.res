@@ -1,4 +1,4 @@
-@@bs.config({jsx: 3})
+@@config({jsx: 3})
 module type Config = {
   type state
   type action

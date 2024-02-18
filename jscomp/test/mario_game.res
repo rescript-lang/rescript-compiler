@@ -1,4 +1,4 @@
-@@bs.config({flags: ["-w", "a", "-bs-no-bin-annot"]})
+@@config({flags: ["-w", "a", "-bs-no-bin-annot"]})
 
 module Actors: {
   type dir_1d = Left | Right

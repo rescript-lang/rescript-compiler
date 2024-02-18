@@ -1,7 +1,7 @@
 @@warning("-39")
 // https://github.com/rescript-lang/rescript-compiler/issues/4511
 /*
-[@bs.config {
+[@config {
   flags : [|"-dsource"|]
 }];
 */
