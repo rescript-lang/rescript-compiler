@@ -1514,7 +1514,7 @@ and compile_prim (prim_info : Lam.prim_info)
       compile_sequand l r lambda_cxt
   | { primitive = Psequor; args = [ l; r ] } -> compile_sequor l r lambda_cxt
   | { primitive = Pdebugger; _ } ->
-      (* [%bs.debugger] guarantees that the expression does not matter
+      (* [%debugger] guarantees that the expression does not matter
          TODO: make it even safer *)
       Js_output.output_of_block_and_expression lambda_cxt.continuation
         S.debugger_block E.unit

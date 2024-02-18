@@ -103,7 +103,7 @@ let int_of_string (s : string) : int =
   let () =
     if d < 0 || d >=  base then
       failwith "int_of_string" in
-  (* let () = [%bs.debugger]  in *)
+  (* let () = [%debugger]  in *)
   let rec aux acc k = 
     if k = len then acc 
     else 
