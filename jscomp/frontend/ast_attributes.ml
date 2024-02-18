@@ -148,8 +148,7 @@ let rs_externals (attrs : t) pval_prim =
     prims_to_be_encoded pval_prim
   | _, _ ->
     Ext_list.exists_fst attrs (fun ({txt} : string Asttypes.loc) ->
-        Ext_string.starts_with txt "bs."
-        || Ext_array.exists external_attrs (fun (x : string) -> txt = x))
+        Ext_array.exists external_attrs (fun (x : string) -> txt = x))
     || prims_to_be_encoded pval_prim
 
 let is_inline : attr -> bool = fun ({txt}, _) -> txt = "inline"

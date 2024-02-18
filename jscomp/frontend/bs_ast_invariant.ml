@@ -28,15 +28,10 @@
 *)
 let is_bs_attribute txt =
   match txt with
-  (* TODO: Issue 6636 *)
-  | "string" | "uncurry" -> true
-  | _ ->
-    let len = String.length txt in
-    len >= 2
-    (*TODO: check the stringing padding rule, this preciate may not be needed *)
-    && String.unsafe_get txt 0 = 'b'
-    && String.unsafe_get txt 1 = 's'
-    && (len = 2 || String.unsafe_get txt 2 = '.')
+  | "bs" | "config" | "ignore" | "int" | "optional" | "string" | "uncurry"
+  | "unwrap" ->
+    true
+  | _ -> false
 
 let used_attributes : string Asttypes.loc Hash_set_poly.t =
   Hash_set_poly.create 16
