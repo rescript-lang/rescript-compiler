@@ -27,12 +27,12 @@ module rec Int3: {
 module rec Inta: {
   let a: lazy_t<int>
 } = {
-  let a = lazy Lazy.force(Intb.a)
+  let a = Lazy.from_fun(() => Lazy.force(Intb.a))
 }
 and Intb: {
   let a: lazy_t<int>
 } = {
-  let a = lazy (Lazy.force(Inta.a) + 1)
+  let a = Lazy.from_fun(() => (Lazy.force(Inta.a) + 1))
 }
 
 eq(
@@ -47,12 +47,12 @@ module A = {
   module rec Inta: {
     let a: lazy_t<int>
   } = {
-    let a = lazy (Lazy.force(Intb.a) + 1)
+    let a = Lazy.from_fun(() => (Lazy.force(Intb.a) + 1))
   }
   and Intb: {
     let a: lazy_t<int>
   } = {
-    let a = lazy 2
+    let a = Lazy.from_fun(() => 2)
   }
 }
 

@@ -25,8 +25,6 @@ let x = -a.bar
 // same as above
 let x = -(a.bar)
 
-!(lazy x)
-lazy !x
 !(assert(x))
 assert(!x)
 !(@attr expr)

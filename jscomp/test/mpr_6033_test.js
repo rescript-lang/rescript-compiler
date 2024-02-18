@@ -30,18 +30,16 @@ function eq(loc, x, y) {
 }
 
 function f(x) {
-  var y = CamlinternalLazy.force(x);
-  return y + "abc";
+  return CamlinternalLazy.force(x) + "abc";
 }
 
-var x = {
-  LAZY_DONE: true,
-  VAL: "def"
-};
+var x = CamlinternalLazy.from_fun(function () {
+      return "def";
+    });
 
 CamlinternalLazy.force(x);
 
-var u = f(x);
+var u = CamlinternalLazy.force(x) + "abc";
 
 eq("File \"mpr_6033_test.res\", line 20, characters 3-10", u, "defabc");
 

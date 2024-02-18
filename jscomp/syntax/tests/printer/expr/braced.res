@@ -126,7 +126,6 @@ map((
 
 let _ = assert({ true })
 let _ = { assert({ true }) }
-let _ = { lazy { true } }
 
 let _ = { %extension }
 let _ = { module(ME) }

@@ -218,13 +218,13 @@ let iapp = (i, s) => Some({count: 0, data: Sapp(data(i), data(s))})
 let icons = (i, s) => Some({count: 0, data: Scons(i, data(s))})
 let ising = i => Some({count: 0, data: Scons(i, Sempty)})
 
-let lapp = (f, s) => Some({count: 0, data: Slazy(lazy Sapp(data(f()), data(s)))})
+let lapp = (f, s) => Some({count: 0, data: Slazy(Lazy.from_fun(() => Sapp(data(f()), data(s))))})
 
-let lcons = (f, s) => Some({count: 0, data: Slazy(lazy Scons(f(), data(s)))})
-let lsing = f => Some({count: 0, data: Slazy(lazy Scons(f(), Sempty))})
+let lcons = (f, s) => Some({count: 0, data: Slazy(Lazy.from_fun(() => Scons(f(), data(s))))})
+let lsing = f => Some({count: 0, data: Slazy(Lazy.from_fun(() => Scons(f(), Sempty)))})
 
 let sempty = None
-let slazy = f => Some({count: 0, data: Slazy(lazy data(f()))})
+let slazy = f => Some({count: 0, data: Slazy(Lazy.from_fun(() => data(f())))})
 
 /* For debugging use */
 

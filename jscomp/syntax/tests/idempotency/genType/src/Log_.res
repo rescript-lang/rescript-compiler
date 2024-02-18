@@ -1,5 +1,5 @@
 module Color = {
-  let color_enabled = lazy Unix.isatty(Unix.stdout)
+  let color_enabled = Lazy.from_fun(() => Unix.isatty(Unix.stdout))
   let forceColor = ref(false)
 
   let get_color_enabled = () => forceColor.contents || Lazy.force(color_enabled)

@@ -1359,7 +1359,7 @@ let traverseAst = (~valueBindingsTable) => {
     valueBindings |> List.iter((vb: Typedtree.value_binding) =>
       switch vb.vb_pat.pat_desc {
       | Tpat_var(id, {loc: {loc_start: pos}}) =>
-        let callees = lazy FindFunctionsCalled.findCallees(vb.vb_expr)
+        let callees = Lazy.from_fun(() => FindFunctionsCalled.findCallees(vb.vb_expr))
         Hashtbl.replace(valueBindingsTable, Ident.name(id), (pos, vb.vb_expr, callees))
       | _ => ()
       }

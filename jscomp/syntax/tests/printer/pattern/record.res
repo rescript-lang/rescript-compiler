@@ -52,8 +52,6 @@ let get_age3 = ({age: Red | Blue | Green, name: _}) => age2
 
 let get_age3 = ({age: #...ppatType, name: _}) => age2
 
-let get_age3 = ({age: lazy ppatType, name: _}) => age2
-
 let get_age3 = ({age: module(P), name: _}) => age2
 let get_age3 = ({age: module(P: S), name: _}) => age2
 
