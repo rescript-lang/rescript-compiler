@@ -222,7 +222,7 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
       | "string" -> assign `String attr
       | "int" -> assign `Int attr
       | "ignore" -> assign `Ignore attr
-      | "bs.unwrap" | "unwrap" -> assign `Unwrap attr
+      | "unwrap" -> assign `Unwrap attr
       | "uncurry" -> assign (`Uncurry (Ast_payload.is_single_int payload)) attr
       | _ -> ());
   !st

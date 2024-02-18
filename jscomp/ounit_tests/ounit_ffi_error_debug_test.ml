@@ -49,12 +49,12 @@ let output = bsc_eval {|
 
         __LOC__ >:: begin fun _ ->
           (*
-             Each [@bs.unwrap] variant constructor requires an argument
+             Each [@unwrap] variant constructor requires an argument
           *)
           let output =
             bsc_eval {|
               external err :
-              ?hi_should_error:([`a of int | `b] [@bs.unwrap]) -> unit -> unit = "err" [@@bs.val]
+              ?hi_should_error:([`a of int | `b] [@unwrap]) -> unit -> unit = "err" [@@bs.val]
             |}
           in
           OUnit.assert_bool __LOC__
@@ -63,12 +63,12 @@ let output = bsc_eval {|
 
         __LOC__ >:: begin fun _ ->
           (*
-             [@bs.unwrap] args are not supported in [@@obj] functions
+             [@unwrap] args are not supported in [@@obj] functions
           *)
           let output =
             bsc_eval {|
               external err :
-              ?hi_should_error:([`a of int] [@bs.unwrap]) -> unit -> _ = "" [@@obj]
+              ?hi_should_error:([`a of int] [@unwrap]) -> unit -> _ = "" [@@obj]
             |}
           in
           OUnit.assert_bool __LOC__
