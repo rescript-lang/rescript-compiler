@@ -334,7 +334,7 @@ let removeNode = (rbt, node) => {
   }
   let (successor, isLeaf) = switch successor {
     | None =>
-      let leaf = createNode(~value=%bs.raw("0"), ~color=Black, ~height=0.)
+      let leaf = createNode(~value=%raw("0"), ~color=Black, ~height=0.)
       let isLeaf = (. x) => x === leaf;
       (leaf, isLeaf)
     | Some(successor) =>

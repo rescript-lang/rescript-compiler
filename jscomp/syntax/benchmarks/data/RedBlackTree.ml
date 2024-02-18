@@ -193,7 +193,7 @@ let removeNode rbt node =
   let (successor, isLeaf) =
     match successor with
     | None ->
-        let leaf = createNode ~value:([%bs.raw "0"]) ~color:Black ~height:0. in
+        let leaf = createNode ~value:([%raw "0"]) ~color:Black ~height:0. in
         let isLeaf = ((fun x -> x == leaf)[@bs ]) in (leaf, isLeaf)
     | Some successor -> (successor, (((fun _ -> false))[@bs ])) in
   let nodeParent = nodeToRemove.parent in

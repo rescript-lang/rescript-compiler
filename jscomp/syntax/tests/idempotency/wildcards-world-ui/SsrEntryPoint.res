@@ -1,4 +1,4 @@
-// [%bs.raw {|require("./custom.css")|}];
+// [%raw {|require("./custom.css")|}];
 open Globals
 
 module Router = {

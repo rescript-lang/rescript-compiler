@@ -28,7 +28,7 @@
 (**
    1. extension point
    {[
-     [%bs.raw{| blabla |}]
+     [%raw{| blabla |}]
    ]}
    will be desugared into
    {[
@@ -514,7 +514,7 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
   | [] -> []
   | item :: rest -> (
     match item.pstr_desc with
-    | Pstr_extension (({txt = "bs.raw" | "raw"; loc}, payload), _attrs) ->
+    | Pstr_extension (({txt = "raw"; loc}, payload), _attrs) ->
       Ast_exp_handle_external.handle_raw_structure loc payload
       :: structure_mapper ~await_context self rest
     (* | Pstr_extension (({txt = "i"}, _),_)

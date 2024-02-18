@@ -1,4 +1,4 @@
-;;[%bs.raw {|require('./HeroGraphic.css')|}]
+;;[%raw {|require('./HeroGraphic.css')|}]
 let make ?(width= "760")  ?(height= "380")  =
   ((svg ~width:((width)) ~height:((height))
       ~viewBox:(("0 0 758 381")) ~fill:(("none")

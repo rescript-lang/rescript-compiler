@@ -130,7 +130,7 @@ let reifyStyle = (type a, x: 'a): (style<a>, a) => {
     @val external canvasGradient: constructor = "CanvasGradient" /* internal */
     @val external canvasPattern: constructor = "CanvasPattern" /* internal */
     let instanceOf = (
-      %bs.raw(`function(x,y) {return +(x instanceof y)}`): ('a, constructor) => bool
+      %raw(`function(x,y) {return +(x instanceof y)}`): ('a, constructor) => bool
     ) /* internal */
   }
 
