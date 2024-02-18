@@ -42,7 +42,7 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
       *)
     | None | Some _ ->
       Location.raise_errorf ~loc "external expects a single identifier")
-  | "bs.time" | "time" -> (
+  | "time" -> (
     match payload with
     | PStr [{pstr_desc = Pstr_eval (e, _)}] ->
       let locString =
