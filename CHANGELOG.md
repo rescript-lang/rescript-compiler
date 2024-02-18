@@ -14,7 +14,7 @@
 
 #### :house: Internal
 
-- Build with OCaml 5.1.0. https://github.com/rescript-lang/rescript-compiler/pull/5895
+- Build with OCaml 5.1.1. https://github.com/rescript-lang/rescript-compiler/pull/6641
 
 # 11.1.0-rc.2
 
