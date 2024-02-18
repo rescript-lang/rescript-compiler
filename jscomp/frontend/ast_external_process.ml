@@ -418,8 +418,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
         with Not_handled_external_attribute -> (attr :: attrs, st))
 
 let has_bs_uncurry (attrs : Ast_attributes.t) =
-  Ext_list.exists_fst attrs (fun {txt; loc = _} ->
-      txt = "bs.uncurry" || txt = "uncurry")
+  Ext_list.exists_fst attrs (fun {txt; loc = _} -> txt = "uncurry")
 
 let check_return_wrapper loc (wrapper : External_ffi_types.return_wrapper)
     result_type =

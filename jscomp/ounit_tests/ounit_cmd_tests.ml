@@ -88,20 +88,20 @@ external ff :
       *)
       let should_err = bsc_check_eval {|
     external v3 :
-    int -> int -> (int -> int -> int [@bs.uncurry])
+    int -> int -> (int -> int -> int [@uncurry])
     = "v3"[@@bs.val]
 
     |} in
       (* Ounit_cmd_util.debug_output should_err;*)
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring
-           should_err.stderr "bs.uncurry")
+           should_err.stderr "uncurry")
     end ;
 
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
     external v4 :
-    (int -> int -> int [@bs.uncurry]) = ""
+    (int -> int -> int [@uncurry]) = ""
     [@@bs.val]
 
     |} in
