@@ -16,7 +16,6 @@ let aTuple = (1, 2)
 let aRecord = { name = {js|steve|js}; age = 30 }
 let blockExpression = ((let a = 1 in let b = 2 in a + b)[@res.braces ])
 let assertSmthing = assert true
-let lazyThing = lazy true
 let jsx =
   ((div ~className:(({js|cx|js})[@res.namedArgLoc ]) ~children:[foo] ())
   [@JSX ])

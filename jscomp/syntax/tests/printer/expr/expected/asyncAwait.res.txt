@@ -21,7 +21,6 @@ let maybeSomeValue = switch await fetchData(url) {
 -(await f)
 (await 1) + (await 2)
 
-lazy (await f())
 assert(await f())
 
 (await f).json()
@@ -85,7 +84,6 @@ let _ = await (
     sideEffect()
   }
 )
-let _ = await (lazy x)
 let _ = await (assert(x))
 let _ = await promises[0]
 let _ = await promises["resolved"]
