@@ -1,9 +1,14 @@
-@module("./tagged_template_lib.js") @taggedTemplate
-external sql: (array<string>, array<string>) => string = "sql"
+module Pg = {
+  @module("./tagged_template_lib.js") @taggedTemplate
+  external sql: (array<string>, array<string>) => string = "sql"
+}
 
 let table = "users"
 let id = "5"
 
+let queryWithModule = Pg.sql`SELECT * FROM ${table} WHERE id = ${id}`
+
+open Pg 
 let query = sql`SELECT * FROM ${table} WHERE id = ${id}`
 
 @module("./tagged_template_lib.js") @taggedTemplate
@@ -29,6 +34,10 @@ Mt.from_pair_suites(
     (
       "with externals, it should return a string with the correct interpolations",
       () => Eq(query, "SELECT * FROM 'users' WHERE id = '5'"),
+    ),
+    (
+      "with module scoped externals, it should also return a string with the correct interpolations",
+      () => Eq(queryWithModule, "SELECT * FROM 'users' WHERE id = '5'"),
     ),
         (
       "with externals, it should return the result of the function",
