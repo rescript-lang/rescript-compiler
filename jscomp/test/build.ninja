@@ -569,8 +569,7 @@ o test/submodule.cmi test/submodule.cmj : cc test/submodule.res | $bsc $stdlib r
 o test/submodule_call.cmi test/submodule_call.cmj : cc test/submodule_call.res | test/submodule.cmj $bsc $stdlib runtime
 o test/switch_case_test.cmi test/switch_case_test.cmj : cc test/switch_case_test.res | test/mt.cmj $bsc $stdlib runtime
 o test/switch_string.cmi test/switch_string.cmj : cc test/switch_string.res | $bsc $stdlib runtime
-o test/tagged_template_test.cmj : cc_cmi test/tagged_template_test.res | test/mt.cmj test/tagged_template_test.cmi $bsc $stdlib runtime
-o test/tagged_template_test.cmi : cc test/tagged_template_test.resi | $bsc $stdlib runtime
+o test/tagged_template_test.cmi test/tagged_template_test.cmj : cc test/tagged_template_test.res | test/mt.cmj $bsc $stdlib runtime
 o test/tailcall_inline_test.cmi test/tailcall_inline_test.cmj : cc test/tailcall_inline_test.res | test/mt.cmj $bsc $stdlib runtime
 o test/template.cmi test/template.cmj : cc test/template.res | $bsc $stdlib runtime
 o test/test.cmi test/test.cmj : cc test/test.res | $bsc $stdlib runtime
