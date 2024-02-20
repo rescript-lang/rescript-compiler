@@ -252,16 +252,15 @@ let translate_scoped_access scopes obj =
 let translate_ffi (cxt : Lam_compile_context.t) arg_types
     (ffi : External_ffi_types.external_spec) (args : J.expression list) =
   match ffi with
-  | Js_call { external_module_name; name; splice; scopes; tagged_template = true } -> 
+  | Js_call { external_module_name; name; splice: _; scopes; tagged_template = true } -> 
       let fn = translate_scoped_module_val external_module_name name scopes in 
       (match args with
-      | [ stringArgs; valueArgs ] -> (
-          match (stringArgs, valueArgs) with
-          | ({expression_desc = Array (strings, _); _}, {expression_desc = Array (values, _); _}) ->
-              E.tagged_template fn strings values
-          | _ -> assert false
-          )
-      | _ -> assert false)
+      | [ {expression_desc = Array (strings, _); _}; {expression_desc = Array (values, _); _} ] -> 
+        E.tagged_template fn strings values
+      | _ -> let args, eff, dynamic = assemble_args_has_splice arg_types args in
+        add_eff eff
+          (if dynamic then splice_apply fn args
+          else E.call ~info:{ arity = Full; call_info = Call_na } fn args))
   | Js_call { external_module_name = module_name; name = fn; splice; scopes; tagged_template = false } ->
       let fn = translate_scoped_module_val module_name fn scopes in
       if splice then
