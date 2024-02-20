@@ -42,7 +42,6 @@ let x = (while i < 10 {
 }).x
 
 let x = (assert(false)).x
-let x = (lazy false).x
 let x = (try sideEffect() catch {| Exit => ()}).x
 
 let x = (@attr expr).x

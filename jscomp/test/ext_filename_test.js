@@ -20,12 +20,9 @@ var node_parent = "..";
 
 var node_current = ".";
 
-var cwd = {
-  LAZY_DONE: false,
-  VAL: (function () {
+var cwd = CamlinternalLazy.from_fun(function () {
       return Caml_sys.sys_getcwd();
-    })
-};
+    });
 
 function path_as_directory(x) {
   if (x === "" || Ext_string_test.ends_with(x, Filename.dir_sep)) {
@@ -195,13 +192,10 @@ function find_package_json_dir(cwd) {
   return find_root_filename(cwd, Test_literals.bsconfig_json);
 }
 
-var package_dir = {
-  LAZY_DONE: false,
-  VAL: (function () {
+var package_dir = CamlinternalLazy.from_fun(function () {
       var cwd$1 = CamlinternalLazy.force(cwd);
       return find_root_filename(cwd$1, Test_literals.bsconfig_json);
-    })
-};
+    });
 
 function module_name_of_file(file) {
   var s = Filename.chop_extension(Curry._1(Filename.basename, file));

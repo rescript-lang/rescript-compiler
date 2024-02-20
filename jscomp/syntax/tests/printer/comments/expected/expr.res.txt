@@ -64,9 +64,6 @@ let x = {
 // Pexp_assert
 let x = /* here */ assert(/* c0 */ true /* c1 */)
 
-// Pexp_lazy
-let x = /* here */ lazy /* c0 */ true /* c1 */
-
 // Pexp_constraint
 let x = (/* c0 */ "string" /* c1 */: /* c2 */ string /* c3 */) // after
 

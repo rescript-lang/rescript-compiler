@@ -16,6 +16,10 @@
 
 - Build with OCaml 5.1.1. https://github.com/rescript-lang/rescript-compiler/pull/6641
 
+#### :boom: Breaking Change
+
+- `lazy` syntax is no longer supported. If you're using it, use `Lazy` module or `React.lazy_` instead. https://github.com/rescript-lang/rescript-compiler/pull/6342
+
 # 11.1.0-rc.2
 
 #### :rocket: New Feature

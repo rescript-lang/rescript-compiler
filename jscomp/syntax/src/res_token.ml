@@ -55,7 +55,6 @@ type t =
   | Hash
   | HashEqual
   | Assert
-  | Lazy
   | Tilde
   | Question
   | If
@@ -166,7 +165,6 @@ let toString = function
   | AsteriskDot -> "*."
   | Exponentiation -> "**"
   | Assert -> "assert"
-  | Lazy -> "lazy"
   | Tilde -> "tilde"
   | Question -> "?"
   | If -> "if"
@@ -222,7 +220,6 @@ let keywordTable = function
   | "if" -> If
   | "in" -> In
   | "include" -> Include
-  | "lazy" -> Lazy
   | "let" -> Let
   | "list{" -> List
   | "module" -> Module
@@ -242,8 +239,8 @@ let keywordTable = function
 
 let isKeyword = function
   | Await | And | As | Assert | Constraint | Else | Exception | External | False
-  | For | If | In | Include | Land | Lazy | Let | List | Lor | Module | Mutable
-  | Of | Open | Private | Rec | Switch | True | Try | Typ | When | While ->
+  | For | If | In | Include | Land | Let | List | Lor | Module | Mutable | Of
+  | Open | Private | Rec | Switch | True | Try | Typ | When | While ->
     true
   | _ -> false
 

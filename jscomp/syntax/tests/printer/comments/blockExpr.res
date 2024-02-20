@@ -369,18 +369,6 @@ assert({
   // test
 })
 
-lazy {
-  // here 
-  open /* inside */ Matrix
-  // c
-
-  // c2
-  compare(m1, m2)
-  // after
-
-  // test
-}
-
 user.name = {
   // here 
   open /* inside */ Names

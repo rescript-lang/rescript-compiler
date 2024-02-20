@@ -53,7 +53,7 @@ let init_mod = (loc: (string, int, int), shape: shape) => {
   let rec loop = (shape: shape, struct_: Obj.t, idx) =>
     switch shape {
     | Function => set_field(struct_, idx, Obj.magic(undef_module))
-    | Lazy => set_field(struct_, idx, Obj.magic(lazy undef_module))
+    | Lazy => set_field(struct_, idx, Obj.magic(undef_module))
     | Class =>
       set_field(
         struct_,

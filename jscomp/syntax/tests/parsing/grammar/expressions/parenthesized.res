@@ -30,8 +30,6 @@ let blockExpression = ({
 
 let assertSmthing = (assert(true))
 
-let lazyThing = (lazy true)
-
 let jsx = (<div className="cx"> foo </div>)
 
 let ifExpr = (if true {

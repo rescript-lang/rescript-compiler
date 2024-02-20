@@ -1108,11 +1108,6 @@ let rec parsePattern ?(alias = true) ?(or_ = true) p =
       let pat = parsePattern ~alias:false ~or_:false p in
       let loc = mkLoc startPos p.prevEndPos in
       Ast_helper.Pat.exception_ ~loc ~attrs pat
-    | Lazy ->
-      Parser.next p;
-      let pat = parsePattern ~alias:false ~or_:false p in
-      let loc = mkLoc startPos p.prevEndPos in
-      Ast_helper.Pat.lazy_ ~loc ~attrs pat
     | List ->
       Parser.next p;
       parseListPattern ~startPos ~attrs p
@@ -2128,11 +2123,6 @@ and parseOperandExpr ~context p =
       let () = attrs := [] in
       parseAsyncArrowExpression ~arrowAttrs p
     | Await -> parseAwaitExpression p
-    | Lazy ->
-      Parser.next p;
-      let expr = parseUnaryExpr p in
-      let loc = mkLoc startPos p.prevEndPos in
-      Ast_helper.Exp.lazy_ ~loc expr
     | Try -> parseTryExpression p
     | If -> parseIfOrIfLetExpression p
     | For -> parseForExpression p

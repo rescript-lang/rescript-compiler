@@ -129,7 +129,7 @@ let isSignatureItemStart = function
 
 let isAtomicPatternStart = function
   | Token.Int _ | String _ | Codepoint _ | Backtick | Lparen | Lbracket | Lbrace
-  | Underscore | Lident _ | Uident _ | List | Exception | Lazy | Percent ->
+  | Underscore | Lident _ | Uident _ | List | Exception | Percent ->
     true
   | _ -> false
 
@@ -148,9 +148,9 @@ let isAtomicTypExprStart = function
 
 let isExprStart = function
   | Token.Assert | At | Await | Backtick | Bang | Codepoint _ | False | Float _
-  | For | Hash | If | Int _ | Lazy | Lbrace | Lbracket | LessThan | Lident _
-  | List | Lparen | Minus | MinusDot | Module | Percent | Plus | PlusDot
-  | String _ | Switch | True | Try | Uident _ | Underscore (* _ => doThings() *)
+  | For | Hash | If | Int _ | Lbrace | Lbracket | LessThan | Lident _ | List
+  | Lparen | Minus | MinusDot | Module | Percent | Plus | PlusDot | String _
+  | Switch | True | Try | Uident _ | Underscore (* _ => doThings() *)
   | While ->
     true
   | _ -> false
@@ -169,7 +169,7 @@ let isStructureItemStart = function
 let isPatternStart = function
   | Token.Int _ | Float _ | String _ | Codepoint _ | Backtick | True | False
   | Minus | Plus | Lparen | Lbracket | Lbrace | List | Underscore | Lident _
-  | Uident _ | Hash | Exception | Lazy | Percent | Module | At ->
+  | Uident _ | Hash | Exception | Percent | Module | At ->
     true
   | _ -> false
 
@@ -257,10 +257,10 @@ let isJsxChildStart = isAtomicExprStart
 
 let isBlockExprStart = function
   | Token.Assert | At | Await | Backtick | Bang | Codepoint _ | Exception
-  | False | Float _ | For | Forwardslash | Hash | If | Int _ | Lazy | Lbrace
-  | Lbracket | LessThan | Let | Lident _ | List | Lparen | Minus | MinusDot
-  | Module | Open | Percent | Plus | PlusDot | String _ | Switch | True | Try
-  | Uident _ | Underscore | While ->
+  | False | Float _ | For | Forwardslash | Hash | If | Int _ | Lbrace | Lbracket
+  | LessThan | Let | Lident _ | List | Lparen | Minus | MinusDot | Module | Open
+  | Percent | Plus | PlusDot | String _ | Switch | True | Try | Uident _
+  | Underscore | While ->
     true
   | _ -> false
 

@@ -40,7 +40,6 @@ let x = assert (while i < 10 {
   print_int(i)
 })
 
-let x = assert (lazy false)
 let x = assert (try sideEffect() catch {| Exit => ()})
 
 let x = assert (@attr expr)

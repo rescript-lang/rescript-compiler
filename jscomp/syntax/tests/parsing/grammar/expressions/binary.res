@@ -18,8 +18,6 @@ let x = z |> switch z {| _ => false}
 let x = z |> @attr switch z {| _ => false} 
 let x = z |> assert(z)
 let x = z |> @attr assert(z)
-let x = z |> lazy z
-let x = z |> @attr lazy z
 let x = z |> try sideEffect() catch { | _ => f() }
 let x = z |> @attr try sideEffect() catch { | _ => f() }
 let x = z |> for i in 0 to 10 { () }

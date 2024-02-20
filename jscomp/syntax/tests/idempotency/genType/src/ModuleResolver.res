@@ -189,7 +189,7 @@ type resolver = {
 }
 
 let createLazyResolver = (~config, ~extensions, ~excludeFile) => {
-  lazyFind: lazy {
+  lazyFind: Lazy.from_fun(() => {
     let (moduleNameMap, bsDependenciesFileMap) = sourcedirsJsonToMap(
       ~config,
       ~extensions,
@@ -210,7 +210,7 @@ let createLazyResolver = (~config, ~extensions, ~excludeFile) => {
         moduleName |> find(~bsDependencies=true, ~map=bsDependenciesFileMap)
       | res => res
       }
-  },
+  }),
 }
 
 let apply = (~resolver, ~useBsDependencies, moduleName) =>

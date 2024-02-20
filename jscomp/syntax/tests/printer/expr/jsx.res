@@ -176,7 +176,6 @@ let x =
       exception Exit;
       raise(Exit)
     }}
-    lazyExpr={lazy stuff()}
     assertExpr={assert(true)}
     pack=module(Foo)
     pack={module(Foo)}
@@ -248,7 +247,6 @@ let x =
       exception Exit;
       raise(Exit)
     }}
-    {lazy stuff()}
     {assert(true)}
     {module(Foo)}
     module(Foo)
