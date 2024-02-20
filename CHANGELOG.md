@@ -15,6 +15,10 @@
 #### :nail_care: Polish
 - No parens around tagged template literals. https://github.com/rescript-lang/rescript-compiler/pull/6639
 
+#### :bug: Bug Fix
+
+- Fix compiler crash when reexporting tagged template literal externals. https://github.com/rescript-lang/rescript-compiler/pull/6645
+
 # 11.1.0-rc.2
 
 #### :rocket: New Feature

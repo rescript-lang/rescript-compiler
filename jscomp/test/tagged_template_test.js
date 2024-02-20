@@ -3,9 +3,21 @@
 
 var Mt = require("./mt.js");
 var Caml_array = require("../../lib/js/caml_array.js");
+var Caml_splice_call = require("../../lib/js/caml_splice_call.js");
 var Tagged_template_libJs = require("./tagged_template_lib.js");
 
-var query = Tagged_template_libJs.sql`SELECT * FROM ${"users"} WHERE id = ${"5"}`;
+function sql(prim0, prim1) {
+  return Caml_splice_call.spliceApply(Tagged_template_libJs.sql, [
+              prim0,
+              prim1
+            ]);
+}
+
+var table = "users";
+
+var id = "5";
+
+var query = Tagged_template_libJs.sql`SELECT * FROM ${table} WHERE id = ${id}`;
 
 var length = Tagged_template_libJs.length`hello ${10} what's the total length? Is it ${3}?`;
 
@@ -73,4 +85,14 @@ Mt.from_pair_suites("tagged templates", {
       }
     });
 
+var extraLength = 10;
+
+exports.sql = sql;
+exports.table = table;
+exports.id = id;
+exports.query = query;
+exports.extraLength = extraLength;
+exports.length = length;
+exports.foo = foo;
+exports.res = res;
 /* query Not a pure module */
