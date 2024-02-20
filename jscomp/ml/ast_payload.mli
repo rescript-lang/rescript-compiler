@@ -63,11 +63,11 @@ val assert_strings : Location.t -> t -> string list
 (** as a record or empty 
     it will accept 
 
-    {[ [@@@bs.config ]]}
+    {[ [@@@config ]]}
     or 
-    {[ [@@@bs.config no_export ] ]}
+    {[ [@@@config no_export ] ]}
     or 
-    {[ [@@@bs.config { property  .. } ]]}    
+    {[ [@@@config { property  .. } ]]}    
     Note that we only 
     {[
       { flat_property}

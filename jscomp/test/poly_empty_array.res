@@ -1,2 +1,2 @@
-@@bs.config({flags: ["-bs-unsafe-empty-array"]})
+@@config({flags: ["-bs-unsafe-empty-array"]})
 let a = []

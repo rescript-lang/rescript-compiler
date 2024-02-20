@@ -16,49 +16,6 @@ type callbackStyle =
    *)
   | ArgumentsFitOnOneLine
 
-(* Since compiler version 8.3, the bs. prefix is no longer needed *)
-(* Synced from
-   https://github.com/rescript-lang/rescript-compiler/blob/29174de1a5fde3b16cf05d10f5ac109cfac5c4ca/jscomp/frontend/ast_external_process.ml#L291-L367 *)
-let convertBsExternalAttribute = function
-  | "bs.as" -> "as"
-  | "bs.deriving" -> "deriving"
-  | "bs.get" -> "get"
-  | "bs.get_index" -> "get_index"
-  | "bs.ignore" -> "ignore"
-  | "bs.inline" -> "inline"
-  | "bs.int" -> "int"
-  | "bs.meth" -> "meth"
-  | "bs.module" -> "module"
-  | "bs.new" -> "new"
-  | "bs.obj" -> "obj"
-  | "bs.optional" -> "optional"
-  | "bs.return" -> "return"
-  | "bs.send" -> "send"
-  | "bs.scope" -> "scope"
-  | "bs.set" -> "set"
-  | "bs.set_index" -> "set_index"
-  | "bs.splice" | "bs.variadic" -> "variadic"
-  | "bs.string" -> "string"
-  | "bs.this" -> "this"
-  | "bs.uncurry" -> "uncurry"
-  | "bs.unwrap" -> "unwrap"
-  | "bs.val" -> "val"
-  (* bs.send.pipe shouldn't be transformed *)
-  | txt -> txt
-
-(* These haven't been needed for a long time now *)
-(* Synced from
-   https://github.com/rescript-lang/rescript-compiler/blob/29174de1a5fde3b16cf05d10f5ac109cfac5c4ca/jscomp/frontend/ast_exp_extension.ml *)
-let convertBsExtension = function
-  | "bs.debugger" -> "debugger"
-  | "bs.external" -> "raw"
-  (* We should never see this one since we use the sugared object form, but still *)
-  | "bs.obj" -> "obj"
-  | "bs.raw" -> "raw"
-  | "bs.re" -> "re"
-  (* TODO: what about bs.time and bs.node? *)
-  | txt -> txt
-
 let addParens doc =
   Doc.group
     (Doc.concat
@@ -2154,7 +2111,7 @@ and printPackageConstraint ~state i cmtTbl (longidentLoc, typ) =
     ]
 
 and printExtension ~state ~atModuleLvl (stringLoc, payload) cmtTbl =
-  let txt = convertBsExtension stringLoc.Location.txt in
+  let txt = stringLoc.Location.txt in
   let extName =
     let doc =
       Doc.concat
@@ -5466,7 +5423,7 @@ and printAttribute ?(standalone = false) ~state
         (Doc.concat
            [
              Doc.text (if standalone then "@@" else "@");
-             Doc.text (convertBsExternalAttribute id.txt);
+             Doc.text id.txt;
              printPayload ~state payload cmtTbl;
            ]),
       Doc.line )

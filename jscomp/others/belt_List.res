@@ -59,7 +59,7 @@
   ```
 */
 
-@@bs.config({flags: ["-bs-noassertfalse"]})
+@@config({flags: ["-bs-noassertfalse"]})
 
 type t<'a> = list<'a>
 

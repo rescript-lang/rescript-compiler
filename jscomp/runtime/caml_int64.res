@@ -320,7 +320,7 @@ let rec of_float = (x: float): t =>
 @val @scope("Math") external log: float => float = "log"
 @val @scope("Math") external ceil: float => float = "ceil"
 @val @scope("Math") external floor: float => float = "floor"
-/* external maxFloat : float -> float -> float = "Math.max" [@@bs.val] */
+/* external maxFloat : float -> float -> float = "Math.max" [@@val] */
 
 /* either top 11 bits are all 0 or all 1 
    when it is all 1, we need exclude -2^53

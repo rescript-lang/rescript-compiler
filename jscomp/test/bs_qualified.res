@@ -29,7 +29,7 @@ external makeBuffer2: int => buffer = "Buffer"
 external makeBuffer3: int => buffer = "makeBuffer3"
 
 @scope("Math") @val external max: (float, float) => float = "max"
-/* TODO: `bs.val` is not necessary, by default is good?
+/* TODO: `@val` is not necessary, by default is good?
  */
 
 type t

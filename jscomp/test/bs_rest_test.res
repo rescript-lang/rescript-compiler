@@ -16,5 +16,4 @@ include (
 )
 
 let u = xxx(. 3)
-/** Do we need both [bs.val] and [bs.call]* instead of just one [bs.val] */
 let xx = xxx(. "3")

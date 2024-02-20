@@ -47,5 +47,5 @@ val to_method_callback :
   Parsetree.expression ->
   Parsetree.expression_desc
 (** syntax: 
-    {[fun [@bs.this] obj pat pat1 -> body]}    
+    {[fun [@this] obj pat pat1 -> body]}    
 *)

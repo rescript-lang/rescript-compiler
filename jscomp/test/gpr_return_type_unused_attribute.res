@@ -2,7 +2,7 @@
 
 @val
 external mk: int => [#a | #b] = "mk"
-/* [@bs.string] */
+/* [@string] */
 
 let v = mk(2)
 

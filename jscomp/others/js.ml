@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-[@@@bs.config {flags = [|"-unboxed-types"; "-w"; "-49"|]}]
+[@@@config {flags = [|"-unboxed-types"; "-w"; "-49"|]}]
 (* DESIGN:
    - It does not have any code, all its code will be inlined so that
        there will never be
@@ -141,14 +141,13 @@ external log : 'a -> unit = "log"
 [@@val] [@@scope "console"]
 (** Equivalent to console.log any value. *)
 
-external log2 : 'a -> 'b -> unit = "log" [@@bs.val] [@@scope "console"]
-external log3 : 'a -> 'b -> 'c -> unit = "log" [@@bs.val] [@@scope "console"]
+external log2 : 'a -> 'b -> unit = "log" [@@val] [@@scope "console"]
+external log3 : 'a -> 'b -> 'c -> unit = "log" [@@val] [@@scope "console"]
 
-external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log"
-[@@bs.val] [@@scope "console"]
+external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log" [@@val] [@@scope "console"]
 
 external logMany : 'a array -> unit = "log"
-[@@bs.val] [@@scope "console"] [@@variadic]
+[@@val] [@@scope "console"] [@@variadic]
 (** A convenience function to console.log more than 4 arguments *)
 
 external eqNull : 'a -> 'a null -> bool = "%bs_equal_null"

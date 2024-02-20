@@ -98,7 +98,7 @@ Curry.__N o
     ]}
     Another use case:
     {[ 
-      external f : ('a -> 'b [@bs.uncurry]) -> unit 
+      external f : ('a -> 'b [@uncurry]) -> unit 
 
       f g (* The compiler will do such converison internally*)
     ]}
@@ -173,12 +173,12 @@ We can simply do inlining, it may have side efffect in `b0`, `b1`, our optimizer
 
 Maybe in the future, we should lift the restriction about `variadic` (delegate to `slow` mode when we can not resolve it statically, my personal expereince is that people will complain about why it fails to compile more than why it is slow in some corner cases)
 
-Note this also interacts with `[@bs.uncurry]`
+Note this also interacts with `[@uncurry]`
 
 for example
 
 ```ocaml
-external filter : 'a array -> ('a -> bool [@bs.uncurry]) -> 'a array = "filter"
+external filter : 'a array -> ('a -> bool [@uncurry]) -> 'a array = "filter"
 [@@send]
 
 let f xs =
@@ -211,7 +211,7 @@ if (typeof x === "undefined"){
 
 ```ocaml
 external of_char : char -> string = "String.fromCharCode"
-[@@bs.val]
+[@@val]
 ```
 
 We introduced `#` so that we can do some optimizations.

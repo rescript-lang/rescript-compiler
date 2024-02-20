@@ -21,7 +21,7 @@ type bla
 
 external foo : bla = "foo.react" [@@module]
 
-external bar : unit -> bla  = "bar" [@@bs.val] [@@module "foo.react"]
+external bar : unit -> bla  = "bar" [@@val] [@@module "foo.react"]
 
 let c = foo 
 

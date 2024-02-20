@@ -6,9 +6,9 @@ open Reprocessing_Common
  * This is where all the fancy things happen.
  *
  * ```reason;shared(sandbox)
- * [@bs.val] external sandboxCanvasId: string = \"\";
- * [@bs.val] external sandboxCanvas: 'canvas = \"\";
- * [@bs.val] external containerDiv: 'node = \"\";
+ * [@val] external sandboxCanvasId: string = \"\";
+ * [@val] external sandboxCanvas: 'canvas = \"\";
+ * [@val] external containerDiv: 'node = \"\";
  * [@send] external addEventListener: ('node, string, 'eventT => unit) => unit = \"addEventListener\";
  * let id = sandboxCanvasId;
  * addEventListener(containerDiv, \"mouseleave\", (_) => Reprocessing.playPause(id, false) |> ignore);

@@ -86,11 +86,9 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
       match (txt, st) with
       | "bs", (Nothing | Uncurry _) ->
         (Uncurry attr, acc) (* TODO: warn unused/duplicated attribute *)
-      | ("bs.this" | "this"), (Nothing | Meth_callback _) ->
-        (Meth_callback attr, acc)
+      | "this", (Nothing | Meth_callback _) -> (Meth_callback attr, acc)
       | "meth", (Nothing | Method _) -> (Method attr, acc)
-      | ("bs" | "bs.this" | "this"), _ ->
-        Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
+      | ("bs" | "this"), _ -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _, _ -> (st, attr :: acc))
 
 let process_bs (attrs : t) =
@@ -150,8 +148,7 @@ let rs_externals (attrs : t) pval_prim =
     prims_to_be_encoded pval_prim
   | _, _ ->
     Ext_list.exists_fst attrs (fun ({txt} : string Asttypes.loc) ->
-        Ext_string.starts_with txt "bs."
-        || Ext_array.exists external_attrs (fun (x : string) -> txt = x))
+        Ext_array.exists external_attrs (fun (x : string) -> txt = x))
     || prims_to_be_encoded pval_prim
 
 let is_inline : attr -> bool = fun ({txt}, _) -> txt = "inline"
@@ -221,12 +218,11 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
   in
   Ext_list.iter attrs (fun (({txt; loc = _}, (payload : _)) as attr) ->
       match txt with
-      | "bs.string" | "string" -> assign `String attr
+      | "string" -> assign `String attr
       | "int" -> assign `Int attr
       | "ignore" -> assign `Ignore attr
-      | "bs.unwrap" | "unwrap" -> assign `Unwrap attr
-      | "bs.uncurry" | "uncurry" ->
-        assign (`Uncurry (Ast_payload.is_single_int payload)) attr
+      | "unwrap" -> assign `Unwrap attr
+      | "uncurry" -> assign (`Uncurry (Ast_payload.is_single_int payload)) attr
       | _ -> ());
   !st
 

@@ -292,7 +292,7 @@ and print_simple_out_type ppf =
   | Otyp_constr (Oide_dot (Oide_dot (Oide_ident "Js_OO", "Callback" ), _),
                  [tyl])
     -> 
-      fprintf ppf "@[<0>(%a@ [@bs.this])@]" print_out_type_1 tyl  
+      fprintf ppf "@[<0>(%a@ [@this])@]" print_out_type_1 tyl  
   | Otyp_constr (id, tyl) ->
       pp_open_box ppf 0;
       print_typargs ppf tyl;

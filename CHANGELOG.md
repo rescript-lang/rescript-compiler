@@ -12,13 +12,15 @@
 
 # 12.0.0-alpha.1 (Unreleased)
 
-#### :house: Internal
-
-- Build with OCaml 5.1.1. https://github.com/rescript-lang/rescript-compiler/pull/6641
-
 #### :boom: Breaking Change
 
 - `lazy` syntax is no longer supported. If you're using it, use `Lazy` module or `React.lazy_` instead. https://github.com/rescript-lang/rescript-compiler/pull/6342
+- Remove handling of attributes with `bs.` prefix (`@bs.as` -> `@as` etc.). https://github.com/rescript-lang/rescript-compiler/pull/6643
+- Remove obsolete `@bs.open` feature. https://github.com/rescript-lang/rescript-compiler/pull/6629
+
+#### :house: Internal
+
+- Build with OCaml 5.1.1. https://github.com/rescript-lang/rescript-compiler/pull/6641
 
 # 11.1.0-rc.2
 

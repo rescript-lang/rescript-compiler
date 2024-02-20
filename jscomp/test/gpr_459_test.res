@@ -1,4 +1,4 @@
-@@bs.config({no_export: no_export})
+@@config({no_export: no_export})
 
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)

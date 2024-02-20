@@ -1,4 +1,4 @@
-@@bs.config({no_export: no_export})
+@@config({no_export: no_export})
 let \".%()" = (s: string, i) => String.get(s, i)
 
 Mt.from_pair_suites(__FILE__, list{(__LOC__, _ => Eq(\".%()"("h", 0), 'h'))})

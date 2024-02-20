@@ -1,4 +1,4 @@
-@@bs.config({flags: ["-w", "a", "-bs-noassertfalse"]})
+@@config({flags: ["-w", "a", "-bs-noassertfalse"]})
 
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)

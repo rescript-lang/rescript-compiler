@@ -1,4 +1,4 @@
-@@bs.config({no_export: no_export})
+@@config({no_export: no_export})
 
 open Belt
 

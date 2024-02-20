@@ -1,4 +1,4 @@
-@@bs.config({flags: ["-w", "a", "-bs-no-bin-annot"], no_export})
+@@config({flags: ["-w", "a", "-bs-no-bin-annot"], no_export})
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 let eq = (loc, x, y) => {

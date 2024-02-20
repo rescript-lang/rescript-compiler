@@ -22,7 +22,7 @@ type nonrec t =
     [ `Has_arity2 ]) function$
 external setTimeout :
   (unit -> unit, [ `Has_arity1 ]) function$ -> int -> timerId = "setTimeout"
-[@@bs.val ]
+[@@val ]
 external setTimeout :
   ((unit -> unit) -> int -> timerId, [ `Has_arity2 ]) function$ =
     "setTimeout"

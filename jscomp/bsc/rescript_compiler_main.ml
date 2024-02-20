@@ -457,7 +457,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
 
 
-(** parse flags in bs.config *)
+(** parse flags in config *)
 let file_level_flags_handler (e : Parsetree.expression option) = 
   match e with 
   | None -> ()

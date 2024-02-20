@@ -1,6 +1,6 @@
 /*
 external ice_cream:
-    ?flavor:([`vanilla | `chocolate ] [@bs.string]) -> 
+    ?flavor:([`vanilla | `chocolate ] [@string]) -> 
     num:int ->
     unit -> 
     _ =  ""
@@ -11,7 +11,7 @@ let my_scoop = ice_cream ~flavor:`vanilla ~num:3 ()
 */
 /*
 external ice_cream_2:
-    flavor:([`vanilla | `chocolate ] [@bs.string]) -> 
+    flavor:([`vanilla | `chocolate ] [@string]) -> 
     num:int ->
     unit -> 
     _ =  ""
@@ -175,7 +175,7 @@ let () = {
   again4(~x=incr(side_effect), ~y=(), __LINE__, ())
 }
 
-/* external again5 : ?x__ignore:([`a of unit -> int | `b of string -> int ] [@bs.string]) */
-/* -> int -> unit = "" [@@bs.val] */
+/* external again5 : ?x__ignore:([`a of unit -> int | `b of string -> int ] [@string]) */
+/* -> int -> unit = "" [@@val] */
 
 /* let v = again5 3 */

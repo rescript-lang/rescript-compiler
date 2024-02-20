@@ -6,7 +6,7 @@ module Block = {}
 type id = int => int
 @val external map2: (array<int>, @uncurry (int => int)) => array<int> = "Array.prototype.map.cal"
 
-/* [@bs.uncurry n] should not be documented,
+/* [@uncurry n] should not be documented,
     since such inconsistency could not be checked
 */
 
@@ -92,10 +92,10 @@ let v = fishy_unit_2 () [@bs]
 /*
 external ff : 
     int -> 
-    (unit -> unit [@bs.uncurry]) -> 
+    (unit -> unit [@uncurry]) -> 
     int = 
     ""
-[@@bs.val]
+[@@val]
 */
 
 /*
@@ -117,7 +117,7 @@ Maybe we can create a sugar
 
 /*
 external config : 
-    hi: (int -> int [@bs.uncurry]) ->    
+    hi: (int -> int [@uncurry]) ->    
     lo: int -> 
     unit -> 
     _ = "" [@@obj]

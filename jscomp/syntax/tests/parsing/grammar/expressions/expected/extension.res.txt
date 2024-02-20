@@ -2,4 +2,4 @@
 ;;[%expr.extension ]
 ;;[%expr.extension.with.args {js|argument|js}]
 ;;[%expr.extension.with.args fun x -> f x]
-let x = ([%bs.raw {js|1|js}]) + ([%bs.raw {js|2|js}])
+let x = ([%raw {js|1|js}]) + ([%raw {js|2|js}])

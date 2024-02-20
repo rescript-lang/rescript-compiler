@@ -50,8 +50,8 @@ module ArrayBuffer = {
 
   /* ArrayBuffer.isView: seems pointless with a type system */
   /* experimental
-  external transfer : array_buffer -> t = "ArrayBuffer.transfer" [@@bs.val]
-  external transferWithLength : array_buffer -> int -> t = "ArrayBuffer.transfer" [@@bs.val]
+  external transfer : array_buffer -> t = "ArrayBuffer.transfer" [@@val]
+  external transferWithLength : array_buffer -> int -> t = "ArrayBuffer.transfer" [@@val]
  */
 
   @get external byteLength: t => int = "byteLength"

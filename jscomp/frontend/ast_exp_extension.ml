@@ -27,13 +27,12 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
     (({txt; loc}, payload) : Parsetree.extension) =
   match txt with
   | "ffi" -> Ast_exp_handle_external.handle_ffi ~loc ~payload
-  | "bs.raw" | "raw" ->
-    Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload
-  | "bs.re" | "re" ->
+  | "raw" -> Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload
+  | "re" ->
     Exp.constraint_ ~loc
       (Ast_exp_handle_external.handle_raw ~kind:Raw_re loc payload)
       (Ast_comb.to_js_re_type loc)
-  | "bs.external" | "external" -> (
+  | "external" -> (
     match Ast_payload.as_ident payload with
     | Some {txt = Lident x} ->
       Ast_exp_handle_external.handle_external loc x
@@ -43,7 +42,7 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
       *)
     | None | Some _ ->
       Location.raise_errorf ~loc "external expects a single identifier")
-  | "bs.time" | "time" -> (
+  | "time" -> (
     match payload with
     | PStr [{pstr_desc = Pstr_eval (e, _)}] ->
       let locString =
@@ -69,7 +68,7 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
               (Exp.ident ~loc {loc; txt = Lident "timed"})))
     | _ ->
       Location.raise_errorf ~loc "expect a boolean expression in the payload")
-  | "bs.debugger" | "debugger" ->
+  | "debugger" ->
     {e with pexp_desc = Ast_exp_handle_external.handle_debugger loc payload}
   | "obj" -> (
     match payload with

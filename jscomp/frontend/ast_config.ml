@@ -57,11 +57,8 @@ let process_directives str =
 let rec iter_on_bs_config_str (x : Parsetree.structure) =
   match x with
   | [] -> ()
-  | {
-      pstr_desc =
-        Pstr_attribute (({txt = "bs.config" | "config"; loc}, payload) as attr);
-    }
-    :: _ ->
+  | {pstr_desc = Pstr_attribute (({txt = "config"; loc}, payload) as attr)} :: _
+    ->
     Bs_ast_invariant.mark_used_bs_attribute attr;
     Ext_list.iter
       (Ast_payload.ident_or_record_as_config loc payload)
@@ -76,11 +73,8 @@ let process_str str =
 let rec iter_on_bs_config_sig (x : Parsetree.signature) =
   match x with
   | [] -> ()
-  | {
-      psig_desc =
-        Psig_attribute (({txt = "bs.config" | "config"; loc}, payload) as attr);
-    }
-    :: _ ->
+  | {psig_desc = Psig_attribute (({txt = "config"; loc}, payload) as attr)} :: _
+    ->
     Bs_ast_invariant.mark_used_bs_attribute attr;
     Ext_list.iter
       (Ast_payload.ident_or_record_as_config loc payload)
