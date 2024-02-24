@@ -33,26 +33,21 @@ jobs:
 
     runs-on: ${{matrix.os}}
 
-    container:
-      image: ghcr.io/rescript-lang/rescript-ci-build:alpine-3.19-ocaml-4.14.1-02
-
     steps:
-      # See https://github.com/actions/runner/issues/801#issuecomment-1374967227.
-      - name: Workaround for Github actions runner on Alpine arm64
-        if: runner.arch	== 'ARM64'
-        run: sed -i "s:ID=alpine:ID=NotpineForGHA:" /etc/os-release
-
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Build compiler binaries
-        run: opam exec -- dune build --display quiet --profile static
+        uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.19-ocaml-4.14.1-02
+        with:
+          args: opam exec -- dune build --display quiet --profile static
 
       - name: Build ninja binary
-        working-directory: ninja
+        uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.19-ocaml-4.14.1-02
         env:
           LDFLAGS: -static
-        run: python3 configure.py --bootstrap --verbose
+        with:
+          args: sh -c "cd ninja && LDFLAGS=-static python3 configure.py --bootstrap"
 
       - name: "Upload artifacts"
         uses: actions/upload-artifact@v3
