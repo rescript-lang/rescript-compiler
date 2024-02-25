@@ -982,6 +982,44 @@ let parseRegion p ~grammar ~f =
   Parser.eatBreadcrumb p;
   nodes
 
+(*
+We start the lookahed from '=' token. i.e. 
+
+prop1=value1
+     ^ here
+ *)
+let isJsxPropWellFormed p = 
+  let res = Parser.lookahead p (fun state ->
+    match state.Parser.token with
+    (* arrived at k1=v1 *)
+    | Lident _x -> (
+      Parser.next p;
+      match state.Parser.token with
+       (* arrived at k1=v1 =v2 *)
+      | Equal -> false 
+      | _ -> true)
+    (* arrived at k1={expression} *)
+    | Lbrace -> (
+      goToClosing Rbrace state;
+      match state.Parser.token with
+      | Lident _ -> true
+      | _ -> true)
+    | String _ -> true
+    | Question -> true
+    | _token -> false
+  ) in
+  let () = if res then (
+    print_string "well_formed : ";
+    print_string (Token.toString p.token);
+    print_newline ();
+    ) else (
+    print_string "not well formed : ";
+    print_string (Token.toString p.token);
+    print_newline ();
+    ) 
+  in res
+
+
 (* let-binding	::=	pattern =  expr   *)
 (* ∣	 value-name  { parameter }  [: typexpr]  [:> typexpr] =  expr   *)
 (* ∣	 value-name :  poly-typexpr =  expr   *)
@@ -2746,6 +2784,7 @@ and parseJsxProp p =
       match p.Parser.token with
       | Equal ->
         Parser.next p;
+        let _ = isJsxPropWellFormed p in
         (* no punning *)
         let optional = Parser.optional p Question in
         Scanner.popMode p.scanner Jsx;
