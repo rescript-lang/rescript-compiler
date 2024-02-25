@@ -987,21 +987,21 @@ let isJsxPropWellFormed p =
     Parser.lookahead p (fun state ->
         match state.Parser.token with
         | Equal -> (
-          Parser.next p;
+          Parser.next state;
           match state.Parser.token with
           (* arrived at k1=v1 *)
           | Lident _x -> (
-            Parser.next p;
+            Parser.next state;
             match state.Parser.token with
             (* arrived at k1=v1 =v2 *)
             | Equal -> false
             | _ -> true)
-          (* arrived at k1={expression} *)
+          (* arrived at k1={expression} k2=v2 *)
           | Lbrace -> (
             goToClosing Rbrace state;
             match state.Parser.token with
-            | Lident _ -> true
-            | _ -> true)
+            | Question | Lident _ | Forwardslash | GreaterThan | Eof -> true
+            | _ -> false)
           | True | False | Hash | List | Backtick | Lbracket | Lparen | Question
           | Percent | Module | LessThan | String _ | Int _ | Float _ | Uident _
             ->
