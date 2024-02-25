@@ -985,10 +985,10 @@ let parseRegion p ~grammar ~f =
 let isJsxPropWellFormed p =
   let res =
     Parser.lookahead p (fun state ->
-      match state.Parser.token with
-        | Equal ->
+        match state.Parser.token with
+        | Equal -> (
           Parser.next p;
-          (match state.Parser.token with
+          match state.Parser.token with
           (* arrived at k1=v1 *)
           | Lident _x -> (
             Parser.next p;
@@ -1002,24 +1002,12 @@ let isJsxPropWellFormed p =
             match state.Parser.token with
             | Lident _ -> true
             | _ -> true)
-          | String _ -> true
-          | Question -> true
-          | token -> 
-            print_string (Token.toString token);
-            print_newline ();
-            false
-          )
+          | True | False | Hash | List | Backtick | Lbracket | Lparen | Question
+          | Percent | Module | LessThan | String _ | Int _ | Float _ | Uident _
+            ->
+            true
+          | _token -> false)
         | _token -> true)
-  in
-  let () =
-    if res then (
-      print_string "well_formed : ";
-      print_string (Token.toString p.token);
-      print_newline ())
-    else (
-      print_string "not well formed : ";
-      print_string (Token.toString p.token);
-      print_newline ())
   in
   res
 
@@ -2787,9 +2775,9 @@ and parseJsxProp p =
       match p.Parser.token with
       | Equal ->
         let wellFormed = isJsxPropWellFormed p in
-        if wellFormed then
+        if wellFormed then (
           (* no punning *)
-          (Parser.next p;
+          Parser.next p;
           let optional = Parser.optional p Question in
           Scanner.popMode p.scanner Jsx;
           let attrExpr =
