@@ -998,9 +998,13 @@ let isJsxPropWellFormed p =
             | _ -> true)
           (* arrived at k1={expression} k2=v2 *)
           | Lbrace -> (
+            print_string (Token.toString state.Parser.token);
+            print_newline ();
             goToClosing Rbrace state;
+            print_string (Token.toString state.Parser.token);
+            print_newline ();
             match state.Parser.token with
-            | Question | Lident _ | Forwardslash | GreaterThan | Eof -> true
+            | Question | Lident _ | Forwardslash | GreaterThan | LessThanSlash | LessThan | Eof -> true
             | _ -> false)
           | True | False | Hash | List | Backtick | Lbracket | Lparen | Question
           | Percent | Module | LessThan | String _ | Int _ | Float _ | Uident _
