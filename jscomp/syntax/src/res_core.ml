@@ -982,43 +982,46 @@ let parseRegion p ~grammar ~f =
   Parser.eatBreadcrumb p;
   nodes
 
-(*
-We start the lookahed from '=' token. i.e. 
-
-prop1=value1
-     ^ here
- *)
-let isJsxPropWellFormed p = 
-  let res = Parser.lookahead p (fun state ->
-    match state.Parser.token with
-    (* arrived at k1=v1 *)
-    | Lident _x -> (
-      Parser.next p;
+let isJsxPropWellFormed p =
+  let res =
+    Parser.lookahead p (fun state ->
       match state.Parser.token with
-       (* arrived at k1=v1 =v2 *)
-      | Equal -> false 
-      | _ -> true)
-    (* arrived at k1={expression} *)
-    | Lbrace -> (
-      goToClosing Rbrace state;
-      match state.Parser.token with
-      | Lident _ -> true
-      | _ -> true)
-    | String _ -> true
-    | Question -> true
-    | _token -> false
-  ) in
-  let () = if res then (
-    print_string "well_formed : ";
-    print_string (Token.toString p.token);
-    print_newline ();
-    ) else (
-    print_string "not well formed : ";
-    print_string (Token.toString p.token);
-    print_newline ();
-    ) 
-  in res
-
+        | Equal ->
+          Parser.next p;
+          (match state.Parser.token with
+          (* arrived at k1=v1 *)
+          | Lident _x -> (
+            Parser.next p;
+            match state.Parser.token with
+            (* arrived at k1=v1 =v2 *)
+            | Equal -> false
+            | _ -> true)
+          (* arrived at k1={expression} *)
+          | Lbrace -> (
+            goToClosing Rbrace state;
+            match state.Parser.token with
+            | Lident _ -> true
+            | _ -> true)
+          | String _ -> true
+          | Question -> true
+          | token -> 
+            print_string (Token.toString token);
+            print_newline ();
+            false
+          )
+        | _token -> true)
+  in
+  let () =
+    if res then (
+      print_string "well_formed : ";
+      print_string (Token.toString p.token);
+      print_newline ())
+    else (
+      print_string "not well formed : ";
+      print_string (Token.toString p.token);
+      print_newline ())
+  in
+  res
 
 (* let-binding	::=	pattern =  expr   *)
 (* ∣	 value-name  { parameter }  [: typexpr]  [:> typexpr] =  expr   *)
@@ -2783,19 +2786,31 @@ and parseJsxProp p =
     else
       match p.Parser.token with
       | Equal ->
-        Parser.next p;
-        let _ = isJsxPropWellFormed p in
-        (* no punning *)
-        let optional = Parser.optional p Question in
-        Scanner.popMode p.scanner Jsx;
-        let attrExpr =
-          let e = parsePrimaryExpr ~operand:(parseAtomicExpr p) p in
-          {e with pexp_attributes = propLocAttr :: e.pexp_attributes}
-        in
-        let label =
-          if optional then Asttypes.Optional name else Asttypes.Labelled name
-        in
-        Some (label, attrExpr)
+        let wellFormed = isJsxPropWellFormed p in
+        if wellFormed then
+          (* no punning *)
+          (Parser.next p;
+          let optional = Parser.optional p Question in
+          Scanner.popMode p.scanner Jsx;
+          let attrExpr =
+            let e = parsePrimaryExpr ~operand:(parseAtomicExpr p) p in
+            {e with pexp_attributes = propLocAttr :: e.pexp_attributes}
+          in
+          let label =
+            if optional then Asttypes.Optional name else Asttypes.Labelled name
+          in
+          Some (label, attrExpr))
+        else
+          let label =
+            if optional then Asttypes.Optional name else Asttypes.Labelled name
+          in
+          let id = Location.mknoloc "rescript.exprhole" in
+          let attrExpr =
+            Ast_helper.Exp.mk
+              (Pexp_extension (id, PStr []))
+              ~attrs:[propLocAttr]
+          in
+          Some (label, attrExpr)
       | _ ->
         let attrExpr =
           Ast_helper.Exp.ident ~loc ~attrs:[propLocAttr]
