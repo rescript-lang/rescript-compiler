@@ -22,6 +22,17 @@
 
 - Build with OCaml 5.1.1. https://github.com/rescript-lang/rescript-compiler/pull/6641
 
+# 11.1.0-rc.3
+
+#### :nail_care: Polish
+
+- No parens around tagged template literals. https://github.com/rescript-lang/rescript-compiler/pull/6639
+- Allow identifier with modules in tagged template literals (e.g. Pg.sql`select * from ${table} where id = ${id}`). https://github.com/rescript-lang/rescript-compiler/pull/6645
+
+#### :bug: Bug Fix
+
+- Fix compiler crash when reexporting tagged template literal externals. https://github.com/rescript-lang/rescript-compiler/pull/6645
+
 # 11.1.0-rc.2
 
 #### :rocket: New Feature
@@ -38,6 +49,7 @@
 - Generic JSX transform: Handle namespaced names. https://github.com/rescript-lang/rescript-compiler/pull/6606
 - Fix issue with doc comment in recursive module. https://github.com/rescript-lang/rescript-compiler/pull/6613
 - Fix issue with Exceptions and Extensible types runtime generation. https://github.com/rescript-lang/rescript-compiler/pull/6570
+- Fix inline comment before spread syntax in record. https://github.com/rescript-lang/rescript-compiler/pull/6615
 
 #### :house: Internal
 

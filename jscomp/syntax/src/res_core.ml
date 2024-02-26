@@ -2066,8 +2066,7 @@ and parsePrimaryExpr ~operand ?(noCall = false) p =
     | Backtick
       when noCall = false && p.prevEndPos.pos_lnum == p.startPos.pos_lnum -> (
       match expr.pexp_desc with
-      | Pexp_ident {txt = Longident.Lident ident} ->
-        parseTemplateExpr ~prefix:ident p
+      | Pexp_ident long_ident -> parseTemplateExpr ~prefix:long_ident p
       | _ ->
         Parser.err ~startPos:expr.pexp_loc.loc_start
           ~endPos:expr.pexp_loc.loc_end p
@@ -2243,13 +2242,15 @@ and parseBinaryExpr ?(context = OrdinaryExpr) ?a p prec =
 (* | _ -> false *)
 (* ) *)
 
-and parseTemplateExpr ?(prefix = "js") p =
+and parseTemplateExpr ?prefix p =
   let partPrefix =
     (* we could stop treating js and j prefix as something special
        for json, we would first need to remove @as(json`true`) feature *)
     match prefix with
-    | "js" | "j" | "json" -> Some prefix
-    | _ -> None
+    | Some {txt = Longident.Lident (("js" | "j" | "json") as prefix); _} ->
+      Some prefix
+    | Some _ -> None
+    | None -> Some "js"
   in
   let startPos = p.Parser.startPos in
 
@@ -2286,8 +2287,7 @@ and parseTemplateExpr ?(prefix = "js") p =
   let values = Ext_list.filter_map parts snd in
   let endPos = p.Parser.endPos in
 
-  let genTaggedTemplateCall () =
-    let lident = Longident.Lident prefix in
+  let genTaggedTemplateCall lident =
     let ident =
       Ast_helper.Exp.ident ~attrs:[] ~loc:Location.none
         (Location.mknoloc lident)
@@ -2338,8 +2338,9 @@ and parseTemplateExpr ?(prefix = "js") p =
   in
 
   match prefix with
-  | "js" | "j" | "json" -> genInterpolatedString ()
-  | _ -> genTaggedTemplateCall ()
+  | Some {txt = Longident.Lident ("js" | "j" | "json"); _} | None ->
+    genInterpolatedString ()
+  | Some {txt = lident} -> genTaggedTemplateCall lident
 
 (* Overparse: let f = a : int => a + 1, is it (a : int) => or (a): int =>
  * Also overparse constraints:
