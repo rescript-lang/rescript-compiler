@@ -1577,7 +1577,7 @@ eq("File \"bs_array_test.res\", line 395, characters 5-12", Belt_Array.getBy([
           3
         ], (function (x) {
             return x > 3;
-          })), undefined);
+          })));
 
 eq("File \"bs_array_test.res\", line 399, characters 5-12", Belt_Array.getIndexBy([
           1,
@@ -1593,7 +1593,7 @@ eq("File \"bs_array_test.res\", line 400, characters 5-12", Belt_Array.getIndexB
           3
         ], (function (x) {
             return x > 3;
-          })), undefined);
+          })));
 
 var arr = [];
 

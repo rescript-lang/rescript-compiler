@@ -15,11 +15,11 @@ newrecord.y = 3;
 
 var newrecord$1 = Caml_obj.obj_dup(newrecord);
 
-newrecord$1.yy = Caml_option.some(undefined);
+newrecord$1.yy = Caml_option.some();
 
 var theseTwoShouldBeIdentical = [
   newrecord$1.yy,
-  Caml_option.some(undefined)
+  Caml_option.some()
 ];
 
 var v = {

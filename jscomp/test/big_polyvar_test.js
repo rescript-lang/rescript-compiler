@@ -7224,7 +7224,7 @@ if (!eq(tFromJs("variant299"), "variant299")) {
       };
 }
 
-if (!eq(tFromJs("xx"), undefined)) {
+if (!eq(tFromJs("xx"))) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [

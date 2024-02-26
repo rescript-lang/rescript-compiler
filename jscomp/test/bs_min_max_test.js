@@ -65,15 +65,15 @@ b("File \"bs_min_max_test.res\", line 21, characters 4-11", Caml.i64_eq(Caml.i64
           3
         ]));
 
-eq("File \"bs_min_max_test.res\", line 22, characters 5-12", Caml_obj.min(undefined, 3), undefined);
+eq("File \"bs_min_max_test.res\", line 22, characters 5-12", Caml_obj.min(undefined, 3));
 
-eq("File \"bs_min_max_test.res\", line 23, characters 5-12", Caml_obj.min(3, undefined), undefined);
+eq("File \"bs_min_max_test.res\", line 23, characters 5-12", Caml_obj.min(3));
 
-eq("File \"bs_min_max_test.res\", line 24, characters 5-12", Caml_obj.max(3, undefined), 3);
+eq("File \"bs_min_max_test.res\", line 24, characters 5-12", Caml_obj.max(3), 3);
 
 eq("File \"bs_min_max_test.res\", line 25, characters 5-12", Caml_obj.max(undefined, 3), 3);
 
-b("File \"bs_min_max_test.res\", line 26, characters 4-11", Caml_obj.greaterequal(5, undefined));
+b("File \"bs_min_max_test.res\", line 26, characters 4-11", Caml_obj.greaterequal(5));
 
 b("File \"bs_min_max_test.res\", line 27, characters 4-11", Caml_obj.lessequal(undefined, 5));
 

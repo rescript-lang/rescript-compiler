@@ -231,7 +231,7 @@ var suites_1 = {
                                         return {
                                                 TAG: "Eq",
                                                 _0: undefined,
-                                                _1: Js_null_undefined.fromOption(undefined)
+                                                _1: Js_null_undefined.fromOption()
                                               };
                                       })
                                   ],

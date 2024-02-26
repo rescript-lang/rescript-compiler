@@ -36,7 +36,7 @@ function foo2(y, xOpt, zOpt) {
   return (x + y | 0) + z | 0;
 }
 
-var r2 = foo2(11, undefined, undefined);
+var r2 = foo2(11);
 
 function foo3(xOpt, yOpt) {
   var x = xOpt !== undefined ? xOpt : 3;
@@ -44,7 +44,7 @@ function foo3(xOpt, yOpt) {
   return x + y | 0;
 }
 
-var r3 = foo3(undefined, undefined);
+var r3 = foo3();
 
 var StandardNotation = {
   withOpt: withOpt,
@@ -92,7 +92,7 @@ function foo2$1(y, xOpt, zOpt) {
   return (x + y | 0) + z | 0;
 }
 
-var r2$1 = foo2$1(11, undefined, undefined);
+var r2$1 = foo2$1(11);
 
 function foo3$1(xOpt, yOpt) {
   var x = xOpt !== undefined ? xOpt : 3;
@@ -100,7 +100,7 @@ function foo3$1(xOpt, yOpt) {
   return x + y | 0;
 }
 
-var r3$1 = foo3$1(undefined, undefined);
+var r3$1 = foo3$1();
 
 function foo(func) {
   return func() + 1 | 0;

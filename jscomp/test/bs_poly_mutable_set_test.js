@@ -176,7 +176,7 @@ eq("File \"bs_poly_mutable_set_test.res\", line 86, characters 5-12", Belt_inter
 
 Belt_internalAVLset.checkInvariantInternal(v.data);
 
-eq("File \"bs_poly_mutable_set_test.res\", line 88, characters 5-12", Belt_MutableSet.get(v, 3), undefined);
+eq("File \"bs_poly_mutable_set_test.res\", line 88, characters 5-12", Belt_MutableSet.get(v, 3));
 
 eq("File \"bs_poly_mutable_set_test.res\", line 89, characters 5-12", Belt_MutableSet.get(v, 1200), 1200);
 

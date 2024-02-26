@@ -57,7 +57,7 @@ b("File \"equal_box_test.res\", line 27, characters 4-11", true);
 
 b("File \"equal_box_test.res\", line 28, characters 4-11", true);
 
-b("File \"equal_box_test.res\", line 29, characters 4-11", !Caml_obj.equal_null(3, undefined));
+b("File \"equal_box_test.res\", line 29, characters 4-11", !Caml_obj.equal_null(3));
 
 var v = null;
 
@@ -83,7 +83,7 @@ b("File \"equal_box_test.res\", line 43, characters 4-11", true);
 
 b("File \"equal_box_test.res\", line 44, characters 4-11", true);
 
-b("File \"equal_box_test.res\", line 45, characters 4-11", !Caml_obj.equal_nullable(3, undefined));
+b("File \"equal_box_test.res\", line 45, characters 4-11", !Caml_obj.equal_nullable(3));
 
 b("File \"equal_box_test.res\", line 51, characters 4-11", 3 !== undefined);
 
@@ -93,21 +93,21 @@ b("File \"equal_box_test.res\", line 53, characters 4-11", "3" !== undefined);
 
 b("File \"equal_box_test.res\", line 54, characters 4-11", /* '3' */51 !== undefined);
 
-b("File \"equal_box_test.res\", line 55, characters 4-11", !Caml_int64.equal_undefined(Caml_int64.zero, undefined));
+b("File \"equal_box_test.res\", line 55, characters 4-11", !Caml_int64.equal_undefined(Caml_int64.zero));
 
 b("File \"equal_box_test.res\", line 56, characters 4-11", 0 !== undefined);
 
 b("File \"equal_box_test.res\", line 57, characters 4-11", true);
 
-b("File \"equal_box_test.res\", line 58, characters 4-11", Caml_obj.equal_undefined(undefined, undefined));
+b("File \"equal_box_test.res\", line 58, characters 4-11", Caml_obj.equal_undefined());
 
-b("File \"equal_box_test.res\", line 62, characters 4-11", !Caml_obj.equal_undefined(null, undefined));
+b("File \"equal_box_test.res\", line 62, characters 4-11", !Caml_obj.equal_undefined(null));
 
 b("File \"equal_box_test.res\", line 63, characters 4-11", true);
 
 b("File \"equal_box_test.res\", line 64, characters 4-11", true);
 
-b("File \"equal_box_test.res\", line 65, characters 4-11", !Caml_obj.equal_undefined(3, undefined));
+b("File \"equal_box_test.res\", line 65, characters 4-11", !Caml_obj.equal_undefined(3));
 
 Mt.from_pair_suites("File \"equal_box_test.res\", line 68, characters 20-27", suites.contents);
 

@@ -43,7 +43,7 @@ eq("File \"gpr_3142_test.res\", line 24, characters 3-10", tFromJs("你"), "b");
 
 eq("File \"gpr_3142_test.res\", line 25, characters 3-10", tFromJs("我"), "c");
 
-eq("File \"gpr_3142_test.res\", line 26, characters 3-10", tFromJs("xx"), undefined);
+eq("File \"gpr_3142_test.res\", line 26, characters 3-10", tFromJs("xx"));
 
 Mt.from_pair_suites("Gpr_3142_test", suites.contents);
 

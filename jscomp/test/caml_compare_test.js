@@ -238,7 +238,7 @@ var suites = {
                                       _1: Caml_obj.greaterthan([
                                             1,
                                             30
-                                          ], undefined)
+                                          ])
                                     };
                             })
                         ],
@@ -1064,7 +1064,7 @@ var suites = {
                                                                                                             (function (param) {
                                                                                                                 return {
                                                                                                                         TAG: "Eq",
-                                                                                                                        _0: Caml_obj.compare(0, undefined),
+                                                                                                                        _0: Caml_obj.compare(0),
                                                                                                                         _1: 1
                                                                                                                       };
                                                                                                               })
@@ -1132,7 +1132,7 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"caml_compare_test.res\", line 88, characters 3-10", true, Caml_obj.greaterthan(1, undefined));
+eq("File \"caml_compare_test.res\", line 88, characters 3-10", true, Caml_obj.greaterthan(1));
 
 eq("File \"caml_compare_test.res\", line 89, characters 3-10", true, Caml_obj.lessthan(/* [] */0, {
           hd: 1,
@@ -1149,7 +1149,7 @@ eq("File \"caml_compare_test.res\", line 91, characters 3-10", false, Caml_obj.g
 eq("File \"caml_compare_test.res\", line 92, characters 3-10", false, Caml_obj.lessthan([
           1,
           30
-        ], undefined));
+        ]));
 
 Mt.from_pair_suites("Caml_compare_test", suites.contents);
 

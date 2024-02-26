@@ -81,7 +81,7 @@ var option_suites_1 = {
                   return {
                           TAG: "Eq",
                           _0: false,
-                          _1: Js_option.isSomeValue(simpleEq, 1, undefined)
+                          _1: Js_option.isSomeValue(simpleEq, 1)
                         };
                 })
             ],
@@ -125,7 +125,7 @@ var option_suites_1 = {
                           return {
                                   TAG: "Eq",
                                   _0: false,
-                                  _1: Js_option.equal(simpleEq, 1, undefined)
+                                  _1: Js_option.equal(simpleEq, 1)
                                 };
                         })
                     ],
@@ -177,7 +177,7 @@ var option_suites_1 = {
                                           _0: undefined,
                                           _1: Js_option.map((function (a) {
                                                   return a + 1 | 0;
-                                                }), undefined)
+                                                }))
                                         };
                                 })
                             ],
@@ -199,7 +199,7 @@ var option_suites_1 = {
                                       return {
                                               TAG: "Eq",
                                               _0: 3,
-                                              _1: Js_option.getWithDefault(3, undefined)
+                                              _1: Js_option.getWithDefault(3)
                                             };
                                     })
                                 ],
@@ -238,7 +238,7 @@ var option_suites_1 = {
                                                     _0: undefined,
                                                     _1: Js_option.filter((function (a) {
                                                             return a % 3 === 0;
-                                                          }), undefined)
+                                                          }))
                                                   };
                                           })
                                       ],
@@ -271,7 +271,7 @@ var option_suites_1 = {
                                                   return {
                                                           TAG: "Eq",
                                                           _0: undefined,
-                                                          _1: Js_option.firstSome(undefined, undefined)
+                                                          _1: Js_option.firstSome()
                                                         };
                                                 })
                                             ],

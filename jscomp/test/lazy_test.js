@@ -76,7 +76,7 @@ var a3 = CamlinternalLazy.from_val(3);
 
 var a4 = CamlinternalLazy.from_val(3);
 
-var a5 = CamlinternalLazy.from_val(undefined);
+var a5 = CamlinternalLazy.from_val();
 
 var a6 = CamlinternalLazy.from_val();
 

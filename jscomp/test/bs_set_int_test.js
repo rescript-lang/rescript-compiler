@@ -369,7 +369,7 @@ b("File \"bs_set_int_test.res\", line 241, characters 4-11", !Belt_SetInt.subset
 
 eq("File \"bs_set_int_test.res\", line 242, characters 5-12", Belt_SetInt.get(v$12, 30), 30);
 
-eq("File \"bs_set_int_test.res\", line 243, characters 5-12", Belt_SetInt.get(v$12, 3000), undefined);
+eq("File \"bs_set_int_test.res\", line 243, characters 5-12", Belt_SetInt.get(v$12, 3000));
 
 Mt.from_pair_suites("Bs_set_int_test", suites.contents);
 

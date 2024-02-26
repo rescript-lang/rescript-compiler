@@ -171,7 +171,7 @@ eq("File \"bs_mutable_set_test.res\", line 91, characters 9-16", Belt_internalAV
 
 Belt_internalAVLset.checkInvariantInternal(v.data);
 
-eq("File \"bs_mutable_set_test.res\", line 93, characters 9-16", Belt_internalSetInt.get(v.data, 3), undefined);
+eq("File \"bs_mutable_set_test.res\", line 93, characters 9-16", Belt_internalSetInt.get(v.data, 3));
 
 eq("File \"bs_mutable_set_test.res\", line 94, characters 9-16", Belt_internalSetInt.get(v.data, 1200), 1200);
 

@@ -576,9 +576,19 @@ and expression_desc cxt ~(level : int) f x : cxt =
                         | [e] when e.expression_desc = Undefined {isUnit = true} ->
                           (* omit passing undefined when the call is f() *)
                           []
-                        | _ ->
-                          el in
-                         arguments cxt f el)
+                        | _ -> 
+                          let rec keepNonUndefinedArgs argsList = (
+                            match argsList with 
+                            | {J.expression_desc=Undefined {isUnit = false}} :: rest -> keepNonUndefinedArgs rest 
+                            | _ -> argsList
+                            
+                          ) in
+                          el 
+                          |> List.rev
+                          |> keepNonUndefinedArgs 
+                          |> List.rev
+                        in
+                        arguments cxt f el)
               | _, _ ->
                   let len = List.length el in
                   if 1 <= len && len <= 8 then (

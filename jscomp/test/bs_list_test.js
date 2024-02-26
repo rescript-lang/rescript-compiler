@@ -108,7 +108,7 @@ eq("File \"bs_list_test.res\", line 33, characters 5-12", Belt_List.getBy({
           }
         }, (function (x) {
             return x % 5 === 0;
-          })), undefined);
+          })));
 
 eq("FLATTEN", Belt_List.flatten({
           hd: {
@@ -849,7 +849,7 @@ eq("TAKE", Belt_List.take({
       }
     });
 
-eq("TAKE", Belt_List.take(/* [] */0, 1), undefined);
+eq("TAKE", Belt_List.take(/* [] */0, 1));
 
 eq("TAKE", Belt_List.take({
           hd: 1,
@@ -857,7 +857,7 @@ eq("TAKE", Belt_List.take({
             hd: 2,
             tl: /* [] */0
           }
-        }, 3), undefined);
+        }, 3));
 
 eq("TAKE", Belt_List.take({
           hd: 1,
@@ -877,7 +877,7 @@ eq("TAKE", Belt_List.take(length_10_id, 8), length_8_id);
 
 eq("TAKE", Belt_List.take(length_10_id, 0), /* [] */0);
 
-eq("TAKE", Belt_List.take(length_8_id, -2), undefined);
+eq("TAKE", Belt_List.take(length_8_id, -2));
 
 eq("DROP", Belt_List.drop(length_10_id, 10), /* [] */0);
 
@@ -891,13 +891,13 @@ eq("DROP", Belt_List.drop(length_10_id, 8), {
 
 eq("DROP", Belt_List.drop(length_10_id, 0), length_10_id);
 
-eq("DROP", Belt_List.drop(length_8_id, -1), undefined);
+eq("DROP", Belt_List.drop(length_8_id, -1));
 
 var a = Belt_List.makeBy(5, id);
 
-eq("SPLIT", Belt_List.splitAt(/* [] */0, 1), undefined);
+eq("SPLIT", Belt_List.splitAt(/* [] */0, 1));
 
-eq("SPLIT", Belt_List.splitAt(a, 6), undefined);
+eq("SPLIT", Belt_List.splitAt(a, 6));
 
 eq("SPLIT", Belt_List.splitAt(a, 5), [
       a,
@@ -989,7 +989,7 @@ eq("SPLIT", Belt_List.splitAt(a, 0), [
       a
     ]);
 
-eq("SPLIT", Belt_List.splitAt(a, -1), undefined);
+eq("SPLIT", Belt_List.splitAt(a, -1));
 
 function succx(x) {
   return x + 1 | 0;
@@ -1549,7 +1549,7 @@ eq("File \"bs_list_test.res\", line 248, characters 4-11", [
       Belt_List.drop(length_10_id, 1)
     ]);
 
-eq("File \"bs_list_test.res\", line 255, characters 5-12", Belt_List.head(/* [] */0), undefined);
+eq("File \"bs_list_test.res\", line 255, characters 5-12", Belt_List.head(/* [] */0));
 
 $$throw("File \"bs_list_test.res\", line 256, characters 8-15", (function (param) {
         Belt_List.headExn(/* [] */0);
@@ -1615,17 +1615,17 @@ Belt_List.forEachWithIndex(length_10_id, (function (i, x) {
         eq("File \"bs_list_test.res\", line 263, characters 48-55", Belt_List.get(length_10_id, i), x);
       }));
 
-eq("File \"bs_list_test.res\", line 264, characters 5-12", Belt_List.tail(/* [] */0), undefined);
+eq("File \"bs_list_test.res\", line 264, characters 5-12", Belt_List.tail(/* [] */0));
 
-eq("File \"bs_list_test.res\", line 265, characters 5-12", Belt_List.drop(/* [] */0, 3), undefined);
+eq("File \"bs_list_test.res\", line 265, characters 5-12", Belt_List.drop(/* [] */0, 3));
 
 eq("File \"bs_list_test.res\", line 266, characters 5-12", Belt_List.mapWithIndex(/* [] */0, (function (i, x) {
             return i + x | 0;
           })), /* [] */0);
 
-eq("File \"bs_list_test.res\", line 267, characters 5-12", Belt_List.get(length_10_id, -1), undefined);
+eq("File \"bs_list_test.res\", line 267, characters 5-12", Belt_List.get(length_10_id, -1));
 
-eq("File \"bs_list_test.res\", line 268, characters 5-12", Belt_List.get(length_10_id, 12), undefined);
+eq("File \"bs_list_test.res\", line 268, characters 5-12", Belt_List.get(length_10_id, 12));
 
 eq("File \"bs_list_test.res\", line 269, characters 5-12", sum(/* [] */0), 0);
 
