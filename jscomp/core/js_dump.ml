@@ -578,7 +578,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
                           []
                         | _ ->
                           el in
-                          arguments cxt f el)
+                         arguments cxt f el)
               | _, _ ->
                   let len = List.length el in
                   if 1 <= len && len <= 8 then (
