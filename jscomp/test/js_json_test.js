@@ -662,7 +662,7 @@ eq("File \"js_json_test.res\", line 290, characters 2-9", JSON.stringify({
 
 eq("File \"js_json_test.res\", line 295, characters 12-19", JSON.stringify(null), "null");
 
-eq("File \"js_json_test.res\", line 297, characters 12-19", JSON.stringify(), undefined);
+eq("File \"js_json_test.res\", line 297, characters 12-19", JSON.stringify(undefined), undefined);
 
 eq("File \"js_json_test.res\", line 300, characters 5-12", Js_json.decodeString("test"), "test");
 

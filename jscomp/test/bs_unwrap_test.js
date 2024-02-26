@@ -32,13 +32,13 @@ console.log(arg_pair.VAL);
 
 console.log();
 
-console.log(1);
+console.log(1, undefined);
 
 console.log(2, "hi");
 
 console.log(3, "hi");
 
-console.log(4);
+console.log(4, undefined);
 
 var some_arg = {
   NAME: "Bool",
@@ -47,7 +47,7 @@ var some_arg = {
 
 console.log(5, Caml_option.option_unwrap(some_arg));
 
-console.log(6);
+console.log(6, undefined);
 
 console.log(7, Caml_option.option_unwrap((console.log("trace"), undefined)));
 

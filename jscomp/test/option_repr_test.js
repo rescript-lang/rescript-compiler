@@ -135,7 +135,7 @@ b("File \"option_repr_test.res\", line 96, characters 4-11", Caml_obj.lessthan(u
 
 b("File \"option_repr_test.res\", line 97, characters 4-11", Caml_obj.greaterthan(Caml_option.some(undefined), undefined));
 
-console.log(6);
+console.log(6, undefined);
 
 function ltx(a, b) {
   if (Caml_obj.lessthan(a, b)) {
