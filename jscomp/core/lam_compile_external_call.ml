@@ -271,6 +271,15 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
           else E.call ~info:{ arity = Full; call_info = Call_na } fn args)
       else
         let args, eff = assemble_args_no_splice arg_types args in
+        let rec keepNonUndefinedArgs argsList = (
+          match argsList with 
+          | {J.expression_desc=Undefined {isUnit = false}; _} :: rest -> keepNonUndefinedArgs rest 
+          | _ -> argsList
+        ) in
+        let args = args 
+        |> List.rev 
+        |> keepNonUndefinedArgs 
+        |> List.rev in
         add_eff eff
         @@ E.call ~info:{ arity = Full; call_info = Call_na } fn args
   | Js_module_as_fn { external_module_name; splice } ->

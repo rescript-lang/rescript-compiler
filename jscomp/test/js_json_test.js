@@ -662,79 +662,79 @@ eq("File \"js_json_test.res\", line 290, characters 2-9", JSON.stringify({
 
 eq("File \"js_json_test.res\", line 295, characters 12-19", JSON.stringify(null), "null");
 
-eq("File \"js_json_test.res\", line 297, characters 12-19", JSON.stringify());
+eq("File \"js_json_test.res\", line 297, characters 12-19", JSON.stringify(), undefined);
 
 eq("File \"js_json_test.res\", line 300, characters 5-12", Js_json.decodeString("test"), "test");
 
-eq("File \"js_json_test.res\", line 301, characters 5-12", Js_json.decodeString(true));
+eq("File \"js_json_test.res\", line 301, characters 5-12", Js_json.decodeString(true), undefined);
 
-eq("File \"js_json_test.res\", line 302, characters 5-12", Js_json.decodeString([]));
+eq("File \"js_json_test.res\", line 302, characters 5-12", Js_json.decodeString([]), undefined);
 
-eq("File \"js_json_test.res\", line 303, characters 5-12", Js_json.decodeString(null));
+eq("File \"js_json_test.res\", line 303, characters 5-12", Js_json.decodeString(null), undefined);
 
-eq("File \"js_json_test.res\", line 304, characters 5-12", Js_json.decodeString({}));
+eq("File \"js_json_test.res\", line 304, characters 5-12", Js_json.decodeString({}), undefined);
 
-eq("File \"js_json_test.res\", line 305, characters 5-12", Js_json.decodeString(1.23));
+eq("File \"js_json_test.res\", line 305, characters 5-12", Js_json.decodeString(1.23), undefined);
 
-eq("File \"js_json_test.res\", line 309, characters 5-12", Js_json.decodeNumber("test"));
+eq("File \"js_json_test.res\", line 309, characters 5-12", Js_json.decodeNumber("test"), undefined);
 
-eq("File \"js_json_test.res\", line 310, characters 5-12", Js_json.decodeNumber(true));
+eq("File \"js_json_test.res\", line 310, characters 5-12", Js_json.decodeNumber(true), undefined);
 
-eq("File \"js_json_test.res\", line 311, characters 5-12", Js_json.decodeNumber([]));
+eq("File \"js_json_test.res\", line 311, characters 5-12", Js_json.decodeNumber([]), undefined);
 
-eq("File \"js_json_test.res\", line 312, characters 5-12", Js_json.decodeNumber(null));
+eq("File \"js_json_test.res\", line 312, characters 5-12", Js_json.decodeNumber(null), undefined);
 
-eq("File \"js_json_test.res\", line 313, characters 5-12", Js_json.decodeNumber({}));
+eq("File \"js_json_test.res\", line 313, characters 5-12", Js_json.decodeNumber({}), undefined);
 
 eq("File \"js_json_test.res\", line 314, characters 5-12", Js_json.decodeNumber(1.23), 1.23);
 
-eq("File \"js_json_test.res\", line 318, characters 5-12", Js_json.decodeObject("test"));
+eq("File \"js_json_test.res\", line 318, characters 5-12", Js_json.decodeObject("test"), undefined);
 
-eq("File \"js_json_test.res\", line 319, characters 5-12", Js_json.decodeObject(true));
+eq("File \"js_json_test.res\", line 319, characters 5-12", Js_json.decodeObject(true), undefined);
 
-eq("File \"js_json_test.res\", line 320, characters 5-12", Js_json.decodeObject([]));
+eq("File \"js_json_test.res\", line 320, characters 5-12", Js_json.decodeObject([]), undefined);
 
-eq("File \"js_json_test.res\", line 321, characters 5-12", Js_json.decodeObject(null));
+eq("File \"js_json_test.res\", line 321, characters 5-12", Js_json.decodeObject(null), undefined);
 
 eq("File \"js_json_test.res\", line 322, characters 5-12", Js_json.decodeObject({}), {});
 
-eq("File \"js_json_test.res\", line 323, characters 5-12", Js_json.decodeObject(1.23));
+eq("File \"js_json_test.res\", line 323, characters 5-12", Js_json.decodeObject(1.23), undefined);
 
-eq("File \"js_json_test.res\", line 327, characters 5-12", Js_json.decodeArray("test"));
+eq("File \"js_json_test.res\", line 327, characters 5-12", Js_json.decodeArray("test"), undefined);
 
-eq("File \"js_json_test.res\", line 328, characters 5-12", Js_json.decodeArray(true));
+eq("File \"js_json_test.res\", line 328, characters 5-12", Js_json.decodeArray(true), undefined);
 
 eq("File \"js_json_test.res\", line 329, characters 5-12", Js_json.decodeArray([]), []);
 
-eq("File \"js_json_test.res\", line 330, characters 5-12", Js_json.decodeArray(null));
+eq("File \"js_json_test.res\", line 330, characters 5-12", Js_json.decodeArray(null), undefined);
 
-eq("File \"js_json_test.res\", line 331, characters 5-12", Js_json.decodeArray({}));
+eq("File \"js_json_test.res\", line 331, characters 5-12", Js_json.decodeArray({}), undefined);
 
-eq("File \"js_json_test.res\", line 332, characters 5-12", Js_json.decodeArray(1.23));
+eq("File \"js_json_test.res\", line 332, characters 5-12", Js_json.decodeArray(1.23), undefined);
 
-eq("File \"js_json_test.res\", line 336, characters 5-12", Js_json.decodeBoolean("test"));
+eq("File \"js_json_test.res\", line 336, characters 5-12", Js_json.decodeBoolean("test"), undefined);
 
 eq("File \"js_json_test.res\", line 337, characters 5-12", Js_json.decodeBoolean(true), true);
 
-eq("File \"js_json_test.res\", line 338, characters 5-12", Js_json.decodeBoolean([]));
+eq("File \"js_json_test.res\", line 338, characters 5-12", Js_json.decodeBoolean([]), undefined);
 
-eq("File \"js_json_test.res\", line 339, characters 5-12", Js_json.decodeBoolean(null));
+eq("File \"js_json_test.res\", line 339, characters 5-12", Js_json.decodeBoolean(null), undefined);
 
-eq("File \"js_json_test.res\", line 340, characters 5-12", Js_json.decodeBoolean({}));
+eq("File \"js_json_test.res\", line 340, characters 5-12", Js_json.decodeBoolean({}), undefined);
 
-eq("File \"js_json_test.res\", line 341, characters 5-12", Js_json.decodeBoolean(1.23));
+eq("File \"js_json_test.res\", line 341, characters 5-12", Js_json.decodeBoolean(1.23), undefined);
 
-eq("File \"js_json_test.res\", line 345, characters 5-12", Js_json.decodeNull("test"));
+eq("File \"js_json_test.res\", line 345, characters 5-12", Js_json.decodeNull("test"), undefined);
 
-eq("File \"js_json_test.res\", line 346, characters 5-12", Js_json.decodeNull(true));
+eq("File \"js_json_test.res\", line 346, characters 5-12", Js_json.decodeNull(true), undefined);
 
-eq("File \"js_json_test.res\", line 347, characters 5-12", Js_json.decodeNull([]));
+eq("File \"js_json_test.res\", line 347, characters 5-12", Js_json.decodeNull([]), undefined);
 
 eq("File \"js_json_test.res\", line 348, characters 5-12", Js_json.decodeNull(null), null);
 
-eq("File \"js_json_test.res\", line 349, characters 5-12", Js_json.decodeNull({}));
+eq("File \"js_json_test.res\", line 349, characters 5-12", Js_json.decodeNull({}), undefined);
 
-eq("File \"js_json_test.res\", line 350, characters 5-12", Js_json.decodeNull(1.23));
+eq("File \"js_json_test.res\", line 350, characters 5-12", Js_json.decodeNull(1.23), undefined);
 
 function id(obj) {
   return Js_json.deserializeUnsafe(Js_json.serializeExn(obj));
@@ -744,7 +744,7 @@ function idtest(obj) {
   eq("File \"js_json_test.res\", line 355, characters 23-30", obj, Js_json.deserializeUnsafe(Js_json.serializeExn(obj)));
 }
 
-idtest();
+idtest(undefined);
 
 idtest({
       hd: [

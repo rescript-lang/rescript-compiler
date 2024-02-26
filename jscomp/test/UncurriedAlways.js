@@ -100,7 +100,7 @@ function ptl$2(none, extra, extra$1) {
   return foo$2(none, "y", extra, extra$1);
 }
 
-var b1 = ptl$2("x", "z");
+var b1 = ptl$2("x", "z", undefined);
 
 console.log("b1:", b1);
 
@@ -138,15 +138,15 @@ function ptl$3(none, none$1, none$2, none$3, none$4, none$5, extra) {
   return foo$3(none, none$1, none$2, "y", none$3, none$4, none$5, "w", extra);
 }
 
-var c1 = ptl$3(undefined, "x", undefined, undefined, "z");
+var c1 = ptl$3(undefined, "x", undefined, undefined, "z", undefined, undefined);
 
 console.log("c1:", c1);
 
-var c2 = ptl$3("d1<-100", "x", undefined, undefined, "z");
+var c2 = ptl$3("d1<-100", "x", undefined, undefined, "z", undefined, undefined);
 
 console.log("c2:", c2);
 
-var c3 = ptl$3(undefined, "x", "d2<-200", undefined, "z", "d4<-400");
+var c3 = ptl$3(undefined, "x", "d2<-200", undefined, "z", "d4<-400", undefined);
 
 console.log("c3:", c3);
 

@@ -3153,7 +3153,7 @@ function compile(r) {
           hd: {
             TAG: "Sem",
             _0: "Shortest",
-            _1: repn(any, 0)
+            _1: repn(any, 0, undefined)
           },
           tl: {
             hd: {
@@ -4100,10 +4100,10 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   var piece = function (param) {
     var r = atom();
     if (accept(/* '*' */42)) {
-      return greedy_mod(repn(r, 0));
+      return greedy_mod(repn(r, 0, undefined));
     }
     if (accept(/* '+' */43)) {
-      return greedy_mod(repn(r, 1));
+      return greedy_mod(repn(r, 1, undefined));
     }
     if (accept(/* '?' */63)) {
       return greedy_mod(repn(r, 0, 1));

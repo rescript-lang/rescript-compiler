@@ -58,7 +58,7 @@ function make(foo) {
   };
 }
 
-var a_ = make()();
+var a_ = make(undefined)();
 
 var b_ = make(42)();
 
@@ -141,7 +141,7 @@ function keys(xs, ys) {
 eq("File \"gpr_1409_test.res\", line 69, characters 3-10", keys({
           hd: "hi",
           tl: /* [] */0
-        }, Object.keys(test3())), true);
+        }, Object.keys(test3(undefined, undefined))), true);
 
 eq("File \"gpr_1409_test.res\", line 71, characters 3-10", keys({
           hd: "hi",
@@ -149,7 +149,7 @@ eq("File \"gpr_1409_test.res\", line 71, characters 3-10", keys({
             hd: "_open",
             tl: /* [] */0
           }
-        }, Object.keys(test3(2))), true);
+        }, Object.keys(test3(2, undefined))), true);
 
 eq("File \"gpr_1409_test.res\", line 73, characters 3-10", keys({
           hd: "hi",

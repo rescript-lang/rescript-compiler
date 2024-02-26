@@ -69,7 +69,7 @@ eq("File \"bs_float_test.res\", line 36, characters 5-12", Belt_Float.fromString
 
 eq("File \"bs_float_test.res\", line 37, characters 5-12", Belt_Float.fromString("-1.7"), -1.7);
 
-eq("File \"bs_float_test.res\", line 38, characters 5-12", Belt_Float.fromString("not a float"));
+eq("File \"bs_float_test.res\", line 38, characters 5-12", Belt_Float.fromString("not a float"), undefined);
 
 eq("File \"bs_float_test.res\", line 42, characters 5-12", String(1.0), "1");
 

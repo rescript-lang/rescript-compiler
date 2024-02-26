@@ -69,7 +69,7 @@ eq("File \"bs_int_test.res\", line 36, characters 5-12", Belt_Int.fromString("-1
 
 eq("File \"bs_int_test.res\", line 37, characters 5-12", Belt_Int.fromString("-1.7"), -1);
 
-eq("File \"bs_int_test.res\", line 38, characters 5-12", Belt_Int.fromString("not an int"));
+eq("File \"bs_int_test.res\", line 38, characters 5-12", Belt_Int.fromString("not an int"), undefined);
 
 eq("File \"bs_int_test.res\", line 42, characters 5-12", String(1), "1");
 

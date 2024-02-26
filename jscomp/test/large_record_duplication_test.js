@@ -199,7 +199,7 @@ eq("File \"large_record_duplication_test.res\", line 276, characters 3-10", get_
 
 eq("File \"large_record_duplication_test.res\", line 277, characters 3-10", get_x0$2({
           RE_EXN_ID: "Not_found"
-        }));
+        }), undefined);
 
 Mt.from_pair_suites("Large_record_duplication_test", suites.contents);
 
