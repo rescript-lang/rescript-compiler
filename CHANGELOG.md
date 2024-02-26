@@ -10,9 +10,10 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.1.0-rc.3 (Unreleased)
+# 11.1.0-rc.3
 
 #### :nail_care: Polish
+
 - No parens around tagged template literals. https://github.com/rescript-lang/rescript-compiler/pull/6639
 - Allow identifier with modules in tagged template literals (e.g. Pg.sql`select * from ${table} where id = ${id}`). https://github.com/rescript-lang/rescript-compiler/pull/6645
 
