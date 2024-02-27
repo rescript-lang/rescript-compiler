@@ -983,16 +983,40 @@ let parseRegion p ~grammar ~f =
   nodes
 
 let isJsxPropWellFormed p =
-  (* k= *)
+  (* jsx-prop ::= prop = value *)
+  (* Possible tokens after `=` *)
+  (* value ::= *)
+  (*  | True *)
+  (*  | False *)
+  (*  | #Variant *)
+  (*  | `string` *)
+  (*  | [array] *)
+  (*  | list{} *)
+  (*  | () *)
+  (*  | ?value *)
+  (*  | <element /> *)
+  (*  | %raw *)
+  (*  | module(P) *)
+  (*  | string-literal *)
+  (*  | int-literal *)
+  (*  | float-literal *)
+  (*  | variable *)
+  (*  | A.B *)
   let isPossibleAfterEqual token =
     match token with
-    | Token.True | False | Hash | List | Backtick | Lbracket | Lparen | Question
+    | Token.True | False | Hash | Backtick | Lbracket | List | Lparen | Question
     | LessThan | Percent | Module | String _ | Int _ | Float _ | Lident _
     | Uident _ ->
       true
     | _ -> false
   in
-  (* }  *)
+  (* jsx-prop ::= prop = {value} *)
+  (* Possible tokens after `}` *)
+  (* prop={{expr}} *)
+  (* prop={value} > ...children </> *)
+  (* prop={value} /> *)
+  (* prop={value} prop2={value2} /> *)
+  (* prop={value} ?prop2 /> *)
   let isPossibleAfterRbrace token =
     match token with
     | Token.Rbrace | GreaterThan | Forwardslash | Lident _ | Question | Eof ->
@@ -1023,9 +1047,9 @@ let isJsxPropWellFormed p =
               (*print_string (Token.toString state.Parser.token);
                 print_newline ();*)
               isPossibleAfterRbrace state.Parser.token)
-          (* arrived at k1=? *)
+          (* arrived at k1=x *)
           | x -> isPossibleAfterEqual x)
-        | _token -> true)
+        | _token -> false)
   in
   res
 
