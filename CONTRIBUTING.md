@@ -14,7 +14,7 @@ Happy hacking!
 
 > Most of our contributors are working on Apple machines, so all our instructions are currently macOS / Linux centric. Contributions for Windows development welcome!
 
-- [NodeJS v16](https://nodejs.org/)
+- [NodeJS v18](https://nodejs.org/)
 - C compiler toolchain (usually installed with `xcode` on Mac)
 - `opam` (OCaml Package Manager)
 - VSCode (+ [OCaml Platform Extension](https://marketplace.visualstudio.com/items?itemName=ocamllabs.ocaml-platform))
