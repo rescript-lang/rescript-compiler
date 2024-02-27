@@ -12,6 +12,9 @@
 
 # 11.1.0-rc.4 (Unreleased)
 
+#### :nail-care: Polish
+- Omit `undefined` in external function calls for trailing optional arguments when not supplied. https://github.com/rescript-lang/rescript-compiler/pull/6653
+
 # 11.1.0-rc.3
 
 #### :nail_care: Polish
