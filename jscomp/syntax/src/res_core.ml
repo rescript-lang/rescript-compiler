@@ -983,6 +983,11 @@ let parseRegion p ~grammar ~f =
   nodes
 
 let isJsxPropWellFormed p =
+  let isPossibleExpression token =
+    match token with
+    | Token.True | False | Hash | List | Backtick | Lbracket | Lparen | Question
+    | Percent | Module | LessThan | GreaterThan | String _ | Int _ | Float _ | Lident _ | Uident _ | Forwardslash -> true
+    | _ -> false in
   let res =
     Parser.lookahead p (fun state ->
         match state.Parser.token with
@@ -996,21 +1001,17 @@ let isJsxPropWellFormed p =
             (* arrived at k1=v1 =v2 *)
             | Equal -> false
             | _ -> true)
-          (* arrived at k1={expression} k2=v2 *)
+          (* arrived at k1={expression} *)
           | Lbrace -> (
-            print_string (Token.toString state.Parser.token);
-            print_newline ();
-            goToClosing Rbrace state;
-            print_string (Token.toString state.Parser.token);
-            print_newline ();
+            Parser.next state;
             match state.Parser.token with
-            | Question | Lident _ | Forwardslash | GreaterThan | LessThanSlash | LessThan | Eof -> true
-            | _ -> false)
-          | True | False | Hash | List | Backtick | Lbracket | Lparen | Question
-          | Percent | Module | LessThan | String _ | Int _ | Float _ | Uident _
-            ->
-            true
-          | _token -> false)
+            | Rbrace -> false
+            | _ -> (
+              goToClosing Rbrace state;
+              (*print_string (Token.toString state.Parser.token);
+              print_newline ();*)
+              isPossibleExpression state.Parser.token))
+          | x -> isPossibleExpression x)
         | _token -> true)
   in
   res
