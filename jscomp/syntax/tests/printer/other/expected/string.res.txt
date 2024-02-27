@@ -17,3 +17,5 @@ let heart = "\u2665"
 let smile = "emoji: \u{1F600}"
 
 let taggedTemplate = sql`select * from ${table} where id = ${id}`
+
+let taggedTemplate = Pg.sql`select * from ${table} where id = ${id}`

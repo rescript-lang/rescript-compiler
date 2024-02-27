@@ -272,3 +272,43 @@ Doc.concat(list{
   rows,
   /* a */
 });
+
+// More record spread test
+type b = {
+  // spread a
+  ...a,
+  // spread c
+  ...c,
+  // no spread
+  b: string
+}
+
+type a = {
+  // spread from different module
+  ...M.a,
+  // spread c
+  ...c,
+  // no spread
+  b: string
+}
+
+let b = {
+  // exotic
+  ...\"let",
+  // foo
+  bar: "foo"
+}
+
+let b = {
+  // quote
+  ..."let",
+  // foo
+  bar: "foo"
+}
+
+let c = {
+  // from different module
+  ...M.a,
+  // foo
+  bar: "foo"
+}
