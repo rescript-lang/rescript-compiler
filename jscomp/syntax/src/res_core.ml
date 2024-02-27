@@ -1030,13 +1030,6 @@ let isJsxPropWellFormed p =
         | Equal -> (
           Parser.next state;
           match state.Parser.token with
-          (* arrived at k1=v1 *)
-          | Lident _x -> (
-            Parser.next state;
-            match state.Parser.token with
-            (* arrived at k1=v1 =v2 *)
-            | Equal -> false
-            | _ -> true)
           (* arrived at k1={ *)
           | Lbrace -> (
             Parser.next state;
@@ -1047,9 +1040,16 @@ let isJsxPropWellFormed p =
               (*print_string (Token.toString state.Parser.token);
                 print_newline ();*)
               isPossibleAfterRbrace state.Parser.token)
+          (* arrived at k1=v1 *)
+          | token when isPossibleAfterEqual token -> (
+            Parser.next state;
+            match state.Parser.token with
+            (* arrived at k1=v1 =v2 *)
+            | Equal -> false
+            | _ -> true)
           (* arrived at k1=x *)
-          | x -> isPossibleAfterEqual x)
-        | _token -> false)
+          | _ -> false)
+        | _ -> false)
   in
   res
 
