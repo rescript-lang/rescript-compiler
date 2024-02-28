@@ -285,12 +285,15 @@ let scanNumber scanner =
 let scanExoticIdentifier scanner =
   let startPos = position scanner in
   let startOff = scanner.offset in
+  let closed = ref false in
 
   next2 scanner;
 
   let rec scan () =
     match scanner.ch with
-    | '"' -> next scanner
+    | '"' ->
+      closed := true;
+      next scanner
     | '\n' | '\r' ->
       (* line break *)
       let endPos = position scanner in
@@ -310,20 +313,23 @@ let scanExoticIdentifier scanner =
   let ident =
     (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff)
   in
-  let name =
-    (String.sub [@doesNotRaise]) scanner.src (startOff + 2)
-      (scanner.offset - startOff - 3)
-  in
-
-  let _ =
-    if name = String.empty then
+  if not !closed then (
+    let endPos = position scanner in
+    scanner.err ~startPos ~endPos
+      (Diagnostics.message "Did you forget a \" here?");
+    Token.Lident ident)
+  else
+    let name =
+      (String.sub [@doesNotRaise]) scanner.src (startOff + 2)
+        (scanner.offset - startOff - 3)
+    in
+    if name = String.empty then (
       let endPos = position scanner in
       scanner.err ~startPos ~endPos
-        (Diagnostics.message "A quoted identifier can't be empty string.")
-  in
-
-  if Token.isInfixOperatorTxt name then Token.Lident name
-  else Token.Lident ident
+        (Diagnostics.message "A quoted identifier can't be empty string.");
+      Token.Lident ident)
+    else if Token.isInfixOperatorTxt name then Token.Lident name
+    else Token.Lident ident
 
 let scanStringEscapeSequence ~startPos scanner =
   let scan ~n ~base ~max =
