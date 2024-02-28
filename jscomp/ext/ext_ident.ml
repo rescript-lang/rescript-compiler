@@ -138,8 +138,10 @@ let is_exotic name =
   | _ -> false
 
 let unwrap_exotic name =
-  let len = String.length name in
-  String.sub name 2 (len - 3)
+  if is_exotic name then
+   let len = String.length name in
+   String.sub name 2 (len - 3)
+  else name
 
 exception Not_normal_letter of int
 let name_mangle name =

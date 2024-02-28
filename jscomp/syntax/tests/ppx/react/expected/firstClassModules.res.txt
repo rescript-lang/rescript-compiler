@@ -7,17 +7,17 @@ module Select = {
   }
   @obj
   external makeProps: (
-    ~model: module(T with type t = '\"type-a" and type key = '\"type-key"),
-    ~selected: option<'\"type-key">,
-    ~onChange: option<'\"type-key"> => unit,
-    ~items: array<'\"type-a">,
+    ~model: module(T with type t = 'type-a and type key = 'type-key),
+    ~selected: option<'type-key>,
+    ~onChange: option<'type-key> => unit,
+    ~items: array<'type-a>,
     ~key: string=?,
     unit,
   ) => {
-    "model": module(T with type t = '\"type-a" and type key = '\"type-key"),
-    "selected": option<'\"type-key">,
-    "onChange": option<'\"type-key"> => unit,
-    "items": array<'\"type-a">,
+    "model": module(T with type t = 'type-a and type key = 'type-key),
+    "selected": option<'type-key>,
+    "onChange": option<'type-key> => unit,
+    "items": array<'type-a>,
   } = ""
 
   @react.component
@@ -32,21 +32,21 @@ module Select = {
     ReactDOMRe.createDOMElementVariadic("div", [])
   }
   let make = {
-    let \"FirstClassModules$Select" = (
-      \"Props": {
-        "model": module(T with type t = '\"type-a" and type key = '\"type-key"),
-        "selected": option<'\"type-key">,
-        "onChange": option<'\"type-key"> => unit,
-        "items": array<'\"type-a">,
+    let FirstClassModules$Select = (
+      Props: {
+        "model": module(T with type t = 'type-a and type key = 'type-key),
+        "selected": option<'type-key>,
+        "onChange": option<'type-key> => unit,
+        "items": array<'type-a>,
       },
     ) =>
       make(
-        ~items=\"Props"["items"],
-        ~onChange=\"Props"["onChange"],
-        ~selected=\"Props"["selected"],
-        ~model=\"Props"["model"],
+        ~items=Props["items"],
+        ~onChange=Props["onChange"],
+        ~selected=Props["selected"],
+        ~model=Props["model"],
       )
-    \"FirstClassModules$Select"
+    FirstClassModules$Select
   }
 }
 
@@ -77,9 +77,9 @@ module Select = {
     ReactDOM.createDOMElementVariadic("div", [])
   }
   let make = {
-    let \"FirstClassModules$Select" = (props: props<_>) => make(props)
+    let FirstClassModules$Select = (props: props<_>) => make(props)
 
-    \"FirstClassModules$Select"
+    FirstClassModules$Select
   }
 }
 

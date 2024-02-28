@@ -60,11 +60,6 @@ let classifyIdentContent ~allowUident txt =
   in
   if Token.isKeywordTxt txt then ExoticIdent else go 0
 
-let printIdentLike ~allowUident txt =
-  match classifyIdentContent ~allowUident txt with
-  | ExoticIdent -> Doc.concat [Doc.text "\\\""; Doc.text txt; Doc.text "\""]
-  | NormalIdent -> Doc.text txt
-
 let printPolyVarIdent txt =
   (* numeric poly-vars don't need quotes: #644 *)
   if isValidNumericPolyvarNumber txt then Doc.text txt
@@ -117,9 +112,9 @@ let escapeStringContents s =
      print_ident fmt id2;
      Format.pp_print_char fmt ')' *)
 
-let rec printOutIdentDoc ?(allowUident = true) (ident : Outcometree.out_ident) =
+let rec printOutIdentDoc (ident : Outcometree.out_ident) =
   match ident with
-  | Oide_ident s -> printIdentLike ~allowUident s
+  | Oide_ident s -> Doc.text s
   | Oide_dot (ident, s) ->
     Doc.concat [printOutIdentDoc ident; Doc.dot; Doc.text s]
   | Oide_apply (call, arg) ->
@@ -188,9 +183,7 @@ let rec printOutTypeDoc (outType : Outcometree.out_type) =
                   [
                     Doc.space;
                     Doc.join ~sep:Doc.space
-                      (List.map
-                         (fun lbl -> printIdentLike ~allowUident:true lbl)
-                         tags);
+                      (List.map (fun lbl -> Doc.text lbl) tags);
                   ]));
            Doc.softLine;
            Doc.rbracket;
@@ -220,7 +213,7 @@ let rec printOutTypeDoc (outType : Outcometree.out_type) =
   | Otyp_constr (Oide_ident "function$", [Otyp_var _; _arity]) ->
     (* function$<'a, arity> -> _ => _ *)
     printOutTypeDoc (Otyp_stuff "_ => _")
-  | Otyp_constr (outIdent, []) -> printOutIdentDoc ~allowUident:false outIdent
+  | Otyp_constr (outIdent, []) -> printOutIdentDoc outIdent
   | Otyp_manifest (typ1, typ2) ->
     Doc.concat [printOutTypeDoc typ1; Doc.text " = "; printOutTypeDoc typ2]
   | Otyp_record record -> printRecordDeclarationDoc ~inline:true record
@@ -530,7 +523,7 @@ and printRecordDeclRowDoc (name, mut, opt, arg) =
     (Doc.concat
        [
          (if mut then Doc.text "mutable " else Doc.nil);
-         printIdentLike ~allowUident:false name;
+         Doc.text name;
          (if opt then Doc.text "?" else Doc.nil);
          Doc.text ": ";
          printOutTypeDoc arg;
@@ -733,7 +726,7 @@ let rec printOutSigItemDoc ?(printNameAsIs = false)
                   attrs;
                   kw;
                   (if printNameAsIs then Doc.text outTypeDecl.otype_name
-                   else printIdentLike ~allowUident:false outTypeDecl.otype_name);
+                   else Doc.text outTypeDecl.otype_name);
                   typeParams;
                   kind;
                 ]);
@@ -865,7 +858,7 @@ and printOutExtensionConstructorDoc
     (Doc.concat
        [
          Doc.text "type ";
-         printIdentLike ~allowUident:false outExt.oext_type_name;
+         Doc.text outExt.oext_type_name;
          typeParams;
          Doc.text " += ";
          Doc.line;
@@ -904,7 +897,7 @@ and printOutTypeExtensionDoc (typeExtension : Outcometree.out_type_extension) =
     (Doc.concat
        [
          Doc.text "type ";
-         printIdentLike ~allowUident:false typeExtension.otyext_name;
+         Doc.text typeExtension.otyext_name;
          typeParams;
          Doc.text " += ";
          (if typeExtension.otyext_private = Asttypes.Private then
