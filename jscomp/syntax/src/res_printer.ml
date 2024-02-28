@@ -398,11 +398,6 @@ let classifyIdentContent ?(allowUident = false) ?(allowHyphen = false) txt =
     in
     loop 0
 
-let printIdentLike ?allowUident ?allowHyphen txt =
-  match classifyIdentContent ?allowUident ?allowHyphen txt with
-  | ExoticIdent -> Doc.concat [Doc.text "\\\""; Doc.text txt; Doc.text "\""]
-  | NormalIdent -> Doc.text txt
-
 let rec unsafe_for_all_range s ~start ~finish p =
   start > finish
   || p (String.unsafe_get s start)
@@ -433,7 +428,7 @@ let printPolyVarIdent txt =
   if isValidNumericPolyvarNumber txt then Doc.text txt
   else
     match classifyIdentContent ~allowUident:true txt with
-    | ExoticIdent -> Doc.concat [Doc.text "\""; Doc.text txt; Doc.text "\""]
+    | ExoticIdent -> Doc.concat [Doc.text "\""; Doc.text (Ext_ident.unwrap_exotic txt); Doc.text "\""]
     | NormalIdent -> (
       match txt with
       | "" -> Doc.concat [Doc.text "\""; Doc.text txt; Doc.text "\""]
@@ -453,7 +448,7 @@ let printLident l =
     flat [] lid
   in
   match l with
-  | Longident.Lident txt -> printIdentLike txt
+  | Longident.Lident txt -> Doc.text txt
   | Longident.Ldot (path, txt) ->
     let doc =
       match flatLidOpt path with
@@ -462,7 +457,7 @@ let printLident l =
           [
             Doc.join ~sep:Doc.dot (List.map Doc.text txts);
             Doc.dot;
-            printIdentLike txt;
+            Doc.text txt;
           ]
       | None -> Doc.text "printLident: Longident.Lapply is not supported"
     in
@@ -484,7 +479,7 @@ let printIdentPath path cmtTbl =
   printComments doc cmtTbl path.loc
 
 let printStringLoc sloc cmtTbl =
-  let doc = printIdentLike sloc.Location.txt in
+  let doc = Doc.text sloc.Location.txt in
   printComments doc cmtTbl sloc.loc
 
 let printStringContents txt =
@@ -1060,7 +1055,7 @@ and printValueDescription ~state valueDescription cmtTbl =
          attrs;
          Doc.text header;
          printComments
-           (printIdentLike valueDescription.pval_name.txt)
+           (Doc.text valueDescription.pval_name.txt)
            cmtTbl valueDescription.pval_name.loc;
          Doc.text ": ";
          printTypExpr ~state valueDescription.pval_type cmtTbl;
@@ -1197,7 +1192,7 @@ and printTypeDeclaration ~state ~name ~equalSign ~recFlag i
 and printTypeDeclaration2 ~state ~recFlag (td : Parsetree.type_declaration)
     cmtTbl i =
   let name =
-    let doc = printIdentLike td.Parsetree.ptype_name.txt in
+    let doc = Doc.text td.Parsetree.ptype_name.txt in
     printComments doc cmtTbl td.ptype_name.loc
   in
   let equalSign = "=" in
@@ -1502,7 +1497,7 @@ and printLabelDeclaration ~state (ld : Parsetree.label_declaration) cmtTbl =
   let name, isDot =
     let doc, isDot =
       if ld.pld_name.txt = "..." then (Doc.text ld.pld_name.txt, true)
-      else (printIdentLike ld.pld_name.txt, false)
+      else (Doc.text ld.pld_name.txt, false)
     in
     (printComments doc cmtTbl ld.pld_name.loc, isDot)
   in
@@ -1603,7 +1598,7 @@ and printTypExpr ~(state : State.t) (typExpr : Parsetree.core_type) cmtTbl =
     match typExpr.ptyp_desc with
     | Ptyp_any -> Doc.text "_"
     | Ptyp_var var ->
-      Doc.concat [Doc.text "'"; printIdentLike ~allowUident:true var]
+      Doc.concat [Doc.text "'"; Doc.text var]
     | Ptyp_extension extension ->
       printExtension ~state ~atModuleLvl:false extension cmtTbl
     | Ptyp_alias (typ, alias) ->
@@ -1622,7 +1617,7 @@ and printTypExpr ~(state : State.t) (typExpr : Parsetree.core_type) cmtTbl =
         if needsParens then Doc.concat [Doc.lparen; doc; Doc.rparen] else doc
       in
       Doc.concat
-        [typ; Doc.text " as "; Doc.concat [Doc.text "'"; printIdentLike alias]]
+        [typ; Doc.text " as "; Doc.concat [Doc.text "'"; Doc.text alias]]
     (* object printings *)
     | Ptyp_object (fields, openFlag) ->
       printObject ~state ~inline:false fields openFlag cmtTbl
@@ -1879,9 +1874,9 @@ and printTypeParameter ~state (attrs, lbl, typ) cmtTbl =
     match lbl with
     | Asttypes.Nolabel -> Doc.nil
     | Labelled lbl ->
-      Doc.concat [Doc.text "~"; printIdentLike lbl; Doc.text ": "]
+      Doc.concat [Doc.text "~"; Doc.text lbl; Doc.text ": "]
     | Optional lbl ->
-      Doc.concat [Doc.text "~"; printIdentLike lbl; Doc.text ": "]
+      Doc.concat [Doc.text "~"; Doc.text lbl; Doc.text ": "]
   in
   let optionalIndicator =
     match lbl with
@@ -2118,7 +2113,7 @@ and printExtension ~state ~atModuleLvl (stringLoc, payload) cmtTbl =
         [
           Doc.text "%";
           (if atModuleLvl then Doc.text "%" else Doc.nil);
-          Doc.text txt;
+          Doc.text (Ext_ident.unwrap_exotic txt);
         ]
     in
     printComments doc cmtTbl stringLoc.Location.loc
@@ -2129,7 +2124,7 @@ and printPattern ~state (p : Parsetree.pattern) cmtTbl =
   let patternWithoutAttributes =
     match p.ppat_desc with
     | Ppat_any -> Doc.text "_"
-    | Ppat_var var -> printIdentLike var.txt
+    | Ppat_var var -> Doc.text var.txt
     | Ppat_constant c ->
       let templateLiteral =
         ParsetreeViewer.hasTemplateLiteralAttr p.ppat_attributes
@@ -4377,9 +4372,9 @@ and printJsxProp ~state arg cmtTbl =
     when lblTxt = ident (* jsx punning *) -> (
     match lbl with
     | Nolabel -> Doc.nil
-    | Labelled _lbl -> printComments (printIdentLike ident) cmtTbl argLoc
+    | Labelled _lbl -> printComments (Doc.text ident) cmtTbl argLoc
     | Optional _lbl ->
-      let doc = Doc.concat [Doc.question; printIdentLike ident] in
+      let doc = Doc.concat [Doc.question; Doc.text ident] in
       printComments doc cmtTbl argLoc)
   | ( ((Asttypes.Labelled lblTxt | Optional lblTxt) as lbl),
       {
@@ -4389,8 +4384,8 @@ and printJsxProp ~state arg cmtTbl =
     when lblTxt = ident (* jsx punning when printing from Reason *) -> (
     match lbl with
     | Nolabel -> Doc.nil
-    | Labelled _lbl -> printIdentLike ident
-    | Optional _lbl -> Doc.concat [Doc.question; printIdentLike ident])
+    | Labelled _lbl -> Doc.text ident
+    | Optional _lbl -> Doc.concat [Doc.question; Doc.text ident])
   | Asttypes.Labelled "_spreadProps", expr ->
     let doc = printExpressionWithComments ~state expr cmtTbl in
     Doc.concat [Doc.lbrace; Doc.dotdotdot; doc; Doc.rbrace]
@@ -4404,10 +4399,10 @@ and printJsxProp ~state arg cmtTbl =
     let lblDoc =
       match lbl with
       | Asttypes.Labelled lbl ->
-        let lbl = printComments (printIdentLike lbl) cmtTbl argLoc in
+        let lbl = printComments (Doc.text lbl) cmtTbl argLoc in
         Doc.concat [lbl; Doc.equal]
       | Asttypes.Optional lbl ->
-        let lbl = printComments (printIdentLike lbl) cmtTbl argLoc in
+        let lbl = printComments (Doc.text lbl) cmtTbl argLoc in
         Doc.concat [lbl; Doc.equal; Doc.question]
       | Nolabel -> Doc.nil
     in
@@ -4431,7 +4426,7 @@ and printJsxProp ~state arg cmtTbl =
  * Navabar.createElement -> Navbar
  * Staff.Users.createElement -> Staff.Users *)
 and printJsxName {txt = lident} =
-  let printIdent = printIdentLike ~allowUident:true ~allowHyphen:true in
+  let printIdent = Doc.text in
   let rec flatten acc lident =
     match lident with
     | Longident.Lident txt -> printIdent txt :: acc
@@ -4458,9 +4453,9 @@ and printArgumentsWithCallbackInFirstPosition ~dotted ~state args cmtTbl =
         match lbl with
         | Asttypes.Nolabel -> Doc.nil
         | Asttypes.Labelled txt ->
-          Doc.concat [Doc.tilde; printIdentLike txt; Doc.equal]
+          Doc.concat [Doc.tilde; Doc.text txt; Doc.equal]
         | Asttypes.Optional txt ->
-          Doc.concat [Doc.tilde; printIdentLike txt; Doc.equal; Doc.question]
+          Doc.concat [Doc.tilde; Doc.text txt; Doc.equal; Doc.question]
       in
       let callback =
         Doc.concat
@@ -4538,9 +4533,9 @@ and printArgumentsWithCallbackInLastPosition ~state ~dotted args cmtTbl =
         match lbl with
         | Asttypes.Nolabel -> Doc.nil
         | Asttypes.Labelled txt ->
-          Doc.concat [Doc.tilde; printIdentLike txt; Doc.equal]
+          Doc.concat [Doc.tilde; Doc.text txt; Doc.equal]
         | Asttypes.Optional txt ->
-          Doc.concat [Doc.tilde; printIdentLike txt; Doc.equal; Doc.question]
+          Doc.concat [Doc.tilde; Doc.text txt; Doc.equal; Doc.question]
       in
       let callbackFitsOnOneLine =
         lazy
@@ -4702,7 +4697,7 @@ and printArgument ~state (argLbl, arg) cmtTbl =
       | ({Location.txt = "res.namedArgLoc"; loc}, _) :: _ -> loc
       | _ -> arg.pexp_loc
     in
-    let doc = Doc.concat [Doc.tilde; printIdentLike lbl] in
+    let doc = Doc.concat [Doc.tilde; Doc.text lbl] in
     printComments doc cmtTbl loc
   (* ~a: int (punned)*)
   | ( Labelled lbl,
@@ -4726,7 +4721,7 @@ and printArgument ~state (argLbl, arg) cmtTbl =
       Doc.concat
         [
           Doc.tilde;
-          printIdentLike lbl;
+          Doc.text lbl;
           Doc.text ": ";
           printTypExpr ~state typ cmtTbl;
         ]
@@ -4744,7 +4739,7 @@ and printArgument ~state (argLbl, arg) cmtTbl =
       | ({Location.txt = "res.namedArgLoc"; loc}, _) :: _ -> loc
       | _ -> arg.pexp_loc
     in
-    let doc = Doc.concat [Doc.tilde; printIdentLike lbl; Doc.question] in
+    let doc = Doc.concat [Doc.tilde; Doc.text lbl; Doc.question] in
     printComments doc cmtTbl loc
   | _lbl, expr ->
     let argLoc, expr =
@@ -4760,11 +4755,11 @@ and printArgument ~state (argLbl, arg) cmtTbl =
         let doc = Doc.text "..." in
         (printComments doc cmtTbl argLoc, true)
       | Labelled lbl ->
-        let doc = Doc.concat [Doc.tilde; printIdentLike lbl; Doc.equal] in
+        let doc = Doc.concat [Doc.tilde; Doc.text lbl; Doc.equal] in
         (printComments doc cmtTbl argLoc, false)
       | Optional lbl ->
         let doc =
-          Doc.concat [Doc.tilde; printIdentLike lbl; Doc.equal; Doc.question]
+          Doc.concat [Doc.tilde; Doc.text lbl; Doc.equal; Doc.question]
         in
         (printComments doc cmtTbl argLoc, false)
     in
@@ -4898,7 +4893,7 @@ and printExprFunParameters ~state ~inCallback ~async ~uncurried ~hasConstraint
   ]
     when not dotted ->
     let txtDoc =
-      let var = printIdentLike stringLoc.txt in
+      let var = Doc.text stringLoc.txt in
       let var =
         match attrs with
         | [] -> if hasConstraint then addParens var else var
@@ -4973,7 +4968,7 @@ and printExpFunParameter ~state parameter cmtTbl =
              (List.map
                 (fun lbl ->
                   printComments
-                    (printIdentLike lbl.Asttypes.txt)
+                    (Doc.text lbl.Asttypes.txt)
                     cmtTbl lbl.Asttypes.loc)
                 lbls);
          ])
@@ -5002,7 +4997,7 @@ and printExpFunParameter ~state parameter cmtTbl =
           [
             printAttributes ~state ppat_attributes cmtTbl;
             Doc.text "~";
-            printIdentLike lbl;
+            Doc.text lbl;
           ]
       | ( (Asttypes.Labelled lbl | Optional lbl),
           {
@@ -5015,7 +5010,7 @@ and printExpFunParameter ~state parameter cmtTbl =
           [
             printAttributes ~state ppat_attributes cmtTbl;
             Doc.text "~";
-            printIdentLike lbl;
+            Doc.text lbl;
             Doc.text ": ";
             printTypExpr ~state typ cmtTbl;
           ]
@@ -5024,7 +5019,7 @@ and printExpFunParameter ~state parameter cmtTbl =
         Doc.concat
           [
             Doc.text "~";
-            printIdentLike lbl;
+            Doc.text lbl;
             Doc.text " as ";
             printPattern ~state pattern cmtTbl;
           ]
@@ -5433,7 +5428,7 @@ and printAttribute ?(standalone = false) ~state
         (Doc.concat
            [
              Doc.text (if standalone then "@@" else "@");
-             Doc.text id.txt;
+             Doc.text (Ext_ident.unwrap_exotic id.txt);
              printPayload ~state payload cmtTbl;
            ]),
       Doc.line )

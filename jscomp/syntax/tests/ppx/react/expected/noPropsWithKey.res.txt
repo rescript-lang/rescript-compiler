@@ -5,9 +5,9 @@ module V4CA = {
 
   let make = (_: props) => ReactDOM.createDOMElementVariadic("div", [])
   let make = {
-    let \"NoPropsWithKey$V4CA" = props => make(props)
+    let NoPropsWithKey$V4CA = props => make(props)
 
-    \"NoPropsWithKey$V4CA"
+    NoPropsWithKey$V4CA
   }
 }
 
@@ -31,9 +31,9 @@ module V4C = {
       ],
     )
   let make = {
-    let \"NoPropsWithKey$V4C" = props => make(props)
+    let NoPropsWithKey$V4C = props => make(props)
 
-    \"NoPropsWithKey$V4C"
+    NoPropsWithKey$V4C
   }
 }
 
@@ -44,9 +44,9 @@ module V4CA = {
 
   let make = (_: props) => ReactDOM.jsx("div", {})
   let make = {
-    let \"NoPropsWithKey$V4CA" = props => make(props)
+    let NoPropsWithKey$V4CA = props => make(props)
 
-    \"NoPropsWithKey$V4CA"
+    NoPropsWithKey$V4CA
   }
 }
 
@@ -71,8 +71,8 @@ module V4C = {
       },
     )
   let make = {
-    let \"NoPropsWithKey$V4C" = props => make(props)
+    let NoPropsWithKey$V4C = props => make(props)
 
-    \"NoPropsWithKey$V4C"
+    NoPropsWithKey$V4C
   }
 }

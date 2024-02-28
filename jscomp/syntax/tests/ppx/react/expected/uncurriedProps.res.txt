@@ -10,9 +10,9 @@ let make = ({a: ?__a, _}: props<(. unit) => unit>) => {
   React.null
 }
 let make = {
-  let \"UncurriedProps" = (props: props<_>) => make(props)
+  let UncurriedProps = (props: props<_>) => make(props)
 
-  \"UncurriedProps"
+  UncurriedProps
 }
 
 let func = (~callback: (. string, bool, bool) => unit=(. _, _, _) => (), ()) => {
@@ -39,9 +39,9 @@ module Foo = {
     }
   }
   let make = {
-    let \"UncurriedProps$Foo" = (props: props<_>) => make(props)
+    let UncurriedProps$Foo = (props: props<_>) => make(props)
 
-    \"UncurriedProps$Foo"
+    UncurriedProps$Foo
   }
 }
 
@@ -50,8 +50,8 @@ module Bar = {
 
   let make = (_: props) => React.jsx(Foo.make, {callback: (. _, _, _) => ()})
   let make = {
-    let \"UncurriedProps$Bar" = props => make(props)
+    let UncurriedProps$Bar = props => make(props)
 
-    \"UncurriedProps$Bar"
+    UncurriedProps$Bar
   }
 }

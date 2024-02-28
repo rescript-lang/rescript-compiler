@@ -1,8 +1,8 @@
 type props<'x, 'y> = {x: 'x, y: 'y} // Component with type constraint
 let make = ({x, y, _}: props<string, string>) => React.string(x ++ y)
 let make = {
-  let \"V4" = (props: props<_>) => make(props)
-  \"V4"
+  let V4 = (props: props<_>) => make(props)
+  V4
 }
 
 module AnotherName = {
@@ -11,9 +11,9 @@ module AnotherName = {
 
   let anotherName = ({x, _}: props<_>) => React.string(x)
   let anotherName = {
-    let \"V4$AnotherName$anotherName" = (props: props<_>) => anotherName(props)
+    let V4$AnotherName$anotherName = (props: props<_>) => anotherName(props)
 
-    \"V4$AnotherName$anotherName"
+    V4$AnotherName$anotherName
   }
 }
 
@@ -22,9 +22,9 @@ module Uncurried = {
 
   let make = ({x, _}: props<_>) => React.string(x)
   let make = {
-    let \"V4$Uncurried" = (props: props<_>) => make(props)
+    let V4$Uncurried = (props: props<_>) => make(props)
 
-    \"V4$Uncurried"
+    V4$Uncurried
   }
 }
 
@@ -51,13 +51,13 @@ module Rec = {
 
   let rec make = {
     @merlin.focus
-    let \"make$Internal" = (_: props) => {
+    let make$Internal = (_: props) => {
       make(({}: props))
     }
     let make = {
-      let \"V4$Rec" = props => \"make$Internal"(props)
+      let V4$Rec = props => make$Internal(props)
 
-      \"V4$Rec"
+      V4$Rec
     }
     make
   }
@@ -68,13 +68,13 @@ module Rec1 = {
 
   let rec make = {
     @merlin.focus
-    let \"make$Internal" = (_: props) => {
+    let make$Internal = (_: props) => {
       React.null
     }
     let make = {
-      let \"V4$Rec1" = props => \"make$Internal"(props)
+      let V4$Rec1 = props => make$Internal(props)
 
-      \"V4$Rec1"
+      V4$Rec1
     }
     make
   }
@@ -85,13 +85,13 @@ module Rec2 = {
 
   let rec make = {
     @merlin.focus
-    let \"make$Internal" = (_: props) => {
+    let make$Internal = (_: props) => {
       mm(({}: props))
     }
     let make = {
-      let \"V4$Rec2" = props => \"make$Internal"(props)
+      let V4$Rec2 = props => make$Internal(props)
 
-      \"V4$Rec2"
+      V4$Rec2
     }
     make
   }
