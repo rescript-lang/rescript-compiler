@@ -3639,7 +3639,7 @@ and parseCallExpr p funExpr =
   in
   let isPartial =
     match p.token with
-    | DotDotDot when args <> [] ->
+    | DotDotDot ->
       Parser.next p;
       true
     | _ -> false
@@ -3647,7 +3647,7 @@ and parseCallExpr p funExpr =
   Parser.expect Rparen p;
   let args =
     match args with
-    | [] ->
+    | [] when not isPartial ->
       let loc = mkLoc startPos p.prevEndPos in
       (* No args -> unit sugar: `foo()` *)
       [
