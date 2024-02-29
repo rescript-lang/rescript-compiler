@@ -1037,8 +1037,6 @@ let isJsxPropWellFormed p =
             | Rbrace -> false
             | _ ->
               goToClosing Rbrace state;
-              (*print_string (Token.toString state.Parser.token);
-                print_newline ();*)
               isPossibleAfterRbrace state.Parser.token)
           (* arrived at k1=v1 *)
           | token when isPossibleAfterEqual token -> (
