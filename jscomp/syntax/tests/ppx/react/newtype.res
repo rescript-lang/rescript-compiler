@@ -46,3 +46,9 @@ module V4A3 = {
 
 @react.component
 let make =(~x : ('a,'b), ~q:'a ) => [fst(x), q]
+
+@@uncurried
+
+module Uncurried = {
+  @react.component
+  let make = (type a, ~foo=?) => React.null}
