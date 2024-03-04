@@ -81,6 +81,8 @@ exception Error_forward of Location.error
 
 (* Forward declaration, to be filled in by Typemod.type_module *)
 
+module I = Incremental_error_reporter
+
 let type_module =
   ref ((fun _env _md -> assert false) :
        Env.t -> Parsetree.module_expr -> Typedtree.module_expr)
@@ -343,7 +345,7 @@ let unify_exp_types ?typeClashContext loc env ty expected_ty =
     unify env ty expected_ty
   with
     Unify trace ->
-      raise(Error(loc, env, Expr_type_clash(trace, typeClashContext)))
+      I.raise(Error(loc, env, Expr_type_clash(trace, typeClashContext)))
   | Tags(l1,l2) ->
       raise(Typetexp.Error(loc, env, Typetexp.Variant_tags (l1, l2)))
 
