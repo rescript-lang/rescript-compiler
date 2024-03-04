@@ -58,6 +58,11 @@ let removeArity binding =
     match expr.pexp_desc with
     | _ when Ast_uncurried.exprIsUncurriedFun expr ->
       Ast_uncurried.exprExtractUncurriedFun expr
+    | Pexp_newtype (label, e) ->
+      {
+        expr with
+        pexp_desc = Pexp_newtype (label, removeArityRecord e);
+      }
     | Pexp_apply (forwardRef, [(label, e)]) ->
       {
         expr with
