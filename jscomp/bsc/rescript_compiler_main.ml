@@ -493,7 +493,7 @@ let _ : unit =
     Format.eprintf "%s@." msg ;
     exit 2
   | Incremental_error_reporter.Errors exns ->
-    exns |> List.iter(Location.report_exception ppf);
+    exns |> List.rev |> List.iter(Location.report_exception ppf);
     exit 2
   | x -> 
     begin
