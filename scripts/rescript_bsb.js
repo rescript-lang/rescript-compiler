@@ -55,23 +55,20 @@ function acquireBuild() {
  * @param {(code: number) => void} [maybeOnClose]
  */
 function delegate(args, maybeOnClose) {
-  /**
-   * @type {child_process.ChildProcess}
-   */
-  let p;
   if (acquireBuild()) {
-    try {
-      p = child_process.spawn(rescript_exe, args, {
-        stdio: "inherit",
-      });
-    } catch (e) {
-      if (e.code === "ENOENT") {
-        // when bsb is actually not found
-        console.error(String(e));
-      }
+    /**
+     * @type {child_process.ChildProcess}
+     */
+    const p = child_process.spawn(rescript_exe, args, {
+      stdio: "inherit",
+    });
+
+    p.on("error", e => {
+      console.error(String(e));
       releaseBuild();
       process.exit(2);
-    }
+    });
+
     // The 'close' event will always emit after 'exit' was already emitted, or
     // 'error' if the child failed to spawn.
     p.on("close", code => {
