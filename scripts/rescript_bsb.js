@@ -493,6 +493,10 @@ function build(args) {
     });
     return;
   }
+  if (args.some(arg => /-h|-help|--help/.test(arg))) {
+    delegate(["build", "-h"]);
+    return;
+  }
   if (args.includes("-w")) {
     watch(args);
     return;

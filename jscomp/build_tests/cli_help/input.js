@@ -81,35 +81,21 @@ assert.equal(out.stdout, buildHelp);
 assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
-// FIXME: Help works incorrectly in watch mode
 out = child_process.spawnSync(`../../../rescript`, ["build", "-w", "--help"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-// FIXME: Shouldn't have "Start compiling" for help
-assert.equal(out.stdout, ">>>> Start compiling\n" + buildHelp);
-// FIXME: Don't run the watcher when showing help
-assert.match(
-  out.stderr,
-  new RegExp(
-    "Uncaught Exception Error: ENOENT: no such file or directory, watch 'bsconfig.json'\n"
-  )
-);
-// FIXME: Should be 0
-assert.equal(out.status, 1);
+assert.equal(out.stdout, buildHelp);
+assert.equal(out.stderr, "");
+assert.equal(out.status, 0);
 
-// FIXME: Has the same problem with `rescript -w`
 out = child_process.spawnSync(`../../../rescript`, ["-w", "--help"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stdout, ">>>> Start compiling\n" + buildHelp);
-assert.match(
-  out.stderr,
-  new RegExp(
-    "Uncaught Exception Error: ENOENT: no such file or directory, watch 'bsconfig.json'\n"
-  )
-);
+assert.equal(out.stdout, cliHelp);
+assert.equal(out.stderr, "");
+assert.equal(out.status, 0);
 
 // Shows cli help with --help arg even if there are invalid arguments after it
 out = child_process.spawnSync(`../../../rescript`, ["--help", "-w"], {

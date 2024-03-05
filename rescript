@@ -67,66 +67,64 @@ process.on("SIGUSR2", exitProcess);
 process.on("SIGTERM", exitProcess);
 process.on("SIGHUP", exitProcess);
 
-const process_argv = process.argv;
-const maybeSubcommand = process_argv[2];
+const args = process.argv.slice(2);
+const helpArgIndex = args.findIndex(arg => /help|-h|-help|--help/.test(arg));
+const firstPositionalArgIndex = args.findIndex(arg => !arg.startsWith("-"));
 
-if (!maybeSubcommand) {
-  bsb.build([]);
-} else {
-  switch (maybeSubcommand) {
+if (helpArgIndex !== -1 && (firstPositionalArgIndex === -1 || helpArgIndex <= firstPositionalArgIndex)) {
+  console.log(helpMessage);
+
+} else if (/version|-v|-version|--version/.test(args[0])) {
+  console.log(require("./package.json").version);
+
+} else if (firstPositionalArgIndex !== -1) {
+  const subcmd = args[firstPositionalArgIndex];
+  const subcmdArgs = args.slice(firstPositionalArgIndex + 1);
+
+  switch (subcmd) {
     case "info": {
-      bsb.info(process_argv.slice(3));
+      bsb.info(subcmdArgs);
       break;
     }
     case "clean": {
-      bsb.clean(process_argv.slice(3));
+      bsb.clean(subcmdArgs);
       break;
     }
     case "build": {
-      bsb.build(process_argv.slice(3));
+      bsb.build(subcmdArgs);
       break;
     }
-    case "format":
+    case "format": {
       require("./scripts/rescript_format.js").main(
-        process.argv.slice(3),
+        subcmdArgs,
         rescript_exe,
         bsc_exe
       );
       break;
-    case "dump":
+    }
+    case "dump": {
       require("./scripts/rescript_dump.js").main(
-        process.argv.slice(3),
+        subcmdArgs,
         rescript_exe,
         bsc_exe
       );
       break;
-    case "convert":
+    }
+    case "convert": {
       require("./scripts/rescript_convert.js").main(
-        process.argv.slice(3),
+        subcmdArgs,
         rescript_exe,
         bsc_exe
       );
       break;
-    case "-h":
-    case "-help":
-    case "--help":
-    case "help":
-      console.log(helpMessage);
-      break;
-    case "-v":
-    case "-version":
-    case "--version":
-    case "version":
-      console.log(require("./package.json").version);
-      break;
-    default:
-      if (maybeSubcommand.startsWith("-")) {
-        bsb.build(process_argv.slice(2));
-      } else {
-        console.error(
-          `Error: Unknown command "${maybeSubcommand}".\n${helpMessage}`
-        );
-        process.exit(2);
-      }
+    }
+    default: {
+      console.error(
+        `Error: Unknown command "${subcmd}".\n${helpMessage}`
+      );
+      process.exit(2);
+    }
   }
+} else {
+  bsb.build(args);
 }
