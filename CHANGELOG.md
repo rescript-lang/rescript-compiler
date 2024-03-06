@@ -23,6 +23,10 @@
 
 - Build with OCaml 5.1.1. https://github.com/rescript-lang/rescript-compiler/pull/6641
 
+#### :nail_care: Polish
+
+- Make the `--help` arg be prioritized in the CLI, so correctly prints help message and skip other commands. https://github.com/rescript-lang/rescript-compiler/pull/6667
+
 # 11.1.0-rc.3
 
 #### :nail_care: Polish
