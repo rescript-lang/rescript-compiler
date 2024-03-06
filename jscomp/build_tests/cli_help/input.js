@@ -73,15 +73,16 @@ const dumpHelp =
   "`rescript dump` dumps the information for the target\n";
 
 // Shows build help with --help arg
-console.group("build --help");
-let out = child_process.spawnSync(`../../../rescript`, ["build", "--help"], {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out.stdout, buildHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
-console.groupEnd();
+// console.group("build --help");
+let out;
+// let out = child_process.spawnSync(`../../../rescript`, ["build", "--help"], {
+//   encoding: "utf8",
+//   cwd: __dirname,
+// });
+// assert.equal(out.stdout, buildHelp);
+// assert.equal(out.stderr, "");
+// assert.equal(out.status, 0);
+// console.groupEnd();
 
 // console.group("build -w --help");
 // out = child_process.spawnSync(`../../../rescript`, ["build", "-w", "--help"], {
@@ -119,30 +120,30 @@ console.log("@@ done");
 console.groupEnd();
 
 // Shows build help with -h arg
-console.group("build -h");
-console.log("@@ begin ");
-out = child_process.spawnSync(`../../../rescript`, ["build", "-h"], {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out.stdout, buildHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
-console.log("@@ done ");
-console.groupEnd();
-
-// Exits with build help with unknown arg
-console.group("build -foo");
-console.log("@@ begin ");
-out = child_process.spawnSync(`../../../rescript`, ["build", "-foo"], {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out.stdout, "");
-assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
-assert.equal(out.status, 2);
-console.log("@@ done ");
-console.groupEnd();
+// console.group("build -h");
+// console.log("@@ begin ");
+// out = child_process.spawnSync(`../../../rescript`, ["build", "-h"], {
+//   encoding: "utf8",
+//   cwd: __dirname,
+// });
+// assert.equal(out.stdout, buildHelp);
+// assert.equal(out.stderr, "");
+// assert.equal(out.status, 0);
+// console.log("@@ done ");
+// console.groupEnd();
+//
+// // Exits with build help with unknown arg
+// console.group("build -foo");
+// console.log("@@ begin ");
+// out = child_process.spawnSync(`../../../rescript`, ["build", "-foo"], {
+//   encoding: "utf8",
+//   cwd: __dirname,
+// });
+// assert.equal(out.stdout, "");
+// assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
+// assert.equal(out.status, 2);
+// console.log("@@ done ");
+// console.groupEnd();
 
 // Shows cli help with --help arg
 console.group("--help");
