@@ -94,6 +94,7 @@ assert.equal(out.status, 0);
 console.groupEnd();
 
 console.group("-w --help");
+console.log("@@ begin ");
 out = child_process.spawnSync(`../../../rescript`, ["-w", "--help"], {
   encoding: "utf8",
   cwd: __dirname,
@@ -101,10 +102,12 @@ out = child_process.spawnSync(`../../../rescript`, ["-w", "--help"], {
 assert.equal(out.stdout, cliHelp);
 assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
+console.log("@@ done");
 console.groupEnd();
 
 // Shows cli help with --help arg even if there are invalid arguments after it
 console.group("--help -w");
+console.log("@@ begin ");
 out = child_process.spawnSync(`../../../rescript`, ["--help", "-w"], {
   encoding: "utf8",
   cwd: __dirname,
@@ -112,10 +115,12 @@ out = child_process.spawnSync(`../../../rescript`, ["--help", "-w"], {
 assert.equal(out.stdout, cliHelp);
 assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
+console.log("@@ done");
 console.groupEnd();
 
 // Shows build help with -h arg
 console.group("build -h");
+console.log("@@ begin ");
 out = child_process.spawnSync(`../../../rescript`, ["build", "-h"], {
   encoding: "utf8",
   cwd: __dirname,
@@ -123,10 +128,12 @@ out = child_process.spawnSync(`../../../rescript`, ["build", "-h"], {
 assert.equal(out.stdout, buildHelp);
 assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
+console.log("@@ done ");
 console.groupEnd();
 
 // Exits with build help with unknown arg
 console.group("build -foo");
+console.log("@@ begin ");
 out = child_process.spawnSync(`../../../rescript`, ["build", "-foo"], {
   encoding: "utf8",
   cwd: __dirname,
@@ -134,6 +141,7 @@ out = child_process.spawnSync(`../../../rescript`, ["build", "-foo"], {
 assert.equal(out.stdout, "");
 assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
 assert.equal(out.status, 2);
+console.log("@@ done ");
 console.groupEnd();
 
 // Shows cli help with --help arg
