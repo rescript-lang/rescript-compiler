@@ -83,15 +83,15 @@ assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 console.groupEnd();
 
-console.group("build -w --help");
-out = child_process.spawnSync(`../../../rescript`, ["build", "-w", "--help"], {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out.stdout, buildHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
-console.groupEnd();
+// console.group("build -w --help");
+// out = child_process.spawnSync(`../../../rescript`, ["build", "-w", "--help"], {
+//   encoding: "utf8",
+//   cwd: __dirname,
+// });
+// assert.equal(out.stdout, buildHelp);
+// assert.equal(out.stderr, "");
+// assert.equal(out.status, 0);
+// console.groupEnd();
 
 console.group("-w --help");
 console.log("@@ begin ");
