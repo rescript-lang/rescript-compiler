@@ -28,14 +28,16 @@ function releaseBuild() {
  * lock files shouldn't rely on the umask to disallow tampering by other.
  *
  * @param {Array<string>} args
+ * @param {child_process.SpawnOptions} [options]
  */
-function acquireBuild(args) {
+function acquireBuild(args, options) {
   if (ownerProcess) {
     return null;
   } else {
     try {
       ownerProcess = child_process.spawn(rescript_exe, args, {
         stdio: "inherit",
+        ...options,
       });
       fs.writeFileSync(lockFileName, ownerProcess.pid.toString(), {
         encoding: "utf8",
@@ -370,17 +372,17 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
     } else {
       dlog(`Rebuilding since ${reasonsToRebuild}`);
     }
-    if (acquireBuild(args)) {
+    let p;
+    if (
+      (p = acquireBuild(rescriptWatchBuildArgs, {
+        stdio: ["inherit", "inherit", "pipe"],
+      }))
+    ) {
       logStartCompiling();
-      child_process
-        .spawn(rescript_exe, rescriptWatchBuildArgs, {
-          stdio: ["inherit", "inherit", "pipe"],
-        })
-        // @ts-ignore
-        .on("data", function (s) {
-          outputError(s, "ninja: error");
-        })
-        .on("exit", buildFinishedCallback)
+      p.on("data", function (s) {
+        outputError(s, "ninja: error");
+      })
+        .once("exit", buildFinishedCallback)
         .stderr.setEncoding("utf8");
       // This is important to clean up all
       // previous queued events
