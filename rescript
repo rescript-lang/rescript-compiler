@@ -68,13 +68,18 @@ process.on("SIGTERM", exitProcess);
 process.on("SIGHUP", exitProcess);
 
 const args = process.argv.slice(2);
-const helpArgIndex = args.findIndex(arg => /help|-h|-help|--help/.test(arg));
+const argPatterns = {
+  help: ['help', '-h', '-help', '--help'],
+  version: ['version', '-v', '-version', '--version'],
+};
+
+const helpArgIndex = args.findIndex(arg => argPatterns.help.includes(arg));
 const firstPositionalArgIndex = args.findIndex(arg => !arg.startsWith("-"));
 
 if (helpArgIndex !== -1 && (firstPositionalArgIndex === -1 || helpArgIndex <= firstPositionalArgIndex)) {
   console.log(helpMessage);
 
-} else if (/version|-v|-version|--version/.test(args[0])) {
+} else if (argPatterns.version.includes(args[0])) {
   console.log(require("./package.json").version);
 
 } else if (firstPositionalArgIndex !== -1) {
