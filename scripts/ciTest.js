@@ -37,7 +37,7 @@ if (all) {
   formatTest = true;
 }
 
-function runTests() {
+async function runTests() {
   if (ounitTest) {
     cp.execSync(path.join(duneBinDir, "ounit_tests"), {
       stdio: [0, 1, 2],
@@ -56,7 +56,13 @@ function runTests() {
     console.log("Doing build_tests");
     var buildTestDir = path.join(__dirname, "..", "jscomp", "build_tests");
     var files = fs.readdirSync(buildTestDir);
-    files.forEach(function (file) {
+    var tasks = files.map(async function (file) {
+      // @ts-ignore
+      let resolve, reject;
+      let promise = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
       var testDir = path.join(buildTestDir, file);
       if (file === "node_modules" || !fs.lstatSync(testDir).isDirectory()) {
         return;
@@ -65,23 +71,38 @@ function runTests() {
         console.warn(`input.js does not exist in ${testDir}`);
       } else {
         console.log(`testing ${file}`);
-        // note existsSync test already ensure that it is a directory
-        cp.exec(
-          `node input.js`,
-          { cwd: testDir, encoding: "utf8" },
-          function (error, stdout, stderr) {
-            console.log(stdout);
 
-            if (error !== null) {
-              console.log(`❌ error in ${file} with stderr:\n`, stderr);
-              throw error;
-            } else {
-              console.log("✅ success in", file);
-            }
+        // note existsSync test already ensure that it is a directory
+        let p = cp.spawn(`node`, ["input.js"], { cwd: testDir });
+
+        p.stdout.setEncoding("utf8").on("data", line => {
+          console.log(line);
+        });
+
+        let stderr = "";
+        p.stderr.setEncoding("utf8").on("data", line => {
+          stderr += line + "\n";
+        });
+
+        p.once("error", err => {
+          console.log(`❌ error in ${file} with stderr:\n`, stderr);
+          // @ts-ignore
+          reject(err);
+        });
+
+        p.once("close", () => {
+          if (!stderr) {
+            console.log("✅ success in", file);
           }
-        );
+          // @ts-ignore
+          resolve();
+        });
       }
+
+      return promise;
     });
+
+    await Promise.all(tasks);
   }
 
   if (formatTest) {
@@ -92,9 +113,9 @@ function runTests() {
   }
 }
 
-function main() {
+async function main() {
   try {
-    runTests();
+    await runTests();
   } catch (err) {
     console.error(err);
     process.exit(2);
