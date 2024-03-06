@@ -132,18 +132,18 @@ console.groupEnd();
 // console.log("@@ done ");
 // console.groupEnd();
 //
-// // Exits with build help with unknown arg
-// console.group("build -foo");
-// console.log("@@ begin ");
-// out = child_process.spawnSync(`../../../rescript`, ["build", "-foo"], {
-//   encoding: "utf8",
-//   cwd: __dirname,
-// });
-// assert.equal(out.stdout, "");
-// assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
-// assert.equal(out.status, 2);
-// console.log("@@ done ");
-// console.groupEnd();
+// Exits with build help with unknown arg
+console.group("build -foo");
+console.log("@@ begin ");
+out = child_process.spawnSync(`../../../rescript`, ["build", "-foo"], {
+  encoding: "utf8",
+  cwd: __dirname,
+});
+assert.equal(out.stdout, "");
+assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
+assert.equal(out.status, 2);
+console.log("@@ done ");
+console.groupEnd();
 
 // Shows cli help with --help arg
 console.group("--help");
