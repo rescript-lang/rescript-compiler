@@ -429,8 +429,13 @@ and print_out_constructors_doc constructors =
                  constructors);
           ]))
 
-and print_out_constructor_doc (name, args, gadt) =
-  let gadt_doc =
+and print_out_constructor_doc (name, args, gadt, repr) =
+  let reprDoc =
+    match repr with
+    | None -> Doc.nil
+    | Some s -> Doc.text (s ^ " ")
+  in
+  let gadtDoc =
     match gadt with
     | Some out_type -> Doc.concat [Doc.text ": "; print_out_type_doc out_type]
     | None -> Doc.nil
@@ -469,7 +474,7 @@ and print_out_constructor_doc (name, args, gadt) =
              Doc.rparen;
            ])
   in
-  Doc.group (Doc.concat [Doc.text name; args_doc; gadt_doc])
+  Doc.group (Doc.concat [reprDoc; Doc.text name; args_doc; gadtDoc])
 
 and print_record_decl_row_doc (name, mut, opt, arg) =
   Doc.group
@@ -758,13 +763,14 @@ and print_out_signature_doc (signature : Outcometree.out_sig_item list) =
         match items with
         | Outcometree.Osig_typext (ext, Oext_next) :: items ->
           gather_extensions
-            ((ext.oext_name, ext.oext_args, ext.oext_ret_type) :: acc)
+            ((ext.oext_name, ext.oext_args, ext.oext_ret_type, ext.oext_repr)
+            :: acc)
             items
         | _ -> (List.rev acc, items)
       in
       let exts, items =
         gather_extensions
-          [(ext.oext_name, ext.oext_args, ext.oext_ret_type)]
+          [(ext.oext_name, ext.oext_args, ext.oext_ret_type, ext.oext_repr)]
           items
       in
       let te =
@@ -822,7 +828,10 @@ and print_out_extension_constructor_doc
          (if out_ext.oext_private = Asttypes.Private then Doc.text "private "
           else Doc.nil);
          print_out_constructor_doc
-           (out_ext.oext_name, out_ext.oext_args, out_ext.oext_ret_type);
+           ( out_ext.oext_name,
+             out_ext.oext_args,
+             out_ext.oext_ret_type,
+             out_ext.oext_repr );
        ])
 
 and print_out_type_extension_doc
@@ -1035,13 +1044,14 @@ let print_out_phrase_signature signature =
         match items with
         | (Outcometree.Osig_typext (ext, Oext_next), None) :: items ->
           gather_extensions
-            ((ext.oext_name, ext.oext_args, ext.oext_ret_type) :: acc)
+            ((ext.oext_name, ext.oext_args, ext.oext_ret_type, ext.oext_repr)
+            :: acc)
             items
         | _ -> (List.rev acc, items)
       in
       let exts, signature =
         gather_extensions
-          [(ext.oext_name, ext.oext_args, ext.oext_ret_type)]
+          [(ext.oext_name, ext.oext_args, ext.oext_ret_type, ext.oext_repr)]
           signature
       in
       let te =
