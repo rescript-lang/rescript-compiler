@@ -73,16 +73,17 @@ const dumpHelp =
   "`rescript dump` dumps the information for the target\n";
 
 // Shows build help with --help arg
-// console.group("build --help");
 let out;
-// let out = child_process.spawnSync(`../../../rescript`, ["build", "--help"], {
-//   encoding: "utf8",
-//   cwd: __dirname,
-// });
-// assert.equal(out.stdout, buildHelp);
-// assert.equal(out.stderr, "");
-// assert.equal(out.status, 0);
-// console.groupEnd();
+
+console.group("build --help");
+out = child_process.spawnSync(`../../../rescript`, ["build", "--help"], {
+  encoding: "utf8",
+  cwd: __dirname,
+});
+assert.equal(out.stdout, buildHelp);
+assert.equal(out.stderr, "");
+assert.equal(out.status, 0);
+console.groupEnd();
 
 // console.group("build -w --help");
 // out = child_process.spawnSync(`../../../rescript`, ["build", "-w", "--help"], {
