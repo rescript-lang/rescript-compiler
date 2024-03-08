@@ -165,6 +165,16 @@ type fpclass =
   | FP_nan
 external classify_float: float => fpclass = "?classify_float"
 
+/* Bigint operations */
+
+external \"~-,": bigint => bigint = "%negbigint"
+external \"~+,": bigint => bigint = "%identity"
+external \"+,": (bigint, bigint) => bigint = "%addbigint"
+external \"-,": (bigint, bigint) => bigint = "%subbigint"
+external \"*,": (bigint, bigint) => bigint = "%mulbigint"
+external \"/,": (bigint, bigint) => bigint = "%divbigint"
+external modn: (bigint, bigint) => bigint = "%modbigint"
+
 /* String and byte sequence operations -- more in modules String and Bytes */
 
 external string_length: string => int = "%string_length"

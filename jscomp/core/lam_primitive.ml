@@ -80,6 +80,13 @@ type t =
   | Psubfloat
   | Pmulfloat
   | Pdivfloat
+  (* Bigint operations *)
+  | Pnegbigint
+  | Paddbigint
+  | Psubbigint
+  | Pmulbigint
+  | Pdivbigint
+  | Pmodbigint
   | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
@@ -201,6 +208,12 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Psubfloat -> rhs = Psubfloat
   | Pmulfloat -> rhs = Pmulfloat
   | Pdivfloat -> rhs = Pdivfloat
+  | Pnegbigint -> rhs = Pnegbigint
+  | Paddbigint -> rhs = Paddbigint
+  | Psubbigint -> rhs = Psubbigint
+  | Pmulbigint -> rhs = Pmulbigint
+  | Pdivbigint -> rhs = Pdivbigint
+  | Pmodbigint -> rhs = Pmodbigint
   | Pjs_apply -> rhs = Pjs_apply
   | Pjs_runtime_apply -> rhs = Pjs_runtime_apply
   | Pstringlength -> rhs = Pstringlength

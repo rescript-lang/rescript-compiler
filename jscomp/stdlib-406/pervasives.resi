@@ -521,6 +521,49 @@ let infinity: float
 /** Negative infinity. */
 let neg_infinity: float
 
+/** Unary negation. You can also write [- e] instead of [~- e].
+    Unary operator at precedence level 9/11 for [- e]
+    and 11/11 for [~- e]. */
+external \"~-,": bigint => bigint = "%negbigint"
+
+/** Unary addition. You can also write [+ e] instead of [~+ e].
+    Unary operator at precedence level 9/11 for [+ e]
+    and 11/11 for [~+ e].
+    @since 3.12.0
+*/
+external \"~+,": bigint => bigint = "%identity"
+
+/** Bigint addition.
+    Left-associative operator at precedence level 6/11. */
+external \"+,": (bigint, bigint) => bigint = "%addbigint"
+
+/** Bigint subtraction.
+    Left-associative operator at precedence level 6/11. */
+external \"-,": (bigint, bigint) => bigint = "%subbigint"
+
+/** Bigint multiplication.
+    Left-associative operator at precedence level 7/11. */
+external \"*,": (bigint, bigint) => bigint = "%mulbigint"
+
+/** Bigint division.
+   Raise [Division_by_zero] if the second argument is 0.
+   Bigint division rounds the real quotient of its arguments towards zero.
+   More precisely, if [x >= 0] and [y > 0], [x / y] is the greatest bigint
+   less than or equal to the real quotient of [x] by [y].  Moreover,
+   [(- x) / y = x / (- y) = - (x / y)].
+   Left-associative operator at precedence level 7/11. */
+external \"/,": (bigint, bigint) => bigint = "%divbigint"
+
+/** Bigint remainder.  If [y] is not zero, the result
+   of [x mod y] satisfies the following properties:
+   [x = (x / y) * y + x mod y] and
+   [abs(x mod y) <= abs(y) - 1].
+   If [y = 0], [x mod y] raises [Division_by_zero].
+   Note that [x mod y] is negative only if [x < 0].
+   Raise [Division_by_zero] if [y] is zero.
+   Left-associative operator at precedence level 7/11. */
+external modn: (bigint, bigint) => bigint = "%modbigint"
+
 @val
 @scope("Number")
 /** A special floating-point value denoting the result of an

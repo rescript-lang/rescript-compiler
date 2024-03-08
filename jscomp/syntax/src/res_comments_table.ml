@@ -1269,7 +1269,8 @@ and walkExpression expr t comments =
             Pexp_ident
               {
                 txt =
-                  Longident.Lident ("~+" | "~+." | "~-" | "~-." | "not" | "!");
+                  Longident.Lident
+                    ("~+" | "~+." | "~+," | "~-" | "~-." | "~-," | "not" | "!");
               };
         },
         [(Nolabel, argExpr)] ) ->

@@ -2236,10 +2236,10 @@ let combine_constant names loc arg cst partial ctx def
           fail
           (Pbintcomp(Pint64, Cneq)) (Pbintcomp(Pint64, Clt))
           arg const_lambda_list
-    | Const_nativeint _ ->
+    | Const_bigint _ ->
         make_test_sequence loc
           fail
-          (Pbintcomp(Pnativeint, Cneq)) (Pbintcomp(Pnativeint, Clt))
+          (Pbintcomp(Pbigint, Cneq)) (Pbintcomp(Pbigint, Clt))
           arg const_lambda_list
   in lambda1,jumps_union local_jumps total
 

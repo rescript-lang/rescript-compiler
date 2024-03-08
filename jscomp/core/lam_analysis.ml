@@ -27,6 +27,7 @@ let not_zero_constant (x : Lam_constant.t) =
   match x with
   | Const_int { i } -> i <> 0l
   | Const_int64 i -> i <> 0L
+  | Const_bigint i -> i <> "0"
   | _ -> false
 
 let rec no_side_effects (lam : Lam.t) : bool =
@@ -53,7 +54,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
               _ ) ->
               true
           | _, _ -> false)
-      | Pmodint | Pdivint | Pdivint64 | Pmodint64 -> (
+      | Pmodint | Pdivint | Pdivint64 | Pmodint64 | Pdivbigint | Pmodbigint -> (
           match args with
           | [ _; Lconst cst ] -> not_zero_constant cst
           | _ -> false)
@@ -76,6 +77,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pintoffloat | Pfloatofint | Pnegfloat
       (* | Pabsfloat *)
       | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat | Pfloatcomp _ | Pjscomp _
+      | Pnegbigint | Paddbigint | Psubbigint | Pmulbigint
       (* String operations *)
       | Pstringlength | Pstringrefu | Pstringrefs | Pbyteslength | Pbytesrefu
       | Pbytesrefs | Pmakearray | Parraylength | Parrayrefu | Parrayrefs
@@ -193,7 +195,7 @@ let rec size (lam : Lam.t) =
 
 and size_constant x =
   match x with
-  | Const_int _ | Const_char _ | Const_float _ | Const_int64 _ | Const_pointer _
+  | Const_int _ | Const_char _ | Const_float _ | Const_int64 _ | Const_bigint _ | Const_pointer _
   | Const_js_null | Const_js_undefined _ | Const_module_alias | Const_js_true
   | Const_js_false ->
       1

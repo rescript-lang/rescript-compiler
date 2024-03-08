@@ -274,14 +274,6 @@ let scanNumber scanner =
   (* suffix *)
   let suffix =
     match scanner.ch with
-    | 'n' ->
-      let msg =
-        "Unsupported number type (nativeint). Did you mean `" ^ literal ^ "`?"
-      in
-      let pos = position scanner in
-      scanner.err ~startPos:pos ~endPos:pos (Diagnostics.message msg);
-      next scanner;
-      Some 'n'
     | ('g' .. 'z' | 'G' .. 'Z') as ch ->
       next scanner;
       Some ch
@@ -705,6 +697,9 @@ let rec scan scanner =
       | '.' ->
         next2 scanner;
         Token.AsteriskDot
+      | ',' ->
+        next2 scanner;
+        Token.AsteriskComma
       | _ ->
         next scanner;
         Token.Asterisk)
@@ -766,6 +761,9 @@ let rec scan scanner =
       | '.' ->
         next2 scanner;
         Token.ForwardslashDot
+      | ',' ->
+        next2 scanner;
+        Token.ForwardslashComma
       | _ ->
         next scanner;
         Token.Forwardslash)
@@ -774,6 +772,9 @@ let rec scan scanner =
       | '.' ->
         next2 scanner;
         Token.MinusDot
+      | ',' ->
+        next2 scanner;
+        Token.MinusComma
       | '>' ->
         next2 scanner;
         Token.MinusGreater
@@ -785,6 +786,9 @@ let rec scan scanner =
       | '.' ->
         next2 scanner;
         Token.PlusDot
+      | ',' ->
+        next2 scanner;
+        Token.PlusComma
       | '+' ->
         next2 scanner;
         Token.PlusPlus

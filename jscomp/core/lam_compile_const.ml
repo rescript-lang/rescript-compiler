@@ -74,6 +74,7 @@ and translate (x : Lam_constant.t) : J.expression =
       (* E.float (Int64.to_string i) *)
       Js_long.of_const i
       (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
+  | Const_bigint i -> E.bigint i
   | Const_float f -> E.float f (* TODO: preserve float *)
   | Const_string { s; unicode = false } -> E.str s
   | Const_string { s; unicode = true } -> E.str ~delim:DStarJ s

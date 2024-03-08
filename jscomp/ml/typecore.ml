@@ -239,8 +239,8 @@ let type_constant = function
   | Const_string _ -> instance_def Predef.type_string
   | Const_float _ -> instance_def Predef.type_float
   | Const_int64 _ -> instance_def Predef.type_int64
-  | Const_int32 _ 
-  | Const_nativeint _ ->  assert false
+  | Const_bigint _ -> instance_def Predef.type_bigint
+  | Const_int32 _ ->  assert false
 
 let constant : Parsetree.constant -> (Asttypes.constant, error) result =
   function
@@ -259,11 +259,7 @@ let constant : Parsetree.constant -> (Asttypes.constant, error) result =
        try Ok (Const_int64 (Misc.Int_literal_converter.int64 i))
        with Failure _ -> Error (Literal_overflow "int64")
      end
-  | Pconst_integer (i,Some 'n') ->
-     begin
-       try Ok (Const_nativeint (Misc.Int_literal_converter.nativeint i))
-       with Failure _ -> Error (Literal_overflow "nativeint")
-     end
+  | Pconst_integer (i,Some 'n') ->Ok (Const_bigint i)
   | Pconst_integer (i,Some c) -> Error (Unknown_literal (i, c))
   | Pconst_char c -> Ok (Const_char c)
   | Pconst_string (s,d) -> Ok (Const_string (s,d))

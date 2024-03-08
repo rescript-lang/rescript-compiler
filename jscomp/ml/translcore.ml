@@ -350,6 +350,12 @@ let primitives_table =
       ("%lefloat", Pfloatcomp Cle);
       ("%gtfloat", Pfloatcomp Cgt);
       ("%gefloat", Pfloatcomp Cge);
+      ("%negbigint", Pnegbigint);
+      ("%addbigint", Paddbigint);
+      ("%subbigint", Psubbigint);
+      ("%mulbigint", Pmulbigint);
+      ("%divbigint", Pdivbigint Safe);
+      ("%modbigint", Pmodbigint Safe);
       ("%string_length", Pstringlength);
       ("%string_safe_get", Pstringrefs);
       ("%string_unsafe_get", Pstringrefu);
@@ -383,12 +389,12 @@ let primitives_table =
       ("%int64_lsl", Plslbint Pint64);
       ("%int64_lsr", Plsrbint Pint64);
       ("%int64_asr", Pasrbint Pint64);
-      ("%nativeint_of_int32", Pcvtbint (Pint32, Pnativeint));
-      ("%nativeint_to_int32", Pcvtbint (Pnativeint, Pint32));
+      ("%bigint_of_int32", Pcvtbint (Pint32, Pbigint));
+      ("%bigint_to_int32", Pcvtbint (Pbigint, Pint32));
       ("%int64_of_int32", Pcvtbint (Pint32, Pint64));
       ("%int64_to_int32", Pcvtbint (Pint64, Pint32));
-      ("%int64_of_nativeint", Pcvtbint (Pnativeint, Pint64));
-      ("%int64_to_nativeint", Pcvtbint (Pint64, Pnativeint));
+      ("%int64_of_bigint", Pcvtbint (Pbigint, Pint64));
+      ("%int64_to_bigint", Pcvtbint (Pint64, Pbigint));
       ("%opaque", Popaque);
       ("%uncurried_apply", Puncurried_apply);
     ]

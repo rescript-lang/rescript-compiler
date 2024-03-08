@@ -312,6 +312,10 @@ let obj_int_tag_literal : t =
 
 let int ?comment ?c i : t = { expression_desc = Number (Int { i; c }); comment }
 
+let bigint ?comment i : t = { expression_desc = Number (Bigint { i }); comment}
+
+let zero_bigint_literal : t = {expression_desc = Number (Bigint {i = "0"}); comment = None}
+
 let small_int i : t =
   match i with
   | 0 -> zero_int_literal
@@ -1252,6 +1256,16 @@ let rec int32_band ?comment (e1 : J.expression) (e2 : J.expression) :
 
 (* let int32_bin ?comment op e1 e2 : J.expression =  *)
 (*   {expression_desc = Int32_bin(op,e1, e2); comment} *)
+
+let bigint_add ?comment (e1: t) (e2:t) = bin ?comment Plus e1 e2
+
+let bigint_minus ?comment (e1: t) (e2: t) = bin ?comment Minus e1 e2
+
+let bigint_mul ?comment (e1: t) (e2: t) = bin ?comment Mul e1 e2
+
+let bigint_div ?comment (e1: t) (e2: t) = bin ?comment Div e1 e2
+
+let bigint_mod ?comment (e1: t) (e2: t) = bin ?comment Mod e1 e2
 
 (* TODO -- alpha conversion
     remember to add parens..

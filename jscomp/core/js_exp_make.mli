@@ -111,6 +111,8 @@ val uint32 : ?comment:string -> int32 -> t
 
 val small_int : int -> t
 
+val bigint : ?comment:string -> string -> t
+
 val float : ?comment:string -> string -> t
 
 (* val empty_string_literal : t  *)
@@ -120,6 +122,8 @@ val zero_int_literal : t
 (* val one_int_literal : t *)
 val zero_float_lit : t
 (* val obj_int_tag_literal : t *)
+
+val zero_bigint_literal : t
 
 val is_out : ?comment:string -> t -> t -> t
 (** [is_out e range] is equivalent to [e > range or e <0]
@@ -271,6 +275,16 @@ val bool_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 val string_comp : Js_op.binop -> ?comment:string -> t -> t -> t
 
 val float_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
+
+val bigint_add : ?comment: string -> t -> t -> t
+
+val bigint_minus : ?comment: string -> t-> t -> t
+
+val bigint_mul : ?comment: string -> t -> t -> t
+
+val bigint_div : ?comment: string -> t -> t -> t
+
+val bigint_mod : ?comment: string -> t -> t -> t
 
 val js_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 

@@ -25,6 +25,7 @@ let rec struct_const ppf (cst : Lam_constant.t) =
   | Const_string { s } -> fprintf ppf "%S" s
   | Const_float f -> fprintf ppf "%s" f
   | Const_int64 n -> fprintf ppf "%LiL" n
+  | Const_bigint i -> fprintf ppf "%sn" i
   | Const_pointer name -> fprintf ppf "`%s" name
   | Const_some n -> fprintf ppf "[some-c]%a" struct_const n
   | Const_block (tag, _, []) -> fprintf ppf "[%i]" tag
@@ -133,6 +134,12 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pfloatcomp Cle -> fprintf ppf "<=."
   | Pfloatcomp Cgt -> fprintf ppf ">."
   | Pfloatcomp Cge -> fprintf ppf ">=."
+  | Pnegbigint -> fprintf ppf "~n"
+  | Paddbigint -> fprintf ppf "+n"
+  | Psubbigint -> fprintf ppf "-n"
+  | Pmulbigint -> fprintf ppf "*n"
+  | Pdivbigint -> fprintf ppf "/n"
+  | Pmodbigint -> fprintf ppf "modn"
   | Pjscomp Ceq -> fprintf ppf "#=="
   | Pjscomp Cneq -> fprintf ppf "#!="
   | Pjscomp Clt -> fprintf ppf "#<"

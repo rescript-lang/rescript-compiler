@@ -150,14 +150,14 @@ let all_coherent column =
         | Const_int _, Const_int _
         | Const_int32 _, Const_int32 _
         | Const_int64 _, Const_int64 _
-        | Const_nativeint _, Const_nativeint _
+        | Const_bigint _, Const_bigint _
         | Const_float _, Const_float _
         | Const_string _, Const_string _ -> true
         | ( Const_char _
           | Const_int _
           | Const_int32 _
           | Const_int64 _
-          | Const_nativeint _
+          | Const_bigint _
           | Const_float _
           | Const_string _), _ -> false
       end
@@ -384,7 +384,7 @@ let pretty_const c = match c with
 | Const_float f -> Printf.sprintf "%s" f
 | Const_int32 i -> Printf.sprintf "%ldl" i
 | Const_int64 i -> Printf.sprintf "%LdL" i
-| Const_nativeint i -> Printf.sprintf "%ndn" i
+| Const_bigint i -> Printf.sprintf "%s" i
 
 let rec pretty_val ppf v =
   match v.pat_extra with
@@ -1102,11 +1102,11 @@ let build_other ext env : Typedtree.pattern = match env with
       (function Tpat_constant(Const_int64 i) -> i | _ -> assert false)
       (function i -> Tpat_constant(Const_int64 i))
       0L Int64.succ p env
-| ({pat_desc=(Tpat_constant (Const_nativeint _))} as p,_) :: _ ->
+| ({pat_desc=(Tpat_constant (Const_bigint _))} as p,_) :: _ ->
     build_other_constant
-      (function Tpat_constant(Const_nativeint i) -> i | _ -> assert false)
-      (function i -> Tpat_constant(Const_nativeint i))
-      0n Nativeint.succ p env
+      (function Tpat_constant(Const_bigint i) -> String.length i | _ -> assert false)
+      (function i -> Tpat_constant(Const_bigint (String.make i '*')))
+      0 succ p env
 | ({pat_desc=(Tpat_constant (Const_string _))} as p,_) :: _ ->
     build_other_constant
       (function Tpat_constant(Const_string (s, _)) -> String.length s
@@ -2293,7 +2293,7 @@ let inactive ~partial pat =
             match c with
             | Const_string _ -> true (*Config.safe_string*)
             | Const_int _ | Const_char _ | Const_float _
-            | Const_int32 _ | Const_int64 _ | Const_nativeint _ -> true
+            | Const_int32 _ | Const_int64 _ | Const_bigint _ -> true
           end
         | Tpat_tuple ps | Tpat_construct (_, _, ps) ->
             List.for_all (fun p -> loop p) ps

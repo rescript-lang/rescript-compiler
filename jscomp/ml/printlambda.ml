@@ -27,7 +27,7 @@ let rec struct_const ppf = function
   | Const_base(Const_float f) -> fprintf ppf "%s" f
   | Const_base(Const_int32 n) -> fprintf ppf "%lil" n
   | Const_base(Const_int64 n) -> fprintf ppf "%LiL" n
-  | Const_base(Const_nativeint n) -> fprintf ppf "%nin" n
+  | Const_base(Const_bigint n) -> fprintf ppf "%sn" n
   | Const_pointer (n,_) -> fprintf ppf "%ia" n
   | Const_block(tag_info, []) ->
       let tag = Lambda.tag_of_tag_info tag_info in 
@@ -47,7 +47,7 @@ let rec struct_const ppf = function
   | Const_false -> fprintf ppf "false"      
   | Const_true -> fprintf ppf "true"
 let boxed_integer_name = function
-  | Pnativeint -> "nativeint"
+  | Pbigint -> "bigint"
   | Pint32 -> "int32"
   | Pint64 -> "int64"
 
@@ -64,7 +64,7 @@ let print_boxed_integer_conversion ppf bi1 bi2 =
   fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
 
 let boxed_integer_mark name = function
-  | Pnativeint -> Printf.sprintf "Nativeint.%s" name
+  | Pbigint -> Printf.sprintf "Bigint.%s" name
   | Pint32 -> Printf.sprintf "Int32.%s" name
   | Pint64 -> Printf.sprintf "Int64.%s" name
 
@@ -177,6 +177,14 @@ let primitive ppf = function
   | Pfloatcomp(Cle) -> fprintf ppf "<=."
   | Pfloatcomp(Cgt) -> fprintf ppf ">."
   | Pfloatcomp(Cge) -> fprintf ppf ">=."
+  | Pnegbigint -> fprintf ppf "~n"
+  | Paddbigint -> fprintf ppf "+n"
+  | Psubbigint -> fprintf ppf "-n"
+  | Pmulbigint -> fprintf ppf "*n"
+  | Pdivbigint Safe -> fprintf ppf "/n"
+  | Pdivbigint Unsafe -> fprintf ppf "/nu"
+  | Pmodbigint Safe -> fprintf ppf "mod"
+  | Pmodbigint Unsafe -> fprintf ppf "mod_unsafe"
   | Pstringlength -> fprintf ppf "string.length"
   | Pstringrefu -> fprintf ppf "string.unsafe_get"
   | Pstringrefs -> fprintf ppf "string.get"
@@ -278,6 +286,12 @@ let name_of_primitive = function
   | Pmulfloat -> "Pmulfloat"
   | Pdivfloat -> "Pdivfloat"
   | Pfloatcomp _ -> "Pfloatcomp"
+  | Pnegbigint -> "Pnegbigint"
+  | Paddbigint -> "Paddbigint"
+  | Psubbigint -> "Psubbigint"
+  | Pmulbigint -> "Pmulbigint"
+  | Pdivbigint _ -> "Pdivbigint"
+  | Pmodbigint _ -> "Pmodbigint"
   | Pstringlength -> "Pstringlength"
   | Pstringrefu -> "Pstringrefu"
   | Pstringrefs -> "Pstringrefs"
