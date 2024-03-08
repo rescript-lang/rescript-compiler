@@ -76,13 +76,11 @@ const dumpHelp =
 let out;
 
 console.group("build --help");
-out = child_process.spawnSync(`../../../rescript`, ["build", "--help"], {
+out = child_process.execSync(`../../../rescript build --help`, {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stdout, buildHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
+assert.equal(out, buildHelp);
 console.groupEnd();
 
 // console.group("build -w --help");
@@ -97,26 +95,22 @@ console.groupEnd();
 
 console.group("-w --help");
 console.log("@@ begin ");
-out = child_process.spawnSync(`../../../rescript`, ["-w", "--help"], {
+out = child_process.execSync(`../../../rescript -w --help`, {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stdout, cliHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
+assert.equal(out, cliHelp);
 console.log("@@ done");
 console.groupEnd();
 
 // Shows cli help with --help arg even if there are invalid arguments after it
 console.group("--help -w");
 console.log("@@ begin ");
-out = child_process.spawnSync(`../../../rescript`, ["--help", "-w"], {
+out = child_process.execSync(`../../../rescript --help -w`, {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stdout, cliHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
+assert.equal(out, cliHelp);
 console.log("@@ done");
 console.groupEnd();
 
@@ -203,24 +197,20 @@ console.groupEnd();
 
 // Shows clean help with --help arg
 console.group("clean --help");
-out = child_process.spawnSync(`../../../rescript`, ["clean", "--help"], {
+out = child_process.execSync(`../../../rescript clean --help`, {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stdout, cleanHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
+assert.equal(out, cleanHelp);
 console.groupEnd();
 
 // Shows clean help with -h arg
 console.group("clean -h");
-out = child_process.spawnSync(`../../../rescript`, ["clean", "-h"], {
+out = child_process.execSync(`../../../rescript clean -h`, {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stdout, cleanHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
+assert.equal(out, cleanHelp);
 console.groupEnd();
 
 // Exits with clean help with unknown arg
@@ -236,66 +226,54 @@ console.groupEnd();
 
 // Shows format help with --help arg
 console.group("format --help");
-out = child_process.spawnSync(`../../../rescript`, ["format", "--help"], {
+out = child_process.execSync(`../../../rescript format --help`, {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stdout, formatHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
+assert.equal(out, formatHelp);
 console.groupEnd();
 
 // Shows format help with -h arg
 console.group("format -h");
-out = child_process.spawnSync(`../../../rescript`, ["format", "-h"], {
+out = child_process.execSync(`../../../rescript format -h`, {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stdout, formatHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
+assert.equal(out, formatHelp);
 console.groupEnd();
 
 // Shows convert help with --help arg
 console.group("convert --help");
-out = child_process.spawnSync(`../../../rescript`, ["convert", "--help"], {
+out = child_process.execSync(`../../../rescript convert --help`, {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stdout, convertHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
+assert.equal(out, convertHelp);
 console.groupEnd();
 
 // Shows convert help with -h arg
 console.group("convert -h");
-out = child_process.spawnSync(`../../../rescript`, ["convert", "-h"], {
+out = child_process.execSync(`../../../rescript convert -h`, {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stdout, convertHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
+assert.equal(out, convertHelp);
 console.groupEnd();
 
 // Shows dump help with --help arg
 console.group("dump --help");
-out = child_process.spawnSync(`../../../rescript`, ["dump", "--help"], {
+out = child_process.execSync(`../../../rescript dump --help`, {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stdout, dumpHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
+assert.equal(out, dumpHelp);
 console.groupEnd();
 
 // Shows dump help with -h arg
 console.group("dump -h");
-out = child_process.spawnSync(`../../../rescript`, ["dump", "-h"], {
+out = child_process.execSync(`../../../rescript dump -h`, {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stdout, dumpHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
+assert.equal(out, dumpHelp);
 console.groupEnd();
