@@ -279,7 +279,6 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
     if !numberTypes > 1 then
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneNumber));
     if !bigintTypes > 1 then
-      (* FIXME need to define another error for duplicated bigint *)
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneBigint));
     if !booleanTypes > 1 then
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneBoolean));
