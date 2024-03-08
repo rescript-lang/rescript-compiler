@@ -22,6 +22,7 @@ type untaggedError =
   | AtMostOneFunction
   | AtMostOneString
   | AtMostOneNumber
+  | AtMostOneBigint
   | AtMostOneBoolean
   | DuplicateLiteral of string
   | ConstructorMoreThanOneArg of string
@@ -54,6 +55,8 @@ let report_error ppf =
       | AtMostOneBoolean -> "At most one case can be a boolean type."
       | AtMostOneNumber ->
         "At most one case can be a number type (int or float)."
+      | AtMostOneBigint ->
+        "At most one case can be a bigint type."
       | DuplicateLiteral s -> "Duplicate literal " ^ s ^ "."
       | ConstructorMoreThanOneArg (name) -> "Constructor " ^ name ^ " has more than one argument.")
 
@@ -62,6 +65,7 @@ type block_type =
   | IntType
   | StringType
   | FloatType
+  | BigintType
   | BooleanType
   | InstanceType of Instance.t
   | FunctionType
@@ -77,6 +81,7 @@ type tag_type =
   | String of string
   | Int of int
   | Float of string
+  | Bigint of string
   | Bool of bool
   | Null
   | Undefined (* literal or tagged block *)
@@ -119,6 +124,9 @@ let process_tag_type (attrs : Parsetree.attributes) =
           (match Ast_payload.is_single_float payload with
           | None -> ()
           | Some f -> st := Some (Float f));
+          (match Ast_payload.is_single_bigint payload with
+          | None -> ()
+          | Some i -> st := Some (Bigint i));
           (match Ast_payload.is_single_bool payload with
           | None -> ()
           | Some b -> st := Some (Bool b));
@@ -172,6 +180,8 @@ let get_block_type_from_typ ~env (t: Types.type_expr) : block_type option =
     Some IntType
   | {desc = Tconstr (path, _, _)} when Path.same path Predef.path_float ->
     Some FloatType
+  | {desc = Tconstr (path, _, _)} when Path.same path Predef.path_bigint ->
+    Some BigintType
   | {desc = Tconstr (path, _, _)} when Path.same path Predef.path_bool ->
       Some BooleanType
   | ({desc = Tconstr _} as t) when Ast_uncurried_utils.typeIsUncurriedFun t ->
@@ -240,6 +250,7 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
   let objectTypes = ref 0 in
   let stringTypes = ref 0 in
   let numberTypes = ref 0 in
+  let bigintTypes = ref 0 in
   let booleanTypes = ref 0 in
   let unknownTypes = ref 0 in
   let addStringLiteral ~loc s =
@@ -267,6 +278,9 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneString));
     if !numberTypes > 1 then
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneNumber));
+    if !bigintTypes > 1 then
+      (* FIXME need to define another error for duplicated bigint *)
+      raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneBigint));
     if !booleanTypes > 1 then
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneBoolean));
     if !booleanTypes > 0 && (StringSet.mem "true" !nonstring_literals || StringSet.mem "false" !nonstring_literals) then
@@ -278,6 +292,7 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
       | Some (String s) -> addStringLiteral ~loc s
       | Some (Int i) -> addNonstringLiteral ~loc (string_of_int i)
       | Some (Float f) -> addNonstringLiteral ~loc f
+      | Some (Bigint i) -> addNonstringLiteral ~loc i
       | Some Null -> addNonstringLiteral ~loc "null"
       | Some Undefined -> addNonstringLiteral ~loc "undefined"
       | Some (Bool b) -> addNonstringLiteral ~loc (if b then "true" else "false")
@@ -295,6 +310,7 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
           Hashtbl.replace instanceTypes i (count + 1);
         | FunctionType -> incr functionTypes;
         | (IntType | FloatType) -> incr numberTypes;
+        | BigintType -> incr bigintTypes;
         | BooleanType -> incr booleanTypes;
         | StringType -> incr stringTypes;
         );
@@ -359,6 +375,9 @@ module DynamicChecks = struct
   let function_ = Untagged FunctionType |> tag_type
   let string = Untagged StringType |> tag_type
   let number = Untagged IntType |> tag_type
+
+  let bigint = Untagged BigintType |> tag_type
+
   let boolean = Untagged BooleanType |> tag_type
 
   let ( == ) x y = bin EqEqEq x y
@@ -375,7 +394,7 @@ module DynamicChecks = struct
     in
     let literals_overlaps_with_number () =
       Ext_list.exists literal_cases (function
-        | Int _ | Float _ -> true
+        | Int _ | Float _ | Bigint _ -> true
         | _ -> false)
     in
     let literals_overlaps_with_boolean () =
@@ -398,6 +417,8 @@ module DynamicChecks = struct
         typeof e != number
       | FloatType when literals_overlaps_with_number () = false ->
         typeof e != number
+      | BigintType when literals_overlaps_with_number () = false ->
+        typeof e != bigint
       | BooleanType when literals_overlaps_with_boolean () = false ->
         typeof e != boolean
       | InstanceType i -> not (is_instance i e)
@@ -408,6 +429,7 @@ module DynamicChecks = struct
       | StringType (* overlap *)
       | IntType (* overlap *)
       | FloatType (* overlap *)
+      | BigintType (* overlap *)
       | BooleanType (* overlap *)
       | UnknownType -> (
         (* We don't know the type of unknown, so we need to express:
@@ -449,7 +471,7 @@ module DynamicChecks = struct
   let add_runtime_type_check ~tag_type ~(block_cases : block_type list) x y =
     let instances = Ext_list.filter_map block_cases (function InstanceType i -> Some i | _ -> None) in
     match tag_type with
-    | Untagged (IntType | StringType | FloatType | BooleanType | FunctionType) ->
+    | Untagged (IntType | StringType | FloatType | BigintType | BooleanType | FunctionType) ->
       typeof y == x
     | Untagged ObjectType ->
       if instances <> [] then
@@ -462,5 +484,5 @@ module DynamicChecks = struct
     | Untagged UnknownType ->
       (* This should not happen because unknown must be the only non-literal case *)
       assert false
-    | Bool _ | Float _ | Int _ | String _ | Null | Undefined -> x
+    | Bool _ | Float _ | Int _ | Bigint _ | String _ | Null | Undefined -> x
 end

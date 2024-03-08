@@ -45,6 +45,7 @@ let variant_has_same_runtime_representation_as_target ~(targetPath : Path.t)
       | None | Some (String _) -> Path.same targetPath Predef.path_string
       | Some (Int _) -> Path.same targetPath Predef.path_int
       | Some (Float _) -> Path.same targetPath Predef.path_float
+      | Some (Bigint _) -> Path.same targetPath Predef.path_bigint
       | Some (Null | Undefined | Bool _ | Untagged _) -> false)
     | _ -> false
   in

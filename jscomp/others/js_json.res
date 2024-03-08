@@ -30,6 +30,7 @@ type rec t =
   | @as(null) Null
   | String(string)
   | Number(float)
+  | Bigint(bigint)
   | Object(Js.Dict.t<t>)
   | Array(array<t>)
 

@@ -807,11 +807,13 @@ let tag_type = function
   | Ast_untagged_variants.String s -> str s ~delim:DStarJ
   | Int i -> small_int i
   | Float f -> float f
+  | Bigint i -> bigint i
   | Bool b -> bool b
   | Null -> nil
   | Undefined -> undefined
   | Untagged IntType -> str "number"
   | Untagged FloatType -> str "number"
+  | Untagged BigintType -> str "bigint"
   | Untagged BooleanType -> str "boolean"
   | Untagged FunctionType -> str "function"
   | Untagged StringType -> str "string"
