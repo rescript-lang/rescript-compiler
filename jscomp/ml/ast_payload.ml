@@ -89,10 +89,10 @@ let is_single_bigint (x : t) : string option =
         {
           pstr_desc =
             Pstr_eval
-              ({pexp_desc = Pexp_constant (Pconst_integer (name, Some n)); _}, _);
+              ({pexp_desc = Pexp_constant (Pconst_integer (name, Some 'n')); _}, _);
           _;
         };
-      ] when n = 'n' ->
+      ] ->
     Some name
   | _ -> None
 
