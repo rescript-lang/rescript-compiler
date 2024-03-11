@@ -1,11 +1,9 @@
 /*** JavaScript BigInt API */
 
-type t = bigint
-
-external \"~-": t => t = "%negbigint"
-external \"~+": t => t = "%identity"
-external \"+": (t, t) => t = "%addbigint"
-external \"-": (t, t) => t = "%subbigint"
-external \"*": (t, t) => t = "%mulbigint"
-external \"/": (t, t) => t = "%divbigint"
-external mod: (t, t) => t = "%modbigint"
+external \"~-": bigint => bigint = "%negbigint"
+external \"~+": bigint => bigint = "%identity"
+external \"+": (bigint, bigint) => bigint = "%addbigint"
+external \"-": (bigint, bigint) => bigint = "%subbigint"
+external \"*": (bigint, bigint) => bigint = "%mulbigint"
+external \"/": (bigint, bigint) => bigint = "%divbigint"
+external mod: (bigint, bigint) => bigint = "%modbigint"
