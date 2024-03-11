@@ -393,7 +393,12 @@ module DynamicChecks = struct
     in
     let literals_overlaps_with_number () =
       Ext_list.exists literal_cases (function
-        | Int _ | Float _ | Bigint _ -> true
+        | Int _ | Float _ -> true
+        | _ -> false)
+    in
+    let literals_overlaps_with_bigint () =
+      Ext_list.exists literal_cases (function
+        | Bigint _ -> true
         | _ -> false)
     in
     let literals_overlaps_with_boolean () =
@@ -416,7 +421,7 @@ module DynamicChecks = struct
         typeof e != number
       | FloatType when literals_overlaps_with_number () = false ->
         typeof e != number
-      | BigintType when literals_overlaps_with_number () = false ->
+      | BigintType when literals_overlaps_with_bigint () = false ->
         typeof e != bigint
       | BooleanType when literals_overlaps_with_boolean () = false ->
         typeof e != boolean
