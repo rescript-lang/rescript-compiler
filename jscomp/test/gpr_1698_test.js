@@ -168,8 +168,6 @@ function compare(context, state, _a, _b) {
           switch (b.TAG) {
             case "Pow" :
                 return 1;
-            case "Gcd" :
-                return -1;
             default:
               return -1;
           }

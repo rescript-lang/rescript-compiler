@@ -8,9 +8,6 @@ function string_or_number(x) {
   var ty = Js_types.classify(x);
   if (typeof ty !== "object") {
     switch (ty) {
-      case "JSFalse" :
-      case "JSTrue" :
-          return false;
       default:
         return false;
     }
