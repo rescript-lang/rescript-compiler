@@ -787,6 +787,7 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
       float_equal ?comment a e1
   | Number (Float { f = f0; _ }), Number (Float { f = f1 }) when f0 = f1 ->
       true_
+  | Number (Bigint { i = i0 }), Number (Bigint { i = i1 }) -> bool (i0 = i1)
   | _ -> { expression_desc = Bin (EqEqEq, e0, e1); comment }
 
 let int_equal = float_equal
@@ -1268,6 +1269,16 @@ let bigint_mul ?comment (e1: t) (e2: t) = bin ?comment Mul e1 e2
 let bigint_div ?comment (e1: t) (e2: t) = bin ?comment Div e1 e2
 
 let bigint_mod ?comment (e1: t) (e2: t) = bin ?comment Mod e1 e2
+
+let bigint_comp (cmp : Lam_compat.comparison) ?comment (e0: t) (e1: t) =
+  match (cmp, e0.expression_desc, e1.expression_desc) with
+  | Ceq, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 = i1)
+  | Cneq, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 <> i1)
+  | Cge, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 >= i1)
+  | Cgt, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 > i1)
+  | Cle, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 <= i1)
+  | Clt, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 < i1)
+  | _ -> bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
 (* TODO -- alpha conversion
     remember to add parens..

@@ -230,7 +230,9 @@ type primitive =
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of comparison
   (* Bigint operations *)
-  | Pnegbigint | Paddbigint | Psubbigint | Pmulbigint | Pdivbigint of is_safe | Pmodbigint of is_safe
+  | Pnegbigint | Paddbigint | Psubbigint
+  | Pmulbigint | Pdivbigint of is_safe | Pmodbigint of is_safe
+  | Pbigintcomp of comparison
   (* String operations *)
   | Pstringlength | Pstringrefu  | Pstringrefs
   | Pbyteslength | Pbytesrefu | Pbytessetu | Pbytesrefs | Pbytessets

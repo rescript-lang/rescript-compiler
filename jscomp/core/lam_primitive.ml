@@ -91,6 +91,7 @@ type t =
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
   | Pint64comp of Lam_compat.comparison
+  | Pbigintcomp of Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
   (* String operations *)
@@ -280,6 +281,11 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Pfloatcomp comparison -> (
       match rhs with
       | Pfloatcomp comparison1 ->
+          Lam_compat.eq_comparison comparison comparison1
+      | _ -> false)
+  | Pbigintcomp comparison -> (
+      match rhs with
+      | Pbigintcomp comparison1 ->
           Lam_compat.eq_comparison comparison comparison1
       | _ -> false)
   | Pjscomp comparison -> (

@@ -57,6 +57,7 @@ type specialized = {
   stringcomp : Lambda.primitive;
   bytescomp : Lambda.primitive;
   int64comp : Lambda.primitive;
+  bigintcomp : Lambda.primitive;
   simplify_constant_constructor : bool;
 }
 
@@ -82,6 +83,7 @@ let comparisons_table =
             Pccall
               (Primitive.simple ~name:"caml_bytes_equal" ~arity:2 ~alloc:false);
           int64comp = Pbintcomp (Pint64, Ceq);
+          bigintcomp = Pbigintcomp Ceq;
           simplify_constant_constructor = true;
         } );
       ( "%notequal",
@@ -102,6 +104,7 @@ let comparisons_table =
               (Primitive.simple ~name:"caml_bytes_notequal" ~arity:2
                  ~alloc:false);
           int64comp = Pbintcomp (Pint64, Cneq);
+          bigintcomp = Pbigintcomp Cneq;
           simplify_constant_constructor = true;
         } );
       ( "%lessthan",
@@ -122,6 +125,7 @@ let comparisons_table =
               (Primitive.simple ~name:"caml_bytes_lessthan" ~arity:2
                  ~alloc:false);
           int64comp = Pbintcomp (Pint64, Clt);
+          bigintcomp = Pbigintcomp Clt;
           simplify_constant_constructor = false;
         } );
       ( "%greaterthan",
@@ -144,6 +148,7 @@ let comparisons_table =
               (Primitive.simple ~name:"caml_bytes_greaterthan" ~arity:2
                  ~alloc:false);
           int64comp = Pbintcomp (Pint64, Cgt);
+          bigintcomp = Pbigintcomp Cgt;
           simplify_constant_constructor = false;
         } );
       ( "%lessequal",
@@ -166,6 +171,7 @@ let comparisons_table =
               (Primitive.simple ~name:"caml_bytes_lessequal" ~arity:2
                  ~alloc:false);
           int64comp = Pbintcomp (Pint64, Cle);
+          bigintcomp = Pbigintcomp Cle;
           simplify_constant_constructor = false;
         } );
       ( "%greaterequal",
@@ -188,6 +194,7 @@ let comparisons_table =
               (Primitive.simple ~name:"caml_bytes_greaterequal" ~arity:2
                  ~alloc:false);
           int64comp = Pbintcomp (Pint64, Cge);
+          bigintcomp = Pbigintcomp Cge;
           simplify_constant_constructor = false;
         } );
       ( "%compare",
@@ -214,6 +221,9 @@ let comparisons_table =
           int64comp =
             Pccall
               (Primitive.simple ~name:"caml_int64_compare" ~arity:2 ~alloc:false);
+          bigintcomp =
+            Pccall
+              (Primitive.simple ~name:"caml_bigint_compare" ~arity:2 ~alloc:false);
           simplify_constant_constructor = false;
         } );
       ( "%bs_max",
@@ -226,6 +236,7 @@ let comparisons_table =
           floatcomp = arity2 "caml_float_max";
           stringcomp = arity2 "caml_string_max";
           int64comp = arity2 "caml_int64_max";
+          bigintcomp = arity2 "caml_bigint_max";
           simplify_constant_constructor = false;
         } );
       ( "%bs_min",
@@ -237,6 +248,7 @@ let comparisons_table =
           floatcomp = arity2 "caml_float_min";
           stringcomp = arity2 "caml_string_min";
           int64comp = arity2 "caml_int64_min";
+          bigintcomp = arity2 "caml_bigint_min";
           simplify_constant_constructor = false;
         } );
       ( "%bs_equal_null",
@@ -249,6 +261,7 @@ let comparisons_table =
           floatcomp = arity2 "caml_float_equal_null";
           stringcomp = arity2 "caml_string_equal_null";
           int64comp = arity2 "caml_int64_equal_null";
+          bigintcomp = arity2 "caml_bigint_equal_null";
           simplify_constant_constructor = true;
         } );
       ( "%bs_equal_undefined",
@@ -261,6 +274,7 @@ let comparisons_table =
           floatcomp = arity2 "caml_float_equal_undefined";
           stringcomp = arity2 "caml_string_equal_undefined";
           int64comp = arity2 "caml_int64_equal_undefined";
+          bigintcomp = arity2 "caml_bigint_equal_undefined";
           simplify_constant_constructor = true;
         } );
       ( "%bs_equal_nullable",
@@ -273,6 +287,7 @@ let comparisons_table =
           floatcomp = arity2 "caml_float_equal_nullable";
           stringcomp = arity2 "caml_string_equal_nullable";
           int64comp = arity2 "caml_int64_equal_nullable";
+          bigintcomp = arity2 "caml_bigint_equal_nullable";
           simplify_constant_constructor = true;
         } );
     ]
@@ -356,6 +371,12 @@ let primitives_table =
       ("%mulbigint", Pmulbigint);
       ("%divbigint", Pdivbigint Safe);
       ("%modbigint", Pmodbigint Safe);
+      ("%eqbigint", Pbigintcomp Ceq);
+      ("%noteqbigint", Pbigintcomp Cneq);
+      ("%ltbigint", Pbigintcomp Clt);
+      ("%lebigint", Pbigintcomp Cle);
+      ("%gtbigint", Pbigintcomp Cgt);
+      ("%gebigint", Pbigintcomp Cge);
       ("%string_length", Pstringlength);
       ("%string_safe_get", Pstringrefs);
       ("%string_unsafe_get", Pstringrefu);
@@ -402,7 +423,7 @@ let primitives_table =
 let find_primitive prim_name = Hashtbl.find primitives_table prim_name
 
 let specialize_comparison
-    ({ gencomp; intcomp; floatcomp; stringcomp; bytescomp; int64comp; boolcomp } :
+    ({ gencomp; intcomp; floatcomp; stringcomp; bytescomp; int64comp; bigintcomp; boolcomp } :
       specialized) env ty =
   match () with
   | ()
@@ -414,6 +435,7 @@ let specialize_comparison
   | () when is_base_type env ty Predef.path_string -> stringcomp
   | () when is_base_type env ty Predef.path_bytes -> bytescomp
   | () when is_base_type env ty Predef.path_int64 -> int64comp
+  | () when is_base_type env ty Predef.path_bigint -> bigintcomp
   | () when is_base_type env ty Predef.path_bool -> boolcomp
   | () -> gencomp
 

@@ -251,6 +251,8 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
          [Not_found] or [Invalid_argument] ?
       *)
       match args with [ e1; e2 ] -> E.int_comp cmp e1 e2 | _ -> assert false)
+  | Pbigintcomp cmp -> (
+      match args with [ e1; e2 ] -> E.bigint_comp cmp e1 e2 | _ -> assert false)
   (* List --> stamp = 0
      Assert_false --> stamp = 26
   *)
