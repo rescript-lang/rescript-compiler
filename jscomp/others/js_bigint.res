@@ -25,12 +25,6 @@ number, `false` otherwise. See [`isFinite`](https://developer.mozilla.org/en-US/
 
 ```rescript
 /* returns [false] */
-Js.Bigint.isFinite(infinity)
-
-/* returns [false] */
-Js.Bigint.isFinite(neg_infinity)
-
-/* returns [false] */
 Js.Bigint.isFinite(Js.Bigint._NaN)
 
 /* returns [true] */
