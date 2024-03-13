@@ -16,6 +16,7 @@
 
 - Fix making the static import for the dynamic import of external ffi https://github.com/rescript-lang/rescript-compiler/pull/6664
 - Fix local type variables breaking react components. https://github.com/rescript-lang/rescript-compiler/pull/6665
+- Fix remove redundant branches in generated switch body. https://github.com/rescript-lang/rescript-compiler/pull/6672
 
 #### :nail-care: Polish
 
