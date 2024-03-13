@@ -294,7 +294,7 @@ let operatorPrecedence operator =
   | "=" | "==" | "<" | ">" | "!=" | "<>" | "!==" | "<=" | ">=" | "|>" -> 4
   | "+" | "+." | "+," | "-" | "-." | "-," | "^" -> 5
   | "*" | "*." | "/" | "/." -> 6
-  | "**" -> 7
+  | "**" | "**," -> 7
   | "#" | "##" | "|." | "|.u" -> 8
   | _ -> 0
 
@@ -317,7 +317,7 @@ let isBinaryOperator operator =
   match operator with
   | ":=" | "||" | "&&" | "=" | "==" | "<" | ">" | "!=" | "!==" | "<=" | ">="
   | "|>" | "+" | "+." | "+," | "-" | "-." | "-," | "^" | "*" | "*." | "*," | "/"
-  | "/." | "/," | "**" | "|." | "|.u" | "<>" ->
+  | "/." | "/," | "**" | "**," | "|." | "|.u" | "<>" ->
     true
   | _ -> false
 
@@ -342,7 +342,7 @@ let isEqualityOperator operator =
 
 let isRhsBinaryOperator operator =
   match operator with
-  | "**" -> true
+  | "**" | "**," -> true
   | _ -> false
 
 let flattenableOperators parentOperator childOperator =

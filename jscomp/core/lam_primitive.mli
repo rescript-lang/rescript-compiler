@@ -77,6 +77,7 @@ type t =
   | Pmulbigint
   | Pdivbigint
   | Pmodbigint
+  | Ppowbigint
   | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison

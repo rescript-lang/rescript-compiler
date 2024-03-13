@@ -68,6 +68,7 @@ external \"-": (bigint, bigint) => bigint = "%subbigint"
 external \"*": (bigint, bigint) => bigint = "%mulbigint"
 external \"/": (bigint, bigint) => bigint = "%divbigint"
 external mod: (bigint, bigint) => bigint = "%modbigint"
+external \"**": (bigint, bigint) => bigint = "%powbigint"
 
 @send
 /**

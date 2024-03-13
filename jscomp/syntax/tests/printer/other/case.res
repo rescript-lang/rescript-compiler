@@ -93,7 +93,8 @@ let precedence = x => switch x {
   | AsteriskDot
   | Forwardslash
   | ForwardslashDot => 6
-  | Exponentiation => 7
+  | Exponentiation
+  | ExponentiationComma => 7
   | Hash
   | HashHash
   | MinusGreater => 8

@@ -1270,6 +1270,8 @@ let bigint_div ?comment (e1: t) (e2: t) = bin ?comment Div e1 e2
 
 let bigint_mod ?comment (e1: t) (e2: t) = bin ?comment Mod e1 e2
 
+let bigint_pow ?comment (e1: t) (e2: t) = bin ?comment Pow e1 e2
+
 let bigint_comp (cmp : Lam_compat.comparison) ?comment (e0: t) (e1: t) =
   match (cmp, e0.expression_desc, e1.expression_desc) with
   | Ceq, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 = i1)

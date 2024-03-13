@@ -87,6 +87,7 @@ type t =
   | Pmulbigint
   | Pdivbigint
   | Pmodbigint
+  | Ppowbigint
   | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
@@ -215,6 +216,7 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Pmulbigint -> rhs = Pmulbigint
   | Pdivbigint -> rhs = Pdivbigint
   | Pmodbigint -> rhs = Pmodbigint
+  | Ppowbigint -> rhs = Ppowbigint
   | Pjs_apply -> rhs = Pjs_apply
   | Pjs_runtime_apply -> rhs = Pjs_runtime_apply
   | Pstringlength -> rhs = Pstringlength

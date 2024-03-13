@@ -188,6 +188,7 @@ external \"-,": (bigint, bigint) => bigint = "%subbigint"
 external \"*,": (bigint, bigint) => bigint = "%mulbigint"
 external \"/,": (bigint, bigint) => bigint = "%divbigint"
 external modn: (bigint, bigint) => bigint = "%modbigint"
+external \"**,": (bigint, bigint) => bigint = "%powbigint"
 
 /* String and byte sequence operations -- more in modules String and Bytes */
 

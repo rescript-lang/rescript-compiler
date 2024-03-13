@@ -567,6 +567,10 @@ external \"/,": (bigint, bigint) => bigint = "%divbigint"
    Left-associative operator at precedence level 7/11. */
 external modn: (bigint, bigint) => bigint = "%modbigint"
 
+/** Bigint Exponentiation.
+    Left-associative operator at precedence level 7/9. */
+external \"**,": (bigint, bigint) => bigint = "%powbigint"
+
 @val
 @scope("Number")
 /** A special floating-point value denoting the result of an

@@ -77,7 +77,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pintoffloat | Pfloatofint | Pnegfloat
       (* | Pabsfloat *)
       | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat | Pfloatcomp _ | Pbigintcomp _ | Pjscomp _
-      | Pnegbigint | Paddbigint | Psubbigint | Pmulbigint
+      | Pnegbigint | Paddbigint | Psubbigint | Pmulbigint | Ppowbigint
       (* String operations *)
       | Pstringlength | Pstringrefu | Pstringrefs | Pbyteslength | Pbytesrefu
       | Pbytesrefs | Pmakearray | Parraylength | Parrayrefu | Parrayrefs

@@ -691,9 +691,14 @@ let rec scan scanner =
         Token.Hash)
     | '*' -> (
       match peek scanner with
-      | '*' ->
-        next2 scanner;
-        Token.Exponentiation
+      | '*' -> (
+        match peek2 scanner with
+        | ',' ->
+          next3 scanner;
+          Token.ExponentiationComma
+        | _ ->
+          next2 scanner;
+          Token.Exponentiation)
       | '.' ->
         next2 scanner;
         Token.AsteriskDot

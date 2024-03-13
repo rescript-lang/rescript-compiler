@@ -2200,7 +2200,8 @@ and parseBinaryExpr ?(context = OrdinaryExpr) ?a p prec =
       let endPos = p.prevEndPos in
       let tokenPrec =
         (* exponentiation operator is right-associative *)
-        if token = Exponentiation then tokenPrec else tokenPrec + 1
+        if token = Exponentiation || token = ExponentiationComma then tokenPrec
+        else tokenPrec + 1
       in
       let b = parseBinaryExpr ~context p tokenPrec in
       let loc = mkLoc a.Parsetree.pexp_loc.loc_start b.pexp_loc.loc_end in

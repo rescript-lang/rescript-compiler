@@ -48,6 +48,7 @@ type binop =
   | Mul
   | Div
   | Mod
+  | Pow
   | InstanceOf
 
 (**

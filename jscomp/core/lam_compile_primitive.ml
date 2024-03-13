@@ -221,6 +221,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       | _ -> assert false)
   | Pmodint64 -> Js_long.mod_ args
   | Pmodbigint -> (match args with [ e1; e2 ] -> E.bigint_mod e1 e2 | _ -> assert false)
+  | Ppowbigint -> (match args with [ e1; e2 ] -> E.bigint_pow e1 e2 | _ -> assert false)
   | Plslint -> (
       match args with [ e1; e2 ] -> E.int32_lsl e1 e2 | _ -> assert false)
   | Plslint64 -> Js_long.lsl_ args

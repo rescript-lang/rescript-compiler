@@ -196,7 +196,7 @@ type primitive =
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of comparison
   (* Bigint operations *)
-  | Pnegbigint | Paddbigint | Psubbigint
+  | Pnegbigint | Paddbigint | Psubbigint | Ppowbigint
   | Pmulbigint | Pdivbigint of is_safe | Pmodbigint of is_safe
   | Pbigintcomp of comparison
   (* String operations *)

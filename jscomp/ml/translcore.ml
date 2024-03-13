@@ -370,6 +370,7 @@ let primitives_table =
       ("%subbigint", Psubbigint);
       ("%mulbigint", Pmulbigint);
       ("%divbigint", Pdivbigint Safe);
+      ("%powbigint", Ppowbigint);
       ("%modbigint", Pmodbigint Safe);
       ("%eqbigint", Pbigintcomp Ceq);
       ("%noteqbigint", Pbigintcomp Cneq);

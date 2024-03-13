@@ -44,6 +44,7 @@ type t =
   | AsteriskDot
   | AsteriskComma
   | Exponentiation
+  | ExponentiationComma
   | Minus
   | MinusDot
   | MinusComma
@@ -112,7 +113,7 @@ let precedence = function
   | Asterisk | AsteriskDot | AsteriskComma | Forwardslash | ForwardslashDot
   | ForwardslashComma ->
     6
-  | Exponentiation -> 7
+  | Exponentiation | ExponentiationComma -> 7
   | MinusGreater -> 8
   | Dot -> 9
   | _ -> 0
@@ -175,6 +176,7 @@ let toString = function
   | AsteriskDot -> "*."
   | AsteriskComma -> "*,"
   | Exponentiation -> "**"
+  | ExponentiationComma -> "**,"
   | Assert -> "assert"
   | Lazy -> "lazy"
   | Tilde -> "tilde"
