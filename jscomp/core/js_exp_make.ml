@@ -1260,17 +1260,7 @@ let rec int32_band ?comment (e1 : J.expression) (e2 : J.expression) :
 (* let int32_bin ?comment op e1 e2 : J.expression =  *)
 (*   {expression_desc = Int32_bin(op,e1, e2); comment} *)
 
-let bigint_add ?comment (e1: t) (e2:t) = bin ?comment Plus e1 e2
-
-let bigint_minus ?comment (e1: t) (e2: t) = bin ?comment Minus e1 e2
-
-let bigint_mul ?comment (e1: t) (e2: t) = bin ?comment Mul e1 e2
-
-let bigint_div ?comment (e1: t) (e2: t) = bin ?comment Div e1 e2
-
-let bigint_mod ?comment (e1: t) (e2: t) = bin ?comment Mod e1 e2
-
-let bigint_pow ?comment (e1: t) (e2: t) = bin ?comment Pow e1 e2
+let bigint_op ?comment op (e1: t) (e2: t) = bin ?comment op e1 e2
 
 let bigint_comp (cmp : Lam_compat.comparison) ?comment (e0: t) (e1: t) =
   match (cmp, e0.expression_desc, e1.expression_desc) with

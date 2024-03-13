@@ -276,17 +276,7 @@ val string_comp : Js_op.binop -> ?comment:string -> t -> t -> t
 
 val float_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 
-val bigint_add : ?comment: string -> t -> t -> t
-
-val bigint_minus : ?comment: string -> t-> t -> t
-
-val bigint_mul : ?comment: string -> t -> t -> t
-
-val bigint_div : ?comment: string -> t -> t -> t
-
-val bigint_mod : ?comment: string -> t -> t -> t
-
-val bigint_pow : ?comment: string -> t -> t -> t
+val bigint_op : ?comment: string -> Js_op.binop -> t -> t -> t
 
 val bigint_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 

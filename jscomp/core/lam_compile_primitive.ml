@@ -183,7 +183,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       E.int32_minus E.zero_int_literal (Ext_list.singleton_exn args)
   | Pnegint64 -> Js_long.neg args
   | Pnegfloat -> E.float_minus E.zero_float_lit (Ext_list.singleton_exn args)
-  | Pnegbigint -> E.bigint_minus E.zero_bigint_literal (Ext_list.singleton_exn args)
+  | Pnegbigint -> E.bigint_op Minus E.zero_bigint_literal (Ext_list.singleton_exn args)
   (* Negate boxed int end*)
   (* Int addition and subtraction *)
   | Paddint -> (
@@ -192,21 +192,21 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Paddfloat -> (
       match args with [ e1; e2 ] -> E.float_add e1 e2 | _ -> assert false)
   | Paddbigint -> (
-    match args with [ e1; e2 ] -> E.bigint_add e1 e2 | _ -> assert false)
+    match args with [ e1; e2 ] -> E.bigint_op Plus e1 e2 | _ -> assert false)
   | Psubint -> (
       match args with [ e1; e2 ] -> E.int32_minus e1 e2 | _ -> assert false)
   | Psubint64 -> Js_long.sub args
   | Psubfloat -> (
       match args with [ e1; e2 ] -> E.float_minus e1 e2 | _ -> assert false)
   | Psubbigint -> (
-      match args with [ e1; e2 ] -> E.bigint_minus e1 e2 | _ -> assert false)
+      match args with [ e1; e2 ] -> E.bigint_op Minus e1 e2 | _ -> assert false)
   | Pmulint -> (
       match args with [ e1; e2 ] -> E.int32_mul e1 e2 | _ -> assert false)
   | Pmulint64 -> Js_long.mul args
   | Pmulfloat -> (
       match args with [ e1; e2 ] -> E.float_mul e1 e2 | _ -> assert false)
   | Pmulbigint -> (
-      match args with [ e1; e2 ] -> E.bigint_mul e1 e2 | _ -> assert false)
+      match args with [ e1; e2 ] -> E.bigint_op Mul e1 e2 | _ -> assert false)
   | Pdivfloat -> (
       match args with [ e1; e2 ] -> E.float_div e1 e2 | _ -> assert false)
   | Pdivint -> (
@@ -214,14 +214,14 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       | [ e1; e2 ] -> E.int32_div ~checked:!Js_config.check_div_by_zero e1 e2
       | _ -> assert false)
   | Pdivint64 -> Js_long.div args
-  | Pdivbigint -> (match args with [ e1; e2 ] -> E.bigint_div e1 e2 | _ -> assert false)
+  | Pdivbigint -> (match args with [ e1; e2 ] -> E.bigint_op Div e1 e2 | _ -> assert false)
   | Pmodint -> (
       match args with
       | [ e1; e2 ] -> E.int32_mod ~checked:!Js_config.check_div_by_zero e1 e2
       | _ -> assert false)
   | Pmodint64 -> Js_long.mod_ args
-  | Pmodbigint -> (match args with [ e1; e2 ] -> E.bigint_mod e1 e2 | _ -> assert false)
-  | Ppowbigint -> (match args with [ e1; e2 ] -> E.bigint_pow e1 e2 | _ -> assert false)
+  | Pmodbigint -> (match args with [ e1; e2 ] -> E.bigint_op Mod e1 e2 | _ -> assert false)
+  | Ppowbigint -> (match args with [ e1; e2 ] -> E.bigint_op Pow e1 e2 | _ -> assert false)
   | Plslint -> (
       match args with [ e1; e2 ] -> E.int32_lsl e1 e2 | _ -> assert false)
   | Plslint64 -> Js_long.lsl_ args
