@@ -10,10 +10,20 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.1.0-rc.4 (Unreleased)
+# 11.1.0-rc.5 (Unreleased)
+
+# 11.1.0-rc.4
+
+#### :bug: Bug Fix
+
+- Fix emitting static import instead of dynamic import. https://github.com/rescript-lang/rescript-compiler/pull/6664
+- Fix local type variables breaking react components. https://github.com/rescript-lang/rescript-compiler/pull/6665
+- Fix remove redundant branches in generated switch body. https://github.com/rescript-lang/rescript-compiler/pull/6672
 
 #### :nail-care: Polish
+
 - Omit `undefined` in external function calls for trailing optional arguments when not supplied. https://github.com/rescript-lang/rescript-compiler/pull/6653
+- Make pattern match suggestions to be easier to copy-paste. https://github.com/rescript-lang/rescript-compiler/pull/6656
 
 # 11.1.0-rc.3
 

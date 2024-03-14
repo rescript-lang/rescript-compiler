@@ -50,8 +50,8 @@ let splice_obj_apply obj name args =
    bundle *)
 
 let external_var
-   ({ bundle; module_bind_name; import_attributes } : External_ffi_types.external_module_name) =
-  let id = Lam_compile_env.add_js_module ?import_attributes module_bind_name bundle false in
+   ({ bundle; module_bind_name; import_attributes } : External_ffi_types.external_module_name) ~dynamic_import =
+  let id = Lam_compile_env.add_js_module ?import_attributes module_bind_name bundle false ~dynamic_import in
   E.external_var ?import_attributes ~external_name:bundle id
 
 (* let handle_external_opt
@@ -216,21 +216,22 @@ let assemble_args_has_splice (arg_types : specs) (args : exprs) :
 
 let translate_scoped_module_val
     (module_name : External_ffi_types.external_module_name option) (fn : string)
-    (scopes : string list) =
+    (scopes : string list)
+    ~dynamic_import =
   match module_name with
   | Some { bundle; module_bind_name; import_attributes } -> (
       match scopes with
       | [] ->
           let default = fn = "default" in
           let id =
-            Lam_compile_env.add_js_module ?import_attributes module_bind_name bundle default
+            Lam_compile_env.add_js_module ?import_attributes module_bind_name bundle default ~dynamic_import
           in
           E.external_var_field ?import_attributes ~external_name:bundle ~field:fn ~default id
       | x :: rest ->
           (* TODO: what happens when scope contains "default" ?*)
           let default = false in
           let id =
-            Lam_compile_env.add_js_module ?import_attributes module_bind_name bundle default
+            Lam_compile_env.add_js_module ?import_attributes module_bind_name bundle default ~dynamic_import
           in
           let start =
             E.external_var_field ?import_attributes ~external_name:bundle ~field:x ~default id
@@ -250,10 +251,10 @@ let translate_scoped_access scopes obj =
   | x :: xs -> Ext_list.fold_left xs (E.dot obj x) E.dot
 
 let translate_ffi (cxt : Lam_compile_context.t) arg_types
-    (ffi : External_ffi_types.external_spec) (args : J.expression list) =
+    (ffi : External_ffi_types.external_spec) (args : J.expression list) ~dynamic_import =
   match ffi with
   | Js_call { external_module_name; name; splice: _; scopes; tagged_template = true } -> 
-      let fn = translate_scoped_module_val external_module_name name scopes in 
+      let fn = translate_scoped_module_val external_module_name name scopes ~dynamic_import in 
       (match args with
       | [ {expression_desc = Array (strings, _); _}; {expression_desc = Array (values, _); _} ] -> 
         E.tagged_template fn strings values
@@ -262,7 +263,7 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
           (if dynamic then splice_apply fn args
           else E.call ~info:{ arity = Full; call_info = Call_na } fn args))
   | Js_call { external_module_name = module_name; name = fn; splice; scopes; tagged_template = false } ->
-      let fn = translate_scoped_module_val module_name fn scopes in
+      let fn = translate_scoped_module_val module_name fn scopes ~dynamic_import in
       if splice then
         let args, eff, dynamic = assemble_args_has_splice arg_types args in
         add_eff eff
@@ -283,7 +284,7 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
         add_eff eff
         @@ E.call ~info:{ arity = Full; call_info = Call_na } fn args
   | Js_module_as_fn { external_module_name; splice } ->
-      let fn = external_var external_module_name in
+      let fn = external_var external_module_name ~dynamic_import in
       if splice then
         let args, eff, dynamic = assemble_args_has_splice arg_types args in
         (* TODO: fix in rest calling convention *)
@@ -313,14 +314,14 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
       in
       if splice then
         let args, eff, dynamic = assemble_args_has_splice arg_types args in
-        let fn = translate_scoped_module_val module_name fn scopes in
+        let fn = translate_scoped_module_val module_name fn scopes ~dynamic_import in
         add_eff eff
           (mark ();
           if dynamic then splice_new_apply fn args
           else E.new_ fn args)
       else
         let args, eff = assemble_args_no_splice arg_types args in
-        let fn = translate_scoped_module_val module_name fn scopes in
+        let fn = translate_scoped_module_val module_name fn scopes ~dynamic_import in
         add_eff eff
           (mark (); E.new_ fn args)
   | Js_send { splice; name; js_send_scopes } -> (
@@ -346,16 +347,16 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
                  ~info:{ arity = Full; call_info = Call_na }
                  (E.dot self name) args)
       | _ -> assert false)
-  | Js_module_as_var module_name -> external_var module_name
+  | Js_module_as_var module_name -> external_var module_name ~dynamic_import
   | Js_var { name; external_module_name; scopes } ->
       (* TODO #11
          1. check args -- error checking
          2. support [@@scope "window"]
          we need know whether we should call [add_js_module] or not
       *)
-      translate_scoped_module_val external_module_name name scopes
+      translate_scoped_module_val external_module_name name scopes ~dynamic_import
   | Js_module_as_class module_name ->
-      let fn = external_var module_name in
+      let fn = external_var module_name ~dynamic_import in
       let args, eff = assemble_args_no_splice arg_types args in
       (* TODO: fix in rest calling convention *)
       add_eff eff

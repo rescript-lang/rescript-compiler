@@ -2099,6 +2099,7 @@ let do_check_partial ?pred exhaust loc casel pss = match pss with
               let errmsg =
                 try
                   let buf = Buffer.create 16 in
+                  Buffer.add_string buf "| ";
                   Buffer.add_string buf (!print_res_pat v);
                   begin match check_partial_all v casel with
                   | None -> ()

@@ -24,7 +24,7 @@ Either bind these labels explicitly or add ', _' to the pattern.
   15 [2m│[0m switch y {
 
   You forgot to handle a possible case here, for example: 
-  {otherValue: true, _}
+  | {otherValue: true, _}
 
 
   [1;33mWarning number 9[0m
@@ -52,7 +52,7 @@ Either bind these labels explicitly or add ', _' to the pattern.
   19 [2m│[0m let arr = [1]
 
   You forgot to handle a possible case here, for example: 
-  {typ: WithPayload(false), _}
+  | {typ: WithPayload(false), _}
 | {typ: Variant | One | Two | Three | Four | Five | Six | Seven(_), _}
 
 
@@ -68,7 +68,7 @@ Either bind these labels explicitly or add ', _' to the pattern.
   25 [2m│[0m switch arr {
 
   You forgot to handle a possible case here, for example: 
-  [_]
+  | [_]
 
 
   [1;33mWarning number 8[0m
@@ -83,7 +83,7 @@ Either bind these labels explicitly or add ', _' to the pattern.
   29 [2m│[0m switch arr {
 
   You forgot to handle a possible case here, for example: 
-  []
+  | []
 
 
   [1;33mWarning number 8[0m
@@ -98,7 +98,7 @@ Either bind these labels explicitly or add ', _' to the pattern.
   33 [2m│[0m let lst = list{}
 
   You forgot to handle a possible case here, for example: 
-  [1, 0] | [0, _] | []
+  | [1, 0] | [0, _] | []
 
 
   [1;33mWarning number 8[0m
@@ -113,7 +113,7 @@ Either bind these labels explicitly or add ', _' to the pattern.
   39 [2m│[0m switch lst {
 
   You forgot to handle a possible case here, for example: 
-  list{_, ..._}
+  | list{_, ..._}
 
 
   [1;33mWarning number 8[0m
@@ -128,7 +128,7 @@ Either bind these labels explicitly or add ', _' to the pattern.
   43 [2m│[0m switch lst {
 
   You forgot to handle a possible case here, for example: 
-  list{1, 2, _, ..._} | list{1, 0, ..._} | list{1} | list{0, ..._} | list{}
+  | list{1, 2, _, ..._} | list{1, 0, ..._} | list{1} | list{0, ..._} | list{}
 
 
   [1;33mWarning number 8[0m
@@ -143,7 +143,7 @@ Either bind these labels explicitly or add ', _' to the pattern.
   47 [2m│[0m switch "abc" {
 
   You forgot to handle a possible case here, for example: 
-  list{1, _, ..._} | list{0, ..._} | list{}
+  | list{1, _, ..._} | list{0, ..._} | list{}
 
 
   [1;33mWarning number 8[0m
@@ -158,7 +158,7 @@ Either bind these labels explicitly or add ', _' to the pattern.
   51 [2m│[0m switch 0 {
 
   You forgot to handle a possible case here, for example: 
-  "*"
+  | "*"
 
 
   [1;33mWarning number 8[0m
@@ -173,7 +173,7 @@ Either bind these labels explicitly or add ', _' to the pattern.
   55 [2m│[0m let tuple = (1, true)
 
   You forgot to handle a possible case here, for example: 
-  0
+  | 0
 
 
   [1;33mWarning number 8[0m
@@ -187,4 +187,4 @@ Either bind these labels explicitly or add ', _' to the pattern.
   60 [2m│[0m 
 
   You forgot to handle a possible case here, for example: 
-  (_, true)
+  | (_, true)
