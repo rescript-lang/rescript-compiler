@@ -7,13 +7,13 @@ const signals = {
   SIGTERM: 15,
 };
 
-async function exec(command, args) {
+async function exec(command, args, options = { cwd: __dirname }) {
   const stdoutChunks = [];
   const stderrChunks = [];
 
   const subprocess = child_process.spawn(command, args, {
     stdio: ["ignore", "pipe", "pipe"],
-    cwd: __dirname,
+    cwd: options.cwd,
   });
 
   subprocess.stdout.on("data", chunk => {
@@ -25,11 +25,11 @@ async function exec(command, args) {
   });
 
   return await new Promise((resolve, reject) => {
-    subprocess.on("error", err => {
+    subprocess.once("error", err => {
       reject(err);
     });
 
-    subprocess.on("close", (exitCode, signal) => {
+    subprocess.once("close", (exitCode, signal) => {
       const stdout = Buffer.concat(stdoutChunks).toString("utf8");
       const stderr = Buffer.concat(stderrChunks).toString("utf8");
 

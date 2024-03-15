@@ -5,6 +5,8 @@ var fs = require("fs");
 
 var duneBinDir = require("./dune").duneBinDir;
 
+const { exec } = require("../jscomp/build_tests/utils.js");
+
 var ounitTest = false;
 var mochaTest = false;
 var bsbTest = false;
@@ -56,13 +58,7 @@ async function runTests() {
     console.log("Doing build_tests");
     var buildTestDir = path.join(__dirname, "..", "jscomp", "build_tests");
     var files = fs.readdirSync(buildTestDir);
-    var tasks = files.map(async function (file) {
-      // @ts-ignore
-      let resolve, reject;
-      let promise = new Promise((res, rej) => {
-        resolve = res;
-        reject = rej;
-      });
+    for (const file of files) {
       var testDir = path.join(buildTestDir, file);
       if (file === "node_modules" || !fs.lstatSync(testDir).isDirectory()) {
         return;
@@ -73,36 +69,16 @@ async function runTests() {
         console.log(`testing ${file}`);
 
         // note existsSync test already ensure that it is a directory
-        let p = cp.spawn(`node`, ["input.js"], { cwd: testDir });
+        const out = await exec(`node`, ["input.js"], { cwd: testDir });
+        console.log(out.stdout);
 
-        p.stdout.setEncoding("utf8").on("data", line => {
-          console.log(line);
-        });
-
-        let stderr = "";
-        p.stderr.setEncoding("utf8").on("data", line => {
-          stderr += line + "\n";
-        });
-
-        p.once("error", err => {
-          console.log(`❌ error in ${file} with stderr:\n`, stderr);
-          // @ts-ignore
-          reject(err);
-        });
-
-        p.once("close", () => {
-          if (!stderr) {
-            console.log("✅ success in", file);
-          }
-          // @ts-ignore
-          resolve();
-        });
+        if (out.status === 0) {
+          console.log("✅ success in", file);
+        } else {
+          console.log(`❌ error in ${file} with stderr:\n`, out.stderr);
+        }
       }
-
-      return promise;
-    });
-
-    await Promise.all(tasks);
+    }
   }
 
   if (formatTest) {
@@ -113,12 +89,4 @@ async function runTests() {
   }
 }
 
-async function main() {
-  try {
-    await runTests();
-  } catch (err) {
-    console.error(err);
-    process.exit(2);
-  }
-}
-main();
+runTests();
