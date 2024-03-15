@@ -486,7 +486,7 @@ function build(args) {
     });
     return;
   }
-  if (args.some(arg => /-h|-help|--help/.test(arg))) {
+  if (args.some(arg => ["help", "-h", "-help", "--help"].includes(arg))) {
     delegate(["build", "-h"]);
     return;
   }
