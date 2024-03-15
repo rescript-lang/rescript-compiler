@@ -2,12 +2,6 @@
 
 @val
 /**
-The special value "Not a Number". See [`NaN`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN) on MDN.
-*/
-external _NaN: bigint = "NaN"
-
-@val
-/**
 Parses the given `string` into a `bigint` using JavaScript semantics. Return the
 number as a `bigint` if successfully parsed, `null`, `undefined`, `_NaN` otherwise.
 
