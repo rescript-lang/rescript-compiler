@@ -85,7 +85,7 @@ o test/belt_result_alias_test.cmi test/belt_result_alias_test.cmj : cc test/belt
 o test/bench.cmi test/bench.cmj : cc test/bench.res | $bsc $stdlib runtime
 o test/big_enum.cmi test/big_enum.cmj : cc test/big_enum.res | $bsc $stdlib runtime
 o test/big_polyvar_test.cmi test/big_polyvar_test.cmj : cc test/big_polyvar_test.res | $bsc $stdlib runtime
-o test/bigint_test.cmi test/bigint_test.cmj : cc test/bigint_test.res | test/mt_global.cmj $bsc $stdlib runtime
+o test/bigint_test.cmi test/bigint_test.cmj : cc test/bigint_test.res | test/mt.cmj test/mt_global.cmj $bsc $stdlib runtime
 o test/block_alias_test.cmi test/block_alias_test.cmj : cc test/block_alias_test.res | test/mt.cmj $bsc $stdlib runtime
 o test/boolean_test.cmi test/boolean_test.cmj : cc test/boolean_test.res | test/mt.cmj test/test_bool_equal.cmj $bsc $stdlib runtime
 o test/bs_MapInt_test.cmi test/bs_MapInt_test.cmj : cc test/bs_MapInt_test.res | $bsc $stdlib runtime
