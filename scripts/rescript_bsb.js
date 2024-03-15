@@ -10,6 +10,18 @@ const cwd = process.cwd();
 const lockFileName = path.join(cwd, ".bsb.lock");
 
 /**
+ * @typedef {Object} ProjectFiles
+ * @property {Array<string>} dirs
+ * @property {Array<string>} generated
+ */
+
+/**
+ * @typedef {Object} WatcherRef
+ * @property {string} dir
+ * @property {fs.FSWatcher} watcher
+ */
+
+/**
  * @type {child_process.ChildProcess | null}
  */
 let ownerProcess = null;
