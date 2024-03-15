@@ -27,7 +27,7 @@ const lockFileName = path.join(cwd, ".bsb.lock");
 let ownerProcess = null;
 function releaseBuild() {
   if (ownerProcess) {
-    ownerProcess.kill('SIGHUP');
+    ownerProcess.kill("SIGHUP");
     try {
       fs.rmSync(lockFileName);
     } catch {}
