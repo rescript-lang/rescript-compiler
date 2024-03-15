@@ -75,21 +75,27 @@ const dumpHelp =
 async function test() {
   {
     // Shows build help with --help arg
-    const out = await exec(`../../../rescript`, ["build", "--help"]);
+    const out = await exec(`../../../rescript`, ["build", "--help"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, buildHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
   }
 
   {
-    const out = await exec(`../../../rescript`, ["build", "-w", "--help"]);
+    const out = await exec(`../../../rescript`, ["build", "-w", "--help"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, buildHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
   }
 
   {
-    const out = await exec(`../../../rescript`, ["-w", "--help"]);
+    const out = await exec(`../../../rescript`, ["-w", "--help"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, cliHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
@@ -97,7 +103,9 @@ async function test() {
 
   {
     // Shows cli help with --help arg even if there are invalid arguments after it
-    const out = await exec(`../../../rescript`, ["--help", "-w"]);
+    const out = await exec(`../../../rescript`, ["--help", "-w"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, cliHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
@@ -105,7 +113,9 @@ async function test() {
 
   {
     // Shows build help with -h arg
-    const out = await exec(`../../../rescript`, ["build", "-h"]);
+    const out = await exec(`../../../rescript`, ["build", "-h"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, buildHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
@@ -113,7 +123,9 @@ async function test() {
 
   {
     // Exits with build help with unknown arg
-    const out = await exec(`../../../rescript`, ["build", "-foo"]);
+    const out = await exec(`../../../rescript`, ["build", "-foo"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, "");
     assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
     assert.equal(out.status, 2);
@@ -121,7 +133,9 @@ async function test() {
 
   {
     // Shows cli help with --help arg
-    const out = await exec(`../../../rescript`, ["--help"]);
+    const out = await exec(`../../../rescript`, ["--help"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, cliHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
@@ -129,7 +143,9 @@ async function test() {
 
   {
     // Shows cli help with -h arg
-    const out = await exec(`../../../rescript`, ["-h"]);
+    const out = await exec(`../../../rescript`, ["-h"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, cliHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
@@ -137,14 +153,18 @@ async function test() {
 
   {
     // Shows cli help with -h arg
-    const out = await exec(`../../../rescript`, ["help"]);
+    const out = await exec(`../../../rescript`, ["help"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, cliHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
   }
 
   {
-    const out = await exec(`../../../rescript`, ["built"]);
+    const out = await exec(`../../../rescript`, ["built"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, "");
     assert.equal(out.stderr, `Error: Unknown command "built".\n` + cliHelp);
     assert.equal(out.status, 2);
@@ -152,7 +172,9 @@ async function test() {
 
   {
     // Exits with build help with unknown args
-    const out = await exec(`../../../rescript`, ["-foo"]);
+    const out = await exec(`../../../rescript`, ["-foo"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, "");
     assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
     assert.equal(out.status, 2);
@@ -160,7 +182,9 @@ async function test() {
 
   {
     // Shows clean help with --help arg
-    const out = await exec(`../../../rescript`, ["clean", "--help"]);
+    const out = await exec(`../../../rescript`, ["clean", "--help"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, cleanHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
@@ -168,7 +192,9 @@ async function test() {
 
   {
     // Shows clean help with -h arg
-    const out = await exec(`../../../rescript`, ["clean", "-h"]);
+    const out = await exec(`../../../rescript`, ["clean", "-h"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, cleanHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
@@ -176,7 +202,9 @@ async function test() {
 
   {
     // Exits with clean help with unknown arg
-    const out = await exec(`../../../rescript`, ["clean", "-foo"]);
+    const out = await exec(`../../../rescript`, ["clean", "-foo"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, "");
     assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + cleanHelp);
     assert.equal(out.status, 2);
@@ -184,7 +212,9 @@ async function test() {
 
   {
     // Shows format help with --help arg
-    const out = await exec(`../../../rescript format`, ["--help"]);
+    const out = await exec(`../../../rescript format`, ["--help"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, formatHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
@@ -192,7 +222,9 @@ async function test() {
 
   {
     // Shows format help with -h arg
-    const out = await exec(`../../../rescript format`, ["-h"]);
+    const out = await exec(`../../../rescript format`, ["-h"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, formatHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
@@ -200,7 +232,9 @@ async function test() {
 
   {
     // Shows convert help with --help arg
-    const out = await exec(`../../../rescript convert`, ["--help"]);
+    const out = await exec(`../../../rescript convert`, ["--help"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, convertHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
@@ -208,7 +242,9 @@ async function test() {
 
   {
     // Shows convert help with -h arg
-    const out = await exec(`../../../rescript convert`, ["-h"]);
+    const out = await exec(`../../../rescript convert`, ["-h"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, convertHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
@@ -216,7 +252,9 @@ async function test() {
 
   {
     // Shows dump help with --help arg
-    const out = await exec(`../../../rescript dump`, ["--help"]);
+    const out = await exec(`../../../rescript dump`, ["--help"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, dumpHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
@@ -224,7 +262,9 @@ async function test() {
 
   {
     // Shows dump help with -h arg
-    const out = await exec(`../../../rescript dump`, ["-h"]);
+    const out = await exec(`../../../rescript dump`, ["-h"], {
+      cwd: __dirname,
+    });
     assert.equal(out.stdout, dumpHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);

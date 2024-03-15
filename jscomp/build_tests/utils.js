@@ -7,13 +7,18 @@ const signals = {
   SIGTERM: 15,
 };
 
-async function exec(command, args, options = { cwd: __dirname }) {
+/**
+ * @param {string} command
+ * @param {Array<string>} args
+ * @param {child_process.SpawnOptions} [options]
+ */
+async function exec(command, args, options) {
   const stdoutChunks = [];
   const stderrChunks = [];
 
   const subprocess = child_process.spawn(command, args, {
     stdio: ["ignore", "pipe", "pipe"],
-    cwd: options.cwd,
+    ...options,
   });
 
   subprocess.stdout.on("data", chunk => {
