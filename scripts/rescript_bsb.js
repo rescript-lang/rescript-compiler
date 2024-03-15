@@ -486,11 +486,7 @@ function build(args) {
     });
     return;
   }
-  if (
-    args.includes("-h") ||
-    args.includes("-help") ||
-    args.includes("--help")
-  ) {
+  if (args.some(arg => /-h|-help|--help/.test(arg))) {
     delegate(["build", "-h"]);
     return;
   }
