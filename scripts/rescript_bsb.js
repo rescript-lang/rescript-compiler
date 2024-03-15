@@ -27,9 +27,9 @@ const lockFileName = path.join(cwd, ".bsb.lock");
 let ownerProcess = null;
 function releaseBuild() {
   if (ownerProcess) {
+    ownerProcess.kill('SIGHUP');
     try {
-      ownerProcess.kill();
-      fs.unlinkSync(lockFileName);
+      fs.rmSync(lockFileName);
     } catch {}
     ownerProcess = null;
   }
@@ -53,6 +53,7 @@ function acquireBuild(args, options) {
       });
       fs.writeFileSync(lockFileName, ownerProcess.pid.toString(), {
         encoding: "utf8",
+        flag: "wx",
         mode: 0o664,
       });
     } catch (err) {
