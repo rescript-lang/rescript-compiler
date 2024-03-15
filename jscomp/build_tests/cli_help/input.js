@@ -1,7 +1,7 @@
 // @ts-check
 
 const assert = require("assert");
-const child_process = require("child_process");
+const { exec } = require("../utils.js");
 
 const cliHelp =
   "Usage: rescript <options> <subcommand>\n" +
@@ -72,208 +72,163 @@ const dumpHelp =
   "Usage: rescript dump <options> [target]\n" +
   "`rescript dump` dumps the information for the target\n";
 
-// Shows build help with --help arg
-let out;
+async function test() {
+  {
+    // Shows build help with --help arg
+    const out = await exec(`../../../rescript`, ["build", "--help"]);
+    assert.equal(out.stdout, buildHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-console.group("build --help");
-out = child_process.execSync(`../../../rescript build --help`, {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out, buildHelp);
-console.groupEnd();
+  {
+    const out = await exec(`../../../rescript`, ["build", "-w", "--help"]);
+    assert.equal(out.stdout, buildHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-// console.group("build -w --help");
-// out = child_process.spawnSync(`../../../rescript`, ["build", "-w", "--help"], {
-//   encoding: "utf8",
-//   cwd: __dirname,
-// });
-// assert.equal(out.stdout, buildHelp);
-// assert.equal(out.stderr, "");
-// assert.equal(out.status, 0);
-// console.groupEnd();
+  {
+    const out = await exec(`../../../rescript`, ["-w", "--help"]);
+    assert.equal(out.stdout, cliHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-console.group("-w --help");
-console.log("@@ begin ");
-out = child_process.execSync(`../../../rescript -w --help`, {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out, cliHelp);
-console.log("@@ done");
-console.groupEnd();
+  {
+    // Shows cli help with --help arg even if there are invalid arguments after it
+    const out = await exec(`../../../rescript`, ["--help", "-w"]);
+    assert.equal(out.stdout, cliHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-// Shows cli help with --help arg even if there are invalid arguments after it
-console.group("--help -w");
-console.log("@@ begin ");
-out = child_process.execSync(`../../../rescript --help -w`, {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out, cliHelp);
-console.log("@@ done");
-console.groupEnd();
+  {
+    // Shows build help with -h arg
+    const out = await exec(`../../../rescript`, ["build", "-h"]);
+    assert.equal(out.stdout, buildHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-// Shows build help with -h arg
-// console.group("build -h");
-// console.log("@@ begin ");
-// out = child_process.spawnSync(`../../../rescript`, ["build", "-h"], {
-//   encoding: "utf8",
-//   cwd: __dirname,
-// });
-// assert.equal(out.stdout, buildHelp);
-// assert.equal(out.stderr, "");
-// assert.equal(out.status, 0);
-// console.log("@@ done ");
-// console.groupEnd();
-//
-// Exits with build help with unknown arg
-console.group("build -foo");
-console.log("@@ begin ");
-out = child_process.spawnSync(`../../../rescript`, ["build", "-foo"], {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out.stdout, "");
-assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
-assert.equal(out.status, 2);
-console.log("@@ done ");
-console.groupEnd();
+  {
+    // Exits with build help with unknown arg
+    const out = await exec(`../../../rescript`, ["build", "-foo"]);
+    assert.equal(out.stdout, "");
+    assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
+    assert.equal(out.status, 2);
+  }
 
-// Shows cli help with --help arg
-console.group("--help");
-out = child_process.spawnSync(`../../../rescript`, ["--help"], {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out.stdout, cliHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
-console.groupEnd();
+  {
+    // Shows cli help with --help arg
+    const out = await exec(`../../../rescript`, ["--help"]);
+    assert.equal(out.stdout, cliHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-// Shows cli help with -h arg
-console.group("-h");
-out = child_process.spawnSync(`../../../rescript`, ["-h"], {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out.stdout, cliHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
-console.groupEnd();
+  {
+    // Shows cli help with -h arg
+    const out = await exec(`../../../rescript`, ["-h"]);
+    assert.equal(out.stdout, cliHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-// Shows cli help with help command
-console.group("help");
-out = child_process.spawnSync(`../../../rescript`, ["help"], {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out.stdout, cliHelp);
-assert.equal(out.stderr, "");
-assert.equal(out.status, 0);
-console.groupEnd();
+  {
+    // Shows cli help with -h arg
+    const out = await exec(`../../../rescript`, ["help"]);
+    assert.equal(out.stdout, cliHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-// Exits with cli help with unknown command
-console.group("built");
-out = child_process.spawnSync(`../../../rescript`, ["built"], {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out.stdout, "");
-assert.equal(out.stderr, `Error: Unknown command "built".\n` + cliHelp);
-assert.equal(out.status, 2);
-console.groupEnd();
+  {
+    const out = await exec(`../../../rescript`, ["built"]);
+    assert.equal(out.stdout, "");
+    assert.equal(out.stderr, `Error: Unknown command "built".\n` + cliHelp);
+    assert.equal(out.status, 2);
+  }
 
-// Exits with build help with unknown args
-console.group("-foo");
-out = child_process.spawnSync(`../../../rescript`, ["-foo"], {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out.stdout, "");
-assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
-assert.equal(out.status, 2);
-console.groupEnd();
+  {
+    // Exits with build help with unknown args
+    const out = await exec(`../../../rescript`, ["-foo"]);
+    assert.equal(out.stdout, "");
+    assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
+    assert.equal(out.status, 2);
+  }
 
-// Shows clean help with --help arg
-console.group("clean --help");
-out = child_process.execSync(`../../../rescript clean --help`, {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out, cleanHelp);
-console.groupEnd();
+  {
+    // Shows clean help with --help arg
+    const out = await exec(`../../../rescript`, ["clean", "--help"]);
+    assert.equal(out.stdout, cleanHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-// Shows clean help with -h arg
-console.group("clean -h");
-out = child_process.execSync(`../../../rescript clean -h`, {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out, cleanHelp);
-console.groupEnd();
+  {
+    // Shows clean help with -h arg
+    const out = await exec(`../../../rescript`, ["clean", "-h"]);
+    assert.equal(out.stdout, cleanHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-// Exits with clean help with unknown arg
-console.group("clean -foo");
-out = child_process.spawnSync(`../../../rescript`, ["clean", "-foo"], {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out.stdout, "");
-assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + cleanHelp);
-assert.equal(out.status, 2);
-console.groupEnd();
+  {
+    // Exits with clean help with unknown arg
+    const out = await exec(`../../../rescript`, ["clean", "-foo"]);
+    assert.equal(out.stdout, "");
+    assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + cleanHelp);
+    assert.equal(out.status, 2);
+  }
 
-// Shows format help with --help arg
-console.group("format --help");
-out = child_process.execSync(`../../../rescript format --help`, {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out, formatHelp);
-console.groupEnd();
+  {
+    // Shows format help with --help arg
+    const out = await exec(`../../../rescript format`, ["--help"]);
+    assert.equal(out.stdout, formatHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-// Shows format help with -h arg
-console.group("format -h");
-out = child_process.execSync(`../../../rescript format -h`, {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out, formatHelp);
-console.groupEnd();
+  {
+    // Shows format help with -h arg
+    const out = await exec(`../../../rescript format`, ["-h"]);
+    assert.equal(out.stdout, formatHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-// Shows convert help with --help arg
-console.group("convert --help");
-out = child_process.execSync(`../../../rescript convert --help`, {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out, convertHelp);
-console.groupEnd();
+  {
+    // Shows convert help with --help arg
+    const out = await exec(`../../../rescript convert`, ["--help"]);
+    assert.equal(out.stdout, convertHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-// Shows convert help with -h arg
-console.group("convert -h");
-out = child_process.execSync(`../../../rescript convert -h`, {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out, convertHelp);
-console.groupEnd();
+  {
+    // Shows convert help with -h arg
+    const out = await exec(`../../../rescript convert`, ["-h"]);
+    assert.equal(out.stdout, convertHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-// Shows dump help with --help arg
-console.group("dump --help");
-out = child_process.execSync(`../../../rescript dump --help`, {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out, dumpHelp);
-console.groupEnd();
+  {
+    // Shows dump help with --help arg
+    const out = await exec(`../../../rescript dump`, ["--help"]);
+    assert.equal(out.stdout, dumpHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
 
-// Shows dump help with -h arg
-console.group("dump -h");
-out = child_process.execSync(`../../../rescript dump -h`, {
-  encoding: "utf8",
-  cwd: __dirname,
-});
-assert.equal(out, dumpHelp);
-console.groupEnd();
+  {
+    // Shows dump help with -h arg
+    const out = await exec(`../../../rescript dump`, ["-h"]);
+    assert.equal(out.stdout, dumpHelp);
+    assert.equal(out.stderr, "");
+    assert.equal(out.status, 0);
+  }
+}
+
+void test();
