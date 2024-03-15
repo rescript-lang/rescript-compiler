@@ -162,6 +162,7 @@ async function test() {
   }
 
   {
+    // Exits with cli help with unknown command
     const out = await exec(`../../../rescript`, ["built"], {
       cwd: __dirname,
     });
