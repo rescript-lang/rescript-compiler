@@ -7,33 +7,6 @@ The special value "Not a Number". See [`NaN`](https://developer.mozilla.org/en-U
 external _NaN: bigint = "NaN"
 
 @val
-@scope("Number")
-/**
-Tests if the given value is `_NaN`
-
-Note that both `_NaN = _NaN` and `_NaN == _NaN` will return `false`. `isNaN` is
-therefore necessary to test for `_NaN`. Return `true` if the given value is
-`_NaN`, `false` otherwise. See [`isNaN`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN) on MDN.
-*/
-external isNaN: bigint => bool = "isNaN"
-
-/**
-Tests if the given value is finite. Return `true` if the given value is a finite
-number, `false` otherwise. See [`isFinite`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite) on MDN.
-
-## Examples
-
-```rescript
-/* returns [false] */
-Js.Bigint.isFinite(Js.Bigint._NaN)
-
-/* returns [true] */
-Js.Bigint.isFinite(1234.)
-```
-*/
-external isFinite: bigint => bool = "isFinite"
-
-@val
 /**
 Parses the given `string` into a `bigint` using JavaScript semantics. Return the
 number as a `bigint` if successfully parsed, `null`, `undefined`, `_NaN` otherwise.
