@@ -48,6 +48,10 @@ val interface_mliast :
     Used in eval
 *)
 
+val implementationForReprinting : Parsetree.structure -> Parsetree.structure
+
+val interfaceForReprinting : Parsetree.signature -> Parsetree.signature
+
 val implementation :
   parser:(string -> Parsetree.structure) ->
   Format.formatter ->

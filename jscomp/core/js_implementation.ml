@@ -172,6 +172,20 @@ let after_parsing_impl ppf outputprefix (ast : Parsetree.structure) =
           Lam_compile_main.lambda_as_module js_program outputprefix);
       process_with_gentype (outputprefix ^ ".cmt"))
 
+let implementationForReprinting structure = 
+  Res_compmisc.init_path ();
+  structure
+  |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name
+       Ml
+  |> Ppx_entry.rewrite_implementation
+
+let interfaceForReprinting signature = 
+  Res_compmisc.init_path ();
+  signature
+  |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name
+         Mli
+  |> Ppx_entry.rewrite_signature
+
 let implementation ~parser ppf ?outputprefix fname =
   let outputprefix =
     match outputprefix with
