@@ -179,6 +179,33 @@ function a$1(__x) {
               }), 2, __x);
 }
 
+function f3(x, y, z) {
+  console.log(x);
+  return (x + y | 0) + z | 0;
+}
+
+function fx(extra, extra$1) {
+  return f3(1, extra, extra$1);
+}
+
+function fy(none, extra) {
+  return f3(none, 1, extra);
+}
+
+function fz(none, none$1) {
+  return f3(none, none$1, 1);
+}
+
+var fxyz = f3(1, 1, 1);
+
+var PartialApplication = {
+  f3: f3,
+  fx: fx,
+  fy: fy,
+  fz: fz,
+  fxyz: fxyz
+};
+
 exports.foo = foo;
 exports.z = z;
 exports.bar = bar;
@@ -198,4 +225,5 @@ exports.OptMixed = OptMixed;
 exports.fn = fn;
 exports.fn1 = fn1;
 exports.a = a$1;
+exports.PartialApplication = PartialApplication;
 /*  Not a pure module */
