@@ -59,11 +59,13 @@ module ArrayBuffer = {
   @bs.send.pipe(: t) external slice: (~start: int, ~end_: int) => array_buffer = "slice" /* FIXME */
   @bs.send.pipe(: t) external sliceFrom: int => array_buffer = "slice"
 }
+
+type typed_array<'a>
+
 module type S = {
   /*** Implements functionality common to all the typed arrays */
 
   type elt
-  type typed_array<'a>
   type t = typed_array<elt>
 
   @get_index external unsafe_get: (t, int) => elt = ""
@@ -173,7 +175,6 @@ module type S = {
 module Int8Array = {
   /** */
   type elt = int
-  type typed_array<'a> = Js_typed_array2.Int8Array.typed_array<'a>
   type t = typed_array<elt>
 
   @get_index external unsafe_get: (t, int) => elt = ""
@@ -296,7 +297,6 @@ module Int8Array = {
 module Uint8Array = {
   /** */
   type elt = int
-  type typed_array<'a> = Js_typed_array2.Uint8Array.typed_array<'a>
   type t = typed_array<elt>
 
   @get_index external unsafe_get: (t, int) => elt = ""
@@ -419,7 +419,6 @@ module Uint8Array = {
 module Uint8ClampedArray = {
   /** */
   type elt = int
-  type typed_array<'a> = Js_typed_array2.Uint8ClampedArray.typed_array<'a>
   type t = typed_array<elt>
 
   @get_index external unsafe_get: (t, int) => elt = ""
@@ -542,7 +541,6 @@ module Uint8ClampedArray = {
 module Int16Array = {
   /** */
   type elt = int
-  type typed_array<'a> = Js_typed_array2.Int16Array.typed_array<'a>
   type t = typed_array<elt>
 
   @get_index external unsafe_get: (t, int) => elt = ""
@@ -665,7 +663,6 @@ module Int16Array = {
 module Uint16Array = {
   /** */
   type elt = int
-  type typed_array<'a> = Js_typed_array2.Uint16Array.typed_array<'a>
   type t = typed_array<elt>
 
   @get_index external unsafe_get: (t, int) => elt = ""
@@ -788,7 +785,6 @@ module Uint16Array = {
 module Int32Array = {
   /** */
   type elt = int
-  type typed_array<'a> = Js_typed_array2.Int32Array.typed_array<'a>
   type t = typed_array<elt>
 
   @get_index external unsafe_get: (t, int) => elt = ""
@@ -914,7 +910,6 @@ module Int32_array = Int32Array
 module Uint32Array = {
   /** */
   type elt = int
-  type typed_array<'a> = Js_typed_array2.Uint32Array.typed_array<'a>
   type t = typed_array<elt>
 
   @get_index external unsafe_get: (t, int) => elt = ""
@@ -1040,7 +1035,6 @@ module Uint32Array = {
 module Float32Array = {
   /** */
   type elt = float
-  type typed_array<'a> = Js_typed_array2.Float32Array.typed_array<'a>
   type t = typed_array<elt>
 
   @get_index external unsafe_get: (t, int) => elt = ""
@@ -1167,7 +1161,6 @@ module Float32_array = Float32Array
 module Float64Array = {
   /** */
   type elt = float
-  type typed_array<'a> = Js_typed_array2.Float64Array.typed_array<'a>
   type t = typed_array<elt>
 
   @get_index external unsafe_get: (t, int) => elt = ""

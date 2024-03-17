@@ -111,6 +111,8 @@ lib/es6/js.js
 lib/es6/js_OO.js
 lib/es6/js_array.js
 lib/es6/js_array2.js
+lib/es6/js_array_buffer.js
+lib/es6/js_atomics.js
 lib/es6/js_bigint.js
 lib/es6/js_blob.js
 lib/es6/js_cast.js
@@ -136,6 +138,7 @@ lib/es6/js_promise2.js
 lib/es6/js_re.js
 lib/es6/js_result.js
 lib/es6/js_set.js
+lib/es6/js_shared_array_buffer.js
 lib/es6/js_string.js
 lib/es6/js_string2.js
 lib/es6/js_typed_array.js
@@ -274,6 +277,8 @@ lib/js/js.js
 lib/js/js_OO.js
 lib/js/js_array.js
 lib/js/js_array2.js
+lib/js/js_array_buffer.js
+lib/js/js_atomics.js
 lib/js/js_bigint.js
 lib/js/js_blob.js
 lib/js/js_cast.js
@@ -299,6 +304,7 @@ lib/js/js_promise2.js
 lib/js/js_re.js
 lib/js/js_result.js
 lib/js/js_set.js
+lib/js/js_shared_array_buffer.js
 lib/js/js_string.js
 lib/js/js_string2.js
 lib/js/js_typed_array.js
@@ -716,6 +722,14 @@ lib/ocaml/js_array2.cmi
 lib/ocaml/js_array2.cmj
 lib/ocaml/js_array2.cmt
 lib/ocaml/js_array2.res
+lib/ocaml/js_array_buffer.cmi
+lib/ocaml/js_array_buffer.cmj
+lib/ocaml/js_array_buffer.cmt
+lib/ocaml/js_array_buffer.res
+lib/ocaml/js_atomics.cmi
+lib/ocaml/js_atomics.cmj
+lib/ocaml/js_atomics.cmt
+lib/ocaml/js_atomics.res
 lib/ocaml/js_bigint.cmi
 lib/ocaml/js_bigint.cmj
 lib/ocaml/js_bigint.cmt
@@ -836,6 +850,10 @@ lib/ocaml/js_set.cmi
 lib/ocaml/js_set.cmj
 lib/ocaml/js_set.cmt
 lib/ocaml/js_set.res
+lib/ocaml/js_shared_array_buffer.cmi
+lib/ocaml/js_shared_array_buffer.cmj
+lib/ocaml/js_shared_array_buffer.cmt
+lib/ocaml/js_shared_array_buffer.res
 lib/ocaml/js_string.cmi
 lib/ocaml/js_string.cmj
 lib/ocaml/js_string.cmt

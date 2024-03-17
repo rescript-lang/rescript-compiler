@@ -244,11 +244,20 @@ module Math = Js_math
 module Obj = Js_obj
 (** Provide utilities for `Js.t` *)
 
+module ArrayBuffer = Js_array_buffer
+(** Provide utilities for `ArrayBuffer` object *)
+
+module SharedArrayBuffer = Js_shared_array_buffer
+(** Provide utilities for `SharedArrayBuffer` object *)
+
 module Typed_array = Js_typed_array
 (** Provide bindings for JS typed array *)
 
 module TypedArray2 = Js_typed_array2
 (** Provide bindings for JS typed array *)
+
+module Atomics = Js_atomics
+(** Provide bindings for JS `Atomics` utilities *)
 
 module Types = Js_types
 (** Provide utilities for manipulating JS types  *)
