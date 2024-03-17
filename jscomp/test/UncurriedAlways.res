@@ -75,3 +75,18 @@ fn(s => Js.log(#foo(s)))
 let fn1 = (a, b, ()) => a() + b 
 
 let a = fn1(() => 1, 2, _)
+
+module PartialApplication = {
+  let f3 = (~x, ~y, ~z) => {
+    Js.log(x)
+    x + y + z
+  }
+
+  let fx = f3(~x=1, ...)
+
+  let fy = f3(~y=1, ...)
+
+  let fz = f3(~z=1, ...)
+
+  let fxyz = f3(~x=1, ~y=1, ~z=1, ...)
+}
