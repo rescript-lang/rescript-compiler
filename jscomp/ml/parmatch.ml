@@ -264,6 +264,8 @@ let const_compare x y =
   match x,y with
   | Const_float f1, Const_float f2 ->
       compare (float_of_string f1) (float_of_string f2)
+  | Const_bigint b1, Const_bigint b2 ->
+      String.compare b1 b2
   | Const_string (s1, _), Const_string (s2, _) ->
       String.compare s1 s2
   | _, _ -> compare x y

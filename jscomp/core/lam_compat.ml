@@ -68,6 +68,15 @@ let cmp_float (cmp : comparison) (a : float) b : bool =
   | Clt -> a < b
   | Cge -> a >= b
 
+let cmp_bigint (cmp : comparison) (a : string) b : bool =
+  match cmp with
+  | Ceq -> a = b
+  | Cneq -> a <> b
+  | Cgt -> a > b
+  | Cle -> a <= b
+  | Clt -> a < b
+  | Cge -> a >= b
+  
 let cmp_int (cmp : comparison) (a : int) b : bool =
   match cmp with
   | Ceq -> a = b
