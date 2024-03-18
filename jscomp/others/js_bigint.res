@@ -37,6 +37,15 @@ external \"/": (bigint, bigint) => bigint = "%divbigint"
 external mod: (bigint, bigint) => bigint = "%modbigint"
 external \"**": (bigint, bigint) => bigint = "%powbigint"
 
+external land: (bigint, bigint) => bigint = "%andbigint"
+external lor: (bigint, bigint) => bigint = "%orbigint"
+external lxor: (bigint, bigint) => bigint = "%xorbigint"
+
+let lnot = x => lxor(x, -1n)
+
+external lsl: (bigint, bigint) => bigint = "%lslbigint"
+external asr: (bigint, bigint) => bigint = "%asrbigint"
+
 @send
 /**
 Formats a `bigint` as a string. Return a `string` representing the given value.
