@@ -12,6 +12,10 @@
 
 # 11.1.0-rc.5 (Unreleased)
 
+#### :rocket: New Feature
+
+- Add bindings to `ArrayBuffer`, `SharedArrayBuffer` and `Atomics`. https://github.com/rescript-lang/rescript-compiler/pull/6683
+
 # 11.1.0-rc.4
 
 #### :bug: Bug Fix
