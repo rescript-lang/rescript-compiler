@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-[@@@bs.config { flags = [| "-unboxed-types"; "-w"; "-49" |] }]
+[@@@bs.config {flags = [|"-unboxed-types"; "-w"; "-49"|]}]
 (* DESIGN:
    - It does not have any code, all its code will be inlined so that
        there will never be
@@ -82,29 +82,23 @@ module Internal = struct
   external opaqueFullApply : 'a -> 'a = "%uncurried_apply"
 
   (* Use opaque instead of [._n] to prevent some optimizations happening *)
-  external run : (unit -> 'a [@bs]) -> 'a = "#run"
+  external run : ((unit -> 'a)[@bs]) -> 'a = "#run"
   external opaque : 'a -> 'a = "%opaque"
 end
 
 (**/**)
 
-type +'a null =
-  | Value of 'a
-  | Null [@as null]
-[@@unboxed]
 (**
   Nullable value of this type can be either null or 'a. This type is equivalent to Js.Null.t.
 *)
+type +'a null = Value of 'a | Null [@as null] [@@unboxed]
 
 type +'a undefined
 (**
   A value of this type can be either undefined or 'a. This type is equivalent to Js.Undefined.t.
 *)
 
-type +'a nullable =
-  | Value of 'a
-  | Null [@as null]
-  | Undefined [@as undefined]
+type +'a nullable = Value of 'a | Null [@as null] | Undefined [@as undefined]
 [@@unboxed]
 
 (**
@@ -144,17 +138,17 @@ external typeof : 'a -> string = "#typeof"
 *)
 
 external log : 'a -> unit = "log"
-  [@@val] [@@scope "console"]
+[@@val] [@@scope "console"]
 (** Equivalent to console.log any value. *)
 
 external log2 : 'a -> 'b -> unit = "log" [@@bs.val] [@@bs.scope "console"]
 external log3 : 'a -> 'b -> 'c -> unit = "log" [@@bs.val] [@@bs.scope "console"]
 
 external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log"
-  [@@bs.val] [@@bs.scope "console"]
+[@@bs.val] [@@bs.scope "console"]
 
 external logMany : 'a array -> unit = "log"
-  [@@bs.val] [@@bs.scope "console"] [@@bs.splice]
+[@@bs.val] [@@bs.scope "console"] [@@bs.splice]
 (** A convenience function to console.log more than 4 arguments *)
 
 external eqNull : 'a -> 'a null -> bool = "%bs_equal_null"
@@ -199,8 +193,9 @@ module Undefined = Js_undefined
 module Nullable = Js_null_undefined
 (** Provide utilities for `Js.null_undefined` *)
 
-module Null_undefined = Js_null_undefined
-[@deprecated "Please use `Js.Nullable`"]
+module Null_undefined =
+  Js_null_undefined
+  [@deprecated "Please use `Js.Nullable`"]
 
 module Exn = Js_exn
 (** Provide utilities for dealing with Js exceptions *)
@@ -244,20 +239,11 @@ module Math = Js_math
 module Obj = Js_obj
 (** Provide utilities for `Js.t` *)
 
-module ArrayBuffer = Js_array_buffer
-(** Provide utilities for `ArrayBuffer` object *)
-
-module SharedArrayBuffer = Js_shared_array_buffer
-(** Provide utilities for `SharedArrayBuffer` object *)
-
 module Typed_array = Js_typed_array
 (** Provide bindings for JS typed array *)
 
 module TypedArray2 = Js_typed_array2
 (** Provide bindings for JS typed array *)
-
-module Atomics = Js_atomics
-(** Provide bindings for JS `Atomics` utilities *)
 
 module Types = Js_types
 (** Provide utilities for manipulating JS types  *)

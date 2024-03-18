@@ -29,21 +29,29 @@ JavaScript Typed Array API
 */
 
 type array_buffer = Js_array_buffer.t
-type shared_array_buffer = Js_shared_array_buffer.t
-
 type array_like<'a> = Js_array2.array_like<'a>
 
-@depreacted("Use `Js.ArrayBuffer` instead.")
 module ArrayBuffer = {
-  include Js_array_buffer
+  /***
+  The underlying buffer that the typed arrays provide views of
+
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
+  */	
+
+  type t = array_buffer	
+
+  @new /** takes length. initializes elements to 0 */
+  external make: int => t = "ArrayBuffer"
+
+  /* ArrayBuffer.isView: seems pointless with a type system */
+
+  @get external byteLength: t => int = "byteLength"
+
+  @send external slice: (t, ~start: int, ~end_: int) => array_buffer = "slice"
+  @send external sliceFrom: (t, int) => array_buffer = "slice"
 }
 
 type typed_array<'a>
-
-module type S = {
-  type elt
-  type t = typed_array<elt>
-}
 
 /* commented out until bs has a plan for iterators
   external values : t -> elt array_iter = "" [@@bs.send]
@@ -58,8 +66,6 @@ module Int8Array = {
   @set_index external unsafe_set: (t, int, elt) => unit = ""
 
   @get external buffer: t => array_buffer = "buffer"
-  @get external sharedBuffer: t => shared_array_buffer = "buffer"
-
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
@@ -148,9 +154,9 @@ module Int8Array = {
   @val external _BYTES_PER_ELEMENT: int = "Int8Array.BYTES_PER_ELEMENT"
 
   @new external make: array<elt> => t = "Int8Array"
-
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int8Array"
+
   @new
   /**
   **raise** Js.Exn.Error raise Js exception
@@ -158,6 +164,7 @@ module Int8Array = {
   **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Int8Array"
+
   @new
   /**
   **raise** Js.Exn.Error raises Js exception
@@ -165,23 +172,6 @@ module Int8Array = {
   **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Int8Array"
-
-  @new /** can throw */
-  external fromSharedBuffer: shared_array_buffer => t = "Int8Array"
-  @new
-  /**
-  **raise** Js.Exn.Error raise Js exception
-
-  **param** offset is in bytes
-  */
-  external fromSharedBufferOffset: (shared_array_buffer, int) => t = "Int8Array"
-  @new
-  /**
-  **raise** Js.Exn.Error raises Js exception
-
-  **param** offset is in bytes, length in elements
-  */
-  external fromSharedBufferRange: (shared_array_buffer, ~offset: int, ~length: int) => t = "Int8Array"
 
   @new external fromLength: int => t = "Int8Array"
   @val external from: array_like<elt> => t = "Int8Array.from"
@@ -197,8 +187,6 @@ module Uint8Array = {
   @set_index external unsafe_set: (t, int, elt) => unit = ""
 
   @get external buffer: t => array_buffer = "buffer"
-  @get external sharedBuffer: t => shared_array_buffer = "buffer"
-
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
@@ -287,9 +275,9 @@ module Uint8Array = {
   @val external _BYTES_PER_ELEMENT: int = "Uint8Array.BYTES_PER_ELEMENT"
 
   @new external make: array<elt> => t = "Uint8Array"
-
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint8Array"
+
   @new 
   /**
   **raise** Js.Exn.Error raise Js exception
@@ -297,6 +285,7 @@ module Uint8Array = {
   **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Uint8Array"
+
   @new
   /**
   **raise** Js.Exn.Error raises Js exception
@@ -304,23 +293,6 @@ module Uint8Array = {
   **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Uint8Array"
-
-  @new /** can throw */
-  external fromSharedBuffer: shared_array_buffer => t = "Uint8Array"
-  @new 
-  /**
-  **raise** Js.Exn.Error raise Js exception
-
-  **param** offset is in bytes
-  */
-  external fromShraedBufferOffset: (shared_array_buffer, int) => t = "Uint8Array"
-  @new
-  /**
-  **raise** Js.Exn.Error raises Js exception
-
-  **param** offset is in bytes, length in elements
-  */
-  external fromSharedBufferRange: (shared_array_buffer, ~offset: int, ~length: int) => t = "Uint8Array"
 
   @new external fromLength: int => t = "Uint8Array"
   @val external from: array_like<elt> => t = "Uint8Array.from"
@@ -336,8 +308,6 @@ module Uint8ClampedArray = {
   @set_index external unsafe_set: (t, int, elt) => unit = ""
 
   @get external buffer: t => array_buffer = "buffer"
-  @get external sharedBuffer: t => shared_array_buffer = "buffer"
-
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
@@ -426,9 +396,9 @@ module Uint8ClampedArray = {
   @val external _BYTES_PER_ELEMENT: int = "Uint8ClampedArray.BYTES_PER_ELEMENT"
 
   @new external make: array<elt> => t = "Uint8ClampedArray"
-
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint8ClampedArray"
+
   @new
   /**
   **raise** Js.Exn.Error raise Js exception
@@ -436,6 +406,7 @@ module Uint8ClampedArray = {
   **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Uint8ClampedArray"
+
   @new
   /**
   **raise** Js.Exn.Error raises Js exception
@@ -443,23 +414,6 @@ module Uint8ClampedArray = {
   **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Uint8ClampedArray"
-
-  @new /** can throw */
-  external fromSharedBuffer: shared_array_buffer => t = "Uint8ClampedArray"
-  @new
-  /**
-  **raise** Js.Exn.Error raise Js exception
-
-  **param** offset is in bytes
-  */
-  external fromSharedBufferOffset: (shared_array_buffer, int) => t = "Uint8ClampedArray"
-  @new
-  /**
-  **raise** Js.Exn.Error raises Js exception
-
-  **param** offset is in bytes, length in elements
-  */
-  external fromSharedBufferRange: (shared_array_buffer, ~offset: int, ~length: int) => t = "Uint8ClampedArray"
 
   @new external fromLength: int => t = "Uint8ClampedArray"
   @val external from: array_like<elt> => t = "Uint8ClampedArray.from"
@@ -475,8 +429,6 @@ module Int16Array = {
   @set_index external unsafe_set: (t, int, elt) => unit = ""
 
   @get external buffer: t => array_buffer = "buffer"
-  @get external sharedBuffer: t => shared_array_buffer = "buffer"
-
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
@@ -565,9 +517,9 @@ module Int16Array = {
   @val external _BYTES_PER_ELEMENT: int = "Int16Array.BYTES_PER_ELEMENT"
 
   @new external make: array<elt> => t = "Int16Array"
-
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int16Array"
+
   @new 
   /**
   **raise** Js.Exn.Error raise Js exception
@@ -575,6 +527,7 @@ module Int16Array = {
   **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Int16Array"
+
   @new
   /**
   **raise** Js.Exn.Error raises Js exception
@@ -582,23 +535,6 @@ module Int16Array = {
   **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Int16Array"
-
-  @new /** can throw */
-  external fromSharedBuffer: shared_array_buffer => t = "Int16Array"
-  @new 
-  /**
-  **raise** Js.Exn.Error raise Js exception
-
-  **param** offset is in bytes
-  */
-  external fromSharedBufferOffset: (shared_array_buffer, int) => t = "Int16Array"
-  @new
-  /**
-  **raise** Js.Exn.Error raises Js exception
-
-  **param** offset is in bytes, length in elements
-  */
-  external fromSharedBufferRange: (shared_array_buffer, ~offset: int, ~length: int) => t = "Int16Array"
 
   @new external fromLength: int => t = "Int16Array"
   @val external from: array_like<elt> => t = "Int16Array.from"
@@ -614,8 +550,6 @@ module Uint16Array = {
   @set_index external unsafe_set: (t, int, elt) => unit = ""
 
   @get external buffer: t => array_buffer = "buffer"
-  @get external sharedBuffer: t => shared_array_buffer = "buffer"
-
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
@@ -704,9 +638,9 @@ module Uint16Array = {
   @val external _BYTES_PER_ELEMENT: int = "Uint16Array.BYTES_PER_ELEMENT"
 
   @new external make: array<elt> => t = "Uint16Array"
-
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint16Array"
+
   @new 
   /**
   **raise** Js.Exn.Error raise Js exception
@@ -714,6 +648,7 @@ module Uint16Array = {
   **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Uint16Array"
+
   @new
   /**
   **raise** Js.Exn.Error raises Js exception
@@ -721,23 +656,6 @@ module Uint16Array = {
   **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Uint16Array"
-
-  @new /** can throw */
-  external fromSharedBuffer: shared_array_buffer => t = "Uint16Array"
-  @new 
-  /**
-  **raise** Js.Exn.Error raise Js exception
-
-  **param** offset is in bytes
-  */
-  external fromSharedBufferOffset: (shared_array_buffer, int) => t = "Uint16Array"
-  @new
-  /**
-  **raise** Js.Exn.Error raises Js exception
-
-  **param** offset is in bytes, length in elements
-  */
-  external fromSharedBufferRange: (shared_array_buffer, ~offset: int, ~length: int) => t = "Uint16Array"
 
   @new external fromLength: int => t = "Uint16Array"
   @val external from: array_like<elt> => t = "Uint16Array.from"
@@ -753,8 +671,6 @@ module Int32Array = {
   @set_index external unsafe_set: (t, int, elt) => unit = ""
 
   @get external buffer: t => array_buffer = "buffer"
-  @get external sharedBuffer: t => shared_array_buffer = "buffer"
-
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
@@ -843,9 +759,9 @@ module Int32Array = {
   @val external _BYTES_PER_ELEMENT: int = "Int32Array.BYTES_PER_ELEMENT"
 
   @new external make: array<elt> => t = "Int32Array"
-
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int32Array"
+
   @new 
   /**
   **raise** Js.Exn.Error raise Js exception
@@ -853,6 +769,7 @@ module Int32Array = {
   **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Int32Array"
+
   @new
   /**
   **raise** Js.Exn.Error raises Js exception
@@ -860,23 +777,6 @@ module Int32Array = {
   **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Int32Array"
-
-  @new /** can throw */
-  external fromSharedBuffer: shared_array_buffer => t = "Int32Array"
-  @new 
-  /**
-  **raise** Js.Exn.Error raise Js exception
-
-  **param** offset is in bytes
-  */
-  external fromSharedBufferOffset: (shared_array_buffer, int) => t = "Int32Array"
-  @new
-  /**
-  **raise** Js.Exn.Error raises Js exception
-
-  **param** offset is in bytes, length in elements
-  */
-  external fromSharedBufferRange: (shared_array_buffer, ~offset: int, ~length: int) => t = "Int32Array"
 
   @new external fromLength: int => t = "Int32Array"
   @val external from: array_like<elt> => t = "Int32Array.from"
@@ -892,8 +792,6 @@ module Uint32Array = {
   @set_index external unsafe_set: (t, int, elt) => unit = ""
 
   @get external buffer: t => array_buffer = "buffer"
-  @get external sharedBuffer: t => shared_array_buffer = "buffer"
-
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
@@ -982,9 +880,9 @@ module Uint32Array = {
   @val external _BYTES_PER_ELEMENT: int = "Uint32Array.BYTES_PER_ELEMENT"
 
   @new external make: array<elt> => t = "Uint32Array"
-
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint32Array"
+
   @new 
   /**
   **raise** Js.Exn.Error raise Js exception
@@ -992,6 +890,7 @@ module Uint32Array = {
   **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Uint32Array"
+
   @new
   /**
   **raise** Js.Exn.Error raises Js exception
@@ -999,23 +898,6 @@ module Uint32Array = {
   **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Uint32Array"
-
-  @new /** can throw */
-  external fromSharedBuffer: shared_array_buffer => t = "Uint32Array"
-  @new 
-  /**
-  **raise** Js.Exn.Error raise Js exception
-
-  **param** offset is in bytes
-  */
-  external fromSharedBufferOffset: (shared_array_buffer, int) => t = "Uint32Array"
-  @new
-  /**
-  **raise** Js.Exn.Error raises Js exception
-
-  **param** offset is in bytes, length in elements
-  */
-  external fromSharedBufferRange: (shared_array_buffer, ~offset: int, ~length: int) => t = "Uint32Array"
 
   @new external fromLength: int => t = "Uint32Array"
   @val external from: array_like<elt> => t = "Uint32Array.from"
@@ -1034,8 +916,6 @@ module Float32Array = {
   @set_index external unsafe_set: (t, int, elt) => unit = ""
 
   @get external buffer: t => array_buffer = "buffer"
-  @get external sharedBuffer: t => shared_array_buffer = "buffer"
-
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
@@ -1124,9 +1004,9 @@ module Float32Array = {
   @val external _BYTES_PER_ELEMENT: int = "Float32Array.BYTES_PER_ELEMENT"
 
   @new external make: array<elt> => t = "Float32Array"
-
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Float32Array"
+
   @new 
   /**
   **raise** Js.Exn.Error raise Js exception
@@ -1134,6 +1014,7 @@ module Float32Array = {
   **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Float32Array"
+
   @new
   /**
   **raise** Js.Exn.Error raises Js exception
@@ -1141,23 +1022,6 @@ module Float32Array = {
   **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Float32Array"
-
-  @new /** can throw */
-  external fromSharedBuffer: shared_array_buffer => t = "Float32Array"
-  @new 
-  /**
-  **raise** Js.Exn.Error raise Js exception
-
-  **param** offset is in bytes
-  */
-  external fromSharedBufferOffset: (shared_array_buffer, int) => t = "Float32Array"
-  @new
-  /**
-  **raise** Js.Exn.Error raises Js exception
-
-  **param** offset is in bytes, length in elements
-  */
-  external fromSharedBufferRange: (shared_array_buffer, ~offset: int, ~length: int) => t = "Float32Array"
 
   @new external fromLength: int => t = "Float32Array"
   @val external from: array_like<elt> => t = "Float32Array.from"
@@ -1173,8 +1037,6 @@ module Float64Array = {
   @set_index external unsafe_set: (t, int, elt) => unit = ""
 
   @get external buffer: t => array_buffer = "buffer"
-  @get external sharedBuffer: t => shared_array_buffer = "buffer"
-
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
@@ -1263,9 +1125,9 @@ module Float64Array = {
   @val external _BYTES_PER_ELEMENT: int = "Float64Array.BYTES_PER_ELEMENT"
 
   @new external make: array<elt> => t = "Float64Array"
-
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Float64Array"
+
   @new 
   /**
   **raise** Js.Exn.Error raise Js exception
@@ -1273,6 +1135,7 @@ module Float64Array = {
   **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Float64Array"
+
   @new
   /**
   **raise** Js.Exn.Error raises Js exception
@@ -1280,23 +1143,6 @@ module Float64Array = {
   **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Float64Array"
-
-  @new /** can throw */
-  external fromSharedBuffer: shared_array_buffer => t = "Float64Array"
-  @new 
-  /**
-  **raise** Js.Exn.Error raise Js exception
-
-  **param** offset is in bytes
-  */
-  external fromSharedBufferOffset: (shared_array_buffer, int) => t = "Float64Array"
-  @new
-  /**
-  **raise** Js.Exn.Error raises Js exception
-
-  **param** offset is in bytes, length in elements
-  */
-  external fromSharedBufferRange: (shared_array_buffer, ~offset: int, ~length: int) => t = "Float64Array"
 
   @new external fromLength: int => t = "Float64Array"
   @val external from: array_like<elt> => t = "Float64Array.from"
@@ -1318,13 +1164,7 @@ module DataView = {
   @new external fromBufferOffset: (array_buffer, int) => t = "DataView"
   @new external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "DataView"
 
-  @new external fromSharedBuffer: shared_array_buffer => t = "DataView"
-  @new external fromSharedBufferOffset: (shared_array_buffer, int) => t = "DataView"
-  @new external fromSharedBufferRange: (shared_array_buffer, ~offset: int, ~length: int) => t = "DataView"
-
   @get external buffer: t => array_buffer = "buffer"
-  @get external sharedBuffer: t => shared_array_buffer = "buffer"
-
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 

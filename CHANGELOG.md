@@ -12,9 +12,9 @@
 
 # 11.1.0-rc.5 (Unreleased)
 
-#### :rocket: New Feature
+#### :nail_care: Polish
 
-- Add bindings to `ArrayBuffer`, `SharedArrayBuffer` and `Atomics`. https://github.com/rescript-lang/rescript-compiler/pull/6683
+- Add `ArrayBuffer.t` and `SharedArrayBuffer.t` to be base types of the Core bindings. https://github.com/rescript-lang/rescript-compiler/pull/6683
 
 # 11.1.0-rc.4
 
