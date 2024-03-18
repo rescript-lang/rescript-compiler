@@ -190,6 +190,15 @@ external \"/,": (bigint, bigint) => bigint = "%divbigint"
 external modn: (bigint, bigint) => bigint = "%modbigint"
 external \"**,": (bigint, bigint) => bigint = "%powbigint"
 
+external landn: (bigint, bigint) => bigint = "%andbigint"
+external lorn: (bigint, bigint) => bigint = "%orbigint"
+external lxorn: (bigint, bigint) => bigint = "%xorbigint"
+
+let lnotn = x => lxorn(x, -1n)
+
+external lsln: (bigint, bigint) => bigint = "%lslbigint"
+external asrn: (bigint, bigint) => bigint = "%asrbigint"
+
 /* String and byte sequence operations -- more in modules String and Bytes */
 
 external string_length: string => int = "%string_length"

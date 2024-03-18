@@ -78,6 +78,11 @@ type t =
   | Pdivbigint
   | Pmodbigint
   | Ppowbigint
+  | Pandbigint
+  | Porbigint
+  | Pxorbigint
+  | Plslbigint
+  | Pasrbigint
   | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison

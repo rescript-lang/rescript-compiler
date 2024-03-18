@@ -225,6 +225,8 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Plslint -> (
       match args with [ e1; e2 ] -> E.int32_lsl e1 e2 | _ -> assert false)
   | Plslint64 -> Js_long.lsl_ args
+  | Plslbigint -> (
+      match args with [ e1; e2 ] -> E.bigint_op Lsl e1 e2 | _ -> assert false)
   | Plsrint -> (
       match args with
       | [ e1; { J.expression_desc = Number (Int { i = 0l; _ } | Uint 0l); _ } ]
@@ -236,15 +238,23 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Pasrint -> (
       match args with [ e1; e2 ] -> E.int32_asr e1 e2 | _ -> assert false)
   | Pasrint64 -> Js_long.asr_ args
+  | Pasrbigint -> (
+      match args with [ e1; e2 ] -> E.bigint_op Asr e1 e2 | _ -> assert false)
   | Pandint -> (
       match args with [ e1; e2 ] -> E.int32_band e1 e2 | _ -> assert false)
   | Pandint64 -> Js_long.and_ args
+  | Pandbigint -> (
+      match args with [ e1; e2 ] -> E.bigint_op Band e1 e2 | _ -> assert false)
   | Porint -> (
       match args with [ e1; e2 ] -> E.int32_bor e1 e2 | _ -> assert false)
   | Porint64 -> Js_long.or_ args
+  | Porbigint -> (
+      match args with [ e1; e2 ] -> E.bigint_op Bor e1 e2 | _ -> assert false)
   | Pxorint -> (
       match args with [ e1; e2 ] -> E.int32_bxor e1 e2 | _ -> assert false)
   | Pxorint64 -> Js_long.xor args
+  | Pxorbigint -> (
+      match args with [ e1; e2 ] -> E.bigint_op Bxor e1 e2 | _ -> assert false)
   | Pjscomp cmp -> (
       match args with [ l; r ] -> E.js_comp cmp l r | _ -> assert false)
   | Pfloatcomp cmp | Pintcomp cmp -> (

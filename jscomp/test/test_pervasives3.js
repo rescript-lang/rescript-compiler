@@ -19,6 +19,7 @@ var Pervasives$1 = {
   lnot: Pervasives.lnot,
   infinity: Pervasives.infinity,
   neg_infinity: Pervasives.neg_infinity,
+  lnotn: Pervasives.lnotn,
   max_float: Pervasives.max_float,
   min_float: Pervasives.min_float,
   epsilon_float: Pervasives.epsilon_float,

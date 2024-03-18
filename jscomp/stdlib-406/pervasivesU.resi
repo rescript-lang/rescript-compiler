@@ -571,6 +571,33 @@ external modn: (bigint, bigint) => bigint = "%modbigint"
     Left-associative operator at precedence level 7/9. */
 external \"**,": (bigint, bigint) => bigint = "%powbigint"
 
+/** Bigint Bitwise logical and.
+    Left-associative operator at precedence level 7/11. */
+external landn: (bigint, bigint) => bigint = "%andbigint"
+
+/** Bigint Bitwise logical or.
+    Left-associative operator at precedence level 7/11. */
+external lorn: (bigint, bigint) => bigint = "%orbigint"
+
+/** Bigint Bitwise logical exclusive or.
+    Left-associative operator at precedence level 7/11. */
+external lxorn: (bigint, bigint) => bigint = "%xorbigint"
+
+/** Bigint Bitwise logical negation. */
+let lnotn: bigint => bigint
+
+/** [n lsln m] shifts [n] to the left by [m] bits.
+   The result is unspecified if [m < 0n] or [m >= bitsize],
+   where the both operands are bigints.
+   Right-associative operator at precedence level 8/11. */
+external lsln: (bigint, bigint) => bigint = "%lslbigint"
+
+/** [n asrn m] shifts [n] to the right by [m] bits.
+   This is an arithmetic shift: the sign bit of [n] is replicated.
+   The result is unspecified if [m < 0n] or [m >= bitsize].
+   Right-associative operator at precedence level 8/11. */
+external asrn: (bigint, bigint) => bigint = "%asrbigint"
+
 @val
 @scope("Number")
 /** A special floating-point value denoting the result of an

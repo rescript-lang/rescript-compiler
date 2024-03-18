@@ -198,6 +198,8 @@ type primitive =
   (* Bigint operations *)
   | Pnegbigint | Paddbigint | Psubbigint | Ppowbigint
   | Pmulbigint | Pdivbigint of is_safe | Pmodbigint of is_safe
+  | Pandbigint | Porbigint | Pxorbigint
+  | Plslbigint | Pasrbigint
   | Pbigintcomp of comparison
   (* String operations *)
   | Pstringlength | Pstringrefu  | Pstringrefs

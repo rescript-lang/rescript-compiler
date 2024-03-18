@@ -345,6 +345,11 @@ let primitives_table =
       ("%lslint", Plslint);
       ("%lsrint", Plsrint);
       ("%asrint", Pasrint);
+      ("%andbigint", Pandbigint);
+      ("%orbigint", Porbigint);
+      ("%xorbigint", Pxorbigint);
+      ("%lslbigint", Plslbigint);
+      ("%asrbigint", Pasrbigint);
       ("%eq", Pintcomp Ceq);
       ("%noteq", Pintcomp Cneq);
       ("%ltint", Pintcomp Clt);
