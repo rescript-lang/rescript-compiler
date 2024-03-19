@@ -40,6 +40,7 @@ async function exec(command, args, options) {
 
       let code = exitCode ?? 1;
       if (signals[signal]) {
+        // + 128 is standard POSIX practice, see also https://nodejs.org/api/process.html#exit-codes
         code = signals[signal] + 128;
       }
 
