@@ -16,6 +16,11 @@ let bigint_lessequal = (x: bigint, y) => x <= y
 let generic_lessequal = \"<="
 let bigint_greaterequal = (x: bigint, y) => x >= y
 let generic_greaterequal = \">="
+let bigint_land = Pervasives.landn
+let bigint_lor = Pervasives.lorn
+let bigint_lxor = Pervasives.lxorn
+let bigint_lsl = Pervasives.lsln
+let bigint_asr = Pervasives.asrn
 
 let () = {
   eq(__LOC__, bigint_compare(1n, 1n), 0)
@@ -32,6 +37,15 @@ let () = {
   eq(__LOC__, generic_equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001n), false)
   eq(__LOC__, bigint_equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), false)
   eq(__LOC__, generic_equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), false)
+  eq(__LOC__, bigint_land(9n, 1n), 1n)
+  eq(__LOC__, bigint_lor(9n, 1n), 9n)
+  eq(__LOC__, bigint_lxor(9n, 1n), 8n)
+  eq(__LOC__, bigint_lsl(9n, 1n), 18n)
+  eq(__LOC__, bigint_lsl(9n, -1n), 4n)
+  eq(__LOC__, bigint_asr(9n, 1n), 4n)
+  eq(__LOC__, bigint_asr(9n, -1n), 18n)
+  eq(__LOC__, bigint_asr(-9n, 1n), -5n)
+  eq(__LOC__, bigint_asr(-9n, -1n), -18n)
 }
 
 let () = Mt.from_pair_suites(__MODULE__, suites.contents)

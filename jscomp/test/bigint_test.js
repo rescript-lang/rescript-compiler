@@ -66,33 +66,71 @@ function bigint_greaterequal(x, y) {
 
 var generic_greaterequal = Caml_obj.greaterequal;
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 21, characters 5-12", Caml.bigint_compare(1n, 1n), 0);
+function bigint_land(prim0, prim1) {
+  return prim0 & prim1;
+}
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 22, characters 5-12", Caml_obj.compare(1n, 1n), 0);
+function bigint_lor(prim0, prim1) {
+  return prim0 | prim1;
+}
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 23, characters 5-12", Caml.bigint_compare(-0n, -1n), 1);
+function bigint_lxor(prim0, prim1) {
+  return prim0 ^ prim1;
+}
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 24, characters 5-12", Caml_obj.compare(-0n, -1n), 1);
+function bigint_lsl(prim0, prim1) {
+  return (prim0 << prim1);
+}
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 25, characters 5-12", Caml.bigint_compare(0n, -1n), 1);
+function bigint_asr(prim0, prim1) {
+  return (prim0 >> prim1);
+}
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 26, characters 5-12", Caml_obj.compare(0n, -1n), 1);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 26, characters 5-12", Caml.bigint_compare(1n, 1n), 0);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 27, characters 5-12", Caml.bigint_compare(1n, 2n), -1);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 27, characters 5-12", Caml_obj.compare(1n, 1n), 0);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 28, characters 5-12", Caml_obj.compare(1n, 2n), -1);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 28, characters 5-12", Caml.bigint_compare(-0n, -1n), 1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 29, characters 5-12", true, true);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 29, characters 5-12", Caml_obj.compare(-0n, -1n), 1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 30, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), true);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 30, characters 5-12", Caml.bigint_compare(0n, -1n), 1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 31, characters 5-12", false, false);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 31, characters 5-12", Caml_obj.compare(0n, -1n), 1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 32, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001n), false);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 32, characters 5-12", Caml.bigint_compare(1n, 2n), -1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 33, characters 5-12", false, false);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 33, characters 5-12", Caml_obj.compare(1n, 2n), -1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 34, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), false);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 34, characters 5-12", true, true);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 35, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), true);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 36, characters 5-12", false, false);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 37, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001n), false);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 38, characters 5-12", false, false);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 39, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), false);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 40, characters 5-12", 9n & 1n, 1n);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 41, characters 5-12", 9n | 1n, 9n);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 42, characters 5-12", 9n ^ 1n, 8n);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 43, characters 5-12", (9n << 1n), 18n);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 44, characters 5-12", (9n << -1n), 4n);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 45, characters 5-12", (9n >> 1n), 4n);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 46, characters 5-12", (9n >> -1n), 18n);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 47, characters 5-12", (-9n >> 1n), -5n);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 48, characters 5-12", (-9n >> -1n), -18n);
 
 Mt.from_pair_suites("Bigint_test", suites.contents);
 
@@ -114,4 +152,9 @@ exports.bigint_lessequal = bigint_lessequal;
 exports.generic_lessequal = generic_lessequal;
 exports.bigint_greaterequal = bigint_greaterequal;
 exports.generic_greaterequal = generic_greaterequal;
+exports.bigint_land = bigint_land;
+exports.bigint_lor = bigint_lor;
+exports.bigint_lxor = bigint_lxor;
+exports.bigint_lsl = bigint_lsl;
+exports.bigint_asr = bigint_asr;
 /*  Not a pure module */
