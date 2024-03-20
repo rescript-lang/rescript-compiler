@@ -507,11 +507,13 @@ let _ = <View style=styles["backgroundImageWrapper"]>
 <div> ...<span /> </div>
 <div> ...[a] </div>
 <div> ...(1, 2) </div>
+<div> ...{array->f} </div>
 
 <> ...element </>
 <> ...{(a) => 1} </>
 <> ...<span /> </>
 <> ...[a] </>
 <> ...(1, 2) </>
+<> ...{array->f} </>
 
 let _ = <A x="y" {...str} />
