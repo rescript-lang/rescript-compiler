@@ -6,6 +6,9 @@ var os = require("os");
 const child_process = require("child_process");
 const rescript_exe = require("./bin_path").rescript_exe;
 
+const cwd = process.cwd();
+const lockFileName = path.join(cwd, ".bsb.lock");
+
 /**
  * @typedef {Object} ProjectFiles
  * @property {Array<string>} dirs
@@ -18,35 +21,47 @@ const rescript_exe = require("./bin_path").rescript_exe;
  * @property {fs.FSWatcher} watcher
  */
 
-const cwd = process.cwd();
-const lockFileName = path.join(cwd, ".bsb.lock");
-
-let isBuilding = false;
+/**
+ * @type {child_process.ChildProcess | null}
+ */
+let ownerProcess = null;
 function releaseBuild() {
-  if (isBuilding) {
+  if (ownerProcess) {
+    ownerProcess.kill("SIGHUP");
     try {
-      fs.unlinkSync(lockFileName);
-    } catch (err) {}
-    isBuilding = false;
+      fs.rmSync(lockFileName);
+    } catch {}
+    ownerProcess = null;
   }
 }
 
-// We use [~perm:0o664] rather than our usual default perms, [0o666], because
-// lock files shouldn't rely on the umask to disallow tampering by other.
-function acquireBuild() {
-  if (isBuilding) {
-    return false;
+/**
+ * We use [~perm:0o664] rather than our usual default perms, [0o666], because
+ * lock files shouldn't rely on the umask to disallow tampering by other.
+ *
+ * @param {Array<string>} args
+ * @param {child_process.SpawnOptions} [options]
+ */
+function acquireBuild(args, options) {
+  if (ownerProcess) {
+    return null;
   } else {
     try {
-      const fid = fs.openSync(lockFileName, "wx", 0o664);
-      fs.closeSync(fid);
-      isBuilding = true;
+      ownerProcess = child_process.spawn(rescript_exe, args, {
+        stdio: "inherit",
+        ...options,
+      });
+      fs.writeFileSync(lockFileName, ownerProcess.pid.toString(), {
+        encoding: "utf8",
+        flag: "wx",
+        mode: 0o664,
+      });
     } catch (err) {
       if (err.code === "EEXIST") {
         console.warn(lockFileName, "already exists, try later");
       } else console.log(err);
     }
-    return isBuilding;
+    return ownerProcess;
   }
 }
 
@@ -55,26 +70,17 @@ function acquireBuild() {
  * @param {(code: number) => void} [maybeOnClose]
  */
 function delegate(args, maybeOnClose) {
-  /**
-   * @type {child_process.ChildProcess}
-   */
   let p;
-  if (acquireBuild()) {
-    try {
-      p = child_process.spawn(rescript_exe, args, {
-        stdio: "inherit",
-      });
-    } catch (e) {
-      if (e.code === "ENOENT") {
-        // when bsb is actually not found
-        console.error(String(e));
-      }
+  if ((p = acquireBuild(args))) {
+    p.once("error", e => {
+      console.error(String(e));
       releaseBuild();
       process.exit(2);
-    }
+    });
+
     // The 'close' event will always emit after 'exit' was already emitted, or
     // 'error' if the child failed to spawn.
-    p.on("close", code => {
+    p.once("close", code => {
       releaseBuild();
       const exitCode = code === null ? 1 : code;
       if (maybeOnClose) {
@@ -379,17 +385,17 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
     } else {
       dlog(`Rebuilding since ${reasonsToRebuild}`);
     }
-    if (acquireBuild()) {
+    let p;
+    if (
+      (p = acquireBuild(rescriptWatchBuildArgs, {
+        stdio: ["inherit", "inherit", "pipe"],
+      }))
+    ) {
       logStartCompiling();
-      child_process
-        .spawn(rescript_exe, rescriptWatchBuildArgs, {
-          stdio: ["inherit", "inherit", "pipe"],
-        })
-        // @ts-ignore
-        .on("data", function (s) {
-          outputError(s, "ninja: error");
-        })
-        .on("exit", buildFinishedCallback)
+      p.on("data", function (s) {
+        outputError(s, "ninja: error");
+      })
+        .once("exit", buildFinishedCallback)
         .stderr.setEncoding("utf8");
       // This is important to clean up all
       // previous queued events
@@ -491,6 +497,10 @@ function build(args) {
       logFinishCompiling(exitCode);
       process.exit(exitCode);
     });
+    return;
+  }
+  if (args.some(arg => ["help", "-h", "-help", "--help"].includes(arg))) {
+    delegate(["build", "-h"]);
     return;
   }
   if (args.includes("-w")) {
