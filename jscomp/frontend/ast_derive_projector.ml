@@ -14,6 +14,11 @@ let init () =
       {
         structure_gen =
           (fun (tdcls : tdcls) _explict_nonrec ->
+            let handle_uncurried_fn_tranform ~loc ~arity fn =
+              match Config.uncurried.contents with
+              | Uncurried -> Ast_uncurried.uncurriedFun ~loc ~arity fn
+              | Legacy | Swap -> fn
+            in
             let handle_tdcl tdcl =
               let core_type =
                 Ast_derive_util.core_type_of_type_declaration tdcl
@@ -39,7 +44,9 @@ let init () =
                          (Pat.constraint_ (Pat.var {txt; loc}) core_type)
                          (Exp.field
                             (Exp.ident {txt = Lident txt; loc})
-                            {txt = Longident.Lident pld_label; loc})))
+                            {txt = Longident.Lident pld_label; loc})
+                      (*arity will alwys be 1 since these are single param functions*)
+                      |> handle_uncurried_fn_tranform ~arity:1 ~loc))
               | Ptype_variant constructor_declarations ->
                 Ext_list.map constructor_declarations
                   (fun
@@ -94,7 +101,8 @@ let init () =
                              annotate_type
                          in
                          Ext_list.fold_right vars exp (fun var b ->
-                             Ast_compatible.fun_ (Pat.var {loc; txt = var}) b)))
+                             Ast_compatible.fun_ (Pat.var {loc; txt = var}) b)
+                         |> handle_uncurried_fn_tranform ~loc ~arity))
               | Ptype_abstract | Ptype_open ->
                 Ast_derive_util.notApplicable tdcl.ptype_loc derivingName;
                 []
@@ -103,6 +111,11 @@ let init () =
             Ext_list.flat_map tdcls handle_tdcl);
         signature_gen =
           (fun (tdcls : Parsetree.type_declaration list) _explict_nonrec ->
+            let handle_uncurried_type_tranform ~loc ~arity t =
+              match Config.uncurried.contents with
+              | Uncurried -> Ast_uncurried.uncurriedType ~loc ~arity t
+              | Legacy | Swap -> t
+            in
             let handle_tdcl tdcl =
               let core_type =
                 Ast_derive_util.core_type_of_type_declaration tdcl
@@ -119,7 +132,10 @@ let init () =
               | Ptype_record label_declarations ->
                 Ext_list.map label_declarations (fun {pld_name; pld_type} ->
                     Ast_comb.single_non_rec_val ?attrs:gentype_attrs pld_name
-                      (Ast_compatible.arrow core_type pld_type))
+                      (Ast_compatible.arrow core_type pld_type
+                      (*arity will alwys be 1 since these are single param functions*)
+                      |> handle_uncurried_type_tranform ~arity:1
+                           ~loc:pld_name.loc))
               | Ptype_variant constructor_declarations ->
                 Ext_list.map constructor_declarations
                   (fun
@@ -135,6 +151,7 @@ let init () =
                       | Pcstr_tuple pcd_args -> pcd_args
                       | Pcstr_record _ -> assert false
                     in
+                    let arity = pcd_args |> List.length in
                     let annotate_type =
                       match pcd_res with
                       | Some x -> x
@@ -143,7 +160,8 @@ let init () =
                     Ast_comb.single_non_rec_val ?attrs:gentype_attrs
                       {loc; txt = Ext_string.uncapitalize_ascii con_name}
                       (Ext_list.fold_right pcd_args annotate_type (fun x acc ->
-                           Ast_compatible.arrow x acc)))
+                           Ast_compatible.arrow x acc)
+                      |> handle_uncurried_type_tranform ~arity ~loc))
               | Ptype_open | Ptype_abstract ->
                 Ast_derive_util.notApplicable tdcl.ptype_loc derivingName;
                 []
