@@ -580,11 +580,13 @@ let _ =
 ;;((div ~children:((span ~children:[] ())[@JSX ]) ())[@JSX ])
 ;;((div ~children:[|a|] ())[@JSX ])
 ;;((div ~children:(1, 2) ())[@JSX ])
+;;((div ~children:((array |. f)[@res.braces ]) ())[@JSX ])
 ;;(([element])[@JSX ])
 ;;(([(((fun a -> 1))[@res.braces ])])[@JSX ])
 ;;(([((span ~children:[] ())[@JSX ])])[@JSX ])
 ;;(([[|a|]])[@JSX ])
 ;;(([(1, 2)])[@JSX ])
+;;(([((array |. f)[@res.braces ])])[@JSX ])
 let _ =
   ((A.createElement ~x:(({js|y|js})[@res.namedArgLoc ]) ~_spreadProps:((str)
       [@res.namedArgLoc ]) ~children:[] ())
