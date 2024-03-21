@@ -94,10 +94,6 @@ var epsilon_float = Caml_int64.float_of_bits([
       0
     ]);
 
-function lnotn(x) {
-  return x ^ -1n;
-}
-
 function $caret(s1, s2) {
   var l1 = s1.length;
   var l2 = s2.length;
@@ -470,7 +466,6 @@ exports.nan = nan;
 exports.max_float = max_float;
 exports.min_float = min_float;
 exports.epsilon_float = epsilon_float;
-exports.lnotn = lnotn;
 exports.$caret = $caret;
 exports.char_of_int = char_of_int;
 exports.string_of_bool = string_of_bool;

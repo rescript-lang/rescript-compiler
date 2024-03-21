@@ -410,17 +410,16 @@ let negateString s =
 
 let makeUnaryExpr startPos tokenEnd token operand =
   match (token, operand.Parsetree.pexp_desc) with
-  | ( (Token.Plus | PlusDot | PlusComma),
-      Pexp_constant (Pconst_integer _ | Pconst_float _) ) ->
+  | (Token.Plus | PlusDot), Pexp_constant (Pconst_integer _ | Pconst_float _) ->
     operand
   | Minus, Pexp_constant (Pconst_integer (n, m)) ->
     {
       operand with
       pexp_desc = Pexp_constant (Pconst_integer (negateString n, m));
     }
-  | (Minus | MinusDot | MinusComma), Pexp_constant (Pconst_float (n, m)) ->
+  | (Minus | MinusDot), Pexp_constant (Pconst_float (n, m)) ->
     {operand with pexp_desc = Pexp_constant (Pconst_float (negateString n, m))}
-  | (Token.Plus | PlusDot | PlusComma | Minus | MinusDot | MinusComma), _ ->
+  | (Token.Plus | PlusDot | Minus | MinusDot), _ ->
     let tokenLoc = mkLoc startPos tokenEnd in
     let operator = "~" ^ Token.toString token in
     Ast_helper.Exp.apply
@@ -2093,8 +2092,7 @@ and parsePrimaryExpr ~operand ?(noCall = false) p =
 and parseUnaryExpr p =
   let startPos = p.Parser.startPos in
   match p.Parser.token with
-  | (Minus | MinusDot | MinusComma | Plus | PlusDot | PlusComma | Bang) as token
-    ->
+  | (Minus | MinusDot | Plus | PlusDot | Bang) as token ->
     Parser.leaveBreadcrumb p Grammar.ExprUnary;
     let tokenEnd = p.endPos in
     Parser.next p;
@@ -2200,8 +2198,7 @@ and parseBinaryExpr ?(context = OrdinaryExpr) ?a p prec =
       let endPos = p.prevEndPos in
       let tokenPrec =
         (* exponentiation operator is right-associative *)
-        if token = Exponentiation || token = ExponentiationComma then tokenPrec
-        else tokenPrec + 1
+        if token = Exponentiation then tokenPrec else tokenPrec + 1
       in
       let b = parseBinaryExpr ~context p tokenPrec in
       let loc = mkLoc a.Parsetree.pexp_loc.loc_start b.pexp_loc.loc_end in

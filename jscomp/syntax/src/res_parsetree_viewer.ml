@@ -292,15 +292,15 @@ let operatorPrecedence operator =
   | "||" -> 2
   | "&&" -> 3
   | "=" | "==" | "<" | ">" | "!=" | "<>" | "!==" | "<=" | ">=" | "|>" -> 4
-  | "+" | "+." | "+," | "-" | "-." | "-," | "^" -> 5
+  | "+" | "+." | "-" | "-." | "^" -> 5
   | "*" | "*." | "/" | "/." -> 6
-  | "**" | "**," -> 7
+  | "**" -> 7
   | "#" | "##" | "|." | "|.u" -> 8
   | _ -> 0
 
 let isUnaryOperator operator =
   match operator with
-  | "~+" | "~+." | "~+," | "~-" | "~-." | "~-," | "not" -> true
+  | "~+" | "~+." | "~-" | "~-." | "not" -> true
   | _ -> false
 
 let isUnaryExpression expr =
@@ -316,8 +316,8 @@ let isUnaryExpression expr =
 let isBinaryOperator operator =
   match operator with
   | ":=" | "||" | "&&" | "=" | "==" | "<" | ">" | "!=" | "!==" | "<=" | ">="
-  | "|>" | "+" | "+." | "+," | "-" | "-." | "-," | "^" | "*" | "*." | "*," | "/"
-  | "/." | "/," | "**" | "**," | "|." | "|.u" | "<>" ->
+  | "|>" | "+" | "+." | "-" | "-." | "^" | "*" | "*." | "/" | "/." | "**" | "|."
+  | "|.u" | "<>" ->
     true
   | _ -> false
 
@@ -342,7 +342,7 @@ let isEqualityOperator operator =
 
 let isRhsBinaryOperator operator =
   match operator with
-  | "**" | "**," -> true
+  | "**" -> true
   | _ -> false
 
 let flattenableOperators parentOperator childOperator =

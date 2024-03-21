@@ -39,18 +39,13 @@ type t =
   | Backslash [@live]
   | Forwardslash
   | ForwardslashDot
-  | ForwardslashComma
   | Asterisk
   | AsteriskDot
-  | AsteriskComma
   | Exponentiation
-  | ExponentiationComma
   | Minus
   | MinusDot
-  | MinusComma
   | Plus
   | PlusDot
-  | PlusComma
   | PlusPlus
   | PlusEqual
   | ColonGreaterThan
@@ -109,11 +104,9 @@ let precedence = function
   | Equal | EqualEqual | EqualEqualEqual | LessThan | GreaterThan | BangEqual
   | BangEqualEqual | LessEqual | GreaterEqual | BarGreater ->
     4
-  | Plus | PlusDot | PlusComma | Minus | MinusDot | MinusComma | PlusPlus -> 5
-  | Asterisk | AsteriskDot | AsteriskComma | Forwardslash | ForwardslashDot
-  | ForwardslashComma ->
-    6
-  | Exponentiation | ExponentiationComma -> 7
+  | Plus | PlusDot | Minus | MinusDot | PlusPlus -> 5
+  | Asterisk | AsteriskDot | Forwardslash | ForwardslashDot -> 6
+  | Exponentiation -> 7
   | MinusGreater -> 8
   | Dot -> 9
   | _ -> 0
@@ -156,16 +149,13 @@ let toString = function
   | Comma -> ","
   | Minus -> "-"
   | MinusDot -> "-."
-  | MinusComma -> "-,"
   | Plus -> "+"
   | PlusDot -> "+."
-  | PlusComma -> "+,"
   | PlusPlus -> "++"
   | PlusEqual -> "+="
   | Backslash -> "\\"
   | Forwardslash -> "/"
   | ForwardslashDot -> "/."
-  | ForwardslashComma -> "/,"
   | Exception -> "exception"
   | Hash -> "#"
   | HashEqual -> "#="
@@ -174,9 +164,7 @@ let toString = function
   | LessThanSlash -> "</"
   | Asterisk -> "*"
   | AsteriskDot -> "*."
-  | AsteriskComma -> "*,"
   | Exponentiation -> "**"
-  | ExponentiationComma -> "**,"
   | Assert -> "assert"
   | Lazy -> "lazy"
   | Tilde -> "tilde"

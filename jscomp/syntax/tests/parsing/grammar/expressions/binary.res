@@ -33,7 +33,6 @@ let x = a + @attr -1 + @attr -2
 // should be interpreted as binary expression not prefix op
 let x = a -b
 let x = a -.b
-let x = a -,b
 
 // not binary expr
 Constructor(a, b)

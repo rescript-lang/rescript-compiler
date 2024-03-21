@@ -691,20 +691,12 @@ let rec scan scanner =
         Token.Hash)
     | '*' -> (
       match peek scanner with
-      | '*' -> (
-        match peek2 scanner with
-        | ',' ->
-          next3 scanner;
-          Token.ExponentiationComma
-        | _ ->
-          next2 scanner;
-          Token.Exponentiation)
+      | '*' ->
+        next2 scanner;
+        Token.Exponentiation
       | '.' ->
         next2 scanner;
         Token.AsteriskDot
-      | ',' ->
-        next2 scanner;
-        Token.AsteriskComma
       | _ ->
         next scanner;
         Token.Asterisk)
@@ -766,9 +758,6 @@ let rec scan scanner =
       | '.' ->
         next2 scanner;
         Token.ForwardslashDot
-      | ',' ->
-        next2 scanner;
-        Token.ForwardslashComma
       | _ ->
         next scanner;
         Token.Forwardslash)
@@ -777,9 +766,6 @@ let rec scan scanner =
       | '.' ->
         next2 scanner;
         Token.MinusDot
-      | ',' ->
-        next2 scanner;
-        Token.MinusComma
       | '>' ->
         next2 scanner;
         Token.MinusGreater
@@ -791,9 +777,6 @@ let rec scan scanner =
       | '.' ->
         next2 scanner;
         Token.PlusDot
-      | ',' ->
-        next2 scanner;
-        Token.PlusComma
       | '+' ->
         next2 scanner;
         Token.PlusPlus
