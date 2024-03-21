@@ -1,9 +1,0 @@
-{
-  "name": "uncurried",
-  "version": "0.1.0",
-  "sources": {
-    "dir": "src",
-    "subdirs": true
-  },
-  "uncurried": false
-}

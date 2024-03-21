@@ -14,10 +14,12 @@ let init () =
       {
         structure_gen =
           (fun (tdcls : tdcls) _explict_nonrec ->
-            let handle_uncurried_fn_tranform ~loc ~arity fn =
+            let handle_uncurried_accessor_tranform ~loc ~arity accessor =
+              (* Accessors with no params (arity of 0) are simply values and not functions *)
               match Config.uncurried.contents with
-              | Uncurried -> Ast_uncurried.uncurriedFun ~loc ~arity fn
-              | Legacy | Swap -> fn
+              | Uncurried when arity > 0 ->
+                Ast_uncurried.uncurriedFun ~loc ~arity accessor
+              | _ -> accessor
             in
             let handle_tdcl tdcl =
               let core_type =
@@ -46,7 +48,7 @@ let init () =
                             (Exp.ident {txt = Lident txt; loc})
                             {txt = Longident.Lident pld_label; loc})
                       (*arity will alwys be 1 since these are single param functions*)
-                      |> handle_uncurried_fn_tranform ~arity:1 ~loc))
+                      |> handle_uncurried_accessor_tranform ~arity:1 ~loc))
               | Ptype_variant constructor_declarations ->
                 Ext_list.map constructor_declarations
                   (fun
@@ -102,7 +104,7 @@ let init () =
                          in
                          Ext_list.fold_right vars exp (fun var b ->
                              Ast_compatible.fun_ (Pat.var {loc; txt = var}) b)
-                         |> handle_uncurried_fn_tranform ~loc ~arity))
+                         |> handle_uncurried_accessor_tranform ~loc ~arity))
               | Ptype_abstract | Ptype_open ->
                 Ast_derive_util.notApplicable tdcl.ptype_loc derivingName;
                 []
@@ -113,8 +115,10 @@ let init () =
           (fun (tdcls : Parsetree.type_declaration list) _explict_nonrec ->
             let handle_uncurried_type_tranform ~loc ~arity t =
               match Config.uncurried.contents with
-              | Uncurried -> Ast_uncurried.uncurriedType ~loc ~arity t
-              | Legacy | Swap -> t
+              (* Accessors with no params (arity of 0) are simply values and not functions *)
+              | Uncurried when arity > 0 ->
+                Ast_uncurried.uncurriedType ~loc ~arity t
+              | _ -> t
             in
             let handle_tdcl tdcl =
               let core_type =
