@@ -10,12 +10,12 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.1.0-rc.5 (Unreleased)
+# 11.1.0-rc.5
 
 #### :bug: Bug Fix
 
 - Fix misparsing in/after JSX. https://github.com/rescript-lang/rescript-compiler/pull/6686
-- Fix `@deriving(accessors)` outputting curried functions in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/6687
+- Fix `@deriving(accessors)` outputting curried functions in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6687
 
 # 11.1.0-rc.4
 
