@@ -380,7 +380,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
   let may_depends = Lam_module_ident.Hash_set.create 0 in
 
   let rec convert_ccall (a_prim : Primitive.description)
-      (args : Lambda.lambda list) loc : Lam.t =
+      (args : Lambda.lambda list) loc ~dynamic_import : Lam.t =
     let prim_name = a_prim.prim_name in
     let prim_name_len = String.length prim_name in
     match External_ffi_types.from_string a_prim.prim_native_name with
@@ -400,7 +400,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           | Param_number i -> Ext_list.init i (fun _ -> External_arg_spec.dummy)
         in
         let args = Ext_list.map args convert_aux in
-        Lam.handle_bs_non_obj_ffi arg_types result_type ffi args loc prim_name
+        Lam.handle_bs_non_obj_ffi arg_types result_type ffi args loc prim_name ~dynamic_import
     | Ffi_inline_const i -> Lam.const i
   and convert_js_primitive (p : Primitive.description)
       (args : Lambda.lambda list) loc : Lam.t =
@@ -542,7 +542,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         convert_pipe f x outer_loc
     | Lprim (Prevapply, _, _) -> assert false
     | Lprim (Pdirapply, _, _) -> assert false
-    | Lprim (Pccall a, args, loc) -> convert_ccall a args loc
+    | Lprim (Pccall a, args, loc) -> convert_ccall a args loc ~dynamic_import
     | Lprim (Pgetglobal id, args, _) ->
         let args = Ext_list.map args convert_aux in
         if Ident.is_predef_exn id then

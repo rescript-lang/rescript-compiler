@@ -46,11 +46,6 @@ function gg(x) {
     case 4 :
         a = 6;
         break;
-    case 5 :
-    case 6 :
-    case 7 :
-        a = 8;
-        break;
     case 8 :
         a = 7;
         break;

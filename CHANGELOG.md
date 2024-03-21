@@ -27,6 +27,27 @@
 
 - Make the `--help` arg be prioritized in the CLI, so correctly prints help message and skip other commands. https://github.com/rescript-lang/rescript-compiler/pull/6667
 
+# 11.1.0-rc.5
+
+#### :bug: Bug Fix
+
+- Fix misparsing in/after JSX. https://github.com/rescript-lang/rescript-compiler/pull/6686
+- Fix `@deriving(accessors)` outputting curried functions in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6687
+
+# 11.1.0-rc.4
+
+#### :bug: Bug Fix
+
+- Fix emitting static import instead of dynamic import. https://github.com/rescript-lang/rescript-compiler/pull/6664
+- Fix local type variables breaking react components. https://github.com/rescript-lang/rescript-compiler/pull/6665
+- Fix remove redundant branches in generated switch body. https://github.com/rescript-lang/rescript-compiler/pull/6672
+- Fix issue in partial application when the last named arg is provided. https://github.com/rescript-lang/rescript-compiler/pull/6681
+
+#### :nail-care: Polish
+
+- Omit `undefined` in external function calls for trailing optional arguments when not supplied. https://github.com/rescript-lang/rescript-compiler/pull/6653
+- Make pattern match suggestions to be easier to copy-paste. https://github.com/rescript-lang/rescript-compiler/pull/6656
+
 # 11.1.0-rc.3
 
 #### :nail_care: Polish

@@ -763,10 +763,18 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
         Translattribute.get_and_remove_inlined_attribute funct
       in
       let uncurried_partial_application =
+        (* In case of partial application foo(args, ...) when some args are missing,
+           get the arity *)
         let uncurried_partial_app = Ext_list.exists e.exp_attributes (fun ({txt },_) -> txt = "res.partial") in
         if uncurried_partial_app then
-          let arity_opt = Ast_uncurried.uncurried_type_get_arity_opt ~env:funct.exp_env funct.exp_type in   
-          arity_opt
+          let arity_opt = Ast_uncurried.uncurried_type_get_arity_opt ~env:funct.exp_env funct.exp_type in
+          match arity_opt with
+            | Some arity ->
+              let real_args = List.filter (fun (_, x) -> Option.is_some x) oargs in
+              if arity > List.length real_args then
+                Some arity
+              else None 
+            | None -> None
         else
           None in
       transl_apply ~inlined ~uncurried_partial_application (transl_exp funct) oargs e.exp_loc
@@ -1036,7 +1044,7 @@ and transl_apply ?(inlined = Default_inline) ?(uncurried_partial_application=Non
     | [] -> lapply lam (List.rev_map fst args)
   in
   match uncurried_partial_application with
-    | Some arity when arity > List.length sargs ->
+  | Some arity ->
     let extra_arity = arity - List.length sargs in
     let none_ids = ref [] in
     let args = Ext_list.filter_map sargs (function

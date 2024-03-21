@@ -99,3 +99,16 @@ let make = {
 
   \"Newtype"
 }
+
+@@uncurried
+
+module Uncurried = {
+  type props<'foo> = {foo?: 'foo}
+
+  let make = (type a, {?foo, _}: props<_>) => React.null
+  let make = {
+    let \"Newtype$Uncurried" = (props: props<_>) => make(props)
+
+    \"Newtype$Uncurried"
+  }
+}

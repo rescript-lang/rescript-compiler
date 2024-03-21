@@ -48,6 +48,7 @@ type t =
       prim_name : string;
       arg_types : External_arg_spec.params;
       ffi : External_ffi_types.external_spec;
+      dynamic_import: bool;
     }
   | Pjs_object_create of External_arg_spec.obj_params
   (* Exceptions *)
@@ -249,11 +250,11 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
           i0 = i1 && flag0 = flag1 && eq_tag_info info0 info1
       | _ -> false)
   | Pduprecord -> rhs = Pduprecord
-  | Pjs_call { prim_name; arg_types; ffi } -> (
+  | Pjs_call { prim_name; arg_types; ffi; dynamic_import } -> (
       match rhs with
       | Pjs_call rhs ->
           prim_name = rhs.prim_name && arg_types = rhs.arg_types
-          && ffi = rhs.ffi
+          && ffi = rhs.ffi && dynamic_import = rhs.dynamic_import
       | _ -> false)
   | Pjs_object_create obj_create -> (
       match rhs with

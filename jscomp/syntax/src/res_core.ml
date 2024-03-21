@@ -2602,6 +2602,7 @@ and parseJsxOpeningOrSelfClosingElement ~startPos p =
       let childrenStartPos = p.Parser.startPos in
       Parser.next p;
       let childrenEndPos = p.Parser.startPos in
+      Scanner.popMode p.scanner Jsx;
       Parser.expect GreaterThan p;
       let loc = mkLoc childrenStartPos childrenEndPos in
       makeListExpression loc [] None (* no children *)
@@ -2611,8 +2612,6 @@ and parseJsxOpeningOrSelfClosingElement ~startPos p =
       Parser.next p;
       let spread, children = parseJsxChildren p in
       let childrenEndPos = p.Parser.startPos in
-      Scanner.popMode p.scanner Jsx;
-      Scanner.setJsxMode p.scanner;
       let () =
         match p.token with
         | LessThanSlash -> Parser.next p
@@ -2624,12 +2623,14 @@ and parseJsxOpeningOrSelfClosingElement ~startPos p =
       in
       match p.Parser.token with
       | (Lident _ | Uident _) when verifyJsxOpeningClosingName p name -> (
+        Scanner.popMode p.scanner Jsx;
         Parser.expect GreaterThan p;
         let loc = mkLoc childrenStartPos childrenEndPos in
         match (spread, children) with
         | true, child :: _ -> child
         | _ -> makeListExpression loc children None)
       | token -> (
+        Scanner.popMode p.scanner Jsx;
         let () =
           if Grammar.isStructureItemStart token then
             let closing = "</" ^ string_of_pexp_ident name ^ ">" in
@@ -2650,6 +2651,7 @@ and parseJsxOpeningOrSelfClosingElement ~startPos p =
         | true, child :: _ -> child
         | _ -> makeListExpression loc children None))
     | token ->
+      Scanner.popMode p.scanner Jsx;
       Parser.err p (Diagnostics.unexpected token p.breadcrumbs);
       makeListExpression Location.none [] None
   in
@@ -2677,7 +2679,6 @@ and parseJsxOpeningOrSelfClosingElement ~startPos p =
  *  jsx-children ::= primary-expr*          * => 0 or more
  *)
 and parseJsx p =
-  Scanner.popMode p.scanner Jsx;
   Scanner.setJsxMode p.Parser.scanner;
   Parser.leaveBreadcrumb p Grammar.Jsx;
   let startPos = p.Parser.startPos in
@@ -2690,7 +2691,6 @@ and parseJsx p =
       parseJsxFragment p
     | _ -> parseJsxName p
   in
-  Scanner.popMode p.scanner Jsx;
   Parser.eatBreadcrumb p;
   {jsxExpr with pexp_attributes = [jsxAttr]}
 
@@ -2704,9 +2704,10 @@ and parseJsxFragment p =
   Parser.expect GreaterThan p;
   let _spread, children = parseJsxChildren p in
   let childrenEndPos = p.Parser.startPos in
+  if p.token = LessThan then p.token <- Scanner.reconsiderLessThan p.scanner;
   Parser.expect LessThanSlash p;
-  Parser.expect GreaterThan p;
   Scanner.popMode p.scanner Jsx;
+  Parser.expect GreaterThan p;
   let loc = mkLoc childrenStartPos childrenEndPos in
   makeListExpression loc children None
 
@@ -2758,6 +2759,7 @@ and parseJsxProp p =
         Some (label, attrExpr))
   (* {...props} *)
   | Lbrace -> (
+    Scanner.popMode p.scanner Jsx;
     Parser.next p;
     match p.Parser.token with
     | DotDotDot -> (
@@ -2776,6 +2778,7 @@ and parseJsxProp p =
       match p.Parser.token with
       | Rbrace ->
         Parser.next p;
+        Scanner.setJsxMode p.scanner;
         Some (label, attrExpr)
       | _ -> None)
     | _ -> None)
@@ -2785,6 +2788,7 @@ and parseJsxProps p =
   parseRegion ~grammar:Grammar.JsxAttribute ~f:parseJsxProp p
 
 and parseJsxChildren p =
+  Scanner.popMode p.scanner Jsx;
   let rec loop p children =
     match p.Parser.token with
     | Token.Eof | LessThanSlash -> children
@@ -2805,21 +2809,23 @@ and parseJsxChildren p =
         let () = p.token <- token in
         children
     | token when Grammar.isJsxChildStart token ->
-      let () = Scanner.popMode p.scanner Jsx in
       let child =
         parsePrimaryExpr ~operand:(parseAtomicExpr p) ~noCall:true p
       in
       loop p (child :: children)
     | _ -> children
   in
-  match p.Parser.token with
-  | DotDotDot ->
-    Parser.next p;
-    (true, [parsePrimaryExpr ~operand:(parseAtomicExpr p) ~noCall:true p])
-  | _ ->
-    let children = List.rev (loop p []) in
-    Scanner.popMode p.scanner Jsx;
-    (false, children)
+  let spread, children =
+    match p.Parser.token with
+    | DotDotDot ->
+      Parser.next p;
+      (true, [parsePrimaryExpr ~operand:(parseAtomicExpr p) ~noCall:true p])
+    | _ ->
+      let children = List.rev (loop p []) in
+      (false, children)
+  in
+  Scanner.setJsxMode p.scanner;
+  (spread, children)
 
 and parseBracedOrRecordExpr p =
   let startPos = p.Parser.startPos in
