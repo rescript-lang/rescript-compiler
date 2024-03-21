@@ -12,6 +12,10 @@
 
 # 11.1.0-rc.5 (Unreleased)
 
+#### :bug: Bug Fix
+
+- Fix misparsing in/after JSX. https://github.com/rescript-lang/rescript-compiler/pull/6686
+
 # 11.1.0-rc.4
 
 #### :bug: Bug Fix
