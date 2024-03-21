@@ -61,8 +61,6 @@ val cmp_int64 : comparison -> int64 -> int64 -> bool
 
 val cmp_float : comparison -> float -> float -> bool
 
-val cmp_bigint : comparison -> string -> string -> bool
-
 val cmp_int : comparison -> int -> int -> bool
 
 val eq_comparison : comparison -> comparison -> bool

@@ -1266,10 +1266,6 @@ let bigint_comp (cmp : Lam_compat.comparison) ?comment (e0: t) (e1: t) =
   match (cmp, e0.expression_desc, e1.expression_desc) with
   | Ceq, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 = i1)
   | Cneq, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 <> i1)
-  | Cge, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 >= i1)
-  | Cgt, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 > i1)
-  | Cle, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 <= i1)
-  | Clt, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 < i1)
   | _ -> bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
 (* TODO -- alpha conversion
