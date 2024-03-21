@@ -23,6 +23,7 @@
 - Fix emitting static import instead of dynamic import. https://github.com/rescript-lang/rescript-compiler/pull/6664
 - Fix local type variables breaking react components. https://github.com/rescript-lang/rescript-compiler/pull/6665
 - Fix remove redundant branches in generated switch body. https://github.com/rescript-lang/rescript-compiler/pull/6672
+- Fix issue in partial application when the last named arg is provided. https://github.com/rescript-lang/rescript-compiler/pull/6681
 
 #### :nail-care: Polish
 
