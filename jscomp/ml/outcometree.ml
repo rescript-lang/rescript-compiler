@@ -63,7 +63,7 @@ type out_type =
   | Otyp_object of (string * out_type) list * bool option
   | Otyp_record of (string * bool * bool * out_type) list
   | Otyp_stuff of string
-  | Otyp_sum of (string * out_type list * out_type option) list
+  | Otyp_sum of (string * out_type list * out_type option * string option) list
   | Otyp_tuple of out_type list
   | Otyp_var of bool * string
   | Otyp_variant of
@@ -118,11 +118,12 @@ and out_extension_constructor =
     oext_type_params: string list;
     oext_args: out_type list;
     oext_ret_type: out_type option;
+    oext_repr: string option;
     oext_private: Asttypes.private_flag }
 and out_type_extension =
   { otyext_name: string;
     otyext_params: string list;
-    otyext_constructors: (string * out_type list * out_type option) list;
+    otyext_constructors: (string * out_type list * out_type option * string option) list;
     otyext_private: Asttypes.private_flag }
 and out_val_decl =
   { oval_name: string;

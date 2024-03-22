@@ -917,16 +917,24 @@ and tree_of_constructor_arguments = function
 
 and tree_of_constructor cd =
   let name = Ident.name cd.cd_id in
+  let nullary = Ast_untagged_variants.is_nullary_variant cd.cd_args in
+  let repr =
+    if not nullary then None
+    else match Ast_untagged_variants.process_tag_type cd.cd_attributes with
+      | Some Null -> Some "@as(null)"
+      | Some Undefined -> Some "@as(undefined)"
+      | Some _tag_type -> Some "XXX"
+      | None -> None in
   let arg () = tree_of_constructor_arguments cd.cd_args in
   match cd.cd_res with
-  | None -> (name, arg (), None)
+  | None -> (name, arg (), None, repr)
   | Some res ->
       let nm = !names in
       names := [];
       let ret = tree_of_typexp false res in
       let args = arg () in
       names := nm;
-      (name, args, Some ret)
+      (name, args, Some ret, repr)
 
 and tree_of_label l =
   let opt = l.ld_attributes |> List.exists (fun ({txt}, _) -> txt = "ns.optional" || txt = "res.optional") in
@@ -982,6 +990,7 @@ let tree_of_extension_constructor id ext es =
       oext_type_params = ty_params;
       oext_args = args;
       oext_ret_type = ret;
+      oext_repr = None;
       oext_private = ext.ext_private }
   in
   let es =
