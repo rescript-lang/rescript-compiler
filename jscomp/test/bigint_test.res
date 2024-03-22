@@ -55,6 +55,26 @@ let () = {
     |2n => 4n
     |_ => 0n
   }, 3n), true)
+  eq(__LOC__, bigint_equal(switch -1n {
+    |-00001n => 3n
+    |-2n => 4n
+    |_ => 0n
+  }, 3n), true)
+  eq(__LOC__, generic_equal(switch -1n {
+    |-00001n => 3n
+    |2n => 4n
+    |_ => 0n
+  }, 3n), true)
+  eq(__LOC__, bigint_equal(switch 0x1n {
+    |0x1n => 3n
+    |0b1n => 4n
+    |_ => 0n
+  }, 3n), true)
+  eq(__LOC__, generic_equal(switch 0x1n {
+    |0x1n => 3n
+    |0b1n => 4n
+    |_ => 0n
+  }, 3n), true)
   eq(__LOC__, bigint_land(9n, 1n), 1n)
   eq(__LOC__, bigint_lor(9n, 1n), 9n)
   eq(__LOC__, bigint_lxor(9n, 1n), 8n)
