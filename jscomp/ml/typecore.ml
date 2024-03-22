@@ -259,7 +259,7 @@ let constant : Parsetree.constant -> (Asttypes.constant, error) result =
        try Ok (Const_int64 (Misc.Int_literal_converter.int64 i))
        with Failure _ -> Error (Literal_overflow "int64")
      end
-  | Pconst_integer (i,Some 'n') ->Ok (Const_bigint i)
+  | Pconst_integer (i,Some 'n') ->Ok (Const_bigint (Ext_string.remove_leading_zeros i))
   | Pconst_integer (i,Some c) -> Error (Unknown_literal (i, c))
   | Pconst_char c -> Ok (Const_char c)
   | Pconst_string (s,d) -> Ok (Const_string (s,d))

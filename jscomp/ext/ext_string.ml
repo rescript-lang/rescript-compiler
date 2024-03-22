@@ -528,4 +528,43 @@ let hash_number_as_i32_exn
 let first_marshal_char (x : string) = 
     x <> ""   &&
     ( String.unsafe_get x  0 = '\132')
+
+(* 
+  Removes leading zeros from the string only if the first non-zero character
+  encountered is a digit. Unlike int and float, bigint cannot be of_string, so
+  This function removes only leading 0s. Instead, values like 00x1 are not converted
+  and are intended to be syntax errors.
+
+  000n -> 0n
+  001n -> 1n
+  01_000_000n -> 1000000n
+  0x1 -> 0x1n
+  0x001n -> 0x001n
+  -00100n -> -100n
   
+  The following values are syntax errors
+
+  00o1n -> 00o1n 
+  00x1_000_000n -> 00x1000000n
+*)
+let remove_leading_zeros str =
+  let aux str =
+    let len = String.length str in
+    if len = 0 then ""
+    else
+      let is_digit c = c >= '0' && c <= '9' in
+      let idx = ref 0 in
+      while !idx < len && str.[!idx] = '0' do
+        incr idx
+      done;
+      if !idx >= len then "0" (* If the string contains only '0's, return '0'. *)
+      else if (is_digit str.[!idx]) then String.sub str !idx (len - !idx) (* Remove leading zeros and return the rest of the string. *)
+      else str
+  in
+  (* Replace the delimiters '_' inside number *)
+  let str = String.concat "" (String.split_on_char '_' str) in
+  (* Check if negative *)
+  let starts_with_minus = str <> "" && str.[0] = '-' in
+  let str = if starts_with_minus then String.sub str 1 (String.length str - 1) else str in
+  let processed_str = aux str in
+  if starts_with_minus then "-" ^ processed_str else processed_str

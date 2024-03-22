@@ -224,3 +224,5 @@ val hash_number_as_i32_exn:
 val first_marshal_char:  
   string -> 
   bool
+
+val remove_leading_zeros: string -> string
