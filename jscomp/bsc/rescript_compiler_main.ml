@@ -108,7 +108,6 @@ let process_file sourcefile ?(kind ) ppf =
   res
 
 let reprint_source_file sourcefile = 
-  Js_config.no_builtin_ppx := true;
   let uncurried = !Config.uncurried in
   let kind = Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile) in
   let sourcefile = set_abs_input_name sourcefile in
