@@ -118,10 +118,13 @@ let reprint_source_file sourcefile =
     in
     if parseResult.invalid then (
       Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
-      exit 1);
+      exit 1
+    );
+    Res_compmisc.init_path ();
     parseResult.parsetree 
-    |> Js_implementation.implementationForReprinting 
-    |> Res_printer.printImplementation ~width:80 ~comments:parseResult.comments 
+    |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Ml
+    |> Ppx_entry.rewrite_implementation
+    |> Res_printer.printImplementation ~width:100 ~comments:parseResult.comments 
     |> print_endline
   | Resi ->   
     let parseResult =
@@ -129,10 +132,13 @@ let reprint_source_file sourcefile =
     in
     if parseResult.invalid then (
       Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
-      exit 1);
+      exit 1
+    );
+    Res_compmisc.init_path ();
     parseResult.parsetree 
-    |> Js_implementation.interfaceForReprinting 
-    |> Res_printer.printInterface ~width:80 ~comments:parseResult.comments 
+    |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Mli
+    |> Ppx_entry.rewrite_signature
+    |> Res_printer.printInterface ~width:100 ~comments:parseResult.comments 
     |> print_endline
   | _ 
     ->     
