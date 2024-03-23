@@ -42,7 +42,7 @@ let is_numeric s =
   let len = String.length s in
   if len = 0 then false
   else
-    let is_digit c = c >= '0' && c <= '9' in
+    let is_digit c = (c >= '0' && c <= '9') || c = '_' in
     let first_char = s.[0] in
     if first_char <> '-' && not (is_digit first_char) then false
     else

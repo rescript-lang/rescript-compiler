@@ -130,23 +130,27 @@ Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 54, charac
 
 Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 59, characters 5-12", Caml_obj.equal(3n, 3n), true);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 64, characters 5-12", 9n & 1n, 1n);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 64, characters 5-12", true, true);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 65, characters 5-12", 9n | 1n, 9n);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 69, characters 5-12", Caml_obj.equal(3n, 3n), true);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 66, characters 5-12", 9n ^ 1n, 8n);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 74, characters 5-12", 9n & 1n, 1n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 67, characters 5-12", (9n << 1n), 18n);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 75, characters 5-12", 9n | 1n, 9n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 68, characters 5-12", (9n << -1n), 4n);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 76, characters 5-12", 9n ^ 1n, 8n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 69, characters 5-12", (9n >> 1n), 4n);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 77, characters 5-12", (9n << 1n), 18n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 70, characters 5-12", (9n >> -1n), 18n);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 78, characters 5-12", (9n << -1n), 4n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 71, characters 5-12", (-9n >> 1n), -5n);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 79, characters 5-12", (9n >> 1n), 4n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 72, characters 5-12", (-9n >> -1n), -18n);
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 80, characters 5-12", (9n >> -1n), 18n);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 81, characters 5-12", (-9n >> 1n), -5n);
+
+Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 82, characters 5-12", (-9n >> -1n), -18n);
 
 Mt.from_pair_suites("Bigint_test", suites.contents);
 
