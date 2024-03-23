@@ -1265,16 +1265,22 @@ let bigint_comp (cmp : Lam_compat.comparison) ?comment (e0: t) (e1: t) =
   bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
 let bigint_div ~checked ?comment (e0: t) (e1: t) =
-  if checked then
-    runtime_call Js_runtime_modules.bigint "div" [e0; e1]
-  else
-    bigint_op ?comment Div e0 e1
+  match e1.expression_desc with
+  | Number (Bigint { i = i1 }) when i1 = "0" || i1 = "-0" -> 
+    if checked then
+      runtime_call Js_runtime_modules.bigint "div" [e0; e1]
+    else
+      bigint_op ?comment Div e0 e1
+  | _ -> bigint_op ?comment Div e0 e1
     
 let bigint_mod ~checked ?comment (e0: t) (e1: t) =
-  if checked then
-    runtime_call Js_runtime_modules.bigint "mod_" [e0; e1]
-  else
-    bigint_op ?comment Mod e0 e1
+  match e1.expression_desc with
+  | Number (Bigint { i = i1 }) when i1 = "0" || i1 = "-0" -> 
+    if checked then
+      runtime_call Js_runtime_modules.bigint "mod_" [e0; e1]
+    else
+      bigint_op ?comment Mod e0 e1
+  | _ -> bigint_op ?comment Mod e0 e1
 
 (* TODO -- alpha conversion
     remember to add parens..
