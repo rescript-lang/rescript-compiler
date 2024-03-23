@@ -76,6 +76,7 @@ type error =
   | Empty_record_literal
   | Uncurried_arity_mismatch of type_expr * int * int
   | Field_not_optional of string * type_expr
+  | Invalid_decimal of string
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
@@ -259,7 +260,10 @@ let constant : Parsetree.constant -> (Asttypes.constant, error) result =
        try Ok (Const_int64 (Misc.Int_literal_converter.int64 i))
        with Failure _ -> Error (Literal_overflow "int64")
      end
-  | Pconst_integer (i,Some 'n') ->Ok (Const_bigint (Ext_string.remove_leading_zeros i))
+  | Pconst_integer (i,Some 'n') ->
+      if Bigint_utils.is_numeric i then
+        Ok (Const_bigint (Bigint_utils.remove_leading_zeros i))
+      else Error (Invalid_decimal i)
   | Pconst_integer (i,Some c) -> Error (Unknown_literal (i, c))
   | Pconst_char c -> Ok (Const_char c)
   | Pconst_string (s,d) -> Ok (Const_string (s,d))
@@ -4075,6 +4079,9 @@ let report_error env ppf = function
     fprintf ppf
     "Field @{<info>%s@} is not optional in type %a. Use without ?" name
     type_expr typ
+  | Invalid_decimal s ->
+    fprintf ppf
+    "Invalid decimal literal '%sn'. Only decimal literal is allowed for bigint" s
 
 
 let super_report_error_no_wrap_printing_env = report_error
