@@ -2,7 +2,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Belt_Option = require("../../lib/js/belt_Option.js");
+var Js_option = require("../../lib/js/js_option.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites_0 = [
@@ -282,9 +282,9 @@ var suites_1 = {
                                                                 "hello ",
                                                                 undefined
                                                               ],
-                                                              _1: Belt_Option.map(Caml_option.null_to_opt("hello word".match(/hello (world)?/)), (function (prim) {
-                                                                      return prim.slice();
-                                                                    }))
+                                                              _1: Js_option.map((function (x) {
+                                                                      return x.slice();
+                                                                    }), Caml_option.null_to_opt("hello word".match(/hello (world)?/)))
                                                             };
                                                     })
                                                 ],

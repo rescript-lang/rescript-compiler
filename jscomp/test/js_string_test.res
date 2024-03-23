@@ -33,7 +33,7 @@ let suites = {
       "match - not found capture groups",
       _ => Eq(
         Some([Some("hello "), None]),
-        "hello word"->Js.String2.match_(%re("/hello (world)?/"))->Belt.Option.map(Js.Array.copy),
+        Js.Option.map(((. x) => Js.Array.copy(x)), "hello word"->Js.String2.match_(%re("/hello (world)?/"))),
       ),
     ),
     /* es2015 */

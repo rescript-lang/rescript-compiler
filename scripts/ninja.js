@@ -1305,7 +1305,7 @@ include body.ninja
 `
   );
 
-  preprocessorNinjaSync(); // This is needed so that ocamldep makes sense
+  // preprocessorNinjaSync(); // This is needed so that ocamldep makes sense
   runtimeNinja();
   stdlibNinja(true);
   if (fs.existsSync(bsc_exe)) {

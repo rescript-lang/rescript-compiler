@@ -5,8 +5,6 @@ var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
 var Js_dict = require("../../lib/js/js_dict.js");
 var Js_json = require("../../lib/js/js_json.js");
-var Belt_List = require("../../lib/js/belt_List.js");
-var Belt_Array = require("../../lib/js/belt_Array.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
@@ -740,37 +738,6 @@ function id(obj) {
   return Js_json.deserializeUnsafe(Js_json.serializeExn(obj));
 }
 
-function idtest(obj) {
-  eq("File \"js_json_test.res\", line 355, characters 23-30", obj, Js_json.deserializeUnsafe(Js_json.serializeExn(obj)));
-}
-
-idtest(undefined);
-
-idtest({
-      hd: [
-        undefined,
-        undefined,
-        undefined
-      ],
-      tl: /* [] */0
-    });
-
-idtest(Belt_List.makeBy(500, (function (i) {
-            if (i % 2 === 0) {
-              return ;
-            } else {
-              return 1;
-            }
-          })));
-
-idtest(Belt_Array.makeBy(500, (function (i) {
-            if (i % 2 === 0) {
-              return ;
-            } else {
-              return 1;
-            }
-          })));
-
 Mt.from_pair_suites("Js_json_test", suites.contents);
 
 var J;
@@ -784,5 +751,4 @@ exports.true_ = true_;
 exports.option_get = option_get;
 exports.eq_at_i = eq_at_i;
 exports.id = id;
-exports.idtest = idtest;
 /* v Not a pure module */

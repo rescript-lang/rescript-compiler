@@ -2,8 +2,7 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
-var Belt_Array = require("../../lib/js/belt_Array.js");
-var Belt_Option = require("../../lib/js/belt_Option.js");
+var Js_option = require("../../lib/js/js_option.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var TestUtils = require("react-dom/test-utils");
 
@@ -52,15 +51,15 @@ function findByAllSelector(element, selector) {
 }
 
 function findBySelectorAndTextContent(element, selector, content) {
-  return Belt_Array.getBy(Array.from(element.querySelectorAll(selector)), (function (node) {
-                return node.textContent === content;
-              }));
+  return Caml_option.undefined_to_opt(Array.from(element.querySelectorAll(selector)).find(function (node) {
+                  return node.textContent === content;
+                }));
 }
 
 function findBySelectorAndPartialTextContent(element, selector, content) {
-  return Belt_Array.getBy(Array.from(element.querySelectorAll(selector)), (function (node) {
-                return node.textContent.includes(content);
-              }));
+  return Caml_option.undefined_to_opt(Array.from(element.querySelectorAll(selector)).find(function (node) {
+                  return node.textContent.includes(content);
+                }));
 }
 
 var DOM = {
@@ -72,21 +71,23 @@ var DOM = {
 
 function prepareContainer(container, param) {
   var containerElement = document.createElement("div");
-  Belt_Option.map(document.body, (function (body) {
-          return body.appendChild(containerElement);
-        }));
+  var body = document.body;
+  if (body !== undefined) {
+    Caml_option.valFromOption(body).appendChild(containerElement);
+  }
   container.contents = Caml_option.some(containerElement);
 }
 
 function cleanupContainer(container, param) {
-  Belt_Option.map(container.contents, (function (prim) {
-          prim.remove();
-        }));
+  var contents = container.contents;
+  if (contents !== undefined) {
+    Caml_option.valFromOption(contents).remove();
+  }
   container.contents = undefined;
 }
 
 function getContainer(container) {
-  return Belt_Option.getExn(container.contents);
+  return Js_option.getExn(container.contents);
 }
 
 exports.act = act;

@@ -2,8 +2,8 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
 var Int64 = require("../../lib/js/int64.js");
-var Belt_List = require("../../lib/js/belt_List.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 
 var suites = {
@@ -1304,7 +1304,7 @@ var random_data = {
   }
 };
 
-Belt_List.forEach(random_data, (function (u) {
+List.iter((function (u) {
         if (u) {
           if (u.tl) {
             throw {
@@ -1329,7 +1329,7 @@ Belt_List.forEach(random_data, (function (u) {
               ],
               Error: new Error()
             };
-      }));
+      }), random_data);
 
 eq("File \"int64_string_test.res\", line 195, characters 3-10", Caml_int64.to_string([
           -2097152,

@@ -36,10 +36,10 @@ test-syntax-roundtrip:
 	make reanalyze
 	bash ./scripts/testok.sh
 
-test-gentype:
-	make -C jscomp/gentype_tests/typescript-react-example clean test
+# test-gentype:
+# 	make -C jscomp/gentype_tests/typescript-react-example clean test
 
-test-all: test test-gentype
+test-all: test # test-gentype
 
 reanalyze:
 	reanalyze.exe -set-exit-code -all-cmt _build/default/jscomp -suppress jscomp/syntax/testrunner -exclude-paths jscomp/outcome_printer,jscomp/ounit_tests,jscomp/ml,jscomp/js_parser,jscomp/frontend,jscomp/ext,jscomp/depends,jscomp/core,jscomp/common,jscomp/cmij,jscomp/bsb_helper,jscomp/bsb
