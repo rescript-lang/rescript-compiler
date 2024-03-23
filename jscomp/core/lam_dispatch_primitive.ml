@@ -252,6 +252,14 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
       match args with
       | [ e1; e2 ] -> E.unchecked_int32_mul e1 e2
       | _ -> assert false)
+  | "?bigint_div" -> (
+      match args with
+      | [ e1; e2 ] -> E.bigint_div e1 e2 ~checked:false
+      | _ -> assert false)
+  | "?bigint_mod" -> (
+      match args with
+      | [ e1; e2 ] -> E.bigint_mod e1 e2 ~checked:false
+      | _ -> assert false)
   | "?await" -> (
       match args with
       | [e] -> {e with expression_desc = Await e}

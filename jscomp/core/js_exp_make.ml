@@ -787,7 +787,6 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
       float_equal ?comment a e1
   | Number (Float { f = f0; _ }), Number (Float { f = f1 }) when f0 = f1 ->
       true_
-  | Number (Bigint { i = i0 }), Number (Bigint { i = i1 }) -> bool (i0 = i1)
   | _ -> { expression_desc = Bin (EqEqEq, e0, e1); comment }
 
 let int_equal = float_equal
@@ -1263,10 +1262,19 @@ let rec int32_band ?comment (e1 : J.expression) (e2 : J.expression) :
 let bigint_op ?comment op (e1: t) (e2: t) = bin ?comment op e1 e2
 
 let bigint_comp (cmp : Lam_compat.comparison) ?comment (e0: t) (e1: t) =
-  match (cmp, e0.expression_desc, e1.expression_desc) with
-  | Ceq, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 = i1)
-  | Cneq, Number (Bigint {i = i0; _}), Number (Bigint {i = i1; _}) -> bool (i0 <> i1)
-  | _ -> bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+  bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+
+let bigint_div ~checked ?comment (e0: t) (e1: t) =
+  if checked then
+    runtime_call Js_runtime_modules.bigint "div" [e0; e1]
+  else
+    bigint_op ?comment Div e0 e1
+    
+let bigint_mod ~checked ?comment (e0: t) (e1: t) =
+  if checked then
+    runtime_call Js_runtime_modules.bigint "mod_" [e0; e1]
+  else
+    bigint_op ?comment Mod e0 e1
 
 (* TODO -- alpha conversion
     remember to add parens..

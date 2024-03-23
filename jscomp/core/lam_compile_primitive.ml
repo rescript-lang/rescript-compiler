@@ -214,13 +214,19 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       | [ e1; e2 ] -> E.int32_div ~checked:!Js_config.check_div_by_zero e1 e2
       | _ -> assert false)
   | Pdivint64 -> Js_long.div args
-  | Pdivbigint -> (match args with [ e1; e2 ] -> E.bigint_op Div e1 e2 | _ -> assert false)
+  | Pdivbigint -> (
+      match args with
+      | [ e1; e2 ] -> E.bigint_div ~checked:!Js_config.check_div_by_zero e1 e2
+      | _ -> assert false)
   | Pmodint -> (
       match args with
       | [ e1; e2 ] -> E.int32_mod ~checked:!Js_config.check_div_by_zero e1 e2
       | _ -> assert false)
   | Pmodint64 -> Js_long.mod_ args
-  | Pmodbigint -> (match args with [ e1; e2 ] -> E.bigint_op Mod e1 e2 | _ -> assert false)
+  | Pmodbigint -> (
+      match args with
+      | [ e1; e2 ] -> E.bigint_mod ~checked:!Js_config.check_div_by_zero e1 e2
+      | _ -> assert false)
   | Ppowbigint -> (match args with [ e1; e2 ] -> E.bigint_op Pow e1 e2 | _ -> assert false)
   | Plslint -> (
       match args with [ e1; e2 ] -> E.int32_lsl e1 e2 | _ -> assert false)
