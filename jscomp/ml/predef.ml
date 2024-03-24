@@ -95,6 +95,7 @@ and path_extension_constructor = Pident ident_extension_constructor
 and path_floatarray = Pident ident_floatarray
 
 and path_promise = Pident ident_promise
+and path_uncurried = Pident ident_uncurried
 
 let type_int = newgenty (Tconstr(path_int, [], ref Mnil))
 and type_char = newgenty (Tconstr(path_char, [], ref Mnil))
