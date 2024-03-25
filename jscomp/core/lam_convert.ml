@@ -258,8 +258,8 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Paddbigint -> prim ~primitive:Paddbigint ~args loc
   | Psubbigint -> prim ~primitive:Psubbigint ~args loc
   | Pmulbigint -> prim ~primitive:Pmulbigint ~args loc
-  | Pdivbigint _is_safe (*FIXME*) -> prim ~primitive:Pdivbigint ~args loc
-  | Pmodbigint _is_safe (*FIXME*) -> prim ~primitive:Pmodbigint ~args loc
+  | Pdivbigint -> prim ~primitive:Pdivbigint ~args loc
+  | Pmodbigint -> prim ~primitive:Pmodbigint ~args loc
   | Ppowbigint -> prim ~primitive:Ppowbigint ~args loc
   | Pandbigint -> prim ~primitive:Pandbigint ~args loc
   | Porbigint -> prim ~primitive:Porbigint ~args loc

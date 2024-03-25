@@ -374,9 +374,9 @@ let primitives_table =
       ("%addbigint", Paddbigint);
       ("%subbigint", Psubbigint);
       ("%mulbigint", Pmulbigint);
-      ("%divbigint", Pdivbigint Safe);
+      ("%divbigint", Pdivbigint);
       ("%powbigint", Ppowbigint);
-      ("%modbigint", Pmodbigint Safe);
+      ("%modbigint", Pmodbigint);
       ("%eqbigint", Pbigintcomp Ceq);
       ("%noteqbigint", Pbigintcomp Cneq);
       ("%ltbigint", Pbigintcomp Clt);

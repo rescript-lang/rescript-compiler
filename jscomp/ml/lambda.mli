@@ -197,7 +197,7 @@ type primitive =
   | Pfloatcomp of comparison
   (* Bigint operations *)
   | Pnegbigint | Paddbigint | Psubbigint | Ppowbigint
-  | Pmulbigint | Pdivbigint of is_safe | Pmodbigint of is_safe
+  | Pmulbigint | Pdivbigint | Pmodbigint
   | Pandbigint | Porbigint | Pxorbigint
   | Plslbigint | Pasrbigint
   | Pbigintcomp of comparison
