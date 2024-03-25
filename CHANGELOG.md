@@ -12,6 +12,10 @@
 
 # 11.1.0-rc.6 (Unreleased)
 
+#### :bug: Bug Fix
+
+- Fix mishandling of uncurried functions in super errors. https://github.com/rescript-lang/rescript-compiler/pull/6694
+
 # 11.1.0-rc.5
 
 #### :bug: Bug Fix
