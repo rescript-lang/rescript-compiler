@@ -50,6 +50,8 @@ val make_unused : unit -> Ident.t
 
 val is_exotic : string -> bool
 
+val wrap_exotic : string -> string
+
 val unwrap_exotic : string -> string
 
 (**

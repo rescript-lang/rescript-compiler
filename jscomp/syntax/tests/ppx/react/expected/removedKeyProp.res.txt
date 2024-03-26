@@ -5,9 +5,9 @@ module Foo = {
 
   let make = ({x, y, _}: props<_, _>) => React.string(x ++ y)
   let make = {
-    let RemovedKeyProp$Foo = (props: props<_>) => make(props)
+    let \"RemovedKeyProp$Foo" = (props: props<_>) => make(props)
 
-    RemovedKeyProp$Foo
+    \"RemovedKeyProp$Foo"
   }
 }
 
@@ -16,9 +16,9 @@ module HasChildren = {
 
   let make = ({children, _}: props<_>) => React.createElement(React.fragment, {children: children})
   let make = {
-    let RemovedKeyProp$HasChildren = (props: props<_>) => make(props)
+    let \"RemovedKeyProp$HasChildren" = (props: props<_>) => make(props)
 
-    RemovedKeyProp$HasChildren
+    \"RemovedKeyProp$HasChildren"
   }
 }
 type props = {}
@@ -46,7 +46,7 @@ let make = (_: props) =>
     ],
   )
 let make = {
-  let RemovedKeyProp = props => make(props)
+  let \"RemovedKeyProp" = props => make(props)
 
-  RemovedKeyProp
+  \"RemovedKeyProp"
 }

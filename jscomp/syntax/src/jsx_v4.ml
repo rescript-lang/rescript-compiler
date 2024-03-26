@@ -916,7 +916,7 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
       }
     in
     let fnName = getFnName binding.pvb_pat in
-    let internalFnName = fnName ^ "$Internal" in
+    let internalFnName = Ext_ident.wrap_exotic (fnName ^ "$Internal") in
     let fullModuleName = makeModuleName fileName config.nestedModules fnName in
     let bindingWrapper, hasForwardRef, expression =
       modifiedBinding ~bindingLoc ~bindingPatLoc ~fnName binding
@@ -988,6 +988,7 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
       match fullModuleName with
       | "" -> fullExpression
       | txt ->
+        let txt = Ext_ident.wrap_exotic txt in
         Exp.let_ Nonrecursive
           [
             Vb.mk ~loc:emptyLoc

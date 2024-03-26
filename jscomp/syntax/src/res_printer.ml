@@ -428,7 +428,9 @@ let printPolyVarIdent txt =
   if isValidNumericPolyvarNumber txt then Doc.text txt
   else
     match classifyIdentContent ~allowUident:true txt with
-    | ExoticIdent -> Doc.concat [Doc.text "\""; Doc.text (Ext_ident.unwrap_exotic txt); Doc.text "\""]
+    | ExoticIdent ->
+      Doc.concat
+        [Doc.text "\""; Doc.text (Ext_ident.unwrap_exotic txt); Doc.text "\""]
     | NormalIdent -> (
       match txt with
       | "" -> Doc.concat [Doc.text "\""; Doc.text txt; Doc.text "\""]
@@ -455,9 +457,7 @@ let printLident l =
       | Some txts ->
         Doc.concat
           [
-            Doc.join ~sep:Doc.dot (List.map Doc.text txts);
-            Doc.dot;
-            Doc.text txt;
+            Doc.join ~sep:Doc.dot (List.map Doc.text txts); Doc.dot; Doc.text txt;
           ]
       | None -> Doc.text "printLident: Longident.Lapply is not supported"
     in
@@ -1597,8 +1597,7 @@ and printTypExpr ~(state : State.t) (typExpr : Parsetree.core_type) cmtTbl =
   let renderedType =
     match typExpr.ptyp_desc with
     | Ptyp_any -> Doc.text "_"
-    | Ptyp_var var ->
-      Doc.concat [Doc.text "'"; Doc.text var]
+    | Ptyp_var var -> Doc.concat [Doc.text "'"; Doc.text var]
     | Ptyp_extension extension ->
       printExtension ~state ~atModuleLvl:false extension cmtTbl
     | Ptyp_alias (typ, alias) ->
@@ -1873,10 +1872,8 @@ and printTypeParameter ~state (attrs, lbl, typ) cmtTbl =
   let label =
     match lbl with
     | Asttypes.Nolabel -> Doc.nil
-    | Labelled lbl ->
-      Doc.concat [Doc.text "~"; Doc.text lbl; Doc.text ": "]
-    | Optional lbl ->
-      Doc.concat [Doc.text "~"; Doc.text lbl; Doc.text ": "]
+    | Labelled lbl -> Doc.concat [Doc.text "~"; Doc.text lbl; Doc.text ": "]
+    | Optional lbl -> Doc.concat [Doc.text "~"; Doc.text lbl; Doc.text ": "]
   in
   let optionalIndicator =
     match lbl with
@@ -4719,12 +4716,7 @@ and printArgument ~state (argLbl, arg) cmtTbl =
     in
     let doc =
       Doc.concat
-        [
-          Doc.tilde;
-          Doc.text lbl;
-          Doc.text ": ";
-          printTypExpr ~state typ cmtTbl;
-        ]
+        [Doc.tilde; Doc.text lbl; Doc.text ": "; printTypExpr ~state typ cmtTbl]
     in
     printComments doc cmtTbl loc
   (* ~a? (optional lbl punned)*)
