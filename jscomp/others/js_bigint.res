@@ -3,25 +3,32 @@
 @val
 /**
 Parses the given `string` into a `bigint` using JavaScript semantics. Return the
-number as a `bigint` if successfully parsed, `null`, `undefined`, `_NaN` otherwise.
+number as a `bigint` if successfully parsed. Uncaught syntax exception otherwise.
 
 ## Examples
 
 ```rescript
 /* returns 123n */
-Js.Bigint.fromString("123")
+Js.Bigint.fromStringExn("123")
 
 /* returns 0n */
-Js.Bigint.fromString("")
+Js.Bigint.fromStringExn("")
 
 /* returns 17n */
-Js.Bigint.fromString("0x11")
+Js.Bigint.fromStringExn("0x11")
 
 /* returns 3n */
-Js.Bigint.fromString("0b11")
+Js.Bigint.fromStringExn("0b11")
 
 /* returns 9n */
-Js.Bigint.fromString("0o11")
+Js.Bigint.fromStringExn("0o11")
+
+/* catch exception */
+try {
+  Js.Bigint.fromStringExn("a")
+} catch {
+| _ => ...
+}
 ```
 */
 external fromStringExn: string => bigint = "BigInt"

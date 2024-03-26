@@ -7,8 +7,6 @@
   000n -> 0n
   001n -> 1n
   01_000_000n -> 1000000n
-  0x1 -> 0x1n
-  0x001n -> 0x001n
   -00100n -> -100n
   
   The following values are syntax errors
