@@ -312,9 +312,9 @@ let obj_int_tag_literal : t =
 
 let int ?comment ?c i : t = { expression_desc = Number (Int { i; c }); comment }
 
-let bigint ?comment i : t = { expression_desc = Number (Bigint { i }); comment}
+let bigint ?comment sign i : t = { expression_desc = Number (Bigint (sign, i)); comment}
 
-let zero_bigint_literal : t = {expression_desc = Number (Bigint {i = "0"}); comment = None}
+let zero_bigint_literal : t = {expression_desc = Number (Bigint (true, "0")); comment = None}
 
 let small_int i : t =
   match i with
@@ -807,7 +807,11 @@ let tag_type = function
   | Ast_untagged_variants.String s -> str s ~delim:DStarJ
   | Int i -> small_int i
   | Float f -> float f
-  | Bigint i -> bigint i
+  | Bigint i -> 
+    let open Bigint_utils in
+    let sign, i = i |> remove_leading_sign in
+    let i = remove_leading_zeros i in
+    bigint sign i
   | Bool b -> bool b
   | Null -> nil
   | Undefined -> undefined

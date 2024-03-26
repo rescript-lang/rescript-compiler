@@ -133,9 +133,9 @@ Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 49, charac
           ) : 3n, 3n), true);
 
 Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 54, characters 5-12", (
-      -1n !== -1n ? (
-          -1n !== -2n ? 0n : 4n
-        ) : 3n
+      -1n !== -2n ? (
+          -1n !== -1n ? 0n : 3n
+        ) : 4n
     ) === 3n, true);
 
 Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 59, characters 5-12", Caml_obj.equal(-1n !== -1n ? (

@@ -27,7 +27,7 @@ let rec struct_const ppf = function
   | Const_base(Const_float f) -> fprintf ppf "%s" f
   | Const_base(Const_int32 n) -> fprintf ppf "%lil" n
   | Const_base(Const_int64 n) -> fprintf ppf "%LiL" n
-  | Const_base(Const_bigint n) -> fprintf ppf "%sn" n
+  | Const_base(Const_bigint (sign, n)) -> fprintf ppf "%sn" (Bigint_utils.to_string sign n)
   | Const_pointer (n,_) -> fprintf ppf "%ia" n
   | Const_block(tag_info, []) ->
       let tag = Lambda.tag_of_tag_info tag_info in 

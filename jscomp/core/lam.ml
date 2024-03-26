@@ -506,7 +506,7 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc : t =
           (* FIXME: could raise? *)
           Lift.bool
             (Lam_compat.cmp_float cmp (float_of_string a) (float_of_string b))
-      | Pbigintcomp cmp, Const_bigint a, Const_bigint b -> default ()
+      | Pbigintcomp cmp, Const_bigint (_, a), Const_bigint (_, b) -> default ()
       | Pintcomp ((Ceq | Cneq) as op), Const_pointer a, Const_pointer b ->
           Lift.bool
             (match op with

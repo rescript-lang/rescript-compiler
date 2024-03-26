@@ -664,7 +664,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
             Int32.to_string i
             (* check , js convention with ocaml lexical convention *)
         | Uint i -> Format.asprintf "%lu" i
-        | Bigint { i } -> Format.asprintf "%sn" i
+        | Bigint (sign, i) -> Format.asprintf "%sn" (Bigint_utils.to_string sign i)
       in
       let need_paren =
         if s.[0] = '-' then level > 13

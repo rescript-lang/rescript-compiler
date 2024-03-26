@@ -158,8 +158,8 @@ let rec eq_expression ({ expression_desc = x0 } : J.expression)
   | Undefined x -> y0 = Undefined x
   | Number (Int { i }) -> (
       match y0 with Number (Int { i = j }) -> i = j | _ -> false)
-  | Number (Bigint { i }) -> (
-    match y0 with Number (Bigint { i = j }) -> i = j | _ -> false)
+  | Number (Bigint (s0, i )) -> (
+    match y0 with Number (Bigint (s1, j)) -> s0 = s1 && i = j | _ -> false)
   | Number (Float _) -> false
   (* begin match y0 with
      | Number (Float j) ->

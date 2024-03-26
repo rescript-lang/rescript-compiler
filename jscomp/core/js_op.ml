@@ -126,13 +126,11 @@ type 'a access = Getter | Setter
 (* literal char *)
 type float_lit = { f : string } [@@unboxed]
 
-type bigint_lit = { i: string } [@@unboxed]
-
 type number =
   | Float of float_lit
   | Int of { i : int32; c : int option }
   | Uint of int32
-  | Bigint of bigint_lit
+  | Bigint of bool * string
 
 (* becareful when constant folding +/-,
    since we treat it as js nativeint, bitwise operators:

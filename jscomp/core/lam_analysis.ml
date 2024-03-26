@@ -27,7 +27,7 @@ let not_zero_constant (x : Lam_constant.t) =
   match x with
   | Const_int { i } -> i <> 0l
   | Const_int64 i -> i <> 0L
-  | Const_bigint i -> i <> "0"
+  | Const_bigint (_, i) -> i <> "0"
   | _ -> false
 
 let rec no_side_effects (lam : Lam.t) : bool =

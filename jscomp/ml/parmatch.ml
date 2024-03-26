@@ -264,8 +264,8 @@ let const_compare x y =
   match x,y with
   | Const_float f1, Const_float f2 ->
       compare (float_of_string f1) (float_of_string f2)
-  | Const_bigint b1, Const_bigint b2 ->
-      Bigint_utils.compare b1 b2
+  | Const_bigint (s1, b1), Const_bigint (s2, b2) ->
+      Bigint_utils.compare (s1, b1) (s2, b2)
   | Const_string (s1, _), Const_string (s2, _) ->
       String.compare s1 s2
   | _, _ -> compare x y
@@ -386,7 +386,7 @@ let pretty_const c = match c with
 | Const_float f -> Printf.sprintf "%s" f
 | Const_int32 i -> Printf.sprintf "%ldl" i
 | Const_int64 i -> Printf.sprintf "%LdL" i
-| Const_bigint i -> Printf.sprintf "%s" i
+| Const_bigint (sign, i) -> Printf.sprintf "%s" (Bigint_utils.to_string sign i)
 
 let rec pretty_val ppf v =
   match v.pat_extra with
@@ -1106,8 +1106,8 @@ let build_other ext env : Typedtree.pattern = match env with
       0L Int64.succ p env
 | ({pat_desc=(Tpat_constant (Const_bigint _))} as p,_) :: _ ->
     build_other_constant
-      (function Tpat_constant(Const_bigint i) -> String.length i | _ -> assert false)
-      (function i -> Tpat_constant(Const_bigint (String.make i '*')))
+      (function Tpat_constant(Const_bigint (sign, i)) -> String.length (Bigint_utils.to_string sign i) | _ -> assert false)
+      (function i -> Tpat_constant(Const_bigint (true, (String.make i '*'))))
       0 succ p env
 | ({pat_desc=(Tpat_constant (Const_string _))} as p,_) :: _ ->
     build_other_constant

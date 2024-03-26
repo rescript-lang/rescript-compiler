@@ -111,7 +111,7 @@ val uint32 : ?comment:string -> int32 -> t
 
 val small_int : int -> t
 
-val bigint : ?comment:string -> string -> t
+val bigint : ?comment:string -> bool -> string -> t
 
 val float : ?comment:string -> string -> t
 
