@@ -36,11 +36,11 @@ module V3 = {
               ],
             )
     let make = React.forwardRef({
-      let ForwardRef$V3$FancyInput = (
-        Props: {"className": option<'className>, "children": 'children},
+      let \"ForwardRef$V3$FancyInput" = (
+        \"Props": {"className": option<'className>, "children": 'children},
         ref,
-      ) => make(~children=Props["children"], ~className=?Props["className"], ref)
-      ForwardRef$V3$FancyInput
+      ) => make(~children=\"Props"["children"], ~className=?\"Props"["className"], ref)
+      \"ForwardRef$V3$FancyInput"
     })
   }
   @obj external makeProps: (~key: string=?, unit) => {.} = ""
@@ -60,8 +60,8 @@ module V3 = {
     )
   }
   let make = {
-    let ForwardRef$V3 = (Props: {.}) => make()
-    ForwardRef$V3
+    let \"ForwardRef$V3" = (\"Props": {.}) => make()
+    \"ForwardRef$V3"
   }
 }
 
@@ -95,9 +95,9 @@ module V4C = {
         ],
       )
     let make = React.forwardRef({
-      let ForwardRef$V4C$FancyInput = (props: props<_>, ref) => make(props, ref)
+      let \"ForwardRef$V4C$FancyInput" = (props: props<_>, ref) => make(props, ref)
 
-      ForwardRef$V4C$FancyInput
+      \"ForwardRef$V4C$FancyInput"
     })
   }
   type props = {}
@@ -116,9 +116,9 @@ module V4C = {
     )
   }
   let make = {
-    let ForwardRef$V4C = props => make(props)
+    let \"ForwardRef$V4C" = props => make(props)
 
-    ForwardRef$V4C
+    \"ForwardRef$V4C"
   }
 }
 
@@ -150,9 +150,9 @@ module V4CUncurried = {
         ],
       )
     let make = React.forwardRef({
-      let ForwardRef$V4CUncurried$FancyInput = (props: props<_>, ref) => make(props, ref)
+      let \"ForwardRef$V4CUncurried$FancyInput" = (props: props<_>, ref) => make(props, ref)
 
-      ForwardRef$V4CUncurried$FancyInput
+      \"ForwardRef$V4CUncurried$FancyInput"
     })
   }
   type props = {}
@@ -171,9 +171,9 @@ module V4CUncurried = {
     )
   }
   let make = {
-    let ForwardRef$V4CUncurried = props => make(props)
+    let \"ForwardRef$V4CUncurried" = props => make(props)
 
-    ForwardRef$V4CUncurried
+    \"ForwardRef$V4CUncurried"
   }
 }
 
@@ -205,9 +205,9 @@ module V4A = {
         },
       )
     let make = React.forwardRef({
-      let ForwardRef$V4A$FancyInput = (props: props<_>, ref) => make(props, ref)
+      let \"ForwardRef$V4A$FancyInput" = (props: props<_>, ref) => make(props, ref)
 
-      ForwardRef$V4A$FancyInput
+      \"ForwardRef$V4A$FancyInput"
     })
   }
   type props = {}
@@ -225,9 +225,9 @@ module V4A = {
     )
   }
   let make = {
-    let ForwardRef$V4A = props => make(props)
+    let \"ForwardRef$V4A" = props => make(props)
 
-    ForwardRef$V4A
+    \"ForwardRef$V4A"
   }
 }
 
@@ -257,9 +257,9 @@ module V4AUncurried = {
         },
       )
     let make = React.forwardRef({
-      let ForwardRef$V4AUncurried$FancyInput = (props: props<_>, ref) => make(props, ref)
+      let \"ForwardRef$V4AUncurried$FancyInput" = (props: props<_>, ref) => make(props, ref)
 
-      ForwardRef$V4AUncurried$FancyInput
+      \"ForwardRef$V4AUncurried$FancyInput"
     })
   }
   type props = {}
@@ -277,8 +277,8 @@ module V4AUncurried = {
     )
   }
   let make = {
-    let ForwardRef$V4AUncurried = props => make(props)
+    let \"ForwardRef$V4AUncurried" = props => make(props)
 
-    ForwardRef$V4AUncurried
+    \"ForwardRef$V4AUncurried"
   }
 }

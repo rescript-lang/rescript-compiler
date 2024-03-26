@@ -5,9 +5,9 @@ module V4C1 = {
 
   let make = ({x, y, _}: props) => React.string(x ++ y)
   let make = {
-    let SharedProps$V4C1 = props => make(props)
+    let \"SharedProps$V4C1" = props => make(props)
 
-    SharedProps$V4C1
+    \"SharedProps$V4C1"
   }
 }
 
@@ -16,9 +16,9 @@ module V4C2 = {
 
   let make = ({x, y, _}: props<_>) => React.string(x ++ y)
   let make = {
-    let SharedProps$V4C2 = (props: props<_>) => make(props)
+    let \"SharedProps$V4C2" = (props: props<_>) => make(props)
 
-    SharedProps$V4C2
+    \"SharedProps$V4C2"
   }
 }
 
@@ -27,9 +27,9 @@ module V4C3 = {
 
   let make = ({x, y, _}: props<_>) => React.string(x ++ y)
   let make = {
-    let SharedProps$V4C3 = (props: props<_>) => make(props)
+    let \"SharedProps$V4C3" = (props: props<_>) => make(props)
 
-    SharedProps$V4C3
+    \"SharedProps$V4C3"
   }
 }
 
@@ -38,9 +38,9 @@ module V4C4 = {
 
   let make = ({x, y, _}: props) => React.string(x ++ y)
   let make = {
-    let SharedProps$V4C4 = props => make(props)
+    let \"SharedProps$V4C4" = props => make(props)
 
-    SharedProps$V4C4
+    \"SharedProps$V4C4"
   }
 }
 
@@ -75,9 +75,9 @@ module V4A1 = {
 
   let make = ({x, y, _}: props) => React.string(x ++ y)
   let make = {
-    let SharedProps$V4A1 = props => make(props)
+    let \"SharedProps$V4A1" = props => make(props)
 
-    SharedProps$V4A1
+    \"SharedProps$V4A1"
   }
 }
 
@@ -86,9 +86,9 @@ module V4A2 = {
 
   let make = ({x, y, _}: props<_>) => React.string(x ++ y)
   let make = {
-    let SharedProps$V4A2 = (props: props<_>) => make(props)
+    let \"SharedProps$V4A2" = (props: props<_>) => make(props)
 
-    SharedProps$V4A2
+    \"SharedProps$V4A2"
   }
 }
 
@@ -97,9 +97,9 @@ module V4A3 = {
 
   let make = ({x, y, _}: props<_>) => React.string(x ++ y)
   let make = {
-    let SharedProps$V4A3 = (props: props<_>) => make(props)
+    let \"SharedProps$V4A3" = (props: props<_>) => make(props)
 
-    SharedProps$V4A3
+    \"SharedProps$V4A3"
   }
 }
 
@@ -108,9 +108,9 @@ module V4A4 = {
 
   let make = ({x, y, _}: props) => React.string(x ++ y)
   let make = {
-    let SharedProps$V4A4 = props => make(props)
+    let \"SharedProps$V4A4" = props => make(props)
 
-    SharedProps$V4A4
+    \"SharedProps$V4A4"
   }
 }
 

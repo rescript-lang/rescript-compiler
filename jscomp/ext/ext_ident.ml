@@ -133,13 +133,17 @@ let [@inline] no_escape (c : char) =
   | _ -> false
 
 let is_exotic name =
+  (* Exotic idents should always wrapped by \"..." *)
   match String.unsafe_get name 0 with
   | '\\' -> true
   | _ -> false
 
+let wrap_exotic name = "\\\"" ^ name ^ "\""
+
 let unwrap_exotic name =
   if is_exotic name then
    let len = String.length name in
+   (* Exotic idents should always wrapped by \"..." *)
    String.sub name 2 (len - 3)
   else name
 

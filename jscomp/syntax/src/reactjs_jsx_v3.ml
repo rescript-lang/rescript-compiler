@@ -151,7 +151,7 @@ let getPropsNameValue _acc (loc, exp) =
 
 (* Lookup the `props` record or string as part of [@react.component] and store the name for use when rewriting *)
 let getPropsAttr payload =
-  let defaultProps = {propsName = "Props"} in
+  let defaultProps = {propsName = Ext_ident.wrap_exotic "Props"} in
   match payload with
   | Some
       (PStr
@@ -317,7 +317,8 @@ let makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList =
     (makePropsType ~loc namedTypeList)
 
 let newtypeToVar newtype type_ =
-  let var_desc = Ptyp_var ("type-" ^ newtype) in
+  let newtype_label = Ext_ident.wrap_exotic ("type-" ^ newtype) in
+  let var_desc = Ptyp_var newtype_label in
   let typ (mapper : Ast_mapper.mapper) typ =
     match typ.ptyp_desc with
     | Ptyp_constr ({txt = Lident name}, _) when name = newtype ->
@@ -970,6 +971,7 @@ let jsxMapper ~config =
             match fullModuleName with
             | "" -> fullExpression
             | txt ->
+              let txt = Ext_ident.wrap_exotic txt in
               Exp.let_ Nonrecursive
                 [
                   Vb.mk ~loc:emptyLoc

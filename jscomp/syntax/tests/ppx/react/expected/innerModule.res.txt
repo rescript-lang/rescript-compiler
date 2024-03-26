@@ -12,8 +12,9 @@ module Bar = {
         ReactDOMRe.createDOMElementVariadic("div", [])
       }
   let make = {
-    let InnerModule$Bar = (Props: {"a": 'a, "b": 'b}) => make(~b=Props["b"], ~a=Props["a"], ())
-    InnerModule$Bar
+    let \"InnerModule$Bar" = (\"Props": {"a": 'a, "b": 'b}) =>
+      make(~b=\"Props"["b"], ~a=\"Props"["a"], ())
+    \"InnerModule$Bar"
   }
   @obj external componentProps: (~a: 'a, ~b: 'b, ~key: string=?, unit) => {"a": 'a, "b": 'b} = ""
 
@@ -27,8 +28,8 @@ module Bar = {
         ReactDOMRe.createDOMElementVariadic("div", [])
       }
   let component = {
-    let InnerModule$Bar$component = (Props: {"a": 'a, "b": 'b}) =>
-      component(~b=Props["b"], ~a=Props["a"], ())
-    InnerModule$Bar$component
+    let \"InnerModule$Bar$component" = (\"Props": {"a": 'a, "b": 'b}) =>
+      component(~b=\"Props"["b"], ~a=\"Props"["a"], ())
+    \"InnerModule$Bar$component"
   }
 }
