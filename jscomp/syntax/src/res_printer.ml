@@ -376,25 +376,23 @@ let printLongident = function
   | Longident.Lident txt -> Doc.text txt
   | lid -> Doc.join ~sep:Doc.dot (printLongidentAux [] lid)
 
-type identifierStyle = ExoticIdent | NormalIdent
+type identifierStyle = ExoticLike | NormalIdent
 
-let classifyIdentContent ?(allowUident = false) ?(allowHyphen = false) txt =
-  if Token.isKeywordTxt txt then ExoticIdent
+let classifyIdentContent txt =
+  if Ext_ident.is_exotic txt then ExoticLike
+  else if Token.isKeywordTxt txt then ExoticLike
   else
     let len = String.length txt in
     let rec loop i =
       if i == len then NormalIdent
       else if i == 0 then
         match String.unsafe_get txt i with
-        | 'A' .. 'Z' when allowUident -> loop (i + 1)
-        | 'a' .. 'z' | '_' -> loop (i + 1)
-        | '-' when allowHyphen -> loop (i + 1)
-        | _ -> ExoticIdent
+        | 'A' .. 'Z' | 'a' .. 'z' | '_' -> loop (i + 1)
+        | _ -> ExoticLike
       else
         match String.unsafe_get txt i with
         | 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '\'' | '_' -> loop (i + 1)
-        | '-' when allowHyphen -> loop (i + 1)
-        | _ -> ExoticIdent
+        | _ -> ExoticLike
     in
     loop 0
 
@@ -427,8 +425,8 @@ let printPolyVarIdent txt =
   (* numeric poly-vars don't need quotes: #644 *)
   if isValidNumericPolyvarNumber txt then Doc.text txt
   else
-    match classifyIdentContent ~allowUident:true txt with
-    | ExoticIdent ->
+    match classifyIdentContent txt with
+    | ExoticLike ->
       Doc.concat
         [Doc.text "\""; Doc.text (Ext_ident.unwrap_exotic txt); Doc.text "\""]
     | NormalIdent -> (
