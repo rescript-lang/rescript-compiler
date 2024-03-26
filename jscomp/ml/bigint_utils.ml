@@ -62,7 +62,8 @@ let compare s0 s1 =
   | _ ->
     (* If both numbers are either negative or positive, compare their lengths. *)
     let len0, len1 = (String.length s0, String.length s1) in
-    if len0 = len1 then String.compare s0 s1  (* If lengths are equal, compare the strings directly. *)
+    if len0 = len1 then
+      if is_neg s0 then String.compare s1 s0 else String.compare s0 s1  (* If lengths are equal, compare the strings directly. *)
     else if len0 > len1 then 
       if is_neg s0 then -1 else 1  (* A longer s0 means it's larger unless it's negative. *)
     else  (* len0 < len1 *)
