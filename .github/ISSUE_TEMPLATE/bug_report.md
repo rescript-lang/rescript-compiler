@@ -1,3 +1,12 @@
+---
+name: 🚨 Bug report
+about: Create a report to help us improve the ReScript compiler and build system
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 Thank you for filing! Check list:
 
 - [ ] Is it a bug? Usage questions should often be asked in the [forum](https://forum.rescript-lang.org) instead.

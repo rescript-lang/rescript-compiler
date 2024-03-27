@@ -22,8 +22,8 @@ let suites =
         __LOC__ >:: begin fun _ -> 
         let output = bsc_eval {|
 external err : 
-   hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
-   unit -> _ = "" [@@bs.obj]
+   hi_should_error:([`a of int | `b of string ] [@string]) ->         
+   unit -> _ = "" [@@obj]
         |} in
         OUnit.assert_bool __LOC__
             (Ext_string.contain_substring output.stderr "hi_should_error")
@@ -31,8 +31,8 @@ external err :
         __LOC__ >:: begin fun _ -> 
 let output = bsc_eval {|
     external err : 
-   ?hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
-   unit -> _ = "" [@@bs.obj]
+   ?hi_should_error:([`a of int | `b of string ] [@string]) ->         
+   unit -> _ = "" [@@obj]
         |} in
         OUnit.assert_bool __LOC__
             (Ext_string.contain_substring output.stderr "hi_should_error")        
@@ -40,8 +40,8 @@ let output = bsc_eval {|
         __LOC__ >:: begin fun _ -> 
         let output = bsc_eval {|
     external err : 
-   ?hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
-   unit -> unit = "err" [@@bs.val]
+   ?hi_should_error:([`a of int | `b of string ] [@string]) ->         
+   unit -> unit = "err" [@@val]
         |} in
         OUnit.assert_bool __LOC__
             (Ext_string.contain_substring output.stderr "hi_should_error")        
@@ -49,12 +49,12 @@ let output = bsc_eval {|
 
         __LOC__ >:: begin fun _ ->
           (*
-             Each [@bs.unwrap] variant constructor requires an argument
+             Each [@unwrap] variant constructor requires an argument
           *)
           let output =
             bsc_eval {|
               external err :
-              ?hi_should_error:([`a of int | `b] [@bs.unwrap]) -> unit -> unit = "err" [@@bs.val]
+              ?hi_should_error:([`a of int | `b] [@unwrap]) -> unit -> unit = "err" [@@val]
             |}
           in
           OUnit.assert_bool __LOC__
@@ -63,12 +63,12 @@ let output = bsc_eval {|
 
         __LOC__ >:: begin fun _ ->
           (*
-             [@bs.unwrap] args are not supported in [@@bs.obj] functions
+             [@unwrap] args are not supported in [@@obj] functions
           *)
           let output =
             bsc_eval {|
               external err :
-              ?hi_should_error:([`a of int] [@bs.unwrap]) -> unit -> _ = "" [@@bs.obj]
+              ?hi_should_error:([`a of int] [@unwrap]) -> unit -> _ = "" [@@obj]
             |}
           in
           OUnit.assert_bool __LOC__

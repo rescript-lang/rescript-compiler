@@ -1,4 +1,4 @@
-@@bs.config({flags: ["-bs-noassertfalse"]})
+@@config({flags: ["-bs-noassertfalse"]})
 
 #ifdef TYPE_STRING
 type key = string

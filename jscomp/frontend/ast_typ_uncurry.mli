@@ -56,5 +56,5 @@ val to_uncurry_type : uncurry_type_gen
 
 val to_method_callback_type : uncurry_type_gen
 (** syntax:
-    {[ 'obj -> int -> int [@bs.this] ]}
+    {[ 'obj -> int -> int [@this] ]}
 *)

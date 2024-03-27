@@ -1,4 +1,4 @@
-/* [@@@bs.config {flags = [|
+/* [@@@config {flags = [|
   "-bs-package-output"; "es6:jscomp/test"
 |]}] 
 */

@@ -3,7 +3,7 @@ module type Signature  =
     type nonrec t
     external linkProgram :
       t -> program:((webGlProgram)[@res.namedArgLoc ]) -> unit =
-        "linkProgram"[@@bs.send ]
+        "linkProgram"[@@send ]
     external add_nat : nat -> int -> int -> int = "add_nat_bytecode"
     external svg : unit -> React.element = "svg"
     external svg : unit -> React.element = "svg"

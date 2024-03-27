@@ -573,6 +573,11 @@ and compile_general_cases :
             break still should not be printed (it will be continuned)
            TOOD: disabled temporarily since it's not perfect yet *)
       morph_declare_to_assign cxt (fun cxt declaration ->
+          (* Exclude cases that are the same as the default if the default is defined *)
+          let cases = match default with
+            | Default lam -> List.filter (fun (_, lam1) -> not (Lam.eq_approx lam lam1)) cases
+            | _ -> cases
+          in
           let default =
             match default with
             | Complete -> None
@@ -1514,7 +1519,7 @@ and compile_prim (prim_info : Lam.prim_info)
       compile_sequand l r lambda_cxt
   | { primitive = Psequor; args = [ l; r ] } -> compile_sequor l r lambda_cxt
   | { primitive = Pdebugger; _ } ->
-      (* [%bs.debugger] guarantees that the expression does not matter
+      (* [%debugger] guarantees that the expression does not matter
          TODO: make it even safer *)
       Js_output.output_of_block_and_expression lambda_cxt.continuation
         S.debugger_block E.unit

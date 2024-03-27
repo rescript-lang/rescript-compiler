@@ -54,6 +54,7 @@ val ml_var_dot : ?comment:string -> ?dynamic_import:bool -> Ident.t -> string ->
 *)
 
 val external_var_field :
+  ?import_attributes:External_ffi_types.import_attributes ->
   ?comment:string ->
   external_name:string ->
   Ident.t ->
@@ -64,7 +65,7 @@ val external_var_field :
     Used in FFI
 *)
 
-val external_var : ?comment:string -> external_name:string -> Ident.t -> t
+val external_var : ?import_attributes:External_ffi_types.import_attributes -> ?comment:string -> external_name:string -> Ident.t -> t
 
 val ml_module_as_var : ?comment:string -> ?dynamic_import:bool -> Ident.t -> t
 

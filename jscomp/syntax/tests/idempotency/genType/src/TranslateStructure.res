@@ -347,7 +347,7 @@ and translateStructureItem = (
     |> Translation.combine
 
   | {
-      /* Bucklescript's encoding of bs.module: include with constraint. */
+      /* ReScript's encoding of @module: include with constraint. */
       Typedtree.str_desc: Tstr_include({
         incl_mod: {
           mod_desc: Tmod_constraint(

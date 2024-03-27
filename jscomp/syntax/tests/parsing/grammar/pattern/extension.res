@@ -2,9 +2,9 @@ let %patternExtension = ()
 
 let %pattern.extension = ()
 
-let %bs.raw("x") = ()
-let (%bs.raw("x") : unit) = ()
-let %bs.raw("x") as y = ()
+let %raw("x") = ()
+let (%raw("x") : unit) = ()
+let %raw("x") as y = ()
 
 let %patExt1 | %patExt2 = ()
 
@@ -19,10 +19,10 @@ switch x {
 
 let f = (%patternExtension) => ()
 let f = (%pattern.extension) => ()
-let f = (%bs.raw("x")) => ()
-let f = (%bs.raw("x"), %bs.raw("y")) => ()
-let f = (%bs.raw("x") as _y) => ()
-let f = (%bs.raw("x") : unit) => ()
+let f = (%raw("x")) => ()
+let f = (%raw("x"), %raw("y")) => ()
+let f = (%raw("x") as _y) => ()
+let f = (%raw("x") : unit) => ()
 let f = (%patExt1 | %patExt2) => ()
 
 for %ext in x to y { () }

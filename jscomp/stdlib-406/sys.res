@@ -1,4 +1,4 @@
-@@bs.config({flags: ["-bs-no-cross-module-opt"]})
+@@config({flags: ["-bs-no-cross-module-opt"]})
 /* ************************************************************************ */
 /*  */
 /* OCaml */

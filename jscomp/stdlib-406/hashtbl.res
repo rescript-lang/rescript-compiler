@@ -56,7 +56,7 @@ let randomized = ref(randomized_default)
 let randomize = () => randomized := true
 let is_randomized = () => randomized.contents
 
-let prng = lazy Random.State.make_self_init()
+let prng = Lazy.from_fun(() => Random.State.make_self_init())
 
 /* Creating a fresh, empty table */
 

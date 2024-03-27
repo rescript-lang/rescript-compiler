@@ -71,12 +71,9 @@ var Intb = Caml_module.init_mod([
         ]]
     });
 
-var a = {
-  LAZY_DONE: false,
-  VAL: (function () {
+var a = CamlinternalLazy.from_fun(function () {
       return CamlinternalLazy.force(Intb.a);
-    })
-};
+    });
 
 Caml_module.update_mod({
       TAG: "Module",
@@ -88,12 +85,9 @@ Caml_module.update_mod({
       a: a
     });
 
-var a$1 = {
-  LAZY_DONE: false,
-  VAL: (function () {
+var a$1 = CamlinternalLazy.from_fun(function () {
       return CamlinternalLazy.force(Inta.a) + 1 | 0;
-    })
-};
+    });
 
 Caml_module.update_mod({
       TAG: "Module",
@@ -147,12 +141,9 @@ var Intb$1 = Caml_module.init_mod([
         ]]
     });
 
-var a$2 = {
-  LAZY_DONE: false,
-  VAL: (function () {
+var a$2 = CamlinternalLazy.from_fun(function () {
       return CamlinternalLazy.force(Intb$1.a) + 1 | 0;
-    })
-};
+    });
 
 Caml_module.update_mod({
       TAG: "Module",
@@ -164,10 +155,9 @@ Caml_module.update_mod({
       a: a$2
     });
 
-var a$3 = {
-  LAZY_DONE: true,
-  VAL: 2
-};
+var a$3 = CamlinternalLazy.from_fun(function () {
+      return 2;
+    });
 
 Caml_module.update_mod({
       TAG: "Module",

@@ -90,7 +90,7 @@ type label = Types.label_description
 
 let find_name (attr : Parsetree.attribute) =
   match attr with
-  | ( { txt = "bs.as" | "as" },
+  | ( { txt = "as" },
       PStr
         [
           {

@@ -75,7 +75,7 @@ let _ = importNode(el, document)
 let _ = importNodeDeep(el, document)
 /* TODO: These get dead code eliminated
 let _ = registerElement(document, "my-component");
-let _ = registerElementWithOptions(document, "my-component", [%bs.raw "{}"]);
+let _ = registerElementWithOptions(document, "my-component", [%raw "{}"]);
 */
 let _ = getElementById("root", document)
 let _ = querySelector(".lstlisting", document)

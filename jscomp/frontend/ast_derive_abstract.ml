@@ -55,11 +55,11 @@ let isAbstract (xs : Ast_payload.action list) =
     so we can still reuse existing frame work
 *)
 let get_optional_attrs =
-  [Ast_attributes.bs_get; Ast_attributes.bs_return_undefined]
+  [Ast_attributes.get; Ast_attributes.bs_return_undefined]
 
 let get_attrs = [Ast_attributes.bs_get_arity]
 
-let set_attrs = [Ast_attributes.bs_set]
+let set_attrs = [Ast_attributes.set]
 
 let handleTdcl light (tdcl : Parsetree.type_declaration) :
     Parsetree.type_declaration * Parsetree.value_description list =

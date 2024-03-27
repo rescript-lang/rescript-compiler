@@ -91,6 +91,7 @@ val handle_bs_non_obj_ffi :
   t list ->
   Location.t ->
   string ->
+  dynamic_import: bool ->
   t
 
 (**************************************************************)

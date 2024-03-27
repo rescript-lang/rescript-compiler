@@ -27,7 +27,7 @@ let toString = annotation =>
 let tagIsGenType = s => s == "genType" || s == "gentype"
 let tagIsGenTypeAs = s => s == "genType.as" || s == "gentype.as"
 
-let tagIsBsAs = s => s == "bs.as"
+let tagIsAs = s => s == "as"
 
 let tagIsUnboxed = s => s == "unboxed" || s == "ocaml.unboxed"
 
@@ -103,8 +103,8 @@ let getGenTypeAsRenaming = attributes =>
   | _ => None
   }
 
-let getBsAsRenaming = attributes =>
-  switch attributes |> getAttributePayload(tagIsBsAs) {
+let getAsRenaming = attributes =>
+  switch attributes |> getAttributePayload(tagIsAs) {
   | Some(StringPayload(s)) => Some(s)
   | _ => None
   }

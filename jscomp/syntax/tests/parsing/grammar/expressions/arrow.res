@@ -22,8 +22,6 @@ let f = ((a, b)) => a + b
 let f = ((a, b), (c, d)) => a + b + c + d
 let f = (exception Terminate) => ()
 let f = (exception Terminate, exception Exit) => ()
-let f = (lazy x) => ()
-let f = (lazy x, lazy y) => ()
 let f = (list{}) => ()
 let f = (list{x, ...xs}) => x + xs->Belt.List.length
 

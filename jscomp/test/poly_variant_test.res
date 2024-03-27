@@ -32,7 +32,7 @@ type u = [
   | #on_closed
   | #on_open
   | #in_
-  /* [@bs.as "in"] TODO: warning test */
+  /* [@as "in"] TODO: warning test */
 ]
 /* indeed we have a warning here */
 /* TODO: add warning test
@@ -93,9 +93,9 @@ let register = readline => {
 /* external on : */
 /* ([ `line of (string -> unit [@bs]) */
 /* | `close of (unit -> unit [@bs])] */
-/* [@bs.string]) -> */
+/* [@string]) -> */
 /* readline -> readline  = */
-/* "on" [@@bs.send] */
+/* "on" [@@send] */
 @send
 external on2: (
   readline,

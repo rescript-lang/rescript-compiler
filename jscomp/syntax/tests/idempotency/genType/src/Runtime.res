@@ -105,7 +105,7 @@ let emitJSVariantWithPayload = (~label, x) =>
 let isMutableObjectField = name =>
   String.length(name) >= 2 && String.sub(name, String.length(name) - 2, 2) == "#="
 
-/* Mutable fields, i.e. fields annotated "[@bs.set]"
+/* Mutable fields, i.e. fields annotated "[@set]"
    are represented as extra fields called "fieldName#="
    preceding the normal field. */
 let checkMutableObjectField = (~previousName, ~name) => previousName == name ++ "#="
@@ -176,7 +176,7 @@ module Mangle = {
   keywords |> Array.iter(x => Hashtbl.add(table, "_" ++ x, x))
 
   /*
-     Apply bucklescript's mangling rules for object field names:
+     Apply ReScript's mangling rules for object field names:
      Remove trailing "__" if present.
      Otherwise remove leading "_" when followed by an uppercase letter, or keyword.
  */

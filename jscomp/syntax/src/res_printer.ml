@@ -16,49 +16,6 @@ type callbackStyle =
    *)
   | ArgumentsFitOnOneLine
 
-(* Since compiler version 8.3, the bs. prefix is no longer needed *)
-(* Synced from
-   https://github.com/rescript-lang/rescript-compiler/blob/29174de1a5fde3b16cf05d10f5ac109cfac5c4ca/jscomp/frontend/ast_external_process.ml#L291-L367 *)
-let convertBsExternalAttribute = function
-  | "bs.as" -> "as"
-  | "bs.deriving" -> "deriving"
-  | "bs.get" -> "get"
-  | "bs.get_index" -> "get_index"
-  | "bs.ignore" -> "ignore"
-  | "bs.inline" -> "inline"
-  | "bs.int" -> "int"
-  | "bs.meth" -> "meth"
-  | "bs.module" -> "module"
-  | "bs.new" -> "new"
-  | "bs.obj" -> "obj"
-  | "bs.optional" -> "optional"
-  | "bs.return" -> "return"
-  | "bs.send" -> "send"
-  | "bs.scope" -> "scope"
-  | "bs.set" -> "set"
-  | "bs.set_index" -> "set_index"
-  | "bs.splice" | "bs.variadic" -> "variadic"
-  | "bs.string" -> "string"
-  | "bs.this" -> "this"
-  | "bs.uncurry" -> "uncurry"
-  | "bs.unwrap" -> "unwrap"
-  | "bs.val" -> "val"
-  (* bs.send.pipe shouldn't be transformed *)
-  | txt -> txt
-
-(* These haven't been needed for a long time now *)
-(* Synced from
-   https://github.com/rescript-lang/rescript-compiler/blob/29174de1a5fde3b16cf05d10f5ac109cfac5c4ca/jscomp/frontend/ast_exp_extension.ml *)
-let convertBsExtension = function
-  | "bs.debugger" -> "debugger"
-  | "bs.external" -> "raw"
-  (* We should never see this one since we use the sugared object form, but still *)
-  | "bs.obj" -> "obj"
-  | "bs.raw" -> "raw"
-  | "bs.re" -> "re"
-  (* TODO: what about bs.time and bs.node? *)
-  | txt -> txt
-
 let addParens doc =
   Doc.group
     (Doc.concat
@@ -421,7 +378,7 @@ let printLongident = function
 
 type identifierStyle = ExoticIdent | NormalIdent
 
-let classifyIdentContent ?(allowUident = false) txt =
+let classifyIdentContent ?(allowUident = false) ?(allowHyphen = false) txt =
   if Token.isKeywordTxt txt then ExoticIdent
   else
     let len = String.length txt in
@@ -431,16 +388,18 @@ let classifyIdentContent ?(allowUident = false) txt =
         match String.unsafe_get txt i with
         | 'A' .. 'Z' when allowUident -> loop (i + 1)
         | 'a' .. 'z' | '_' -> loop (i + 1)
+        | '-' when allowHyphen -> loop (i + 1)
         | _ -> ExoticIdent
       else
         match String.unsafe_get txt i with
         | 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '\'' | '_' -> loop (i + 1)
+        | '-' when allowHyphen -> loop (i + 1)
         | _ -> ExoticIdent
     in
     loop 0
 
-let printIdentLike ?allowUident txt =
-  match classifyIdentContent ?allowUident txt with
+let printIdentLike ?allowUident ?allowHyphen txt =
+  match classifyIdentContent ?allowUident ?allowHyphen txt with
   | ExoticIdent -> Doc.concat [Doc.text "\\\""; Doc.text txt; Doc.text "\""]
   | NormalIdent -> Doc.text txt
 
@@ -2152,7 +2111,7 @@ and printPackageConstraint ~state i cmtTbl (longidentLoc, typ) =
     ]
 
 and printExtension ~state ~atModuleLvl (stringLoc, payload) cmtTbl =
-  let txt = convertBsExtension stringLoc.Location.txt in
+  let txt = stringLoc.Location.txt in
   let extName =
     let doc =
       Doc.concat
@@ -2962,15 +2921,25 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
         let spread =
           match spreadExpr with
           | None -> Doc.nil
-          | Some expr ->
+          | Some ({pexp_desc} as expr) ->
+            let doc =
+              match pexp_desc with
+              | Pexp_ident {txt = expr} -> printLident expr
+              | _ -> printExpression ~state expr cmtTbl
+            in
+            let docWithSpread =
+              Doc.concat
+                [
+                  Doc.dotdotdot;
+                  (match Parens.expr expr with
+                  | Parens.Parenthesized -> addParens doc
+                  | Braced braces -> printBraces doc expr braces
+                  | Nothing -> doc);
+                ]
+            in
             Doc.concat
               [
-                Doc.dotdotdot;
-                (let doc = printExpressionWithComments ~state expr cmtTbl in
-                 match Parens.expr expr with
-                 | Parens.Parenthesized -> addParens doc
-                 | Braced braces -> printBraces doc expr braces
-                 | Nothing -> doc);
+                printComments docWithSpread cmtTbl expr.Parsetree.pexp_loc;
                 Doc.comma;
                 Doc.line;
               ]
@@ -3012,7 +2981,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
              ])
     | Pexp_extension extension -> (
       match extension with
-      | ( {txt = "bs.obj" | "obj"},
+      | ( {txt = "obj"},
           PStr
             [
               {
@@ -3046,6 +3015,9 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
                Doc.rbrace;
              ])
       | extension -> printExtension ~state ~atModuleLvl:false extension cmtTbl)
+    | Pexp_apply (e, [(Nolabel, {pexp_desc = Pexp_array subLists})])
+      when ParsetreeViewer.isSpreadBeltArrayConcat e ->
+      printBeltArrayConcatApply ~state subLists cmtTbl
     | Pexp_apply (e, [(Nolabel, {pexp_desc = Pexp_array subLists})])
       when ParsetreeViewer.isSpreadBeltListConcat e ->
       printBeltListConcatApply ~state subLists cmtTbl
@@ -3813,6 +3785,61 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
          ])
   | _ -> Doc.nil
 
+and printBeltArrayConcatApply ~state subLists cmtTbl =
+  let makeSpreadDoc commaBeforeSpread = function
+    | Some expr ->
+      Doc.concat
+        [
+          commaBeforeSpread;
+          Doc.dotdotdot;
+          (let doc = printExpressionWithComments ~state expr cmtTbl in
+           match Parens.expr expr with
+           | Parens.Parenthesized -> addParens doc
+           | Braced braces -> printBraces doc expr braces
+           | Nothing -> doc);
+        ]
+    | None -> Doc.nil
+  in
+  let makeSubListDoc (expressions, spread) =
+    let commaBeforeSpread =
+      match expressions with
+      | [] -> Doc.nil
+      | _ -> Doc.concat [Doc.text ","; Doc.line]
+    in
+    let spreadDoc = makeSpreadDoc commaBeforeSpread spread in
+    Doc.concat
+      [
+        Doc.join
+          ~sep:(Doc.concat [Doc.text ","; Doc.line])
+          (List.map
+             (fun expr ->
+               let doc = printExpressionWithComments ~state expr cmtTbl in
+               match Parens.expr expr with
+               | Parens.Parenthesized -> addParens doc
+               | Braced braces -> printBraces doc expr braces
+               | Nothing -> doc)
+             expressions);
+        spreadDoc;
+      ]
+  in
+  Doc.group
+    (Doc.concat
+       [
+         Doc.lbracket;
+         Doc.indent
+           (Doc.concat
+              [
+                Doc.softLine;
+                Doc.join
+                  ~sep:(Doc.concat [Doc.text ","; Doc.line])
+                  (List.map makeSubListDoc
+                     (List.map ParsetreeViewer.collectArrayExpressions subLists));
+              ]);
+         Doc.trailingComma;
+         Doc.softLine;
+         Doc.rbracket;
+       ])
+
 and printBeltListConcatApply ~state subLists cmtTbl =
   let makeSpreadDoc commaBeforeSpread = function
     | Some expr ->
@@ -4404,7 +4431,7 @@ and printJsxProp ~state arg cmtTbl =
  * Navabar.createElement -> Navbar
  * Staff.Users.createElement -> Staff.Users *)
 and printJsxName {txt = lident} =
-  let printIdent = printIdentLike ~allowUident:true in
+  let printIdent = printIdentLike ~allowUident:true ~allowHyphen:true in
   let rec flatten acc lident =
     match lident with
     | Longident.Lident txt -> printIdent txt :: acc
@@ -5406,7 +5433,7 @@ and printAttribute ?(standalone = false) ~state
         (Doc.concat
            [
              Doc.text (if standalone then "@@" else "@");
-             Doc.text (convertBsExternalAttribute id.txt);
+             Doc.text id.txt;
              printPayload ~state payload cmtTbl;
            ]),
       Doc.line )

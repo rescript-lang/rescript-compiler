@@ -102,14 +102,14 @@ type domProps = {
   /* accessibility */
   /* https://www.w3.org/TR/wai-aria-1.1/ */
   /* https://accessibilityresources.org/<aria-tag> is a great resource for these */
-  /* [@bs.optional] [@bs.as "aria-current"] ariaCurrent: page|step|location|date|time|true|false, */
+  /* [@optional] [@as "aria-current"] ariaCurrent: page|step|location|date|time|true|false, */
   @optional @as("aria-details")
   ariaDetails: string,
   @optional @as("aria-disabled")
   ariaDisabled: bool,
   @optional @as("aria-hidden")
   ariaHidden: bool,
-  /* [@bs.optional] [@bs.as "aria-invalid"] ariaInvalid: grammar|false|spelling|true, */
+  /* [@optional] [@as "aria-invalid"] ariaInvalid: grammar|false|spelling|true, */
   @optional @as("aria-keyshortcuts")
   ariaKeyshortcuts: string,
   @optional @as("aria-label")
@@ -117,11 +117,11 @@ type domProps = {
   @optional @as("aria-roledescription")
   ariaRoledescription: string,
   /* Widget Attributes */
-  /* [@bs.optional] [@bs.as "aria-autocomplete"] ariaAutocomplete: inline|list|both|none, */
-  /* [@bs.optional] [@bs.as "aria-checked"] ariaChecked: true|false|mixed, /* https://www.w3.org/TR/wai-aria-1.1/#valuetype_tristate */ */
+  /* [@optional] [@as "aria-autocomplete"] ariaAutocomplete: inline|list|both|none, */
+  /* [@optional] [@as "aria-checked"] ariaChecked: true|false|mixed, /* https://www.w3.org/TR/wai-aria-1.1/#valuetype_tristate */ */
   @optional @as("aria-expanded")
   ariaExpanded: bool,
-  /* [@bs.optional] [@bs.as "aria-haspopup"] ariaHaspopup: false|true|menu|listbox|tree|grid|dialog, */
+  /* [@optional] [@as "aria-haspopup"] ariaHaspopup: false|true|menu|listbox|tree|grid|dialog, */
   @optional @as("aria-level")
   ariaLevel: int,
   @optional @as("aria-modal")
@@ -130,10 +130,10 @@ type domProps = {
   ariaMultiline: bool,
   @optional @as("aria-multiselectable")
   ariaMultiselectable: bool,
-  /* [@bs.optional] [@bs.as "aria-orientation"] ariaOrientation: horizontal|vertical|undefined, */
+  /* [@optional] [@as "aria-orientation"] ariaOrientation: horizontal|vertical|undefined, */
   @optional @as("aria-placeholder")
   ariaPlaceholder: string,
-  /* [@bs.optional] [@bs.as "aria-pressed"] ariaPressed: true|false|mixed, /* https://www.w3.org/TR/wai-aria-1.1/#valuetype_tristate */ */
+  /* [@optional] [@as "aria-pressed"] ariaPressed: true|false|mixed, /* https://www.w3.org/TR/wai-aria-1.1/#valuetype_tristate */ */
   @optional @as("aria-readonly")
   ariaReadonly: bool,
   @optional @as("aria-required")
@@ -155,11 +155,11 @@ type domProps = {
   ariaAtomic: bool,
   @optional @as("aria-busy")
   ariaBusy: bool,
-  /* [@bs.optional] [@bs.as "aria-live"] ariaLive: off|polite|assertive|rude, */
+  /* [@optional] [@as "aria-live"] ariaLive: off|polite|assertive|rude, */
   @optional @as("aria-relevant")
   ariaRelevant: string,
   /* Drag-and-Drop Attributes */
-  /* [@bs.optional] [@bs.as "aria-dropeffect"] ariaDropeffect: copy|move|link|execute|popup|none, */
+  /* [@optional] [@as "aria-dropeffect"] ariaDropeffect: copy|move|link|execute|popup|none, */
   @optional @as("aria-grabbed")
   ariaGrabbed: bool,
   /* Relationship Attributes */
@@ -1107,14 +1107,14 @@ type props = {
   /* accessibility */
   /* https://www.w3.org/TR/wai-aria-1.1/ */
   /* https://accessibilityresources.org/<aria-tag> is a great resource for these */
-  /* [@bs.optional] [@bs.as "aria-current"] ariaCurrent: page|step|location|date|time|true|false, */
+  /* [@optional] [@as "aria-current"] ariaCurrent: page|step|location|date|time|true|false, */
   @optional @as("aria-details")
   ariaDetails: string,
   @optional @as("aria-disabled")
   ariaDisabled: bool,
   @optional @as("aria-hidden")
   ariaHidden: bool,
-  /* [@bs.optional] [@bs.as "aria-invalid"] ariaInvalid: grammar|false|spelling|true, */
+  /* [@optional] [@as "aria-invalid"] ariaInvalid: grammar|false|spelling|true, */
   @optional @as("aria-keyshortcuts")
   ariaKeyshortcuts: string,
   @optional @as("aria-label")
@@ -1122,11 +1122,11 @@ type props = {
   @optional @as("aria-roledescription")
   ariaRoledescription: string,
   /* Widget Attributes */
-  /* [@bs.optional] [@bs.as "aria-autocomplete"] ariaAutocomplete: inline|list|both|none, */
-  /* [@bs.optional] [@bs.as "aria-checked"] ariaChecked: true|false|mixed, /* https://www.w3.org/TR/wai-aria-1.1/#valuetype_tristate */ */
+  /* [@optional] [@as "aria-autocomplete"] ariaAutocomplete: inline|list|both|none, */
+  /* [@optional] [@as "aria-checked"] ariaChecked: true|false|mixed, /* https://www.w3.org/TR/wai-aria-1.1/#valuetype_tristate */ */
   @optional @as("aria-expanded")
   ariaExpanded: bool,
-  /* [@bs.optional] [@bs.as "aria-haspopup"] ariaHaspopup: false|true|menu|listbox|tree|grid|dialog, */
+  /* [@optional] [@as "aria-haspopup"] ariaHaspopup: false|true|menu|listbox|tree|grid|dialog, */
   @optional @as("aria-level")
   ariaLevel: int,
   @optional @as("aria-modal")
@@ -1135,10 +1135,10 @@ type props = {
   ariaMultiline: bool,
   @optional @as("aria-multiselectable")
   ariaMultiselectable: bool,
-  /* [@bs.optional] [@bs.as "aria-orientation"] ariaOrientation: horizontal|vertical|undefined, */
+  /* [@optional] [@as "aria-orientation"] ariaOrientation: horizontal|vertical|undefined, */
   @optional @as("aria-placeholder")
   ariaPlaceholder: string,
-  /* [@bs.optional] [@bs.as "aria-pressed"] ariaPressed: true|false|mixed, /* https://www.w3.org/TR/wai-aria-1.1/#valuetype_tristate */ */
+  /* [@optional] [@as "aria-pressed"] ariaPressed: true|false|mixed, /* https://www.w3.org/TR/wai-aria-1.1/#valuetype_tristate */ */
   @optional @as("aria-readonly")
   ariaReadonly: bool,
   @optional @as("aria-required")
@@ -1160,11 +1160,11 @@ type props = {
   ariaAtomic: bool,
   @optional @as("aria-busy")
   ariaBusy: bool,
-  /* [@bs.optional] [@bs.as "aria-live"] ariaLive: off|polite|assertive|rude, */
+  /* [@optional] [@as "aria-live"] ariaLive: off|polite|assertive|rude, */
   @optional @as("aria-relevant")
   ariaRelevant: string,
   /* Drag-and-Drop Attributes */
-  /* [@bs.optional] [@bs.as "aria-dropeffect"] ariaDropeffect: copy|move|link|execute|popup|none, */
+  /* [@optional] [@as "aria-dropeffect"] ariaDropeffect: copy|move|link|execute|popup|none, */
   @optional @as("aria-grabbed")
   ariaGrabbed: bool,
   /* Relationship Attributes */

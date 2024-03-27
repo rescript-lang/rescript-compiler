@@ -262,7 +262,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
          args)
   | [] -> args
 
-(* Build an AST node for the [@bs.obj] representing props for a component *)
+(* Build an AST node for the [@obj] representing props for a component *)
 let makePropsValue fnName loc namedArgListWithKeyAndRef propsType =
   let propsName = fnName ^ "Props" in
   {
@@ -277,11 +277,11 @@ let makePropsValue fnName loc namedArgListWithKeyAndRef propsType =
            }
            propsType);
     pval_prim = [""];
-    pval_attributes = [({txt = "bs.obj"; loc}, PStr [])];
+    pval_attributes = [({txt = "obj"; loc}, PStr [])];
     pval_loc = loc;
   }
 
-(* Build an AST node representing an `external` with the definition of the [@bs.obj] *)
+(* Build an AST node representing an `external` with the definition of the [@obj] *)
 let makePropsExternal fnName loc namedArgListWithKeyAndRef propsType =
   {
     pstr_loc = loc;

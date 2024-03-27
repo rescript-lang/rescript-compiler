@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-@@bs.config({flags: ["-bs-no-cross-module-opt"]})
+@@config({flags: ["-bs-no-cross-module-opt"]})
 
 /* Internals of forcing lazy values. */
 type t<'a> = {
@@ -35,6 +35,7 @@ type t<'a> = {
 %%private(external fnToVal: ((. unit) => 'a) => 'a = "%identity")
 %%private(external valToFn: 'a => (. unit) => 'a = "%identity")
 %%private(external castToConcrete: lazy_t<'a> => t<'a> = "%identity")
+%%private(external castFromConcrete: t<'a> => lazy_t<'a> = "%identity")
 
 let is_val = (type a, l: lazy_t<a>): bool => castToConcrete(l).tag
 
@@ -89,4 +90,20 @@ let force_val = (type a, lzv: lazy_t<a>): a => {
   } else {
     force_val_lazy_block(lzv)
   }
+}
+
+let from_fun = (type a, closure: (. unit) => a): lazy_t<a> => {
+  let blk = {
+    tag: false,
+    value: fnToVal(closure),
+  }
+  castFromConcrete(blk)
+}
+
+let from_val = (type a, value: a): lazy_t<a> => {
+  let blk = {
+    tag: true,
+    value: value,
+  }
+  castFromConcrete(blk)
 }

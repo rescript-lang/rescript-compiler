@@ -75,9 +75,6 @@ let _ = switch "anything" {
 // Ppat_constraint
 let /* c0 */ number /* c1 */: /* c2 */ int /* c3 */ = 123
 
-// Ppat_lazy
-let /* before */ lazy /* a */ x /* b */ /* after */ = lazy 1
-
 // Ppat_unpack 
 let /* before */ module(/* h1 */ Hashtbl /* h2 */) /* after */ = Hashtbl
 let /* before */ module(/* h1 */ Hashtbl /* h2 */: /* h3 */ MutableTable /* h4 */) /* after */ = Hashtbl

@@ -4,18 +4,14 @@
 var Mt = require("./mt.js");
 var Lazy = require("../../lib/js/lazy.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
-var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 var u = {
   contents: 3
 };
 
-var v = {
-  LAZY_DONE: false,
-  VAL: (function () {
+var v = CamlinternalLazy.from_fun(function () {
       u.contents = 32;
-    })
-};
+    });
 
 function lazy_test(param) {
   var h = u.contents;
@@ -27,161 +23,62 @@ function lazy_test(param) {
         ];
 }
 
-function f(x) {
-  CamlinternalLazy.force(x[0]);
-  var match = x[2].contents;
-  if (match === undefined) {
-    return 0;
-  }
-  CamlinternalLazy.force(x[1]);
-  var x$1 = x[2].contents;
-  if (x$1 !== undefined) {
-    return 1;
-  }
-  throw new Error("Match_failure", {
-            cause: {
-              RE_EXN_ID: "Match_failure",
-              _1: [
-                "lazy_test.res",
-                14,
-                2
-              ]
-            }
-          });
-}
-
-var s = {
-  contents: undefined
-};
-
-var set_true = {
-  LAZY_DONE: false,
-  VAL: (function () {
-      s.contents = 1;
-    })
-};
-
-var set_false = {
-  LAZY_DONE: false,
-  VAL: (function () {
-      s.contents = undefined;
-    })
-};
-
-var h;
-
-try {
-  h = f([
-        set_true,
-        set_false,
-        s
-      ]);
-}
-catch (raw_exn){
-  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn.RE_EXN_ID === "Match_failure") {
-    h = 2;
-  } else {
-    throw new Error(exn.RE_EXN_ID, {
-              cause: exn
-            });
-  }
-}
-
 var u_v = {
   contents: 0
 };
 
-var u$1 = {
-  LAZY_DONE: false,
-  VAL: (function () {
+var u$1 = CamlinternalLazy.from_fun(function () {
       u_v.contents = 2;
-    })
-};
+    });
 
 CamlinternalLazy.force(u$1);
 
 var exotic = CamlinternalLazy.force;
 
-var l_from_fun = {
-  LAZY_DONE: false,
-  VAL: (function () {
+var l_from_fun = CamlinternalLazy.from_fun(function () {
       return 3;
-    })
-};
+    });
 
-var forward_test = {
-  LAZY_DONE: false,
-  VAL: (function () {
+var forward_test = CamlinternalLazy.from_fun(function () {
       var u = 3;
       u = u + 1 | 0;
       return u;
-    })
-};
+    });
 
-var f005 = {
-  LAZY_DONE: true,
-  VAL: 6
-};
+var f005 = CamlinternalLazy.from_fun(function () {
+      return 6;
+    });
 
-var f006 = {
-  LAZY_DONE: false,
-  VAL: (function () {
+var f006 = CamlinternalLazy.from_fun(function () {
       return function (param) {
         return 3;
       };
-    })
-};
+    });
 
-var f007 = {
-  LAZY_DONE: false,
-  VAL: (function () {
-      throw new Error("Not_found", {
-                cause: {
-                  RE_EXN_ID: "Not_found"
-                }
-              });
-    })
-};
+var f007 = CamlinternalLazy.from_fun(function () {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
+    });
 
-var f008 = {
-  LAZY_DONE: false,
-  VAL: (function () {
+var f008 = CamlinternalLazy.from_fun(function () {
       console.log("hi");
-      throw new Error("Not_found", {
-                cause: {
-                  RE_EXN_ID: "Not_found"
-                }
-              });
-    })
-};
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
+    });
 
-function a2(x) {
-  return {
-          LAZY_DONE: true,
-          VAL: x
-        };
-}
+var a2 = CamlinternalLazy.from_val;
 
-var a3 = {
-  LAZY_DONE: true,
-  VAL: 3
-};
+var a3 = CamlinternalLazy.from_val(3);
 
-var a4 = {
-  LAZY_DONE: true,
-  VAL: 3
-};
+var a4 = CamlinternalLazy.from_val(3);
 
-var a5 = {
-  LAZY_DONE: true,
-  VAL: undefined
-};
+var a5 = CamlinternalLazy.from_val(undefined);
 
-var a6 = {
-  LAZY_DONE: true,
-  VAL: undefined
-};
+var a6 = CamlinternalLazy.from_val();
 
 var a7 = CamlinternalLazy.force(a5);
 
@@ -203,80 +100,70 @@ Mt.from_pair_suites("Lazy_test", {
       ],
       tl: {
         hd: [
-          "lazy_match",
+          "lazy_force",
           (function (param) {
               return {
                       TAG: "Eq",
-                      _0: h,
+                      _0: u_v.contents,
                       _1: 2
                     };
             })
         ],
         tl: {
           hd: [
-            "lazy_force",
+            "lazy_from_fun",
             (function (param) {
                 return {
                         TAG: "Eq",
-                        _0: u_v.contents,
-                        _1: 2
+                        _0: CamlinternalLazy.force(l_from_fun),
+                        _1: 3
                       };
               })
           ],
           tl: {
             hd: [
-              "lazy_from_fun",
+              "lazy_from_val",
               (function (param) {
                   return {
                           TAG: "Eq",
-                          _0: CamlinternalLazy.force(l_from_fun),
+                          _0: CamlinternalLazy.force(CamlinternalLazy.from_val(3)),
                           _1: 3
                         };
                 })
             ],
             tl: {
               hd: [
-                "lazy_from_val",
+                "lazy_from_val2",
                 (function (param) {
                     return {
                             TAG: "Eq",
-                            _0: CamlinternalLazy.force({
-                                  LAZY_DONE: true,
-                                  VAL: 3
-                                }),
+                            _0: CamlinternalLazy.force(CamlinternalLazy.force(CamlinternalLazy.from_val(CamlinternalLazy.from_fun(function () {
+                                              return 3;
+                                            })))),
                             _1: 3
                           };
                   })
               ],
               tl: {
                 hd: [
-                  "lazy_from_val2",
+                  "lazy_from_val3",
                   (function (param) {
+                      debugger;
                       return {
                               TAG: "Eq",
-                              _0: CamlinternalLazy.force(CamlinternalLazy.force({
-                                        LAZY_DONE: true,
-                                        VAL: {
-                                          LAZY_DONE: true,
-                                          VAL: 3
-                                        }
-                                      })),
-                              _1: 3
+                              _0: CamlinternalLazy.force(CamlinternalLazy.force(CamlinternalLazy.from_val(forward_test))),
+                              _1: 4
                             };
                     })
                 ],
                 tl: {
                   hd: [
-                    "lazy_from_val3",
+                    "lazy_test.res",
                     (function (param) {
-                        debugger;
                         return {
                                 TAG: "Eq",
-                                _0: CamlinternalLazy.force(CamlinternalLazy.force({
-                                          LAZY_DONE: true,
-                                          VAL: forward_test
-                                        })),
-                                _1: 4
+                                _0: a3,
+                                _1: a4
                               };
                       })
                   ],
@@ -286,8 +173,8 @@ Mt.from_pair_suites("Lazy_test", {
                       (function (param) {
                           return {
                                   TAG: "Eq",
-                                  _0: a3,
-                                  _1: a4
+                                  _0: a7,
+                                  _1: undefined
                                 };
                         })
                     ],
@@ -297,56 +184,37 @@ Mt.from_pair_suites("Lazy_test", {
                         (function (param) {
                             return {
                                     TAG: "Eq",
-                                    _0: a7,
+                                    _0: a8,
                                     _1: undefined
                                   };
                           })
                       ],
                       tl: {
                         hd: [
-                          "lazy_test.res",
+                          "File \"lazy_test.res\", line 95, characters 7-14",
                           (function (param) {
                               return {
-                                      TAG: "Eq",
-                                      _0: a8,
-                                      _1: undefined
+                                      TAG: "Ok",
+                                      _0: Lazy.is_val(CamlinternalLazy.from_val(3))
                                     };
                             })
                         ],
                         tl: {
                           hd: [
-                            "File \"lazy_test.res\", line 98, characters 7-14",
+                            "File \"lazy_test.res\", line 96, characters 7-14",
                             (function (param) {
                                 return {
                                         TAG: "Ok",
-                                        _0: Lazy.is_val({
-                                              LAZY_DONE: true,
-                                              VAL: 3
-                                            })
+                                        _0: !Lazy.is_val(CamlinternalLazy.from_fun(function () {
+                                                  throw {
+                                                        RE_EXN_ID: "Not_found",
+                                                        Error: new Error()
+                                                      };
+                                                }))
                                       };
                               })
                           ],
-                          tl: {
-                            hd: [
-                              "File \"lazy_test.res\", line 99, characters 7-14",
-                              (function (param) {
-                                  return {
-                                          TAG: "Ok",
-                                          _0: !Lazy.is_val({
-                                                LAZY_DONE: false,
-                                                VAL: (function () {
-                                                    throw new Error("Not_found", {
-                                                              cause: {
-                                                                RE_EXN_ID: "Not_found"
-                                                              }
-                                                            });
-                                                  })
-                                              })
-                                        };
-                                })
-                            ],
-                            tl: /* [] */0
-                          }
+                          tl: /* [] */0
                         }
                       }
                     }
@@ -361,11 +229,6 @@ Mt.from_pair_suites("Lazy_test", {
 
 exports.v = v;
 exports.lazy_test = lazy_test;
-exports.f = f;
-exports.s = s;
-exports.set_true = set_true;
-exports.set_false = set_false;
-exports.h = h;
 exports.u_v = u_v;
 exports.u = u$1;
 exports.exotic = exotic;
@@ -382,4 +245,4 @@ exports.a5 = a5;
 exports.a6 = a6;
 exports.a7 = a7;
 exports.a8 = a8;
-/* h Not a pure module */
+/*  Not a pure module */

@@ -5,17 +5,17 @@ external on : process ->
   [
   `beforeExit 
   | `exit 
-  ] ->  unit Js.fn -> unit = "on" [@@bs.send]
+  ] ->  unit Js.fn -> unit = "on" [@@send]
 
 
-external p : process = "process" [@@bs.val]
+external p : process = "process" [@@val]
 
 
 external on_hi : process -> 
   [
   `hello
   | `xx
-  ] ->  (unit*unit) Js.fn -> unit = "on" [@@bs.send]
+  ] ->  (unit*unit) Js.fn -> unit = "on" [@@send]
 
 type 'a t 
 

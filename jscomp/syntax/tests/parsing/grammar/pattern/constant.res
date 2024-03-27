@@ -83,7 +83,6 @@ switch science {
 | -4.15 as x => true
 | -4.15 | +4.15 => true
 | (-3.14 : float) => true
-| lazy 5.678 => true
 | exception 19.34 => true
 | _ => false
 }
@@ -99,7 +98,6 @@ switch literal {
 | `literal` as x => true
 | `literal` | `literal` => true
 | (`literal` : string) => true
-| lazy `literal`  => true
 | exception `literal` => true
 | _ => false
 }

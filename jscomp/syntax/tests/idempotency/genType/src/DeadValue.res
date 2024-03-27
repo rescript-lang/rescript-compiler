@@ -12,12 +12,12 @@ let whiteListSideEffects = list{
   "Int64.one",
   "String.length",
 }
-let whiteTableSideEffects = lazy {
+let whiteTableSideEffects = Lazy.from_fun(() => {
   let tbl = Hashtbl.create(11)
 
   whiteListSideEffects |> List.iter(s => Hashtbl.add(tbl, s, ()))
   tbl
-}
+})
 
 let pathIsWhitelistedForSideEffects = path =>
   switch path |> Path.flatten {

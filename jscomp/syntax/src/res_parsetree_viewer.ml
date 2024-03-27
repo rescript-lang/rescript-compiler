@@ -104,6 +104,11 @@ let hasAwaitAttribute attrs =
       | _ -> false)
     attrs
 
+let collectArrayExpressions expr =
+  match expr.pexp_desc with
+  | Pexp_array exprs -> (exprs, None)
+  | _ -> ([], Some expr)
+
 let collectListExpressions expr =
   let rec collect acc expr =
     match expr.pexp_desc with
@@ -219,7 +224,8 @@ let filterParsingAttrs attrs =
             Location.txt =
               ( "bs" | "res.uapp" | "res.arity" | "res.braces" | "ns.braces"
               | "res.iflet" | "res.namedArgLoc" | "res.optional" | "res.ternary"
-              | "res.async" | "res.await" | "res.template" );
+              | "res.async" | "res.await" | "res.template"
+              | "res.taggedTemplate" );
           },
           _ ) ->
         false
@@ -256,7 +262,7 @@ let isHuggableExpression expr =
   | Pexp_array _ | Pexp_tuple _
   | Pexp_constant (Pconst_string (_, Some _))
   | Pexp_construct ({txt = Longident.Lident ("::" | "[]")}, _)
-  | Pexp_extension ({txt = "bs.obj" | "obj"}, _)
+  | Pexp_extension ({txt = "obj"}, _)
   | Pexp_record _ ->
     true
   | _ when isBlockExpr expr -> true
@@ -267,7 +273,7 @@ let isHuggableExpression expr =
 let isHuggableRhs expr =
   match expr.pexp_desc with
   | Pexp_array _ | Pexp_tuple _
-  | Pexp_extension ({txt = "bs.obj" | "obj"}, _)
+  | Pexp_extension ({txt = "obj"}, _)
   | Pexp_record _ ->
     true
   | _ when isBracedExpr expr -> true
@@ -674,6 +680,17 @@ let isSpreadBeltListConcat expr =
         txt =
           Longident.Ldot
             (Longident.Ldot (Longident.Lident "Belt", "List"), "concatMany");
+      } ->
+    hasSpreadAttr expr.pexp_attributes
+  | _ -> false
+
+let isSpreadBeltArrayConcat expr =
+  match expr.pexp_desc with
+  | Pexp_ident
+      {
+        txt =
+          Longident.Ldot
+            (Longident.Ldot (Longident.Lident "Belt", "Array"), "concatMany");
       } ->
     hasSpreadAttr expr.pexp_attributes
   | _ -> false

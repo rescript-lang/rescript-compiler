@@ -1,5 +1,5 @@
 @val("x") external f: int => int = ""
-/* [@@bs.scope "u"] [@@bs.scope "uuu"] */
+/* [@@scope "u"] [@@scope "uuu"] */
 @val("x") external ff: int => int = ""
 let h = f(3)
 let hh = ff(3)

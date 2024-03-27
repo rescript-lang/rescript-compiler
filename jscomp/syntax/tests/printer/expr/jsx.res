@@ -6,8 +6,8 @@ let x = <Foo.bar className="container" />
 let x = <Foo.baz
  className="multiline"
 />
-let x = <\"custom-tag" className="container" />
-let x = <Foo.\"custom-tag" className="container" />
+let x = <custom-tag className="container" />
+let x = <Foo.custom-tag className="container" />
 
 // https://github.com/rescript-lang/syntax/issues/570
 let x = <A> <B> <C> <D /> <E /> </C> <F> <G /> <H /> </F> </B> </A>
@@ -15,8 +15,8 @@ let x = <A> {children} <B/> </A>
 let x = <A> <B/> {children} </A>
 let x = <A> {a} </A>
 let x = <A> {a} {b} </A>
-let x = <\"custom-tag" className="container" > {a} <B/> </\"custom-tag">
-let x = <Foo.\"custom-tag" className="container" > {a} <B/> </Foo.\"custom-tag">
+let x = <custom-tag className="container" > {a} <B/> </custom-tag>
+let x = <Foo.custom-tag className="container" > {a} <B/> </Foo.custom-tag>
 
 let x =
   <div
@@ -176,7 +176,6 @@ let x =
       exception Exit;
       raise(Exit)
     }}
-    lazyExpr={lazy stuff()}
     assertExpr={assert(true)}
     pack=module(Foo)
     pack={module(Foo)}
@@ -248,7 +247,6 @@ let x =
       exception Exit;
       raise(Exit)
     }}
-    {lazy stuff()}
     {assert(true)}
     {module(Foo)}
     module(Foo)
@@ -414,3 +412,34 @@ let x = props =>
     {...props}
     className="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight"
   />
+
+let x = <C> ...{() => msg->React.string} </C>
+
+let x = <C> ...{array->Array.map(React.string)} </C>
+
+let x = <> ...{array->Array.map(React.string)} </>
+
+let x = {
+  let _ = <div />
+  msg->React.string
+}
+
+let x = {
+  let _ = <div> {children} </div>
+  msg->React.string
+}
+
+let x = {
+  let _ = <> {children} </>
+  msg->React.string
+}
+
+let x = {
+  let _ = <C />
+  msg->React.string
+}
+
+let x = {
+  let _ = <C> {children} </C>
+  msg->React.string
+}

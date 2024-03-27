@@ -1844,7 +1844,7 @@ module Printer = {
     | Pexp_extension(extension) =>
       switch extension {
       | /
-          {txt: "bs.obj"},
+          {txt: "obj"},
           PStr(
             list({
               pstr_loc: loc,

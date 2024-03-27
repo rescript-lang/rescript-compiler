@@ -20,7 +20,7 @@ type state = {
 }
 
 type state = {
-  @bs.meth
+  @meth
   "send": string =>
 }
 
@@ -30,7 +30,7 @@ type state = {
 }
 
 type state = {
-  @bs.set "age": ,
+  @set "age": ,
   "name": string
 }
 

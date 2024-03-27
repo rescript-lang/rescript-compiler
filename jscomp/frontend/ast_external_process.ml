@@ -248,12 +248,17 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
           {
             st with
             external_module_name =
-              Some {bundle; module_bind_name = Phint_nothing};
+              Some
+                {
+                  bundle;
+                  module_bind_name = Phint_nothing;
+                  import_attributes = None;
+                };
           } )
       else
         let action () =
           match txt with
-          | "bs.val" | "val" ->
+          | "val" ->
             if no_arguments then
               {st with val_name = Some (name_from_payload_or_prim ~loc payload)}
             else
@@ -261,32 +266,117 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                 st with
                 call_name = Some (name_from_payload_or_prim ~loc payload);
               }
-          | "bs.module" | "module" -> (
-            match Ast_payload.assert_strings loc payload with
-            | [bundle] ->
-              {
-                st with
-                external_module_name =
-                  Some {bundle; module_bind_name = Phint_nothing};
-              }
-            | [bundle; bind_name] ->
-              {
-                st with
-                external_module_name =
-                  Some {bundle; module_bind_name = Phint_name bind_name};
-              }
-            | [] ->
-              {
-                st with
-                module_as_val =
-                  Some
-                    {
-                      bundle = prim_name_or_pval_prim.name;
-                      module_bind_name = Phint_nothing;
-                    };
-              }
-            | _ -> Bs_syntaxerr.err loc Illegal_attribute)
-          | "bs.scope" | "scope" -> (
+          | "module" -> (
+            match payload with
+            | PStr
+                [
+                  {
+                    pstr_desc =
+                      Pstr_eval
+                        ({pexp_loc; pexp_desc = Pexp_record (fields, _); _}, _);
+                    _;
+                  };
+                ] -> (
+              let fromName = ref None in
+              let with_ = ref None in
+              fields
+              |> List.iter
+                   (fun
+                     ((l, exp) :
+                       Longident.t Location.loc * Parsetree.expression)
+                   ->
+                     match (l, exp.pexp_desc) with
+                     | ( {txt = Lident "from"; _},
+                         Pexp_constant (Pconst_string (s, _)) ) ->
+                       fromName := Some s
+                     | {txt = Lident "with"; _}, Pexp_record (fields, _) ->
+                       with_ := Some fields
+                     | _ -> ());
+              match (!fromName, !with_) with
+              | None, _ ->
+                Location.raise_errorf ~loc:pexp_loc
+                  "@module annotations with import attributes must have a \
+                   \"from\" field. This \"from\" field should point to the JS \
+                   module to import, just like the string payload to @module \
+                   normally does."
+              | Some _, None ->
+                Location.raise_errorf ~loc:pexp_loc
+                  "@module annotations with import attributes must have a \
+                   \"with\" field. This \"with\" field should hold a record of \
+                   the import attributes you want applied to the import."
+              | Some fromName, Some withFields ->
+                let importAttributesFromRecord =
+                  withFields
+                  |> List.filter_map
+                       (fun
+                         ((l, exp) :
+                           Longident.t Location.loc * Parsetree.expression)
+                       ->
+                         match exp.pexp_desc with
+                         | Pexp_constant (Pconst_string (s, _)) -> (
+                           match l.txt with
+                           | Longident.Lident "type_" -> Some ("type", s)
+                           | Longident.Lident txt -> Some (txt, s)
+                           | _ ->
+                             Location.raise_errorf ~loc:exp.pexp_loc
+                               "Field must be a regular key.")
+                         | _ ->
+                           Location.raise_errorf ~loc:exp.pexp_loc
+                             "Only string values are allowed here.")
+                in
+                let import_attributes =
+                  Hashtbl.create (List.length importAttributesFromRecord)
+                in
+                importAttributesFromRecord
+                |> List.iter (fun (key, value) ->
+                       Hashtbl.replace import_attributes key value);
+                {
+                  st with
+                  external_module_name =
+                    Some
+                      {
+                        bundle = fromName;
+                        module_bind_name = Phint_nothing;
+                        import_attributes = Some import_attributes;
+                      };
+                })
+            | _ -> (
+              match Ast_payload.assert_strings loc payload with
+              | [bundle] ->
+                {
+                  st with
+                  external_module_name =
+                    Some
+                      {
+                        bundle;
+                        module_bind_name = Phint_nothing;
+                        import_attributes = None;
+                      };
+                }
+              | [bundle; bind_name] ->
+                {
+                  st with
+                  external_module_name =
+                    Some
+                      {
+                        bundle;
+                        module_bind_name = Phint_name bind_name;
+                        import_attributes = None;
+                      };
+                }
+              | [] ->
+                {
+                  st with
+                  module_as_val =
+                    Some
+                      {
+                        bundle = prim_name_or_pval_prim.name;
+                        module_bind_name = Phint_nothing;
+                        import_attributes = None;
+                      };
+                }
+              | _ -> Bs_syntaxerr.err loc Illegal_attribute))
+          | "scope" -> (
             match Ast_payload.assert_strings loc payload with
             | [] -> Bs_syntaxerr.err loc Illegal_attribute
             (* We need err on empty scope, so we can tell the difference
@@ -294,29 +384,29 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
             *)
             | scopes -> {st with scopes})
           | "taggedTemplate" -> {st with splice = true; tagged_template = true}
-          | "bs.splice" | "bs.variadic" | "variadic" -> {st with splice = true}
-          | "bs.send" | "send" ->
+          | "variadic" -> {st with splice = true}
+          | "send" ->
             {st with val_send = Some (name_from_payload_or_prim ~loc payload)}
-          | "bs.set" | "set" ->
+          | "set" ->
             {st with set_name = Some (name_from_payload_or_prim ~loc payload)}
-          | "bs.get" | "get" ->
+          | "get" ->
             {st with get_name = Some (name_from_payload_or_prim ~loc payload)}
-          | "bs.new" | "new" ->
+          | "new" ->
             {st with new_name = Some (name_from_payload_or_prim ~loc payload)}
-          | "bs.set_index" | "set_index" ->
+          | "set_index" ->
             if String.length prim_name_check <> 0 then
               Location.raise_errorf ~loc
                 "%@set_index this particular external's name needs to be a \
                  placeholder empty string";
             {st with set_index = true}
-          | "bs.get_index" | "get_index" ->
+          | "get_index" ->
             if String.length prim_name_check <> 0 then
               Location.raise_errorf ~loc
                 "%@get_index this particular external's name needs to be a \
                  placeholder empty string";
             {st with get_index = true}
-          | "bs.obj" | "obj" -> {st with mk_obj = true}
-          | "bs.return" | "return" -> (
+          | "obj" -> {st with mk_obj = true}
+          | "return" -> (
             let actions = Ast_payload.ident_or_record_as_config loc payload in
             match actions with
             | [({txt; _}, None)] ->
@@ -328,8 +418,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
         with Not_handled_external_attribute -> (attr :: attrs, st))
 
 let has_bs_uncurry (attrs : Ast_attributes.t) =
-  Ext_list.exists_fst attrs (fun {txt; loc = _} ->
-      txt = "bs.uncurry" || txt = "uncurry")
+  Ext_list.exists_fst attrs (fun {txt; loc = _} -> txt = "uncurry")
 
 let check_return_wrapper loc (wrapper : External_ffi_types.return_wrapper)
     result_type =
@@ -856,9 +945,9 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
       Js_get {js_get_name = name; js_get_scopes = scopes}
     else
       Location.raise_errorf ~loc
-        "Ill defined attribute %@bs.get (only one argument)"
+        "Ill defined attribute %@get (only one argument)"
   | {get_name = Some _; _} ->
-    Location.raise_errorf ~loc "Attribute found that conflicts with %@bs.get"
+    Location.raise_errorf ~loc "Attribute found that conflicts with %@get"
 
 (** Note that the passed [type_annotation] is already processed by visitor pattern before*)
 let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)

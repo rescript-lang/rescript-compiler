@@ -983,7 +983,7 @@ Js.String2.link("Go to page two", "page2.html") == "<a href="page2.html">Go to p
 external link: (t, t) => t = "link"
 
 /* FIXME: we should not encourage people to use [%identity], better
-    to provide something using [@@bs.val] so that we can track such
+    to provide something using [@@val] so that we can track such
     casting
 */
 /**

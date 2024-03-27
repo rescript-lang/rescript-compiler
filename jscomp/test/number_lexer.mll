@@ -1,5 +1,5 @@
 {
-external log : string -> unit = "caml_alloc_dummy" [@@bs.val "console.log"]
+external log : string -> unit = "caml_alloc_dummy" [@@val "console.log"]
 let l = 
 #if BS then 
  log 

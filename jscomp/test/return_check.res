@@ -14,7 +14,7 @@ let test = dom => {
 }
 
 /* external getElementById2 : dom -> string -> element option = ""
- [@@bs.return null_to_opt] */
+ [@@return null_to_opt] */
 
 @get_index @return(undefined_to_opt) external get_undefined: (array<int>, int) => option<int> = ""
 

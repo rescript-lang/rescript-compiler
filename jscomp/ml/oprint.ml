@@ -288,11 +288,11 @@ and print_simple_out_type ppf =
           Otyp_arrow ("", Otyp_constr (Oide_ident "unit", []),tyl)
         else tyl
       in 
-      fprintf ppf "@[<0>(%a@ [@bs.meth])@]" print_out_type_1 res
+      fprintf ppf "@[<0>(%a@ [@meth])@]" print_out_type_1 res
   | Otyp_constr (Oide_dot (Oide_dot (Oide_ident "Js_OO", "Callback" ), _),
                  [tyl])
     -> 
-      fprintf ppf "@[<0>(%a@ [@bs.this])@]" print_out_type_1 tyl  
+      fprintf ppf "@[<0>(%a@ [@this])@]" print_out_type_1 tyl  
   | Otyp_constr (id, tyl) ->
       pp_open_box ppf 0;
       print_typargs ppf tyl;
@@ -562,7 +562,7 @@ and print_out_sig_item ppf =
             fprintf ppf "@ = \"%s\"" s;
             List.iter (fun s ->
 (* TODO: in general, we should print bs attributes, some attributes like
-  bs.splice does need it *)  
+   variadic do need it *)  
       fprintf ppf "@ \"%s\"" (!map_primitive_name s)
               ) sl
       in

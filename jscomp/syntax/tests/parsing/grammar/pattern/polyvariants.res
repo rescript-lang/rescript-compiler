@@ -94,7 +94,6 @@ let cmp = (selectedChoice, value) =>
   | #...a as x => true
   | # ...a | # ... b => true
   | (#...a : typ) => true
-  | lazy #...a => true
   | exception #...a => true
   | _ => false
   }

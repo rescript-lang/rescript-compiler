@@ -14,7 +14,7 @@ Happy hacking!
 
 > Most of our contributors are working on Apple machines, so all our instructions are currently macOS / Linux centric. Contributions for Windows development welcome!
 
-- [NodeJS v16](https://nodejs.org/)
+- [NodeJS v18](https://nodejs.org/)
 - C compiler toolchain (usually installed with `xcode` on Mac)
 - `opam` (OCaml Package Manager)
 - VSCode (+ [OCaml Platform Extension](https://marketplace.visualstudio.com/items?itemName=ocamllabs.ocaml-platform))
@@ -41,7 +41,7 @@ Make sure you have [opam](https://opam.ocaml.org/doc/Install.html) installed on 
 opam init
 
 # Any recent OCaml version works as a development compiler
-opam switch create 4.14.1 # can also create local switch with opam switch create . 4.14.1
+opam switch create 5.1.1 # can also create local switch with opam switch create
 
 # Install dev dependencies from OPAM
 opam install . --deps-only

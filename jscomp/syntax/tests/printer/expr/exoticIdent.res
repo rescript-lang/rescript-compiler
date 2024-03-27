@@ -45,8 +45,6 @@ let x = (\"type" : \"module")
 
 assert(\"let")
 
-lazy \"let"
-
 %\"let"
 %\"let"(`console.log`)
 

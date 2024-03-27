@@ -6,4 +6,4 @@
 
 %expr.extension.with.args(x => f(x))
 
-let x = %bs.raw("1") + %bs.raw("2")
+let x = %raw("1") + %raw("2")

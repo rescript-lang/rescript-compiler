@@ -66,7 +66,7 @@ let unsafeDeleteKey: (. t<string>, string) => unit = %raw(` function (dict,key){
   `)
 
 @new external unsafeCreate: int => array<'a> = "Array"
-/* external entries : 'a t -> (key * 'a) array = "Object.entries" [@@bs.val] (* ES2017 *) */
+/* external entries : 'a t -> (key * 'a) array = "Object.entries" [@@val] (* ES2017 *) */
 let entries = dict => {
   let keys = keys(dict)
   let l = Js_array2.length(keys)
@@ -78,7 +78,7 @@ let entries = dict => {
   values
 }
 
-/* external values : 'a t -> 'a array = "Object.values" [@@bs.val] (* ES2017 *) */
+/* external values : 'a t -> 'a array = "Object.values" [@@val] (* ES2017 *) */
 let values = dict => {
   let keys = keys(dict)
   let l = Js_array2.length(keys)

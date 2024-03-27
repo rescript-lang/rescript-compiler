@@ -32,7 +32,7 @@ type t = [
   | #Dir(string)
 ]
 
-let cwd = lazy Sys.getcwd()
+let cwd = Lazy.from_fun(() => Sys.getcwd())
 
 let \"//" = Filename.concat
 
@@ -211,7 +211,7 @@ let rec find_root_filename = (~cwd, filename) =>
 
 let find_package_json_dir = cwd => find_root_filename(~cwd, Test_literals.bsconfig_json)
 
-let package_dir = lazy find_package_json_dir(Lazy.force(cwd))
+let package_dir = Lazy.from_fun(() => find_package_json_dir(Lazy.force(cwd)))
 
 let module_name_of_file = file =>
   String.capitalize_ascii(\"@@"(Filename.chop_extension, Filename.basename(file)))

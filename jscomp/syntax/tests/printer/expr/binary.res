@@ -251,9 +251,6 @@ let x = a && {exception Exit; raise(Exit)} && {exception Exit; raise(Exit)}
 let x = a && assert(false)
 let x = a && assert(false) && assert(true)
 
-let x = a && lazy false
-let x = a && lazy false && lazy true
-
 let x = a && {open React; killPerform()}
 let x = a && {open React; killPerform()} && {open Dom; regainPerform()}
 

@@ -3,7 +3,7 @@ let x: string = %raw(`"\\x01\\x02\\x03"`)
 let max: (. float, float) => float = %raw("Math.max")
 
 let u = v => max(. 1., v)
-/* let max2 : float -> float -> float = [%bs.raw {Math.max} ] */
+/* let max2 : float -> float -> float = [%raw {Math.max} ] */
 %%raw(`
 
 function $$test(x,y){

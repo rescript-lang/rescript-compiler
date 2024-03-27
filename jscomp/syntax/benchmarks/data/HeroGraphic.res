@@ -1,4 +1,4 @@
-%bs.raw(`require('./HeroGraphic.css')`)
+%raw(`require('./HeroGraphic.css')`)
 
 @react.component
 let make = (~width="760", ~height="380") =>

@@ -64,9 +64,6 @@ let x = {
 // Pexp_assert
 let x = /* here */ assert( /* c0 */ true /* c1 */)
 
-// Pexp_lazy
-let x = /* here */ lazy /* c0 */ true /* c1 */
-
 // Pexp_constraint
 let x = (/* c0 */ "string" /* c1 */: /* c2 */ string /* c3 */) // after
 
@@ -275,3 +272,43 @@ Doc.concat(list{
   rows,
   /* a */
 });
+
+// More record spread test
+type b = {
+  // spread a
+  ...a,
+  // spread c
+  ...c,
+  // no spread
+  b: string
+}
+
+type a = {
+  // spread from different module
+  ...M.a,
+  // spread c
+  ...c,
+  // no spread
+  b: string
+}
+
+let b = {
+  // exotic
+  ...\"let",
+  // foo
+  bar: "foo"
+}
+
+let b = {
+  // quote
+  ..."let",
+  // foo
+  bar: "foo"
+}
+
+let c = {
+  // from different module
+  ...M.a,
+  // foo
+  bar: "foo"
+}

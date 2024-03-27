@@ -49,7 +49,7 @@ let suites =
       int -> int -> int arra -> unit
       = ""
       [@@bs.send.pipe:int]
-      [@@bs.splice]|}|] in  
+      [@@variadic]|}|] in  
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "variadic")
     end;
     __LOC__ >:: begin fun _ -> 
@@ -58,13 +58,13 @@ let suites =
   int -> int -> ?y:int array -> unit  
   = ""
   [@@bs.send.pipe:int]
-  [@@bs.splice]  |}|] in  
+  [@@variadic]  |}|] in  
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "variadic")
     end;
 
     __LOC__ >:: begin fun _ ->
       let should_be_warning =
-        bsc_check_eval  {| external mk : int -> ([`a|`b [@bs.string]]) = "mk" [@@bs.val] |} in
+        bsc_check_eval  {| external mk : int -> ([`a|`b [@string]]) = "mk" [@@val] |} in
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring
            should_be_warning.stderr "Unused")
@@ -72,8 +72,8 @@ let suites =
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
 external ff :
-    resp -> (_ [@bs.as "x"]) -> int -> unit =
-    "x" [@@bs.set]
+    resp -> (_ [@as "x"]) -> int -> unit =
+    "x" [@@set]
       |} in
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr
@@ -88,21 +88,21 @@ external ff :
       *)
       let should_err = bsc_check_eval {|
     external v3 :
-    int -> int -> (int -> int -> int [@bs.uncurry])
-    = "v3"[@@bs.val]
+    int -> int -> (int -> int -> int [@uncurry])
+    = "v3"[@@val]
 
     |} in
       (* Ounit_cmd_util.debug_output should_err;*)
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring
-           should_err.stderr "bs.uncurry")
+           should_err.stderr "uncurry")
     end ;
 
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
     external v4 :
-    (int -> int -> int [@bs.uncurry]) = ""
-    [@@bs.val]
+    (int -> int -> int [@uncurry]) = ""
+    [@@val]
 
     |} in
       (* Ounit_cmd_util.debug_output should_err ; *)
@@ -120,18 +120,18 @@ external ff :
 
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-      external mk : int -> ([`a|`b] [@bs.string]) = "" [@@bs.val]
+      external mk : int -> ([`a|`b] [@string]) = "" [@@val]
       |} in
       OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
     end;
 
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-      external mk : int -> ([`a|`b] ) = "mk" [@@bs.val]
+      external mk : int -> ([`a|`b] ) = "mk" [@@val]
       |} in
       OUnit.assert_bool __LOC__ ( Ext_string.is_empty should_err.stderr)
       (* give a warning or ?
-         ( [`a | `b ] [@bs.string] )
+         ( [`a | `b ] [@string] )
          (* auto-convert to ocaml poly-variant *)
       *)
     end;
@@ -139,7 +139,7 @@ external ff :
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
       type t
-      external mk : int -> (_ [@bs.as {json| { x : 3 } |json}]) ->  t = "mk" [@@bs.val]
+      external mk : int -> (_ [@as {json| { x : 3 } |json}]) ->  t = "mk" [@@val]
       |} in
       OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
     end
@@ -147,7 +147,7 @@ external ff :
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
       type t
-      external mk : int -> (_ [@bs.as {json| { "x" : 3 } |json}]) ->  t = "mk" [@@bs.val]
+      external mk : int -> (_ [@as {json| { "x" : 3 } |json}]) ->  t = "mk" [@@val]
       |} in
       OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
     end
@@ -155,7 +155,7 @@ external ff :
     (* #1510 *)
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-       let should_fail = fun [@bs.this] (Some x) y u -> y + u
+       let should_fail = fun [@this] (Some x) y u -> y + u
       |} in
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring  should_err.stderr "simple")
@@ -163,7 +163,7 @@ external ff :
 
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-       let should_fail = fun [@bs.this] (Some x as v) y u -> y + u
+       let should_fail = fun [@this] (Some x as v) y u -> y + u
       |} in
       (* Ounit_cmd_util.debug_output should_err; *)
       OUnit.assert_bool __LOC__
@@ -172,7 +172,7 @@ external ff :
 
     (* __LOC__ >:: begin fun _ ->
        let should_err = bsc_check_eval {|
-       external f : string -> unit -> unit = "x.y" [@@bs.send]
+       external f : string -> unit -> unit = "x.y" [@@send]
        |} in
        OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr "Not a valid method name")
@@ -248,10 +248,10 @@ let rec y = A y;;
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
     external foo_bar :
-    (_ [@bs.as "foo"]) ->
+    (_ [@as "foo"]) ->
     string ->
     string = "bar"
-  [@@bs.send]
+  [@@send]
     |} in
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr "Ill defined attribute")
@@ -261,8 +261,8 @@ let rec y = A y;;
     external mk : int ->
   (
     [`a|`b]
-     [@bs.string]
-  ) = "mk" [@@bs.val]
+     [@string]
+  ) = "mk" [@@val]
     |} in
       (* Ounit_cmd_util.debug_output should_err ;  *)
       OUnit.assert_bool __LOC__
@@ -271,7 +271,7 @@ let rec y = A y;;
     end;
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-    type -'a t = {k : 'a } [@@bs.deriving abstract]
+    type -'a t = {k : 'a } [@@deriving abstract]
     |} in
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr "contravariant")

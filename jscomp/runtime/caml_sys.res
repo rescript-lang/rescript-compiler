@@ -68,7 +68,7 @@ let sys_time = () =>
 
 /*
 type spawnResult
-external spawnSync : string -> spawnResult = "spawnSync" [@@bs.module "child_process"]
+external spawnSync : string -> spawnResult = "spawnSync" [@@module "child_process"]
 
 external readAs : spawnResult -> 
   < 

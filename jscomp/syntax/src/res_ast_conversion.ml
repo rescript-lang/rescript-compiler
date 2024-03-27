@@ -274,18 +274,6 @@ let normalize =
   let open Ast_mapper in
   {
     default_mapper with
-    extension =
-      (fun mapper ext ->
-        match ext with
-        | id, payload ->
-          ( {id with txt = Res_printer.convertBsExtension id.txt},
-            default_mapper.payload mapper payload ));
-    attribute =
-      (fun mapper attr ->
-        match attr with
-        | id, payload ->
-          ( {id with txt = Res_printer.convertBsExternalAttribute id.txt},
-            default_mapper.payload mapper payload ));
     attributes =
       (fun mapper attrs ->
         attrs

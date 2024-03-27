@@ -1,4 +1,4 @@
-open Ast_helper
+open! Ast_helper
 open Ast_mapper
 open Asttypes
 open Parsetree

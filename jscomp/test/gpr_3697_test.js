@@ -6,12 +6,9 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 function fix(param) {
   return {
           TAG: "Fix",
-          _0: {
-            LAZY_DONE: false,
-            VAL: (function () {
+          _0: CamlinternalLazy.from_fun(function () {
                 return fix();
               })
-          }
         };
 }
 
@@ -25,8 +22,8 @@ function unfixLeak(_f) {
 
 function unfix(p) {
   while(true) {
-    var match = p.contents;
-    p.contents = CamlinternalLazy.force(match._0);
+    var h = p.contents;
+    p.contents = CamlinternalLazy.force(h._0);
   };
 }
 

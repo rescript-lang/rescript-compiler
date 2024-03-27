@@ -28,7 +28,7 @@
 (**
    1. extension point
    {[
-     [%bs.raw{| blabla |}]
+     [%raw{| blabla |}]
    ]}
    will be desugared into
    {[
@@ -110,16 +110,9 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
   | Pexp_constant (Pconst_integer (s, Some 'l')) ->
     {e with pexp_desc = Pexp_constant (Pconst_integer (s, None))}
   (* End rewriting *)
-  | Pexp_function cases -> (
-    (* {[ function [@bs.exn]
-         | Not_found -> 0
-         | Invalid_argument -> 1
-       ]}*)
+  | Pexp_function _ ->
     async_context := false;
-    match Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes with
-    | false, _ -> default_expr_mapper self e
-    | true, pexp_attributes ->
-      Ast_bs_open.convertBsErrorFunction e.pexp_loc self pexp_attributes cases)
+    default_expr_mapper self e
   | _
     when Ast_uncurried.exprIsUncurriedFun e
          &&
@@ -474,7 +467,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) :
           Pstr_value
             (Nonrecursive, [{pvb_pat; pvb_expr; pvb_attributes; pvb_loc}]);
       })
-  | Pstr_attribute ({txt = "bs.config" | "config"}, _) -> str
+  | Pstr_attribute ({txt = "config"}, _) -> str
   | _ -> default_mapper.structure_item self str
 
 let local_module_name =
@@ -521,7 +514,7 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
   | [] -> []
   | item :: rest -> (
     match item.pstr_desc with
-    | Pstr_extension (({txt = "bs.raw" | "raw"; loc}, payload), _attrs) ->
+    | Pstr_extension (({txt = "raw"; loc}, payload), _attrs) ->
       Ast_exp_handle_external.handle_raw_structure loc payload
       :: structure_mapper ~await_context self rest
     (* | Pstr_extension (({txt = "i"}, _),_)

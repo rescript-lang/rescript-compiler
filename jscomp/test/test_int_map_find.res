@@ -13,7 +13,7 @@ include (
       list{(10, 'a'), (3, 'b'), (7, 'c'), (20, 'd')},
     )
 
-    /* external log : 'a -> unit = "" [@@bs.val "console.log"] */
+    /* external log : 'a -> unit = "" [@@val "console.log"] */
 
     let assert_test = () =>
       if IntMap.find(10, m) == 'a' {

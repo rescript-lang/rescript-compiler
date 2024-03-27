@@ -59,7 +59,7 @@ let isHuggableExpression = (expr) =>
   | Pexp_tuple(_)
   | Pexp_construct ({txt: Longident.Lident("::")}, _)
   | Pexp_construct ({txt: Longident.Lident("[]")}, _)
-  | Pexp_extension ({txt: "bs.obj"}, _)
+  | Pexp_extension ({txt: "obj"}, _)
   | Pexp_record(_) => true
   | _ => false
   }

@@ -232,7 +232,7 @@ module Pointer = {
   /* Should return Dom.eventTarget */
 
   /* PointerEvent */
-  /* external pointerId : t -> Dom.eventPointerId = "pointerId" [@@bs.get] */
+  /* external pointerId : t -> Dom.eventPointerId = "pointerId" [@@get] */
   @get external width: t => float = "width"
   @get external height: t => float = "height"
   @get external pressure: t => float = "pressure"
@@ -287,7 +287,7 @@ module UI = {
   })
 
   @get external detail: t => int = "detail"
-  /* external view : t -> Dom.window = "view" [@@bs.get] */
+  /* external view : t -> Dom.window = "view" [@@get] */
   /* Should return DOMAbstractView/WindowProxy */
 }
 

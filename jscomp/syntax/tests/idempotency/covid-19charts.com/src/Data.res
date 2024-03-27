@@ -57,7 +57,7 @@ type value =
 let dataWithGrowth =
   Map.entries(data)
   |> Js.Array.map(((countryId, dataPoints)) => {
-    let data = lazy {
+    let data = Lazy.from_fun(() => {
       let countryDataWithGrowth = Map.empty()
       let _ = Js.Array.reduce((prevRecord, day) => {
         let record = Map.get(dataPoints, day)
@@ -72,7 +72,7 @@ let dataWithGrowth =
         Some(record)
       }, None, days)
       countryDataWithGrowth
-    }
+    })
     (countryId, data)
   })
   |> Belt.Map.String.fromArray
@@ -92,7 +92,7 @@ let calendar: t = Js.Array.mapi((day, index) => {
       Belt.HashMap.String.set(
         values,
         Map.get(locations, countryId).name,
-        lazy Map.get(Belt.Map.String.getExn(dataWithGrowth, countryId) |> Lazy.force, day),
+        Lazy.from_fun(() => Map.get(Belt.Map.String.getExn(dataWithGrowth, countryId) |> Lazy.force, day)),
       ),
     countryIds,
   )
@@ -140,7 +140,7 @@ let getValue = (dataType, dataItem) => getValueFromRecord(dataType, getRecord(da
 
 let alignToDay0 = (dataType, threshold) => {
   let data = Belt.Map.String.mapU(dataWithGrowth, (. dataPoints) =>
-    lazy {
+    Lazy.from_fun(() => {
       let dataPoints = Lazy.force(dataPoints)
       Map.entries(dataPoints)
       |> Js.Array.map(((date, value)) => (Map.get(dayToIndex, date), value))
@@ -149,7 +149,7 @@ let alignToDay0 = (dataType, threshold) => {
       |> Js.Array.filter(value => getValue(dataType, value) >= threshold)
       |> Js.Array.mapi((value, index) => (index, value))
       |> Belt.Map.Int.fromArray
-    }
+    })
   )
 
   Array.init(Js.Array.length(days), day => {

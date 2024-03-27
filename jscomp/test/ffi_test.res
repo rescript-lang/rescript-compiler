@@ -15,7 +15,7 @@ module Textarea = {
 }
 
 /*
-external never_used : Textarea.t ->  int -> int  = "minHeight" [@@bs.get]
+external never_used : Textarea.t ->  int -> int  = "minHeight" [@@get]
 
 let v = never_used (Textarea.create ()) 3 
 */

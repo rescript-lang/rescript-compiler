@@ -28,7 +28,7 @@ let isMutableObjectField name =
   String.length name >= 2
   && (String.sub name (String.length name - 2) 2 [@doesNotRaise]) = "#="
 
-(** Mutable fields, i.e. fields annotated "[@bs.set]"
+(** Mutable fields, i.e. fields annotated "[@set]"
    are represented as extra fields called "fieldName#="
    preceding the normal field. *)
 let checkMutableObjectField ~previousName ~name = previousName = name ^ "#="

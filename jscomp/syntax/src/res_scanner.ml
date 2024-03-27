@@ -182,8 +182,11 @@ let digitValue ch =
 let scanIdentifier scanner =
   let startOff = scanner.offset in
   let rec skipGoodChars scanner =
-    match scanner.ch with
-    | 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' | '\'' ->
+    match (scanner.ch, inJsxMode scanner) with
+    | ('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' | '\''), false ->
+      next scanner;
+      skipGoodChars scanner
+    | ('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' | '\'' | '-'), true ->
       next scanner;
       skipGoodChars scanner
     | _ -> ()

@@ -25,3 +25,7 @@ let force: lazy_t<'a> => 'a
 let force_val: lazy_t<'a> => 'a
 
 let is_val: lazy_t<'a> => bool
+
+let from_fun: ((. unit) => 'a) => lazy_t<'a>
+
+let from_val: 'a => lazy_t<'a>

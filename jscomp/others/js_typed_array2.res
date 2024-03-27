@@ -45,8 +45,8 @@ module ArrayBuffer = {
 
   /* ArrayBuffer.isView: seems pointless with a type system */
   /* experimental
-  external transfer : array_buffer -> t = "ArrayBuffer.transfer" [@@bs.val]
-  external transferWithLength : array_buffer -> int -> t = "ArrayBuffer.transfer" [@@bs.val]
+  external transfer : array_buffer -> t = "ArrayBuffer.transfer" [@@val]
+  external transferWithLength : array_buffer -> int -> t = "ArrayBuffer.transfer" [@@val]
  */
 
   @get external byteLength: t => int = "byteLength"
@@ -56,7 +56,7 @@ module ArrayBuffer = {
 }
 
 /* commented out until bs has a plan for iterators
-  external values : t -> elt array_iter = "" [@@bs.send]
+  external values : t -> elt array_iter = "" [@@send]
  */
 
 module Int8Array = {
@@ -121,7 +121,7 @@ module Int8Array = {
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : t -> (int * elt) array_iter = "" [@@bs.send]
+  external entries : t -> (int * elt) array_iter = "" [@@send]
  */
   @send external every: (t, (. elt) => bool) => bool = "every"
   @send external everyi: (t, (. elt, int) => bool) => bool = "every"
@@ -139,7 +139,7 @@ module Int8Array = {
   @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : t -> int array_iter = "" [@@bs.send]
+  external keys : t -> int array_iter = "" [@@send]
  */
 
   @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
@@ -243,7 +243,7 @@ module Uint8Array = {
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : t -> (int * elt) array_iter = "" [@@bs.send]
+  external entries : t -> (int * elt) array_iter = "" [@@send]
  */
   @send external every: (t, (. elt) => bool) => bool = "every"
   @send external everyi: (t, (. elt, int) => bool) => bool = "every"
@@ -261,7 +261,7 @@ module Uint8Array = {
   @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : t -> int array_iter = "" [@@bs.send]
+  external keys : t -> int array_iter = "" [@@send]
  */
 
   @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
@@ -365,7 +365,7 @@ module Uint8ClampedArray = {
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : t -> (int * elt) array_iter = "" [@@bs.send]
+  external entries : t -> (int * elt) array_iter = "" [@@send]
  */
   @send external every: (t, (. elt) => bool) => bool = "every"
   @send external everyi: (t, (. elt, int) => bool) => bool = "every"
@@ -383,7 +383,7 @@ module Uint8ClampedArray = {
   @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : t -> int array_iter = "" [@@bs.send]
+  external keys : t -> int array_iter = "" [@@send]
  */
 
   @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
@@ -487,7 +487,7 @@ module Int16Array = {
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : t -> (int * elt) array_iter = "" [@@bs.send]
+  external entries : t -> (int * elt) array_iter = "" [@@send]
  */
   @send external every: (t, (. elt) => bool) => bool = "every"
   @send external everyi: (t, (. elt, int) => bool) => bool = "every"
@@ -505,7 +505,7 @@ module Int16Array = {
   @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : t -> int array_iter = "" [@@bs.send]
+  external keys : t -> int array_iter = "" [@@send]
  */
 
   @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
@@ -609,7 +609,7 @@ module Uint16Array = {
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : t -> (int * elt) array_iter = "" [@@bs.send]
+  external entries : t -> (int * elt) array_iter = "" [@@send]
  */
   @send external every: (t, (. elt) => bool) => bool = "every"
   @send external everyi: (t, (. elt, int) => bool) => bool = "every"
@@ -627,7 +627,7 @@ module Uint16Array = {
   @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : t -> int array_iter = "" [@@bs.send]
+  external keys : t -> int array_iter = "" [@@send]
  */
 
   @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
@@ -731,7 +731,7 @@ module Int32Array = {
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : t -> (int * elt) array_iter = "" [@@bs.send]
+  external entries : t -> (int * elt) array_iter = "" [@@send]
  */
   @send external every: (t, (. elt) => bool) => bool = "every"
   @send external everyi: (t, (. elt, int) => bool) => bool = "every"
@@ -749,7 +749,7 @@ module Int32Array = {
   @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : t -> int array_iter = "" [@@bs.send]
+  external keys : t -> int array_iter = "" [@@send]
  */
 
   @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
@@ -853,7 +853,7 @@ module Uint32Array = {
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : t -> (int * elt) array_iter = "" [@@bs.send]
+  external entries : t -> (int * elt) array_iter = "" [@@send]
  */
   @send external every: (t, (. elt) => bool) => bool = "every"
   @send external everyi: (t, (. elt, int) => bool) => bool = "every"
@@ -871,7 +871,7 @@ module Uint32Array = {
   @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : t -> int array_iter = "" [@@bs.send]
+  external keys : t -> int array_iter = "" [@@send]
  */
 
   @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
@@ -978,7 +978,7 @@ module Float32Array = {
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : t -> (int * elt) array_iter = "" [@@bs.send]
+  external entries : t -> (int * elt) array_iter = "" [@@send]
  */
   @send external every: (t, (. elt) => bool) => bool = "every"
   @send external everyi: (t, (. elt, int) => bool) => bool = "every"
@@ -996,7 +996,7 @@ module Float32Array = {
   @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : t -> int array_iter = "" [@@bs.send]
+  external keys : t -> int array_iter = "" [@@send]
  */
 
   @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
@@ -1100,7 +1100,7 @@ module Float64Array = {
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : t -> (int * elt) array_iter = "" [@@bs.send]
+  external entries : t -> (int * elt) array_iter = "" [@@send]
  */
   @send external every: (t, (. elt) => bool) => bool = "every"
   @send external everyi: (t, (. elt, int) => bool) => bool = "every"
@@ -1118,7 +1118,7 @@ module Float64Array = {
   @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : t -> int array_iter = "" [@@bs.send]
+  external keys : t -> int array_iter = "" [@@send]
  */
 
   @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"

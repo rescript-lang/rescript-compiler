@@ -1,21 +1,21 @@
 /*
 external ice_cream:
-    ?flavor:([`vanilla | `chocolate ] [@bs.string]) -> 
+    ?flavor:([`vanilla | `chocolate ] [@string]) -> 
     num:int ->
     unit -> 
     _ =  ""
-[@@bs.obj]
+[@@obj]
 
 
 let my_scoop = ice_cream ~flavor:`vanilla ~num:3 ()
 */
 /*
 external ice_cream_2:
-    flavor:([`vanilla | `chocolate ] [@bs.string]) -> 
+    flavor:([`vanilla | `chocolate ] [@string]) -> 
     num:int ->
     unit -> 
     _ =  ""
-[@@bs.obj]
+[@@obj]
 
 let my_scoop2 = ice_cream_2 ~flavor:`vanilla ~num:3 ()
 */
@@ -27,7 +27,7 @@ let u: opt_test = opt_test(~y=3, ())
 
 @obj
 external ice_cream3: (~flavor: @string [#vanilla | @as("x") #chocolate]=?, ~num: int, unit) => _ =
-  "" /* TODO: warn when [_] happens in any place except `bs.obj` */
+  "" /* TODO: warn when [_] happens in any place except `obj` */
 type ice_cream3_expect = {"flavor": Js.undefined<string>, "num": int}
 
 let v_ice_cream3: list<ice_cream3_expect> = list{
@@ -175,7 +175,7 @@ let () = {
   again4(~x=incr(side_effect), ~y=(), __LINE__, ())
 }
 
-/* external again5 : ?x__ignore:([`a of unit -> int | `b of string -> int ] [@bs.string]) */
-/* -> int -> unit = "" [@@bs.val] */
+/* external again5 : ?x__ignore:([`a of unit -> int | `b of string -> int ] [@string]) */
+/* -> int -> unit = "" [@@val] */
 
 /* let v = again5 3 */

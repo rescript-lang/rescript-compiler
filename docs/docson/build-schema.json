@@ -335,8 +335,7 @@
           "description": "Build the given dependencies in JSX V3 compatibility mode."
         }
       },
-      "additionalProperties": false,
-      "required": ["version"]
+      "additionalProperties": false
     },
     "bsc-flags": {
       "oneOf": [
@@ -440,7 +439,7 @@
       "properties": {
         "number": {
           "type": "string",
-          "description": "Default: -40+6+7+27+32..39+44+45 [Here](https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec270) for the meanings of the warning flags"
+          "description": "Default: \"+a-4-9-20-40-41-42-50-61-102\". Go [here](https://rescript-lang.org/docs/manual/latest/warning-numbers) for the meanings of the warning flags"
         },
         "error": {
           "oneOf": [

@@ -277,7 +277,7 @@ let old_from_promise_suites_donotuse = (name, suites: list<(string, Js.Promise.t
 Note that [require] is a file local value,
 we need type [require]
 
-let is_top : unit -> bool = [%bs.raw{|
+let is_top : unit -> bool = [%raw{|
 function (_){
 console.log('hi');
 if (typeof require === "undefined"){

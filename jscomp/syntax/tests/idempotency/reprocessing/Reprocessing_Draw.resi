@@ -3,10 +3,10 @@
  * This is where all the fancy things happen.
  *
  * ```reason;shared(sandbox)
- * [@bs.val] external sandboxCanvasId: string = \"\";
- * [@bs.val] external sandboxCanvas: 'canvas = \"\";
- * [@bs.val] external containerDiv: 'node = \"\";
- * [@bs.send] external addEventListener: ('node, string, 'eventT => unit) => unit = \"addEventListener\";
+ * [@val] external sandboxCanvasId: string = \"\";
+ * [@val] external sandboxCanvas: 'canvas = \"\";
+ * [@val] external containerDiv: 'node = \"\";
+ * [@send] external addEventListener: ('node, string, 'eventT => unit) => unit = \"addEventListener\";
  * let id = sandboxCanvasId;
  * addEventListener(containerDiv, \"mouseleave\", (_) => Reprocessing.playPause(id, false) |> ignore);
  * addEventListener(containerDiv, \"mouseenter\", (_) => Reprocessing.playPause(id, true) |> ignore);

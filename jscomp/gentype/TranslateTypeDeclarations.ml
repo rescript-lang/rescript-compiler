@@ -40,7 +40,7 @@ let createCase (label, attributes) ~poly =
 (**
  * Rename record fields.
  * If @genType.as is used, perform renaming conversion.
- * If @bs.as is used (with records-as-objects active), escape and quote if
+ * If @as is used (with records-as-objects active), escape and quote if
  * the identifier contains characters which are invalid as JS property names.
 *)
 let renameRecordField ~attributes ~name =

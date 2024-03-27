@@ -321,7 +321,7 @@ let translateConstr = (
       switch fields {
       | list{(previousName, {type_: _}), (name, {type_}), ...rest}
         if Runtime.checkMutableObjectField(~previousName, ~name) =>
-        /* The field was annotated "@bs.set" */
+        /* The field was annotated "@set" */
         rest |> checkMutableField(~acc=list{(name, type_, Mutable), ...acc})
       | list{(name, {type_}), ...rest} =>
         rest |> checkMutableField(~acc=list{(name, type_, Immutable), ...acc})
@@ -552,7 +552,7 @@ and translateTypeExprFromTypes_ = (
       {dependencies: list{}, type_: type_}
 
     | {noPayloads: list{}, payloads: list{(_label, t)}, unknowns: list{}} =>
-      /* Handle bucklescript's "Arity_" encoding in first argument of Js.Internal.fn(_,_) for uncurried functions.
+      /* Handle ReScript's "Arity_" encoding in first argument of Js.Internal.fn(_,_) for uncurried functions.
        Return the argument tuple. */
       t |> translateTypeExprFromTypes_(
         ~config,

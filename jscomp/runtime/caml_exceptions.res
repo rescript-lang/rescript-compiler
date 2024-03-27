@@ -22,6 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+module Map = {
+  type t<'k, 'v>
+  
+  @new external make: unit => t<'k, 'v> = "Map"
+
+  @send external set: (t<'k, 'v>, 'k, 'v) => unit = "set"
+
+  @send external get: (t<'k, 'v>, 'k) => option<'v> = "get"
+}
+
 type t = {@as("RE_EXN_ID") id: string}
 
 /**
@@ -31,11 +41,23 @@ type t = {@as("RE_EXN_ID") id: string}
    This can be inlined as 
    {[ a = caml_set_oo_id([248,"string", caml_oo_last_id++]) ]}
 */
-let id = ref(0)
+let idMap: Map.t<string, int> = Map.make()
 
 let create = (str: string): string => {
-  id.contents = id.contents + 1
-  str ++ ("/" ++ (Obj.magic((id.contents: int)): string))
+  let id = switch idMap->Map.get(str) {
+    | Some(v) => {
+      let id = v + 1
+      idMap->Map.set(str, id)
+      id
+    }
+    | None => {
+      let id = 1
+      idMap->Map.set(str, id)
+      id
+    }
+  }
+
+  str ++ ("/" ++ (Obj.magic((id: int)): string))
 }
 
 /**

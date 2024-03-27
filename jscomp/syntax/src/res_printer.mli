@@ -1,6 +1,3 @@
-val convertBsExternalAttribute : string -> string
-val convertBsExtension : string -> string
-
 val printTypeParams :
   (Parsetree.core_type * Asttypes.variance) list ->
   Res_comments_table.t ->

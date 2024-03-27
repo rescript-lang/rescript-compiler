@@ -1,4 +1,4 @@
-@@bs.config({flags: [/* "-bs-diagnose" */]})
+@@config({flags: [/* "-bs-diagnose" */]})
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 let eq = (loc, x, y) => Mt.eq_suites(~test_id, ~suites, loc, x, y)

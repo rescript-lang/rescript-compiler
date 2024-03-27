@@ -3222,7 +3222,7 @@ module ParsetreeViewer: {
     | Pexp_array(_)
     | Pexp_tuple(_)
     | Pexp_construct({txt: Longident.Lident("::" | "[]")}, _)
-    | Pexp_extension({txt: "bs.obj"}, _)
+    | Pexp_extension({txt: "obj"}, _)
     | Pexp_record(_) => true
     | _ when isBlockExpr(expr) => true
     | _ when isBracedExpr(expr) => true
@@ -3234,7 +3234,7 @@ module ParsetreeViewer: {
     | Pexp_array(_)
     | Pexp_tuple(_)
     | Pexp_construct({txt: Longident.Lident("::" | "[]")}, _)
-    | Pexp_extension({txt: "bs.obj"}, _)
+    | Pexp_extension({txt: "obj"}, _)
     | Pexp_record(_) => true
     | _ when isBracedExpr(expr) => true
     | _ => false
@@ -3596,7 +3596,7 @@ module ParsetreeViewer: {
       | list{} => JsGlobalImport
       | list{
           (
-            {Location.txt: "bs.scope"},
+            {Location.txt: "scope"},
             PStr(list{{pstr_desc: Pstr_eval({pexp_desc: Pexp_constant(Pconst_string(s, _))}, _)}}),
           ),
           ..._,
@@ -3612,7 +3612,7 @@ module ParsetreeViewer: {
         JsModuleImport(s)
       | list{
           (
-            {Location.txt: "bs.scope"},
+            {Location.txt: "scope"},
             PStr(list{{pstr_desc: Pstr_eval({pexp_desc: Pexp_tuple(exprs)}, _)}}),
           ),
           ..._,
@@ -5030,7 +5030,7 @@ module CommentTable = {
         attach(t.trailing, expr2.pexp_loc, trailing)
       }
     | Pexp_extension(
-        {txt: "bs.obj"},
+        {txt: "obj"},
         PStr(list{{pstr_desc: Pstr_eval({pexp_desc: Pexp_record(rows, _)}, list{})}}),
       ) =>
       walkList(~getLoc=((longident, expr): (Asttypes.loc<Longident.t>, Parsetree.expression)) => {
@@ -6906,7 +6906,7 @@ module Printer = {
   and printJsFfiImport = (valueDescription: Parsetree.value_description, cmtTbl) => {
     let attrs = List.filter(attr =>
       switch attr {
-      | ({Location.txt: "bs.val" | "genType.import" | "bs.scope"}, _) => false
+      | ({Location.txt: "val" | "genType.import" | "scope"}, _) => false
       | _ => true
       }
     , valueDescription.pval_attributes)
@@ -8713,7 +8713,7 @@ module Printer = {
     | Pexp_extension(extension) =>
       switch extension {
       | (
-          {txt: "bs.obj"},
+          {txt: "obj"},
           PStr(list{{
             pstr_loc: loc,
             pstr_desc: Pstr_eval({pexp_desc: Pexp_record(rows, _)}, list{}),
@@ -11843,8 +11843,8 @@ module Scanner = {
 module JsFfi = {
   type scope =
     | Global
-    | Module(string) /* bs.module("path") */
-    | Scope(Longident.t) /* bs.scope(/"window", "location"/) */
+    | Module(string) /* module("path") */
+    | Scope(Longident.t) /* scope(/"window", "location"/) */
 
   type label_declaration = {
     @live jld_attributes: Parsetree.attributes,
@@ -11881,7 +11881,7 @@ module JsFfi = {
   }
 
   let toParsetree = importDescr => {
-    let bsVal = (Location.mknoloc("bs.val"), Parsetree.PStr(list{}))
+    let bsVal = (Location.mknoloc("val"), Parsetree.PStr(list{}))
     let attrs = switch importDescr.jid_scope {
     | Global => list{bsVal}
     /* @genType.import("./MyMath"),
@@ -11904,7 +11904,7 @@ module JsFfi = {
         Ast_helper.Str.eval(expr)
       }
 
-      let bsScope = (Location.mknoloc("bs.scope"), Parsetree.PStr(list{structureItem}))
+      let bsScope = (Location.mknoloc("scope"), Parsetree.PStr(list{structureItem}))
       list{bsVal, bsScope}
     }
 
@@ -15884,7 +15884,7 @@ Solution: directly use `concat`."
     let recordStrExpr = Ast_helper.Str.eval(~loc, Ast_helper.Exp.record(~loc, rows, None))
     Ast_helper.Exp.extension(
       ~loc,
-      (Location.mkloc("bs.obj", loc), Parsetree.PStr(list{recordStrExpr})),
+      (Location.mkloc("obj", loc), Parsetree.PStr(list{recordStrExpr})),
     )
   }
 

@@ -4,16 +4,16 @@ type t
 
 let f = () => mk(3)
 
-/* external mk2 : int -> t = "xx/foo_class" [@@bs.new "x"] [@@bs.module] 
+/* external mk2 : int -> t = "xx/foo_class" [@@new "x"] [@@module] 
 
 File "module_as_class_ffi.ml", line 9, characters 0-69:
-conflict attributes found: (bs.new should not carry payload here)
+conflict attributes found: (new should not carry payload here)
 */
 /*
 TODO: more error checking
-1. [@@bs.module] can only be used once
-2. here [bs.new] should not have any payload
-3. consolidate all [bs.module] 
+1. [@@module] can only be used once
+2. here [new] should not have any payload
+3. consolidate all [module] 
 
 
 let ff () =

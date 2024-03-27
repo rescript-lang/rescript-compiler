@@ -37,8 +37,6 @@ type attr_kind =
 
 val process_attributes_rev : t -> attr_kind * t
 
-val process_pexp_fun_attributes_rev : t -> bool * t
-
 val process_bs : t -> bool * t
 
 val has_inline_payload : t -> attr option
@@ -74,13 +72,13 @@ val is_bs : attr -> bool
 (* Attribute for uncurried application coming from the ReScript parser *)
 val res_uapp : attr
 
-val bs_get : attr
+val get : attr
 
-val bs_get_index : attr
+val get_index : attr
 
 val bs_get_arity : attr
 
-val bs_set : attr
+val set : attr
 
 val bs_return_undefined : attr
 

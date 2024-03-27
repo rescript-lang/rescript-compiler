@@ -12,7 +12,7 @@
 /* special exception on linking described in the file LICENSE. */
 /*  */
 /* ************************************************************************ */
-@@bs.config({flags: ["-bs-no-cross-module-opt"]})
+@@config({flags: ["-bs-no-cross-module-opt"]})
 /* Registering OCaml values with the C runtime for later callbacks */
 
 let register = (_, _) => ()

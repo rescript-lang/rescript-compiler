@@ -1,4 +1,4 @@
-@@bs.config({
+@@config({
   flags: [
     /* "-drawlambda"; */
     /* "-dlambda"; */

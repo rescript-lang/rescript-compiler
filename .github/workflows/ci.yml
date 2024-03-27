@@ -33,29 +33,22 @@ jobs:
 
     runs-on: ${{matrix.os}}
 
-    container:
-      image: ghcr.io/rescript-lang/rescript-ci-build:alpine-3.19-ocaml-4.14.1-02
-
     steps:
-      # See https://github.com/actions/runner/issues/801#issuecomment-1374967227.
-      - name: Workaround for Github actions runner on Alpine arm64
-        if: runner.arch	== 'ARM64'
-        run: sed -i "s:ID=alpine:ID=NotpineForGHA:" /etc/os-release
-
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build compiler binaries
-        run: opam exec -- dune build --display quiet --profile static
+        uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.19-ocaml-5.1.1-01
+        with:
+          args: opam exec -- dune build --display quiet --profile static
 
       - name: Build ninja binary
-        working-directory: ninja
-        env:
-          LDFLAGS: -static
-        run: python3 configure.py --bootstrap --verbose
+        uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.19-ocaml-5.1.1-01
+        with:
+          args: sh -c "cd ninja && LDFLAGS=-static python3 configure.py --bootstrap"
 
       - name: "Upload artifacts"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: static-binaries-linux-${{runner.arch}}
           path: |
@@ -72,11 +65,11 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download static linux binaries
         if: runner.os == 'Linux'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: static-binaries-linux-${{ runner.arch }}
 
@@ -87,9 +80,9 @@ jobs:
           chmod +x _build/install/default/bin/*
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Copy exes to platform bin dirs
         run: node ./scripts/copyExes.js
@@ -98,7 +91,7 @@ jobs:
         run: node .github/workflows/get_artifact_info.js
 
       - name: "Upload artifacts: binaries"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.artifact_name }}
           path: ${{ env.artifact_path }}
@@ -115,7 +108,7 @@ jobs:
             ubuntu-latest,
             windows-latest,
           ]
-        ocaml_compiler: [4.14.1]
+        ocaml_compiler: [5.1.1]
 
     runs-on: ${{matrix.os}}
 
@@ -130,13 +123,13 @@ jobs:
           git config --global core.eol lf
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2 # to be able to check for changes in subfolder jscomp/syntax later
 
       - name: Download static linux binaries
         if: runner.os == 'Linux'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: static-binaries-linux-${{ runner.arch }}
 
@@ -158,11 +151,12 @@ jobs:
         uses: ocaml/setup-ocaml@v2
         if: matrix.os == 'windows-latest'
         with:
-          ocaml-compiler: ${{matrix.ocaml_compiler}}
+          ocaml-compiler: ocaml-variants.5.1.1+options,ocaml-option-mingw
           opam-pin: false
           opam-depext: false
           opam-repositories: |
-            opam-repository-mingw: https://github.com/ocaml-opam/opam-repository-mingw.git#sunset
+            windows-5.0: https://github.com/dra27/opam-repository.git#windows-5.0
+            sunset: https://github.com/ocaml-opam/opam-repository-mingw.git#sunset
             default: https://github.com/ocaml/opam-repository.git
 
       - name: "Install OPAM dependencies"
@@ -173,16 +167,16 @@ jobs:
         run: opam exec -- dune build --display quiet --profile release
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Install npm packages
         run: npm ci --ignore-scripts
 
       - name: "Windows: Use MSVC for ninja build"
         if: runner.os == 'Windows'
-        uses: TheMrMilchmann/setup-msvc-dev@v2
+        uses: TheMrMilchmann/setup-msvc-dev@v3
         with:
           arch: x64
 
@@ -238,7 +232,7 @@ jobs:
       # Build the playground compiler on the fastest runner (ubuntu-latest)
       - name: Install JSOO
         if: matrix.os == 'ubuntu-latest'
-        run: opam install js_of_ocaml.4.0.0
+        run: opam install js_of_ocaml.5.6.0
 
       - name: Build playground compiler
         if: matrix.os == 'ubuntu-latest'
@@ -256,20 +250,20 @@ jobs:
         env:
           KEYCDN_USER: ${{ secrets.KEYCDN_USER }}
           KEYCDN_PASSWORD: ${{ secrets.KEYCDN_PASSWORD }}
-        run: sh playground/upload_bundle.sh
+        run: bash playground/upload_bundle.sh
 
       - name: Prepare artifact upload
         run: node .github/workflows/get_artifact_info.js
 
       - name: "Upload artifacts: binaries"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.artifact_name }}
           path: ${{ env.artifact_path }}
 
       - name: "Upload artifacts: lib/ocaml"
         if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: lib-ocaml
           path: lib/ocaml
@@ -280,18 +274,18 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
       - name: NPM install
         run: npm ci --ignore-scripts
 
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: Move artifacts
         run: ./scripts/moveArtifacts.sh
@@ -314,7 +308,7 @@ jobs:
         run: node .github/workflows/prepare_package_upload.js ${{ github.event.pull_request.head.sha }}
 
       - name: "Upload artifact: npm packages"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: npm-packages
           path: |
@@ -341,15 +335,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: npm-packages
           path: packages/test
@@ -373,16 +367,16 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
           registry-url: https://registry.npmjs.org # Needed to make auth work for publishing
 
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: npm-packages
 

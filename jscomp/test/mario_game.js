@@ -2379,25 +2379,6 @@ function keydown(evt) {
       case 83 :
           pressed_keys.down = true;
           break;
-      case 67 :
-      case 69 :
-      case 70 :
-      case 71 :
-      case 72 :
-      case 73 :
-      case 74 :
-      case 75 :
-      case 76 :
-      case 77 :
-      case 78 :
-      case 79 :
-      case 80 :
-      case 81 :
-      case 82 :
-      case 84 :
-      case 85 :
-      case 86 :
-          break;
       case 87 :
           pressed_keys.up = true;
           break;

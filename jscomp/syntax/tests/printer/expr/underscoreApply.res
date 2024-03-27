@@ -41,7 +41,6 @@ f(a, b, _) + g(x, _, z)
 f(a, b, _) + g(x, _, z) + h(alpha, beta, _)
 
 assert(f(a, b, _))
-lazy f(a, b, _)
 
 getDirector(a, b, _).name
 

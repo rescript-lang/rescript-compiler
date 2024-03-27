@@ -19,9 +19,9 @@ let toString annotation =
 
 let tagIsGenType s = s = "genType" || s = "gentype"
 let tagIsGenTypeAs s = s = "genType.as" || s = "gentype.as"
-let tagIsAs s = s = "bs.as" || s = "as"
-let tagIsInt s = s = "bs.int" || s = "int"
-let tagIsString s = s = "bs.string" || s = "string"
+let tagIsAs s = s = "as"
+let tagIsInt s = s = "int"
+let tagIsString s = s = "string"
 
 let tagIsTag s = s = "tag"
 
