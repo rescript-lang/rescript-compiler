@@ -4,7 +4,8 @@
   "devDependencies": {
     "mocha": "10.1.0",
     "nyc": "15.0.0",
-    "prettier": "2.7.1"
+    "prettier": "2.7.1",
+    "puppeteer": "22.6.1"
   },
   "engines": {
     "node": ">=18"
