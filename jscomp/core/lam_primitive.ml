@@ -80,7 +80,7 @@ type t =
   | Psubfloat
   | Pmulfloat
   | Pdivfloat
-  (* Bigint operations *)
+  (* BigInt operations *)
   | Pnegbigint
   | Paddbigint
   | Psubbigint

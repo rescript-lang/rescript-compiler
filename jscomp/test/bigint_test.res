@@ -16,11 +16,11 @@ let bigint_lessequal = (x: bigint, y) => x <= y
 let generic_lessequal = \"<="
 let bigint_greaterequal = (x: bigint, y) => x >= y
 let generic_greaterequal = \">="
-let bigint_land = Js.Bigint.land
-let bigint_lor = Js.Bigint.lor
-let bigint_lxor = Js.Bigint.lxor
-let bigint_lsl = Js.Bigint.lsl
-let bigint_asr = Js.Bigint.asr
+let bigint_land = Js.BigInt.land
+let bigint_lor = Js.BigInt.lor
+let bigint_lxor = Js.BigInt.lxor
+let bigint_lsl = Js.BigInt.lsl
+let bigint_asr = Js.BigInt.asr
 
 let () = {
   eq(__LOC__, bigint_compare(1n, 1n), 0)

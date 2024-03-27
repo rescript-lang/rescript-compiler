@@ -229,7 +229,7 @@ type primitive =
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of comparison
-  (* Bigint operations *)
+  (* BigInt operations *)
   | Pnegbigint | Paddbigint | Psubbigint | Ppowbigint
   | Pmulbigint | Pdivbigint | Pmodbigint
   | Pandbigint | Porbigint | Pxorbigint

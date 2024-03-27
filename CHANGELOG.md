@@ -14,7 +14,7 @@
 
 #### :rocket: New Feature
 
-- Add the primitive bigint type https://github.com/rescript-lang/rescript-compiler/pull/6670
+- Add the primitive bigint type https://github.com/rescript-lang/rescript-compiler/pull/6670 https://github.com/rescript-lang/rescript-compiler/pull/6696
 
 #### :bug: Bug Fix
 

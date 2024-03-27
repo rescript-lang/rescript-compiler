@@ -39,7 +39,7 @@ let variant_has_same_runtime_representation_as_target ~(targetPath : Path.t)
       path_same Predef.path_string
       || (* unboxed Number(float) :> float *)
       path_same Predef.path_float
-      || (* unboxed Bigint(bigint) :> bigint *)
+      || (* unboxed BigInt(bigint) :> bigint *)
       path_same Predef.path_bigint
     | Cstr_tuple [] -> (
       (* Check that @as payloads match with the target path to coerce to.
@@ -48,7 +48,7 @@ let variant_has_same_runtime_representation_as_target ~(targetPath : Path.t)
       | None | Some (String _) -> Path.same targetPath Predef.path_string
       | Some (Int _) -> Path.same targetPath Predef.path_int
       | Some (Float _) -> Path.same targetPath Predef.path_float
-      | Some (Bigint _) -> Path.same targetPath Predef.path_bigint
+      | Some (BigInt _) -> Path.same targetPath Predef.path_bigint
       | Some (Null | Undefined | Bool _ | Untagged _) -> false)
     | _ -> false
   in

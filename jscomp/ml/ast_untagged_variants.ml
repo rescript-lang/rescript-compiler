@@ -81,7 +81,7 @@ type tag_type =
   | String of string
   | Int of int
   | Float of string
-  | Bigint of string
+  | BigInt of string
   | Bool of bool
   | Null
   | Undefined (* literal or tagged block *)
@@ -126,7 +126,7 @@ let process_tag_type (attrs : Parsetree.attributes) =
           | Some f -> st := Some (Float f));
           (match Ast_payload.is_single_bigint payload with
           | None -> ()
-          | Some i -> st := Some (Bigint i));
+          | Some i -> st := Some (BigInt i));
           (match Ast_payload.is_single_bool payload with
           | None -> ()
           | Some b -> st := Some (Bool b));
@@ -291,7 +291,7 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
       | Some (String s) -> addStringLiteral ~loc s
       | Some (Int i) -> addNonstringLiteral ~loc (string_of_int i)
       | Some (Float f) -> addNonstringLiteral ~loc f
-      | Some (Bigint i) -> addNonstringLiteral ~loc i
+      | Some (BigInt i) -> addNonstringLiteral ~loc i
       | Some Null -> addNonstringLiteral ~loc "null"
       | Some Undefined -> addNonstringLiteral ~loc "undefined"
       | Some (Bool b) -> addNonstringLiteral ~loc (if b then "true" else "false")
@@ -398,7 +398,7 @@ module DynamicChecks = struct
     in
     let literals_overlaps_with_bigint () =
       Ext_list.exists literal_cases (function
-        | Bigint _ -> true
+        | BigInt _ -> true
         | _ -> false)
     in
     let literals_overlaps_with_boolean () =
@@ -488,5 +488,5 @@ module DynamicChecks = struct
     | Untagged UnknownType ->
       (* This should not happen because unknown must be the only non-literal case *)
       assert false
-    | Bool _ | Float _ | Int _ | Bigint _ | String _ | Null | Undefined -> x
+    | Bool _ | Float _ | Int _ | BigInt _ | String _ | Null | Undefined -> x
 end
