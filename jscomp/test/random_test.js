@@ -33,7 +33,7 @@ function approx(f) {
   };
 }
 
-Mt_global.collect_neq(id, suites, "File \"random_test.res\", line 9, characters 2-9", (Random.self_init(), Random.$$int(10000)), (Random.self_init(), Random.$$int(1000)));
+Mt_global.collect_neq(id, suites, "File \"random_test.res\", line 9, characters 2-9", (Random.self_init(), Random.int(10000)), (Random.self_init(), Random.int(1000)));
 
 Random.init(0);
 
@@ -65,7 +65,7 @@ let h = Random.int64([
 
 let vv = Random.bits();
 
-let xx = Random.$$float(3.0);
+let xx = Random.float(3.0);
 
 let xxx = Random.int32(103);
 

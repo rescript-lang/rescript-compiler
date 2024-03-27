@@ -179,9 +179,10 @@ let name_mangle name =
 let convert (name : string) =
   if is_exotic name then
      let name = unwrap_exotic name in
-     name_mangle name
+     if Js_reserved_map.is_js_keyword name then "$$" ^ name
+     else name_mangle name
   else
-   if Js_reserved_map.is_reserved name  then
+   if Js_reserved_map.is_js_keyword name || Js_reserved_map.is_js_special_word name || Js_reserved_map.is_reserved name then
       "$$" ^ name
    else name_mangle name
 

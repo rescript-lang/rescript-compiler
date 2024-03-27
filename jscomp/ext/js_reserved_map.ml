@@ -1,4 +1,3 @@
-
 (* Copyright (C) 2019-Present Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23,11 +22,96 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let sorted_keywords = [|
+type element = string 
+
+let rec binarySearchAux (arr : element array) (lo : int) (hi : int) key : bool =
+  let mid = (lo + hi)/2 in
+  let midVal = Array.unsafe_get arr mid in
+  if key = midVal then true
+  else if key < midVal then (* a[lo] =< key < a[mid] <= a[hi] *)
+    if hi = mid then
+      (Array.unsafe_get arr lo) = key
+    else binarySearchAux arr lo mid key
+  else (* a[lo] =< a[mid] < key <= a[hi] *)
+    if lo = mid then
+      (Array.unsafe_get arr hi) = key
+    else binarySearchAux arr mid hi key
+
+let binarySearch (key : element) (sorted : element array) : bool =
+  let len = Array.length sorted in
+  if len = 0 then false
+  else
+    let lo = Array.unsafe_get sorted 0 in
+    if key < lo then false
+    else
+      let hi = Array.unsafe_get sorted (len - 1) in
+      if key > hi then false
+      else binarySearchAux sorted 0 (len - 1) key
+
+let sorted_js_keyword = [|
+  "await";
+  "break";
+  "case";
+  "catch";
+  "class";
+  "const";
+  "continue";
+  "debugger";
+  "default";
+  "delete";
+  "do";
+  "else";
+  "enum";
+  "export";
+  "extends";
+  "false";
+  "finally";
+  "for";
+  "function";
+  "if";
+  "implements";
+  "import";
+  "in";
+  "instanceof";
+  "interface";
+  "let";
+  "new";
+  "null";
+  "package";
+  "private";
+  "protected";
+  "public";
+  "return";
+  "static";
+  "super";
+  "switch";
+  "this";
+  "throw";
+  "true";
+  "try";
+  "typeof";
+  "var";
+  "void";
+  "while";
+  "with";
+  "yield";
+  |]
+
+let is_js_keyword s = binarySearch s sorted_js_keyword
+
+let sorted_js_special_word = [|
+  "arguments";
+  "as";
+  "async";
+  "eval";
+  |]
+
+let is_js_special_word s = binarySearch s sorted_js_special_word
+
+let sorted_reserved = [|
   "AbortController";
   "AbortSignal";
   "AbstractRange";
-  "ActiveXObject";
   "AggregateError";
   "AnalyserNode";
   "Animation";
@@ -66,7 +150,6 @@ let sorted_keywords = [|
   "BiquadFilterNode";
   "Blob";
   "BlobEvent";
-  "BluetoothUUID";
   "Boolean";
   "BroadcastChannel";
   "BrowserCaptureMediaStreamTrack";
@@ -110,9 +193,11 @@ let sorted_keywords = [|
   "CSSRule";
   "CSSRuleList";
   "CSSScale";
+  "CSSScopeRule";
   "CSSSkew";
   "CSSSkewX";
   "CSSSkewY";
+  "CSSStartingStyleRule";
   "CSSStyleDeclaration";
   "CSSStyleRule";
   "CSSStyleSheet";
@@ -131,6 +216,7 @@ let sorted_keywords = [|
   "CanvasRenderingContext2D";
   "ChannelMergerNode";
   "ChannelSplitterNode";
+  "CharacterBoundsUpdateEvent";
   "CharacterData";
   "ClipboardEvent";
   "CloseEvent";
@@ -177,6 +263,7 @@ let sorted_keywords = [|
   "DocumentType";
   "DragEvent";
   "DynamicsCompressorNode";
+  "EditContext";
   "Element";
   "ElementInternals";
   "EncodedAudioChunk";
@@ -324,6 +411,7 @@ let sorted_keywords = [|
   "IntersectionObserver";
   "IntersectionObserverEntry";
   "Intl";
+  "Iterator";
   "JSON";
   "KeyboardEvent";
   "KeyframeEffect";
@@ -356,6 +444,7 @@ let sorted_keywords = [|
   "MediaStreamTrackEvent";
   "MediaStreamTrackGenerator";
   "MediaStreamTrackProcessor";
+  "MediaStreamTrackVideoStats";
   "MessageChannel";
   "MessageEvent";
   "MessagePort";
@@ -369,6 +458,7 @@ let sorted_keywords = [|
   "NamedNodeMap";
   "NavigateEvent";
   "Navigation";
+  "NavigationActivation";
   "NavigationCurrentEntryChangeEvent";
   "NavigationDestination";
   "NavigationHistoryEntry";
@@ -390,15 +480,15 @@ let sorted_keywords = [|
   "Option";
   "OscillatorNode";
   "OverconstrainedError";
+  "PageRevealEvent";
   "PageTransitionEvent";
   "PannerNode";
   "Path2D";
-  "PaymentManager";
-  "PaymentRequestUpdateEvent";
   "Performance";
   "PerformanceElementTiming";
   "PerformanceEntry";
   "PerformanceEventTiming";
+  "PerformanceLongAnimationFrameTiming";
   "PerformanceLongTaskTiming";
   "PerformanceMark";
   "PerformanceMeasure";
@@ -408,6 +498,7 @@ let sorted_keywords = [|
   "PerformanceObserverEntryList";
   "PerformancePaintTiming";
   "PerformanceResourceTiming";
+  "PerformanceScriptTiming";
   "PerformanceServerTiming";
   "PerformanceTiming";
   "PeriodicSyncManager";
@@ -580,9 +671,11 @@ let sorted_keywords = [|
   "SharedWorker";
   "SourceBuffer";
   "SourceBufferList";
+  "SpeechSynthesis";
   "SpeechSynthesisErrorEvent";
   "SpeechSynthesisEvent";
   "SpeechSynthesisUtterance";
+  "SpeechSynthesisVoice";
   "StaticRange";
   "StereoPannerNode";
   "Storage";
@@ -606,11 +699,14 @@ let sorted_keywords = [|
   "TextEncoder";
   "TextEncoderStream";
   "TextEvent";
+  "TextFormat";
+  "TextFormatUpdateEvent";
   "TextMetrics";
   "TextTrack";
   "TextTrackCue";
   "TextTrackCueList";
   "TextTrackList";
+  "TextUpdateEvent";
   "TimeRanges";
   "ToggleEvent";
   "Touch";
@@ -680,7 +776,6 @@ let sorted_keywords = [|
   "WritableStream";
   "WritableStreamDefaultController";
   "WritableStreamDefaultWriter";
-  "XDomainRequest";
   "XMLDocument";
   "XMLHttpRequest";
   "XMLHttpRequestEventTarget";
@@ -693,128 +788,38 @@ let sorted_keywords = [|
   "__dirname";
   "__esModule";
   "__filename";
-  "abstract";
-  "arguments";
-  "await";
-  "boolean";
-  "break";
-  "byte";
-  "case";
-  "catch";
-  "char";
-  "class";
   "clearImmediate";
   "clearInterval";
   "clearTimeout";
   "console";
-  "const";
-  "continue";
-  "debugger";
   "decodeURI";
   "decodeURIComponent";
-  "default";
-  "delete";
-  "do";
   "document";
-  "double";
-  "else";
   "encodeURI";
   "encodeURIComponent";
-  "enum";
   "escape";
-  "eval";
   "event";
-  "export";
   "exports";
-  "extends";
-  "false";
   "fetch";
-  "final";
-  "finally";
-  "float";
-  "for";
-  "function";
   "global";
-  "goto";
-  "if";
-  "implements";
-  "import";
-  "in";
-  "instanceof";
-  "int";
-  "interface";
+  "globalThis";
   "isFinite";
   "isNaN";
-  "let";
   "location";
-  "long";
   "module";
-  "native";
   "navigator";
-  "new";
-  "null";
-  "package";
   "parseFloat";
   "parseInt";
-  "private";
   "process";
-  "protected";
-  "public";
   "require";
-  "return";
+  "self";
   "setImmediate";
   "setInterval";
   "setTimeout";
-  "short";
-  "static";
-  "super";
-  "switch";
-  "synchronized";
-  "this";
-  "throw";
-  "transient";
-  "true";
-  "try";
-  "typeof";
   "undefined";
   "unescape";
-  "var";
-  "void";
-  "volatile";
-  "while";
   "window";
-  "with";
-  "yield";
   |]
 
+let is_reserved s = binarySearch s sorted_reserved
 
-type element = string 
-
-let rec binarySearchAux (arr : element array) (lo : int) (hi : int) key : bool =   
-    let mid = (lo + hi)/2 in 
-    let midVal = Array.unsafe_get arr mid in 
-    (* let c = cmp key midVal [@bs] in  *)
-    if key = midVal then true 
-    else if key < midVal then  (*  a[lo] =< key < a[mid] <= a[hi] *)
-      if hi = mid then  
-        (Array.unsafe_get arr lo) = key 
-      else binarySearchAux arr lo mid key 
-    else  (*  a[lo] =< a[mid] < key <= a[hi] *)
-      if lo = mid then 
-        (Array.unsafe_get arr hi) = key 
-      else binarySearchAux arr mid hi key 
-
-let binarySearch (sorted : element array) (key : element)  : bool =  
-  let len = Array.length sorted in 
-  if len = 0 then false
-  else 
-    let lo = Array.unsafe_get sorted 0 in 
-    (* let c = cmp key lo [@bs] in  *)
-    if key < lo then false
-    else
-    let hi = Array.unsafe_get sorted (len - 1) in 
-    (* let c2 = cmp key hi [@bs]in  *)
-    if key > hi then false
-    else binarySearchAux sorted 0 (len - 1) key 
-
-let is_reserved s = binarySearch sorted_keywords s     
