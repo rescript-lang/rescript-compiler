@@ -813,10 +813,10 @@ let parseConstant p =
     match p.Parser.token with
     | Int {i; suffix} ->
       (* Only decimal literal is allowed for bigint *)
-      if suffix = Some 'n' && not (Bigint_utils.is_numeric i) then
+      if suffix = Some 'n' && not (Bigint_utils.is_valid i) then
         Parser.err p
           (Diagnostics.message
-             "Invalid decimal literal. Only decimal literal is allowed for \
+             "Invalid bigint literal. Only decimal literal is allowed for \
               bigint.");
       let intTxt = if isNegative then "-" ^ i else i in
       Parsetree.Pconst_integer (intTxt, suffix)

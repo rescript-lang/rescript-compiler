@@ -260,8 +260,7 @@ let constant : Parsetree.constant -> (Asttypes.constant, error) result =
        with Failure _ -> Error (Literal_overflow "int64")
      end
   | Pconst_integer (i,Some 'n') ->
-    let sign, i = i |> Bigint_utils.remove_leading_sign in
-    let i = Bigint_utils.remove_leading_zeros i in
+    let sign, i = Bigint_utils.parse_bigint i in
     Ok (Const_bigint (sign, i))
   | Pconst_integer (i,Some c) -> Error (Unknown_literal (i, c))
   | Pconst_char c -> Ok (Const_char c)

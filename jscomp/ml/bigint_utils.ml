@@ -8,7 +8,7 @@ let remove_leading_sign str : bool * string =
   if len = 0 then (false, str)
   else
     if is_neg str || is_pos str then (not (is_neg str), String.sub str 1 (len -1))
-    else (not (is_neg str), str)
+    else (true, str)
 
 (* 
   Removes leading zeros from the string only if the first non-zero character
@@ -48,7 +48,11 @@ let remove_leading_zeros str =
   let processed_str = aux str in
   if starts_with_minus then "-" ^ processed_str else processed_str
 
-let is_numeric s =
+let parse_bigint s =
+  let sign, i = remove_leading_sign s in
+  (sign, remove_leading_zeros i)
+
+let is_valid s =
   let len = String.length s in
   if len = 0 then false
   else

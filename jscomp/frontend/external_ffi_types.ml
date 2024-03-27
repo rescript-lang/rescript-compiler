@@ -301,8 +301,7 @@ let inline_int64_primitive (i : int64) : string list =
   [""; to_string (Ffi_inline_const (Const_int64 i))]
 
 let inline_bigint_primitive (i : string) : string list =
-  let sign, i = i |> Bigint_utils.remove_leading_sign in
-  let i = Bigint_utils.remove_leading_zeros i in
+  let sign, i = Bigint_utils.parse_bigint i in
   [""; to_string (Ffi_inline_const (Const_bigint (sign, i)))]
 
 let inline_float_primitive (i : string) : string list =

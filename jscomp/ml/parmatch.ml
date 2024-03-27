@@ -1107,7 +1107,7 @@ let build_other ext env : Typedtree.pattern = match env with
 | ({pat_desc=(Tpat_constant (Const_bigint _))} as p,_) :: _ ->
     build_other_constant
       (function Tpat_constant(Const_bigint (sign, i)) -> String.length (Bigint_utils.to_string sign i) | _ -> assert false)
-      (function i -> Tpat_constant(Const_bigint (true, (String.make i '*'))))
+      (function i -> Tpat_constant(Const_bigint (true, (string_of_int i))))
       0 succ p env
 | ({pat_desc=(Tpat_constant (Const_string _))} as p,_) :: _ ->
     build_other_constant
