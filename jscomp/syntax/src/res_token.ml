@@ -257,38 +257,4 @@ let isKeywordTxt str =
     true
   with Not_found -> false
 
-let infixOperatorTable = function
-  | "==" -> EqualEqual
-  | "===" -> EqualEqualEqual
-  | "-" -> Minus
-  | "-." -> MinusDot
-  | "+" -> Plus
-  | "+." -> PlusDot
-  | "++" -> PlusPlus
-  | "/" -> Forwardslash
-  | "/." -> ForwardslashDot
-  | ">" -> GreaterThan
-  | "<" -> LessThan
-  | "*" -> Asterisk
-  | "*." -> AsteriskDot
-  | "**" -> Exponentiation
-  | "||" -> Lor
-  | "&&" -> Land
-  | "!=" -> BangEqual
-  | "!==" -> BangEqualEqual
-  | ">=" -> GreaterEqual
-  | "<=" -> LessEqual
-  | _ -> raise Not_found
-[@@raises Not_found]
-
-let isInfixOperatorTxt str =
-  match str with
-  | "=" | "<>" | "^" | "~-" | "~-." | ":=" | "|." | "|.u" | "|>" ->
-    true (* Allow internally aliases to OCaml ones *)
-  | _ -> (
-    try
-      let _ = infixOperatorTable str in
-      true
-    with Not_found -> false)
-
 let catch = Lident "catch"
