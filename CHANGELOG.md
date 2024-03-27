@@ -10,11 +10,11 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.1.0-rc.6 (Unreleased)
+# 11.1.0-rc.6
 
 #### :rocket: New Feature
 
-- Add the primitive bigint type https://github.com/rescript-lang/rescript-compiler/pull/6670 https://github.com/rescript-lang/rescript-compiler/pull/6696
+- Add experimental BigInt support. https://github.com/rescript-lang/rescript-compiler/pull/6670, https://github.com/rescript-lang/rescript-compiler/pull/6696
 
 #### :bug: Bug Fix
 
