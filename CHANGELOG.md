@@ -12,6 +12,10 @@
 
 # 11.1.0-rc.6 (Unreleased)
 
+#### :rocket: New Feature
+
+- Add the primitive bigint type https://github.com/rescript-lang/rescript-compiler/pull/6670
+
 #### :bug: Bug Fix
 
 - Fix mishandling of uncurried functions in super errors. https://github.com/rescript-lang/rescript-compiler/pull/6694

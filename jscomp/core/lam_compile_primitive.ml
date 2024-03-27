@@ -183,6 +183,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       E.int32_minus E.zero_int_literal (Ext_list.singleton_exn args)
   | Pnegint64 -> Js_long.neg args
   | Pnegfloat -> E.float_minus E.zero_float_lit (Ext_list.singleton_exn args)
+  | Pnegbigint -> E.bigint_op Minus E.zero_bigint_literal (Ext_list.singleton_exn args)
   (* Negate boxed int end*)
   (* Int addition and subtraction *)
   | Paddint -> (
@@ -190,16 +191,22 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Paddint64 -> Js_long.add args
   | Paddfloat -> (
       match args with [ e1; e2 ] -> E.float_add e1 e2 | _ -> assert false)
+  | Paddbigint -> (
+    match args with [ e1; e2 ] -> E.bigint_op Plus e1 e2 | _ -> assert false)
   | Psubint -> (
       match args with [ e1; e2 ] -> E.int32_minus e1 e2 | _ -> assert false)
   | Psubint64 -> Js_long.sub args
   | Psubfloat -> (
       match args with [ e1; e2 ] -> E.float_minus e1 e2 | _ -> assert false)
+  | Psubbigint -> (
+      match args with [ e1; e2 ] -> E.bigint_op Minus e1 e2 | _ -> assert false)
   | Pmulint -> (
       match args with [ e1; e2 ] -> E.int32_mul e1 e2 | _ -> assert false)
   | Pmulint64 -> Js_long.mul args
   | Pmulfloat -> (
       match args with [ e1; e2 ] -> E.float_mul e1 e2 | _ -> assert false)
+  | Pmulbigint -> (
+      match args with [ e1; e2 ] -> E.bigint_op Mul e1 e2 | _ -> assert false)
   | Pdivfloat -> (
       match args with [ e1; e2 ] -> E.float_div e1 e2 | _ -> assert false)
   | Pdivint -> (
@@ -207,14 +214,25 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       | [ e1; e2 ] -> E.int32_div ~checked:!Js_config.check_div_by_zero e1 e2
       | _ -> assert false)
   | Pdivint64 -> Js_long.div args
+  | Pdivbigint -> (
+      match args with
+      | [ e1; e2 ] -> E.bigint_div ~checked:!Js_config.check_div_by_zero e1 e2
+      | _ -> assert false)
   | Pmodint -> (
       match args with
       | [ e1; e2 ] -> E.int32_mod ~checked:!Js_config.check_div_by_zero e1 e2
       | _ -> assert false)
   | Pmodint64 -> Js_long.mod_ args
+  | Pmodbigint -> (
+      match args with
+      | [ e1; e2 ] -> E.bigint_mod ~checked:!Js_config.check_div_by_zero e1 e2
+      | _ -> assert false)
+  | Ppowbigint -> (match args with [ e1; e2 ] -> E.bigint_op Pow e1 e2 | _ -> assert false)
   | Plslint -> (
       match args with [ e1; e2 ] -> E.int32_lsl e1 e2 | _ -> assert false)
   | Plslint64 -> Js_long.lsl_ args
+  | Plslbigint -> (
+      match args with [ e1; e2 ] -> E.bigint_op Lsl e1 e2 | _ -> assert false)
   | Plsrint -> (
       match args with
       | [ e1; { J.expression_desc = Number (Int { i = 0l; _ } | Uint 0l); _ } ]
@@ -226,15 +244,23 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Pasrint -> (
       match args with [ e1; e2 ] -> E.int32_asr e1 e2 | _ -> assert false)
   | Pasrint64 -> Js_long.asr_ args
+  | Pasrbigint -> (
+      match args with [ e1; e2 ] -> E.bigint_op Asr e1 e2 | _ -> assert false)
   | Pandint -> (
       match args with [ e1; e2 ] -> E.int32_band e1 e2 | _ -> assert false)
   | Pandint64 -> Js_long.and_ args
+  | Pandbigint -> (
+      match args with [ e1; e2 ] -> E.bigint_op Band e1 e2 | _ -> assert false)
   | Porint -> (
       match args with [ e1; e2 ] -> E.int32_bor e1 e2 | _ -> assert false)
   | Porint64 -> Js_long.or_ args
+  | Porbigint -> (
+      match args with [ e1; e2 ] -> E.bigint_op Bor e1 e2 | _ -> assert false)
   | Pxorint -> (
       match args with [ e1; e2 ] -> E.int32_bxor e1 e2 | _ -> assert false)
   | Pxorint64 -> Js_long.xor args
+  | Pxorbigint -> (
+      match args with [ e1; e2 ] -> E.bigint_op Bxor e1 e2 | _ -> assert false)
   | Pjscomp cmp -> (
       match args with [ l; r ] -> E.js_comp cmp l r | _ -> assert false)
   | Pfloatcomp cmp | Pintcomp cmp -> (
@@ -242,6 +268,8 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
          [Not_found] or [Invalid_argument] ?
       *)
       match args with [ e1; e2 ] -> E.int_comp cmp e1 e2 | _ -> assert false)
+  | Pbigintcomp cmp -> (
+      match args with [ e1; e2 ] -> E.bigint_comp cmp e1 e2 | _ -> assert false)
   (* List --> stamp = 0
      Assert_false --> stamp = 26
   *)

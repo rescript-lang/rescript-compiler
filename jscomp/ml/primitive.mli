@@ -15,7 +15,7 @@
 
 (* Description of primitive functions *)
 
-type boxed_integer = Pnativeint | Pint32 | Pint64
+type boxed_integer = Pbigint | Pint32 | Pint64
 
 (* Representation of arguments/result for the native code version
    of a primitive *)

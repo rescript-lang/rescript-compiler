@@ -43,6 +43,7 @@ and ident_result = ident_create "result"
 and ident_dict = ident_create "dict"
 
 and ident_int64 = ident_create "int64"
+and ident_bigint = ident_create "bigint"
 and ident_lazy_t = ident_create "lazy_t"
 and ident_string = ident_create "string"
 and ident_extension_constructor = ident_create "extension_constructor"
@@ -87,6 +88,7 @@ and path_dict = Pident ident_dict
 
 
 and path_int64 = Pident ident_int64
+and path_bigint = Pident ident_bigint
 and path_lazy_t = Pident ident_lazy_t
 and path_string = Pident ident_string
 
@@ -111,6 +113,7 @@ and type_result t1 t2 = newgenty (Tconstr(path_result, [t1; t2], ref Mnil))
 and type_dict t = newgenty (Tconstr(path_dict, [t], ref Mnil))
 
 and type_int64 = newgenty (Tconstr(path_int64, [], ref Mnil))
+and type_bigint = newgenty (Tconstr(path_bigint, [], ref Mnil))
 and type_lazy_t t = newgenty (Tconstr(path_lazy_t, [t], ref Mnil))
 and type_string = newgenty (Tconstr(path_string, [], ref Mnil))
 
@@ -298,6 +301,7 @@ let common_initial_env add_type add_extension empty_env =
   add_extension ident_undefined_recursive_module
                          [newgenty (Ttuple[type_string; type_int; type_int])] (
   add_type ident_int64 decl_abstr (
+  add_type ident_bigint decl_abstr (
 
   add_type ident_lazy_t decl_lazy_t (
   add_type ident_option decl_option (
@@ -316,7 +320,7 @@ let common_initial_env add_type add_extension empty_env =
   add_type ident_extension_constructor decl_abstr (
   add_type ident_floatarray decl_abstr (
     add_type ident_promise decl_promise (
-      empty_env)))))))))))))))))))))))))))
+      empty_env))))))))))))))))))))))))))))
 
 let build_initial_env add_type add_exception empty_env =
   let common = common_initial_env add_type add_exception empty_env in

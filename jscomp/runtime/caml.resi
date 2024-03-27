@@ -27,6 +27,7 @@ type selector<'a> = ('a, 'a) => 'a
 let int_compare: (int, int) => int
 let bool_compare: (bool, bool) => int
 let float_compare: (float, float) => int
+let bigint_compare: (bigint, bigint) => int
 let string_compare: (string, string) => int
 
 let bool_min: selector<bool>

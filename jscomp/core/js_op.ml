@@ -48,6 +48,7 @@ type binop =
   | Mul
   | Div
   | Mod
+  | Pow
   | InstanceOf
 
 (**
@@ -125,10 +126,13 @@ type 'a access = Getter | Setter
 (* literal char *)
 type float_lit = { f : string } [@@unboxed]
 
+type bigint_lit = { positive: bool; value: string }
+
 type number =
   | Float of float_lit
   | Int of { i : int32; c : int option }
   | Uint of int32
+  | Bigint of bigint_lit
 
 (* becareful when constant folding +/-,
    since we treat it as js nativeint, bitwise operators:

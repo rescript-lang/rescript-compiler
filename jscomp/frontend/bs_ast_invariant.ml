@@ -83,8 +83,6 @@ let check_constant loc (const : Parsetree.constant) =
     *)
     try ignore @@ Int32.of_string s
     with _ -> Bs_warnings.warn_literal_overflow loc)
-  | Pconst_integer (_, Some 'n') ->
-    Location.raise_errorf ~loc "literal with `n` suffix is not supported"
   | _ -> ()
 
 (* Note we only used Bs_ast_iterator here, we can reuse compiler-libs instead of

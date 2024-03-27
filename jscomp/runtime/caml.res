@@ -52,6 +52,15 @@ let float_compare = (x: float, y: float) =>
     0
   }
 
+let bigint_compare = (x: bigint, y: bigint) =>
+  if x < y {
+    -1
+  } else if x == y {
+    0
+  } else {
+    1
+  }
+
 /* Lexical order */
 let string_compare = (s1: string, s2: string): int =>
   if s1 == s2 {

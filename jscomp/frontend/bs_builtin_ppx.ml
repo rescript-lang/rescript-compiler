@@ -341,6 +341,18 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) :
                   pval_attributes = [];
                 };
           }
+        | Pexp_constant (Pconst_integer (s, Some 'n')) ->
+          succeed attr pval_attributes;
+          {
+            sigi with
+            psig_desc =
+              Psig_value
+                {
+                  value_desc with
+                  pval_prim = External_ffi_types.inline_bigint_primitive s;
+                  pval_attributes = [];
+                };
+          }
         | Pexp_constant (Pconst_float (s, None)) ->
           succeed attr pval_attributes;
           {

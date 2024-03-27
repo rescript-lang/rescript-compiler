@@ -18,7 +18,7 @@
 open Misc
 open Parsetree
 
-type boxed_integer = Pnativeint | Pint32 | Pint64
+type boxed_integer = Pbigint | Pint32 | Pint64
 
 type native_repr =
   | Same_as_ocaml_repr

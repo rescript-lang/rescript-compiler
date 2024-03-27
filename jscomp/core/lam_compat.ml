@@ -22,11 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type boxed_integer = Lambda.boxed_integer = Pnativeint | Pint32 | Pint64
+type boxed_integer = Lambda.boxed_integer = Pbigint | Pint32 | Pint64
 
 let eq_boxed_integer (p : boxed_integer) (p1 : boxed_integer) =
   match p with
-  | Pnativeint -> p1 = Pnativeint
+  | Pbigint -> p1 = Pbigint
   | Pint32 -> p1 = Pint32
   | Pint64 -> p1 = Pint64
 
@@ -59,15 +59,6 @@ let cmp_int64 (cmp : comparison) (a : int64) b : bool =
   | Clt -> a < b
   | Cge -> a >= b
 
-let cmp_nativeint (cmp : comparison) (a : nativeint) b : bool =
-  match cmp with
-  | Ceq -> a = b
-  | Cneq -> a <> b
-  | Cgt -> a > b
-  | Cle -> a <= b
-  | Clt -> a < b
-  | Cge -> a >= b
-
 let cmp_float (cmp : comparison) (a : float) b : bool =
   match cmp with
   | Ceq -> a = b
@@ -76,7 +67,7 @@ let cmp_float (cmp : comparison) (a : float) b : bool =
   | Cle -> a <= b
   | Clt -> a < b
   | Cge -> a >= b
-
+  
 let cmp_int (cmp : comparison) (a : int) b : bool =
   match cmp with
   | Ceq -> a = b
