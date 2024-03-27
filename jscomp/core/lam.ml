@@ -506,6 +506,7 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc : t =
           (* FIXME: could raise? *)
           Lift.bool
             (Lam_compat.cmp_float cmp (float_of_string a) (float_of_string b))
+      | Pbigintcomp cmp, Const_bigint _, Const_bigint _ -> default ()
       | Pintcomp ((Ceq | Cneq) as op), Const_pointer a, Const_pointer b ->
           Lift.bool
             (match op with
@@ -641,7 +642,7 @@ let rec eval_const_as_bool (v : Lam_constant.t) : bool =
   | Const_int64 x -> x <> 0L
   | Const_js_false | Const_js_null | Const_module_alias | Const_js_undefined _ ->
       false
-  | Const_js_true | Const_string _ | Const_pointer _ | Const_float _
+  | Const_js_true | Const_string _ | Const_pointer _ | Const_float _ | Const_bigint _
   | Const_block _ | Const_float_array _ ->
       true
   | Const_some b -> eval_const_as_bool b

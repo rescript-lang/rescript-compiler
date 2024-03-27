@@ -1628,7 +1628,7 @@ and printTypExpr ~(state : State.t) (typExpr : Parsetree.core_type) cmtTbl =
       printObject ~state ~inline:false fields openFlag cmtTbl
     | Ptyp_arrow _ -> printArrow ~uncurried:false typExpr
     | Ptyp_constr _ when Ast_uncurried.coreTypeIsUncurriedFun typExpr ->
-      let arity, tArg = Ast_uncurried.typeExtractUncurriedFun typExpr in
+      let arity, tArg = Ast_uncurried.coreTypeExtractUncurriedFun typExpr in
       printArrow ~uncurried:true ~arity tArg
     | Ptyp_constr (longidentLoc, [{ptyp_desc = Ptyp_object (fields, openFlag)}])
       ->

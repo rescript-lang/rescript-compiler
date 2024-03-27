@@ -26,7 +26,7 @@
 type symbol
 
 /** Js bigint type only available in ES2020 */
-type bigint_val = Js_bigint.t
+type bigint_val = bigint
 
 type obj_val
 /** This type has only one value `undefined` */

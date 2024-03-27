@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type boxed_integer = Lambda.boxed_integer = Pnativeint | Pint32 | Pint64
+type boxed_integer = Lambda.boxed_integer = Pbigint | Pint32 | Pint64
 
 type comparison = Lambda.comparison = Ceq | Cneq | Clt | Cgt | Cle | Cge
 
@@ -58,8 +58,6 @@ type set_field_dbg_info = Lambda.set_field_dbg_info =
 val cmp_int32 : comparison -> int32 -> int32 -> bool
 
 val cmp_int64 : comparison -> int64 -> int64 -> bool
-
-val cmp_nativeint : comparison -> nativeint -> nativeint -> bool
 
 val cmp_float : comparison -> float -> float -> bool
 

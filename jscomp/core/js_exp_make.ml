@@ -312,6 +312,10 @@ let obj_int_tag_literal : t =
 
 let int ?comment ?c i : t = { expression_desc = Number (Int { i; c }); comment }
 
+let bigint ?comment sign i : t = { expression_desc = Number (BigInt {positive=sign; value=i}); comment}
+
+let zero_bigint_literal : t = {expression_desc = Number (BigInt {positive=true; value="0"}); comment = None}
+
 let small_int i : t =
   match i with
   | 0 -> zero_int_literal
@@ -803,11 +807,15 @@ let tag_type = function
   | Ast_untagged_variants.String s -> str s ~delim:DStarJ
   | Int i -> small_int i
   | Float f -> float f
+  | BigInt i -> 
+    let sign, i = Bigint_utils.parse_bigint i in
+    bigint sign i
   | Bool b -> bool b
   | Null -> nil
   | Undefined -> undefined
   | Untagged IntType -> str "number"
   | Untagged FloatType -> str "number"
+  | Untagged BigintType -> str "bigint"
   | Untagged BooleanType -> str "boolean"
   | Untagged FunctionType -> str "function"
   | Untagged StringType -> str "string"
@@ -1252,6 +1260,23 @@ let rec int32_band ?comment (e1 : J.expression) (e2 : J.expression) :
 
 (* let int32_bin ?comment op e1 e2 : J.expression =  *)
 (*   {expression_desc = Int32_bin(op,e1, e2); comment} *)
+
+let bigint_op ?comment op (e1: t) (e2: t) = bin ?comment op e1 e2
+
+let bigint_comp (cmp : Lam_compat.comparison) ?comment (e0: t) (e1: t) =
+  bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+
+let bigint_div ~checked ?comment (e0: t) (e1: t) =
+  if checked then
+    runtime_call Js_runtime_modules.bigint "div" [e0; e1]
+  else
+    bigint_op ?comment Div e0 e1
+    
+let bigint_mod ~checked ?comment (e0: t) (e1: t) =
+  if checked then
+    runtime_call Js_runtime_modules.bigint "mod_" [e0; e1]
+  else
+    bigint_op ?comment Mod e0 e1
 
 (* TODO -- alpha conversion
     remember to add parens..

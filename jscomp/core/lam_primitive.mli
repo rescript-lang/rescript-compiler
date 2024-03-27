@@ -71,10 +71,23 @@ type t =
   | Psubfloat
   | Pmulfloat
   | Pdivfloat
+  | Pnegbigint
+  | Paddbigint
+  | Psubbigint
+  | Pmulbigint
+  | Pdivbigint
+  | Pmodbigint
+  | Ppowbigint
+  | Pandbigint
+  | Porbigint
+  | Pxorbigint
+  | Plslbigint
+  | Pasrbigint
   | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
   | Pint64comp of Lam_compat.comparison
+  | Pbigintcomp of Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
   | Pstringlength

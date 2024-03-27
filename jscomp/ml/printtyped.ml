@@ -65,7 +65,7 @@ let fmt_constant f x =
   | Const_float (s) -> fprintf f "Const_float %s" s;
   | Const_int32 (i) -> fprintf f "Const_int32 %ld" i;
   | Const_int64 (i) -> fprintf f "Const_int64 %Ld" i;
-  | Const_nativeint (i) -> fprintf f "Const_nativeint %nd" i;
+  | Const_bigint (sign, i) -> fprintf f "Const_bigint %s" (Bigint_utils.to_string sign i);
 ;;
 
 let fmt_mutable_flag f x =

@@ -61,10 +61,10 @@ let is_single_int (x : t) : int option =
         {
           pstr_desc =
             Pstr_eval
-              ({pexp_desc = Pexp_constant (Pconst_integer (name, _)); _}, _);
+              ({pexp_desc = Pexp_constant (Pconst_integer (name, char)); _}, _);
           _;
         };
-      ] ->
+      ] when (match char with Some n when n = 'n' -> false | _ -> true) ->
     Some (int_of_string name)
   | _ -> None
 
@@ -76,6 +76,20 @@ let is_single_float (x : t) : string option =
           pstr_desc =
             Pstr_eval
               ({pexp_desc = Pexp_constant (Pconst_float (name, _)); _}, _);
+          _;
+        };
+      ] ->
+    Some name
+  | _ -> None
+
+let is_single_bigint (x : t) : string option =
+  match x with
+  | PStr
+      [
+        {
+          pstr_desc =
+            Pstr_eval
+              ({pexp_desc = Pexp_constant (Pconst_integer (name, Some 'n')); _}, _);
           _;
         };
       ] ->

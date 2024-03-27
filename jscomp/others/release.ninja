@@ -57,7 +57,7 @@ o others/js_string.cmi others/js_string.cmj : cc others/js_string.res | others/b
 o others/js_string2.cmi others/js_string2.cmj : cc others/js_string2.res | others/belt_internals.cmi others/js.cmi others/js_array2.cmj others/js_re.cmj $bsc
 o others/js_typed_array.cmi others/js_typed_array.cmj : cc others/js_typed_array.res | others/belt_internals.cmi others/js.cmi others/js.cmj others/js_typed_array2.cmj $bsc
 o others/js_typed_array2.cmi others/js_typed_array2.cmj : cc others/js_typed_array2.res | others/belt_internals.cmi others/js.cmi others/js.cmj $bsc
-o others/js_types.cmj : cc_cmi others/js_types.res | others/belt_internals.cmi others/js.cmi others/js.cmj others/js_bigint.cmj others/js_null.cmj others/js_types.cmi $bsc
+o others/js_types.cmj : cc_cmi others/js_types.res | others/belt_internals.cmi others/js.cmi others/js.cmj others/js_null.cmj others/js_types.cmi $bsc
 o others/js_types.cmi : cc others/js_types.resi | others/belt_internals.cmi others/js.cmi $bsc
 o others/js_undefined.cmj : cc_cmi others/js_undefined.res | others/belt_internals.cmi others/js.cmi others/js.cmj others/js_exn.cmj others/js_undefined.cmi $bsc
 o others/js_undefined.cmi : cc others/js_undefined.resi | others/belt_internals.cmi others/js.cmi others/js.cmj $bsc

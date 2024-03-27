@@ -528,4 +528,3 @@ let hash_number_as_i32_exn
 let first_marshal_char (x : string) = 
     x <> ""   &&
     ( String.unsafe_get x  0 = '\132')
-  

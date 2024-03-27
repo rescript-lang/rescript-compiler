@@ -80,3 +80,15 @@ module CoerceFromFloatToVariant = {
   let c = 120.
   let cc: mixed = (c :> mixed)
 }
+
+module CoerceFromBigintToVariant = {
+  @unboxed type bigints = BigInt(bigint) | @as(1n) First | @as(2n) Second | @as(3n) Third
+  let a = 100n
+  let aa = 1n
+  let b: bigints = (a :> bigints)
+  let bb: bigints = (aa :> bigints)
+
+  @unboxed type mixed = BigInt(bigint) | @as(1n) One | @as(null) Null | Two
+  let c = 120n
+  let cc: mixed = (c :> mixed)
+}

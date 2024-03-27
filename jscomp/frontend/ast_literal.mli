@@ -39,6 +39,8 @@ module Lid : sig
 
   val type_int : t
 
+  val type_bigint : t
+
   val js_internal_full_apply : t
 
   val opaque : t
@@ -83,6 +85,8 @@ val type_int : core_type_lit
 val type_int64 : Parsetree.core_type
 
 val type_float : Parsetree.core_type
+
+val type_bigint : core_type_lit
 
 val type_any : core_type_lit
 

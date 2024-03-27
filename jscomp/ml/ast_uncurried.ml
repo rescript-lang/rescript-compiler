@@ -69,12 +69,18 @@ let coreTypeIsUncurriedFun (typ : Parsetree.core_type) =
     true
   | _ -> false
 
-let typeIsUncurriedFun = Ast_uncurried_utils.typeIsUncurriedFun
-
-let typeExtractUncurriedFun (typ : Parsetree.core_type) =
+let coreTypeExtractUncurriedFun (typ : Parsetree.core_type) =
   match typ.ptyp_desc with
   | Ptyp_constr ({txt = Lident "function$"}, [tArg; tArity]) ->
     (arityFromType tArity, tArg)
+  | _ -> assert false
+
+let typeIsUncurriedFun = Ast_uncurried_utils.typeIsUncurriedFun
+
+let typeExtractUncurriedFun (typ : Types.type_expr) = 
+  match typ.desc with
+  | Tconstr (Pident {name = "function$"}, [tArg; _], _) ->
+    tArg
   | _ -> assert false
 
 (* Typed AST *)
@@ -114,3 +120,6 @@ let uncurried_type_get_arity_opt ~env typ =
   | Tconstr (Pident { name = "function$" }, [ _t; tArity ], _) ->
       Some (type_to_arity tArity)
   | _ -> None
+
+
+

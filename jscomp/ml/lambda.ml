@@ -229,6 +229,12 @@ type primitive =
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of comparison
+  (* BigInt operations *)
+  | Pnegbigint | Paddbigint | Psubbigint | Ppowbigint
+  | Pmulbigint | Pdivbigint | Pmodbigint
+  | Pandbigint | Porbigint | Pxorbigint
+  | Plslbigint | Pasrbigint
+  | Pbigintcomp of comparison
   (* String operations *)
   | Pstringlength | Pstringrefu  | Pstringrefs
   | Pbyteslength | Pbytesrefu | Pbytessetu | Pbytesrefs | Pbytessets
@@ -273,7 +279,7 @@ and value_kind =
 
 
 and boxed_integer = Primitive.boxed_integer =
-    Pnativeint | Pint32 | Pint64
+    Pbigint | Pint32 | Pint64
 
 
 and raise_kind =

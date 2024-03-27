@@ -106,6 +106,48 @@ let process_file sourcefile ?(kind ) ppf =
   in
   Config.uncurried := uncurried;
   res
+
+let reprint_source_file sourcefile = 
+  let uncurried = !Config.uncurried in
+  let kind = Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile) in
+  let sourcefile = set_abs_input_name sourcefile in
+  let res = match kind with 
+  | Res -> 
+    let parseResult =
+      Res_driver.parsingEngine.parseImplementation ~forPrinter:true ~filename:sourcefile
+    in
+    if parseResult.invalid then (
+      Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
+      exit 1
+    );
+    Res_compmisc.init_path ();
+    parseResult.parsetree 
+    |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Ml
+    |> Ppx_entry.rewrite_implementation
+    |> Res_printer.printImplementation ~width:100 ~comments:parseResult.comments 
+    |> print_endline
+  | Resi ->   
+    let parseResult =
+      Res_driver.parsingEngine.parseInterface ~forPrinter:true ~filename:sourcefile
+    in
+    if parseResult.invalid then (
+      Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
+      exit 1
+    );
+    Res_compmisc.init_path ();
+    parseResult.parsetree 
+    |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Mli
+    |> Ppx_entry.rewrite_signature
+    |> Res_printer.printInterface ~width:100 ~comments:parseResult.comments 
+    |> print_endline
+  | _ 
+    ->     
+    print_endline ("Invalid input for reprinting ReScript source. Must be a ReScript file: " ^ sourcefile);
+    exit 2
+  in
+  Config.uncurried := uncurried;
+  res
+
 let usage = "Usage: bsc <options> <files>\nOptions are:"
 
 let ppf = Format.err_formatter
@@ -389,6 +431,9 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-dsource", set Clflags.dump_source, 
     "*internal* print source";
+
+    "-reprint-source", string_call reprint_source_file, 
+    "*internal* transform the target ReScript file using PPXes provided, and print the transformed ReScript code to stdout";
 
     "-format", string_call format_file,
     "*internal* Format as Res syntax";

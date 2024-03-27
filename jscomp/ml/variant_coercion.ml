@@ -5,6 +5,7 @@ let can_coerce_primitive (path : Path.t) =
   Path.same path Predef.path_string
   || Path.same path Predef.path_int
   || Path.same path Predef.path_float
+  || Path.same path Predef.path_bigint
 
 let check_paths_same p1 p2 target_path =
   Path.same p1 target_path && Path.same p2 target_path
@@ -38,6 +39,8 @@ let variant_has_same_runtime_representation_as_target ~(targetPath : Path.t)
       path_same Predef.path_string
       || (* unboxed Number(float) :> float *)
       path_same Predef.path_float
+      || (* unboxed BigInt(bigint) :> bigint *)
+      path_same Predef.path_bigint
     | Cstr_tuple [] -> (
       (* Check that @as payloads match with the target path to coerce to.
            No @as means the default encoding, which is string *)
@@ -45,6 +48,7 @@ let variant_has_same_runtime_representation_as_target ~(targetPath : Path.t)
       | None | Some (String _) -> Path.same targetPath Predef.path_string
       | Some (Int _) -> Path.same targetPath Predef.path_int
       | Some (Float _) -> Path.same targetPath Predef.path_float
+      | Some (BigInt _) -> Path.same targetPath Predef.path_bigint
       | Some (Null | Undefined | Bool _ | Untagged _) -> false)
     | _ -> false
   in
