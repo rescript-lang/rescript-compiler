@@ -323,13 +323,13 @@ let scanExoticIdentifier scanner =
       (String.sub [@doesNotRaise]) scanner.src (startOff + 2)
         (scanner.offset - startOff - 3)
     in
-    if name = String.empty then (
-      let endPos = position scanner in
-      scanner.err ~startPos ~endPos
-        (Diagnostics.message "A quoted identifier can't be empty string.");
-      Token.Lident ident)
-    else if Token.isInfixOperatorTxt name then Token.Lident name
-    else Token.Lident ident
+    let _ =
+      if name = String.empty then
+        let endPos = position scanner in
+        scanner.err ~startPos ~endPos
+          (Diagnostics.message "A quoted identifier can't be empty string.")
+    in
+    Token.Lident ident
 
 let scanStringEscapeSequence ~startPos scanner =
   let scan ~n ~base ~max =
