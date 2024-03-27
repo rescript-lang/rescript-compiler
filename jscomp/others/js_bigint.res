@@ -9,23 +9,23 @@ number as a `bigint` if successfully parsed. Uncaught syntax exception otherwise
 
 ```rescript
 /* returns 123n */
-Js.Bigint.fromStringExn("123")
+Js.BigInt.fromStringExn("123")
 
 /* returns 0n */
-Js.Bigint.fromStringExn("")
+Js.BigInt.fromStringExn("")
 
 /* returns 17n */
-Js.Bigint.fromStringExn("0x11")
+Js.BigInt.fromStringExn("0x11")
 
 /* returns 3n */
-Js.Bigint.fromStringExn("0b11")
+Js.BigInt.fromStringExn("0b11")
 
 /* returns 9n */
-Js.Bigint.fromStringExn("0o11")
+Js.BigInt.fromStringExn("0o11")
 
 /* catch exception */
 try {
-  Js.Bigint.fromStringExn("a")
+  Js.BigInt.fromStringExn("a")
 } catch {
 | _ => ...
 }
@@ -62,20 +62,20 @@ See [`toString`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referen
 
 ```rescript
 /* prints "123" */
-Js.Bigint.toString(123n)->Js.log
+Js.BigInt.toString(123n)->Js.log
 ```
 */
 external toString: bigint => string = "toString"
 
 @send
 /**
-Returns a string with a language-sensitive representation of this Bigint value.
+Returns a string with a language-sensitive representation of this BigInt value.
 
 ## Examples
 
 ```rescript
 /* prints "123" */
-Js.Bigint.toString(123n)->Js.log
+Js.BigInt.toString(123n)->Js.log
 ```
 */
 external toLocaleString: bigint => string = "toLocaleString"

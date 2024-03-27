@@ -64,7 +64,7 @@ let print_boxed_integer_conversion ppf bi1 bi2 =
   fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
 
 let boxed_integer_mark name = function
-  | Pbigint -> Printf.sprintf "Bigint.%s" name
+  | Pbigint -> Printf.sprintf "BigInt.%s" name
   | Pint32 -> Printf.sprintf "Int32.%s" name
   | Pint64 -> Printf.sprintf "Int64.%s" name
 
