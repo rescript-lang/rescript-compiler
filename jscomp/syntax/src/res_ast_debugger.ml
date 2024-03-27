@@ -66,7 +66,8 @@ module SexpAst = struct
   let longident l =
     let rec loop l =
       match l with
-      | Longident.Lident ident -> Sexp.list [Sexp.atom "Lident"; string ident]
+      | Longident.Lident ident ->
+        Sexp.list [Sexp.atom "Lident"; string (Ext_ident.unwrap_exotic ident)]
       | Longident.Ldot (lident, txt) ->
         Sexp.list [Sexp.atom "Ldot"; loop lident; string txt]
       | Longident.Lapply (l1, l2) ->
@@ -601,7 +602,7 @@ module SexpAst = struct
         Sexp.list
           [
             Sexp.atom "Pexp_variant";
-            string lbl;
+            string (Ext_ident.unwrap_exotic lbl);
             (match exprOpt with
             | None -> Sexp.atom "None"
             | Some expr -> Sexp.list [Sexp.atom "Some"; expression expr]);
@@ -760,7 +761,7 @@ module SexpAst = struct
         Sexp.list
           [
             Sexp.atom "Ppat_variant";
-            string lbl;
+            string (Ext_ident.unwrap_exotic lbl);
             (match optPattern with
             | None -> Sexp.atom "None"
             | Some p -> Sexp.list [Sexp.atom "Some"; pattern p]);
@@ -814,7 +815,7 @@ module SexpAst = struct
       Sexp.list
         [
           Sexp.atom "Rtag";
-          string labelLoc.txt;
+          string (Ext_ident.unwrap_exotic labelLoc.txt);
           attributes attrs;
           Sexp.atom (if truth then "true" else "false");
           Sexp.list (mapEmpty ~f:coreType types);
@@ -910,11 +911,19 @@ module SexpAst = struct
 
   and attribute (stringLoc, p) =
     Sexp.list
-      [Sexp.atom "attribute"; Sexp.atom stringLoc.Asttypes.txt; payload p]
+      [
+        Sexp.atom "attribute";
+        Sexp.atom (Ext_ident.unwrap_exotic stringLoc.Asttypes.txt);
+        payload p;
+      ]
 
   and extension (stringLoc, p) =
     Sexp.list
-      [Sexp.atom "extension"; Sexp.atom stringLoc.Asttypes.txt; payload p]
+      [
+        Sexp.atom "extension";
+        Sexp.atom (Ext_ident.unwrap_exotic stringLoc.Asttypes.txt);
+        payload p;
+      ]
 
   and attributes attrs =
     let sexprs = mapEmpty ~f:attribute attrs in
