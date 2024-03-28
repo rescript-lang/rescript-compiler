@@ -59,6 +59,8 @@ let md5 = "Caml_md5"
 
 let int32 = "Caml_int32"
 
+let bigint = "Caml_bigint"
+
 let option = "Caml_option"
 
 let module_ = "Caml_module"

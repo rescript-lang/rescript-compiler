@@ -25,6 +25,7 @@ let rec struct_const ppf (cst : Lam_constant.t) =
   | Const_string { s } -> fprintf ppf "%S" s
   | Const_float f -> fprintf ppf "%s" f
   | Const_int64 n -> fprintf ppf "%LiL" n
+  | Const_bigint (sign, i) -> fprintf ppf "%sn" (Bigint_utils.to_string sign i)
   | Const_pointer name -> fprintf ppf "`%s" name
   | Const_some n -> fprintf ppf "[some-c]%a" struct_const n
   | Const_block (tag, _, []) -> fprintf ppf "[%i]" tag
@@ -133,6 +134,24 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pfloatcomp Cle -> fprintf ppf "<=."
   | Pfloatcomp Cgt -> fprintf ppf ">."
   | Pfloatcomp Cge -> fprintf ppf ">=."
+  | Pnegbigint -> fprintf ppf "~"
+  | Paddbigint -> fprintf ppf "+"
+  | Psubbigint -> fprintf ppf "-"
+  | Pmulbigint -> fprintf ppf "*"
+  | Pdivbigint -> fprintf ppf "/"
+  | Pmodbigint -> fprintf ppf "mod"
+  | Ppowbigint -> fprintf ppf "**"
+  | Pandbigint -> fprintf ppf "and"
+  | Porbigint -> fprintf ppf "or"
+  | Pxorbigint -> fprintf ppf "xor"
+  | Plslbigint -> fprintf ppf "lsl"
+  | Pasrbigint -> fprintf ppf "asr"
+  | Pbigintcomp Ceq -> fprintf ppf "=="
+  | Pbigintcomp Cneq -> fprintf ppf "!="
+  | Pbigintcomp Clt -> fprintf ppf "<"
+  | Pbigintcomp Cle -> fprintf ppf "<="
+  | Pbigintcomp Cgt -> fprintf ppf ">"
+  | Pbigintcomp Cge -> fprintf ppf ">="
   | Pjscomp Ceq -> fprintf ppf "#=="
   | Pjscomp Cneq -> fprintf ppf "#!="
   | Pjscomp Clt -> fprintf ppf "#<"

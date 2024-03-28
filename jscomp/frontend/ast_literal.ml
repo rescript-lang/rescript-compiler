@@ -43,6 +43,8 @@ module Lid = struct
 
   let type_int : t = Lident "int" (* use *predef* *)
 
+  let type_bigint : t = Lident "bigint" (* use *predef* *)
+
   let type_exn : t = Lident "exn" (* use *predef* *)
 
   let type_bool : t = Lident "bool" (* use *predef* *)
@@ -84,6 +86,9 @@ module No_loc = struct
     Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_unit; loc}, []))
 
   let type_int = Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))
+
+  let type_bigint =
+    Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_bigint; loc}, []))
 
   let type_string =
     Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_string; loc}, []))
@@ -146,6 +151,12 @@ let type_int64 =
 let type_float =
   Ast_helper.Typ.mk
     (Ptyp_constr ({txt = Lident "float"; loc = Location.none}, []))
+
+let type_bigint ?loc () =
+  match loc with
+  | None -> No_loc.type_bigint
+  | Some loc ->
+    Ast_helper.Typ.mk ~loc (Ptyp_constr ({txt = Lid.type_bigint; loc}, []))
 
 let type_any ?loc () =
   match loc with

@@ -138,7 +138,7 @@ let string_switch ?(comment : string option)
             match switch_case with
             | String s ->
               if s = txt then Some x.switch_body else None
-            | Int _  | Float _| Bool _ | Null | Undefined | Untagged _ ->
+            | Int _  | Float _ | BigInt _ | Bool _ | Null | Undefined | Untagged _ ->
               None)
         with
         | Some case -> case

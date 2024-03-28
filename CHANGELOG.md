@@ -27,6 +27,16 @@
 
 - Make the `--help` arg be prioritized in the CLI, so correctly prints help message and skip other commands. https://github.com/rescript-lang/rescript-compiler/pull/6667
 
+# 11.1.0-rc.6
+
+#### :rocket: New Feature
+
+- Add experimental BigInt support. https://github.com/rescript-lang/rescript-compiler/pull/6670, https://github.com/rescript-lang/rescript-compiler/pull/6696
+
+#### :bug: Bug Fix
+
+- Fix mishandling of uncurried functions in super errors. https://github.com/rescript-lang/rescript-compiler/pull/6694
+
 # 11.1.0-rc.5
 
 #### :bug: Bug Fix

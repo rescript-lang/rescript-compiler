@@ -239,8 +239,8 @@ let type_constant = function
   | Const_string _ -> instance_def Predef.type_string
   | Const_float _ -> instance_def Predef.type_float
   | Const_int64 _ -> instance_def Predef.type_int64
-  | Const_int32 _ 
-  | Const_nativeint _ ->  assert false
+  | Const_bigint _ -> instance_def Predef.type_bigint
+  | Const_int32 _ ->  assert false
 
 let constant : Parsetree.constant -> (Asttypes.constant, error) result =
   function
@@ -260,10 +260,8 @@ let constant : Parsetree.constant -> (Asttypes.constant, error) result =
        with Failure _ -> Error (Literal_overflow "int64")
      end
   | Pconst_integer (i,Some 'n') ->
-     begin
-       try Ok (Const_nativeint (Misc.Int_literal_converter.nativeint i))
-       with Failure _ -> Error (Literal_overflow "nativeint")
-     end
+    let sign, i = Bigint_utils.parse_bigint i in
+    Ok (Const_bigint (sign, i))
   | Pconst_integer (i,Some c) -> Error (Unknown_literal (i, c))
   | Pconst_char c -> Ok (Const_char c)
   | Pconst_string (s,d) -> Ok (Const_string (s,d))
@@ -307,7 +305,9 @@ let extract_concrete_record env ty =
 
 let extract_concrete_variant env ty =
   match extract_concrete_typedecl env ty with
-    (p0, p, {type_kind=Type_variant cstrs}) -> (p0, p, cstrs)
+    (p0, p, {type_kind=Type_variant cstrs}) 
+      when not (Ast_uncurried.typeIsUncurriedFun ty)  
+      -> (p0, p, cstrs)
   | (p0, p, {type_kind=Type_open}) -> (p0, p, [])
   | _ -> raise Not_found
 
@@ -662,6 +662,9 @@ let rec collect_missing_arguments env type1 type2 = match type1 with
       | Some res -> Some ((label, argtype) :: res)
       | None -> None
     end
+  | t when Ast_uncurried.typeIsUncurriedFun t -> 
+    let typ = Ast_uncurried.typeExtractUncurriedFun t in 
+    collect_missing_arguments env typ type2
   | _ -> None
 
 let print_expr_type_clash ?typeClashContext env trace ppf = begin

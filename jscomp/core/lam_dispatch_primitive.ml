@@ -123,6 +123,9 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   | "caml_float_equal_null" | "caml_float_equal_nullable"
   | "caml_float_equal_undefined" -> (
       match args with [ e0; e1 ] -> E.float_comp Ceq e0 e1 | _ -> assert false)
+  | "caml_bigint_equal_null" | "caml_bigint_equal_nullable"
+  | "caml_bigint_equal_undefined" -> (
+      match args with [ e0; e1 ] -> E.bigint_comp Ceq e0 e1 | _ -> assert false)
   | "caml_string_equal_null" | "caml_string_equal_nullable"
   | "caml_string_equal_undefined" -> (
       match args with
@@ -137,8 +140,9 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   | "caml_int_compare" ->
       E.runtime_call Js_runtime_modules.caml_primitive "int_compare" args
   | "caml_float_compare" -> call Js_runtime_modules.caml_primitive
+  | "caml_bigint_compare" -> call Js_runtime_modules.caml_primitive
   | "caml_string_compare" -> call Js_runtime_modules.caml_primitive
-  | "caml_bool_min" | "caml_int_min" | "caml_float_min" | "caml_string_min" -> (
+  | "caml_bool_min" | "caml_int_min" | "caml_float_min" | "caml_bigint_min" | "caml_string_min" -> (
       match args with
       | [ a; b ] ->
           if
@@ -147,7 +151,7 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
           then E.econd (E.js_comp Clt a b) a b
           else call Js_runtime_modules.caml_primitive
       | _ -> assert false)
-  | "caml_bool_max" | "caml_int_max" | "caml_float_max" | "caml_string_max" -> (
+  | "caml_bool_max" | "caml_int_max" | "caml_float_max" | "caml_bigint_max" | "caml_string_max" -> (
       match args with
       | [ a; b ] ->
           if
@@ -247,6 +251,14 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   | "?nativeint_mul" -> (
       match args with
       | [ e1; e2 ] -> E.unchecked_int32_mul e1 e2
+      | _ -> assert false)
+  | "?bigint_div" -> (
+      match args with
+      | [ e1; e2 ] -> E.bigint_div e1 e2 ~checked:false
+      | _ -> assert false)
+  | "?bigint_mod" -> (
+      match args with
+      | [ e1; e2 ] -> E.bigint_mod e1 e2 ~checked:false
       | _ -> assert false)
   | "?await" -> (
       match args with

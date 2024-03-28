@@ -210,7 +210,7 @@ module Float = Js_float
 module Int = Js_int
 (** Provide utilities for int *)
 
-module Bigint = Js_bigint
+module BigInt = Js_bigint
 (** Provide utilities for bigint *)
 
 module File = Js_file

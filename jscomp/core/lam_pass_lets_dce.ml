@@ -51,7 +51,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
         | {times = 1; captured = true }, (Lconst _ | Lvar _)
         |  _, (Lconst 
                  ((
-                   Const_int _ | Const_char _ | Const_float _ 
+                   Const_int _ | Const_char _ | Const_float _ | Const_bigint _
                  )
                  | Const_pointer _ |Const_js_true | Const_js_false | Const_js_undefined _) (* could be poly-variant [`A] -> [65a]*)
               | Lprim {primitive = Pfield (_);
