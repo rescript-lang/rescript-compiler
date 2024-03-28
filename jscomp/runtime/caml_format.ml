@@ -659,7 +659,7 @@ let float_of_string : string -> exn ->  float  =
         return Infinity;
     if (/^-inf(inity)?$/i.test(s))
         return -Infinity;
-    throw exn;
+    throw new Error(exn.RE_EXN_ID, { cause: exn });;
 }
 |}]
 

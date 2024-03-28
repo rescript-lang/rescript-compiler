@@ -45,42 +45,45 @@ var q = {
 };
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), []) && q.length === 0)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          25,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                25,
+                2
+              ]
+            }
+          });
 }
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 1), q)), [1]) && q.length === 1)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          26,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                26,
+                2
+              ]
+            }
+          });
 }
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2), q)), [
           1,
           2
         ]) && q.length === 2)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          27,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                27,
+                2
+              ]
+            }
+          });
 }
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3), q)), [
@@ -88,15 +91,16 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3), q))
           2,
           3
         ]) && q.length === 3)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          28,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                28,
+                2
+              ]
+            }
+          });
 }
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 4), q)), [
@@ -105,27 +109,29 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 4), q))
           3,
           4
         ]) && q.length === 4)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          29,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                29,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.popExn(q) !== 1) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          30,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                30,
+                2
+              ]
+            }
+          });
 }
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), [
@@ -133,102 +139,110 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), [
           3,
           4
         ]) && q.length === 3)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          31,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                31,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.popExn(q) !== 2) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          32,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                32,
+                2
+              ]
+            }
+          });
 }
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), [
           3,
           4
         ]) && q.length === 2)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          33,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                33,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.popExn(q) !== 3) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          34,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                34,
+                2
+              ]
+            }
+          });
 }
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), [4]) && q.length === 1)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          35,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                35,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.popExn(q) !== 4) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          36,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                36,
+                2
+              ]
+            }
+          });
 }
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), []) && q.length === 0)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          37,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                37,
+                2
+              ]
+            }
+          });
 }
 
 if (!does_raise(Belt_MutableQueue.popExn, q)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          38,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                38,
+                2
+              ]
+            }
+          });
 }
 
 var q$1 = {
@@ -238,63 +252,68 @@ var q$1 = {
 };
 
 if (Belt_MutableQueue.popExn((Belt_MutableQueue.add(q$1, 1), q$1)) !== 1) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          43,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                43,
+                2
+              ]
+            }
+          });
 }
 
 if (!does_raise(Belt_MutableQueue.popExn, q$1)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          44,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                44,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.popExn((Belt_MutableQueue.add(q$1, 2), q$1)) !== 2) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          45,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                45,
+                2
+              ]
+            }
+          });
 }
 
 if (!does_raise(Belt_MutableQueue.popExn, q$1)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          46,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                46,
+                2
+              ]
+            }
+          });
 }
 
 if (q$1.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          47,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                47,
+                2
+              ]
+            }
+          });
 }
 
 var q$2 = {
@@ -304,135 +323,146 @@ var q$2 = {
 };
 
 if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 1), q$2)) !== 1) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          52,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                52,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 2), q$2)) !== 1) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          53,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                53,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 3), q$2)) !== 1) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          54,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                54,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.peekExn(q$2) !== 1) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          55,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                55,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.popExn(q$2) !== 1) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          56,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                56,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.peekExn(q$2) !== 2) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          57,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                57,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.popExn(q$2) !== 2) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          58,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                58,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.peekExn(q$2) !== 3) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          59,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                59,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.popExn(q$2) !== 3) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          60,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                60,
+                2
+              ]
+            }
+          });
 }
 
 if (!does_raise(Belt_MutableQueue.peekExn, q$2)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          61,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                61,
+                2
+              ]
+            }
+          });
 }
 
 if (!does_raise(Belt_MutableQueue.peekExn, q$2)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          62,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                62,
+                2
+              ]
+            }
+          });
 }
 
 var q$3 = {
@@ -448,27 +478,29 @@ for(var i = 1; i <= 10; ++i){
 Belt_MutableQueue.clear(q$3);
 
 if (q$3.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          71,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                71,
+                2
+              ]
+            }
+          });
 }
 
 if (!does_raise(Belt_MutableQueue.popExn, q$3)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          72,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                72,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(q$3, {
@@ -476,29 +508,31 @@ if (!Caml_obj.equal(q$3, {
         first: undefined,
         last: undefined
       })) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          73,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                73,
+                2
+              ]
+            }
+          });
 }
 
 Belt_MutableQueue.add(q$3, 42);
 
 if (Belt_MutableQueue.popExn(q$3) !== 42) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          75,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                75,
+                2
+              ]
+            }
+          });
 }
 
 var q1 = {
@@ -525,15 +559,16 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1), [
         9,
         10
       ])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          84,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                84,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2), [
@@ -548,67 +583,72 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2), [
         9,
         10
       ])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          85,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                85,
+                2
+              ]
+            }
+          });
 }
 
 if (q1.length !== 10) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          86,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                86,
+                2
+              ]
+            }
+          });
 }
 
 if (q2.length !== 10) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          87,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                87,
+                2
+              ]
+            }
+          });
 }
 
 for(var i$2 = 1; i$2 <= 10; ++i$2){
   if (Belt_MutableQueue.popExn(q1) !== i$2) {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "bs_queue_test.res",
-            89,
-            4
-          ],
-          Error: new Error()
-        };
+    throw new Error("Assert_failure", {
+              cause: {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "bs_queue_test.res",
+                  89,
+                  4
+                ]
+              }
+            });
   }
   
 }
 
 for(var i$3 = 1; i$3 <= 10; ++i$3){
   if (Belt_MutableQueue.popExn(q2) !== i$3) {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "bs_queue_test.res",
-            92,
-            4
-          ],
-          Error: new Error()
-        };
+    throw new Error("Assert_failure", {
+              cause: {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "bs_queue_test.res",
+                  92,
+                  4
+                ]
+              }
+            });
   }
   
 }
@@ -620,92 +660,99 @@ var q$4 = {
 };
 
 if (q$4.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          98,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                98,
+                2
+              ]
+            }
+          });
 }
 
 for(var i$4 = 1; i$4 <= 10; ++i$4){
   Belt_MutableQueue.add(q$4, i$4);
   if (q$4.length !== i$4) {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "bs_queue_test.res",
-            101,
-            4
-          ],
-          Error: new Error()
-        };
+    throw new Error("Assert_failure", {
+              cause: {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "bs_queue_test.res",
+                  101,
+                  4
+                ]
+              }
+            });
   }
   if (q$4.length === 0) {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "bs_queue_test.res",
-            102,
-            4
-          ],
-          Error: new Error()
-        };
+    throw new Error("Assert_failure", {
+              cause: {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "bs_queue_test.res",
+                  102,
+                  4
+                ]
+              }
+            });
   }
   
 }
 
 for(var i$5 = 10; i$5 >= 1; --i$5){
   if (q$4.length !== i$5) {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "bs_queue_test.res",
-            105,
-            4
-          ],
-          Error: new Error()
-        };
+    throw new Error("Assert_failure", {
+              cause: {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "bs_queue_test.res",
+                  105,
+                  4
+                ]
+              }
+            });
   }
   if (q$4.length === 0) {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "bs_queue_test.res",
-            106,
-            4
-          ],
-          Error: new Error()
-        };
+    throw new Error("Assert_failure", {
+              cause: {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "bs_queue_test.res",
+                  106,
+                  4
+                ]
+              }
+            });
   }
   Belt_MutableQueue.popExn(q$4);
 }
 
 if (q$4.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          109,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                109,
+                2
+              ]
+            }
+          });
 }
 
 if (q$4.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          110,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                110,
+                2
+              ]
+            }
+          });
 }
 
 var q$5 = {
@@ -724,15 +771,16 @@ var i$7 = {
 
 Belt_MutableQueue.forEach(q$5, (function (j) {
         if (i$7.contents !== j) {
-          throw {
-                RE_EXN_ID: "Assert_failure",
-                _1: [
-                  "bs_queue_test.res",
-                  120,
-                  4
-                ],
-                Error: new Error()
-              };
+          throw new Error("Assert_failure", {
+                    cause: {
+                      RE_EXN_ID: "Assert_failure",
+                      _1: [
+                        "bs_queue_test.res",
+                        120,
+                        4
+                      ]
+                    }
+                  });
         }
         i$7.contents = i$7.contents + 1 | 0;
       }));
@@ -750,101 +798,109 @@ var q2$1 = {
 };
 
 if (q1$1.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          127,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                127,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$1), [])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          128,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                128,
+                2
+              ]
+            }
+          });
 }
 
 if (q2$1.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          129,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                129,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$1), [])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          130,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                130,
+                2
+              ]
+            }
+          });
 }
 
 Belt_MutableQueue.transfer(q1$1, q2$1);
 
 if (q1$1.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          132,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                132,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$1), [])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          133,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                133,
+                2
+              ]
+            }
+          });
 }
 
 if (q2$1.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          134,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                134,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$1), [])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          135,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                135,
+                2
+              ]
+            }
+          });
 }
 
 var q1$2 = {
@@ -864,15 +920,16 @@ for(var i$8 = 1; i$8 <= 4; ++i$8){
 }
 
 if (q1$2.length !== 4) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          143,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                143,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$2), [
@@ -881,77 +938,83 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$2), [
         3,
         4
       ])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          144,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                144,
+                2
+              ]
+            }
+          });
 }
 
 if (q2$2.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          145,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                145,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$2), [])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          146,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                146,
+                2
+              ]
+            }
+          });
 }
 
 Belt_MutableQueue.transfer(q1$2, q2$2);
 
 if (q1$2.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          148,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                148,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$2), [])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          149,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                149,
+                2
+              ]
+            }
+          });
 }
 
 if (q2$2.length !== 4) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          150,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                150,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$2), [
@@ -960,15 +1023,16 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$2), [
         3,
         4
       ])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          151,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                151,
+                2
+              ]
+            }
+          });
 }
 
 var q1$3 = {
@@ -988,39 +1052,42 @@ for(var i$9 = 5; i$9 <= 8; ++i$9){
 }
 
 if (q1$3.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          159,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                159,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$3), [])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          160,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                160,
+                2
+              ]
+            }
+          });
 }
 
 if (q2$3.length !== 4) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          161,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                161,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$3), [
@@ -1029,53 +1096,57 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$3), [
         7,
         8
       ])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          162,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                162,
+                2
+              ]
+            }
+          });
 }
 
 Belt_MutableQueue.transfer(q1$3, q2$3);
 
 if (q1$3.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          164,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                164,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$3), [])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          165,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                165,
+                2
+              ]
+            }
+          });
 }
 
 if (q2$3.length !== 4) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          166,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                166,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$3), [
@@ -1084,15 +1155,16 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$3), [
         7,
         8
       ])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          167,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                167,
+                2
+              ]
+            }
+          });
 }
 
 var q1$4 = {
@@ -1116,15 +1188,16 @@ for(var i$11 = 5; i$11 <= 8; ++i$11){
 }
 
 if (q1$4.length !== 4) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          178,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                178,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$4), [
@@ -1133,27 +1206,29 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$4), [
         3,
         4
       ])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          179,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                179,
+                2
+              ]
+            }
+          });
 }
 
 if (q2$4.length !== 4) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          180,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                180,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$4), [
@@ -1162,41 +1237,44 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$4), [
         7,
         8
       ])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          181,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                181,
+                2
+              ]
+            }
+          });
 }
 
 Belt_MutableQueue.transfer(q1$4, q2$4);
 
 if (q1$4.length !== 0) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          183,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                183,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$4), [])) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          184,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                184,
+                2
+              ]
+            }
+          });
 }
 
 var v = [
@@ -1211,27 +1289,29 @@ var v = [
 ];
 
 if (q2$4.length !== 8) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          186,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                186,
+                2
+              ]
+            }
+          });
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$4), v)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          187,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                187,
+                2
+              ]
+            }
+          });
 }
 
 if (Belt_MutableQueue.reduce(q2$4, 0, (function (x, y) {
@@ -1239,15 +1319,16 @@ if (Belt_MutableQueue.reduce(q2$4, 0, (function (x, y) {
         })) !== Belt_Array.reduce(v, 0, (function (x, y) {
           return x - y | 0;
         }))) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.res",
-          189,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_queue_test.res",
+                189,
+                2
+              ]
+            }
+          });
 }
 
 console.log("OK");

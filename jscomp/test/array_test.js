@@ -21,10 +21,11 @@ function starts_with(xs, prefix, p) {
   try {
     for(var i = 0; i < len2; ++i){
       if (!Curry._2(p, Caml_array.get(xs, i), Caml_array.get(prefix, i))) {
-        throw {
-              RE_EXN_ID: H,
-              Error: new Error()
-            };
+        throw new Error(H, {
+                  cause: {
+                    RE_EXN_ID: H
+                  }
+                });
       }
       
     }
@@ -35,7 +36,9 @@ function starts_with(xs, prefix, p) {
     if (exn.RE_EXN_ID === H) {
       return false;
     }
-    throw exn;
+    throw new Error(exn.RE_EXN_ID, {
+              cause: exn
+            });
   }
 }
 

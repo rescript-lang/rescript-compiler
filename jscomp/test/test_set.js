@@ -32,11 +32,12 @@ function Make(Ord) {
     hr = typeof r !== "object" ? 0 : r._3;
     if (hl > (hr + 2 | 0)) {
       if (typeof l !== "object") {
-        throw {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Set.bal",
-              Error: new Error()
-            };
+        throw new Error("Invalid_argument", {
+                  cause: {
+                    RE_EXN_ID: "Invalid_argument",
+                    _1: "Set.bal"
+                  }
+                });
       }
       var lr = l._2;
       var lv = l._1;
@@ -47,11 +48,12 @@ function Make(Ord) {
       if (typeof lr === "object") {
         return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
       }
-      throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal",
-            Error: new Error()
-          };
+      throw new Error("Invalid_argument", {
+                cause: {
+                  RE_EXN_ID: "Invalid_argument",
+                  _1: "Set.bal"
+                }
+              });
     }
     if (hr <= (hl + 2 | 0)) {
       return {
@@ -63,11 +65,12 @@ function Make(Ord) {
             };
     }
     if (typeof r !== "object") {
-      throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal",
-            Error: new Error()
-          };
+      throw new Error("Invalid_argument", {
+                cause: {
+                  RE_EXN_ID: "Invalid_argument",
+                  _1: "Set.bal"
+                }
+              });
     }
     var rr = r._2;
     var rv = r._1;
@@ -78,11 +81,12 @@ function Make(Ord) {
     if (typeof rl === "object") {
       return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
     }
-    throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal",
-          Error: new Error()
-        };
+    throw new Error("Invalid_argument", {
+              cause: {
+                RE_EXN_ID: "Invalid_argument",
+                _1: "Set.bal"
+              }
+            });
   };
   var add = function (x, x_) {
     if (typeof x_ !== "object") {
@@ -150,10 +154,11 @@ function Make(Ord) {
     while(true) {
       var x = _x;
       if (typeof x !== "object") {
-        throw {
-              RE_EXN_ID: "Not_found",
-              Error: new Error()
-            };
+        throw new Error("Not_found", {
+                  cause: {
+                    RE_EXN_ID: "Not_found"
+                  }
+                });
       }
       var l = x._0;
       if (typeof l !== "object") {
@@ -167,10 +172,11 @@ function Make(Ord) {
     while(true) {
       var x = _x;
       if (typeof x !== "object") {
-        throw {
-              RE_EXN_ID: "Not_found",
-              Error: new Error()
-            };
+        throw new Error("Not_found", {
+                  cause: {
+                    RE_EXN_ID: "Not_found"
+                  }
+                });
       }
       var r = x._2;
       if (typeof r !== "object") {
@@ -182,11 +188,12 @@ function Make(Ord) {
   };
   var remove_min_elt = function (x) {
     if (typeof x !== "object") {
-      throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.remove_min_elt",
-            Error: new Error()
-          };
+      throw new Error("Invalid_argument", {
+                cause: {
+                  RE_EXN_ID: "Invalid_argument",
+                  _1: "Set.remove_min_elt"
+                }
+              });
     }
     var l = x._0;
     if (typeof l !== "object") {
@@ -566,10 +573,11 @@ function Make(Ord) {
     while(true) {
       var x_ = _x_;
       if (typeof x_ !== "object") {
-        throw {
-              RE_EXN_ID: "Not_found",
-              Error: new Error()
-            };
+        throw new Error("Not_found", {
+                  cause: {
+                    RE_EXN_ID: "Not_found"
+                  }
+                });
       }
       var v = x_._1;
       var c = Curry._2(Ord.compare, x, v);
@@ -673,15 +681,16 @@ function Make(Ord) {
                 match$4[1]
               ];
       }
-      throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "test_set.res",
-              497,
-              20
-            ],
-            Error: new Error()
-          };
+      throw new Error("Assert_failure", {
+                cause: {
+                  RE_EXN_ID: "Assert_failure",
+                  _1: [
+                    "test_set.res",
+                    497,
+                    20
+                  ]
+                }
+              });
     };
     return sub(List.length(l), l)[0];
   };

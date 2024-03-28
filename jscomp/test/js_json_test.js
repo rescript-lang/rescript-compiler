@@ -97,28 +97,30 @@ add_test("File \"js_json_test.res\", line 22, characters 11-18", (function (para
         ty2._0.forEach(function (x) {
               var ty3 = Js_json.classify(x);
               if (typeof ty3 !== "object") {
-                throw {
-                      RE_EXN_ID: "Assert_failure",
-                      _1: [
-                        "js_json_test.res",
-                        37,
-                        19
-                      ],
-                      Error: new Error()
-                    };
+                throw new Error("Assert_failure", {
+                          cause: {
+                            RE_EXN_ID: "Assert_failure",
+                            _1: [
+                              "js_json_test.res",
+                              37,
+                              19
+                            ]
+                          }
+                        });
               }
               if (ty3.TAG === "JSONNumber") {
                 return ;
               }
-              throw {
-                    RE_EXN_ID: "Assert_failure",
-                    _1: [
-                      "js_json_test.res",
-                      37,
-                      19
-                    ],
-                    Error: new Error()
-                  };
+              throw new Error("Assert_failure", {
+                        cause: {
+                          RE_EXN_ID: "Assert_failure",
+                          _1: [
+                            "js_json_test.res",
+                            37,
+                            19
+                          ]
+                        }
+                      });
             });
         return {
                 TAG: "Ok",
@@ -257,15 +259,16 @@ function option_get(x) {
   if (x !== undefined) {
     return Caml_option.valFromOption(x);
   }
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "js_json_test.res",
-          111,
-          12
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "js_json_test.res",
+                111,
+                12
+              ]
+            }
+          });
 }
 
 var dict = {};

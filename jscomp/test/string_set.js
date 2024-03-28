@@ -223,10 +223,11 @@ function find(x, _tree) {
   while(true) {
     var tree = _tree;
     if (typeof tree !== "object") {
-      throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+      throw new Error("Not_found", {
+                cause: {
+                  RE_EXN_ID: "Not_found"
+                }
+              });
     }
     var v = tree._1;
     var c = Caml.string_compare(x, v);

@@ -13,15 +13,16 @@ function bench(param) {
   console.time("bs_rbset_int_bench.res 11");
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Rbset.mem(i$1, data)) {
-      throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "bs_rbset_int_bench.res",
-              13,
-              6
-            ],
-            Error: new Error()
-          };
+      throw new Error("Assert_failure", {
+                cause: {
+                  RE_EXN_ID: "Assert_failure",
+                  _1: [
+                    "bs_rbset_int_bench.res",
+                    13,
+                    6
+                  ]
+                }
+              });
     }
     
   }
@@ -34,15 +35,16 @@ function bench(param) {
   if (Rbset.cardinal(data) === 0) {
     return ;
   }
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_rbset_int_bench.res",
-          21,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_rbset_int_bench.res",
+                21,
+                2
+              ]
+            }
+          });
 }
 
 console.time("bs_rbset_int_bench.res 24");

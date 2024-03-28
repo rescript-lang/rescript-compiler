@@ -49,15 +49,16 @@ function compare(context, state, _a, _b) {
                 exit$2 = 4;
                 break;
             case "Frac" :
-                throw {
-                      RE_EXN_ID: "Assert_failure",
-                      _1: [
-                        "gpr_1698_test.res",
-                        41,
-                        9
-                      ],
-                      Error: new Error()
-                    };
+                throw new Error("Assert_failure", {
+                          cause: {
+                            RE_EXN_ID: "Assert_failure",
+                            _1: [
+                              "gpr_1698_test.res",
+                              41,
+                              9
+                            ]
+                          }
+                        });
             case "Pow" :
             case "Gcd" :
                 exit = 1;
@@ -75,15 +76,16 @@ function compare(context, state, _a, _b) {
       case "Frac" :
           switch (b.TAG) {
             case "Val" :
-                throw {
-                      RE_EXN_ID: "Assert_failure",
-                      _1: [
-                        "gpr_1698_test.res",
-                        41,
-                        9
-                      ],
-                      Error: new Error()
-                    };
+                throw new Error("Assert_failure", {
+                          cause: {
+                            RE_EXN_ID: "Assert_failure",
+                            _1: [
+                              "gpr_1698_test.res",
+                              41,
+                              9
+                            ]
+                          }
+                        });
             case "Neg" :
                 exit$3 = 5;
                 break;
