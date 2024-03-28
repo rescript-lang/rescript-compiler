@@ -132,6 +132,21 @@ let [@inline] no_escape (c : char) =
   | '0' .. '9' | '_' | '$' -> true 
   | _ -> false
 
+let is_exotic name =
+  (* Exotic idents should always wrapped by \"..." *)
+  match String.unsafe_get name 0 with
+  | '\\' -> true
+  | _ -> false
+
+let wrap_exotic name = "\\\"" ^ name ^ "\""
+
+let unwrap_exotic name =
+  if is_exotic name then
+   let len = String.length name in
+   (* Exotic idents should always wrapped by \"..." *)
+   String.sub name 2 (len - 3)
+  else name
+
 exception Not_normal_letter of int
 let name_mangle name =
   let len = String.length name  in
@@ -157,14 +172,19 @@ let name_mangle name =
      Ext_ident.convert "^";;
      - : string = "$caret"
    ]}
-   [convert name] if [name] is a js keyword,add "$$"
+   [convert name] if [name] is a js keyword, and also is not explicitly used as exotic identifier, add "$$"
    otherwise do the name mangling to make sure ocaml identifier it is
    a valid js identifier
 *)
 let convert (name : string) =
-  if  Js_reserved_map.is_reserved name  then
-    "$$" ^ name
-  else name_mangle name
+  if is_exotic name then
+     let name = unwrap_exotic name in
+     if Js_reserved_map.is_js_keyword name then "$$" ^ name
+     else name_mangle name
+  else
+   if Js_reserved_map.is_js_keyword name || Js_reserved_map.is_js_special_word name || Js_reserved_map.is_reserved name then
+      "$$" ^ name
+   else name_mangle name
 
 (** keyword could be used in property *)
 

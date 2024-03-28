@@ -1,8 +1,8 @@
-//@ts-check
+// @ts-check
 
-const fs = require("fs");
-const path = require("path");
-const { execSync } = require("child_process");
+const fs = require("node:fs/promises");
+const path = require("node:path");
+const { execSync } = require("node:child_process");
 const puppeteer = require("puppeteer");
 
 const jscompDir = path.join(__dirname, "..", "jscomp");
@@ -15,8 +15,8 @@ const reservedMap = path.join(jscompDir, "ext", "js_reserved_map.ml");
   /**
    * @type string[]
    */
-  const result = await page.evaluate(`Object.getOwnPropertyNames(window)`);
-  fs.writeFileSync(
+  const result = await page.evaluate("Object.getOwnPropertyNames(globalThis)");
+  await fs.writeFile(
     keywordsFile,
     result
       .filter(x => /^[A-Z]/.test(x))

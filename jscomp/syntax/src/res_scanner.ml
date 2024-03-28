@@ -283,14 +283,17 @@ let scanNumber scanner =
   else Token.Int {i = literal; suffix}
 
 let scanExoticIdentifier scanner =
-  (* TODO: are we disregarding the current char...? Should be a quote *)
-  next scanner;
-  let buffer = Buffer.create 20 in
   let startPos = position scanner in
+  let startOff = scanner.offset in
+  let closed = ref false in
+
+  next2 scanner;
 
   let rec scan () =
     match scanner.ch with
-    | '"' -> next scanner
+    | '"' ->
+      closed := true;
+      next scanner
     | '\n' | '\r' ->
       (* line break *)
       let endPos = position scanner in
@@ -301,14 +304,32 @@ let scanExoticIdentifier scanner =
       let endPos = position scanner in
       scanner.err ~startPos ~endPos
         (Diagnostics.message "Did you forget a \" here?")
-    | ch ->
-      Buffer.add_char buffer ch;
+    | _ ->
       next scanner;
       scan ()
   in
   scan ();
-  (* TODO: do we really need to create a new buffer instead of substring once? *)
-  Token.Lident (Buffer.contents buffer)
+
+  let ident =
+    (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff)
+  in
+  if not !closed then (
+    let endPos = position scanner in
+    scanner.err ~startPos ~endPos
+      (Diagnostics.message "Did you forget a \" here?");
+    Token.Lident ident)
+  else
+    let name =
+      (String.sub [@doesNotRaise]) scanner.src (startOff + 2)
+        (scanner.offset - startOff - 3)
+    in
+    let _ =
+      if name = String.empty then
+        let endPos = position scanner in
+        scanner.err ~startPos ~endPos
+          (Diagnostics.message "A quoted identifier can't be empty string.")
+    in
+    Token.Lident ident
 
 let scanStringEscapeSequence ~startPos scanner =
   let scan ~n ~base ~max =
@@ -746,9 +767,7 @@ let rec scan scanner =
       | _ ->
         next scanner;
         Token.Colon)
-    | '\\' ->
-      next scanner;
-      scanExoticIdentifier scanner
+    | '\\' -> scanExoticIdentifier scanner
     | '/' -> (
       match peek scanner with
       | '/' ->
