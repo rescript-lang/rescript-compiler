@@ -329,7 +329,8 @@ let scanExoticIdentifier scanner =
         scanner.err ~startPos ~endPos
           (Diagnostics.message "A quoted identifier can't be empty string.")
     in
-    Token.Lident ident
+    if Res_token.isInfixOperatorTxt name then Token.Lident name
+    else Token.Lident ident
 
 let scanStringEscapeSequence ~startPos scanner =
   let scan ~n ~base ~max =

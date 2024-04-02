@@ -384,39 +384,20 @@ let buildLongident words =
   | hd :: tl -> List.fold_left (fun p s -> Longident.Ldot (p, s)) (Lident hd) tl
 
 let makeInfixOperator (p : Parser.t) token startPos endPos =
-  (* FIXME: why this always gonna be true???? *)
-  let isBinaryOp =
-    Lexing.(Scanner.isBinaryOp p.scanner.src startPos.pos_cnum endPos.pos_cnum)
-  in
   let stringifiedToken =
-    if isBinaryOp then
-      match token with
-      | Token.Minus ->
-        print_endline "@@@ binary";
-        Ext_ident.wrap_exotic "-"
-      | Token.PlusPlus -> Ext_ident.wrap_exotic "^"
-      | Token.BangEqual -> Ext_ident.wrap_exotic "<>"
-      | Token.BangEqualEqual -> Ext_ident.wrap_exotic "!="
-      | Token.Equal ->
-        (* TODO: could have a totally different meaning like x->fooSet(y)*)
-        Parser.err ~startPos ~endPos p
-          (Diagnostics.message "Did you mean `==` here?");
-        "="
-      | Token.EqualEqual -> Ext_ident.wrap_exotic "="
-      | Token.EqualEqualEqual -> Ext_ident.wrap_exotic "=="
-      | Token.GreaterThan -> Ext_ident.wrap_exotic ">"
-      | Token.LessThan -> Ext_ident.wrap_exotic "<"
-      | token -> Ext_ident.wrap_exotic (Token.toString token)
-    else
-      (* unary *)
-      match token with
-      | Token.Minus ->
-        print_endline "@@@ unary";
-        Ext_ident.wrap_exotic "~-"
-      | Token.MinusDot -> Ext_ident.wrap_exotic "~-."
-      | Token.MinusGreater when p.uncurried_config = Legacy -> "|."
-      | Token.MinusGreater -> "|.u"
-      | token -> Ext_ident.wrap_exotic (Token.toString token)
+    if token = Token.MinusGreater then
+      if p.uncurried_config = Legacy then "|." else "|.u"
+    else if token = Token.PlusPlus then "^"
+    else if token = Token.BangEqual then "<>"
+    else if token = Token.BangEqualEqual then "!="
+    else if token = Token.Equal then (
+      (* TODO: could have a totally different meaning like x->fooSet(y)*)
+      Parser.err ~startPos ~endPos p
+        (Diagnostics.message "Did you mean `==` here?");
+      "=")
+    else if token = Token.EqualEqual then "="
+    else if token = Token.EqualEqualEqual then "=="
+    else Token.toString token
   in
   let loc = mkLoc startPos endPos in
   let operator = Location.mkloc (Longident.Lident stringifiedToken) loc in

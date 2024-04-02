@@ -376,11 +376,10 @@ let printLongident = function
   | Longident.Lident txt -> Doc.text txt
   | lid -> Doc.join ~sep:Doc.dot (printLongidentAux [] lid)
 
-type identifierStyle = ExoticLike | NormalIdent
+type polyVarIdentifierStyle = ExoticLike | NormalIdent
 
-let classifyIdentContent txt =
-  if Ext_ident.is_exotic txt then ExoticLike
-  else if Token.isKeywordTxt txt then ExoticLike
+let classifyPolyVarIdentContent txt =
+  if Token.isKeywordTxt txt then ExoticLike
   else
     let len = String.length txt in
     let rec loop i =
@@ -406,7 +405,7 @@ let for_all_from s start p =
   unsafe_for_all_range s ~start ~finish:(len - 1) p
 
 (* See https://github.com/rescript-lang/rescript-compiler/blob/726cfa534314b586e5b5734471bc2023ad99ebd9/jscomp/ext/ext_string.ml#L510 *)
-let isValidNumericPolyvarNumber (x : string) =
+let isValidNumericPolyVarNumber (x : string) =
   let len = String.length x in
   len > 0
   &&
@@ -423,12 +422,10 @@ let isValidNumericPolyvarNumber (x : string) =
 (* Exotic identifiers in poly-vars have a "lighter" syntax: #"ease-in" *)
 let printPolyVarIdent txt =
   (* numeric poly-vars don't need quotes: #644 *)
-  if isValidNumericPolyvarNumber txt then Doc.text txt
+  if isValidNumericPolyVarNumber txt then Doc.text txt
   else
-    match classifyIdentContent txt with
-    | ExoticLike ->
-      Doc.concat
-        [Doc.text "\""; Doc.text (Ext_ident.unwrap_exotic txt); Doc.text "\""]
+    match classifyPolyVarIdentContent txt with
+    | ExoticLike -> Doc.text ("\"" ^ Ext_ident.unwrap_exotic txt ^ "\"")
     | NormalIdent -> (
       match txt with
       | "" -> Doc.concat [Doc.text "\""; Doc.text txt; Doc.text "\""]
@@ -437,6 +434,10 @@ let printPolyVarIdent txt =
 let polyVarIdentToString polyVarIdent =
   Doc.concat [Doc.text "#"; printPolyVarIdent polyVarIdent]
   |> Doc.toString ~width:80
+
+let printIdentPossiblyInfixOperator txt =
+  if Res_token.isInfixOperatorTxt txt then Doc.text (Ext_ident.wrap_exotic txt)
+  else Doc.text txt
 
 let printLident l =
   let flatLidOpt lid =
@@ -448,14 +449,16 @@ let printLident l =
     flat [] lid
   in
   match l with
-  | Longident.Lident txt -> Doc.text txt
+  | Longident.Lident txt -> printIdentPossiblyInfixOperator txt
   | Longident.Ldot (path, txt) ->
     let doc =
       match flatLidOpt path with
       | Some txts ->
         Doc.concat
           [
-            Doc.join ~sep:Doc.dot (List.map Doc.text txts); Doc.dot; Doc.text txt;
+            Doc.join ~sep:Doc.dot (List.map Doc.text txts);
+            Doc.dot;
+            printIdentPossiblyInfixOperator txt;
           ]
       | None -> Doc.text "printLident: Longident.Lapply is not supported"
     in
@@ -1053,7 +1056,7 @@ and printValueDescription ~state valueDescription cmtTbl =
          attrs;
          Doc.text header;
          printComments
-           (Doc.text valueDescription.pval_name.txt)
+           (printIdentPossiblyInfixOperator valueDescription.pval_name.txt)
            cmtTbl valueDescription.pval_name.loc;
          Doc.text ": ";
          printTypExpr ~state valueDescription.pval_type cmtTbl;
@@ -2119,7 +2122,7 @@ and printPattern ~state (p : Parsetree.pattern) cmtTbl =
   let patternWithoutAttributes =
     match p.ppat_desc with
     | Ppat_any -> Doc.text "_"
-    | Ppat_var var -> Doc.text var.txt
+    | Ppat_var var -> printIdentPossiblyInfixOperator var.txt
     | Ppat_constant c ->
       let templateLiteral =
         ParsetreeViewer.hasTemplateLiteralAttr p.ppat_attributes
@@ -4421,16 +4424,15 @@ and printJsxProp ~state arg cmtTbl =
  * Navabar.createElement -> Navbar
  * Staff.Users.createElement -> Staff.Users *)
 and printJsxName {txt = lident} =
-  let printIdent = Doc.text in
   let rec flatten acc lident =
     match lident with
-    | Longident.Lident txt -> printIdent txt :: acc
+    | Longident.Lident txt -> Doc.text txt :: acc
     | Ldot (lident, "createElement") -> flatten acc lident
-    | Ldot (lident, txt) -> flatten (printIdent txt :: acc) lident
+    | Ldot (lident, txt) -> flatten (Doc.text txt :: acc) lident
     | _ -> acc
   in
   match lident with
-  | Longident.Lident txt -> printIdent txt
+  | Longident.Lident txt -> Doc.text txt
   | _ as lident ->
     let segments = flatten [] lident in
     Doc.join ~sep:Doc.dot segments
@@ -4987,7 +4989,7 @@ and printExpFunParameter ~state parameter cmtTbl =
           [
             printAttributes ~state ppat_attributes cmtTbl;
             Doc.text "~";
-            Doc.text lbl;
+            printIdentPossiblyInfixOperator lbl;
           ]
       | ( (Asttypes.Labelled lbl | Optional lbl),
           {
@@ -5000,7 +5002,7 @@ and printExpFunParameter ~state parameter cmtTbl =
           [
             printAttributes ~state ppat_attributes cmtTbl;
             Doc.text "~";
-            Doc.text lbl;
+            printIdentPossiblyInfixOperator lbl;
             Doc.text ": ";
             printTypExpr ~state typ cmtTbl;
           ]
@@ -5009,7 +5011,7 @@ and printExpFunParameter ~state parameter cmtTbl =
         Doc.concat
           [
             Doc.text "~";
-            Doc.text lbl;
+            printIdentPossiblyInfixOperator lbl;
             Doc.text " as ";
             printPattern ~state pattern cmtTbl;
           ]

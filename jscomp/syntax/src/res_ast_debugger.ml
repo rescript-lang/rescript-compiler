@@ -54,7 +54,7 @@ module SexpAst = struct
     | [] -> [Sexp.list []]
     | items -> List.map f items
 
-  let string txt = Sexp.atom ("\"" ^ txt ^ "\"")
+  let string txt = Sexp.atom ("\"" ^ Ext_ident.unwrap_exotic txt ^ "\"")
 
   let char c = Sexp.atom ("'" ^ Char.escaped c ^ "'")
 
@@ -66,8 +66,7 @@ module SexpAst = struct
   let longident l =
     let rec loop l =
       match l with
-      | Longident.Lident ident ->
-        Sexp.list [Sexp.atom "Lident"; string (Ext_ident.unwrap_exotic ident)]
+      | Longident.Lident ident -> Sexp.list [Sexp.atom "Lident"; string ident]
       | Longident.Ldot (lident, txt) ->
         Sexp.list [Sexp.atom "Ldot"; loop lident; string txt]
       | Longident.Lapply (l1, l2) ->
@@ -602,7 +601,7 @@ module SexpAst = struct
         Sexp.list
           [
             Sexp.atom "Pexp_variant";
-            string (Ext_ident.unwrap_exotic lbl);
+            string lbl;
             (match exprOpt with
             | None -> Sexp.atom "None"
             | Some expr -> Sexp.list [Sexp.atom "Some"; expression expr]);
@@ -761,7 +760,7 @@ module SexpAst = struct
         Sexp.list
           [
             Sexp.atom "Ppat_variant";
-            string (Ext_ident.unwrap_exotic lbl);
+            string lbl;
             (match optPattern with
             | None -> Sexp.atom "None"
             | Some p -> Sexp.list [Sexp.atom "Some"; pattern p]);
@@ -815,7 +814,7 @@ module SexpAst = struct
       Sexp.list
         [
           Sexp.atom "Rtag";
-          string (Ext_ident.unwrap_exotic labelLoc.txt);
+          string labelLoc.txt;
           attributes attrs;
           Sexp.atom (if truth then "true" else "false");
           Sexp.list (mapEmpty ~f:coreType types);

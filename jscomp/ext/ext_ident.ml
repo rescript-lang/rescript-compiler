@@ -134,9 +134,11 @@ let [@inline] no_escape (c : char) =
 
 let is_exotic name =
   (* Exotic idents should always wrapped by \"..." *)
-  match String.unsafe_get name 0 with
-  | '\\' -> true
-  | _ -> false
+  let len = String.length name in
+  len >= 3
+  && String.unsafe_get name 0 = '\\'
+  && String.unsafe_get name 1 = '\"'
+  && String.unsafe_get name (len - 1) = '\"'
 
 let wrap_exotic name = "\\\"" ^ name ^ "\""
 
