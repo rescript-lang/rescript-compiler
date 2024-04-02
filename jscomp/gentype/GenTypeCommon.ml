@@ -60,7 +60,7 @@ let labelJSToString case =
   | BoolLabel b -> b |> string_of_bool
   | FloatLabel s -> s
   | IntLabel i -> i
-  | StringLabel s -> s |> EmitText.quotes
+  | StringLabel s -> s |> Ext_ident.unwrap_exotic |> EmitText.quotes
 
 type closedFlag = Open | Closed | Inline
 
