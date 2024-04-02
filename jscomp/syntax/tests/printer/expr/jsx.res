@@ -17,6 +17,7 @@ let x = <A> {a} </A>
 let x = <A> {a} {b} </A>
 let x = <custom-tag className="container" > {a} <B/> </custom-tag>
 let x = <Foo.custom-tag className="container" > {a} <B/> </Foo.custom-tag>
+let x = <custom-tag data-custom-state=true > {a} <B/> </custom-tag>
 
 let x =
   <div
