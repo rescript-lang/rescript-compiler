@@ -20,6 +20,8 @@
 
 - Improve error when using '@deriving(accessors)' on a variant with record arguments. https://github.com/rescript-lang/rescript-compiler/pull/6712
 
+- Stop escaping JSX prop names with hyphens. https://github.com/rescript-lang/rescript-compiler/pull/6705
+
 # 11.1.0-rc.7
 
 #### :bug: Bug Fix
