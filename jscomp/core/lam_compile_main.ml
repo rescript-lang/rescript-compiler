@@ -292,7 +292,7 @@ let lambda_as_module
   : unit = 
   let package_info = Js_packages_state.get_packages_info () in 
   if Js_packages_info.is_empty package_info && !Js_config.js_stdout then begin    
-    Js_dump_program.dump_deps_program ~output_prefix NodeJS (lambda_output) stdout
+    Js_dump_program.dump_deps_program ~output_prefix Commonjs (lambda_output) stdout
   end else
     Js_packages_info.iter package_info (fun {module_system; path; suffix} -> 
         let output_chan chan  = 

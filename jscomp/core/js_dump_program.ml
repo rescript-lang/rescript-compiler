@@ -79,7 +79,7 @@ let node_program ~output_dir f (x : J.deps_program) =
         | true -> None
         | false -> 
            Some ( x.id,
-             Js_name_of_module_id.string_of_module_id x ~output_dir NodeJS,
+             Js_name_of_module_id.string_of_module_id x ~output_dir Commonjs,
              is_default x.kind )))
   in
   program f cxt x.program
@@ -129,8 +129,8 @@ let pp_deps_program ~(output_prefix : string)
     let output_dir = Filename.dirname output_prefix in
     ignore
       (match kind with
-      | Es6 | Es6_global -> es6_program ~output_dir kind f program
-      | NodeJS -> node_program ~output_dir f program);
+      | Esmodule | Es6_global -> es6_program ~output_dir kind f program
+      | Commonjs -> node_program ~output_dir f program);
     P.newline f;
     P.string f
       (match program.side_effect with

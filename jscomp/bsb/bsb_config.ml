@@ -41,16 +41,18 @@ let rev_lib_bs = ".." // ".."
 
 (* access the js directory from "lib/bs",
    it would be '../js'
+
+   TODO: should be renamed, js -> cjs, es6 -> esm in v12
 *)
 let lib_bs_prefix_of_format (x : Ext_module_system.t) =
   ".."
-  // match x with NodeJS -> "js" | Es6 -> "es6" | Es6_global -> "es6_global"
+  // match x with Commonjs -> "js" | Esmodule -> "es6" | Es6_global -> "es6_global"
 
 (* lib/js, lib/es6, lib/es6_global *)
 let top_prefix_of_format (x : Ext_module_system.t) =
   match x with
-  | NodeJS -> lib_js
-  | Es6 -> lib_es6
+  | Commonjs -> lib_js
+  | Esmodule -> lib_es6
   | Es6_global -> lib_es6_global
 
 let rev_lib_bs_prefix p = rev_lib_bs // p
