@@ -79,6 +79,7 @@ type t =
   | Bs_integer_literal_overflow (* 107 *)
   | Bs_uninterpreted_delimiters of string (* 108 *)
   | Bs_toplevel_expression_unit of (string * topLevelUnitHelp) option (* 109 *)
+  | Bs_todo of string option (* 110 *)
 
 val parse_options : bool -> string -> unit
 

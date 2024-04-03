@@ -26,6 +26,15 @@ open Ast_helper
 let handle_extension e (self : Bs_ast_mapper.mapper)
     (({txt; loc}, payload) : Parsetree.extension) =
   match txt with
+  | "todo" ->
+    Location.prerr_warning e.Parsetree.pexp_loc
+      (Bs_todo
+         (match Ast_payload.is_single_string payload with
+         | Some (s, _) -> Some s
+         | None -> None));
+    Exp.apply ~loc
+      (Exp.ident ~loc {txt = Longident.parse "Obj.magic"; loc})
+      [(Nolabel, Exp.construct ~loc {txt = Longident.Lident "()"; loc} None)]
   | "ffi" -> Ast_exp_handle_external.handle_ffi ~loc ~payload
   | "bs.raw" | "raw" ->
     Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload
