@@ -12,6 +12,10 @@
 
 # 11.1.0-rc.7 (Unreleased)
 
+#### :bug: Bug Fix
+
+- Fixes variance setting for builtin dict. Fixes issues around inference. https://github.com/rescript-lang/rescript-compiler/pull/6707 
+
 # 11.1.0-rc.6
 
 #### :rocket: New Feature
