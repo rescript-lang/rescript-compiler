@@ -12,6 +12,10 @@
 
 # 11.1.0-rc.8 (Unreleased)
 
+#### :bug: Bug Fix
+
+- Improve error when using '@deriving(accessors)' on a variant with record arguments. https://github.com/rescript-lang/rescript-compiler/pull/6712
+
 # 11.1.0-rc.7
 
 #### :bug: Bug Fix
