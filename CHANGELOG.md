@@ -27,6 +27,12 @@
 
 - Make the `--help` arg be prioritized in the CLI, so correctly prints help message and skip other commands. https://github.com/rescript-lang/rescript-compiler/pull/6667
 
+# 11.1.0-rc.7
+
+#### :bug: Bug Fix
+
+- Fix variance setting for builtin `dict` type. Fixes issues around inference. https://github.com/rescript-lang/rescript-compiler/pull/6707 
+
 # 11.1.0-rc.6
 
 #### :rocket: New Feature

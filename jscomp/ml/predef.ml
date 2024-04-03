@@ -238,7 +238,7 @@ let common_initial_env add_type add_extension empty_env =
     {decl_abstr with
       type_params = [tvar];
       type_arity = 1;
-      type_variance = [Variance.covariant]}
+      type_variance = [Variance.full]}
   and decl_uncurried =
     let tvar1, tvar2 = newgenvar(), newgenvar() in
     {decl_abstr with
