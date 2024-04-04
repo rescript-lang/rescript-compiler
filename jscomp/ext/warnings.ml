@@ -515,7 +515,7 @@ let message = function
       match maybe_text with 
       | None -> "Todo found." 
       | Some todo -> "Todo found: " ^ todo
-    ) ^ "\n\n  This code will crash if it's run. Be sure to finish it before running your program."
+    ) ^ "\n\n  This code is not implemented yet and will crash at runtime. Make sure you implement this before running the code."
 
 let sub_locs = function
   | Deprecated (_, def, use) ->
