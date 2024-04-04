@@ -12,6 +12,10 @@
 
 # 11.1.0-rc.8 (Unreleased)
 
+#### :rocket: New Feature
+
+- Add `%todo` extension for leaving implementation for later. https://github.com/rescript-lang/rescript-compiler/pull/6713
+
 #### :bug: Bug Fix
 
 - Improve error when using '@deriving(accessors)' on a variant with record arguments. https://github.com/rescript-lang/rescript-compiler/pull/6712
