@@ -33,15 +33,26 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
       | None -> None
     in
     Location.prerr_warning e.Parsetree.pexp_loc (Bs_todo todo_message);
+    let pretext =
+      loc.loc_start.pos_fname ^ ":"
+      ^ string_of_int loc.loc_start.pos_lnum
+      ^ ":"
+      ^ string_of_int loc.loc_start.pos_cnum
+      ^ "-"
+      ^ string_of_int loc.loc_end.pos_cnum
+    in
+
     Exp.apply ~loc
-      (Exp.ident ~loc {txt = Longident.parse "failwith"; loc})
+      (Exp.ident ~loc {txt = Longident.parse "Js.Exn.raiseError"; loc})
       [
         ( Nolabel,
           Exp.constant ~loc
             (Pconst_string
-               ( (match todo_message with
-                 | None -> "todo"
-                 | Some msg -> msg),
+               ( (pretext
+                 ^
+                 match todo_message with
+                 | None -> " - Todo"
+                 | Some msg -> " - Todo: " ^ msg),
                  None )) );
       ]
   | "ffi" -> Ast_exp_handle_external.handle_ffi ~loc ~payload
