@@ -152,14 +152,25 @@ type specs = External_arg_spec.params
 type exprs = E.t list
 
 let keep_non_undefined_args (arg_types : specs) (args : exprs) =
+  let rec has_undefined_trailing_args arg_types args =
+    match (arg_types, args) with
+    | ( [{External_arg_spec.arg_label = Arg_optional; _}],
+        [{J.expression_desc = Undefined {isUnit = false}; _}] ) ->
+      true
+    | ( _ :: arg_types_rest, _ :: args_rest ) ->
+      has_undefined_trailing_args arg_types_rest args_rest
+    | _ -> false
+  in
   let rec aux arg_types args =
-    match (args, arg_types) with
-    | ( {J.expression_desc = Undefined {isUnit = false}; _} :: args_rest,
-        {External_arg_spec.arg_label = Arg_optional; _} :: arg_types_rest ) ->
+    match (arg_types, args) with
+    | ( {External_arg_spec.arg_label = Arg_optional; _} :: arg_types_rest,
+        {J.expression_desc = Undefined {isUnit = false}; _} :: args_rest ) ->
           aux arg_types_rest args_rest
     | _ -> args
   in
-  aux (List.rev arg_types) (List.rev args) |> List.rev
+  if (has_undefined_trailing_args arg_types args) then 
+    aux (List.rev arg_types) (List.rev args) |> List.rev
+  else args 
 
 (* TODO: fix splice,
    we need a static guarantee that it is static array construct
