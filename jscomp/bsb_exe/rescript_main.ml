@@ -30,6 +30,8 @@ let no_deps_mode = ref false
 
 let do_install = ref false
 
+let warning_as_error = ref None
+
 let force_regenerate = ref false
 
 type spec = Bsb_arg.spec
@@ -39,6 +41,8 @@ let call_spec f : spec = Unit (Unit_call f)
 let unit_set_spec b : spec = Unit (Unit_set b)
 
 let string_set_spec s : spec = String (String_set s)
+
+let string_call f: spec = String (String_call f)
 
 let failed_annon ~rev_args =
   match rev_args with
@@ -132,6 +136,7 @@ let build_subcommand ~start argv argv_len =
          Always regenerate build.ninja no matter bsconfig.json is changed or \
          not" );
       ("-no-deps", unit_set_spec no_deps_mode, "*internal* Needed for watcher to build without dependencies on file change");
+      ("-warn-error", string_call (fun s -> warning_as_error := Some s), "Enable warnings as error")
     |]
     failed_annon;
 
@@ -141,12 +146,18 @@ let build_subcommand ~start argv argv_len =
   match ninja_args with
   | [| "-h" |] -> ninja_command_exit ninja_args
   | _ ->
+      let warn_as_error = match !warning_as_error with
+      | Some s ->
+        Warnings.parse_options true s;
+        Some s
+      | None -> None in
       let config_opt =
         Bsb_ninja_regen.regenerate_ninja
           ~package_kind:Toplevel
           ~per_proj_dir:Bsb_global_paths.cwd
           ~forced:!force_regenerate
           ~warn_legacy_config:true
+          ~warn_as_error
         in
       if not !no_deps_mode then Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
       if !do_install then install_target ();
@@ -180,6 +191,7 @@ let info_subcommand ~start argv =
             ~per_proj_dir:Bsb_global_paths.cwd
             ~forced:true
             ~warn_legacy_config:true
+            ~warn_as_error:None
         with
         | None -> assert false
         | Some { file_groups = { files } } ->
@@ -210,6 +222,7 @@ let () =
           ~per_proj_dir:Bsb_global_paths.cwd
           ~forced:false
           ~warn_legacy_config:true
+          ~warn_as_error:None
       in
       Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||];
       ninja_command_exit [||])

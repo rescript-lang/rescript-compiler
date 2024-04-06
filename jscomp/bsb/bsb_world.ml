@@ -71,6 +71,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
                    else Dependency { package_specs; jsx; uncurried })
                  ~per_proj_dir:proj_dir ~forced:false
                  ~warn_legacy_config:false
+                 ~warn_as_error:None
              in
              let command =
                { Bsb_unix.cmd = vendor_ninja; cwd = lib_bs_dir; args }
