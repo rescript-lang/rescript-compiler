@@ -1,7 +1,7 @@
 {
   "gentypeconfig": {
     "language": "typescript",
-    "module": "es6",
+    "module": "esmodule",
     "importPath": "relative",
     "shims": {
       "Js": "Js",
@@ -26,7 +26,7 @@
   ],
   "uncurried": false,
   "package-specs": {
-    "module": "es6",
+    "module": "esmodule",
     "in-source": true
   },
   "suffix": ".res.js"
