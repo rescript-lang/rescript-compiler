@@ -11,7 +11,9 @@ SomeModule.formatDate(new Date(), {
 
 SomeModule.formatDate(new Date(), undefined, true);
 
-var x = (42).toString();
+(42).toString();
+
+var x = new RegExp("ab+c");
 
 exports.x = x;
 /*  Not a pure module */

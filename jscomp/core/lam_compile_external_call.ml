@@ -151,6 +151,16 @@ type specs = External_arg_spec.params
 
 type exprs = E.t list
 
+let keep_non_undefined_args (arg_types : specs) (args : exprs) =
+  let rec aux arg_types args =
+    match (args, arg_types) with
+    | ( {J.expression_desc = Undefined {isUnit = false}; _} :: args_rest,
+        {External_arg_spec.arg_label = Arg_optional; _} :: arg_types_rest ) ->
+          aux arg_types_rest args_rest
+    | _ -> args
+  in
+  aux (List.rev arg_types) (List.rev args) |> List.rev
+
 (* TODO: fix splice,
    we need a static guarantee that it is static array construct
    otherwise, we should provide a good error message here,
@@ -176,7 +186,7 @@ let assemble_args_no_splice (arg_types : specs) (args : exprs) :
     | _ :: _, [] -> assert false
   in
   let args, eff = aux arg_types args in
-  ( args,
+  ( keep_non_undefined_args arg_types args,
     match eff with
     | [] -> None
     | x :: xs ->
@@ -250,16 +260,6 @@ let translate_scoped_access scopes obj =
   | [] -> obj
   | x :: xs -> Ext_list.fold_left xs (E.dot obj x) E.dot
 
-let keep_non_undefined_args args arg_types =
-  let rec aux argsList (argTypes : specs) =
-    match (argsList, argTypes) with
-    | ( {J.expression_desc = Undefined {isUnit = false}; _} :: rest,
-        {External_arg_spec.arg_label = Arg_optional; _} :: argTypes ) ->
-          aux rest argTypes
-    | _ -> argsList
-  in
-  aux (List.rev args) (List.rev arg_types) |> List.rev
-
 let translate_ffi (cxt : Lam_compile_context.t) arg_types
     (ffi : External_ffi_types.external_spec) (args : J.expression list) ~dynamic_import =
   match ffi with
@@ -281,7 +281,6 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
           else E.call ~info:{ arity = Full; call_info = Call_na } fn args)
       else
         let args, eff = assemble_args_no_splice arg_types args in
-        let args = keep_non_undefined_args args arg_types in
         add_eff eff
         @@ E.call ~info:{ arity = Full; call_info = Call_na } fn args
   | Js_module_as_fn { external_module_name; splice } ->
@@ -342,7 +341,6 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
                    (E.dot self name) args)
           else
             let args, eff = assemble_args_no_splice arg_types args in
-            let args = keep_non_undefined_args args arg_types in
             add_eff eff
               (let self = translate_scoped_access js_send_scopes self in
                E.call
