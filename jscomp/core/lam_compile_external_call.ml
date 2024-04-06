@@ -250,6 +250,16 @@ let translate_scoped_access scopes obj =
   | [] -> obj
   | x :: xs -> Ext_list.fold_left xs (E.dot obj x) E.dot
 
+let keep_non_undefined_args args arg_types =
+  let rec aux argsList (argTypes : specs) =
+    match (argsList, argTypes) with
+    | ( {J.expression_desc = Undefined {isUnit = false}; _} :: rest,
+        {External_arg_spec.arg_label = Arg_optional; _} :: argTypes ) ->
+          aux rest argTypes
+    | _ -> argsList
+  in
+  aux (List.rev args) (List.rev arg_types) |> List.rev
+
 let translate_ffi (cxt : Lam_compile_context.t) arg_types
     (ffi : External_ffi_types.external_spec) (args : J.expression list) ~dynamic_import =
   match ffi with
@@ -271,16 +281,7 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
           else E.call ~info:{ arity = Full; call_info = Call_na } fn args)
       else
         let args, eff = assemble_args_no_splice arg_types args in
-        let rec keepNonUndefinedArgs argsList (argTypes : specs) =
-          match (argsList, argTypes) with
-          | ( {J.expression_desc = Undefined {isUnit = false}; _} :: rest,
-              {External_arg_spec.arg_label = Arg_optional; _} :: argTypes ) ->
-            keepNonUndefinedArgs rest argTypes
-          | _ -> argsList
-        in
-        let args =
-          keepNonUndefinedArgs (List.rev args) (List.rev arg_types) |> List.rev
-        in
+        let args = keep_non_undefined_args args arg_types in
         add_eff eff
         @@ E.call ~info:{ arity = Full; call_info = Call_na } fn args
   | Js_module_as_fn { external_module_name; splice } ->
@@ -341,6 +342,7 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
                    (E.dot self name) args)
           else
             let args, eff = assemble_args_no_splice arg_types args in
+            let args = keep_non_undefined_args args arg_types in
             add_eff eff
               (let self = translate_scoped_access js_send_scopes self in
                E.call

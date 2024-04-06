@@ -9,7 +9,9 @@ SomeModule.formatDate(new Date(), {
       someOption: true
     });
 
-var x = SomeModule.formatDate(new Date(), undefined, true);
+SomeModule.formatDate(new Date(), undefined, true);
+
+var x = (42).toString();
 
 exports.x = x;
 /*  Not a pure module */
