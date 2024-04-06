@@ -42,7 +42,7 @@ let rev_lib_bs = ".." // ".."
 (* access the js directory from "lib/bs",
    it would be '../js'
 
-   TODO: should be renamed, js -> cjs, es6 -> esm in v12
+   TODO: should be renamed, js -> cjs, es6 -> mjs in v12
 *)
 let lib_bs_prefix_of_format (x : Ext_module_system.t) =
   ".."
