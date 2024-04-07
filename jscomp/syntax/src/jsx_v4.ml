@@ -1258,7 +1258,6 @@ let transformSignatureItem ~config item =
       let pval_type = Jsx_common.extractUncurried pval_type in
       check_string_int_attribute_iter.signature_item
         check_string_int_attribute_iter item;
-      let hasForwardRef = ref false in
       let coreTypeOfAttr = Jsx_common.coreTypeOfAttrs pval_attributes in
       let typVarsOfCoreType =
         coreTypeOfAttr
@@ -1277,9 +1276,7 @@ let transformSignatureItem ~config item =
             (Nolabel, {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, _)}, rest)
           ->
           getPropTypes types rest
-        | Ptyp_arrow (Nolabel, _type, rest) ->
-          hasForwardRef := true;
-          getPropTypes types rest
+        | Ptyp_arrow (Nolabel, _type, rest) -> getPropTypes types rest
         | Ptyp_arrow (name, ({ptyp_attributes = attrs} as type_), returnValue)
           when isOptional name || isLabelled name ->
           (returnValue, (name, attrs, returnValue.ptyp_loc, type_) :: types)
@@ -1299,12 +1296,7 @@ let transformSignatureItem ~config item =
       in
       let propsRecordType =
         makePropsRecordTypeSig ~coreTypeOfAttr ~typVarsOfCoreType "props"
-          psig_loc
-          ((* If there is Nolabel arg, regard the type as ref in forwardRef *)
-           (if !hasForwardRef then
-              [(true, "ref", [], Location.none, refTypeVar Location.none)]
-            else [])
-          @ namedTypeList)
+          psig_loc namedTypeList
       in
       (* can't be an arrow because it will defensively uncurry *)
       let newExternalType =
