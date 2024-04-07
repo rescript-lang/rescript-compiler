@@ -46,10 +46,12 @@ let safeTypeFromValue valueStr =
   if valueStr = "" || (valueStr.[0] [@doesNotRaise]) <> '_' then valueStr
   else "T" ^ valueStr
 
+let refTypeVar loc = Typ.var ~loc "ref"
+
 let refType loc =
   Typ.constr ~loc
-    {loc; txt = Ldot (Ldot (Lident "ReactDOM", "Ref"), "currentDomRef")}
-    []
+    {loc; txt = Ldot (Ldot (Lident "Js", "Nullable"), "t")}
+    [refTypeVar loc]
 
 type 'a children = ListLiteral of 'a | Exact of 'a
 
@@ -279,11 +281,11 @@ let makePropsTypeParams ?(stripExplicitOption = false)
            (* TODO: Worth thinking how about "ref_" or "_ref" usages *)
          else if label = "ref" then
            (*
-                If ref has a type annotation then use it, else `ReactDOM.Ref.currentDomRef.
+                If ref has a type annotation then use it, else 'ref.
                 For example, if JSX ppx is used for React Native, type would be different.
              *)
            match interiorType with
-           | {ptyp_desc = Ptyp_any} -> Some (refType loc)
+           | {ptyp_desc = Ptyp_any} -> Some (refTypeVar loc)
            | _ ->
              (* Strip explicit Js.Nullable.t in case of forwardRef *)
              if stripExplicitJsNullableOfRef then stripJsNullable interiorType
@@ -1077,7 +1079,14 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
     (* (ref) => expr *)
     let expression =
       List.fold_left
-        (fun expr (_, pattern) -> Exp.fun_ Nolabel None pattern expr)
+        (fun expr (_, pattern) ->
+          let pattern =
+            match pattern.ppat_desc with
+            | Ppat_var {txt} when txt = "ref" ->
+              Pat.constraint_ pattern (refType Location.none)
+            | _ -> pattern
+          in
+          Exp.fun_ Nolabel None pattern expr)
         expression patternsWithNolabel
     in
     (* ({a, b, _}: props<'a, 'b>) *)
@@ -1293,7 +1302,7 @@ let transformSignatureItem ~config item =
           psig_loc
           ((* If there is Nolabel arg, regard the type as ref in forwardRef *)
            (if !hasForwardRef then
-              [(true, "ref", [], Location.none, refType Location.none)]
+              [(true, "ref", [], Location.none, refTypeVar Location.none)]
             else [])
           @ namedTypeList)
       in
