@@ -136,7 +136,7 @@ let build_subcommand ~start argv argv_len =
          Always regenerate build.ninja no matter bsconfig.json is changed or \
          not" );
       ("-no-deps", unit_set_spec no_deps_mode, "*internal* Needed for watcher to build without dependencies on file change");
-      ("-warn-error", string_call (fun s -> warning_as_error := Some s), "Enable warnings as error")
+      ("-warn-error", string_call (fun s -> warning_as_error := Some s), "Warning numbers and whether to turn it into error or not")
     |]
     failed_annon;
 
@@ -148,7 +148,7 @@ let build_subcommand ~start argv argv_len =
   | _ ->
       let warn_as_error = match !warning_as_error with
       | Some s ->
-        Warnings.parse_options true s;
+        let () = try Warnings.parse_options true s with Arg.Bad msg -> Bsb_arg.bad_arg (msg ^ "\n") in
         Some s
       | None -> None in
       let config_opt =

@@ -36,7 +36,7 @@ const buildHelp =
   "  -ws          [host]:port set up host & port for WebSocket build notifications\n" +
   "  -verbose     Set the output to be verbose\n" +
   "  -with-deps   *deprecated* This is the default behavior now. This option will be removed in a future release\n" +
-  "  -warn-error  Enable warnings as error\n";
+  "  -warn-error  Warning numbers and whether to turn it into error or not\n";
 
 const cleanHelp =
   "Usage: rescript clean <options>\n" +
