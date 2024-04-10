@@ -151,3 +151,11 @@ let variant_configuration_can_be_coerced_raises ~is_spread_context ~left_loc
               right_loc;
               error = TagName {left_tag; right_tag};
             }))
+
+let has_res_pat_variant_spread_attribute attrs =
+  attrs
+  |> List.find_opt (fun (({txt}, _) : Parsetree.attribute) ->
+          txt = "res.patVariantSpread")
+  |> Option.is_some
+
+  

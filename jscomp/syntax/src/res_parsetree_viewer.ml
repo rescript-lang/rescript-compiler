@@ -104,6 +104,13 @@ let hasAwaitAttribute attrs =
       | _ -> false)
     attrs
 
+let hasResPatVariantSpreadAttribute attrs =
+  List.exists
+    (function
+      | {Location.txt = "res.patVariantSpread"}, _ -> true
+      | _ -> false)
+    attrs
+
 let collectArrayExpressions expr =
   match expr.pexp_desc with
   | Pexp_array exprs -> (exprs, None)
@@ -225,7 +232,7 @@ let filterParsingAttrs attrs =
               ( "bs" | "res.uapp" | "res.arity" | "res.braces" | "ns.braces"
               | "res.iflet" | "res.namedArgLoc" | "res.optional" | "res.ternary"
               | "res.async" | "res.await" | "res.template"
-              | "res.taggedTemplate" );
+              | "res.taggedTemplate" | "res.patVariantSpread" );
           },
           _ ) ->
         false
