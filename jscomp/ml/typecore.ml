@@ -1506,7 +1506,6 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
   | Ppat_type lid when Variant_coercion.has_res_pat_variant_spread_attribute sp.ppat_attributes ->
     let (path, p, ty) = build_or_pat_for_variant_spread !env loc lid expected_ty in
       Ctype.subtype !env ty expected_ty ();
-      assert (constrs = None);
     k { p with pat_extra =
       (Tpat_type (path, lid), loc, sp.ppat_attributes) :: p.pat_extra }
   | Ppat_type lid ->
