@@ -1,5 +1,4 @@
 type a = One | Two | Three
-type a1 = One
 type b = | ...a | Four | Five
 
 let doWithA = (a: a) => {
