@@ -1169,7 +1169,12 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
       end
     | Ppat_alias({ppat_desc=Ppat_type lid; ppat_attributes}, name) when Variant_coercion.has_res_pat_variant_spread_attribute ppat_attributes ->
       let (_, p, ty) = build_or_pat_for_variant_spread !env loc lid expected_ty in
-      Ctype.subtype !env ty expected_ty ();
+      (try 
+        Ctype.subtype !env ty expected_ty () 
+      with 
+        Ctype.Subtype (tr1, tr2) -> 
+          raise(Error(loc, !env, Not_subtype(tr1, tr2)))
+      );
       assert (constrs = None);
 
       let id = enter_variable ~is_as_variable:true loc name ty in
@@ -1505,7 +1510,12 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
         in k p)
   | Ppat_type lid when Variant_coercion.has_res_pat_variant_spread_attribute sp.ppat_attributes ->
     let (path, p, ty) = build_or_pat_for_variant_spread !env loc lid expected_ty in
-      Ctype.subtype !env ty expected_ty ();
+      (try 
+        Ctype.subtype !env ty expected_ty () 
+      with 
+        Ctype.Subtype (tr1, tr2) -> 
+          raise(Error(loc, !env, Not_subtype(tr1, tr2)))
+      );
     k { p with pat_extra =
       (Tpat_type (path, lid), loc, sp.ppat_attributes) :: p.pat_extra }
   | Ppat_type lid ->
