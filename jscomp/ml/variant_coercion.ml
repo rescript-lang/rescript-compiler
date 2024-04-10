@@ -208,5 +208,3 @@ let has_res_pat_variant_spread_attribute attrs =
   |> List.find_opt (fun (({txt}, _) : Parsetree.attribute) ->
           txt = "res.patVariantSpread")
   |> Option.is_some
-
-  
