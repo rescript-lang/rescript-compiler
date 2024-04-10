@@ -2405,7 +2405,12 @@ and print_pattern ~state (p : Parsetree.pattern) cmt_tbl =
       in
       Doc.group (Doc.concat [variant_name; args_doc])
     | Ppat_type ident ->
-      Doc.concat [Doc.text "#..."; print_ident_path ident cmt_tbl]
+      let prefix =
+        if ParsetreeViewer.hasResPatVariantSpreadAttribute p.ppat_attributes
+        then ""
+        else "#"
+      in
+      Doc.concat [Doc.text (prefix ^ "..."); print_ident_path ident cmt_tbl]
     | Ppat_record (rows, open_flag) ->
       Doc.group
         (Doc.concat
