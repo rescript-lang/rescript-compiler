@@ -74,6 +74,7 @@ type error =
   | Empty_record_literal
   | Uncurried_arity_mismatch of type_expr * int * int
   | Field_not_optional of string * type_expr
+  | Type_params_not_supported of Longident.t
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
@@ -598,9 +599,15 @@ let build_or_pat env loc lid =
 let build_or_pat_for_variant_spread env loc lid expected_ty =
   let path, decl = Typetexp.find_type env lid.loc lid.txt in
   match decl with
-  | {type_kind = Type_variant constructors} -> (
-    (* TODO: Probably problematic that we don't account for type params here? *)
+  | {type_kind = Type_variant constructors; type_params} -> (
+    if List.length type_params > 0 then raise (Error (lid.loc, env, Type_params_not_supported lid.txt));
     let ty = newty (Tconstr (path, [], ref Mnil)) in
+    (try 
+        Ctype.subtype env ty expected_ty () 
+      with 
+        Ctype.Subtype (tr1, tr2) -> 
+          raise(Error(loc, env, Not_subtype(tr1, tr2)))
+      );
     let gloc = {loc with Location.loc_ghost = true} in
     let pats =
       constructors
@@ -1182,12 +1189,6 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
       end
     | Ppat_alias({ppat_desc=Ppat_type lid; ppat_attributes}, name) when Variant_coercion.has_res_pat_variant_spread_attribute ppat_attributes ->
       let (_, p, ty) = build_or_pat_for_variant_spread !env loc lid expected_ty in
-      (try 
-        Ctype.subtype !env ty expected_ty () 
-      with 
-        Ctype.Subtype (tr1, tr2) -> 
-          raise(Error(loc, !env, Not_subtype(tr1, tr2)))
-      );
       assert (constrs = None);
 
       let id = enter_variable ~is_as_variable:true loc name ty in
@@ -1523,13 +1524,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
                   pat_extra = extra :: p.pat_extra}
         in k p)
   | Ppat_type lid when Variant_coercion.has_res_pat_variant_spread_attribute sp.ppat_attributes ->
-    let (path, p, ty) = build_or_pat_for_variant_spread !env loc lid expected_ty in
-      (try 
-        Ctype.subtype !env ty expected_ty () 
-      with 
-        Ctype.Subtype (tr1, tr2) -> 
-          raise(Error(loc, !env, Not_subtype(tr1, tr2)))
-      );
+    let (path, p, _ty) = build_or_pat_for_variant_spread !env loc lid expected_ty in
     k { p with pat_extra =
       (Tpat_type (path, lid), loc, sp.ppat_attributes) :: p.pat_extra }
   | Ppat_type lid ->
@@ -4121,8 +4116,10 @@ let report_error env ppf = function
       args (if args = 0 then "" else "s") arity
   | Field_not_optional (name, typ) ->
     fprintf ppf
-      "Field @{<info>%s@} is not optional in type %a. Use without ?" name
-      type_expr typ
+    "Field @{<info>%s@} is not optional in type %a. Use without ?" name
+    type_expr typ
+  | Type_params_not_supported lid ->
+    fprintf ppf "The type %a@ has type parameters, but type parameters is not supported here." longident lid
 
 
 let super_report_error_no_wrap_printing_env = report_error
