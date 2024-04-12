@@ -601,7 +601,7 @@ let build_or_pat_for_variant_spread env loc lid expected_ty =
   match decl with
   | {type_kind = Type_variant constructors; type_params} -> (
     if List.length type_params > 0 then raise (Error (lid.loc, env, Type_params_not_supported lid.txt));
-    let ty = newty (Tconstr (path, [], ref Mnil)) in
+    let ty = newgenty (Tconstr (path, [], ref Mnil)) in
     (try 
         Ctype.subtype env ty expected_ty () 
       with 
@@ -617,7 +617,7 @@ let build_or_pat_for_variant_spread env loc lid expected_ty =
               {
                 pat_desc =
                   Tpat_construct
-                    ( {loc = Location.none; txt = lid},
+                    ( {loc = c.cd_loc; txt = lid},
                       Env.lookup_constructor ~loc:c.cd_loc lid env,
                       match c.cd_args with
                       | Cstr_tuple [] -> []
@@ -637,7 +637,8 @@ let build_or_pat_for_variant_spread env loc lid expected_ty =
                 pat_type = expected_ty;
                 pat_env = env;
                 pat_attributes = [];
-              })
+              }) 
+      |> List.rev
     in
     match pats with
     | [] -> raise (Error (lid.loc, env, Not_a_variant_type lid.txt))
@@ -646,7 +647,7 @@ let build_or_pat_for_variant_spread env loc lid expected_ty =
         List.fold_left
           (fun pat pat0 ->
             {
-              Typedtree.pat_desc = Tpat_or (pat0, pat, None);
+              Typedtree.pat_desc = Tpat_or (pat, pat0, None);
               pat_extra = [];
               pat_loc = gloc;
               pat_env = env;
