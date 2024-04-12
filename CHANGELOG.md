@@ -23,6 +23,10 @@
 - Fix trailing undefined for optional parameters not omitted with `@send` and `@new`. https://github.com/rescript-lang/rescript-compiler/pull/6716
 - Fix JSX4 adding the incorrect type annotation for the prop `ref` in React.forwardRef component https://github.com/rescript-lang/rescript-compiler/pull/6718
 
+#### :nail_care: Polish
+
+- Module spec `es6` and `es6-global` is deprecated in favor of `esmodule`. https://github.com/rescript-lang/rescript-compiler/pull/6709
+
 # 11.1.0-rc.7
 
 #### :bug: Bug Fix

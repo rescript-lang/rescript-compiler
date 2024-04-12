@@ -1,1 +1,1 @@
-type t = NodeJS | Es6 | Es6_global
+type t =  Commonjs | Esmodule | Es6_global

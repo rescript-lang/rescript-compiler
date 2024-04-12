@@ -382,7 +382,7 @@ let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
   let importPathString = ImportPath.emit importPath in
   let output =
     match config.module_ with
-    | ES6 when not importedValueOrComponent ->
+    | ESModule when not importedValueOrComponent ->
       "import * as " ^ moduleNameString ^ " from '" ^ importPathString ^ "';"
     | _ ->
       "const " ^ moduleNameString ^ " = require('" ^ importPathString ^ "');"

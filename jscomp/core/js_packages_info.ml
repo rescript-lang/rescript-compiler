@@ -24,15 +24,15 @@
 
 [@@@warning "+9"]
 
-type module_system = NodeJS | Es6 | Es6_global
+type module_system = Ext_module_system.t
 (* ignore node_modules, just calcluating relative path *)
 
 (* ocamlopt could not optimize such simple case..*)
 let compatible (dep : module_system) (query : module_system) =
   match query with
-  | NodeJS -> dep = NodeJS
-  | Es6 -> dep = Es6
-  | Es6_global -> dep = Es6_global || dep = Es6
+  | Commonjs -> dep = Commonjs
+  | Esmodule -> dep = Esmodule
+  | Es6_global -> dep = Es6_global || dep = Esmodule
 (* As a dependency Leaf Node, it is the same either [global] or [not] *)
 
 type package_info = {
@@ -47,7 +47,7 @@ let ( // ) = Filename.concat
 
 (* in runtime lib, [es6] and [es6] are treated the same wway *)
 let runtime_dir_of_module_system (ms : module_system) =
-  match ms with NodeJS -> "js" | Es6 | Es6_global -> "es6"
+  match ms with Commonjs -> "js" | Esmodule | Es6_global -> "es6"
 
 let runtime_package_path (ms : module_system) js_file =
   !Bs_version.package_name // "lib"
@@ -61,8 +61,8 @@ let runtime_package_specs : t =
     name = Pkg_runtime;
     module_systems =
       [
-        { module_system = Es6; path = "lib/es6"; suffix = Literals.suffix_js };
-        { module_system = NodeJS; path = "lib/js"; suffix = Literals.suffix_js };
+        { module_system = Esmodule; path = "lib/es6"; suffix = Literals.suffix_js };
+        { module_system = Commonjs; path = "lib/js"; suffix = Literals.suffix_js };
       ];
   }
 
@@ -107,12 +107,12 @@ let from_name (name : string) : t =
 let is_empty (x : t) = x.name = Pkg_empty
 
 let string_of_module_system (ms : module_system) =
-  match ms with NodeJS -> "NodeJS" | Es6 -> "Es6" | Es6_global -> "Es6_global"
+  match ms with Commonjs -> "CommonJS" | Esmodule -> "ESModule" | Es6_global -> "Es6_global"
 
 let module_system_of_string package_name : module_system option =
   match package_name with
-  | "commonjs" -> Some NodeJS
-  | "es6" -> Some Es6
+  | "commonjs" -> Some Commonjs
+  | "esmodule" | "es6" -> Some Esmodule
   | "es6-global" -> Some Es6_global
   | _ -> None
 
@@ -201,7 +201,7 @@ let add_npm_package_path (packages_info : t) (s : string) : t =
     in
     let m =
       match Ext_string.split ~keep_empty:true s ':' with
-      | [ path ] -> { module_system = NodeJS; path; suffix = Literals.suffix_js }
+      | [ path ] -> { module_system = Esmodule; path; suffix = Literals.suffix_js }
       | [ module_system; path ] ->
           {
             module_system = handle_module_system module_system;

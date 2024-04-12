@@ -125,11 +125,15 @@ let suffix_gen_js = ".gen.js"
 
 let suffix_gen_tsx = ".gen.tsx"
 
+let esmodule = "esmodule"
+
 let commonjs = "commonjs"
 
 let es6 = "es6"
+[@@ocaml.deprecated "Will be removed in v12"]
 
 let es6_global = "es6-global"
+[@@ocaml.deprecated "Will be removed in v12"]
 
 let unused_attribute = "Unused attribute "
 
