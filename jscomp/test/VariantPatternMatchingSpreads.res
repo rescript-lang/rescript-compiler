@@ -1,5 +1,7 @@
 type a = One | Two | Three
 type b = | ...a | Four | Five
+type c = Six | Seven
+type d = | ...b | ...c
 
 let doWithA = (a: a) => {
   switch a {
@@ -23,9 +25,9 @@ let lookup = (b: b) =>
   | Five => Js.log("five")
   }
 
-let lookup2 = (b: b) =>
-  switch b {
-  | ...a => Js.log("spread")
-  | Four => Js.log("four")
-  | Five => Js.log("five")
+let lookup2 = (d: d) =>
+  switch d {
+  | ...a as a => doWithA(a)
+  | ...b as b => doWithB(b)
+  | Six | Seven => Js.log("Got rest of d")
   }
