@@ -159,7 +159,7 @@ let build_subcommand ~start argv argv_len =
           ~warn_legacy_config:true
           ~warn_as_error
         in
-      if not !no_deps_mode then Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
+      if not !no_deps_mode then Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args warn_as_error;
       if !do_install then install_target ();
       ninja_command_exit ninja_args
 
@@ -224,7 +224,7 @@ let () =
           ~warn_legacy_config:true
           ~warn_as_error:None
       in
-      Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||];
+      Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||] None;
       ninja_command_exit [||])
     else
       match argv.(1) with
