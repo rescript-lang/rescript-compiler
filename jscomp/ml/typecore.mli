@@ -111,6 +111,7 @@ type error =
   | Empty_record_literal
   | Uncurried_arity_mismatch of type_expr * int * int
   | Field_not_optional of string * type_expr
+  | Type_params_not_supported of Longident.t
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 

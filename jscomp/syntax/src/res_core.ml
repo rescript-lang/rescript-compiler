@@ -175,6 +175,8 @@ let suppressFragileMatchWarningAttr =
       ] )
 let makeBracesAttr loc = (Location.mkloc "res.braces" loc, Parsetree.PStr [])
 let templateLiteralAttr = (Location.mknoloc "res.template", Parsetree.PStr [])
+let makePatVariantSpreadAttr =
+  (Location.mknoloc "res.patVariantSpread", Parsetree.PStr [])
 
 let taggedTemplateLiteralAttr =
   (Location.mknoloc "res.taggedTemplate", Parsetree.PStr [])
@@ -1077,6 +1079,11 @@ let rec parsePattern ?(alias = true) ?(or_ = true) p =
       match p.Parser.token with
       | Lparen -> parseConstructorPatternArgs p constr startPos attrs
       | _ -> Ast_helper.Pat.construct ~loc:constr.loc ~attrs constr None)
+    | DotDotDot ->
+      Parser.next p;
+      let ident = parseValuePath p in
+      let loc = mkLoc startPos ident.loc.loc_end in
+      Ast_helper.Pat.type_ ~loc ~attrs:(makePatVariantSpreadAttr :: attrs) ident
     | Hash -> (
       Parser.next p;
       if p.Parser.token == DotDotDot then (

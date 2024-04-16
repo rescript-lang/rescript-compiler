@@ -33,6 +33,7 @@ type functionAttributesInfo = {
 val processFunctionAttributes : Parsetree.attributes -> functionAttributesInfo
 
 val hasAwaitAttribute : Parsetree.attributes -> bool
+val hasResPatVariantSpreadAttribute : Parsetree.attributes -> bool
 
 type ifConditionKind =
   | If of Parsetree.expression
