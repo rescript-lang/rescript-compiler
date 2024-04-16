@@ -1,0 +1,127 @@
+@@jsxConfig({version: 3})
+
+module V3: {
+  module FancyInput: {
+    @obj
+    external makeProps: (
+      ~className: string=?,
+      ~children: React.element,
+      ~ref: ReactDOM.Ref.currentDomRef=?,
+      ~key: string=?,
+      unit,
+    ) => {
+      "className": option<string>,
+      "children": React.element,
+      "ref": option<ReactDOM.Ref.currentDomRef>,
+    } = ""
+    let make: React.componentLike<
+      {
+        "className": option<string>,
+        "children": React.element,
+        "ref": option<ReactDOM.Ref.currentDomRef>,
+      },
+      React.element,
+    >
+  }
+
+  module ForwardRef: {
+    @obj
+    external makeProps: (
+      ~ref: React.ref<Js.Nullable.t<inputRef>>=?,
+      ~key: string=?,
+      unit,
+    ) => {"ref": option<React.ref<Js.Nullable.t<inputRef>>>} = ""
+    let make: React.componentLike<
+      {"ref": option<React.ref<Js.Nullable.t<inputRef>>>},
+      React.element,
+    >
+  }
+}
+
+@@jsxConfig({version: 4, mode: "classic"})
+
+module V4C: {
+  module FancyInput: {
+    type props<'className, 'children, 'ref> = {
+      className?: 'className,
+      children: 'children,
+      ref?: 'ref,
+    }
+
+    let make: React.componentLike<
+      props<string, React.element, ReactDOM.Ref.currentDomRef>,
+      React.element,
+    >
+  }
+
+  module ForwardRef: {
+    type props<'ref> = {ref?: 'ref}
+
+    let make: React.componentLike<props<React.ref<Js.Nullable.t<inputRef>>>, React.element>
+  }
+}
+
+module V4CUncurried: {
+  module FancyInput: {
+    type props<'className, 'children, 'ref> = {
+      className?: 'className,
+      children: 'children,
+      ref?: 'ref,
+    }
+
+    let make: React.componentLike<
+      props<string, React.element, ReactDOM.Ref.currentDomRef>,
+      React.element,
+    >
+  }
+
+  module ForwardRef: {
+    type props<'ref> = {ref?: 'ref}
+
+    let make: React.componentLike<props<React.ref<Js.Nullable.t<inputRef>>>, React.element>
+  }
+}
+
+@@jsxConfig({version: 4, mode: "automatic"})
+
+module V4A: {
+  module FancyInput: {
+    type props<'className, 'children, 'ref> = {
+      className?: 'className,
+      children: 'children,
+      ref?: 'ref,
+    }
+
+    let make: React.componentLike<
+      props<string, React.element, ReactDOM.Ref.currentDomRef>,
+      React.element,
+    >
+  }
+
+  module ForwardRef: {
+    type props<'ref> = {ref?: 'ref}
+
+    let make: React.componentLike<props<React.ref<Js.Nullable.t<inputRef>>>, React.element>
+  }
+}
+
+module V4AUncurried: {
+  module FancyInput: {
+    type props<'className, 'children, 'ref> = {
+      className?: 'className,
+      children: 'children,
+      ref?: 'ref,
+    }
+
+    let make: React.componentLike<
+      props<string, React.element, ReactDOM.Ref.currentDomRef>,
+      React.element,
+    >
+  }
+
+  module ForwardRef: {
+    type props<'ref> = {ref?: 'ref}
+
+    let make: React.componentLike<props<React.ref<Js.Nullable.t<inputRef>>>, React.element>
+  }
+}

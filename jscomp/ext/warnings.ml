@@ -647,7 +647,7 @@ let descriptions =
     );
     (108, "Uninterpreted delimiters (for unicode)");
     (109, "Toplevel expression has unit type");
-    (110, "Expression has nested promise type");
+    (110, "Todo found");
   ]
 
 let help_warnings () =
