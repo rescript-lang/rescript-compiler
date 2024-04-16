@@ -22,6 +22,7 @@
 - Stop escaping JSX prop names with hyphens. https://github.com/rescript-lang/rescript-compiler/pull/6705
 - Fix trailing undefined for optional parameters not omitted with `@send` and `@new`. https://github.com/rescript-lang/rescript-compiler/pull/6716
 - Fix JSX4 adding the incorrect type annotation for the prop `ref` in React.forwardRef component https://github.com/rescript-lang/rescript-compiler/pull/6718
+- Fix description for warning number 110 https://github.com/rescript-lang/rescript-compiler/pull/6725
 
 #### :nail_care: Polish
 
