@@ -6,7 +6,7 @@
  * rescript version as the compiler bundle.
  *
  * This script extracts all cmi / cmj files of the rescript/lib/ocaml and all
- * dependencies listed in the project root's bsconfig.json, creates cmij.js
+ * dependencies listed in the project root's rescript.json, creates cmij.js
  * files for each library and puts them in the compiler playground directory.
  *
  * The cmij files are representing the marshaled dependencies that can be used with the ReScript
@@ -17,7 +17,7 @@ const child_process = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-const bsconfig = require("../bsconfig.json");
+const resConfig = require("../rescript.json");
 
 const RESCRIPT_COMPILER_ROOT_DIR = path.join(__dirname, "..", "..", "..");
 const PLAYGROUND_DIR = path.join(RESCRIPT_COMPILER_ROOT_DIR, "playground");
@@ -51,7 +51,7 @@ e(`npm link ${RESCRIPT_COMPILER_ROOT_DIR}`);
 e(`npx rescript clean`);
 e(`npx rescript`);
 
-const packages = bsconfig["bs-dependencies"];
+const packages = resConfig["bs-dependencies"];
 
 // We need to build the compiler's builtin modules as a separate cmij.
 // Otherwise we can't use them for compilation within the playground.

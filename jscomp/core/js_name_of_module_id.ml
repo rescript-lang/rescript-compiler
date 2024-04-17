@@ -77,7 +77,7 @@ let get_runtime_module_path
         *)
     else  
       match module_system with 
-      | NodeJS | Es6 -> 
+      | Commonjs | Esmodule -> 
         Js_packages_info.runtime_package_path module_system js_file              
       (* Note we did a post-processing when working on Windows *)
       | Es6_global 
@@ -164,7 +164,7 @@ let string_of_module_id
             get_runtime_module_path dep_module_id current_package_info module_system
           else 
             begin match module_system with 
-              | NodeJS | Es6 -> 
+              | Commonjs | Esmodule -> 
                 dep_pkg.pkg_rel_path // js_file
               (* Note we did a post-processing when working on Windows *)
               | Es6_global 

@@ -4367,6 +4367,7 @@ and printJsxProps ~state args cmtTbl : Doc.t * Parsetree.expression option =
   loop [] args
 
 and printJsxProp ~state arg cmtTbl =
+  let printIdentLike ident = printIdentLike ~allowHyphen:true ident in
   match arg with
   | ( ((Asttypes.Labelled lblTxt | Optional lblTxt) as lbl),
       {

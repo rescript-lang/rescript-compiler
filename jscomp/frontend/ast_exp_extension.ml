@@ -26,6 +26,35 @@ open Ast_helper
 let handle_extension e (self : Bs_ast_mapper.mapper)
     (({txt; loc}, payload) : Parsetree.extension) =
   match txt with
+  | "todo" ->
+    let todo_message =
+      match Ast_payload.is_single_string payload with
+      | Some (s, _) -> Some s
+      | None -> None
+    in
+    Location.prerr_warning e.Parsetree.pexp_loc (Bs_todo todo_message);
+    let pretext =
+      loc.loc_start.pos_fname ^ ":"
+      ^ string_of_int loc.loc_start.pos_lnum
+      ^ ":"
+      ^ string_of_int loc.loc_start.pos_cnum
+      ^ "-"
+      ^ string_of_int loc.loc_end.pos_cnum
+    in
+
+    Exp.apply ~loc
+      (Exp.ident ~loc {txt = Longident.parse "Js.Exn.raiseError"; loc})
+      [
+        ( Nolabel,
+          Exp.constant ~loc
+            (Pconst_string
+               ( (pretext
+                 ^
+                 match todo_message with
+                 | None -> " - Todo"
+                 | Some msg -> " - Todo: " ^ msg),
+                 None )) );
+      ]
   | "ffi" -> Ast_exp_handle_external.handle_ffi ~loc ~payload
   | "raw" -> Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload
   | "re" ->

@@ -4,6 +4,12 @@ let invalid_config (config : Parsetree.expression) =
   Location.raise_errorf ~loc:config.pexp_loc
     "such configuration is not supported"
 
+let raise_unsupported_vaiant_record_arg loc =
+  Location.raise_errorf ~loc
+    "@deriving(accessors) from a variant record argument is unsupported. \
+     Either define the record type separately from the variant type or use a \
+     positional argument."
+
 type tdcls = Parsetree.type_declaration list
 
 let derivingName = "accessors"
@@ -55,7 +61,7 @@ let init () =
                     {
                       pcd_name = {loc; txt = con_name};
                       pcd_args;
-                      pcd_loc = _;
+                      pcd_loc;
                       pcd_res;
                     }
                   ->
@@ -63,7 +69,8 @@ let init () =
                     let pcd_args =
                       match pcd_args with
                       | Pcstr_tuple pcd_args -> pcd_args
-                      | Pcstr_record _ -> assert false
+                      | Pcstr_record _ ->
+                        raise_unsupported_vaiant_record_arg pcd_loc
                     in
                     let little_con_name =
                       Ext_string.uncapitalize_ascii con_name
@@ -146,14 +153,15 @@ let init () =
                     {
                       pcd_name = {loc; txt = con_name};
                       pcd_args;
-                      pcd_loc = _;
+                      pcd_loc;
                       pcd_res;
                     }
                   ->
                     let pcd_args =
                       match pcd_args with
                       | Pcstr_tuple pcd_args -> pcd_args
-                      | Pcstr_record _ -> assert false
+                      | Pcstr_record _ ->
+                        raise_unsupported_vaiant_record_arg pcd_loc
                     in
                     let arity = pcd_args |> List.length in
                     let annotate_type =

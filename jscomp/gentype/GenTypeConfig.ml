@@ -1,6 +1,6 @@
 module ModuleNameMap = Map.Make (ModuleName)
 
-type module_ = CommonJS | ES6
+type module_ = CommonJS | ESModule
 
 (** Compatibility for `compilerOptions.moduleResolution` in TypeScript projects. *)
 type moduleResolution =
@@ -41,7 +41,7 @@ let default =
     everything = false;
     exportInterfaces = false;
     generatedFileExtension = None;
-    module_ = ES6;
+    module_ = ESModule;
     moduleResolution = Node;
     namespace = None;
     platformLib = "";
@@ -53,7 +53,7 @@ let default =
 
 let bsPlatformLib ~config =
   match config.module_ with
-  | ES6 -> config.platformLib ^ "/lib/es6"
+  | ESModule -> config.platformLib ^ "/lib/es6"
   | CommonJS -> config.platformLib ^ "/lib/js"
 
 let getBsCurryPath ~config = Filename.concat (bsPlatformLib ~config) "curry.js"
@@ -154,9 +154,9 @@ let readConfig ~getConfigFile ~namespace =
       (* Give priority to gentypeconfig, followed by package-specs *)
       match (moduleString, packageSpecsModuleString) with
       | Some "commonjs", _ -> CommonJS
-      | Some "es6", _ -> ES6
+      | Some ("esmodule" | "es6"), _ -> ESModule
       | None, Some "commonjs" -> CommonJS
-      | None, Some ("es6" | "es6-global") -> ES6
+      | None, Some ("esmodule" | "es6" | "es6-global") -> ESModule
       | _ -> default.module_
     in
     let moduleResolution =

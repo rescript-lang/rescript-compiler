@@ -9,7 +9,11 @@ SomeModule.formatDate(new Date(), {
       someOption: true
     });
 
-var x = SomeModule.formatDate(new Date(), undefined, true);
+SomeModule.formatDate(new Date(), undefined, true);
+
+(42).toString();
+
+var x = new RegExp("ab+c");
 
 exports.x = x;
 /*  Not a pure module */
