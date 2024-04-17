@@ -25,7 +25,7 @@
 [@@@warning "+9"]
 
 (* TODO: sync up with {!Js_packages_info.module_system}  *)
-type format = Ext_module_system.t = NodeJS | Es6 | Es6_global
+type format = Ext_module_system.t
 
 type spec = { format : format; in_source : bool; suffix : string }
 

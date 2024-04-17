@@ -47,6 +47,11 @@ let x =
     {a}
     <B />
   </Foo.custom-tag>
+let x =
+  <custom-tag data-custom-state=true>
+    {a}
+    <B />
+  </custom-tag>
 
 let x = <div className="container" className2="container2" className3="container3" onClick />
 

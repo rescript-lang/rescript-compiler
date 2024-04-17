@@ -187,7 +187,7 @@ module V4A = {
       ref?: 'ref,
     }
 
-    let make = ({?className, children, _}: props<_, _, ReactDOM.Ref.currentDomRef>, ref) =>
+    let make = ({?className, children, _}: props<_, _, 'ref>, ref: Js.Nullable.t<'ref>) =>
       ReactDOM.jsxs(
         "div",
         {
@@ -239,7 +239,7 @@ module V4AUncurried = {
       ref?: 'ref,
     }
 
-    let make = ({?className, children, _}: props<_, _, ReactDOM.Ref.currentDomRef>, ref) =>
+    let make = ({?className, children, _}: props<_, _, 'ref>, ref: Js.Nullable.t<'ref>) =>
       ReactDOM.jsxs(
         "div",
         {

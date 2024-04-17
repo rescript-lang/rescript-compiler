@@ -86,6 +86,7 @@ type t =
   | Bs_integer_literal_overflow (* 107 *)
   | Bs_uninterpreted_delimiters of string (* 108 *)
   | Bs_toplevel_expression_unit of (string * topLevelUnitHelp) option (* 109 *)
+  | Bs_todo of string option (* 110 *)
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
    the numbers of existing warnings.
@@ -151,6 +152,7 @@ let number = function
   | Bs_integer_literal_overflow -> 107
   | Bs_uninterpreted_delimiters _ -> 108
   | Bs_toplevel_expression_unit _ -> 109
+  | Bs_todo _ -> 110
 
 let last_warning_number = 110
 
@@ -509,6 +511,11 @@ let message = function
           | Other -> "yourExpression") in
           Printf.sprintf "\n\n  Possible solutions:\n  - Assigning to a value that is then ignored: `let _ = %s`\n  - Piping into the built-in ignore function to ignore the result: `%s->ignore`" helpText helpText
         | _ -> "") 
+    | Bs_todo maybe_text -> (
+      match maybe_text with 
+      | None -> "Todo found." 
+      | Some todo -> "Todo found: " ^ todo
+    ) ^ "\n\n  This code is not implemented yet and will crash at runtime. Make sure you implement this before running the code."
 
 let sub_locs = function
   | Deprecated (_, def, use) ->
@@ -640,7 +647,7 @@ let descriptions =
     );
     (108, "Uninterpreted delimiters (for unicode)");
     (109, "Toplevel expression has unit type");
-    (110, "Expression has nested promise type");
+    (110, "Todo found");
   ]
 
 let help_warnings () =

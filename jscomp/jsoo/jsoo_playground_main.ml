@@ -74,7 +74,7 @@ end
 
 module BundleConfig = struct
   type t = {
-    mutable module_system: Js_packages_info.module_system;
+    mutable module_system: Ext_module_system.t;
     mutable filename: string option;
     mutable warn_flags: string;
     mutable open_modules: string list;
@@ -86,7 +86,7 @@ module BundleConfig = struct
   }
 
   let make () = {
-    module_system=Js_packages_info.NodeJS;
+    module_system=Ext_module_system.Commonjs;
     filename=None;
     warn_flags=Bsc_warnings.defaults_w;
     open_modules=[];
@@ -97,8 +97,8 @@ module BundleConfig = struct
   let default_filename (lang: Lang.t) = "playground." ^ (Lang.toString lang)
 
   let string_of_module_system m = (match m with
-    | Js_packages_info.NodeJS -> "nodejs"
-    | Es6 -> "es6"
+    | Ext_module_system.Commonjs -> "nodejs"
+    | Esmodule -> "es6"
     | Es6_global -> "es6_global")
 end
 
@@ -608,10 +608,10 @@ module Export = struct
     let config = BundleConfig.make () in
     let set_module_system value =
       match value with
-      | "es6" ->
-        config.module_system <- Js_packages_info.Es6; true
-      | "nodejs" ->
-        config.module_system <- NodeJS; true
+      | "esmodule" | "es6" ->
+        config.module_system <- Ext_module_system.Esmodule; true
+      | "commonjs" | "nodejs" ->
+        config.module_system <- Commonjs; true
       | _ -> false in
     let set_filename value =
       config.filename <- Some value; true

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "bs-dependencies": ["@rescript/react", "@rescript/core"],
   "package-specs": {
-    "module": "es6",
+    "module": "esmodule",
     "in-source": false
   },
   "sources": {

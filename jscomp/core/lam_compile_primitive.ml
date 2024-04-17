@@ -44,12 +44,12 @@ let get_module_system () =
     let package_info = Js_packages_state.get_packages_info () in
     let module_system =
         if Js_packages_info.is_empty package_info && !Js_config.js_stdout then
-            [Js_packages_info.NodeJS]
+            [Ext_module_system.Commonjs]
         else Js_packages_info.map package_info (fun {module_system} -> module_system)
     in
     match module_system with
     | [module_system] -> module_system
-    | _ -> NodeJS
+    | _ -> Commonjs
 
 let import_of_path path =
   E.call
