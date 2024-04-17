@@ -30,7 +30,7 @@ let ( // ) = Ext_path.combine
     return None if we dont need regenerate
     otherwise return Some info
 *)
-let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir ~warn_legacy_config
+let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir ~warn_legacy_config ~warn_as_error
     : Bsb_config_types.t option =
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let lib_bs_dir = per_proj_dir // lib_artifacts_dir in
@@ -58,6 +58,23 @@ let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir 
         Bsb_config_parse.interpret_json
           ~filename:config_filename ~json:config_json ~package_kind ~per_proj_dir
       in
+
+      let warning = match config.warning with
+      | None -> (
+          match warn_as_error with
+          | Some e -> Some {Bsb_warning.number = Some e; error = Warn_error_number e}
+          | None -> None)
+      | Some {error} as t ->
+          match (warn_as_error, error) with
+          | (Some error_str, Warn_error_false) ->
+              Some {number = Some error_str; error = Warn_error_number error_str}
+          | (Some error_str, Warn_error_number prev) ->
+              let new_error = prev ^ error_str in
+              Some {number = Some new_error; error = Warn_error_number new_error}
+          | _ -> t
+      in
+
+      let config = {config with warning = warning} in
       (* create directory, lib/bs, lib/js, lib/es6 etc *)
       Bsb_build_util.mkp lib_bs_dir;
       Bsb_package_specs.list_dirs_by config.package_specs (fun x ->

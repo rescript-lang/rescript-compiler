@@ -15,6 +15,7 @@
 #### :rocket: New Feature
 
 - Add `%todo` extension for leaving implementation for later. https://github.com/rescript-lang/rescript-compiler/pull/6713
+- Add `-warn-error` argument for generate error on CI. Useful for `%todo` extension. https://github.com/rescript-lang/rescript-compiler/pull/6717
 
 #### :bug: Bug Fix
 
