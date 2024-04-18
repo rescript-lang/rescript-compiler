@@ -62,7 +62,7 @@ lazy \"let"
 let x = 1
 
 let x =
-  <div aria-foo=\"type">
+  <div \"aria-foo"=\"type">
     \"module"
     \"let"
   </div>
