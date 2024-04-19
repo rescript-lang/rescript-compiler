@@ -10,11 +10,11 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.1.0-rc.9 (Unreleased)
+# 11.1.0
 
 #### :bug: Bug Fix
 
-- revert escape JSX prop names with hyphens (#6705). https://github.com/rescript-lang/rescript-compiler/pull/6731.
+- Revert escape JSX prop names with hyphens (#6705). https://github.com/rescript-lang/rescript-compiler/pull/6731
 
 # 11.1.0-rc.8
 
