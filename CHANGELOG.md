@@ -27,6 +27,12 @@
 
 - Make the `--help` arg be prioritized in the CLI, so correctly prints help message and skip other commands. https://github.com/rescript-lang/rescript-compiler/pull/6667
 
+# 11.1.0
+
+#### :bug: Bug Fix
+
+- Revert escape JSX prop names with hyphens (#6705). https://github.com/rescript-lang/rescript-compiler/pull/6731
+
 # 11.1.0-rc.8
 
 #### :rocket: New Feature
