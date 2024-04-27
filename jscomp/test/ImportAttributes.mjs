@@ -12,7 +12,7 @@ var buttonCss = MyCssCss.button;
 console.log(buttonCss);
 
 export {
-  myJson ,
-  buttonCss ,
+  myJson,
+  buttonCss,
 }
 /* myJson Not a pure module */

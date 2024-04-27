@@ -26,6 +26,7 @@
 #### :nail_care: Polish
 
 - Make the `--help` arg be prioritized in the CLI, so correctly prints help message and skip other commands. https://github.com/rescript-lang/rescript-compiler/pull/6667
+- Remove redundant space for export in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6560
 
 # 11.1.0
 
