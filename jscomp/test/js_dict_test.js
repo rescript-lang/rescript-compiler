@@ -58,9 +58,9 @@ var suites_1 = {
                     TAG: "Eq",
                     _0: 43,
                     _1: ({
-                          foo: 43,
-                          bar: 86
-                        })["foo"]
+                        foo: 43,
+                        bar: 86
+                      })["foo"]
                   };
           })
       ],

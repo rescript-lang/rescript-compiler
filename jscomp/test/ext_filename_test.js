@@ -133,18 +133,18 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
   var len = file2.length;
   if (!(node_modules_shorten && v >= 0)) {
     return relative_path(dep_file.NAME === "File" ? ({
-                    NAME: "File",
-                    VAL: absolute_path(dep_file.VAL)
-                  }) : ({
-                    NAME: "Dir",
-                    VAL: absolute_path(dep_file.VAL)
-                  }), file1.NAME === "File" ? ({
-                    NAME: "File",
-                    VAL: absolute_path(file1.VAL)
-                  }) : ({
-                    NAME: "Dir",
-                    VAL: absolute_path(file1.VAL)
-                  })) + (node_sep + Curry._1(Filename.basename, file2));
+                  NAME: "File",
+                  VAL: absolute_path(dep_file.VAL)
+                }) : ({
+                  NAME: "Dir",
+                  VAL: absolute_path(dep_file.VAL)
+                }), file1.NAME === "File" ? ({
+                  NAME: "File",
+                  VAL: absolute_path(file1.VAL)
+                }) : ({
+                  NAME: "Dir",
+                  VAL: absolute_path(file1.VAL)
+                })) + (node_sep + Curry._1(Filename.basename, file2));
   }
   var skip = function (_i) {
     while(true) {

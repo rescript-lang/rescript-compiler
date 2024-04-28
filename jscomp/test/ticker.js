@@ -42,9 +42,9 @@ function split(delim, s) {
         tl: l
       };
       var l$2 = i$p === 0 ? ({
-            hd: "",
-            tl: l$1
-          }) : l$1;
+          hd: "",
+          tl: l$1
+        }) : l$1;
       _x = i$p;
       _l = l$2;
       continue ;

@@ -1334,14 +1334,14 @@ function kill(collid, ctx) {
           pos_1
         ];
         var score = o.score > 0 ? ({
-              hd: make_score(o.score, pos, ctx),
-              tl: /* [] */0
-            }) : /* [] */0;
+            hd: make_score(o.score, pos, ctx),
+            tl: /* [] */0
+          }) : /* [] */0;
         var remains;
         remains = collid._0 === "Goomba" ? ({
-              hd: make$1(undefined, undefined, "GoombaSquish", pos, ctx),
-              tl: /* [] */0
-            }) : /* [] */0;
+            hd: make$1(undefined, undefined, "GoombaSquish", pos, ctx),
+            tl: /* [] */0
+          }) : /* [] */0;
         return Pervasives.$at(score, remains);
     case "Item" :
         var o$1 = collid._2;
@@ -2160,21 +2160,21 @@ function check_collisions(collid, all_collids, state) {
     if (o !== undefined) {
       var o2 = new_objs[1];
       acc$1 = o2 !== undefined ? ({
-            hd: o,
-            tl: {
-              hd: o2,
-              tl: acc
-            }
-          }) : ({
-            hd: o,
+          hd: o,
+          tl: {
+            hd: o2,
             tl: acc
-          });
+          }
+        }) : ({
+          hd: o,
+          tl: acc
+        });
     } else {
       var o$1 = new_objs[1];
       acc$1 = o$1 !== undefined ? ({
-            hd: o$1,
-            tl: acc
-          }) : acc;
+          hd: o$1,
+          tl: acc
+        }) : acc;
     }
     _acc = acc$1;
     _cs = cs.tl;
