@@ -919,7 +919,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
            var f = { x : 2 , y : 2}
          ]}
       *)
-      P.cond_paren_group f (level > 1) 1 (fun _ ->
+      P.cond_paren_group f (level > 1) 0 (fun _ ->
           if lst = [] then (
             P.string f "{}";
             cxt)
