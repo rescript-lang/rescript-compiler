@@ -92,9 +92,6 @@ module Curry_gen = struct
     P.string f (Printf.sprintf "%d" len)
 end
 
-let return_indent = String.length L.return / Ext_pp.indent_length
-let throw_indent = String.length L.throw / Ext_pp.indent_length
-
 type cxt = Ext_pp_scope.t
 
 let semi f = P.string f L.semi
@@ -1211,7 +1208,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       | _ ->
           return_sp f;
           (* P.string f "return ";(\* ASI -- when there is a comment*\) *)
-          P.group f return_indent (fun _ ->
+          P.group f 0 (fun _ ->
               let cxt = expression ~level:0 cxt f e in
               semi f;
               cxt)
@@ -1261,7 +1258,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       in
       P.string f L.throw;
       P.space f;
-      P.group f throw_indent (fun _ ->
+      P.group f 0 (fun _ ->
           let cxt = expression ~level:0 cxt f e in
           semi f;
           cxt)
