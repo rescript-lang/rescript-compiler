@@ -57,8 +57,8 @@ newrecord$4.aa = undefined;
 
 function setAA(ao) {
   return {
-          aa: ao
-        };
+    aa: ao
+  };
 }
 
 var ir0 = {
@@ -164,11 +164,11 @@ if (ir2.TAG === "V0") {
 function inlinedRecord(ir) {
   if (ir.TAG !== "V0") {
     return [
-            ir.y0,
-            "n/a",
-            0,
-            ir.y1
-          ];
+      ir.y0,
+      "n/a",
+      0,
+      ir.y1
+    ];
   }
   var x1 = ir.x1;
   var x0 = ir.x0;
@@ -178,22 +178,22 @@ function inlinedRecord(ir) {
           var x2 = ir.x2;
           if (x2 !== undefined) {
             return [
-                    x0,
-                    "x1",
-                    x2,
-                    ir.x3
-                  ];
+              x0,
+              "x1",
+              x2,
+              ir.x3
+            ];
           }
           break;
       case "xx1" :
           var x2$1 = ir.x2;
           if (x2$1 !== undefined) {
             return [
-                    x0,
-                    "xx1",
-                    x2$1,
-                    ir.x3
-                  ];
+              x0,
+              "xx1",
+              x2$1,
+              ir.x3
+            ];
           }
           break;
       default:
@@ -202,35 +202,35 @@ function inlinedRecord(ir) {
     var x2$2 = ir.x2;
     if (x2$2 !== undefined) {
       return [
-              x0,
-              x1,
-              x2$2,
-              ir.x3
-            ];
+        x0,
+        x1,
+        x2$2,
+        ir.x3
+      ];
     } else {
       return [
-              x0,
-              x1,
-              0,
-              ir.x3
-            ];
+        x0,
+        x1,
+        0,
+        ir.x3
+      ];
     }
   }
   var x2$3 = ir.x2;
   if (x2$3 !== undefined) {
     return [
-            x0,
-            "n/a",
-            x2$3,
-            ir.x3
-          ];
+      x0,
+      "n/a",
+      x2$3,
+      ir.x3
+    ];
   } else {
     return [
-            x0,
-            "n/a",
-            0,
-            ir.x3
-          ];
+      x0,
+      "n/a",
+      0,
+      ir.x3
+    ];
   }
 }
 

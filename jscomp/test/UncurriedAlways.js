@@ -58,18 +58,18 @@ function inl2(x, y) {
 
 function foo$1(x, y, z) {
   return [
-          x,
-          y,
-          z
-        ];
+    x,
+    y,
+    z
+  ];
 }
 
 function ptl$1(none, extra) {
   return [
-          none,
-          "y",
-          extra
-        ];
+    none,
+    "y",
+    extra
+  ];
 }
 
 var a1 = [
@@ -89,11 +89,11 @@ var AllLabels = {
 function foo$2(x, y, z, dOpt) {
   var d = dOpt !== undefined ? dOpt : "d=0";
   return [
-          x,
-          y,
-          z,
-          d
-        ];
+    x,
+    y,
+    z,
+    d
+  ];
 }
 
 function ptl$2(none, extra, extra$1) {
@@ -122,16 +122,16 @@ function foo$3(d1Opt, x, d2Opt, y, d3Opt, z, d4Opt, w, d5Opt) {
   var d4 = d4Opt !== undefined ? d4Opt : "d4=0";
   var d5 = d5Opt !== undefined ? d5Opt : "d5=0";
   return [
-          d1,
-          x,
-          d2,
-          y,
-          d3,
-          z,
-          d4,
-          w,
-          d5
-        ];
+    d1,
+    x,
+    d2,
+    y,
+    d3,
+    z,
+    d4,
+    w,
+    d5
+  ];
 }
 
 function ptl$3(none, none$1, none$2, none$3, none$4, none$5, extra) {
@@ -175,8 +175,8 @@ function fn1(a, b, param) {
 
 function a$1(__x) {
   return fn1((function () {
-                return 1;
-              }), 2, __x);
+          return 1;
+        }), 2, __x);
 }
 
 function f3(x, y, z) {

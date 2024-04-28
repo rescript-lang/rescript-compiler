@@ -20,23 +20,23 @@ function fib(n, k) {
     return k(1);
   } else {
     return {
-            TAG: "Suspend",
-            _0: (function () {
-                return fib(n - 1 | 0, (function (v0) {
-                              return fib(n - 2 | 0, (function (v1) {
-                                            return k(v0 + v1 | 0);
-                                          }));
-                            }));
-              })
-          };
+      TAG: "Suspend",
+      _0: (function () {
+          return fib(n - 1 | 0, (function (v0) {
+                  return fib(n - 2 | 0, (function (v1) {
+                          return k(v0 + v1 | 0);
+                        }));
+                }));
+        })
+    };
   }
 }
 
 var u = fib(10, (function (x) {
         return {
-                TAG: "Continue",
-                _0: x
-              };
+          TAG: "Continue",
+          _0: x
+        };
       }));
 
 function iter(_bounce) {
@@ -54,22 +54,22 @@ function isEven(n) {
   if (n !== 0) {
     if (n !== 1) {
       return {
-              TAG: "Suspend",
-              _0: (function () {
-                  return isOdd(n - 1 | 0);
-                })
-            };
+        TAG: "Suspend",
+        _0: (function () {
+            return isOdd(n - 1 | 0);
+          })
+      };
     } else {
       return {
-              TAG: "Continue",
-              _0: false
-            };
+        TAG: "Continue",
+        _0: false
+      };
     }
   } else {
     return {
-            TAG: "Continue",
-            _0: true
-          };
+      TAG: "Continue",
+      _0: true
+    };
   }
 }
 
@@ -79,15 +79,15 @@ function isOdd(n) {
       return isEven(n - 1 | 0);
     } else {
       return {
-              TAG: "Continue",
-              _0: true
-            };
+        TAG: "Continue",
+        _0: true
+      };
     }
   } else {
     return {
-            TAG: "Continue",
-            _0: false
-          };
+      TAG: "Continue",
+      _0: false
+    };
   }
 }
 

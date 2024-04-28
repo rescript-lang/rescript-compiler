@@ -114,18 +114,18 @@ function $eq$tilde(a, b) {
 
 var u0 = f(Belt_Array.map(Array_data_util.randomRange(0, 39), (function (x) {
             return [
-                    x,
-                    x
-                  ];
+              x,
+              x
+            ];
           })));
 
 var u1 = Belt_Map.set(u0, 39, 120);
 
 b("File \"bs_map_set_dict_test.res\", line 72, characters 4-11", Belt_Array.every2(Belt_MapDict.toArray(u0.data), Belt_Array.map(Array_data_util.range(0, 39), (function (x) {
                 return [
-                        x,
-                        x
-                      ];
+                  x,
+                  x
+                ];
               })), (function (param, param$1) {
             if (param[0] === param$1[0]) {
               return param[1] === param$1[1];
@@ -136,9 +136,9 @@ b("File \"bs_map_set_dict_test.res\", line 72, characters 4-11", Belt_Array.ever
 
 b("File \"bs_map_set_dict_test.res\", line 79, characters 4-11", Belt_List.every2(Belt_MapDict.toList(u0.data), Belt_List.fromArray(Belt_Array.map(Array_data_util.range(0, 39), (function (x) {
                     return [
-                            x,
-                            x
-                          ];
+                      x,
+                      x
+                    ];
                   }))), (function (param, param$1) {
             if (param[0] === param$1[0]) {
               return param[1] === param$1[1];
@@ -153,16 +153,16 @@ eq("File \"bs_map_set_dict_test.res\", line 85, characters 5-12", Belt_Map.get(u
 
 var u = f(Belt_Array.makeByAndShuffle(10000, (function (x) {
             return [
-                    x,
-                    x
-                  ];
+              x,
+              x
+            ];
           })));
 
 eq("File \"bs_map_set_dict_test.res\", line 90, characters 5-12", Belt_Array.makeBy(10000, (function (x) {
             return [
-                    x,
-                    x
-                  ];
+              x,
+              x
+            ];
           })), Belt_MapDict.toArray(u.data));
 
 Mt.from_pair_suites("Bs_map_set_dict_test", suites.contents);

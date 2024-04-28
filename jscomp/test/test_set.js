@@ -18,12 +18,12 @@ function Make(Ord) {
     var hr;
     hr = typeof r !== "object" ? 0 : r._3;
     return {
-            TAG: "Node",
-            _0: l,
-            _1: v,
-            _2: r,
-            _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-          };
+      TAG: "Node",
+      _0: l,
+      _1: v,
+      _2: r,
+      _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+    };
   };
   var bal = function (l, v, r) {
     var hl;
@@ -33,10 +33,10 @@ function Make(Ord) {
     if (hl > (hr + 2 | 0)) {
       if (typeof l !== "object") {
         throw {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Set.bal",
-              Error: new Error()
-            };
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.bal",
+          Error: new Error()
+        };
       }
       var lr = l._2;
       var lv = l._1;
@@ -48,26 +48,26 @@ function Make(Ord) {
         return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
       }
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal",
+        Error: new Error()
+      };
     }
     if (hr <= (hl + 2 | 0)) {
       return {
-              TAG: "Node",
-              _0: l,
-              _1: v,
-              _2: r,
-              _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-            };
+        TAG: "Node",
+        _0: l,
+        _1: v,
+        _2: r,
+        _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+      };
     }
     if (typeof r !== "object") {
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal",
+        Error: new Error()
+      };
     }
     var rr = r._2;
     var rv = r._1;
@@ -79,20 +79,20 @@ function Make(Ord) {
       return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
     }
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.bal",
+      Error: new Error()
+    };
   };
   var add = function (x, x_) {
     if (typeof x_ !== "object") {
       return {
-              TAG: "Node",
-              _0: "Empty",
-              _1: x,
-              _2: "Empty",
-              _3: 1
-            };
+        TAG: "Node",
+        _0: "Empty",
+        _1: x,
+        _2: "Empty",
+        _3: 1
+      };
     }
     var r = x_._2;
     var v = x_._1;
@@ -108,12 +108,12 @@ function Make(Ord) {
   };
   var singleton = function (x) {
     return {
-            TAG: "Node",
-            _0: "Empty",
-            _1: x,
-            _2: "Empty",
-            _3: 1
-          };
+      TAG: "Node",
+      _0: "Empty",
+      _1: x,
+      _2: "Empty",
+      _3: 1
+    };
   };
   var add_min_element = function (v, x) {
     if (typeof x !== "object") {
@@ -151,9 +151,9 @@ function Make(Ord) {
       var x = _x;
       if (typeof x !== "object") {
         throw {
-              RE_EXN_ID: "Not_found",
-              Error: new Error()
-            };
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
+        };
       }
       var l = x._0;
       if (typeof l !== "object") {
@@ -168,9 +168,9 @@ function Make(Ord) {
       var x = _x;
       if (typeof x !== "object") {
         throw {
-              RE_EXN_ID: "Not_found",
-              Error: new Error()
-            };
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
+        };
       }
       var r = x._2;
       if (typeof r !== "object") {
@@ -183,10 +183,10 @@ function Make(Ord) {
   var remove_min_elt = function (x) {
     if (typeof x !== "object") {
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.remove_min_elt",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.remove_min_elt",
+        Error: new Error()
+      };
     }
     var l = x._0;
     if (typeof l !== "object") {
@@ -216,10 +216,10 @@ function Make(Ord) {
   var split = function (x, x_) {
     if (typeof x_ !== "object") {
       return [
-              "Empty",
-              false,
-              "Empty"
-            ];
+        "Empty",
+        false,
+        "Empty"
+      ];
     }
     var r = x_._2;
     var v = x_._1;
@@ -227,25 +227,25 @@ function Make(Ord) {
     var c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
       return [
-              l,
-              true,
-              r
-            ];
+        l,
+        true,
+        r
+      ];
     }
     if (c < 0) {
       var match = split(x, l);
       return [
-              match[0],
-              match[1],
-              join(match[2], v, r)
-            ];
+        match[0],
+        match[1],
+        join(match[2], v, r)
+      ];
     }
     var match$1 = split(x, r);
     return [
-            join(l, v, match$1[0]),
-            match$1[1],
-            match$1[2]
-          ];
+      join(l, v, match$1[0]),
+      match$1[1],
+      match$1[2]
+    ];
   };
   var is_empty = function (x) {
     if (typeof x !== "object") {
@@ -513,9 +513,9 @@ function Make(Ord) {
   var partition = function (p, x) {
     if (typeof x !== "object") {
       return [
-              "Empty",
-              "Empty"
-            ];
+        "Empty",
+        "Empty"
+      ];
     }
     var v = x._1;
     var match = partition(p, x._0);
@@ -527,14 +527,14 @@ function Make(Ord) {
     var rt = match$1[0];
     if (pv) {
       return [
-              join(lt, v, rt),
-              concat(lf, rf)
-            ];
+        join(lt, v, rt),
+        concat(lf, rf)
+      ];
     } else {
       return [
-              concat(lt, rt),
-              join(lf, v, rf)
-            ];
+        concat(lt, rt),
+        join(lf, v, rf)
+      ];
     }
   };
   var cardinal = function (x) {
@@ -567,9 +567,9 @@ function Make(Ord) {
       var x_ = _x_;
       if (typeof x_ !== "object") {
         throw {
-              RE_EXN_ID: "Not_found",
-              Error: new Error()
-            };
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
+        };
       }
       var v = x_._1;
       var c = Curry._2(Ord.compare, x, v);
@@ -585,21 +585,21 @@ function Make(Ord) {
       switch (n) {
         case 0 :
             return [
-                    "Empty",
-                    l
-                  ];
+              "Empty",
+              l
+            ];
         case 1 :
             if (l) {
               return [
-                      {
-                        TAG: "Node",
-                        _0: "Empty",
-                        _1: l.hd,
-                        _2: "Empty",
-                        _3: 1
-                      },
-                      l.tl
-                    ];
+                {
+                  TAG: "Node",
+                  _0: "Empty",
+                  _1: l.hd,
+                  _2: "Empty",
+                  _3: 1
+                },
+                l.tl
+              ];
             }
             break;
         case 2 :
@@ -607,21 +607,21 @@ function Make(Ord) {
               var match = l.tl;
               if (match) {
                 return [
-                        {
-                          TAG: "Node",
-                          _0: {
-                            TAG: "Node",
-                            _0: "Empty",
-                            _1: l.hd,
-                            _2: "Empty",
-                            _3: 1
-                          },
-                          _1: match.hd,
-                          _2: "Empty",
-                          _3: 2
-                        },
-                        match.tl
-                      ];
+                  {
+                    TAG: "Node",
+                    _0: {
+                      TAG: "Node",
+                      _0: "Empty",
+                      _1: l.hd,
+                      _2: "Empty",
+                      _3: 1
+                    },
+                    _1: match.hd,
+                    _2: "Empty",
+                    _3: 2
+                  },
+                  match.tl
+                ];
               }
               
             }
@@ -633,27 +633,27 @@ function Make(Ord) {
                 var match$2 = match$1.tl;
                 if (match$2) {
                   return [
-                          {
-                            TAG: "Node",
-                            _0: {
-                              TAG: "Node",
-                              _0: "Empty",
-                              _1: l.hd,
-                              _2: "Empty",
-                              _3: 1
-                            },
-                            _1: match$1.hd,
-                            _2: {
-                              TAG: "Node",
-                              _0: "Empty",
-                              _1: match$2.hd,
-                              _2: "Empty",
-                              _3: 1
-                            },
-                            _3: 2
-                          },
-                          match$2.tl
-                        ];
+                    {
+                      TAG: "Node",
+                      _0: {
+                        TAG: "Node",
+                        _0: "Empty",
+                        _1: l.hd,
+                        _2: "Empty",
+                        _3: 1
+                      },
+                      _1: match$1.hd,
+                      _2: {
+                        TAG: "Node",
+                        _0: "Empty",
+                        _1: match$2.hd,
+                        _2: "Empty",
+                        _3: 1
+                      },
+                      _3: 2
+                    },
+                    match$2.tl
+                  ];
                 }
                 
               }
@@ -669,19 +669,19 @@ function Make(Ord) {
       if (l$1) {
         var match$4 = sub((n - nl | 0) - 1 | 0, l$1.tl);
         return [
-                create(match$3[0], l$1.hd, match$4[0]),
-                match$4[1]
-              ];
+          create(match$3[0], l$1.hd, match$4[0]),
+          match$4[1]
+        ];
       }
       throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "test_set.res",
-              497,
-              20
-            ],
-            Error: new Error()
-          };
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "test_set.res",
+          497,
+          20
+        ],
+        Error: new Error()
+      };
     };
     return sub(List.length(l), l)[0];
   };
@@ -717,46 +717,46 @@ function Make(Ord) {
     }
   };
   return {
-          height: height,
-          create: create,
-          bal: bal,
-          add: add,
-          singleton: singleton,
-          add_min_element: add_min_element,
-          add_max_element: add_max_element,
-          join: join,
-          min_elt: min_elt,
-          max_elt: max_elt,
-          remove_min_elt: remove_min_elt,
-          merge: merge,
-          concat: concat,
-          split: split,
-          empty: "Empty",
-          is_empty: is_empty,
-          mem: mem,
-          remove: remove,
-          union: union,
-          inter: inter,
-          diff: diff,
-          cons_enum: cons_enum,
-          compare_aux: compare_aux,
-          compare: compare,
-          equal: equal,
-          subset: subset,
-          iter: iter,
-          fold: fold,
-          for_all: for_all,
-          exists: exists,
-          filter: filter,
-          partition: partition,
-          cardinal: cardinal,
-          elements_aux: elements_aux,
-          elements: elements,
-          choose: min_elt,
-          find: find,
-          of_sorted_list: of_sorted_list,
-          of_list: of_list
-        };
+    height: height,
+    create: create,
+    bal: bal,
+    add: add,
+    singleton: singleton,
+    add_min_element: add_min_element,
+    add_max_element: add_max_element,
+    join: join,
+    min_elt: min_elt,
+    max_elt: max_elt,
+    remove_min_elt: remove_min_elt,
+    merge: merge,
+    concat: concat,
+    split: split,
+    empty: "Empty",
+    is_empty: is_empty,
+    mem: mem,
+    remove: remove,
+    union: union,
+    inter: inter,
+    diff: diff,
+    cons_enum: cons_enum,
+    compare_aux: compare_aux,
+    compare: compare,
+    equal: equal,
+    subset: subset,
+    iter: iter,
+    fold: fold,
+    for_all: for_all,
+    exists: exists,
+    filter: filter,
+    partition: partition,
+    cardinal: cardinal,
+    elements_aux: elements_aux,
+    elements: elements,
+    choose: min_elt,
+    find: find,
+    of_sorted_list: of_sorted_list,
+    of_list: of_list
+  };
 }
 
 var N = {

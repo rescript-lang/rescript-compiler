@@ -5,10 +5,10 @@
 function f(param) {
   console.log("no inline");
   return [
-          1,
-          2,
-          3
-        ];
+    1,
+    2,
+    3
+  ];
 }
 
 var match = f();

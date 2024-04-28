@@ -25,10 +25,10 @@ var suites_0 = [
   "sum",
   (function (param) {
       return {
-              TAG: "Eq",
-              _0: 55,
-              _1: f()
-            };
+        TAG: "Eq",
+        _0: 55,
+        _1: f()
+      };
     })
 ];
 

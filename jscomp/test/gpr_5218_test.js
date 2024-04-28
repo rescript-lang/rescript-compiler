@@ -14,14 +14,14 @@ var suites = {
 function test(x) {
   if (x.NAME === 2) {
     return {
-            NAME: 2,
-            VAL: x.VAL
-          };
+      NAME: 2,
+      VAL: x.VAL
+    };
   } else {
     return {
-            NAME: 1,
-            VAL: x.VAL
-          };
+      NAME: 1,
+      VAL: x.VAL
+    };
   }
 }
 

@@ -49,10 +49,10 @@ function f2_with(x) {
     return x;
   } else {
     return {
-            TAG: "C",
-            x: 0,
-            y: x.y
-          };
+      TAG: "C",
+      x: 0,
+      y: x.y
+    };
   }
 }
 

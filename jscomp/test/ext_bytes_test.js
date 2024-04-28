@@ -138,9 +138,9 @@ function starts_with(xs, prefix, p) {
     for(var i = 0; i < len2; ++i){
       if (!Curry._2(p, Caml_bytes.get(xs, i), Caml_bytes.get(prefix, i))) {
         throw {
-              RE_EXN_ID: H,
-              Error: new Error()
-            };
+          RE_EXN_ID: H,
+          Error: new Error()
+        };
       }
       
     }
@@ -191,22 +191,22 @@ eq("File \"ext_bytes_test.res\", line 153, characters 5-12", s, s2);
 
 function f$1(a, b) {
   return [
-          Caml_bytes.bytes_greaterthan(a, b),
-          Caml_bytes.bytes_greaterequal(a, b),
-          Caml_bytes.bytes_lessthan(a, b),
-          Caml_bytes.bytes_lessequal(a, b),
-          Caml_bytes.bytes_equal(a, b)
-        ];
+    Caml_bytes.bytes_greaterthan(a, b),
+    Caml_bytes.bytes_greaterequal(a, b),
+    Caml_bytes.bytes_lessthan(a, b),
+    Caml_bytes.bytes_lessequal(a, b),
+    Caml_bytes.bytes_equal(a, b)
+  ];
 }
 
 function f_0(a, b) {
   return [
-          Caml.i64_gt(a, b),
-          Caml.i64_ge(a, b),
-          Caml.i64_lt(a, b),
-          Caml.i64_le(a, b),
-          Caml.i64_eq(a, b)
-        ];
+    Caml.i64_gt(a, b),
+    Caml.i64_ge(a, b),
+    Caml.i64_lt(a, b),
+    Caml.i64_le(a, b),
+    Caml.i64_eq(a, b)
+  ];
 }
 
 Mt.from_pair_suites("Ext_bytes_test", suites.contents);

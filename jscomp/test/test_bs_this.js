@@ -41,9 +41,9 @@ function f(x) {
       console.log(o);
     });
   return Curry._2(x.addEventListener, "onload", (function () {
-                var o = this ;
-                console.log(o.response);
-              }));
+          var o = this ;
+          console.log(o.response);
+        }));
 }
 
 function u(x) {

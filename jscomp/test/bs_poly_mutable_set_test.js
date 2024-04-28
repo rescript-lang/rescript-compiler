@@ -34,9 +34,9 @@ function fromArray(param) {
 
 function empty(param) {
   return {
-          cmp: IntCmp.cmp,
-          data: undefined
-        };
+    cmp: IntCmp.cmp,
+    data: undefined
+  };
 }
 
 var u = fromArray(Array_data_util.range(0, 30));

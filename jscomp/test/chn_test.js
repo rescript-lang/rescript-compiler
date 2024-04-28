@@ -20,10 +20,10 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents
@@ -36,20 +36,20 @@ console.log("\x3f\u003f\b\t\n\v\f\r\0\"'");
 
 function convert(s) {
   return $$Array.to_list(Array.from(s, (function (x) {
-                    var x$1 = x.codePointAt(0);
-                    if (x$1 !== undefined) {
-                      return x$1;
-                    }
-                    throw {
-                          RE_EXN_ID: "Assert_failure",
-                          _1: [
-                            "chn_test.res",
-                            17,
-                            14
-                          ],
-                          Error: new Error()
-                        };
-                  })));
+              var x$1 = x.codePointAt(0);
+              if (x$1 !== undefined) {
+                return x$1;
+              }
+              throw {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "chn_test.res",
+                  17,
+                  14
+                ],
+                Error: new Error()
+              };
+            })));
 }
 
 eq("File \"chn_test.res\", line 24, characters 4-11", "你好，\n世界", "你好，\n世界");

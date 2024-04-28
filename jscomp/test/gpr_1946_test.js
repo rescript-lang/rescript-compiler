@@ -16,13 +16,13 @@ function eq(loc, x, y) {
 }
 
 var x = ({
-    x: 3,
-    y: 4
-  }).x;
+  x: 3,
+  y: 4
+}).x;
 
 var zz = ({
-    _5: 3
-  })._5;
+  _5: 3
+})._5;
 
 var h = {
   "0123": 2,
@@ -37,8 +37,8 @@ function f(id) {
 }
 
 eq("File \"gpr_1946_test.res\", line 24, characters 3-10", ({
-        _5: 3
-      })._5, 3);
+      _5: 3
+    })._5, 3);
 
 eq("File \"gpr_1946_test.res\", line 25, characters 3-10", [
       2,
@@ -49,8 +49,8 @@ eq("File \"gpr_1946_test.res\", line 25, characters 3-10", [
     ]);
 
 console.log(({
-          _5: 3
-        }).TAG);
+        _5: 3
+      }).TAG);
 
 Mt.from_pair_suites("File \"gpr_1946_test.res\", line 28, characters 20-27", suites.contents);
 

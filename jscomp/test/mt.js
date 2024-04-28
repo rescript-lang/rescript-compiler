@@ -258,10 +258,10 @@ function eq_suites(test_id, suites, loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents
@@ -275,9 +275,9 @@ function bool_suites(test_id, suites, loc, x) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Ok",
-                  _0: x
-                };
+            TAG: "Ok",
+            _0: x
+          };
         })
     ],
     tl: suites.contents
@@ -291,9 +291,9 @@ function throw_suites(test_id, suites, loc, x) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "ThrowAny",
-                  _0: x
-                };
+            TAG: "ThrowAny",
+            _0: x
+          };
         })
     ],
     tl: suites.contents

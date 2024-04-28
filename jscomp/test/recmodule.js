@@ -9,13 +9,13 @@ var Entity = {};
 function MakeLayer(Deps) {
   var getLight = function (id) {
     return Curry._1(Deps.presentLight, {
-                id: id,
-                name: "Light 1"
-              });
+          id: id,
+          name: "Light 1"
+        });
   };
   return {
-          getLight: getLight
-        };
+    getLight: getLight
+  };
 }
 
 var UseCase = {
@@ -30,9 +30,9 @@ function MakeLayer$1(Deps, UC) {
     return Curry._1(UC.getLight, req.params.id);
   };
   return {
-          handleGetLight: handleGetLight,
-          presentLight: presentLight
-        };
+    handleGetLight: handleGetLight,
+    presentLight: presentLight
+  };
 }
 
 var Adapter = {
@@ -42,25 +42,25 @@ var Adapter = {
 function MakeLayer$2(Deps) {
   var presentJson = function (json, status) {
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "recmodule.res",
-            60,
-            41
-          ],
-          Error: new Error()
-        };
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "recmodule.res",
+        60,
+        41
+      ],
+      Error: new Error()
+    };
   };
   var routes = function (param) {
     return [[
-              "/lights",
-              Deps.handleGetLight
-            ]];
+        "/lights",
+        Deps.handleGetLight
+      ]];
   };
   return {
-          presentJson: presentJson,
-          routes: routes
-        };
+    presentJson: presentJson,
+    routes: routes
+  };
 }
 
 var Infra = {
@@ -117,21 +117,21 @@ var U = Caml_module.init_mod([
 
 function presentJson(json, status) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "recmodule.res",
-          60,
-          41
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "recmodule.res",
+      60,
+      41
+    ],
+    Error: new Error()
+  };
 }
 
 function routes(param) {
   return [[
-            "/lights",
-            A.handleGetLight
-          ]];
+      "/lights",
+      A.handleGetLight
+    ]];
 }
 
 Caml_module.update_mod({
@@ -178,9 +178,9 @@ Caml_module.update_mod({
 
 function getLight(id) {
   return Curry._1(A.presentLight, {
-              id: id,
-              name: "Light 1"
-            });
+        id: id,
+        name: "Light 1"
+      });
 }
 
 Caml_module.update_mod({

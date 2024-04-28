@@ -8,9 +8,9 @@ function map(f, x) {
   }
   var r = f(x.hd);
   return {
-          hd: r,
-          tl: map(f, x.tl)
-        };
+    hd: r,
+    tl: map(f, x.tl)
+  };
 }
 
 exports.map = map;

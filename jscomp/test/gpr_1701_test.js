@@ -10,9 +10,9 @@ var Foo = /* @__PURE__ */Caml_exceptions.create("Gpr_1701_test.Foo");
 function test(n) {
   if (n === 0) {
     throw {
-          RE_EXN_ID: Foo,
-          Error: new Error()
-        };
+      RE_EXN_ID: Foo,
+      Error: new Error()
+    };
   }
   try {
     return test(n - 1 | 0);
@@ -83,9 +83,9 @@ function read_lines3(inc) {
     try {
       var l = input_line(inc);
       return loop({
-                  hd: l,
-                  tl: acc
-                });
+            hd: l,
+            tl: acc
+          });
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);

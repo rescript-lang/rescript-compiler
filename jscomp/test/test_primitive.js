@@ -8,28 +8,28 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function a4(prim) {
   return [
-          "File \"test_primitive.res\", line 29, characters 9-19",
-          prim
-        ];
+    "File \"test_primitive.res\", line 29, characters 9-19",
+    prim
+  ];
 }
 
 function a5(prim) {
   return [
-          30,
-          prim
-        ];
+    30,
+    prim
+  ];
 }
 
 function a6(prim) {
   return [
-          [
-            "test_primitive.res",
-            31,
-            9,
-            19
-          ],
-          prim
-        ];
+    [
+      "test_primitive.res",
+      31,
+      9,
+      19
+    ],
+    prim
+  ];
 }
 
 var test_float = 3;

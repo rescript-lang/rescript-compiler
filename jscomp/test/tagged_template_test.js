@@ -8,9 +8,9 @@ var Tagged_template_libJs = require("./tagged_template_lib.js");
 
 function sql(prim0, prim1) {
   return Caml_splice_call.spliceApply(Tagged_template_libJs.sql, [
-              prim0,
-              prim1
-            ]);
+        prim0,
+        prim1
+      ]);
 }
 
 var Pg = {
@@ -46,10 +46,10 @@ Mt.from_pair_suites("tagged templates", {
         "with externals, it should return a string with the correct interpolations",
         (function (param) {
             return {
-                    TAG: "Eq",
-                    _0: query,
-                    _1: "SELECT * FROM 'users' WHERE id = '5'"
-                  };
+              TAG: "Eq",
+              _0: query,
+              _1: "SELECT * FROM 'users' WHERE id = '5'"
+            };
           })
       ],
       tl: {
@@ -57,10 +57,10 @@ Mt.from_pair_suites("tagged templates", {
           "with module scoped externals, it should also return a string with the correct interpolations",
           (function (param) {
               return {
-                      TAG: "Eq",
-                      _0: queryWithModule,
-                      _1: "SELECT * FROM 'users' WHERE id = '5'"
-                    };
+                TAG: "Eq",
+                _0: queryWithModule,
+                _1: "SELECT * FROM 'users' WHERE id = '5'"
+              };
             })
         ],
         tl: {
@@ -68,10 +68,10 @@ Mt.from_pair_suites("tagged templates", {
             "with externals, it should return the result of the function",
             (function (param) {
                 return {
-                        TAG: "Eq",
-                        _0: length,
-                        _1: 52
-                      };
+                  TAG: "Eq",
+                  _0: length,
+                  _1: 52
+                };
               })
           ],
           tl: {
@@ -79,10 +79,10 @@ Mt.from_pair_suites("tagged templates", {
               "with rescript function, it should return a string with the correct interpolations",
               (function (param) {
                   return {
-                          TAG: "Eq",
-                          _0: res,
-                          _1: "| 5 * 10 = 50 |"
-                        };
+                    TAG: "Eq",
+                    _0: res,
+                    _1: "| 5 * 10 = 50 |"
+                  };
                 })
             ],
             tl: {
@@ -90,10 +90,10 @@ Mt.from_pair_suites("tagged templates", {
                 "a template literal tagged with json should generate a regular string interpolation for now",
                 (function (param) {
                     return {
-                            TAG: "Eq",
-                            _0: "some random " + "string",
-                            _1: "some random string"
-                          };
+                      TAG: "Eq",
+                      _0: "some random " + "string",
+                      _1: "some random string"
+                    };
                   })
               ],
               tl: /* [] */0

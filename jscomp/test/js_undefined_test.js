@@ -9,10 +9,10 @@ var suites_0 = [
   "toOption - empty",
   (function (param) {
       return {
-              TAG: "Eq",
-              _0: undefined,
-              _1: undefined
-            };
+        TAG: "Eq",
+        _0: undefined,
+        _1: undefined
+      };
     })
 ];
 
@@ -21,10 +21,10 @@ var suites_1 = {
     "File \"js_undefined_test.res\", line 7, characters 5-12",
     (function (param) {
         return {
-                TAG: "Eq",
-                _0: undefined,
-                _1: undefined
-              };
+          TAG: "Eq",
+          _0: undefined,
+          _1: undefined
+        };
       })
   ],
   tl: {
@@ -32,10 +32,10 @@ var suites_1 = {
       "return",
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: "something",
-                  _1: Caml_option.undefined_to_opt("something")
-                };
+            TAG: "Eq",
+            _0: "something",
+            _1: Caml_option.undefined_to_opt("something")
+          };
         })
     ],
     tl: {
@@ -43,10 +43,10 @@ var suites_1 = {
         "test - empty",
         (function (param) {
             return {
-                    TAG: "Eq",
-                    _0: true,
-                    _1: true
-                  };
+              TAG: "Eq",
+              _0: true,
+              _1: true
+            };
           })
       ],
       tl: {
@@ -54,10 +54,10 @@ var suites_1 = {
           "File \"js_undefined_test.res\", line 10, characters 5-12",
           (function (param) {
               return {
-                      TAG: "Eq",
-                      _0: true,
-                      _1: true
-                    };
+                TAG: "Eq",
+                _0: true,
+                _1: true
+              };
             })
         ],
         tl: {
@@ -65,12 +65,12 @@ var suites_1 = {
             "bind - empty",
             (function (param) {
                 return {
-                        TAG: "Eq",
-                        _0: undefined,
-                        _1: Js_undefined.bind(undefined, (function (v) {
-                                return v;
-                              }))
-                      };
+                  TAG: "Eq",
+                  _0: undefined,
+                  _1: Js_undefined.bind(undefined, (function (v) {
+                          return v;
+                        }))
+                };
               })
           ],
           tl: {
@@ -78,12 +78,12 @@ var suites_1 = {
               "bind - 'a",
               (function (param) {
                   return {
-                          TAG: "Eq",
-                          _0: 4,
-                          _1: Js_undefined.bind(2, (function (n) {
-                                  return (n << 1);
-                                }))
-                        };
+                    TAG: "Eq",
+                    _0: 4,
+                    _1: Js_undefined.bind(2, (function (n) {
+                            return (n << 1);
+                          }))
+                  };
                 })
             ],
             tl: {
@@ -97,10 +97,10 @@ var suites_1 = {
                             hit.contents = true;
                           }));
                     return {
-                            TAG: "Eq",
-                            _0: false,
-                            _1: hit.contents
-                          };
+                      TAG: "Eq",
+                      _0: false,
+                      _1: hit.contents
+                    };
                   })
               ],
               tl: {
@@ -114,10 +114,10 @@ var suites_1 = {
                               hit.contents = v;
                             }));
                       return {
-                              TAG: "Eq",
-                              _0: 2,
-                              _1: hit.contents
-                            };
+                        TAG: "Eq",
+                        _0: 2,
+                        _1: hit.contents
+                      };
                     })
                 ],
                 tl: {
@@ -125,10 +125,10 @@ var suites_1 = {
                     "fromOption - None",
                     (function (param) {
                         return {
-                                TAG: "Eq",
-                                _0: undefined,
-                                _1: Js_undefined.fromOption(undefined)
-                              };
+                          TAG: "Eq",
+                          _0: undefined,
+                          _1: Js_undefined.fromOption(undefined)
+                        };
                       })
                   ],
                   tl: {
@@ -136,10 +136,10 @@ var suites_1 = {
                       "fromOption - Some",
                       (function (param) {
                           return {
-                                  TAG: "Eq",
-                                  _0: 2,
-                                  _1: Js_undefined.fromOption(2)
-                                };
+                            TAG: "Eq",
+                            _0: 2,
+                            _1: Js_undefined.fromOption(2)
+                          };
                         })
                     ],
                     tl: /* [] */0

@@ -4,10 +4,10 @@
 
 function mo(prim0, prim1) {
   return {
-          objectMode: false,
-          name: prim0,
-          someOther: true
-        };
+    objectMode: false,
+    name: prim0,
+    someOther: true
+  };
 }
 
 var options = {

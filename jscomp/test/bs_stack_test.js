@@ -104,10 +104,10 @@ function inOrder2(v) {
 
 function n(l, r, a) {
   return {
-          value: a,
-          left: Js_undefined.fromOption(l),
-          right: Js_undefined.fromOption(r)
-        };
+    value: a,
+    left: Js_undefined.fromOption(l),
+    right: Js_undefined.fromOption(r)
+  };
 }
 
 var test1 = n(Caml_option.some(n(Caml_option.some(n(undefined, undefined, 4)), Caml_option.some(n(undefined, undefined, 5)), 2)), Caml_option.some(n(undefined, undefined, 3)), 1);

@@ -14,14 +14,14 @@ function bench(param) {
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_SetInt.has(data, i$1)) {
       throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "bs_set_bench.res",
-              13,
-              6
-            ],
-            Error: new Error()
-          };
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "bs_set_bench.res",
+          13,
+          6
+        ],
+        Error: new Error()
+      };
     }
     
   }
@@ -35,14 +35,14 @@ function bench(param) {
     return;
   }
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_set_bench.res",
-          21,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "bs_set_bench.res",
+      21,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 console.time("bs_set_bench.res 24");

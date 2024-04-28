@@ -10,14 +10,14 @@ function f(x) {
         return 1;
     default:
       throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "test_string_case.res",
-              5,
-              9
-            ],
-            Error: new Error()
-          };
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "test_string_case.res",
+          5,
+          9
+        ],
+        Error: new Error()
+      };
   }
 }
 

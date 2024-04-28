@@ -23,10 +23,10 @@ var suites_0 = [
   "for_order",
   (function (param) {
       return {
-              TAG: "Eq",
-              _0: 10,
-              _1: test2()
-            };
+        TAG: "Eq",
+        _0: 10,
+        _1: test2()
+      };
     })
 ];
 

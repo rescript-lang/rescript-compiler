@@ -23,10 +23,10 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents
@@ -36,13 +36,13 @@ function eq(loc, x, y) {
 function f(x) {
   var y = Caml_obj.obj_dup(x);
   return {
-          a0: 1,
-          a1: y.a1,
-          a2: y.a2,
-          a3: y.a3,
-          a4: y.a4,
-          a5: y.a5
-        };
+    a0: 1,
+    a1: y.a1,
+    a2: y.a2,
+    a3: y.a3,
+    a4: y.a4,
+    a5: y.a5
+  };
 }
 
 eq("File \"update_record_test.res\", line 28, characters 5-12", 1, f({
@@ -61,9 +61,9 @@ var val0 = {
 
 function fff(x) {
   return {
-          "invalid_js_id'": x["invalid_js_id'"] + 2 | 0,
-          x: x.x
-        };
+    "invalid_js_id'": x["invalid_js_id'"] + 2 | 0,
+    x: x.x
+  };
 }
 
 var val1 = fff(val0);

@@ -4,9 +4,9 @@
 
 function u(param) {
   return [
-          3,
-          u
-        ];
+    3,
+    u
+  ];
 }
 
 exports.u = u;

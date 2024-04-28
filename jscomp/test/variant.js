@@ -69,8 +69,8 @@ function Make(M) {
     
   };
   return {
-          find: find
-        };
+    find: find
+  };
 }
 
 function find(x) {

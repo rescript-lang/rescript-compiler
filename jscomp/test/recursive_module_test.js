@@ -20,10 +20,10 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents
@@ -82,11 +82,11 @@ add([
       "File \"recursive_module_test.res\", line 31, characters 14-21",
       (function (param) {
           return {
-                  TAG: "ThrowAny",
-                  _0: (function (param) {
-                      Curry._1(Int3.u, 3);
-                    })
-                };
+            TAG: "ThrowAny",
+            _0: (function (param) {
+                Curry._1(Int3.u, 3);
+              })
+          };
         })
     ]);
 

@@ -7,10 +7,10 @@ var suites_0 = [
   "empty",
   (function (param) {
       return {
-              TAG: "Eq",
-              _0: 0,
-              _1: Object.keys({}).length
-            };
+        TAG: "Eq",
+        _0: 0,
+        _1: Object.keys({}).length
+      };
     })
 ];
 
@@ -19,14 +19,14 @@ var suites_1 = {
     "assign",
     (function (param) {
         return {
-                TAG: "Eq",
-                _0: {
-                  a: 1
-                },
-                _1: Object.assign({}, {
-                      a: 1
-                    })
-              };
+          TAG: "Eq",
+          _0: {
+            a: 1
+          },
+          _1: Object.assign({}, {
+                a: 1
+              })
+        };
       })
   ],
   tl: /* [] */0

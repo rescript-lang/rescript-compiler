@@ -180,9 +180,9 @@ var Pipe = {
 
 function f1(c) {
   return Caml_splice_call.spliceApply(Math.max, [
-              1,
-              c
-            ]);
+        1,
+        c
+      ]);
 }
 
 eq("File \"splice_test.res\", line 109, characters 3-10", Math.max(1, 2, 3), 3);

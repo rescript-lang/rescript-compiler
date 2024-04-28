@@ -5,8 +5,8 @@ var Curry = require("../../lib/js/curry.js");
 
 async function eachIntAsync(list, f) {
   return Curry._2(await import("../../lib/js/belt_List.js").then(function (m) {
-                  return m.forEach;
-                }), list, f);
+            return m.forEach;
+          }), list, f);
 }
 
 function eachIntLazy(list, f) {
@@ -87,18 +87,18 @@ async function f2(param) {
   var M3 = await import("../../lib/js/belt_List.js");
   var M4 = await import("../../lib/js/belt_List.js");
   return [
-          M3.forEach,
-          M4.forEach
-        ];
+    M3.forEach,
+    M4.forEach
+  ];
 }
 
 async function f3(param) {
   var M3 = await import("../../lib/js/belt_List.js");
   var M4 = await import("../../lib/js/belt_List.js");
   return [
-          M3.forEach,
-          M4.forEach
-        ];
+    M3.forEach,
+    M4.forEach
+  ];
 }
 
 async function f4(param) {
@@ -109,19 +109,19 @@ async function f5(param) {
   var A = await import("../../lib/js/belt_Array.js");
   var O = await import("../../lib/js/belt_Option.js");
   return [
-          A.forEach,
-          O.forEach
-        ];
+    A.forEach,
+    O.forEach
+  ];
 }
 
 async function f6(param) {
   var MS = await import("../../lib/js/belt_MapString.js");
   var A = await import("../../lib/js/belt_Array.js");
   return [
-          0,
-          MS.forEach,
-          A.forEach
-        ];
+    0,
+    MS.forEach,
+    A.forEach
+  ];
 }
 
 async function f7(param) {

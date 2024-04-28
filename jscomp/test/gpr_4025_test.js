@@ -8,8 +8,8 @@ console.log("hi");
 
 function f(x) {
   ({
-      x: (console.log("hi"), x)
-    }).x = x + 1 | 0;
+    x: (console.log("hi"), x)
+  }).x = x + 1 | 0;
 }
 
 exports.f = f;

@@ -29,8 +29,8 @@ var f = List.length;
 
 function g(x) {
   return List.length(List.map((function (prim) {
-                    return prim + 1 | 0;
-                  }), x));
+              return prim + 1 | 0;
+            }), x));
 }
 
 function F(X) {
@@ -100,9 +100,9 @@ function F0(X) {
     x: 1
   };
   return {
-          N: N,
-          N$p: undefined
-        };
+    N: N,
+    N$p: undefined
+  };
 }
 
 var N$2 = {
@@ -176,8 +176,8 @@ function G0(funarg) {
     x: 1
   };
   return {
-          N$p: N
-        };
+    N$p: N
+  };
 }
 
 var M1 = {

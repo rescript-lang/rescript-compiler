@@ -21,10 +21,10 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents
@@ -38,9 +38,9 @@ function b(loc, v) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Ok",
-                  _0: v
-                };
+            TAG: "Ok",
+            _0: v
+          };
         })
     ],
     tl: suites.contents
@@ -57,9 +57,9 @@ function emptyMap(param) {
 
 var v = Belt_Array.makeByAndShuffle(1000000, (function (i) {
         return [
-                i,
-                i
-              ];
+          i,
+          i
+        ];
       }));
 
 var u = Belt_MapInt.fromArray(v);

@@ -16,8 +16,8 @@ function Make(I) {
     return await I.get(key);
   };
   return {
-          get: get
-        };
+    get: get
+  };
 }
 
 async function topFoo() {

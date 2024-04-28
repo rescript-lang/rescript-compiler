@@ -10,10 +10,10 @@ var Set_gen = require("./set_gen.js");
 function split(x, tree) {
   if (typeof tree !== "object") {
     return [
-            "Empty",
-            false,
-            "Empty"
-          ];
+      "Empty",
+      false,
+      "Empty"
+    ];
   }
   var r = tree._2;
   var v = tree._1;
@@ -21,36 +21,36 @@ function split(x, tree) {
   var c = Caml.string_compare(x, v);
   if (c === 0) {
     return [
-            l,
-            true,
-            r
-          ];
+      l,
+      true,
+      r
+    ];
   }
   if (c < 0) {
     var match = split(x, l);
     return [
-            match[0],
-            match[1],
-            Set_gen.internal_join(match[2], v, r)
-          ];
+      match[0],
+      match[1],
+      Set_gen.internal_join(match[2], v, r)
+    ];
   }
   var match$1 = split(x, r);
   return [
-          Set_gen.internal_join(l, v, match$1[0]),
-          match$1[1],
-          match$1[2]
-        ];
+    Set_gen.internal_join(l, v, match$1[0]),
+    match$1[1],
+    match$1[2]
+  ];
 }
 
 function add(x, tree) {
   if (typeof tree !== "object") {
     return {
-            TAG: "Node",
-            _0: "Empty",
-            _1: x,
-            _2: "Empty",
-            _3: 1
-          };
+      TAG: "Node",
+      _0: "Empty",
+      _1: x,
+      _2: "Empty",
+      _3: 1
+    };
   }
   var r = tree._2;
   var v = tree._1;
@@ -224,9 +224,9 @@ function find(x, _tree) {
     var tree = _tree;
     if (typeof tree !== "object") {
       throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     var v = tree._1;
     var c = Caml.string_compare(x, v);
@@ -272,8 +272,8 @@ function of_list(l) {
 
 function of_array(l) {
   return $$Array.fold_left((function (acc, x) {
-                return add(x, acc);
-              }), "Empty", l);
+          return add(x, acc);
+        }), "Empty", l);
 }
 
 function invariant(t) {

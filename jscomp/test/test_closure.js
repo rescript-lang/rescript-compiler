@@ -31,14 +31,14 @@ $$Array.iter((function (x) {
 
 if (v.contents !== 45) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "test_closure.res",
-          52,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "test_closure.res",
+      52,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 exports.v = v;

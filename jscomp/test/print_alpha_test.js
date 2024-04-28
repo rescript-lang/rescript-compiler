@@ -14,12 +14,12 @@ Mt.from_pair_suites("Print_alpha_test", {
         "File \"print_alpha_test.res\", line 16, characters 10-17",
         (function (param) {
             return {
-                    TAG: "Eq",
-                    _0: f((function (prim0, prim1) {
-                              return prim0 + prim1 | 0;
-                            }), undefined)(1, 2),
-                    _1: 3
-                  };
+              TAG: "Eq",
+              _0: f((function (prim0, prim1) {
+                        return prim0 + prim1 | 0;
+                      }), undefined)(1, 2),
+              _1: 3
+            };
           })
       ],
       tl: /* [] */0

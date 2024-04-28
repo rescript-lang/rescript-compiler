@@ -22,17 +22,17 @@ function t3(x, f) {
 
 function f(a, b, c) {
   return [
-          Curry._1(b, a),
-          Curry._1(c, a)
-        ];
+    Curry._1(b, a),
+    Curry._1(c, a)
+  ];
 }
 
 function f1(a, b, c, d) {
   var __ocaml_internal_obj = Curry._1(a, b);
   return [
-          Curry._1(c, __ocaml_internal_obj),
-          Curry._1(d, __ocaml_internal_obj)
-        ];
+    Curry._1(c, __ocaml_internal_obj),
+    Curry._1(d, __ocaml_internal_obj)
+  ];
 }
 
 function f2(a, b, c, d) {
@@ -52,9 +52,9 @@ function f3(a, b, c, d, e) {
 
 function f4(a, b, c) {
   return [
-          Curry._2(b, a, c),
-          Curry._2(b, a, c)
-        ];
+    Curry._2(b, a, c),
+    Curry._2(b, a, c)
+  ];
 }
 
 function f5(a, b, c, d) {
@@ -70,10 +70,10 @@ function f6(a) {
 
 function f7(a) {
   return [
-          Caml_option.some(a),
-          Caml_option.some(a),
-          Caml_option.some(a)
-        ];
+    Caml_option.some(a),
+    Caml_option.some(a),
+    Caml_option.some(a)
+  ];
 }
 
 function f8(a) {

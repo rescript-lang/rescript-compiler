@@ -56,14 +56,14 @@ b("File \"bs_set_int_test.res\", line 27, characters 11-18", Belt_SetInt.eq(Belt
 
 function range(i, j) {
   return $$Array.init((j - i | 0) + 1 | 0, (function (k) {
-                return k + i | 0;
-              }));
+          return k + i | 0;
+        }));
 }
 
 function revRange(i, j) {
   return $$Array.of_list(List.rev($$Array.to_list($$Array.init((j - i | 0) + 1 | 0, (function (k) {
-                            return k + i | 0;
-                          })))));
+                      return k + i | 0;
+                    })))));
 }
 
 var v = Belt_SetInt.fromArray($$Array.append(range(100, 1000), revRange(400, 1500)));

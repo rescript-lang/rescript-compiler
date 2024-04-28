@@ -24,15 +24,15 @@ function _must_escape(s) {
             exit = 1;
           } else {
             throw {
-                  RE_EXN_ID: Pervasives.Exit,
-                  Error: new Error()
-                };
+              RE_EXN_ID: Pervasives.Exit,
+              Error: new Error()
+            };
           }
         } else {
           throw {
-                RE_EXN_ID: Pervasives.Exit,
-                Error: new Error()
-              };
+            RE_EXN_ID: Pervasives.Exit,
+            Error: new Error()
+          };
         }
       } else if (c >= 11) {
         if (c >= 32) {
@@ -50,9 +50,9 @@ function _must_escape(s) {
             case 40 :
             case 41 :
                 throw {
-                      RE_EXN_ID: Pervasives.Exit,
-                      Error: new Error()
-                    };
+                  RE_EXN_ID: Pervasives.Exit,
+                  Error: new Error()
+                };
             
           }
         } else {
@@ -61,17 +61,17 @@ function _must_escape(s) {
       } else {
         if (c >= 9) {
           throw {
-                RE_EXN_ID: Pervasives.Exit,
-                Error: new Error()
-              };
+            RE_EXN_ID: Pervasives.Exit,
+            Error: new Error()
+          };
         }
         exit = 1;
       }
       if (exit === 1 && c > 127) {
         throw {
-              RE_EXN_ID: Pervasives.Exit,
-              Error: new Error()
-            };
+          RE_EXN_ID: Pervasives.Exit,
+          Error: new Error()
+        };
       }
       
     }
@@ -126,14 +126,14 @@ function make(bufsizeOpt, refill) {
   var bufsize = bufsizeOpt !== undefined ? bufsizeOpt : 1024;
   var bufsize$1 = Caml.int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
   return {
-          buf: Caml_bytes.create(bufsize$1),
-          refill: refill,
-          atom: $$Buffer.create(32),
-          i: 0,
-          len: 0,
-          line: 1,
-          col: 1
-        };
+    buf: Caml_bytes.create(bufsize$1),
+    refill: refill,
+    atom: $$Buffer.create(32),
+    i: 0,
+    len: 0,
+    line: 1,
+    col: 1
+  };
 }
 
 function _is_digit(c) {
@@ -158,14 +158,14 @@ function _refill(t, k_succ, k_fail) {
 function _get(t) {
   if (t.i >= t.len) {
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "sexpm.res",
-            111,
-            4
-          ],
-          Error: new Error()
-        };
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "sexpm.res",
+        111,
+        4
+      ],
+      Error: new Error()
+    };
   }
   var c = Caml_bytes.get(t.buf, t.i);
   t.i = t.i + 1 | 0;
@@ -187,9 +187,9 @@ function _error(param) {
     $$Buffer.add_string(b, msg);
     var msg$p = $$Buffer.contents(b);
     return {
-            NAME: "Error",
-            VAL: msg$p
-          };
+      NAME: "Error",
+      VAL: msg$p
+    };
   };
 }
 
@@ -201,8 +201,8 @@ function expr(k, t) {
   while(true) {
     if (t.i === t.len) {
       return _refill(t, (function (param) {
-                    return expr(k, param);
-                  }), _error_eof);
+              return expr(k, param);
+            }), _error_eof);
     }
     var c = _get(t);
     if (c >= 11) {
@@ -222,8 +222,8 @@ function expr_starting_with(c, k, t) {
   if (c >= 42) {
     if (c === 59) {
       return skip_comment((function (param, param$1) {
-                    return expr(k, t);
-                  }), t);
+              return expr(k, t);
+            }), t);
     }
     if (c === 92) {
       return _error(t)("unexpected '\\'");
@@ -234,14 +234,14 @@ function expr_starting_with(c, k, t) {
       switch (c) {
         case 32 :
             throw {
-                  RE_EXN_ID: "Assert_failure",
-                  _1: [
-                    "sexpm.res",
-                    152,
-                    27
-                  ],
-                  Error: new Error()
-                };
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "sexpm.res",
+                152,
+                27
+              ],
+              Error: new Error()
+            };
         case 34 :
             return quoted(k, t);
         case 33 :
@@ -261,14 +261,14 @@ function expr_starting_with(c, k, t) {
     
   } else if (c >= 9) {
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "sexpm.res",
-            152,
-            27
-          ],
-          Error: new Error()
-        };
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "sexpm.res",
+        152,
+        27
+      ],
+      Error: new Error()
+    };
   }
   $$Buffer.add_char(t.atom, c);
   return atom(k, t);
@@ -278,53 +278,53 @@ function expr_list(acc, k, t) {
   while(true) {
     if (t.i === t.len) {
       return _refill(t, (function (param) {
-                    return expr_list(acc, k, param);
-                  }), _error_eof);
+              return expr_list(acc, k, param);
+            }), _error_eof);
     }
     var c = _get(t);
     if (c > 32 || c < 9) {
       if (c === 41) {
         return Curry._2(k, undefined, {
-                    NAME: "List",
-                    VAL: List.rev(acc)
-                  });
+              NAME: "List",
+              VAL: List.rev(acc)
+            });
       }
       
     } else if (c > 31 || c < 11) {
       continue ;
     }
     return expr_starting_with(c, (function (last, e) {
-                  if (last !== undefined) {
-                    if (last !== 40) {
-                      if (last !== 41) {
+            if (last !== undefined) {
+              if (last !== 40) {
+                if (last !== 41) {
+                  return expr_list({
+                        hd: e,
+                        tl: acc
+                      }, k, t);
+                } else {
+                  return Curry._2(k, undefined, {
+                        NAME: "List",
+                        VAL: List.rev({
+                              hd: e,
+                              tl: acc
+                            })
+                      });
+                }
+              } else {
+                return expr_list(/* [] */0, (function (param, l) {
                         return expr_list({
-                                    hd: e,
-                                    tl: acc
-                                  }, k, t);
-                      } else {
-                        return Curry._2(k, undefined, {
-                                    NAME: "List",
-                                    VAL: List.rev({
-                                          hd: e,
-                                          tl: acc
-                                        })
-                                  });
-                      }
-                    } else {
-                      return expr_list(/* [] */0, (function (param, l) {
-                                    return expr_list({
-                                                hd: l,
-                                                tl: acc
-                                              }, k, t);
-                                  }), t);
-                    }
-                  } else {
-                    return expr_list({
-                                hd: e,
-                                tl: acc
-                              }, k, t);
-                  }
-                }), t);
+                              hd: l,
+                              tl: acc
+                            }, k, t);
+                      }), t);
+              }
+            } else {
+              return expr_list({
+                    hd: e,
+                    tl: acc
+                  }, k, t);
+            }
+          }), t);
   };
 }
 
@@ -332,19 +332,19 @@ function _return_atom(last, k, t) {
   var s = $$Buffer.contents(t.atom);
   t.atom.position = 0;
   return Curry._2(k, last, {
-              NAME: "Atom",
-              VAL: s
-            });
+        NAME: "Atom",
+        VAL: s
+      });
 }
 
 function atom(k, t) {
   while(true) {
     if (t.i === t.len) {
       return _refill(t, (function (param) {
-                    return atom(k, param);
-                  }), (function (param) {
-                    return _return_atom(undefined, k, param);
-                  }));
+              return atom(k, param);
+            }), (function (param) {
+              return _return_atom(undefined, k, param);
+            }));
     }
     var c = _get(t);
     var exit = 0;
@@ -391,8 +391,8 @@ function quoted(k, t) {
   while(true) {
     if (t.i === t.len) {
       return _refill(t, (function (param) {
-                    return quoted(k, param);
-                  }), _error_eof);
+              return quoted(k, param);
+            }), _error_eof);
     }
     var c = _get(t);
     if (c === 34) {
@@ -400,9 +400,9 @@ function quoted(k, t) {
     }
     if (c === 92) {
       return escaped((function (c) {
-                    $$Buffer.add_char(t.atom, c);
-                    return quoted(k, t);
-                  }), t);
+              $$Buffer.add_char(t.atom, c);
+              return quoted(k, t);
+            }), t);
     }
     $$Buffer.add_char(t.atom, c);
     continue ;
@@ -412,8 +412,8 @@ function quoted(k, t) {
 function escaped(k, t) {
   if (t.i === t.len) {
     return _refill(t, (function (param) {
-                  return escaped(k, param);
-                }), _error_eof);
+            return escaped(k, param);
+          }), _error_eof);
   }
   var c = _get(t);
   if (c >= 92) {
@@ -459,8 +459,8 @@ function escaped(k, t) {
   }
   if (_is_digit(c)) {
     return read2int(c - /* '0' */48 | 0, (function (n) {
-                  return Curry._1(k, Char.chr(n));
-                }), t);
+            return Curry._1(k, Char.chr(n));
+          }), t);
   } else {
     return _error(t)("unexpected escaped char '" + (c + "'"));
   }
@@ -469,8 +469,8 @@ function escaped(k, t) {
 function read2int(i, k, t) {
   if (t.i === t.len) {
     return _refill(t, (function (param) {
-                  return read2int(i, k, param);
-                }), _error_eof);
+            return read2int(i, k, param);
+          }), _error_eof);
   }
   var c = _get(t);
   if (_is_digit(c)) {
@@ -483,8 +483,8 @@ function read2int(i, k, t) {
 function read1int(i, k, t) {
   if (t.i === t.len) {
     return _refill(t, (function (param) {
-                  return read1int(i, k, param);
-                }), _error_eof);
+            return read1int(i, k, param);
+          }), _error_eof);
   }
   var c = _get(t);
   if (_is_digit(c)) {
@@ -498,8 +498,8 @@ function skip_comment(k, t) {
   while(true) {
     if (t.i === t.len) {
       return _refill(t, (function (param) {
-                    return skip_comment(k, param);
-                  }), _error_eof);
+              return skip_comment(k, param);
+            }), _error_eof);
     }
     var match = _get(t);
     if (match === 10) {
@@ -513,10 +513,10 @@ function expr_or_end(k, t) {
   while(true) {
     if (t.i === t.len) {
       return _refill(t, (function (param) {
-                    return expr_or_end(k, param);
-                  }), (function (param) {
-                    return "End";
-                  }));
+              return expr_or_end(k, param);
+            }), (function (param) {
+              return "End";
+            }));
     }
     var c = _get(t);
     if (c >= 11) {
@@ -534,11 +534,11 @@ function expr_or_end(k, t) {
 
 function next(t) {
   return expr_or_end((function (param, x) {
-                return {
-                        NAME: "Ok",
-                        VAL: x
-                      };
-              }), t);
+          return {
+            NAME: "Ok",
+            VAL: x
+          };
+        }), t);
 }
 
 function parse_string(s) {
@@ -561,9 +561,9 @@ function parse_string(s) {
     return res;
   } else {
     return {
-            NAME: "Error",
-            VAL: "unexpected end of file"
-          };
+      NAME: "Error",
+      VAL: "unexpected end of file"
+    };
   }
 }
 

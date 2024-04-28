@@ -118,9 +118,9 @@ function ff(g, x) {
 
 function u(param) {
   throw {
-        RE_EXN_ID: "Not_found",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Not_found",
+    Error: new Error()
+  };
 }
 
 function f(x) {
@@ -131,14 +131,14 @@ function f(x) {
     return 1;
   }
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "test_trywith.res",
-          59,
-          9
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "test_trywith.res",
+      59,
+      9
+    ],
+    Error: new Error()
+  };
 }
 
 var u1 = "bad character decimal encoding \\";

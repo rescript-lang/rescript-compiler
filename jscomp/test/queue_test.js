@@ -25,9 +25,9 @@ function Test(Queue) {
     return to_array(q);
   };
   return {
-          to_array: to_array,
-          queue_1: queue_1
-        };
+    to_array: to_array,
+    queue_1: queue_1
+  };
 }
 
 function to_array(q) {
@@ -91,10 +91,10 @@ var suites_0 = [
         2
       ];
       return {
-              TAG: "Eq",
-              _0: x,
-              _1: queue_1(x)
-            };
+        TAG: "Eq",
+        _0: x,
+        _1: queue_1(x)
+      };
     })
 ];
 
@@ -109,10 +109,10 @@ var suites_1 = {
           2
         ];
         return {
-                TAG: "Eq",
-                _0: x,
-                _1: queue_1$1(x)
-              };
+          TAG: "Eq",
+          _0: x,
+          _1: queue_1$1(x)
+        };
       })
   ],
   tl: /* [] */0

@@ -16,31 +16,31 @@ function c_x(param) {
 
 function d_int(param_0) {
   return {
-          TAG: "D_int",
-          _0: param_0
-        };
+    TAG: "D_int",
+    _0: param_0
+  };
 }
 
 function d_tuple(param_0, param_1) {
   return {
-          TAG: "D_tuple",
-          _0: param_0,
-          _1: param_1
-        };
+    TAG: "D_tuple",
+    _0: param_0,
+    _1: param_1
+  };
 }
 
 function newContent(param_0) {
   return {
-          TAG: "NewContent",
-          _0: param_0
-        };
+    TAG: "NewContent",
+    _0: param_0
+  };
 }
 
 function d_tweak(param_0) {
   return {
-          TAG: "D_tweak",
-          _0: param_0
-        };
+    TAG: "D_tweak",
+    _0: param_0
+  };
 }
 
 function u_X(param) {
@@ -93,16 +93,16 @@ var h = {
 
 function xx(param_0) {
   return {
-          TAG: "Xx",
-          _0: param_0
-        };
+    TAG: "Xx",
+    _0: param_0
+  };
 }
 
 function a(param_0) {
   return {
-          TAG: "A",
-          _0: param_0
-        };
+    TAG: "A",
+    _0: param_0
+  };
 }
 
 var d_empty = "D_empty";

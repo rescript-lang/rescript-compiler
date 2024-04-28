@@ -20,10 +20,10 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents
@@ -185,9 +185,9 @@ eq("File \"js_list_test.res\", line 31, characters 5-12", Js_list.countBy((funct
 
 var vv = Js_list.foldRight((function (x, y) {
         return {
-                hd: x,
-                tl: y
-              };
+          hd: x,
+          tl: y
+        };
       }), v, /* [] */0);
 
 eq("File \"js_list_test.res\", line 33, characters 5-12", true, Js_list.equal((function (x, y) {

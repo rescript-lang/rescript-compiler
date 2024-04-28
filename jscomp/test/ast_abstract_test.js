@@ -19,10 +19,10 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents
@@ -31,18 +31,18 @@ function eq(loc, x, y) {
 
 function tToJs(param) {
   return {
-          x: param.x,
-          y: param.y,
-          z: param.z
-        };
+    x: param.x,
+    y: param.y,
+    z: param.z
+  };
 }
 
 function tFromJs(param) {
   return {
-          x: param.x,
-          y: param.y,
-          z: param.z
-        };
+    x: param.x,
+    y: param.y,
+    z: param.z
+  };
 }
 
 var v0 = {

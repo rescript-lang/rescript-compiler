@@ -76,8 +76,8 @@ async function nested2(param) {
 
 function onSubmit(param) {
   return React.useCallback(async function (_a, b) {
-              return await b;
-            });
+        return await b;
+      });
 }
 
 var tci = 3;

@@ -29,6 +29,7 @@
 - Remove redundant space for empty return in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6745
 - Remove redundant space for export in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6560
 - Remove empty export blocks in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6744
+- Fix indent for returned/thrown/wrapped in parentheses objects in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6746
 
 # 11.1.0
 

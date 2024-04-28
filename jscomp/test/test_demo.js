@@ -14,10 +14,10 @@ function fib(x) {
 
 function cons(x, y) {
   return {
-          TAG: "Cons",
-          _0: x,
-          _1: y
-        };
+    TAG: "Cons",
+    _0: x,
+    _1: y
+  };
 }
 
 function map(f, x) {
@@ -25,10 +25,10 @@ function map(f, x) {
     return "Nil";
   } else {
     return {
-            TAG: "Cons",
-            _0: Curry._1(f, x._0),
-            _1: map(f, x._1)
-          };
+      TAG: "Cons",
+      _0: Curry._1(f, x._0),
+      _1: map(f, x._1)
+    };
   }
 }
 

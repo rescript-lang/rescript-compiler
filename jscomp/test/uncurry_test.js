@@ -12,9 +12,9 @@ function f1(a0) {
 
 function f2(a0, a1) {
   return [
-          a0,
-          a1
-        ];
+    a0,
+    a1
+  ];
 }
 
 console.log(0);

@@ -35,10 +35,10 @@ var suites_0 = [
   "and_tail",
   (function (param) {
       return {
-              TAG: "Eq",
-              _0: false,
-              _1: f(true, 1, 0)
-            };
+        TAG: "Eq",
+        _0: false,
+        _1: f(true, 1, 0)
+      };
     })
 ];
 
@@ -47,10 +47,10 @@ var suites_1 = {
     "or_tail",
     (function (param) {
         return {
-                TAG: "Eq",
-                _0: false,
-                _1: or_f(false, 1, 0)
-              };
+          TAG: "Eq",
+          _0: false,
+          _1: or_f(false, 1, 0)
+        };
       })
   ],
   tl: /* [] */0

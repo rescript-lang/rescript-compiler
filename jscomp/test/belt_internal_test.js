@@ -19,11 +19,11 @@ function copy(n) {
   var l = n.left;
   var r = n.right;
   return {
-          value: v,
-          height: h,
-          left: copy(l),
-          right: copy(r)
-        };
+    value: v,
+    height: h,
+    left: copy(l),
+    right: copy(r)
+  };
 }
 
 exports.treeHeight = treeHeight;

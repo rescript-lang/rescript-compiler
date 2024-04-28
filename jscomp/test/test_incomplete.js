@@ -7,14 +7,14 @@ function f(x) {
     return /* 'a' */97;
   }
   throw {
-        RE_EXN_ID: "Match_failure",
-        _1: [
-          "test_incomplete.res",
-          3,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Match_failure",
+    _1: [
+      "test_incomplete.res",
+      3,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 function f2(x) {

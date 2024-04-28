@@ -6,19 +6,19 @@ var Js_dict = require("../../lib/js/js_dict.js");
 
 function obj(param) {
   return {
-          foo: 43,
-          bar: 86
-        };
+    foo: 43,
+    bar: 86
+  };
 }
 
 var suites_0 = [
   "empty",
   (function (param) {
       return {
-              TAG: "Eq",
-              _0: [],
-              _1: Object.keys({})
-            };
+        TAG: "Eq",
+        _0: [],
+        _1: Object.keys({})
+      };
     })
 ];
 
@@ -27,13 +27,13 @@ var suites_1 = {
     "get",
     (function (param) {
         return {
-                TAG: "Eq",
-                _0: 43,
-                _1: Js_dict.get({
-                      foo: 43,
-                      bar: 86
-                    }, "foo")
-              };
+          TAG: "Eq",
+          _0: 43,
+          _1: Js_dict.get({
+                foo: 43,
+                bar: 86
+              }, "foo")
+        };
       })
   ],
   tl: {
@@ -41,13 +41,13 @@ var suites_1 = {
       "get - property not in object",
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: undefined,
-                  _1: Js_dict.get({
-                        foo: 43,
-                        bar: 86
-                      }, "baz")
-                };
+            TAG: "Eq",
+            _0: undefined,
+            _1: Js_dict.get({
+                  foo: 43,
+                  bar: 86
+                }, "baz")
+          };
         })
     ],
     tl: {
@@ -55,13 +55,13 @@ var suites_1 = {
         "unsafe_get",
         (function (param) {
             return {
-                    TAG: "Eq",
-                    _0: 43,
-                    _1: ({
-                          foo: 43,
-                          bar: 86
-                        })["foo"]
-                  };
+              TAG: "Eq",
+              _0: 43,
+              _1: ({
+                  foo: 43,
+                  bar: 86
+                })["foo"]
+            };
           })
       ],
       tl: {
@@ -74,10 +74,10 @@ var suites_1 = {
               };
               o["foo"] = 36;
               return {
-                      TAG: "Eq",
-                      _0: 36,
-                      _1: Js_dict.get(o, "foo")
-                    };
+                TAG: "Eq",
+                _0: 36,
+                _1: Js_dict.get(o, "foo")
+              };
             })
         ],
         tl: {
@@ -85,16 +85,16 @@ var suites_1 = {
             "keys",
             (function (param) {
                 return {
-                        TAG: "Eq",
-                        _0: [
-                          "foo",
-                          "bar"
-                        ],
-                        _1: Object.keys({
-                              foo: 43,
-                              bar: 86
-                            })
-                      };
+                  TAG: "Eq",
+                  _0: [
+                    "foo",
+                    "bar"
+                  ],
+                  _1: Object.keys({
+                        foo: 43,
+                        bar: 86
+                      })
+                };
               })
           ],
           tl: {
@@ -102,22 +102,22 @@ var suites_1 = {
               "entries",
               (function (param) {
                   return {
-                          TAG: "Eq",
-                          _0: [
-                            [
-                              "foo",
-                              43
-                            ],
-                            [
-                              "bar",
-                              86
-                            ]
-                          ],
-                          _1: Js_dict.entries({
-                                foo: 43,
-                                bar: 86
-                              })
-                        };
+                    TAG: "Eq",
+                    _0: [
+                      [
+                        "foo",
+                        43
+                      ],
+                      [
+                        "bar",
+                        86
+                      ]
+                    ],
+                    _1: Js_dict.entries({
+                          foo: 43,
+                          bar: 86
+                        })
+                  };
                 })
             ],
             tl: {
@@ -125,16 +125,16 @@ var suites_1 = {
                 "values",
                 (function (param) {
                     return {
-                            TAG: "Eq",
-                            _0: [
-                              43,
-                              86
-                            ],
-                            _1: Js_dict.values({
-                                  foo: 43,
-                                  bar: 86
-                                })
-                          };
+                      TAG: "Eq",
+                      _0: [
+                        43,
+                        86
+                      ],
+                      _1: Js_dict.values({
+                            foo: 43,
+                            bar: 86
+                          })
+                    };
                   })
               ],
               tl: {
@@ -142,10 +142,10 @@ var suites_1 = {
                   "fromList - []",
                   (function (param) {
                       return {
-                              TAG: "Eq",
-                              _0: {},
-                              _1: Js_dict.fromList(/* [] */0)
-                            };
+                        TAG: "Eq",
+                        _0: {},
+                        _1: Js_dict.fromList(/* [] */0)
+                      };
                     })
                 ],
                 tl: {
@@ -153,31 +153,31 @@ var suites_1 = {
                     "fromList",
                     (function (param) {
                         return {
-                                TAG: "Eq",
-                                _0: [
-                                  [
-                                    "x",
-                                    23
-                                  ],
-                                  [
-                                    "y",
-                                    46
-                                  ]
-                                ],
-                                _1: Js_dict.entries(Js_dict.fromList({
-                                          hd: [
-                                            "x",
-                                            23
-                                          ],
-                                          tl: {
-                                            hd: [
-                                              "y",
-                                              46
-                                            ],
-                                            tl: /* [] */0
-                                          }
-                                        }))
-                              };
+                          TAG: "Eq",
+                          _0: [
+                            [
+                              "x",
+                              23
+                            ],
+                            [
+                              "y",
+                              46
+                            ]
+                          ],
+                          _1: Js_dict.entries(Js_dict.fromList({
+                                    hd: [
+                                      "x",
+                                      23
+                                    ],
+                                    tl: {
+                                      hd: [
+                                        "y",
+                                        46
+                                      ],
+                                      tl: /* [] */0
+                                    }
+                                  }))
+                        };
                       })
                   ],
                   tl: {
@@ -185,10 +185,10 @@ var suites_1 = {
                       "fromArray - []",
                       (function (param) {
                           return {
-                                  TAG: "Eq",
-                                  _0: {},
-                                  _1: Js_dict.fromArray([])
-                                };
+                            TAG: "Eq",
+                            _0: {},
+                            _1: Js_dict.fromArray([])
+                          };
                         })
                     ],
                     tl: {
@@ -196,28 +196,28 @@ var suites_1 = {
                         "fromArray",
                         (function (param) {
                             return {
-                                    TAG: "Eq",
-                                    _0: [
-                                      [
-                                        "x",
-                                        23
-                                      ],
-                                      [
-                                        "y",
-                                        46
-                                      ]
-                                    ],
-                                    _1: Js_dict.entries(Js_dict.fromArray([
-                                              [
-                                                "x",
-                                                23
-                                              ],
-                                              [
-                                                "y",
-                                                46
-                                              ]
-                                            ]))
-                                  };
+                              TAG: "Eq",
+                              _0: [
+                                [
+                                  "x",
+                                  23
+                                ],
+                                [
+                                  "y",
+                                  46
+                                ]
+                              ],
+                              _1: Js_dict.entries(Js_dict.fromArray([
+                                        [
+                                          "x",
+                                          23
+                                        ],
+                                        [
+                                          "y",
+                                          46
+                                        ]
+                                      ]))
+                            };
                           })
                       ],
                       tl: {
@@ -225,18 +225,18 @@ var suites_1 = {
                           "map",
                           (function (param) {
                               return {
-                                      TAG: "Eq",
-                                      _0: {
-                                        foo: "43",
-                                        bar: "86"
-                                      },
-                                      _1: Js_dict.map((function (i) {
-                                              return String(i);
-                                            }), {
-                                            foo: 43,
-                                            bar: 86
-                                          })
-                                    };
+                                TAG: "Eq",
+                                _0: {
+                                  foo: "43",
+                                  bar: "86"
+                                },
+                                _1: Js_dict.map((function (i) {
+                                        return String(i);
+                                      }), {
+                                      foo: 43,
+                                      bar: 86
+                                    })
+                              };
                             })
                         ],
                         tl: /* [] */0

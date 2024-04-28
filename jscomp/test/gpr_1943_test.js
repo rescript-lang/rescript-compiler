@@ -18,10 +18,10 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents
@@ -30,14 +30,14 @@ function eq(loc, x, y) {
 
 function f(x) {
   return [
-          x._003,
-          x._50,
-          x._50x,
-          x.__50,
-          x.__50x,
-          x["_50x'"],
-          x["x'"]
-        ];
+    x._003,
+    x._50,
+    x._50x,
+    x.__50,
+    x.__50x,
+    x["_50x'"],
+    x["x'"]
+  ];
 }
 
 var v = f({

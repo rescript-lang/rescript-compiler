@@ -5,50 +5,50 @@ var Curry = require("../../lib/js/curry.js");
 
 function peek_queue(param) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "format_regression.res",
-          10,
-          22
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "format_regression.res",
+      10,
+      22
+    ],
+    Error: new Error()
+  };
 }
 
 function int_of_size(param) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "format_regression.res",
-          11,
-          23
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "format_regression.res",
+      11,
+      23
+    ],
+    Error: new Error()
+  };
 }
 
 function take_queue(param) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "format_regression.res",
-          12,
-          22
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "format_regression.res",
+      12,
+      22
+    ],
+    Error: new Error()
+  };
 }
 
 function format_pp_token(param, param$1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "format_regression.res",
-          13,
-          32
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "format_regression.res",
+      13,
+      32
+    ],
+    Error: new Error()
+  };
 }
 
 function advance_loop(state) {
