@@ -70,7 +70,11 @@ let exports cxt f (idents : Ident.t list) =
 
 (** Print module in ES6 format, it is ES6, trailing comma is valid ES6 code *)
 let es6_export cxt f (idents : Ident.t list) =
-  let outer_cxt, reversed_list =
+  P.at_least_two_lines f;
+  match idents with
+  | [] -> cxt
+  | _ -> 
+    let outer_cxt, reversed_list =
     Ext_list.fold_left idents (cxt, []) (fun (cxt, acc) id ->
         let id_name = id.name in
         let s = Ext_ident.convert id_name in
@@ -79,23 +83,23 @@ let es6_export cxt f (idents : Ident.t list) =
           if id_name = default_export then
             (default_export, str) :: acc
           else (s, str) :: acc ))
-  in
-  P.at_least_two_lines f;
-  P.string f L.export;
-  P.space f;
-  P.brace_vgroup f 1 (fun _ ->
-      rev_iter_inter reversed_list
-        (fun (s, export) ->
-          P.group f 0 (fun _ ->
-              P.string f export;
-              if not @@ Ext_string.equal export s then (
-                P.space f;
-                P.string f L.as_;
-                P.space f;
-                P.string f s);
-              P.string f L.comma))
-        (fun _ -> P.newline f));
-  outer_cxt
+    in
+    P.string f L.export;
+    P.space f;
+    P.brace_vgroup f 1 (fun _ ->
+        rev_iter_inter reversed_list
+          (fun (s, export) ->
+            P.group f 0 (fun _ ->
+                P.string f export;
+                if not @@ Ext_string.equal export s then (
+                  P.space f;
+                  P.string f L.as_;
+                  P.space f;
+                  P.string f s);
+                P.string f L.comma))
+          (fun _ -> P.newline f));
+    outer_cxt
+  
 
 (** Node or Google module style imports *)
 let requires require_lit cxt f (modules : (Ident.t * string * bool) list) =
