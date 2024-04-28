@@ -271,10 +271,10 @@ function hash_rec(x) {
 
 function one_char(x) {
   if (!x) {
-    return ;
+    return;
   }
   if (x.tl) {
-    return ;
+    return;
   }
   var match = x.hd;
   var i = match[0];
@@ -658,7 +658,7 @@ function first(f, _x) {
   while(true) {
     var x = _x;
     if (!x) {
-      return ;
+      return;
     }
     var res = Curry._1(f, x.hd);
     if (res !== undefined) {
@@ -1248,7 +1248,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
                 switch (x.TAG) {
                   case "TSeq" :
                   case "TExp" :
-                      return ;
+                      return;
                   case "TMatch" :
                       return x._0;
                   
@@ -1363,7 +1363,7 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
           switch (x.TAG) {
             case "TSeq" :
             case "TExp" :
-                return ;
+                return;
             case "TMatch" :
                 return x._0;
             
@@ -1803,7 +1803,7 @@ function split(s, cm) {
   while(true) {
     var t = _t;
     if (!t) {
-      return ;
+      return;
     }
     var match = t.hd;
     Curry._2(f, match[0], match[1]);
@@ -1869,12 +1869,12 @@ function colorize(c, regexp) {
               return split(cword, c);
           case "Last_end_of_line" :
               lnl.contents = true;
-              return ;
+              return;
           case "Beg_of_str" :
           case "End_of_str" :
           case "Start" :
           case "Stop" :
-              return ;
+              return;
           
         }
       } else {
@@ -3674,12 +3674,12 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   };
   var integer = function (param) {
     if (i.contents === l) {
-      return ;
+      return;
     }
     var d = get();
     if (d > 57 || d < 48) {
       i.contents = i.contents - 1 | 0;
-      return ;
+      return;
     } else {
       var _i = d - /* '0' */48 | 0;
       while(true) {

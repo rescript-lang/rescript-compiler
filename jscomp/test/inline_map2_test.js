@@ -251,7 +251,7 @@ function Make(Ord) {
     while(true) {
       var x = _x;
       if (typeof x !== "object") {
-        return ;
+        return;
       }
       iter(f, x._0);
       Curry._2(f, x._1, x._2);
@@ -887,7 +887,7 @@ function iter(f, _x) {
   while(true) {
     var x = _x;
     if (typeof x !== "object") {
-      return ;
+      return;
     }
     iter(f, x._0);
     Curry._2(f, x._1, x._2);
@@ -1571,7 +1571,7 @@ function iter$1(f, _x) {
   while(true) {
     var x = _x;
     if (typeof x !== "object") {
-      return ;
+      return;
     }
     iter$1(f, x._0);
     Curry._2(f, x._1, x._2);

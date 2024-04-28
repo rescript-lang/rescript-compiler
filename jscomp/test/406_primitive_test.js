@@ -42,12 +42,12 @@ function f(param) {
       }
       
     }
-    return ;
+    return;
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === A) {
-      return ;
+      return;
     }
     throw exn;
   }

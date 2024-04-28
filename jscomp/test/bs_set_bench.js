@@ -32,7 +32,7 @@ function bench(param) {
   }
   console.timeEnd("bs_set_bench.res 16");
   if (Belt_SetInt.size(data) === 0) {
-    return ;
+    return;
   }
   throw {
         RE_EXN_ID: "Assert_failure",

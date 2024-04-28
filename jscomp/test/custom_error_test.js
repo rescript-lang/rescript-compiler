@@ -13,7 +13,7 @@ function test_js_error(param) {
     var err = Caml_js_exceptions.internalToOCamlException(raw_err);
     if (err.RE_EXN_ID === Js_exn.$$Error) {
       console.log(err._1.stack);
-      return ;
+      return;
     }
     throw err;
   }
@@ -43,7 +43,7 @@ function example1(param) {
     var err = Caml_js_exceptions.internalToOCamlException(raw_err);
     if (err.RE_EXN_ID === Js_exn.$$Error) {
       console.log(err._1.stack);
-      return ;
+      return;
     }
     throw err;
   }
@@ -57,7 +57,7 @@ function example2(param) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === Js_exn.$$Error) {
-      return ;
+      return;
     }
     throw exn;
   }

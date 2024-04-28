@@ -18,10 +18,10 @@ for(var i = 1; i <= 2; ++i){
           Curry._1(prev, undefined);
           f(((n + 1 | 0) + i | 0) - i | 0, x - 1 | 0);
         });
-      return ;
+      return;
     }
     if (i === n) {
-      return ;
+      return;
     }
     throw {
           RE_EXN_ID: "Assert_failure",

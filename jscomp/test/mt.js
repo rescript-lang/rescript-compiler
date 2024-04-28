@@ -54,40 +54,40 @@ function handleCode(spec) {
   switch (spec.TAG) {
     case "Eq" :
         Assert.deepEqual(spec._0, spec._1);
-        return ;
+        return;
     case "Neq" :
         Assert.notDeepEqual(spec._0, spec._1);
-        return ;
+        return;
     case "StrictEq" :
         Assert.strictEqual(spec._0, spec._1);
-        return ;
+        return;
     case "StrictNeq" :
         Assert.notStrictEqual(spec._0, spec._1);
-        return ;
+        return;
     case "Ok" :
         Assert.ok(spec._0);
-        return ;
+        return;
     case "Approx" :
         var b = spec._1;
         var a = spec._0;
         if (!close_enough(undefined, a, b)) {
           Assert.deepEqual(a, b);
-          return ;
+          return;
         } else {
-          return ;
+          return;
         }
     case "ApproxThreshold" :
         var b$1 = spec._2;
         var a$1 = spec._1;
         if (!close_enough(spec._0, a$1, b$1)) {
           Assert.deepEqual(a$1, b$1);
-          return ;
+          return;
         } else {
-          return ;
+          return;
         }
     case "ThrowAny" :
         Assert.throws(spec._0);
-        return ;
+        return;
     case "Fail" :
         return assert_fail("failed");
     case "FailWith" :
@@ -246,7 +246,7 @@ function old_from_promise_suites_donotuse(name, suites) {
     } else {
       console.log("promise suites");
     }
-    return ;
+    return;
   }
   
 }

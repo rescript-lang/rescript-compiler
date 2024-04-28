@@ -188,7 +188,7 @@ function min_elt_opt(_param) {
   while(true) {
     var param = _param;
     if (typeof param !== "object") {
-      return ;
+      return;
     }
     var l = param.l;
     if (typeof l !== "object") {
@@ -221,7 +221,7 @@ function max_elt_opt(_param) {
   while(true) {
     var param = _param;
     if (typeof param !== "object") {
-      return ;
+      return;
     }
     var r = param.r;
     if (typeof r !== "object") {
@@ -515,7 +515,7 @@ function iter(f, _param) {
   while(true) {
     var param = _param;
     if (typeof param !== "object") {
-      return ;
+      return;
     }
     iter(f, param.l);
     Curry._1(f, param.v);
@@ -705,7 +705,7 @@ function find_first_opt(f, _param) {
   while(true) {
     var param = _param;
     if (typeof param !== "object") {
-      return ;
+      return;
     }
     var v = param.v;
     if (Curry._1(f, v)) {
@@ -770,7 +770,7 @@ function find_last_opt(f, _param) {
   while(true) {
     var param = _param;
     if (typeof param !== "object") {
-      return ;
+      return;
     }
     var v = param.v;
     if (Curry._1(f, v)) {
@@ -801,7 +801,7 @@ function find_opt(x, _param) {
   while(true) {
     var param = _param;
     if (typeof param !== "object") {
-      return ;
+      return;
     }
     var v = param.v;
     var c = Caml.string_compare(x, v);

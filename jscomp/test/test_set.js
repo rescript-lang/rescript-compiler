@@ -444,7 +444,7 @@ function Make(Ord) {
     while(true) {
       var x_ = _x_;
       if (typeof x_ !== "object") {
-        return ;
+        return;
       }
       iter(f, x_._0);
       Curry._1(f, x_._1);

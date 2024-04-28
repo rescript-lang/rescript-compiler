@@ -117,7 +117,7 @@ function iter(f, _x) {
   while(true) {
     var x = _x;
     if (typeof x !== "object") {
-      return ;
+      return;
     }
     iter(f, x._0);
     Curry._1(f, x._1);

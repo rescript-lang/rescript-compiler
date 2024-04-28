@@ -70,7 +70,7 @@ function test2(param) {
 function test3(param) {
   if (Caml_option.undefined_to_opt(typeof __DEV__ === "undefined" ? undefined : __DEV__) === undefined) {
     console.log("production mode");
-    return ;
+    return;
   }
   
 }

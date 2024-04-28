@@ -172,7 +172,7 @@ function map_opt(f, l) {
     }
     var y = Curry._1(f, l$1.hd);
     if (y === undefined) {
-      return ;
+      return;
     }
     _l = l$1.tl;
     _acc = {
@@ -189,7 +189,7 @@ function list_any(f, e) {
     while(true) {
       var l = _l;
       if (!l) {
-        return ;
+        return;
       }
       var res = Curry._1(f, l.hd);
       if (res !== undefined) {
@@ -232,13 +232,13 @@ function list_all(f, e) {
 
 function _try_atom(e, f) {
   if (e.NAME === "List") {
-    return ;
+    return;
   }
   try {
     return Caml_option.some(Curry._1(f, e.VAL));
   }
   catch (exn){
-    return ;
+    return;
   }
 }
 
@@ -262,14 +262,14 @@ function to_string(e) {
 
 function to_pair(e) {
   if (typeof e !== "object") {
-    return ;
+    return;
   }
   if (e.NAME !== "List") {
-    return ;
+    return;
   }
   var match = e.VAL;
   if (!match) {
-    return ;
+    return;
   }
   var match$1 = match.tl;
   if (match$1 && !match$1.tl) {
@@ -297,18 +297,18 @@ function to_pair_with(f1, f2, e) {
 
 function to_triple(e) {
   if (typeof e !== "object") {
-    return ;
+    return;
   }
   if (e.NAME !== "List") {
-    return ;
+    return;
   }
   var match = e.VAL;
   if (!match) {
-    return ;
+    return;
   }
   var match$1 = match.tl;
   if (!match$1) {
-    return ;
+    return;
   }
   var match$2 = match$1.tl;
   if (match$2 && !match$2.tl) {
@@ -359,7 +359,7 @@ function get_field(name, e) {
     while(true) {
       var l = _l;
       if (!l) {
-        return ;
+        return;
       }
       var match = l.hd;
       if (typeof match === "object") {
@@ -411,7 +411,7 @@ function _get_field_list(name, _l) {
   while(true) {
     var l = _l;
     if (!l) {
-      return ;
+      return;
     }
     var match = l.hd;
     if (typeof match === "object") {
@@ -455,7 +455,7 @@ function _get_variant(s, args, _l) {
   while(true) {
     var l = _l;
     if (!l) {
-      return ;
+      return;
     }
     var match = l.hd;
     if (Caml_obj.equal(s, match[0])) {
@@ -472,7 +472,7 @@ function get_variant(l, e) {
   }
   var match = e.VAL;
   if (!match) {
-    return ;
+    return;
   }
   var match$1 = match.hd;
   if (typeof match$1 === "object" && match$1.NAME === "Atom") {

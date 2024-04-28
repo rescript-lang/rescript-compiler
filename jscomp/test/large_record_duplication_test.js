@@ -86,7 +86,7 @@ var v1 = {
 
 function get_x0(x) {
   if (typeof x !== "object") {
-    return ;
+    return;
   } else {
     return x.x0;
   }

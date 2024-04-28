@@ -221,7 +221,7 @@ function flush_all(param) {
   while(true) {
     var x = _x;
     if (!x) {
-      return ;
+      return;
     }
     try {
       Caml_external_polyfill.resolve("ml_flush")(x.hd);
@@ -284,7 +284,7 @@ function close_out_noerr(oc) {
     return Caml_external_polyfill.resolve("ml_close_channel")(oc);
   }
   catch (exn$1){
-    return ;
+    return;
   }
 }
 
@@ -328,7 +328,7 @@ function unsafe_really_input(ic, s, _ofs, _len) {
     var len = _len;
     var ofs = _ofs;
     if (len <= 0) {
-      return ;
+      return;
     }
     var r = Caml_external_polyfill.resolve("ml_input")(ic, s, ofs, len);
     if (r === 0) {
@@ -420,7 +420,7 @@ function close_in_noerr(ic) {
     return Caml_external_polyfill.resolve("ml_close_channel")(ic);
   }
   catch (exn){
-    return ;
+    return;
   }
 }
 
