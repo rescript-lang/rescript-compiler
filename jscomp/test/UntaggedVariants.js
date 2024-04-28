@@ -391,12 +391,12 @@ var someJson = '[{"name": "Haan"}, {"name": "Mr"}, false]';
 function check$1(s) {
   if (!Array.isArray(s) && (s === null || typeof s !== "object") && typeof s !== "number" && typeof s !== "string") {
     console.log("Nope...");
-    return ;
+    return;
   }
   if (Array.isArray(s)) {
     if (s.length !== 3) {
       console.log("Nope...");
-      return ;
+      return;
     }
     var match = s[0];
     if (match === true) {
@@ -405,23 +405,23 @@ function check$1(s) {
         var match$2 = s[2];
         if (!Array.isArray(match$2) && (match$2 === null || typeof match$2 !== "object") && typeof match$2 !== "number" && typeof match$2 !== "string") {
           console.log("Nope...");
-          return ;
+          return;
         }
         if (Array.isArray(match$2)) {
           if (match$2.length !== 2) {
             console.log("Nope...");
-            return ;
+            return;
           }
           var match$3 = match$2[0];
           if (!Array.isArray(match$3) && (match$3 === null || typeof match$3 !== "object") && typeof match$3 !== "number" && typeof match$3 !== "string") {
             console.log("Nope...");
-            return ;
+            return;
           }
           if (typeof match$3 === "string" && match$3 === "My name is") {
             var match$4 = match$2[1];
             if (!Array.isArray(match$4) && (match$4 === null || typeof match$4 !== "object") && typeof match$4 !== "number" && typeof match$4 !== "string") {
               console.log("Nope...");
-              return ;
+              return;
             }
             if (typeof match$4 === "number") {
               if (match$4 !== 10) {
@@ -429,29 +429,29 @@ function check$1(s) {
               } else {
                 console.log("yup");
               }
-              return ;
+              return;
             }
             console.log("Nope...");
-            return ;
+            return;
           } else {
             console.log("Nope...");
-            return ;
+            return;
           }
         } else {
           console.log("Nope...");
-          return ;
+          return;
         }
       } else {
         console.log("Nope...");
-        return ;
+        return;
       }
     } else {
       console.log("Nope...");
-      return ;
+      return;
     }
   } else {
     console.log("Nope...");
-    return ;
+    return;
   }
 }
 
@@ -494,28 +494,28 @@ async function classify$10(a) {
   if (typeof a !== "object" && !(a instanceof Promise) && (a === "test" || a === 12) && !Array.isArray(a)) {
     if (a === "test") {
       console.log("testing");
-      return ;
+      return;
     }
     console.log(12);
-    return ;
+    return;
   } else {
     if (Array.isArray(a)) {
       console.log(function (param) {
             return Belt_Array.joinWith(a, "-", param);
           });
-      return ;
+      return;
     }
     if (a instanceof Promise) {
       console.log(await a);
-      return ;
+      return;
     }
     switch (typeof a) {
       case "string" :
           console.log(a);
-          return ;
+          return;
       case "object" :
           console.log(a.userName);
-          return ;
+          return;
       
     }
   }
@@ -530,35 +530,35 @@ async function classifyAll(t) {
     console.log(function (param) {
           return Belt_Array.joinWith(t, "-", param);
         });
-    return ;
+    return;
   }
   if (t instanceof Promise) {
     console.log(await t);
-    return ;
+    return;
   }
   if (t instanceof Date) {
     console.log(t.toString());
-    return ;
+    return;
   }
   if (t instanceof RegExp) {
     console.log(t.test("test"));
-    return ;
+    return;
   }
   if (t instanceof File) {
     console.log(t.name);
-    return ;
+    return;
   }
   if (t instanceof Blob) {
     console.log(t.size);
-    return ;
+    return;
   }
   switch (typeof t) {
     case "string" :
         console.log(t);
-        return ;
+        return;
     case "object" :
         console.log(t.userName);
-        return ;
+        return;
     
   }
 }

@@ -32,7 +32,7 @@ function bench(param) {
   }
   console.timeEnd("bs_rbset_int_bench.res 16");
   if (Rbset.cardinal(data) === 0) {
-    return ;
+    return;
   }
   throw {
         RE_EXN_ID: "Assert_failure",

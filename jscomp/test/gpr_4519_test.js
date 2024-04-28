@@ -20,7 +20,7 @@ function nextFor(x) {
     if (x === "Required") {
       return "Optional";
     } else {
-      return ;
+      return;
     }
   } else {
     return "Required";

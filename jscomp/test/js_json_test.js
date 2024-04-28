@@ -108,7 +108,7 @@ add_test("File \"js_json_test.res\", line 22, characters 11-18", (function (para
                     };
               }
               if (ty3.TAG === "JSONNumber") {
-                return ;
+                return;
               }
               throw {
                     RE_EXN_ID: "Assert_failure",
@@ -757,7 +757,7 @@ idtest({
 
 idtest(Belt_List.makeBy(500, (function (i) {
             if (i % 2 === 0) {
-              return ;
+              return;
             } else {
               return 1;
             }
@@ -765,7 +765,7 @@ idtest(Belt_List.makeBy(500, (function (i) {
 
 idtest(Belt_Array.makeBy(500, (function (i) {
             if (i % 2 === 0) {
-              return ;
+              return;
             } else {
               return 1;
             }

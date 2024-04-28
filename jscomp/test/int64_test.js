@@ -2149,7 +2149,7 @@ function id(loc, x) {
   var float_value = Caml_int64.float_of_bits(x);
   var match = Pervasives.classify_float(float_value);
   if (match === "FP_nan") {
-    return ;
+    return;
   } else {
     return eq(loc, Caml_int64.bits_of_float(float_value), x);
   }

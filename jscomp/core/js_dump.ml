@@ -1205,7 +1205,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
           semi f;
           cxt
       | Undefined _ ->
-          return_sp f;
+          P.string f L.return;
           semi f;
           cxt
       | _ ->

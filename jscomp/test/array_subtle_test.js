@@ -96,7 +96,7 @@ function fff(x) {
 function fff2(x) {
   if (x.length >= 10) {
     console.log("hi");
-    return ;
+    return;
   }
   
 }

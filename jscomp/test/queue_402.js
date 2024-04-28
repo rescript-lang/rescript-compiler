@@ -26,7 +26,7 @@ function add(x, q) {
     cell.next = cell;
     q.length = 1;
     q.tail = cell;
-    return ;
+    return;
   }
   var tail = q.tail;
   var head = tail.next;
@@ -85,7 +85,7 @@ function copy(q) {
       var cell = _cell;
       var prev = _prev;
       if (cell === tail) {
-        return ;
+        return;
       }
       var res = {
         content: cell.content,
@@ -114,7 +114,7 @@ function length(q) {
 
 function iter(f, q) {
   if (q.length <= 0) {
-    return ;
+    return;
   }
   var tail = q.tail;
   var _cell = tail.next;
@@ -122,7 +122,7 @@ function iter(f, q) {
     var cell = _cell;
     Curry._1(f, cell.content);
     if (cell === tail) {
-      return ;
+      return;
     }
     _cell = cell.next;
     continue ;
@@ -152,7 +152,7 @@ function fold(f, accu, q) {
 function transfer(q1, q2) {
   var length1 = q1.length;
   if (length1 <= 0) {
-    return ;
+    return;
   }
   var tail1 = q1.tail;
   clear(q1);

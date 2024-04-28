@@ -110,7 +110,7 @@ function ff(g, x) {
   catch (raw_exn$9){
     var exn$9 = Caml_js_exceptions.internalToOCamlException(raw_exn$9);
     if (exn$9.RE_EXN_ID === "Undefined_recursive_module") {
-      return ;
+      return;
     }
     throw exn$9;
   }

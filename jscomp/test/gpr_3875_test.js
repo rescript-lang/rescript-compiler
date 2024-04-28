@@ -28,7 +28,7 @@ function compilerBug(a, b, c, f) {
       } else {
         result.contents = "No x, c is false";
       }
-      return ;
+      return;
     }
     if (b !== "x") {
       if (c) {
@@ -36,7 +36,7 @@ function compilerBug(a, b, c, f) {
       } else {
         result.contents = "No x, c is false";
       }
-      return ;
+      return;
     }
     
   }

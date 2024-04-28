@@ -82,7 +82,7 @@ function push(path) {
   if (match !== undefined && match$1 !== undefined) {
     match.pushState(null, "", path);
     match$1.dispatchEvent(safeMakeEvent("popstate"));
-    return ;
+    return;
   }
   
 }
@@ -93,7 +93,7 @@ function replace(path) {
   if (match !== undefined && match$1 !== undefined) {
     match.replaceState(null, "", path);
     match$1.dispatchEvent(safeMakeEvent("popstate"));
-    return ;
+    return;
   }
   
 }
@@ -153,7 +153,7 @@ function unwatchUrl(watcherID) {
   var $$window = typeof window === "undefined" ? undefined : window;
   if ($$window !== undefined) {
     $$window.removeEventListener("popstate", watcherID);
-    return ;
+    return;
   }
   
 }

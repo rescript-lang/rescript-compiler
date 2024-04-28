@@ -20,7 +20,7 @@ function f_01(param) {
   return hi(function (x) {
               if (x === undefined) {
                 console.log("x");
-                return ;
+                return;
               }
               
             });

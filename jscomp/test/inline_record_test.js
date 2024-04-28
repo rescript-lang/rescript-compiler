@@ -154,7 +154,7 @@ function ff0(x) {
   if (x.RE_EXN_ID === A4) {
     x.x = x.x + 1 | 0;
     x.z = x.z + 1 | 0;
-    return ;
+    return;
   }
   
 }

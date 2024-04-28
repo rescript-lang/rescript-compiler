@@ -606,7 +606,7 @@ function find_first_not(p, _x) {
   while(true) {
     var x = _x;
     if (!x) {
-      return ;
+      return;
     }
     var a = x.hd;
     if (!Curry._1(p, a)) {
@@ -621,7 +621,7 @@ function for_all_opt(p, _x) {
   while(true) {
     var x = _x;
     if (!x) {
-      return ;
+      return;
     }
     var v = Curry._1(p, x.hd);
     if (v !== undefined) {
@@ -702,7 +702,7 @@ function find_no_exn(p, _x) {
   while(true) {
     var x = _x;
     if (!x) {
-      return ;
+      return;
     }
     var x$1 = x.hd;
     if (Curry._1(p, x$1)) {
@@ -717,7 +717,7 @@ function find_opt(p, _x) {
   while(true) {
     var x = _x;
     if (!x) {
-      return ;
+      return;
     }
     var v = Curry._1(p, x.hd);
     if (v !== undefined) {

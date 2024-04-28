@@ -150,7 +150,7 @@ function iter(f, _x) {
   while(true) {
     var x = _x;
     if (!x) {
-      return ;
+      return;
     }
     Curry._1(f, x.hd);
     _x = x.tl;
@@ -165,7 +165,7 @@ function iteri(f, l) {
     var x = _x;
     var i = _i;
     if (!x) {
-      return ;
+      return;
     }
     Curry._2(f, i, x.hd);
     _x = x.tl;
@@ -273,7 +273,7 @@ function iter2(f, _l1, _l2) {
           };
     }
     if (!l2) {
-      return ;
+      return;
     }
     throw {
           RE_EXN_ID: "Invalid_argument",

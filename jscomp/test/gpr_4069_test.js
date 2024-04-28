@@ -5,7 +5,7 @@ var Curry = require("../../lib/js/curry.js");
 
 function f(value) {
   if (value == null) {
-    return ;
+    return;
   } else {
     return value;
   }

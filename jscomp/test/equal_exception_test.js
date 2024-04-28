@@ -48,7 +48,7 @@ function is_equal(param) {
         };
   }
   if (Caml_string.get(v, 0) === /* 'g' */103) {
-    return ;
+    return;
   }
   throw {
         RE_EXN_ID: "Assert_failure",
@@ -71,7 +71,7 @@ function is_exception(param) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
-      return ;
+      return;
     }
     throw exn;
   }
@@ -90,7 +90,7 @@ function is_normal_exception(_x) {
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === A) {
       if (exn._1 === 3) {
-        return ;
+        return;
       }
       throw exn;
     }
@@ -107,7 +107,7 @@ function is_arbitrary_exception(param) {
         };
   }
   catch (exn){
-    return ;
+    return;
   }
 }
 

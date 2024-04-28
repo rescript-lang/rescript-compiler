@@ -89,7 +89,7 @@ function print_all_composite(all_tickers) {
   List.iter((function (x) {
           var tmp = x.type_;
           if (typeof tmp !== "object") {
-            return ;
+            return;
           }
           console.log(x.ticker_name);
         }), all_tickers);
@@ -306,7 +306,7 @@ function find_first_opt(f, _param) {
   while(true) {
     var param = _param;
     if (typeof param !== "object") {
-      return ;
+      return;
     }
     var v = param.v;
     if (Curry._1(f, v)) {
@@ -383,7 +383,7 @@ function find_last_opt(f, _param) {
   while(true) {
     var param = _param;
     if (typeof param !== "object") {
-      return ;
+      return;
     }
     var v = param.v;
     if (Curry._1(f, v)) {
@@ -420,7 +420,7 @@ function find_opt(x, _param) {
   while(true) {
     var param = _param;
     if (typeof param !== "object") {
-      return ;
+      return;
     }
     var c = Caml_obj.compare(x, param.v);
     if (c === 0) {
@@ -471,7 +471,7 @@ function min_binding_opt(_param) {
   while(true) {
     var param = _param;
     if (typeof param !== "object") {
-      return ;
+      return;
     }
     var l = param.l;
     if (typeof l !== "object") {
@@ -510,7 +510,7 @@ function max_binding_opt(_param) {
   while(true) {
     var param = _param;
     if (typeof param !== "object") {
-      return ;
+      return;
     }
     var r = param.r;
     if (typeof r !== "object") {
@@ -639,7 +639,7 @@ function iter(f, _param) {
   while(true) {
     var param = _param;
     if (typeof param !== "object") {
-      return ;
+      return;
     }
     iter(f, param.l);
     Curry._2(f, param.v, param.d);
@@ -1191,7 +1191,7 @@ function process_quote(ticker_map, new_ticker, new_value) {
           if (typeof match !== "object") {
             if (ticker.ticker_name === new_ticker) {
               ticker.value = new_value;
-              return ;
+              return;
             }
             throw {
                   RE_EXN_ID: "Failure",
