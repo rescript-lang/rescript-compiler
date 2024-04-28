@@ -14,12 +14,12 @@ function create(l, v, r) {
   var hl = height(l);
   var hr = height(r);
   return {
-          TAG: "Node",
-          _0: l,
-          _1: v,
-          _2: r,
-          _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-        };
+    TAG: "Node",
+    _0: l,
+    _1: v,
+    _2: r,
+    _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+  };
 }
 
 function bal(l, v, r) {
@@ -42,12 +42,12 @@ function bal(l, v, r) {
   }
   if (hr <= (hl + 2 | 0)) {
     return {
-            TAG: "Node",
-            _0: l,
-            _1: v,
-            _2: r,
-            _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-          };
+      TAG: "Node",
+      _0: l,
+      _1: v,
+      _2: r,
+      _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+    };
   }
   if (typeof r !== "object") {
     return "Empty";
@@ -77,12 +77,12 @@ function compare_int(x, y) {
 function add(x, x_) {
   if (typeof x_ !== "object") {
     return {
-            TAG: "Node",
-            _0: "Empty",
-            _1: x,
-            _2: "Empty",
-            _3: 1
-          };
+      TAG: "Node",
+      _0: "Empty",
+      _1: x,
+      _2: "Empty",
+      _3: 1
+    };
   }
   var r = x_._2;
   var v = x_._1;

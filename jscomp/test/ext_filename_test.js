@@ -66,10 +66,10 @@ function chop_extension(locOpt, name) {
     if (exn.RE_EXN_ID === "Invalid_argument") {
       var s = "Filename.chop_extension ( " + loc + " : " + name + " )";
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: s,
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: s,
+        Error: new Error()
+      };
     }
     throw exn;
   }
@@ -105,8 +105,8 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
         continue ;
       }
       return Pervasives.$at(List.map((function (param) {
-                        return node_parent;
-                      }), dir2), dir1);
+                  return node_parent;
+                }), dir2), dir1);
     };
   };
   var ys = go(dir1, dir2);
@@ -133,18 +133,18 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
   var len = file2.length;
   if (!(node_modules_shorten && v >= 0)) {
     return relative_path(dep_file.NAME === "File" ? ({
-                  NAME: "File",
-                  VAL: absolute_path(dep_file.VAL)
-                }) : ({
-                  NAME: "Dir",
-                  VAL: absolute_path(dep_file.VAL)
-                }), file1.NAME === "File" ? ({
-                  NAME: "File",
-                  VAL: absolute_path(file1.VAL)
-                }) : ({
-                  NAME: "Dir",
-                  VAL: absolute_path(file1.VAL)
-                })) + (node_sep + Curry._1(Filename.basename, file2));
+            NAME: "File",
+            VAL: absolute_path(dep_file.VAL)
+          }) : ({
+            NAME: "Dir",
+            VAL: absolute_path(dep_file.VAL)
+          }), file1.NAME === "File" ? ({
+            NAME: "File",
+            VAL: absolute_path(file1.VAL)
+          }) : ({
+            NAME: "Dir",
+            VAL: absolute_path(file1.VAL)
+          })) + (node_sep + Curry._1(Filename.basename, file2));
   }
   var skip = function (_i) {
     while(true) {
@@ -152,10 +152,10 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
       if (i >= len) {
         var s = "invalid path: " + file2;
         throw {
-              RE_EXN_ID: "Failure",
-              _1: s,
-              Error: new Error()
-            };
+          RE_EXN_ID: "Failure",
+          _1: s,
+          Error: new Error()
+        };
       }
       var curr_char = file2.codePointAt(i);
       if (!(curr_char === os_path_separator_char || curr_char === /* '.' */46)) {
@@ -181,10 +181,10 @@ function find_root_filename(_cwd, filename) {
     }
     var s = filename + " not found from " + cwd;
     throw {
-          RE_EXN_ID: "Failure",
-          _1: s,
-          Error: new Error()
-        };
+      RE_EXN_ID: "Failure",
+      _1: s,
+      Error: new Error()
+    };
   };
 }
 
@@ -228,9 +228,9 @@ function split_aux(p) {
     var dir = Curry._1(Filename.dirname, p$1);
     if (dir === p$1) {
       return [
-              dir,
-              acc
-            ];
+        dir,
+        acc
+      ];
     }
     var new_path = Curry._1(Filename.basename, p$1);
     if (new_path === Filename.dir_sep) {
@@ -268,8 +268,8 @@ function rel_normalized_absolute_path(from, to_) {
     var xs = xss.tl;
     if (!yss) {
       return List.fold_left((function (acc, param) {
-                    return Filename.concat(acc, Ext_string_test.parent_dir_lit);
-                  }), Ext_string_test.parent_dir_lit, xs);
+              return Filename.concat(acc, Ext_string_test.parent_dir_lit);
+            }), Ext_string_test.parent_dir_lit, xs);
     }
     if (xss.hd === yss.hd) {
       _yss = yss.tl;
@@ -358,10 +358,10 @@ if (Sys.unix) {
 } else {
   var s = "Unknown OS : " + Sys.os_type;
   throw {
-        RE_EXN_ID: "Failure",
-        _1: s,
-        Error: new Error()
-      };
+    RE_EXN_ID: "Failure",
+    _1: s,
+    Error: new Error()
+  };
 }
 
 var $slash$slash = Filename.concat;

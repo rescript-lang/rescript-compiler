@@ -129,14 +129,14 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
           continue ;
       case 1 :
           return {
-                  TAG: "NUMERAL",
-                  _0: Caml_format.int_of_string(Lexing.lexeme(lexbuf))
-                };
+            TAG: "NUMERAL",
+            _0: Caml_format.int_of_string(Lexing.lexeme(lexbuf))
+          };
       case 2 :
           return {
-                  TAG: "IDENT",
-                  _0: Lexing.lexeme(lexbuf)
-                };
+            TAG: "IDENT",
+            _0: Lexing.lexeme(lexbuf)
+          };
       case 3 :
           return "PLUS";
       case 4 :

@@ -37,12 +37,12 @@ var v1 = {
 function f(x) {
   if (x.TAG === "A0") {
     return List.fold_left((function (prim0, prim1) {
-                  return prim0 + prim1 | 0;
-                }), x.lbl, x.more);
+            return prim0 + prim1 | 0;
+          }), x.lbl, x.more);
   } else {
     return List.fold_left((function (prim0, prim1) {
-                  return prim0 + prim1 | 0;
-                }), 0, x.more);
+            return prim0 + prim1 | 0;
+          }), 0, x.more);
   }
 }
 
@@ -68,14 +68,14 @@ if (A0 === A0) {
   tmp = 3;
 } else {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "inline_record_test.res",
-          47,
-          9
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "inline_record_test.res",
+      47,
+      9
+    ],
+    Error: new Error()
+  };
 }
 
 eq("File \"inline_record_test.res\", line 44, characters 2-9", tmp, 3);
@@ -111,14 +111,14 @@ if (v4.TAG === "A0") {
   tmp$1 = v4.x;
 } else {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "inline_record_test.res",
-          74,
-          9
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "inline_record_test.res",
+      74,
+      9
+    ],
+    Error: new Error()
+  };
 }
 
 eq("File \"inline_record_test.res\", line 71, characters 2-9", tmp$1, 11);
@@ -127,14 +127,14 @@ var tmp$2;
 
 if (v5.TAG === "A0") {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "inline_record_test.res",
-          83,
-          9
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "inline_record_test.res",
+      83,
+      9
+    ],
+    Error: new Error()
+  };
 }
 
 tmp$2 = v5.z;
@@ -169,14 +169,14 @@ if (v6.RE_EXN_ID === A4) {
   tmp$3 = v6.x;
 } else {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "inline_record_test.res",
-          108,
-          9
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "inline_record_test.res",
+      108,
+      9
+    ],
+    Error: new Error()
+  };
 }
 
 eq("File \"inline_record_test.res\", line 105, characters 2-9", tmp$3, 11);
@@ -186,10 +186,10 @@ function ff1(x) {
     return "A1";
   } else {
     return {
-            TAG: "A0",
-            lbl: x.lbl + 1 | 0,
-            more: x.more
-          };
+      TAG: "A0",
+      lbl: x.lbl + 1 | 0,
+      more: x.more
+    };
   }
 }
 

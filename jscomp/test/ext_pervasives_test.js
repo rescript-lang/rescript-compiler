@@ -39,9 +39,9 @@ function is_pos_pow(n) {
         continue ;
       }
       throw {
-            RE_EXN_ID: E,
-            Error: new Error()
-          };
+        RE_EXN_ID: E,
+        Error: new Error()
+      };
     };
   }
   catch (raw_exn){
@@ -73,9 +73,9 @@ function is_pos_pow_2(n) {
         continue ;
       }
       throw {
-            RE_EXN_ID: E,
-            Error: new Error()
-          };
+        RE_EXN_ID: E,
+        Error: new Error()
+      };
     };
   }
   catch (raw_exn){

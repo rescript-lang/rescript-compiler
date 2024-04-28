@@ -24,10 +24,10 @@ var suites_0 = [
   "const",
   (function (param) {
       return {
-              TAG: "Eq",
-              _0: 1,
-              _1: v0
-            };
+        TAG: "Eq",
+        _0: 1,
+        _1: v0
+      };
     })
 ];
 
@@ -36,10 +36,10 @@ var suites_1 = {
     "other",
     (function (param) {
         return {
-                TAG: "Eq",
-                _0: 3,
-                _1: "abc".length
-              };
+          TAG: "Eq",
+          _0: 3,
+          _1: "abc".length
+        };
       })
   ],
   tl: /* [] */0

@@ -9,9 +9,9 @@ var Empty = /* @__PURE__ */Caml_exceptions.create("Queue_402.Empty");
 
 function create(param) {
   return {
-          length: 0,
-          tail: undefined
-        };
+    length: 0,
+    tail: undefined
+  };
 }
 
 function clear(q) {
@@ -42,9 +42,9 @@ function add(x, q) {
 function peek(q) {
   if (q.length === 0) {
     throw {
-          RE_EXN_ID: Empty,
-          Error: new Error()
-        };
+      RE_EXN_ID: Empty,
+      Error: new Error()
+    };
   }
   return q.tail.next.content;
 }
@@ -52,9 +52,9 @@ function peek(q) {
 function take(q) {
   if (q.length === 0) {
     throw {
-          RE_EXN_ID: Empty,
-          Error: new Error()
-        };
+      RE_EXN_ID: Empty,
+      Error: new Error()
+    };
   }
   q.length = q.length - 1 | 0;
   var tail = q.tail;
@@ -70,9 +70,9 @@ function take(q) {
 function copy(q) {
   if (q.length === 0) {
     return {
-            length: 0,
-            tail: undefined
-          };
+      length: 0,
+      tail: undefined
+    };
   }
   var tail = q.tail;
   var tail$p = {};
@@ -99,9 +99,9 @@ function copy(q) {
   };
   copy$1(tail$p, tail.next);
   return {
-          length: q.length,
-          tail: tail$p
-        };
+    length: q.length,
+    tail: tail$p
+  };
 }
 
 function is_empty(q) {

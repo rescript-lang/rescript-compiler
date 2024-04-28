@@ -79,10 +79,10 @@ Mt.from_pair_suites("Cps_test", {
         "cps_test_sum",
         (function (param) {
             return {
-                    TAG: "Eq",
-                    _0: 55,
-                    _1: test()
-                  };
+              TAG: "Eq",
+              _0: 55,
+              _1: test()
+            };
           })
       ],
       tl: {
@@ -90,10 +90,10 @@ Mt.from_pair_suites("Cps_test", {
           "cps_test_closure",
           (function (param) {
               return {
-                      TAG: "Eq",
-                      _0: 15,
-                      _1: test_closure()
-                    };
+                TAG: "Eq",
+                _0: 15,
+                _1: test_closure()
+              };
             })
         ],
         tl: {
@@ -101,10 +101,10 @@ Mt.from_pair_suites("Cps_test", {
             "cps_test_closure2",
             (function (param) {
                 return {
-                        TAG: "Eq",
-                        _0: 30,
-                        _1: test_closure2()
-                      };
+                  TAG: "Eq",
+                  _0: 30,
+                  _1: test_closure2()
+                };
               })
           ],
           tl: /* [] */0

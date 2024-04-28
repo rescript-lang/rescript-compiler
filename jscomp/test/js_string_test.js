@@ -9,10 +9,10 @@ var suites_0 = [
   "make",
   (function (param) {
       return {
-              TAG: "Eq",
-              _0: "null",
-              _1: String(null).concat("")
-            };
+        TAG: "Eq",
+        _0: "null",
+        _1: String(null).concat("")
+      };
     })
 ];
 
@@ -21,10 +21,10 @@ var suites_1 = {
     "fromCharCode",
     (function (param) {
         return {
-                TAG: "Eq",
-                _0: "a",
-                _1: String.fromCharCode(97)
-              };
+          TAG: "Eq",
+          _0: "a",
+          _1: String.fromCharCode(97)
+        };
       })
   ],
   tl: {
@@ -32,10 +32,10 @@ var suites_1 = {
       "fromCharCodeMany",
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: "az",
-                  _1: String.fromCharCode(97, 122)
-                };
+            TAG: "Eq",
+            _0: "az",
+            _1: String.fromCharCode(97, 122)
+          };
         })
     ],
     tl: {
@@ -43,10 +43,10 @@ var suites_1 = {
         "fromCodePoint",
         (function (param) {
             return {
-                    TAG: "Eq",
-                    _0: "a",
-                    _1: String.fromCodePoint(97)
-                  };
+              TAG: "Eq",
+              _0: "a",
+              _1: String.fromCodePoint(97)
+            };
           })
       ],
       tl: {
@@ -54,10 +54,10 @@ var suites_1 = {
           "fromCodePointMany",
           (function (param) {
               return {
-                      TAG: "Eq",
-                      _0: "az",
-                      _1: String.fromCodePoint(97, 122)
-                    };
+                TAG: "Eq",
+                _0: "az",
+                _1: String.fromCodePoint(97, 122)
+              };
             })
         ],
         tl: {
@@ -65,10 +65,10 @@ var suites_1 = {
             "length",
             (function (param) {
                 return {
-                        TAG: "Eq",
-                        _0: 3,
-                        _1: "foo".length
-                      };
+                  TAG: "Eq",
+                  _0: 3,
+                  _1: "foo".length
+                };
               })
           ],
           tl: {
@@ -76,10 +76,10 @@ var suites_1 = {
               "get",
               (function (param) {
                   return {
-                          TAG: "Eq",
-                          _0: "a",
-                          _1: "foobar"[4]
-                        };
+                    TAG: "Eq",
+                    _0: "a",
+                    _1: "foobar"[4]
+                  };
                 })
             ],
             tl: {
@@ -87,10 +87,10 @@ var suites_1 = {
                 "charAt",
                 (function (param) {
                     return {
-                            TAG: "Eq",
-                            _0: "a",
-                            _1: "foobar".charAt(4)
-                          };
+                      TAG: "Eq",
+                      _0: "a",
+                      _1: "foobar".charAt(4)
+                    };
                   })
               ],
               tl: {
@@ -98,10 +98,10 @@ var suites_1 = {
                   "charCodeAt",
                   (function (param) {
                       return {
-                              TAG: "Eq",
-                              _0: 97,
-                              _1: "foobar".charCodeAt(4)
-                            };
+                        TAG: "Eq",
+                        _0: 97,
+                        _1: "foobar".charCodeAt(4)
+                      };
                     })
                 ],
                 tl: {
@@ -109,10 +109,10 @@ var suites_1 = {
                     "codePointAt",
                     (function (param) {
                         return {
-                                TAG: "Eq",
-                                _0: 97,
-                                _1: "foobar".codePointAt(4)
-                              };
+                          TAG: "Eq",
+                          _0: 97,
+                          _1: "foobar".codePointAt(4)
+                        };
                       })
                   ],
                   tl: {
@@ -120,10 +120,10 @@ var suites_1 = {
                       "codePointAt - out of bounds",
                       (function (param) {
                           return {
-                                  TAG: "Eq",
-                                  _0: undefined,
-                                  _1: "foobar".codePointAt(98)
-                                };
+                            TAG: "Eq",
+                            _0: undefined,
+                            _1: "foobar".codePointAt(98)
+                          };
                         })
                     ],
                     tl: {
@@ -131,10 +131,10 @@ var suites_1 = {
                         "concat",
                         (function (param) {
                             return {
-                                    TAG: "Eq",
-                                    _0: "foobar",
-                                    _1: "foo".concat("bar")
-                                  };
+                              TAG: "Eq",
+                              _0: "foobar",
+                              _1: "foo".concat("bar")
+                            };
                           })
                       ],
                       tl: {
@@ -142,10 +142,10 @@ var suites_1 = {
                           "concatMany",
                           (function (param) {
                               return {
-                                      TAG: "Eq",
-                                      _0: "foobarbaz",
-                                      _1: "foo".concat("bar", "baz")
-                                    };
+                                TAG: "Eq",
+                                _0: "foobarbaz",
+                                _1: "foo".concat("bar", "baz")
+                              };
                             })
                         ],
                         tl: {
@@ -153,10 +153,10 @@ var suites_1 = {
                             "endsWith",
                             (function (param) {
                                 return {
-                                        TAG: "Eq",
-                                        _0: true,
-                                        _1: "foobar".endsWith("bar")
-                                      };
+                                  TAG: "Eq",
+                                  _0: true,
+                                  _1: "foobar".endsWith("bar")
+                                };
                               })
                           ],
                           tl: {
@@ -164,10 +164,10 @@ var suites_1 = {
                               "endsWithFrom",
                               (function (param) {
                                   return {
-                                          TAG: "Eq",
-                                          _0: false,
-                                          _1: "foobar".endsWith("bar", 1)
-                                        };
+                                    TAG: "Eq",
+                                    _0: false,
+                                    _1: "foobar".endsWith("bar", 1)
+                                  };
                                 })
                             ],
                             tl: {
@@ -175,10 +175,10 @@ var suites_1 = {
                                 "includes",
                                 (function (param) {
                                     return {
-                                            TAG: "Eq",
-                                            _0: true,
-                                            _1: "foobarbaz".includes("bar")
-                                          };
+                                      TAG: "Eq",
+                                      _0: true,
+                                      _1: "foobarbaz".includes("bar")
+                                    };
                                   })
                               ],
                               tl: {
@@ -186,10 +186,10 @@ var suites_1 = {
                                   "includesFrom",
                                   (function (param) {
                                       return {
-                                              TAG: "Eq",
-                                              _0: false,
-                                              _1: "foobarbaz".includes("bar", 4)
-                                            };
+                                        TAG: "Eq",
+                                        _0: false,
+                                        _1: "foobarbaz".includes("bar", 4)
+                                      };
                                     })
                                 ],
                                 tl: {
@@ -197,10 +197,10 @@ var suites_1 = {
                                     "indexOf",
                                     (function (param) {
                                         return {
-                                                TAG: "Eq",
-                                                _0: 3,
-                                                _1: "foobarbaz".indexOf("bar")
-                                              };
+                                          TAG: "Eq",
+                                          _0: 3,
+                                          _1: "foobarbaz".indexOf("bar")
+                                        };
                                       })
                                   ],
                                   tl: {
@@ -208,10 +208,10 @@ var suites_1 = {
                                       "indexOfFrom",
                                       (function (param) {
                                           return {
-                                                  TAG: "Eq",
-                                                  _0: -1,
-                                                  _1: "foobarbaz".indexOf("bar", 4)
-                                                };
+                                            TAG: "Eq",
+                                            _0: -1,
+                                            _1: "foobarbaz".indexOf("bar", 4)
+                                          };
                                         })
                                     ],
                                     tl: {
@@ -219,10 +219,10 @@ var suites_1 = {
                                         "lastIndexOf",
                                         (function (param) {
                                             return {
-                                                    TAG: "Eq",
-                                                    _0: 3,
-                                                    _1: "foobarbaz".lastIndexOf("bar")
-                                                  };
+                                              TAG: "Eq",
+                                              _0: 3,
+                                              _1: "foobarbaz".lastIndexOf("bar")
+                                            };
                                           })
                                       ],
                                       tl: {
@@ -230,10 +230,10 @@ var suites_1 = {
                                           "lastIndexOfFrom",
                                           (function (param) {
                                               return {
-                                                      TAG: "Eq",
-                                                      _0: 3,
-                                                      _1: "foobarbaz".lastIndexOf("bar", 4)
-                                                    };
+                                                TAG: "Eq",
+                                                _0: 3,
+                                                _1: "foobarbaz".lastIndexOf("bar", 4)
+                                              };
                                             })
                                         ],
                                         tl: {
@@ -241,10 +241,10 @@ var suites_1 = {
                                             "localeCompare",
                                             (function (param) {
                                                 return {
-                                                        TAG: "Eq",
-                                                        _0: 0,
-                                                        _1: "foo".localeCompare("foo")
-                                                      };
+                                                  TAG: "Eq",
+                                                  _0: 0,
+                                                  _1: "foo".localeCompare("foo")
+                                                };
                                               })
                                           ],
                                           tl: {
@@ -252,13 +252,13 @@ var suites_1 = {
                                               "match",
                                               (function (param) {
                                                   return {
-                                                          TAG: "Eq",
-                                                          _0: [
-                                                            "na",
-                                                            "na"
-                                                          ],
-                                                          _1: Caml_option.null_to_opt("banana".match(/na+/g))
-                                                        };
+                                                    TAG: "Eq",
+                                                    _0: [
+                                                      "na",
+                                                      "na"
+                                                    ],
+                                                    _1: Caml_option.null_to_opt("banana".match(/na+/g))
+                                                  };
                                                 })
                                             ],
                                             tl: {
@@ -266,10 +266,10 @@ var suites_1 = {
                                                 "match - no match",
                                                 (function (param) {
                                                     return {
-                                                            TAG: "Eq",
-                                                            _0: undefined,
-                                                            _1: Caml_option.null_to_opt("banana".match(/nanana+/g))
-                                                          };
+                                                      TAG: "Eq",
+                                                      _0: undefined,
+                                                      _1: Caml_option.null_to_opt("banana".match(/nanana+/g))
+                                                    };
                                                   })
                                               ],
                                               tl: {
@@ -277,15 +277,15 @@ var suites_1 = {
                                                   "match - not found capture groups",
                                                   (function (param) {
                                                       return {
-                                                              TAG: "Eq",
-                                                              _0: [
-                                                                "hello ",
-                                                                undefined
-                                                              ],
-                                                              _1: Belt_Option.map(Caml_option.null_to_opt("hello word".match(/hello (world)?/)), (function (prim) {
-                                                                      return prim.slice();
-                                                                    }))
-                                                            };
+                                                        TAG: "Eq",
+                                                        _0: [
+                                                          "hello ",
+                                                          undefined
+                                                        ],
+                                                        _1: Belt_Option.map(Caml_option.null_to_opt("hello word".match(/hello (world)?/)), (function (prim) {
+                                                                return prim.slice();
+                                                              }))
+                                                      };
                                                     })
                                                 ],
                                                 tl: {
@@ -293,10 +293,10 @@ var suites_1 = {
                                                     "normalize",
                                                     (function (param) {
                                                         return {
-                                                                TAG: "Eq",
-                                                                _0: "foo",
-                                                                _1: "foo".normalize()
-                                                              };
+                                                          TAG: "Eq",
+                                                          _0: "foo",
+                                                          _1: "foo".normalize()
+                                                        };
                                                       })
                                                   ],
                                                   tl: {
@@ -304,10 +304,10 @@ var suites_1 = {
                                                       "normalizeByForm",
                                                       (function (param) {
                                                           return {
-                                                                  TAG: "Eq",
-                                                                  _0: "foo",
-                                                                  _1: "foo".normalize("NFKD")
-                                                                };
+                                                            TAG: "Eq",
+                                                            _0: "foo",
+                                                            _1: "foo".normalize("NFKD")
+                                                          };
                                                         })
                                                     ],
                                                     tl: {
@@ -315,10 +315,10 @@ var suites_1 = {
                                                         "repeat",
                                                         (function (param) {
                                                             return {
-                                                                    TAG: "Eq",
-                                                                    _0: "foofoofoo",
-                                                                    _1: "foo".repeat(3)
-                                                                  };
+                                                              TAG: "Eq",
+                                                              _0: "foofoofoo",
+                                                              _1: "foo".repeat(3)
+                                                            };
                                                           })
                                                       ],
                                                       tl: {
@@ -326,10 +326,10 @@ var suites_1 = {
                                                           "replace",
                                                           (function (param) {
                                                               return {
-                                                                      TAG: "Eq",
-                                                                      _0: "fooBORKbaz",
-                                                                      _1: "foobarbaz".replace("bar", "BORK")
-                                                                    };
+                                                                TAG: "Eq",
+                                                                _0: "fooBORKbaz",
+                                                                _1: "foobarbaz".replace("bar", "BORK")
+                                                              };
                                                             })
                                                         ],
                                                         tl: {
@@ -337,10 +337,10 @@ var suites_1 = {
                                                             "replaceByRe",
                                                             (function (param) {
                                                                 return {
-                                                                        TAG: "Eq",
-                                                                        _0: "fooBORKBORK",
-                                                                        _1: "foobarbaz".replace(/ba./g, "BORK")
-                                                                      };
+                                                                  TAG: "Eq",
+                                                                  _0: "fooBORKBORK",
+                                                                  _1: "foobarbaz".replace(/ba./g, "BORK")
+                                                                };
                                                               })
                                                           ],
                                                           tl: {
@@ -355,10 +355,10 @@ var suites_1 = {
                                                                     }
                                                                   };
                                                                   return {
-                                                                          TAG: "Eq",
-                                                                          _0: "fooBORKDORK",
-                                                                          _1: "foobarbaz".replace(/ba./g, replace)
-                                                                        };
+                                                                    TAG: "Eq",
+                                                                    _0: "fooBORKDORK",
+                                                                    _1: "foobarbaz".replace(/ba./g, replace)
+                                                                  };
                                                                 })
                                                             ],
                                                             tl: {
@@ -373,10 +373,10 @@ var suites_1 = {
                                                                       }
                                                                     };
                                                                     return {
-                                                                            TAG: "Eq",
-                                                                            _0: "fooBORKDORK",
-                                                                            _1: "foobarbaz".replace(/ba./g, replace)
-                                                                          };
+                                                                      TAG: "Eq",
+                                                                      _0: "fooBORKDORK",
+                                                                      _1: "foobarbaz".replace(/ba./g, replace)
+                                                                    };
                                                                   })
                                                               ],
                                                               tl: {
@@ -391,10 +391,10 @@ var suites_1 = {
                                                                         }
                                                                       };
                                                                       return {
-                                                                              TAG: "Eq",
-                                                                              _0: "fooBORKDORK",
-                                                                              _1: "foobarbaz".replace(/ba./g, replace)
-                                                                            };
+                                                                        TAG: "Eq",
+                                                                        _0: "fooBORKDORK",
+                                                                        _1: "foobarbaz".replace(/ba./g, replace)
+                                                                      };
                                                                     })
                                                                 ],
                                                                 tl: {
@@ -409,10 +409,10 @@ var suites_1 = {
                                                                           }
                                                                         };
                                                                         return {
-                                                                                TAG: "Eq",
-                                                                                _0: "fooBORKDORK",
-                                                                                _1: "foobarbaz".replace(/ba./g, replace)
-                                                                              };
+                                                                          TAG: "Eq",
+                                                                          _0: "fooBORKDORK",
+                                                                          _1: "foobarbaz".replace(/ba./g, replace)
+                                                                        };
                                                                       })
                                                                   ],
                                                                   tl: {
@@ -420,10 +420,10 @@ var suites_1 = {
                                                                       "search",
                                                                       (function (param) {
                                                                           return {
-                                                                                  TAG: "Eq",
-                                                                                  _0: 3,
-                                                                                  _1: "foobarbaz".search(/ba./g)
-                                                                                };
+                                                                            TAG: "Eq",
+                                                                            _0: 3,
+                                                                            _1: "foobarbaz".search(/ba./g)
+                                                                          };
                                                                         })
                                                                     ],
                                                                     tl: {
@@ -431,10 +431,10 @@ var suites_1 = {
                                                                         "slice",
                                                                         (function (param) {
                                                                             return {
-                                                                                    TAG: "Eq",
-                                                                                    _0: "bar",
-                                                                                    _1: "foobarbaz".slice(3, 6)
-                                                                                  };
+                                                                              TAG: "Eq",
+                                                                              _0: "bar",
+                                                                              _1: "foobarbaz".slice(3, 6)
+                                                                            };
                                                                           })
                                                                       ],
                                                                       tl: {
@@ -442,10 +442,10 @@ var suites_1 = {
                                                                           "sliceToEnd",
                                                                           (function (param) {
                                                                               return {
-                                                                                      TAG: "Eq",
-                                                                                      _0: "barbaz",
-                                                                                      _1: "foobarbaz".slice(3)
-                                                                                    };
+                                                                                TAG: "Eq",
+                                                                                _0: "barbaz",
+                                                                                _1: "foobarbaz".slice(3)
+                                                                              };
                                                                             })
                                                                         ],
                                                                         tl: {
@@ -453,14 +453,14 @@ var suites_1 = {
                                                                             "split",
                                                                             (function (param) {
                                                                                 return {
-                                                                                        TAG: "Eq",
-                                                                                        _0: [
-                                                                                          "foo",
-                                                                                          "bar",
-                                                                                          "baz"
-                                                                                        ],
-                                                                                        _1: "foo bar baz".split(" ")
-                                                                                      };
+                                                                                  TAG: "Eq",
+                                                                                  _0: [
+                                                                                    "foo",
+                                                                                    "bar",
+                                                                                    "baz"
+                                                                                  ],
+                                                                                  _1: "foo bar baz".split(" ")
+                                                                                };
                                                                               })
                                                                           ],
                                                                           tl: {
@@ -468,13 +468,13 @@ var suites_1 = {
                                                                               "splitAtMost",
                                                                               (function (param) {
                                                                                   return {
-                                                                                          TAG: "Eq",
-                                                                                          _0: [
-                                                                                            "foo",
-                                                                                            "bar"
-                                                                                          ],
-                                                                                          _1: "foo bar baz".split(" ", 2)
-                                                                                        };
+                                                                                    TAG: "Eq",
+                                                                                    _0: [
+                                                                                      "foo",
+                                                                                      "bar"
+                                                                                    ],
+                                                                                    _1: "foo bar baz".split(" ", 2)
+                                                                                  };
                                                                                 })
                                                                             ],
                                                                             tl: {
@@ -482,18 +482,18 @@ var suites_1 = {
                                                                                 "splitByRe",
                                                                                 (function (param) {
                                                                                     return {
-                                                                                            TAG: "Eq",
-                                                                                            _0: [
-                                                                                              "a",
-                                                                                              "#",
-                                                                                              undefined,
-                                                                                              "b",
-                                                                                              "#",
-                                                                                              ":",
-                                                                                              "c"
-                                                                                            ],
-                                                                                            _1: "a#b#:c".split(/(#)(:)?/)
-                                                                                          };
+                                                                                      TAG: "Eq",
+                                                                                      _0: [
+                                                                                        "a",
+                                                                                        "#",
+                                                                                        undefined,
+                                                                                        "b",
+                                                                                        "#",
+                                                                                        ":",
+                                                                                        "c"
+                                                                                      ],
+                                                                                      _1: "a#b#:c".split(/(#)(:)?/)
+                                                                                    };
                                                                                   })
                                                                               ],
                                                                               tl: {
@@ -501,14 +501,14 @@ var suites_1 = {
                                                                                   "splitByReAtMost",
                                                                                   (function (param) {
                                                                                       return {
-                                                                                              TAG: "Eq",
-                                                                                              _0: [
-                                                                                                "a",
-                                                                                                "#",
-                                                                                                undefined
-                                                                                              ],
-                                                                                              _1: "a#b#:c".split(/(#)(:)?/, 3)
-                                                                                            };
+                                                                                        TAG: "Eq",
+                                                                                        _0: [
+                                                                                          "a",
+                                                                                          "#",
+                                                                                          undefined
+                                                                                        ],
+                                                                                        _1: "a#b#:c".split(/(#)(:)?/, 3)
+                                                                                      };
                                                                                     })
                                                                                 ],
                                                                                 tl: {
@@ -516,10 +516,10 @@ var suites_1 = {
                                                                                     "startsWith",
                                                                                     (function (param) {
                                                                                         return {
-                                                                                                TAG: "Eq",
-                                                                                                _0: true,
-                                                                                                _1: "foobarbaz".startsWith("foo")
-                                                                                              };
+                                                                                          TAG: "Eq",
+                                                                                          _0: true,
+                                                                                          _1: "foobarbaz".startsWith("foo")
+                                                                                        };
                                                                                       })
                                                                                   ],
                                                                                   tl: {
@@ -527,10 +527,10 @@ var suites_1 = {
                                                                                       "startsWithFrom",
                                                                                       (function (param) {
                                                                                           return {
-                                                                                                  TAG: "Eq",
-                                                                                                  _0: false,
-                                                                                                  _1: "foobarbaz".startsWith("foo", 1)
-                                                                                                };
+                                                                                            TAG: "Eq",
+                                                                                            _0: false,
+                                                                                            _1: "foobarbaz".startsWith("foo", 1)
+                                                                                          };
                                                                                         })
                                                                                     ],
                                                                                     tl: {
@@ -538,10 +538,10 @@ var suites_1 = {
                                                                                         "substr",
                                                                                         (function (param) {
                                                                                             return {
-                                                                                                    TAG: "Eq",
-                                                                                                    _0: "barbaz",
-                                                                                                    _1: "foobarbaz".substr(3)
-                                                                                                  };
+                                                                                              TAG: "Eq",
+                                                                                              _0: "barbaz",
+                                                                                              _1: "foobarbaz".substr(3)
+                                                                                            };
                                                                                           })
                                                                                       ],
                                                                                       tl: {
@@ -549,10 +549,10 @@ var suites_1 = {
                                                                                           "substrAtMost",
                                                                                           (function (param) {
                                                                                               return {
-                                                                                                      TAG: "Eq",
-                                                                                                      _0: "bar",
-                                                                                                      _1: "foobarbaz".substr(3, 3)
-                                                                                                    };
+                                                                                                TAG: "Eq",
+                                                                                                _0: "bar",
+                                                                                                _1: "foobarbaz".substr(3, 3)
+                                                                                              };
                                                                                             })
                                                                                         ],
                                                                                         tl: {
@@ -560,10 +560,10 @@ var suites_1 = {
                                                                                             "substring",
                                                                                             (function (param) {
                                                                                                 return {
-                                                                                                        TAG: "Eq",
-                                                                                                        _0: "bar",
-                                                                                                        _1: "foobarbaz".substring(3, 6)
-                                                                                                      };
+                                                                                                  TAG: "Eq",
+                                                                                                  _0: "bar",
+                                                                                                  _1: "foobarbaz".substring(3, 6)
+                                                                                                };
                                                                                               })
                                                                                           ],
                                                                                           tl: {
@@ -571,10 +571,10 @@ var suites_1 = {
                                                                                               "substringToEnd",
                                                                                               (function (param) {
                                                                                                   return {
-                                                                                                          TAG: "Eq",
-                                                                                                          _0: "barbaz",
-                                                                                                          _1: "foobarbaz".substring(3)
-                                                                                                        };
+                                                                                                    TAG: "Eq",
+                                                                                                    _0: "barbaz",
+                                                                                                    _1: "foobarbaz".substring(3)
+                                                                                                  };
                                                                                                 })
                                                                                             ],
                                                                                             tl: {
@@ -582,10 +582,10 @@ var suites_1 = {
                                                                                                 "toLowerCase",
                                                                                                 (function (param) {
                                                                                                     return {
-                                                                                                            TAG: "Eq",
-                                                                                                            _0: "bork",
-                                                                                                            _1: "BORK".toLowerCase()
-                                                                                                          };
+                                                                                                      TAG: "Eq",
+                                                                                                      _0: "bork",
+                                                                                                      _1: "BORK".toLowerCase()
+                                                                                                    };
                                                                                                   })
                                                                                               ],
                                                                                               tl: {
@@ -593,10 +593,10 @@ var suites_1 = {
                                                                                                   "toLocaleLowerCase",
                                                                                                   (function (param) {
                                                                                                       return {
-                                                                                                              TAG: "Eq",
-                                                                                                              _0: "bork",
-                                                                                                              _1: "BORK".toLocaleLowerCase()
-                                                                                                            };
+                                                                                                        TAG: "Eq",
+                                                                                                        _0: "bork",
+                                                                                                        _1: "BORK".toLocaleLowerCase()
+                                                                                                      };
                                                                                                     })
                                                                                                 ],
                                                                                                 tl: {
@@ -604,10 +604,10 @@ var suites_1 = {
                                                                                                     "toUpperCase",
                                                                                                     (function (param) {
                                                                                                         return {
-                                                                                                                TAG: "Eq",
-                                                                                                                _0: "FUBAR",
-                                                                                                                _1: "fubar".toUpperCase()
-                                                                                                              };
+                                                                                                          TAG: "Eq",
+                                                                                                          _0: "FUBAR",
+                                                                                                          _1: "fubar".toUpperCase()
+                                                                                                        };
                                                                                                       })
                                                                                                   ],
                                                                                                   tl: {
@@ -615,10 +615,10 @@ var suites_1 = {
                                                                                                       "toLocaleUpperCase",
                                                                                                       (function (param) {
                                                                                                           return {
-                                                                                                                  TAG: "Eq",
-                                                                                                                  _0: "FUBAR",
-                                                                                                                  _1: "fubar".toLocaleUpperCase()
-                                                                                                                };
+                                                                                                            TAG: "Eq",
+                                                                                                            _0: "FUBAR",
+                                                                                                            _1: "fubar".toLocaleUpperCase()
+                                                                                                          };
                                                                                                         })
                                                                                                     ],
                                                                                                     tl: {
@@ -626,10 +626,10 @@ var suites_1 = {
                                                                                                         "trim",
                                                                                                         (function (param) {
                                                                                                             return {
-                                                                                                                    TAG: "Eq",
-                                                                                                                    _0: "foo",
-                                                                                                                    _1: "  foo  ".trim()
-                                                                                                                  };
+                                                                                                              TAG: "Eq",
+                                                                                                              _0: "foo",
+                                                                                                              _1: "  foo  ".trim()
+                                                                                                            };
                                                                                                           })
                                                                                                       ],
                                                                                                       tl: {
@@ -637,10 +637,10 @@ var suites_1 = {
                                                                                                           "anchor",
                                                                                                           (function (param) {
                                                                                                               return {
-                                                                                                                      TAG: "Eq",
-                                                                                                                      _0: "<a name=\"bar\">foo</a>",
-                                                                                                                      _1: "foo".anchor("bar")
-                                                                                                                    };
+                                                                                                                TAG: "Eq",
+                                                                                                                _0: "<a name=\"bar\">foo</a>",
+                                                                                                                _1: "foo".anchor("bar")
+                                                                                                              };
                                                                                                             })
                                                                                                         ],
                                                                                                         tl: {
@@ -648,10 +648,10 @@ var suites_1 = {
                                                                                                             "link",
                                                                                                             (function (param) {
                                                                                                                 return {
-                                                                                                                        TAG: "Eq",
-                                                                                                                        _0: "<a href=\"https://reason.ml\">foo</a>",
-                                                                                                                        _1: "foo".link("https://reason.ml")
-                                                                                                                      };
+                                                                                                                  TAG: "Eq",
+                                                                                                                  _0: "<a href=\"https://reason.ml\">foo</a>",
+                                                                                                                  _1: "foo".link("https://reason.ml")
+                                                                                                                };
                                                                                                               })
                                                                                                           ],
                                                                                                           tl: {
@@ -659,9 +659,9 @@ var suites_1 = {
                                                                                                               "File \"js_string_test.res\", line 138, characters 5-12",
                                                                                                               (function (param) {
                                                                                                                   return {
-                                                                                                                          TAG: "Ok",
-                                                                                                                          _0: "ab".includes("a")
-                                                                                                                        };
+                                                                                                                    TAG: "Ok",
+                                                                                                                    _0: "ab".includes("a")
+                                                                                                                  };
                                                                                                                 })
                                                                                                             ],
                                                                                                             tl: /* [] */0

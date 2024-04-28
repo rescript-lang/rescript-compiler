@@ -28,10 +28,10 @@ function hd(x) {
     return x.hd;
   }
   throw {
-        RE_EXN_ID: "Failure",
-        _1: "hd",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Failure",
+    _1: "hd",
+    Error: new Error()
+  };
 }
 
 function tl(x) {
@@ -39,19 +39,19 @@ function tl(x) {
     return x.tl;
   }
   throw {
-        RE_EXN_ID: "Failure",
-        _1: "tl",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Failure",
+    _1: "tl",
+    Error: new Error()
+  };
 }
 
 function nth(l, n) {
   if (n < 0) {
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.nth",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.nth",
+      Error: new Error()
+    };
   }
   var _l = l;
   var _n = n;
@@ -67,10 +67,10 @@ function nth(l, n) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Failure",
-          _1: "nth",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Failure",
+      _1: "nth",
+      Error: new Error()
+    };
   };
 }
 
@@ -108,9 +108,9 @@ function map(f, x) {
   }
   var r = Curry._1(f, x.hd);
   return {
-          hd: r,
-          tl: map(f, x.tl)
-        };
+    hd: r,
+    tl: map(f, x.tl)
+  };
 }
 
 function mapi(i, f, x) {
@@ -119,9 +119,9 @@ function mapi(i, f, x) {
   }
   var r = Curry._2(f, i, x.hd);
   return {
-          hd: r,
-          tl: mapi(i + 1 | 0, f, x.tl)
-        };
+    hd: r,
+    tl: mapi(i + 1 | 0, f, x.tl)
+  };
 }
 
 function mapi$1(f, l) {
@@ -200,24 +200,24 @@ function map2(f, l1, l2) {
     if (l2) {
       var r = Curry._2(f, l1.hd, l2.hd);
       return {
-              hd: r,
-              tl: map2(f, l1.tl, l2.tl)
-            };
+        hd: r,
+        tl: map2(f, l1.tl, l2.tl)
+      };
     }
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.map2",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.map2",
+      Error: new Error()
+    };
   }
   if (!l2) {
     return /* [] */0;
   }
   throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.map2",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Invalid_argument",
+    _1: "List.map2",
+    Error: new Error()
+  };
 }
 
 function rev_map2(f, l1, l2) {
@@ -239,17 +239,17 @@ function rev_map2(f, l1, l2) {
         continue ;
       }
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "List.rev_map2",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.rev_map2",
+        Error: new Error()
+      };
     }
     if (l2$1) {
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "List.rev_map2",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.rev_map2",
+        Error: new Error()
+      };
     }
     return accu;
   };
@@ -267,19 +267,19 @@ function iter2(f, _l1, _l2) {
         continue ;
       }
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "List.iter2",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.iter2",
+        Error: new Error()
+      };
     }
     if (!l2) {
       return;
     }
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.iter2",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.iter2",
+      Error: new Error()
+    };
   };
 }
 
@@ -296,17 +296,17 @@ function fold_left2(f, _accu, _l1, _l2) {
         continue ;
       }
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "List.fold_left2",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.fold_left2",
+        Error: new Error()
+      };
     }
     if (l2) {
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "List.fold_left2",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.fold_left2",
+        Error: new Error()
+      };
     }
     return accu;
   };
@@ -318,17 +318,17 @@ function fold_right2(f, l1, l2, accu) {
       return Curry._3(f, l1.hd, l2.hd, fold_right2(f, l1.tl, l2.tl, accu));
     }
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.fold_right2",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.fold_right2",
+      Error: new Error()
+    };
   }
   if (l2) {
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.fold_right2",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.fold_right2",
+      Error: new Error()
+    };
   }
   return accu;
 }
@@ -375,19 +375,19 @@ function for_all2(p, _l1, _l2) {
         continue ;
       }
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "List.for_all2",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.for_all2",
+        Error: new Error()
+      };
     }
     if (!l2) {
       return true;
     }
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.for_all2",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.for_all2",
+      Error: new Error()
+    };
   };
 }
 
@@ -405,19 +405,19 @@ function exists2(p, _l1, _l2) {
         continue ;
       }
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "List.exists2",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.exists2",
+        Error: new Error()
+      };
     }
     if (!l2) {
       return false;
     }
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.exists2",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.exists2",
+      Error: new Error()
+    };
   };
 }
 
@@ -461,9 +461,9 @@ function assoc(x, _x_) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Not_found",
+      Error: new Error()
+    };
   };
 }
 
@@ -479,9 +479,9 @@ function assq(x, _x_) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Not_found",
+      Error: new Error()
+    };
   };
 }
 
@@ -523,9 +523,9 @@ function remove_assoc(x, x_) {
     return l;
   } else {
     return {
-            hd: pair,
-            tl: remove_assoc(x, l)
-          };
+      hd: pair,
+      tl: remove_assoc(x, l)
+    };
   }
 }
 
@@ -539,9 +539,9 @@ function remove_assq(x, x_) {
     return l;
   } else {
     return {
-            hd: pair,
-            tl: remove_assq(x, l)
-          };
+      hd: pair,
+      tl: remove_assq(x, l)
+    };
   }
 }
 
@@ -557,9 +557,9 @@ function find(p, _x) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Not_found",
+      Error: new Error()
+    };
   };
 }
 
@@ -599,9 +599,9 @@ function partition(p, l) {
     var yes = _yes;
     if (!x) {
       return [
-              rev_append(yes, /* [] */0),
-              rev_append(no, /* [] */0)
-            ];
+        rev_append(yes, /* [] */0),
+        rev_append(no, /* [] */0)
+      ];
     }
     var l$1 = x.tl;
     var x$1 = x.hd;
@@ -625,49 +625,49 @@ function partition(p, l) {
 function split(x) {
   if (!x) {
     return [
-            /* [] */0,
-            /* [] */0
-          ];
+      /* [] */0,
+      /* [] */0
+    ];
   }
   var match = x.hd;
   var match$1 = split(x.tl);
   return [
-          {
-            hd: match[0],
-            tl: match$1[0]
-          },
-          {
-            hd: match[1],
-            tl: match$1[1]
-          }
-        ];
+    {
+      hd: match[0],
+      tl: match$1[0]
+    },
+    {
+      hd: match[1],
+      tl: match$1[1]
+    }
+  ];
 }
 
 function combine(l1, l2) {
   if (l1) {
     if (l2) {
       return {
-              hd: [
-                l1.hd,
-                l2.hd
-              ],
-              tl: combine(l1.tl, l2.tl)
-            };
+        hd: [
+          l1.hd,
+          l2.hd
+        ],
+        tl: combine(l1.tl, l2.tl)
+      };
     }
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.combine",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.combine",
+      Error: new Error()
+    };
   }
   if (!l2) {
     return /* [] */0;
   }
   throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.combine",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Invalid_argument",
+    _1: "List.combine",
+    Error: new Error()
+  };
 }
 
 function merge(cmp, l1, l2) {
@@ -681,14 +681,14 @@ function merge(cmp, l1, l2) {
   var h1 = l1.hd;
   if (Curry._2(cmp, h1, h2) <= 0) {
     return {
-            hd: h1,
-            tl: merge(cmp, l1.tl, l2)
-          };
+      hd: h1,
+      tl: merge(cmp, l1.tl, l2)
+    };
   } else {
     return {
-            hd: h2,
-            tl: merge(cmp, l1, l2.tl)
-          };
+      hd: h2,
+      tl: merge(cmp, l1, l2.tl)
+    };
   }
 }
 
@@ -705,14 +705,14 @@ function chop(_k, _l) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "test_list.res",
-            343,
-            11
-          ],
-          Error: new Error()
-        };
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "test_list.res",
+        343,
+        11
+      ],
+      Error: new Error()
+    };
   };
 }
 
@@ -730,71 +730,71 @@ function stable_sort(cmp, l) {
             if (Curry._2(cmp, x1, x2) <= 0) {
               if (Curry._2(cmp, x2, x3) <= 0) {
                 return {
-                        hd: x1,
-                        tl: {
-                          hd: x2,
-                          tl: {
-                            hd: x3,
-                            tl: /* [] */0
-                          }
-                        }
-                      };
+                  hd: x1,
+                  tl: {
+                    hd: x2,
+                    tl: {
+                      hd: x3,
+                      tl: /* [] */0
+                    }
+                  }
+                };
               } else if (Curry._2(cmp, x1, x3) <= 0) {
                 return {
-                        hd: x1,
-                        tl: {
-                          hd: x3,
-                          tl: {
-                            hd: x2,
-                            tl: /* [] */0
-                          }
-                        }
-                      };
+                  hd: x1,
+                  tl: {
+                    hd: x3,
+                    tl: {
+                      hd: x2,
+                      tl: /* [] */0
+                    }
+                  }
+                };
               } else {
                 return {
-                        hd: x3,
-                        tl: {
-                          hd: x1,
-                          tl: {
-                            hd: x2,
-                            tl: /* [] */0
-                          }
-                        }
-                      };
+                  hd: x3,
+                  tl: {
+                    hd: x1,
+                    tl: {
+                      hd: x2,
+                      tl: /* [] */0
+                    }
+                  }
+                };
               }
             } else if (Curry._2(cmp, x1, x3) <= 0) {
               return {
-                      hd: x2,
-                      tl: {
-                        hd: x1,
-                        tl: {
-                          hd: x3,
-                          tl: /* [] */0
-                        }
-                      }
-                    };
+                hd: x2,
+                tl: {
+                  hd: x1,
+                  tl: {
+                    hd: x3,
+                    tl: /* [] */0
+                  }
+                }
+              };
             } else if (Curry._2(cmp, x2, x3) <= 0) {
               return {
-                      hd: x2,
-                      tl: {
-                        hd: x3,
-                        tl: {
-                          hd: x1,
-                          tl: /* [] */0
-                        }
-                      }
-                    };
+                hd: x2,
+                tl: {
+                  hd: x3,
+                  tl: {
+                    hd: x1,
+                    tl: /* [] */0
+                  }
+                }
+              };
             } else {
               return {
-                      hd: x3,
-                      tl: {
-                        hd: x2,
-                        tl: {
-                          hd: x1,
-                          tl: /* [] */0
-                        }
-                      }
-                    };
+                hd: x3,
+                tl: {
+                  hd: x2,
+                  tl: {
+                    hd: x1,
+                    tl: /* [] */0
+                  }
+                }
+              };
             }
           }
           
@@ -809,20 +809,20 @@ function stable_sort(cmp, l) {
         var x1$1 = l.hd;
         if (Curry._2(cmp, x1$1, x2$1) <= 0) {
           return {
-                  hd: x1$1,
-                  tl: {
-                    hd: x2$1,
-                    tl: /* [] */0
-                  }
-                };
+            hd: x1$1,
+            tl: {
+              hd: x2$1,
+              tl: /* [] */0
+            }
+          };
         } else {
           return {
-                  hd: x2$1,
-                  tl: {
-                    hd: x1$1,
-                    tl: /* [] */0
-                  }
-                };
+            hd: x2$1,
+            tl: {
+              hd: x1$1,
+              tl: /* [] */0
+            }
+          };
         }
       }
       
@@ -876,71 +876,71 @@ function stable_sort(cmp, l) {
             if (Curry._2(cmp, x1, x2) > 0) {
               if (Curry._2(cmp, x2, x3) > 0) {
                 return {
-                        hd: x1,
-                        tl: {
-                          hd: x2,
-                          tl: {
-                            hd: x3,
-                            tl: /* [] */0
-                          }
-                        }
-                      };
+                  hd: x1,
+                  tl: {
+                    hd: x2,
+                    tl: {
+                      hd: x3,
+                      tl: /* [] */0
+                    }
+                  }
+                };
               } else if (Curry._2(cmp, x1, x3) > 0) {
                 return {
-                        hd: x1,
-                        tl: {
-                          hd: x3,
-                          tl: {
-                            hd: x2,
-                            tl: /* [] */0
-                          }
-                        }
-                      };
+                  hd: x1,
+                  tl: {
+                    hd: x3,
+                    tl: {
+                      hd: x2,
+                      tl: /* [] */0
+                    }
+                  }
+                };
               } else {
                 return {
-                        hd: x3,
-                        tl: {
-                          hd: x1,
-                          tl: {
-                            hd: x2,
-                            tl: /* [] */0
-                          }
-                        }
-                      };
+                  hd: x3,
+                  tl: {
+                    hd: x1,
+                    tl: {
+                      hd: x2,
+                      tl: /* [] */0
+                    }
+                  }
+                };
               }
             } else if (Curry._2(cmp, x1, x3) > 0) {
               return {
-                      hd: x2,
-                      tl: {
-                        hd: x1,
-                        tl: {
-                          hd: x3,
-                          tl: /* [] */0
-                        }
-                      }
-                    };
+                hd: x2,
+                tl: {
+                  hd: x1,
+                  tl: {
+                    hd: x3,
+                    tl: /* [] */0
+                  }
+                }
+              };
             } else if (Curry._2(cmp, x2, x3) > 0) {
               return {
-                      hd: x2,
-                      tl: {
-                        hd: x3,
-                        tl: {
-                          hd: x1,
-                          tl: /* [] */0
-                        }
-                      }
-                    };
+                hd: x2,
+                tl: {
+                  hd: x3,
+                  tl: {
+                    hd: x1,
+                    tl: /* [] */0
+                  }
+                }
+              };
             } else {
               return {
-                      hd: x3,
-                      tl: {
-                        hd: x2,
-                        tl: {
-                          hd: x1,
-                          tl: /* [] */0
-                        }
-                      }
-                    };
+                hd: x3,
+                tl: {
+                  hd: x2,
+                  tl: {
+                    hd: x1,
+                    tl: /* [] */0
+                  }
+                }
+              };
             }
           }
           
@@ -955,20 +955,20 @@ function stable_sort(cmp, l) {
         var x1$1 = l.hd;
         if (Curry._2(cmp, x1$1, x2$1) > 0) {
           return {
-                  hd: x1$1,
-                  tl: {
-                    hd: x2$1,
-                    tl: /* [] */0
-                  }
-                };
+            hd: x1$1,
+            tl: {
+              hd: x2$1,
+              tl: /* [] */0
+            }
+          };
         } else {
           return {
-                  hd: x2$1,
-                  tl: {
-                    hd: x1$1,
-                    tl: /* [] */0
-                  }
-                };
+            hd: x2$1,
+            tl: {
+              hd: x1$1,
+              tl: /* [] */0
+            }
+          };
         }
       }
       
@@ -1033,136 +1033,136 @@ function sort_uniq(cmp, l) {
               var c$1 = Curry._2(cmp, x2, x3);
               if (c$1 === 0) {
                 return {
-                        hd: x2,
-                        tl: /* [] */0
-                      };
+                  hd: x2,
+                  tl: /* [] */0
+                };
               } else if (c$1 < 0) {
                 return {
-                        hd: x2,
-                        tl: {
-                          hd: x3,
-                          tl: /* [] */0
-                        }
-                      };
+                  hd: x2,
+                  tl: {
+                    hd: x3,
+                    tl: /* [] */0
+                  }
+                };
               } else {
                 return {
-                        hd: x3,
-                        tl: {
-                          hd: x2,
-                          tl: /* [] */0
-                        }
-                      };
+                  hd: x3,
+                  tl: {
+                    hd: x2,
+                    tl: /* [] */0
+                  }
+                };
               }
             }
             if (c < 0) {
               var c$2 = Curry._2(cmp, x2, x3);
               if (c$2 === 0) {
                 return {
-                        hd: x1,
-                        tl: {
-                          hd: x2,
-                          tl: /* [] */0
-                        }
-                      };
+                  hd: x1,
+                  tl: {
+                    hd: x2,
+                    tl: /* [] */0
+                  }
+                };
               }
               if (c$2 < 0) {
                 return {
-                        hd: x1,
-                        tl: {
-                          hd: x2,
-                          tl: {
-                            hd: x3,
-                            tl: /* [] */0
-                          }
-                        }
-                      };
+                  hd: x1,
+                  tl: {
+                    hd: x2,
+                    tl: {
+                      hd: x3,
+                      tl: /* [] */0
+                    }
+                  }
+                };
               }
               var c$3 = Curry._2(cmp, x1, x3);
               if (c$3 === 0) {
                 return {
-                        hd: x1,
-                        tl: {
-                          hd: x2,
-                          tl: /* [] */0
-                        }
-                      };
+                  hd: x1,
+                  tl: {
+                    hd: x2,
+                    tl: /* [] */0
+                  }
+                };
               } else if (c$3 < 0) {
                 return {
-                        hd: x1,
-                        tl: {
-                          hd: x3,
-                          tl: {
-                            hd: x2,
-                            tl: /* [] */0
-                          }
-                        }
-                      };
+                  hd: x1,
+                  tl: {
+                    hd: x3,
+                    tl: {
+                      hd: x2,
+                      tl: /* [] */0
+                    }
+                  }
+                };
               } else {
                 return {
-                        hd: x3,
-                        tl: {
-                          hd: x1,
-                          tl: {
-                            hd: x2,
-                            tl: /* [] */0
-                          }
-                        }
-                      };
+                  hd: x3,
+                  tl: {
+                    hd: x1,
+                    tl: {
+                      hd: x2,
+                      tl: /* [] */0
+                    }
+                  }
+                };
               }
             }
             var c$4 = Curry._2(cmp, x1, x3);
             if (c$4 === 0) {
               return {
-                      hd: x2,
-                      tl: {
-                        hd: x1,
-                        tl: /* [] */0
-                      }
-                    };
+                hd: x2,
+                tl: {
+                  hd: x1,
+                  tl: /* [] */0
+                }
+              };
             }
             if (c$4 < 0) {
               return {
-                      hd: x2,
-                      tl: {
-                        hd: x1,
-                        tl: {
-                          hd: x3,
-                          tl: /* [] */0
-                        }
-                      }
-                    };
+                hd: x2,
+                tl: {
+                  hd: x1,
+                  tl: {
+                    hd: x3,
+                    tl: /* [] */0
+                  }
+                }
+              };
             }
             var c$5 = Curry._2(cmp, x2, x3);
             if (c$5 === 0) {
               return {
-                      hd: x2,
-                      tl: {
-                        hd: x1,
-                        tl: /* [] */0
-                      }
-                    };
+                hd: x2,
+                tl: {
+                  hd: x1,
+                  tl: /* [] */0
+                }
+              };
             } else if (c$5 < 0) {
               return {
-                      hd: x2,
-                      tl: {
-                        hd: x3,
-                        tl: {
-                          hd: x1,
-                          tl: /* [] */0
-                        }
-                      }
-                    };
+                hd: x2,
+                tl: {
+                  hd: x3,
+                  tl: {
+                    hd: x1,
+                    tl: /* [] */0
+                  }
+                }
+              };
             } else {
               return {
-                      hd: x3,
-                      tl: {
-                        hd: x2,
-                        tl: {
-                          hd: x1,
-                          tl: /* [] */0
-                        }
-                      }
-                    };
+                hd: x3,
+                tl: {
+                  hd: x2,
+                  tl: {
+                    hd: x1,
+                    tl: /* [] */0
+                  }
+                }
+              };
             }
           }
           
@@ -1178,25 +1178,25 @@ function sort_uniq(cmp, l) {
         var c$6 = Curry._2(cmp, x1$1, x2$1);
         if (c$6 === 0) {
           return {
-                  hd: x1$1,
-                  tl: /* [] */0
-                };
+            hd: x1$1,
+            tl: /* [] */0
+          };
         } else if (c$6 < 0) {
           return {
-                  hd: x1$1,
-                  tl: {
-                    hd: x2$1,
-                    tl: /* [] */0
-                  }
-                };
+            hd: x1$1,
+            tl: {
+              hd: x2$1,
+              tl: /* [] */0
+            }
+          };
         } else {
           return {
-                  hd: x2$1,
-                  tl: {
-                    hd: x1$1,
-                    tl: /* [] */0
-                  }
-                };
+            hd: x2$1,
+            tl: {
+              hd: x1$1,
+              tl: /* [] */0
+            }
+          };
         }
       }
       
@@ -1264,136 +1264,136 @@ function sort_uniq(cmp, l) {
               var c$1 = Curry._2(cmp, x2, x3);
               if (c$1 === 0) {
                 return {
-                        hd: x2,
-                        tl: /* [] */0
-                      };
+                  hd: x2,
+                  tl: /* [] */0
+                };
               } else if (c$1 > 0) {
                 return {
-                        hd: x2,
-                        tl: {
-                          hd: x3,
-                          tl: /* [] */0
-                        }
-                      };
+                  hd: x2,
+                  tl: {
+                    hd: x3,
+                    tl: /* [] */0
+                  }
+                };
               } else {
                 return {
-                        hd: x3,
-                        tl: {
-                          hd: x2,
-                          tl: /* [] */0
-                        }
-                      };
+                  hd: x3,
+                  tl: {
+                    hd: x2,
+                    tl: /* [] */0
+                  }
+                };
               }
             }
             if (c > 0) {
               var c$2 = Curry._2(cmp, x2, x3);
               if (c$2 === 0) {
                 return {
-                        hd: x1,
-                        tl: {
-                          hd: x2,
-                          tl: /* [] */0
-                        }
-                      };
+                  hd: x1,
+                  tl: {
+                    hd: x2,
+                    tl: /* [] */0
+                  }
+                };
               }
               if (c$2 > 0) {
                 return {
-                        hd: x1,
-                        tl: {
-                          hd: x2,
-                          tl: {
-                            hd: x3,
-                            tl: /* [] */0
-                          }
-                        }
-                      };
+                  hd: x1,
+                  tl: {
+                    hd: x2,
+                    tl: {
+                      hd: x3,
+                      tl: /* [] */0
+                    }
+                  }
+                };
               }
               var c$3 = Curry._2(cmp, x1, x3);
               if (c$3 === 0) {
                 return {
-                        hd: x1,
-                        tl: {
-                          hd: x2,
-                          tl: /* [] */0
-                        }
-                      };
+                  hd: x1,
+                  tl: {
+                    hd: x2,
+                    tl: /* [] */0
+                  }
+                };
               } else if (c$3 > 0) {
                 return {
-                        hd: x1,
-                        tl: {
-                          hd: x3,
-                          tl: {
-                            hd: x2,
-                            tl: /* [] */0
-                          }
-                        }
-                      };
+                  hd: x1,
+                  tl: {
+                    hd: x3,
+                    tl: {
+                      hd: x2,
+                      tl: /* [] */0
+                    }
+                  }
+                };
               } else {
                 return {
-                        hd: x3,
-                        tl: {
-                          hd: x1,
-                          tl: {
-                            hd: x2,
-                            tl: /* [] */0
-                          }
-                        }
-                      };
+                  hd: x3,
+                  tl: {
+                    hd: x1,
+                    tl: {
+                      hd: x2,
+                      tl: /* [] */0
+                    }
+                  }
+                };
               }
             }
             var c$4 = Curry._2(cmp, x1, x3);
             if (c$4 === 0) {
               return {
-                      hd: x2,
-                      tl: {
-                        hd: x1,
-                        tl: /* [] */0
-                      }
-                    };
+                hd: x2,
+                tl: {
+                  hd: x1,
+                  tl: /* [] */0
+                }
+              };
             }
             if (c$4 > 0) {
               return {
-                      hd: x2,
-                      tl: {
-                        hd: x1,
-                        tl: {
-                          hd: x3,
-                          tl: /* [] */0
-                        }
-                      }
-                    };
+                hd: x2,
+                tl: {
+                  hd: x1,
+                  tl: {
+                    hd: x3,
+                    tl: /* [] */0
+                  }
+                }
+              };
             }
             var c$5 = Curry._2(cmp, x2, x3);
             if (c$5 === 0) {
               return {
-                      hd: x2,
-                      tl: {
-                        hd: x1,
-                        tl: /* [] */0
-                      }
-                    };
+                hd: x2,
+                tl: {
+                  hd: x1,
+                  tl: /* [] */0
+                }
+              };
             } else if (c$5 > 0) {
               return {
-                      hd: x2,
-                      tl: {
-                        hd: x3,
-                        tl: {
-                          hd: x1,
-                          tl: /* [] */0
-                        }
-                      }
-                    };
+                hd: x2,
+                tl: {
+                  hd: x3,
+                  tl: {
+                    hd: x1,
+                    tl: /* [] */0
+                  }
+                }
+              };
             } else {
               return {
-                      hd: x3,
-                      tl: {
-                        hd: x2,
-                        tl: {
-                          hd: x1,
-                          tl: /* [] */0
-                        }
-                      }
-                    };
+                hd: x3,
+                tl: {
+                  hd: x2,
+                  tl: {
+                    hd: x1,
+                    tl: /* [] */0
+                  }
+                }
+              };
             }
           }
           
@@ -1409,25 +1409,25 @@ function sort_uniq(cmp, l) {
         var c$6 = Curry._2(cmp, x1$1, x2$1);
         if (c$6 === 0) {
           return {
-                  hd: x1$1,
-                  tl: /* [] */0
-                };
+            hd: x1$1,
+            tl: /* [] */0
+          };
         } else if (c$6 > 0) {
           return {
-                  hd: x1$1,
-                  tl: {
-                    hd: x2$1,
-                    tl: /* [] */0
-                  }
-                };
+            hd: x1$1,
+            tl: {
+              hd: x2$1,
+              tl: /* [] */0
+            }
+          };
         } else {
           return {
-                  hd: x2$1,
-                  tl: {
-                    hd: x1$1,
-                    tl: /* [] */0
-                  }
-                };
+            hd: x2$1,
+            tl: {
+              hd: x1$1,
+              tl: /* [] */0
+            }
+          };
         }
       }
       

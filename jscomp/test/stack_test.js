@@ -31,19 +31,19 @@ var suites_0 = [
   "push_test",
   (function (param) {
       return {
-              TAG: "Eq",
-              _0: {
-                hd: 1,
-                tl: {
-                  hd: 4,
-                  tl: {
-                    hd: 3,
-                    tl: /* [] */0
-                  }
-                }
-              },
-              _1: v()
-            };
+        TAG: "Eq",
+        _0: {
+          hd: 1,
+          tl: {
+            hd: 4,
+            tl: {
+              hd: 3,
+              tl: /* [] */0
+            }
+          }
+        },
+        _1: v()
+      };
     })
 ];
 

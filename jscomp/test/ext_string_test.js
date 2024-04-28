@@ -26,9 +26,9 @@ function split_by(keep_emptyOpt, is_delim, str) {
         return acc;
       } else {
         return {
-                hd: $$String.sub(str, 0, last_pos),
-                tl: acc
-              };
+          hd: $$String.sub(str, 0, last_pos),
+          tl: acc
+        };
       }
     }
     if (Curry._1(is_delim, Caml_string.get(str, pos))) {
@@ -84,19 +84,19 @@ function split(keep_empty, str, on) {
     return /* [] */0;
   } else {
     return split_by(keep_empty, (function (x) {
-                  return x === on;
-                }), str);
+            return x === on;
+          }), str);
   }
 }
 
 function quick_split_by_ws(str) {
   return split_by(false, (function (x) {
-                if (x === /* '\t' */9 || x === /* '\n' */10) {
-                  return true;
-                } else {
-                  return x === /* ' ' */32;
-                }
-              }), str);
+          if (x === /* '\t' */9 || x === /* '\n' */10) {
+            return true;
+          } else {
+            return x === /* ' ' */32;
+          }
+        }), str);
 }
 
 function starts_with(s, beg) {
@@ -149,8 +149,8 @@ function ends_with_then_chop(s, beg) {
 
 function check_any_suffix_case(s, suffixes) {
   return List.exists((function (x) {
-                return ends_with(s, x);
-              }), suffixes);
+          return ends_with(s, x);
+        }), suffixes);
 }
 
 function check_any_suffix_case_then_chop(s, suffixes) {
@@ -219,10 +219,10 @@ function for_all_range(s, start, finish, p) {
   var len = s.length;
   if (start < 0 || finish >= len) {
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_string_test.for_all_range",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Ext_string_test.for_all_range",
+      Error: new Error()
+    };
   }
   return unsafe_for_all_range(s, start, finish, p);
 }
@@ -274,9 +274,9 @@ function find(startOpt, sub, s) {
     while((i + n | 0) <= s_len) {
       if (unsafe_is_sub(sub, 0, s, i, n)) {
         throw {
-              RE_EXN_ID: Local_exit,
-              Error: new Error()
-            };
+          RE_EXN_ID: Local_exit,
+          Error: new Error()
+        };
       }
       i = i + 1 | 0;
     };
@@ -299,10 +299,10 @@ function non_overlap_count(sub, s) {
   var sub_len = sub.length;
   if (sub.length === 0) {
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_string_test.non_overlap_count",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Ext_string_test.non_overlap_count",
+      Error: new Error()
+    };
   }
   var _acc = 0;
   var _off = 0;
@@ -326,9 +326,9 @@ function rfind(sub, s) {
     while(i >= 0) {
       if (unsafe_is_sub(sub, 0, s, i, n)) {
         throw {
-              RE_EXN_ID: Local_exit,
-              Error: new Error()
-            };
+          RE_EXN_ID: Local_exit,
+          Error: new Error()
+        };
       }
       i = i - 1 | 0;
     };
@@ -350,10 +350,10 @@ function tail_from(s, x) {
   }
   var s$1 = "Ext_string_test.tail_from " + (s + (" : " + String(x)));
   throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: s$1,
-        Error: new Error()
-      };
+    RE_EXN_ID: "Invalid_argument",
+    _1: s$1,
+    Error: new Error()
+  };
 }
 
 function digits_of_str(s, offset, x) {
@@ -444,18 +444,18 @@ function is_valid_module_file(s) {
     return false;
   }
   return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
-                if (x >= 65) {
-                  if (x > 96 || x < 91) {
-                    return x < 123;
-                  } else {
-                    return x === 95;
-                  }
-                } else if (x >= 48) {
-                  return x < 58;
-                } else {
-                  return x === 39;
-                }
-              }));
+          if (x >= 65) {
+            if (x > 96 || x < 91) {
+              return x < 123;
+            } else {
+              return x === 95;
+            }
+          } else if (x >= 48) {
+            return x < 58;
+          } else {
+            return x === 39;
+          }
+        }));
 }
 
 function is_valid_npm_package_name(s) {
@@ -476,18 +476,18 @@ function is_valid_npm_package_name(s) {
     return false;
   }
   return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
-                if (x >= 58) {
-                  if (x >= 97) {
-                    return x < 123;
-                  } else {
-                    return x === 95;
-                  }
-                } else if (x !== 45) {
-                  return x >= 48;
-                } else {
-                  return true;
-                }
-              }));
+          if (x >= 58) {
+            if (x >= 97) {
+              return x < 123;
+            } else {
+              return x === 95;
+            }
+          } else if (x !== 45) {
+            return x >= 48;
+          } else {
+            return true;
+          }
+        }));
 }
 
 function is_valid_source_name(name) {
@@ -547,10 +547,10 @@ function no_char(x, ch, i, len) {
   var str_len = x.length;
   if (i < 0 || i >= str_len || len >= str_len) {
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_string_test.no_char",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Ext_string_test.no_char",
+      Error: new Error()
+    };
   }
   return unsafe_no_char(x, ch, i, len);
 }
@@ -569,12 +569,12 @@ function replace_slash_backward(x) {
     return x;
   } else {
     return $$String.map((function (x) {
-                  if (x !== 47) {
-                    return x;
-                  } else {
-                    return /* '\\' */92;
-                  }
-                }), x);
+            if (x !== 47) {
+              return x;
+            } else {
+              return /* '\\' */92;
+            }
+          }), x);
   }
 }
 
@@ -584,12 +584,12 @@ function replace_backward_slash(x) {
     return x;
   } else {
     return $$String.map((function (x) {
-                  if (x !== 92) {
-                    return x;
-                  } else {
-                    return /* '/' */47;
-                  }
-                }), x);
+            if (x !== 92) {
+              return x;
+            } else {
+              return /* '/' */47;
+            }
+          }), x);
   }
 }
 

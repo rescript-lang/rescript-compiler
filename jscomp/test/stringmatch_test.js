@@ -12,38 +12,38 @@ function tst01(s) {
 
 if (tst01("") !== 0) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          22,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      22,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst01("\x00\x00\x00\x03") !== 1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          23,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      23,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst01("\x00\x00\x00\x00\x00\x00\x00\x07") !== 1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          24,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      24,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 function tst02(s) {
@@ -53,25 +53,25 @@ function tst02(s) {
       return 1;
     }
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "stringmatch_test.res",
-            33,
-            21
-          ],
-          Error: new Error()
-        };
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "stringmatch_test.res",
+        33,
+        21
+      ],
+      Error: new Error()
+    };
   }
   if (len === 0) {
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "stringmatch_test.res",
-            35,
-            21
-          ],
-          Error: new Error()
-        };
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "stringmatch_test.res",
+        35,
+        21
+      ],
+      Error: new Error()
+    };
   }
   if (s === "A") {
     return 2;
@@ -82,62 +82,62 @@ function tst02(s) {
 
 if (tst02("") !== 1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          42,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      42,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst02("A") !== 2) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          43,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      43,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst02("B") !== 3) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          44,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      44,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst02("\x00\x00\x00\x00\x00\x00\x00\x07") !== 3) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          45,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      45,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst02("\x00\x00\x00\x03") !== 3) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          46,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      46,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 function tst03(s) {
@@ -197,578 +197,578 @@ function tst03(s) {
 
 if (tst03("get_const") !== 0) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          131,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      131,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("set_congt") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          132,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      132,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("get_var") !== 1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          133,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      133,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("gat_ver") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          134,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      134,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("get_env") !== 2) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          135,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      135,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("get_env") !== 2) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          136,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      136,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("get_meth") !== 3) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          137,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      137,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("met_geth") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          138,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      138,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("set_var") !== 4) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          139,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      139,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("sev_tar") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          140,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      140,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_const") !== 5) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          141,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      141,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("ppa_const") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          142,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      142,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_var") !== 6) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          143,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      143,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_var") !== 6) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          144,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      144,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_env") !== 7) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          145,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      145,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("epp_anv") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          146,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      146,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_meth") !== 8) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          147,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      147,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("atp_meph") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          148,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      148,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_const_const") !== 9) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          149,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      149,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_const_const") !== 9) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          150,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      150,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_const_var") !== 10) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          151,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      151,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("atp_consp_var") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          152,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      152,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_const_env") !== 11) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          153,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      153,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_constne_v") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          154,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      154,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_const_meth") !== 12) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          155,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      155,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("spp_conat_meth") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          156,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      156,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_var_const") !== 13) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          157,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      157,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_va_rconst") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          158,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      158,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_env_const") !== 14) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          159,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      159,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_env_const") !== 14) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          160,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      160,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_meth_const") !== 15) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          161,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      161,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("app_teth_consm") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          162,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      162,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("meth_app_const") !== 16) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          163,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      163,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("math_epp_const") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          164,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      164,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("meth_app_var") !== 17) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          165,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      165,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("meth_app_var") !== 17) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          166,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      166,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("meth_app_env") !== 18) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          167,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      167,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("eeth_app_mnv") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          168,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      168,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("meth_app_meth") !== 19) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          169,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      169,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("meth_apt_meph") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          170,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      170,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("send_const") !== 20) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          171,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      171,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("tend_conss") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          172,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      172,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("send_var") !== 21) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          173,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      173,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("serd_van") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          174,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      174,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("send_env") !== 22) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          175,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      175,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("sen_denv") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          176,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      176,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("send_meth") !== 23) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          177,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      177,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst03("tend_mesh") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          178,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      178,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 function tst04(s) {
@@ -804,230 +804,230 @@ function tst04(s) {
 
 if (tst04("AAAAAAAA") !== 0) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          215,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      215,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("AAAAAAAAAAAAAAAA") !== 1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          216,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      216,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("AAAAAAAAAAAAAAAAAAAAAAAA") !== 2) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          217,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      217,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA") !== 3) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          218,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      218,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("BBBBBBBB") !== 4) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          219,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      219,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("BBBBBBBBBBBBBBBB") !== 5) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          220,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      220,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("BBBBBBBBBBBBBBBBBBBBBBBB") !== 6) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          221,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      221,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB") !== 7) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          222,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      222,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("CCCCCCCC") !== 8) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          223,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      223,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("CCCCCCCCCCCCCCCC") !== 9) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          224,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      224,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("CCCCCCCCCCCCCCCCCCCCCCCC") !== 10) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          225,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      225,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC") !== 11) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          226,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      226,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          227,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      227,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("DDD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          228,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      228,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("DDDDDDD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          229,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      229,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("AAADDDD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          230,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      230,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("AAAAAAADDDDDDDD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          231,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      231,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("AAAAAAADDDD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          232,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      232,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst04("AAAAAAAAAAAAAAADDDD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          233,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      233,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 function tst05(s) {
@@ -1065,266 +1065,266 @@ function tst05(s) {
 
 if (tst05("AAA") !== 0) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          272,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      272,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("AAAA") !== 1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          273,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      273,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("AAAAA") !== 2) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          274,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      274,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("AAAAAA") !== 3) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          275,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      275,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("AAAAAAA") !== 4) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          276,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      276,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("AAAAAAAAAAAA") !== 5) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          277,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      277,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("AAAAAAAAAAAAAAAA") !== 6) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          278,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      278,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("AAAAAAAAAAAAAAAAAAAA") !== 7) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          279,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      279,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("BBB") !== 8) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          280,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      280,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("BBBB") !== 9) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          281,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      281,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("BBBBB") !== 10) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          282,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      282,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("BBBBBB") !== 11) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          283,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      283,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("BBBBBBB") !== 12) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          284,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      284,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          285,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      285,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("AAD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          286,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      286,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("AAAD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          287,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      287,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("AAAAAAD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          288,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      288,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("AAAAAAAD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          289,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      289,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("BBD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          290,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      290,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("BBBD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          291,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      291,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("BBBBBBD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          292,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      292,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst05("BBBBBBBD") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          293,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      293,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 var s00 = "and";
@@ -1888,2222 +1888,2222 @@ function tst06(s) {
 
 if (tst06(s00) !== 0) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          582,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      582,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t00) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          583,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      583,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s01) !== 1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          584,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      584,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t01) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          585,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      585,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s02) !== 2) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          586,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      586,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t02) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          587,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      587,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s03) !== 3) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          588,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      588,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t03) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          589,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      589,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s04) !== 4) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          590,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      590,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t04) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          591,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      591,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s05) !== 5) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          592,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      592,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t05) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          593,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      593,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s06) !== 6) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          594,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      594,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t06) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          595,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      595,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s07) !== 7) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          596,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      596,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t07) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          597,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      597,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s08) !== 8) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          598,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      598,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t08) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          599,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      599,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s09) !== 9) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          600,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      600,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t09) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          601,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      601,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s10) !== 10) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          602,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      602,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t10) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          603,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      603,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s11) !== 11) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          604,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      604,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t11) !== 11) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          605,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      605,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s12) !== 12) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          606,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      606,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t12) !== 12) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          607,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      607,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s13) !== 13) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          608,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      608,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t13) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          609,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      609,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s14) !== 14) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          610,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      610,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t14) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          611,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      611,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s15) !== 15) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          612,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      612,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t15) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          613,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      613,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s16) !== 16) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          614,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      614,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t16) !== 16) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          615,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      615,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s17) !== 17) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          616,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      616,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t17) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          617,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      617,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s18) !== 18) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          618,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      618,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t18) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          619,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      619,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s19) !== 19) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          620,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      620,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t19) !== 19) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          621,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      621,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s20) !== 20) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          622,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      622,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t20) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          623,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      623,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s21) !== 21) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          624,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      624,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t21) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          625,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      625,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s22) !== 22) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          626,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      626,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t22) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          627,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      627,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s23) !== 23) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          628,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      628,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t23) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          629,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      629,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s24) !== 24) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          630,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      630,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t24) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          631,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      631,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s25) !== 25) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          632,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      632,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t25) !== 25) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          633,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      633,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s26) !== 26) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          634,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      634,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t26) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          635,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      635,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s27) !== 27) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          636,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      636,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t27) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          637,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      637,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s28) !== 28) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          638,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      638,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t28) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          639,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      639,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s29) !== 29) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          640,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      640,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t29) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          641,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      641,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s30) !== 30) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          642,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      642,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t30) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          643,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      643,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s31) !== 31) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          644,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      644,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t31) !== 31) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          645,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      645,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s32) !== 32) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          646,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      646,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t32) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          647,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      647,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s33) !== 33) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          648,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      648,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t33) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          649,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      649,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s34) !== 34) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          650,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      650,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t34) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          651,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      651,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s35) !== 35) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          652,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      652,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t35) !== 35) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          653,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      653,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s36) !== 36) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          654,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      654,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t36) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          655,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      655,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s37) !== 37) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          656,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      656,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t37) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          657,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      657,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s38) !== 38) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          658,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      658,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t38) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          659,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      659,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s39) !== 39) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          660,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      660,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t39) !== 39) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          661,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      661,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s40) !== 40) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          662,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      662,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t40) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          663,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      663,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s41) !== 41) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          664,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      664,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t41) !== 41) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          665,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      665,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s42) !== 42) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          666,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      666,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t42) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          667,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      667,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s43) !== 43) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          668,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      668,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t43) !== 43) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          669,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      669,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s44) !== 44) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          670,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      670,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t44) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          671,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      671,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s45) !== 45) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          672,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      672,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t45) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          673,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      673,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s46) !== 46) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          674,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      674,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t46) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          675,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      675,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s47) !== 47) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          676,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      676,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t47) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          677,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      677,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s48) !== 48) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          678,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      678,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t48) !== 48) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          679,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      679,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s49) !== 49) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          680,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      680,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t49) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          681,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      681,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s50) !== 50) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          682,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      682,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t50) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          683,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      683,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s51) !== 51) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          684,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      684,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t51) !== 51) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          685,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      685,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s52) !== 52) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          686,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      686,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t52) !== 52) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          687,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      687,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s53) !== 53) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          688,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      688,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t53) !== 53) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          689,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      689,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s54) !== 54) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          690,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      690,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t54) !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          691,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      691,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s55) !== 55) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          692,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      692,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t55) !== 55) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          693,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      693,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s56) !== 56) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          694,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      694,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t56) !== 56) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          695,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      695,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s57) !== 57) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          696,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      696,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t57) !== 57) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          697,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      697,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s58) !== 58) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          698,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      698,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t58) !== 58) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          699,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      699,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s59) !== 59) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          700,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      700,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t59) !== 59) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          701,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      701,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s60) !== 60) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          702,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      702,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t60) !== 60) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          703,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      703,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s61) !== 61) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          704,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      704,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t61) !== 61) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          705,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      705,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s62) !== 62) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          706,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      706,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t62) !== 62) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          707,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      707,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s63) !== 63) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          708,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      708,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t63) !== 63) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          709,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      709,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s64) !== 64) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          710,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      710,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t64) !== 64) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          711,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      711,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s65) !== 65) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          712,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      712,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t65) !== 65) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          713,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      713,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s66) !== 66) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          714,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      714,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t66) !== 66) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          715,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      715,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s67) !== 67) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          716,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      716,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t67) !== 67) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          717,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      717,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s68) !== 68) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          718,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      718,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t68) !== 68) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          719,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      719,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s69) !== 69) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          720,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      720,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t69) !== 69) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          721,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      721,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s70) !== 70) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          722,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      722,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t70) !== 70) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          723,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      723,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s71) !== 71) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          724,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      724,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t71) !== 71) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          725,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      725,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s72) !== 72) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          726,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      726,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t72) !== 72) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          727,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      727,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s73) !== 73) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          728,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      728,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t73) !== 73) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          729,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      729,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s74) !== 74) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          730,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      730,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t74) !== 74) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          731,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      731,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s75) !== 75) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          732,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      732,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t75) !== 75) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          733,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      733,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s76) !== 76) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          734,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      734,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t76) !== 76) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          735,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      735,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s77) !== 77) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          736,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      736,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t77) !== 77) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          737,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      737,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s78) !== 78) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          738,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      738,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t78) !== 78) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          739,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      739,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s79) !== 79) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          740,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      740,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t79) !== 79) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          741,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      741,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s80) !== 80) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          742,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      742,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t80) !== 80) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          743,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      743,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s81) !== 81) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          744,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      744,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t81) !== 81) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          745,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      745,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s82) !== 82) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          746,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      746,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t82) !== 82) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          747,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      747,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s83) !== 83) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          748,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      748,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t83) !== 83) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          749,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      749,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s84) !== 84) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          750,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      750,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t84) !== 84) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          751,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      751,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s85) !== 85) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          752,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      752,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t85) !== 85) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          753,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      753,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s86) !== 86) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          754,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      754,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t86) !== 86) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          755,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      755,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s87) !== 87) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          756,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      756,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t87) !== 87) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          757,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      757,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s88) !== 88) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          758,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      758,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t88) !== 88) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          759,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      759,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s89) !== 89) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          760,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      760,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t89) !== 89) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          761,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      761,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s90) !== 90) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          762,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      762,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t90) !== 90) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          763,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      763,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(s91) !== 91) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          764,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      764,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06(t91) !== 91) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          765,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      765,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 if (tst06("") !== -1) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.res",
-          766,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "stringmatch_test.res",
+      766,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 exports.tst01 = tst01;

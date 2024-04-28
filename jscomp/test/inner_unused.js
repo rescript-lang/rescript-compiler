@@ -11,8 +11,8 @@ function M(S) {
     return x;
   };
   return {
-          f: f
-        };
+    f: f
+  };
 }
 
 function fff(param, param$1) {

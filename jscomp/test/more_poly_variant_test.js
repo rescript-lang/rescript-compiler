@@ -8,25 +8,25 @@ function map(f, x) {
   }
   var match = x.VAL;
   return {
-          NAME: "Cons",
-          VAL: [
-            f(match[0]),
-            map(f, match[1])
-          ]
-        };
+    NAME: "Cons",
+    VAL: [
+      f(match[0]),
+      map(f, match[1])
+    ]
+  };
 }
 
 function split_cases(x) {
   if (typeof x === "object" && x.NAME === "Snoc") {
     return {
-            NAME: "B",
-            VAL: x
-          };
+      NAME: "B",
+      VAL: x
+    };
   } else {
     return {
-            NAME: "A",
-            VAL: x
-          };
+      NAME: "A",
+      VAL: x
+    };
   }
 }
 

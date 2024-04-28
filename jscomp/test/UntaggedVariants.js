@@ -43,9 +43,9 @@ var ListWithObjects = {};
 function tuplesToObjects(l) {
   if (Array.isArray(l)) {
     return {
-            hd: l[0],
-            tl: tuplesToObjects(l[1])
-          };
+      hd: l[0],
+      tl: tuplesToObjects(l[1])
+    };
   } else {
     return null;
   }
@@ -191,26 +191,26 @@ function classify$6(x) {
   } else {
     if (Array.isArray(x)) {
       return {
-              TAG: "JSONArray",
-              _0: x
-            };
+        TAG: "JSONArray",
+        _0: x
+      };
     }
     switch (typeof x) {
       case "string" :
           return {
-                  TAG: "JSONString",
-                  _0: x
-                };
+            TAG: "JSONString",
+            _0: x
+          };
       case "number" :
           return {
-                  TAG: "JSONNumber",
-                  _0: x
-                };
+            TAG: "JSONNumber",
+            _0: x
+          };
       case "object" :
           return {
-                  TAG: "JSONObject",
-                  _0: x
-                };
+            TAG: "JSONObject",
+            _0: x
+          };
       
     }
   }

@@ -26,9 +26,9 @@ function parse(token) {
     }
     catch (exn){
       return {
-              TAG: "Kwd",
-              _0: "=="
-            };
+        TAG: "Kwd",
+        _0: "=="
+      };
     }
   };
   var parse_atom = function (param) {
@@ -43,32 +43,32 @@ function parse(token) {
                 return v;
               }
               throw {
-                    RE_EXN_ID: Parse_error,
-                    _1: "Unbalanced parens",
-                    Error: new Error()
-                  };
+                RE_EXN_ID: Parse_error,
+                _1: "Unbalanced parens",
+                Error: new Error()
+              };
             }
             throw {
-                  RE_EXN_ID: Parse_error,
-                  _1: "Unbalanced parens",
-                  Error: new Error()
-                };
+              RE_EXN_ID: Parse_error,
+              _1: "Unbalanced parens",
+              Error: new Error()
+            };
           }
           Queue.push(n, look_ahead);
           throw {
-                RE_EXN_ID: Parse_error,
-                _1: "unexpected token",
-                Error: new Error()
-              };
+            RE_EXN_ID: Parse_error,
+            _1: "unexpected token",
+            Error: new Error()
+          };
       case "Int" :
           return n._0;
       default:
         Queue.push(n, look_ahead);
         throw {
-              RE_EXN_ID: Parse_error,
-              _1: "unexpected token",
-              Error: new Error()
-            };
+          RE_EXN_ID: Parse_error,
+          _1: "unexpected token",
+          Error: new Error()
+        };
     }
   };
   var parse_term_aux = function (e1) {
@@ -107,14 +107,14 @@ function parse(token) {
   };
   var r = parse_expr_aux(parse_term_aux(parse_atom()));
   return [
-          r,
-          Queue.fold((function (acc, x) {
-                  return {
-                          hd: x,
-                          tl: acc
-                        };
-                }), /* [] */0, look_ahead)
-        ];
+    r,
+    Queue.fold((function (acc, x) {
+            return {
+              hd: x,
+              tl: acc
+            };
+          }), /* [] */0, look_ahead)
+  ];
 }
 
 var lexer = Genlex.make_lexer({
@@ -159,9 +159,9 @@ function l_parse(token) {
     }
     catch (exn){
       return {
-              TAG: "Kwd",
-              _0: "=="
-            };
+        TAG: "Kwd",
+        _0: "=="
+      };
     }
   };
   var parse_f_aux = function (_a) {
@@ -198,30 +198,30 @@ function l_parse(token) {
                 return v;
               }
               throw {
-                    RE_EXN_ID: Parse_error,
-                    _1: "Unbalanced )",
-                    Error: new Error()
-                  };
-            }
-            throw {
-                  RE_EXN_ID: Parse_error,
-                  _1: "Unbalanced )",
-                  Error: new Error()
-                };
-          }
-          throw {
                 RE_EXN_ID: Parse_error,
-                _1: "Unexpected token",
+                _1: "Unbalanced )",
                 Error: new Error()
               };
+            }
+            throw {
+              RE_EXN_ID: Parse_error,
+              _1: "Unbalanced )",
+              Error: new Error()
+            };
+          }
+          throw {
+            RE_EXN_ID: Parse_error,
+            _1: "Unexpected token",
+            Error: new Error()
+          };
       case "Int" :
           return i._0;
       default:
         throw {
-              RE_EXN_ID: Parse_error,
-              _1: "Unexpected token",
-              Error: new Error()
-            };
+          RE_EXN_ID: Parse_error,
+          _1: "Unexpected token",
+          Error: new Error()
+        };
     }
   };
   var parse_t_aux = function (_a) {
@@ -248,14 +248,14 @@ function l_parse(token) {
   };
   var r = parse_t_aux(parse_f_aux(parse_f()));
   return [
-          r,
-          Queue.fold((function (acc, x) {
-                  return {
-                          hd: x,
-                          tl: acc
-                        };
-                }), /* [] */0, look_ahead)
-        ];
+    r,
+    Queue.fold((function (acc, x) {
+            return {
+              hd: x,
+              tl: acc
+            };
+          }), /* [] */0, look_ahead)
+  ];
 }
 
 var suites = {
@@ -273,10 +273,10 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents

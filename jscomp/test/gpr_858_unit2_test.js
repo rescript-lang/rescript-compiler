@@ -24,14 +24,14 @@ for(var i = 1; i <= 2; ++i){
       return;
     }
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "gpr_858_unit2_test.res",
-            6,
-            13
-          ],
-          Error: new Error()
-        };
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "gpr_858_unit2_test.res",
+        6,
+        13
+      ],
+      Error: new Error()
+    };
   }
   }(i));
   f(0, i);

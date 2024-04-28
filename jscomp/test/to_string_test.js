@@ -15,10 +15,10 @@ Mt.from_pair_suites("To_string_test", {
         "File \"to_string_test.res\", line 6, characters 8-15",
         (function (param) {
             return {
-                    TAG: "Eq",
-                    _0: Pervasives.string_of_float(Pervasives.infinity),
-                    _1: "inf"
-                  };
+              TAG: "Eq",
+              _0: Pervasives.string_of_float(Pervasives.infinity),
+              _1: "inf"
+            };
           })
       ],
       tl: {
@@ -26,10 +26,10 @@ Mt.from_pair_suites("To_string_test", {
           "File \"to_string_test.res\", line 6, characters 49-56",
           (function (param) {
               return {
-                      TAG: "Eq",
-                      _0: Pervasives.string_of_float(Pervasives.neg_infinity),
-                      _1: "-inf"
-                    };
+                TAG: "Eq",
+                _0: Pervasives.string_of_float(Pervasives.neg_infinity),
+                _1: "-inf"
+              };
             })
         ],
         tl: /* [] */0

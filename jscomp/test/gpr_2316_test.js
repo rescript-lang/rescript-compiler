@@ -19,10 +19,10 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents
@@ -33,10 +33,10 @@ var y;
 
 try {
   throw {
-        RE_EXN_ID: "Failure",
-        _1: "boo",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Failure",
+    _1: "boo",
+    Error: new Error()
+  };
 }
 catch (raw_msg){
   var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
@@ -53,10 +53,10 @@ var exit = 0;
 
 try {
   throw {
-        RE_EXN_ID: "Failure",
-        _1: "boo",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Failure",
+    _1: "boo",
+    Error: new Error()
+  };
 }
 catch (raw_msg$1){
   var msg$1 = Caml_js_exceptions.internalToOCamlException(raw_msg$1);

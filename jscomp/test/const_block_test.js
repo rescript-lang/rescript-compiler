@@ -37,16 +37,16 @@ function h(param) {
 function g(param) {
   f();
   return {
-          TAG: "Eq",
-          _0: [
-            Caml_array.get(a, 0),
-            Caml_array.get(b, 0)
-          ],
-          _1: [
-            3.0,
-            3
-          ]
-        };
+    TAG: "Eq",
+    _0: [
+      Caml_array.get(a, 0),
+      Caml_array.get(b, 0)
+    ],
+    _1: [
+      3.0,
+      3
+    ]
+  };
 }
 
 var suites_0 = [
@@ -61,17 +61,17 @@ var suites_1 = {
         Caml_array.set(c, 0, 3);
         Caml_array.set(c, 1, 4);
         return {
-                TAG: "Eq",
-                _0: [
-                  3,
-                  4,
-                  2,
-                  3,
-                  4,
-                  5
-                ],
-                _1: c
-              };
+          TAG: "Eq",
+          _0: [
+            3,
+            4,
+            2,
+            3,
+            4,
+            5
+          ],
+          _1: c
+        };
       })
   ],
   tl: /* [] */0

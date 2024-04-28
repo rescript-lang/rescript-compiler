@@ -17,13 +17,13 @@ function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
   return {
-          TAG: "Node",
-          l: l,
-          v: x,
-          d: d,
-          r: r,
-          h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-        };
+    TAG: "Node",
+    l: l,
+    v: x,
+    d: d,
+    r: r,
+    h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+  };
 }
 
 function bal(l, x, d, r) {
@@ -34,10 +34,10 @@ function bal(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal",
+        Error: new Error()
+      };
     }
     var lr = l.r;
     var ld = l.d;
@@ -50,27 +50,27 @@ function bal(l, x, d, r) {
       return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal",
+      Error: new Error()
+    };
   }
   if (hr <= (hl + 2 | 0)) {
     return {
-            TAG: "Node",
-            l: l,
-            v: x,
-            d: d,
-            r: r,
-            h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-          };
+      TAG: "Node",
+      l: l,
+      v: x,
+      d: d,
+      r: r,
+      h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+    };
   }
   if (typeof r !== "object") {
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal",
+      Error: new Error()
+    };
   }
   var rr = r.r;
   var rd = r.d;
@@ -83,22 +83,22 @@ function bal(l, x, d, r) {
     return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Map.bal",
+    Error: new Error()
+  };
 }
 
 function add(x, data, param) {
   if (typeof param !== "object") {
     return {
-            TAG: "Node",
-            l: "Empty",
-            v: x,
-            d: data,
-            r: "Empty",
-            h: 1
-          };
+      TAG: "Node",
+      l: "Empty",
+      v: x,
+      d: data,
+      r: "Empty",
+      h: 1
+    };
   }
   var r = param.r;
   var d = param.d;
@@ -110,13 +110,13 @@ function add(x, data, param) {
       return param;
     } else {
       return {
-              TAG: "Node",
-              l: l,
-              v: x,
-              d: data,
-              r: r,
-              h: param.h
-            };
+        TAG: "Node",
+        l: l,
+        v: x,
+        d: data,
+        r: r,
+        h: param.h
+      };
     }
   }
   if (c < 0) {
@@ -140,9 +140,9 @@ function find(x, _param) {
     var param = _param;
     if (typeof param !== "object") {
       throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     var c = Caml.int_compare(x, param.v);
     if (c === 0) {
@@ -193,13 +193,13 @@ function create$1(l, x, d, r) {
   var hl = height$1(l);
   var hr = height$1(r);
   return {
-          TAG: "Node",
-          l: l,
-          v: x,
-          d: d,
-          r: r,
-          h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-        };
+    TAG: "Node",
+    l: l,
+    v: x,
+    d: d,
+    r: r,
+    h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+  };
 }
 
 function bal$1(l, x, d, r) {
@@ -210,10 +210,10 @@ function bal$1(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal",
+        Error: new Error()
+      };
     }
     var lr = l.r;
     var ld = l.d;
@@ -226,27 +226,27 @@ function bal$1(l, x, d, r) {
       return create$1(create$1(ll, lv, ld, lr.l), lr.v, lr.d, create$1(lr.r, x, d, r));
     }
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal",
+      Error: new Error()
+    };
   }
   if (hr <= (hl + 2 | 0)) {
     return {
-            TAG: "Node",
-            l: l,
-            v: x,
-            d: d,
-            r: r,
-            h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-          };
+      TAG: "Node",
+      l: l,
+      v: x,
+      d: d,
+      r: r,
+      h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+    };
   }
   if (typeof r !== "object") {
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal",
+      Error: new Error()
+    };
   }
   var rr = r.r;
   var rd = r.d;
@@ -259,22 +259,22 @@ function bal$1(l, x, d, r) {
     return create$1(create$1(l, x, d, rl.l), rl.v, rl.d, create$1(rl.r, rv, rd, rr));
   }
   throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Map.bal",
+    Error: new Error()
+  };
 }
 
 function add$1(x, data, param) {
   if (typeof param !== "object") {
     return {
-            TAG: "Node",
-            l: "Empty",
-            v: x,
-            d: data,
-            r: "Empty",
-            h: 1
-          };
+      TAG: "Node",
+      l: "Empty",
+      v: x,
+      d: data,
+      r: "Empty",
+      h: 1
+    };
   }
   var r = param.r;
   var d = param.d;
@@ -286,13 +286,13 @@ function add$1(x, data, param) {
       return param;
     } else {
       return {
-              TAG: "Node",
-              l: l,
-              v: x,
-              d: data,
-              r: r,
-              h: param.h
-            };
+        TAG: "Node",
+        l: l,
+        v: x,
+        d: data,
+        r: r,
+        h: param.h
+      };
     }
   }
   if (c < 0) {
@@ -316,9 +316,9 @@ function find$1(x, _param) {
     var param = _param;
     if (typeof param !== "object") {
       throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     var c = Caml.string_compare(x, param.v);
     if (c === 0) {
@@ -362,10 +362,10 @@ Mt.from_pair_suites("Map_find_test", {
         "int",
         (function (param) {
             return {
-                    TAG: "Eq",
-                    _0: find(10, m),
-                    _1: /* 'a' */97
-                  };
+              TAG: "Eq",
+              _0: find(10, m),
+              _1: /* 'a' */97
+            };
           })
       ],
       tl: {
@@ -373,10 +373,10 @@ Mt.from_pair_suites("Map_find_test", {
           "string",
           (function (param) {
               return {
-                      TAG: "Eq",
-                      _0: find$1("10", s),
-                      _1: /* 'a' */97
-                    };
+                TAG: "Eq",
+                _0: find$1("10", s),
+                _1: /* 'a' */97
+              };
             })
         ],
         tl: /* [] */0

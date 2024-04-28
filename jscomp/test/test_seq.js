@@ -25,21 +25,21 @@ function assoc3(x, _l) {
       continue ;
     }
     throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Not_found",
+      Error: new Error()
+    };
   };
 }
 
 function help_action(param) {
   throw {
-        RE_EXN_ID: Stop,
-        _1: {
-          TAG: "Unknown",
-          _0: "-help"
-        },
-        Error: new Error()
-      };
+    RE_EXN_ID: Stop,
+    _1: {
+      TAG: "Unknown",
+      _0: "-help"
+    },
+    Error: new Error()
+  };
 }
 
 function v(speclist) {

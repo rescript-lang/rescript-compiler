@@ -4,11 +4,11 @@
 
 function f(x, y) {
   return [
-          x < y,
-          x <= y,
-          x > y,
-          x >= y
-        ];
+    x < y,
+    x <= y,
+    x > y,
+    x >= y
+  ];
 }
 
 function ff(x, y) {

@@ -11,10 +11,10 @@ var suites_0 = [
   "?is_printable",
   (function (param) {
       return {
-              TAG: "Eq",
-              _0: Test_char.caml_is_printable(/* 'a' */97),
-              _1: true
-            };
+        TAG: "Eq",
+        _0: Test_char.caml_is_printable(/* 'a' */97),
+        _1: true
+      };
     })
 ];
 
@@ -26,11 +26,11 @@ var suites_1 = {
                     var b = Caml_bytes.create(x);
                     Bytes.fill(b, 0, x, /* 'c' */99);
                     return [
-                            Bytes.to_string(b),
-                            Bytes.unsafe_to_string(Bytes.init(x, (function (param) {
-                                        return /* 'c' */99;
-                                      })))
-                          ];
+                      Bytes.to_string(b),
+                      Bytes.unsafe_to_string(Bytes.init(x, (function (param) {
+                                  return /* 'c' */99;
+                                })))
+                    ];
                   }), {
                   hd: 1000,
                   tl: {
@@ -54,10 +54,10 @@ var suites_1 = {
                   }
                 }));
         return {
-                TAG: "Eq",
-                _0: match[0],
-                _1: match[1]
-              };
+          TAG: "Eq",
+          _0: match[0],
+          _1: match[1]
+        };
       })
   ],
   tl: /* [] */0

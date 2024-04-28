@@ -11,8 +11,8 @@ function Make(X) {
     f: f
   };
   return {
-          M: M
-        };
+    M: M
+  };
 }
 
 var B = Caml_module.init_mod([

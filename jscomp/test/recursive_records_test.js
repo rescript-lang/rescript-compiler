@@ -69,14 +69,14 @@ function tl_exn(x) {
     return x.next;
   }
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "recursive_records_test.res",
-          49,
-          11
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "recursive_records_test.res",
+      49,
+      11
+    ],
+    Error: new Error()
+  };
 }
 
 eq("File \"recursive_records_test.res\", line 54, characters 5-12", (hd(rec_cell2) + hd(tl_exn(rec_cell2)) | 0) + hd(tl_exn(tl_exn(rec_cell2))) | 0, 9);

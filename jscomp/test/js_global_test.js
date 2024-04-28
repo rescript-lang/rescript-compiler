@@ -11,9 +11,9 @@ var suites_0 = [
             }), 0);
       clearTimeout(handle);
       return {
-              TAG: "Ok",
-              _0: true
-            };
+        TAG: "Ok",
+        _0: true
+      };
     })
 ];
 
@@ -26,9 +26,9 @@ var suites_1 = {
               }), 0);
         clearInterval(handle);
         return {
-                TAG: "Ok",
-                _0: true
-              };
+          TAG: "Ok",
+          _0: true
+        };
       })
   ],
   tl: {
@@ -36,10 +36,10 @@ var suites_1 = {
       "encodeURI",
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: encodeURI("[-=-]"),
-                  _1: "%5B-=-%5D"
-                };
+            TAG: "Eq",
+            _0: encodeURI("[-=-]"),
+            _1: "%5B-=-%5D"
+          };
         })
     ],
     tl: {
@@ -47,10 +47,10 @@ var suites_1 = {
         "decodeURI",
         (function (param) {
             return {
-                    TAG: "Eq",
-                    _0: decodeURI("%5B-=-%5D"),
-                    _1: "[-=-]"
-                  };
+              TAG: "Eq",
+              _0: decodeURI("%5B-=-%5D"),
+              _1: "[-=-]"
+            };
           })
       ],
       tl: {
@@ -58,10 +58,10 @@ var suites_1 = {
           "encodeURIComponent",
           (function (param) {
               return {
-                      TAG: "Eq",
-                      _0: encodeURIComponent("[-=-]"),
-                      _1: "%5B-%3D-%5D"
-                    };
+                TAG: "Eq",
+                _0: encodeURIComponent("[-=-]"),
+                _1: "%5B-%3D-%5D"
+              };
             })
         ],
         tl: {
@@ -69,10 +69,10 @@ var suites_1 = {
             "decodeURIComponent",
             (function (param) {
                 return {
-                        TAG: "Eq",
-                        _0: decodeURIComponent("%5B-%3D-%5D"),
-                        _1: "[-=-]"
-                      };
+                  TAG: "Eq",
+                  _0: decodeURIComponent("%5B-%3D-%5D"),
+                  _1: "[-=-]"
+                };
               })
           ],
           tl: /* [] */0

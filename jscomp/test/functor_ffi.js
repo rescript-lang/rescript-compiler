@@ -8,8 +8,8 @@ function Make(S) {
     return Caml_option.undefined_to_opt(f[i]);
   };
   return {
-          opt_get: opt_get
-        };
+    opt_get: opt_get
+  };
 }
 
 function opt_get(f, i) {
@@ -22,9 +22,9 @@ var Int_arr = {
 
 function f(v) {
   return [
-          v[0],
-          Caml_option.undefined_to_opt(v[1])
-        ];
+    v[0],
+    Caml_option.undefined_to_opt(v[1])
+  ];
 }
 
 exports.Make = Make;

@@ -19,10 +19,10 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents
@@ -33,10 +33,10 @@ function f(param) {
   var x = new Date();
   var y = new Date();
   return [
-          Caml_obj.greaterthan(y, x),
-          Caml_obj.lessthan(y, x),
-          true
-        ];
+    Caml_obj.greaterthan(y, x),
+    Caml_obj.lessthan(y, x),
+    true
+  ];
 }
 
 var match = f();

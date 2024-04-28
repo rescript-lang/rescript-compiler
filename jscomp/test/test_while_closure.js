@@ -36,14 +36,14 @@ console.log(String(v.contents));
 
 if (v.contents !== 45) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "test_while_closure.res",
-          55,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "test_while_closure.res",
+      55,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 var count = 10;

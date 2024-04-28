@@ -10,9 +10,9 @@ function $plus$colon(_f, _g) {
       var n = f._0;
       if (g.TAG === "Int") {
         return {
-                TAG: "Int",
-                _0: n + g._0 | 0
-              };
+          TAG: "Int",
+          _0: n + g._0 | 0
+        };
       }
       if (n === 0) {
         return g;
@@ -23,10 +23,10 @@ function $plus$colon(_f, _g) {
       case "Int" :
           if (g._0 !== 0) {
             return {
-                    TAG: "Add",
-                    _0: f,
-                    _1: g
-                  };
+              TAG: "Add",
+              _0: f,
+              _1: g
+            };
           } else {
             return f;
           }
@@ -37,10 +37,10 @@ function $plus$colon(_f, _g) {
       case "Var" :
       case "Mul" :
           return {
-                  TAG: "Add",
-                  _0: f,
-                  _1: g
-                };
+            TAG: "Add",
+            _0: f,
+            _1: g
+          };
       
     }
   };
@@ -56,15 +56,15 @@ function $star$colon(_f, _g) {
       var n = f._0;
       if (g.TAG === "Int") {
         return {
-                TAG: "Int",
-                _0: Math.imul(n, g._0)
-              };
+          TAG: "Int",
+          _0: Math.imul(n, g._0)
+        };
       }
       if (n === 0) {
         return {
-                TAG: "Int",
-                _0: 0
-              };
+          TAG: "Int",
+          _0: 0
+        };
       }
       exit$1 = 3;
     } else {
@@ -74,9 +74,9 @@ function $star$colon(_f, _g) {
       if (g.TAG === "Int") {
         if (g._0 === 0) {
           return {
-                  TAG: "Int",
-                  _0: 0
-                };
+            TAG: "Int",
+            _0: 0
+          };
         }
         exit = 2;
       } else {
@@ -90,20 +90,20 @@ function $star$colon(_f, _g) {
       case "Int" :
           if (g._0 !== 1) {
             return {
-                    TAG: "Mul",
-                    _0: f,
-                    _1: g
-                  };
+              TAG: "Mul",
+              _0: f,
+              _1: g
+            };
           } else {
             return f;
           }
       case "Var" :
       case "Add" :
           return {
-                  TAG: "Mul",
-                  _0: f,
-                  _1: g
-                };
+            TAG: "Mul",
+            _0: f,
+            _1: g
+          };
       case "Mul" :
           _g = g._1;
           _f = $star$colon(f, g._0);

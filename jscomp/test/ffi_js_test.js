@@ -29,10 +29,10 @@ function eq(loc, param) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents
@@ -123,10 +123,10 @@ function vvvv(z) {
 
 function create_prim(param) {
   return {
-          "x'": 3,
-          "x''": 3,
-          "x''''": 2
-        };
+    "x'": 3,
+    "x''": 3,
+    "x''''": 2
+  };
 }
 
 function ffff(x) {

@@ -290,9 +290,9 @@ function plus$3(x, y) {
     }
   } else if (!(y === undefined || y === null || y === "WhyNotAnotherOne")) {
     return {
-            x: x.x + y.x,
-            y: x.y + y.y
-          };
+      x: x.x + y.x,
+      y: x.y + y.y
+    };
   }
   if (!(y === undefined || y === null || y === "WhyNotAnotherOne")) {
     return "WhyNotAnotherOne";

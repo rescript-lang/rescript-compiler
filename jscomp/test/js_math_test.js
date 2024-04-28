@@ -8,11 +8,11 @@ var suites_0 = [
   "_E",
   (function (param) {
       return {
-              TAG: "ApproxThreshold",
-              _0: 0.001,
-              _1: 2.718,
-              _2: Math.E
-            };
+        TAG: "ApproxThreshold",
+        _0: 0.001,
+        _1: 2.718,
+        _2: Math.E
+      };
     })
 ];
 
@@ -21,11 +21,11 @@ var suites_1 = {
     "_LN2",
     (function (param) {
         return {
-                TAG: "ApproxThreshold",
-                _0: 0.001,
-                _1: 0.693,
-                _2: Math.LN2
-              };
+          TAG: "ApproxThreshold",
+          _0: 0.001,
+          _1: 0.693,
+          _2: Math.LN2
+        };
       })
   ],
   tl: {
@@ -33,11 +33,11 @@ var suites_1 = {
       "_LN10",
       (function (param) {
           return {
-                  TAG: "ApproxThreshold",
-                  _0: 0.001,
-                  _1: 2.303,
-                  _2: Math.LN10
-                };
+            TAG: "ApproxThreshold",
+            _0: 0.001,
+            _1: 2.303,
+            _2: Math.LN10
+          };
         })
     ],
     tl: {
@@ -45,11 +45,11 @@ var suites_1 = {
         "_LOG2E",
         (function (param) {
             return {
-                    TAG: "ApproxThreshold",
-                    _0: 0.001,
-                    _1: 1.443,
-                    _2: Math.LOG2E
-                  };
+              TAG: "ApproxThreshold",
+              _0: 0.001,
+              _1: 1.443,
+              _2: Math.LOG2E
+            };
           })
       ],
       tl: {
@@ -57,11 +57,11 @@ var suites_1 = {
           "_LOG10E",
           (function (param) {
               return {
-                      TAG: "ApproxThreshold",
-                      _0: 0.001,
-                      _1: 0.434,
-                      _2: Math.LOG10E
-                    };
+                TAG: "ApproxThreshold",
+                _0: 0.001,
+                _1: 0.434,
+                _2: Math.LOG10E
+              };
             })
         ],
         tl: {
@@ -69,11 +69,11 @@ var suites_1 = {
             "_PI",
             (function (param) {
                 return {
-                        TAG: "ApproxThreshold",
-                        _0: 0.00001,
-                        _1: 3.14159,
-                        _2: Math.PI
-                      };
+                  TAG: "ApproxThreshold",
+                  _0: 0.00001,
+                  _1: 3.14159,
+                  _2: Math.PI
+                };
               })
           ],
           tl: {
@@ -81,11 +81,11 @@ var suites_1 = {
               "_SQRT1_2",
               (function (param) {
                   return {
-                          TAG: "ApproxThreshold",
-                          _0: 0.001,
-                          _1: 0.707,
-                          _2: Math.SQRT1_2
-                        };
+                    TAG: "ApproxThreshold",
+                    _0: 0.001,
+                    _1: 0.707,
+                    _2: Math.SQRT1_2
+                  };
                 })
             ],
             tl: {
@@ -93,11 +93,11 @@ var suites_1 = {
                 "_SQRT2",
                 (function (param) {
                     return {
-                            TAG: "ApproxThreshold",
-                            _0: 0.001,
-                            _1: 1.414,
-                            _2: Math.SQRT2
-                          };
+                      TAG: "ApproxThreshold",
+                      _0: 0.001,
+                      _1: 1.414,
+                      _2: Math.SQRT2
+                    };
                   })
               ],
               tl: {
@@ -105,10 +105,10 @@ var suites_1 = {
                   "abs_int",
                   (function (param) {
                       return {
-                              TAG: "Eq",
-                              _0: 4,
-                              _1: Math.abs(-4)
-                            };
+                        TAG: "Eq",
+                        _0: 4,
+                        _1: Math.abs(-4)
+                      };
                     })
                 ],
                 tl: {
@@ -116,10 +116,10 @@ var suites_1 = {
                     "abs_float",
                     (function (param) {
                         return {
-                                TAG: "Eq",
-                                _0: 1.2,
-                                _1: Math.abs(-1.2)
-                              };
+                          TAG: "Eq",
+                          _0: 1.2,
+                          _1: Math.abs(-1.2)
+                        };
                       })
                   ],
                   tl: {
@@ -127,11 +127,11 @@ var suites_1 = {
                       "acos",
                       (function (param) {
                           return {
-                                  TAG: "ApproxThreshold",
-                                  _0: 0.001,
-                                  _1: 1.159,
-                                  _2: Math.acos(0.4)
-                                };
+                            TAG: "ApproxThreshold",
+                            _0: 0.001,
+                            _1: 1.159,
+                            _2: Math.acos(0.4)
+                          };
                         })
                     ],
                     tl: {
@@ -139,11 +139,11 @@ var suites_1 = {
                         "acosh",
                         (function (param) {
                             return {
-                                    TAG: "ApproxThreshold",
-                                    _0: 0.001,
-                                    _1: 0.622,
-                                    _2: Math.acosh(1.2)
-                                  };
+                              TAG: "ApproxThreshold",
+                              _0: 0.001,
+                              _1: 0.622,
+                              _2: Math.acosh(1.2)
+                            };
                           })
                       ],
                       tl: {
@@ -151,11 +151,11 @@ var suites_1 = {
                           "asin",
                           (function (param) {
                               return {
-                                      TAG: "ApproxThreshold",
-                                      _0: 0.001,
-                                      _1: 0.411,
-                                      _2: Math.asin(0.4)
-                                    };
+                                TAG: "ApproxThreshold",
+                                _0: 0.001,
+                                _1: 0.411,
+                                _2: Math.asin(0.4)
+                              };
                             })
                         ],
                         tl: {
@@ -163,11 +163,11 @@ var suites_1 = {
                             "asinh",
                             (function (param) {
                                 return {
-                                        TAG: "ApproxThreshold",
-                                        _0: 0.001,
-                                        _1: 0.390,
-                                        _2: Math.asinh(0.4)
-                                      };
+                                  TAG: "ApproxThreshold",
+                                  _0: 0.001,
+                                  _1: 0.390,
+                                  _2: Math.asinh(0.4)
+                                };
                               })
                           ],
                           tl: {
@@ -175,11 +175,11 @@ var suites_1 = {
                               "atan",
                               (function (param) {
                                   return {
-                                          TAG: "ApproxThreshold",
-                                          _0: 0.001,
-                                          _1: 0.380,
-                                          _2: Math.atan(0.4)
-                                        };
+                                    TAG: "ApproxThreshold",
+                                    _0: 0.001,
+                                    _1: 0.380,
+                                    _2: Math.atan(0.4)
+                                  };
                                 })
                             ],
                             tl: {
@@ -187,11 +187,11 @@ var suites_1 = {
                                 "atanh",
                                 (function (param) {
                                     return {
-                                            TAG: "ApproxThreshold",
-                                            _0: 0.001,
-                                            _1: 0.423,
-                                            _2: Math.atanh(0.4)
-                                          };
+                                      TAG: "ApproxThreshold",
+                                      _0: 0.001,
+                                      _1: 0.423,
+                                      _2: Math.atanh(0.4)
+                                    };
                                   })
                               ],
                               tl: {
@@ -199,11 +199,11 @@ var suites_1 = {
                                   "atan2",
                                   (function (param) {
                                       return {
-                                              TAG: "ApproxThreshold",
-                                              _0: 0.001,
-                                              _1: 0.588,
-                                              _2: Math.atan2(0.4, 0.6)
-                                            };
+                                        TAG: "ApproxThreshold",
+                                        _0: 0.001,
+                                        _1: 0.588,
+                                        _2: Math.atan2(0.4, 0.6)
+                                      };
                                     })
                                 ],
                                 tl: {
@@ -211,10 +211,10 @@ var suites_1 = {
                                     "cbrt",
                                     (function (param) {
                                         return {
-                                                TAG: "Eq",
-                                                _0: 2,
-                                                _1: Math.cbrt(8)
-                                              };
+                                          TAG: "Eq",
+                                          _0: 2,
+                                          _1: Math.cbrt(8)
+                                        };
                                       })
                                   ],
                                   tl: {
@@ -222,10 +222,10 @@ var suites_1 = {
                                       "unsafe_ceil_int",
                                       (function (param) {
                                           return {
-                                                  TAG: "Eq",
-                                                  _0: 4,
-                                                  _1: Math.ceil(3.2)
-                                                };
+                                            TAG: "Eq",
+                                            _0: 4,
+                                            _1: Math.ceil(3.2)
+                                          };
                                         })
                                     ],
                                     tl: {
@@ -233,10 +233,10 @@ var suites_1 = {
                                         "ceil_int",
                                         (function (param) {
                                             return {
-                                                    TAG: "Eq",
-                                                    _0: 4,
-                                                    _1: Js_math.ceil_int(3.2)
-                                                  };
+                                              TAG: "Eq",
+                                              _0: 4,
+                                              _1: Js_math.ceil_int(3.2)
+                                            };
                                           })
                                       ],
                                       tl: {
@@ -244,10 +244,10 @@ var suites_1 = {
                                           "ceil_float",
                                           (function (param) {
                                               return {
-                                                      TAG: "Eq",
-                                                      _0: 4,
-                                                      _1: Math.ceil(3.2)
-                                                    };
+                                                TAG: "Eq",
+                                                _0: 4,
+                                                _1: Math.ceil(3.2)
+                                              };
                                             })
                                         ],
                                         tl: {
@@ -255,11 +255,11 @@ var suites_1 = {
                                             "cos",
                                             (function (param) {
                                                 return {
-                                                        TAG: "ApproxThreshold",
-                                                        _0: 0.001,
-                                                        _1: 0.921,
-                                                        _2: Math.cos(0.4)
-                                                      };
+                                                  TAG: "ApproxThreshold",
+                                                  _0: 0.001,
+                                                  _1: 0.921,
+                                                  _2: Math.cos(0.4)
+                                                };
                                               })
                                           ],
                                           tl: {
@@ -267,11 +267,11 @@ var suites_1 = {
                                               "cosh",
                                               (function (param) {
                                                   return {
-                                                          TAG: "ApproxThreshold",
-                                                          _0: 0.001,
-                                                          _1: 1.081,
-                                                          _2: Math.cosh(0.4)
-                                                        };
+                                                    TAG: "ApproxThreshold",
+                                                    _0: 0.001,
+                                                    _1: 1.081,
+                                                    _2: Math.cosh(0.4)
+                                                  };
                                                 })
                                             ],
                                             tl: {
@@ -279,11 +279,11 @@ var suites_1 = {
                                                 "exp",
                                                 (function (param) {
                                                     return {
-                                                            TAG: "ApproxThreshold",
-                                                            _0: 0.001,
-                                                            _1: 1.491,
-                                                            _2: Math.exp(0.4)
-                                                          };
+                                                      TAG: "ApproxThreshold",
+                                                      _0: 0.001,
+                                                      _1: 1.491,
+                                                      _2: Math.exp(0.4)
+                                                    };
                                                   })
                                               ],
                                               tl: {
@@ -291,11 +291,11 @@ var suites_1 = {
                                                   "expm1",
                                                   (function (param) {
                                                       return {
-                                                              TAG: "ApproxThreshold",
-                                                              _0: 0.001,
-                                                              _1: 0.491,
-                                                              _2: Math.expm1(0.4)
-                                                            };
+                                                        TAG: "ApproxThreshold",
+                                                        _0: 0.001,
+                                                        _1: 0.491,
+                                                        _2: Math.expm1(0.4)
+                                                      };
                                                     })
                                                 ],
                                                 tl: {
@@ -303,10 +303,10 @@ var suites_1 = {
                                                     "unsafe_floor_int",
                                                     (function (param) {
                                                         return {
-                                                                TAG: "Eq",
-                                                                _0: 3,
-                                                                _1: Math.floor(3.2)
-                                                              };
+                                                          TAG: "Eq",
+                                                          _0: 3,
+                                                          _1: Math.floor(3.2)
+                                                        };
                                                       })
                                                   ],
                                                   tl: {
@@ -314,10 +314,10 @@ var suites_1 = {
                                                       "floor_int",
                                                       (function (param) {
                                                           return {
-                                                                  TAG: "Eq",
-                                                                  _0: 3,
-                                                                  _1: Js_math.floor_int(3.2)
-                                                                };
+                                                            TAG: "Eq",
+                                                            _0: 3,
+                                                            _1: Js_math.floor_int(3.2)
+                                                          };
                                                         })
                                                     ],
                                                     tl: {
@@ -325,10 +325,10 @@ var suites_1 = {
                                                         "floor_float",
                                                         (function (param) {
                                                             return {
-                                                                    TAG: "Eq",
-                                                                    _0: 3,
-                                                                    _1: Math.floor(3.2)
-                                                                  };
+                                                              TAG: "Eq",
+                                                              _0: 3,
+                                                              _1: Math.floor(3.2)
+                                                            };
                                                           })
                                                       ],
                                                       tl: {
@@ -336,10 +336,10 @@ var suites_1 = {
                                                           "fround",
                                                           (function (param) {
                                                               return {
-                                                                      TAG: "Approx",
-                                                                      _0: 3.2,
-                                                                      _1: Math.fround(3.2)
-                                                                    };
+                                                                TAG: "Approx",
+                                                                _0: 3.2,
+                                                                _1: Math.fround(3.2)
+                                                              };
                                                             })
                                                         ],
                                                         tl: {
@@ -347,11 +347,11 @@ var suites_1 = {
                                                             "hypot",
                                                             (function (param) {
                                                                 return {
-                                                                        TAG: "ApproxThreshold",
-                                                                        _0: 0.001,
-                                                                        _1: 0.721,
-                                                                        _2: Math.hypot(0.4, 0.6)
-                                                                      };
+                                                                  TAG: "ApproxThreshold",
+                                                                  _0: 0.001,
+                                                                  _1: 0.721,
+                                                                  _2: Math.hypot(0.4, 0.6)
+                                                                };
                                                               })
                                                           ],
                                                           tl: {
@@ -359,11 +359,11 @@ var suites_1 = {
                                                               "hypotMany",
                                                               (function (param) {
                                                                   return {
-                                                                          TAG: "ApproxThreshold",
-                                                                          _0: 0.001,
-                                                                          _1: 1.077,
-                                                                          _2: Math.hypot(0.4, 0.6, 0.8)
-                                                                        };
+                                                                    TAG: "ApproxThreshold",
+                                                                    _0: 0.001,
+                                                                    _1: 1.077,
+                                                                    _2: Math.hypot(0.4, 0.6, 0.8)
+                                                                  };
                                                                 })
                                                             ],
                                                             tl: {
@@ -371,10 +371,10 @@ var suites_1 = {
                                                                 "imul",
                                                                 (function (param) {
                                                                     return {
-                                                                            TAG: "Eq",
-                                                                            _0: 8,
-                                                                            _1: Math.imul(4, 2)
-                                                                          };
+                                                                      TAG: "Eq",
+                                                                      _0: 8,
+                                                                      _1: Math.imul(4, 2)
+                                                                    };
                                                                   })
                                                               ],
                                                               tl: {
@@ -382,11 +382,11 @@ var suites_1 = {
                                                                   "log",
                                                                   (function (param) {
                                                                       return {
-                                                                              TAG: "ApproxThreshold",
-                                                                              _0: 0.001,
-                                                                              _1: -0.916,
-                                                                              _2: Math.log(0.4)
-                                                                            };
+                                                                        TAG: "ApproxThreshold",
+                                                                        _0: 0.001,
+                                                                        _1: -0.916,
+                                                                        _2: Math.log(0.4)
+                                                                      };
                                                                     })
                                                                 ],
                                                                 tl: {
@@ -394,11 +394,11 @@ var suites_1 = {
                                                                     "log1p",
                                                                     (function (param) {
                                                                         return {
-                                                                                TAG: "ApproxThreshold",
-                                                                                _0: 0.001,
-                                                                                _1: 0.336,
-                                                                                _2: Math.log1p(0.4)
-                                                                              };
+                                                                          TAG: "ApproxThreshold",
+                                                                          _0: 0.001,
+                                                                          _1: 0.336,
+                                                                          _2: Math.log1p(0.4)
+                                                                        };
                                                                       })
                                                                   ],
                                                                   tl: {
@@ -406,11 +406,11 @@ var suites_1 = {
                                                                       "log10",
                                                                       (function (param) {
                                                                           return {
-                                                                                  TAG: "ApproxThreshold",
-                                                                                  _0: 0.001,
-                                                                                  _1: -0.397,
-                                                                                  _2: Math.log10(0.4)
-                                                                                };
+                                                                            TAG: "ApproxThreshold",
+                                                                            _0: 0.001,
+                                                                            _1: -0.397,
+                                                                            _2: Math.log10(0.4)
+                                                                          };
                                                                         })
                                                                     ],
                                                                     tl: {
@@ -418,11 +418,11 @@ var suites_1 = {
                                                                         "log2",
                                                                         (function (param) {
                                                                             return {
-                                                                                    TAG: "ApproxThreshold",
-                                                                                    _0: 0.001,
-                                                                                    _1: -1.321,
-                                                                                    _2: Math.log2(0.4)
-                                                                                  };
+                                                                              TAG: "ApproxThreshold",
+                                                                              _0: 0.001,
+                                                                              _1: -1.321,
+                                                                              _2: Math.log2(0.4)
+                                                                            };
                                                                           })
                                                                       ],
                                                                       tl: {
@@ -430,10 +430,10 @@ var suites_1 = {
                                                                           "max_int",
                                                                           (function (param) {
                                                                               return {
-                                                                                      TAG: "Eq",
-                                                                                      _0: 4,
-                                                                                      _1: Math.max(2, 4)
-                                                                                    };
+                                                                                TAG: "Eq",
+                                                                                _0: 4,
+                                                                                _1: Math.max(2, 4)
+                                                                              };
                                                                             })
                                                                         ],
                                                                         tl: {
@@ -441,10 +441,10 @@ var suites_1 = {
                                                                             "maxMany_int",
                                                                             (function (param) {
                                                                                 return {
-                                                                                        TAG: "Eq",
-                                                                                        _0: 4,
-                                                                                        _1: Math.max(2, 4, 3)
-                                                                                      };
+                                                                                  TAG: "Eq",
+                                                                                  _0: 4,
+                                                                                  _1: Math.max(2, 4, 3)
+                                                                                };
                                                                               })
                                                                           ],
                                                                           tl: {
@@ -452,10 +452,10 @@ var suites_1 = {
                                                                               "max_float",
                                                                               (function (param) {
                                                                                   return {
-                                                                                          TAG: "Eq",
-                                                                                          _0: 4.2,
-                                                                                          _1: Math.max(2.7, 4.2)
-                                                                                        };
+                                                                                    TAG: "Eq",
+                                                                                    _0: 4.2,
+                                                                                    _1: Math.max(2.7, 4.2)
+                                                                                  };
                                                                                 })
                                                                             ],
                                                                             tl: {
@@ -463,10 +463,10 @@ var suites_1 = {
                                                                                 "maxMany_float",
                                                                                 (function (param) {
                                                                                     return {
-                                                                                            TAG: "Eq",
-                                                                                            _0: 4.2,
-                                                                                            _1: Math.max(2.7, 4.2, 3.9)
-                                                                                          };
+                                                                                      TAG: "Eq",
+                                                                                      _0: 4.2,
+                                                                                      _1: Math.max(2.7, 4.2, 3.9)
+                                                                                    };
                                                                                   })
                                                                               ],
                                                                               tl: {
@@ -474,10 +474,10 @@ var suites_1 = {
                                                                                   "min_int",
                                                                                   (function (param) {
                                                                                       return {
-                                                                                              TAG: "Eq",
-                                                                                              _0: 2,
-                                                                                              _1: Math.min(2, 4)
-                                                                                            };
+                                                                                        TAG: "Eq",
+                                                                                        _0: 2,
+                                                                                        _1: Math.min(2, 4)
+                                                                                      };
                                                                                     })
                                                                                 ],
                                                                                 tl: {
@@ -485,10 +485,10 @@ var suites_1 = {
                                                                                     "minMany_int",
                                                                                     (function (param) {
                                                                                         return {
-                                                                                                TAG: "Eq",
-                                                                                                _0: 2,
-                                                                                                _1: Math.min(2, 4, 3)
-                                                                                              };
+                                                                                          TAG: "Eq",
+                                                                                          _0: 2,
+                                                                                          _1: Math.min(2, 4, 3)
+                                                                                        };
                                                                                       })
                                                                                   ],
                                                                                   tl: {
@@ -496,10 +496,10 @@ var suites_1 = {
                                                                                       "min_float",
                                                                                       (function (param) {
                                                                                           return {
-                                                                                                  TAG: "Eq",
-                                                                                                  _0: 2.7,
-                                                                                                  _1: Math.min(2.7, 4.2)
-                                                                                                };
+                                                                                            TAG: "Eq",
+                                                                                            _0: 2.7,
+                                                                                            _1: Math.min(2.7, 4.2)
+                                                                                          };
                                                                                         })
                                                                                     ],
                                                                                     tl: {
@@ -507,10 +507,10 @@ var suites_1 = {
                                                                                         "minMany_float",
                                                                                         (function (param) {
                                                                                             return {
-                                                                                                    TAG: "Eq",
-                                                                                                    _0: 2.7,
-                                                                                                    _1: Math.min(2.7, 4.2, 3.9)
-                                                                                                  };
+                                                                                              TAG: "Eq",
+                                                                                              _0: 2.7,
+                                                                                              _1: Math.min(2.7, 4.2, 3.9)
+                                                                                            };
                                                                                           })
                                                                                       ],
                                                                                       tl: {
@@ -519,9 +519,9 @@ var suites_1 = {
                                                                                           (function (param) {
                                                                                               var a = Math.random();
                                                                                               return {
-                                                                                                      TAG: "Ok",
-                                                                                                      _0: a >= 0 && a < 1
-                                                                                                    };
+                                                                                                TAG: "Ok",
+                                                                                                _0: a >= 0 && a < 1
+                                                                                              };
                                                                                             })
                                                                                         ],
                                                                                         tl: {
@@ -530,9 +530,9 @@ var suites_1 = {
                                                                                             (function (param) {
                                                                                                 var a = Js_math.random_int(1, 3);
                                                                                                 return {
-                                                                                                        TAG: "Ok",
-                                                                                                        _0: a >= 1 && a < 3
-                                                                                                      };
+                                                                                                  TAG: "Ok",
+                                                                                                  _0: a >= 1 && a < 3
+                                                                                                };
                                                                                               })
                                                                                           ],
                                                                                           tl: {
@@ -540,10 +540,10 @@ var suites_1 = {
                                                                                               "unsafe_round",
                                                                                               (function (param) {
                                                                                                   return {
-                                                                                                          TAG: "Eq",
-                                                                                                          _0: 3,
-                                                                                                          _1: Math.round(3.2)
-                                                                                                        };
+                                                                                                    TAG: "Eq",
+                                                                                                    _0: 3,
+                                                                                                    _1: Math.round(3.2)
+                                                                                                  };
                                                                                                 })
                                                                                             ],
                                                                                             tl: {
@@ -551,10 +551,10 @@ var suites_1 = {
                                                                                                 "round",
                                                                                                 (function (param) {
                                                                                                     return {
-                                                                                                            TAG: "Eq",
-                                                                                                            _0: 3,
-                                                                                                            _1: Math.round(3.2)
-                                                                                                          };
+                                                                                                      TAG: "Eq",
+                                                                                                      _0: 3,
+                                                                                                      _1: Math.round(3.2)
+                                                                                                    };
                                                                                                   })
                                                                                               ],
                                                                                               tl: {
@@ -562,10 +562,10 @@ var suites_1 = {
                                                                                                   "sign_int",
                                                                                                   (function (param) {
                                                                                                       return {
-                                                                                                              TAG: "Eq",
-                                                                                                              _0: -1,
-                                                                                                              _1: Math.sign(-4)
-                                                                                                            };
+                                                                                                        TAG: "Eq",
+                                                                                                        _0: -1,
+                                                                                                        _1: Math.sign(-4)
+                                                                                                      };
                                                                                                     })
                                                                                                 ],
                                                                                                 tl: {
@@ -573,10 +573,10 @@ var suites_1 = {
                                                                                                     "sign_float",
                                                                                                     (function (param) {
                                                                                                         return {
-                                                                                                                TAG: "Eq",
-                                                                                                                _0: -1,
-                                                                                                                _1: Math.sign(-4.2)
-                                                                                                              };
+                                                                                                          TAG: "Eq",
+                                                                                                          _0: -1,
+                                                                                                          _1: Math.sign(-4.2)
+                                                                                                        };
                                                                                                       })
                                                                                                   ],
                                                                                                   tl: {
@@ -584,10 +584,10 @@ var suites_1 = {
                                                                                                       "sign_float -0",
                                                                                                       (function (param) {
                                                                                                           return {
-                                                                                                                  TAG: "Eq",
-                                                                                                                  _0: -0,
-                                                                                                                  _1: Math.sign(-0)
-                                                                                                                };
+                                                                                                            TAG: "Eq",
+                                                                                                            _0: -0,
+                                                                                                            _1: Math.sign(-0)
+                                                                                                          };
                                                                                                         })
                                                                                                     ],
                                                                                                     tl: {
@@ -595,11 +595,11 @@ var suites_1 = {
                                                                                                         "sin",
                                                                                                         (function (param) {
                                                                                                             return {
-                                                                                                                    TAG: "ApproxThreshold",
-                                                                                                                    _0: 0.001,
-                                                                                                                    _1: 0.389,
-                                                                                                                    _2: Math.sin(0.4)
-                                                                                                                  };
+                                                                                                              TAG: "ApproxThreshold",
+                                                                                                              _0: 0.001,
+                                                                                                              _1: 0.389,
+                                                                                                              _2: Math.sin(0.4)
+                                                                                                            };
                                                                                                           })
                                                                                                       ],
                                                                                                       tl: {
@@ -607,11 +607,11 @@ var suites_1 = {
                                                                                                           "sinh",
                                                                                                           (function (param) {
                                                                                                               return {
-                                                                                                                      TAG: "ApproxThreshold",
-                                                                                                                      _0: 0.001,
-                                                                                                                      _1: 0.410,
-                                                                                                                      _2: Math.sinh(0.4)
-                                                                                                                    };
+                                                                                                                TAG: "ApproxThreshold",
+                                                                                                                _0: 0.001,
+                                                                                                                _1: 0.410,
+                                                                                                                _2: Math.sinh(0.4)
+                                                                                                              };
                                                                                                             })
                                                                                                         ],
                                                                                                         tl: {
@@ -619,11 +619,11 @@ var suites_1 = {
                                                                                                             "sqrt",
                                                                                                             (function (param) {
                                                                                                                 return {
-                                                                                                                        TAG: "ApproxThreshold",
-                                                                                                                        _0: 0.001,
-                                                                                                                        _1: 0.632,
-                                                                                                                        _2: Math.sqrt(0.4)
-                                                                                                                      };
+                                                                                                                  TAG: "ApproxThreshold",
+                                                                                                                  _0: 0.001,
+                                                                                                                  _1: 0.632,
+                                                                                                                  _2: Math.sqrt(0.4)
+                                                                                                                };
                                                                                                               })
                                                                                                           ],
                                                                                                           tl: {
@@ -631,11 +631,11 @@ var suites_1 = {
                                                                                                               "tan",
                                                                                                               (function (param) {
                                                                                                                   return {
-                                                                                                                          TAG: "ApproxThreshold",
-                                                                                                                          _0: 0.001,
-                                                                                                                          _1: 0.422,
-                                                                                                                          _2: Math.tan(0.4)
-                                                                                                                        };
+                                                                                                                    TAG: "ApproxThreshold",
+                                                                                                                    _0: 0.001,
+                                                                                                                    _1: 0.422,
+                                                                                                                    _2: Math.tan(0.4)
+                                                                                                                  };
                                                                                                                 })
                                                                                                             ],
                                                                                                             tl: {
@@ -643,11 +643,11 @@ var suites_1 = {
                                                                                                                 "tanh",
                                                                                                                 (function (param) {
                                                                                                                     return {
-                                                                                                                            TAG: "ApproxThreshold",
-                                                                                                                            _0: 0.001,
-                                                                                                                            _1: 0.379,
-                                                                                                                            _2: Math.tanh(0.4)
-                                                                                                                          };
+                                                                                                                      TAG: "ApproxThreshold",
+                                                                                                                      _0: 0.001,
+                                                                                                                      _1: 0.379,
+                                                                                                                      _2: Math.tanh(0.4)
+                                                                                                                    };
                                                                                                                   })
                                                                                                               ],
                                                                                                               tl: {
@@ -655,10 +655,10 @@ var suites_1 = {
                                                                                                                   "unsafe_trunc",
                                                                                                                   (function (param) {
                                                                                                                       return {
-                                                                                                                              TAG: "Eq",
-                                                                                                                              _0: 4,
-                                                                                                                              _1: Math.trunc(4.2156)
-                                                                                                                            };
+                                                                                                                        TAG: "Eq",
+                                                                                                                        _0: 4,
+                                                                                                                        _1: Math.trunc(4.2156)
+                                                                                                                      };
                                                                                                                     })
                                                                                                                 ],
                                                                                                                 tl: {
@@ -666,10 +666,10 @@ var suites_1 = {
                                                                                                                     "trunc",
                                                                                                                     (function (param) {
                                                                                                                         return {
-                                                                                                                                TAG: "Eq",
-                                                                                                                                _0: 4,
-                                                                                                                                _1: Math.trunc(4.2156)
-                                                                                                                              };
+                                                                                                                          TAG: "Eq",
+                                                                                                                          _0: 4,
+                                                                                                                          _1: Math.trunc(4.2156)
+                                                                                                                        };
                                                                                                                       })
                                                                                                                   ],
                                                                                                                   tl: /* [] */0

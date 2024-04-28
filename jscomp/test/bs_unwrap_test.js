@@ -91,10 +91,10 @@ function ff1(x, p) {
 
 function test00(param) {
   return {
-          a: 1,
-          b: 2,
-          x: undefined
-        };
+    a: 1,
+    b: 2,
+    x: undefined
+  };
 }
 
 var none_arg;

@@ -8,10 +8,10 @@ var suites_0 = [
   "_NaN <> _NaN",
   (function (param) {
       return {
-              TAG: "Eq",
-              _0: false,
-              _1: NaN === NaN
-            };
+        TAG: "Eq",
+        _0: false,
+        _1: NaN === NaN
+      };
     })
 ];
 
@@ -20,10 +20,10 @@ var suites_1 = {
     "isNaN - _NaN",
     (function (param) {
         return {
-                TAG: "Eq",
-                _0: true,
-                _1: Number.isNaN(NaN)
-              };
+          TAG: "Eq",
+          _0: true,
+          _1: Number.isNaN(NaN)
+        };
       })
   ],
   tl: {
@@ -31,10 +31,10 @@ var suites_1 = {
       "isNaN - 0.",
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: false,
-                  _1: Number.isNaN(0)
-                };
+            TAG: "Eq",
+            _0: false,
+            _1: Number.isNaN(0)
+          };
         })
     ],
     tl: {
@@ -42,10 +42,10 @@ var suites_1 = {
         "isFinite - infinity",
         (function (param) {
             return {
-                    TAG: "Eq",
-                    _0: false,
-                    _1: Number.isFinite(Pervasives.infinity)
-                  };
+              TAG: "Eq",
+              _0: false,
+              _1: Number.isFinite(Pervasives.infinity)
+            };
           })
       ],
       tl: {
@@ -53,10 +53,10 @@ var suites_1 = {
           "isFinite - neg_infinity",
           (function (param) {
               return {
-                      TAG: "Eq",
-                      _0: false,
-                      _1: Number.isFinite(Pervasives.neg_infinity)
-                    };
+                TAG: "Eq",
+                _0: false,
+                _1: Number.isFinite(Pervasives.neg_infinity)
+              };
             })
         ],
         tl: {
@@ -64,10 +64,10 @@ var suites_1 = {
             "isFinite - _NaN",
             (function (param) {
                 return {
-                        TAG: "Eq",
-                        _0: false,
-                        _1: Number.isFinite(NaN)
-                      };
+                  TAG: "Eq",
+                  _0: false,
+                  _1: Number.isFinite(NaN)
+                };
               })
           ],
           tl: {
@@ -75,10 +75,10 @@ var suites_1 = {
               "isFinite - 0.",
               (function (param) {
                   return {
-                          TAG: "Eq",
-                          _0: true,
-                          _1: Number.isFinite(0)
-                        };
+                    TAG: "Eq",
+                    _0: true,
+                    _1: Number.isFinite(0)
+                  };
                 })
             ],
             tl: {
@@ -86,10 +86,10 @@ var suites_1 = {
                 "toExponential",
                 (function (param) {
                     return {
-                            TAG: "Eq",
-                            _0: "1.23456e+2",
-                            _1: (123.456).toExponential()
-                          };
+                      TAG: "Eq",
+                      _0: "1.23456e+2",
+                      _1: (123.456).toExponential()
+                    };
                   })
               ],
               tl: {
@@ -97,10 +97,10 @@ var suites_1 = {
                   "toExponential - large number",
                   (function (param) {
                       return {
-                              TAG: "Eq",
-                              _0: "1.2e+21",
-                              _1: (1.2e21).toExponential()
-                            };
+                        TAG: "Eq",
+                        _0: "1.2e+21",
+                        _1: (1.2e21).toExponential()
+                      };
                     })
                 ],
                 tl: {
@@ -108,10 +108,10 @@ var suites_1 = {
                     "toExponentialWithPrecision - digits:2",
                     (function (param) {
                         return {
-                                TAG: "Eq",
-                                _0: "1.23e+2",
-                                _1: (123.456).toExponential(2)
-                              };
+                          TAG: "Eq",
+                          _0: "1.23e+2",
+                          _1: (123.456).toExponential(2)
+                        };
                       })
                   ],
                   tl: {
@@ -119,10 +119,10 @@ var suites_1 = {
                       "toExponentialWithPrecision - digits:4",
                       (function (param) {
                           return {
-                                  TAG: "Eq",
-                                  _0: "1.2346e+2",
-                                  _1: (123.456).toExponential(4)
-                                };
+                            TAG: "Eq",
+                            _0: "1.2346e+2",
+                            _1: (123.456).toExponential(4)
+                          };
                         })
                     ],
                     tl: {
@@ -130,10 +130,10 @@ var suites_1 = {
                         "toExponentialWithPrecision - digits:20",
                         (function (param) {
                             return {
-                                    TAG: "Eq",
-                                    _0: "0.00000000000000000000e+0",
-                                    _1: (0).toExponential(20)
-                                  };
+                              TAG: "Eq",
+                              _0: "0.00000000000000000000e+0",
+                              _1: (0).toExponential(20)
+                            };
                           })
                       ],
                       tl: {
@@ -141,11 +141,11 @@ var suites_1 = {
                           "File \"js_float_test.res\", line 27, characters 5-12",
                           (function (param) {
                               return {
-                                      TAG: "ThrowAny",
-                                      _0: (function (param) {
-                                          (0).toExponential(101);
-                                        })
-                                    };
+                                TAG: "ThrowAny",
+                                _0: (function (param) {
+                                    (0).toExponential(101);
+                                  })
+                              };
                             })
                         ],
                         tl: {
@@ -153,11 +153,11 @@ var suites_1 = {
                             "toExponentialWithPrecision - digits:-1",
                             (function (param) {
                                 return {
-                                        TAG: "ThrowAny",
-                                        _0: (function (param) {
-                                            (0).toExponential(-1);
-                                          })
-                                      };
+                                  TAG: "ThrowAny",
+                                  _0: (function (param) {
+                                      (0).toExponential(-1);
+                                    })
+                                };
                               })
                           ],
                           tl: {
@@ -165,10 +165,10 @@ var suites_1 = {
                               "toFixed",
                               (function (param) {
                                   return {
-                                          TAG: "Eq",
-                                          _0: "123",
-                                          _1: (123.456).toFixed()
-                                        };
+                                    TAG: "Eq",
+                                    _0: "123",
+                                    _1: (123.456).toFixed()
+                                  };
                                 })
                             ],
                             tl: {
@@ -176,10 +176,10 @@ var suites_1 = {
                                 "toFixed - large number",
                                 (function (param) {
                                     return {
-                                            TAG: "Eq",
-                                            _0: "1.2e+21",
-                                            _1: (1.2e21).toFixed()
-                                          };
+                                      TAG: "Eq",
+                                      _0: "1.2e+21",
+                                      _1: (1.2e21).toFixed()
+                                    };
                                   })
                               ],
                               tl: {
@@ -187,10 +187,10 @@ var suites_1 = {
                                   "toFixedWithPrecision - digits:2",
                                   (function (param) {
                                       return {
-                                              TAG: "Eq",
-                                              _0: "123.46",
-                                              _1: (123.456).toFixed(2)
-                                            };
+                                        TAG: "Eq",
+                                        _0: "123.46",
+                                        _1: (123.456).toFixed(2)
+                                      };
                                     })
                                 ],
                                 tl: {
@@ -198,10 +198,10 @@ var suites_1 = {
                                     "toFixedWithPrecision - digits:4",
                                     (function (param) {
                                         return {
-                                                TAG: "Eq",
-                                                _0: "123.4560",
-                                                _1: (123.456).toFixed(4)
-                                              };
+                                          TAG: "Eq",
+                                          _0: "123.4560",
+                                          _1: (123.456).toFixed(4)
+                                        };
                                       })
                                   ],
                                   tl: {
@@ -209,10 +209,10 @@ var suites_1 = {
                                       "toFixedWithPrecision - digits:20",
                                       (function (param) {
                                           return {
-                                                  TAG: "Eq",
-                                                  _0: "0.00000000000000000000",
-                                                  _1: (0).toFixed(20)
-                                                };
+                                            TAG: "Eq",
+                                            _0: "0.00000000000000000000",
+                                            _1: (0).toFixed(20)
+                                          };
                                         })
                                     ],
                                     tl: {
@@ -220,11 +220,11 @@ var suites_1 = {
                                         "toFixedWithPrecision - digits:101",
                                         (function (param) {
                                             return {
-                                                    TAG: "ThrowAny",
-                                                    _0: (function (param) {
-                                                        (0).toFixed(101);
-                                                      })
-                                                  };
+                                              TAG: "ThrowAny",
+                                              _0: (function (param) {
+                                                  (0).toFixed(101);
+                                                })
+                                            };
                                           })
                                       ],
                                       tl: {
@@ -232,11 +232,11 @@ var suites_1 = {
                                           "toFixedWithPrecision - digits:-1",
                                           (function (param) {
                                               return {
-                                                      TAG: "ThrowAny",
-                                                      _0: (function (param) {
-                                                          (0).toFixed(-1);
-                                                        })
-                                                    };
+                                                TAG: "ThrowAny",
+                                                _0: (function (param) {
+                                                    (0).toFixed(-1);
+                                                  })
+                                              };
                                             })
                                         ],
                                         tl: {
@@ -244,10 +244,10 @@ var suites_1 = {
                                             "toPrecision",
                                             (function (param) {
                                                 return {
-                                                        TAG: "Eq",
-                                                        _0: "123.456",
-                                                        _1: (123.456).toPrecision()
-                                                      };
+                                                  TAG: "Eq",
+                                                  _0: "123.456",
+                                                  _1: (123.456).toPrecision()
+                                                };
                                               })
                                           ],
                                           tl: {
@@ -255,10 +255,10 @@ var suites_1 = {
                                               "toPrecision - large number",
                                               (function (param) {
                                                   return {
-                                                          TAG: "Eq",
-                                                          _0: "1.2e+21",
-                                                          _1: (1.2e21).toPrecision()
-                                                        };
+                                                    TAG: "Eq",
+                                                    _0: "1.2e+21",
+                                                    _1: (1.2e21).toPrecision()
+                                                  };
                                                 })
                                             ],
                                             tl: {
@@ -266,10 +266,10 @@ var suites_1 = {
                                                 "toPrecisionWithPrecision - digits:2",
                                                 (function (param) {
                                                     return {
-                                                            TAG: "Eq",
-                                                            _0: "1.2e+2",
-                                                            _1: (123.456).toPrecision(2)
-                                                          };
+                                                      TAG: "Eq",
+                                                      _0: "1.2e+2",
+                                                      _1: (123.456).toPrecision(2)
+                                                    };
                                                   })
                                               ],
                                               tl: {
@@ -277,10 +277,10 @@ var suites_1 = {
                                                   "toPrecisionWithPrecision - digits:4",
                                                   (function (param) {
                                                       return {
-                                                              TAG: "Eq",
-                                                              _0: "123.5",
-                                                              _1: (123.456).toPrecision(4)
-                                                            };
+                                                        TAG: "Eq",
+                                                        _0: "123.5",
+                                                        _1: (123.456).toPrecision(4)
+                                                      };
                                                     })
                                                 ],
                                                 tl: {
@@ -288,10 +288,10 @@ var suites_1 = {
                                                     "toPrecisionWithPrecision - digits:20",
                                                     (function (param) {
                                                         return {
-                                                                TAG: "Eq",
-                                                                _0: "0.0000000000000000000",
-                                                                _1: (0).toPrecision(20)
-                                                              };
+                                                          TAG: "Eq",
+                                                          _0: "0.0000000000000000000",
+                                                          _1: (0).toPrecision(20)
+                                                        };
                                                       })
                                                   ],
                                                   tl: {
@@ -299,11 +299,11 @@ var suites_1 = {
                                                       "File \"js_float_test.res\", line 68, characters 5-12",
                                                       (function (param) {
                                                           return {
-                                                                  TAG: "ThrowAny",
-                                                                  _0: (function (param) {
-                                                                      (0).toPrecision(101);
-                                                                    })
-                                                                };
+                                                            TAG: "ThrowAny",
+                                                            _0: (function (param) {
+                                                                (0).toPrecision(101);
+                                                              })
+                                                          };
                                                         })
                                                     ],
                                                     tl: {
@@ -311,11 +311,11 @@ var suites_1 = {
                                                         "toPrecisionWithPrecision - digits:-1",
                                                         (function (param) {
                                                             return {
-                                                                    TAG: "ThrowAny",
-                                                                    _0: (function (param) {
-                                                                        (0).toPrecision(-1);
-                                                                      })
-                                                                  };
+                                                              TAG: "ThrowAny",
+                                                              _0: (function (param) {
+                                                                  (0).toPrecision(-1);
+                                                                })
+                                                            };
                                                           })
                                                       ],
                                                       tl: {
@@ -323,10 +323,10 @@ var suites_1 = {
                                                           "toString",
                                                           (function (param) {
                                                               return {
-                                                                      TAG: "Eq",
-                                                                      _0: "1.23",
-                                                                      _1: (1.23).toString()
-                                                                    };
+                                                                TAG: "Eq",
+                                                                _0: "1.23",
+                                                                _1: (1.23).toString()
+                                                              };
                                                             })
                                                         ],
                                                         tl: {
@@ -334,10 +334,10 @@ var suites_1 = {
                                                             "toString - large number",
                                                             (function (param) {
                                                                 return {
-                                                                        TAG: "Eq",
-                                                                        _0: "1.2e+21",
-                                                                        _1: (1.2e21).toString()
-                                                                      };
+                                                                  TAG: "Eq",
+                                                                  _0: "1.2e+21",
+                                                                  _1: (1.2e21).toString()
+                                                                };
                                                               })
                                                           ],
                                                           tl: {
@@ -345,10 +345,10 @@ var suites_1 = {
                                                               "toStringWithRadix - radix:2",
                                                               (function (param) {
                                                                   return {
-                                                                          TAG: "Eq",
-                                                                          _0: "1111011.0111010010111100011010100111111011111001110111",
-                                                                          _1: (123.456).toString(2)
-                                                                        };
+                                                                    TAG: "Eq",
+                                                                    _0: "1111011.0111010010111100011010100111111011111001110111",
+                                                                    _1: (123.456).toString(2)
+                                                                  };
                                                                 })
                                                             ],
                                                             tl: {
@@ -356,10 +356,10 @@ var suites_1 = {
                                                                 "toStringWithRadix - radix:16",
                                                                 (function (param) {
                                                                     return {
-                                                                            TAG: "Eq",
-                                                                            _0: "7b.74bc6a7ef9dc",
-                                                                            _1: (123.456).toString(16)
-                                                                          };
+                                                                      TAG: "Eq",
+                                                                      _0: "7b.74bc6a7ef9dc",
+                                                                      _1: (123.456).toString(16)
+                                                                    };
                                                                   })
                                                               ],
                                                               tl: {
@@ -367,10 +367,10 @@ var suites_1 = {
                                                                   "toStringWithRadix - radix:36",
                                                                   (function (param) {
                                                                       return {
-                                                                              TAG: "Eq",
-                                                                              _0: "3f",
-                                                                              _1: (123).toString(36)
-                                                                            };
+                                                                        TAG: "Eq",
+                                                                        _0: "3f",
+                                                                        _1: (123).toString(36)
+                                                                      };
                                                                     })
                                                                 ],
                                                                 tl: {
@@ -378,11 +378,11 @@ var suites_1 = {
                                                                     "toStringWithRadix - radix:37",
                                                                     (function (param) {
                                                                         return {
-                                                                                TAG: "ThrowAny",
-                                                                                _0: (function (param) {
-                                                                                    (0).toString(37);
-                                                                                  })
-                                                                              };
+                                                                          TAG: "ThrowAny",
+                                                                          _0: (function (param) {
+                                                                              (0).toString(37);
+                                                                            })
+                                                                        };
                                                                       })
                                                                   ],
                                                                   tl: {
@@ -390,11 +390,11 @@ var suites_1 = {
                                                                       "toStringWithRadix - radix:1",
                                                                       (function (param) {
                                                                           return {
-                                                                                  TAG: "ThrowAny",
-                                                                                  _0: (function (param) {
-                                                                                      (0).toString(1);
-                                                                                    })
-                                                                                };
+                                                                            TAG: "ThrowAny",
+                                                                            _0: (function (param) {
+                                                                                (0).toString(1);
+                                                                              })
+                                                                          };
                                                                         })
                                                                     ],
                                                                     tl: {
@@ -402,11 +402,11 @@ var suites_1 = {
                                                                         "toStringWithRadix - radix:-1",
                                                                         (function (param) {
                                                                             return {
-                                                                                    TAG: "ThrowAny",
-                                                                                    _0: (function (param) {
-                                                                                        (0).toString(-1);
-                                                                                      })
-                                                                                  };
+                                                                              TAG: "ThrowAny",
+                                                                              _0: (function (param) {
+                                                                                  (0).toString(-1);
+                                                                                })
+                                                                            };
                                                                           })
                                                                       ],
                                                                       tl: {
@@ -414,10 +414,10 @@ var suites_1 = {
                                                                           "fromString - 123",
                                                                           (function (param) {
                                                                               return {
-                                                                                      TAG: "Eq",
-                                                                                      _0: 123,
-                                                                                      _1: Number("123")
-                                                                                    };
+                                                                                TAG: "Eq",
+                                                                                _0: 123,
+                                                                                _1: Number("123")
+                                                                              };
                                                                             })
                                                                         ],
                                                                         tl: {
@@ -425,10 +425,10 @@ var suites_1 = {
                                                                             "fromString - 12.3",
                                                                             (function (param) {
                                                                                 return {
-                                                                                        TAG: "Eq",
-                                                                                        _0: 12.3,
-                                                                                        _1: Number("12.3")
-                                                                                      };
+                                                                                  TAG: "Eq",
+                                                                                  _0: 12.3,
+                                                                                  _1: Number("12.3")
+                                                                                };
                                                                               })
                                                                           ],
                                                                           tl: {
@@ -436,10 +436,10 @@ var suites_1 = {
                                                                               "fromString - empty string",
                                                                               (function (param) {
                                                                                   return {
-                                                                                          TAG: "Eq",
-                                                                                          _0: 0,
-                                                                                          _1: Number("")
-                                                                                        };
+                                                                                    TAG: "Eq",
+                                                                                    _0: 0,
+                                                                                    _1: Number("")
+                                                                                  };
                                                                                 })
                                                                             ],
                                                                             tl: {
@@ -447,10 +447,10 @@ var suites_1 = {
                                                                                 "fromString - 0x11",
                                                                                 (function (param) {
                                                                                     return {
-                                                                                            TAG: "Eq",
-                                                                                            _0: 17,
-                                                                                            _1: Number("0x11")
-                                                                                          };
+                                                                                      TAG: "Eq",
+                                                                                      _0: 17,
+                                                                                      _1: Number("0x11")
+                                                                                    };
                                                                                   })
                                                                               ],
                                                                               tl: {
@@ -458,10 +458,10 @@ var suites_1 = {
                                                                                   "fromString - 0b11",
                                                                                   (function (param) {
                                                                                       return {
-                                                                                              TAG: "Eq",
-                                                                                              _0: 3,
-                                                                                              _1: Number("0b11")
-                                                                                            };
+                                                                                        TAG: "Eq",
+                                                                                        _0: 3,
+                                                                                        _1: Number("0b11")
+                                                                                      };
                                                                                     })
                                                                                 ],
                                                                                 tl: {
@@ -469,10 +469,10 @@ var suites_1 = {
                                                                                     "fromString - 0o11",
                                                                                     (function (param) {
                                                                                         return {
-                                                                                                TAG: "Eq",
-                                                                                                _0: 9,
-                                                                                                _1: Number("0o11")
-                                                                                              };
+                                                                                          TAG: "Eq",
+                                                                                          _0: 9,
+                                                                                          _1: Number("0o11")
+                                                                                        };
                                                                                       })
                                                                                   ],
                                                                                   tl: {
@@ -480,10 +480,10 @@ var suites_1 = {
                                                                                       "fromString - invalid string",
                                                                                       (function (param) {
                                                                                           return {
-                                                                                                  TAG: "Eq",
-                                                                                                  _0: true,
-                                                                                                  _1: Number.isNaN(Number("foo"))
-                                                                                                };
+                                                                                            TAG: "Eq",
+                                                                                            _0: true,
+                                                                                            _1: Number.isNaN(Number("foo"))
+                                                                                          };
                                                                                         })
                                                                                     ],
                                                                                     tl: /* [] */0

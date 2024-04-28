@@ -12,9 +12,9 @@ function sub(_tr, _k) {
     var tr = _tr;
     if (typeof tr !== "object") {
       throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     if (k === 1) {
       return tr._0;
@@ -34,51 +34,51 @@ function update(tr, k, w) {
   if (typeof tr !== "object") {
     if (k === 1) {
       return {
-              TAG: "Br",
-              _0: w,
-              _1: "Lf",
-              _2: "Lf"
-            };
+        TAG: "Br",
+        _0: w,
+        _1: "Lf",
+        _2: "Lf"
+      };
     }
     throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Not_found",
+      Error: new Error()
+    };
   }
   var r = tr._2;
   var l = tr._1;
   if (k === 1) {
     return {
-            TAG: "Br",
-            _0: w,
-            _1: l,
-            _2: r
-          };
+      TAG: "Br",
+      _0: w,
+      _1: l,
+      _2: r
+    };
   }
   var v = tr._0;
   if (k % 2 === 0) {
     return {
-            TAG: "Br",
-            _0: v,
-            _1: update(l, k / 2 | 0, w),
-            _2: r
-          };
+      TAG: "Br",
+      _0: v,
+      _1: update(l, k / 2 | 0, w),
+      _2: r
+    };
   } else {
     return {
-            TAG: "Br",
-            _0: v,
-            _1: l,
-            _2: update(r, k / 2 | 0, w)
-          };
+      TAG: "Br",
+      _0: v,
+      _1: l,
+      _2: update(r, k / 2 | 0, w)
+    };
   }
 }
 
 function $$delete(tr, n) {
   if (typeof tr !== "object") {
     throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Not_found",
+      Error: new Error()
+    };
   }
   if (n === 1) {
     return "Lf";
@@ -88,68 +88,68 @@ function $$delete(tr, n) {
   var v = tr._0;
   if (n % 2 === 0) {
     return {
-            TAG: "Br",
-            _0: v,
-            _1: $$delete(l, n / 2 | 0),
-            _2: r
-          };
+      TAG: "Br",
+      _0: v,
+      _1: $$delete(l, n / 2 | 0),
+      _2: r
+    };
   } else {
     return {
-            TAG: "Br",
-            _0: v,
-            _1: l,
-            _2: $$delete(r, n / 2 | 0)
-          };
+      TAG: "Br",
+      _0: v,
+      _1: l,
+      _2: $$delete(r, n / 2 | 0)
+    };
   }
 }
 
 function loext(tr, w) {
   if (typeof tr !== "object") {
     return {
-            TAG: "Br",
-            _0: w,
-            _1: "Lf",
-            _2: "Lf"
-          };
+      TAG: "Br",
+      _0: w,
+      _1: "Lf",
+      _2: "Lf"
+    };
   } else {
     return {
-            TAG: "Br",
-            _0: w,
-            _1: loext(tr._2, tr._0),
-            _2: tr._1
-          };
+      TAG: "Br",
+      _0: w,
+      _1: loext(tr._2, tr._0),
+      _2: tr._1
+    };
   }
 }
 
 function lorem(tr) {
   if (typeof tr !== "object") {
     throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Not_found",
+      Error: new Error()
+    };
   }
   var l = tr._1;
   if (typeof l === "object") {
     return {
-            TAG: "Br",
-            _0: l._0,
-            _1: tr._2,
-            _2: lorem(l)
-          };
+      TAG: "Br",
+      _0: l._0,
+      _1: tr._2,
+      _2: lorem(l)
+    };
   }
   var tmp = tr._2;
   if (typeof tmp !== "object") {
     return "Lf";
   }
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "flexible_array_test.res",
-          80,
-          9
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "flexible_array_test.res",
+      80,
+      9
+    ],
+    Error: new Error()
+  };
 }
 
 var empty = [
@@ -166,70 +166,70 @@ function get(param, i) {
     return sub(param[0], i + 1 | 0);
   }
   throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Array.get",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Array.get",
+    Error: new Error()
+  };
 }
 
 function set(param, i, v) {
   var k = param[1];
   if (i >= 0 && i < k) {
     return [
-            update(param[0], i + 1 | 0, v),
-            k
-          ];
+      update(param[0], i + 1 | 0, v),
+      k
+    ];
   }
   throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Array.set",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Array.set",
+    Error: new Error()
+  };
 }
 
 function push_front(param, v) {
   return [
-          loext(param[0], v),
-          param[1] + 1 | 0
-        ];
+    loext(param[0], v),
+    param[1] + 1 | 0
+  ];
 }
 
 function pop_front(param) {
   var k = param[1];
   if (k > 0) {
     return [
-            lorem(param[0]),
-            k - 1 | 0
-          ];
+      lorem(param[0]),
+      k - 1 | 0
+    ];
   }
   throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Array.pop_front",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Array.pop_front",
+    Error: new Error()
+  };
 }
 
 function push_back(param, v) {
   var k = param[1];
   return [
-          update(param[0], k + 1 | 0, v),
-          k + 1 | 0
-        ];
+    update(param[0], k + 1 | 0, v),
+    k + 1 | 0
+  ];
 }
 
 function pop_back(param) {
   var k = param[1];
   if (k > 0) {
     return [
-            $$delete(param[0], k),
-            k - 1 | 0
-          ];
+      $$delete(param[0], k),
+      k - 1 | 0
+    ];
   }
   throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Array.pop_back",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Array.pop_back",
+    Error: new Error()
+  };
 }
 
 function filter_from(i, p, s) {
@@ -318,14 +318,14 @@ if (!Caml_obj.equal(x, of_array([
             6
           ]))) {
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "flexible_array_test.res",
-          184,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "flexible_array_test.res",
+      184,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 var v = $$Array.init(500, (function (i) {

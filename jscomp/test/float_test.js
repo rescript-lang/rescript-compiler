@@ -123,19 +123,19 @@ var results = $$Array.append([
 
 function from_pairs(ps) {
   return $$Array.to_list($$Array.mapi((function (i, param) {
-                    var b = param[1];
-                    var a = param[0];
-                    return [
-                            "pair " + i,
-                            (function (param) {
-                                return {
-                                        TAG: "Approx",
-                                        _0: a,
-                                        _1: b
-                                      };
-                              })
-                          ];
-                  }), ps));
+              var b = param[1];
+              var a = param[0];
+              return [
+                "pair " + i,
+                (function (param) {
+                    return {
+                      TAG: "Approx",
+                      _0: a,
+                      _1: b
+                    };
+                  })
+              ];
+            }), ps));
 }
 
 var float_compare = Caml.float_compare;
@@ -331,10 +331,10 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
             "mod_float",
             (function (param) {
                 return {
-                        TAG: "Approx",
-                        _0: 3.2 % 0.5,
-                        _1: 0.200000000000000178
-                      };
+                  TAG: "Approx",
+                  _0: 3.2 % 0.5,
+                  _1: 0.200000000000000178
+                };
               })
           ],
           tl: {
@@ -342,10 +342,10 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
               "modf_float1",
               (function (param) {
                   return {
-                          TAG: "Approx",
-                          _0: a,
-                          _1: 0.299999999999997158
-                        };
+                    TAG: "Approx",
+                    _0: a,
+                    _1: 0.299999999999997158
+                  };
                 })
             ],
             tl: {
@@ -353,10 +353,10 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
                 "modf_float2",
                 (function (param) {
                     return {
-                            TAG: "Approx",
-                            _0: b,
-                            _1: 32
-                          };
+                      TAG: "Approx",
+                      _0: b,
+                      _1: 32
+                    };
                   })
               ],
               tl: {
@@ -364,10 +364,10 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
                   "int_of_float",
                   (function (param) {
                       return {
-                              TAG: "Eq",
-                              _0: 3,
-                              _1: 3
-                            };
+                        TAG: "Eq",
+                        _0: 3,
+                        _1: 3
+                      };
                     })
                 ],
                 tl: /* [] */0

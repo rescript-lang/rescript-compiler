@@ -39,9 +39,9 @@ function setOfArray(x) {
 
 function emptyMap(param) {
   return {
-          cmp: Icmp.cmp,
-          data: undefined
-        };
+    cmp: Icmp.cmp,
+    data: undefined
+  };
 }
 
 function mergeInter(s1, s2) {
@@ -76,11 +76,11 @@ function mergeDiff(s1, s2) {
 
 function randomRange(i, j) {
   return Belt_Array.map(Array_data_util.randomRange(i, j), (function (x) {
-                return [
-                        x,
-                        x
-                      ];
-              }));
+          return [
+            x,
+            x
+          ];
+        }));
 }
 
 var u0 = Belt_Map.fromArray(randomRange(0, 100), Icmp);
@@ -169,14 +169,14 @@ eq("File \"bs_poly_map_test.res\", line 109, characters 5-12", Belt_Map.get(u0$1
 
 function acc(m, is) {
   return Belt_Array.reduce(is, m, (function (a, i) {
-                return Belt_Map.update(a, i, (function (n) {
-                              if (n !== undefined) {
-                                return n + 1 | 0;
-                              } else {
-                                return 1;
-                              }
-                            }));
-              }));
+          return Belt_Map.update(a, i, (function (n) {
+                  if (n !== undefined) {
+                    return n + 1 | 0;
+                  } else {
+                    return 1;
+                  }
+                }));
+        }));
 }
 
 var m_cmp = Icmp.cmp;
@@ -190,9 +190,9 @@ var m1 = acc(m, Belt_Array.concat(Array_data_util.randomRange(0, 20), Array_data
 
 b("File \"bs_poly_map_test.res\", line 126, characters 4-11", Belt_Map.eq(m1, Belt_Map.fromArray(Belt_Array.makeBy(31, (function (i) {
                     return [
-                            i,
-                            i >= 10 && i <= 20 ? 2 : 1
-                          ];
+                      i,
+                      i >= 10 && i <= 20 ? 2 : 1
+                    ];
                   })), Icmp), (function (x, y) {
             return x === y;
           })));
@@ -206,16 +206,16 @@ var v0 = {
 
 var v1 = Belt_Map.mergeMany(v0, Belt_Array.map(Array_data_util.randomRange(0, 10000), (function (x) {
             return [
-                    x,
-                    x
-                  ];
+              x,
+              x
+            ];
           })));
 
 var v2 = Belt_Map.fromArray(Belt_Array.map(Array_data_util.randomRange(0, 10000), (function (x) {
             return [
-                    x,
-                    x
-                  ];
+              x,
+              x
+            ];
           })), Icmp);
 
 b("File \"bs_poly_map_test.res\", line 150, characters 4-11", Belt_Map.eq(v1, v2, (function (x, y) {

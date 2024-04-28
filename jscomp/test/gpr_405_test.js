@@ -38,25 +38,25 @@ function Make(funarg) {
     var step2 = function (top, rest_of_stack) {
       if (find_default(already_processed, top)) {
         throw {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "gpr_405_test.res",
-                40,
-                6
-              ],
-              Error: new Error()
-            };
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "gpr_405_test.res",
+            40,
+            6
+          ],
+          Error: new Error()
+        };
       }
       if (find_default(on_the_stack, top)) {
         throw {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "gpr_405_test.res",
-                41,
-                6
-              ],
-              Error: new Error()
-            };
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "gpr_405_test.res",
+            41,
+            6
+          ],
+          Error: new Error()
+        };
       }
       Curry._3(H.add, on_the_stack, top, true);
       Curry._3(H.add, n_labels, top, counter.contents);
@@ -74,12 +74,12 @@ function Make(funarg) {
           var successor = successors.hd;
           if (!find_default(already_processed, successor)) {
             return step2(successor, {
-                        hd: [
-                          top$1,
-                          successors
-                        ],
-                        tl: rest_of_stack$1
-                      });
+                  hd: [
+                    top$1,
+                    successors
+                  ],
+                  tl: rest_of_stack$1
+                });
           }
           var x = find_default(on_the_stack, successor) ? Curry._2(H.find, n_labels, successor) : Curry._2(H.find, l_labels, successor);
           Curry._3(H.add, l_labels, top$1, Caml.int_max(Curry._2(H.find, l_labels, top$1), x));
@@ -95,10 +95,10 @@ function Make(funarg) {
         }
         if (Curry._2(H.find, l_labels, top$1) > Curry._2(H.find, n_labels, top$1)) {
           throw {
-                RE_EXN_ID: "Invalid_argument",
-                _1: "Graph.Mincut: graph not reducible",
-                Error: new Error()
-              };
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Graph.Mincut: graph not reducible",
+            Error: new Error()
+          };
         }
         if (!rest_of_stack$1) {
           return cut_set.contents;
@@ -116,8 +116,8 @@ function Make(funarg) {
     return step2(first_node, /* [] */0);
   };
   return {
-          min_cutset: min_cutset
-        };
+    min_cutset: min_cutset
+  };
 }
 
 exports.Make = Make;

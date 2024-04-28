@@ -1587,12 +1587,12 @@ eq("File \"bs_list_test.res\", line 260, characters 5-12", Belt_List.map({
           }
         }, (function (i) {
             return Belt_List.getExn({
-                        hd: 0,
-                        tl: {
-                          hd: 1,
-                          tl: /* [] */0
-                        }
-                      }, i);
+                  hd: 0,
+                  tl: {
+                    hd: 1,
+                    tl: /* [] */0
+                  }
+                }, i);
           })), {
       hd: 0,
       tl: {

@@ -195,14 +195,14 @@ function f11(x) {
     return 1;
   }
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "adt_optimize_test.res",
-          202,
-          9
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "adt_optimize_test.res",
+      202,
+      9
+    ],
+    Error: new Error()
+  };
 }
 
 exports.f = f;

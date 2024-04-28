@@ -38,23 +38,23 @@ function reducerDefault(_action, _state) {
 
 function basicComponent(debugName) {
   return {
-          debugName: debugName,
-          reactClassInternal: debugName,
-          handedOffState: {
-            contents: undefined
-          },
-          willReceiveProps: willReceivePropsDefault,
-          didMount: anyToUnit,
-          didUpdate: anyToUnit,
-          willUnmount: anyToUnit,
-          willUpdate: anyToUnit,
-          shouldUpdate: anyToTrue,
-          render: renderDefault,
-          initialState: initialStateDefault,
-          retainedProps: undefined,
-          reducer: reducerDefault,
-          jsElementWrapped: undefined
-        };
+    debugName: debugName,
+    reactClassInternal: debugName,
+    handedOffState: {
+      contents: undefined
+    },
+    willReceiveProps: willReceivePropsDefault,
+    didMount: anyToUnit,
+    didUpdate: anyToUnit,
+    willUnmount: anyToUnit,
+    willUpdate: anyToUnit,
+    shouldUpdate: anyToTrue,
+    render: renderDefault,
+    initialState: initialStateDefault,
+    retainedProps: undefined,
+    reducer: reducerDefault,
+    jsElementWrapped: undefined
+  };
 }
 
 var statelessComponent = basicComponent;
@@ -77,10 +77,10 @@ function element(keyOpt, refOpt, component) {
     return Curry._2(jsElementWrapped, key, ref);
   } else {
     return React.createElement(component.reactClassInternal, {
-                key: key,
-                ref: ref,
-                reasonProps: element$1
-              });
+          key: key,
+          ref: ref,
+          reasonProps: element$1
+        });
   }
 }
 
@@ -105,21 +105,21 @@ function wrapJsForReason(reactClass, props, children) {
       return Curry._2(React.createElement.apply, null, varargs);
     });
   return {
-          debugName: dummyInteropComponent.debugName,
-          reactClassInternal: dummyInteropComponent.reactClassInternal,
-          handedOffState: dummyInteropComponent.handedOffState,
-          willReceiveProps: dummyInteropComponent.willReceiveProps,
-          didMount: dummyInteropComponent.didMount,
-          didUpdate: dummyInteropComponent.didUpdate,
-          willUnmount: dummyInteropComponent.willUnmount,
-          willUpdate: dummyInteropComponent.willUpdate,
-          shouldUpdate: dummyInteropComponent.shouldUpdate,
-          render: dummyInteropComponent.render,
-          initialState: dummyInteropComponent.initialState,
-          retainedProps: dummyInteropComponent.retainedProps,
-          reducer: dummyInteropComponent.reducer,
-          jsElementWrapped: jsElementWrapped
-        };
+    debugName: dummyInteropComponent.debugName,
+    reactClassInternal: dummyInteropComponent.reactClassInternal,
+    handedOffState: dummyInteropComponent.handedOffState,
+    willReceiveProps: dummyInteropComponent.willReceiveProps,
+    didMount: dummyInteropComponent.didMount,
+    didUpdate: dummyInteropComponent.didUpdate,
+    willUnmount: dummyInteropComponent.willUnmount,
+    willUpdate: dummyInteropComponent.willUpdate,
+    shouldUpdate: dummyInteropComponent.shouldUpdate,
+    render: dummyInteropComponent.render,
+    initialState: dummyInteropComponent.initialState,
+    retainedProps: dummyInteropComponent.retainedProps,
+    reducer: dummyInteropComponent.reducer,
+    jsElementWrapped: jsElementWrapped
+  };
 }
 
 var Router;

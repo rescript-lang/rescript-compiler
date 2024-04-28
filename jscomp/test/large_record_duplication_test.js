@@ -28,14 +28,14 @@ var Small = /* @__PURE__ */Caml_exceptions.create("Large_record_duplication_test
 function f_small(x) {
   if (x.RE_EXN_ID === Small) {
     return {
-            RE_EXN_ID: Small,
-            x: 2,
-            y: x.y
-          };
+      RE_EXN_ID: Small,
+      x: 2,
+      y: x.y
+    };
   } else {
     return {
-            RE_EXN_ID: "Not_found"
-          };
+      RE_EXN_ID: "Not_found"
+    };
   }
 }
 

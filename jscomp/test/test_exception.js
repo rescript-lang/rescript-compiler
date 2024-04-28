@@ -8,40 +8,40 @@ var Local = /* @__PURE__ */Caml_exceptions.create("Test_exception.Local");
 
 function f(param) {
   throw {
-        RE_EXN_ID: Local,
-        _1: 3,
-        Error: new Error()
-      };
+    RE_EXN_ID: Local,
+    _1: 3,
+    Error: new Error()
+  };
 }
 
 function g(param) {
   throw {
-        RE_EXN_ID: "Not_found",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Not_found",
+    Error: new Error()
+  };
 }
 
 function h(param) {
   throw {
-        RE_EXN_ID: Test_common.U,
-        _1: 3,
-        Error: new Error()
-      };
+    RE_EXN_ID: Test_common.U,
+    _1: 3,
+    Error: new Error()
+  };
 }
 
 function x(param) {
   throw {
-        RE_EXN_ID: Test_common.H,
-        Error: new Error()
-      };
+    RE_EXN_ID: Test_common.H,
+    Error: new Error()
+  };
 }
 
 function xx(param) {
   throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "x",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Invalid_argument",
+    _1: "x",
+    Error: new Error()
+  };
 }
 
 var Nullary = /* @__PURE__ */Caml_exceptions.create("Test_exception.Nullary");

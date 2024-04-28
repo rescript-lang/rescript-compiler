@@ -5,11 +5,11 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function fix(param) {
   return {
-          TAG: "Fix",
-          _0: CamlinternalLazy.from_fun(function () {
-                return fix();
-              })
-        };
+    TAG: "Fix",
+    _0: CamlinternalLazy.from_fun(function () {
+          return fix();
+        })
+  };
 }
 
 function unfixLeak(_f) {

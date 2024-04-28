@@ -101,14 +101,14 @@ catch (raw_x$3){
     a0 = x$3._1;
   } else {
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "exception_raise_test.res",
-            104,
-            7
-          ],
-          Error: new Error()
-        };
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "exception_raise_test.res",
+        104,
+        7
+      ],
+      Error: new Error()
+    };
   }
 }
 
@@ -136,20 +136,20 @@ var suites = {
       "File \"exception_raise_test.res\", line 120, characters 5-12",
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: [
-                    f,
-                    ff,
-                    fff,
-                    a0
-                  ],
-                  _1: [
-                    2,
-                    2,
-                    2,
-                    2
-                  ]
-                };
+            TAG: "Eq",
+            _0: [
+              f,
+              ff,
+              fff,
+              a0
+            ],
+            _1: [
+              2,
+              2,
+              2,
+              2
+            ]
+          };
         })
     ],
     tl: {
@@ -158,20 +158,20 @@ var suites = {
         (function (param) {
             if (a1.RE_EXN_ID === Js_exn.$$Error) {
               return {
-                      TAG: "Eq",
-                      _0: a1._1,
-                      _1: 2
-                    };
+                TAG: "Eq",
+                _0: a1._1,
+                _1: 2
+              };
             }
             throw {
-                  RE_EXN_ID: "Assert_failure",
-                  _1: [
-                    "exception_raise_test.res",
-                    127,
-                    15
-                  ],
-                  Error: new Error()
-                };
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "exception_raise_test.res",
+                127,
+                15
+              ],
+              Error: new Error()
+            };
           })
       ],
       tl: /* [] */0
@@ -197,9 +197,9 @@ catch (raw_e$2){
 
 try {
   throw {
-        RE_EXN_ID: "Not_found",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Not_found",
+    Error: new Error()
+  };
 }
 catch (raw_e$3){
   var e$1 = Caml_js_exceptions.internalToOCamlException(raw_e$3);

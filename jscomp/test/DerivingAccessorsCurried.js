@@ -9,17 +9,17 @@ function myField(param) {
 
 function num(param_0) {
   return {
-          TAG: "Num",
-          _0: param_0
-        };
+    TAG: "Num",
+    _0: param_0
+  };
 }
 
 function doubleNum(param_0, param_1) {
   return {
-          TAG: "DoubleNum",
-          _0: param_0,
-          _1: param_1
-        };
+    TAG: "DoubleNum",
+    _0: param_0,
+    _1: param_1
+  };
 }
 
 function compose(a, accessor) {

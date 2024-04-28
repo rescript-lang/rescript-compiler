@@ -17,13 +17,13 @@ function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
   return {
-          TAG: "Node",
-          _0: l,
-          _1: x,
-          _2: d,
-          _3: r,
-          _4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-        };
+    TAG: "Node",
+    _0: l,
+    _1: x,
+    _2: d,
+    _3: r,
+    _4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+  };
 }
 
 function bal(l, x, d, r) {
@@ -34,14 +34,14 @@ function bal(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "inline_map_demo.res",
-              41,
-              15
-            ],
-            Error: new Error()
-          };
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "inline_map_demo.res",
+          41,
+          15
+        ],
+        Error: new Error()
+      };
     }
     var lr = l._3;
     var ld = l._2;
@@ -54,35 +54,35 @@ function bal(l, x, d, r) {
       return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
     }
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "inline_map_demo.res",
-            47,
-            19
-          ],
-          Error: new Error()
-        };
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "inline_map_demo.res",
+        47,
+        19
+      ],
+      Error: new Error()
+    };
   }
   if (hr <= (hl + 2 | 0)) {
     return {
-            TAG: "Node",
-            _0: l,
-            _1: x,
-            _2: d,
-            _3: r,
-            _4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-          };
+      TAG: "Node",
+      _0: l,
+      _1: x,
+      _2: d,
+      _3: r,
+      _4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+    };
   }
   if (typeof r !== "object") {
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "inline_map_demo.res",
-            55,
-            15
-          ],
-          Error: new Error()
-        };
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "inline_map_demo.res",
+        55,
+        15
+      ],
+      Error: new Error()
+    };
   }
   var rr = r._3;
   var rd = r._2;
@@ -95,26 +95,26 @@ function bal(l, x, d, r) {
     return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
   }
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "inline_map_demo.res",
-          61,
-          19
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "inline_map_demo.res",
+      61,
+      19
+    ],
+    Error: new Error()
+  };
 }
 
 function add(x, data, tree) {
   if (typeof tree !== "object") {
     return {
-            TAG: "Node",
-            _0: "Empty",
-            _1: x,
-            _2: data,
-            _3: "Empty",
-            _4: 1
-          };
+      TAG: "Node",
+      _0: "Empty",
+      _1: x,
+      _2: data,
+      _3: "Empty",
+      _4: 1
+    };
   }
   var r = tree._3;
   var d = tree._2;
@@ -123,13 +123,13 @@ function add(x, data, tree) {
   var c = Caml.int_compare(x, v);
   if (c === 0) {
     return {
-            TAG: "Node",
-            _0: l,
-            _1: x,
-            _2: data,
-            _3: r,
-            _4: tree._4
-          };
+      TAG: "Node",
+      _0: l,
+      _1: x,
+      _2: data,
+      _3: r,
+      _4: tree._4
+    };
   } else if (c < 0) {
     return bal(add(x, data, l), v, d, r);
   } else {
@@ -170,9 +170,9 @@ function find(px, _x) {
     var x = _x;
     if (typeof x !== "object") {
       throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     var c = Caml.int_compare(px, x._1);
     if (c === 0) {
@@ -188,10 +188,10 @@ Mt.from_pair_suites("Inline_map_demo", {
         "find",
         (function (param) {
             return {
-                    TAG: "Eq",
-                    _0: find(10, m),
-                    _1: /* 'a' */97
-                  };
+              TAG: "Eq",
+              _0: find(10, m),
+              _1: /* 'a' */97
+            };
           })
       ],
       tl: /* [] */0

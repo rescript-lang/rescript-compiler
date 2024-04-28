@@ -40,18 +40,18 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
 
 function basename(param) {
   return generic_basename((function (s, i) {
-                return Caml_string.get(s, i) === /* '/' */47;
-              }), Filename.current_dir_name, param);
+          return Caml_string.get(s, i) === /* '/' */47;
+        }), Filename.current_dir_name, param);
 }
 
 var suites_0 = [
   "basename",
   (function (param) {
       return {
-              TAG: "Eq",
-              _0: basename("b/c/a.b"),
-              _1: "a.b"
-            };
+        TAG: "Eq",
+        _0: basename("b/c/a.b"),
+        _1: "a.b"
+      };
     })
 ];
 

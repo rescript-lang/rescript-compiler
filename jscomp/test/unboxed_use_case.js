@@ -6,9 +6,9 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 
 function map_pair(r, param) {
   return [
-          Curry._1(r, param[0]),
-          Curry._1(r, param[1])
-        ];
+    Curry._1(r, param[0]),
+    Curry._1(r, param[1])
+  ];
 }
 
 function u(x) {

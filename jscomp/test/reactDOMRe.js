@@ -26,14 +26,14 @@ function createRootWithClassName(className) {
   var elements = document.getElementsByClassName(className);
   if (elements.length !== 0) {
     return {
-            TAG: "Ok",
-            _0: ReactDom.createRoot(elements[0])
-          };
+      TAG: "Ok",
+      _0: ReactDom.createRoot(elements[0])
+    };
   } else {
     return {
-            TAG: "Error",
-            _0: "ReactDOMRe.Unstable.createRootWithClassName: no element of class " + (className + " found in the HTML.")
-          };
+      TAG: "Error",
+      _0: "ReactDOMRe.Unstable.createRootWithClassName: no element of class " + (className + " found in the HTML.")
+    };
   }
 }
 
@@ -41,14 +41,14 @@ function createRootWithId(id) {
   var element = document.getElementById(id);
   if (element == null) {
     return {
-            TAG: "Error",
-            _0: "ReactDOMRe.Unstable.createRootWithId: no element of id " + (id + " found in the HTML.")
-          };
+      TAG: "Error",
+      _0: "ReactDOMRe.Unstable.createRootWithId: no element of id " + (id + " found in the HTML.")
+    };
   } else {
     return {
-            TAG: "Ok",
-            _0: ReactDom.createRoot(element)
-          };
+      TAG: "Ok",
+      _0: ReactDom.createRoot(element)
+    };
   }
 }
 
@@ -70,10 +70,10 @@ function hydrateToElementWithId(reactElement, id) {
   var element = document.getElementById(id);
   if (element == null) {
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "ReactDOMRe.hydrateToElementWithId : no element of id " + (id + " found in the HTML."),
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "ReactDOMRe.hydrateToElementWithId : no element of id " + (id + " found in the HTML."),
+      Error: new Error()
+    };
   }
   ReactDom.hydrate(reactElement, element);
 }

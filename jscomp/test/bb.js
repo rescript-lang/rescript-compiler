@@ -22,14 +22,14 @@ function ff(x) {
         return "c";
     default:
       throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "bb.res",
-              13,
-              9
-            ],
-            Error: new Error()
-          };
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "bb.res",
+          13,
+          9
+        ],
+        Error: new Error()
+      };
   }
 }
 
@@ -47,14 +47,14 @@ function test(x) {
         break;
     default:
       throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "bb.res",
-              21,
-              9
-            ],
-            Error: new Error()
-          };
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "bb.res",
+          21,
+          9
+        ],
+        Error: new Error()
+      };
   }
   if (match === "b") {
     return "b";

@@ -30,9 +30,9 @@ function split(delim, s) {
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn.RE_EXN_ID === "Not_found") {
           return {
-                  hd: $$String.sub(s, 0, x),
-                  tl: l
-                };
+            hd: $$String.sub(s, 0, x),
+            tl: l
+          };
         }
         throw exn;
       }
@@ -81,8 +81,8 @@ function string_of_rank(x) {
 
 function find_ticker_by_name(all_tickers, ticker) {
   return List.find((function (param) {
-                return param.ticker_name === ticker;
-              }), all_tickers);
+          return param.ticker_name === ticker;
+        }), all_tickers);
 }
 
 function print_all_composite(all_tickers) {
@@ -107,24 +107,24 @@ function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
   return {
-          TAG: "Node",
-          l: l,
-          v: x,
-          d: d,
-          r: r,
-          h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-        };
+    TAG: "Node",
+    l: l,
+    v: x,
+    d: d,
+    r: r,
+    h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+  };
 }
 
 function singleton(x, d) {
   return {
-          TAG: "Node",
-          l: "Empty",
-          v: x,
-          d: d,
-          r: "Empty",
-          h: 1
-        };
+    TAG: "Node",
+    l: "Empty",
+    v: x,
+    d: d,
+    r: "Empty",
+    h: 1
+  };
 }
 
 function bal(l, x, d, r) {
@@ -135,10 +135,10 @@ function bal(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal",
+        Error: new Error()
+      };
     }
     var lr = l.r;
     var ld = l.d;
@@ -151,27 +151,27 @@ function bal(l, x, d, r) {
       return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal",
+      Error: new Error()
+    };
   }
   if (hr <= (hl + 2 | 0)) {
     return {
-            TAG: "Node",
-            l: l,
-            v: x,
-            d: d,
-            r: r,
-            h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
-          };
+      TAG: "Node",
+      l: l,
+      v: x,
+      d: d,
+      r: r,
+      h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+    };
   }
   if (typeof r !== "object") {
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal",
+      Error: new Error()
+    };
   }
   var rr = r.r;
   var rd = r.d;
@@ -184,10 +184,10 @@ function bal(l, x, d, r) {
     return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Map.bal",
+    Error: new Error()
+  };
 }
 
 function is_empty(param) {
@@ -201,13 +201,13 @@ function is_empty(param) {
 function add(x, data, param) {
   if (typeof param !== "object") {
     return {
-            TAG: "Node",
-            l: "Empty",
-            v: x,
-            d: data,
-            r: "Empty",
-            h: 1
-          };
+      TAG: "Node",
+      l: "Empty",
+      v: x,
+      d: data,
+      r: "Empty",
+      h: 1
+    };
   }
   var r = param.r;
   var d = param.d;
@@ -219,13 +219,13 @@ function add(x, data, param) {
       return param;
     } else {
       return {
-              TAG: "Node",
-              l: l,
-              v: x,
-              d: data,
-              r: r,
-              h: param.h
-            };
+        TAG: "Node",
+        l: l,
+        v: x,
+        d: data,
+        r: r,
+        h: param.h
+      };
     }
   }
   if (c < 0) {
@@ -249,9 +249,9 @@ function find(x, _param) {
     var param = _param;
     if (typeof param !== "object") {
       throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     var c = Caml_obj.compare(x, param.v);
     if (c === 0) {
@@ -267,9 +267,9 @@ function find_first(f, _param) {
     var param = _param;
     if (typeof param !== "object") {
       throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     var v = param.v;
     if (Curry._1(f, v)) {
@@ -282,9 +282,9 @@ function find_first(f, _param) {
         var v0 = _v0;
         if (typeof param$1 !== "object") {
           return [
-                  v0,
-                  d0
-                ];
+            v0,
+            d0
+          ];
         }
         var v$1 = param$1.v;
         if (Curry._1(f, v$1)) {
@@ -319,9 +319,9 @@ function find_first_opt(f, _param) {
         var v0 = _v0;
         if (typeof param$1 !== "object") {
           return [
-                  v0,
-                  d0
-                ];
+            v0,
+            d0
+          ];
         }
         var v$1 = param$1.v;
         if (Curry._1(f, v$1)) {
@@ -344,9 +344,9 @@ function find_last(f, _param) {
     var param = _param;
     if (typeof param !== "object") {
       throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     var v = param.v;
     if (Curry._1(f, v)) {
@@ -359,9 +359,9 @@ function find_last(f, _param) {
         var v0 = _v0;
         if (typeof param$1 !== "object") {
           return [
-                  v0,
-                  d0
-                ];
+            v0,
+            d0
+          ];
         }
         var v$1 = param$1.v;
         if (Curry._1(f, v$1)) {
@@ -396,9 +396,9 @@ function find_last_opt(f, _param) {
         var v0 = _v0;
         if (typeof param$1 !== "object") {
           return [
-                  v0,
-                  d0
-                ];
+            v0,
+            d0
+          ];
         }
         var v$1 = param$1.v;
         if (Curry._1(f, v$1)) {
@@ -451,16 +451,16 @@ function min_binding(_param) {
     var param = _param;
     if (typeof param !== "object") {
       throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     var l = param.l;
     if (typeof l !== "object") {
       return [
-              param.v,
-              param.d
-            ];
+        param.v,
+        param.d
+      ];
     }
     _param = l;
     continue ;
@@ -476,9 +476,9 @@ function min_binding_opt(_param) {
     var l = param.l;
     if (typeof l !== "object") {
       return [
-              param.v,
-              param.d
-            ];
+        param.v,
+        param.d
+      ];
     }
     _param = l;
     continue ;
@@ -490,16 +490,16 @@ function max_binding(_param) {
     var param = _param;
     if (typeof param !== "object") {
       throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     var r = param.r;
     if (typeof r !== "object") {
       return [
-              param.v,
-              param.d
-            ];
+        param.v,
+        param.d
+      ];
     }
     _param = r;
     continue ;
@@ -515,9 +515,9 @@ function max_binding_opt(_param) {
     var r = param.r;
     if (typeof r !== "object") {
       return [
-              param.v,
-              param.d
-            ];
+        param.v,
+        param.d
+      ];
     }
     _param = r;
     continue ;
@@ -527,10 +527,10 @@ function max_binding_opt(_param) {
 function remove_min_binding(param) {
   if (typeof param !== "object") {
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.remove_min_elt",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.remove_min_elt",
+      Error: new Error()
+    };
   }
   var l = param.l;
   if (typeof l !== "object") {
@@ -584,13 +584,13 @@ function update(x, f, param) {
     var data = Curry._1(f, undefined);
     if (data !== undefined) {
       return {
-              TAG: "Node",
-              l: "Empty",
-              v: x,
-              d: Caml_option.valFromOption(data),
-              r: "Empty",
-              h: 1
-            };
+        TAG: "Node",
+        l: "Empty",
+        v: x,
+        d: Caml_option.valFromOption(data),
+        r: "Empty",
+        h: 1
+      };
     } else {
       return "Empty";
     }
@@ -610,13 +610,13 @@ function update(x, f, param) {
       return param;
     } else {
       return {
-              TAG: "Node",
-              l: l,
-              v: x,
-              d: data$2,
-              r: r,
-              h: param.h
-            };
+        TAG: "Node",
+        l: l,
+        v: x,
+        d: data$2,
+        r: r,
+        h: param.h
+      };
     }
   }
   if (c < 0) {
@@ -656,13 +656,13 @@ function map(f, param) {
   var d$p = Curry._1(f, param.d);
   var r$p = map(f, param.r);
   return {
-          TAG: "Node",
-          l: l$p,
-          v: param.v,
-          d: d$p,
-          r: r$p,
-          h: param.h
-        };
+    TAG: "Node",
+    l: l$p,
+    v: param.v,
+    d: d$p,
+    r: r$p,
+    h: param.h
+  };
 }
 
 function mapi(f, param) {
@@ -674,13 +674,13 @@ function mapi(f, param) {
   var d$p = Curry._2(f, v, param.d);
   var r$p = mapi(f, param.r);
   return {
-          TAG: "Node",
-          l: l$p,
-          v: v,
-          d: d$p,
-          r: r$p,
-          h: param.h
-        };
+    TAG: "Node",
+    l: l$p,
+    v: v,
+    d: d$p,
+    r: r$p,
+    h: param.h
+  };
 }
 
 function fold(f, _m, _accu) {
@@ -786,10 +786,10 @@ function concat_or_join(t1, v, d, t2) {
 function split$1(x, param) {
   if (typeof param !== "object") {
     return [
-            "Empty",
-            undefined,
-            "Empty"
-          ];
+      "Empty",
+      undefined,
+      "Empty"
+    ];
   }
   var r = param.r;
   var d = param.d;
@@ -798,25 +798,25 @@ function split$1(x, param) {
   var c = Caml_obj.compare(x, v);
   if (c === 0) {
     return [
-            l,
-            Caml_option.some(d),
-            r
-          ];
+      l,
+      Caml_option.some(d),
+      r
+    ];
   }
   if (c < 0) {
     var match = split$1(x, l);
     return [
-            match[0],
-            match[1],
-            join(match[2], v, d, r)
-          ];
+      match[0],
+      match[1],
+      join(match[2], v, d, r)
+    ];
   }
   var match$1 = split$1(x, r);
   return [
-          join(l, v, d, match$1[0]),
-          match$1[1],
-          match$1[2]
-        ];
+    join(l, v, d, match$1[0]),
+    match$1[1],
+    match$1[2]
+  ];
 }
 
 function merge$1(f, s1, s2) {
@@ -835,14 +835,14 @@ function merge$1(f, s1, s2) {
   }
   if (typeof s2 !== "object") {
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "map.res",
-            552,
-            11
-          ],
-          Error: new Error()
-        };
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "map.res",
+        552,
+        11
+      ],
+      Error: new Error()
+    };
   }
   var v2 = s2.v;
   var match$1 = split$1(v2, s1);
@@ -907,9 +907,9 @@ function filter(p, param) {
 function partition(p, param) {
   if (typeof param !== "object") {
     return [
-            "Empty",
-            "Empty"
-          ];
+      "Empty",
+      "Empty"
+    ];
   }
   var d = param.d;
   var v = param.v;
@@ -922,14 +922,14 @@ function partition(p, param) {
   var rt = match$1[0];
   if (pvd) {
     return [
-            join(lt, v, d, rt),
-            concat(lf, rf)
-          ];
+      join(lt, v, d, rt),
+      concat(lf, rf)
+    ];
   } else {
     return [
-            concat(lt, rt),
-            join(lf, v, d, rf)
-          ];
+      concat(lt, rt),
+      join(lf, v, d, rf)
+    ];
   }
 }
 
@@ -1114,9 +1114,9 @@ function compute_update_sequences(all_tickers) {
           var tmp = ticker.type_;
           if (typeof tmp !== "object") {
             return add(ticker.ticker_name, {
-                        hd: ticker,
-                        tl: /* [] */0
-                      }, map);
+                  hd: ticker,
+                  tl: /* [] */0
+                }, map);
           }
           var loop = function (_up, _map, _ticker) {
             while(true) {
@@ -1146,42 +1146,42 @@ function compute_update_sequences(all_tickers) {
           return loop(/* [] */0, map, ticker);
         }), "Empty", List.rev(all_tickers));
   return fold((function (k, l, map) {
-                var l$1 = List.sort_uniq((function (lhs, rhs) {
-                        var x = lhs.rank;
-                        if (typeof x !== "object") {
-                          if (x === "Uninitialized") {
-                            throw {
-                                  RE_EXN_ID: "Failure",
-                                  _1: "All nodes should be ranked",
-                                  Error: new Error()
-                                };
-                          }
-                          throw {
-                                RE_EXN_ID: "Failure",
-                                _1: "All nodes should be ranked",
-                                Error: new Error()
-                              };
-                        } else {
-                          var y = rhs.rank;
-                          if (typeof y === "object") {
-                            return Caml.int_compare(x._0, y._0);
-                          }
-                          if (y === "Uninitialized") {
-                            throw {
-                                  RE_EXN_ID: "Failure",
-                                  _1: "All nodes should be ranked",
-                                  Error: new Error()
-                                };
-                          }
-                          throw {
-                                RE_EXN_ID: "Failure",
-                                _1: "All nodes should be ranked",
-                                Error: new Error()
-                              };
-                        }
-                      }), l);
-                return add(k, l$1, map);
-              }), map, map);
+          var l$1 = List.sort_uniq((function (lhs, rhs) {
+                  var x = lhs.rank;
+                  if (typeof x !== "object") {
+                    if (x === "Uninitialized") {
+                      throw {
+                        RE_EXN_ID: "Failure",
+                        _1: "All nodes should be ranked",
+                        Error: new Error()
+                      };
+                    }
+                    throw {
+                      RE_EXN_ID: "Failure",
+                      _1: "All nodes should be ranked",
+                      Error: new Error()
+                    };
+                  } else {
+                    var y = rhs.rank;
+                    if (typeof y === "object") {
+                      return Caml.int_compare(x._0, y._0);
+                    }
+                    if (y === "Uninitialized") {
+                      throw {
+                        RE_EXN_ID: "Failure",
+                        _1: "All nodes should be ranked",
+                        Error: new Error()
+                      };
+                    }
+                    throw {
+                      RE_EXN_ID: "Failure",
+                      _1: "All nodes should be ranked",
+                      Error: new Error()
+                    };
+                  }
+                }), l);
+          return add(k, l$1, map);
+        }), map, map);
 }
 
 function process_quote(ticker_map, new_ticker, new_value) {
@@ -1194,10 +1194,10 @@ function process_quote(ticker_map, new_ticker, new_value) {
               return;
             }
             throw {
-                  RE_EXN_ID: "Failure",
-                  _1: "Only single Market ticker should be udpated upon a new quote",
-                  Error: new Error()
-                };
+              RE_EXN_ID: "Failure",
+              _1: "Only single Market ticker should be udpated upon a new quote",
+              Error: new Error()
+            };
           }
           var match$1 = match._0;
           var match$2 = match$1.lhs.value;
@@ -1214,18 +1214,18 @@ function process_input_line(ticker_map, all_tickers, line) {
     var lhs$1 = find_ticker_by_name(all_tickers, lhs);
     var rhs$1 = find_ticker_by_name(all_tickers, rhs);
     return {
-            value: undefined,
-            rank: "Uninitialized",
-            ticker_name: ticker_name,
-            type_: {
-              TAG: "Binary_op",
-              _0: {
-                op: op,
-                rhs: rhs$1,
-                lhs: lhs$1
-              }
-            }
-          };
+      value: undefined,
+      rank: "Uninitialized",
+      ticker_name: ticker_name,
+      type_: {
+        TAG: "Binary_op",
+        _0: {
+          op: op,
+          rhs: rhs$1,
+          lhs: lhs$1
+        }
+      }
+    };
   };
   var tokens = split(/* '|' */124, line);
   if (tokens) {
@@ -1237,30 +1237,30 @@ function process_input_line(ticker_map, all_tickers, line) {
             if (match$1) {
               if (match$1.tl) {
                 throw {
-                      RE_EXN_ID: "Failure",
-                      _1: "Invalid input line",
-                      Error: new Error()
-                    };
+                  RE_EXN_ID: "Failure",
+                  _1: "Invalid input line",
+                  Error: new Error()
+                };
               }
               var ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
               var value = Caml_format.float_of_string(match$1.hd);
               process_quote(ticker_map$1, match.hd, value);
               return [
-                      all_tickers,
-                      Caml_option.some(ticker_map$1)
-                    ];
+                all_tickers,
+                Caml_option.some(ticker_map$1)
+              ];
             }
             throw {
-                  RE_EXN_ID: "Failure",
-                  _1: "Invalid input line",
-                  Error: new Error()
-                };
+              RE_EXN_ID: "Failure",
+              _1: "Invalid input line",
+              Error: new Error()
+            };
           }
           throw {
-                RE_EXN_ID: "Failure",
-                _1: "Invalid input line",
-                Error: new Error()
-              };
+            RE_EXN_ID: "Failure",
+            _1: "Invalid input line",
+            Error: new Error()
+          };
       case "R" :
           var match$2 = tokens.tl;
           if (match$2) {
@@ -1275,30 +1275,30 @@ function process_input_line(ticker_map, all_tickers, line) {
                       if (match$5) {
                         if (match$5.tl) {
                           throw {
-                                RE_EXN_ID: "Failure",
-                                _1: "Invalid input line",
-                                Error: new Error()
-                              };
-                        }
-                        return [
-                                {
-                                  hd: make_binary_op(ticker_name, match$4.hd, match$5.hd, "PLUS"),
-                                  tl: all_tickers
-                                },
-                                ticker_map
-                              ];
-                      }
-                      throw {
                             RE_EXN_ID: "Failure",
                             _1: "Invalid input line",
                             Error: new Error()
                           };
+                        }
+                        return [
+                          {
+                            hd: make_binary_op(ticker_name, match$4.hd, match$5.hd, "PLUS"),
+                            tl: all_tickers
+                          },
+                          ticker_map
+                        ];
+                      }
+                      throw {
+                        RE_EXN_ID: "Failure",
+                        _1: "Invalid input line",
+                        Error: new Error()
+                      };
                     }
                     throw {
-                          RE_EXN_ID: "Failure",
-                          _1: "Invalid input line",
-                          Error: new Error()
-                        };
+                      RE_EXN_ID: "Failure",
+                      _1: "Invalid input line",
+                      Error: new Error()
+                    };
                 case "-" :
                     var match$6 = match$3.tl;
                     if (match$6) {
@@ -1306,84 +1306,84 @@ function process_input_line(ticker_map, all_tickers, line) {
                       if (match$7) {
                         if (match$7.tl) {
                           throw {
-                                RE_EXN_ID: "Failure",
-                                _1: "Invalid input line",
-                                Error: new Error()
-                              };
+                            RE_EXN_ID: "Failure",
+                            _1: "Invalid input line",
+                            Error: new Error()
+                          };
                         }
                         return [
-                                {
-                                  hd: make_binary_op(ticker_name, match$6.hd, match$7.hd, "MINUS"),
-                                  tl: all_tickers
-                                },
-                                ticker_map
-                              ];
+                          {
+                            hd: make_binary_op(ticker_name, match$6.hd, match$7.hd, "MINUS"),
+                            tl: all_tickers
+                          },
+                          ticker_map
+                        ];
                       }
                       throw {
-                            RE_EXN_ID: "Failure",
-                            _1: "Invalid input line",
-                            Error: new Error()
-                          };
-                    }
-                    throw {
-                          RE_EXN_ID: "Failure",
-                          _1: "Invalid input line",
-                          Error: new Error()
-                        };
-                case "S" :
-                    if (match$3.tl) {
-                      throw {
-                            RE_EXN_ID: "Failure",
-                            _1: "Invalid input line",
-                            Error: new Error()
-                          };
-                    }
-                    return [
-                            {
-                              hd: {
-                                value: undefined,
-                                rank: "Uninitialized",
-                                ticker_name: ticker_name,
-                                type_: "Market"
-                              },
-                              tl: all_tickers
-                            },
-                            ticker_map
-                          ];
-                default:
-                  throw {
                         RE_EXN_ID: "Failure",
                         _1: "Invalid input line",
                         Error: new Error()
                       };
-              }
-            } else {
-              throw {
+                    }
+                    throw {
+                      RE_EXN_ID: "Failure",
+                      _1: "Invalid input line",
+                      Error: new Error()
+                    };
+                case "S" :
+                    if (match$3.tl) {
+                      throw {
+                        RE_EXN_ID: "Failure",
+                        _1: "Invalid input line",
+                        Error: new Error()
+                      };
+                    }
+                    return [
+                      {
+                        hd: {
+                          value: undefined,
+                          rank: "Uninitialized",
+                          ticker_name: ticker_name,
+                          type_: "Market"
+                        },
+                        tl: all_tickers
+                      },
+                      ticker_map
+                    ];
+                default:
+                  throw {
                     RE_EXN_ID: "Failure",
                     _1: "Invalid input line",
                     Error: new Error()
                   };
+              }
+            } else {
+              throw {
+                RE_EXN_ID: "Failure",
+                _1: "Invalid input line",
+                Error: new Error()
+              };
             }
           } else {
             throw {
-                  RE_EXN_ID: "Failure",
-                  _1: "Invalid input line",
-                  Error: new Error()
-                };
-          }
-      default:
-        throw {
               RE_EXN_ID: "Failure",
               _1: "Invalid input line",
               Error: new Error()
             };
-    }
-  } else {
-    throw {
+          }
+      default:
+        throw {
           RE_EXN_ID: "Failure",
           _1: "Invalid input line",
           Error: new Error()
         };
+    }
+  } else {
+    throw {
+      RE_EXN_ID: "Failure",
+      _1: "Invalid input line",
+      Error: new Error()
+    };
   }
 }
 

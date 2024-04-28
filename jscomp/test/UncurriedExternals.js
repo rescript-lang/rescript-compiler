@@ -5,9 +5,9 @@ var React = require("react");
 
 function dd(param) {
   throw {
-        RE_EXN_ID: "Not_found",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Not_found",
+    Error: new Error()
+  };
 }
 
 var h = sum(1.0, 2.0);
@@ -75,15 +75,15 @@ var StandardNotation = {
 function methodWithAsync(param) {
   var $$this = this ;
   return (async function (arg) {
-              return $$this + arg | 0;
-            })(param);
+        return $$this + arg | 0;
+      })(param);
 }
 
 function dd$1(param) {
   throw {
-        RE_EXN_ID: "Not_found",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Not_found",
+    Error: new Error()
+  };
 }
 
 var h$1 = sum(1.0, 2.0);

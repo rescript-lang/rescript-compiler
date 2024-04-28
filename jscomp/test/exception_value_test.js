@@ -8,31 +8,31 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function f(param) {
   throw {
-        RE_EXN_ID: "Not_found",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Not_found",
+    Error: new Error()
+  };
 }
 
 function assert_f(x) {
   if (x <= 3) {
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "exception_value_test.res",
-            4,
-            11
-          ],
-          Error: new Error()
-        };
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "exception_value_test.res",
+        4,
+        11
+      ],
+      Error: new Error()
+    };
   }
   return 3;
 }
 
 function hh(param) {
   throw {
-        RE_EXN_ID: "Not_found",
-        Error: new Error()
-      };
+    RE_EXN_ID: "Not_found",
+    Error: new Error()
+  };
 }
 
 var A = /* @__PURE__ */Caml_exceptions.create("Exception_value_test.A");

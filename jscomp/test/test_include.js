@@ -8,9 +8,9 @@ var Test_order = require("./test_order.js");
 function Make(U) {
   var compare = U.compare;
   return {
-          compare: compare,
-          v: compare
-        };
+    compare: compare,
+    v: compare
+  };
 }
 
 var X = {

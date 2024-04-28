@@ -5,20 +5,20 @@
 function blackify(x) {
   if (typeof x !== "object" || x._0 === "Black") {
     return [
-            x,
-            true
-          ];
+      x,
+      true
+    ];
   } else {
     return [
-            {
-              TAG: "Node",
-              _0: "Black",
-              _1: x._1,
-              _2: x._2,
-              _3: x._3
-            },
-            false
-          ];
+      {
+        TAG: "Node",
+        _0: "Black",
+        _1: x._1,
+        _2: x._2,
+        _3: x._3
+      },
+      false
+    ];
   }
 }
 
@@ -95,32 +95,32 @@ function balance_left(l, x, r) {
   switch (exit) {
     case 1 :
         return {
-                TAG: "Node",
-                _0: "Black",
-                _1: l,
-                _2: x,
-                _3: r
-              };
+          TAG: "Node",
+          _0: "Black",
+          _1: l,
+          _2: x,
+          _3: r
+        };
     case 2 :
         return {
-                TAG: "Node",
-                _0: "Red",
-                _1: {
-                  TAG: "Node",
-                  _0: "Black",
-                  _1: a,
-                  _2: x$1,
-                  _3: b
-                },
-                _2: y,
-                _3: {
-                  TAG: "Node",
-                  _0: "Black",
-                  _1: c,
-                  _2: z,
-                  _3: d
-                }
-              };
+          TAG: "Node",
+          _0: "Red",
+          _1: {
+            TAG: "Node",
+            _0: "Black",
+            _1: a,
+            _2: x$1,
+            _3: b
+          },
+          _2: y,
+          _3: {
+            TAG: "Node",
+            _0: "Black",
+            _1: c,
+            _2: z,
+            _3: d
+          }
+        };
     
   }
 }
@@ -171,44 +171,44 @@ function balance_right(l, x, r) {
   switch (exit) {
     case 1 :
         return {
-                TAG: "Node",
-                _0: "Black",
-                _1: l,
-                _2: x,
-                _3: r
-              };
+          TAG: "Node",
+          _0: "Black",
+          _1: l,
+          _2: x,
+          _3: r
+        };
     case 2 :
         return {
-                TAG: "Node",
-                _0: "Red",
-                _1: {
-                  TAG: "Node",
-                  _0: "Black",
-                  _1: a,
-                  _2: x$1,
-                  _3: b
-                },
-                _2: y,
-                _3: {
-                  TAG: "Node",
-                  _0: "Black",
-                  _1: c,
-                  _2: z,
-                  _3: d
-                }
-              };
+          TAG: "Node",
+          _0: "Red",
+          _1: {
+            TAG: "Node",
+            _0: "Black",
+            _1: a,
+            _2: x$1,
+            _3: b
+          },
+          _2: y,
+          _3: {
+            TAG: "Node",
+            _0: "Black",
+            _1: c,
+            _2: z,
+            _3: d
+          }
+        };
     
   }
 }
 
 function singleton(x) {
   return {
-          TAG: "Node",
-          _0: "Black",
-          _1: "Empty",
-          _2: x,
-          _3: "Empty"
-        };
+    TAG: "Node",
+    _0: "Black",
+    _1: "Empty",
+    _2: x,
+    _3: "Empty"
+  };
 }
 
 function unbalanced_left(x) {
@@ -218,34 +218,34 @@ function unbalanced_left(x) {
       if (typeof match === "object") {
         if (match._0 === "Black") {
           return [
-                  balance_left({
-                        TAG: "Node",
-                        _0: "Red",
-                        _1: match._1,
-                        _2: match._2,
-                        _3: match._3
-                      }, x._2, x._3),
-                  true
-                ];
+            balance_left({
+                  TAG: "Node",
+                  _0: "Red",
+                  _1: match._1,
+                  _2: match._2,
+                  _3: match._3
+                }, x._2, x._3),
+            true
+          ];
         }
         var match$1 = match._3;
         if (typeof match$1 === "object" && match$1._0 === "Black") {
           return [
-                  {
+            {
+              TAG: "Node",
+              _0: "Black",
+              _1: match._1,
+              _2: match._2,
+              _3: balance_left({
                     TAG: "Node",
-                    _0: "Black",
-                    _1: match._1,
-                    _2: match._2,
-                    _3: balance_left({
-                          TAG: "Node",
-                          _0: "Red",
-                          _1: match$1._1,
-                          _2: match$1._2,
-                          _3: match$1._3
-                        }, x._2, x._3)
-                  },
-                  false
-                ];
+                    _0: "Red",
+                    _1: match$1._1,
+                    _2: match$1._2,
+                    _3: match$1._3
+                  }, x._2, x._3)
+            },
+            false
+          ];
         }
         
       }
@@ -254,28 +254,28 @@ function unbalanced_left(x) {
       var match$2 = x._1;
       if (typeof match$2 === "object" && match$2._0 === "Black") {
         return [
-                balance_left({
-                      TAG: "Node",
-                      _0: "Red",
-                      _1: match$2._1,
-                      _2: match$2._2,
-                      _3: match$2._3
-                    }, x._2, x._3),
-                false
-              ];
+          balance_left({
+                TAG: "Node",
+                _0: "Red",
+                _1: match$2._1,
+                _2: match$2._2,
+                _3: match$2._3
+              }, x._2, x._3),
+          false
+        ];
       }
       
     }
   }
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "rbset.res",
-          64,
-          9
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "rbset.res",
+      64,
+      9
+    ],
+    Error: new Error()
+  };
 }
 
 function unbalanced_right(x) {
@@ -287,34 +287,34 @@ function unbalanced_right(x) {
       if (typeof match === "object") {
         if (match._0 === "Black") {
           return [
-                  balance_right(a, x$1, {
-                        TAG: "Node",
-                        _0: "Red",
-                        _1: match._1,
-                        _2: match._2,
-                        _3: match._3
-                      }),
-                  true
-                ];
+            balance_right(a, x$1, {
+                  TAG: "Node",
+                  _0: "Red",
+                  _1: match._1,
+                  _2: match._2,
+                  _3: match._3
+                }),
+            true
+          ];
         }
         var match$1 = match._1;
         if (typeof match$1 === "object" && match$1._0 === "Black") {
           return [
-                  {
+            {
+              TAG: "Node",
+              _0: "Black",
+              _1: balance_right(a, x$1, {
                     TAG: "Node",
-                    _0: "Black",
-                    _1: balance_right(a, x$1, {
-                          TAG: "Node",
-                          _0: "Red",
-                          _1: match$1._1,
-                          _2: match$1._2,
-                          _3: match$1._3
-                        }),
-                    _2: match._2,
-                    _3: match._3
-                  },
-                  false
-                ];
+                    _0: "Red",
+                    _1: match$1._1,
+                    _2: match$1._2,
+                    _3: match$1._3
+                  }),
+              _2: match._2,
+              _3: match._3
+            },
+            false
+          ];
         }
         
       }
@@ -323,110 +323,110 @@ function unbalanced_right(x) {
       var match$2 = x._3;
       if (typeof match$2 === "object" && match$2._0 === "Black") {
         return [
-                balance_right(x._1, x._2, {
-                      TAG: "Node",
-                      _0: "Red",
-                      _1: match$2._1,
-                      _2: match$2._2,
-                      _3: match$2._3
-                    }),
-                false
-              ];
+          balance_right(x._1, x._2, {
+                TAG: "Node",
+                _0: "Red",
+                _1: match$2._1,
+                _2: match$2._2,
+                _3: match$2._3
+              }),
+          false
+        ];
       }
       
     }
   }
   throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "rbset.res",
-          75,
-          9
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "rbset.res",
+      75,
+      9
+    ],
+    Error: new Error()
+  };
 }
 
 function lbalance(x1, x2, x3) {
   if (typeof x1 !== "object") {
     return {
-            TAG: "Node",
-            _0: "Black",
-            _1: x1,
-            _2: x2,
-            _3: x3
-          };
+      TAG: "Node",
+      _0: "Black",
+      _1: x1,
+      _2: x2,
+      _3: x3
+    };
   }
   if (x1._0 === "Black") {
     return {
-            TAG: "Node",
-            _0: "Black",
-            _1: x1,
-            _2: x2,
-            _3: x3
-          };
+      TAG: "Node",
+      _0: "Black",
+      _1: x1,
+      _2: x2,
+      _3: x3
+    };
   }
   var r = x1._3;
   var l = x1._1;
   if (typeof l === "object" && l._0 !== "Black") {
     return {
-            TAG: "Node",
-            _0: "Red",
-            _1: {
-              TAG: "Node",
-              _0: "Black",
-              _1: l._1,
-              _2: l._2,
-              _3: l._3
-            },
-            _2: x1._2,
-            _3: {
-              TAG: "Node",
-              _0: "Black",
-              _1: r,
-              _2: x2,
-              _3: x3
-            }
-          };
+      TAG: "Node",
+      _0: "Red",
+      _1: {
+        TAG: "Node",
+        _0: "Black",
+        _1: l._1,
+        _2: l._2,
+        _3: l._3
+      },
+      _2: x1._2,
+      _3: {
+        TAG: "Node",
+        _0: "Black",
+        _1: r,
+        _2: x2,
+        _3: x3
+      }
+    };
   }
   if (typeof r !== "object") {
     return {
-            TAG: "Node",
-            _0: "Black",
-            _1: x1,
-            _2: x2,
-            _3: x3
-          };
+      TAG: "Node",
+      _0: "Black",
+      _1: x1,
+      _2: x2,
+      _3: x3
+    };
   }
   if (r._0 === "Black") {
     return {
-            TAG: "Node",
-            _0: "Black",
-            _1: x1,
-            _2: x2,
-            _3: x3
-          };
+      TAG: "Node",
+      _0: "Black",
+      _1: x1,
+      _2: x2,
+      _3: x3
+    };
   }
   var y = r._2;
   return {
-          TAG: "Node",
-          _0: "Red",
-          _1: {
-            TAG: "Node",
-            _0: "Black",
-            _1: l,
-            _2: y,
-            _3: r._1
-          },
-          _2: y,
-          _3: {
-            TAG: "Node",
-            _0: "Black",
-            _1: r._3,
-            _2: x2,
-            _3: x3
-          }
-        };
+    TAG: "Node",
+    _0: "Red",
+    _1: {
+      TAG: "Node",
+      _0: "Black",
+      _1: l,
+      _2: y,
+      _3: r._1
+    },
+    _2: y,
+    _3: {
+      TAG: "Node",
+      _0: "Black",
+      _1: r._3,
+      _2: x2,
+      _3: x3
+    }
+  };
 }
 
 function rbalance(x1, x2, x3) {
@@ -438,24 +438,24 @@ function rbalance(x1, x2, x3) {
     } else {
       if (b._0 !== "Black") {
         return {
-                TAG: "Node",
-                _0: "Red",
-                _1: {
-                  TAG: "Node",
-                  _0: "Black",
-                  _1: x1,
-                  _2: x2,
-                  _3: b._1
-                },
-                _2: b._2,
-                _3: {
-                  TAG: "Node",
-                  _0: "Black",
-                  _1: b._3,
-                  _2: x3._2,
-                  _3: x3._3
-                }
-              };
+          TAG: "Node",
+          _0: "Red",
+          _1: {
+            TAG: "Node",
+            _0: "Black",
+            _1: x1,
+            _2: x2,
+            _3: b._1
+          },
+          _2: b._2,
+          _3: {
+            TAG: "Node",
+            _0: "Black",
+            _1: b._3,
+            _2: x3._2,
+            _3: x3._3
+          }
+        };
       }
       exit = 2;
     }
@@ -463,47 +463,47 @@ function rbalance(x1, x2, x3) {
       var match = x3._3;
       if (typeof match === "object" && match._0 !== "Black") {
         return {
-                TAG: "Node",
-                _0: "Red",
-                _1: {
-                  TAG: "Node",
-                  _0: "Black",
-                  _1: x1,
-                  _2: x2,
-                  _3: b
-                },
-                _2: x3._2,
-                _3: {
-                  TAG: "Node",
-                  _0: "Black",
-                  _1: match._1,
-                  _2: match._2,
-                  _3: match._3
-                }
-              };
+          TAG: "Node",
+          _0: "Red",
+          _1: {
+            TAG: "Node",
+            _0: "Black",
+            _1: x1,
+            _2: x2,
+            _3: b
+          },
+          _2: x3._2,
+          _3: {
+            TAG: "Node",
+            _0: "Black",
+            _1: match._1,
+            _2: match._2,
+            _3: match._3
+          }
+        };
       }
       
     }
     
   }
   return {
-          TAG: "Node",
-          _0: "Black",
-          _1: x1,
-          _2: x2,
-          _3: x3
-        };
+    TAG: "Node",
+    _0: "Black",
+    _1: x1,
+    _2: x2,
+    _3: x3
+  };
 }
 
 function ins(x, x_) {
   if (typeof x_ !== "object") {
     return {
-            TAG: "Node",
-            _0: "Red",
-            _1: "Empty",
-            _2: x,
-            _3: "Empty"
-          };
+      TAG: "Node",
+      _0: "Red",
+      _1: "Empty",
+      _2: x,
+      _3: "Empty"
+    };
   }
   if (x_._0 === "Black") {
     var y = x_._2;
@@ -526,20 +526,20 @@ function ins(x, x_) {
   var a$1 = x_._1;
   if (x < y$1) {
     return {
-            TAG: "Node",
-            _0: "Red",
-            _1: ins(x, a$1),
-            _2: y$1,
-            _3: b$1
-          };
+      TAG: "Node",
+      _0: "Red",
+      _1: ins(x, a$1),
+      _2: y$1,
+      _3: b$1
+    };
   } else {
     return {
-            TAG: "Node",
-            _0: "Red",
-            _1: a$1,
-            _2: y$1,
-            _3: ins(x, b$1)
-          };
+      TAG: "Node",
+      _0: "Red",
+      _1: a$1,
+      _2: y$1,
+      _3: ins(x, b$1)
+    };
   }
 }
 
@@ -549,26 +549,26 @@ function add(x, s) {
     return s$1;
   } else {
     return {
-            TAG: "Node",
-            _0: "Black",
-            _1: s$1._1,
-            _2: s$1._2,
-            _3: s$1._3
-          };
+      TAG: "Node",
+      _0: "Black",
+      _1: s$1._1,
+      _2: s$1._2,
+      _3: s$1._3
+    };
   }
 }
 
 function remove_min(x) {
   if (typeof x !== "object") {
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "rbset.res",
-            138,
-            4
-          ],
-          Error: new Error()
-        };
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "rbset.res",
+        138,
+        4
+      ],
+      Error: new Error()
+    };
   }
   var c = x._0;
   if (c === "Black") {
@@ -578,43 +578,43 @@ function remove_min(x) {
       var x$1 = x._2;
       if (typeof match !== "object") {
         return [
-                "Empty",
-                x$1,
-                true
-              ];
+          "Empty",
+          x$1,
+          true
+        ];
       }
       if (match._0 !== "Black") {
         return [
-                {
-                  TAG: "Node",
-                  _0: "Black",
-                  _1: match._1,
-                  _2: match._2,
-                  _3: match._3
-                },
-                x$1,
-                false
-              ];
+          {
+            TAG: "Node",
+            _0: "Black",
+            _1: match._1,
+            _2: match._2,
+            _3: match._3
+          },
+          x$1,
+          false
+        ];
       }
       throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "rbset.res",
-              138,
-              4
-            ],
-            Error: new Error()
-          };
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "rbset.res",
+          138,
+          4
+        ],
+        Error: new Error()
+      };
     }
     
   } else {
     var tmp$1 = x._1;
     if (typeof tmp$1 !== "object") {
       return [
-              x._3,
-              x._2,
-              false
-            ];
+        x._3,
+        x._2,
+        false
+      ];
     }
     
   }
@@ -632,25 +632,25 @@ function remove_min(x) {
   };
   if (!match$1[2]) {
     return [
-            s,
-            y,
-            false
-          ];
+      s,
+      y,
+      false
+    ];
   }
   var match$2 = unbalanced_right(s);
   return [
-          match$2[0],
-          y,
-          match$2[1]
-        ];
+    match$2[0],
+    y,
+    match$2[1]
+  ];
 }
 
 function remove_aux(x, n) {
   if (typeof n !== "object") {
     return [
-            "Empty",
-            false
-          ];
+      "Empty",
+      false
+    ];
   }
   var r = n._3;
   var y = n._2;
@@ -660,9 +660,9 @@ function remove_aux(x, n) {
     if (typeof r !== "object") {
       if (c === "Red") {
         return [
-                l,
-                false
-              ];
+          l,
+          false
+        ];
       } else {
         return blackify(l);
       }
@@ -681,9 +681,9 @@ function remove_aux(x, n) {
       return unbalanced_left(n$1);
     } else {
       return [
-              n$1,
-              false
-            ];
+        n$1,
+        false
+      ];
     }
   }
   if (x < y) {
@@ -700,9 +700,9 @@ function remove_aux(x, n) {
       return unbalanced_right(n$2);
     } else {
       return [
-              n$2,
-              false
-            ];
+        n$2,
+        false
+      ];
     }
   }
   var match$2 = remove_aux(x, r);
@@ -718,9 +718,9 @@ function remove_aux(x, n) {
     return unbalanced_left(n$3);
   } else {
     return [
-            n$3,
-            false
-          ];
+      n$3,
+      false
+    ];
   }
 }
 

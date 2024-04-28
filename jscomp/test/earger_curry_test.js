@@ -26,10 +26,10 @@ function init(l, f) {
   }
   if (l < 0) {
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Array.init",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Array.init",
+      Error: new Error()
+    };
   }
   var res = Caml_array.make(l, f$1(0));
   for(var i = 1; i < l; ++i){
@@ -77,10 +77,10 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents

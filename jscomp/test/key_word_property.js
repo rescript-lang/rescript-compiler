@@ -19,26 +19,26 @@ var $$window = Vscode.window;
 
 function mk($$window, $$default) {
   return {
-          window: $$window,
-          default: $$default
-        };
+    window: $$window,
+    default: $$default
+  };
 }
 
 function mk2($$window, $$default) {
   return {
-          hd: {
-            window: $$window,
-            default: $$default
-          },
-          tl: /* [] */0
-        };
+    hd: {
+      window: $$window,
+      default: $$default
+    },
+    tl: /* [] */0
+  };
 }
 
 function des(v) {
   return {
-          window: v.window,
-          default: v.default
-        };
+    window: v.window,
+    default: v.default
+  };
 }
 
 var test = {

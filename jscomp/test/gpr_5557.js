@@ -7,14 +7,14 @@ function isA(c) {
     return true;
   }
   throw {
-        RE_EXN_ID: "Match_failure",
-        _1: [
-          "gpr_5557.res",
-          5,
-          2
-        ],
-        Error: new Error()
-      };
+    RE_EXN_ID: "Match_failure",
+    _1: [
+      "gpr_5557.res",
+      5,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 var h = /* 'a' */97;

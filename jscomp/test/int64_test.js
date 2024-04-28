@@ -21,16 +21,16 @@ var a = [
 
 function commutative_add(result, a, b) {
   return {
-          TAG: "Eq",
-          _0: [
-            result,
-            result
-          ],
-          _1: [
-            Caml_int64.add(a, b),
-            Caml_int64.add(b, a)
-          ]
-        };
+    TAG: "Eq",
+    _0: [
+      result,
+      result
+    ],
+    _1: [
+      Caml_int64.add(a, b),
+      Caml_int64.add(b, a)
+    ]
+  };
 }
 
 var generic_compare = Caml_obj.compare;
@@ -854,13 +854,13 @@ var suites = Pervasives.$at({
         "add_one",
         (function (param) {
             return {
-                    TAG: "Eq",
-                    _0: v,
-                    _1: [
-                      0,
-                      2147483648
-                    ]
-                  };
+              TAG: "Eq",
+              _0: v,
+              _1: [
+                0,
+                2147483648
+              ]
+            };
           })
       ],
       tl: {
@@ -868,13 +868,13 @@ var suites = Pervasives.$at({
           "add_2",
           (function (param) {
               return {
-                      TAG: "Eq",
-                      _0: [
-                        0,
-                        4294967294
-                      ],
-                      _1: Caml_int64.add(a, a)
-                    };
+                TAG: "Eq",
+                _0: [
+                  0,
+                  4294967294
+                ],
+                _1: Caml_int64.add(a, a)
+              };
             })
         ],
         tl: {
@@ -882,10 +882,10 @@ var suites = Pervasives.$at({
             "add_3",
             (function (param) {
                 return {
-                        TAG: "Eq",
-                        _0: Caml_int64.zero,
-                        _1: Caml_int64.zero
-                      };
+                  TAG: "Eq",
+                  _0: Caml_int64.zero,
+                  _1: Caml_int64.zero
+                };
               })
           ],
           tl: {
@@ -893,12 +893,12 @@ var suites = Pervasives.$at({
               "add_4",
               (function (param) {
                   return commutative_add([
-                              -1,
-                              4294967294
-                            ], [
-                              -1,
-                              4294967293
-                            ], Caml_int64.one);
+                        -1,
+                        4294967294
+                      ], [
+                        -1,
+                        4294967293
+                      ], Caml_int64.one);
                 })
             ],
             tl: {
@@ -906,12 +906,12 @@ var suites = Pervasives.$at({
                 "add_5",
                 (function (param) {
                     return commutative_add([
-                                -1,
-                                4294967293
-                              ], [
-                                -1,
-                                4294967293
-                              ], Caml_int64.zero);
+                          -1,
+                          4294967293
+                        ], [
+                          -1,
+                          4294967293
+                        ], Caml_int64.zero);
                   })
               ],
               tl: {
@@ -919,15 +919,15 @@ var suites = Pervasives.$at({
                   "add_6",
                   (function (param) {
                       return commutative_add([
-                                  0,
-                                  4
-                                ], [
-                                  -1,
-                                  4294967293
-                                ], [
-                                  0,
-                                  7
-                                ]);
+                            0,
+                            4
+                          ], [
+                            -1,
+                            4294967293
+                          ], [
+                            0,
+                            7
+                          ]);
                     })
                 ],
                 tl: {
@@ -935,15 +935,15 @@ var suites = Pervasives.$at({
                     "add_7",
                     (function (param) {
                         return commutative_add([
-                                    1,
-                                    0
-                                  ], [
-                                    0,
-                                    2147483648
-                                  ], [
-                                    0,
-                                    2147483648
-                                  ]);
+                              1,
+                              0
+                            ], [
+                              0,
+                              2147483648
+                            ], [
+                              0,
+                              2147483648
+                            ]);
                       })
                   ],
                   tl: {
@@ -951,12 +951,12 @@ var suites = Pervasives.$at({
                       "add_8",
                       (function (param) {
                           return commutative_add([
-                                      1,
-                                      0
-                                    ], [
-                                      0,
-                                      4294967295
-                                    ], Caml_int64.one);
+                                1,
+                                0
+                              ], [
+                                0,
+                                4294967295
+                              ], Caml_int64.one);
                         })
                     ],
                     tl: {
@@ -964,15 +964,15 @@ var suites = Pervasives.$at({
                         "add_9",
                         (function (param) {
                             return commutative_add([
-                                        0,
-                                        4294967295
-                                      ], [
-                                        0,
-                                        2147483648
-                                      ], [
-                                        0,
-                                        2147483647
-                                      ]);
+                                  0,
+                                  4294967295
+                                ], [
+                                  0,
+                                  2147483648
+                                ], [
+                                  0,
+                                  2147483647
+                                ]);
                           })
                       ],
                       tl: {
@@ -980,12 +980,12 @@ var suites = Pervasives.$at({
                           "add_10",
                           (function (param) {
                               return commutative_add([
-                                          0,
-                                          2147483648
-                                        ], [
-                                          0,
-                                          2147483648
-                                        ], Caml_int64.zero);
+                                    0,
+                                    2147483648
+                                  ], [
+                                    0,
+                                    2147483648
+                                  ], Caml_int64.zero);
                             })
                         ],
                         tl: {
@@ -993,12 +993,12 @@ var suites = Pervasives.$at({
                             "add_11",
                             (function (param) {
                                 return commutative_add([
-                                            0,
-                                            4294967295
-                                          ], [
-                                            0,
-                                            4294967295
-                                          ], Caml_int64.zero);
+                                      0,
+                                      4294967295
+                                    ], [
+                                      0,
+                                      4294967295
+                                    ], Caml_int64.zero);
                               })
                           ],
                           tl: {
@@ -1006,13 +1006,13 @@ var suites = Pervasives.$at({
                               "to_int32",
                               (function (param) {
                                   return {
-                                          TAG: "Eq",
-                                          _0: 3,
-                                          _1: Caml_int64.to_int32([
-                                                0,
-                                                3
-                                              ])
-                                        };
+                                    TAG: "Eq",
+                                    _0: 3,
+                                    _1: Caml_int64.to_int32([
+                                          0,
+                                          3
+                                        ])
+                                  };
                                 })
                             ],
                             tl: {
@@ -1020,13 +1020,13 @@ var suites = Pervasives.$at({
                                 "to_int",
                                 (function (param) {
                                     return {
-                                            TAG: "Eq",
-                                            _0: 3,
-                                            _1: Caml_int64.to_int32([
-                                                  0,
-                                                  3
-                                                ])
-                                          };
+                                      TAG: "Eq",
+                                      _0: 3,
+                                      _1: Caml_int64.to_int32([
+                                            0,
+                                            3
+                                          ])
+                                    };
                                   })
                               ],
                               tl: {
@@ -1034,16 +1034,16 @@ var suites = Pervasives.$at({
                                   "of_int",
                                   (function (param) {
                                       return {
-                                              TAG: "Eq",
-                                              _0: [
-                                                0,
-                                                3
-                                              ],
-                                              _1: [
-                                                0,
-                                                3
-                                              ]
-                                            };
+                                        TAG: "Eq",
+                                        _0: [
+                                          0,
+                                          3
+                                        ],
+                                        _1: [
+                                          0,
+                                          3
+                                        ]
+                                      };
                                     })
                                 ],
                                 tl: {
@@ -1051,16 +1051,16 @@ var suites = Pervasives.$at({
                                     "lognot",
                                     (function (param) {
                                         return {
-                                                TAG: "Eq",
-                                                _0: [
-                                                  -1,
-                                                  4294967293
-                                                ],
-                                                _1: [
-                                                  -1,
-                                                  4294967293
-                                                ]
-                                              };
+                                          TAG: "Eq",
+                                          _0: [
+                                            -1,
+                                            4294967293
+                                          ],
+                                          _1: [
+                                            -1,
+                                            4294967293
+                                          ]
+                                        };
                                       })
                                   ],
                                   tl: {
@@ -1068,16 +1068,16 @@ var suites = Pervasives.$at({
                                       "neg",
                                       (function (param) {
                                           return {
-                                                  TAG: "Eq",
-                                                  _0: [
-                                                    -1,
-                                                    4294967294
-                                                  ],
-                                                  _1: [
-                                                    -1,
-                                                    4294967294
-                                                  ]
-                                                };
+                                            TAG: "Eq",
+                                            _0: [
+                                              -1,
+                                              4294967294
+                                            ],
+                                            _1: [
+                                              -1,
+                                              4294967294
+                                            ]
+                                          };
                                         })
                                     ],
                                     tl: {
@@ -1085,10 +1085,10 @@ var suites = Pervasives.$at({
                                         "File \"int64_test.res\", line 277, characters 7-14",
                                         (function (param) {
                                             return {
-                                                    TAG: "Eq",
-                                                    _0: Int64.min_int,
-                                                    _1: Caml_int64.neg(Int64.min_int)
-                                                  };
+                                              TAG: "Eq",
+                                              _0: Int64.min_int,
+                                              _1: Caml_int64.neg(Int64.min_int)
+                                            };
                                           })
                                       ],
                                       tl: {
@@ -1096,10 +1096,10 @@ var suites = Pervasives.$at({
                                           "File \"int64_test.res\", line 279, characters 8-15",
                                           (function (param) {
                                               return {
-                                                      TAG: "Eq",
-                                                      _0: Int64.max_int,
-                                                      _1: Caml_int64.neg(Caml_int64.add(Int64.min_int, Caml_int64.one))
-                                                    };
+                                                TAG: "Eq",
+                                                _0: Int64.max_int,
+                                                _1: Caml_int64.neg(Caml_int64.add(Int64.min_int, Caml_int64.one))
+                                              };
                                             })
                                         ],
                                         tl: {
@@ -1107,16 +1107,16 @@ var suites = Pervasives.$at({
                                             "sub1",
                                             (function (param) {
                                                 return {
-                                                        TAG: "Eq",
-                                                        _0: [
-                                                          0,
-                                                          2
-                                                        ],
-                                                        _1: [
-                                                          0,
-                                                          2
-                                                        ]
-                                                      };
+                                                  TAG: "Eq",
+                                                  _0: [
+                                                    0,
+                                                    2
+                                                  ],
+                                                  _1: [
+                                                    0,
+                                                    2
+                                                  ]
+                                                };
                                               })
                                           ],
                                           tl: {
@@ -1124,28 +1124,28 @@ var suites = Pervasives.$at({
                                               "xor1",
                                               (function (param) {
                                                   return {
-                                                          TAG: "Eq",
-                                                          _0: [
-                                                            [
-                                                              0,
-                                                              286331153
-                                                            ],
-                                                            Caml_int64.xor(a, [
-                                                                  0,
-                                                                  4009750271
-                                                                ])
-                                                          ],
-                                                          _1: [
-                                                            [
-                                                              0,
-                                                              286331153
-                                                            ],
-                                                            [
-                                                              0,
-                                                              2432700672
-                                                            ]
-                                                          ]
-                                                        };
+                                                    TAG: "Eq",
+                                                    _0: [
+                                                      [
+                                                        0,
+                                                        286331153
+                                                      ],
+                                                      Caml_int64.xor(a, [
+                                                            0,
+                                                            4009750271
+                                                          ])
+                                                    ],
+                                                    _1: [
+                                                      [
+                                                        0,
+                                                        286331153
+                                                      ],
+                                                      [
+                                                        0,
+                                                        2432700672
+                                                      ]
+                                                    ]
+                                                  };
                                                 })
                                             ],
                                             tl: {
@@ -1153,16 +1153,16 @@ var suites = Pervasives.$at({
                                                 "or",
                                                 (function (param) {
                                                     return {
-                                                            TAG: "Eq",
-                                                            _0: [
-                                                              0,
-                                                              4294967295
-                                                            ],
-                                                            _1: [
-                                                              0,
-                                                              4294967295
-                                                            ]
-                                                          };
+                                                      TAG: "Eq",
+                                                      _0: [
+                                                        0,
+                                                        4294967295
+                                                      ],
+                                                      _1: [
+                                                        0,
+                                                        4294967295
+                                                      ]
+                                                    };
                                                   })
                                               ],
                                               tl: {
@@ -1170,16 +1170,16 @@ var suites = Pervasives.$at({
                                                   "and",
                                                   (function (param) {
                                                       return {
-                                                              TAG: "Eq",
-                                                              _0: [
-                                                                0,
-                                                                4008636142
-                                                              ],
-                                                              _1: [
-                                                                0,
-                                                                4008636142
-                                                              ]
-                                                            };
+                                                        TAG: "Eq",
+                                                        _0: [
+                                                          0,
+                                                          4008636142
+                                                        ],
+                                                        _1: [
+                                                          0,
+                                                          4008636142
+                                                        ]
+                                                      };
                                                     })
                                                 ],
                                                 tl: {
@@ -1187,265 +1187,265 @@ var suites = Pervasives.$at({
                                                     "lsl",
                                                     (function (param) {
                                                         return {
-                                                                TAG: "Eq",
-                                                                _0: $$Array.map((function (x) {
-                                                                        return Caml_int64.lsl_(Caml_int64.one, x);
-                                                                      }), $$Array.init(64, (function (i) {
-                                                                            return i;
-                                                                          }))),
-                                                                _1: [
-                                                                  Caml_int64.one,
-                                                                  [
-                                                                    0,
-                                                                    2
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    4
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    8
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    16
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    32
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    64
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    128
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    256
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    512
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    1024
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    2048
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    4096
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    8192
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    16384
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    32768
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    65536
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    131072
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    262144
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    524288
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    1048576
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    2097152
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    4194304
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    8388608
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    16777216
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    33554432
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    67108864
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    134217728
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    268435456
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    536870912
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    1073741824
-                                                                  ],
-                                                                  [
-                                                                    0,
-                                                                    2147483648
-                                                                  ],
-                                                                  [
-                                                                    1,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    2,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    4,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    8,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    16,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    32,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    64,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    128,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    256,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    512,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    1024,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    2048,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    4096,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    8192,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    16384,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    32768,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    65536,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    131072,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    262144,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    524288,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    1048576,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    2097152,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    4194304,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    8388608,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    16777216,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    33554432,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    67108864,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    134217728,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    268435456,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    536870912,
-                                                                    0
-                                                                  ],
-                                                                  [
-                                                                    1073741824,
-                                                                    0
-                                                                  ],
-                                                                  Caml_int64.min_int
-                                                                ]
-                                                              };
+                                                          TAG: "Eq",
+                                                          _0: $$Array.map((function (x) {
+                                                                  return Caml_int64.lsl_(Caml_int64.one, x);
+                                                                }), $$Array.init(64, (function (i) {
+                                                                      return i;
+                                                                    }))),
+                                                          _1: [
+                                                            Caml_int64.one,
+                                                            [
+                                                              0,
+                                                              2
+                                                            ],
+                                                            [
+                                                              0,
+                                                              4
+                                                            ],
+                                                            [
+                                                              0,
+                                                              8
+                                                            ],
+                                                            [
+                                                              0,
+                                                              16
+                                                            ],
+                                                            [
+                                                              0,
+                                                              32
+                                                            ],
+                                                            [
+                                                              0,
+                                                              64
+                                                            ],
+                                                            [
+                                                              0,
+                                                              128
+                                                            ],
+                                                            [
+                                                              0,
+                                                              256
+                                                            ],
+                                                            [
+                                                              0,
+                                                              512
+                                                            ],
+                                                            [
+                                                              0,
+                                                              1024
+                                                            ],
+                                                            [
+                                                              0,
+                                                              2048
+                                                            ],
+                                                            [
+                                                              0,
+                                                              4096
+                                                            ],
+                                                            [
+                                                              0,
+                                                              8192
+                                                            ],
+                                                            [
+                                                              0,
+                                                              16384
+                                                            ],
+                                                            [
+                                                              0,
+                                                              32768
+                                                            ],
+                                                            [
+                                                              0,
+                                                              65536
+                                                            ],
+                                                            [
+                                                              0,
+                                                              131072
+                                                            ],
+                                                            [
+                                                              0,
+                                                              262144
+                                                            ],
+                                                            [
+                                                              0,
+                                                              524288
+                                                            ],
+                                                            [
+                                                              0,
+                                                              1048576
+                                                            ],
+                                                            [
+                                                              0,
+                                                              2097152
+                                                            ],
+                                                            [
+                                                              0,
+                                                              4194304
+                                                            ],
+                                                            [
+                                                              0,
+                                                              8388608
+                                                            ],
+                                                            [
+                                                              0,
+                                                              16777216
+                                                            ],
+                                                            [
+                                                              0,
+                                                              33554432
+                                                            ],
+                                                            [
+                                                              0,
+                                                              67108864
+                                                            ],
+                                                            [
+                                                              0,
+                                                              134217728
+                                                            ],
+                                                            [
+                                                              0,
+                                                              268435456
+                                                            ],
+                                                            [
+                                                              0,
+                                                              536870912
+                                                            ],
+                                                            [
+                                                              0,
+                                                              1073741824
+                                                            ],
+                                                            [
+                                                              0,
+                                                              2147483648
+                                                            ],
+                                                            [
+                                                              1,
+                                                              0
+                                                            ],
+                                                            [
+                                                              2,
+                                                              0
+                                                            ],
+                                                            [
+                                                              4,
+                                                              0
+                                                            ],
+                                                            [
+                                                              8,
+                                                              0
+                                                            ],
+                                                            [
+                                                              16,
+                                                              0
+                                                            ],
+                                                            [
+                                                              32,
+                                                              0
+                                                            ],
+                                                            [
+                                                              64,
+                                                              0
+                                                            ],
+                                                            [
+                                                              128,
+                                                              0
+                                                            ],
+                                                            [
+                                                              256,
+                                                              0
+                                                            ],
+                                                            [
+                                                              512,
+                                                              0
+                                                            ],
+                                                            [
+                                                              1024,
+                                                              0
+                                                            ],
+                                                            [
+                                                              2048,
+                                                              0
+                                                            ],
+                                                            [
+                                                              4096,
+                                                              0
+                                                            ],
+                                                            [
+                                                              8192,
+                                                              0
+                                                            ],
+                                                            [
+                                                              16384,
+                                                              0
+                                                            ],
+                                                            [
+                                                              32768,
+                                                              0
+                                                            ],
+                                                            [
+                                                              65536,
+                                                              0
+                                                            ],
+                                                            [
+                                                              131072,
+                                                              0
+                                                            ],
+                                                            [
+                                                              262144,
+                                                              0
+                                                            ],
+                                                            [
+                                                              524288,
+                                                              0
+                                                            ],
+                                                            [
+                                                              1048576,
+                                                              0
+                                                            ],
+                                                            [
+                                                              2097152,
+                                                              0
+                                                            ],
+                                                            [
+                                                              4194304,
+                                                              0
+                                                            ],
+                                                            [
+                                                              8388608,
+                                                              0
+                                                            ],
+                                                            [
+                                                              16777216,
+                                                              0
+                                                            ],
+                                                            [
+                                                              33554432,
+                                                              0
+                                                            ],
+                                                            [
+                                                              67108864,
+                                                              0
+                                                            ],
+                                                            [
+                                                              134217728,
+                                                              0
+                                                            ],
+                                                            [
+                                                              268435456,
+                                                              0
+                                                            ],
+                                                            [
+                                                              536870912,
+                                                              0
+                                                            ],
+                                                            [
+                                                              1073741824,
+                                                              0
+                                                            ],
+                                                            Caml_int64.min_int
+                                                          ]
+                                                        };
                                                       })
                                                   ],
                                                   tl: {
@@ -1453,262 +1453,262 @@ var suites = Pervasives.$at({
                                                       "lsr",
                                                       (function (param) {
                                                           return {
-                                                                  TAG: "Eq",
-                                                                  _0: $$Array.map((function (x) {
-                                                                          return Caml_int64.lsr_(Caml_int64.neg_one, x);
-                                                                        }), $$Array.init(64, (function (i) {
-                                                                              return i;
-                                                                            }))),
-                                                                  _1: [
-                                                                    Caml_int64.neg_one,
-                                                                    Caml_int64.max_int,
-                                                                    [
-                                                                      1073741823,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      536870911,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      268435455,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      134217727,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      67108863,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      33554431,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      16777215,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      8388607,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      4194303,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      2097151,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      1048575,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      524287,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      262143,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      131071,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      65535,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      32767,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      16383,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      8191,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      4095,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      2047,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      1023,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      511,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      255,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      127,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      63,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      31,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      15,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      7,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      3,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      1,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      4294967295
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      2147483647
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      1073741823
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      536870911
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      268435455
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      134217727
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      67108863
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      33554431
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      16777215
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      8388607
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      4194303
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      2097151
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      1048575
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      524287
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      262143
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      131071
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      65535
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      32767
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      16383
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      8191
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      4095
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      2047
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      1023
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      511
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      255
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      127
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      63
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      31
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      15
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      7
-                                                                    ],
-                                                                    [
-                                                                      0,
-                                                                      3
-                                                                    ],
-                                                                    Caml_int64.one
-                                                                  ]
-                                                                };
+                                                            TAG: "Eq",
+                                                            _0: $$Array.map((function (x) {
+                                                                    return Caml_int64.lsr_(Caml_int64.neg_one, x);
+                                                                  }), $$Array.init(64, (function (i) {
+                                                                        return i;
+                                                                      }))),
+                                                            _1: [
+                                                              Caml_int64.neg_one,
+                                                              Caml_int64.max_int,
+                                                              [
+                                                                1073741823,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                536870911,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                268435455,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                134217727,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                67108863,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                33554431,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                16777215,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                8388607,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                4194303,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                2097151,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                1048575,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                524287,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                262143,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                131071,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                65535,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                32767,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                16383,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                8191,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                4095,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                2047,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                1023,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                511,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                255,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                127,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                63,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                31,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                15,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                7,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                3,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                1,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                0,
+                                                                4294967295
+                                                              ],
+                                                              [
+                                                                0,
+                                                                2147483647
+                                                              ],
+                                                              [
+                                                                0,
+                                                                1073741823
+                                                              ],
+                                                              [
+                                                                0,
+                                                                536870911
+                                                              ],
+                                                              [
+                                                                0,
+                                                                268435455
+                                                              ],
+                                                              [
+                                                                0,
+                                                                134217727
+                                                              ],
+                                                              [
+                                                                0,
+                                                                67108863
+                                                              ],
+                                                              [
+                                                                0,
+                                                                33554431
+                                                              ],
+                                                              [
+                                                                0,
+                                                                16777215
+                                                              ],
+                                                              [
+                                                                0,
+                                                                8388607
+                                                              ],
+                                                              [
+                                                                0,
+                                                                4194303
+                                                              ],
+                                                              [
+                                                                0,
+                                                                2097151
+                                                              ],
+                                                              [
+                                                                0,
+                                                                1048575
+                                                              ],
+                                                              [
+                                                                0,
+                                                                524287
+                                                              ],
+                                                              [
+                                                                0,
+                                                                262143
+                                                              ],
+                                                              [
+                                                                0,
+                                                                131071
+                                                              ],
+                                                              [
+                                                                0,
+                                                                65535
+                                                              ],
+                                                              [
+                                                                0,
+                                                                32767
+                                                              ],
+                                                              [
+                                                                0,
+                                                                16383
+                                                              ],
+                                                              [
+                                                                0,
+                                                                8191
+                                                              ],
+                                                              [
+                                                                0,
+                                                                4095
+                                                              ],
+                                                              [
+                                                                0,
+                                                                2047
+                                                              ],
+                                                              [
+                                                                0,
+                                                                1023
+                                                              ],
+                                                              [
+                                                                0,
+                                                                511
+                                                              ],
+                                                              [
+                                                                0,
+                                                                255
+                                                              ],
+                                                              [
+                                                                0,
+                                                                127
+                                                              ],
+                                                              [
+                                                                0,
+                                                                63
+                                                              ],
+                                                              [
+                                                                0,
+                                                                31
+                                                              ],
+                                                              [
+                                                                0,
+                                                                15
+                                                              ],
+                                                              [
+                                                                0,
+                                                                7
+                                                              ],
+                                                              [
+                                                                0,
+                                                                3
+                                                              ],
+                                                              Caml_int64.one
+                                                            ]
+                                                          };
                                                         })
                                                     ],
                                                     tl: {
@@ -1716,79 +1716,79 @@ var suites = Pervasives.$at({
                                                         "asr",
                                                         (function (param) {
                                                             return {
-                                                                    TAG: "Eq",
-                                                                    _0: $$Array.map((function (x) {
-                                                                            return Caml_int64.asr_(Caml_int64.neg_one, x);
-                                                                          }), $$Array.init(64, (function (i) {
-                                                                                return i;
-                                                                              }))),
-                                                                    _1: [
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one,
-                                                                      Caml_int64.neg_one
-                                                                    ]
-                                                                  };
+                                                              TAG: "Eq",
+                                                              _0: $$Array.map((function (x) {
+                                                                      return Caml_int64.asr_(Caml_int64.neg_one, x);
+                                                                    }), $$Array.init(64, (function (i) {
+                                                                          return i;
+                                                                        }))),
+                                                              _1: [
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one,
+                                                                Caml_int64.neg_one
+                                                              ]
+                                                            };
                                                           })
                                                       ],
                                                       tl: {
@@ -1796,16 +1796,16 @@ var suites = Pervasives.$at({
                                                           "mul simple",
                                                           (function (param) {
                                                               return {
-                                                                      TAG: "Eq",
-                                                                      _0: [
-                                                                        0,
-                                                                        6
-                                                                      ],
-                                                                      _1: [
-                                                                        0,
-                                                                        6
-                                                                      ]
-                                                                    };
+                                                                TAG: "Eq",
+                                                                _0: [
+                                                                  0,
+                                                                  6
+                                                                ],
+                                                                _1: [
+                                                                  0,
+                                                                  6
+                                                                ]
+                                                              };
                                                             })
                                                         ],
                                                         tl: {
@@ -1813,19 +1813,19 @@ var suites = Pervasives.$at({
                                                             "of_int32",
                                                             (function (param) {
                                                                 return {
-                                                                        TAG: "Eq",
-                                                                        _0: $$Array.map(Caml_int64.of_int32, [
-                                                                              0,
-                                                                              -2147483648
-                                                                            ]),
-                                                                        _1: [
-                                                                          Caml_int64.zero,
-                                                                          [
-                                                                            -1,
-                                                                            2147483648
-                                                                          ]
-                                                                        ]
-                                                                      };
+                                                                  TAG: "Eq",
+                                                                  _0: $$Array.map(Caml_int64.of_int32, [
+                                                                        0,
+                                                                        -2147483648
+                                                                      ]),
+                                                                  _1: [
+                                                                    Caml_int64.zero,
+                                                                    [
+                                                                      -1,
+                                                                      2147483648
+                                                                    ]
+                                                                  ]
+                                                                };
                                                               })
                                                           ],
                                                           tl: {
@@ -1833,16 +1833,16 @@ var suites = Pervasives.$at({
                                                               "of_int32_singleton",
                                                               (function (param) {
                                                                   return {
-                                                                          TAG: "Eq",
-                                                                          _0: [
-                                                                            -1,
-                                                                            4294967293
-                                                                          ],
-                                                                          _1: [
-                                                                            -1,
-                                                                            4294967293
-                                                                          ]
-                                                                        };
+                                                                    TAG: "Eq",
+                                                                    _0: [
+                                                                      -1,
+                                                                      4294967293
+                                                                    ],
+                                                                    _1: [
+                                                                      -1,
+                                                                      4294967293
+                                                                    ]
+                                                                  };
                                                                 })
                                                             ],
                                                             tl: {
@@ -1850,16 +1850,16 @@ var suites = Pervasives.$at({
                                                                 "File \"int64_test.res\", line 526, characters 7-14",
                                                                 (function (param) {
                                                                     return {
-                                                                            TAG: "Eq",
-                                                                            _0: [
-                                                                              0,
-                                                                              3
-                                                                            ],
-                                                                            _1: [
-                                                                              0,
-                                                                              3
-                                                                            ]
-                                                                          };
+                                                                      TAG: "Eq",
+                                                                      _0: [
+                                                                        0,
+                                                                        3
+                                                                      ],
+                                                                      _1: [
+                                                                        0,
+                                                                        3
+                                                                      ]
+                                                                    };
                                                                   })
                                                               ],
                                                               tl: {
@@ -1867,19 +1867,19 @@ var suites = Pervasives.$at({
                                                                   "to_int32",
                                                                   (function (param) {
                                                                       return {
-                                                                              TAG: "Eq",
-                                                                              _0: $$Array.map(Caml_int64.to_int32, [
-                                                                                    Caml_int64.zero,
-                                                                                    [
-                                                                                      0,
-                                                                                      2147483648
-                                                                                    ]
-                                                                                  ]),
-                                                                              _1: [
+                                                                        TAG: "Eq",
+                                                                        _0: $$Array.map(Caml_int64.to_int32, [
+                                                                              Caml_int64.zero,
+                                                                              [
                                                                                 0,
-                                                                                -2147483648
+                                                                                2147483648
                                                                               ]
-                                                                            };
+                                                                            ]),
+                                                                        _1: [
+                                                                          0,
+                                                                          -2147483648
+                                                                        ]
+                                                                      };
                                                                     })
                                                                 ],
                                                                 tl: {
@@ -1887,10 +1887,10 @@ var suites = Pervasives.$at({
                                                                     "discard_sign",
                                                                     (function (param) {
                                                                         return {
-                                                                                TAG: "Eq",
-                                                                                _0: Caml_int64.discard_sign(Caml_int64.neg_one),
-                                                                                _1: Caml_int64.max_int
-                                                                              };
+                                                                          TAG: "Eq",
+                                                                          _0: Caml_int64.discard_sign(Caml_int64.neg_one),
+                                                                          _1: Caml_int64.max_int
+                                                                        };
                                                                       })
                                                                   ],
                                                                   tl: {
@@ -1898,22 +1898,22 @@ var suites = Pervasives.$at({
                                                                       "div_mod",
                                                                       (function (param) {
                                                                           return {
-                                                                                  TAG: "Eq",
-                                                                                  _0: Caml_int64.div_mod([
-                                                                                        0,
-                                                                                        7
-                                                                                      ], [
-                                                                                        0,
-                                                                                        3
-                                                                                      ]),
-                                                                                  _1: [
-                                                                                    [
-                                                                                      0,
-                                                                                      2
-                                                                                    ],
-                                                                                    Caml_int64.one
-                                                                                  ]
-                                                                                };
+                                                                            TAG: "Eq",
+                                                                            _0: Caml_int64.div_mod([
+                                                                                  0,
+                                                                                  7
+                                                                                ], [
+                                                                                  0,
+                                                                                  3
+                                                                                ]),
+                                                                            _1: [
+                                                                              [
+                                                                                0,
+                                                                                2
+                                                                              ],
+                                                                              Caml_int64.one
+                                                                            ]
+                                                                          };
                                                                         })
                                                                     ],
                                                                     tl: {
@@ -1921,10 +1921,10 @@ var suites = Pervasives.$at({
                                                                         "to_hex",
                                                                         (function (param) {
                                                                             return {
-                                                                                    TAG: "Eq",
-                                                                                    _0: Caml_int64.to_hex(Caml_int64.neg_one),
-                                                                                    _1: "ffffffffffffffff"
-                                                                                  };
+                                                                              TAG: "Eq",
+                                                                              _0: Caml_int64.to_hex(Caml_int64.neg_one),
+                                                                              _1: "ffffffffffffffff"
+                                                                            };
                                                                           })
                                                                       ],
                                                                       tl: {
@@ -1932,13 +1932,13 @@ var suites = Pervasives.$at({
                                                                           "generic_compare",
                                                                           (function (param) {
                                                                               return {
-                                                                                      TAG: "Eq",
-                                                                                      _0: Caml_obj.compare([
-                                                                                            1,
-                                                                                            0
-                                                                                          ], Caml_int64.one) > 0,
-                                                                                      _1: true
-                                                                                    };
+                                                                                TAG: "Eq",
+                                                                                _0: Caml_obj.compare([
+                                                                                      1,
+                                                                                      0
+                                                                                    ], Caml_int64.one) > 0,
+                                                                                _1: true
+                                                                              };
                                                                             })
                                                                         ],
                                                                         tl: {
@@ -1946,16 +1946,16 @@ var suites = Pervasives.$at({
                                                                             "test_compier_literal",
                                                                             (function (param) {
                                                                                 return {
-                                                                                        TAG: "Eq",
-                                                                                        _0: [
-                                                                                          0,
-                                                                                          4294967295
-                                                                                        ],
-                                                                                        _1: [
-                                                                                          0,
-                                                                                          4294967295
-                                                                                        ]
-                                                                                      };
+                                                                                  TAG: "Eq",
+                                                                                  _0: [
+                                                                                    0,
+                                                                                    4294967295
+                                                                                  ],
+                                                                                  _1: [
+                                                                                    0,
+                                                                                    4294967295
+                                                                                  ]
+                                                                                };
                                                                               })
                                                                           ],
                                                                           tl: {
@@ -1963,13 +1963,13 @@ var suites = Pervasives.$at({
                                                                               "generic_compare2",
                                                                               (function (param) {
                                                                                   return {
-                                                                                          TAG: "Eq",
-                                                                                          _0: Caml_obj.compare([
-                                                                                                0,
-                                                                                                2147483648
-                                                                                              ], Caml_int64.one) > 0,
-                                                                                          _1: true
-                                                                                        };
+                                                                                    TAG: "Eq",
+                                                                                    _0: Caml_obj.compare([
+                                                                                          0,
+                                                                                          2147483648
+                                                                                        ], Caml_int64.one) > 0,
+                                                                                    _1: true
+                                                                                  };
                                                                                 })
                                                                             ],
                                                                             tl: {
@@ -1977,16 +1977,16 @@ var suites = Pervasives.$at({
                                                                                 "shift_left",
                                                                                 (function (param) {
                                                                                     return {
-                                                                                            TAG: "Eq",
-                                                                                            _0: [
-                                                                                              0,
-                                                                                              4294967040
-                                                                                            ],
-                                                                                            _1: [
-                                                                                              0,
-                                                                                              4294967040
-                                                                                            ]
-                                                                                          };
+                                                                                      TAG: "Eq",
+                                                                                      _0: [
+                                                                                        0,
+                                                                                        4294967040
+                                                                                      ],
+                                                                                      _1: [
+                                                                                        0,
+                                                                                        4294967040
+                                                                                      ]
+                                                                                    };
                                                                                   })
                                                                               ],
                                                                               tl: {
@@ -1994,16 +1994,16 @@ var suites = Pervasives.$at({
                                                                                   "fib_int64",
                                                                                   (function (param) {
                                                                                       return {
-                                                                                              TAG: "Eq",
-                                                                                              _0: fib(1000, Caml_int64.one, [
-                                                                                                    0,
-                                                                                                    2
-                                                                                                  ]),
-                                                                                              _1: [
-                                                                                                -1990564327,
-                                                                                                2874523960
-                                                                                              ]
-                                                                                            };
+                                                                                        TAG: "Eq",
+                                                                                        _0: fib(1000, Caml_int64.one, [
+                                                                                              0,
+                                                                                              2
+                                                                                            ]),
+                                                                                        _1: [
+                                                                                          -1990564327,
+                                                                                          2874523960
+                                                                                        ]
+                                                                                      };
                                                                                     })
                                                                                 ],
                                                                                 tl: {
@@ -2011,13 +2011,13 @@ var suites = Pervasives.$at({
                                                                                     "fac_int64",
                                                                                     (function (param) {
                                                                                         return {
-                                                                                                TAG: "Eq",
-                                                                                                _0: fac(30, Caml_int64.one),
-                                                                                                _1: [
-                                                                                                  -2040662563,
-                                                                                                  1409286144
-                                                                                                ]
-                                                                                              };
+                                                                                          TAG: "Eq",
+                                                                                          _0: fac(30, Caml_int64.one),
+                                                                                          _1: [
+                                                                                            -2040662563,
+                                                                                            1409286144
+                                                                                          ]
+                                                                                        };
                                                                                       })
                                                                                   ],
                                                                                   tl: {
@@ -2025,13 +2025,13 @@ var suites = Pervasives.$at({
                                                                                       "File \"int64_test.res\", line 553, characters 8-15",
                                                                                       (function (param) {
                                                                                           return {
-                                                                                                  TAG: "Eq",
-                                                                                                  _0: Caml_int64.add(Int64.max_int, Int64.max_int),
-                                                                                                  _1: [
-                                                                                                    -1,
-                                                                                                    4294967294
-                                                                                                  ]
-                                                                                                };
+                                                                                            TAG: "Eq",
+                                                                                            _0: Caml_int64.add(Int64.max_int, Int64.max_int),
+                                                                                            _1: [
+                                                                                              -1,
+                                                                                              4294967294
+                                                                                            ]
+                                                                                          };
                                                                                         })
                                                                                     ],
                                                                                     tl: {
@@ -2039,10 +2039,10 @@ var suites = Pervasives.$at({
                                                                                         "File \"int64_test.res\", line 563, characters 8-15",
                                                                                         (function (param) {
                                                                                             return {
-                                                                                                    TAG: "Eq",
-                                                                                                    _0: Caml_int64.add(Int64.min_int, Int64.min_int),
-                                                                                                    _1: Caml_int64.zero
-                                                                                                  };
+                                                                                              TAG: "Eq",
+                                                                                              _0: Caml_int64.add(Int64.min_int, Int64.min_int),
+                                                                                              _1: Caml_int64.zero
+                                                                                            };
                                                                                           })
                                                                                       ],
                                                                                       tl: {
@@ -2050,10 +2050,10 @@ var suites = Pervasives.$at({
                                                                                           "File \"int64_test.res\", line 573, characters 8-15",
                                                                                           (function (param) {
                                                                                               return {
-                                                                                                      TAG: "Eq",
-                                                                                                      _0: Caml_int64.neg_one,
-                                                                                                      _1: Caml_int64.neg_one
-                                                                                                    };
+                                                                                                TAG: "Eq",
+                                                                                                _0: Caml_int64.neg_one,
+                                                                                                _1: Caml_int64.neg_one
+                                                                                              };
                                                                                             })
                                                                                         ],
                                                                                         tl: /* [] */0
@@ -2100,37 +2100,37 @@ var suites = Pervasives.$at({
       }
     }, Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                     return [
-                            "shift_left_cases " + i,
-                            (function (param) {
-                                return {
-                                        TAG: "Eq",
-                                        _0: a,
-                                        _1: b
-                                      };
-                              })
-                          ];
+                      "shift_left_cases " + i,
+                      (function (param) {
+                          return {
+                            TAG: "Eq",
+                            _0: a,
+                            _1: b
+                          };
+                        })
+                    ];
                   }), shift_left_tests_0, shift_left_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                         return [
-                                "shift_right_cases " + i,
-                                (function (param) {
-                                    return {
-                                            TAG: "Eq",
-                                            _0: a,
-                                            _1: b
-                                          };
-                                  })
-                              ];
+                          "shift_right_cases " + i,
+                          (function (param) {
+                              return {
+                                TAG: "Eq",
+                                _0: a,
+                                _1: b
+                              };
+                            })
+                        ];
                       }), shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                         return [
-                                "shift_right_logical_cases " + i,
-                                (function (param) {
-                                    return {
-                                            TAG: "Eq",
-                                            _0: a,
-                                            _1: b
-                                          };
-                                  })
-                              ];
+                          "shift_right_logical_cases " + i,
+                          (function (param) {
+                              return {
+                                TAG: "Eq",
+                                _0: a,
+                                _1: b
+                              };
+                            })
+                        ];
                       }), shift_right_logical_suites_0, shift_right_logical_suites_1)))));
 
 var suites$1 = {

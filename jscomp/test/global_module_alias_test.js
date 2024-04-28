@@ -20,10 +20,10 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: "Eq",
-                  _0: x,
-                  _1: y
-                };
+            TAG: "Eq",
+            _0: x,
+            _1: y
+          };
         })
     ],
     tl: suites.contents
@@ -89,18 +89,18 @@ eq("File \"global_module_alias_test.res\", line 52, characters 12-19", v.content
 
 function g(param) {
   return List.length({
-              hd: 1,
-              tl: {
-                hd: 2,
-                tl: {
-                  hd: 3,
-                  tl: {
-                    hd: 4,
-                    tl: /* [] */0
-                  }
-                }
-              }
-            });
+        hd: 1,
+        tl: {
+          hd: 2,
+          tl: {
+            hd: 3,
+            tl: {
+              hd: 4,
+              tl: /* [] */0
+            }
+          }
+        }
+      });
 }
 
 function xx(param) {

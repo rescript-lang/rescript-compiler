@@ -27,9 +27,9 @@ function f(x) {
 function bind(x, f) {
   if (x.TAG === "Left") {
     return {
-            TAG: "Left",
-            _0: Curry._1(f, x._0)
-          };
+      TAG: "Left",
+      _0: Curry._1(f, x._0)
+    };
   } else {
     return x;
   }

@@ -41,8 +41,8 @@ function kf(cb, v) {
 
 function ikf(v) {
   return kf((function (prim) {
-                
-              }), v);
+          
+        }), v);
 }
 
 exports.v = v;

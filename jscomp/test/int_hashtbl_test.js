@@ -13,16 +13,16 @@ function f(H) {
   Curry._3(H.add, tbl, 1, /* '1' */49);
   Curry._3(H.add, tbl, 2, /* '2' */50);
   return List.sort((function (param, param$1) {
-                return Caml.int_compare(param[0], param$1[0]);
-              }), Curry._3(H.fold, (function (k, v, acc) {
-                    return {
-                            hd: [
-                              k,
-                              v
-                            ],
-                            tl: acc
-                          };
-                  }), tbl, /* [] */0));
+          return Caml.int_compare(param[0], param$1[0]);
+        }), Curry._3(H.fold, (function (k, v, acc) {
+              return {
+                hd: [
+                  k,
+                  v
+                ],
+                tl: acc
+              };
+            }), tbl, /* [] */0));
 }
 
 function g(H, count) {
@@ -35,16 +35,16 @@ function g(H, count) {
   }
   var v = Curry._3(H.fold, (function (k, v, acc) {
           return {
-                  hd: [
-                    k,
-                    v
-                  ],
-                  tl: acc
-                };
+            hd: [
+              k,
+              v
+            ],
+            tl: acc
+          };
         }), tbl, /* [] */0);
   return $$Array.of_list(List.sort((function (param, param$1) {
-                    return Caml.int_compare(param[0], param$1[0]);
-                  }), v));
+              return Caml.int_compare(param[0], param$1[0]);
+            }), v));
 }
 
 var hash = Hashtbl.hash;
@@ -62,22 +62,22 @@ var suites_0 = [
   "simple",
   (function (param) {
       return {
-              TAG: "Eq",
-              _0: {
-                hd: [
-                  1,
-                  /* '1' */49
-                ],
-                tl: {
-                  hd: [
-                    2,
-                    /* '2' */50
-                  ],
-                  tl: /* [] */0
-                }
-              },
-              _1: f(Int_hash)
-            };
+        TAG: "Eq",
+        _0: {
+          hd: [
+            1,
+            /* '1' */49
+          ],
+          tl: {
+            hd: [
+              2,
+              /* '2' */50
+            ],
+            tl: /* [] */0
+          }
+        },
+        _1: f(Int_hash)
+      };
     })
 ];
 
@@ -86,15 +86,15 @@ var suites_1 = {
     "more_iterations",
     (function (param) {
         return {
-                TAG: "Eq",
-                _0: $$Array.init(1001, (function (i) {
-                        return [
-                                (i << 1),
-                                String(i)
-                              ];
-                      })),
-                _1: g(Int_hash, 1000)
-              };
+          TAG: "Eq",
+          _0: $$Array.init(1001, (function (i) {
+                  return [
+                    (i << 1),
+                    String(i)
+                  ];
+                })),
+          _1: g(Int_hash, 1000)
+        };
       })
   ],
   tl: /* [] */0

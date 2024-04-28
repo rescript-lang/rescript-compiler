@@ -107,28 +107,28 @@ function filter_map(f, a) {
 function range(from, to_) {
   if (from > to_) {
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_array_test.range",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Ext_array_test.range",
+      Error: new Error()
+    };
   }
   return $$Array.init((to_ - from | 0) + 1 | 0, (function (i) {
-                return i + from | 0;
-              }));
+          return i + from | 0;
+        }));
 }
 
 function map2i(f, a, b) {
   var len = a.length;
   if (len !== b.length) {
     throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_array_test.map2i",
-          Error: new Error()
-        };
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Ext_array_test.map2i",
+      Error: new Error()
+    };
   }
   return $$Array.mapi((function (i, a) {
-                return Curry._3(f, i, a, b[i]);
-              }), a);
+          return Curry._3(f, i, a, b[i]);
+        }), a);
 }
 
 function tolist_aux(a, f, _i, _res) {
@@ -202,12 +202,12 @@ function rfind_and_split(arr, cmp, v) {
     return "No_split";
   } else {
     return {
-            NAME: "Split",
-            VAL: [
-              $$Array.sub(arr, 0, i),
-              $$Array.sub(arr, i + 1 | 0, (arr.length - i | 0) - 1 | 0)
-            ]
-          };
+      NAME: "Split",
+      VAL: [
+        $$Array.sub(arr, 0, i),
+        $$Array.sub(arr, i + 1 | 0, (arr.length - i | 0) - 1 | 0)
+      ]
+    };
   }
 }
 
@@ -233,12 +233,12 @@ function find_and_split(arr, cmp, v) {
     return "No_split";
   } else {
     return {
-            NAME: "Split",
-            VAL: [
-              $$Array.sub(arr, 0, i),
-              $$Array.sub(arr, i + 1 | 0, (arr.length - i | 0) - 1 | 0)
-            ]
-          };
+      NAME: "Split",
+      VAL: [
+        $$Array.sub(arr, 0, i),
+        $$Array.sub(arr, i + 1 | 0, (arr.length - i | 0) - 1 | 0)
+      ]
+    };
   }
 }
 

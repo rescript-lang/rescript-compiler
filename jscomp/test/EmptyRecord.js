@@ -5,8 +5,8 @@
 function construct(b) {
   if (b) {
     return {
-            n: 0
-          };
+      n: 0
+    };
   } else {
     return {};
   }

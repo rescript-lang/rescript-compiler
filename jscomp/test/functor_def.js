@@ -22,8 +22,8 @@ function Make(U) {
     return Curry._2(U.say, x$1, x$1);
   };
   return {
-          h: h
-        };
+    h: h
+  };
 }
 
 exports.v = v;
