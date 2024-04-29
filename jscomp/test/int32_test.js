@@ -17,8 +17,8 @@ function f(x) {
 }
 
 var shift_right_logical_tests_0 = $$Array.map((function (x) {
-        return (-1 >>> x) | 0;
-      }), Ext_array_test.range(0, 31));
+  return (-1 >>> x) | 0;
+}), Ext_array_test.range(0, 31));
 
 var shift_right_logical_tests_1 = [
   -1,
@@ -61,8 +61,8 @@ var shift_right_logical_tests = [
 ];
 
 var shift_right_tests_0 = $$Array.map((function (x) {
-        return (Int32.min_int >> x);
-      }), Ext_array_test.range(0, 31));
+  return (Int32.min_int >> x);
+}), Ext_array_test.range(0, 31));
 
 var shift_right_tests_1 = [
   -2147483648,
@@ -105,8 +105,8 @@ var shift_right_tests = [
 ];
 
 var shift_left_tests_0 = $$Array.map((function (x) {
-        return (1 << x);
-      }), Ext_array_test.range(0, 31));
+  return (1 << x);
+}), Ext_array_test.range(0, 31));
 
 var shift_left_tests_1 = [
   1,
@@ -154,63 +154,63 @@ function $star$tilde(prim0, prim1) {
 
 var suites = {
   contents: Pervasives.$at({
-        hd: [
-          "File \"int32_test.res\", line 131, characters 9-16",
-          (function (param) {
-              return {
-                TAG: "Eq",
-                _0: 1,
-                _1: 1
-              };
-            })
-        ],
-        tl: {
-          hd: [
-            "File \"int32_test.res\", line 132, characters 9-16",
-            (function (param) {
-                return {
-                  TAG: "Eq",
-                  _0: -2147483647,
-                  _1: -2147483647
-                };
-              })
-          ],
-          tl: /* [] */0
-        }
-      }, Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                      return [
-                        "shift_right_logical_cases " + i,
-                        (function (param) {
-                            return {
-                              TAG: "Eq",
-                              _0: a,
-                              _1: b
-                            };
-                          })
-                      ];
-                    }), shift_right_logical_tests_0, shift_right_logical_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                          return [
-                            "shift_right_cases " + i,
-                            (function (param) {
-                                return {
-                                  TAG: "Eq",
-                                  _0: a,
-                                  _1: b
-                                };
-                              })
-                          ];
-                        }), shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                          return [
-                            "shift_left_cases " + i,
-                            (function (param) {
-                                return {
-                                  TAG: "Eq",
-                                  _0: a,
-                                  _1: b
-                                };
-                              })
-                          ];
-                        }), shift_left_tests_0, shift_left_tests_1)))))
+    hd: [
+      "File \"int32_test.res\", line 131, characters 9-16",
+      (function (param) {
+        return {
+          TAG: "Eq",
+          _0: 1,
+          _1: 1
+        };
+      })
+    ],
+    tl: {
+      hd: [
+        "File \"int32_test.res\", line 132, characters 9-16",
+        (function (param) {
+          return {
+            TAG: "Eq",
+            _0: -2147483647,
+            _1: -2147483647
+          };
+        })
+      ],
+      tl: /* [] */0
+    }
+  }, Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+    return [
+      "shift_right_logical_cases " + i,
+      (function (param) {
+        return {
+          TAG: "Eq",
+          _0: a,
+          _1: b
+        };
+      })
+    ];
+  }), shift_right_logical_tests_0, shift_right_logical_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+    return [
+      "shift_right_cases " + i,
+      (function (param) {
+        return {
+          TAG: "Eq",
+          _0: a,
+          _1: b
+        };
+      })
+    ];
+  }), shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+    return [
+      "shift_left_cases " + i,
+      (function (param) {
+        return {
+          TAG: "Eq",
+          _0: a,
+          _1: b
+        };
+      })
+    ];
+  }), shift_left_tests_0, shift_left_tests_1)))))
 };
 
 var test_id = {

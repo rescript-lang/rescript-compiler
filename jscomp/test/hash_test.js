@@ -23,8 +23,8 @@ function eq(f) {
 }
 
 var test_strings = $$Array.init(32, (function (i) {
-        return Caml_string.make(i, Char.chr(i));
-      }));
+  return Caml_string.make(i, Char.chr(i));
+}));
 
 var test_strings_hash_results = [
   0,

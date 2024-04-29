@@ -44,10 +44,10 @@ var arg_spec = {
 };
 
 Arg.parse_argv(undefined, [
-      "prog.exe",
-      "-c",
-      "-d"
-    ], arg_spec, anno_fun, usage_msg);
+  "prog.exe",
+  "-c",
+  "-d"
+], arg_spec, anno_fun, usage_msg);
 
 if (compile.contents !== true) {
   throw {

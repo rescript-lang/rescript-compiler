@@ -19,12 +19,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -38,82 +38,82 @@ function add(suite) {
 }
 
 add([
-      "File \"div_by_zero_test.res\", line 11, characters 7-14",
-      (function (param) {
-          return {
-            TAG: "ThrowAny",
-            _0: (function (param) {
-                Caml_int32.div(3, 0);
-              })
-          };
-        })
-    ]);
+  "File \"div_by_zero_test.res\", line 11, characters 7-14",
+  (function (param) {
+    return {
+      TAG: "ThrowAny",
+      _0: (function (param) {
+        Caml_int32.div(3, 0);
+      })
+    };
+  })
+]);
 
 add([
-      "File \"div_by_zero_test.res\", line 12, characters 7-14",
-      (function (param) {
-          return {
-            TAG: "ThrowAny",
-            _0: (function (param) {
-                Caml_int32.mod_(3, 0);
-              })
-          };
-        })
-    ]);
+  "File \"div_by_zero_test.res\", line 12, characters 7-14",
+  (function (param) {
+    return {
+      TAG: "ThrowAny",
+      _0: (function (param) {
+        Caml_int32.mod_(3, 0);
+      })
+    };
+  })
+]);
 
 add([
-      "File \"div_by_zero_test.res\", line 13, characters 7-14",
-      (function (param) {
-          return {
-            TAG: "ThrowAny",
-            _0: (function (param) {
-                Caml_int32.div(3, 0);
-              })
-          };
-        })
-    ]);
+  "File \"div_by_zero_test.res\", line 13, characters 7-14",
+  (function (param) {
+    return {
+      TAG: "ThrowAny",
+      _0: (function (param) {
+        Caml_int32.div(3, 0);
+      })
+    };
+  })
+]);
 
 add([
-      "File \"div_by_zero_test.res\", line 14, characters 7-14",
-      (function (param) {
-          return {
-            TAG: "ThrowAny",
-            _0: (function (param) {
-                Caml_int32.mod_(3, 0);
-              })
-          };
-        })
-    ]);
+  "File \"div_by_zero_test.res\", line 14, characters 7-14",
+  (function (param) {
+    return {
+      TAG: "ThrowAny",
+      _0: (function (param) {
+        Caml_int32.mod_(3, 0);
+      })
+    };
+  })
+]);
 
 add([
-      "File \"div_by_zero_test.res\", line 15, characters 7-14",
-      (function (param) {
-          return {
-            TAG: "ThrowAny",
-            _0: (function (param) {
-                Caml_int64.div([
-                      0,
-                      3
-                    ], Caml_int64.zero);
-              })
-          };
-        })
-    ]);
+  "File \"div_by_zero_test.res\", line 15, characters 7-14",
+  (function (param) {
+    return {
+      TAG: "ThrowAny",
+      _0: (function (param) {
+        Caml_int64.div([
+          0,
+          3
+        ], Caml_int64.zero);
+      })
+    };
+  })
+]);
 
 add([
-      "File \"div_by_zero_test.res\", line 16, characters 7-14",
-      (function (param) {
-          return {
-            TAG: "ThrowAny",
-            _0: (function (param) {
-                Caml_int64.mod_([
-                      0,
-                      3
-                    ], Caml_int64.zero);
-              })
-          };
-        })
-    ]);
+  "File \"div_by_zero_test.res\", line 16, characters 7-14",
+  (function (param) {
+    return {
+      TAG: "ThrowAny",
+      _0: (function (param) {
+        Caml_int64.mod_([
+          0,
+          3
+        ], Caml_int64.zero);
+      })
+    };
+  })
+]);
 
 function div(x, y) {
   return Caml_int32.div(x, y) + 3 | 0;

@@ -7,9 +7,9 @@ var N = {};
 var hh = "hellohello";
 
 console.log([
-      3e-6,
-      3e-6
-    ]);
+  3e-6,
+  3e-6
+]);
 
 var x = true;
 

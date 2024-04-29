@@ -49,14 +49,14 @@ function fold_left(f, x, a) {
 
 function f2(param) {
   var arr = init(30000000, (function (i) {
-          return i;
-        }));
+    return i;
+  }));
   var b = map((function (i) {
-          return i + i - 1;
-        }), arr);
+    return i + i - 1;
+  }), arr);
   var v = fold_left((function (prim0, prim1) {
-          return prim0 + prim1;
-        }), 0, b);
+    return prim0 + prim1;
+  }), 0, b);
   console.log(Pervasives.string_of_float(v));
 }
 
@@ -76,12 +76,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -97,12 +97,12 @@ var all_v = {
 
 function add5(a0, a1, a2, a3, a4) {
   console.log([
-        a0,
-        a1,
-        a2,
-        a3,
-        a4
-      ]);
+    a0,
+    a1,
+    a2,
+    a3,
+    a4
+  ]);
   all_v.contents = {
     hd: v.contents,
     tl: all_v.contents
@@ -152,24 +152,24 @@ eq("File \"earger_curry_test.res\", line 140, characters 5-12", c, 10);
 eq("File \"earger_curry_test.res\", line 141, characters 5-12", d, 11);
 
 eq("File \"earger_curry_test.res\", line 142, characters 5-12", all_v.contents, {
-      hd: 8,
+  hd: 8,
+  tl: {
+    hd: 8,
+    tl: {
+      hd: 6,
       tl: {
-        hd: 8,
+        hd: 6,
         tl: {
-          hd: 6,
+          hd: 4,
           tl: {
-            hd: 6,
-            tl: {
-              hd: 4,
-              tl: {
-                hd: 2,
-                tl: /* [] */0
-              }
-            }
+            hd: 2,
+            tl: /* [] */0
           }
         }
       }
-    });
+    }
+  }
+});
 
 Mt.from_pair_suites("Earger_curry_test", suites.contents);
 

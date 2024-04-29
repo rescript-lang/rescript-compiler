@@ -64,24 +64,24 @@ function f33(x) {
 }
 
 eq("File \"int_switch_test.res\", line 32, characters 3-10", f(function (param) {
-          return 1;
-        }), /* 'a' */97);
+  return 1;
+}), /* 'a' */97);
 
 eq("File \"int_switch_test.res\", line 33, characters 3-10", f(function (param) {
-          return 2;
-        }), /* 'b' */98);
+  return 2;
+}), /* 'b' */98);
 
 eq("File \"int_switch_test.res\", line 34, characters 3-10", f(function (param) {
-          return 3;
-        }), /* 'c' */99);
+  return 3;
+}), /* 'c' */99);
 
 eq("File \"int_switch_test.res\", line 35, characters 3-10", f(function (param) {
-          return 0;
-        }), /* 'x' */120);
+  return 0;
+}), /* 'x' */120);
 
 eq("File \"int_switch_test.res\", line 36, characters 3-10", f(function (param) {
-          return -1;
-        }), /* 'x' */120);
+  return -1;
+}), /* 'x' */120);
 
 Mt.from_pair_suites("Int_switch_test", suites.contents);
 

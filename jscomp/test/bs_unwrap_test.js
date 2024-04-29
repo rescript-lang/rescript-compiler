@@ -5,9 +5,9 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
 console.log([
-      "hello world",
-      1
-    ]);
+  "hello world",
+  1
+]);
 
 console.log(1337);
 
@@ -56,26 +56,26 @@ function dyn_log3(prim0, prim1, prim2) {
 }
 
 dyn_log3({
-      NAME: "Int",
-      VAL: 8
-    }, {
-      NAME: "Bool",
-      VAL: true
-    }, undefined);
+  NAME: "Int",
+  VAL: 8
+}, {
+  NAME: "Bool",
+  VAL: true
+}, undefined);
 
 console.log("foo");
 
 console.log({
-      foo: 1
-    });
+  foo: 1
+});
 
 function dyn_log4(prim) {
   console.log(prim.VAL);
 }
 
 console.log({
-      foo: 2
-    });
+  foo: 2
+});
 
 function f(x) {
   console.log(x.VAL);

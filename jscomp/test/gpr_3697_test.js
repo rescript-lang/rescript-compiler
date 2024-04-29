@@ -7,8 +7,8 @@ function fix(param) {
   return {
     TAG: "Fix",
     _0: CamlinternalLazy.from_fun(function () {
-          return fix();
-        })
+      return fix();
+    })
   };
 }
 

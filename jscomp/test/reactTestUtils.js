@@ -16,8 +16,8 @@ function act(func) {
 
 function actAsync(func) {
   return TestUtils.act(function () {
-        return Curry._1(func, undefined);
-      });
+    return Curry._1(func, undefined);
+  });
 }
 
 function changeWithValue(element, value) {
@@ -53,14 +53,14 @@ function findByAllSelector(element, selector) {
 
 function findBySelectorAndTextContent(element, selector, content) {
   return Belt_Array.getBy(Array.from(element.querySelectorAll(selector)), (function (node) {
-          return node.textContent === content;
-        }));
+    return node.textContent === content;
+  }));
 }
 
 function findBySelectorAndPartialTextContent(element, selector, content) {
   return Belt_Array.getBy(Array.from(element.querySelectorAll(selector)), (function (node) {
-          return node.textContent.includes(content);
-        }));
+    return node.textContent.includes(content);
+  }));
 }
 
 var DOM = {
@@ -73,15 +73,15 @@ var DOM = {
 function prepareContainer(container, param) {
   var containerElement = document.createElement("div");
   Belt_Option.map(document.body, (function (body) {
-          return body.appendChild(containerElement);
-        }));
+    return body.appendChild(containerElement);
+  }));
   container.contents = Caml_option.some(containerElement);
 }
 
 function cleanupContainer(container, param) {
   Belt_Option.map(container.contents, (function (prim) {
-          prim.remove();
-        }));
+    prim.remove();
+  }));
   container.contents = undefined;
 }
 

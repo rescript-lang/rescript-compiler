@@ -11,14 +11,14 @@ var v = {
 
 function f(param) {
   var arr = Caml_array.make(10, (function (param) {
-          
-        }));
+    
+  }));
   for(var i = 0; i <= 9; ++i){
     Caml_array.set(arr, i, (function(i){
-        return function (param) {
-          v.contents = v.contents + i | 0;
-        }
-        }(i)));
+    return function (param) {
+      v.contents = v.contents + i | 0;
+    }
+    }(i)));
   }
   return arr;
 }
@@ -26,8 +26,8 @@ function f(param) {
 var u = f();
 
 $$Array.iter((function (x) {
-        Curry._1(x, undefined);
-      }), u);
+  Curry._1(x, undefined);
+}), u);
 
 if (v.contents !== 45) {
   throw {

@@ -5,14 +5,14 @@ var Curry = require("../../lib/js/curry.js");
 
 async function eachIntAsync(list, f) {
   return Curry._2(await import("../../lib/js/belt_List.js").then(function (m) {
-            return m.forEach;
-          }), list, f);
+    return m.forEach;
+  }), list, f);
 }
 
 function eachIntLazy(list, f) {
   var obj = import("../../lib/js/belt_List.js").then(function (m) {
-        return m.forEach;
-      });
+    return m.forEach;
+  });
   var arg1 = function (each) {
     return Promise.resolve(Curry._2(each, list, f));
   };
@@ -20,30 +20,30 @@ function eachIntLazy(list, f) {
 }
 
 eachIntLazy({
-      hd: 1,
-      tl: {
-        hd: 2,
-        tl: {
-          hd: 3,
-          tl: /* [] */0
-        }
-      }
-    }, (function (n) {
-        console.log("lazy", n);
-      }));
+  hd: 1,
+  tl: {
+    hd: 2,
+    tl: {
+      hd: 3,
+      tl: /* [] */0
+    }
+  }
+}, (function (n) {
+  console.log("lazy", n);
+}));
 
 eachIntAsync({
-      hd: 1,
-      tl: {
-        hd: 2,
-        tl: {
-          hd: 3,
-          tl: /* [] */0
-        }
-      }
-    }, (function (n) {
-        console.log("async", n);
-      }));
+  hd: 1,
+  tl: {
+    hd: 2,
+    tl: {
+      hd: 3,
+      tl: /* [] */0
+    }
+  }
+}, (function (n) {
+  console.log("async", n);
+}));
 
 var beltAsModule = await import("../../lib/js/belt_List.js");
 

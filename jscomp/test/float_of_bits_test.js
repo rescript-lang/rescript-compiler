@@ -26,61 +26,61 @@ var int32_pairs = [
 
 function from_pairs(pair) {
   return List.concat($$Array.to_list($$Array.mapi((function (i, param) {
-                  var f = param[1];
-                  var i32 = param[0];
-                  return {
-                    hd: [
-                      "int32_float_of_bits " + i,
-                      (function (param) {
-                          return {
-                            TAG: "Eq",
-                            _0: Caml_float.int_float_of_bits(i32),
-                            _1: f
-                          };
-                        })
-                    ],
-                    tl: {
-                      hd: [
-                        "int32_bits_of_float " + i,
-                        (function (param) {
-                            return {
-                              TAG: "Eq",
-                              _0: Caml_float.int_bits_of_float(f),
-                              _1: i32
-                            };
-                          })
-                      ],
-                      tl: /* [] */0
-                    }
-                  };
-                }), int32_pairs)));
-}
-
-var suites = Pervasives.$at({
+    var f = param[1];
+    var i32 = param[0];
+    return {
       hd: [
-        "one",
+        "int32_float_of_bits " + i,
         (function (param) {
-            return {
-              TAG: "Eq",
-              _0: Caml_int64.bits_of_float(1.0),
-              _1: one_float
-            };
-          })
+          return {
+            TAG: "Eq",
+            _0: Caml_float.int_float_of_bits(i32),
+            _1: f
+          };
+        })
       ],
       tl: {
         hd: [
-          "two",
+          "int32_bits_of_float " + i,
           (function (param) {
-              return {
-                TAG: "Eq",
-                _0: Caml_int64.float_of_bits(one_float),
-                _1: 1.0
-              };
-            })
+            return {
+              TAG: "Eq",
+              _0: Caml_float.int_bits_of_float(f),
+              _1: i32
+            };
+          })
         ],
         tl: /* [] */0
       }
-    }, from_pairs(int32_pairs));
+    };
+  }), int32_pairs)));
+}
+
+var suites = Pervasives.$at({
+  hd: [
+    "one",
+    (function (param) {
+      return {
+        TAG: "Eq",
+        _0: Caml_int64.bits_of_float(1.0),
+        _1: one_float
+      };
+    })
+  ],
+  tl: {
+    hd: [
+      "two",
+      (function (param) {
+        return {
+          TAG: "Eq",
+          _0: Caml_int64.float_of_bits(one_float),
+          _1: 1.0
+        };
+      })
+    ],
+    tl: /* [] */0
+  }
+}, from_pairs(int32_pairs));
 
 Mt.from_pair_suites("Float_of_bits_test", suites);
 

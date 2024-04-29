@@ -371,161 +371,161 @@ function find(x, _param) {
 
 function of_list(kvs) {
   return List.fold_left((function (acc, param) {
-          return add(param[0], param[1], acc);
-        }), "Empty", kvs);
+    return add(param[0], param[1], acc);
+  }), "Empty", kvs);
 }
 
 var int_map_suites_0 = [
   "add",
   (function (param) {
-      var v = of_list({
-            hd: [
-              1,
-              /* '1' */49
-            ],
-            tl: {
-              hd: [
-                2,
-                /* '3' */51
-              ],
-              tl: {
-                hd: [
-                  3,
-                  /* '4' */52
-                ],
-                tl: /* [] */0
-              }
-            }
-          });
-      return {
-        TAG: "Eq",
-        _0: cardinal(v),
-        _1: 3
-      };
-    })
+    var v = of_list({
+      hd: [
+        1,
+        /* '1' */49
+      ],
+      tl: {
+        hd: [
+          2,
+          /* '3' */51
+        ],
+        tl: {
+          hd: [
+            3,
+            /* '4' */52
+          ],
+          tl: /* [] */0
+        }
+      }
+    });
+    return {
+      TAG: "Eq",
+      _0: cardinal(v),
+      _1: 3
+    };
+  })
 ];
 
 var int_map_suites_1 = {
   hd: [
     "equal",
     (function (param) {
-        var v = of_list({
-              hd: [
-                1,
-                /* '1' */49
-              ],
-              tl: {
-                hd: [
-                  2,
-                  /* '3' */51
-                ],
-                tl: {
-                  hd: [
-                    3,
-                    /* '4' */52
-                  ],
-                  tl: /* [] */0
-                }
-              }
-            });
-        var u = of_list({
-              hd: [
-                2,
-                /* '3' */51
-              ],
-              tl: {
-                hd: [
-                  3,
-                  /* '4' */52
-                ],
-                tl: {
-                  hd: [
-                    1,
-                    /* '1' */49
-                  ],
-                  tl: /* [] */0
-                }
-              }
-            });
-        return {
-          TAG: "Eq",
-          _0: compare(Caml.int_compare, u, v),
-          _1: 0
-        };
-      })
+      var v = of_list({
+        hd: [
+          1,
+          /* '1' */49
+        ],
+        tl: {
+          hd: [
+            2,
+            /* '3' */51
+          ],
+          tl: {
+            hd: [
+              3,
+              /* '4' */52
+            ],
+            tl: /* [] */0
+          }
+        }
+      });
+      var u = of_list({
+        hd: [
+          2,
+          /* '3' */51
+        ],
+        tl: {
+          hd: [
+            3,
+            /* '4' */52
+          ],
+          tl: {
+            hd: [
+              1,
+              /* '1' */49
+            ],
+            tl: /* [] */0
+          }
+        }
+      });
+      return {
+        TAG: "Eq",
+        _0: compare(Caml.int_compare, u, v),
+        _1: 0
+      };
+    })
   ],
   tl: {
     hd: [
       "equal2",
       (function (param) {
-          var v = of_list({
-                hd: [
-                  1,
-                  /* '1' */49
-                ],
-                tl: {
-                  hd: [
-                    2,
-                    /* '3' */51
-                  ],
-                  tl: {
-                    hd: [
-                      3,
-                      /* '4' */52
-                    ],
-                    tl: /* [] */0
-                  }
-                }
-              });
-          var u = of_list({
-                hd: [
-                  2,
-                  /* '3' */51
-                ],
-                tl: {
-                  hd: [
-                    3,
-                    /* '4' */52
-                  ],
-                  tl: {
-                    hd: [
-                      1,
-                      /* '1' */49
-                    ],
-                    tl: /* [] */0
-                  }
-                }
-              });
-          return {
-            TAG: "Eq",
-            _0: true,
-            _1: equal((function (x, y) {
-                    return x === y;
-                  }), u, v)
-          };
-        })
+        var v = of_list({
+          hd: [
+            1,
+            /* '1' */49
+          ],
+          tl: {
+            hd: [
+              2,
+              /* '3' */51
+            ],
+            tl: {
+              hd: [
+                3,
+                /* '4' */52
+              ],
+              tl: /* [] */0
+            }
+          }
+        });
+        var u = of_list({
+          hd: [
+            2,
+            /* '3' */51
+          ],
+          tl: {
+            hd: [
+              3,
+              /* '4' */52
+            ],
+            tl: {
+              hd: [
+                1,
+                /* '1' */49
+              ],
+              tl: /* [] */0
+            }
+          }
+        });
+        return {
+          TAG: "Eq",
+          _0: true,
+          _1: equal((function (x, y) {
+            return x === y;
+          }), u, v)
+        };
+      })
     ],
     tl: {
       hd: [
         "iteration",
         (function (param) {
-            var m = "Empty";
-            for(var i = 0; i <= 10000; ++i){
-              m = add$1(String(i), String(i), m);
+          var m = "Empty";
+          for(var i = 0; i <= 10000; ++i){
+            m = add$1(String(i), String(i), m);
+          }
+          var v = -1;
+          for(var i$1 = 0; i$1 <= 10000; ++i$1){
+            if (find(String(i$1), m) !== String(i$1)) {
+              v = i$1;
             }
-            var v = -1;
-            for(var i$1 = 0; i$1 <= 10000; ++i$1){
-              if (find(String(i$1), m) !== String(i$1)) {
-                v = i$1;
-              }
-              
-            }
-            return {
-              TAG: "Eq",
-              _0: v,
-              _1: -1
-            };
-          })
+            
+          }
+          return {
+            TAG: "Eq",
+            _0: v,
+            _1: -1
+          };
+        })
       ],
       tl: /* [] */0
     }

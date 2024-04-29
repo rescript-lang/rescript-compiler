@@ -6,74 +6,74 @@ var Mt = require("./mt.js");
 var suites_0 = [
   "setTimeout/clearTimeout sanity check",
   (function (param) {
-      var handle = setTimeout((function (param) {
-              
-            }), 0);
-      clearTimeout(handle);
-      return {
-        TAG: "Ok",
-        _0: true
-      };
-    })
+    var handle = setTimeout((function (param) {
+      
+    }), 0);
+    clearTimeout(handle);
+    return {
+      TAG: "Ok",
+      _0: true
+    };
+  })
 ];
 
 var suites_1 = {
   hd: [
     "setInerval/clearInterval sanity check",
     (function (param) {
-        var handle = setInterval((function (param) {
-                
-              }), 0);
-        clearInterval(handle);
-        return {
-          TAG: "Ok",
-          _0: true
-        };
-      })
+      var handle = setInterval((function (param) {
+        
+      }), 0);
+      clearInterval(handle);
+      return {
+        TAG: "Ok",
+        _0: true
+      };
+    })
   ],
   tl: {
     hd: [
       "encodeURI",
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: encodeURI("[-=-]"),
-            _1: "%5B-=-%5D"
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: encodeURI("[-=-]"),
+          _1: "%5B-=-%5D"
+        };
+      })
     ],
     tl: {
       hd: [
         "decodeURI",
         (function (param) {
-            return {
-              TAG: "Eq",
-              _0: decodeURI("%5B-=-%5D"),
-              _1: "[-=-]"
-            };
-          })
+          return {
+            TAG: "Eq",
+            _0: decodeURI("%5B-=-%5D"),
+            _1: "[-=-]"
+          };
+        })
       ],
       tl: {
         hd: [
           "encodeURIComponent",
           (function (param) {
-              return {
-                TAG: "Eq",
-                _0: encodeURIComponent("[-=-]"),
-                _1: "%5B-%3D-%5D"
-              };
-            })
+            return {
+              TAG: "Eq",
+              _0: encodeURIComponent("[-=-]"),
+              _1: "%5B-%3D-%5D"
+            };
+          })
         ],
         tl: {
           hd: [
             "decodeURIComponent",
             (function (param) {
-                return {
-                  TAG: "Eq",
-                  _0: decodeURIComponent("%5B-%3D-%5D"),
-                  _1: "[-=-]"
-                };
-              })
+              return {
+                TAG: "Eq",
+                _0: decodeURIComponent("%5B-%3D-%5D"),
+                _1: "[-=-]"
+              };
+            })
           ],
           tl: /* [] */0
         }

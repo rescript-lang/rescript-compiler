@@ -14,20 +14,20 @@ var test_id = {
 
 function eq(loc, x, y) {
   console.log([
-        x,
-        y
-      ]);
+    x,
+    y
+  ]);
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -46,13 +46,13 @@ function f(x) {
 }
 
 eq("File \"update_record_test.res\", line 28, characters 5-12", 1, f({
-          a0: 0,
-          a1: 0,
-          a2: 0,
-          a3: 0,
-          a4: 0,
-          a5: 0
-        }).a0);
+  a0: 0,
+  a1: 0,
+  a2: 0,
+  a3: 0,
+  a4: 0,
+  a5: 0
+}).a0);
 
 var val0 = {
   "invalid_js_id'": 3,

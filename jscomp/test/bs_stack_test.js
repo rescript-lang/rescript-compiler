@@ -64,14 +64,14 @@ function inOrder3(v) {
     current = v$1.left;
   };
   Belt_MutableStack.dynamicPopIter(s, (function (popped) {
-          Belt_MutableQueue.add(q, popped.value);
-          var current = popped.right;
-          while(current !== undefined) {
-            var v = current;
-            Belt_MutableStack.push(s, v);
-            current = v.left;
-          };
-        }));
+    Belt_MutableQueue.add(q, popped.value);
+    var current = popped.right;
+    while(current !== undefined) {
+      var v = current;
+      Belt_MutableStack.push(s, v);
+      current = v.left;
+    };
+  }));
   return Belt_MutableQueue.toArray(q);
 }
 
@@ -126,20 +126,20 @@ var test2 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(Caml_opti
 var test3 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(undefined, undefined, 4)), undefined, 2)), undefined, 5)), Caml_option.some(n(undefined, undefined, 3)), 1);
 
 eq("File \"bs_stack_test.res\", line 98, characters 3-10", inOrder(test1), [
-      4,
-      2,
-      5,
-      1,
-      3
-    ]);
+  4,
+  2,
+  5,
+  1,
+  3
+]);
 
 eq("File \"bs_stack_test.res\", line 99, characters 3-10", inOrder3(test1), [
-      4,
-      2,
-      5,
-      1,
-      3
-    ]);
+  4,
+  2,
+  5,
+  1,
+  3
+]);
 
 Mt.from_pair_suites("bs_stack_test.res", suites.contents);
 

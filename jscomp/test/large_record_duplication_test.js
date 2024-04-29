@@ -46,16 +46,16 @@ var h = {
 };
 
 eq("File \"large_record_duplication_test.res\", line 70, characters 3-10", f_small(h), {
-      RE_EXN_ID: Small,
-      x: 2,
-      y: ""
-    });
+  RE_EXN_ID: Small,
+  x: 2,
+  y: ""
+});
 
 eq("File \"large_record_duplication_test.res\", line 72, characters 3-10", Caml_obj.equal(h, {
-          RE_EXN_ID: Small,
-          x: 2,
-          y: ""
-        }), false);
+  RE_EXN_ID: Small,
+  x: 2,
+  y: ""
+}), false);
 
 var v1 = {
   TAG: "A0",
@@ -198,8 +198,8 @@ eq("File \"large_record_duplication_test.res\", line 275, characters 3-10", get_
 eq("File \"large_record_duplication_test.res\", line 276, characters 3-10", get_x0$2(v3), 9);
 
 eq("File \"large_record_duplication_test.res\", line 277, characters 3-10", get_x0$2({
-          RE_EXN_ID: "Not_found"
-        }), undefined);
+  RE_EXN_ID: "Not_found"
+}), undefined);
 
 Mt.from_pair_suites("Large_record_duplication_test", suites.contents);
 

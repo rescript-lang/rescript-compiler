@@ -89,9 +89,9 @@ function resize(newSize) {
       } else {
         var ind = hashVal(getId(n._0), getId(n._3), n._1) & newSz_1;
         Caml_array.set(newArr, ind, {
-              hd: n,
-              tl: Caml_array.get(newArr, ind)
-            });
+          hd: n,
+          tl: Caml_array.get(newArr, ind)
+        });
         _bucket = bucket.tl;
         continue ;
       }
@@ -107,18 +107,18 @@ function resize(newSize) {
 function insert(idl, idh, v, ind, bucket, newNode) {
   if (n_items.contents <= sz_1.contents) {
     Caml_array.set(htab.contents, ind, {
-          hd: newNode,
-          tl: bucket
-        });
+      hd: newNode,
+      tl: bucket
+    });
     n_items.contents = n_items.contents + 1 | 0;
     return;
   }
   resize((sz_1.contents + sz_1.contents | 0) + 2 | 0);
   var ind$1 = hashVal(idl, idh, v) & sz_1.contents;
   Caml_array.set(htab.contents, ind$1, {
-        hd: newNode,
-        tl: Caml_array.get(htab.contents, ind$1)
-      });
+    hd: newNode,
+    tl: Caml_array.get(htab.contents, ind$1)
+  });
 }
 
 function resetUnique(param) {

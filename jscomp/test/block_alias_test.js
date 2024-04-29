@@ -53,18 +53,18 @@ var V = {
 var f = Caml_obj.equal;
 
 eq("File \"block_alias_test.res\", line 27, characters 3-10", List.length({
-          hd: 1,
-          tl: {
-            hd: 2,
-            tl: /* [] */0
-          }
-        }), 2);
+  hd: 1,
+  tl: {
+    hd: 2,
+    tl: /* [] */0
+  }
+}), 2);
 
 b("File \"block_alias_test.res\", line 28, characters 2-9", Caml_obj.equal(v0, {
-          TAG: "A",
-          _0: 0,
-          _1: 1
-        }));
+  TAG: "A",
+  _0: 0,
+  _1: 1
+}));
 
 eq("File \"block_alias_test.res\", line 29, characters 3-10", v0, v1);
 

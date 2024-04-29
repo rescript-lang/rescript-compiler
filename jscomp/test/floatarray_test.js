@@ -25,14 +25,14 @@ for(var i = 0; i <= 4; ++i){
 Caml_array.set(v, 2, 15.5);
 
 eq("File \"floatarray_test.res\", line 15, characters 5-12", [
-      v.length,
-      v[2],
-      Caml_array.get(v, 1)
-    ], [
-      5,
-      15.5,
-      0
-    ]);
+  v.length,
+  v[2],
+  Caml_array.get(v, 1)
+], [
+  5,
+  15.5,
+  0
+]);
 
 Mt.from_pair_suites("Floatarray_test", suites.contents);
 

@@ -21,12 +21,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -47,8 +47,8 @@ function map(f, x) {
 
 function make(foo) {
   var partial_arg = map((function (prim) {
-          return String(prim);
-        }), foo);
+    return String(prim);
+  }), foo);
   return function (param) {
     var tmp = {};
     if (partial_arg !== undefined) {
@@ -139,28 +139,28 @@ function keys(xs, ys) {
 }
 
 eq("File \"gpr_1409_test.res\", line 69, characters 3-10", keys({
-          hd: "hi",
-          tl: /* [] */0
-        }, Object.keys(test3(undefined, undefined))), true);
+  hd: "hi",
+  tl: /* [] */0
+}, Object.keys(test3(undefined, undefined))), true);
 
 eq("File \"gpr_1409_test.res\", line 71, characters 3-10", keys({
-          hd: "hi",
-          tl: {
-            hd: "_open",
-            tl: /* [] */0
-          }
-        }, Object.keys(test3(2, undefined))), true);
+  hd: "hi",
+  tl: {
+    hd: "_open",
+    tl: /* [] */0
+  }
+}, Object.keys(test3(2, undefined))), true);
 
 eq("File \"gpr_1409_test.res\", line 73, characters 3-10", keys({
-          hd: "hi",
-          tl: {
-            hd: "_open",
-            tl: {
-              hd: "xx__hi",
-              tl: /* [] */0
-            }
-          }
-        }, Object.keys(test3(2, 2))), true);
+  hd: "hi",
+  tl: {
+    hd: "_open",
+    tl: {
+      hd: "xx__hi",
+      tl: /* [] */0
+    }
+  }
+}, Object.keys(test3(2, 2))), true);
 
 Mt.from_pair_suites("Gpr_1409_test", suites.contents);
 

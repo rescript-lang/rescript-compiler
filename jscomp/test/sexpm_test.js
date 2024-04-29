@@ -20,12 +20,12 @@ function eq(loc, param) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -42,50 +42,50 @@ function print_or_error(x) {
 var a = Sexpm.parse_string("(x x gh 3 3)");
 
 eq("File \"sexpm_test.res\", line 17, characters 5-12", [
-      {
-        NAME: "Ok",
-        VAL: {
-          NAME: "List",
-          VAL: {
+  {
+    NAME: "Ok",
+    VAL: {
+      NAME: "List",
+      VAL: {
+        hd: {
+          NAME: "Atom",
+          VAL: "x"
+        },
+        tl: {
+          hd: {
+            NAME: "Atom",
+            VAL: "x"
+          },
+          tl: {
             hd: {
               NAME: "Atom",
-              VAL: "x"
+              VAL: "gh"
             },
             tl: {
               hd: {
                 NAME: "Atom",
-                VAL: "x"
+                VAL: "3"
               },
               tl: {
                 hd: {
                   NAME: "Atom",
-                  VAL: "gh"
+                  VAL: "3"
                 },
-                tl: {
-                  hd: {
-                    NAME: "Atom",
-                    VAL: "3"
-                  },
-                  tl: {
-                    hd: {
-                      NAME: "Atom",
-                      VAL: "3"
-                    },
-                    tl: /* [] */0
-                  }
-                }
+                tl: /* [] */0
               }
             }
           }
         }
-      },
-      a
-    ]);
+      }
+    }
+  },
+  a
+]);
 
 eq("File \"sexpm_test.res\", line 18, characters 5-12", [
-      print_or_error(a).trim(),
-      "Ok:(x x gh 3 3)\n".trim()
-    ]);
+  print_or_error(a).trim(),
+  "Ok:(x x gh 3 3)\n".trim()
+]);
 
 Mt.from_pair_suites("Sexpm_test", suites.contents);
 

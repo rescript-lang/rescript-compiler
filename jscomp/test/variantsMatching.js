@@ -323,12 +323,12 @@ function kind$1(x) {
 }
 
 var expectSeven$1 = plus$3({
-      x: 4,
-      y: 3
-    }, {
-      x: 3,
-      y: 4
-    });
+  x: 4,
+  y: 3
+}, {
+  x: 3,
+  y: 4
+});
 
 console.log("expect {x:7, y:7}:", expectSeven$1);
 

@@ -41,14 +41,14 @@ eq("File \"hash_collision_test.res\", line 20, characters 3-10", 0, 0);
 eq("File \"hash_collision_test.res\", line 21, characters 3-10", 1, 1);
 
 eq("File \"hash_collision_test.res\", line 23, characters 3-10", f1({
-          NAME: "Eric_Cooper",
-          VAL: -1
-        }), 0);
+  NAME: "Eric_Cooper",
+  VAL: -1
+}), 0);
 
 eq("File \"hash_collision_test.res\", line 25, characters 3-10", f1({
-          NAME: "azdwbie",
-          VAL: -2
-        }), 0);
+  NAME: "azdwbie",
+  VAL: -2
+}), 0);
 
 Mt.from_pair_suites("hash_collision_test.res", suites.contents);
 

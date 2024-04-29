@@ -17,12 +17,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -49,15 +49,15 @@ function f(check) {
 }
 
 eq("File \"gpr_904_test.res\", line 16, characters 12-19", f({
-          x: true,
-          y: false
-        }), false);
+  x: true,
+  y: false
+}), false);
 
 eq("File \"gpr_904_test.res\", line 18, characters 12-19", check_healty({
-          a: false,
-          b: false,
-          c: true
-        }), false);
+  a: false,
+  b: false,
+  c: true
+}), false);
 
 Mt.from_pair_suites("Gpr_904_test", suites.contents);
 

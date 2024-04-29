@@ -21,9 +21,9 @@ function Test($star) {
   };
   var Block = {};
   var b = eq_A({
-        TAG: "A",
-        _0: 3
-      }, u);
+    TAG: "A",
+    _0: 3
+  }, u);
   return {
     u: u,
     Block: Block,
@@ -36,12 +36,12 @@ function Test2($star) {
   console.log("no inline");
   var Block = {};
   var b = eq_A({
-        TAG: "A",
-        _0: 3
-      }, {
-        TAG: "A",
-        _0: 3
-      });
+    TAG: "A",
+    _0: 3
+  }, {
+    TAG: "A",
+    _0: 3
+  });
   return {
     Block: Block,
     y: 32,

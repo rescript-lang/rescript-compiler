@@ -48,14 +48,14 @@ function fold_left(f, x, a) {
 
 function f2(param) {
   var arr = init(3000000, (function (i) {
-          return i;
-        }));
+    return i;
+  }));
   var b = map((function (i) {
-          return i + i - 1;
-        }), arr);
+    return i + i - 1;
+  }), arr);
   var v = fold_left((function (prim0, prim1) {
-          return prim0 + prim1;
-        }), 0, b);
+    return prim0 + prim1;
+  }), 0, b);
   console.log(Pervasives.string_of_float(v));
 }
 

@@ -19,12 +19,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -91,20 +91,20 @@ catch (exn$5){
 }
 
 eq("File \"gpr_1760_test.res\", line 57, characters 3-10", [
-      a0,
-      a1,
-      a4,
-      a5,
-      a6,
-      a7
-    ], [
-      1,
-      1,
-      1,
-      1,
-      1,
-      1
-    ]);
+  a0,
+  a1,
+  a4,
+  a5,
+  a6,
+  a7
+], [
+  1,
+  1,
+  1,
+  1,
+  1,
+  1
+]);
 
 Mt.from_pair_suites("Gpr_1760_test", suites.contents);
 

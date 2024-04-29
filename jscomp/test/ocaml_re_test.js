@@ -33,12 +33,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -685,14 +685,14 @@ function mk_expr(ids, def) {
 function cst(ids, s) {
   if (s ? false : true) {
     return mk_expr(ids, {
-          TAG: "Alt",
-          _0: /* [] */0
-        });
+      TAG: "Alt",
+      _0: /* [] */0
+    });
   } else {
     return mk_expr(ids, {
-          TAG: "Cst",
-          _0: s
-        });
+      TAG: "Cst",
+      _0: s
+    });
   }
 }
 
@@ -700,17 +700,17 @@ function alt(ids, x) {
   if (x) {
     if (x.tl) {
       return mk_expr(ids, {
-            TAG: "Alt",
-            _0: x
-          });
+        TAG: "Alt",
+        _0: x
+      });
     } else {
       return x.hd;
     }
   } else {
     return mk_expr(ids, {
-          TAG: "Alt",
-          _0: /* [] */0
-        });
+      TAG: "Alt",
+      _0: /* [] */0
+    });
   }
 }
 
@@ -741,11 +741,11 @@ function seq$1(ids, kind, x, y) {
     
   }
   return mk_expr(ids, {
-        TAG: "Seq",
-        _0: kind,
-        _1: x,
-        _2: y
-      });
+    TAG: "Seq",
+    _0: kind,
+    _1: x,
+    _2: y
+  });
 }
 
 function is_eps(expr) {
@@ -759,19 +759,19 @@ function is_eps(expr) {
 
 function rep(ids, kind, sem, x) {
   return mk_expr(ids, {
-        TAG: "Rep",
-        _0: kind,
-        _1: sem,
-        _2: x
-      });
+    TAG: "Rep",
+    _0: kind,
+    _1: sem,
+    _2: x
+  });
 }
 
 function erase(ids, m, m$p) {
   return mk_expr(ids, {
-        TAG: "Erase",
-        _0: m,
-        _1: m$p
-      });
+    TAG: "Erase",
+    _0: m,
+    _1: m$p
+  });
 }
 
 function rename(ids, x) {
@@ -782,25 +782,25 @@ function rename(ids, x) {
   switch (l.TAG) {
     case "Alt" :
         return mk_expr(ids, {
-              TAG: "Alt",
-              _0: List.map((function (param) {
-                      return rename(ids, param);
-                    }), l._0)
-            });
+          TAG: "Alt",
+          _0: List.map((function (param) {
+            return rename(ids, param);
+          }), l._0)
+        });
     case "Seq" :
         return mk_expr(ids, {
-              TAG: "Seq",
-              _0: l._0,
-              _1: rename(ids, l._1),
-              _2: rename(ids, l._2)
-            });
+          TAG: "Seq",
+          _0: l._0,
+          _1: rename(ids, l._1),
+          _2: rename(ids, l._2)
+        });
     case "Rep" :
         return mk_expr(ids, {
-              TAG: "Rep",
-              _0: l._0,
-              _1: l._1,
-              _2: rename(ids, l._2)
-            });
+          TAG: "Rep",
+          _0: l._0,
+          _1: l._1,
+          _2: rename(ids, l._2)
+        });
     default:
       return mk_expr(ids, x.def);
   }
@@ -969,13 +969,13 @@ function mk(idx, cat, desc) {
 
 function create$2(cat, e) {
   return mk(0, cat, {
-        hd: {
-          TAG: "TExp",
-          _0: empty,
-          _1: e
-        },
-        tl: /* [] */0
-      });
+    hd: {
+      TAG: "TExp",
+      _0: empty,
+      _1: e
+    },
+    tl: /* [] */0
+  });
 }
 
 function equal$1(x, y) {
@@ -991,9 +991,9 @@ function hash$3(t) {
 }
 
 var Table = Hashtbl.Make({
-      equal: equal$1,
-      hash: hash$3
-    });
+  equal: equal$1,
+  hash: hash$3
+});
 
 function reset_table(a) {
   $$Array.fill(a, 0, a.length, false);
@@ -1002,22 +1002,22 @@ function reset_table(a) {
 function mark_used_indices(tbl) {
   return function (param) {
     return List.iter((function (x) {
-            switch (x.TAG) {
-              case "TSeq" :
-                  return mark_used_indices(tbl)(x._0);
-              case "TExp" :
-              case "TMatch" :
-                  break;
-              
-            }
-            List.iter((function (param) {
-                    var i = param[1];
-                    if (i >= 0) {
-                      return Caml_array.set(tbl, i, true);
-                    }
-                    
-                  }), x._0.marks);
-          }), param);
+      switch (x.TAG) {
+        case "TSeq" :
+            return mark_used_indices(tbl)(x._0);
+        case "TExp" :
+        case "TMatch" :
+            break;
+        
+      }
+      List.iter((function (param) {
+        var i = param[1];
+        if (i >= 0) {
+          return Caml_array.set(tbl, i, true);
+        }
+        
+      }), x._0.marks);
+    }), param);
   };
 }
 
@@ -1045,15 +1045,15 @@ function free_index(tbl_ref, l) {
 }
 
 var remove_matches = List.filter(function (x) {
-      switch (x.TAG) {
-        case "TSeq" :
-        case "TExp" :
-            return true;
-        case "TMatch" :
-            return false;
-        
-      }
-    });
+  switch (x.TAG) {
+    case "TSeq" :
+    case "TExp" :
+        return true;
+    case "TMatch" :
+        return false;
+    
+  }
+});
 
 function split_at_match_rec(_l$p, _x) {
   while(true) {
@@ -1120,9 +1120,9 @@ function remove_duplicates(prev, _l, y) {
               continue ;
             }
             var match$2 = remove_duplicates({
-                  hd: y.id,
-                  tl: prev
-                }, r, y);
+              hd: y.id,
+              tl: prev
+            }, r, y);
             return [
               {
                 hd: x,
@@ -1137,9 +1137,9 @@ function remove_duplicates(prev, _l, y) {
             continue ;
           }
           var match$3 = remove_duplicates({
-                hd: x$2.id,
-                tl: prev
-              }, r$1, y);
+            hd: x$2.id,
+            tl: prev
+          }, r$1, y);
           return [
             {
               hd: x,
@@ -1200,13 +1200,13 @@ function set_idx(idx, x) {
 function filter_marks(b, e, marks) {
   return {
     marks: List.filter(function (param) {
-            var i = param[0];
-            if (i < b) {
-              return true;
-            } else {
-              return i > e;
-            }
-          })(marks.marks),
+      var i = param[0];
+      if (i < b) {
+        return true;
+      } else {
+        return i > e;
+      }
+    })(marks.marks),
     pmarks: marks.pmarks
   };
 }
@@ -1245,15 +1245,15 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
         var kind = s._1;
         var y$p$1 = delta_1(marks, c, next_cat, prev_cat, s._2, /* [] */0);
         var marks$p = first((function (x) {
-                switch (x.TAG) {
-                  case "TSeq" :
-                  case "TExp" :
-                      return;
-                  case "TMatch" :
-                      return x._0;
-                  
-                }
-              }), y$p$1);
+          switch (x.TAG) {
+            case "TSeq" :
+            case "TExp" :
+                return;
+            case "TMatch" :
+                return x._0;
+            
+          }
+        }), y$p$1);
         var match = marks$p !== undefined ? [
             Curry._1(remove_matches, y$p$1),
             marks$p
@@ -1272,12 +1272,12 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
           };
         } else {
           return tseq(kind, y$p$p, x, {
-                hd: {
-                  TAG: "TMatch",
-                  _0: match[1]
-                },
-                tl: rem
-              });
+            hd: {
+              TAG: "TMatch",
+              _0: match[1]
+            },
+            tl: rem
+          });
         }
     case "Mark" :
         var i = s._0;
@@ -1360,15 +1360,15 @@ function delta_2(marks, c, next_cat, prev_cat, l, rem) {
 
 function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
   var marks = first((function (x) {
-          switch (x.TAG) {
-            case "TSeq" :
-            case "TExp" :
-                return;
-            case "TMatch" :
-                return x._0;
-            
-          }
-        }), y);
+    switch (x.TAG) {
+      case "TSeq" :
+      case "TExp" :
+          return;
+      case "TMatch" :
+          return x._0;
+      
+    }
+  }), y);
   if (marks === undefined) {
     return tseq(kind, y, z, rem);
   }
@@ -1415,12 +1415,12 @@ function delta(tbl_ref, next_cat, $$char, st) {
 
 function flatten_match(m) {
   var ma = List.fold_left((function (ma, param) {
-          return Caml.int_max(ma, param[0]);
-        }), -1, m);
+    return Caml.int_max(ma, param[0]);
+  }), -1, m);
   var res = Caml_array.make(ma + 1 | 0, -1);
   List.iter((function (param) {
-          Caml_array.set(res, param[0], param[1]);
-        }), m);
+    Caml_array.set(res, param[0], param[1]);
+  }), m);
   return res;
 }
 
@@ -1751,8 +1751,8 @@ function trans_set(cache, cm, s) {
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       var l = List.fold_right((function (param, l) {
-              return union(seq(Caml_bytes.get(cm, param[0]), Caml_bytes.get(cm, param[1])), l);
-            }), s, /* [] */0);
+        return union(seq(Caml_bytes.get(cm, param[0]), Caml_bytes.get(cm, param[1])), l);
+      }), s, /* [] */0);
       cache.contents = add(v, l, cache.contents);
       return l;
     }
@@ -1817,33 +1817,33 @@ var cupper = union(seq(/* 'A' */65, /* 'Z' */90), union(seq(/* '\192' */192, /* 
 var clower = offset(32, cupper);
 
 var calpha = List.fold_right(cadd, {
-      hd: /* '\170' */170,
+  hd: /* '\170' */170,
+  tl: {
+    hd: /* '\181' */181,
+    tl: {
+      hd: /* '\186' */186,
       tl: {
-        hd: /* '\181' */181,
+        hd: /* '\223' */223,
         tl: {
-          hd: /* '\186' */186,
-          tl: {
-            hd: /* '\223' */223,
-            tl: {
-              hd: /* '\255' */255,
-              tl: /* [] */0
-            }
-          }
+          hd: /* '\255' */255,
+          tl: /* [] */0
         }
       }
-    }, union(clower, cupper));
+    }
+  }
+}, union(clower, cupper));
 
 var cdigit = seq(/* '0' */48, /* '9' */57);
 
 var calnum = union(calpha, cdigit);
 
 var cword = union({
-      hd: [
-        /* '_' */95,
-        /* '_' */95
-      ],
-      tl: /* [] */0
-    }, calnum);
+  hd: [
+    /* '_' */95,
+    /* '_' */95
+  ],
+  tl: /* [] */0
+}, calnum);
 
 function colorize(c, regexp) {
   var lnl = {
@@ -1857,12 +1857,12 @@ function colorize(c, regexp) {
           case "Beg_of_line" :
           case "End_of_line" :
               return split({
-                    hd: [
-                      /* '\n' */10,
-                      /* '\n' */10
-                    ],
-                    tl: /* [] */0
-                  }, c);
+                hd: [
+                  /* '\n' */10,
+                  /* '\n' */10
+                ],
+                tl: /* [] */0
+              }, c);
           case "Beg_of_word" :
           case "End_of_word" :
           case "Not_bound" :
@@ -2286,18 +2286,18 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             var c$1 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.newline);
             return [
               mk_expr(ids, {
-                    TAG: "After",
-                    _0: c$1
-                  }),
+                TAG: "After",
+                _0: c$1
+              }),
               kind
             ];
         case "End_of_line" :
             var c$2 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.newline);
             return [
               mk_expr(ids, {
-                    TAG: "Before",
-                    _0: c$2
-                  }),
+                TAG: "Before",
+                _0: c$2
+              }),
               kind
             ];
         case "Beg_of_word" :
@@ -2305,12 +2305,12 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             var c$4 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.letter);
             return [
               seq$1(ids, "First", mk_expr(ids, {
-                        TAG: "After",
-                        _0: c$3
-                      }), mk_expr(ids, {
-                        TAG: "Before",
-                        _0: c$4
-                      })),
+                TAG: "After",
+                _0: c$3
+              }), mk_expr(ids, {
+                TAG: "Before",
+                _0: c$4
+              })),
               kind
             ];
         case "End_of_word" :
@@ -2318,76 +2318,76 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             var c$6 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.not_letter);
             return [
               seq$1(ids, "First", mk_expr(ids, {
-                        TAG: "After",
-                        _0: c$5
-                      }), mk_expr(ids, {
-                        TAG: "Before",
-                        _0: c$6
-                      })),
+                TAG: "After",
+                _0: c$5
+              }), mk_expr(ids, {
+                TAG: "Before",
+                _0: c$6
+              })),
               kind
             ];
         case "Not_bound" :
             return [
               alt(ids, {
-                    hd: seq$1(ids, "First", mk_expr(ids, {
-                              TAG: "After",
-                              _0: Re_automata_Category.letter
-                            }), mk_expr(ids, {
-                              TAG: "Before",
-                              _0: Re_automata_Category.letter
-                            })),
-                    tl: {
-                      hd: seq$1(ids, "First", mk_expr(ids, {
-                                TAG: "After",
-                                _0: Re_automata_Category.letter
-                              }), mk_expr(ids, {
-                                TAG: "Before",
-                                _0: Re_automata_Category.letter
-                              })),
-                      tl: /* [] */0
-                    }
-                  }),
+                hd: seq$1(ids, "First", mk_expr(ids, {
+                  TAG: "After",
+                  _0: Re_automata_Category.letter
+                }), mk_expr(ids, {
+                  TAG: "Before",
+                  _0: Re_automata_Category.letter
+                })),
+                tl: {
+                  hd: seq$1(ids, "First", mk_expr(ids, {
+                    TAG: "After",
+                    _0: Re_automata_Category.letter
+                  }), mk_expr(ids, {
+                    TAG: "Before",
+                    _0: Re_automata_Category.letter
+                  })),
+                  tl: /* [] */0
+                }
+              }),
               kind
             ];
         case "Beg_of_str" :
             return [
               mk_expr(ids, {
-                    TAG: "After",
-                    _0: Re_automata_Category.inexistant
-                  }),
+                TAG: "After",
+                _0: Re_automata_Category.inexistant
+              }),
               kind
             ];
         case "End_of_str" :
             return [
               mk_expr(ids, {
-                    TAG: "Before",
-                    _0: Re_automata_Category.inexistant
-                  }),
+                TAG: "Before",
+                _0: Re_automata_Category.inexistant
+              }),
               kind
             ];
         case "Last_end_of_line" :
             var c$7 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.lastnewline);
             return [
               mk_expr(ids, {
-                    TAG: "Before",
-                    _0: c$7
-                  }),
+                TAG: "Before",
+                _0: c$7
+              }),
               kind
             ];
         case "Start" :
             return [
               mk_expr(ids, {
-                    TAG: "After",
-                    _0: Re_automata_Category.search_boundary
-                  }),
+                TAG: "After",
+                _0: Re_automata_Category.search_boundary
+              }),
               kind
             ];
         case "Stop" :
             return [
               mk_expr(ids, {
-                    TAG: "Before",
-                    _0: Re_automata_Category.search_boundary
-                  }),
+                TAG: "Before",
+                _0: Re_automata_Category.search_boundary
+              }),
               kind
             ];
         
@@ -2415,11 +2415,11 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             }
             return [
               alt(ids, List.map((function(ign_group,greedy){
-                      return function (r$p) {
-                        var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$p);
-                        return enforce_kind(ids, kind, match[1], match[0]);
-                      }
-                      }(ign_group,greedy)), merged_sequences)),
+              return function (r$p) {
+                var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$p);
+                return enforce_kind(ids, kind, match[1], match[0]);
+              }
+              }(ign_group,greedy)), merged_sequences)),
               kind
             ];
         case "Repeat" :
@@ -2433,22 +2433,22 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
               var f = greedy === "Non_greedy" ? (function(cr,kind$p){
                 return function (rem) {
                   return alt(ids, {
-                        hd: mk_expr(ids, "Eps"),
-                        tl: {
-                          hd: seq$1(ids, kind$p, rename(ids, cr), rem),
-                          tl: /* [] */0
-                        }
-                      });
+                    hd: mk_expr(ids, "Eps"),
+                    tl: {
+                      hd: seq$1(ids, kind$p, rename(ids, cr), rem),
+                      tl: /* [] */0
+                    }
+                  });
                 }
                 }(cr,kind$p)) : (function(cr,kind$p){
                 return function (rem) {
                   return alt(ids, {
-                        hd: seq$1(ids, kind$p, rename(ids, cr), rem),
-                        tl: {
-                          hd: mk_expr(ids, "Eps"),
-                          tl: /* [] */0
-                        }
-                      });
+                    hd: seq$1(ids, kind$p, rename(ids, cr), rem),
+                    tl: {
+                      hd: mk_expr(ids, "Eps"),
+                      tl: /* [] */0
+                    }
+                  });
                 }
                 }(cr,kind$p));
               rem = iter(j - i | 0, f, mk_expr(ids, "Eps"));
@@ -2457,10 +2457,10 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             }
             return [
               iter(i, (function(cr,kind$p){
-                  return function (rem) {
-                    return seq$1(ids, kind$p, rename(ids, cr), rem);
-                  }
-                  }(cr,kind$p)), rem),
+              return function (rem) {
+                return seq$1(ids, kind$p, rename(ids, cr), rem);
+              }
+              }(cr,kind$p)), rem),
               kind
             ];
         case "Sem" :
@@ -2485,12 +2485,12 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             var match$3 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$p);
             return [
               seq$1(ids, "First", mk_expr(ids, {
-                        TAG: "Mark",
-                        _0: p
-                      }), seq$1(ids, "First", match$3[0], mk_expr(ids, {
-                            TAG: "Mark",
-                            _0: p + 1 | 0
-                          }))),
+                TAG: "Mark",
+                _0: p
+              }), seq$1(ids, "First", match$3[0], mk_expr(ids, {
+                TAG: "Mark",
+                _0: p + 1 | 0
+              }))),
               match$3[1]
             ];
         case "No_group" :
@@ -2518,9 +2518,9 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             var match$5 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, x._1);
             return [
               seq$1(ids, "First", mk_expr(ids, {
-                        TAG: "Pmark",
-                        _0: x._0
-                      }), match$5[0]),
+                TAG: "Pmark",
+                _0: x._0
+              }), match$5[0]),
               match$5[1]
             ];
         default:
@@ -2608,26 +2608,26 @@ function handle_case(_ign_case, _x) {
           return {
             TAG: "Sequence",
             _0: List.map((function(ign_case){
-                return function (param) {
-                  return handle_case(ign_case, param);
-                }
-                }(ign_case)), x._0)
+            return function (param) {
+              return handle_case(ign_case, param);
+            }
+            }(ign_case)), x._0)
           };
       case "Alternative" :
           var l$p = List.map((function(ign_case){
-              return function (param) {
-                return handle_case(ign_case, param);
-              }
-              }(ign_case)), x._0);
+          return function (param) {
+            return handle_case(ign_case, param);
+          }
+          }(ign_case)), x._0);
           if (is_charset({
-                  TAG: "Alternative",
-                  _0: l$p
-                })) {
+              TAG: "Alternative",
+              _0: l$p
+            })) {
             return {
               TAG: "Set",
               _0: List.fold_left((function (s, r) {
-                      return union(s, as_set(r));
-                    }), /* [] */0, l$p)
+                return union(s, as_set(r));
+              }), /* [] */0, l$p)
             };
           } else {
             return {
@@ -2699,27 +2699,27 @@ function handle_case(_ign_case, _x) {
           continue ;
       case "Intersection" :
           var l$p$1 = List.map((function(ign_case){
-              return function (r) {
-                return handle_case(ign_case, r);
-              }
-              }(ign_case)), x._0);
+          return function (r) {
+            return handle_case(ign_case, r);
+          }
+          }(ign_case)), x._0);
           return {
             TAG: "Set",
             _0: List.fold_left((function (s, r) {
-                    return inter(s, as_set(r));
-                  }), cany, l$p$1)
+              return inter(s, as_set(r));
+            }), cany, l$p$1)
           };
       case "Complement" :
           var l$p$2 = List.map((function(ign_case){
-              return function (r) {
-                return handle_case(ign_case, r);
-              }
-              }(ign_case)), x._0);
+          return function (r) {
+            return handle_case(ign_case, r);
+          }
+          }(ign_case)), x._0);
           return {
             TAG: "Set",
             _0: diff(cany, List.fold_left((function (s, r) {
-                        return union(s, as_set(r));
-                      }), /* [] */0, l$p$2))
+              return union(s, as_set(r));
+            }), /* [] */0, l$p$2))
           };
       case "Difference" :
           return {
@@ -2863,97 +2863,97 @@ var any = {
 var notnl = {
   TAG: "Set",
   _0: diff(cany, {
-        hd: [
-          /* '\n' */10,
-          /* '\n' */10
-        ],
-        tl: /* [] */0
-      })
+    hd: [
+      /* '\n' */10,
+      /* '\n' */10
+    ],
+    tl: /* [] */0
+  })
 };
 
 var lower = alt$1({
+  hd: {
+    TAG: "Set",
+    _0: seq(/* 'a' */97, /* 'z' */122)
+  },
+  tl: {
+    hd: {
+      TAG: "Set",
+      _0: {
+        hd: [
+          /* '\181' */181,
+          /* '\181' */181
+        ],
+        tl: /* [] */0
+      }
+    },
+    tl: {
       hd: {
         TAG: "Set",
-        _0: seq(/* 'a' */97, /* 'z' */122)
+        _0: seq(/* '\223' */223, /* '\246' */246)
+      },
+      tl: {
+        hd: {
+          TAG: "Set",
+          _0: seq(/* '\248' */248, /* '\255' */255)
+        },
+        tl: /* [] */0
+      }
+    }
+  }
+});
+
+var upper = alt$1({
+  hd: {
+    TAG: "Set",
+    _0: seq(/* 'A' */65, /* 'Z' */90)
+  },
+  tl: {
+    hd: {
+      TAG: "Set",
+      _0: seq(/* '\192' */192, /* '\214' */214)
+    },
+    tl: {
+      hd: {
+        TAG: "Set",
+        _0: seq(/* '\216' */216, /* '\222' */222)
+      },
+      tl: /* [] */0
+    }
+  }
+});
+
+var alpha = alt$1({
+  hd: lower,
+  tl: {
+    hd: upper,
+    tl: {
+      hd: {
+        TAG: "Set",
+        _0: {
+          hd: [
+            /* '\170' */170,
+            /* '\170' */170
+          ],
+          tl: /* [] */0
+        }
       },
       tl: {
         hd: {
           TAG: "Set",
           _0: {
             hd: [
-              /* '\181' */181,
-              /* '\181' */181
+              /* '\186' */186,
+              /* '\186' */186
             ],
             tl: /* [] */0
           }
         },
-        tl: {
-          hd: {
-            TAG: "Set",
-            _0: seq(/* '\223' */223, /* '\246' */246)
-          },
-          tl: {
-            hd: {
-              TAG: "Set",
-              _0: seq(/* '\248' */248, /* '\255' */255)
-            },
-            tl: /* [] */0
-          }
-        }
+        tl: /* [] */0
       }
-    });
-
-var upper = alt$1({
-      hd: {
-        TAG: "Set",
-        _0: seq(/* 'A' */65, /* 'Z' */90)
-      },
-      tl: {
-        hd: {
-          TAG: "Set",
-          _0: seq(/* '\192' */192, /* '\214' */214)
-        },
-        tl: {
-          hd: {
-            TAG: "Set",
-            _0: seq(/* '\216' */216, /* '\222' */222)
-          },
-          tl: /* [] */0
-        }
-      }
-    });
-
-var alpha = alt$1({
-      hd: lower,
-      tl: {
-        hd: upper,
-        tl: {
-          hd: {
-            TAG: "Set",
-            _0: {
-              hd: [
-                /* '\170' */170,
-                /* '\170' */170
-              ],
-              tl: /* [] */0
-            }
-          },
-          tl: {
-            hd: {
-              TAG: "Set",
-              _0: {
-                hd: [
-                  /* '\186' */186,
-                  /* '\186' */186
-                ],
-                tl: /* [] */0
-              }
-            },
-            tl: /* [] */0
-          }
-        }
-      }
-    });
+    }
+  }
+});
 
 var digit = {
   TAG: "Set",
@@ -2961,29 +2961,29 @@ var digit = {
 };
 
 var alnum = alt$1({
-      hd: alpha,
-      tl: {
-        hd: digit,
-        tl: /* [] */0
-      }
-    });
+  hd: alpha,
+  tl: {
+    hd: digit,
+    tl: /* [] */0
+  }
+});
 
 var wordc = alt$1({
-      hd: alnum,
-      tl: {
-        hd: {
-          TAG: "Set",
-          _0: {
-            hd: [
-              /* '_' */95,
-              /* '_' */95
-            ],
-            tl: /* [] */0
-          }
-        },
+  hd: alnum,
+  tl: {
+    hd: {
+      TAG: "Set",
+      _0: {
+        hd: [
+          /* '_' */95,
+          /* '_' */95
+        ],
         tl: /* [] */0
       }
-    });
+    },
+    tl: /* [] */0
+  }
+});
 
 var ascii = {
   TAG: "Set",
@@ -2993,112 +2993,110 @@ var ascii = {
 var blank = set("\t ");
 
 var cntrl = alt$1({
-      hd: {
-        TAG: "Set",
-        _0: seq(/* '\000' */0, /* '\031' */31)
-      },
-      tl: {
-        hd: {
-          TAG: "Set",
-          _0: seq(/* '\127' */127, /* '\159' */159)
-        },
-        tl: /* [] */0
-      }
-    });
+  hd: {
+    TAG: "Set",
+    _0: seq(/* '\000' */0, /* '\031' */31)
+  },
+  tl: {
+    hd: {
+      TAG: "Set",
+      _0: seq(/* '\127' */127, /* '\159' */159)
+    },
+    tl: /* [] */0
+  }
+});
 
 var graph = alt$1({
-      hd: {
-        TAG: "Set",
-        _0: seq(/* '!' */33, /* '~' */126)
-      },
-      tl: {
-        hd: {
-          TAG: "Set",
-          _0: seq(/* '\160' */160, /* '\255' */255)
-        },
-        tl: /* [] */0
-      }
-    });
+  hd: {
+    TAG: "Set",
+    _0: seq(/* '!' */33, /* '~' */126)
+  },
+  tl: {
+    hd: {
+      TAG: "Set",
+      _0: seq(/* '\160' */160, /* '\255' */255)
+    },
+    tl: /* [] */0
+  }
+});
 
 var print = alt$1({
-      hd: {
-        TAG: "Set",
-        _0: seq(/* ' ' */32, /* '~' */126)
-      },
-      tl: {
-        hd: {
-          TAG: "Set",
-          _0: seq(/* '\160' */160, /* '\255' */255)
-        },
-        tl: /* [] */0
-      }
-    });
+  hd: {
+    TAG: "Set",
+    _0: seq(/* ' ' */32, /* '~' */126)
+  },
+  tl: {
+    hd: {
+      TAG: "Set",
+      _0: seq(/* '\160' */160, /* '\255' */255)
+    },
+    tl: /* [] */0
+  }
+});
 
 var punct = alt$1({
+  hd: {
+    TAG: "Set",
+    _0: seq(/* '!' */33, /* '/' */47)
+  },
+  tl: {
+    hd: {
+      TAG: "Set",
+      _0: seq(/* ':' */58, /* '@' */64)
+    },
+    tl: {
       hd: {
         TAG: "Set",
-        _0: seq(/* '!' */33, /* '/' */47)
+        _0: seq(/* '[' */91, /* '`' */96)
       },
       tl: {
         hd: {
           TAG: "Set",
-          _0: seq(/* ':' */58, /* '@' */64)
+          _0: seq(/* '{' */123, /* '~' */126)
         },
         tl: {
           hd: {
             TAG: "Set",
-            _0: seq(/* '[' */91, /* '`' */96)
+            _0: seq(/* '\160' */160, /* '\169' */169)
           },
           tl: {
             hd: {
               TAG: "Set",
-              _0: seq(/* '{' */123, /* '~' */126)
+              _0: seq(/* '\171' */171, /* '\180' */180)
             },
             tl: {
               hd: {
                 TAG: "Set",
-                _0: seq(/* '\160' */160, /* '\169' */169)
+                _0: seq(/* '\182' */182, /* '\185' */185)
               },
               tl: {
                 hd: {
                   TAG: "Set",
-                  _0: seq(/* '\171' */171, /* '\180' */180)
+                  _0: seq(/* '\187' */187, /* '\191' */191)
                 },
                 tl: {
                   hd: {
                     TAG: "Set",
-                    _0: seq(/* '\182' */182, /* '\185' */185)
+                    _0: {
+                      hd: [
+                        /* '\215' */215,
+                        /* '\215' */215
+                      ],
+                      tl: /* [] */0
+                    }
                   },
                   tl: {
                     hd: {
                       TAG: "Set",
-                      _0: seq(/* '\187' */187, /* '\191' */191)
-                    },
-                    tl: {
-                      hd: {
-                        TAG: "Set",
-                        _0: {
-                          hd: [
-                            /* '\215' */215,
-                            /* '\215' */215
-                          ],
-                          tl: /* [] */0
-                        }
-                      },
-                      tl: {
-                        hd: {
-                          TAG: "Set",
-                          _0: {
-                            hd: [
-                              /* '\247' */247,
-                              /* '\247' */247
-                            ],
-                            tl: /* [] */0
-                          }
-                        },
+                      _0: {
+                        hd: [
+                          /* '\247' */247,
+                          /* '\247' */247
+                        ],
                         tl: /* [] */0
                       }
-                    }
+                    },
+                    tl: /* [] */0
                   }
                 }
               }
@@ -3106,63 +3104,65 @@ var punct = alt$1({
           }
         }
       }
-    });
+    }
+  }
+});
 
 var space = alt$1({
-      hd: {
-        TAG: "Set",
-        _0: {
-          hd: [
-            /* ' ' */32,
-            /* ' ' */32
-          ],
-          tl: /* [] */0
-        }
-      },
-      tl: {
-        hd: {
-          TAG: "Set",
-          _0: seq(/* '\t' */9, /* '\r' */13)
-        },
-        tl: /* [] */0
-      }
-    });
+  hd: {
+    TAG: "Set",
+    _0: {
+      hd: [
+        /* ' ' */32,
+        /* ' ' */32
+      ],
+      tl: /* [] */0
+    }
+  },
+  tl: {
+    hd: {
+      TAG: "Set",
+      _0: seq(/* '\t' */9, /* '\r' */13)
+    },
+    tl: /* [] */0
+  }
+});
 
 var xdigit = alt$1({
-      hd: digit,
-      tl: {
-        hd: {
-          TAG: "Set",
-          _0: seq(/* 'a' */97, /* 'f' */102)
-        },
-        tl: {
-          hd: {
-            TAG: "Set",
-            _0: seq(/* 'A' */65, /* 'F' */70)
-          },
-          tl: /* [] */0
-        }
-      }
-    });
+  hd: digit,
+  tl: {
+    hd: {
+      TAG: "Set",
+      _0: seq(/* 'a' */97, /* 'f' */102)
+    },
+    tl: {
+      hd: {
+        TAG: "Set",
+        _0: seq(/* 'A' */65, /* 'F' */70)
+      },
+      tl: /* [] */0
+    }
+  }
+});
 
 function compile(r) {
   var regexp = anchored(r) ? ({
       TAG: "Group",
       _0: r
     }) : seq$2({
-          hd: {
-            TAG: "Sem",
-            _0: "Shortest",
-            _1: repn(any, 0, undefined)
-          },
-          tl: {
-            hd: {
-              TAG: "Group",
-              _0: r
-            },
-            tl: /* [] */0
-          }
-        });
+      hd: {
+        TAG: "Sem",
+        _0: "Shortest",
+        _1: repn(any, 0, undefined)
+      },
+      tl: {
+        hd: {
+          TAG: "Group",
+          _0: r
+        },
+        tl: /* [] */0
+      }
+    });
   var regexp$1 = handle_case(false, regexp);
   var c = Bytes.make(257, /* '\000' */0);
   var need_lnl = colorize(c, regexp$1);
@@ -3178,8 +3178,8 @@ function compile(r) {
     contents: 0
   };
   var match$1 = translate(ids, "First", false, false, "Greedy", pos, {
-        contents: "Empty"
-      }, col, regexp$1);
+    contents: "Empty"
+  }, col, regexp$1);
   var r$1 = enforce_kind(ids, "First", match$1[1], match$1[0]);
   var col_repr = match[1];
   var group_count = pos.contents / 2 | 0;
@@ -3512,64 +3512,64 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             return "Not_bound";
         case 68 :
             return compl({
-                  hd: digit,
-                  tl: /* [] */0
-                });
+              hd: digit,
+              tl: /* [] */0
+            });
         case 71 :
             return "Start";
         case 83 :
             return compl({
-                  hd: space,
-                  tl: /* [] */0
-                });
+              hd: space,
+              tl: /* [] */0
+            });
         case 87 :
             return compl({
-                  hd: alnum,
-                  tl: {
-                    hd: {
-                      TAG: "Set",
-                      _0: {
-                        hd: [
-                          /* '_' */95,
-                          /* '_' */95
-                        ],
-                        tl: /* [] */0
-                      }
-                    },
+              hd: alnum,
+              tl: {
+                hd: {
+                  TAG: "Set",
+                  _0: {
+                    hd: [
+                      /* '_' */95,
+                      /* '_' */95
+                    ],
                     tl: /* [] */0
                   }
-                });
+                },
+                tl: /* [] */0
+              }
+            });
         case 90 :
             return "Last_end_of_line";
         case 98 :
             return alt$1({
-                  hd: "Beg_of_word",
-                  tl: {
-                    hd: "End_of_word",
-                    tl: /* [] */0
-                  }
-                });
+              hd: "Beg_of_word",
+              tl: {
+                hd: "End_of_word",
+                tl: /* [] */0
+              }
+            });
         case 100 :
             return digit;
         case 115 :
             return space;
         case 119 :
             return alt$1({
-                  hd: alnum,
-                  tl: {
-                    hd: {
-                      TAG: "Set",
-                      _0: {
-                        hd: [
-                          /* '_' */95,
-                          /* '_' */95
-                        ],
-                        tl: /* [] */0
-                      }
-                    },
+              hd: alnum,
+              tl: {
+                hd: {
+                  TAG: "Set",
+                  _0: {
+                    hd: [
+                      /* '_' */95,
+                      /* '_' */95
+                    ],
                     tl: /* [] */0
                   }
-                });
+                },
+                tl: /* [] */0
+              }
+            });
         case 67 :
         case 69 :
         case 70 :
@@ -3724,34 +3724,32 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         var cls;
         try {
           cls = List.find(accept_s, {
-                hd: "alnum",
+            hd: "alnum",
+            tl: {
+              hd: "ascii",
+              tl: {
+                hd: "blank",
                 tl: {
-                  hd: "ascii",
+                  hd: "cntrl",
                   tl: {
-                    hd: "blank",
+                    hd: "digit",
                     tl: {
-                      hd: "cntrl",
+                      hd: "lower",
                       tl: {
-                        hd: "digit",
+                        hd: "print",
                         tl: {
-                          hd: "lower",
+                          hd: "space",
                           tl: {
-                            hd: "print",
+                            hd: "upper",
                             tl: {
-                              hd: "space",
+                              hd: "word",
                               tl: {
-                                hd: "upper",
+                                hd: "punct",
                                 tl: {
-                                  hd: "word",
+                                  hd: "graph",
                                   tl: {
-                                    hd: "punct",
-                                    tl: {
-                                      hd: "graph",
-                                      tl: {
-                                        hd: "xdigit",
-                                        tl: /* [] */0
-                                      }
-                                    }
+                                    hd: "xdigit",
+                                    tl: /* [] */0
                                   }
                                 }
                               }
@@ -3762,7 +3760,9 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                     }
                   }
                 }
-              });
+              }
+            }
+          });
         }
         catch (raw_exn){
           var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -3782,9 +3782,9 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         }
         var posix_class = posix_class_of_string(cls);
         var re = compl$1 ? compl({
-                hd: posix_class,
-                tl: /* [] */0
-              }) : posix_class;
+            hd: posix_class,
+            tl: /* [] */0
+          }) : posix_class;
         return {
           NAME: "Set",
           VAL: re
@@ -3839,37 +3839,37 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             return {
               NAME: "Set",
               VAL: compl({
-                    hd: digit,
-                    tl: /* [] */0
-                  })
+                hd: digit,
+                tl: /* [] */0
+              })
             };
         case 83 :
             return {
               NAME: "Set",
               VAL: compl({
-                    hd: space,
-                    tl: /* [] */0
-                  })
+                hd: space,
+                tl: /* [] */0
+              })
             };
         case 87 :
             return {
               NAME: "Set",
               VAL: compl({
-                    hd: alnum,
-                    tl: {
-                      hd: {
-                        TAG: "Set",
-                        _0: {
-                          hd: [
-                            /* '_' */95,
-                            /* '_' */95
-                          ],
-                          tl: /* [] */0
-                        }
-                      },
+                hd: alnum,
+                tl: {
+                  hd: {
+                    TAG: "Set",
+                    _0: {
+                      hd: [
+                        /* '_' */95,
+                        /* '_' */95
+                      ],
                       tl: /* [] */0
                     }
-                  })
+                  },
+                  tl: /* [] */0
+                }
+              })
             };
         case 58 :
         case 59 :
@@ -3922,21 +3922,21 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             return {
               NAME: "Set",
               VAL: alt$1({
-                    hd: alnum,
-                    tl: {
-                      hd: {
-                        TAG: "Set",
-                        _0: {
-                          hd: [
-                            /* '_' */95,
-                            /* '_' */95
-                          ],
-                          tl: /* [] */0
-                        }
-                      },
+                hd: alnum,
+                tl: {
+                  hd: {
+                    TAG: "Set",
+                    _0: {
+                      hd: [
+                        /* '_' */95,
+                        /* '_' */95
+                      ],
                       tl: /* [] */0
                     }
-                  })
+                  },
+                  tl: /* [] */0
+                }
+              })
             };
         case 65 :
         case 66 :
@@ -4134,12 +4134,12 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         return left;
       }
       _left = alt$1({
-            hd: left,
-            tl: {
-              hd: branch$p(/* [] */0),
-              tl: /* [] */0
-            }
-          });
+        hd: left,
+        tl: {
+          hd: branch$p(/* [] */0),
+          tl: /* [] */0
+        }
+      });
       continue ;
     };
   };
@@ -4156,24 +4156,24 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
 function re(flagsOpt, pat) {
   var flags = flagsOpt !== undefined ? flagsOpt : /* [] */0;
   var opts = List.map((function (x) {
-          if (x === "CASELESS") {
-            return "Caseless";
-          } else if (x === "ANCHORED") {
-            return "Anchored";
-          } else {
-            return "Multiline";
-          }
-        }), flags);
+    if (x === "CASELESS") {
+      return "Caseless";
+    } else if (x === "ANCHORED") {
+      return "Anchored";
+    } else {
+      return "Multiline";
+    }
+  }), flags);
   var optsOpt = opts;
   var opts$1 = optsOpt !== undefined ? optsOpt : /* [] */0;
   var r = parse(List.memq("Multiline", opts$1), List.memq("Dollar_endonly", opts$1), List.memq("Dotall", opts$1), List.memq("Ungreedy", opts$1), pat);
   var r$1 = List.memq("Anchored", opts$1) ? seq$2({
-          hd: "Start",
-          tl: {
-            hd: r,
-            tl: /* [] */0
-          }
-        }) : r;
+      hd: "Start",
+      tl: {
+        hd: r,
+        tl: /* [] */0
+      }
+    }) : r;
   if (List.memq("Caseless", opts$1)) {
     return {
       TAG: "No_case",

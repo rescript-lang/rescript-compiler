@@ -19,12 +19,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -35,10 +35,10 @@ function foo(f) {
 }
 
 foo(function (param) {
-      return function (param$1) {
-        return Gpr_1423_nav.busted(param, "a2", param$1);
-      };
-    });
+  return function (param$1) {
+    return Gpr_1423_nav.busted(param, "a2", param$1);
+  };
+});
 
 function foo2(f) {
   return Curry._2(f, "a1", undefined);

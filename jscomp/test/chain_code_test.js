@@ -18,12 +18,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -53,12 +53,12 @@ function f4(h, x, y) {
 }
 
 eq("File \"chain_code_test.res\", line 24, characters 12-19", 32, ({
-      x: {
-        y: {
-          z: 32
-        }
-      }
-    }).x.y.z);
+  x: {
+    y: {
+      z: 32
+    }
+  }
+}).x.y.z);
 
 Mt.from_pair_suites("Chain_code_test", suites.contents);
 

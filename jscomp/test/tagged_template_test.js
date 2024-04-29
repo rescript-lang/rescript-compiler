@@ -8,9 +8,9 @@ var Tagged_template_libJs = require("./tagged_template_lib.js");
 
 function sql(prim0, prim1) {
   return Caml_splice_call.spliceApply(Tagged_template_libJs.sql, [
-        prim0,
-        prim1
-      ]);
+    prim0,
+    prim1
+  ]);
 }
 
 var Pg = {
@@ -37,71 +37,71 @@ function foo(strings, values) {
 }
 
 var res = foo([
-      "| 5 * 10 = ",
-      " |"
-    ], [5]);
+  "| 5 * 10 = ",
+  " |"
+], [5]);
 
 Mt.from_pair_suites("tagged templates", {
+  hd: [
+    "with externals, it should return a string with the correct interpolations",
+    (function (param) {
+      return {
+        TAG: "Eq",
+        _0: query,
+        _1: "SELECT * FROM 'users' WHERE id = '5'"
+      };
+    })
+  ],
+  tl: {
+    hd: [
+      "with module scoped externals, it should also return a string with the correct interpolations",
+      (function (param) {
+        return {
+          TAG: "Eq",
+          _0: queryWithModule,
+          _1: "SELECT * FROM 'users' WHERE id = '5'"
+        };
+      })
+    ],
+    tl: {
       hd: [
-        "with externals, it should return a string with the correct interpolations",
+        "with externals, it should return the result of the function",
         (function (param) {
-            return {
-              TAG: "Eq",
-              _0: query,
-              _1: "SELECT * FROM 'users' WHERE id = '5'"
-            };
-          })
+          return {
+            TAG: "Eq",
+            _0: length,
+            _1: 52
+          };
+        })
       ],
       tl: {
         hd: [
-          "with module scoped externals, it should also return a string with the correct interpolations",
+          "with rescript function, it should return a string with the correct interpolations",
           (function (param) {
-              return {
-                TAG: "Eq",
-                _0: queryWithModule,
-                _1: "SELECT * FROM 'users' WHERE id = '5'"
-              };
-            })
+            return {
+              TAG: "Eq",
+              _0: res,
+              _1: "| 5 * 10 = 50 |"
+            };
+          })
         ],
         tl: {
           hd: [
-            "with externals, it should return the result of the function",
+            "a template literal tagged with json should generate a regular string interpolation for now",
             (function (param) {
-                return {
-                  TAG: "Eq",
-                  _0: length,
-                  _1: 52
-                };
-              })
+              return {
+                TAG: "Eq",
+                _0: "some random " + "string",
+                _1: "some random string"
+              };
+            })
           ],
-          tl: {
-            hd: [
-              "with rescript function, it should return a string with the correct interpolations",
-              (function (param) {
-                  return {
-                    TAG: "Eq",
-                    _0: res,
-                    _1: "| 5 * 10 = 50 |"
-                  };
-                })
-            ],
-            tl: {
-              hd: [
-                "a template literal tagged with json should generate a regular string interpolation for now",
-                (function (param) {
-                    return {
-                      TAG: "Eq",
-                      _0: "some random " + "string",
-                      _1: "some random string"
-                    };
-                  })
-              ],
-              tl: /* [] */0
-            }
-          }
+          tl: /* [] */0
         }
       }
-    });
+    }
+  }
+});
 
 var extraLength = 10;
 

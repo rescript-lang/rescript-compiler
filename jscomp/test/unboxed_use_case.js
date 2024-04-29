@@ -16,9 +16,9 @@ function u(x) {
 }
 
 map_pair(u, [
-      3,
-      true
-    ]);
+  3,
+  true
+]);
 
 var hi = [
   3,
@@ -33,9 +33,9 @@ console.log("x");
 var v0 = {};
 
 Caml_obj.update_dummy(v0, {
-      NAME: "A",
-      VAL: v0
-    });
+  NAME: "A",
+  VAL: v0
+});
 
 var v1 = {
   NAME: "A",

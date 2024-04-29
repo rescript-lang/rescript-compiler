@@ -20,12 +20,12 @@ function eq(loc, param) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -39,45 +39,45 @@ var v = [
 ];
 
 eq("File \"array_subtle_test.res\", line 11, characters 12-19", [
-      4,
-      v.length
-    ]);
+  4,
+  v.length
+]);
 
 eq("File \"array_subtle_test.res\", line 14, characters 5-12", [
-      5,
-      v.push(3)
-    ]);
+  5,
+  v.push(3)
+]);
 
 eq("File \"array_subtle_test.res\", line 15, characters 5-12", [
-      5,
-      v.length
-    ]);
+  5,
+  v.length
+]);
 
 eq("File \"array_subtle_test.res\", line 16, characters 5-12", [
-      5,
-      v.length
-    ]);
+  5,
+  v.length
+]);
 
 eq("File \"array_subtle_test.res\", line 20, characters 5-12", [
-      3,
-      Caml_array.get(v, 2)
-    ]);
+  3,
+  Caml_array.get(v, 2)
+]);
 
 Caml_array.set(v, 2, 4);
 
 eq("File \"array_subtle_test.res\", line 22, characters 5-12", [
-      4,
-      Caml_array.get(v, 2)
-    ]);
+  4,
+  Caml_array.get(v, 2)
+]);
 
 while(v.length > 0) {
   v.pop();
 };
 
 eq("File \"array_subtle_test.res\", line 29, characters 5-12", [
-      0,
-      v.length
-    ]);
+  0,
+  v.length
+]);
 
 function f(v) {
   var x = v.pop();
@@ -114,19 +114,19 @@ function fff4(x) {
 }
 
 eq("File \"array_subtle_test.res\", line 61, characters 3-10", [
-      fff3([]),
-      1
-    ]);
+  fff3([]),
+  1
+]);
 
 eq("File \"array_subtle_test.res\", line 62, characters 3-10", [
-      fff4([]),
-      2
-    ]);
+  fff4([]),
+  2
+]);
 
 eq("File \"array_subtle_test.res\", line 63, characters 3-10", [
-      fff4([1]),
-      1
-    ]);
+  fff4([1]),
+  1
+]);
 
 Mt.from_pair_suites("Array_subtle_test", suites.contents);
 

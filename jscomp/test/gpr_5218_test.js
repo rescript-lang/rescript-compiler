@@ -26,20 +26,20 @@ function test(x) {
 }
 
 Mt.eq_suites(test_id, suites, "File \"gpr_5218_test.res\", line 11, characters 27-34", test({
-          NAME: 1,
-          VAL: 3
-        }), {
-      NAME: 1,
-      VAL: 3
-    });
+  NAME: 1,
+  VAL: 3
+}), {
+  NAME: 1,
+  VAL: 3
+});
 
 Mt.eq_suites(test_id, suites, "File \"gpr_5218_test.res\", line 13, characters 27-34", test({
-          NAME: 2,
-          VAL: 3
-        }), {
-      NAME: 2,
-      VAL: 3
-    });
+  NAME: 2,
+  VAL: 3
+}), {
+  NAME: 2,
+  VAL: 3
+});
 
 Mt.from_pair_suites("gpr_5218_test.res", suites.contents);
 

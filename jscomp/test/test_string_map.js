@@ -163,15 +163,15 @@ function assertion_test(param) {
     contents: "Empty"
   };
   timing("building", (function (param) {
-          for(var i = 0; i <= 1000000; ++i){
-            m.contents = add(String(i), String(i), m.contents);
-          }
-        }));
+    for(var i = 0; i <= 1000000; ++i){
+      m.contents = add(String(i), String(i), m.contents);
+    }
+  }));
   timing("querying", (function (param) {
-          for(var i = 0; i <= 1000000; ++i){
-            find(String(i), m.contents);
-          }
-        }));
+    for(var i = 0; i <= 1000000; ++i){
+      find(String(i), m.contents);
+    }
+  }));
 }
 
 exports.assertion_test = assertion_test;

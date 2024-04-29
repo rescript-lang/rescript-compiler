@@ -15,14 +15,14 @@ function f(x) {
 }
 
 console.log([
-      f(3),
-      "None",
-      "Some"
-    ]);
+  f(3),
+  "None",
+  "Some"
+]);
 
 console.log([
-      "A",
-      "A"
-    ]);
+  "A",
+  "A"
+]);
 
 /*  Not a pure module */

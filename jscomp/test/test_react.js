@@ -11,12 +11,12 @@ var ReactDom = require("react-dom");
 console.log(32);
 
 ReactDom.render(React.createClass({
-          render: (function (param) {
-              return React.DOM.div({
-                    alt: "pic"
-                  }, React.DOM.h1(undefined, "hello react"), React.DOM.h2(undefined, "type safe!"), React.DOM.h3(undefined, "type safe!"));
-            })
-        }), document.getElementById("hi"));
+  render: (function (param) {
+    return React.DOM.div({
+      alt: "pic"
+    }, React.DOM.h1(undefined, "hello react"), React.DOM.h2(undefined, "type safe!"), React.DOM.h3(undefined, "type safe!"));
+  })
+}), document.getElementById("hi"));
 
 function f(param) {
   Xxx();

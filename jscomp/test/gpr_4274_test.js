@@ -8,20 +8,20 @@ var N = {};
 
 function f(X, xs) {
   X.forEach(xs, {
-        i: (function (x) {
-            console.log(x.x);
-          })
-      });
+    i: (function (x) {
+      console.log(x.x);
+    })
+  });
 }
 
 Belt_List.forEachU({
-      hd: {
-        x: 3
-      },
-      tl: /* [] */0
-    }, (function (x) {
-        console.log(x.x);
-      }));
+  hd: {
+    x: 3
+  },
+  tl: /* [] */0
+}, (function (x) {
+  console.log(x.x);
+}));
 
 var Foo = {};
 
@@ -30,8 +30,8 @@ var bar = [{
   }];
 
 Belt_Array.mapU(bar, (function (b) {
-        return b.foo;
-      }));
+  return b.foo;
+}));
 
 exports.N = N;
 exports.f = f;

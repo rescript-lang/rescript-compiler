@@ -30,21 +30,21 @@ function v(param) {
 var suites_0 = [
   "push_test",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: {
-          hd: 1,
+    return {
+      TAG: "Eq",
+      _0: {
+        hd: 1,
+        tl: {
+          hd: 4,
           tl: {
-            hd: 4,
-            tl: {
-              hd: 3,
-              tl: /* [] */0
-            }
+            hd: 3,
+            tl: /* [] */0
           }
-        },
-        _1: v()
-      };
-    })
+        }
+      },
+      _1: v()
+    };
+  })
 ];
 
 var suites = {

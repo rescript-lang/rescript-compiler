@@ -16,8 +16,8 @@ var testWithOpt = withOpt(undefined, 3)(undefined, 4);
 var partial_arg = 10;
 
 var partial = Curry._1((function (param) {
-            return withOpt(partial_arg, param);
-          })(3), 4)(11);
+  return withOpt(partial_arg, param);
+})(3), 4)(11);
 
 var total = withOpt(10, 3)(4, 11);
 
@@ -72,8 +72,8 @@ var testWithOpt$1 = withOpt$1(undefined, 3)(undefined, 4);
 var partial_arg$1 = 10;
 
 var partial$1 = Curry._1((function (param) {
-            return withOpt$1(partial_arg$1, param);
-          })(3), 4)(11);
+  return withOpt$1(partial_arg$1, param);
+})(3), 4)(11);
 
 var total$1 = withOpt$1(10, 3)(4, 11);
 

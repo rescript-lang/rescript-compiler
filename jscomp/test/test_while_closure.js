@@ -10,18 +10,18 @@ var v = {
 };
 
 var arr = Caml_array.make(10, (function (param) {
-        
-      }));
+  
+}));
 
 function f(param) {
   var n = 0;
   while(n < 10) {
     var j = n;
     Caml_array.set(arr, j, (function(j){
-        return function (param) {
-          v.contents = v.contents + j | 0;
-        }
-        }(j)));
+    return function (param) {
+      v.contents = v.contents + j | 0;
+    }
+    }(j)));
     n = n + 1 | 0;
   };
 }
@@ -29,8 +29,8 @@ function f(param) {
 f();
 
 $$Array.iter((function (x) {
-        Curry._1(x, undefined);
-      }), arr);
+  Curry._1(x, undefined);
+}), arr);
 
 console.log(String(v.contents));
 

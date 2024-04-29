@@ -19,12 +19,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -39,15 +39,15 @@ function f(x) {
 var h = f(/* [] */0);
 
 var a = Curry._1(h.length, {
-      hd: 1,
-      tl: {
-        hd: 2,
-        tl: {
-          hd: 3,
-          tl: /* [] */0
-        }
-      }
-    });
+  hd: 1,
+  tl: {
+    hd: 2,
+    tl: {
+      hd: 3,
+      tl: /* [] */0
+    }
+  }
+});
 
 eq("File \"module_alias_test.res\", line 30, characters 3-10", a, 3);
 

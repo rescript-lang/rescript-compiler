@@ -49,13 +49,13 @@ function F2(X, Y) {
 
 var M = {
   F: (function (funarg, funarg$1) {
-      var sheep = function (x) {
-        return 1 + Curry._1(funarg$1.foo, Curry._1(funarg.foo, x)) | 0;
-      };
-      return {
-        sheep: sheep
-      };
-    })
+    var sheep = function (x) {
+      return 1 + Curry._1(funarg$1.foo, Curry._1(funarg.foo, x)) | 0;
+    };
+    return {
+      sheep: sheep
+    };
+  })
 };
 
 exports.O = O;

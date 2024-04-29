@@ -6,8 +6,8 @@ var SomeModule = require("SomeModule");
 SomeModule.formatDate(new Date());
 
 SomeModule.formatDate(new Date(), {
-      someOption: true
-    });
+  someOption: true
+});
 
 SomeModule.formatDate(new Date(), undefined, true);
 

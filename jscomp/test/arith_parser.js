@@ -140,82 +140,82 @@ var yynames_block = "\
 
 var yyact = [
   (function (param) {
-      throw {
-        RE_EXN_ID: "Failure",
-        _1: "parser",
-        Error: new Error()
-      };
-    }),
+    throw {
+      RE_EXN_ID: "Failure",
+      _1: "parser",
+      Error: new Error()
+    };
+  }),
   (function (__caml_parser_env) {
-      return Parsing.peek_val(__caml_parser_env, 1);
-    }),
+    return Parsing.peek_val(__caml_parser_env, 1);
+  }),
   (function (__caml_parser_env) {
-      var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return {
-        TAG: "Numeral",
-        _0: _1
-      };
-    }),
+    var _1 = Parsing.peek_val(__caml_parser_env, 0);
+    return {
+      TAG: "Numeral",
+      _0: _1
+    };
+  }),
   (function (__caml_parser_env) {
-      var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return {
-        TAG: "Variable",
-        _0: _1
-      };
-    }),
+    var _1 = Parsing.peek_val(__caml_parser_env, 0);
+    return {
+      TAG: "Variable",
+      _0: _1
+    };
+  }),
   (function (__caml_parser_env) {
-      var _1 = Parsing.peek_val(__caml_parser_env, 2);
-      var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return {
-        TAG: "Plus",
-        _0: _1,
-        _1: _3
-      };
-    }),
+    var _1 = Parsing.peek_val(__caml_parser_env, 2);
+    var _3 = Parsing.peek_val(__caml_parser_env, 0);
+    return {
+      TAG: "Plus",
+      _0: _1,
+      _1: _3
+    };
+  }),
   (function (__caml_parser_env) {
-      var _1 = Parsing.peek_val(__caml_parser_env, 2);
-      var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return {
-        TAG: "Minus",
-        _0: _1,
-        _1: _3
-      };
-    }),
+    var _1 = Parsing.peek_val(__caml_parser_env, 2);
+    var _3 = Parsing.peek_val(__caml_parser_env, 0);
+    return {
+      TAG: "Minus",
+      _0: _1,
+      _1: _3
+    };
+  }),
   (function (__caml_parser_env) {
-      var _1 = Parsing.peek_val(__caml_parser_env, 2);
-      var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return {
-        TAG: "Times",
-        _0: _1,
-        _1: _3
-      };
-    }),
+    var _1 = Parsing.peek_val(__caml_parser_env, 2);
+    var _3 = Parsing.peek_val(__caml_parser_env, 0);
+    return {
+      TAG: "Times",
+      _0: _1,
+      _1: _3
+    };
+  }),
   (function (__caml_parser_env) {
-      var _1 = Parsing.peek_val(__caml_parser_env, 2);
-      var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return {
-        TAG: "Divide",
-        _0: _1,
-        _1: _3
-      };
-    }),
+    var _1 = Parsing.peek_val(__caml_parser_env, 2);
+    var _3 = Parsing.peek_val(__caml_parser_env, 0);
+    return {
+      TAG: "Divide",
+      _0: _1,
+      _1: _3
+    };
+  }),
   (function (__caml_parser_env) {
-      var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return {
-        TAG: "Negate",
-        _0: _2
-      };
-    }),
+    var _2 = Parsing.peek_val(__caml_parser_env, 0);
+    return {
+      TAG: "Negate",
+      _0: _2
+    };
+  }),
   (function (__caml_parser_env) {
-      return Parsing.peek_val(__caml_parser_env, 1);
-    }),
+    return Parsing.peek_val(__caml_parser_env, 1);
+  }),
   (function (__caml_parser_env) {
-      throw {
-        RE_EXN_ID: Parsing.YYexit,
-        _1: Parsing.peek_val(__caml_parser_env, 0),
-        Error: new Error()
-      };
-    })
+    throw {
+      RE_EXN_ID: Parsing.YYexit,
+      _1: Parsing.peek_val(__caml_parser_env, 0),
+      Error: new Error()
+    };
+  })
 ];
 
 var yytables = {

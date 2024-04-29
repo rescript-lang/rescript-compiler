@@ -71,55 +71,55 @@ var hihi = f3(3, 0);
 var hh10 = "3" === 3;
 
 var tuple_0 = nest({
-      TAG: "A",
-      _0: 0
-    });
+  TAG: "A",
+  _0: 0
+});
 
 var tuple_1 = nest({
-      TAG: "A",
-      _0: 1
-    });
+  TAG: "A",
+  _0: 1
+});
 
 var tuple_2 = nest({
-      TAG: "A",
-      _0: 2
-    });
+  TAG: "A",
+  _0: 2
+});
 
 var tuple_3 = nest({
-      TAG: "B",
-      _0: 1,
-      _1: 0
-    });
+  TAG: "B",
+  _0: 1,
+  _1: 0
+});
 
 var tuple_4 = nest({
-      TAG: "B",
-      _0: 1,
-      _1: 1
-    });
+  TAG: "B",
+  _0: 1,
+  _1: 1
+});
 
 var tuple_5 = nest({
-      TAG: "B",
-      _0: 2,
-      _1: 1
-    });
+  TAG: "B",
+  _0: 2,
+  _1: 1
+});
 
 var tuple_6 = nest({
-      TAG: "B",
-      _0: 2,
-      _1: 2
-    });
+  TAG: "B",
+  _0: 2,
+  _1: 2
+});
 
 var tuple_7 = nest({
-      TAG: "B",
-      _0: 0,
-      _1: 0
-    });
+  TAG: "B",
+  _0: 0,
+  _1: 0
+});
 
 var tuple_8 = nest({
-      TAG: "B",
-      _0: 0,
-      _1: 1
-    });
+  TAG: "B",
+  _0: 0,
+  _1: 1
+});
 
 var tuple = [
   tuple_0,
@@ -138,18 +138,18 @@ var tuple = [
 Mt.eq_suites(test_id, suites, "File \"int_poly_var.res\", line 79, characters 29-36", hihi, 3);
 
 Mt.eq_suites(test_id, suites, "File \"int_poly_var.res\", line 80, characters 29-36", tuple, [
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      5,
-      3,
-      6,
-      true,
-      false
-    ]);
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  5,
+  3,
+  6,
+  true,
+  false
+]);
 
 function hh0(x) {
   return x;

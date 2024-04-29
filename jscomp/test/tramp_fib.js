@@ -22,22 +22,22 @@ function fib(n, k) {
     return {
       TAG: "Suspend",
       _0: (function () {
-          return fib(n - 1 | 0, (function (v0) {
-                  return fib(n - 2 | 0, (function (v1) {
-                          return k(v0 + v1 | 0);
-                        }));
-                }));
-        })
+        return fib(n - 1 | 0, (function (v0) {
+          return fib(n - 2 | 0, (function (v1) {
+            return k(v0 + v1 | 0);
+          }));
+        }));
+      })
     };
   }
 }
 
 var u = fib(10, (function (x) {
-        return {
-          TAG: "Continue",
-          _0: x
-        };
-      }));
+  return {
+    TAG: "Continue",
+    _0: x
+  };
+}));
 
 function iter(_bounce) {
   while(true) {
@@ -56,8 +56,8 @@ function isEven(n) {
       return {
         TAG: "Suspend",
         _0: (function () {
-            return isOdd(n - 1 | 0);
-          })
+          return isOdd(n - 1 | 0);
+        })
       };
     } else {
       return {

@@ -38,11 +38,11 @@ function ff(x) {
 
 function randomRange(i, j) {
   return Belt_Array.map(Array_data_util.randomRange(i, j), (function (x) {
-          return [
-            x,
-            x
-          ];
-        }));
+    return [
+      x,
+      x
+    ];
+  }));
 }
 
 var a0 = Belt_MutableMap.fromArray(randomRange(0, 10), Icmp);
@@ -52,23 +52,23 @@ Belt_MutableMap.set(a0, 3, 33);
 eq("File \"bs_poly_mutable_map_test.res\", line 27, characters 5-12", Belt_MutableMap.getExn(a0, 3), 33);
 
 Belt_MutableMap.removeMany(a0, [
-      7,
-      8,
-      0,
-      1,
-      3,
-      2,
-      4,
-      922,
-      4,
-      5,
-      6
-    ]);
+  7,
+  8,
+  0,
+  1,
+  3,
+  2,
+  4,
+  922,
+  4,
+  5,
+  6
+]);
 
 eq("File \"bs_poly_mutable_map_test.res\", line 29, characters 5-12", Belt_internalAVLtree.keysToArray(a0.data), [
-      9,
-      10
-    ]);
+  9,
+  10
+]);
 
 Belt_MutableMap.removeMany(a0, Array_data_util.randomRange(0, 100));
 
@@ -79,27 +79,27 @@ var a0$1 = Belt_MutableMap.fromArray(randomRange(0, 10000), Icmp);
 Belt_MutableMap.set(a0$1, 2000, 33);
 
 Belt_MutableMap.removeMany(a0$1, Belt_Array.map(randomRange(0, 1998), (function (prim) {
-            return prim[0];
-          })));
+  return prim[0];
+})));
 
 Belt_MutableMap.removeMany(a0$1, Belt_Array.map(randomRange(2002, 11000), (function (prim) {
-            return prim[0];
-          })));
+  return prim[0];
+})));
 
 eq("File \"bs_poly_mutable_map_test.res\", line 39, characters 5-12", Belt_internalAVLtree.toArray(a0$1.data), [
-      [
-        1999,
-        1999
-      ],
-      [
-        2000,
-        33
-      ],
-      [
-        2001,
-        2001
-      ]
-    ]);
+  [
+    1999,
+    1999
+  ],
+  [
+    2000,
+    33
+  ],
+  [
+    2001,
+    2001
+  ]
+]);
 
 Mt.from_pair_suites("Bs_poly_mutable_map_test", suites.contents);
 

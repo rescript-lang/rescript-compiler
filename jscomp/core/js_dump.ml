@@ -393,7 +393,7 @@ and pp_function ~return_unit ~async ~is_method cxt (f : P.t) ~fn_state
                 param_body ()
             | No_name { single_arg } ->
                 (* see # 1692, add a paren for annoymous function for safety  *)
-                P.cond_paren_group f (not single_arg) 1 (fun _ ->
+                P.cond_paren_group f (not single_arg) (fun _ ->
                     P.string f (L.function_async ~async);
                     P.space f;
                     param_body ())
@@ -526,7 +526,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
       bool f b;
       cxt
   | Seq (e1, e2) ->
-      P.cond_paren_group f (level > 0) 1 (fun () ->
+      P.cond_paren_group f (level > 0) (fun () ->
           let cxt = expression ~level:0 cxt f e1 in
           comma_sp f;
           expression ~level:0 cxt f e2)
@@ -544,12 +544,12 @@ and expression_desc cxt ~(level : int) f x : cxt =
          ]}
       *)
   | Call (e, el, info) ->
-      P.cond_paren_group f (level > 15) 1 (fun _ ->
-          P.group f 1 (fun _ ->
+      P.cond_paren_group f (level > 15) (fun _ ->
+          P.group f 0 (fun _ ->
               match (info, el) with
               | { arity = Full }, _ | _, [] ->
                   let cxt = expression ~level:15 cxt f e in
-                  P.paren_group f 1 (fun _ ->
+                  P.paren_group f 0 (fun _ ->
                       match el with
                       | [
                        {
@@ -580,13 +580,13 @@ and expression_desc cxt ~(level : int) f x : cxt =
                   let len = List.length el in
                   if 1 <= len && len <= 8 then (
                     Curry_gen.pp_app f len;
-                    P.paren_group f 1 (fun _ -> arguments cxt f (e :: el)))
+                    P.paren_group f 0 (fun _ -> arguments cxt f (e :: el)))
                   else (
                     Curry_gen.pp_app_any f;
-                    P.paren_group f 1 (fun _ ->
+                    P.paren_group f 0 (fun _ ->
                         arguments cxt f [ e; E.array Mutable el ]))))
   | FlatCall (e, el) ->
-      P.group f 1 (fun _ ->
+      P.group f 0 (fun _ ->
           let cxt = expression ~level:15 cxt f e in
           P.string f L.dot;
           P.string f L.apply;
@@ -676,7 +676,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
       if need_paren then P.paren f action else action ();
       cxt
   | Is_null_or_undefined e ->
-      P.cond_paren_group f (level > 0) 1 (fun _ ->
+      P.cond_paren_group f (level > 0) (fun _ ->
           let cxt = expression ~level:1 cxt f e in
           P.space f;
           P.string f "==";
@@ -684,7 +684,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
           P.string f L.null;
           cxt)
   | Js_not e ->
-      P.cond_paren_group f (level > 13) 1 (fun _ ->
+      P.cond_paren_group f (level > 13) (fun _ ->
           P.string f "!";
           expression ~level:13 cxt f e)
   | Typeof e ->
@@ -704,7 +704,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
      {[ 0.00 - x ]}
      {[ 0.000 - x ]}
   *) ->
-      P.cond_paren_group f (level > 13) 1 (fun _ ->
+      P.cond_paren_group f (level > 13) (fun _ ->
           P.string f (match desc with Float _ -> "- " | _ -> "-");
           expression ~level:13 cxt f e)
   | Bin (op, e1, e2) ->
@@ -714,7 +714,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
       in
       (* We are more conservative here, to make the generated code more readable
             to the user *)
-      P.cond_paren_group f need_paren 1 (fun _ ->
+      P.cond_paren_group f need_paren (fun _ ->
           let cxt = expression ~level:lft cxt f e1 in
           P.space f;
           P.string f (Js_op_util.op_str op);
@@ -726,7 +726,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
       let need_paren =
         level > out || match op with Lsl | Lsr | Asr -> true | _ -> false
       in
-      P.cond_paren_group f need_paren 1 (fun _ ->
+      P.cond_paren_group f need_paren (fun _ ->
           let cxt = expression ~level:lft cxt f e1 in
           P.space f;
           P.string f "+";
@@ -862,12 +862,12 @@ and expression_desc cxt ~(level : int) f x : cxt =
           P.string f tag;
           cxt)
   | Array_index (e, p) ->
-      P.cond_paren_group f (level > 15) 1 (fun _ ->
+      P.cond_paren_group f (level > 15) (fun _ ->
           P.group f 1 (fun _ ->
               let cxt = expression ~level:15 cxt f e in
               P.bracket_group f 1 (fun _ -> expression ~level:0 cxt f p)))
   | Static_index (e, s, _) ->
-      P.cond_paren_group f (level > 15) 1 (fun _ ->
+      P.cond_paren_group f (level > 15) (fun _ ->
           let cxt = expression ~level:15 cxt f e in
           Js_dump_property.property_access f s;
           (* See [ .obj_of_exports]
@@ -877,13 +877,13 @@ and expression_desc cxt ~(level : int) f x : cxt =
           cxt)
   | Length (e, _) ->
       (*Todo: check parens *)
-      P.cond_paren_group f (level > 15) 1 (fun _ ->
+      P.cond_paren_group f (level > 15) (fun _ ->
           let cxt = expression ~level:15 cxt f e in
           P.string f L.dot;
           P.string f L.length;
           cxt)
   | New (e, el) ->
-      P.cond_paren_group f (level > 15) 1 (fun _ ->
+      P.cond_paren_group f (level > 15) (fun _ ->
           P.group f 1 (fun _ ->
               P.string f L.new_;
               P.space f;
@@ -916,14 +916,14 @@ and expression_desc cxt ~(level : int) f x : cxt =
            var f = { x : 2 , y : 2}
          ]}
       *)
-      P.cond_paren_group f (level > 1) 0 (fun _ ->
+      P.cond_paren_group f (level > 1) (fun _ ->
           if lst = [] then (
             P.string f "{}";
             cxt)
           else
             P.brace_vgroup f 1 (fun _ -> property_name_and_value_list cxt f lst))
   | Await e ->
-      P.cond_paren_group f (level > 13) 1 (fun _ ->
+      P.cond_paren_group f (level > 13) (fun _ ->
           P.string f "await ";
           expression ~level:13 cxt f e)
 

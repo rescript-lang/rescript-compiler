@@ -58,21 +58,21 @@ var suites_1 = {
   hd: [
     "avoid_mutable_inline_test",
     (function (param) {
-        Caml_array.set(c, 0, 3);
-        Caml_array.set(c, 1, 4);
-        return {
-          TAG: "Eq",
-          _0: [
-            3,
-            4,
-            2,
-            3,
-            4,
-            5
-          ],
-          _1: c
-        };
-      })
+      Caml_array.set(c, 0, 3);
+      Caml_array.set(c, 1, 4);
+      return {
+        TAG: "Eq",
+        _0: [
+          3,
+          4,
+          2,
+          3,
+          4,
+          5
+        ],
+        _1: c
+      };
+    })
   ],
   tl: /* [] */0
 };

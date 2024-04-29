@@ -30,14 +30,14 @@ function testRaise(param) {
 }
 
 var l = Belt_List.mapU({
-      hd: 1,
-      tl: {
-        hd: 2,
-        tl: /* [] */0
-      }
-    }, (function (x) {
-        return x + 1 | 0;
-      }));
+  hd: 1,
+  tl: {
+    hd: 2,
+    tl: /* [] */0
+  }
+}, (function (x) {
+  return x + 1 | 0;
+}));
 
 var partial_arg = {
   hd: 1,
@@ -52,8 +52,8 @@ function partial(param) {
 }
 
 var ll = partial(function (x) {
-      return x + 1 | 0;
-    });
+  return x + 1 | 0;
+});
 
 function withOpts(xOpt, y, zOpt, w) {
   var x = xOpt !== undefined ? xOpt : 3;
@@ -85,14 +85,14 @@ function testRaise$1() {
 }
 
 var l$1 = Belt_List.mapU({
-      hd: 1,
-      tl: {
-        hd: 2,
-        tl: /* [] */0
-      }
-    }, (function (x) {
-        return x + 1 | 0;
-      }));
+  hd: 1,
+  tl: {
+    hd: 2,
+    tl: /* [] */0
+  }
+}, (function (x) {
+  return x + 1 | 0;
+}));
 
 var partial_arg$1 = {
   hd: 1,
@@ -107,8 +107,8 @@ function partial$1(param) {
 }
 
 var ll$1 = partial$1(function (x) {
-      return x + 1 | 0;
-    });
+  return x + 1 | 0;
+});
 
 function withOpts$1(xOpt, y, zOpt, w) {
   var x = xOpt !== undefined ? xOpt : 3;
@@ -123,8 +123,8 @@ function still2Args$1(param, param$1) {
 var partial_arg$2 = 3;
 
 var anInt$1 = (function (param) {
-      return still2Args$1(partial_arg$2, param);
-    })(5);
+  return still2Args$1(partial_arg$2, param);
+})(5);
 
 exports.Uncurried = Uncurried;
 exports.E = E;

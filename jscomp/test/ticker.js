@@ -81,18 +81,18 @@ function string_of_rank(x) {
 
 function find_ticker_by_name(all_tickers, ticker) {
   return List.find((function (param) {
-          return param.ticker_name === ticker;
-        }), all_tickers);
+    return param.ticker_name === ticker;
+  }), all_tickers);
 }
 
 function print_all_composite(all_tickers) {
   List.iter((function (x) {
-          var tmp = x.type_;
-          if (typeof tmp !== "object") {
-            return;
-          }
-          console.log(x.ticker_name);
-        }), all_tickers);
+    var tmp = x.type_;
+    if (typeof tmp !== "object") {
+      return;
+    }
+    console.log(x.ticker_name);
+  }), all_tickers);
 }
 
 function height(param) {
@@ -1080,133 +1080,133 @@ var Ticker_map = {
 
 function compute_update_sequences(all_tickers) {
   List.fold_left((function (counter, ticker) {
-          var loop = function (counter, ticker) {
-            var rank = ticker.rank;
-            if (typeof rank === "object") {
-              return counter;
-            }
-            if (rank !== "Uninitialized") {
-              return counter;
-            }
-            ticker.rank = "Visited";
-            var match = ticker.type_;
-            if (typeof match !== "object") {
-              var counter$1 = counter + 1 | 0;
-              ticker.rank = {
-                TAG: "Ranked",
-                _0: counter$1
-              };
-              return counter$1;
-            }
-            var match$1 = match._0;
-            var counter$2 = loop(counter, match$1.lhs);
-            var counter$3 = loop(counter$2, match$1.rhs);
-            var counter$4 = counter$3 + 1 | 0;
-            ticker.rank = {
-              TAG: "Ranked",
-              _0: counter$4
-            };
-            return counter$4;
-          };
-          return loop(counter, ticker);
-        }), 0, all_tickers);
+    var loop = function (counter, ticker) {
+      var rank = ticker.rank;
+      if (typeof rank === "object") {
+        return counter;
+      }
+      if (rank !== "Uninitialized") {
+        return counter;
+      }
+      ticker.rank = "Visited";
+      var match = ticker.type_;
+      if (typeof match !== "object") {
+        var counter$1 = counter + 1 | 0;
+        ticker.rank = {
+          TAG: "Ranked",
+          _0: counter$1
+        };
+        return counter$1;
+      }
+      var match$1 = match._0;
+      var counter$2 = loop(counter, match$1.lhs);
+      var counter$3 = loop(counter$2, match$1.rhs);
+      var counter$4 = counter$3 + 1 | 0;
+      ticker.rank = {
+        TAG: "Ranked",
+        _0: counter$4
+      };
+      return counter$4;
+    };
+    return loop(counter, ticker);
+  }), 0, all_tickers);
   var map = List.fold_left((function (map, ticker) {
-          var tmp = ticker.type_;
-          if (typeof tmp !== "object") {
-            return add(ticker.ticker_name, {
-                  hd: ticker,
-                  tl: /* [] */0
-                }, map);
-          }
-          var loop = function (_up, _map, _ticker) {
-            while(true) {
-              var ticker = _ticker;
-              var map = _map;
-              var up = _up;
-              var type_ = ticker.type_;
-              var ticker_name = ticker.ticker_name;
-              if (typeof type_ !== "object") {
-                var l = find(ticker_name, map);
-                return add(ticker_name, Pervasives.$at(up, l), map);
-              }
-              var match = type_._0;
-              var map$1 = loop({
-                    hd: ticker,
-                    tl: up
-                  }, map, match.lhs);
-              _ticker = match.rhs;
-              _map = map$1;
-              _up = {
-                hd: ticker,
-                tl: up
-              };
-              continue ;
-            };
-          };
-          return loop(/* [] */0, map, ticker);
-        }), "Empty", List.rev(all_tickers));
+    var tmp = ticker.type_;
+    if (typeof tmp !== "object") {
+      return add(ticker.ticker_name, {
+        hd: ticker,
+        tl: /* [] */0
+      }, map);
+    }
+    var loop = function (_up, _map, _ticker) {
+      while(true) {
+        var ticker = _ticker;
+        var map = _map;
+        var up = _up;
+        var type_ = ticker.type_;
+        var ticker_name = ticker.ticker_name;
+        if (typeof type_ !== "object") {
+          var l = find(ticker_name, map);
+          return add(ticker_name, Pervasives.$at(up, l), map);
+        }
+        var match = type_._0;
+        var map$1 = loop({
+          hd: ticker,
+          tl: up
+        }, map, match.lhs);
+        _ticker = match.rhs;
+        _map = map$1;
+        _up = {
+          hd: ticker,
+          tl: up
+        };
+        continue ;
+      };
+    };
+    return loop(/* [] */0, map, ticker);
+  }), "Empty", List.rev(all_tickers));
   return fold((function (k, l, map) {
-          var l$1 = List.sort_uniq((function (lhs, rhs) {
-                  var x = lhs.rank;
-                  if (typeof x !== "object") {
-                    if (x === "Uninitialized") {
-                      throw {
-                        RE_EXN_ID: "Failure",
-                        _1: "All nodes should be ranked",
-                        Error: new Error()
-                      };
-                    }
-                    throw {
-                      RE_EXN_ID: "Failure",
-                      _1: "All nodes should be ranked",
-                      Error: new Error()
-                    };
-                  } else {
-                    var y = rhs.rank;
-                    if (typeof y === "object") {
-                      return Caml.int_compare(x._0, y._0);
-                    }
-                    if (y === "Uninitialized") {
-                      throw {
-                        RE_EXN_ID: "Failure",
-                        _1: "All nodes should be ranked",
-                        Error: new Error()
-                      };
-                    }
-                    throw {
-                      RE_EXN_ID: "Failure",
-                      _1: "All nodes should be ranked",
-                      Error: new Error()
-                    };
-                  }
-                }), l);
-          return add(k, l$1, map);
-        }), map, map);
+    var l$1 = List.sort_uniq((function (lhs, rhs) {
+      var x = lhs.rank;
+      if (typeof x !== "object") {
+        if (x === "Uninitialized") {
+          throw {
+            RE_EXN_ID: "Failure",
+            _1: "All nodes should be ranked",
+            Error: new Error()
+          };
+        }
+        throw {
+          RE_EXN_ID: "Failure",
+          _1: "All nodes should be ranked",
+          Error: new Error()
+        };
+      } else {
+        var y = rhs.rank;
+        if (typeof y === "object") {
+          return Caml.int_compare(x._0, y._0);
+        }
+        if (y === "Uninitialized") {
+          throw {
+            RE_EXN_ID: "Failure",
+            _1: "All nodes should be ranked",
+            Error: new Error()
+          };
+        }
+        throw {
+          RE_EXN_ID: "Failure",
+          _1: "All nodes should be ranked",
+          Error: new Error()
+        };
+      }
+    }), l);
+    return add(k, l$1, map);
+  }), map, map);
 }
 
 function process_quote(ticker_map, new_ticker, new_value) {
   var update_sequence = find(new_ticker, ticker_map);
   List.iter((function (ticker) {
-          var match = ticker.type_;
-          if (typeof match !== "object") {
-            if (ticker.ticker_name === new_ticker) {
-              ticker.value = new_value;
-              return;
-            }
-            throw {
-              RE_EXN_ID: "Failure",
-              _1: "Only single Market ticker should be udpated upon a new quote",
-              Error: new Error()
-            };
-          }
-          var match$1 = match._0;
-          var match$2 = match$1.lhs.value;
-          var match$3 = match$1.rhs.value;
-          var value = match$2 !== undefined && match$3 !== undefined ? (
-              match$1.op === "PLUS" ? match$2 + match$3 : match$2 - match$3
-            ) : undefined;
-          ticker.value = value;
-        }), update_sequence);
+    var match = ticker.type_;
+    if (typeof match !== "object") {
+      if (ticker.ticker_name === new_ticker) {
+        ticker.value = new_value;
+        return;
+      }
+      throw {
+        RE_EXN_ID: "Failure",
+        _1: "Only single Market ticker should be udpated upon a new quote",
+        Error: new Error()
+      };
+    }
+    var match$1 = match._0;
+    var match$2 = match$1.lhs.value;
+    var match$3 = match$1.rhs.value;
+    var value = match$2 !== undefined && match$3 !== undefined ? (
+        match$1.op === "PLUS" ? match$2 + match$3 : match$2 - match$3
+      ) : undefined;
+    ticker.value = value;
+  }), update_sequence);
 }
 
 function process_input_line(ticker_map, all_tickers, line) {

@@ -24,21 +24,21 @@ function f(_n, _acc) {
 
 function test_closure(param) {
   var arr = Caml_array.make(6, (function (x) {
-          return x;
-        }));
+    return x;
+  }));
   for(var i = 0; i <= 6; ++i){
     Caml_array.set(arr, i, (function(i){
-        return function (param) {
-          return i;
-        }
-        }(i)));
+    return function (param) {
+      return i;
+    }
+    }(i)));
   }
   return arr;
 }
 
 f(10, (function (param) {
-        
-      }));
+  
+}));
 
 exports.f = f;
 exports.test_closure = test_closure;

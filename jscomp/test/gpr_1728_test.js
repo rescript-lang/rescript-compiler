@@ -18,12 +18,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -39,8 +39,8 @@ function badInlining(obj) {
 }
 
 eq("File \"gpr_1728_test.res\", line 16, characters 3-10", badInlining({
-          field: "3"
-        }), undefined);
+  field: "3"
+}), undefined);
 
 eq("File \"gpr_1728_test.res\", line 18, characters 3-10", Caml_format.int_of_string("-13"), -13);
 

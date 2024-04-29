@@ -14,8 +14,8 @@ var h = sum(1.0, 2.0);
 
 var M = {
   sum: (function (prim0, prim1) {
-      return sum(prim0, prim1);
-    })
+    return sum(prim0, prim1);
+  })
 };
 
 var hh = M.sum(1.0, 2.0);
@@ -36,21 +36,21 @@ var tcr = {};
 
 function tsiC(c) {
   c.increment = (function (amount) {
-      var me = this ;
-      console.log(me);
-    });
+    var me = this ;
+    console.log(me);
+  });
 }
 
 function tsiU(c) {
   c.increment = (function (amount) {
-      var me = this ;
-      console.log(me);
-    });
+    var me = this ;
+    console.log(me);
+  });
 }
 
 var match = React.useState(function (param) {
-      return 3;
-    });
+  return 3;
+});
 
 var StandardNotation_get = match[0];
 
@@ -75,8 +75,8 @@ var StandardNotation = {
 function methodWithAsync(param) {
   var $$this = this ;
   return (async function (arg) {
-        return $$this + arg | 0;
-      })(param);
+    return $$this + arg | 0;
+  })(param);
 }
 
 function dd$1(param) {
@@ -90,8 +90,8 @@ var h$1 = sum(1.0, 2.0);
 
 var M$1 = {
   sum: (function (prim0, prim1) {
-      return sum(prim0, prim1);
-    })
+    return sum(prim0, prim1);
+  })
 };
 
 var hh$1 = M$1.sum(1.0, 2.0);
@@ -112,21 +112,21 @@ var tcr$1 = {};
 
 function tsiC$1(c) {
   c.increment = (function (amount) {
-      var me = this ;
-      console.log(me);
-    });
+    var me = this ;
+    console.log(me);
+  });
 }
 
 function tsiU$1(c) {
   c.increment = (function (amount) {
-      var me = this ;
-      console.log(me);
-    });
+    var me = this ;
+    console.log(me);
+  });
 }
 
 var match$1 = React.useState(function () {
-      return 3;
-    });
+  return 3;
+});
 
 function methodWithAsyncU() {
   var $$this = this ;

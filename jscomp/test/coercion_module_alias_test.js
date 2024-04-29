@@ -29,8 +29,8 @@ var f = List.length;
 
 function g(x) {
   return List.length(List.map((function (prim) {
-              return prim + 1 | 0;
-            }), x));
+    return prim + 1 | 0;
+  }), x));
 }
 
 function F(X) {

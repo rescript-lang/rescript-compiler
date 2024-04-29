@@ -47,23 +47,23 @@ var f5_max = Caml_obj.max;
 b("File \"bs_min_max_test.res\", line 19, characters 4-11", Caml.i64_eq(Caml.i64_min(Caml_int64.zero, Caml_int64.one), Caml_int64.zero));
 
 b("File \"bs_min_max_test.res\", line 20, characters 4-11", Caml.i64_eq(Caml.i64_max([
-              0,
-              22
-            ], Caml_int64.one), [
-          0,
-          22
-        ]));
+  0,
+  22
+], Caml_int64.one), [
+  0,
+  22
+]));
 
 b("File \"bs_min_max_test.res\", line 21, characters 4-11", Caml.i64_eq(Caml.i64_max([
-              -1,
-              4294967293
-            ], [
-              0,
-              3
-            ]), [
-          0,
-          3
-        ]));
+  -1,
+  4294967293
+], [
+  0,
+  3
+]), [
+  0,
+  3
+]));
 
 eq("File \"bs_min_max_test.res\", line 22, characters 5-12", Caml_obj.min(undefined, 3), undefined);
 

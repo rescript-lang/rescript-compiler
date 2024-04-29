@@ -21,8 +21,8 @@ var node_parent = "..";
 var node_current = ".";
 
 var cwd = CamlinternalLazy.from_fun(function () {
-      return Caml_sys.sys_getcwd();
-    });
+  return Caml_sys.sys_getcwd();
+});
 
 function path_as_directory(x) {
   if (x === "" || Ext_string_test.ends_with(x, Filename.dir_sep)) {
@@ -105,8 +105,8 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
         continue ;
       }
       return Pervasives.$at(List.map((function (param) {
-                  return node_parent;
-                }), dir2), dir1);
+        return node_parent;
+      }), dir2), dir1);
     };
   };
   var ys = go(dir1, dir2);
@@ -133,18 +133,18 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
   var len = file2.length;
   if (!(node_modules_shorten && v >= 0)) {
     return relative_path(dep_file.NAME === "File" ? ({
-            NAME: "File",
-            VAL: absolute_path(dep_file.VAL)
-          }) : ({
-            NAME: "Dir",
-            VAL: absolute_path(dep_file.VAL)
-          }), file1.NAME === "File" ? ({
-            NAME: "File",
-            VAL: absolute_path(file1.VAL)
-          }) : ({
-            NAME: "Dir",
-            VAL: absolute_path(file1.VAL)
-          })) + (node_sep + Curry._1(Filename.basename, file2));
+        NAME: "File",
+        VAL: absolute_path(dep_file.VAL)
+      }) : ({
+        NAME: "Dir",
+        VAL: absolute_path(dep_file.VAL)
+      }), file1.NAME === "File" ? ({
+        NAME: "File",
+        VAL: absolute_path(file1.VAL)
+      }) : ({
+        NAME: "Dir",
+        VAL: absolute_path(file1.VAL)
+      })) + (node_sep + Curry._1(Filename.basename, file2));
   }
   var skip = function (_i) {
     while(true) {
@@ -193,9 +193,9 @@ function find_package_json_dir(cwd) {
 }
 
 var package_dir = CamlinternalLazy.from_fun(function () {
-      var cwd$1 = CamlinternalLazy.force(cwd);
-      return find_root_filename(cwd$1, Test_literals.bsconfig_json);
-    });
+  var cwd$1 = CamlinternalLazy.force(cwd);
+  return find_root_filename(cwd$1, Test_literals.bsconfig_json);
+});
 
 function module_name_of_file(file) {
   var s = Filename.chop_extension(Curry._1(Filename.basename, file));
@@ -268,8 +268,8 @@ function rel_normalized_absolute_path(from, to_) {
     var xs = xss.tl;
     if (!yss) {
       return List.fold_left((function (acc, param) {
-              return Filename.concat(acc, Ext_string_test.parent_dir_lit);
-            }), Ext_string_test.parent_dir_lit, xs);
+        return Filename.concat(acc, Ext_string_test.parent_dir_lit);
+      }), Ext_string_test.parent_dir_lit, xs);
     }
     if (xss.hd === yss.hd) {
       _yss = yss.tl;
@@ -277,8 +277,8 @@ function rel_normalized_absolute_path(from, to_) {
       continue ;
     }
     var start = List.fold_left((function (acc, param) {
-            return Filename.concat(acc, Ext_string_test.parent_dir_lit);
-          }), Ext_string_test.parent_dir_lit, xs);
+      return Filename.concat(acc, Ext_string_test.parent_dir_lit);
+    }), Ext_string_test.parent_dir_lit, xs);
     return List.fold_left(Filename.concat, start, yss);
   };
 }
@@ -351,8 +351,8 @@ var simple_convert_node_path_to_os_path;
 
 if (Sys.unix) {
   simple_convert_node_path_to_os_path = (function (x) {
-      return x;
-    });
+    return x;
+  });
 } else if (Sys.win32 || false) {
   simple_convert_node_path_to_os_path = Ext_string_test.replace_slash_backward;
 } else {

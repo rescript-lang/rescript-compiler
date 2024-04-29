@@ -61,9 +61,9 @@ function rev_split_by_char(c, s) {
       var i$p = $$String.index_from(s, i, c);
       var s$p = $$String.sub(s, i, i$p - i | 0);
       return loop(i$p + 1 | 0, s$p === "" ? l : ({
-              hd: s$p,
-              tl: l
-            }));
+          hd: s$p,
+          tl: l
+        }));
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -124,245 +124,243 @@ function xsplit(delim, s) {
 
 function string_of_chars(x) {
   var xs = List.map((function (prim) {
-          return String.fromCharCode(prim);
-        }), x);
+    return String.fromCharCode(prim);
+  }), x);
   return $$Array.of_list(xs).join("");
 }
 
 Mt.from_pair_suites("String_test", {
+  hd: [
+    "mutliple switch",
+    (function (param) {
+      return {
+        TAG: "Eq",
+        _0: 9,
+        _1: ff("4")
+      };
+    })
+  ],
+  tl: {
+    hd: [
+      "int switch",
+      (function (param) {
+        return {
+          TAG: "Eq",
+          _0: 9,
+          _1: gg(4)
+        };
+      })
+    ],
+    tl: {
       hd: [
-        "mutliple switch",
+        "escape_normal",
         (function (param) {
-            return {
-              TAG: "Eq",
-              _0: 9,
-              _1: ff("4")
-            };
-          })
+          return {
+            TAG: "Eq",
+            _0: "haha",
+            _1: $$String.escaped("haha")
+          };
+        })
       ],
       tl: {
         hd: [
-          "int switch",
+          "escape_bytes",
           (function (param) {
-              return {
-                TAG: "Eq",
-                _0: 9,
-                _1: gg(4)
-              };
-            })
+            return {
+              TAG: "Eq",
+              _0: Bytes.of_string("haha"),
+              _1: Bytes.escaped(Bytes.of_string("haha"))
+            };
+          })
         ],
         tl: {
           hd: [
-            "escape_normal",
+            "escape_quote",
             (function (param) {
-                return {
-                  TAG: "Eq",
-                  _0: "haha",
-                  _1: $$String.escaped("haha")
-                };
-              })
+              return {
+                TAG: "Eq",
+                _0: "\\\"\\\"",
+                _1: $$String.escaped("\"\"")
+              };
+            })
           ],
           tl: {
             hd: [
-              "escape_bytes",
+              "rev_split_by_char",
               (function (param) {
-                  return {
-                    TAG: "Eq",
-                    _0: Bytes.of_string("haha"),
-                    _1: Bytes.escaped(Bytes.of_string("haha"))
-                  };
-                })
+                return {
+                  TAG: "Eq",
+                  _0: {
+                    hd: "",
+                    tl: {
+                      hd: "bbbb",
+                      tl: {
+                        hd: "bbbb",
+                        tl: /* [] */0
+                      }
+                    }
+                  },
+                  _1: rev_split_by_char(/* 'a' */97, "bbbbabbbba")
+                };
+              })
             ],
             tl: {
               hd: [
-                "escape_quote",
+                "File \"string_test.res\", line 86, characters 5-12",
                 (function (param) {
-                    return {
-                      TAG: "Eq",
-                      _0: "\\\"\\\"",
-                      _1: $$String.escaped("\"\"")
-                    };
-                  })
+                  return {
+                    TAG: "Eq",
+                    _0: {
+                      hd: "aaaa",
+                      tl: /* [] */0
+                    },
+                    _1: rev_split_by_char(/* ',' */44, "aaaa")
+                  };
+                })
               ],
               tl: {
                 hd: [
-                  "rev_split_by_char",
+                  "xsplit",
                   (function (param) {
-                      return {
-                        TAG: "Eq",
-                        _0: {
-                          hd: "",
+                    return {
+                      TAG: "Eq",
+                      _0: {
+                        hd: "a",
+                        tl: {
+                          hd: "b",
                           tl: {
-                            hd: "bbbb",
-                            tl: {
-                              hd: "bbbb",
-                              tl: /* [] */0
-                            }
+                            hd: "c",
+                            tl: /* [] */0
                           }
-                        },
-                        _1: rev_split_by_char(/* 'a' */97, "bbbbabbbba")
-                      };
-                    })
+                        }
+                      },
+                      _1: xsplit(/* '.' */46, "a.b.c")
+                    };
+                  })
                 ],
                 tl: {
                   hd: [
-                    "File \"string_test.res\", line 86, characters 5-12",
+                    "split_empty",
                     (function (param) {
-                        return {
-                          TAG: "Eq",
-                          _0: {
-                            hd: "aaaa",
-                            tl: /* [] */0
-                          },
-                          _1: rev_split_by_char(/* ',' */44, "aaaa")
-                        };
-                      })
+                      return {
+                        TAG: "Eq",
+                        _0: /* [] */0,
+                        _1: Ext_string_test.split(undefined, "", /* '_' */95)
+                      };
+                    })
                   ],
                   tl: {
                     hd: [
-                      "xsplit",
+                      "split_empty2",
                       (function (param) {
-                          return {
-                            TAG: "Eq",
-                            _0: {
-                              hd: "a",
-                              tl: {
-                                hd: "b",
-                                tl: {
-                                  hd: "c",
-                                  tl: /* [] */0
-                                }
-                              }
-                            },
-                            _1: xsplit(/* '.' */46, "a.b.c")
-                          };
-                        })
+                        return {
+                          TAG: "Eq",
+                          _0: {
+                            hd: "test_unsafe_obj_ffi_ppx.cmi",
+                            tl: /* [] */0
+                          },
+                          _1: Ext_string_test.split(false, " test_unsafe_obj_ffi_ppx.cmi", /* ' ' */32)
+                        };
+                      })
                     ],
                     tl: {
                       hd: [
-                        "split_empty",
+                        "rfind",
                         (function (param) {
-                            return {
-                              TAG: "Eq",
-                              _0: /* [] */0,
-                              _1: Ext_string_test.split(undefined, "", /* '_' */95)
-                            };
-                          })
+                          return {
+                            TAG: "Eq",
+                            _0: 7,
+                            _1: Ext_string_test.rfind("__", "__index__js")
+                          };
+                        })
                       ],
                       tl: {
                         hd: [
-                          "split_empty2",
+                          "rfind_2",
                           (function (param) {
-                              return {
-                                TAG: "Eq",
-                                _0: {
-                                  hd: "test_unsafe_obj_ffi_ppx.cmi",
-                                  tl: /* [] */0
-                                },
-                                _1: Ext_string_test.split(false, " test_unsafe_obj_ffi_ppx.cmi", /* ' ' */32)
-                              };
-                            })
+                            return {
+                              TAG: "Eq",
+                              _0: 0,
+                              _1: Ext_string_test.rfind("__", "__index_js")
+                            };
+                          })
                         ],
                         tl: {
                           hd: [
-                            "rfind",
+                            "rfind_3",
                             (function (param) {
-                                return {
-                                  TAG: "Eq",
-                                  _0: 7,
-                                  _1: Ext_string_test.rfind("__", "__index__js")
-                                };
-                              })
+                              return {
+                                TAG: "Eq",
+                                _0: -1,
+                                _1: Ext_string_test.rfind("__", "_index_js")
+                              };
+                            })
                           ],
                           tl: {
                             hd: [
-                              "rfind_2",
+                              "find",
                               (function (param) {
-                                  return {
-                                    TAG: "Eq",
-                                    _0: 0,
-                                    _1: Ext_string_test.rfind("__", "__index_js")
-                                  };
-                                })
+                                return {
+                                  TAG: "Eq",
+                                  _0: 0,
+                                  _1: Ext_string_test.find(undefined, "__", "__index__js")
+                                };
+                              })
                             ],
                             tl: {
                               hd: [
-                                "rfind_3",
+                                "find_2",
                                 (function (param) {
-                                    return {
-                                      TAG: "Eq",
-                                      _0: -1,
-                                      _1: Ext_string_test.rfind("__", "_index_js")
-                                    };
-                                  })
+                                  return {
+                                    TAG: "Eq",
+                                    _0: 6,
+                                    _1: Ext_string_test.find(undefined, "__", "_index__js")
+                                  };
+                                })
                               ],
                               tl: {
                                 hd: [
-                                  "find",
+                                  "find_3",
                                   (function (param) {
-                                      return {
-                                        TAG: "Eq",
-                                        _0: 0,
-                                        _1: Ext_string_test.find(undefined, "__", "__index__js")
-                                      };
-                                    })
+                                    return {
+                                      TAG: "Eq",
+                                      _0: -1,
+                                      _1: Ext_string_test.find(undefined, "__", "_index_js")
+                                    };
+                                  })
                                 ],
                                 tl: {
                                   hd: [
-                                    "find_2",
+                                    "of_char",
                                     (function (param) {
-                                        return {
-                                          TAG: "Eq",
-                                          _0: 6,
-                                          _1: Ext_string_test.find(undefined, "__", "_index__js")
-                                        };
-                                      })
+                                      return {
+                                        TAG: "Eq",
+                                        _0: String.fromCharCode(/* '0' */48),
+                                        _1: "0"
+                                      };
+                                    })
                                   ],
                                   tl: {
                                     hd: [
-                                      "find_3",
+                                      "of_chars",
                                       (function (param) {
-                                          return {
-                                            TAG: "Eq",
-                                            _0: -1,
-                                            _1: Ext_string_test.find(undefined, "__", "_index_js")
-                                          };
-                                        })
+                                        return {
+                                          TAG: "Eq",
+                                          _0: string_of_chars({
+                                            hd: /* '0' */48,
+                                            tl: {
+                                              hd: /* '1' */49,
+                                              tl: {
+                                                hd: /* '2' */50,
+                                                tl: /* [] */0
+                                              }
+                                            }
+                                          }),
+                                          _1: "012"
+                                        };
+                                      })
                                     ],
-                                    tl: {
-                                      hd: [
-                                        "of_char",
-                                        (function (param) {
-                                            return {
-                                              TAG: "Eq",
-                                              _0: String.fromCharCode(/* '0' */48),
-                                              _1: "0"
-                                            };
-                                          })
-                                      ],
-                                      tl: {
-                                        hd: [
-                                          "of_chars",
-                                          (function (param) {
-                                              return {
-                                                TAG: "Eq",
-                                                _0: string_of_chars({
-                                                      hd: /* '0' */48,
-                                                      tl: {
-                                                        hd: /* '1' */49,
-                                                        tl: {
-                                                          hd: /* '2' */50,
-                                                          tl: /* [] */0
-                                                        }
-                                                      }
-                                                    }),
-                                                _1: "012"
-                                              };
-                                            })
-                                        ],
-                                        tl: /* [] */0
-                                      }
-                                    }
+                                    tl: /* [] */0
                                   }
                                 }
                               }
@@ -378,7 +376,9 @@ Mt.from_pair_suites("String_test", {
           }
         }
       }
-    });
+    }
+  }
+});
 
 exports.ff = ff;
 exports.gg = gg;

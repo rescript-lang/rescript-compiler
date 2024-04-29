@@ -4,9 +4,9 @@
 
 function f(x, y) {
   console.log([
-        x,
-        y
-      ]);
+    x,
+    y
+  ]);
   return x + y | 0;
 }
 

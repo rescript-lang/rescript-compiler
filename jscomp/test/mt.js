@@ -98,9 +98,9 @@ function handleCode(spec) {
 
 function force_curry(x) {
   List.hd({
-        hd: 3,
-        tl: /* [] */0
-      });
+    hd: 3,
+    tl: /* [] */0
+  });
   $$Array.copy([5]);
   return Curry._1(x, undefined);
 }
@@ -232,17 +232,17 @@ function old_from_promise_suites_donotuse(name, suites) {
   if (match) {
     if (is_mocha()) {
       describe(name, (function () {
-              List.iter((function (param) {
-                      var code = param[1];
-                      it(param[0], (function (param) {
-                              var arg1 = function (x) {
-                                handleCode(x);
-                                return val_unit;
-                              };
-                              return code.then(arg1);
-                            }));
-                    }), suites);
-            }));
+        List.iter((function (param) {
+          var code = param[1];
+          it(param[0], (function (param) {
+            var arg1 = function (x) {
+              handleCode(x);
+              return val_unit;
+            };
+            return code.then(arg1);
+          }));
+        }), suites);
+      }));
     } else {
       console.log("promise suites");
     }
@@ -257,12 +257,12 @@ function eq_suites(test_id, suites, loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -274,11 +274,11 @@ function bool_suites(test_id, suites, loc, x) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Ok",
-            _0: x
-          };
-        })
+        return {
+          TAG: "Ok",
+          _0: x
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -290,11 +290,11 @@ function throw_suites(test_id, suites, loc, x) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "ThrowAny",
-            _0: x
-          };
-        })
+        return {
+          TAG: "ThrowAny",
+          _0: x
+        };
+      })
     ],
     tl: suites.contents
   };

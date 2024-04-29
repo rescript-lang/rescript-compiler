@@ -23,24 +23,24 @@ function v(x) {
 var suites_0 = [
   "const",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: 1,
-        _1: v0
-      };
-    })
+    return {
+      TAG: "Eq",
+      _0: 1,
+      _1: v0
+    };
+  })
 ];
 
 var suites_1 = {
   hd: [
     "other",
     (function (param) {
-        return {
-          TAG: "Eq",
-          _0: 3,
-          _1: "abc".length
-        };
-      })
+      return {
+        TAG: "Eq",
+        _0: 3,
+        _1: "abc".length
+      };
+    })
   ],
   tl: /* [] */0
 };

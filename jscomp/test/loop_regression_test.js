@@ -24,12 +24,12 @@ function f(param) {
 var suites_0 = [
   "sum",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: 55,
-        _1: f()
-      };
-    })
+    return {
+      TAG: "Eq",
+      _0: 55,
+      _1: f()
+    };
+  })
 ];
 
 var suites = {

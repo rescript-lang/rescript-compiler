@@ -8,12 +8,12 @@ var vicky = {};
 var teacher = {};
 
 Caml_obj.update_dummy(vicky, {
-      taughtBy: teacher
-    });
+  taughtBy: teacher
+});
 
 Caml_obj.update_dummy(teacher, {
-      students: [vicky]
-    });
+  students: [vicky]
+});
 
 exports.vicky = vicky;
 exports.teacher = teacher;
