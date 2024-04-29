@@ -10,55 +10,55 @@ var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var suites_0 = [
   "?is_printable",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: Test_char.caml_is_printable(/* 'a' */97),
-        _1: true
-      };
-    })
+    return {
+      TAG: "Eq",
+      _0: Test_char.caml_is_printable(/* 'a' */97),
+      _1: true
+    };
+  })
 ];
 
 var suites_1 = {
   hd: [
     "?string_of_bytes",
     (function (param) {
-        var match = List.split(List.map((function (x) {
-                    var b = Caml_bytes.create(x);
-                    Bytes.fill(b, 0, x, /* 'c' */99);
-                    return [
-                      Bytes.to_string(b),
-                      Bytes.unsafe_to_string(Bytes.init(x, (function (param) {
-                                  return /* 'c' */99;
-                                })))
-                    ];
-                  }), {
-                  hd: 1000,
+      var match = List.split(List.map((function (x) {
+        var b = Caml_bytes.create(x);
+        Bytes.fill(b, 0, x, /* 'c' */99);
+        return [
+          Bytes.to_string(b),
+          Bytes.unsafe_to_string(Bytes.init(x, (function (param) {
+            return /* 'c' */99;
+          })))
+        ];
+      }), {
+        hd: 1000,
+        tl: {
+          hd: 1024,
+          tl: {
+            hd: 1025,
+            tl: {
+              hd: 4095,
+              tl: {
+                hd: 4096,
+                tl: {
+                  hd: 5000,
                   tl: {
-                    hd: 1024,
-                    tl: {
-                      hd: 1025,
-                      tl: {
-                        hd: 4095,
-                        tl: {
-                          hd: 4096,
-                          tl: {
-                            hd: 5000,
-                            tl: {
-                              hd: 10000,
-                              tl: /* [] */0
-                            }
-                          }
-                        }
-                      }
-                    }
+                    hd: 10000,
+                    tl: /* [] */0
                   }
-                }));
-        return {
-          TAG: "Eq",
-          _0: match[0],
-          _1: match[1]
-        };
-      })
+                }
+              }
+            }
+          }
+        }
+      }));
+      return {
+        TAG: "Eq",
+        _0: match[0],
+        _1: match[1]
+      };
+    })
   ],
   tl: /* [] */0
 };

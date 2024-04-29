@@ -20,12 +20,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -37,11 +37,11 @@ function b(loc, v) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Ok",
-            _0: v
-          };
-        })
+        return {
+          TAG: "Ok",
+          _0: v
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -56,11 +56,11 @@ function emptyMap(param) {
 }
 
 var v = Belt_Array.makeByAndShuffle(1000000, (function (i) {
-        return [
-          i,
-          i
-        ];
-      }));
+  return [
+    i,
+    i
+  ];
+}));
 
 var u = Belt_MapInt.fromArray(v);
 
@@ -69,8 +69,8 @@ Belt_MapInt.checkInvariantInternal(u);
 var firstHalf = Belt_Array.slice(v, 0, 2000);
 
 var xx = Belt_Array.reduce(firstHalf, u, (function (acc, param) {
-        return Belt_MapInt.remove(acc, param[0]);
-      }));
+  return Belt_MapInt.remove(acc, param[0]);
+}));
 
 Belt_MapInt.checkInvariantInternal(u);
 

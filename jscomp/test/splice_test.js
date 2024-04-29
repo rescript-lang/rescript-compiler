@@ -30,79 +30,79 @@ var a = [];
 a.push(1, 2, 3, 4);
 
 eq("File \"splice_test.res\", line 23, characters 5-12", a, [
-      1,
-      2,
-      3,
-      4
-    ]);
+  1,
+  2,
+  3,
+  4
+]);
 
 function dynamic(arr) {
   var a = [];
   Caml_splice_call.spliceObjApply(a, "push", [
-        1,
-        arr
-      ]);
+    1,
+    arr
+  ]);
   eq("File \"splice_test.res\", line 29, characters 5-12", a, Caml_array.concat({
-            hd: [1],
-            tl: {
-              hd: arr,
-              tl: /* [] */0
-            }
-          }));
+    hd: [1],
+    tl: {
+      hd: arr,
+      tl: /* [] */0
+    }
+  }));
 }
 
 dynamic([
-      2,
-      3,
-      4
-    ]);
+  2,
+  3,
+  4
+]);
 
 dynamic([]);
 
 dynamic([
-      1,
-      1,
-      3
-    ]);
+  1,
+  1,
+  3
+]);
 
 var a$1 = new Array(1, 2, 3, 4);
 
 eq("File \"splice_test.res\", line 44, characters 5-12", a$1, [
-      1,
-      2,
-      3,
-      4
-    ]);
+  1,
+  2,
+  3,
+  4
+]);
 
 function dynamicNew(arr) {
   var a = Caml_splice_call.spliceNewApply(Array, [
-        1,
-        2,
-        arr
-      ]);
+    1,
+    2,
+    arr
+  ]);
   eq("File \"splice_test.res\", line 49, characters 5-12", a, Caml_array.concat({
-            hd: [
-              1,
-              2
-            ],
-            tl: {
-              hd: arr,
-              tl: /* [] */0
-            }
-          }));
+    hd: [
+      1,
+      2
+    ],
+    tl: {
+      hd: arr,
+      tl: /* [] */0
+    }
+  }));
 }
 
 dynamicNew([
-      3,
-      4
-    ]);
+  3,
+  4
+]);
 
 dynamicNew([]);
 
 dynamicNew([
-      1,
-      3
-    ]);
+  1,
+  3
+]);
 
 class Foo {
   constructor(...names) {
@@ -114,10 +114,10 @@ class Foo {
 var f = new Foo("a", "b", "c");
 
 eq("File \"splice_test.res\", line 71, characters 5-12", f.names, [
-      "a",
-      "b",
-      "c"
-    ]);
+  "a",
+  "b",
+  "c"
+]);
 
 function dynamicFoo(arr) {
   var f = Caml_splice_call.spliceNewApply(Foo, [arr]);
@@ -129,50 +129,50 @@ dynamicFoo([]);
 dynamicFoo(["a"]);
 
 dynamicFoo([
-      "a",
-      "b",
-      "c"
-    ]);
+  "a",
+  "b",
+  "c"
+]);
 
 var a$2 = [];
 
 a$2.push(1, 2, 3, 4);
 
 eq("File \"splice_test.res\", line 93, characters 7-14", a$2, [
-      1,
-      2,
-      3,
-      4
-    ]);
+  1,
+  2,
+  3,
+  4
+]);
 
 function dynamic$1(arr) {
   var a = [];
   Caml_splice_call.spliceObjApply(a, "push", [
-        1,
-        arr
-      ]);
+    1,
+    arr
+  ]);
   eq("File \"splice_test.res\", line 99, characters 7-14", a, Caml_array.concat({
-            hd: [1],
-            tl: {
-              hd: arr,
-              tl: /* [] */0
-            }
-          }));
+    hd: [1],
+    tl: {
+      hd: arr,
+      tl: /* [] */0
+    }
+  }));
 }
 
 dynamic$1([
-      2,
-      3,
-      4
-    ]);
+  2,
+  3,
+  4
+]);
 
 dynamic$1([]);
 
 dynamic$1([
-      1,
-      1,
-      3
-    ]);
+  1,
+  1,
+  3
+]);
 
 var Pipe = {
   dynamic: dynamic$1
@@ -180,9 +180,9 @@ var Pipe = {
 
 function f1(c) {
   return Caml_splice_call.spliceApply(Math.max, [
-        1,
-        c
-      ]);
+    1,
+    c
+  ]);
 }
 
 eq("File \"splice_test.res\", line 109, characters 3-10", Math.max(1, 2, 3), 3);

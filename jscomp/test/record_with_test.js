@@ -40,12 +40,12 @@ function f(g, h) {
 var suites_0 = [
   "eq_with",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: v,
-        _1: u_v
-      };
-    })
+    return {
+      TAG: "Eq",
+      _0: v,
+      _1: u_v
+    };
+  })
 ];
 
 var suites = {

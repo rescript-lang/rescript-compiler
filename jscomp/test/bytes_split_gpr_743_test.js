@@ -21,12 +21,12 @@ function eq(loc, param) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -51,9 +51,9 @@ var res = Bytes.unsafe_to_string(b);
 console.log(res);
 
 eq("File \"bytes_split_gpr_743_test.res\", line 17, characters 5-12", [
-      "aab",
-      res
-    ]);
+  "aab",
+  res
+]);
 
 var b$1 = [
   0,
@@ -74,9 +74,9 @@ var res2 = Bytes.unsafe_to_string(b$1);
 console.log(res2);
 
 eq("File \"bytes_split_gpr_743_test.res\", line 32, characters 5-12", [
-      "bcc",
-      res2
-    ]);
+  "bcc",
+  res2
+]);
 
 Mt.from_pair_suites("Bytes_split_gpr_743_test", suites.contents);
 

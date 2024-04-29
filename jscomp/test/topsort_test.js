@@ -63,15 +63,15 @@ var graph = {
 
 function nexts(x, g) {
   return List.fold_left((function (acc, param) {
-          if (param[0] === x) {
-            return {
-              hd: param[1],
-              tl: acc
-            };
-          } else {
-            return acc;
-          }
-        }), /* [] */0, g);
+    if (param[0] === x) {
+      return {
+        hd: param[1],
+        tl: acc
+      };
+    } else {
+      return acc;
+    }
+  }), /* [] */0, g);
 }
 
 function dfs1(_nodes, graph, _visited) {
@@ -98,30 +98,30 @@ function dfs1(_nodes, graph, _visited) {
 }
 
 if (!Caml_obj.equal(dfs1({
-            hd: "a",
-            tl: /* [] */0
-          }, graph, /* [] */0), {
-        hd: "a",
+    hd: "a",
+    tl: /* [] */0
+  }, graph, /* [] */0), {
+    hd: "a",
+    tl: {
+      hd: "d",
+      tl: {
+        hd: "e",
         tl: {
-          hd: "d",
+          hd: "g",
           tl: {
-            hd: "e",
+            hd: "f",
             tl: {
-              hd: "g",
+              hd: "c",
               tl: {
-                hd: "f",
-                tl: {
-                  hd: "c",
-                  tl: {
-                    hd: "b",
-                    tl: /* [] */0
-                  }
-                }
+                hd: "b",
+                tl: /* [] */0
               }
             }
           }
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -136,30 +136,30 @@ if (!Caml_obj.equal(dfs1({
 console.log("");
 
 if (!Caml_obj.equal(dfs1({
-            hd: "b",
-            tl: /* [] */0
-          }, {
-            hd: [
-              "f",
-              "d"
-            ],
-            tl: graph
-          }, /* [] */0), {
-        hd: "b",
+    hd: "b",
+    tl: /* [] */0
+  }, {
+    hd: [
+      "f",
+      "d"
+    ],
+    tl: graph
+  }, /* [] */0), {
+    hd: "b",
+    tl: {
+      hd: "e",
+      tl: {
+        hd: "g",
         tl: {
-          hd: "e",
+          hd: "f",
           tl: {
-            hd: "g",
-            tl: {
-              hd: "f",
-              tl: {
-                hd: "d",
-                tl: /* [] */0
-              }
-            }
+            hd: "d",
+            tl: /* [] */0
           }
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -186,9 +186,9 @@ function dfs2(nodes, graph, visited) {
         continue ;
       }
       _visited = aux(nexts(x, graph), graph, {
-            hd: x,
-            tl: visited
-          });
+        hd: x,
+        tl: visited
+      });
       _nodes = xs;
       continue ;
     };
@@ -197,30 +197,30 @@ function dfs2(nodes, graph, visited) {
 }
 
 if (!Caml_obj.equal(dfs2({
-            hd: "a",
-            tl: /* [] */0
-          }, graph, /* [] */0), {
-        hd: "a",
+    hd: "a",
+    tl: /* [] */0
+  }, graph, /* [] */0), {
+    hd: "a",
+    tl: {
+      hd: "d",
+      tl: {
+        hd: "e",
         tl: {
-          hd: "d",
+          hd: "g",
           tl: {
-            hd: "e",
+            hd: "f",
             tl: {
-              hd: "g",
+              hd: "c",
               tl: {
-                hd: "f",
-                tl: {
-                  hd: "c",
-                  tl: {
-                    hd: "b",
-                    tl: /* [] */0
-                  }
-                }
+                hd: "b",
+                tl: /* [] */0
               }
             }
           }
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -233,30 +233,30 @@ if (!Caml_obj.equal(dfs2({
 }
 
 if (!Caml_obj.equal(dfs2({
-            hd: "b",
-            tl: /* [] */0
-          }, {
-            hd: [
-              "f",
-              "d"
-            ],
-            tl: graph
-          }, /* [] */0), {
-        hd: "b",
+    hd: "b",
+    tl: /* [] */0
+  }, {
+    hd: [
+      "f",
+      "d"
+    ],
+    tl: graph
+  }, /* [] */0), {
+    hd: "b",
+    tl: {
+      hd: "e",
+      tl: {
+        hd: "g",
         tl: {
-          hd: "e",
+          hd: "f",
           tl: {
-            hd: "g",
-            tl: {
-              hd: "f",
-              tl: {
-                hd: "d",
-                tl: /* [] */0
-              }
-            }
+            hd: "d",
+            tl: /* [] */0
           }
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -279,42 +279,42 @@ function dfs3(nodes, graph) {
         tl: visited.contents
       };
       return List.iter((function (x) {
-              aux(x, graph);
-            }), nexts(node, graph));
+        aux(x, graph);
+      }), nexts(node, graph));
     }
     
   };
   List.iter((function (node) {
-          aux(node, graph);
-        }), nodes);
+    aux(node, graph);
+  }), nodes);
   return List.rev(visited.contents);
 }
 
 if (!Caml_obj.equal(dfs3({
-            hd: "a",
-            tl: /* [] */0
-          }, graph), {
-        hd: "a",
+    hd: "a",
+    tl: /* [] */0
+  }, graph), {
+    hd: "a",
+    tl: {
+      hd: "d",
+      tl: {
+        hd: "e",
         tl: {
-          hd: "d",
+          hd: "g",
           tl: {
-            hd: "e",
+            hd: "f",
             tl: {
-              hd: "g",
+              hd: "c",
               tl: {
-                hd: "f",
-                tl: {
-                  hd: "c",
-                  tl: {
-                    hd: "b",
-                    tl: /* [] */0
-                  }
-                }
+                hd: "b",
+                tl: /* [] */0
               }
             }
           }
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -327,30 +327,30 @@ if (!Caml_obj.equal(dfs3({
 }
 
 if (!Caml_obj.equal(dfs3({
-            hd: "b",
-            tl: /* [] */0
-          }, {
-            hd: [
-              "f",
-              "d"
-            ],
-            tl: graph
-          }), {
-        hd: "b",
+    hd: "b",
+    tl: /* [] */0
+  }, {
+    hd: [
+      "f",
+      "d"
+    ],
+    tl: graph
+  }), {
+    hd: "b",
+    tl: {
+      hd: "e",
+      tl: {
+        hd: "g",
         tl: {
-          hd: "e",
+          hd: "f",
           tl: {
-            hd: "g",
-            tl: {
-              hd: "f",
-              tl: {
-                hd: "d",
-                tl: /* [] */0
-              }
-            }
+            hd: "d",
+            tl: /* [] */0
           }
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -416,30 +416,30 @@ function unsafe_topsort(graph) {
     };
   };
   List.iter((function (param) {
-          sort_node(param[0]);
-        }), graph);
+    sort_node(param[0]);
+  }), graph);
   return visited.contents;
 }
 
 if (!Caml_obj.equal(unsafe_topsort(grwork), {
-        hd: "wake",
+    hd: "wake",
+    tl: {
+      hd: "shower",
+      tl: {
+        hd: "dress",
         tl: {
-          hd: "shower",
+          hd: "eat",
           tl: {
-            hd: "dress",
+            hd: "washup",
             tl: {
-              hd: "eat",
-              tl: {
-                hd: "washup",
-                tl: {
-                  hd: "go",
-                  tl: /* [] */0
-                }
-              }
+              hd: "go",
+              tl: /* [] */0
             }
           }
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -930,24 +930,24 @@ function subset(_s1, _s2) {
     }
     if (c < 0) {
       if (!subset({
-              TAG: "Node",
-              l: l1,
-              v: v1,
-              r: "Empty",
-              h: 0
-            }, l2)) {
+          TAG: "Node",
+          l: l1,
+          v: v1,
+          r: "Empty",
+          h: 0
+        }, l2)) {
         return false;
       }
       _s1 = r1;
       continue ;
     }
     if (!subset({
-            TAG: "Node",
-            l: "Empty",
-            v: v1,
-            r: r1,
-            h: 0
-          }, r2)) {
+        TAG: "Node",
+        l: "Empty",
+        v: v1,
+        r: r1,
+        h: 0
+      }, r2)) {
       return false;
     }
     _s1 = l1;
@@ -1482,8 +1482,8 @@ function pathsort(graph) {
   };
   var sort_nodes = function (path, nodes) {
     List.iter((function (node) {
-            sort_node(path, node);
-          }), nodes);
+      sort_node(path, node);
+    }), nodes);
   };
   var sort_node = function (path, node) {
     if (!List.mem(node, visited.contents)) {
@@ -1497,30 +1497,30 @@ function pathsort(graph) {
     
   };
   List.iter((function (param) {
-          sort_node(empty_path, param[0]);
-        }), graph);
+    sort_node(empty_path, param[0]);
+  }), graph);
   return visited.contents;
 }
 
 if (!Caml_obj.equal(pathsort(grwork), {
-        hd: "wake",
+    hd: "wake",
+    tl: {
+      hd: "shower",
+      tl: {
+        hd: "dress",
         tl: {
-          hd: "shower",
+          hd: "eat",
           tl: {
-            hd: "dress",
+            hd: "washup",
             tl: {
-              hd: "eat",
-              tl: {
-                hd: "washup",
-                tl: {
-                  hd: "go",
-                  tl: /* [] */0
-                }
-              }
+              hd: "go",
+              tl: /* [] */0
             }
           }
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1534,12 +1534,12 @@ if (!Caml_obj.equal(pathsort(grwork), {
 
 try {
   pathsort({
-        hd: [
-          "go",
-          "eat"
-        ],
-        tl: grwork
-      });
+    hd: [
+      "go",
+      "eat"
+    ],
+    tl: grwork
+  });
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [

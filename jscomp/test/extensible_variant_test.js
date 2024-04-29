@@ -38,46 +38,46 @@ function to_int(x) {
 var suites_0 = [
   "test_int",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: 3,
-        _1: to_int({
-              RE_EXN_ID: Int,
-              _1: 3,
-              _2: 0
-            })
-      };
-    })
+    return {
+      TAG: "Eq",
+      _0: 3,
+      _1: to_int({
+        RE_EXN_ID: Int,
+        _1: 3,
+        _2: 0
+      })
+    };
+  })
 ];
 
 var suites_1 = {
   hd: [
     "test_int2",
     (function (param) {
-        return {
-          TAG: "Eq",
-          _0: 0,
-          _1: to_int({
-                RE_EXN_ID: Int$1,
-                _1: 3,
-                _2: 0
-              })
-        };
-      })
+      return {
+        TAG: "Eq",
+        _0: 0,
+        _1: to_int({
+          RE_EXN_ID: Int$1,
+          _1: 3,
+          _2: 0
+        })
+      };
+    })
   ],
   tl: {
     hd: [
       "test_string",
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: -1,
-            _1: to_int({
-                  RE_EXN_ID: Str,
-                  _1: "x"
-                })
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: -1,
+          _1: to_int({
+            RE_EXN_ID: Str,
+            _1: "x"
+          })
+        };
+      })
     ],
     tl: /* [] */0
   }

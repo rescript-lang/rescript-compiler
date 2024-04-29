@@ -3,8 +3,8 @@
 
 
 var f8 = import("a").then(function (m) {
-      return m.default;
-    });
+  return m.default;
+});
 
 exports.f8 = f8;
 /* f8 Not a pure module */

@@ -25,9 +25,9 @@ var backend_type = {
 };
 
 eq("File \"406_primitive_test.res\", line 23, characters 3-10", backend_type, {
-      TAG: "Other",
-      _0: "BS"
-    });
+  TAG: "Other",
+  _0: "BS"
+});
 
 function f(param) {
   var A = /* @__PURE__ */Caml_exceptions.create("A");

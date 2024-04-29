@@ -378,8 +378,8 @@ function classify$9(v) {
 }
 
 var ff = (function (x) {
-    return x + 1 | 0;
-  });
+  return x + 1 | 0;
+});
 
 var TestFunctionCase = {
   classify: classify$9,
@@ -501,8 +501,8 @@ async function classify$10(a) {
   } else {
     if (Array.isArray(a)) {
       console.log(function (param) {
-            return Belt_Array.joinWith(a, "-", param);
-          });
+        return Belt_Array.joinWith(a, "-", param);
+      });
       return;
     }
     if (a instanceof Promise) {
@@ -528,8 +528,8 @@ var Arr = {
 async function classifyAll(t) {
   if (Array.isArray(t)) {
     console.log(function (param) {
-          return Belt_Array.joinWith(t, "-", param);
-        });
+      return Belt_Array.joinWith(t, "-", param);
+    });
     return;
   }
   if (t instanceof Promise) {

@@ -23,81 +23,81 @@ function eq(loc, x, y) {
 
 var Xx = {
   f: (function (prim0, prim1) {
-      return Caml_external_polyfill.resolve("hfiehi")(prim0, prim1);
-    })
+    return Caml_external_polyfill.resolve("hfiehi")(prim0, prim1);
+  })
 };
 
 var Int3 = Caml_module.init_mod([
-      "recursive_module.res",
-      25,
-      4
-    ], {
-      TAG: "Module",
-      _0: [[
-          "Function",
-          "u"
-        ]]
-    });
+  "recursive_module.res",
+  25,
+  4
+], {
+  TAG: "Module",
+  _0: [[
+      "Function",
+      "u"
+    ]]
+});
 
 Caml_module.update_mod({
-      TAG: "Module",
-      _0: [[
-          "Function",
-          "u"
-        ]]
-    }, Int3, Int3);
+  TAG: "Module",
+  _0: [[
+      "Function",
+      "u"
+    ]]
+}, Int3, Int3);
 
 var Inta = Caml_module.init_mod([
-      "recursive_module.res",
-      29,
-      4
-    ], {
-      TAG: "Module",
-      _0: [[
-          "Lazy",
-          "a"
-        ]]
-    });
+  "recursive_module.res",
+  29,
+  4
+], {
+  TAG: "Module",
+  _0: [[
+      "Lazy",
+      "a"
+    ]]
+});
 
 var Intb = Caml_module.init_mod([
-      "recursive_module.res",
-      34,
-      4
-    ], {
-      TAG: "Module",
-      _0: [[
-          "Lazy",
-          "a"
-        ]]
-    });
+  "recursive_module.res",
+  34,
+  4
+], {
+  TAG: "Module",
+  _0: [[
+      "Lazy",
+      "a"
+    ]]
+});
 
 var a = CamlinternalLazy.from_fun(function () {
-      return CamlinternalLazy.force(Intb.a);
-    });
+  return CamlinternalLazy.force(Intb.a);
+});
 
 Caml_module.update_mod({
-      TAG: "Module",
-      _0: [[
-          "Lazy",
-          "a"
-        ]]
-    }, Inta, {
-      a: a
-    });
+  TAG: "Module",
+  _0: [[
+      "Lazy",
+      "a"
+    ]]
+}, Inta, {
+  a: a
+});
 
 var a$1 = CamlinternalLazy.from_fun(function () {
-      return CamlinternalLazy.force(Inta.a) + 1 | 0;
-    });
+  return CamlinternalLazy.force(Inta.a) + 1 | 0;
+});
 
 Caml_module.update_mod({
-      TAG: "Module",
-      _0: [[
-          "Lazy",
-          "a"
-        ]]
-    }, Intb, {
-      a: a$1
-    });
+  TAG: "Module",
+  _0: [[
+      "Lazy",
+      "a"
+    ]]
+}, Intb, {
+  a: a$1
+});
 
 var tmp;
 
@@ -116,56 +116,56 @@ catch (raw_exn){
 eq("File \"recursive_module.res\", line 39, characters 2-9", -1, tmp);
 
 var Inta$1 = Caml_module.init_mod([
-      "recursive_module.res",
-      49,
-      6
-    ], {
-      TAG: "Module",
-      _0: [[
-          "Lazy",
-          "a"
-        ]]
-    });
+  "recursive_module.res",
+  49,
+  6
+], {
+  TAG: "Module",
+  _0: [[
+      "Lazy",
+      "a"
+    ]]
+});
 
 var Intb$1 = Caml_module.init_mod([
-      "recursive_module.res",
-      54,
-      6
-    ], {
-      TAG: "Module",
-      _0: [[
-          "Lazy",
-          "a"
-        ]]
-    });
+  "recursive_module.res",
+  54,
+  6
+], {
+  TAG: "Module",
+  _0: [[
+      "Lazy",
+      "a"
+    ]]
+});
 
 var a$2 = CamlinternalLazy.from_fun(function () {
-      return CamlinternalLazy.force(Intb$1.a) + 1 | 0;
-    });
+  return CamlinternalLazy.force(Intb$1.a) + 1 | 0;
+});
 
 Caml_module.update_mod({
-      TAG: "Module",
-      _0: [[
-          "Lazy",
-          "a"
-        ]]
-    }, Inta$1, {
-      a: a$2
-    });
+  TAG: "Module",
+  _0: [[
+      "Lazy",
+      "a"
+    ]]
+}, Inta$1, {
+  a: a$2
+});
 
 var a$3 = CamlinternalLazy.from_fun(function () {
-      return 2;
-    });
+  return 2;
+});
 
 Caml_module.update_mod({
-      TAG: "Module",
-      _0: [[
-          "Lazy",
-          "a"
-        ]]
-    }, Intb$1, {
-      a: a$3
-    });
+  TAG: "Module",
+  _0: [[
+      "Lazy",
+      "a"
+    ]]
+}, Intb$1, {
+  a: a$3
+});
 
 var A = {
   Inta: Inta$1,

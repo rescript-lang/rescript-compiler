@@ -10,8 +10,8 @@ function mk(fn) {
 (((_)=> console.log('should works'))());
 
 console.log((function () {
-          return 1;
-        })());
+  return 1;
+})());
 
 exports.mk = mk;
 /*  Not a pure module */

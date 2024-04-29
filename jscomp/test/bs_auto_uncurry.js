@@ -9,54 +9,54 @@ var Curry$1 = {};
 var Block = {};
 
 var xbs = Array.prototype.map.call([
-      1,
-      2,
-      3,
-      5
-    ], (function (x) {
-        return x + 1 | 0;
-      }));
+  1,
+  2,
+  3,
+  5
+], (function (x) {
+  return x + 1 | 0;
+}));
 
 function f(cb) {
   return Array.prototype.map.call([
-        1,
-        2,
-        3,
-        4
-      ], Curry.__1(cb));
+    1,
+    2,
+    3,
+    4
+  ], Curry.__1(cb));
 }
 
 var xs = Array.prototype.map.call([
-      1,
-      1,
-      2
-    ], (function (x) {
-        return function (y) {
-          return (y + x | 0) + 1 | 0;
-        };
-      }));
+  1,
+  1,
+  2
+], (function (x) {
+  return function (y) {
+    return (y + x | 0) + 1 | 0;
+  };
+}));
 
 function f_0(param) {
   return hi(function (param) {
-        
-      });
+    
+  });
 }
 
 function f_01(param) {
   return hi(function (x) {
-        if (x === undefined) {
-          console.log("x");
-          return;
-        }
-        
-      });
+    if (x === undefined) {
+      console.log("x");
+      return;
+    }
+    
+  });
 }
 
 function f_02(xs) {
   return hi(function (x) {
-        xs.contents = x;
-        console.log("x");
-      });
+    xs.contents = x;
+    console.log("x");
+  });
 }
 
 function f_03(xs, u) {
@@ -82,33 +82,33 @@ function add3(x, y, z) {
 
 function h2(x) {
   return ff(x, (function (prim0, prim1) {
-          return prim0 + prim1 | 0;
-        }));
+    return prim0 + prim1 | 0;
+  }));
 }
 
 function h3(x) {
   return ff(x, (function (param, param$1) {
-          return add3(1, param, param$1);
-        }));
+    return add3(1, param, param$1);
+  }));
 }
 
 function h4(x) {
   return ff1(x, 3, (function (param, param$1) {
-          return add3(1, param, param$1);
-        }));
+    return add3(1, param, param$1);
+  }));
 }
 
 function h5(x) {
   return ff2(x, "3", (function (param, param$1) {
-          return add3(2, param, param$1);
-        }));
+    return add3(2, param, param$1);
+  }));
 }
 
 function add(x, y) {
   console.log([
-        x,
-        y
-      ]);
+    x,
+    y
+  ]);
   return x + y | 0;
 }
 
@@ -127,9 +127,9 @@ var f_unit_magic = unit_magic();
 function hh(xs) {
   return function (param) {
     Caml_splice_call.spliceApply(f_0002, [
-          xs,
-          param
-        ]);
+      xs,
+      param
+    ]);
   };
 }
 

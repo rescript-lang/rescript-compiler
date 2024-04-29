@@ -7,15 +7,15 @@ var Complex = require("../../lib/js/complex.js");
 var suites_0 = [
   "basic_add",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: {
-          re: 2,
-          im: 2
-        },
-        _1: Complex.add(Complex.add(Complex.add(Complex.one, Complex.one), Complex.i), Complex.i)
-      };
-    })
+    return {
+      TAG: "Eq",
+      _0: {
+        re: 2,
+        im: 2
+      },
+      _1: Complex.add(Complex.add(Complex.add(Complex.one, Complex.one), Complex.i), Complex.i)
+    };
+  })
 ];
 
 var suites = {

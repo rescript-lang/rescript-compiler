@@ -14,230 +14,230 @@ function obj(param) {
 var suites_0 = [
   "empty",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: [],
-        _1: Object.keys({})
-      };
-    })
+    return {
+      TAG: "Eq",
+      _0: [],
+      _1: Object.keys({})
+    };
+  })
 ];
 
 var suites_1 = {
   hd: [
     "get",
     (function (param) {
-        return {
-          TAG: "Eq",
-          _0: 43,
-          _1: Js_dict.get({
-                foo: 43,
-                bar: 86
-              }, "foo")
-        };
-      })
+      return {
+        TAG: "Eq",
+        _0: 43,
+        _1: Js_dict.get({
+          foo: 43,
+          bar: 86
+        }, "foo")
+      };
+    })
   ],
   tl: {
     hd: [
       "get - property not in object",
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: undefined,
-            _1: Js_dict.get({
-                  foo: 43,
-                  bar: 86
-                }, "baz")
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: undefined,
+          _1: Js_dict.get({
+            foo: 43,
+            bar: 86
+          }, "baz")
+        };
+      })
     ],
     tl: {
       hd: [
         "unsafe_get",
         (function (param) {
-            return {
-              TAG: "Eq",
-              _0: 43,
-              _1: ({
-                  foo: 43,
-                  bar: 86
-                })["foo"]
-            };
-          })
+          return {
+            TAG: "Eq",
+            _0: 43,
+            _1: ({
+                foo: 43,
+                bar: 86
+              })["foo"]
+          };
+        })
       ],
       tl: {
         hd: [
           "set",
           (function (param) {
-              var o = {
-                foo: 43,
-                bar: 86
-              };
-              o["foo"] = 36;
-              return {
-                TAG: "Eq",
-                _0: 36,
-                _1: Js_dict.get(o, "foo")
-              };
-            })
+            var o = {
+              foo: 43,
+              bar: 86
+            };
+            o["foo"] = 36;
+            return {
+              TAG: "Eq",
+              _0: 36,
+              _1: Js_dict.get(o, "foo")
+            };
+          })
         ],
         tl: {
           hd: [
             "keys",
             (function (param) {
-                return {
-                  TAG: "Eq",
-                  _0: [
-                    "foo",
-                    "bar"
-                  ],
-                  _1: Object.keys({
-                        foo: 43,
-                        bar: 86
-                      })
-                };
-              })
+              return {
+                TAG: "Eq",
+                _0: [
+                  "foo",
+                  "bar"
+                ],
+                _1: Object.keys({
+                  foo: 43,
+                  bar: 86
+                })
+              };
+            })
           ],
           tl: {
             hd: [
               "entries",
               (function (param) {
-                  return {
-                    TAG: "Eq",
-                    _0: [
-                      [
-                        "foo",
-                        43
-                      ],
-                      [
-                        "bar",
-                        86
-                      ]
+                return {
+                  TAG: "Eq",
+                  _0: [
+                    [
+                      "foo",
+                      43
                     ],
-                    _1: Js_dict.entries({
-                          foo: 43,
-                          bar: 86
-                        })
-                  };
-                })
+                    [
+                      "bar",
+                      86
+                    ]
+                  ],
+                  _1: Js_dict.entries({
+                    foo: 43,
+                    bar: 86
+                  })
+                };
+              })
             ],
             tl: {
               hd: [
                 "values",
                 (function (param) {
-                    return {
-                      TAG: "Eq",
-                      _0: [
-                        43,
-                        86
-                      ],
-                      _1: Js_dict.values({
-                            foo: 43,
-                            bar: 86
-                          })
-                    };
-                  })
+                  return {
+                    TAG: "Eq",
+                    _0: [
+                      43,
+                      86
+                    ],
+                    _1: Js_dict.values({
+                      foo: 43,
+                      bar: 86
+                    })
+                  };
+                })
               ],
               tl: {
                 hd: [
                   "fromList - []",
                   (function (param) {
-                      return {
-                        TAG: "Eq",
-                        _0: {},
-                        _1: Js_dict.fromList(/* [] */0)
-                      };
-                    })
+                    return {
+                      TAG: "Eq",
+                      _0: {},
+                      _1: Js_dict.fromList(/* [] */0)
+                    };
+                  })
                 ],
                 tl: {
                   hd: [
                     "fromList",
                     (function (param) {
-                        return {
-                          TAG: "Eq",
-                          _0: [
-                            [
-                              "x",
-                              23
-                            ],
-                            [
+                      return {
+                        TAG: "Eq",
+                        _0: [
+                          [
+                            "x",
+                            23
+                          ],
+                          [
+                            "y",
+                            46
+                          ]
+                        ],
+                        _1: Js_dict.entries(Js_dict.fromList({
+                          hd: [
+                            "x",
+                            23
+                          ],
+                          tl: {
+                            hd: [
                               "y",
                               46
-                            ]
-                          ],
-                          _1: Js_dict.entries(Js_dict.fromList({
-                                    hd: [
-                                      "x",
-                                      23
-                                    ],
-                                    tl: {
-                                      hd: [
-                                        "y",
-                                        46
-                                      ],
-                                      tl: /* [] */0
-                                    }
-                                  }))
-                        };
-                      })
+                            ],
+                            tl: /* [] */0
+                          }
+                        }))
+                      };
+                    })
                   ],
                   tl: {
                     hd: [
                       "fromArray - []",
                       (function (param) {
-                          return {
-                            TAG: "Eq",
-                            _0: {},
-                            _1: Js_dict.fromArray([])
-                          };
-                        })
+                        return {
+                          TAG: "Eq",
+                          _0: {},
+                          _1: Js_dict.fromArray([])
+                        };
+                      })
                     ],
                     tl: {
                       hd: [
                         "fromArray",
                         (function (param) {
-                            return {
-                              TAG: "Eq",
-                              _0: [
-                                [
-                                  "x",
-                                  23
-                                ],
-                                [
-                                  "y",
-                                  46
-                                ]
+                          return {
+                            TAG: "Eq",
+                            _0: [
+                              [
+                                "x",
+                                23
                               ],
-                              _1: Js_dict.entries(Js_dict.fromArray([
-                                        [
-                                          "x",
-                                          23
-                                        ],
-                                        [
-                                          "y",
-                                          46
-                                        ]
-                                      ]))
-                            };
-                          })
+                              [
+                                "y",
+                                46
+                              ]
+                            ],
+                            _1: Js_dict.entries(Js_dict.fromArray([
+                              [
+                                "x",
+                                23
+                              ],
+                              [
+                                "y",
+                                46
+                              ]
+                            ]))
+                          };
+                        })
                       ],
                       tl: {
                         hd: [
                           "map",
                           (function (param) {
-                              return {
-                                TAG: "Eq",
-                                _0: {
-                                  foo: "43",
-                                  bar: "86"
-                                },
-                                _1: Js_dict.map((function (i) {
-                                        return String(i);
-                                      }), {
-                                      foo: 43,
-                                      bar: 86
-                                    })
-                              };
-                            })
+                            return {
+                              TAG: "Eq",
+                              _0: {
+                                foo: "43",
+                                bar: "86"
+                              },
+                              _1: Js_dict.map((function (i) {
+                                return String(i);
+                              }), {
+                                foo: 43,
+                                bar: 86
+                              })
+                            };
+                          })
                         ],
                         tl: /* [] */0
                       }

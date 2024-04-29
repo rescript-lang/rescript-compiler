@@ -12,8 +12,8 @@ var b = {
   y: [1],
   z: 3,
   u: (function (x, y) {
-      return x + y | 0;
-    })
+    return x + y | 0;
+  })
 };
 
 function f(obj) {

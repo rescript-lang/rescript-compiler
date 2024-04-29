@@ -19,12 +19,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -52,12 +52,12 @@ function f(param) {
 }
 
 eq("File \"global_module_alias_test.res\", line 48, characters 12-19", List.length({
-          hd: 1,
-          tl: {
-            hd: 2,
-            tl: /* [] */0
-          }
-        }), 2);
+  hd: 1,
+  tl: {
+    hd: 2,
+    tl: /* [] */0
+  }
+}), 2);
 
 v.contents = v.contents + 1 | 0;
 
@@ -89,18 +89,18 @@ eq("File \"global_module_alias_test.res\", line 52, characters 12-19", v.content
 
 function g(param) {
   return List.length({
-        hd: 1,
+    hd: 1,
+    tl: {
+      hd: 2,
+      tl: {
+        hd: 3,
         tl: {
-          hd: 2,
-          tl: {
-            hd: 3,
-            tl: {
-              hd: 4,
-              tl: /* [] */0
-            }
-          }
+          hd: 4,
+          tl: /* [] */0
         }
-      });
+      }
+    }
+  });
 }
 
 function xx(param) {
@@ -115,27 +115,27 @@ eq("File \"global_module_alias_test.res\", line 80, characters 12-19", g(), 4);
 var V = xx();
 
 eq("File \"global_module_alias_test.res\", line 84, characters 5-12", Curry._1(V.length, {
-          hd: 1,
-          tl: {
-            hd: 2,
-            tl: {
-              hd: 3,
-              tl: /* [] */0
-            }
-          }
-        }), 3);
+  hd: 1,
+  tl: {
+    hd: 2,
+    tl: {
+      hd: 3,
+      tl: /* [] */0
+    }
+  }
+}), 3);
 
 eq("File \"global_module_alias_test.res\", line 85, characters 5-12", v.contents, 15);
 
 var H$1 = f();
 
 eq("File \"global_module_alias_test.res\", line 87, characters 5-12", Curry._1(H$1.length, {
-          hd: 1,
-          tl: {
-            hd: 2,
-            tl: /* [] */0
-          }
-        }), 2);
+  hd: 1,
+  tl: {
+    hd: 2,
+    tl: /* [] */0
+  }
+}), 2);
 
 eq("File \"global_module_alias_test.res\", line 88, characters 5-12", v.contents, 21);
 

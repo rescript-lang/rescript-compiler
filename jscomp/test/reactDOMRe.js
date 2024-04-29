@@ -82,9 +82,9 @@ var Ref = {};
 
 function createElementVariadic(domClassName, props, children) {
   var variadicArguments = [
-      domClassName,
-      props
-    ].concat(children);
+    domClassName,
+    props
+  ].concat(children);
   return React.createElement.apply(null, variadicArguments);
 }
 

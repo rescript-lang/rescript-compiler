@@ -123,34 +123,34 @@ Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 42, charac
 Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 43, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), false);
 
 Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 44, characters 5-12", (
-      1n !== 1n ? (
-          1n !== 2n ? 0n : 4n
-        ) : 3n
-    ) === 3n, true);
+  1n !== 1n ? (
+      1n !== 2n ? 0n : 4n
+    ) : 3n
+) === 3n, true);
 
 Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 49, characters 5-12", Caml_obj.equal(1n !== 1n ? (
-            1n !== 2n ? 0n : 4n
-          ) : 3n, 3n), true);
+    1n !== 2n ? 0n : 4n
+  ) : 3n, 3n), true);
 
 Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 54, characters 5-12", (
-      -1n !== -2n ? (
-          -1n !== -1n ? 0n : 3n
-        ) : 4n
-    ) === 3n, true);
+  -1n !== -2n ? (
+      -1n !== -1n ? 0n : 3n
+    ) : 4n
+) === 3n, true);
 
 Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 59, characters 5-12", Caml_obj.equal(-1n !== -1n ? (
-            -1n !== 2n ? 0n : 4n
-          ) : 3n, 3n), true);
+    -1n !== 2n ? 0n : 4n
+  ) : 3n, 3n), true);
 
 Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 64, characters 5-12", (
-      -1000n !== -1000n ? (
-          -1000n !== -2n ? 0n : 4n
-        ) : 3n
-    ) === 3n, true);
+  -1000n !== -1000n ? (
+      -1000n !== -2n ? 0n : 4n
+    ) : 3n
+) === 3n, true);
 
 Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 69, characters 5-12", Caml_obj.equal(-1000n !== -1000n ? (
-            -1000n !== -2n ? 0n : 4n
-          ) : 3n, 3n), true);
+    -1000n !== -2n ? 0n : 4n
+  ) : 3n, 3n), true);
 
 Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 74, characters 5-12", 9n & 1n, 1n);
 

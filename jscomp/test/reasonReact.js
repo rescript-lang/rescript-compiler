@@ -6,9 +6,9 @@ var React = require("react");
 
 function createDomElement(s, props, children) {
   var vararg = [
-      s,
-      props
-    ].concat(children);
+    s,
+    props
+  ].concat(children);
   return Curry._2(React.createElement.apply, null, vararg);
 }
 
@@ -77,10 +77,10 @@ function element(keyOpt, refOpt, component) {
     return Curry._2(jsElementWrapped, key, ref);
   } else {
     return React.createElement(component.reactClassInternal, {
-          key: key,
-          ref: ref,
-          reasonProps: element$1
-        });
+      key: key,
+      ref: ref,
+      reasonProps: element$1
+    });
   }
 }
 
@@ -94,16 +94,16 @@ var dummyInteropComponent = basicComponent("interop");
 
 function wrapJsForReason(reactClass, props, children) {
   var jsElementWrapped = (function (param, param$1) {
-      var props$1 = Object.assign(Object.assign({}, props), {
-            ref: param$1,
-            key: param
-          });
-      var varargs = [
-          reactClass,
-          props$1
-        ].concat(children);
-      return Curry._2(React.createElement.apply, null, varargs);
+    var props$1 = Object.assign(Object.assign({}, props), {
+      ref: param$1,
+      key: param
     });
+    var varargs = [
+      reactClass,
+      props$1
+    ].concat(children);
+    return Curry._2(React.createElement.apply, null, varargs);
+  });
   return {
     debugName: dummyInteropComponent.debugName,
     reactClassInternal: dummyInteropComponent.reactClassInternal,

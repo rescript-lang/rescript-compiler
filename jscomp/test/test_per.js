@@ -12,9 +12,9 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 
 Caml_external_polyfill.resolve("register_named_value")("Pervasives.array_bound_error", {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "index out of bounds"
-    });
+  RE_EXN_ID: "Invalid_argument",
+  _1: "index out of bounds"
+});
 
 function failwith(s) {
   throw {
@@ -65,34 +65,34 @@ function lnot(x) {
 var min_int = -2147483648;
 
 var infinity = Caml_int64.float_of_bits([
-      2146435072,
-      0
-    ]);
+  2146435072,
+  0
+]);
 
 var neg_infinity = Caml_int64.float_of_bits([
-      -1048576,
-      0
-    ]);
+  -1048576,
+  0
+]);
 
 var nan = Caml_int64.float_of_bits([
-      2146435072,
-      1
-    ]);
+  2146435072,
+  1
+]);
 
 var max_float = Caml_int64.float_of_bits([
-      2146435071,
-      4294967295
-    ]);
+  2146435071,
+  4294967295
+]);
 
 var min_float = Caml_int64.float_of_bits([
-      1048576,
-      0
-    ]);
+  1048576,
+  0
+]);
 
 var epsilon_float = Caml_int64.float_of_bits([
-      1018167296,
-      0
-    ]);
+  1018167296,
+  0
+]);
 
 function $caret(s1, s2) {
   var l1 = s1.length;
@@ -186,34 +186,34 @@ function open_out_gen(mode, perm, name) {
 
 function open_out(name) {
   return open_out_gen({
-        hd: "Open_wronly",
+    hd: "Open_wronly",
+    tl: {
+      hd: "Open_creat",
+      tl: {
+        hd: "Open_trunc",
         tl: {
-          hd: "Open_creat",
-          tl: {
-            hd: "Open_trunc",
-            tl: {
-              hd: "Open_text",
-              tl: /* [] */0
-            }
-          }
+          hd: "Open_text",
+          tl: /* [] */0
         }
-      }, 438, name);
+      }
+    }
+  }, 438, name);
 }
 
 function open_out_bin(name) {
   return open_out_gen({
-        hd: "Open_wronly",
+    hd: "Open_wronly",
+    tl: {
+      hd: "Open_creat",
+      tl: {
+        hd: "Open_trunc",
         tl: {
-          hd: "Open_creat",
-          tl: {
-            hd: "Open_trunc",
-            tl: {
-              hd: "Open_binary",
-              tl: /* [] */0
-            }
-          }
+          hd: "Open_binary",
+          tl: /* [] */0
         }
-      }, 438, name);
+      }
+    }
+  }, 438, name);
 }
 
 function flush_all(param) {
@@ -294,22 +294,22 @@ function open_in_gen(mode, perm, name) {
 
 function open_in(name) {
   return open_in_gen({
-        hd: "Open_rdonly",
-        tl: {
-          hd: "Open_text",
-          tl: /* [] */0
-        }
-      }, 0, name);
+    hd: "Open_rdonly",
+    tl: {
+      hd: "Open_text",
+      tl: /* [] */0
+    }
+  }, 0, name);
 }
 
 function open_in_bin(name) {
   return open_in_gen({
-        hd: "Open_rdonly",
-        tl: {
-          hd: "Open_binary",
-          tl: /* [] */0
-        }
-      }, 0, name);
+    hd: "Open_rdonly",
+    tl: {
+      hd: "Open_binary",
+      tl: /* [] */0
+    }
+  }, 0, name);
 }
 
 function input(ic, s, ofs, len) {
@@ -400,9 +400,9 @@ function input_line(chan) {
       }
       var len$1 = (len + n | 0) - 1 | 0;
       return build_result(Caml_bytes.create(len$1), len$1, {
-            hd: res,
-            tl: accu
-          });
+        hd: res,
+        tl: accu
+      });
     }
     var beg = Caml_bytes.create(-n | 0);
     Caml_external_polyfill.resolve("ml_input")(chan, beg, 0, -n | 0);
@@ -433,9 +433,9 @@ var exit_function = {
 function at_exit(f) {
   var g = exit_function.contents;
   exit_function.contents = (function (param) {
-      Curry._1(f, undefined);
-      Curry._1(g, undefined);
-    });
+    Curry._1(f, undefined);
+    Curry._1(g, undefined);
+  });
 }
 
 function do_at_exit(param) {

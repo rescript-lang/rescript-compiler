@@ -109,33 +109,33 @@ function parse(token) {
   return [
     r,
     Queue.fold((function (acc, x) {
-            return {
-              hd: x,
-              tl: acc
-            };
-          }), /* [] */0, look_ahead)
+      return {
+        hd: x,
+        tl: acc
+      };
+    }), /* [] */0, look_ahead)
   ];
 }
 
 var lexer = Genlex.make_lexer({
-      hd: "(",
+  hd: "(",
+  tl: {
+    hd: "*",
+    tl: {
+      hd: "/",
       tl: {
-        hd: "*",
+        hd: "+",
         tl: {
-          hd: "/",
+          hd: "-",
           tl: {
-            hd: "+",
-            tl: {
-              hd: "-",
-              tl: {
-                hd: ")",
-                tl: /* [] */0
-              }
-            }
+            hd: ")",
+            tl: /* [] */0
           }
         }
       }
-    });
+    }
+  }
+});
 
 function token(chars) {
   var strm = lexer(chars);
@@ -250,11 +250,11 @@ function l_parse(token) {
   return [
     r,
     Queue.fold((function (acc, x) {
-            return {
-              hd: x,
-              tl: acc
-            };
-          }), /* [] */0, look_ahead)
+      return {
+        hd: x,
+        tl: acc
+      };
+    }), /* [] */0, look_ahead)
   ];
 }
 
@@ -272,12 +272,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -286,40 +286,40 @@ function eq(loc, x, y) {
 var match = parse(token(Stream.of_string("1 + 2 + (3  - 2) * 3 * 3  - 2 a")));
 
 eq("File \"stream_parser_test.res\", line 141, characters 5-12", [
-      match[0],
-      match[1]
-    ], [
-      10,
-      {
-        hd: {
-          TAG: "Ident",
-          _0: "a"
-        },
-        tl: /* [] */0
-      }
-    ]);
+  match[0],
+  match[1]
+], [
+  10,
+  {
+    hd: {
+      TAG: "Ident",
+      _0: "a"
+    },
+    tl: /* [] */0
+  }
+]);
 
 eq("File \"stream_parser_test.res\", line 142, characters 5-12", [
-      2,
-      {
-        hd: {
-          TAG: "Kwd",
-          _0: "=="
-        },
-        tl: /* [] */0
-      }
-    ], parse(token(Stream.of_string("3 - 2  - 1"))));
+  2,
+  {
+    hd: {
+      TAG: "Kwd",
+      _0: "=="
+    },
+    tl: /* [] */0
+  }
+], parse(token(Stream.of_string("3 - 2  - 1"))));
 
 eq("File \"stream_parser_test.res\", line 143, characters 5-12", [
-      0,
-      {
-        hd: {
-          TAG: "Kwd",
-          _0: "=="
-        },
-        tl: /* [] */0
-      }
-    ], l_parse(token(Stream.of_string("3 - 2  - 1"))));
+  0,
+  {
+    hd: {
+      TAG: "Kwd",
+      _0: "=="
+    },
+    tl: /* [] */0
+  }
+], l_parse(token(Stream.of_string("3 - 2  - 1"))));
 
 Mt.from_pair_suites("Stream_parser_test", suites.contents);
 

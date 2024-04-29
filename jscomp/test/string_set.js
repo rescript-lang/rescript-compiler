@@ -194,24 +194,24 @@ function subset(_s1, _s2) {
     }
     if (c < 0) {
       if (!subset({
-              TAG: "Node",
-              _0: l1,
-              _1: v1,
-              _2: "Empty",
-              _3: 0
-            }, l2)) {
+          TAG: "Node",
+          _0: l1,
+          _1: v1,
+          _2: "Empty",
+          _3: 0
+        }, l2)) {
         return false;
       }
       _s1 = r1;
       continue ;
     }
     if (!subset({
-            TAG: "Node",
-            _0: "Empty",
-            _1: v1,
-            _2: r1,
-            _3: 0
-          }, r2)) {
+        TAG: "Node",
+        _0: "Empty",
+        _1: v1,
+        _2: r1,
+        _3: 0
+      }, r2)) {
       return false;
     }
     _s1 = l1;
@@ -272,8 +272,8 @@ function of_list(l) {
 
 function of_array(l) {
   return $$Array.fold_left((function (acc, x) {
-          return add(x, acc);
-        }), "Empty", l);
+    return add(x, acc);
+  }), "Empty", l);
 }
 
 function invariant(t) {

@@ -34,8 +34,8 @@ function sum2(h) {
     contents: 0
   };
   Belt_HashSetInt.forEach(h, (function (x) {
-          v.contents = v.contents + x | 0;
-        }));
+    v.contents = v.contents + x | 0;
+  }));
   return v.contents;
 }
 

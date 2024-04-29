@@ -10,49 +10,49 @@ function is_block(x) {
 var suites_0 = [
   "is_block_test1",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: false,
-        _1: "number" !== "number"
-      };
-    })
+    return {
+      TAG: "Eq",
+      _0: false,
+      _1: "number" !== "number"
+    };
+  })
 ];
 
 var suites_1 = {
   hd: [
     "is_block_test2",
     (function (param) {
-        return {
-          TAG: "Eq",
-          _0: true,
-          _1: typeof ({
-            hd: 3,
-            tl: /* [] */0
-          }) !== "number"
-        };
-      })
+      return {
+        TAG: "Eq",
+        _0: true,
+        _1: typeof ({
+          hd: 3,
+          tl: /* [] */0
+        }) !== "number"
+      };
+    })
   ],
   tl: {
     hd: [
       "is_block_test3",
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: true,
-            _1: "string" !== "number"
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: true,
+          _1: "string" !== "number"
+        };
+      })
     ],
     tl: {
       hd: [
         "is_block_test4",
         (function (param) {
-            return {
-              TAG: "Eq",
-              _0: false,
-              _1: "number" !== "number"
-            };
-          })
+          return {
+            TAG: "Eq",
+            _0: false,
+            _1: "number" !== "number"
+          };
+        })
       ],
       tl: /* [] */0
     }

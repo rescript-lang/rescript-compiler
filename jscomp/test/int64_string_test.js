@@ -27,33 +27,33 @@ function f(a, b) {
 }
 
 var hh = Caml_int64.add(Int64.min_int, [
-      0,
-      100
-    ]);
+  0,
+  100
+]);
 
 eq("File \"int64_string_test.res\", line 14, characters 3-10", hh, [
-      -2147483648,
-      100
-    ]);
+  -2147483648,
+  100
+]);
 
 f([
-      -1,
-      4294967263
-    ], "-33");
+  -1,
+  4294967263
+], "-33");
 
 f([
-      0,
-      33
-    ], "33");
+  0,
+  33
+], "33");
 
 f(Int64.min_int, "-9223372036854775808");
 
 f(hh, "-9223372036854775708");
 
 f([
-      232830,
-      2764472320
-    ], "1000000000000000");
+  232830,
+  2764472320
+], "1000000000000000");
 
 for(var i = 0; i <= 8; ++i){
   eq("File \"int64_string_test.res\", line 22, characters 4-11", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(i))), "-922337203685477580" + String(8 - i | 0));
@@ -86,19 +86,19 @@ for(var i$4 = 0; i$4 <= 9; ++i$4){
 }
 
 eq("File \"int64_string_test.res\", line 73, characters 3-10", Caml_int64.to_string([
-          2097151,
-          4294967295
-        ]), "9007199254740991");
+  2097151,
+  4294967295
+]), "9007199254740991");
 
 eq("File \"int64_string_test.res\", line 74, characters 3-10", Caml_int64.to_string([
-          -2097152,
-          1
-        ]), "-9007199254740991");
+  -2097152,
+  1
+]), "-9007199254740991");
 
 eq("File \"int64_string_test.res\", line 75, characters 3-10", Caml_int64.to_string([
-          -1,
-          4294967063
-        ]), "-233");
+  -1,
+  4294967063
+]), "-233");
 
 eq("File \"int64_string_test.res\", line 77, characters 2-9", Caml_int64.to_string(Caml_int64.max_int), "9223372036854775807");
 
@@ -1305,41 +1305,41 @@ var random_data = {
 };
 
 Belt_List.forEach(random_data, (function (u) {
-        if (u) {
-          if (u.tl) {
-            throw {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "int64_string_test.res",
-                191,
-                9
-              ],
-              Error: new Error()
-            };
-          }
-          var match = u.hd;
-          return eq("File \"int64_string_test.res\", line 190, characters 25-32", Caml_int64.to_string(match[0]), match[1]);
-        }
-        throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "int64_string_test.res",
-            191,
-            9
-          ],
-          Error: new Error()
-        };
-      }));
+  if (u) {
+    if (u.tl) {
+      throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "int64_string_test.res",
+          191,
+          9
+        ],
+        Error: new Error()
+      };
+    }
+    var match = u.hd;
+    return eq("File \"int64_string_test.res\", line 190, characters 25-32", Caml_int64.to_string(match[0]), match[1]);
+  }
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "int64_string_test.res",
+      191,
+      9
+    ],
+    Error: new Error()
+  };
+}));
 
 eq("File \"int64_string_test.res\", line 195, characters 3-10", Caml_int64.to_string([
-          -2097152,
-          1
-        ]), "-9007199254740991");
+  -2097152,
+  1
+]), "-9007199254740991");
 
 eq("File \"int64_string_test.res\", line 196, characters 3-10", Caml_int64.to_string([
-          -2097152,
-          0
-        ]), "-9007199254740992");
+  -2097152,
+  0
+]), "-9007199254740992");
 
 Mt.from_pair_suites("File \"int64_string_test.res\", line 197, characters 20-27", suites.contents);
 

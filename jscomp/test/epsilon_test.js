@@ -9,24 +9,24 @@ var v = (Number.EPSILON?Number.EPSILON:2.220446049250313e-16);
 var suites_0 = [
   "epsilon",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: Pervasives.epsilon_float,
-        _1: v
-      };
-    })
+    return {
+      TAG: "Eq",
+      _0: Pervasives.epsilon_float,
+      _1: v
+    };
+  })
 ];
 
 var suites_1 = {
   hd: [
     "raw_epsilon",
     (function (param) {
-        return {
-          TAG: "Eq",
-          _0: 2.220446049250313e-16,
-          _1: v
-        };
-      })
+      return {
+        TAG: "Eq",
+        _0: 2.220446049250313e-16,
+        _1: v
+      };
+    })
   ],
   tl: /* [] */0
 };

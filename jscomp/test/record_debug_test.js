@@ -87,12 +87,12 @@ var c = [
 console.log(a, c);
 
 eq("File \"record_debug_test.res\", line 58, characters 3-10", [
-      "",
-      "a"
-    ], [
-      "",
-      "a"
-    ]);
+  "",
+  "a"
+], [
+  "",
+  "a"
+]);
 
 Mt.from_pair_suites("record_debug_test.res", suites.contents);
 

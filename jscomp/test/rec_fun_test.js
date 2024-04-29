@@ -19,12 +19,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -44,8 +44,8 @@ function g(param) {
     return i + 1 | 0;
   };
   Caml_obj.update_dummy(v, {
-        contents: next
-      });
+    contents: next
+  });
   console.log(String(next(0, true)));
 }
 
@@ -56,14 +56,14 @@ var x = {};
 var y = {};
 
 Caml_obj.update_dummy(x, {
-      hd: 1,
-      tl: y
-    });
+  hd: 1,
+  tl: y
+});
 
 Caml_obj.update_dummy(y, {
-      hd: 2,
-      tl: x
-    });
+  hd: 2,
+  tl: x
+});
 
 eq("File \"rec_fun_test.res\", line 29, characters 3-10", called.contents, 2);
 

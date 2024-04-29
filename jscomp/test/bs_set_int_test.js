@@ -33,37 +33,37 @@ function $eq$star(a, b) {
 }
 
 b("File \"bs_set_int_test.res\", line 21, characters 11-18", $eq$star([
-          1,
-          2,
-          3
-        ], [
-          3,
-          2,
-          1
-        ]));
+  1,
+  2,
+  3
+], [
+  3,
+  2,
+  1
+]));
 
 var u = Belt_SetInt.intersect(Belt_SetInt.fromArray([
-          1,
-          2,
-          3
-        ]), Belt_SetInt.fromArray([
-          3,
-          4,
-          5
-        ]));
+  1,
+  2,
+  3
+]), Belt_SetInt.fromArray([
+  3,
+  4,
+  5
+]));
 
 b("File \"bs_set_int_test.res\", line 27, characters 11-18", Belt_SetInt.eq(Belt_SetInt.fromArray([3]), u));
 
 function range(i, j) {
   return $$Array.init((j - i | 0) + 1 | 0, (function (k) {
-          return k + i | 0;
-        }));
+    return k + i | 0;
+  }));
 }
 
 function revRange(i, j) {
   return $$Array.of_list(List.rev($$Array.to_list($$Array.init((j - i | 0) + 1 | 0, (function (k) {
-                      return k + i | 0;
-                    })))));
+    return k + i | 0;
+  })))));
 }
 
 var v = Belt_SetInt.fromArray($$Array.append(range(100, 1000), revRange(400, 1500)));
@@ -73,8 +73,8 @@ var i = range(100, 1500);
 b("File \"bs_set_int_test.res\", line 37, characters 4-11", Belt_SetInt.eq(Belt_SetInt.fromArray(i), v));
 
 var match = Belt_SetInt.partition(v, (function (x) {
-        return x % 3 === 0;
-      }));
+  return x % 3 === 0;
+}));
 
 var l;
 
@@ -144,15 +144,15 @@ var ss = [
 ];
 
 var v$1 = Belt_SetInt.fromArray([
-      1,
-      222,
-      3,
-      4,
-      2,
-      0,
-      33,
-      -1
-    ]);
+  1,
+  222,
+  3,
+  4,
+  2,
+  0,
+  33,
+  -1
+]);
 
 var minv = Belt_SetInt.minUndefined(v$1);
 
@@ -163,10 +163,10 @@ function approx(loc, x, y) {
 }
 
 eq("File \"bs_set_int_test.res\", line 125, characters 5-12", Belt_SetInt.reduce(v$1, 0, (function (x, y) {
-            return x + y | 0;
-          })), Belt_Array.reduce(ss, 0, (function (prim0, prim1) {
-            return prim0 + prim1 | 0;
-          })));
+  return x + y | 0;
+})), Belt_Array.reduce(ss, 0, (function (prim0, prim1) {
+  return prim0 + prim1 | 0;
+})));
 
 approx("File \"bs_set_int_test.res\", line 126, characters 9-16", -1, minv);
 
@@ -217,8 +217,8 @@ var v$10 = Belt_SetInt.remove(v$9, 1);
 b("File \"bs_set_int_test.res\", line 146, characters 4-11", Belt_SetInt.isEmpty(v$10));
 
 var v$11 = Belt_Array.makeByAndShuffle(1000000, (function (i) {
-        return i;
-      }));
+  return i;
+}));
 
 var u$1 = Belt_SetInt.fromArray(v$11);
 
@@ -337,21 +337,21 @@ var v1 = Belt_SetInt.fromArray(Array_data_util.randomRange(1, 2001));
 var v2 = Belt_SetInt.fromArray(Array_data_util.randomRange(3, 2002));
 
 var v3 = Belt_SetInt.removeMany(v2, [
-      2002,
-      2001
-    ]);
+  2002,
+  2001
+]);
 
 var us = Belt_Array.map(Array_data_util.randomRange(1000, 3000), (function (x) {
-        return Belt_SetInt.has(v$12, x);
-      }));
+  return Belt_SetInt.has(v$12, x);
+}));
 
 var counted = Belt_Array.reduce(us, 0, (function (acc, x) {
-        if (x) {
-          return acc + 1 | 0;
-        } else {
-          return acc;
-        }
-      }));
+  if (x) {
+    return acc + 1 | 0;
+  } else {
+    return acc;
+  }
+}));
 
 eq("File \"bs_set_int_test.res\", line 235, characters 5-12", counted, 1001);
 

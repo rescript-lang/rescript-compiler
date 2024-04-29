@@ -9,9 +9,9 @@ var Entity = {};
 function MakeLayer(Deps) {
   var getLight = function (id) {
     return Curry._1(Deps.presentLight, {
-          id: id,
-          name: "Light 1"
-        });
+      id: id,
+      name: "Light 1"
+    });
   };
   return {
     getLight: getLight
@@ -68,52 +68,52 @@ var Infra = {
 };
 
 var I = Caml_module.init_mod([
-      "recmodule.res",
-      67,
-      30
-    ], {
-      TAG: "Module",
-      _0: [
-        [
-          "Function",
-          "presentJson"
-        ],
-        [
-          "Function",
-          "routes"
-        ]
-      ]
-    });
+  "recmodule.res",
+  67,
+  30
+], {
+  TAG: "Module",
+  _0: [
+    [
+      "Function",
+      "presentJson"
+    ],
+    [
+      "Function",
+      "routes"
+    ]
+  ]
+});
 
 var A = Caml_module.init_mod([
-      "recmodule.res",
-      68,
-      25
-    ], {
-      TAG: "Module",
-      _0: [
-        [
-          "Function",
-          "handleGetLight"
-        ],
-        [
-          "Function",
-          "presentLight"
-        ]
-      ]
-    });
+  "recmodule.res",
+  68,
+  25
+], {
+  TAG: "Module",
+  _0: [
+    [
+      "Function",
+      "handleGetLight"
+    ],
+    [
+      "Function",
+      "presentLight"
+    ]
+  ]
+});
 
 var U = Caml_module.init_mod([
-      "recmodule.res",
-      69,
-      25
-    ], {
-      TAG: "Module",
-      _0: [[
-          "Function",
-          "getLight"
-        ]]
-    });
+  "recmodule.res",
+  69,
+  25
+], {
+  TAG: "Module",
+  _0: [[
+      "Function",
+      "getLight"
+    ]]
+});
 
 function presentJson(json, status) {
   throw {
@@ -135,21 +135,21 @@ function routes(param) {
 }
 
 Caml_module.update_mod({
-      TAG: "Module",
-      _0: [
-        [
-          "Function",
-          "presentJson"
-        ],
-        [
-          "Function",
-          "routes"
-        ]
-      ]
-    }, I, {
-      presentJson: presentJson,
-      routes: routes
-    });
+  TAG: "Module",
+  _0: [
+    [
+      "Function",
+      "presentJson"
+    ],
+    [
+      "Function",
+      "routes"
+    ]
+  ]
+}, I, {
+  presentJson: presentJson,
+  routes: routes
+});
 
 function presentLight(light) {
   return Curry._2(I.presentJson, light, 200);
@@ -160,38 +160,38 @@ function handleGetLight(req) {
 }
 
 Caml_module.update_mod({
-      TAG: "Module",
-      _0: [
-        [
-          "Function",
-          "handleGetLight"
-        ],
-        [
-          "Function",
-          "presentLight"
-        ]
-      ]
-    }, A, {
-      handleGetLight: handleGetLight,
-      presentLight: presentLight
-    });
+  TAG: "Module",
+  _0: [
+    [
+      "Function",
+      "handleGetLight"
+    ],
+    [
+      "Function",
+      "presentLight"
+    ]
+  ]
+}, A, {
+  handleGetLight: handleGetLight,
+  presentLight: presentLight
+});
 
 function getLight(id) {
   return Curry._1(A.presentLight, {
-        id: id,
-        name: "Light 1"
-      });
+    id: id,
+    name: "Light 1"
+  });
 }
 
 Caml_module.update_mod({
-      TAG: "Module",
-      _0: [[
-          "Function",
-          "getLight"
-        ]]
-    }, U, {
-      getLight: getLight
-    });
+  TAG: "Module",
+  _0: [[
+      "Function",
+      "getLight"
+    ]]
+}, U, {
+  getLight: getLight
+});
 
 var App = {
   I: I,

@@ -32,12 +32,12 @@ eq("File \"gpr_3549_test.res\", line 15, characters 5-12", 0.2, 0.2);
 eq("File \"gpr_3549_test.res\", line 16, characters 5-12", 32, 32);
 
 eq("File \"gpr_3549_test.res\", line 17, characters 5-12", others, [
-      0.0,
-      0.0,
-      1.0,
-      1.0,
-      2e3
-    ]);
+  0.0,
+  0.0,
+  1.0,
+  1.0,
+  2e3
+]);
 
 Mt.from_pair_suites("Gpr_3549_test", suites.contents);
 

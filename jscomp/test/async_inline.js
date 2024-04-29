@@ -12,16 +12,16 @@ var inlined = willBeInlined();
 
 function wrapSomethingAsync(param) {
   ((async function (param) {
-          var test = await Promise.resolve("Test");
-          console.log(test);
-        })(777));
+      var test = await Promise.resolve("Test");
+      console.log(test);
+    })(777));
 }
 
 function wrapSomethingAsync2(param) {
   ((async function (param) {
-          var test = await Promise.resolve("Test");
-          console.log(test);
-        })());
+      var test = await Promise.resolve("Test");
+      console.log(test);
+    })());
 }
 
 async function doSomethingAsync(someAsyncFunction) {
@@ -76,8 +76,8 @@ async function nested2(param) {
 
 function onSubmit(param) {
   return React.useCallback(async function (_a, b) {
-        return await b;
-      });
+    return await b;
+  });
 }
 
 var tci = 3;

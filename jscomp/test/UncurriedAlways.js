@@ -21,8 +21,8 @@ var a = 7;
 console.log(a);
 
 [1].map(function (x) {
-      return x + 1 | 0;
-    });
+  return x + 1 | 0;
+});
 
 function ptl(extra) {
   return 10 + extra | 0;
@@ -163,11 +163,11 @@ function fn(cb) {
 }
 
 ((function (s) {
-        console.log({
-              NAME: "foo",
-              VAL: s
-            });
-      })());
+    console.log({
+      NAME: "foo",
+      VAL: s
+    });
+  })());
 
 function fn1(a, b, param) {
   return a() + b | 0;
@@ -175,8 +175,8 @@ function fn1(a, b, param) {
 
 function a$1(__x) {
   return fn1((function () {
-          return 1;
-        }), 2, __x);
+    return 1;
+  }), 2, __x);
 }
 
 function f3(x, y, z) {

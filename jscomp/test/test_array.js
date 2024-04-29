@@ -11,36 +11,36 @@ Caml_array.make_float(30);
 var h = $$Array.sub(v, 0, 2);
 
 var hhh = $$Array.append([
-      1,
-      2,
-      3,
-      4
-    ], [
-      1,
-      2,
-      3,
-      5
-    ]);
+  1,
+  2,
+  3,
+  4
+], [
+  1,
+  2,
+  3,
+  5
+]);
 
 var u = Caml_array.concat({
+  hd: [
+    1,
+    2
+  ],
+  tl: {
+    hd: [
+      2,
+      3
+    ],
+    tl: {
       hd: [
-        1,
-        2
+        3,
+        4
       ],
-      tl: {
-        hd: [
-          2,
-          3
-        ],
-        tl: {
-          hd: [
-            3,
-            4
-          ],
-          tl: /* [] */0
-        }
-      }
-    });
+      tl: /* [] */0
+    }
+  }
+});
 
 var hh = $$Array.blit;
 

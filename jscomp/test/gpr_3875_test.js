@@ -60,8 +60,8 @@ function eq(loc, x, y) {
 }
 
 compilerBug("x", undefined, true, (function (param) {
-        return true;
-      }));
+  return true;
+}));
 
 eq("File \"gpr_3875_test.res\", line 35, characters 5-12", result.contents, "Some x, f returns true");
 

@@ -44,23 +44,23 @@ function add(prim0, prim1) {
 }
 
 Belt_HashMap.mergeMany(empty, [
-      [
-        1,
-        1
-      ],
-      [
-        2,
-        3
-      ],
-      [
-        3,
-        3
-      ],
-      [
-        2,
-        2
-      ]
-    ]);
+  [
+    1,
+    1
+  ],
+  [
+    2,
+    3
+  ],
+  [
+    3,
+    3
+  ],
+  [
+    2,
+    2
+  ]
+]);
 
 eqx("File \"bs_hashmap_test.res\", line 30, characters 6-13", Belt_HashMap.get(empty, 2), 2);
 
@@ -97,8 +97,8 @@ for(var i$1 = 0; i$1 <= 2000; ++i$1){
 eqx("File \"bs_hashmap_test.res\", line 57, characters 6-13", v$1.size, 98000);
 
 b("File \"bs_hashmap_test.res\", line 58, characters 4-11", Belt_Array.every(Array_data_util.range(2001, 100000), (function (x) {
-            return Belt_HashMap.has(v$1, x);
-          })));
+  return Belt_HashMap.has(v$1, x);
+})));
 
 Mt.from_pair_suites("Bs_hashmap_test", suites.contents);
 

@@ -83,9 +83,9 @@ function read_lines3(inc) {
     try {
       var l = input_line(inc);
       return loop({
-            hd: l,
-            tl: acc
-          });
+        hd: l,
+        tl: acc
+      });
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);

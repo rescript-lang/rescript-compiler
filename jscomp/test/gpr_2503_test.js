@@ -30,8 +30,8 @@ function makeWrapper(foo, param) {
 
 function makeWrapper2(foo, param) {
   console.log({
-        foo: foo
-      });
+    foo: foo
+  });
 }
 
 makeWrapper2("a", undefined);

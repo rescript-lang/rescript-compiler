@@ -4,8 +4,8 @@
 var Belt_Array = require("../../lib/js/belt_Array.js");
 
 var a = Belt_Array.map([1], (function (x) {
-        return x;
-      }));
+  return x;
+}));
 
 exports.a = a;
 /* a Not a pure module */

@@ -25,9 +25,9 @@ function setup_sprite(loopOpt, bbox_offsetOpt, bbox_sizeOpt, img_src, max_frames
       0
     ];
   var bbox_size$1 = Caml_obj.equal(bbox_size, [
-        0,
-        0
-      ]) ? frame_size : bbox_size;
+    0,
+    0
+  ]) ? frame_size : bbox_size;
   var img_src$1 = "./sprites/" + img_src;
   return {
     max_frames: max_frames,
@@ -46,106 +46,106 @@ function make_enemy(param) {
   switch (param[0]) {
     case "Goomba" :
         return setup_sprite(undefined, [
-              1,
-              1
-            ], [
-              14,
-              14
-            ], "enemies.png", 2, 10, [
-              16,
-              16
-            ], [
-              0,
-              128
-            ]);
+          1,
+          1
+        ], [
+          14,
+          14
+        ], "enemies.png", 2, 10, [
+          16,
+          16
+        ], [
+          0,
+          128
+        ]);
     case "GKoopa" :
         if (dir === "Left") {
           return setup_sprite(undefined, [
-                4,
-                10
-              ], [
-                11,
-                16
-              ], "enemies.png", 2, 10, [
-                16,
-                27
-              ], [
-                0,
-                69
-              ]);
+            4,
+            10
+          ], [
+            11,
+            16
+          ], "enemies.png", 2, 10, [
+            16,
+            27
+          ], [
+            0,
+            69
+          ]);
         } else {
           return setup_sprite(undefined, [
-                1,
-                10
-              ], [
-                11,
-                16
-              ], "enemies.png", 2, 10, [
-                16,
-                27
-              ], [
-                32,
-                69
-              ]);
+            1,
+            10
+          ], [
+            11,
+            16
+          ], "enemies.png", 2, 10, [
+            16,
+            27
+          ], [
+            32,
+            69
+          ]);
         }
     case "RKoopa" :
         if (dir === "Left") {
           return setup_sprite(undefined, [
-                4,
-                10
-              ], [
-                11,
-                16
-              ], "enemies.png", 2, 10, [
-                16,
-                27
-              ], [
-                0,
-                5
-              ]);
+            4,
+            10
+          ], [
+            11,
+            16
+          ], "enemies.png", 2, 10, [
+            16,
+            27
+          ], [
+            0,
+            5
+          ]);
         } else {
           return setup_sprite(undefined, [
-                1,
-                10
-              ], [
-                11,
-                16
-              ], "enemies.png", 2, 10, [
-                16,
-                27
-              ], [
-                32,
-                5
-              ]);
+            1,
+            10
+          ], [
+            11,
+            16
+          ], "enemies.png", 2, 10, [
+            16,
+            27
+          ], [
+            32,
+            5
+          ]);
         }
     case "GKoopaShell" :
         return setup_sprite(undefined, [
-              2,
-              2
-            ], [
-              12,
-              13
-            ], "enemies.png", 4, 10, [
-              16,
-              16
-            ], [
-              0,
-              96
-            ]);
+          2,
+          2
+        ], [
+          12,
+          13
+        ], "enemies.png", 4, 10, [
+          16,
+          16
+        ], [
+          0,
+          96
+        ]);
     case "RKoopaShell" :
         return setup_sprite(undefined, [
-              2,
-              2
-            ], [
-              12,
-              13
-            ], "enemies.png", 4, 10, [
-              16,
-              16
-            ], [
-              0,
-              32
-            ]);
+          2,
+          2
+        ], [
+          12,
+          13
+        ], "enemies.png", 4, 10, [
+          16,
+          16
+        ], [
+          0,
+          32
+        ]);
     
   }
 }
@@ -154,92 +154,92 @@ function make_particle(x) {
   switch (x) {
     case "GoombaSquish" :
         return setup_sprite(undefined, undefined, undefined, "enemies.png", 1, 0, [
-              16,
-              16
-            ], [
-              0,
-              144
-            ]);
+          16,
+          16
+        ], [
+          0,
+          144
+        ]);
     case "BrickChunkL" :
         return setup_sprite(undefined, undefined, undefined, "chunks.png", 1, 0, [
-              8,
-              8
-            ], [
-              0,
-              0
-            ]);
+          8,
+          8
+        ], [
+          0,
+          0
+        ]);
     case "BrickChunkR" :
         return setup_sprite(undefined, undefined, undefined, "chunks.png", 1, 0, [
-              8,
-              8
-            ], [
-              8,
-              0
-            ]);
+          8,
+          8
+        ], [
+          8,
+          0
+        ]);
     case "Score100" :
         return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, [
-              12,
-              8
-            ], [
-              0,
-              0
-            ]);
+          12,
+          8
+        ], [
+          0,
+          0
+        ]);
     case "Score200" :
         return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, [
-              12,
-              9
-            ], [
-              0,
-              9
-            ]);
+          12,
+          9
+        ], [
+          0,
+          9
+        ]);
     case "Score400" :
         return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, [
-              12,
-              9
-            ], [
-              0,
-              18
-            ]);
+          12,
+          9
+        ], [
+          0,
+          18
+        ]);
     case "Score800" :
         return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, [
-              12,
-              9
-            ], [
-              0,
-              27
-            ]);
+          12,
+          9
+        ], [
+          0,
+          27
+        ]);
     case "Score1000" :
         return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, [
-              14,
-              9
-            ], [
-              13,
-              0
-            ]);
+          14,
+          9
+        ], [
+          13,
+          0
+        ]);
     case "Score2000" :
         return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, [
-              14,
-              9
-            ], [
-              13,
-              9
-            ]);
+          14,
+          9
+        ], [
+          13,
+          9
+        ]);
     case "Score4000" :
         return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, [
-              14,
-              9
-            ], [
-              13,
-              18
-            ]);
+          14,
+          9
+        ], [
+          13,
+          18
+        ]);
     case "Score8000" :
         return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, [
-              14,
-              9
-            ], [
-              13,
-              27
-            ]);
+          14,
+          9
+        ], [
+          13,
+          27
+        ]);
     
   }
 }
@@ -258,120 +258,120 @@ function make_type(typ, dir) {
             switch (typ$1) {
               case "Standing" :
                   return setup_sprite(undefined, [
-                        2,
-                        1
-                      ], [
-                        13,
-                        25
-                      ], "mario-big.png", 1, 0, [
-                        16,
-                        27
-                      ], [
-                        16,
-                        5
-                      ]);
+                    2,
+                    1
+                  ], [
+                    13,
+                    25
+                  ], "mario-big.png", 1, 0, [
+                    16,
+                    27
+                  ], [
+                    16,
+                    5
+                  ]);
               case "Jumping" :
                   return setup_sprite(undefined, [
-                        2,
-                        1
-                      ], [
-                        12,
-                        25
-                      ], "mario-big.png", 1, 0, [
-                        16,
-                        26
-                      ], [
-                        48,
-                        6
-                      ]);
+                    2,
+                    1
+                  ], [
+                    12,
+                    25
+                  ], "mario-big.png", 1, 0, [
+                    16,
+                    26
+                  ], [
+                    48,
+                    6
+                  ]);
               case "Running" :
                   return setup_sprite(undefined, [
-                        2,
-                        1
-                      ], [
-                        13,
-                        25
-                      ], "mario-big.png", 4, 10, [
-                        16,
-                        27
-                      ], [
-                        0,
-                        37
-                      ]);
+                    2,
+                    1
+                  ], [
+                    13,
+                    25
+                  ], "mario-big.png", 4, 10, [
+                    16,
+                    27
+                  ], [
+                    0,
+                    37
+                  ]);
               case "Crouching" :
                   return setup_sprite(undefined, [
-                        2,
-                        10
-                      ], [
-                        13,
-                        17
-                      ], "mario-big.png", 1, 0, [
-                        16,
-                        27
-                      ], [
-                        32,
-                        5
-                      ]);
+                    2,
+                    10
+                  ], [
+                    13,
+                    17
+                  ], "mario-big.png", 1, 0, [
+                    16,
+                    27
+                  ], [
+                    32,
+                    5
+                  ]);
               
             }
           } else {
             switch (typ$1) {
               case "Standing" :
                   return setup_sprite(undefined, [
-                        1,
-                        1
-                      ], [
-                        13,
-                        25
-                      ], "mario-big.png", 1, 0, [
-                        16,
-                        26
-                      ], [
-                        16,
-                        69
-                      ]);
+                    1,
+                    1
+                  ], [
+                    13,
+                    25
+                  ], "mario-big.png", 1, 0, [
+                    16,
+                    26
+                  ], [
+                    16,
+                    69
+                  ]);
               case "Jumping" :
                   return setup_sprite(undefined, [
-                        2,
-                        1
-                      ], [
-                        12,
-                        25
-                      ], "mario-big.png", 1, 0, [
-                        16,
-                        26
-                      ], [
-                        48,
-                        70
-                      ]);
+                    2,
+                    1
+                  ], [
+                    12,
+                    25
+                  ], "mario-big.png", 1, 0, [
+                    16,
+                    26
+                  ], [
+                    48,
+                    70
+                  ]);
               case "Running" :
                   return setup_sprite(undefined, [
-                        2,
-                        1
-                      ], [
-                        13,
-                        25
-                      ], "mario-big.png", 4, 10, [
-                        16,
-                        27
-                      ], [
-                        0,
-                        101
-                      ]);
+                    2,
+                    1
+                  ], [
+                    13,
+                    25
+                  ], "mario-big.png", 4, 10, [
+                    16,
+                    27
+                  ], [
+                    0,
+                    101
+                  ]);
               case "Crouching" :
                   return setup_sprite(undefined, [
-                        2,
-                        10
-                      ], [
-                        13,
-                        17
-                      ], "mario-big.png", 1, 0, [
-                        16,
-                        27
-                      ], [
-                        32,
-                        69
-                      ]);
+                    2,
+                    10
+                  ], [
+                    13,
+                    17
+                  ], "mario-big.png", 1, 0, [
+                    16,
+                    27
+                  ], [
+                    32,
+                    69
+                  ]);
               
             }
           }
@@ -381,238 +381,238 @@ function make_type(typ, dir) {
             switch (typ$2) {
               case "Standing" :
                   return setup_sprite(undefined, [
-                        3,
-                        1
-                      ], [
-                        11,
-                        15
-                      ], "mario-small.png", 1, 0, [
-                        16,
-                        16
-                      ], [
-                        0,
-                        0
-                      ]);
-              case "Jumping" :
-                  return setup_sprite(undefined, [
-                        2,
-                        1
-                      ], [
-                        13,
-                        15
-                      ], "mario-small.png", 2, 10, [
-                        16,
-                        16
-                      ], [
-                        16,
-                        16
-                      ]);
-              case "Running" :
-                  return setup_sprite(undefined, [
-                        2,
-                        1
-                      ], [
-                        12,
-                        15
-                      ], "mario-small.png", 3, 5, [
-                        16,
-                        16
-                      ], [
-                        16,
-                        0
-                      ]);
-              case "Crouching" :
-                  return setup_sprite(undefined, [
-                        1,
-                        5
-                      ], [
-                        14,
-                        10
-                      ], "mario-small.png", 1, 0, [
-                        16,
-                        16
-                      ], [
-                        0,
-                        64
-                      ]);
-              
-            }
-          } else {
-            switch (typ$2) {
-              case "Standing" :
-                  return setup_sprite(undefined, [
-                        1,
-                        1
-                      ], [
-                        11,
-                        15
-                      ], "mario-small.png", 1, 0, [
-                        16,
-                        16
-                      ], [
-                        0,
-                        32
-                      ]);
-              case "Jumping" :
-                  return setup_sprite(undefined, [
-                        2,
-                        1
-                      ], [
-                        13,
-                        15
-                      ], "mario-small.png", 2, 10, [
-                        16,
-                        16
-                      ], [
-                        16,
-                        48
-                      ]);
-              case "Running" :
-                  return setup_sprite(undefined, [
-                        2,
-                        1
-                      ], [
-                        12,
-                        15
-                      ], "mario-small.png", 3, 5, [
-                        16,
-                        16
-                      ], [
-                        16,
-                        32
-                      ]);
-              case "Crouching" :
-                  return setup_sprite(undefined, [
-                        1,
-                        5
-                      ], [
-                        14,
-                        10
-                      ], "mario-small.png", 1, 0, [
-                        16,
-                        16
-                      ], [
-                        0,
-                        64
-                      ]);
-              
-            }
-          }
-        }
-    case "SEnemy" :
-        return make_enemy([
-              typ._0,
-              dir
-            ]);
-    case "SItem" :
-        var x = typ._0;
-        switch (x) {
-          case "Mushroom" :
-              return setup_sprite(undefined, [
-                    2,
-                    0
-                  ], [
-                    12,
-                    16
-                  ], "items.png", 1, 0, [
-                    16,
-                    16
-                  ], [
-                    0,
-                    0
-                  ]);
-          case "FireFlower" :
-              return setup_sprite(undefined, undefined, undefined, "items.png", 1, 0, [
-                    16,
-                    16
-                  ], [
-                    0,
-                    188
-                  ]);
-          case "Star" :
-              return setup_sprite(undefined, undefined, undefined, "items.png", 1, 0, [
-                    16,
-                    16
-                  ], [
-                    16,
-                    48
-                  ]);
-          case "Coin" :
-              return setup_sprite(undefined, [
                     3,
+                    1
+                  ], [
+                    11,
+                    15
+                  ], "mario-small.png", 1, 0, [
+                    16,
+                    16
+                  ], [
+                    0,
                     0
+                  ]);
+              case "Jumping" :
+                  return setup_sprite(undefined, [
+                    2,
+                    1
+                  ], [
+                    13,
+                    15
+                  ], "mario-small.png", 2, 10, [
+                    16,
+                    16
+                  ], [
+                    16,
+                    16
+                  ]);
+              case "Running" :
+                  return setup_sprite(undefined, [
+                    2,
+                    1
                   ], [
                     12,
-                    16
-                  ], "items.png", 3, 15, [
+                    15
+                  ], "mario-small.png", 3, 5, [
                     16,
                     16
                   ], [
-                    0,
-                    80
-                  ]);
-          
-        }
-    case "SBlock" :
-        var x$1 = typ._0;
-        if (typeof x$1 === "object") {
-          return setup_sprite(undefined, undefined, undefined, "blocks.png", 4, 15, [
-                16,
-                16
-              ], [
-                0,
-                16
-              ]);
-        }
-        switch (x$1) {
-          case "QBlockUsed" :
-              return setup_sprite(undefined, undefined, undefined, "blocks.png", 1, 0, [
                     16,
-                    16
-                  ], [
-                    0,
-                    32
-                  ]);
-          case "Brick" :
-              return setup_sprite(undefined, undefined, undefined, "blocks.png", 5, 10, [
-                    16,
-                    16
-                  ], [
-                    0,
                     0
                   ]);
-          case "UnBBlock" :
-              return setup_sprite(undefined, undefined, undefined, "blocks.png", 1, 0, [
-                    16,
-                    16
+              case "Crouching" :
+                  return setup_sprite(undefined, [
+                    1,
+                    5
                   ], [
-                    0,
-                    48
-                  ]);
-          case "Cloud" :
-              return setup_sprite(undefined, undefined, undefined, "blocks.png", 1, 0, [
+                    14,
+                    10
+                  ], "mario-small.png", 1, 0, [
                     16,
                     16
                   ], [
                     0,
                     64
                   ]);
-          case "Panel" :
-              return setup_sprite(undefined, undefined, undefined, "panel.png", 3, 15, [
-                    26,
-                    26
+              
+            }
+          } else {
+            switch (typ$2) {
+              case "Standing" :
+                  return setup_sprite(undefined, [
+                    1,
+                    1
                   ], [
-                    0,
-                    0
-                  ]);
-          case "Ground" :
-              return setup_sprite(undefined, undefined, undefined, "ground.png", 1, 0, [
+                    11,
+                    15
+                  ], "mario-small.png", 1, 0, [
                     16,
                     16
                   ], [
                     0,
                     32
                   ]);
+              case "Jumping" :
+                  return setup_sprite(undefined, [
+                    2,
+                    1
+                  ], [
+                    13,
+                    15
+                  ], "mario-small.png", 2, 10, [
+                    16,
+                    16
+                  ], [
+                    16,
+                    48
+                  ]);
+              case "Running" :
+                  return setup_sprite(undefined, [
+                    2,
+                    1
+                  ], [
+                    12,
+                    15
+                  ], "mario-small.png", 3, 5, [
+                    16,
+                    16
+                  ], [
+                    16,
+                    32
+                  ]);
+              case "Crouching" :
+                  return setup_sprite(undefined, [
+                    1,
+                    5
+                  ], [
+                    14,
+                    10
+                  ], "mario-small.png", 1, 0, [
+                    16,
+                    16
+                  ], [
+                    0,
+                    64
+                  ]);
+              
+            }
+          }
+        }
+    case "SEnemy" :
+        return make_enemy([
+          typ._0,
+          dir
+        ]);
+    case "SItem" :
+        var x = typ._0;
+        switch (x) {
+          case "Mushroom" :
+              return setup_sprite(undefined, [
+                2,
+                0
+              ], [
+                12,
+                16
+              ], "items.png", 1, 0, [
+                16,
+                16
+              ], [
+                0,
+                0
+              ]);
+          case "FireFlower" :
+              return setup_sprite(undefined, undefined, undefined, "items.png", 1, 0, [
+                16,
+                16
+              ], [
+                0,
+                188
+              ]);
+          case "Star" :
+              return setup_sprite(undefined, undefined, undefined, "items.png", 1, 0, [
+                16,
+                16
+              ], [
+                16,
+                48
+              ]);
+          case "Coin" :
+              return setup_sprite(undefined, [
+                3,
+                0
+              ], [
+                12,
+                16
+              ], "items.png", 3, 15, [
+                16,
+                16
+              ], [
+                0,
+                80
+              ]);
+          
+        }
+    case "SBlock" :
+        var x$1 = typ._0;
+        if (typeof x$1 === "object") {
+          return setup_sprite(undefined, undefined, undefined, "blocks.png", 4, 15, [
+            16,
+            16
+          ], [
+            0,
+            16
+          ]);
+        }
+        switch (x$1) {
+          case "QBlockUsed" :
+              return setup_sprite(undefined, undefined, undefined, "blocks.png", 1, 0, [
+                16,
+                16
+              ], [
+                0,
+                32
+              ]);
+          case "Brick" :
+              return setup_sprite(undefined, undefined, undefined, "blocks.png", 5, 10, [
+                16,
+                16
+              ], [
+                0,
+                0
+              ]);
+          case "UnBBlock" :
+              return setup_sprite(undefined, undefined, undefined, "blocks.png", 1, 0, [
+                16,
+                16
+              ], [
+                0,
+                48
+              ]);
+          case "Cloud" :
+              return setup_sprite(undefined, undefined, undefined, "blocks.png", 1, 0, [
+                16,
+                16
+              ], [
+                0,
+                64
+              ]);
+          case "Panel" :
+              return setup_sprite(undefined, undefined, undefined, "panel.png", 3, 15, [
+                26,
+                26
+              ], [
+                0,
+                0
+              ]);
+          case "Ground" :
+              return setup_sprite(undefined, undefined, undefined, "ground.png", 1, 0, [
+                16,
+                16
+              ], [
+                0,
+                32
+              ]);
           
         }
     
@@ -642,12 +642,12 @@ function make(spawn, dir, context) {
 
 function make_bgd(context) {
   var params = setup_sprite(undefined, undefined, undefined, "bgd-1.png", 1, 0, [
-        512,
-        256
-      ], [
-        0,
-        0
-      ]);
+    512,
+    256
+  ], [
+    0,
+    0
+  ]);
   return make_from_params(params, context);
 }
 
@@ -658,9 +658,9 @@ function make_particle$1(ptyp, context) {
 
 function transform_enemy(enemy_typ, spr, dir) {
   var params = make_enemy([
-        enemy_typ,
-        dir
-      ]);
+    enemy_typ,
+    dir
+  ]);
   var img = document.createElement("img");
   img.src = params.img_src;
   spr.params = params;
@@ -762,9 +762,9 @@ function make_score(score, pos, ctx) {
         )
     );
   return make$1([
-        0.5,
-        -0.7
-      ], undefined, t, pos, ctx);
+    0.5,
+    -0.7
+  ], undefined, t, pos, ctx);
 }
 
 function update_vel(part) {
@@ -876,9 +876,9 @@ function make$2($staropt$star, $staropt$star$1, spawnable, context, param) {
 
 function spawn(spawnable, context, param) {
   var match = make$2(undefined, undefined, spawnable, context, [
-        param[0],
-        param[1]
-      ]);
+    param[0],
+    param[1]
+  ]);
   var obj = match[1];
   var spr = match[0];
   switch (spawnable.TAG) {
@@ -957,47 +957,47 @@ function update_player(player, keys, context) {
   var prev_dir = player.dir;
   var prev_vx = Math.abs(player.vel.x);
   List.iter((function (param) {
-          var lr_acc = player.vel.x * 0.2;
-          switch (param) {
-            case "CLeft" :
-                if (!player.crouch) {
-                  if (player.vel.x > - player.params.speed) {
-                    player.vel.x = player.vel.x - (0.4 - lr_acc);
-                  }
-                  player.dir = "Left";
-                  return;
-                } else {
-                  return;
-                }
-            case "CRight" :
-                if (!player.crouch) {
-                  if (player.vel.x < player.params.speed) {
-                    player.vel.x = player.vel.x + (0.4 + lr_acc);
-                  }
-                  player.dir = "Right";
-                  return;
-                } else {
-                  return;
-                }
-            case "CUp" :
-                if (!player.jumping && player.grounded) {
-                  player.jumping = true;
-                  player.grounded = false;
-                  player.vel.y = Caml.float_max(player.vel.y - (5.7 + Math.abs(player.vel.x) * 0.25), -6);
-                  return;
-                } else {
-                  return;
-                }
-            case "CDown" :
-                if (!player.jumping && player.grounded) {
-                  player.crouch = true;
-                  return;
-                } else {
-                  return;
-                }
-            
+    var lr_acc = player.vel.x * 0.2;
+    switch (param) {
+      case "CLeft" :
+          if (!player.crouch) {
+            if (player.vel.x > - player.params.speed) {
+              player.vel.x = player.vel.x - (0.4 - lr_acc);
+            }
+            player.dir = "Left";
+            return;
+          } else {
+            return;
           }
-        }), keys);
+      case "CRight" :
+          if (!player.crouch) {
+            if (player.vel.x < player.params.speed) {
+              player.vel.x = player.vel.x + (0.4 + lr_acc);
+            }
+            player.dir = "Right";
+            return;
+          } else {
+            return;
+          }
+      case "CUp" :
+          if (!player.jumping && player.grounded) {
+            player.jumping = true;
+            player.grounded = false;
+            player.vel.y = Caml.float_max(player.vel.y - (5.7 + Math.abs(player.vel.x) * 0.25), -6);
+            return;
+          } else {
+            return;
+          }
+      case "CDown" :
+          if (!player.jumping && player.grounded) {
+            player.crouch = true;
+            return;
+          } else {
+            return;
+          }
+      
+    }
+  }), keys);
   var v = player.vel.x * 0.9;
   var vel_damped = Math.abs(v) < 0.1 ? 0 : v;
   player.vel.x = vel_damped;
@@ -1006,46 +1006,46 @@ function update_player(player, keys, context) {
     return [
       pl_typ,
       make({
-            TAG: "SPlayer",
-            _0: pl_typ,
-            _1: "Jumping"
-          }, player.dir, context)
+        TAG: "SPlayer",
+        _0: pl_typ,
+        _1: "Jumping"
+      }, player.dir, context)
     ];
   } else if (prev_dir !== player.dir || prev_vx === 0 && Math.abs(player.vel.x) > 0 && !player.jumping) {
     return [
       pl_typ,
       make({
-            TAG: "SPlayer",
-            _0: pl_typ,
-            _1: "Running"
-          }, player.dir, context)
+        TAG: "SPlayer",
+        _0: pl_typ,
+        _1: "Running"
+      }, player.dir, context)
     ];
   } else if (prev_dir !== player.dir && player.jumping && prev_jumping) {
     return [
       pl_typ,
       make({
-            TAG: "SPlayer",
-            _0: pl_typ,
-            _1: "Jumping"
-          }, player.dir, context)
+        TAG: "SPlayer",
+        _0: pl_typ,
+        _1: "Jumping"
+      }, player.dir, context)
     ];
   } else if (player.vel.y === 0 && player.crouch) {
     return [
       pl_typ,
       make({
-            TAG: "SPlayer",
-            _0: pl_typ,
-            _1: "Crouching"
-          }, player.dir, context)
+        TAG: "SPlayer",
+        _0: pl_typ,
+        _1: "Crouching"
+      }, player.dir, context)
     ];
   } else if (player.vel.y === 0 && player.vel.x === 0) {
     return [
       pl_typ,
       make({
-            TAG: "SPlayer",
-            _0: pl_typ,
-            _1: "Standing"
-          }, player.dir, context)
+        TAG: "SPlayer",
+        _0: pl_typ,
+        _1: "Standing"
+      }, player.dir, context)
     ];
   } else {
     return;
@@ -1134,12 +1134,12 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
         return;
     case "GKoopa" :
         var match = make$2(undefined, obj.dir, {
-              TAG: "SEnemy",
-              _0: "GKoopaShell"
-            }, context, [
-              obj.pos.x,
-              obj.pos.y
-            ]);
+          TAG: "SEnemy",
+          _0: "GKoopaShell"
+        }, context, [
+          obj.pos.x,
+          obj.pos.y
+        ]);
         var new_obj = match[1];
         var new_spr = match[0];
         normalize_pos(new_obj.pos, spr.params, new_spr.params);
@@ -1151,12 +1151,12 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
         };
     case "RKoopa" :
         var match$1 = make$2(undefined, obj.dir, {
-              TAG: "SEnemy",
-              _0: "RKoopaShell"
-            }, context, [
-              obj.pos.x,
-              obj.pos.y
-            ]);
+          TAG: "SEnemy",
+          _0: "RKoopaShell"
+        }, context, [
+          obj.pos.x,
+          obj.pos.y
+        ]);
         var new_obj$1 = match$1[1];
         var new_spr$1 = match$1[0];
         normalize_pos(new_obj$1.pos, spr.params, new_spr$1.params);
@@ -1202,12 +1202,12 @@ function dec_health(obj) {
 function evolve_block(obj, context) {
   dec_health(obj);
   var match = make$2(undefined, undefined, {
-        TAG: "SBlock",
-        _0: "QBlockUsed"
-      }, context, [
-        obj.pos.x,
-        obj.pos.y
-      ]);
+    TAG: "SBlock",
+    _0: "QBlockUsed"
+  }, context, [
+    obj.pos.x,
+    obj.pos.y
+  ]);
   return {
     TAG: "Block",
     _0: "QBlockUsed",
@@ -1218,12 +1218,12 @@ function evolve_block(obj, context) {
 
 function spawn_above(player_dir, obj, typ, context) {
   var item = spawn({
-        TAG: "SItem",
-        _0: typ
-      }, context, [
-        obj.pos.x,
-        obj.pos.y
-      ]);
+    TAG: "SItem",
+    _0: typ
+  }, context, [
+    obj.pos.x,
+    obj.pos.y
+  ]);
   var item_obj = item._2;
   item_obj.pos.y = item_obj.pos.y - item._1.params.frame_size[1];
   item_obj.dir = opposite_dir(player_dir);
@@ -1348,9 +1348,9 @@ function kill(collid, ctx) {
         if (collid._0 === "Mushroom") {
           return {
             hd: make_score(o$1.score, [
-                  o$1.pos.x,
-                  o$1.pos.y
-                ], ctx),
+              o$1.pos.x,
+              o$1.pos.y
+            ], ctx),
             tl: /* [] */0
           };
         } else {
@@ -1372,33 +1372,33 @@ function kill(collid, ctx) {
           pos_1$1
         ];
         var p1 = make$1([
-              -5,
-              -5
-            ], [
-              0,
-              0.2
-            ], "BrickChunkL", pos$1, ctx);
+          -5,
+          -5
+        ], [
+          0,
+          0.2
+        ], "BrickChunkL", pos$1, ctx);
         var p2 = make$1([
-              -3,
-              -4
-            ], [
-              0,
-              0.2
-            ], "BrickChunkL", pos$1, ctx);
+          -3,
+          -4
+        ], [
+          0,
+          0.2
+        ], "BrickChunkL", pos$1, ctx);
         var p3 = make$1([
-              3,
-              -4
-            ], [
-              0,
-              0.2
-            ], "BrickChunkR", pos$1, ctx);
+          3,
+          -4
+        ], [
+          0,
+          0.2
+        ], "BrickChunkR", pos$1, ctx);
         var p4 = make$1([
-              5,
-              -5
-            ], [
-              0,
-              0.2
-            ], "BrickChunkR", pos$1, ctx);
+          5,
+          -5
+        ], [
+          0,
+          0.2
+        ], "BrickChunkR", pos$1, ctx);
         return {
           hd: p1,
           tl: {
@@ -1456,27 +1456,27 @@ function render(sprite, param) {
   var match$2 = sprite.params.frame_size;
   var sx = match[0] + sprite.frame.contents * sw;
   return Curry.app(context.drawImage, [
-        sprite.img,
-        sx,
-        match[1],
-        sw,
-        match$1[1],
-        param[0],
-        param[1],
-        match$2[0],
-        match$2[1]
-      ]);
+    sprite.img,
+    sx,
+    match[1],
+    sw,
+    match$1[1],
+    param[0],
+    param[1],
+    match$2[0],
+    match$2[1]
+  ]);
 }
 
 function draw_bgd(bgd, off_x) {
   render(bgd, [
-        - off_x,
-        0
-      ]);
+    - off_x,
+    0
+  ]);
   return render(bgd, [
-        bgd.params.frame_size[0] - off_x,
-        0
-      ]);
+    bgd.params.frame_size[0] - off_x,
+    0
+  ]);
 }
 
 function clear_canvas(canvas) {
@@ -2119,12 +2119,12 @@ function process_collision(dir, c1, c2, state) {
 function broad_phase(collid, all_collids, state) {
   var obj = collid._2;
   return List.filter(function (c) {
-          if (in_viewport(state.vpt, obj.pos) || is_player(collid)) {
-            return true;
-          } else {
-            return out_of_viewport_below(state.vpt, obj.pos.y);
-          }
-        })(all_collids);
+    if (in_viewport(state.vpt, obj.pos) || is_player(collid)) {
+      return true;
+    } else {
+      return out_of_viewport_below(state.vpt, obj.pos.y);
+    }
+  })(all_collids);
 }
 
 function check_collisions(collid, all_collids, state) {
@@ -2195,14 +2195,14 @@ function update_collidable(state, collid, all_collids) {
   var evolved = check_collisions(collid, all_collids, state);
   var vpt_adj_xy = coord_to_viewport(state.vpt, obj.pos);
   render(spr, [
-        vpt_adj_xy.x,
-        vpt_adj_xy.y
-      ]);
+    vpt_adj_xy.x,
+    vpt_adj_xy.y
+  ]);
   if (pressed_keys.bbox === 1) {
     render_bbox(spr, [
-          vpt_adj_xy.x,
-          vpt_adj_xy.y
-        ]);
+      vpt_adj_xy.x,
+      vpt_adj_xy.y
+    ]);
   }
   if (obj.vel.x !== 0 || !is_enemy(collid)) {
     update_animation(spr);
@@ -2239,15 +2239,15 @@ function translate_keys(param) {
     tl: ctrls_1
   };
   return List.fold_left((function (a, x) {
-          if (x[0]) {
-            return {
-              hd: x[1],
-              tl: a
-            };
-          } else {
-            return a;
-          }
-        }), /* [] */0, ctrls);
+    if (x[0]) {
+      return {
+        hd: x[1],
+        tl: a
+      };
+    } else {
+      return a;
+    }
+  }), /* [] */0, ctrls);
 }
 
 function run_update_collid(state, collid, all_collids) {
@@ -2292,9 +2292,9 @@ function update_loop(canvas, param, map_dim) {
   var cwidth = canvas.width / 1;
   var cheight = canvas.height / 1;
   var viewport = make$3([
-        cwidth,
-        cheight
-      ], map_dim);
+    cwidth,
+    cheight
+  ], map_dim);
   var state = {
     bgd: make_bgd(ctx),
     ctx: ctx,
@@ -2333,30 +2333,30 @@ function update_loop(canvas, param, map_dim) {
       game_over: state.game_over
     };
     List.iter((function (obj) {
-            run_update_collid(state$1, obj, objs);
-          }), objs);
+      run_update_collid(state$1, obj, objs);
+    }), objs);
     List.iter((function (part) {
-            $$process(part);
-            var x = part.pos.x - state$1.vpt.pos.x;
-            var y = part.pos.y - state$1.vpt.pos.y;
-            render(part.params.sprite, [
-                  x,
-                  y
-                ]);
-            if (!part.kill) {
-              particles.contents = {
-                hd: part,
-                tl: particles.contents
-              };
-              return;
-            }
-            
-          }), parts);
+      $$process(part);
+      var x = part.pos.x - state$1.vpt.pos.x;
+      var y = part.pos.y - state$1.vpt.pos.y;
+      render(part.params.sprite, [
+        x,
+        y
+      ]);
+      if (!part.kill) {
+        particles.contents = {
+          hd: part,
+          tl: particles.contents
+        };
+        return;
+      }
+      
+    }), parts);
     fps(canvas, fps$1);
     hud(canvas, state$1.score, state$1.coins);
     requestAnimationFrame(function (t) {
-          update_helper(t, state$1, player$1, collid_objs.contents, particles.contents);
-        });
+      update_helper(t, state$1, player$1, collid_objs.contents, particles.contents);
+    });
   };
   update_helper(0, state, player, param[1], /* [] */0);
 }
@@ -2483,15 +2483,15 @@ function convert_list(lst) {
   }
   var h = lst.hd;
   return Pervasives.$at({
-        hd: [
-          h[0],
-          [
-            h[1][0] * 16,
-            h[1][1] * 16
-          ]
-        ],
-        tl: /* [] */0
-      }, convert_list(lst.tl));
+    hd: [
+      h[0],
+      [
+        h[1][0] * 16,
+        h[1][1] * 16
+      ]
+    ],
+    tl: /* [] */0
+  }, convert_list(lst.tl));
 }
 
 function choose_enemy_typ(typ) {
@@ -2545,9 +2545,9 @@ function avoid_overlap(_lst, currentLst) {
     var h = lst.hd;
     if (!mem_loc(h[1], currentLst)) {
       return Pervasives.$at({
-            hd: h,
-            tl: /* [] */0
-          }, avoid_overlap(t, currentLst));
+        hd: h,
+        tl: /* [] */0
+      }, avoid_overlap(t, currentLst));
     }
     _lst = t;
     continue ;
@@ -2568,9 +2568,9 @@ function trim_edges(_lst, blockw, blockh) {
     var pixy = blockh * 16;
     if (!(cx < 128 || pixx - cx < 528 || cy === 0 || pixy - cy < 48)) {
       return Pervasives.$at({
-            hd: h,
-            tl: /* [] */0
-          }, trim_edges(t, blockw, blockh));
+        hd: h,
+        tl: /* [] */0
+      }, trim_edges(t, blockw, blockh));
     }
     _lst = t;
     continue ;
@@ -2582,15 +2582,15 @@ function generate_clouds(cbx, cby, typ, num) {
     return /* [] */0;
   } else {
     return Pervasives.$at({
-          hd: [
-            typ,
-            [
-              cbx,
-              cby
-            ]
-          ],
-          tl: /* [] */0
-        }, generate_clouds(cbx + 1, cby, typ, num - 1 | 0));
+      hd: [
+        typ,
+        [
+          cbx,
+          cby
+        ]
+      ],
+      tl: /* [] */0
+    }, generate_clouds(cbx + 1, cby, typ, num - 1 | 0));
   }
 }
 
@@ -2607,15 +2607,15 @@ function generate_coins(_block_coord) {
       var xc = h[1][0];
       var yc = h[1][1];
       return Pervasives.$at({
-            hd: [
-              0,
-              [
-                xc,
-                yc - 16
-              ]
-            ],
-            tl: /* [] */0
-          }, generate_coins(t));
+        hd: [
+          0,
+          [
+            xc,
+            yc - 16
+          ]
+        ],
+        tl: /* [] */0
+      }, generate_coins(t));
     }
     _block_coord = t;
     continue ;
@@ -3063,9 +3063,9 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
       continue ;
     }
     if (mem_loc([
-            cbx,
-            cby
-          ], acc) || cby === 0) {
+        cbx,
+        cby
+      ], acc) || cby === 0) {
       _cby = cby + 1;
       continue ;
     }
@@ -3103,15 +3103,15 @@ function generate_block_enemies(_block_coord) {
       var xc = h[1][0];
       var yc = h[1][1];
       return Pervasives.$at({
-            hd: [
-              enemy_typ,
-              [
-                xc,
-                yc - 16
-              ]
-            ],
-            tl: /* [] */0
-          }, generate_block_enemies(t));
+        hd: [
+          enemy_typ,
+          [
+            xc,
+            yc - 16
+          ]
+        ],
+        tl: /* [] */0
+      }, generate_block_enemies(t));
     }
     _block_coord = t;
     continue ;
@@ -3132,9 +3132,9 @@ function generate_block_locs(blockw, blockh, _cbx, _cby, _acc) {
       continue ;
     }
     if (mem_loc([
-            cbx,
-            cby
-          ], acc) || cby === 0) {
+        cbx,
+        cby
+      ], acc) || cby === 0) {
       _cby = cby + 1;
       continue ;
     }
@@ -3154,12 +3154,12 @@ function generate_block_locs(blockw, blockh, _cbx, _cby, _acc) {
 
 function generate_panel(context, blockw, blockh) {
   return spawn({
-        TAG: "SBlock",
-        _0: "Panel"
-      }, context, [
-        blockw * 16 - 256,
-        blockh * 16 * 2 / 3
-      ]);
+    TAG: "SBlock",
+    _0: "Panel"
+  }, context, [
+    blockw * 16 - 256,
+    blockh * 16 * 2 / 3
+  ]);
 }
 
 function generate_ground(blockw, blockh, _inc, _acc) {
@@ -3172,15 +3172,15 @@ function generate_ground(blockw, blockh, _inc, _acc) {
     if (inc > 10) {
       var skip = Random.$$int(10);
       var newacc = Pervasives.$at(acc, {
-            hd: [
-              4,
-              [
-                inc * 16,
-                blockh * 16
-              ]
-            ],
-            tl: /* [] */0
-          });
+        hd: [
+          4,
+          [
+            inc * 16,
+            blockh * 16
+          ]
+        ],
+        tl: /* [] */0
+      });
       if (skip === 7 && blockw - inc > 32) {
         _inc = inc + 1;
         continue ;
@@ -3190,15 +3190,15 @@ function generate_ground(blockw, blockh, _inc, _acc) {
       continue ;
     }
     var newacc$1 = Pervasives.$at(acc, {
-          hd: [
-            4,
-            [
-              inc * 16,
-              blockh * 16
-            ]
-          ],
-          tl: /* [] */0
-        });
+      hd: [
+        4,
+        [
+          inc * 16,
+          blockh * 16
+        ]
+      ],
+      tl: /* [] */0
+    });
     _acc = newacc$1;
     _inc = inc + 1;
     continue ;
@@ -3212,13 +3212,13 @@ function convert_to_block_obj(lst, context) {
   var h = lst.hd;
   var sblock_typ = choose_sblock_typ(h[0]);
   var ob = spawn({
-        TAG: "SBlock",
-        _0: sblock_typ
-      }, context, h[1]);
+    TAG: "SBlock",
+    _0: sblock_typ
+  }, context, h[1]);
   return Pervasives.$at({
-        hd: ob,
-        tl: /* [] */0
-      }, convert_to_block_obj(lst.tl, context));
+    hd: ob,
+    tl: /* [] */0
+  }, convert_to_block_obj(lst.tl, context));
 }
 
 function convert_to_enemy_obj(lst, context) {
@@ -3228,13 +3228,13 @@ function convert_to_enemy_obj(lst, context) {
   var h = lst.hd;
   var senemy_typ = choose_enemy_typ(h[0]);
   var ob = spawn({
-        TAG: "SEnemy",
-        _0: senemy_typ
-      }, context, h[1]);
+    TAG: "SEnemy",
+    _0: senemy_typ
+  }, context, h[1]);
   return Pervasives.$at({
-        hd: ob,
-        tl: /* [] */0
-      }, convert_to_enemy_obj(lst.tl, context));
+    hd: ob,
+    tl: /* [] */0
+  }, convert_to_enemy_obj(lst.tl, context));
 }
 
 function convert_to_coin_obj(lst, context) {
@@ -3242,13 +3242,13 @@ function convert_to_coin_obj(lst, context) {
     return /* [] */0;
   }
   var ob = spawn({
-        TAG: "SItem",
-        _0: "Coin"
-      }, context, lst.hd[1]);
+    TAG: "SItem",
+    _0: "Coin"
+  }, context, lst.hd[1]);
   return Pervasives.$at({
-        hd: ob,
-        tl: /* [] */0
-      }, convert_to_coin_obj(lst.tl, context));
+    hd: ob,
+    tl: /* [] */0
+  }, convert_to_coin_obj(lst.tl, context));
 }
 
 function generate_helper(blockw, blockh, cx, cy, context) {
@@ -3270,9 +3270,9 @@ function generate_helper(blockw, blockh, cx, cy, context) {
   var coin_objects = convert_to_coin_obj(undup_coin_locs, context);
   var obj_panel = generate_panel(context, blockw, blockh);
   return Pervasives.$at(all_blocks, Pervasives.$at(obj_converted_enemies, Pervasives.$at(coin_objects, Pervasives.$at(obj_enemy_blocks, {
-                    hd: obj_panel,
-                    tl: /* [] */0
-                  }))));
+    hd: obj_panel,
+    tl: /* [] */0
+  }))));
 }
 
 function generate(w, h, context) {
@@ -3280,13 +3280,13 @@ function generate(w, h, context) {
   var blockh = h / 16 - 1;
   var collide_list = generate_helper(blockw, blockh, 0, 0, context);
   var player = spawn({
-        TAG: "SPlayer",
-        _0: "SmallM",
-        _1: "Standing"
-      }, context, [
-        100,
-        224
-      ]);
+    TAG: "SPlayer",
+    _0: "SmallM",
+    _1: "Standing"
+  }, context, [
+    100,
+    224
+  ]);
   return [
     player,
     collide_list
@@ -3326,9 +3326,9 @@ function load(param) {
   document.addEventListener("keyup", keyup, true);
   Random.self_init();
   update_loop(canvas, generate(2400, 256, context), [
-        2400,
-        256
-      ]);
+    2400,
+    256
+  ]);
   console.log("asd");
 }
 
@@ -3342,32 +3342,32 @@ function inc_counter(param) {
 
 function preload(param) {
   return List.map((function (img_src) {
-          var img_src$1 = "sprites/" + img_src;
-          var img = document.createElement("img");
-          img.src = img_src$1;
-          img.addEventListener("load", (function (ev) {
-                  inc_counter();
-                  return true;
-                }), true);
-        }), {
-        hd: "blocks.png",
+    var img_src$1 = "sprites/" + img_src;
+    var img = document.createElement("img");
+    img.src = img_src$1;
+    img.addEventListener("load", (function (ev) {
+      inc_counter();
+      return true;
+    }), true);
+  }), {
+    hd: "blocks.png",
+    tl: {
+      hd: "items.png",
+      tl: {
+        hd: "enemies.png",
         tl: {
-          hd: "items.png",
-          tl: {
-            hd: "enemies.png",
-            tl: {
-              hd: "mario-small.png",
-              tl: /* [] */0
-            }
-          }
+          hd: "mario-small.png",
+          tl: /* [] */0
         }
-      });
+      }
+    }
+  });
 }
 
 window.onload = (function (param) {
-    preload();
-    return true;
-  });
+  preload();
+  return true;
+});
 
 var Main = {
   Html: undefined,

@@ -28,8 +28,8 @@ function test(param) {
     };
   };
   f(10, (function (param) {
-          
-        }));
+    
+  }));
   return v.contents;
 }
 
@@ -38,18 +38,18 @@ function test_closure(param) {
     contents: 0
   };
   var arr = Caml_array.make(6, (function (x) {
-          return x;
-        }));
+    return x;
+  }));
   for(var i = 0; i <= 5; ++i){
     Caml_array.set(arr, i, (function(i){
-        return function (param) {
-          return i;
-        }
-        }(i)));
+    return function (param) {
+      return i;
+    }
+    }(i)));
   }
   $$Array.iter((function (i) {
-          v.contents = v.contents + Curry._1(i, 0) | 0;
-        }), arr);
+    v.contents = v.contents + Curry._1(i, 0) | 0;
+  }), arr);
   return v.contents;
 }
 
@@ -58,59 +58,59 @@ function test_closure2(param) {
     contents: 0
   };
   var arr = Caml_array.make(6, (function (x) {
-          return x;
-        }));
+    return x;
+  }));
   for(var i = 0; i <= 5; ++i){
     var j = i + i | 0;
     Caml_array.set(arr, i, (function(j){
-        return function (param) {
-          return j;
-        }
-        }(j)));
+    return function (param) {
+      return j;
+    }
+    }(j)));
   }
   $$Array.iter((function (i) {
-          v.contents = v.contents + Curry._1(i, 0) | 0;
-        }), arr);
+    v.contents = v.contents + Curry._1(i, 0) | 0;
+  }), arr);
   return v.contents;
 }
 
 Mt.from_pair_suites("Cps_test", {
+  hd: [
+    "cps_test_sum",
+    (function (param) {
+      return {
+        TAG: "Eq",
+        _0: 55,
+        _1: test()
+      };
+    })
+  ],
+  tl: {
+    hd: [
+      "cps_test_closure",
+      (function (param) {
+        return {
+          TAG: "Eq",
+          _0: 15,
+          _1: test_closure()
+        };
+      })
+    ],
+    tl: {
       hd: [
-        "cps_test_sum",
+        "cps_test_closure2",
         (function (param) {
-            return {
-              TAG: "Eq",
-              _0: 55,
-              _1: test()
-            };
-          })
+          return {
+            TAG: "Eq",
+            _0: 30,
+            _1: test_closure2()
+          };
+        })
       ],
-      tl: {
-        hd: [
-          "cps_test_closure",
-          (function (param) {
-              return {
-                TAG: "Eq",
-                _0: 15,
-                _1: test_closure()
-              };
-            })
-        ],
-        tl: {
-          hd: [
-            "cps_test_closure2",
-            (function (param) {
-                return {
-                  TAG: "Eq",
-                  _0: 30,
-                  _1: test_closure2()
-                };
-              })
-          ],
-          tl: /* [] */0
-        }
-      }
-    });
+      tl: /* [] */0
+    }
+  }
+});
 
 exports.test = test;
 exports.test_closure = test_closure;

@@ -28,12 +28,12 @@ function eq(loc, param) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -50,9 +50,9 @@ var string_config = {
 };
 
 eq("File \"ffi_js_test.res\", line 30, characters 12-19", [
-      6,
-      $$higher_order(1)(2, 3)
-    ]);
+  6,
+  $$higher_order(1)(2, 3)
+]);
 
 var same_type_0 = {
   hd: int_config,
@@ -82,28 +82,28 @@ var same_type = [
 ];
 
 eq("File \"ffi_js_test.res\", line 38, characters 5-12", [
-      Object.keys(int_config).length,
-      2
-    ]);
+  Object.keys(int_config).length,
+  2
+]);
 
 eq("File \"ffi_js_test.res\", line 39, characters 5-12", [
-      Object.keys(string_config).length,
-      2
-    ]);
+  Object.keys(string_config).length,
+  2
+]);
 
 var u = {
   contents: 3
 };
 
 var side_effect_config = (u.contents = u.contents + 1 | 0, "Int", {
-    hi: 3,
-    low: 32
-  });
+  hi: 3,
+  low: 32
+});
 
 eq("File \"ffi_js_test.res\", line 53, characters 12-19", [
-      u.contents,
-      4
-    ]);
+  u.contents,
+  4
+]);
 
 function vv(z) {
   return z.hh();
@@ -141,9 +141,9 @@ function ffff(x) {
   ];
   var match = x[3];
   console.log([
-        match[0],
-        match[1]
-      ]);
+    match[0],
+    match[1]
+  ]);
   console.log(x.getGADT);
   var match$1 = x.getGADT2;
   console.log(match$1[0], match$1[1]);

@@ -17,12 +17,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -38,9 +38,9 @@ var v = {
 };
 
 var h = (v.contents = v.contents + 1 | 0, {
-    hi: 2,
-    lo: 0
-  });
+  hi: 2,
+  lo: 0
+});
 
 var z = (v.contents = v.contents + 1 | 0, "Float", add(3.0, 2.0));
 

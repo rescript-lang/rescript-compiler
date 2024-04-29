@@ -17,33 +17,33 @@ function bark(param) {
   return function (x, y) {
     var o = this ;
     console.log([
-          o.length,
-          o.x,
-          o.y,
-          x,
-          y
-        ]);
+      o.length,
+      o.x,
+      o.y,
+      x,
+      y
+    ]);
     return x + y | 0;
   };
 }
 
 var js_obj = {
   bark: (function (x, y) {
-      var o = this ;
-      console.log(o);
-      return x + y | 0;
-    })
+    var o = this ;
+    console.log(o);
+    return x + y | 0;
+  })
 };
 
 function f(x) {
   x.onload = (function () {
-      var o = this ;
-      console.log(o);
-    });
+    var o = this ;
+    console.log(o);
+  });
   return Curry._2(x.addEventListener, "onload", (function () {
-          var o = this ;
-          console.log(o.response);
-        }));
+    var o = this ;
+    console.log(o.response);
+  }));
 }
 
 function u(x) {

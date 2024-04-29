@@ -154,32 +154,32 @@ function find(x, _param) {
 }
 
 var m = List.fold_left((function (acc, param) {
-        return add(param[0], param[1], acc);
-      }), "Empty", {
+  return add(param[0], param[1], acc);
+}), "Empty", {
+  hd: [
+    10,
+    /* 'a' */97
+  ],
+  tl: {
+    hd: [
+      3,
+      /* 'b' */98
+    ],
+    tl: {
       hd: [
-        10,
-        /* 'a' */97
+        7,
+        /* 'c' */99
       ],
       tl: {
         hd: [
-          3,
-          /* 'b' */98
+          20,
+          /* 'd' */100
         ],
-        tl: {
-          hd: [
-            7,
-            /* 'c' */99
-          ],
-          tl: {
-            hd: [
-              20,
-              /* 'd' */100
-            ],
-            tl: /* [] */0
-          }
-        }
+        tl: /* [] */0
       }
-    });
+    }
+  }
+});
 
 function height$1(param) {
   if (typeof param !== "object") {
@@ -330,57 +330,57 @@ function find$1(x, _param) {
 }
 
 var s = List.fold_left((function (acc, param) {
-        return add$1(param[0], param[1], acc);
-      }), "Empty", {
+  return add$1(param[0], param[1], acc);
+}), "Empty", {
+  hd: [
+    "10",
+    /* 'a' */97
+  ],
+  tl: {
+    hd: [
+      "3",
+      /* 'b' */98
+    ],
+    tl: {
       hd: [
-        "10",
-        /* 'a' */97
+        "7",
+        /* 'c' */99
       ],
       tl: {
         hd: [
-          "3",
-          /* 'b' */98
-        ],
-        tl: {
-          hd: [
-            "7",
-            /* 'c' */99
-          ],
-          tl: {
-            hd: [
-              "20",
-              /* 'd' */100
-            ],
-            tl: /* [] */0
-          }
-        }
-      }
-    });
-
-Mt.from_pair_suites("Map_find_test", {
-      hd: [
-        "int",
-        (function (param) {
-            return {
-              TAG: "Eq",
-              _0: find(10, m),
-              _1: /* 'a' */97
-            };
-          })
-      ],
-      tl: {
-        hd: [
-          "string",
-          (function (param) {
-              return {
-                TAG: "Eq",
-                _0: find$1("10", s),
-                _1: /* 'a' */97
-              };
-            })
+          "20",
+          /* 'd' */100
         ],
         tl: /* [] */0
       }
-    });
+    }
+  }
+});
+
+Mt.from_pair_suites("Map_find_test", {
+  hd: [
+    "int",
+    (function (param) {
+      return {
+        TAG: "Eq",
+        _0: find(10, m),
+        _1: /* 'a' */97
+      };
+    })
+  ],
+  tl: {
+    hd: [
+      "string",
+      (function (param) {
+        return {
+          TAG: "Eq",
+          _0: find$1("10", s),
+          _1: /* 'a' */97
+        };
+      })
+    ],
+    tl: /* [] */0
+  }
+});
 
 /* m Not a pure module */

@@ -7,484 +7,484 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var suites_0 = [
   "_NaN <> _NaN",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: false,
-        _1: NaN === NaN
-      };
-    })
+    return {
+      TAG: "Eq",
+      _0: false,
+      _1: NaN === NaN
+    };
+  })
 ];
 
 var suites_1 = {
   hd: [
     "isNaN - _NaN",
     (function (param) {
-        return {
-          TAG: "Eq",
-          _0: true,
-          _1: Number.isNaN(NaN)
-        };
-      })
+      return {
+        TAG: "Eq",
+        _0: true,
+        _1: Number.isNaN(NaN)
+      };
+    })
   ],
   tl: {
     hd: [
       "isNaN - 0.",
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: false,
-            _1: Number.isNaN(0)
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: false,
+          _1: Number.isNaN(0)
+        };
+      })
     ],
     tl: {
       hd: [
         "isFinite - infinity",
         (function (param) {
-            return {
-              TAG: "Eq",
-              _0: false,
-              _1: Number.isFinite(Pervasives.infinity)
-            };
-          })
+          return {
+            TAG: "Eq",
+            _0: false,
+            _1: Number.isFinite(Pervasives.infinity)
+          };
+        })
       ],
       tl: {
         hd: [
           "isFinite - neg_infinity",
           (function (param) {
-              return {
-                TAG: "Eq",
-                _0: false,
-                _1: Number.isFinite(Pervasives.neg_infinity)
-              };
-            })
+            return {
+              TAG: "Eq",
+              _0: false,
+              _1: Number.isFinite(Pervasives.neg_infinity)
+            };
+          })
         ],
         tl: {
           hd: [
             "isFinite - _NaN",
             (function (param) {
-                return {
-                  TAG: "Eq",
-                  _0: false,
-                  _1: Number.isFinite(NaN)
-                };
-              })
+              return {
+                TAG: "Eq",
+                _0: false,
+                _1: Number.isFinite(NaN)
+              };
+            })
           ],
           tl: {
             hd: [
               "isFinite - 0.",
               (function (param) {
-                  return {
-                    TAG: "Eq",
-                    _0: true,
-                    _1: Number.isFinite(0)
-                  };
-                })
+                return {
+                  TAG: "Eq",
+                  _0: true,
+                  _1: Number.isFinite(0)
+                };
+              })
             ],
             tl: {
               hd: [
                 "toExponential",
                 (function (param) {
-                    return {
-                      TAG: "Eq",
-                      _0: "1.23456e+2",
-                      _1: (123.456).toExponential()
-                    };
-                  })
+                  return {
+                    TAG: "Eq",
+                    _0: "1.23456e+2",
+                    _1: (123.456).toExponential()
+                  };
+                })
               ],
               tl: {
                 hd: [
                   "toExponential - large number",
                   (function (param) {
-                      return {
-                        TAG: "Eq",
-                        _0: "1.2e+21",
-                        _1: (1.2e21).toExponential()
-                      };
-                    })
+                    return {
+                      TAG: "Eq",
+                      _0: "1.2e+21",
+                      _1: (1.2e21).toExponential()
+                    };
+                  })
                 ],
                 tl: {
                   hd: [
                     "toExponentialWithPrecision - digits:2",
                     (function (param) {
-                        return {
-                          TAG: "Eq",
-                          _0: "1.23e+2",
-                          _1: (123.456).toExponential(2)
-                        };
-                      })
+                      return {
+                        TAG: "Eq",
+                        _0: "1.23e+2",
+                        _1: (123.456).toExponential(2)
+                      };
+                    })
                   ],
                   tl: {
                     hd: [
                       "toExponentialWithPrecision - digits:4",
                       (function (param) {
-                          return {
-                            TAG: "Eq",
-                            _0: "1.2346e+2",
-                            _1: (123.456).toExponential(4)
-                          };
-                        })
+                        return {
+                          TAG: "Eq",
+                          _0: "1.2346e+2",
+                          _1: (123.456).toExponential(4)
+                        };
+                      })
                     ],
                     tl: {
                       hd: [
                         "toExponentialWithPrecision - digits:20",
                         (function (param) {
-                            return {
-                              TAG: "Eq",
-                              _0: "0.00000000000000000000e+0",
-                              _1: (0).toExponential(20)
-                            };
-                          })
+                          return {
+                            TAG: "Eq",
+                            _0: "0.00000000000000000000e+0",
+                            _1: (0).toExponential(20)
+                          };
+                        })
                       ],
                       tl: {
                         hd: [
                           "File \"js_float_test.res\", line 27, characters 5-12",
                           (function (param) {
-                              return {
-                                TAG: "ThrowAny",
-                                _0: (function (param) {
-                                    (0).toExponential(101);
-                                  })
-                              };
-                            })
+                            return {
+                              TAG: "ThrowAny",
+                              _0: (function (param) {
+                                (0).toExponential(101);
+                              })
+                            };
+                          })
                         ],
                         tl: {
                           hd: [
                             "toExponentialWithPrecision - digits:-1",
                             (function (param) {
-                                return {
-                                  TAG: "ThrowAny",
-                                  _0: (function (param) {
-                                      (0).toExponential(-1);
-                                    })
-                                };
-                              })
+                              return {
+                                TAG: "ThrowAny",
+                                _0: (function (param) {
+                                  (0).toExponential(-1);
+                                })
+                              };
+                            })
                           ],
                           tl: {
                             hd: [
                               "toFixed",
                               (function (param) {
-                                  return {
-                                    TAG: "Eq",
-                                    _0: "123",
-                                    _1: (123.456).toFixed()
-                                  };
-                                })
+                                return {
+                                  TAG: "Eq",
+                                  _0: "123",
+                                  _1: (123.456).toFixed()
+                                };
+                              })
                             ],
                             tl: {
                               hd: [
                                 "toFixed - large number",
                                 (function (param) {
-                                    return {
-                                      TAG: "Eq",
-                                      _0: "1.2e+21",
-                                      _1: (1.2e21).toFixed()
-                                    };
-                                  })
+                                  return {
+                                    TAG: "Eq",
+                                    _0: "1.2e+21",
+                                    _1: (1.2e21).toFixed()
+                                  };
+                                })
                               ],
                               tl: {
                                 hd: [
                                   "toFixedWithPrecision - digits:2",
                                   (function (param) {
-                                      return {
-                                        TAG: "Eq",
-                                        _0: "123.46",
-                                        _1: (123.456).toFixed(2)
-                                      };
-                                    })
+                                    return {
+                                      TAG: "Eq",
+                                      _0: "123.46",
+                                      _1: (123.456).toFixed(2)
+                                    };
+                                  })
                                 ],
                                 tl: {
                                   hd: [
                                     "toFixedWithPrecision - digits:4",
                                     (function (param) {
-                                        return {
-                                          TAG: "Eq",
-                                          _0: "123.4560",
-                                          _1: (123.456).toFixed(4)
-                                        };
-                                      })
+                                      return {
+                                        TAG: "Eq",
+                                        _0: "123.4560",
+                                        _1: (123.456).toFixed(4)
+                                      };
+                                    })
                                   ],
                                   tl: {
                                     hd: [
                                       "toFixedWithPrecision - digits:20",
                                       (function (param) {
-                                          return {
-                                            TAG: "Eq",
-                                            _0: "0.00000000000000000000",
-                                            _1: (0).toFixed(20)
-                                          };
-                                        })
+                                        return {
+                                          TAG: "Eq",
+                                          _0: "0.00000000000000000000",
+                                          _1: (0).toFixed(20)
+                                        };
+                                      })
                                     ],
                                     tl: {
                                       hd: [
                                         "toFixedWithPrecision - digits:101",
                                         (function (param) {
-                                            return {
-                                              TAG: "ThrowAny",
-                                              _0: (function (param) {
-                                                  (0).toFixed(101);
-                                                })
-                                            };
-                                          })
+                                          return {
+                                            TAG: "ThrowAny",
+                                            _0: (function (param) {
+                                              (0).toFixed(101);
+                                            })
+                                          };
+                                        })
                                       ],
                                       tl: {
                                         hd: [
                                           "toFixedWithPrecision - digits:-1",
                                           (function (param) {
-                                              return {
-                                                TAG: "ThrowAny",
-                                                _0: (function (param) {
-                                                    (0).toFixed(-1);
-                                                  })
-                                              };
-                                            })
+                                            return {
+                                              TAG: "ThrowAny",
+                                              _0: (function (param) {
+                                                (0).toFixed(-1);
+                                              })
+                                            };
+                                          })
                                         ],
                                         tl: {
                                           hd: [
                                             "toPrecision",
                                             (function (param) {
-                                                return {
-                                                  TAG: "Eq",
-                                                  _0: "123.456",
-                                                  _1: (123.456).toPrecision()
-                                                };
-                                              })
+                                              return {
+                                                TAG: "Eq",
+                                                _0: "123.456",
+                                                _1: (123.456).toPrecision()
+                                              };
+                                            })
                                           ],
                                           tl: {
                                             hd: [
                                               "toPrecision - large number",
                                               (function (param) {
-                                                  return {
-                                                    TAG: "Eq",
-                                                    _0: "1.2e+21",
-                                                    _1: (1.2e21).toPrecision()
-                                                  };
-                                                })
+                                                return {
+                                                  TAG: "Eq",
+                                                  _0: "1.2e+21",
+                                                  _1: (1.2e21).toPrecision()
+                                                };
+                                              })
                                             ],
                                             tl: {
                                               hd: [
                                                 "toPrecisionWithPrecision - digits:2",
                                                 (function (param) {
-                                                    return {
-                                                      TAG: "Eq",
-                                                      _0: "1.2e+2",
-                                                      _1: (123.456).toPrecision(2)
-                                                    };
-                                                  })
+                                                  return {
+                                                    TAG: "Eq",
+                                                    _0: "1.2e+2",
+                                                    _1: (123.456).toPrecision(2)
+                                                  };
+                                                })
                                               ],
                                               tl: {
                                                 hd: [
                                                   "toPrecisionWithPrecision - digits:4",
                                                   (function (param) {
-                                                      return {
-                                                        TAG: "Eq",
-                                                        _0: "123.5",
-                                                        _1: (123.456).toPrecision(4)
-                                                      };
-                                                    })
+                                                    return {
+                                                      TAG: "Eq",
+                                                      _0: "123.5",
+                                                      _1: (123.456).toPrecision(4)
+                                                    };
+                                                  })
                                                 ],
                                                 tl: {
                                                   hd: [
                                                     "toPrecisionWithPrecision - digits:20",
                                                     (function (param) {
-                                                        return {
-                                                          TAG: "Eq",
-                                                          _0: "0.0000000000000000000",
-                                                          _1: (0).toPrecision(20)
-                                                        };
-                                                      })
+                                                      return {
+                                                        TAG: "Eq",
+                                                        _0: "0.0000000000000000000",
+                                                        _1: (0).toPrecision(20)
+                                                      };
+                                                    })
                                                   ],
                                                   tl: {
                                                     hd: [
                                                       "File \"js_float_test.res\", line 68, characters 5-12",
                                                       (function (param) {
-                                                          return {
-                                                            TAG: "ThrowAny",
-                                                            _0: (function (param) {
-                                                                (0).toPrecision(101);
-                                                              })
-                                                          };
-                                                        })
+                                                        return {
+                                                          TAG: "ThrowAny",
+                                                          _0: (function (param) {
+                                                            (0).toPrecision(101);
+                                                          })
+                                                        };
+                                                      })
                                                     ],
                                                     tl: {
                                                       hd: [
                                                         "toPrecisionWithPrecision - digits:-1",
                                                         (function (param) {
-                                                            return {
-                                                              TAG: "ThrowAny",
-                                                              _0: (function (param) {
-                                                                  (0).toPrecision(-1);
-                                                                })
-                                                            };
-                                                          })
+                                                          return {
+                                                            TAG: "ThrowAny",
+                                                            _0: (function (param) {
+                                                              (0).toPrecision(-1);
+                                                            })
+                                                          };
+                                                        })
                                                       ],
                                                       tl: {
                                                         hd: [
                                                           "toString",
                                                           (function (param) {
-                                                              return {
-                                                                TAG: "Eq",
-                                                                _0: "1.23",
-                                                                _1: (1.23).toString()
-                                                              };
-                                                            })
+                                                            return {
+                                                              TAG: "Eq",
+                                                              _0: "1.23",
+                                                              _1: (1.23).toString()
+                                                            };
+                                                          })
                                                         ],
                                                         tl: {
                                                           hd: [
                                                             "toString - large number",
                                                             (function (param) {
-                                                                return {
-                                                                  TAG: "Eq",
-                                                                  _0: "1.2e+21",
-                                                                  _1: (1.2e21).toString()
-                                                                };
-                                                              })
+                                                              return {
+                                                                TAG: "Eq",
+                                                                _0: "1.2e+21",
+                                                                _1: (1.2e21).toString()
+                                                              };
+                                                            })
                                                           ],
                                                           tl: {
                                                             hd: [
                                                               "toStringWithRadix - radix:2",
                                                               (function (param) {
-                                                                  return {
-                                                                    TAG: "Eq",
-                                                                    _0: "1111011.0111010010111100011010100111111011111001110111",
-                                                                    _1: (123.456).toString(2)
-                                                                  };
-                                                                })
+                                                                return {
+                                                                  TAG: "Eq",
+                                                                  _0: "1111011.0111010010111100011010100111111011111001110111",
+                                                                  _1: (123.456).toString(2)
+                                                                };
+                                                              })
                                                             ],
                                                             tl: {
                                                               hd: [
                                                                 "toStringWithRadix - radix:16",
                                                                 (function (param) {
-                                                                    return {
-                                                                      TAG: "Eq",
-                                                                      _0: "7b.74bc6a7ef9dc",
-                                                                      _1: (123.456).toString(16)
-                                                                    };
-                                                                  })
+                                                                  return {
+                                                                    TAG: "Eq",
+                                                                    _0: "7b.74bc6a7ef9dc",
+                                                                    _1: (123.456).toString(16)
+                                                                  };
+                                                                })
                                                               ],
                                                               tl: {
                                                                 hd: [
                                                                   "toStringWithRadix - radix:36",
                                                                   (function (param) {
-                                                                      return {
-                                                                        TAG: "Eq",
-                                                                        _0: "3f",
-                                                                        _1: (123).toString(36)
-                                                                      };
-                                                                    })
+                                                                    return {
+                                                                      TAG: "Eq",
+                                                                      _0: "3f",
+                                                                      _1: (123).toString(36)
+                                                                    };
+                                                                  })
                                                                 ],
                                                                 tl: {
                                                                   hd: [
                                                                     "toStringWithRadix - radix:37",
                                                                     (function (param) {
-                                                                        return {
-                                                                          TAG: "ThrowAny",
-                                                                          _0: (function (param) {
-                                                                              (0).toString(37);
-                                                                            })
-                                                                        };
-                                                                      })
+                                                                      return {
+                                                                        TAG: "ThrowAny",
+                                                                        _0: (function (param) {
+                                                                          (0).toString(37);
+                                                                        })
+                                                                      };
+                                                                    })
                                                                   ],
                                                                   tl: {
                                                                     hd: [
                                                                       "toStringWithRadix - radix:1",
                                                                       (function (param) {
-                                                                          return {
-                                                                            TAG: "ThrowAny",
-                                                                            _0: (function (param) {
-                                                                                (0).toString(1);
-                                                                              })
-                                                                          };
-                                                                        })
+                                                                        return {
+                                                                          TAG: "ThrowAny",
+                                                                          _0: (function (param) {
+                                                                            (0).toString(1);
+                                                                          })
+                                                                        };
+                                                                      })
                                                                     ],
                                                                     tl: {
                                                                       hd: [
                                                                         "toStringWithRadix - radix:-1",
                                                                         (function (param) {
-                                                                            return {
-                                                                              TAG: "ThrowAny",
-                                                                              _0: (function (param) {
-                                                                                  (0).toString(-1);
-                                                                                })
-                                                                            };
-                                                                          })
+                                                                          return {
+                                                                            TAG: "ThrowAny",
+                                                                            _0: (function (param) {
+                                                                              (0).toString(-1);
+                                                                            })
+                                                                          };
+                                                                        })
                                                                       ],
                                                                       tl: {
                                                                         hd: [
                                                                           "fromString - 123",
                                                                           (function (param) {
-                                                                              return {
-                                                                                TAG: "Eq",
-                                                                                _0: 123,
-                                                                                _1: Number("123")
-                                                                              };
-                                                                            })
+                                                                            return {
+                                                                              TAG: "Eq",
+                                                                              _0: 123,
+                                                                              _1: Number("123")
+                                                                            };
+                                                                          })
                                                                         ],
                                                                         tl: {
                                                                           hd: [
                                                                             "fromString - 12.3",
                                                                             (function (param) {
-                                                                                return {
-                                                                                  TAG: "Eq",
-                                                                                  _0: 12.3,
-                                                                                  _1: Number("12.3")
-                                                                                };
-                                                                              })
+                                                                              return {
+                                                                                TAG: "Eq",
+                                                                                _0: 12.3,
+                                                                                _1: Number("12.3")
+                                                                              };
+                                                                            })
                                                                           ],
                                                                           tl: {
                                                                             hd: [
                                                                               "fromString - empty string",
                                                                               (function (param) {
-                                                                                  return {
-                                                                                    TAG: "Eq",
-                                                                                    _0: 0,
-                                                                                    _1: Number("")
-                                                                                  };
-                                                                                })
+                                                                                return {
+                                                                                  TAG: "Eq",
+                                                                                  _0: 0,
+                                                                                  _1: Number("")
+                                                                                };
+                                                                              })
                                                                             ],
                                                                             tl: {
                                                                               hd: [
                                                                                 "fromString - 0x11",
                                                                                 (function (param) {
-                                                                                    return {
-                                                                                      TAG: "Eq",
-                                                                                      _0: 17,
-                                                                                      _1: Number("0x11")
-                                                                                    };
-                                                                                  })
+                                                                                  return {
+                                                                                    TAG: "Eq",
+                                                                                    _0: 17,
+                                                                                    _1: Number("0x11")
+                                                                                  };
+                                                                                })
                                                                               ],
                                                                               tl: {
                                                                                 hd: [
                                                                                   "fromString - 0b11",
                                                                                   (function (param) {
-                                                                                      return {
-                                                                                        TAG: "Eq",
-                                                                                        _0: 3,
-                                                                                        _1: Number("0b11")
-                                                                                      };
-                                                                                    })
+                                                                                    return {
+                                                                                      TAG: "Eq",
+                                                                                      _0: 3,
+                                                                                      _1: Number("0b11")
+                                                                                    };
+                                                                                  })
                                                                                 ],
                                                                                 tl: {
                                                                                   hd: [
                                                                                     "fromString - 0o11",
                                                                                     (function (param) {
-                                                                                        return {
-                                                                                          TAG: "Eq",
-                                                                                          _0: 9,
-                                                                                          _1: Number("0o11")
-                                                                                        };
-                                                                                      })
+                                                                                      return {
+                                                                                        TAG: "Eq",
+                                                                                        _0: 9,
+                                                                                        _1: Number("0o11")
+                                                                                      };
+                                                                                    })
                                                                                   ],
                                                                                   tl: {
                                                                                     hd: [
                                                                                       "fromString - invalid string",
                                                                                       (function (param) {
-                                                                                          return {
-                                                                                            TAG: "Eq",
-                                                                                            _0: true,
-                                                                                            _1: Number.isNaN(Number("foo"))
-                                                                                          };
-                                                                                        })
+                                                                                        return {
+                                                                                          TAG: "Eq",
+                                                                                          _0: true,
+                                                                                          _1: Number.isNaN(Number("foo"))
+                                                                                        };
+                                                                                      })
                                                                                     ],
                                                                                     tl: /* [] */0
                                                                                   }

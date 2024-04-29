@@ -19,18 +19,18 @@ var a = String(3);
 var b = 101;
 
 var arr = $$Array.init(2, (function (param) {
-        return 0;
-      }));
+  return 0;
+}));
 
 for(var i = 0; i <= 1; ++i){
   Caml_array.set(arr, i, i + 1 | 0);
 }
 
 console.log([
-      a,
-      b,
-      arr
-    ]);
+  a,
+  b,
+  arr
+]);
 
 var c = arr;
 

@@ -5,8 +5,8 @@ var Curry = require("../../lib/js/curry.js");
 
 var delayed = {
   contents: (function (param) {
-      
-    })
+    
+  })
 };
 
 for(var i = 1; i <= 2; ++i){
@@ -15,9 +15,9 @@ for(var i = 1; i <= 2; ++i){
     if (x !== 0) {
       var prev = delayed.contents;
       delayed.contents = (function (param) {
-          Curry._1(prev, undefined);
-          f(((n + 1 | 0) + i | 0) - i | 0, x - 1 | 0);
-        });
+        Curry._1(prev, undefined);
+        f(((n + 1 | 0) + i | 0) - i | 0, x - 1 | 0);
+      });
       return;
     }
     if (i === n) {

@@ -8,12 +8,12 @@ var a0 = {
 };
 
 var b = List.length({
-      hd: 1,
-      tl: {
-        hd: 2,
-        tl: /* [] */0
-      }
-    });
+  hd: 1,
+  tl: {
+    hd: 2,
+    tl: /* [] */0
+  }
+});
 
 var List$1 = {
   compare_lengths: List.compare_lengths,

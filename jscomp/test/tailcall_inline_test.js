@@ -28,48 +28,48 @@ function f(param) {
 var suites_0 = [
   "acc",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: f(),
-        _1: [
-          0,
-          1,
-          3,
-          6,
-          10,
-          15,
-          21,
-          28,
-          36,
-          45
-        ]
-      };
-    })
+    return {
+      TAG: "Eq",
+      _0: f(),
+      _1: [
+        0,
+        1,
+        3,
+        6,
+        10,
+        15,
+        21,
+        28,
+        36,
+        45
+      ]
+    };
+  })
 ];
 
 var suites_1 = {
   hd: [
     "array_to_list",
     (function (param) {
-        return {
-          TAG: "Eq",
-          _0: {
-            hd: 1,
+      return {
+        TAG: "Eq",
+        _0: {
+          hd: 1,
+          tl: {
+            hd: 2,
             tl: {
-              hd: 2,
-              tl: {
-                hd: 3,
-                tl: /* [] */0
-              }
+              hd: 3,
+              tl: /* [] */0
             }
-          },
-          _1: $$Array.to_list([
-                1,
-                2,
-                3
-              ])
-        };
-      })
+          }
+        },
+        _1: $$Array.to_list([
+          1,
+          2,
+          3
+        ])
+      };
+    })
   ],
   tl: /* [] */0
 };

@@ -10,14 +10,14 @@ var MoreLabels = require("../../lib/js/moreLabels.js");
 
 function to_list(tbl) {
   return Hashtbl.fold((function (k, v, acc) {
-          return {
-            hd: [
-              k,
-              v
-            ],
-            tl: acc
-          };
-        }), tbl, /* [] */0);
+    return {
+      hd: [
+        k,
+        v
+      ],
+      tl: acc
+    };
+  }), tbl, /* [] */0);
 }
 
 function f(param) {
@@ -25,8 +25,8 @@ function f(param) {
   Hashtbl.add(tbl, 1, /* '1' */49);
   Hashtbl.add(tbl, 2, /* '2' */50);
   return List.sort((function (param, param$1) {
-          return Caml.int_compare(param[0], param$1[0]);
-        }), to_list(tbl));
+    return Caml.int_compare(param[0], param$1[0]);
+  }), to_list(tbl));
 }
 
 function g(count) {
@@ -39,61 +39,61 @@ function g(count) {
   }
   var v = to_list(tbl);
   return $$Array.of_list(List.sort((function (param, param$1) {
-              return Caml.int_compare(param[0], param$1[0]);
-            }), v));
+    return Caml.int_compare(param[0], param$1[0]);
+  }), v));
 }
 
 var suites_0 = [
   "simple",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: {
+    return {
+      TAG: "Eq",
+      _0: {
+        hd: [
+          1,
+          /* '1' */49
+        ],
+        tl: {
           hd: [
-            1,
-            /* '1' */49
+            2,
+            /* '2' */50
           ],
-          tl: {
-            hd: [
-              2,
-              /* '2' */50
-            ],
-            tl: /* [] */0
-          }
-        },
-        _1: f()
-      };
-    })
+          tl: /* [] */0
+        }
+      },
+      _1: f()
+    };
+  })
 ];
 
 var suites_1 = {
   hd: [
     "more_iterations",
     (function (param) {
-        return {
-          TAG: "Eq",
-          _0: $$Array.init(1001, (function (i) {
-                  return [
-                    (i << 1),
-                    String(i)
-                  ];
-                })),
-          _1: g(1000)
-        };
-      })
+      return {
+        TAG: "Eq",
+        _0: $$Array.init(1001, (function (i) {
+          return [
+            (i << 1),
+            String(i)
+          ];
+        })),
+        _1: g(1000)
+      };
+    })
   ],
   tl: {
     hd: [
       "More_labels_regressionfix_374",
       (function (param) {
-          var tbl = MoreLabels.Hashtbl.create(undefined, 30);
-          Hashtbl.add(tbl, 3, 3);
-          return {
-            TAG: "Eq",
-            _0: tbl.size,
-            _1: 1
-          };
-        })
+        var tbl = MoreLabels.Hashtbl.create(undefined, 30);
+        Hashtbl.add(tbl, 3, 3);
+        return {
+          TAG: "Eq",
+          _0: tbl.size,
+          _1: 1
+        };
+      })
     ],
     tl: /* [] */0
   }

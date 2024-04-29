@@ -4,8 +4,8 @@
 var A = require("a").default;
 
 var a = import("a").then(function (m) {
-      return m.default;
-    });
+  return m.default;
+});
 
 var b = A;
 

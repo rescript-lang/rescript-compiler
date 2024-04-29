@@ -5,8 +5,8 @@ var $$String = require("../../lib/js/string.js");
 
 function v(u) {
   t({
-        compare: $$String.compare
-      });
+    compare: $$String.compare
+  });
 }
 
 function u(v) {

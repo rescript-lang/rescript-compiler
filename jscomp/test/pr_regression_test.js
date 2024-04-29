@@ -17,12 +17,12 @@ function f(h) {
 }
 
 f(function (prim0, prim1) {
-      return prim0 + prim1 | 0;
-    });
+  return prim0 + prim1 | 0;
+});
 
 f(function (prim0, prim1) {
-      return prim0 + prim1 | 0;
-    });
+  return prim0 + prim1 | 0;
+});
 
 var a = v.contents;
 
@@ -39,12 +39,12 @@ function f$1(h) {
 }
 
 f$1(function (prim0, prim1) {
-      return prim0 + prim1 | 0;
-    });
+  return prim0 + prim1 | 0;
+});
 
 f$1(function (prim0, prim1) {
-      return prim0 + prim1 | 0;
-    });
+  return prim0 + prim1 | 0;
+});
 
 var b = v$1.contents;
 
@@ -57,12 +57,12 @@ function f$2(h) {
 }
 
 f$2(function (prim0, prim1) {
-      return prim0 + prim1 | 0;
-    });
+  return prim0 + prim1 | 0;
+});
 
 f$2(function (prim0, prim1) {
-      return prim0 + prim1 | 0;
-    });
+  return prim0 + prim1 | 0;
+});
 
 var c = v$2.contents;
 
@@ -79,38 +79,38 @@ function f$3(h, g) {
 }
 
 f$3((function (prim0, prim1) {
-        return prim0 + prim1 | 0;
-      }), 3);
+  return prim0 + prim1 | 0;
+}), 3);
 
 f$3((function (prim0, prim1) {
-        return prim0 + prim1 | 0;
-      }), 3);
+  return prim0 + prim1 | 0;
+}), 3);
 
 var d = v$3.contents;
 
 Mt.from_pair_suites("Pr_regression_test", {
-      hd: [
-        "partial",
-        (function (param) {
-            return {
-              TAG: "Eq",
-              _0: [
-                5,
-                5,
-                5,
-                5
-              ],
-              _1: [
-                a,
-                b,
-                c,
-                d
-              ]
-            };
-          })
-      ],
-      tl: /* [] */0
-    });
+  hd: [
+    "partial",
+    (function (param) {
+      return {
+        TAG: "Eq",
+        _0: [
+          5,
+          5,
+          5,
+          5
+        ],
+        _1: [
+          a,
+          b,
+          c,
+          d
+        ]
+      };
+    })
+  ],
+  tl: /* [] */0
+});
 
 exports.a = a;
 exports.b = b;

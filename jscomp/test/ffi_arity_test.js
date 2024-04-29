@@ -17,28 +17,28 @@ function f(v) {
 }
 
 var v = [
-    1,
-    2,
-    3
-  ].map(function (a, b) {
-      return f(a)(b);
-    });
+  1,
+  2,
+  3
+].map(function (a, b) {
+  return f(a)(b);
+});
 
 var vv = [
-    1,
-    2,
-    3
-  ].map(function (a, b) {
-      return a + b | 0;
-    });
+  1,
+  2,
+  3
+].map(function (a, b) {
+  return a + b | 0;
+});
 
 var hh = [
-    "1",
-    "2",
-    "3"
-  ].map(function (x) {
-      return parseInt(x);
-    });
+  "1",
+  "2",
+  "3"
+].map(function (x) {
+  return parseInt(x);
+});
 
 function u() {
   return 3;
@@ -69,54 +69,54 @@ var abc_u = abc;
 fff();
 
 Mt.from_pair_suites("Ffi_arity_test", {
+  hd: [
+    "File \"ffi_arity_test.res\", line 51, characters 7-14",
+    (function (param) {
+      return {
+        TAG: "Eq",
+        _0: v,
+        _1: [
+          0,
+          1,
+          4
+        ]
+      };
+    })
+  ],
+  tl: {
+    hd: [
+      "File \"ffi_arity_test.res\", line 52, characters 7-14",
+      (function (param) {
+        return {
+          TAG: "Eq",
+          _0: vv,
+          _1: [
+            1,
+            3,
+            5
+          ]
+        };
+      })
+    ],
+    tl: {
       hd: [
-        "File \"ffi_arity_test.res\", line 51, characters 7-14",
+        "File \"ffi_arity_test.res\", line 53, characters 7-14",
         (function (param) {
-            return {
-              TAG: "Eq",
-              _0: v,
-              _1: [
-                0,
-                1,
-                4
-              ]
-            };
-          })
+          return {
+            TAG: "Eq",
+            _0: hh,
+            _1: [
+              1,
+              2,
+              3
+            ]
+          };
+        })
       ],
-      tl: {
-        hd: [
-          "File \"ffi_arity_test.res\", line 52, characters 7-14",
-          (function (param) {
-              return {
-                TAG: "Eq",
-                _0: vv,
-                _1: [
-                  1,
-                  3,
-                  5
-                ]
-              };
-            })
-        ],
-        tl: {
-          hd: [
-            "File \"ffi_arity_test.res\", line 53, characters 7-14",
-            (function (param) {
-                return {
-                  TAG: "Eq",
-                  _0: hh,
-                  _1: [
-                    1,
-                    2,
-                    3
-                  ]
-                };
-              })
-          ],
-          tl: /* [] */0
-        }
-      }
-    });
+      tl: /* [] */0
+    }
+  }
+});
 
 function bar(fn) {
   return Curry._1(fn, undefined);

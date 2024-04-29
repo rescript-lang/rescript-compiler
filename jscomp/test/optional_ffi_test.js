@@ -20,12 +20,12 @@ function eq(loc, param) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -42,15 +42,15 @@ var u = hey(undefined, 3);
 var z = hey(5, 3);
 
 eq("File \"optional_ffi_test.res\", line 21, characters 12-19", [
-      [
-        u,
-        z
-      ],
-      [
-        6,
-        8
-      ]
-    ]);
+  [
+    u,
+    z
+  ],
+  [
+    6,
+    8
+  ]
+]);
 
 var counter = {
   contents: 0

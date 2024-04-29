@@ -37,20 +37,20 @@ function f(id) {
 }
 
 eq("File \"gpr_1946_test.res\", line 24, characters 3-10", ({
-      _5: 3
-    })._5, 3);
+  _5: 3
+})._5, 3);
 
 eq("File \"gpr_1946_test.res\", line 25, characters 3-10", [
-      2,
-      3
-    ], [
-      f(h)["0123"],
-      f(h)["123_456"]
-    ]);
+  2,
+  3
+], [
+  f(h)["0123"],
+  f(h)["123_456"]
+]);
 
 console.log(({
-        _5: 3
-      }).TAG);
+    _5: 3
+  }).TAG);
 
 Mt.from_pair_suites("File \"gpr_1946_test.res\", line 28, characters 20-27", suites.contents);
 

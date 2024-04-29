@@ -77,9 +77,9 @@ function copy(q) {
   var tail = q.tail;
   var tail$p = {};
   Caml_obj.update_dummy(tail$p, {
-        content: tail.content,
-        next: tail$p
-      });
+    content: tail.content,
+    next: tail$p
+  });
   var copy$1 = function (_prev, _cell) {
     while(true) {
       var cell = _cell;

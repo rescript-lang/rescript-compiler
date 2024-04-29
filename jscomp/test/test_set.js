@@ -416,24 +416,24 @@ function Make(Ord) {
       }
       if (c < 0) {
         if (!subset({
-                TAG: "Node",
-                _0: l1,
-                _1: v1,
-                _2: "Empty",
-                _3: 0
-              }, l2)) {
+            TAG: "Node",
+            _0: l1,
+            _1: v1,
+            _2: "Empty",
+            _3: 0
+          }, l2)) {
           return false;
         }
         _s1 = r1;
         continue ;
       }
       if (!subset({
-              TAG: "Node",
-              _0: "Empty",
-              _1: v1,
-              _2: r1,
-              _3: 0
-            }, r2)) {
+          TAG: "Node",
+          _0: "Empty",
+          _1: v1,
+          _2: r1,
+          _3: 0
+        }, r2)) {
         return false;
       }
       _s1 = l1;

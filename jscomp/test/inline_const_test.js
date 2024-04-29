@@ -47,9 +47,9 @@ eq("File \"inline_const_test.res\", line 19, characters 5-12", 1, 1);
 eq("File \"inline_const_test.res\", line 20, characters 5-12", 3e-6, 0.000003);
 
 var h = Caml_int64.add(Caml_int64.add([
-          0,
-          100
-        ], Int64.one), Caml_int64.one);
+  0,
+  100
+], Int64.one), Caml_int64.one);
 
 Mt.from_pair_suites("File \"inline_const_test.res\", line 28, characters 29-36", suites.contents);
 

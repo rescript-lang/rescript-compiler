@@ -40,29 +40,29 @@ var B = {};
 function f(param) {
   return [
     (function (prim) {
-        List$3.ff();
-      }),
+      List$3.ff();
+    }),
     (function (prim) {
-        List$3.ff2();
-      }),
+      List$3.ff2();
+    }),
     (function (prim) {
-        List$2.ff();
-      }),
+      List$2.ff();
+    }),
     (function (prim) {
-        List$2.ff2();
-      })
+      List$2.ff2();
+    })
   ];
 }
 
 List$1.xx();
 
 List.length({
-      hd: 1,
-      tl: {
-        hd: 2,
-        tl: /* [] */0
-      }
-    });
+  hd: 1,
+  tl: {
+    hd: 2,
+    tl: /* [] */0
+  }
+});
 
 List.length(/* [] */0);
 

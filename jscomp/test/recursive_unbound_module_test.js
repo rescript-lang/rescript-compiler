@@ -16,22 +16,22 @@ function Make(X) {
 }
 
 var B = Caml_module.init_mod([
-      "recursive_unbound_module_test.res",
-      14,
-      11
-    ], {
-      TAG: "Module",
-      _0: [[
-          {
-            TAG: "Module",
-            _0: [[
-                "Function",
-                "f"
-              ]]
-          },
-          "M"
-        ]]
-    });
+  "recursive_unbound_module_test.res",
+  14,
+  11
+], {
+  TAG: "Module",
+  _0: [[
+      {
+        TAG: "Module",
+        _0: [[
+            "Function",
+            "f"
+          ]]
+      },
+      "M"
+    ]]
+});
 
 function f(param) {
   
@@ -42,20 +42,20 @@ var M = {
 };
 
 Caml_module.update_mod({
-      TAG: "Module",
-      _0: [[
-          {
-            TAG: "Module",
-            _0: [[
-                "Function",
-                "f"
-              ]]
-          },
-          "M"
-        ]]
-    }, B, {
-      M: M
-    });
+  TAG: "Module",
+  _0: [[
+      {
+        TAG: "Module",
+        _0: [[
+            "Function",
+            "f"
+          ]]
+      },
+      "M"
+    ]]
+}, B, {
+  M: M
+});
 
 var A;
 

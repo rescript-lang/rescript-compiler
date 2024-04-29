@@ -93,11 +93,11 @@ function to_buf(b, t) {
       if (l.tl) {
         $$Buffer.add_char(b, /* '(' */40);
         List.iteri((function (i, t$p) {
-                if (i > 0) {
-                  $$Buffer.add_char(b, /* ' ' */32);
-                }
-                to_buf(b, t$p);
-              }), l);
+          if (i > 0) {
+            $$Buffer.add_char(b, /* ' ' */32);
+          }
+          to_buf(b, t$p);
+        }), l);
         return $$Buffer.add_char(b, /* ')' */41);
       } else {
         $$Buffer.add_string(b, "(");
@@ -201,8 +201,8 @@ function expr(k, t) {
   while(true) {
     if (t.i === t.len) {
       return _refill(t, (function (param) {
-              return expr(k, param);
-            }), _error_eof);
+        return expr(k, param);
+      }), _error_eof);
     }
     var c = _get(t);
     if (c >= 11) {
@@ -222,8 +222,8 @@ function expr_starting_with(c, k, t) {
   if (c >= 42) {
     if (c === 59) {
       return skip_comment((function (param, param$1) {
-              return expr(k, t);
-            }), t);
+        return expr(k, t);
+      }), t);
     }
     if (c === 92) {
       return _error(t)("unexpected '\\'");
@@ -278,53 +278,53 @@ function expr_list(acc, k, t) {
   while(true) {
     if (t.i === t.len) {
       return _refill(t, (function (param) {
-              return expr_list(acc, k, param);
-            }), _error_eof);
+        return expr_list(acc, k, param);
+      }), _error_eof);
     }
     var c = _get(t);
     if (c > 32 || c < 9) {
       if (c === 41) {
         return Curry._2(k, undefined, {
-              NAME: "List",
-              VAL: List.rev(acc)
-            });
+          NAME: "List",
+          VAL: List.rev(acc)
+        });
       }
       
     } else if (c > 31 || c < 11) {
       continue ;
     }
     return expr_starting_with(c, (function (last, e) {
-            if (last !== undefined) {
-              if (last !== 40) {
-                if (last !== 41) {
-                  return expr_list({
-                        hd: e,
-                        tl: acc
-                      }, k, t);
-                } else {
-                  return Curry._2(k, undefined, {
-                        NAME: "List",
-                        VAL: List.rev({
-                              hd: e,
-                              tl: acc
-                            })
-                      });
-                }
-              } else {
-                return expr_list(/* [] */0, (function (param, l) {
-                        return expr_list({
-                              hd: l,
-                              tl: acc
-                            }, k, t);
-                      }), t);
-              }
-            } else {
-              return expr_list({
-                    hd: e,
-                    tl: acc
-                  }, k, t);
-            }
+      if (last !== undefined) {
+        if (last !== 40) {
+          if (last !== 41) {
+            return expr_list({
+              hd: e,
+              tl: acc
+            }, k, t);
+          } else {
+            return Curry._2(k, undefined, {
+              NAME: "List",
+              VAL: List.rev({
+                hd: e,
+                tl: acc
+              })
+            });
+          }
+        } else {
+          return expr_list(/* [] */0, (function (param, l) {
+            return expr_list({
+              hd: l,
+              tl: acc
+            }, k, t);
           }), t);
+        }
+      } else {
+        return expr_list({
+          hd: e,
+          tl: acc
+        }, k, t);
+      }
+    }), t);
   };
 }
 
@@ -332,19 +332,19 @@ function _return_atom(last, k, t) {
   var s = $$Buffer.contents(t.atom);
   t.atom.position = 0;
   return Curry._2(k, last, {
-        NAME: "Atom",
-        VAL: s
-      });
+    NAME: "Atom",
+    VAL: s
+  });
 }
 
 function atom(k, t) {
   while(true) {
     if (t.i === t.len) {
       return _refill(t, (function (param) {
-              return atom(k, param);
-            }), (function (param) {
-              return _return_atom(undefined, k, param);
-            }));
+        return atom(k, param);
+      }), (function (param) {
+        return _return_atom(undefined, k, param);
+      }));
     }
     var c = _get(t);
     var exit = 0;
@@ -391,8 +391,8 @@ function quoted(k, t) {
   while(true) {
     if (t.i === t.len) {
       return _refill(t, (function (param) {
-              return quoted(k, param);
-            }), _error_eof);
+        return quoted(k, param);
+      }), _error_eof);
     }
     var c = _get(t);
     if (c === 34) {
@@ -400,9 +400,9 @@ function quoted(k, t) {
     }
     if (c === 92) {
       return escaped((function (c) {
-              $$Buffer.add_char(t.atom, c);
-              return quoted(k, t);
-            }), t);
+        $$Buffer.add_char(t.atom, c);
+        return quoted(k, t);
+      }), t);
     }
     $$Buffer.add_char(t.atom, c);
     continue ;
@@ -412,8 +412,8 @@ function quoted(k, t) {
 function escaped(k, t) {
   if (t.i === t.len) {
     return _refill(t, (function (param) {
-            return escaped(k, param);
-          }), _error_eof);
+      return escaped(k, param);
+    }), _error_eof);
   }
   var c = _get(t);
   if (c >= 92) {
@@ -459,8 +459,8 @@ function escaped(k, t) {
   }
   if (_is_digit(c)) {
     return read2int(c - /* '0' */48 | 0, (function (n) {
-            return Curry._1(k, Char.chr(n));
-          }), t);
+      return Curry._1(k, Char.chr(n));
+    }), t);
   } else {
     return _error(t)("unexpected escaped char '" + (c + "'"));
   }
@@ -469,8 +469,8 @@ function escaped(k, t) {
 function read2int(i, k, t) {
   if (t.i === t.len) {
     return _refill(t, (function (param) {
-            return read2int(i, k, param);
-          }), _error_eof);
+      return read2int(i, k, param);
+    }), _error_eof);
   }
   var c = _get(t);
   if (_is_digit(c)) {
@@ -483,8 +483,8 @@ function read2int(i, k, t) {
 function read1int(i, k, t) {
   if (t.i === t.len) {
     return _refill(t, (function (param) {
-            return read1int(i, k, param);
-          }), _error_eof);
+      return read1int(i, k, param);
+    }), _error_eof);
   }
   var c = _get(t);
   if (_is_digit(c)) {
@@ -498,8 +498,8 @@ function skip_comment(k, t) {
   while(true) {
     if (t.i === t.len) {
       return _refill(t, (function (param) {
-              return skip_comment(k, param);
-            }), _error_eof);
+        return skip_comment(k, param);
+      }), _error_eof);
     }
     var match = _get(t);
     if (match === 10) {
@@ -513,10 +513,10 @@ function expr_or_end(k, t) {
   while(true) {
     if (t.i === t.len) {
       return _refill(t, (function (param) {
-              return expr_or_end(k, param);
-            }), (function (param) {
-              return "End";
-            }));
+        return expr_or_end(k, param);
+      }), (function (param) {
+        return "End";
+      }));
     }
     var c = _get(t);
     if (c >= 11) {
@@ -534,11 +534,11 @@ function expr_or_end(k, t) {
 
 function next(t) {
   return expr_or_end((function (param, x) {
-          return {
-            NAME: "Ok",
-            VAL: x
-          };
-        }), t);
+    return {
+      NAME: "Ok",
+      VAL: x
+    };
+  }), t);
 }
 
 function parse_string(s) {

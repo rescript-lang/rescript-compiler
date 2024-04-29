@@ -63,14 +63,14 @@ eq("File \"bs_sort_test.res\", line 36, characters 5-12", unions(Array_data_util
 eq("File \"bs_sort_test.res\", line 37, characters 5-12", unions(Array_data_util.range(8, 10), Array_data_util.range(9, 13)), Array_data_util.range(8, 13));
 
 eq("File \"bs_sort_test.res\", line 38, characters 5-12", unions(Array_data_util.range(0, 2), Array_data_util.range(4, 7)), [
-      0,
-      1,
-      2,
-      4,
-      5,
-      6,
-      7
-    ]);
+  0,
+  1,
+  2,
+  4,
+  5,
+  6,
+  7
+]);
 
 eq("File \"bs_sort_test.res\", line 42, characters 5-12", inters(Array_data_util.range(1, 10), Array_data_util.range(3, 13)), Array_data_util.range(3, 10));
 
@@ -87,36 +87,36 @@ eq("File \"bs_sort_test.res\", line 50, characters 5-12", diffs(Array_data_util.
 eq("File \"bs_sort_test.res\", line 51, characters 5-12", diffs(Array_data_util.range(8, 10), Array_data_util.range(9, 13)), Array_data_util.range(8, 8));
 
 eq("File \"bs_sort_test.res\", line 52, characters 5-12", diffs(Array_data_util.range(0, 2), Array_data_util.range(4, 7)), [
-      0,
-      1,
-      2
-    ]);
+  0,
+  1,
+  2
+]);
 
 b("File \"bs_sort_test.res\", line 56, characters 4-11", Belt_Range.every(0, 200, (function (i) {
-            var v = Array_data_util.randomRange(0, i);
-            Belt_SortArray.stableSortInPlaceBy(v, cmp);
-            return Belt_SortArray.isSorted(v, cmp);
-          })));
+  var v = Array_data_util.randomRange(0, i);
+  Belt_SortArray.stableSortInPlaceBy(v, cmp);
+  return Belt_SortArray.isSorted(v, cmp);
+})));
 
 b("File \"bs_sort_test.res\", line 64, characters 4-11", Belt_Range.every(0, 200, (function (i) {
-            var v = Array_data_util.randomRange(0, i);
-            Belt_SortArray.stableSortInPlaceBy(v, cmp);
-            return Belt_SortArray.isSorted(v, cmp);
-          })));
+  var v = Array_data_util.randomRange(0, i);
+  Belt_SortArray.stableSortInPlaceBy(v, cmp);
+  return Belt_SortArray.isSorted(v, cmp);
+})));
 
 b("File \"bs_sort_test.res\", line 71, characters 4-11", Belt_SortArray.isSorted([], cmp));
 
 b("File \"bs_sort_test.res\", line 73, characters 4-11", Belt_SortArray.isSorted([0], cmp));
 
 b("File \"bs_sort_test.res\", line 75, characters 4-11", Belt_SortArray.isSorted([
-          0,
-          1
-        ], cmp));
+  0,
+  1
+], cmp));
 
 b("File \"bs_sort_test.res\", line 76, characters 4-11", !Belt_SortArray.isSorted([
-          1,
-          0
-        ], cmp));
+  1,
+  0
+], cmp));
 
 var u = Array_data_util.randomRange(0, 1000000);
 
@@ -164,21 +164,21 @@ var u$1 = [
 ];
 
 eq("File \"bs_sort_test.res\", line 95, characters 5-12", Belt_SortArray.stableSortBy(u$1, (function (param, param$1) {
-            return param[0] - param$1[0] | 0;
-          })), [
-      [
-        1,
-        "a"
-      ],
-      [
-        1,
-        "b"
-      ],
-      [
-        2,
-        "a"
-      ]
-    ]);
+  return param[0] - param$1[0] | 0;
+})), [
+  [
+    1,
+    "a"
+  ],
+  [
+    1,
+    "b"
+  ],
+  [
+    2,
+    "a"
+  ]
+]);
 
 var u$2 = [
   [
@@ -200,25 +200,25 @@ var u$2 = [
 ];
 
 eq("File \"bs_sort_test.res\", line 98, characters 4-11", Belt_SortArray.stableSortBy(u$2, (function (param, param$1) {
-            return param[0] - param$1[0] | 0;
-          })), [
-      [
-        1,
-        "b"
-      ],
-      [
-        1,
-        "a"
-      ],
-      [
-        1,
-        "b"
-      ],
-      [
-        2,
-        "a"
-      ]
-    ]);
+  return param[0] - param$1[0] | 0;
+})), [
+  [
+    1,
+    "b"
+  ],
+  [
+    1,
+    "a"
+  ],
+  [
+    1,
+    "b"
+  ],
+  [
+    2,
+    "a"
+  ]
+]);
 
 var u$3 = [
   [
@@ -248,100 +248,100 @@ var u$3 = [
 ];
 
 eq("File \"bs_sort_test.res\", line 104, characters 4-11", Belt_SortArray.stableSortBy(u$3, (function (param, param$1) {
-            return param[0] - param$1[0] | 0;
-          })), [
-      [
-        1,
-        "c"
-      ],
-      [
-        1,
-        "b"
-      ],
-      [
-        1,
-        "a"
-      ],
-      [
-        1,
-        "b"
-      ],
-      [
-        1,
-        "c"
-      ],
-      [
-        2,
-        "a"
-      ]
-    ]);
+  return param[0] - param$1[0] | 0;
+})), [
+  [
+    1,
+    "c"
+  ],
+  [
+    1,
+    "b"
+  ],
+  [
+    1,
+    "a"
+  ],
+  [
+    1,
+    "b"
+  ],
+  [
+    1,
+    "c"
+  ],
+  [
+    2,
+    "a"
+  ]
+]);
 
 eq("File \"bs_sort_test.res\", line 111, characters 5-12", Belt_SortArray.binarySearchBy([
-          1,
-          3,
-          5,
-          7
-        ], 4, Caml.int_compare) ^ -1, 2);
+  1,
+  3,
+  5,
+  7
+], 4, Caml.int_compare) ^ -1, 2);
 
 eq("File \"bs_sort_test.res\", line 112, characters 5-12", Belt_SortArray.binarySearchBy([
-          1,
-          2,
-          3,
-          4,
-          33,
-          35,
-          36
-        ], 33, cmp), 4);
+  1,
+  2,
+  3,
+  4,
+  33,
+  35,
+  36
+], 33, cmp), 4);
 
 eq("File \"bs_sort_test.res\", line 113, characters 5-12", Belt_SortArray.binarySearchBy([
-          1,
-          2,
-          3,
-          4,
-          33,
-          35,
-          36
-        ], 1, cmp), 0);
+  1,
+  2,
+  3,
+  4,
+  33,
+  35,
+  36
+], 1, cmp), 0);
 
 eq("File \"bs_sort_test.res\", line 114, characters 5-12", Belt_SortArray.binarySearchBy([
-          1,
-          2,
-          3,
-          4,
-          33,
-          35,
-          36
-        ], 2, cmp), 1);
+  1,
+  2,
+  3,
+  4,
+  33,
+  35,
+  36
+], 2, cmp), 1);
 
 eq("File \"bs_sort_test.res\", line 115, characters 5-12", Belt_SortArray.binarySearchBy([
-          1,
-          2,
-          3,
-          4,
-          33,
-          35,
-          36
-        ], 3, cmp), 2);
+  1,
+  2,
+  3,
+  4,
+  33,
+  35,
+  36
+], 3, cmp), 2);
 
 eq("File \"bs_sort_test.res\", line 116, characters 5-12", Belt_SortArray.binarySearchBy([
-          1,
-          2,
-          3,
-          4,
-          33,
-          35,
-          36
-        ], 4, cmp), 3);
+  1,
+  2,
+  3,
+  4,
+  33,
+  35,
+  36
+], 4, cmp), 3);
 
 var aa = Array_data_util.range(0, 1000);
 
 b("File \"bs_sort_test.res\", line 118, characters 10-17", Belt_Range.every(0, 1000, (function (i) {
-            return Belt_SortArray.binarySearchBy(aa, i, cmp) === i;
-          })));
+  return Belt_SortArray.binarySearchBy(aa, i, cmp) === i;
+})));
 
 var cc = Belt_Array.map(Array_data_util.range(0, 2000), (function (x) {
-        return (x << 1);
-      }));
+  return (x << 1);
+}));
 
 eq("File \"bs_sort_test.res\", line 121, characters 5-12", Belt_SortArray.binarySearchBy(cc, 5000, cmp) ^ -1, 2001);
 
@@ -352,8 +352,8 @@ eq("File \"bs_sort_test.res\", line 123, characters 5-12", Belt_SortArray.binary
 eq("File \"bs_sort_test.res\", line 125, characters 5-12", Belt_SortArray.binarySearchBy(cc, 1, cmp) ^ -1, 1);
 
 b("File \"bs_sort_test.res\", line 127, characters 6-13", Belt_Range.every(0, 1999, (function (i) {
-            return (Belt_SortArray.binarySearchBy(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0);
-          })));
+  return (Belt_SortArray.binarySearchBy(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0);
+})));
 
 function lt(x, y) {
   return x < y;
@@ -364,51 +364,51 @@ eq("File \"bs_sort_test.res\", line 137, characters 5-12", Belt_SortArray.strict
 eq("File \"bs_sort_test.res\", line 138, characters 5-12", Belt_SortArray.strictlySortedLength([1], lt), 1);
 
 eq("File \"bs_sort_test.res\", line 139, characters 5-12", Belt_SortArray.strictlySortedLength([
-          1,
-          1
-        ], lt), 1);
+  1,
+  1
+], lt), 1);
 
 eq("File \"bs_sort_test.res\", line 140, characters 5-12", Belt_SortArray.strictlySortedLength([
-          1,
-          1,
-          2
-        ], lt), 1);
+  1,
+  1,
+  2
+], lt), 1);
 
 eq("File \"bs_sort_test.res\", line 141, characters 5-12", Belt_SortArray.strictlySortedLength([
-          1,
-          2
-        ], lt), 2);
+  1,
+  2
+], lt), 2);
 
 eq("File \"bs_sort_test.res\", line 142, characters 5-12", Belt_SortArray.strictlySortedLength([
-          1,
-          2,
-          3,
-          4,
-          3
-        ], lt), 4);
+  1,
+  2,
+  3,
+  4,
+  3
+], lt), 4);
 
 eq("File \"bs_sort_test.res\", line 143, characters 5-12", Belt_SortArray.strictlySortedLength([
-          4,
-          4,
-          3,
-          2,
-          1
-        ], lt), 1);
+  4,
+  4,
+  3,
+  2,
+  1
+], lt), 1);
 
 eq("File \"bs_sort_test.res\", line 144, characters 5-12", Belt_SortArray.strictlySortedLength([
-          4,
-          3,
-          2,
-          1
-        ], lt), -4);
+  4,
+  3,
+  2,
+  1
+], lt), -4);
 
 eq("File \"bs_sort_test.res\", line 145, characters 5-12", Belt_SortArray.strictlySortedLength([
-          4,
-          3,
-          2,
-          1,
-          0
-        ], lt), -5);
+  4,
+  3,
+  2,
+  1,
+  0
+], lt), -5);
 
 Mt.from_pair_suites("Bs_sort_test", suites.contents);
 

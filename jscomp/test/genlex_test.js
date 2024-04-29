@@ -8,30 +8,30 @@ var Stream = require("../../lib/js/stream.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 var lexer = Genlex.make_lexer({
-      hd: "+",
+  hd: "+",
+  tl: {
+    hd: "-",
+    tl: {
+      hd: "*",
       tl: {
-        hd: "-",
+        hd: "/",
         tl: {
-          hd: "*",
+          hd: "let",
           tl: {
-            hd: "/",
+            hd: "=",
             tl: {
-              hd: "let",
+              hd: "(",
               tl: {
-                hd: "=",
-                tl: {
-                  hd: "(",
-                  tl: {
-                    hd: ")",
-                    tl: /* [] */0
-                  }
-                }
+                hd: ")",
+                tl: /* [] */0
               }
             }
           }
         }
       }
-    });
+    }
+  }
+});
 
 function to_list(s) {
   var _acc = /* [] */0;
@@ -59,54 +59,54 @@ function to_list(s) {
 var suites_0 = [
   "lexer_stream_genlex",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: {
+    return {
+      TAG: "Eq",
+      _0: {
+        hd: {
+          TAG: "Int",
+          _0: 3
+        },
+        tl: {
           hd: {
-            TAG: "Int",
-            _0: 3
+            TAG: "Kwd",
+            _0: "("
           },
           tl: {
             hd: {
-              TAG: "Kwd",
-              _0: "("
+              TAG: "Int",
+              _0: 3
             },
             tl: {
               hd: {
-                TAG: "Int",
-                _0: 3
+                TAG: "Kwd",
+                _0: "+"
               },
               tl: {
                 hd: {
-                  TAG: "Kwd",
-                  _0: "+"
+                  TAG: "Int",
+                  _0: 2
                 },
                 tl: {
                   hd: {
                     TAG: "Int",
-                    _0: 2
+                    _0: -1
                   },
                   tl: {
                     hd: {
-                      TAG: "Int",
-                      _0: -1
+                      TAG: "Kwd",
+                      _0: ")"
                     },
-                    tl: {
-                      hd: {
-                        TAG: "Kwd",
-                        _0: ")"
-                      },
-                      tl: /* [] */0
-                    }
+                    tl: /* [] */0
                   }
                 }
               }
             }
           }
-        },
-        _1: to_list(lexer(Stream.of_string("3(3 + 2 -1)")))
-      };
-    })
+        }
+      },
+      _1: to_list(lexer(Stream.of_string("3(3 + 2 -1)")))
+    };
+  })
 ];
 
 var suites = {

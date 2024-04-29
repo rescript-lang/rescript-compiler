@@ -9,11 +9,11 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function to_list(q) {
   return List.rev(Queue.fold((function (l, x) {
-              return {
-                hd: x,
-                tl: l
-              };
-            }), /* [] */0, q));
+    return {
+      hd: x,
+      tl: l
+    };
+  }), /* [] */0, q));
 }
 
 var Q = {
@@ -70,9 +70,9 @@ if (!(to_list(q) === /* [] */0 && q.length === 0)) {
 Queue.add(1, q);
 
 if (!(Caml_obj.equal(to_list(q), {
-          hd: 1,
-          tl: /* [] */0
-        }) && q.length === 1)) {
+    hd: 1,
+    tl: /* [] */0
+  }) && q.length === 1)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -87,12 +87,12 @@ if (!(Caml_obj.equal(to_list(q), {
 Queue.add(2, q);
 
 if (!(Caml_obj.equal(to_list(q), {
-          hd: 1,
-          tl: {
-            hd: 2,
-            tl: /* [] */0
-          }
-        }) && q.length === 2)) {
+    hd: 1,
+    tl: {
+      hd: 2,
+      tl: /* [] */0
+    }
+  }) && q.length === 2)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -107,15 +107,15 @@ if (!(Caml_obj.equal(to_list(q), {
 Queue.add(3, q);
 
 if (!(Caml_obj.equal(to_list(q), {
-          hd: 1,
-          tl: {
-            hd: 2,
-            tl: {
-              hd: 3,
-              tl: /* [] */0
-            }
-          }
-        }) && q.length === 3)) {
+    hd: 1,
+    tl: {
+      hd: 2,
+      tl: {
+        hd: 3,
+        tl: /* [] */0
+      }
+    }
+  }) && q.length === 3)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -130,18 +130,18 @@ if (!(Caml_obj.equal(to_list(q), {
 Queue.add(4, q);
 
 if (!(Caml_obj.equal(to_list(q), {
-          hd: 1,
-          tl: {
-            hd: 2,
-            tl: {
-              hd: 3,
-              tl: {
-                hd: 4,
-                tl: /* [] */0
-              }
-            }
-          }
-        }) && q.length === 4)) {
+    hd: 1,
+    tl: {
+      hd: 2,
+      tl: {
+        hd: 3,
+        tl: {
+          hd: 4,
+          tl: /* [] */0
+        }
+      }
+    }
+  }) && q.length === 4)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -166,15 +166,15 @@ if (Queue.take(q) !== 1) {
 }
 
 if (!(Caml_obj.equal(to_list(q), {
-          hd: 2,
-          tl: {
-            hd: 3,
-            tl: {
-              hd: 4,
-              tl: /* [] */0
-            }
-          }
-        }) && q.length === 3)) {
+    hd: 2,
+    tl: {
+      hd: 3,
+      tl: {
+        hd: 4,
+        tl: /* [] */0
+      }
+    }
+  }) && q.length === 3)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -199,12 +199,12 @@ if (Queue.take(q) !== 2) {
 }
 
 if (!(Caml_obj.equal(to_list(q), {
-          hd: 3,
-          tl: {
-            hd: 4,
-            tl: /* [] */0
-          }
-        }) && q.length === 2)) {
+    hd: 3,
+    tl: {
+      hd: 4,
+      tl: /* [] */0
+    }
+  }) && q.length === 2)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -229,9 +229,9 @@ if (Queue.take(q) !== 3) {
 }
 
 if (!(Caml_obj.equal(to_list(q), {
-          hd: 4,
-          tl: /* [] */0
-        }) && q.length === 1)) {
+    hd: 4,
+    tl: /* [] */0
+  }) && q.length === 1)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -530,10 +530,10 @@ if (!does_raise(Queue.take, q$3)) {
 }
 
 if (!Caml_obj.equal(q$3, {
-        length: 0,
-        first: "Nil",
-        last: "Nil"
-      })) {
+    length: 0,
+    first: "Nil",
+    last: "Nil"
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -572,28 +572,26 @@ for(var i$1 = 1; i$1 <= 10; ++i$1){
 var q2 = Queue.copy(q1);
 
 if (!Caml_obj.equal(to_list(q1), {
-        hd: 1,
+    hd: 1,
+    tl: {
+      hd: 2,
+      tl: {
+        hd: 3,
         tl: {
-          hd: 2,
+          hd: 4,
           tl: {
-            hd: 3,
+            hd: 5,
             tl: {
-              hd: 4,
+              hd: 6,
               tl: {
-                hd: 5,
+                hd: 7,
                 tl: {
-                  hd: 6,
+                  hd: 8,
                   tl: {
-                    hd: 7,
+                    hd: 9,
                     tl: {
-                      hd: 8,
-                      tl: {
-                        hd: 9,
-                        tl: {
-                          hd: 10,
-                          tl: /* [] */0
-                        }
-                      }
+                      hd: 10,
+                      tl: /* [] */0
                     }
                   }
                 }
@@ -601,7 +599,9 @@ if (!Caml_obj.equal(to_list(q1), {
             }
           }
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -614,28 +614,26 @@ if (!Caml_obj.equal(to_list(q1), {
 }
 
 if (!Caml_obj.equal(to_list(q2), {
-        hd: 1,
+    hd: 1,
+    tl: {
+      hd: 2,
+      tl: {
+        hd: 3,
         tl: {
-          hd: 2,
+          hd: 4,
           tl: {
-            hd: 3,
+            hd: 5,
             tl: {
-              hd: 4,
+              hd: 6,
               tl: {
-                hd: 5,
+                hd: 7,
                 tl: {
-                  hd: 6,
+                  hd: 8,
                   tl: {
-                    hd: 7,
+                    hd: 9,
                     tl: {
-                      hd: 8,
-                      tl: {
-                        hd: 9,
-                        tl: {
-                          hd: 10,
-                          tl: /* [] */0
-                        }
-                      }
+                      hd: 10,
+                      tl: /* [] */0
                     }
                   }
                 }
@@ -643,7 +641,9 @@ if (!Caml_obj.equal(to_list(q2), {
             }
           }
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -819,19 +819,19 @@ var i$7 = {
 };
 
 Queue.iter((function (j) {
-        if (i$7.contents !== j) {
-          throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "libqueue_test.res",
-              134,
-              4
-            ],
-            Error: new Error()
-          };
-        }
-        i$7.contents = i$7.contents + 1 | 0;
-      }), q$5);
+  if (i$7.contents !== j) {
+    throw {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "libqueue_test.res",
+        134,
+        4
+      ],
+      Error: new Error()
+    };
+  }
+  i$7.contents = i$7.contents + 1 | 0;
+}), q$5);
 
 var q1$1 = {
   length: 0,
@@ -972,18 +972,18 @@ if (q1$2.length !== 4) {
 }
 
 if (!Caml_obj.equal(to_list(q1$2), {
-        hd: 1,
+    hd: 1,
+    tl: {
+      hd: 2,
+      tl: {
+        hd: 3,
         tl: {
-          hd: 2,
-          tl: {
-            hd: 3,
-            tl: {
-              hd: 4,
-              tl: /* [] */0
-            }
-          }
+          hd: 4,
+          tl: /* [] */0
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1058,18 +1058,18 @@ if (q2$2.length !== 4) {
 }
 
 if (!Caml_obj.equal(to_list(q2$2), {
-        hd: 1,
+    hd: 1,
+    tl: {
+      hd: 2,
+      tl: {
+        hd: 3,
         tl: {
-          hd: 2,
-          tl: {
-            hd: 3,
-            tl: {
-              hd: 4,
-              tl: /* [] */0
-            }
-          }
+          hd: 4,
+          tl: /* [] */0
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1134,18 +1134,18 @@ if (q2$3.length !== 4) {
 }
 
 if (!Caml_obj.equal(to_list(q2$3), {
-        hd: 5,
+    hd: 5,
+    tl: {
+      hd: 6,
+      tl: {
+        hd: 7,
         tl: {
-          hd: 6,
-          tl: {
-            hd: 7,
-            tl: {
-              hd: 8,
-              tl: /* [] */0
-            }
-          }
+          hd: 8,
+          tl: /* [] */0
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1196,18 +1196,18 @@ if (q2$3.length !== 4) {
 }
 
 if (!Caml_obj.equal(to_list(q2$3), {
-        hd: 5,
+    hd: 5,
+    tl: {
+      hd: 6,
+      tl: {
+        hd: 7,
         tl: {
-          hd: 6,
-          tl: {
-            hd: 7,
-            tl: {
-              hd: 8,
-              tl: /* [] */0
-            }
-          }
+          hd: 8,
+          tl: /* [] */0
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1252,18 +1252,18 @@ if (q1$4.length !== 4) {
 }
 
 if (!Caml_obj.equal(to_list(q1$4), {
-        hd: 1,
+    hd: 1,
+    tl: {
+      hd: 2,
+      tl: {
+        hd: 3,
         tl: {
-          hd: 2,
-          tl: {
-            hd: 3,
-            tl: {
-              hd: 4,
-              tl: /* [] */0
-            }
-          }
+          hd: 4,
+          tl: /* [] */0
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1288,18 +1288,18 @@ if (q2$4.length !== 4) {
 }
 
 if (!Caml_obj.equal(to_list(q2$4), {
-        hd: 5,
+    hd: 5,
+    tl: {
+      hd: 6,
+      tl: {
+        hd: 7,
         tl: {
-          hd: 6,
-          tl: {
-            hd: 7,
-            tl: {
-              hd: 8,
-              tl: /* [] */0
-            }
-          }
+          hd: 8,
+          tl: /* [] */0
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1350,30 +1350,30 @@ if (q2$4.length !== 8) {
 }
 
 if (!Caml_obj.equal(to_list(q2$4), {
-        hd: 5,
+    hd: 5,
+    tl: {
+      hd: 6,
+      tl: {
+        hd: 7,
         tl: {
-          hd: 6,
+          hd: 8,
           tl: {
-            hd: 7,
+            hd: 1,
             tl: {
-              hd: 8,
+              hd: 2,
               tl: {
-                hd: 1,
+                hd: 3,
                 tl: {
-                  hd: 2,
-                  tl: {
-                    hd: 3,
-                    tl: {
-                      hd: 4,
-                      tl: /* [] */0
-                    }
-                  }
+                  hd: 4,
+                  tl: /* [] */0
                 }
               }
             }
           }
         }
-      })) {
+      }
+    }
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [

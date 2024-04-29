@@ -4,8 +4,8 @@
 var Nightmare = require("nightmare");
 
 var v = Nightmare({
-      show: true
-    });
+  show: true
+});
 
 exports.v = v;
 /* v Not a pure module */

@@ -69,9 +69,9 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 1), q))
 }
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2), q)), [
-          1,
-          2
-        ]) && q.length === 2)) {
+    1,
+    2
+  ]) && q.length === 2)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -84,10 +84,10 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2), q))
 }
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3), q)), [
-          1,
-          2,
-          3
-        ]) && q.length === 3)) {
+    1,
+    2,
+    3
+  ]) && q.length === 3)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -100,11 +100,11 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3), q))
 }
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 4), q)), [
-          1,
-          2,
-          3,
-          4
-        ]) && q.length === 4)) {
+    1,
+    2,
+    3,
+    4
+  ]) && q.length === 4)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -129,10 +129,10 @@ if (Belt_MutableQueue.popExn(q) !== 1) {
 }
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), [
-          2,
-          3,
-          4
-        ]) && q.length === 3)) {
+    2,
+    3,
+    4
+  ]) && q.length === 3)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -157,9 +157,9 @@ if (Belt_MutableQueue.popExn(q) !== 2) {
 }
 
 if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), [
-          3,
-          4
-        ]) && q.length === 2)) {
+    3,
+    4
+  ]) && q.length === 2)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -472,10 +472,10 @@ if (!does_raise(Belt_MutableQueue.popExn, q$3)) {
 }
 
 if (!Caml_obj.equal(q$3, {
-        length: 0,
-        first: undefined,
-        last: undefined
-      })) {
+    length: 0,
+    first: undefined,
+    last: undefined
+  })) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -514,17 +514,17 @@ for(var i$1 = 1; i$1 <= 10; ++i$1){
 var q2 = Belt_MutableQueue.copy(q1);
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1), [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10
-      ])) {
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -537,17 +537,17 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1), [
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2), [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10
-      ])) {
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -723,19 +723,19 @@ var i$7 = {
 };
 
 Belt_MutableQueue.forEach(q$5, (function (j) {
-        if (i$7.contents !== j) {
-          throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "bs_queue_test.res",
-              120,
-              4
-            ],
-            Error: new Error()
-          };
-        }
-        i$7.contents = i$7.contents + 1 | 0;
-      }));
+  if (i$7.contents !== j) {
+    throw {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "bs_queue_test.res",
+        120,
+        4
+      ],
+      Error: new Error()
+    };
+  }
+  i$7.contents = i$7.contents + 1 | 0;
+}));
 
 var q1$1 = {
   length: 0,
@@ -876,11 +876,11 @@ if (q1$2.length !== 4) {
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$2), [
-        1,
-        2,
-        3,
-        4
-      ])) {
+    1,
+    2,
+    3,
+    4
+  ])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -955,11 +955,11 @@ if (q2$2.length !== 4) {
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$2), [
-        1,
-        2,
-        3,
-        4
-      ])) {
+    1,
+    2,
+    3,
+    4
+  ])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1024,11 +1024,11 @@ if (q2$3.length !== 4) {
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$3), [
-        5,
-        6,
-        7,
-        8
-      ])) {
+    5,
+    6,
+    7,
+    8
+  ])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1079,11 +1079,11 @@ if (q2$3.length !== 4) {
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$3), [
-        5,
-        6,
-        7,
-        8
-      ])) {
+    5,
+    6,
+    7,
+    8
+  ])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1128,11 +1128,11 @@ if (q1$4.length !== 4) {
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$4), [
-        1,
-        2,
-        3,
-        4
-      ])) {
+    1,
+    2,
+    3,
+    4
+  ])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1157,11 +1157,11 @@ if (q2$4.length !== 4) {
 }
 
 if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$4), [
-        5,
-        6,
-        7,
-        8
-      ])) {
+    5,
+    6,
+    7,
+    8
+  ])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1235,10 +1235,10 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$4), v)) {
 }
 
 if (Belt_MutableQueue.reduce(q2$4, 0, (function (x, y) {
-          return x - y | 0;
-        })) !== Belt_Array.reduce(v, 0, (function (x, y) {
-          return x - y | 0;
-        }))) {
+    return x - y | 0;
+  })) !== Belt_Array.reduce(v, 0, (function (x, y) {
+    return x - y | 0;
+  }))) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1253,30 +1253,30 @@ if (Belt_MutableQueue.reduce(q2$4, 0, (function (x, y) {
 console.log("OK");
 
 var q$6 = Belt_MutableQueue.fromArray([
-      1,
-      2,
-      3,
-      4
-    ]);
+  1,
+  2,
+  3,
+  4
+]);
 
 var q1$5 = Belt_MutableQueue.map(q$6, (function (x) {
-        return x - 1 | 0;
-      }));
+  return x - 1 | 0;
+}));
 
 eq("File \"bs_queue_test.res\", line 197, characters 5-12", Belt_MutableQueue.toArray(q1$5), [
-      0,
-      1,
-      2,
-      3
-    ]);
+  0,
+  1,
+  2,
+  3
+]);
 
 var q$7 = Belt_MutableQueue.fromArray([]);
 
 b("File \"bs_queue_test.res\", line 198, characters 4-11", q$7.length === 0);
 
 var q$8 = Belt_MutableQueue.map(Belt_MutableQueue.fromArray([]), (function (x) {
-        return x + 1 | 0;
-      }));
+  return x + 1 | 0;
+}));
 
 b("File \"bs_queue_test.res\", line 199, characters 4-11", q$8.length === 0);
 

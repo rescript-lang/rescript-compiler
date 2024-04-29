@@ -29,16 +29,16 @@ function eq2(x, param) {
 }
 
 eqs("File \"mutable_uncurry_test.res\", line 15, characters 4-11", false, eq({
-          contents: 1
-        }, {
-          contents: 2
-        }));
+  contents: 1
+}, {
+  contents: 2
+}));
 
 eqs("File \"mutable_uncurry_test.res\", line 16, characters 4-11", true, eq({
-          contents: 2
-        }, {
-          contents: 2
-        }));
+  contents: 2
+}, {
+  contents: 2
+}));
 
 function ut3(param, param$1, param$2) {
   var x0 = param.contents;
@@ -70,17 +70,17 @@ function ut4(param, param$1, param$2, param$3) {
   var x0 = param.contents;
   var x1 = param$1.contents;
   return Curry._2((function (param) {
-          var x2 = param.contents;
-          return function (param) {
-            var x3 = param.contents;
-            return [
-              x0,
-              x1,
-              x2,
-              x3
-            ];
-          };
-        }), param$2, param$3);
+    var x2 = param.contents;
+    return function (param) {
+      var x3 = param.contents;
+      return [
+        x0,
+        x1,
+        x2,
+        x3
+      ];
+    };
+  }), param$2, param$3);
 }
 
 function t4(param) {
@@ -106,21 +106,21 @@ function ut5(param, param$1, param$2, param$3, param$4) {
   var x0 = param.contents;
   var x1 = param$1.contents;
   return Curry._3((function (param) {
-          var x2 = param.contents;
-          return function (param) {
-            var x3 = param.contents;
-            return function (param) {
-              var x4 = param.contents;
-              return [
-                x0,
-                x1,
-                x2,
-                x3,
-                x4
-              ];
-            };
-          };
-        }), param$2, param$3, param$4);
+    var x2 = param.contents;
+    return function (param) {
+      var x3 = param.contents;
+      return function (param) {
+        var x4 = param.contents;
+        return [
+          x0,
+          x1,
+          x2,
+          x3,
+          x4
+        ];
+      };
+    };
+  }), param$2, param$3, param$4);
 }
 
 function t5(param) {
@@ -181,46 +181,46 @@ function nested1(param) {
 }
 
 eqs("File \"mutable_uncurry_test.res\", line 51, characters 4-11", ut3({
-          contents: 1
-        }, {
-          contents: 2
-        }, {
-          contents: 3
-        }), [
-      1,
-      2,
-      3
-    ]);
+  contents: 1
+}, {
+  contents: 2
+}, {
+  contents: 3
+}), [
+  1,
+  2,
+  3
+]);
 
 eqs("File \"mutable_uncurry_test.res\", line 52, characters 4-11", Curry._1(t3({
-                contents: 1
-              })({
-              contents: 2
-            }), {
-          contents: 3
-        }), [
-      1,
-      2,
-      3
-    ]);
+  contents: 1
+})({
+  contents: 2
+}), {
+  contents: 3
+}), [
+  1,
+  2,
+  3
+]);
 
 eqs("File \"mutable_uncurry_test.res\", line 54, characters 4-11", ut5({
-          contents: 1
-        }, {
-          contents: 2
-        }, {
-          contents: 3
-        }, {
-          contents: 1
-        }, {
-          contents: 1
-        }), [
-      1,
-      2,
-      3,
-      1,
-      1
-    ]);
+  contents: 1
+}, {
+  contents: 2
+}, {
+  contents: 3
+}, {
+  contents: 1
+}, {
+  contents: 1
+}), [
+  1,
+  2,
+  3,
+  1,
+  1
+]);
 
 Mt.from_pair_suites("mutable_uncurry_test.res", suites.contents);
 

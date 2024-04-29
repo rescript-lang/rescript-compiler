@@ -26,22 +26,22 @@ var hashString = (function(str){
                                               return hash});
 
 var $$String = Belt_Id.hashable(Hashtbl.hash, (function (x, y) {
-        return x === y;
-      }));
+  return x === y;
+}));
 
 var String1 = Belt_Id.hashable(hashString, (function (x, y) {
-        return x === y;
-      }));
+  return x === y;
+}));
 
 var String2 = Belt_Id.hashable((function (x) {
-        return Caml_hash_primitive.hash_final_mix(Caml_hash_primitive.hash_mix_string(0, x));
-      }), (function (x, y) {
-        return x === y;
-      }));
+  return Caml_hash_primitive.hash_final_mix(Caml_hash_primitive.hash_mix_string(0, x));
+}), (function (x, y) {
+  return x === y;
+}));
 
 var Int = Belt_Id.hashable(Hashtbl.hash, (function (x, y) {
-        return x === y;
-      }));
+  return x === y;
+}));
 
 var empty = Belt_internalBucketsType.make(Int.hash, Int.eq, 500000);
 

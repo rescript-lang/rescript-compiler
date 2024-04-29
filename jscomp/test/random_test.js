@@ -44,24 +44,24 @@ for(var i = 0; i <= 9; ++i){
 }
 
 Mt_global.collect_eq(id, suites, "File \"random_test.res\", line 28, characters 12-19", v, [
-      true,
-      true,
-      true,
-      true,
-      true,
-      false,
-      true,
-      true,
-      true,
-      false
-    ]);
+  true,
+  true,
+  true,
+  true,
+  true,
+  false,
+  true,
+  true,
+  true,
+  false
+]);
 
 var f = Random.int64(Int64.max_int);
 
 var h = Random.int64([
-      0,
-      3
-    ]);
+  0,
+  3
+]);
 
 var vv = Random.bits();
 

@@ -17,12 +17,12 @@ function eq(loc, x, y) {
     hd: [
       loc + (" id " + String(test_id.contents)),
       (function (param) {
-          return {
-            TAG: "Eq",
-            _0: x,
-            _1: y
-          };
-        })
+        return {
+          TAG: "Eq",
+          _0: x,
+          _1: y
+        };
+      })
     ],
     tl: suites.contents
   };
@@ -41,24 +41,24 @@ function f(x) {
 }
 
 var v = f({
-      _003: 0,
-      _50: 1,
-      _50x: 2,
-      __50: 3,
-      __50x: 4,
-      "_50x'": 5,
-      "x'": 6
-    });
+  _003: 0,
+  _50: 1,
+  _50x: 2,
+  __50: 3,
+  __50x: 4,
+  "_50x'": 5,
+  "x'": 6
+});
 
 eq("File \"gpr_1943_test.res\", line 23, characters 3-10", [
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6
-    ], v);
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6
+], v);
 
 Mt.from_pair_suites("Gpr_1943_test", suites.contents);
 

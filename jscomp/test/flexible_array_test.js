@@ -262,11 +262,11 @@ function sort(s) {
   }
   var head = get(s, 0);
   var larger = sort(filter_from(1, (function (x) {
-              return Caml_obj.greaterthan(x, head);
-            }), s));
+    return Caml_obj.greaterthan(x, head);
+  }), s));
   var smaller = sort(filter_from(1, (function (x) {
-              return Caml_obj.lessequal(x, head);
-            }), s));
+    return Caml_obj.lessequal(x, head);
+  }), s));
   return append(smaller, push_front(larger, head));
 }
 
@@ -299,24 +299,24 @@ function $eq$tilde(x, y) {
 }
 
 var u = of_array([
-      1,
-      2,
-      2,
-      5,
-      3,
-      6
-    ]);
+  1,
+  2,
+  2,
+  5,
+  3,
+  6
+]);
 
 var x = sort(u);
 
 if (!Caml_obj.equal(x, of_array([
-            1,
-            2,
-            2,
-            3,
-            5,
-            6
-          ]))) {
+    1,
+    2,
+    2,
+    3,
+    5,
+    6
+  ]))) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -329,12 +329,12 @@ if (!Caml_obj.equal(x, of_array([
 }
 
 var v = $$Array.init(500, (function (i) {
-        return 500 - i | 0;
-      }));
+  return 500 - i | 0;
+}));
 
 var y = $$Array.init(500, (function (i) {
-        return i + 1 | 0;
-      }));
+  return i + 1 | 0;
+}));
 
 var x$1 = sort(of_array(v));
 

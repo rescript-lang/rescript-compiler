@@ -216,7 +216,7 @@ var b = {
 };
 
 console.log(compare("InSum", {
-          complex: true
-        }, a, b));
+  complex: true
+}, a, b));
 
 /*  Not a pure module */

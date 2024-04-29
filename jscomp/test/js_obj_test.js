@@ -6,28 +6,28 @@ var Mt = require("./mt.js");
 var suites_0 = [
   "empty",
   (function (param) {
-      return {
-        TAG: "Eq",
-        _0: 0,
-        _1: Object.keys({}).length
-      };
-    })
+    return {
+      TAG: "Eq",
+      _0: 0,
+      _1: Object.keys({}).length
+    };
+  })
 ];
 
 var suites_1 = {
   hd: [
     "assign",
     (function (param) {
-        return {
-          TAG: "Eq",
-          _0: {
-            a: 1
-          },
-          _1: Object.assign({}, {
-                a: 1
-              })
-        };
-      })
+      return {
+        TAG: "Eq",
+        _0: {
+          a: 1
+        },
+        _1: Object.assign({}, {
+          a: 1
+        })
+      };
+    })
   ],
   tl: /* [] */0
 };

@@ -9,9 +9,9 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 function Make(funarg) {
   var $$let = funarg.V;
   var H = Hashtbl.Make({
-        equal: $$let.equal,
-        hash: $$let.hash
-      });
+    equal: $$let.equal,
+    hash: $$let.hash
+  });
   var find_default = function (htbl, x) {
     try {
       return Curry._2(H.find, htbl, x);
@@ -74,12 +74,12 @@ function Make(funarg) {
           var successor = successors.hd;
           if (!find_default(already_processed, successor)) {
             return step2(successor, {
-                  hd: [
-                    top$1,
-                    successors
-                  ],
-                  tl: rest_of_stack$1
-                });
+              hd: [
+                top$1,
+                successors
+              ],
+              tl: rest_of_stack$1
+            });
           }
           var x = find_default(on_the_stack, successor) ? Curry._2(H.find, n_labels, successor) : Curry._2(H.find, l_labels, successor);
           Curry._3(H.add, l_labels, top$1, Caml.int_max(Curry._2(H.find, l_labels, top$1), x));

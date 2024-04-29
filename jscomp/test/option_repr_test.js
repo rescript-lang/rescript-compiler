@@ -105,24 +105,24 @@ function f12(x) {
 }
 
 var length_8_id = Belt_List.makeBy(8, (function (x) {
-        return x;
-      }));
+  return x;
+}));
 
 var length_10_id = Belt_List.makeBy(10, (function (x) {
-        return x;
-      }));
+  return x;
+}));
 
 function f13$1(param) {
   return Caml_obj.equal(Belt_List.take(length_10_id, 8), {
-        hd: 1,
-        tl: {
-          hd: 2,
-          tl: {
-            hd: 3,
-            tl: /* [] */0
-          }
-        }
-      });
+    hd: 1,
+    tl: {
+      hd: 2,
+      tl: {
+        hd: 3,
+        tl: /* [] */0
+      }
+    }
+  });
 }
 
 b("File \"option_repr_test.res\", line 93, characters 4-11", Caml_obj.lessthan(undefined, null));
@@ -171,8 +171,8 @@ function neqx(a, b) {
 
 function all_true(xs) {
   return Belt_List.every(xs, (function (x) {
-          return x;
-        }));
+    return x;
+  }));
 }
 
 var xs_0 = gtx(Caml_option.some(null), Caml_option.some(undefined));
@@ -183,8 +183,8 @@ var xs = {
 };
 
 b("File \"option_repr_test.res\", line 125, characters 8-15", Belt_List.every(xs, (function (x) {
-            return x;
-          })));
+  return x;
+})));
 
 var xs_0$1 = ltx(Caml_option.some(undefined), 3);
 
@@ -206,8 +206,8 @@ var xs_1 = {
                 hd: ltx(undefined, null),
                 tl: {
                   hd: ltx(undefined, (function (x) {
-                          return x;
-                        })),
+                    return x;
+                  })),
                   tl: {
                     hd: ltx(null, 3),
                     tl: /* [] */0
@@ -228,8 +228,8 @@ var xs$1 = {
 };
 
 b("File \"option_repr_test.res\", line 128, characters 4-11", Belt_List.every(xs$1, (function (x) {
-            return x;
-          })));
+  return x;
+})));
 
 var xs_0$2 = eqx(undefined, undefined);
 
@@ -253,8 +253,8 @@ var xs$2 = {
 };
 
 b("File \"option_repr_test.res\", line 145, characters 4-11", Belt_List.every(xs$2, (function (x) {
-            return x;
-          })));
+  return x;
+})));
 
 function v(x) {
   return x;

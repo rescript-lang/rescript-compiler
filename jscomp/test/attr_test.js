@@ -16,8 +16,8 @@ var hh = 1 + 2;
 
 function f(x) {
   des(x, (function (param) {
-          console.log("hei");
-        }));
+    console.log("hei");
+  }));
 }
 
 exports.u = u;

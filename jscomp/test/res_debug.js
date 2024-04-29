@@ -35,16 +35,16 @@ function optionMap(x, f) {
 }
 
 var ok_name = optionMap(undefined, (function (x) {
-        return x;
-      }));
+  return x;
+}));
 
 var ok = {
   name: ok_name
 };
 
 var bad_name = optionMap(undefined, (function (x) {
-        return x;
-      }));
+  return x;
+}));
 
 var bad = {
   name: bad_name

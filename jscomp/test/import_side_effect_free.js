@@ -3,8 +3,8 @@
 
 
 var a = await import("./side_effect_free.js").then(function (m) {
-      return m.a;
-    });
+  return m.a;
+});
 
 exports.a = a;
 /* a Not a pure module */

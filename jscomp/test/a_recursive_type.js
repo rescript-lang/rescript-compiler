@@ -8,9 +8,9 @@ function g(x) {
 }
 
 var loop = g({
-      TAG: "A",
-      _0: g
-    });
+  TAG: "A",
+  _0: g
+});
 
 var x = {
   TAG: "A",

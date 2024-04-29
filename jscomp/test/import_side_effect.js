@@ -3,8 +3,8 @@
 
 
 var a = import("./side_effect2.js").then(function (m) {
-      return m.a;
-    });
+  return m.a;
+});
 
 var M = await import("./side_effect.js");
 

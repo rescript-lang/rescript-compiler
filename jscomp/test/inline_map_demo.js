@@ -138,32 +138,32 @@ function add(x, data, tree) {
 }
 
 var m = List.fold_left((function (acc, param) {
-        return add(param[0], param[1], acc);
-      }), "Empty", {
+  return add(param[0], param[1], acc);
+}), "Empty", {
+  hd: [
+    10,
+    /* 'a' */97
+  ],
+  tl: {
+    hd: [
+      3,
+      /* 'b' */98
+    ],
+    tl: {
       hd: [
-        10,
-        /* 'a' */97
+        7,
+        /* 'c' */99
       ],
       tl: {
         hd: [
-          3,
-          /* 'b' */98
+          20,
+          /* 'd' */100
         ],
-        tl: {
-          hd: [
-            7,
-            /* 'c' */99
-          ],
-          tl: {
-            hd: [
-              20,
-              /* 'd' */100
-            ],
-            tl: /* [] */0
-          }
-        }
+        tl: /* [] */0
       }
-    });
+    }
+  }
+});
 
 function find(px, _x) {
   while(true) {
@@ -184,17 +184,17 @@ function find(px, _x) {
 }
 
 Mt.from_pair_suites("Inline_map_demo", {
-      hd: [
-        "find",
-        (function (param) {
-            return {
-              TAG: "Eq",
-              _0: find(10, m),
-              _1: /* 'a' */97
-            };
-          })
-      ],
-      tl: /* [] */0
-    });
+  hd: [
+    "find",
+    (function (param) {
+      return {
+        TAG: "Eq",
+        _0: find(10, m),
+        _1: /* 'a' */97
+      };
+    })
+  ],
+  tl: /* [] */0
+});
 
 /* m Not a pure module */
