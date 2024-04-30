@@ -2,12 +2,12 @@
 'use strict';
 
 
-var vxy = {
+let vxy = {
   x: 10,
   y: "abc"
 };
 
-var xxi = {
+let xxi = {
   x: 10
 };
 

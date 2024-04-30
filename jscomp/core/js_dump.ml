@@ -182,7 +182,7 @@ let pp_paren_params (inner_cxt : cxt) (f : Ext_pp.t) (lexical : Ident.t list) :
       id) *)
 
 let pp_var_assign cxt f id =
-  P.string f L.var;
+  P.string f L.let_;
   P.space f;
   let acxt = Ext_pp_scope.ident cxt f id in
   P.space f;
@@ -199,7 +199,7 @@ let pp_var_assign_this cxt f id =
   cxt
 
 let pp_var_declare cxt f id =
-  P.string f L.var;
+  P.string f L.let_;
   P.space f;
   let acxt = Ext_pp_scope.ident cxt f id in
   semi f;

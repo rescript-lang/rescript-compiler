@@ -10,19 +10,19 @@ function addC(x, y) {
   return x + y | 0;
 }
 
-var v7 = 7;
+let v7 = 7;
 
-var v17 = 17;
+let v17 = 17;
 
-var v27 = 27;
+let v27 = 27;
 
-var v37 = 37;
+let v37 = 37;
 
 function unary(x) {
   return x + 1 | 0;
 }
 
-var StandardNotation = {
+let StandardNotation = {
   add: add,
   addC: addC,
   v7: v7,
@@ -32,15 +32,15 @@ var StandardNotation = {
   unary: unary
 };
 
-var v7$1 = 7;
+let v7$1 = 7;
 
-var v17$1 = 17;
+let v17$1 = 17;
 
-var v27$1 = 27;
+let v27$1 = 27;
 
-var v37$1 = 37;
+let v37$1 = 37;
 
-var v100 = 100;
+let v100 = 100;
 
 exports.StandardNotation = StandardNotation;
 exports.v7 = v7$1;

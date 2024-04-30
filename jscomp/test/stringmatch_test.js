@@ -47,7 +47,7 @@ if (tst01("\x00\x00\x00\x00\x00\x00\x00\x07") !== 1) {
 }
 
 function tst02(s) {
-  var len = s.length;
+  let len = s.length;
   if (s === "") {
     if (len >= 0) {
       return 1;
@@ -1327,373 +1327,373 @@ if (tst05("BBBBBBBD") !== -1) {
   };
 }
 
-var s00 = "and";
+let s00 = "and";
 
-var t00 = "nad";
+let t00 = "nad";
 
-var s01 = "as";
+let s01 = "as";
 
-var t01 = "sa";
+let t01 = "sa";
 
-var s02 = "assert";
+let s02 = "assert";
 
-var t02 = "asesrt";
+let t02 = "asesrt";
 
-var s03 = "begin";
+let s03 = "begin";
 
-var t03 = "negib";
+let t03 = "negib";
 
-var s04 = "class";
+let s04 = "class";
 
-var t04 = "lcass";
+let t04 = "lcass";
 
-var s05 = "constraint";
+let s05 = "constraint";
 
-var t05 = "constiarnt";
+let t05 = "constiarnt";
 
-var s06 = "do";
+let s06 = "do";
 
-var t06 = "od";
+let t06 = "od";
 
-var s07 = "done";
+let s07 = "done";
 
-var t07 = "eond";
+let t07 = "eond";
 
-var s08 = "downto";
+let s08 = "downto";
 
-var t08 = "dowtno";
+let t08 = "dowtno";
 
-var s09 = "else";
+let s09 = "else";
 
-var t09 = "lese";
+let t09 = "lese";
 
-var s10 = "end";
+let s10 = "end";
 
-var t10 = "edn";
+let t10 = "edn";
 
-var s11 = "exception";
+let s11 = "exception";
 
-var t11 = "exception";
+let t11 = "exception";
 
-var s12 = "external";
+let s12 = "external";
 
-var t12 = "external";
+let t12 = "external";
 
-var s13 = "false";
+let s13 = "false";
 
-var t13 = "fslae";
+let t13 = "fslae";
 
-var s14 = "for";
+let s14 = "for";
 
-var t14 = "ofr";
+let t14 = "ofr";
 
-var s15 = "fun";
+let s15 = "fun";
 
-var t15 = "fnu";
+let t15 = "fnu";
 
-var s16 = "function";
+let s16 = "function";
 
-var t16 = "function";
+let t16 = "function";
 
-var s17 = "functor";
+let s17 = "functor";
 
-var t17 = "ounctfr";
+let t17 = "ounctfr";
 
-var s18 = "if";
+let s18 = "if";
 
-var t18 = "fi";
+let t18 = "fi";
 
-var s19 = "in";
+let s19 = "in";
 
-var t19 = "in";
+let t19 = "in";
 
-var s20 = "include";
+let s20 = "include";
 
-var t20 = "inculde";
+let t20 = "inculde";
 
-var s21 = "inherit";
+let s21 = "inherit";
 
-var t21 = "iehnrit";
+let t21 = "iehnrit";
 
-var s22 = "initializer";
+let s22 = "initializer";
 
-var t22 = "enitializir";
+let t22 = "enitializir";
 
-var s23 = "lazy";
+let s23 = "lazy";
 
-var t23 = "zaly";
+let t23 = "zaly";
 
-var s24 = "let";
+let s24 = "let";
 
-var t24 = "elt";
+let t24 = "elt";
 
-var s25 = "match";
+let s25 = "match";
 
-var t25 = "match";
+let t25 = "match";
 
-var s26 = "method";
+let s26 = "method";
 
-var t26 = "methdo";
+let t26 = "methdo";
 
-var s27 = "module";
+let s27 = "module";
 
-var t27 = "modelu";
+let t27 = "modelu";
 
-var s28 = "mutable";
+let s28 = "mutable";
 
-var t28 = "butamle";
+let t28 = "butamle";
 
-var s29 = "new";
+let s29 = "new";
 
-var t29 = "wen";
+let t29 = "wen";
 
-var s30 = "object";
+let s30 = "object";
 
-var t30 = "objcet";
+let t30 = "objcet";
 
-var s31 = "of";
+let s31 = "of";
 
-var t31 = "of";
+let t31 = "of";
 
-var s32 = "open";
+let s32 = "open";
 
-var t32 = "epon";
+let t32 = "epon";
 
-var s33 = "or";
+let s33 = "or";
 
-var t33 = "ro";
+let t33 = "ro";
 
-var s34 = "private";
+let s34 = "private";
 
-var t34 = "privaet";
+let t34 = "privaet";
 
-var s35 = "rec";
+let s35 = "rec";
 
-var t35 = "rec";
+let t35 = "rec";
 
-var s36 = "sig";
+let s36 = "sig";
 
-var t36 = "gis";
+let t36 = "gis";
 
-var s37 = "struct";
+let s37 = "struct";
 
-var t37 = "scrutt";
+let t37 = "scrutt";
 
-var s38 = "then";
+let s38 = "then";
 
-var t38 = "hten";
+let t38 = "hten";
 
-var s39 = "to";
+let s39 = "to";
 
-var t39 = "to";
+let t39 = "to";
 
-var s40 = "true";
+let s40 = "true";
 
-var t40 = "teur";
+let t40 = "teur";
 
-var s41 = "try";
+let s41 = "try";
 
-var t41 = "try";
+let t41 = "try";
 
-var s42 = "type";
+let s42 = "type";
 
-var t42 = "pyte";
+let t42 = "pyte";
 
-var s43 = "val";
+let s43 = "val";
 
-var t43 = "val";
+let t43 = "val";
 
-var s44 = "virtual";
+let s44 = "virtual";
 
-var t44 = "vritual";
+let t44 = "vritual";
 
-var s45 = "when";
+let s45 = "when";
 
-var t45 = "whne";
+let t45 = "whne";
 
-var s46 = "while";
+let s46 = "while";
 
-var t46 = "wlihe";
+let t46 = "wlihe";
 
-var s47 = "with";
+let s47 = "with";
 
-var t47 = "iwth";
+let t47 = "iwth";
 
-var s48 = "mod";
+let s48 = "mod";
 
-var t48 = "mod";
+let t48 = "mod";
 
-var s49 = "land";
+let s49 = "land";
 
-var t49 = "alnd";
+let t49 = "alnd";
 
-var s50 = "lor";
+let s50 = "lor";
 
-var t50 = "rol";
+let t50 = "rol";
 
-var s51 = "lxor";
+let s51 = "lxor";
 
-var t51 = "lxor";
+let t51 = "lxor";
 
-var s52 = "lsl";
+let s52 = "lsl";
 
-var t52 = "lsl";
+let t52 = "lsl";
 
-var s53 = "lsr";
+let s53 = "lsr";
 
-var t53 = "lsr";
+let t53 = "lsr";
 
-var s54 = "asr";
+let s54 = "asr";
 
-var t54 = "sar";
+let t54 = "sar";
 
-var s55 = "A";
+let s55 = "A";
 
-var t55 = "A";
+let t55 = "A";
 
-var s56 = "AA";
+let s56 = "AA";
 
-var t56 = "AA";
+let t56 = "AA";
 
-var s57 = "AAA";
+let s57 = "AAA";
 
-var t57 = "AAA";
+let t57 = "AAA";
 
-var s58 = "AAAA";
+let s58 = "AAAA";
 
-var t58 = "AAAA";
+let t58 = "AAAA";
 
-var s59 = "AAAAA";
+let s59 = "AAAAA";
 
-var t59 = "AAAAA";
+let t59 = "AAAAA";
 
-var s60 = "AAAAAA";
+let s60 = "AAAAAA";
 
-var t60 = "AAAAAA";
+let t60 = "AAAAAA";
 
-var s61 = "AAAAAAA";
+let s61 = "AAAAAAA";
 
-var t61 = "AAAAAAA";
+let t61 = "AAAAAAA";
 
-var s62 = "AAAAAAAA";
+let s62 = "AAAAAAAA";
 
-var t62 = "AAAAAAAA";
+let t62 = "AAAAAAAA";
 
-var s63 = "AAAAAAAAA";
+let s63 = "AAAAAAAAA";
 
-var t63 = "AAAAAAAAA";
+let t63 = "AAAAAAAAA";
 
-var s64 = "AAAAAAAAAA";
+let s64 = "AAAAAAAAAA";
 
-var t64 = "AAAAAAAAAA";
+let t64 = "AAAAAAAAAA";
 
-var s65 = "AAAAAAAAAAA";
+let s65 = "AAAAAAAAAAA";
 
-var t65 = "AAAAAAAAAAA";
+let t65 = "AAAAAAAAAAA";
 
-var s66 = "AAAAAAAAAAAA";
+let s66 = "AAAAAAAAAAAA";
 
-var t66 = "AAAAAAAAAAAA";
+let t66 = "AAAAAAAAAAAA";
 
-var s67 = "AAAAAAAAAAAAA";
+let s67 = "AAAAAAAAAAAAA";
 
-var t67 = "AAAAAAAAAAAAA";
+let t67 = "AAAAAAAAAAAAA";
 
-var s68 = "AAAAAAAAAAAAAA";
+let s68 = "AAAAAAAAAAAAAA";
 
-var t68 = "AAAAAAAAAAAAAA";
+let t68 = "AAAAAAAAAAAAAA";
 
-var s69 = "AAAAAAAAAAAAAAA";
+let s69 = "AAAAAAAAAAAAAAA";
 
-var t69 = "AAAAAAAAAAAAAAA";
+let t69 = "AAAAAAAAAAAAAAA";
 
-var s70 = "AAAAAAAAAAAAAAAA";
+let s70 = "AAAAAAAAAAAAAAAA";
 
-var t70 = "AAAAAAAAAAAAAAAA";
+let t70 = "AAAAAAAAAAAAAAAA";
 
-var s71 = "AAAAAAAAAAAAAAAAA";
+let s71 = "AAAAAAAAAAAAAAAAA";
 
-var t71 = "AAAAAAAAAAAAAAAAA";
+let t71 = "AAAAAAAAAAAAAAAAA";
 
-var s72 = "AAAAAAAAAAAAAAAAAA";
+let s72 = "AAAAAAAAAAAAAAAAAA";
 
-var t72 = "AAAAAAAAAAAAAAAAAA";
+let t72 = "AAAAAAAAAAAAAAAAAA";
 
-var s73 = "AAAAAAAAAAAAAAAAAAA";
+let s73 = "AAAAAAAAAAAAAAAAAAA";
 
-var t73 = "AAAAAAAAAAAAAAAAAAA";
+let t73 = "AAAAAAAAAAAAAAAAAAA";
 
-var s74 = "AAAAAAAAAAAAAAAAAAAA";
+let s74 = "AAAAAAAAAAAAAAAAAAAA";
 
-var t74 = "AAAAAAAAAAAAAAAAAAAA";
+let t74 = "AAAAAAAAAAAAAAAAAAAA";
 
-var s75 = "AAAAAAAAAAAAAAAAAAAAA";
+let s75 = "AAAAAAAAAAAAAAAAAAAAA";
 
-var t75 = "AAAAAAAAAAAAAAAAAAAAA";
+let t75 = "AAAAAAAAAAAAAAAAAAAAA";
 
-var s76 = "AAAAAAAAAAAAAAAAAAAAAA";
+let s76 = "AAAAAAAAAAAAAAAAAAAAAA";
 
-var t76 = "AAAAAAAAAAAAAAAAAAAAAA";
+let t76 = "AAAAAAAAAAAAAAAAAAAAAA";
 
-var s77 = "AAAAAAAAAAAAAAAAAAAAAAA";
+let s77 = "AAAAAAAAAAAAAAAAAAAAAAA";
 
-var t77 = "AAAAAAAAAAAAAAAAAAAAAAA";
+let t77 = "AAAAAAAAAAAAAAAAAAAAAAA";
 
-var s78 = "AAAAAAAAAAAAAAAAAAAAAAAA";
+let s78 = "AAAAAAAAAAAAAAAAAAAAAAAA";
 
-var t78 = "AAAAAAAAAAAAAAAAAAAAAAAA";
+let t78 = "AAAAAAAAAAAAAAAAAAAAAAAA";
 
-var s79 = "AAAAAAAAAAAAAAAAAAAAAAAAA";
+let s79 = "AAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var t79 = "AAAAAAAAAAAAAAAAAAAAAAAAA";
+let t79 = "AAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var s80 = "AAAAAAAAAAAAAAAAAAAAAAAAAA";
+let s80 = "AAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var t80 = "AAAAAAAAAAAAAAAAAAAAAAAAAA";
+let t80 = "AAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var s81 = "AAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let s81 = "AAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var t81 = "AAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let t81 = "AAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var s82 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let s82 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var t82 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let t82 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var s83 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let s83 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var t83 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let t83 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var s84 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let s84 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var t84 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let t84 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var s85 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let s85 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var t85 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let t85 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var s86 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let s86 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var t86 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let t86 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var s87 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let s87 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var t87 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let t87 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var s88 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let s88 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var t88 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let t88 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-var s89 = "BBBBBBBBBBBBBBB";
+let s89 = "BBBBBBBBBBBBBBB";
 
-var t89 = "BBBBBBBBBBBBBBB";
+let t89 = "BBBBBBBBBBBBBBB";
 
-var s90 = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
+let s90 = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
 
-var t90 = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
+let t90 = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
 
-var s91 = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
+let s91 = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
 
-var t91 = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
+let t91 = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
 
 function tst06(s) {
   switch (s) {

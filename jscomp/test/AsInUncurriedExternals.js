@@ -10,7 +10,7 @@ function mo(prim0, prim1) {
   };
 }
 
-var options = {
+let options = {
   objectMode: false,
   name: "foo",
   someOther: true

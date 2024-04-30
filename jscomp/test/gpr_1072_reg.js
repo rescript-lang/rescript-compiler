@@ -2,7 +2,7 @@
 'use strict';
 
 
-var v1 = {
+let v1 = {
   localeMatcher: "best fit",
   formatMatcher: "basic",
   day: "2-digit",

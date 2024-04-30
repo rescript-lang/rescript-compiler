@@ -2,38 +2,38 @@
 'use strict';
 
 
-var NotOption = {};
+let NotOption = {};
 
-var TotallyNotOption = {};
+let TotallyNotOption = {};
 
-var NotOption2 = {};
+let NotOption2 = {};
 
-var a;
+let a;
 
-var b = 1;
+let b = 1;
 
-var c;
+let c;
 
-var d = 1;
+let d = 1;
 
-var e;
+let e;
 
-var f = 1;
+let f = 1;
 
-var g;
+let g;
 
-var h = 1;
+let h = 1;
 
-var i = "None";
+let i = "None";
 
-var j = {
+let j = {
   TAG: "Some",
   _0: 1
 };
 
-var k = "None";
+let k = "None";
 
-var l = {
+let l = {
   TAG: "Some",
   _0: 1
 };

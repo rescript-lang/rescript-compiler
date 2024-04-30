@@ -4,7 +4,7 @@
 
 function is_number(_expr) {
   while(true) {
-    var expr = _expr;
+    let expr = _expr;
     switch (expr.TAG) {
       case "Val" :
           if (expr._0.TAG === "Natural") {
@@ -27,16 +27,16 @@ function is_number(_expr) {
 
 function compare(context, state, _a, _b) {
   while(true) {
-    var b = _b;
-    var a = _a;
-    var exit = 0;
-    var na;
-    var da;
-    var nb;
-    var db;
-    var exit$1 = 0;
-    var exit$2 = 0;
-    var exit$3 = 0;
+    let b = _b;
+    let a = _a;
+    let exit = 0;
+    let na;
+    let da;
+    let nb;
+    let db;
+    let exit$1 = 0;
+    let exit$2 = 0;
+    let exit$3 = 0;
     switch (a.TAG) {
       case "Val" :
           switch (b.TAG) {
@@ -172,7 +172,7 @@ function compare(context, state, _a, _b) {
               return -1;
           }
       case 2 :
-          var denom = compare(context, state, da, db);
+          let denom = compare(context, state, da, db);
           if (denom !== 0) {
             return denom;
           }
@@ -184,7 +184,7 @@ function compare(context, state, _a, _b) {
   };
 }
 
-var a = {
+let a = {
   TAG: "Sum",
   _0: {
     hd: {
@@ -207,7 +207,7 @@ var a = {
   }
 };
 
-var b = {
+let b = {
   TAG: "Val",
   _0: {
     TAG: "Symbol",

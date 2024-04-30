@@ -2,24 +2,24 @@
 'use strict';
 
 
-var S = {};
+let S = {};
 
-var b1 = "Two";
+let b1 = "Two";
 
-var b2 = {
+let b2 = {
   TAG: "One",
   _0: true,
   _1: "Bar"
 };
 
-var c = {
+let c = {
   TAG: "Five",
   _0: 2
 };
 
-var ddd = "Six";
+let ddd = "Six";
 
-var q = {
+let q = {
   TAG: "One",
   name: "hello"
 };

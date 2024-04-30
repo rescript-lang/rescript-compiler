@@ -11,8 +11,8 @@ function height(param) {
 }
 
 function create(l, x, d, r) {
-  var hl = height(l);
-  var hr = height(r);
+  let hl = height(l);
+  let hr = height(r);
   return {
     TAG: "Node",
     l: l,
@@ -24,9 +24,9 @@ function create(l, x, d, r) {
 }
 
 function bal(l, x, d, r) {
-  var hl;
+  let hl;
   hl = typeof l !== "object" ? 0 : l.h;
-  var hr;
+  let hr;
   hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
@@ -36,10 +36,10 @@ function bal(l, x, d, r) {
         Error: new Error()
       };
     }
-    var lr = l.r;
-    var ld = l.d;
-    var lv = l.v;
-    var ll = l.l;
+    let lr = l.r;
+    let ld = l.d;
+    let lv = l.v;
+    let ll = l.l;
     if (height(ll) >= height(lr)) {
       return create(ll, lv, ld, create(lr, x, d, r));
     }
@@ -69,10 +69,10 @@ function bal(l, x, d, r) {
       Error: new Error()
     };
   }
-  var rr = r.r;
-  var rd = r.d;
-  var rv = r.v;
-  var rl = r.l;
+  let rr = r.r;
+  let rd = r.d;
+  let rv = r.v;
+  let rl = r.l;
   if (height(rr) >= height(rl)) {
     return create(create(l, x, d, rl), rv, rd, rr);
   }
@@ -97,11 +97,11 @@ function add(x, data, param) {
       h: 1
     };
   }
-  var r = param.r;
-  var d = param.d;
-  var v = param.v;
-  var l = param.l;
-  var c = x - v | 0;
+  let r = param.r;
+  let d = param.d;
+  let v = param.v;
+  let l = param.l;
+  let c = x - v | 0;
   if (c === 0) {
     if (d === data) {
       return param;
@@ -117,14 +117,14 @@ function add(x, data, param) {
     }
   }
   if (c < 0) {
-    var ll = add(x, data, l);
+    let ll = add(x, data, l);
     if (l === ll) {
       return param;
     } else {
       return bal(ll, v, d, r);
     }
   }
-  var rr = add(x, data, r);
+  let rr = add(x, data, r);
   if (r === rr) {
     return param;
   } else {
@@ -134,14 +134,14 @@ function add(x, data, param) {
 
 function find(x, _param) {
   while(true) {
-    var param = _param;
+    let param = _param;
     if (typeof param !== "object") {
       throw {
         RE_EXN_ID: "Not_found",
         Error: new Error()
       };
     }
-    var c = x - param.v | 0;
+    let c = x - param.v | 0;
     if (c === 0) {
       return param.d;
     }
@@ -151,11 +151,11 @@ function find(x, _param) {
 }
 
 function test(param) {
-  var m = "Empty";
-  for(var i = 0; i <= 1000000; ++i){
+  let m = "Empty";
+  for(let i = 0; i <= 1000000; ++i){
     m = add(i, i, m);
   }
-  for(var i$1 = 0; i$1 <= 1000000; ++i$1){
+  for(let i$1 = 0; i$1 <= 1000000; ++i$1){
     find(i$1, m);
   }
 }

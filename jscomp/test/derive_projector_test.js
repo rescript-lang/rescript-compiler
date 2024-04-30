@@ -51,12 +51,12 @@ function d(param) {
   return param.d;
 }
 
-var v = {
+let v = {
   TAG: "D_int",
   _0: 3
 };
 
-var h_1 = {
+let h_1 = {
   hd: {
     TAG: "D_int",
     _0: 3
@@ -86,7 +86,7 @@ var h_1 = {
   }
 };
 
-var h = {
+let h = {
   hd: "D_empty",
   tl: h_1
 };
@@ -105,9 +105,9 @@ function a(param_0) {
   };
 }
 
-var d_empty = "D_empty";
+let d_empty = "D_empty";
 
-var hei = "Hei";
+let hei = "Hei";
 
 exports.u_x = u_x;
 exports.b_x = b_x;

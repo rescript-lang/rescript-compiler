@@ -4,7 +4,7 @@
 
 function isfree(id, _x) {
   while(true) {
-    var x = _x;
+    let x = _x;
     switch (x.TAG) {
       case "Pident" :
           return id === x._0;

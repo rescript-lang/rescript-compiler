@@ -2,7 +2,7 @@
 'use strict';
 
 
-var f8 = import("a").then(function (m) {
+let f8 = import("a").then(function (m) {
   return m.default;
 });
 

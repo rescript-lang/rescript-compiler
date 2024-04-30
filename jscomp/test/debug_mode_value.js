@@ -2,14 +2,14 @@
 'use strict';
 
 
-var u = {
+let u = {
   TAG: "A",
   _0: 1,
   _1: 2,
   [Symbol.for("name")]: "A"
 };
 
-var h = {
+let h = {
   hd: 1,
   tl: /* [] */0
 };

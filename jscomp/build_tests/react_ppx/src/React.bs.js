@@ -2,15 +2,15 @@
 'use strict';
 
 
-var Ref = {};
+let Ref = {};
 
-var Children = {};
+let Children = {};
 
-var Context = {};
+let Context = {};
 
-var Fragment = {};
+let Fragment = {};
 
-var Suspense = {};
+let Suspense = {};
 
 exports.Ref = Ref;
 exports.Children = Children;

@@ -91,14 +91,14 @@ function third(l) {
   if (l.hd !== 1) {
     return false;
   }
-  var match = l.tl;
+  let match = l.tl;
   if (!match) {
     return false;
   }
   if (match.hd !== 2) {
     return false;
   }
-  var match$1 = match.tl;
+  let match$1 = match.tl;
   if (match$1 && !(match$1.hd !== 3 || match$1.tl)) {
     return true;
   } else {
@@ -113,21 +113,21 @@ function third2(l) {
   if (l._0 !== 1) {
     return false;
   }
-  var match = l._1;
+  let match = l._1;
   if (typeof match !== "object") {
     return false;
   }
   if (match._0 !== 2) {
     return false;
   }
-  var match$1 = match._1;
+  let match$1 = match._1;
   if (typeof match$1 !== "object") {
     return false;
   }
   if (match$1._0 !== 3) {
     return false;
   }
-  var tmp = match$1._1;
+  let tmp = match$1._1;
   if (typeof tmp !== "object") {
     return true;
   } else {
@@ -159,17 +159,17 @@ function foo(x) {
   }
 }
 
-var CustomizeTags_d = {
+let CustomizeTags_d = {
   TAG: "qq",
   _0: 42
 };
 
-var CustomizeTags_e = {
+let CustomizeTags_e = {
   TAG: 42,
   _0: 0
 };
 
-var CustomizeTags = {
+let CustomizeTags = {
   foo: foo,
   a: "dd",
   b: 12,
@@ -192,7 +192,7 @@ function plus(x, y) {
   }
 }
 
-var MyUndefined = {
+let MyUndefined = {
   $$undefined: undefined,
   isUndefined: isUndefined,
   plus: plus
@@ -212,9 +212,9 @@ function plus$1(x, y) {
   }
 }
 
-var MyNull_null = null;
+let MyNull_null = null;
 
-var MyNull = {
+let MyNull = {
   $$null: MyNull_null,
   isNull: isNull,
   plus: plus$1
@@ -250,13 +250,13 @@ function kind(x) {
   }
 }
 
-var expectSeven = plus$2(3, 4);
+let expectSeven = plus$2(3, 4);
 
 console.log("expect 7:", expectSeven);
 
-var MyNullable_null = null;
+let MyNullable_null = null;
 
-var MyNullable = {
+let MyNullable = {
   $$null: MyNullable_null,
   $$undefined: undefined,
   isNull: isNull$1,
@@ -322,7 +322,7 @@ function kind$1(x) {
   }
 }
 
-var expectSeven$1 = plus$3({
+let expectSeven$1 = plus$3({
   x: 4,
   y: 3
 }, {
@@ -332,9 +332,9 @@ var expectSeven$1 = plus$3({
 
 console.log("expect {x:7, y:7}:", expectSeven$1);
 
-var MyNullableExtended_null = null;
+let MyNullableExtended_null = null;
 
-var MyNullableExtended = {
+let MyNullableExtended = {
   $$null: MyNullableExtended_null,
   $$undefined: undefined,
   whynot: "WhyNotAnotherOne",
@@ -358,33 +358,33 @@ function area(shape) {
   }
 }
 
-var TaggedUnions_circle = {
+let TaggedUnions_circle = {
   kind: 1,
   radius: 10
 };
 
-var TaggedUnions_square = {
+let TaggedUnions_square = {
   kind: "square",
   sideLength: 10
 };
 
-var TaggedUnions = {
+let TaggedUnions = {
   area: area,
   circle: TaggedUnions_circle,
   square: TaggedUnions_square
 };
 
-var CustomTagNotInline_a = {
+let CustomTagNotInline_a = {
   "custom-tag": "A",
   _0: 10
 };
 
-var CustomTagNotInline_b = {
+let CustomTagNotInline_b = {
   "custom-tag": "B",
   _0: 20
 };
 
-var CustomTagNotInline = {
+let CustomTagNotInline = {
   a: CustomTagNotInline_a,
   b: CustomTagNotInline_b
 };
@@ -407,7 +407,7 @@ function classify(x) {
   }
 }
 
-var UntaggedWithBool = {
+let UntaggedWithBool = {
   classify: classify
 };
 
@@ -419,7 +419,7 @@ function classify$1(x) {
   }
 }
 
-var UntaggedWithTuple = {
+let UntaggedWithTuple = {
   classify: classify$1
 };
 

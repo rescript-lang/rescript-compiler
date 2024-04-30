@@ -3,9 +3,9 @@
 
 
 function f(param) {
-  var n = 0;
+  let n = 0;
   while((function () {
-      var fib = function (x) {
+      let fib = function (x) {
         if (x === 0 || x === 1) {
           return 1;
         } else {
@@ -21,7 +21,7 @@ function f(param) {
 
 function ff(param) {
   while((function () {
-      var b = 9;
+      let b = 9;
       return (3 + b | 0) > 10;
     })()) {
     
