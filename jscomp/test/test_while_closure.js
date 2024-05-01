@@ -17,11 +17,9 @@ function f(param) {
   let n = 0;
   while(n < 10) {
     let j = n;
-    Caml_array.set(arr, j, (function(j){
-    return function (param) {
+    Caml_array.set(arr, j, (function (param) {
       v.contents = v.contents + j | 0;
-    }
-    }(j)));
+    }));
     n = n + 1 | 0;
   };
 }

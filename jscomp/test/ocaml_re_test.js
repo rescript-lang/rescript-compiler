@@ -2414,12 +2414,10 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
               ];
             }
             return [
-              alt(ids, List.map((function(ign_group,greedy){
-              return function (r$p) {
+              alt(ids, List.map((function (r$p) {
                 let match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$p);
                 return enforce_kind(ids, kind, match[1], match[0]);
-              }
-              }(ign_group,greedy)), merged_sequences)),
+              }), merged_sequences)),
               kind
             ];
         case "Repeat" :
@@ -2430,8 +2428,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             let cr = match$1[0];
             let rem;
             if (j !== undefined) {
-              let f = greedy === "Non_greedy" ? (function(cr,kind$p){
-                return function (rem) {
+              let f = greedy === "Non_greedy" ? (function (rem) {
                   return alt(ids, {
                     hd: mk_expr(ids, "Eps"),
                     tl: {
@@ -2439,9 +2436,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
                       tl: /* [] */0
                     }
                   });
-                }
-                }(cr,kind$p)) : (function(cr,kind$p){
-                return function (rem) {
+                }) : (function (rem) {
                   return alt(ids, {
                     hd: seq$1(ids, kind$p, rename(ids, cr), rem),
                     tl: {
@@ -2449,18 +2444,15 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
                       tl: /* [] */0
                     }
                   });
-                }
-                }(cr,kind$p));
+                });
               rem = iter(j - i | 0, f, mk_expr(ids, "Eps"));
             } else {
               rem = rep(ids, greedy, kind$p, cr);
             }
             return [
-              iter(i, (function(cr,kind$p){
-              return function (rem) {
+              iter(i, (function (rem) {
                 return seq$1(ids, kind$p, rename(ids, cr), rem);
-              }
-              }(cr,kind$p)), rem),
+              }), rem),
               kind
             ];
         case "Sem" :
@@ -2607,18 +2599,14 @@ function handle_case(_ign_case, _x) {
       case "Sequence" :
           return {
             TAG: "Sequence",
-            _0: List.map((function(ign_case){
-            return function (param) {
+            _0: List.map((function (param) {
               return handle_case(ign_case, param);
-            }
-            }(ign_case)), x._0)
+            }), x._0)
           };
       case "Alternative" :
-          let l$p = List.map((function(ign_case){
-          return function (param) {
+          let l$p = List.map((function (param) {
             return handle_case(ign_case, param);
-          }
-          }(ign_case)), x._0);
+          }), x._0);
           if (is_charset({
               TAG: "Alternative",
               _0: l$p
@@ -2698,11 +2686,9 @@ function handle_case(_ign_case, _x) {
           _ign_case = true;
           continue ;
       case "Intersection" :
-          let l$p$1 = List.map((function(ign_case){
-          return function (r) {
+          let l$p$1 = List.map((function (r) {
             return handle_case(ign_case, r);
-          }
-          }(ign_case)), x._0);
+          }), x._0);
           return {
             TAG: "Set",
             _0: List.fold_left((function (s, r) {
@@ -2710,11 +2696,9 @@ function handle_case(_ign_case, _x) {
             }), cany, l$p$1)
           };
       case "Complement" :
-          let l$p$2 = List.map((function(ign_case){
-          return function (r) {
+          let l$p$2 = List.map((function (r) {
             return handle_case(ign_case, r);
-          }
-          }(ign_case)), x._0);
+          }), x._0);
           return {
             TAG: "Set",
             _0: diff(cany, List.fold_left((function (s, r) {

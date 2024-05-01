@@ -36,10 +36,6 @@ val no_tailcall : t -> bool list
 
 val set_unbounded : t -> Set_ident.t -> unit
 
-val set_lexical_scope : t -> Set_ident.t -> unit
-
-val get_lexical_scope : t -> Set_ident.t
-
 (* val to_string : t -> string *)
 
 val mark_unused : t -> int -> unit

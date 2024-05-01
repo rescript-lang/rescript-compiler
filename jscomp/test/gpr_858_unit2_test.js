@@ -10,8 +10,7 @@ let delayed = {
 };
 
 for(let i = 1; i <= 2; ++i){
-  let f = (function(i){
-  return function f(n, x) {
+  let f = function (n, x) {
     if (x !== 0) {
       let prev = delayed.contents;
       delayed.contents = (function (param) {
@@ -32,8 +31,7 @@ for(let i = 1; i <= 2; ++i){
       ],
       Error: new Error()
     };
-  }
-  }(i));
+  };
   f(0, i);
 }
 

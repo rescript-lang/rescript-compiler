@@ -133,14 +133,12 @@ val assign : ?comment:string -> J.ident -> J.expression -> t
 val while_ :
   ?comment:string ->
   ?label:J.label ->
-  ?env:Js_closure.t ->
   J.expression ->
   J.block ->
   t
 
 val for_ :
   ?comment:string ->
-  ?env:Js_closure.t ->
   J.for_ident_expression option ->
   J.finish_ident_expression ->
   J.for_ident ->

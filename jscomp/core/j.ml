@@ -254,7 +254,7 @@ and statement_desc =
   (* Function declaration and Variable declaration  *)
   | Exp of expression
   | If of expression * block * block
-  | While of label option * expression * block * Js_closure.t
+  | While of label option * expression * block
     (* check if it contains loop mutable values, happens in nested loop *)
   | ForRange of
       for_ident_expression option
@@ -262,7 +262,6 @@ and statement_desc =
       * for_ident
       * for_direction
       * block
-      * Js_closure.t
   | Continue of label
   | Break (* only used when inline a fucntion *)
   | Return of expression
