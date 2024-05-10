@@ -17,7 +17,7 @@ function f(param) {
     }
     acc.contents = acc.contents + v.contents | 0;
     v.contents = v.contents + 1 | 0;
-    continue ;
+    continue;
   };
 }
 

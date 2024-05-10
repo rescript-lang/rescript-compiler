@@ -29,11 +29,11 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
             return $$String.sub(name, n$1 + 1 | 0, (p - n$1 | 0) - 1 | 0);
           }
           _n$1 = n$1 - 1 | 0;
-          continue ;
+          continue;
         };
       }
       _n = n - 1 | 0;
-      continue ;
+      continue;
     };
   }
 }

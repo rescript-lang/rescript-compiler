@@ -139,7 +139,7 @@ function mem(x, _tree) {
       return true;
     }
     _tree = c < 0 ? tree._0 : tree._2;
-    continue ;
+    continue;
   };
 }
 
@@ -190,7 +190,7 @@ function subset(_s1, _s2) {
       }
       _s2 = r2;
       _s1 = r1;
-      continue ;
+      continue;
     }
     if (c < 0) {
       if (!subset({
@@ -203,7 +203,7 @@ function subset(_s1, _s2) {
         return false;
       }
       _s1 = r1;
-      continue ;
+      continue;
     }
     if (!subset({
         TAG: "Node",
@@ -215,7 +215,7 @@ function subset(_s1, _s2) {
       return false;
     }
     _s1 = l1;
-    continue ;
+    continue;
   };
 }
 
@@ -234,7 +234,7 @@ function find(x, _tree) {
       return v;
     }
     _tree = c < 0 ? tree._0 : tree._2;
-    continue ;
+    continue;
   };
 }
 

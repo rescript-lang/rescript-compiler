@@ -22,11 +22,11 @@ function sub(_tr, _k) {
     if (k % 2 === 0) {
       _k = k / 2 | 0;
       _tr = tr._1;
-      continue ;
+      continue;
     }
     _k = k / 2 | 0;
     _tr = tr._2;
-    continue ;
+    continue;
   };
 }
 

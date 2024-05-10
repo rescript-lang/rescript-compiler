@@ -15,7 +15,7 @@ function length_aux(_len, _x) {
     }
     _x = x.tl;
     _len = len + 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -64,7 +64,7 @@ function nth(l, n) {
       }
       _n = n$1 - 1 | 0;
       _l = l$1.tl;
-      continue ;
+      continue;
     }
     throw {
       RE_EXN_ID: "Failure",
@@ -86,7 +86,7 @@ function rev_append(_l1, _l2) {
       tl: l2
     };
     _l1 = l1.tl;
-    continue ;
+    continue;
   };
 }
 
@@ -142,7 +142,7 @@ function rev_map(f, l) {
       hd: Curry._1(f, x.hd),
       tl: accu
     };
-    continue ;
+    continue;
   };
 }
 
@@ -154,7 +154,7 @@ function iter(f, _x) {
     }
     Curry._1(f, x.hd);
     _x = x.tl;
-    continue ;
+    continue;
   };
 }
 
@@ -170,7 +170,7 @@ function iteri(f, l) {
     Curry._2(f, i, x.hd);
     _x = x.tl;
     _i = i + 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -183,7 +183,7 @@ function fold_left(f, _accu, _l) {
     }
     _l = l.tl;
     _accu = Curry._2(f, accu, l.hd);
-    continue ;
+    continue;
   };
 }
 
@@ -236,7 +236,7 @@ function rev_map2(f, l1, l2) {
           hd: Curry._2(f, l1$1.hd, l2$1.hd),
           tl: accu
         };
-        continue ;
+        continue;
       }
       throw {
         RE_EXN_ID: "Invalid_argument",
@@ -264,7 +264,7 @@ function iter2(f, _l1, _l2) {
         Curry._2(f, l1.hd, l2.hd);
         _l2 = l2.tl;
         _l1 = l1.tl;
-        continue ;
+        continue;
       }
       throw {
         RE_EXN_ID: "Invalid_argument",
@@ -293,7 +293,7 @@ function fold_left2(f, _accu, _l1, _l2) {
         _l2 = l2.tl;
         _l1 = l1.tl;
         _accu = Curry._3(f, accu, l1.hd, l2.hd);
-        continue ;
+        continue;
       }
       throw {
         RE_EXN_ID: "Invalid_argument",
@@ -343,7 +343,7 @@ function for_all(p, _x) {
       return false;
     }
     _x = x.tl;
-    continue ;
+    continue;
   };
 }
 
@@ -357,7 +357,7 @@ function exists(p, _x) {
       return true;
     }
     _x = x.tl;
-    continue ;
+    continue;
   };
 }
 
@@ -372,7 +372,7 @@ function for_all2(p, _l1, _l2) {
         }
         _l2 = l2.tl;
         _l1 = l1.tl;
-        continue ;
+        continue;
       }
       throw {
         RE_EXN_ID: "Invalid_argument",
@@ -402,7 +402,7 @@ function exists2(p, _l1, _l2) {
         }
         _l2 = l2.tl;
         _l1 = l1.tl;
-        continue ;
+        continue;
       }
       throw {
         RE_EXN_ID: "Invalid_argument",
@@ -431,7 +431,7 @@ function mem(x, _x_) {
       return true;
     }
     _x_ = x_.tl;
-    continue ;
+    continue;
   };
 }
 
@@ -445,7 +445,7 @@ function memq(x, _x_) {
       return true;
     }
     _x_ = x_.tl;
-    continue ;
+    continue;
   };
 }
 
@@ -458,7 +458,7 @@ function assoc(x, _x_) {
         return match[1];
       }
       _x_ = x_.tl;
-      continue ;
+      continue;
     }
     throw {
       RE_EXN_ID: "Not_found",
@@ -476,7 +476,7 @@ function assq(x, _x_) {
         return match[1];
       }
       _x_ = x_.tl;
-      continue ;
+      continue;
     }
     throw {
       RE_EXN_ID: "Not_found",
@@ -495,7 +495,7 @@ function mem_assoc(x, _x_) {
       return true;
     }
     _x_ = x_.tl;
-    continue ;
+    continue;
   };
 }
 
@@ -509,7 +509,7 @@ function mem_assq(x, _x_) {
       return true;
     }
     _x_ = x_.tl;
-    continue ;
+    continue;
   };
 }
 
@@ -554,7 +554,7 @@ function find(p, _x) {
         return x$1;
       }
       _x = x.tl;
-      continue ;
+      continue;
     }
     throw {
       RE_EXN_ID: "Not_found",
@@ -581,10 +581,10 @@ function find_all(p) {
           hd: x$1,
           tl: accu
         };
-        continue ;
+        continue;
       }
       _x = l;
-      continue ;
+      continue;
     };
   };
 }
@@ -611,14 +611,14 @@ function partition(p, l) {
         hd: x$1,
         tl: yes
       };
-      continue ;
+      continue;
     }
     _x = l$1;
     _no = {
       hd: x$1,
       tl: no
     };
-    continue ;
+    continue;
   };
 }
 
@@ -702,7 +702,7 @@ function chop(_k, _l) {
     if (l) {
       _l = l.tl;
       _k = k - 1 | 0;
-      continue ;
+      continue;
     }
     throw {
       RE_EXN_ID: "Assert_failure",
@@ -853,14 +853,14 @@ function stable_sort(cmp, l) {
           tl: accu
         };
         _l1 = l1.tl;
-        continue ;
+        continue;
       }
       _accu = {
         hd: h2,
         tl: accu
       };
       _l2 = l2$1.tl;
-      continue ;
+      continue;
     };
   };
   let rev_sort = function (n, l) {
@@ -999,14 +999,14 @@ function stable_sort(cmp, l) {
           tl: accu
         };
         _l1 = l1.tl;
-        continue ;
+        continue;
       }
       _accu = {
         hd: h2,
         tl: accu
       };
       _l2 = l2$1.tl;
-      continue ;
+      continue;
     };
   };
   let len = length_aux(0, l);
@@ -1231,7 +1231,7 @@ function sort_uniq(cmp, l) {
         };
         _l2 = t2;
         _l1 = t1;
-        continue ;
+        continue;
       }
       if (c$7 > 0) {
         _accu = {
@@ -1239,14 +1239,14 @@ function sort_uniq(cmp, l) {
           tl: accu
         };
         _l1 = t1;
-        continue ;
+        continue;
       }
       _accu = {
         hd: h2,
         tl: accu
       };
       _l2 = t2;
-      continue ;
+      continue;
     };
   };
   let rev_sort = function (n, l) {
@@ -1462,7 +1462,7 @@ function sort_uniq(cmp, l) {
         };
         _l2 = t2;
         _l1 = t1;
-        continue ;
+        continue;
       }
       if (c$7 < 0) {
         _accu = {
@@ -1470,14 +1470,14 @@ function sort_uniq(cmp, l) {
           tl: accu
         };
         _l1 = t1;
-        continue ;
+        continue;
       }
       _accu = {
         hd: h2,
         tl: accu
       };
       _l2 = t2;
-      continue ;
+      continue;
     };
   };
   let len = length_aux(0, l);

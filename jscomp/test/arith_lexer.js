@@ -126,7 +126,7 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
     switch (__ocaml_lex_state$1) {
       case 0 :
           ___ocaml_lex_state = 0;
-          continue ;
+          continue;
       case 1 :
           return {
             TAG: "NUMERAL",
@@ -154,7 +154,7 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
       default:
         Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
-        continue ;
+        continue;
     }
   };
 }

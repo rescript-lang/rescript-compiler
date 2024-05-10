@@ -51,7 +51,7 @@ function read_lines(inc) {
       hd: l,
       tl: acc
     };
-    continue ;
+    continue;
   };
 }
 
@@ -74,7 +74,7 @@ function read_lines2(inc) {
       hd: l,
       tl: acc
     };
-    continue ;
+    continue;
   };
 }
 

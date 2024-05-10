@@ -29,7 +29,7 @@ console.log([
 function xx() {
   while(true) {
     _param = undefined;
-    continue ;
+    continue;
   };
 }
 

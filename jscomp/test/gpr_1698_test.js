@@ -14,7 +14,7 @@ function is_number(_expr) {
           }
       case "Neg" :
           _expr = expr._0;
-          continue ;
+          continue;
       case "Sum" :
       case "Pow" :
       case "Frac" :
@@ -67,7 +67,7 @@ function compare(context, state, _a, _b) {
           break;
       case "Neg" :
           _a = a._0;
-          continue ;
+          continue;
       case "Sum" :
       case "Pow" :
           exit$3 = 5;
@@ -128,7 +128,7 @@ function compare(context, state, _a, _b) {
     if (exit$3 === 5) {
       if (b.TAG === "Neg") {
         _b = b._0;
-        continue ;
+        continue;
       }
       if (a.TAG === "Sum") {
         if (is_number(b)) {
@@ -178,7 +178,7 @@ function compare(context, state, _a, _b) {
           }
           _b = nb;
           _a = na;
-          continue ;
+          continue;
       
     }
   };

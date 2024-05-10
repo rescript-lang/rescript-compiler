@@ -8,7 +8,7 @@ function f(_x, _y) {
     let x = _x;
     _y = x;
     _x = y;
-    continue ;
+    continue;
   };
 }
 
@@ -21,7 +21,7 @@ function f1(_x, _y, _z) {
     _z = x;
     _y = z;
     _x = y;
-    continue ;
+    continue;
   };
 }
 
@@ -29,7 +29,7 @@ function f2(x, _y) {
   while(true) {
     let y = _y;
     _y = y + 10 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -39,7 +39,7 @@ function f3(_x, _y) {
     let x = _x;
     _y = x + 10 | 0;
     _x = y;
-    continue ;
+    continue;
   };
 }
 
@@ -49,7 +49,7 @@ function f4(_x, _y) {
     let x = _x;
     _y = y + x | 0;
     _x = x + 10 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -58,7 +58,7 @@ function f5(_x, _y, z) {
     let y = _y;
     _y = z + 20 | 0;
     _x = y + 10 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -67,7 +67,7 @@ function f6(b) {
     if (!b) {
       return false;
     }
-    continue ;
+    continue;
   };
 }
 
@@ -76,7 +76,7 @@ function f7(b) {
     if (b) {
       return true;
     }
-    continue ;
+    continue;
   };
 }
 
@@ -86,17 +86,17 @@ function f8(_x, _y) {
     let x = _x;
     if (x > 10) {
       _y = y + 1 | 0;
-      continue ;
+      continue;
     }
     if (x < 5) {
       _x = x - 1 | 0;
-      continue ;
+      continue;
     }
     if (x <= 6) {
       return f8(x, y + 1 | 0) + f8(x - 1 | 0, y) | 0;
     }
     _x = x - 2 | 0;
-    continue ;
+    continue;
   };
 }
 

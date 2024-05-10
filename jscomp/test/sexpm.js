@@ -209,12 +209,12 @@ function expr(k, t) {
       if (c !== 32) {
         return expr_starting_with(c, k, t);
       }
-      continue ;
+      continue;
     }
     if (c < 9) {
       return expr_starting_with(c, k, t);
     }
-    continue ;
+    continue;
   };
 }
 
@@ -291,7 +291,7 @@ function expr_list(acc, k, t) {
       }
       
     } else if (c > 31 || c < 11) {
-      continue ;
+      continue;
     }
     return expr_starting_with(c, (function (last, e) {
       if (last !== undefined) {
@@ -379,7 +379,7 @@ function atom(k, t) {
     switch (exit) {
       case 1 :
           $$Buffer.add_char(t.atom, c);
-          continue ;
+          continue;
       case 2 :
           return _return_atom(c, k, t);
       
@@ -405,7 +405,7 @@ function quoted(k, t) {
       }), t);
     }
     $$Buffer.add_char(t.atom, c);
-    continue ;
+    continue;
   };
 }
 
@@ -505,7 +505,7 @@ function skip_comment(k, t) {
     if (match === 10) {
       return Curry._2(k, undefined, undefined);
     }
-    continue ;
+    continue;
   };
 }
 
@@ -523,12 +523,12 @@ function expr_or_end(k, t) {
       if (c !== 32) {
         return expr_starting_with(c, k, t);
       }
-      continue ;
+      continue;
     }
     if (c < 9) {
       return expr_starting_with(c, k, t);
     }
-    continue ;
+    continue;
   };
 }
 

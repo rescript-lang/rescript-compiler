@@ -4,7 +4,7 @@
 
 function tailcall(x) {
   while(true) {
-    continue ;
+    continue;
   };
 }
 
@@ -29,7 +29,7 @@ function length(_acc, _x) {
     }
     _x = tl;
     _acc = acc + 1 | 0;
-    continue ;
+    continue;
   };
 }
 

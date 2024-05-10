@@ -31,7 +31,7 @@ function f(_x) {
   while(true) {
     let x = _x;
     _x = x + 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -41,7 +41,7 @@ function ff(_x, _y) {
     let x = _x;
     _y = x + 1 | 0;
     _x = y;
-    continue ;
+    continue;
   };
 }
 
@@ -51,7 +51,7 @@ function fff(_x, _y) {
     let x = _x;
     _y = x;
     _x = y;
-    continue ;
+    continue;
   };
 }
 

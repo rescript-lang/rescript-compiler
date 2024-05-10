@@ -22,7 +22,7 @@ function test(param) {
         return Curry._1(acc, undefined);
       });
       _n = n - 1 | 0;
-      continue ;
+      continue;
     };
   };
   f(10, (function (param) {

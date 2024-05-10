@@ -231,7 +231,7 @@ function input_lines(ic, _acc) {
       hd: line,
       tl: acc
     };
-    continue ;
+    continue;
   };
 }
 

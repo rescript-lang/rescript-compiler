@@ -110,7 +110,7 @@ function min_elt(_def, _x) {
     }
     _x = l;
     _def = x._1;
-    continue ;
+    continue;
   };
 }
 
@@ -161,7 +161,7 @@ function mem(x, _x_) {
       return true;
     }
     _x_ = c < 0 ? x_._0 : x_._2;
-    continue ;
+    continue;
   };
 }
 

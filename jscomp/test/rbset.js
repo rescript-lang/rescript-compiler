@@ -42,10 +42,10 @@ function mem(x, _x_) {
     }
     if (x < y) {
       _x_ = x_._1;
-      continue ;
+      continue;
     }
     _x_ = x_._3;
-    continue ;
+    continue;
   };
 }
 

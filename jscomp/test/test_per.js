@@ -155,13 +155,13 @@ function valid_float_lexem(s) {
         return s;
       }
       _i = i + 1 | 0;
-      continue ;
+      continue;
     }
     if (match !== 45) {
       return s;
     }
     _i = i + 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -230,7 +230,7 @@ function flush_all(param) {
       
     }
     _x = x.tl;
-    continue ;
+    continue;
   };
 }
 
@@ -339,7 +339,7 @@ function unsafe_really_input(ic, s, _ofs, _len) {
     }
     _len = len - r | 0;
     _ofs = ofs + r | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -373,7 +373,7 @@ function input_line(chan) {
       Caml_external_polyfill.resolve("blit_string")(hd, 0, buf, pos - len | 0, len);
       _x = x.tl;
       _pos = pos - len | 0;
-      continue ;
+      continue;
     };
   };
   let _accu = /* [] */0;
@@ -411,7 +411,7 @@ function input_line(chan) {
       hd: beg,
       tl: accu
     };
-    continue ;
+    continue;
   };
 }
 

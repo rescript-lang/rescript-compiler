@@ -15,7 +15,7 @@ function f(param) {
       }
       _n = n - 1 | 0;
       _acc = acc + n | 0;
-      continue ;
+      continue;
     };
   };
   let v = Caml_array.make(10, 0);

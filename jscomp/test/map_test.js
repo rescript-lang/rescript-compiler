@@ -151,7 +151,7 @@ function cons_enum(_m, _e) {
       _3: e
     };
     _m = m.l;
-    continue ;
+    continue;
   };
 }
 
@@ -181,7 +181,7 @@ function compare(cmp, m1, m2) {
     }
     _e2 = cons_enum(e2._2, e2._3);
     _e1 = cons_enum(e1._2, e1._3);
-    continue ;
+    continue;
   };
 }
 
@@ -209,7 +209,7 @@ function equal(cmp, m1, m2) {
     }
     _e2 = cons_enum(e2._2, e2._3);
     _e1 = cons_enum(e1._2, e1._3);
-    continue ;
+    continue;
   };
 }
 
@@ -365,7 +365,7 @@ function find(x, _param) {
       return param.d;
     }
     _param = c < 0 ? param.l : param.r;
-    continue ;
+    continue;
   };
 }
 

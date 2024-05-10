@@ -41,7 +41,7 @@ function path(param) {
           tl: res
         };
         _i = i - 1 | 0;
-        continue ;
+        continue;
       };
   }
 }
@@ -122,7 +122,7 @@ function urlNotEqual(a, b) {
       }
       _bList = bList.tl;
       _aList = aList.tl;
-      continue ;
+      continue;
     };
   }
 }

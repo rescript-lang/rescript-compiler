@@ -4,7 +4,7 @@
 
 function f(a) {
   while(true) {
-    continue ;
+    continue;
   };
 }
 
