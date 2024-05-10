@@ -287,7 +287,7 @@ let record_scope_pass =
               closured_idents =
                 Set_ident.union state.closured_idents lexical_scope;
             }
-        | While (_label, pred, body) ->
+        | While (pred, body) ->
             with_in_loop
               (self.block self
                  (with_in_loop (self.expression self state pred) true)

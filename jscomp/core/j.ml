@@ -42,7 +42,6 @@ type exports = Js_op.exports
 type tag_info = Js_op.tag_info
 type property_name = Js_op.property_name
 
-type label = string
 and ident = Ident.t
 (* we override `method ident` *)
 
@@ -254,7 +253,7 @@ and statement_desc =
   (* Function declaration and Variable declaration  *)
   | Exp of expression
   | If of expression * block * block
-  | While of label option * expression * block
+  | While of expression * block
     (* check if it contains loop mutable values, happens in nested loop *)
   | ForRange of
       for_ident_expression option
@@ -262,7 +261,7 @@ and statement_desc =
       * for_ident
       * for_direction
       * block
-  | Continue of label
+  | Continue
   | Break (* only used when inline a fucntion *)
   | Return of expression
   (* Here we need track back a bit ?, move Return to Function ...

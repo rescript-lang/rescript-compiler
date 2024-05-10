@@ -132,7 +132,6 @@ val assign : ?comment:string -> J.ident -> J.expression -> t
 
 val while_ :
   ?comment:string ->
-  ?label:J.label ->
   J.expression ->
   J.block ->
   t
