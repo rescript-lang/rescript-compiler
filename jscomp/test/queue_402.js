@@ -94,7 +94,7 @@ function copy(q) {
       prev.next = res;
       _cell = cell.next;
       _prev = res;
-      continue ;
+      continue;
     };
   };
   copy$1(tail$p, tail.next);
@@ -125,7 +125,7 @@ function iter(f, q) {
       return;
     }
     _cell = cell.next;
-    continue ;
+    continue;
   };
 }
 
@@ -145,7 +145,7 @@ function fold(f, accu, q) {
     }
     _cell = cell.next;
     _accu = accu$2;
-    continue ;
+    continue;
   };
 }
 

@@ -9,7 +9,7 @@ function even(_n) {
       return true;
     }
     _n = n - 1 | 0;
-    continue ;
+    continue;
   };
 }
 

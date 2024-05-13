@@ -87,7 +87,7 @@ function fib3(n) {
     _n = n$1 - 1 | 0;
     _b = a + b | 0;
     _a = b;
-    continue ;
+    continue;
   };
 }
 

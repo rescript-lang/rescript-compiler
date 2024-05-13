@@ -19,7 +19,7 @@ function gray_decode(n) {
     }
     _n = (n$1 >>> 1);
     _p = p ^ n$1;
-    continue ;
+    continue;
   };
 }
 
@@ -38,7 +38,7 @@ function bool_string(len, n) {
     }
     _n = (n$1 >>> 1);
     _i = i - 1 | 0;
-    continue ;
+    continue;
   };
 }
 

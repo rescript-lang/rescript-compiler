@@ -51,7 +51,7 @@ function reverse_of_list(x) {
     a[(len - i | 0) - 2 | 0] = x$1.hd;
     _x = x$1.tl;
     _i = i + 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -72,10 +72,10 @@ function filter(f, a) {
         hd: v,
         tl: acc
       };
-      continue ;
+      continue;
     }
     _i = i + 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -97,10 +97,10 @@ function filter_map(f, a) {
         hd: Caml_option.valFromOption(v$1),
         tl: acc
       };
-      continue ;
+      continue;
     }
     _i = i + 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -145,7 +145,7 @@ function tolist_aux(a, f, _i, _res) {
         tl: res
       }) : res;
     _i = i - 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -176,7 +176,7 @@ function of_list_map(f, a) {
     arr[i] = Curry._1(f, x.hd);
     _x = x.tl;
     _i = i + 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -192,7 +192,7 @@ function rfind_with_index(arr, cmp, v) {
       return i;
     }
     _i = i - 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -223,7 +223,7 @@ function find_with_index(arr, cmp, v) {
       return i;
     }
     _i = i + 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -254,7 +254,7 @@ function exists(p, a) {
       return true;
     }
     _i = i + 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -272,7 +272,7 @@ function unsafe_loop(_index, len, p, xs, ys) {
       return false;
     }
     _index = index + 1 | 0;
-    continue ;
+    continue;
   };
 }
 

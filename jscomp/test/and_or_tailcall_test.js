@@ -13,7 +13,7 @@ function f(b, x, _n) {
       return false;
     }
     _n = n + 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -27,7 +27,7 @@ function or_f(b, x, _n) {
       return true;
     }
     _n = n + 1 | 0;
-    continue ;
+    continue;
   };
 }
 

@@ -179,7 +179,7 @@ function map_opt(f, l) {
       hd: Caml_option.valFromOption(y),
       tl: acc
     };
-    continue ;
+    continue;
   };
 }
 
@@ -196,7 +196,7 @@ function list_any(f, e) {
         return res;
       }
       _l = l.tl;
-      continue ;
+      continue;
     };
   }
   
@@ -220,10 +220,10 @@ function list_all(f, e) {
           hd: Caml_option.valFromOption(y),
           tl: acc
         };
-        continue ;
+        continue;
       }
       _l = tl;
-      continue ;
+      continue;
     };
   } else {
     return /* [] */0;
@@ -373,31 +373,31 @@ function get_field(name, e) {
                 if (match$3) {
                   if (match$3.tl) {
                     _l = l.tl;
-                    continue ;
+                    continue;
                   }
                   if (Caml_obj.equal(name, match$2.VAL)) {
                     return match$3.hd;
                   }
                   _l = l.tl;
-                  continue ;
+                  continue;
                 }
                 _l = l.tl;
-                continue ;
+                continue;
               }
               _l = l.tl;
-              continue ;
+              continue;
             }
             _l = l.tl;
-            continue ;
+            continue;
           }
           _l = l.tl;
-          continue ;
+          continue;
         }
         _l = l.tl;
-        continue ;
+        continue;
       }
       _l = l.tl;
-      continue ;
+      continue;
     };
   }
   
@@ -425,22 +425,22 @@ function _get_field_list(name, _l) {
                 return match$1.tl;
               }
               _l = l.tl;
-              continue ;
+              continue;
             }
             _l = l.tl;
-            continue ;
+            continue;
           }
           _l = l.tl;
-          continue ;
+          continue;
         }
         _l = l.tl;
-        continue ;
+        continue;
       }
       _l = l.tl;
-      continue ;
+      continue;
     }
     _l = l.tl;
-    continue ;
+    continue;
   };
 }
 
@@ -462,7 +462,7 @@ function _get_variant(s, args, _l) {
       return Curry._1(match[1], args);
     }
     _l = l.tl;
-    continue ;
+    continue;
   };
 }
 

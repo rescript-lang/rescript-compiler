@@ -51,7 +51,7 @@ function is_sorted(x) {
       return false;
     }
     _i = i + 1 | 0;
-    continue ;
+    continue;
   };
 }
 

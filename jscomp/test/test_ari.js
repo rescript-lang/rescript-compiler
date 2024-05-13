@@ -41,7 +41,7 @@ function length_aux(_len, _x) {
     }
     _x = x.tl;
     _len = len + 1 | 0;
-    continue ;
+    continue;
   };
 }
 

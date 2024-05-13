@@ -160,7 +160,7 @@ function Make(Ord) {
         return x._1;
       }
       _x = l;
-      continue ;
+      continue;
     };
   };
   let max_elt = function (_x) {
@@ -177,7 +177,7 @@ function Make(Ord) {
         return x._1;
       }
       _x = r;
-      continue ;
+      continue;
     };
   };
   let remove_min_elt = function (x) {
@@ -265,7 +265,7 @@ function Make(Ord) {
         return true;
       }
       _x_ = c < 0 ? x_._0 : x_._2;
-      continue ;
+      continue;
     };
   };
   let remove = function (x, x_) {
@@ -358,7 +358,7 @@ function Make(Ord) {
         _2: e
       };
       _s = s._0;
-      continue ;
+      continue;
     };
   };
   let compare_aux = function (_e1, _e2) {
@@ -381,7 +381,7 @@ function Make(Ord) {
       }
       _e2 = cons_enum(e2._1, e2._2);
       _e1 = cons_enum(e1._1, e1._2);
-      continue ;
+      continue;
     };
   };
   let compare = function (s1, s2) {
@@ -412,7 +412,7 @@ function Make(Ord) {
         }
         _s2 = r2;
         _s1 = r1;
-        continue ;
+        continue;
       }
       if (c < 0) {
         if (!subset({
@@ -425,7 +425,7 @@ function Make(Ord) {
           return false;
         }
         _s1 = r1;
-        continue ;
+        continue;
       }
       if (!subset({
           TAG: "Node",
@@ -437,7 +437,7 @@ function Make(Ord) {
         return false;
       }
       _s1 = l1;
-      continue ;
+      continue;
     };
   };
   let iter = function (f, _x_) {
@@ -449,7 +449,7 @@ function Make(Ord) {
       iter(f, x_._0);
       Curry._1(f, x_._1);
       _x_ = x_._2;
-      continue ;
+      continue;
     };
   };
   let fold = function (f, _s, _accu) {
@@ -461,7 +461,7 @@ function Make(Ord) {
       }
       _accu = Curry._2(f, s._1, fold(f, s._0, accu));
       _s = s._2;
-      continue ;
+      continue;
     };
   };
   let for_all = function (p, _x) {
@@ -477,7 +477,7 @@ function Make(Ord) {
         return false;
       }
       _x = x._2;
-      continue ;
+      continue;
     };
   };
   let exists = function (p, _x) {
@@ -493,7 +493,7 @@ function Make(Ord) {
         return true;
       }
       _x = x._2;
-      continue ;
+      continue;
     };
   };
   let filter = function (p, x) {
@@ -556,7 +556,7 @@ function Make(Ord) {
         hd: x._1,
         tl: elements_aux(accu, x._2)
       };
-      continue ;
+      continue;
     };
   };
   let elements = function (s) {
@@ -577,7 +577,7 @@ function Make(Ord) {
         return v;
       }
       _x_ = c < 0 ? x_._0 : x_._2;
-      continue ;
+      continue;
     };
   };
   let of_sorted_list = function (l) {

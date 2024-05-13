@@ -179,7 +179,7 @@ let rec block_last_is_return_throw_or_continue (x : J.block) =
   | [] -> false
   | [ x ] -> (
       match x.statement_desc with
-      | Return _ | Throw _ | Continue _ -> true
+      | Return _ | Throw _ | Continue -> true
       | _ -> false)
   | _ :: rest -> block_last_is_return_throw_or_continue rest
 
@@ -318,8 +318,8 @@ let if_ ?comment ?declaration ?else_ (e : J.expression) (then_ : J.block) : t =
 let assign ?comment id e : t =
   { statement_desc = J.Exp (E.assign (E.var id) e); comment }
 
-let while_ ?comment ?label (e : E.t) (st : J.block) : t =
-  { statement_desc = While (label, e, st); comment }
+let while_ ?comment (e : E.t) (st : J.block) : t =
+  { statement_desc = While (e, st); comment }
 
 let for_ ?comment for_ident_expression finish_ident_expression id direction
     (b : J.block) : t =
@@ -333,15 +333,6 @@ let for_ ?comment for_ident_expression finish_ident_expression id direction
 let try_ ?comment ?with_ ?finally body : t =
   { statement_desc = Try (body, with_, finally); comment }
 
-(* TODO:
-    actually, only loops can be labelled
-*)
-(* let continue_stmt  ?comment   ?(label="") ()  : t =
-   {
-    statement_desc = J.Continue  label;
-    comment;
-   } *)
-
-let continue_ : t = { statement_desc = Continue ""; comment = None }
+let continue_ : t = { statement_desc = Continue; comment = None }
 
 let debugger_block : t list = [ { statement_desc = Debugger; comment = None } ]

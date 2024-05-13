@@ -9,7 +9,7 @@ function odd(_z) {
     let a = (even + 4 | 0) + even | 0;
     console.log(String(a));
     _z = 32;
-    continue ;
+    continue;
   };
 }
 

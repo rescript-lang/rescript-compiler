@@ -2178,7 +2178,7 @@ function check_collisions(collid, all_collids, state) {
     }
     _acc = acc$1;
     _cs = cs.tl;
-    continue ;
+    continue;
   };
 }
 
@@ -2473,7 +2473,7 @@ function mem_loc(checkloc, _loclist) {
       return true;
     }
     _loclist = loclist.tl;
-    continue ;
+    continue;
   };
 }
 
@@ -2550,7 +2550,7 @@ function avoid_overlap(_lst, currentLst) {
       }, avoid_overlap(t, currentLst));
     }
     _lst = t;
-    continue ;
+    continue;
   };
 }
 
@@ -2573,7 +2573,7 @@ function trim_edges(_lst, blockw, blockh) {
       }, trim_edges(t, blockw, blockh));
     }
     _lst = t;
-    continue ;
+    continue;
   };
 }
 
@@ -2618,7 +2618,7 @@ function generate_coins(_block_coord) {
       }, generate_coins(t));
     }
     _block_coord = t;
-    continue ;
+    continue;
   };
 }
 
@@ -3060,14 +3060,14 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
     if (cby > blockh - 1 || cbx < 15) {
       _cby = 0;
       _cbx = cbx + 1;
-      continue ;
+      continue;
     }
     if (mem_loc([
         cbx,
         cby
       ], acc) || cby === 0) {
       _cby = cby + 1;
-      continue ;
+      continue;
     }
     let prob = Random.$$int(30);
     if (prob < 3 && blockh - 1 === cby) {
@@ -3085,7 +3085,7 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
       return Pervasives.$at(enemy, generate_enemies(blockw, blockh, cbx, cby + 1, acc));
     }
     _cby = cby + 1;
-    continue ;
+    continue;
   };
 }
 
@@ -3114,7 +3114,7 @@ function generate_block_enemies(_block_coord) {
       }, generate_block_enemies(t));
     }
     _block_coord = t;
-    continue ;
+    continue;
   };
 }
 
@@ -3129,14 +3129,14 @@ function generate_block_locs(blockw, blockh, _cbx, _cby, _acc) {
     if (cby > blockh - 1) {
       _cby = 0;
       _cbx = cbx + 1;
-      continue ;
+      continue;
     }
     if (mem_loc([
         cbx,
         cby
       ], acc) || cby === 0) {
       _cby = cby + 1;
-      continue ;
+      continue;
     }
     let prob = Random.$$int(100);
     if (prob < 5) {
@@ -3145,10 +3145,10 @@ function generate_block_locs(blockw, blockh, _cbx, _cby, _acc) {
       let called_acc = Pervasives.$at(acc, undup_lst);
       _acc = called_acc;
       _cby = cby + 1;
-      continue ;
+      continue;
     }
     _cby = cby + 1;
-    continue ;
+    continue;
   };
 }
 
@@ -3183,11 +3183,11 @@ function generate_ground(blockw, blockh, _inc, _acc) {
       });
       if (skip === 7 && blockw - inc > 32) {
         _inc = inc + 1;
-        continue ;
+        continue;
       }
       _acc = newacc;
       _inc = inc + 1;
-      continue ;
+      continue;
     }
     let newacc$1 = Pervasives.$at(acc, {
       hd: [
@@ -3201,7 +3201,7 @@ function generate_ground(blockw, blockh, _inc, _acc) {
     });
     _acc = newacc$1;
     _inc = inc + 1;
-    continue ;
+    continue;
   };
 }
 

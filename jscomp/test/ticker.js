@@ -47,7 +47,7 @@ function split(delim, s) {
         }) : l$1;
       _x = i$p;
       _l = l$2;
-      continue ;
+      continue;
     };
   } else {
     return /* [] */0;
@@ -258,7 +258,7 @@ function find(x, _param) {
       return param.d;
     }
     _param = c < 0 ? param.l : param.r;
-    continue ;
+    continue;
   };
 }
 
@@ -291,14 +291,14 @@ function find_first(f, _param) {
           _param$1 = param$1.l;
           _d0 = param$1.d;
           _v0 = v$1;
-          continue ;
+          continue;
         }
         _param$1 = param$1.r;
-        continue ;
+        continue;
       };
     }
     _param = param.r;
-    continue ;
+    continue;
   };
 }
 
@@ -328,14 +328,14 @@ function find_first_opt(f, _param) {
           _param$1 = param$1.l;
           _d0 = param$1.d;
           _v0 = v$1;
-          continue ;
+          continue;
         }
         _param$1 = param$1.r;
-        continue ;
+        continue;
       };
     }
     _param = param.r;
-    continue ;
+    continue;
   };
 }
 
@@ -368,14 +368,14 @@ function find_last(f, _param) {
           _param$1 = param$1.r;
           _d0 = param$1.d;
           _v0 = v$1;
-          continue ;
+          continue;
         }
         _param$1 = param$1.l;
-        continue ;
+        continue;
       };
     }
     _param = param.l;
-    continue ;
+    continue;
   };
 }
 
@@ -405,14 +405,14 @@ function find_last_opt(f, _param) {
           _param$1 = param$1.r;
           _d0 = param$1.d;
           _v0 = v$1;
-          continue ;
+          continue;
         }
         _param$1 = param$1.l;
-        continue ;
+        continue;
       };
     }
     _param = param.l;
-    continue ;
+    continue;
   };
 }
 
@@ -427,7 +427,7 @@ function find_opt(x, _param) {
       return Caml_option.some(param.d);
     }
     _param = c < 0 ? param.l : param.r;
-    continue ;
+    continue;
   };
 }
 
@@ -442,7 +442,7 @@ function mem(x, _param) {
       return true;
     }
     _param = c < 0 ? param.l : param.r;
-    continue ;
+    continue;
   };
 }
 
@@ -463,7 +463,7 @@ function min_binding(_param) {
       ];
     }
     _param = l;
-    continue ;
+    continue;
   };
 }
 
@@ -481,7 +481,7 @@ function min_binding_opt(_param) {
       ];
     }
     _param = l;
-    continue ;
+    continue;
   };
 }
 
@@ -502,7 +502,7 @@ function max_binding(_param) {
       ];
     }
     _param = r;
-    continue ;
+    continue;
   };
 }
 
@@ -520,7 +520,7 @@ function max_binding_opt(_param) {
       ];
     }
     _param = r;
-    continue ;
+    continue;
   };
 }
 
@@ -644,7 +644,7 @@ function iter(f, _param) {
     iter(f, param.l);
     Curry._2(f, param.v, param.d);
     _param = param.r;
-    continue ;
+    continue;
   };
 }
 
@@ -692,7 +692,7 @@ function fold(f, _m, _accu) {
     }
     _accu = Curry._3(f, m.v, m.d, fold(f, m.l, accu));
     _m = m.r;
-    continue ;
+    continue;
   };
 }
 
@@ -709,7 +709,7 @@ function for_all(p, _param) {
       return false;
     }
     _param = param.r;
-    continue ;
+    continue;
   };
 }
 
@@ -726,7 +726,7 @@ function exists(p, _param) {
       return true;
     }
     _param = param.r;
-    continue ;
+    continue;
   };
 }
 
@@ -948,7 +948,7 @@ function cons_enum(_m, _e) {
       _3: e
     };
     _m = m.l;
-    continue ;
+    continue;
   };
 }
 
@@ -978,7 +978,7 @@ function compare(cmp, m1, m2) {
     }
     _e2 = cons_enum(e2._2, e2._3);
     _e1 = cons_enum(e1._2, e1._3);
-    continue ;
+    continue;
   };
 }
 
@@ -1006,7 +1006,7 @@ function equal(cmp, m1, m2) {
     }
     _e2 = cons_enum(e2._2, e2._3);
     _e1 = cons_enum(e1._2, e1._3);
-    continue ;
+    continue;
   };
 }
 
@@ -1033,7 +1033,7 @@ function bindings_aux(_accu, _param) {
       ],
       tl: bindings_aux(accu, param.r)
     };
-    continue ;
+    continue;
   };
 }
 
@@ -1140,7 +1140,7 @@ function compute_update_sequences(all_tickers) {
           hd: ticker,
           tl: up
         };
-        continue ;
+        continue;
       };
     };
     return loop(/* [] */0, map, ticker);
@@ -1397,7 +1397,7 @@ function loop(_lines, _param) {
     }
     _param = process_input_line(param[1], all_tickers, lines.hd);
     _lines = lines.tl;
-    continue ;
+    continue;
   };
 }
 

@@ -62,7 +62,7 @@ function advance_loop(state) {
     take_queue(state.pp_queue);
     Curry._1(format_pp_token(state, size$1 < 0 ? 1000000010 : size$1), match.token);
     state.pp_left_total = match.length + state.pp_left_total | 0;
-    continue ;
+    continue;
   };
 }
 

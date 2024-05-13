@@ -46,7 +46,7 @@ function iter(_bounce) {
       return bounce._0;
     }
     _bounce = bounce._0();
-    continue ;
+    continue;
   };
 }
 

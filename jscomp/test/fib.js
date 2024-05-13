@@ -24,7 +24,7 @@ function fib2(n) {
     _i = i + 1 | 0;
     _b = a + b | 0;
     _a = b;
-    continue ;
+    continue;
   };
 }
 

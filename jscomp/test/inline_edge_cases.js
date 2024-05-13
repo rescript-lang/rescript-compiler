@@ -9,7 +9,7 @@ function test3(_n) {
       return (n + 5 | 0) + 4 | 0;
     }
     _n = n - 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -20,7 +20,7 @@ function test2(_n) {
       return test3(n) + 3 | 0;
     }
     _n = n - 1 | 0;
-    continue ;
+    continue;
   };
 }
 
@@ -35,11 +35,11 @@ function test0(_n) {
           return test2(n$1) + 2 | 0;
         }
         _n$1 = n$1 - 1 | 0;
-        continue ;
+        continue;
       };
     }
     _n = n - 1 | 0;
-    continue ;
+    continue;
   };
 }
 

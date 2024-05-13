@@ -84,7 +84,7 @@ function Make(funarg) {
           let x = find_default(on_the_stack, successor) ? Curry._2(H.find, n_labels, successor) : Curry._2(H.find, l_labels, successor);
           Curry._3(H.add, l_labels, top$1, Caml.int_max(Curry._2(H.find, l_labels, top$1), x));
           _successors = successors.tl;
-          continue ;
+          continue;
         }
         if (Curry._2(H.find, l_labels, top$1) === Curry._2(H.find, n_labels, top$1)) {
           cut_set.contents = {
@@ -110,7 +110,7 @@ function Make(funarg) {
         _rest_of_stack = rest_of_stack$1.tl;
         _top = new_top;
         _successors = match[1];
-        continue ;
+        continue;
       };
     };
     return step2(first_node, /* [] */0);

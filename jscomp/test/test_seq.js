@@ -22,7 +22,7 @@ function assoc3(x, _l) {
         return match[1];
       }
       _l = l.tl;
-      continue ;
+      continue;
     }
     throw {
       RE_EXN_ID: "Not_found",

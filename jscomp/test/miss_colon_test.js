@@ -33,7 +33,7 @@ function $plus$colon(_f, _g) {
       case "Add" :
           _g = g._1;
           _f = $plus$colon(f, g._0);
-          continue ;
+          continue;
       case "Var" :
       case "Mul" :
           return {
@@ -107,7 +107,7 @@ function $star$colon(_f, _g) {
       case "Mul" :
           _g = g._1;
           _f = $star$colon(f, g._0);
-          continue ;
+          continue;
       
     }
   };

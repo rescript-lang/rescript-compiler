@@ -16,7 +16,7 @@ function f(_n, _acc) {
       return Curry._1(acc, undefined);
     });
     _n = n - 1 | 0;
-    continue ;
+    continue;
   };
 }
 

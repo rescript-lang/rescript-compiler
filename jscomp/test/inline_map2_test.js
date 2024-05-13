@@ -151,7 +151,7 @@ function Make(Ord) {
         return x_._2;
       }
       _x_ = c < 0 ? x_._0 : x_._3;
-      continue ;
+      continue;
     };
   };
   let mem = function (x, _x_) {
@@ -165,7 +165,7 @@ function Make(Ord) {
         return true;
       }
       _x_ = c < 0 ? x_._0 : x_._3;
-      continue ;
+      continue;
     };
   };
   let min_binding = function (_x) {
@@ -185,7 +185,7 @@ function Make(Ord) {
         ];
       }
       _x = l;
-      continue ;
+      continue;
     };
   };
   let max_binding = function (_x) {
@@ -205,7 +205,7 @@ function Make(Ord) {
         ];
       }
       _x = r;
-      continue ;
+      continue;
     };
   };
   let remove_min_binding = function (x) {
@@ -256,7 +256,7 @@ function Make(Ord) {
       iter(f, x._0);
       Curry._2(f, x._1, x._2);
       _x = x._3;
-      continue ;
+      continue;
     };
   };
   let map = function (f, x) {
@@ -301,7 +301,7 @@ function Make(Ord) {
       }
       _accu = Curry._3(f, m._1, m._2, fold(f, m._0, accu));
       _m = m._3;
-      continue ;
+      continue;
     };
   };
   let for_all = function (p, _x) {
@@ -317,7 +317,7 @@ function Make(Ord) {
         return false;
       }
       _x = x._3;
-      continue ;
+      continue;
     };
   };
   let exists = function (p, _x) {
@@ -333,7 +333,7 @@ function Make(Ord) {
         return true;
       }
       _x = x._3;
-      continue ;
+      continue;
     };
   };
   let add_min_binding = function (k, v, x) {
@@ -506,7 +506,7 @@ function Make(Ord) {
         _3: e
       };
       _m = m._0;
-      continue ;
+      continue;
     };
   };
   let compare = function (cmp, m1, m2) {
@@ -535,7 +535,7 @@ function Make(Ord) {
       }
       _e2 = cons_enum(e2._2, e2._3);
       _e1 = cons_enum(e1._2, e1._3);
-      continue ;
+      continue;
     };
   };
   let equal = function (cmp, m1, m2) {
@@ -562,7 +562,7 @@ function Make(Ord) {
       }
       _e2 = cons_enum(e2._2, e2._3);
       _e1 = cons_enum(e1._2, e1._3);
-      continue ;
+      continue;
     };
   };
   let cardinal = function (x) {
@@ -587,7 +587,7 @@ function Make(Ord) {
         ],
         tl: bindings_aux(accu, x._3)
       };
-      continue ;
+      continue;
     };
   };
   let bindings = function (s) {
@@ -781,7 +781,7 @@ function find(x, _x_) {
       return x_._2;
     }
     _x_ = c < 0 ? x_._0 : x_._3;
-    continue ;
+    continue;
   };
 }
 
@@ -796,7 +796,7 @@ function mem(x, _x_) {
       return true;
     }
     _x_ = c < 0 ? x_._0 : x_._3;
-    continue ;
+    continue;
   };
 }
 
@@ -817,7 +817,7 @@ function min_binding(_x) {
       ];
     }
     _x = l;
-    continue ;
+    continue;
   };
 }
 
@@ -838,7 +838,7 @@ function max_binding(_x) {
       ];
     }
     _x = r;
-    continue ;
+    continue;
   };
 }
 
@@ -892,7 +892,7 @@ function iter(f, _x) {
     iter(f, x._0);
     Curry._2(f, x._1, x._2);
     _x = x._3;
-    continue ;
+    continue;
   };
 }
 
@@ -940,7 +940,7 @@ function fold(f, _m, _accu) {
     }
     _accu = Curry._3(f, m._1, m._2, fold(f, m._0, accu));
     _m = m._3;
-    continue ;
+    continue;
   };
 }
 
@@ -957,7 +957,7 @@ function for_all(p, _x) {
       return false;
     }
     _x = x._3;
-    continue ;
+    continue;
   };
 }
 
@@ -974,7 +974,7 @@ function exists(p, _x) {
       return true;
     }
     _x = x._3;
-    continue ;
+    continue;
   };
 }
 
@@ -1157,7 +1157,7 @@ function cons_enum(_m, _e) {
       _3: e
     };
     _m = m._0;
-    continue ;
+    continue;
   };
 }
 
@@ -1187,7 +1187,7 @@ function compare(cmp, m1, m2) {
     }
     _e2 = cons_enum(e2._2, e2._3);
     _e1 = cons_enum(e1._2, e1._3);
-    continue ;
+    continue;
   };
 }
 
@@ -1215,7 +1215,7 @@ function equal(cmp, m1, m2) {
     }
     _e2 = cons_enum(e2._2, e2._3);
     _e1 = cons_enum(e1._2, e1._3);
-    continue ;
+    continue;
   };
 }
 
@@ -1242,7 +1242,7 @@ function bindings_aux(_accu, _x) {
       ],
       tl: bindings_aux(accu, x._3)
     };
-    continue ;
+    continue;
   };
 }
 
@@ -1465,7 +1465,7 @@ function find$1(x, _x_) {
       return x_._2;
     }
     _x_ = c < 0 ? x_._0 : x_._3;
-    continue ;
+    continue;
   };
 }
 
@@ -1480,7 +1480,7 @@ function mem$1(x, _x_) {
       return true;
     }
     _x_ = c < 0 ? x_._0 : x_._3;
-    continue ;
+    continue;
   };
 }
 
@@ -1501,7 +1501,7 @@ function min_binding$1(_x) {
       ];
     }
     _x = l;
-    continue ;
+    continue;
   };
 }
 
@@ -1522,7 +1522,7 @@ function max_binding$1(_x) {
       ];
     }
     _x = r;
-    continue ;
+    continue;
   };
 }
 
@@ -1576,7 +1576,7 @@ function iter$1(f, _x) {
     iter$1(f, x._0);
     Curry._2(f, x._1, x._2);
     _x = x._3;
-    continue ;
+    continue;
   };
 }
 
@@ -1624,7 +1624,7 @@ function fold$1(f, _m, _accu) {
     }
     _accu = Curry._3(f, m._1, m._2, fold$1(f, m._0, accu));
     _m = m._3;
-    continue ;
+    continue;
   };
 }
 
@@ -1641,7 +1641,7 @@ function for_all$1(p, _x) {
       return false;
     }
     _x = x._3;
-    continue ;
+    continue;
   };
 }
 
@@ -1658,7 +1658,7 @@ function exists$1(p, _x) {
       return true;
     }
     _x = x._3;
-    continue ;
+    continue;
   };
 }
 
@@ -1841,7 +1841,7 @@ function cons_enum$1(_m, _e) {
       _3: e
     };
     _m = m._0;
-    continue ;
+    continue;
   };
 }
 
@@ -1871,7 +1871,7 @@ function compare$1(cmp, m1, m2) {
     }
     _e2 = cons_enum$1(e2._2, e2._3);
     _e1 = cons_enum$1(e1._2, e1._3);
-    continue ;
+    continue;
   };
 }
 
@@ -1899,7 +1899,7 @@ function equal$1(cmp, m1, m2) {
     }
     _e2 = cons_enum$1(e2._2, e2._3);
     _e1 = cons_enum$1(e1._2, e1._3);
-    continue ;
+    continue;
   };
 }
 
@@ -1926,7 +1926,7 @@ function bindings_aux$1(_accu, _x) {
       ],
       tl: bindings_aux$1(accu, x._3)
     };
-    continue ;
+    continue;
   };
 }
 

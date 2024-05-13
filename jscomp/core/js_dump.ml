@@ -232,10 +232,8 @@ let break_nl f =
   semi f;
   P.newline f
 
-let continue f s =
+let continue f =
   P.string f L.continue;
-  P.space f;
-  P.string f s;
   semi f
 
 let formal_parameter_list cxt f l = iter_lst cxt f l Ext_pp_scope.ident comma_sp
@@ -1020,14 +1018,8 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
           P.string f L.else_;
           P.space f;
           brace_block cxt f s2)
-  | While (label, e, s) ->
+  | While (e, s) ->
       (*  FIXME: print scope as well *)
-      (match label with
-      | Some i ->
-          P.string f i;
-          P.string f L.colon;
-          P.newline f
-      | None -> ());
       let cxt =
         match e.expression_desc with
         | Number (Int { i = 1l }) ->
@@ -1120,8 +1112,8 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
             brace_block cxt f s)
       in
       action cxt
-  | Continue s ->
-      continue f s;
+  | Continue ->
+      continue f;
       cxt
   (* P.newline f;  #2642 *)
   | Debugger ->

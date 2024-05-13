@@ -52,7 +52,7 @@ function to_list(s) {
       hd: v,
       tl: acc
     };
-    continue ;
+    continue;
   };
 }
 

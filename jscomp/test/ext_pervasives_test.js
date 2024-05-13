@@ -36,7 +36,7 @@ function is_pos_pow(n) {
       if ((n$1 & 1) === 0) {
         _n = (n$1 >> 1);
         _c = c + 1 | 0;
-        continue ;
+        continue;
       }
       throw {
         RE_EXN_ID: E,
@@ -70,7 +70,7 @@ function is_pos_pow_2(n) {
       if ((n$1 & 1) === 0) {
         _n = (n$1 >> 1);
         _c = c + 1 | 0;
-        continue ;
+        continue;
       }
       throw {
         RE_EXN_ID: E,
