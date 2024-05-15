@@ -207,7 +207,7 @@ let unit : t = { expression_desc = Undefined {isUnit = true}; comment = None }
    [Js_fun_env.empty] is a mutable state ..
 *)
 
-let ocaml_fun ?comment ?immutable_mask ~return_unit ~async ~oneUnitArg params body : t =
+let ocaml_fun ?comment ?immutable_mask ~return_unit ~async ~oneUnitArg ?directive params body : t =
   let params = if oneUnitArg then [] else params in
   let len = List.length params in
   {
@@ -220,6 +220,7 @@ let ocaml_fun ?comment ?immutable_mask ~return_unit ~async ~oneUnitArg params bo
           env = Js_fun_env.make ?immutable_mask len;
           return_unit;
           async;
+          directive;
         };
     comment;
   }
@@ -236,6 +237,7 @@ let method_ ?comment ?immutable_mask ~return_unit params body : t =
           env = Js_fun_env.make ?immutable_mask len;
           return_unit;
           async = false;
+          directive = None;
         };
     comment;
   }
@@ -1301,6 +1303,7 @@ let of_block ?comment ?e block : t =
             env = Js_fun_env.make 0;
             return_unit;
             async = false;
+            directive = None;
           };
     }
     []

@@ -717,6 +717,11 @@ let try_ids = Hashtbl.create 8
 
 let has_async_attribute exp = exp.exp_attributes |> List.exists (fun ({txt}, _payload) -> txt = "res.async")
 
+let extract_directive_for_fn exp = 
+  exp.exp_attributes |> List.find_map (
+    fun ({txt}, payload) -> if txt = "directive" then Ast_payload.is_single_string payload else None)
+
+
 let rec transl_exp e =
   List.iter (Translattribute.check_attribute e) e.exp_attributes;
   transl_exp0 e
@@ -732,6 +737,11 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
       transl_let rec_flag pat_expr_list (transl_exp body)
   | Texp_function { arg_label = _; param; cases; partial } ->
       let async = has_async_attribute e in
+      let directive = (
+        match extract_directive_for_fn e with 
+        | None -> None 
+        | Some (directive, _) -> Some directive
+      ) in
       let params, body, return_unit =
         let pl = push_defaults e.exp_loc [] cases partial in
         transl_function e.exp_loc partial param pl
@@ -742,6 +752,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
           inline = Translattribute.get_inline_attribute e.exp_attributes;
           async;
           return_unit;
+          directive;
         }
       in
       let loc = e.exp_loc in

@@ -282,7 +282,7 @@ let rec try_optimize_curry cxt f len function_id =
   Curry_gen.pp_optimize_curry f len;
   P.paren_group f 1 (fun _ -> expression ~level:1 cxt f function_id)
 
-and pp_function ~return_unit ~async ~is_method cxt (f : P.t) ~fn_state
+and pp_function ~return_unit ~async ~is_method ?directive cxt (f : P.t) ~fn_state
     (l : Ident.t list) (b : J.block) (env : Js_fun_env.t) : cxt =
   match b with
   | [
@@ -363,13 +363,13 @@ and pp_function ~return_unit ~async ~is_method cxt (f : P.t) ~fn_state
                     if Js_fun_env.get_unused env 0 then cxt
                     else pp_var_assign_this cxt f this
                   in
-                  function_body ~return_unit cxt f b))
+                  function_body ?directive ~return_unit cxt f b))
         else
           let cxt =
             P.paren_group f 1 (fun _ -> formal_parameter_list inner_cxt f l)
           in
           P.space f;
-          P.brace_vgroup f 1 (fun _ -> function_body ~return_unit cxt f b)
+          P.brace_vgroup f 1 (fun _ -> function_body ?directive ~return_unit cxt f b)
       in
       let enclose () =
         let handle () =
@@ -483,9 +483,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
           let cxt = expression ~level:0 cxt f e1 in
           comma_sp f;
           expression ~level:0 cxt f e2)
-  | Fun { is_method; params; body; env; return_unit; async } ->
+  | Fun { is_method; params; body; env; return_unit; async; directive } ->
       (* TODO: dump for comments *)
-      pp_function ~is_method cxt f ~fn_state:default_fn_exp_state params body
+      pp_function ?directive ~is_method cxt f ~fn_state:default_fn_exp_state params body
         env ~return_unit ~async
       (* TODO:
          when [e] is [Js_raw_code] with arity
@@ -515,10 +515,11 @@ and expression_desc cxt ~(level : int) f x : cxt =
                                env;
                                return_unit;
                                async;
+                               directive;
                              };
                        };
                       ] ->
-                          pp_function ~is_method ~return_unit ~async cxt f
+                          pp_function ?directive ~is_method ~return_unit ~async cxt f
                             ~fn_state:(No_name { single_arg = true })
                             params body env
                       | _ ->
@@ -920,8 +921,8 @@ and variable_declaration top cxt f (variable : J.variable_declaration) : cxt =
           statement_desc top cxt f (J.Exp e)
       | _ -> (
           match e.expression_desc with
-          | Fun { is_method; params; body; env; return_unit; async } ->
-              pp_function ~is_method cxt f ~return_unit ~async
+          | Fun { is_method; params; body; env; return_unit; async; directive } ->
+              pp_function ?directive ~is_method cxt f ~return_unit ~async
                 ~fn_state:(if top then Name_top name else Name_non_top name)
                 params body env
           | _ ->
@@ -1124,9 +1125,9 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       cxt
   | Return e -> (
       match e.expression_desc with
-      | Fun { is_method; params; body; env; return_unit; async } ->
+      | Fun { is_method; params; body; env; return_unit; async; directive } ->
           let cxt =
-            pp_function ~return_unit ~is_method ~async cxt f ~fn_state:Is_return
+            pp_function ?directive ~return_unit ~is_method ~async cxt f ~fn_state:Is_return
               params body env
           in
           semi f;
@@ -1216,8 +1217,15 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
                   P.string f L.finally;
                   P.space f;
                   brace_block cxt f b))
+                  
 
-and function_body (cxt : cxt) f ~return_unit (b : J.block) : unit =
+and function_body ?directive (cxt : cxt) f ~return_unit (b : J.block) : unit =
+  (match directive with 
+  | None -> () 
+  | Some directive -> 
+    P.newline f;
+    P.string f directive; P.string f ";";
+    P.newline f);
   match b with
   | [] -> ()
   | [ s ] -> (

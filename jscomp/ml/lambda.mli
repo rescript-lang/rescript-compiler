@@ -293,6 +293,7 @@ type function_attribute = {
   stub: bool;
   return_unit : bool;
   async : bool;
+  directive : string option;
   oneUnitArg : bool;
 }
 

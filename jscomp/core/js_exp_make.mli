@@ -91,6 +91,7 @@ val ocaml_fun :
   return_unit:bool ->
   async:bool ->
   oneUnitArg:bool ->
+  ?directive:string ->
   J.ident list ->
   J.block ->
   t

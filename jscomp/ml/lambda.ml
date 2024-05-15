@@ -323,6 +323,7 @@ type function_attribute = {
   stub: bool;
   return_unit : bool;
   async : bool;
+  directive : string option;
   oneUnitArg : bool;
 }
 
@@ -394,6 +395,7 @@ let default_function_attribute = {
   return_unit = false;
   async = false;
   oneUnitArg = false;
+  directive = None;
 }
 
 let default_stub_attribute =
