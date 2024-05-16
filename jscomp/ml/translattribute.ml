@@ -65,7 +65,7 @@ let get_inline_attribute l =
 let rec add_inline_attribute (expr : Lambda.lambda) loc attributes =
   match (expr, get_inline_attribute attributes) with
   | expr, Default_inline -> expr
-  | Lfunction ({ attr = { stub = false } as attr } as funct), inline ->
+  | Lfunction ({ attr } as funct), inline ->
       (match attr.inline with
       | Default_inline -> ()
       | Always_inline | Never_inline ->

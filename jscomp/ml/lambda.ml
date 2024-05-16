@@ -320,7 +320,6 @@ type let_kind = Strict | Alias | StrictOpt | Variable
 type function_attribute = {
   inline : inline_attribute;
   is_a_functor: bool;
-  stub: bool;
   return_unit : bool;
   async : bool;
   directive : string option;
@@ -391,15 +390,11 @@ let lambda_unit = Lconst const_unit
 let default_function_attribute = {
   inline = Default_inline;
   is_a_functor = false;
-  stub = false;
   return_unit = false;
   async = false;
   oneUnitArg = false;
   directive = None;
 }
-
-let default_stub_attribute =
-  { default_function_attribute with stub = true }
 
 (* Build sharing keys *)
 (*

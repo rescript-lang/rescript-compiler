@@ -290,7 +290,6 @@ type let_kind = Strict | Alias | StrictOpt | Variable
 type function_attribute = {
   inline : inline_attribute;
   is_a_functor: bool;
-  stub: bool;
   return_unit : bool;
   async : bool;
   directive : string option;
@@ -387,7 +386,6 @@ val commute_comparison : comparison -> comparison
 val negate_comparison : comparison -> comparison
 
 val default_function_attribute : function_attribute
-val default_stub_attribute : function_attribute
 
 (***********************)
 (* For static failures *)

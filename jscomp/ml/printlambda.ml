@@ -345,11 +345,9 @@ let name_of_primitive = function
   | Popaque -> "Popaque"
   | Pcreate_extension _ -> "Pcreate_extension"
 
-let function_attribute ppf { inline; is_a_functor; stub; return_unit } =
+let function_attribute ppf { inline; is_a_functor; return_unit } =
   if is_a_functor then
     fprintf ppf "is_a_functor@ ";
-  if stub then
-    fprintf ppf "stub@ ";
   if return_unit then 
     fprintf ppf "void@ ";  
   begin match inline with
