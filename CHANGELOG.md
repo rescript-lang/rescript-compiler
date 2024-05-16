@@ -12,6 +12,10 @@
 
 # 12.0.0-alpha.1 (Unreleased)
 
+#### :rocket: New Feature
+
+- Allow `@directive` on functions for emitting function level directive code (`let serverAction = @directive("'use server'") (~name) => {...}`). https://github.com/rescript-lang/rescript-compiler/pull/6756
+
 #### :boom: Breaking Change
 
 - `lazy` syntax is no longer supported. If you're using it, use `Lazy` module or `React.lazy_` instead. https://github.com/rescript-lang/rescript-compiler/pull/6342
