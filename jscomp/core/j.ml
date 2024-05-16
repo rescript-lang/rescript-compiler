@@ -135,6 +135,7 @@ and expression_desc =
       env : Js_fun_env.t;
       return_unit : bool;
       async : bool;
+      directive : string option;
     }
   | Str of { delim : delim; txt : string }
   (* A string is UTF-8 encoded, and may contain

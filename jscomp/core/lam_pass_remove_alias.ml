@@ -82,7 +82,7 @@ let simplify_alias (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
                       rec_flag );
               })
           when Ext_list.same_length ap_args params
-               && Lam_analysis.lfunction_can_be_beta_reduced m
+               && Lam_analysis.lfunction_can_be_inlined m
                && Lam_analysis.ok_to_inline_fun_when_app m ap_args -> (
             let param_map =
               Lam_closure.is_closed_with_map meta.export_idents params body
@@ -184,7 +184,7 @@ let simplify_alias (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
                           | Some v -> v <> Parameter
                           | None -> true)
                       | _ -> true)
-               && Lam_analysis.lfunction_can_be_beta_reduced lfunction ->
+               && Lam_analysis.lfunction_can_be_inlined lfunction ->
             simpl (Lam_beta_reduce.propagate_beta_reduce meta params body args)
         | _ -> Lam.apply (simpl l1) (Ext_list.map args simpl) ap_info)
     (* Function inlining interact with other optimizations...
@@ -208,7 +208,7 @@ let simplify_alias (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
                     ( Lfunction ({ params; body; attr = { is_a_functor } } as m),
                       rec_flag );
               })
-          when Lam_analysis.lfunction_can_be_beta_reduced m ->
+          when Lam_analysis.lfunction_can_be_inlined m ->
             if Ext_list.same_length ap_args params then
               if
                 is_a_functor
@@ -266,7 +266,7 @@ let simplify_alias (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
           _;
         }
       when Ext_list.same_length params args
-           && Lam_analysis.lfunction_can_be_beta_reduced lfunction ->
+           && Lam_analysis.lfunction_can_be_inlined lfunction ->
         simpl (Lam_beta_reduce.propagate_beta_reduce meta params body args)
     (* | Lapply{ fn = Lfunction{function_kind =  Tupled;  params; body};  *)
     (*          args = [Lprim {primitive = Pmakeblock _; args; _}]; _} *)

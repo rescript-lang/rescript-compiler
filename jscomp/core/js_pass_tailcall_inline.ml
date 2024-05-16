@@ -165,7 +165,7 @@ let subst (export_set : Set_ident.t) stats =
                      Some
                        {
                          expression_desc =
-                           Fun {is_method=false; params; body; env; async=false};
+                           Fun {is_method=false; params; body; env; async=false; directive=None};
                          comment = _;
                        };
                    (*TODO: don't inline method tail call yet,
@@ -200,7 +200,7 @@ let subst (export_set : Set_ident.t) stats =
                    Call
                      ( {
                          expression_desc =
-                           Fun {is_method=false; params; body; env; async=false};
+                           Fun {is_method=false; params; body; env; async=false; directive=None};
                        },
                        args,
                        _info );

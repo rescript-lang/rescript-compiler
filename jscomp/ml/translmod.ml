@@ -278,6 +278,7 @@ let rec compile_functor mexp coercion root_path loc =
           return_unit = false;
           async = false;
           oneUnitArg = false;
+          directive = None;
         };
       loc;
       body;
