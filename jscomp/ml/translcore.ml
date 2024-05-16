@@ -471,7 +471,7 @@ let transl_primitive loc p env ty =
           params = [ parm ];
           body = Matching.inline_lazy_force (Lvar parm) Location.none;
           loc;
-          attr = default_stub_attribute;
+          attr = default_function_attribute;
         }
   | Ploc kind -> (
       let lam = lam_of_loc kind loc in
@@ -483,7 +483,7 @@ let transl_primitive loc p env ty =
           Lfunction
             {
               params = [ param ];
-              attr = default_stub_attribute;
+              attr = default_function_attribute;
               loc;
               body = Lprim (Pmakeblock Blk_tuple, [ lam; Lvar param ], loc);
             }
@@ -505,7 +505,7 @@ let transl_primitive loc p env ty =
         Lfunction
           {
             params;
-            attr = default_stub_attribute;
+            attr = default_function_attribute;
             loc;
             body = Lprim (prim, List.map (fun id -> Lvar id) params, loc);
           }
@@ -1078,7 +1078,7 @@ and transl_apply ?(inlined = Default_inline) ?(uncurried_partial_application=Non
                 {
                   params = [ id_arg ];
                   body = lam;
-                  attr = default_stub_attribute;
+                  attr = default_function_attribute;
                   loc;
                 }
         in
