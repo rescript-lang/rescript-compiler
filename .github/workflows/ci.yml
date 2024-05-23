@@ -97,11 +97,35 @@ jobs:
           path: ${{ env.artifact_path }}
 
   build-rewatch:
-    runs-on: macos-14
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [
+            macos-13, # x64
+            macos-14, # ARM
+            ubuntu-latest, # x64
+            buildjet-2vcpu-ubuntu-2204-arm, # ARM
+            windows-latest,
+          ]
+        include:
+          - os: macos-13
+            rust-target: x86_64-apple-darwin
+          - os: macos-14
+            rust-target: aarch64-apple-darwin
+          - os: ubuntu-latest
+            rust-target: x86_64-unknown-linux-musl
+          - os: buildjet-2vcpu-ubuntu-2204-arm
+            rust-target: aarch64-unknown-linux-musl
+          - os: windows-latest
+            rust-target: x86_64-pc-windows-gnu
+
+    runs-on: ${{matrix.os}}
+
     env:
       RUST_BACKTRACE: "1"
       SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: "sccache"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -112,30 +136,18 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-      - name: Install zig
-        uses: korandoru/setup-zig@v1
-        with:
-          zig-version: 0.11.0
-      - name: Install Rust targets
-        shell: bash
-        run: |
-          rustup target add x86_64-unknown-linux-musl \
-            aarch64-apple-darwin \
-            x86_64-apple-darwin \
-            x86_64-pc-windows-gnu
+      - name: Install Rust target
+        run: rustup target add ${{matrix.rust-target}}
+      - name: Build rewatch
+        run: cargo build --target ${{matrix.rust-target}} --release
+        working-directory: rewatch
 
-      - name: Install cargo zigbuild
-        run: cargo install cargo-zigbuild
-        working-directory: rewatch
-      - name: macOS - build universal2
-        run: cargo zigbuild --target universal2-apple-darwin --release
-        working-directory: rewatch
-      - name: Linux - build x86_64 musl
-        run: cargo zigbuild --target x86_64-unknown-linux-musl --release
-        working-directory: rewatch
-      - name: Windows - build x86_64 musl
-        run: cargo zigbuild --target x86_64-pc-windows-gnu --release
-        working-directory: rewatch
+      # - name: "Upload artifacts: binaries"
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: ${{ env.artifact_name }}
+      #     path: ${{ env.artifact_path }}
+
       # - name: Move / Rename Artifacts
       #   run: |
       #     mv target/x86_64-unknown-linux-musl/release/rewatch ./rewatch-linux
