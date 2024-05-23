@@ -59,7 +59,7 @@ function from_pairs(pair) {
 let suites = Pervasives.$at({
   hd: [
     "one",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: Caml_int64.bits_of_float(1.0),
@@ -70,7 +70,7 @@ let suites = Pervasives.$at({
   tl: {
     hd: [
       "two",
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: Caml_int64.float_of_bits(one_float),

@@ -134,10 +134,10 @@ let g = x => {
 }
 let a = f(0)(3, 4)
 
-let b = f(0, 3, 5)
+let b = f(0)(3, 5)
 
-let c = g(0, 3, 4)
-let d = g(0, 3, 5)
+let c = g(0)(3, 4)
+let d = g(0)(3, 5)
 
 let () = {
   eq(__LOC__, a, 10)

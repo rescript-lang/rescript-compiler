@@ -2,12 +2,13 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 
 function map(f, a) {
-  let f$1 = Curry.__1(f);
+  let f$1 = function (x) {
+    return f(x);
+  };
   let l = a.length;
   if (l === 0) {
     return [];
@@ -20,7 +21,9 @@ function map(f, a) {
 }
 
 function init(l, f) {
-  let f$1 = Curry.__1(f);
+  let f$1 = function (x) {
+    return f(x);
+  };
   if (l === 0) {
     return [];
   }
@@ -39,7 +42,9 @@ function init(l, f) {
 }
 
 function fold_left(f, x, a) {
-  let f$1 = Curry.__2(f);
+  let f$1 = function (x, y) {
+    return f(x, y);
+  };
   let r = x;
   for(let i = 0 ,i_finish = a.length; i < i_finish; ++i){
     r = f$1(r, a[i]);
@@ -47,7 +52,7 @@ function fold_left(f, x, a) {
   return r;
 }
 
-function f2(param) {
+function f2() {
   let arr = init(30000000, (function (i) {
     return i;
   }));
@@ -75,7 +80,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -111,22 +116,14 @@ function add5(a0, a1, a2, a3, a4) {
 }
 
 function f(x) {
-  v.contents = v.contents + 1 | 0;
-  let partial_arg = 2;
-  v.contents = v.contents + 1 | 0;
-  let partial_arg$1 = 1;
-  return function (param, param$1) {
-    return add5(x, partial_arg$1, partial_arg, param, param$1);
+  return function (a, b) {
+    return add5(x, (v.contents = v.contents + 1 | 0, 1), (v.contents = v.contents + 1 | 0, 2), a, b);
   };
 }
 
 function g(x) {
-  v.contents = v.contents + 1 | 0;
-  let partial_arg = 2;
-  v.contents = v.contents + 1 | 0;
-  let partial_arg$1 = 1;
-  let u = function (param, param$1) {
-    return add5(x, partial_arg$1, partial_arg, param, param$1);
+  let u = function (a, b) {
+    return add5(x, (v.contents = v.contents + 1 | 0, 1), (v.contents = v.contents + 1 | 0, 2), a, b);
   };
   all_v.contents = {
     hd: v.contents,
@@ -139,19 +136,19 @@ let a = f(0)(3, 4);
 
 let b = f(0)(3, 5);
 
-let c = Curry._2(g(0), 3, 4);
+let c = g(0)(3, 4);
 
-let d = Curry._2(g(0), 3, 5);
+let d = g(0)(3, 5);
 
-eq("File \"earger_curry_test.res\", line 138, characters 5-12", a, 10);
+eq("File \"earger_curry_test.res\", line 143, characters 5-12", a, 10);
 
-eq("File \"earger_curry_test.res\", line 139, characters 5-12", b, 11);
+eq("File \"earger_curry_test.res\", line 144, characters 5-12", b, 11);
 
-eq("File \"earger_curry_test.res\", line 140, characters 5-12", c, 10);
+eq("File \"earger_curry_test.res\", line 145, characters 5-12", c, 10);
 
-eq("File \"earger_curry_test.res\", line 141, characters 5-12", d, 11);
+eq("File \"earger_curry_test.res\", line 146, characters 5-12", d, 11);
 
-eq("File \"earger_curry_test.res\", line 142, characters 5-12", all_v.contents, {
+eq("File \"earger_curry_test.res\", line 147, characters 5-12", all_v.contents, {
   hd: 8,
   tl: {
     hd: 8,
