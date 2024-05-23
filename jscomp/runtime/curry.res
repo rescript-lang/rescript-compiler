@@ -88,13 +88,13 @@ external apply8: (
 %%private(
   let curry_1 = (o, a0, arity) =>
     switch arity {
-    | 1 => apply1(Obj.magic(o), a0)
-    | 2 => apply2(Obj.magic(o), a0)
-    | 3 => apply3(Obj.magic(o), a0)
-    | 4 => apply4(Obj.magic(o), a0)
-    | 5 => apply5(Obj.magic(o), a0)
-    | 6 => apply6(Obj.magic(o), a0)
-    | 7 => apply7(Obj.magic(o), a0)
+    | 1 => Obj.magic(apply1)(Obj.magic(o), a0)
+    | 2 => Obj.magic(apply2)(Obj.magic(o), a0)
+    | 3 => Obj.magic(apply3)(Obj.magic(o), a0)
+    | 4 => Obj.magic(apply4)(Obj.magic(o), a0)
+    | 5 => Obj.magic(apply5)(Obj.magic(o), a0)
+    | 6 => Obj.magic(apply6)(Obj.magic(o), a0)
+    | 7 => Obj.magic(apply7)(Obj.magic(o), a0)
     | _ => Obj.magic(app(o, [a0]))
     }
 )
@@ -122,13 +122,13 @@ let __1 = o => {
 %%private(
   let curry_2 = (o, a0, a1, arity) =>
     switch arity {
-    | 1 => app(apply1(Obj.magic(o), a0), [a1])
-    | 2 => apply2(Obj.magic(o), a0, a1)
-    | 3 => apply3(Obj.magic(o), a0, a1)
-    | 4 => apply4(Obj.magic(o), a0, a1)
-    | 5 => apply5(Obj.magic(o), a0, a1)
-    | 6 => apply6(Obj.magic(o), a0, a1)
-    | 7 => apply7(Obj.magic(o), a0, a1)
+    | 1 => Obj.magic(app)(apply1(Obj.magic(o), a0), [a1])
+    | 2 => Obj.magic(apply2)(Obj.magic(o), a0, a1)
+    | 3 => Obj.magic(apply3)(Obj.magic(o), a0, a1)
+    | 4 => Obj.magic(apply4)(Obj.magic(o), a0, a1)
+    | 5 => Obj.magic(apply5)(Obj.magic(o), a0, a1)
+    | 6 => Obj.magic(apply6)(Obj.magic(o), a0, a1)
+    | 7 => Obj.magic(apply7)(Obj.magic(o), a0, a1)
     | _ => Obj.magic(app(o, [a0, a1]))
     }
 )
@@ -139,7 +139,7 @@ let _2 = (o, a0, a1) => {
   if arity == 2 {
     apply2(o, a0, a1)
   } else {
-    curry_2(o, a0, a1, arity)
+    Obj.magic(curry_2)(o, a0, a1, arity)
   }
 }
 
@@ -159,10 +159,10 @@ let __2 = o => {
     | 1 => app(apply1(Obj.magic(o), a0), [a1, a2])
     | 2 => app(apply2(Obj.magic(o), a0, a1), [a2])
     | 3 => apply3(Obj.magic(o), a0, a1, a2)
-    | 4 => apply4(Obj.magic(o), a0, a1, a2)
-    | 5 => apply5(Obj.magic(o), a0, a1, a2)
-    | 6 => apply6(Obj.magic(o), a0, a1, a2)
-    | 7 => apply7(Obj.magic(o), a0, a1, a2)
+    | 4 => Obj.magic(apply4)(Obj.magic(o), a0, a1, a2)
+    | 5 => Obj.magic(apply5)(Obj.magic(o), a0, a1, a2)
+    | 6 => Obj.magic(apply6)(Obj.magic(o), a0, a1, a2)
+    | 7 => Obj.magic(apply7)(Obj.magic(o), a0, a1, a2)
     | _ => Obj.magic(app(o, [a0, a1, a2]))
     }
 )
@@ -173,7 +173,7 @@ let _3 = (o, a0, a1, a2) => {
   if arity == 3 {
     apply3(o, a0, a1, a2)
   } else {
-    curry_3(o, a0, a1, a2, arity)
+    Obj.magic(curry_3)(o, a0, a1, a2, arity)
   }
 }
 
@@ -194,9 +194,9 @@ let __3 = o => {
     | 2 => app(apply2(Obj.magic(o), a0, a1), [a2, a3])
     | 3 => app(apply3(Obj.magic(o), a0, a1, a2), [a3])
     | 4 => apply4(Obj.magic(o), a0, a1, a2, a3)
-    | 5 => apply5(Obj.magic(o), a0, a1, a2, a3)
-    | 6 => apply6(Obj.magic(o), a0, a1, a2, a3)
-    | 7 => apply7(Obj.magic(o), a0, a1, a2, a3)
+    | 5 => Obj.magic(apply5)(Obj.magic(o), a0, a1, a2, a3)
+    | 6 => Obj.magic(apply6)(Obj.magic(o), a0, a1, a2, a3)
+    | 7 => Obj.magic(apply7)(Obj.magic(o), a0, a1, a2, a3)
     | _ => Obj.magic(app(o, [a0, a1, a2, a3]))
     }
 )
@@ -207,7 +207,7 @@ let _4 = (o, a0, a1, a2, a3) => {
   if arity == 4 {
     apply4(o, a0, a1, a2, a3)
   } else {
-    curry_4(o, a0, a1, a2, a3, arity)
+    Obj.magic(curry_4)(o, a0, a1, a2, a3, arity)
   }
 }
 
@@ -228,9 +228,9 @@ let __4 = o => {
     | 2 => app(apply2(Obj.magic(o), a0, a1), [a2, a3, a4])
     | 3 => app(apply3(Obj.magic(o), a0, a1, a2), [a3, a4])
     | 4 => app(apply4(Obj.magic(o), a0, a1, a2, a3), [a4])
-    | 5 => apply5(Obj.magic(o), a0, a1, a2, a3, a4)
-    | 6 => apply6(Obj.magic(o), a0, a1, a2, a3, a4)
-    | 7 => apply7(Obj.magic(o), a0, a1, a2, a3, a4)
+    | 5 => Obj.magic(apply5)(Obj.magic(o), a0, a1, a2, a3, a4)
+    | 6 => Obj.magic(apply6)(Obj.magic(o), a0, a1, a2, a3, a4)
+    | 7 => Obj.magic(apply7)(Obj.magic(o), a0, a1, a2, a3, a4)
     | _ => Obj.magic(app(o, [a0, a1, a2, a3, a4]))
     }
 )
@@ -241,7 +241,7 @@ let _5 = (o, a0, a1, a2, a3, a4) => {
   if arity == 5 {
     apply5(o, a0, a1, a2, a3, a4)
   } else {
-    curry_5(o, a0, a1, a2, a3, a4, arity)
+    Obj.magic(curry_5)(o, a0, a1, a2, a3, a4, arity)
   }
 }
 
@@ -263,8 +263,8 @@ let __5 = o => {
     | 3 => app(apply3(Obj.magic(o), a0, a1, a2), [a3, a4, a5])
     | 4 => app(apply4(Obj.magic(o), a0, a1, a2, a3), [a4, a5])
     | 5 => app(apply5(Obj.magic(o), a0, a1, a2, a3, a4), [a5])
-    | 6 => apply6(Obj.magic(o), a0, a1, a2, a3, a4, a5)
-    | 7 => apply7(Obj.magic(o), a0, a1, a2, a3, a4, a5)
+    | 6 => Obj.magic(apply6)(Obj.magic(o), a0, a1, a2, a3, a4, a5)
+    | 7 => Obj.magic(apply7)(Obj.magic(o), a0, a1, a2, a3, a4, a5)
     | _ => Obj.magic(app(o, [a0, a1, a2, a3, a4, a5]))
     }
 )
@@ -275,7 +275,7 @@ let _6 = (o, a0, a1, a2, a3, a4, a5) => {
   if arity == 6 {
     apply6(o, a0, a1, a2, a3, a4, a5)
   } else {
-    curry_6(o, a0, a1, a2, a3, a4, a5, arity)
+    Obj.magic(curry_6)(o, a0, a1, a2, a3, a4, a5, arity)
   }
 }
 
@@ -298,7 +298,7 @@ let __6 = o => {
     | 4 => app(apply4(Obj.magic(o), a0, a1, a2, a3), [a4, a5, a6])
     | 5 => app(apply5(Obj.magic(o), a0, a1, a2, a3, a4), [a5, a6])
     | 6 => app(apply6(Obj.magic(o), a0, a1, a2, a3, a4, a5), [a6])
-    | 7 => apply7(Obj.magic(o), a0, a1, a2, a3, a4, a5, a6)
+    | 7 => Obj.magic(apply7)(Obj.magic(o), a0, a1, a2, a3, a4, a5, a6)
     | _ => Obj.magic(app(o, [a0, a1, a2, a3, a4, a5, a6]))
     }
 )
@@ -309,7 +309,7 @@ let _7 = (o, a0, a1, a2, a3, a4, a5, a6) => {
   if arity == 7 {
     apply7(o, a0, a1, a2, a3, a4, a5, a6)
   } else {
-    curry_7(o, a0, a1, a2, a3, a4, a5, a6, arity)
+    Obj.magic(curry_7)(o, a0, a1, a2, a3, a4, a5, a6, arity)
   }
 }
 
@@ -343,7 +343,7 @@ let _8 = (o, a0, a1, a2, a3, a4, a5, a6, a7) => {
   if arity == 8 {
     apply8(o, a0, a1, a2, a3, a4, a5, a6, a7)
   } else {
-    curry_8(o, a0, a1, a2, a3, a4, a5, a6, a7, arity)
+    Obj.magic(curry_8)(o, a0, a1, a2, a3, a4, a5, a6, a7, arity)
   }
 }
 
