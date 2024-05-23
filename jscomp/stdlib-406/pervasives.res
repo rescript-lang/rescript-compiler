@@ -13,15 +13,16 @@
 /*  */
 /* ************************************************************************ */
 
-module Jsx = JsxC
-module JsxEvent = JsxEventC
-module JsxDOM = JsxDOMC
-module JsxPPXReactSupport = JsxPPXReactSupportC
+@@uncurried
 
+module Jsx = JsxU
+module JsxEvent = JsxEventU
+module JsxDOM = JsxDOMU
+module JsxPPXReactSupport = JsxPPXReactSupportU
 module JsxModules = {
-  module Jsx = JsxC
-  module JsxEvent = JsxEventC
-  module JsxDOM = JsxDOMC
+  module Jsx = JsxU
+  module JsxEvent = JsxEventU
+  module JsxDOM = JsxDOMU
 }
 
 /* Internal */
@@ -165,7 +166,7 @@ type fpclass =
   | FP_nan
 
 let classify_float = (x: float): fpclass =>
-  if (%raw(`isFinite`): (. _) => _)(. x) {
+  if (%raw(`isFinite`): _ => _)(x) {
     if abs_float(x) >= /* 0x1p-1022 */ /* 2.22507385850720138e-308 */ min_float {
       FP_normal
     } else if x != 0. {
@@ -173,7 +174,7 @@ let classify_float = (x: float): fpclass =>
     } else {
       FP_zero
     }
-  } else if (%raw(`isNaN`): (. _) => _)(. x) {
+  } else if (%raw(`isNaN`): _ => _)(x) {
     FP_nan
   } else {
     FP_infinite

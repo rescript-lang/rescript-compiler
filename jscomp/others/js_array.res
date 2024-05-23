@@ -99,7 +99,7 @@ let code = s => Js.String.charCodeAt(0, s)
 Js.Array.fromMap(strArr, code) == [97.0, 98.0, 99.0, 100.0]
 ```
 */
-external fromMap: (array_like<'a>, @uncurry ('a => 'b)) => array<'b> = "Array.from"
+external fromMap: (array_like<'a>, 'a => 'b) => array<'b> = "Array.from"
 
 /* ES2015 */
 
@@ -127,7 +127,7 @@ external length: array<'a> => int = "length"
 
 /* Mutator functions */
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /** 
 Copies from the first element in the given array to the designated `~to_` position, returning the resulting array. *This function modifies the original array.* See [`Array.copyWithin`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin) on MDN.
 
@@ -143,7 +143,7 @@ external copyWithin: (~to_: int) => 'this = "copyWithin"
 
 /* ES2015 */
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Copies starting at element `~from` in the given array to the designated `~to_` position, returning the resulting array. *This function modifies the original array.* See [`Array.copyWithin`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin) on MDN.
 
@@ -159,7 +159,7 @@ external copyWithinFrom: (~to_: int, ~from: int) => 'this = "copyWithin"
 
 /* ES2015 */
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Copies starting at element `~start` in the given array up to but not including `~end_` to the designated `~to_` position, returning the resulting array. *This function modifies the original array.* See [`Array.copyWithin`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin) on MDN.
 
@@ -175,7 +175,7 @@ external copyWithinFromRange: (~to_: int, ~start: int, ~end_: int) => 'this = "c
 
 /* ES2015 */
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Sets all elements of the given array (the second arumgent) to the designated value (the first argument), returning the resulting array. *This function modifies the original array.* See [`Array.fill`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill) on MDN.
 
@@ -191,7 +191,7 @@ external fillInPlace: 'a => 'this = "fill"
 
 /* ES2015 */
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Sets all elements of the given array (the last arumgent) from position `~from` to the end to the designated value (the first argument), returning the resulting array. *This function modifies the original array.* See [`Array.fill`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill) on MDN.
 
@@ -207,7 +207,7 @@ external fillFromInPlace: ('a, ~from: int) => 'this = "fill"
 
 /* ES2015 */
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Sets the elements of the given array (the last arumgent) from position `~start` up to but not including position `~end_` to the designated value (the first argument), returning the resulting array. *This function modifies the original array.* See [`Array.fill`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill) on MDN.
 
@@ -223,8 +223,8 @@ external fillRangeInPlace: ('a, ~start: int, ~end_: int) => 'this = "fill"
 
 /* ES2015 */
 
-@bs.send.pipe(: t<'a> as 'this)
-@return(undefined_to_opt)
+@send.pipe(: t<'a> as 'this)
+@return(nullable)
 /**
 If the array is not empty, removes the last element and returns it as `Some(value)`; returns `None` if the array is empty. *This function modifies the original array.* See [`Array.pop`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop) on MDN.
 
@@ -241,7 +241,7 @@ Js.Array.pop(empty) == None
 */
 external pop: option<'a> = "pop"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Appends the given value to the array, returning the number of elements in the updated array. *This function modifies the original array.* See [`Array.push`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push) on MDN.
 
@@ -255,7 +255,7 @@ arr == ["ant", "bee", "cat", "dog"]
 */
 external push: 'a => int = "push"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 @variadic
 /**
 Appends the values from one array (the first argument) to another (the second argument), returning the number of elements in the updated array. *This function modifies the original array.* See [`Array.push`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push) on MDN.
@@ -270,7 +270,7 @@ arr == ["ant", "bee", "cat", "dog", "elk"]
 */
 external pushMany: array<'a> => int = "push"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Returns an array with the elements of the input array in reverse order. *This function modifies the original array.* See [`Array.reverse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reverse) on MDN.
 
@@ -284,8 +284,8 @@ arr == ["cat", "bee", "ant"]
 */
 external reverseInPlace: 'this = "reverse"
 
-@bs.send.pipe(: t<'a> as 'this)
-@return({undefined_to_opt: undefined_to_opt})
+@send.pipe(: t<'a> as 'this)
+@return(nullable)
 /**
 If the array is not empty, removes the first element and returns it as `Some(value)`; returns `None` if the array is empty. *This function modifies the original array.* See [`Array.shift`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/shift) on MDN.
 
@@ -302,7 +302,7 @@ Js.Array.shift(empty) == None
 */
 external shift: option<'a> = "shift"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Sorts the given array in place and returns the sorted array. JavaScript sorts the array by converting the arguments to UTF-16 strings and sorting them. See the second example with sorting numbers, which does not do a numeric sort. *This function modifies the original array.* See [`Array.sort`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort) on MDN.
 
@@ -320,7 +320,7 @@ numbers == [1, 10, 2, 20, 3, 30]
 */
 external sortInPlace: 'this = "sort"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Sorts the given array in place and returns the sorted array. *This function modifies the original array.*
 
@@ -347,9 +347,9 @@ let reverseNumeric = (n1, n2) => n2 - n1
 Js.Array.sortInPlaceWith(reverseNumeric, numbers) == [30, 20, 10, 3, 2, 1]
 ```
 */
-external sortInPlaceWith: (@uncurry ('a, 'a) => int) => 'this = "sort"
+external sortInPlaceWith: (('a, 'a) => int) => 'this = "sort"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 @variadic
 /**
 Starting at position `~pos`, remove `~remove` elements and then add the
@@ -376,7 +376,7 @@ arr3 == ["a", "b", "c", "d", "e", "f", "x", "y", "z"]
 */
 external spliceInPlace: (~pos: int, ~remove: int, ~add: array<'a>) => 'this = "splice"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Removes elements from the given array starting at position `~pos` to the end
 of the array, returning the removed elements. *This function modifies the
@@ -394,7 +394,7 @@ arr == ["a", "b", "c", "d"]
 */
 external removeFromInPlace: (~pos: int) => 'this = "splice"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Removes `~count` elements from the given array starting at position `~pos`,
 returning the removed elements. *This function modifies the original array.*
@@ -412,7 +412,7 @@ arr == ["a", "b", "f"]
 */
 external removeCountInPlace: (~pos: int, ~count: int) => 'this = "splice"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Adds the given element to the array, returning the new number of elements in
 the array. *This function modifies the original array.* See
@@ -429,7 +429,7 @@ arr == ["a", "b", "c", "d"]
 */
 external unshift: 'a => int = "unshift"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 @variadic
 /**
 Adds the elements in the first array argument at the beginning of the second
@@ -450,7 +450,7 @@ external unshiftMany: array<'a> => int = "unshift"
 
 /* Accessor functions
  */
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Concatenates the first array argument to the second array argument, returning
 a new array. The original arrays are not modified. See
@@ -465,7 +465,7 @@ Js.Array.concat(["c", "d", "e"], ["a", "b"]) == ["a", "b", "c", "d", "e"]
 */
 external concat: 'this => 'this = "concat"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 @variadic
 /**
 The first argument to `concatMany()` is an array of arrays; these are added
@@ -491,7 +491,7 @@ Js.Array.concatMany([["d", "e"], ["f", "g", "h"]], ["a", "b", "c"]) == [
 external concatMany: array<'this> => 'this = "concat"
 
 /* ES2016 */
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Returns true if the given value is in the array, `false` otherwise. See
 [`Array.includes`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes)
@@ -506,7 +506,7 @@ Js.Array.includes("x", ["a", "b", "c"]) == false
 */
 external includes: 'a => bool = "includes"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Returns the index of the first element in the array that has the given value.
 If the value is not in the array, returns -1. See
@@ -522,7 +522,7 @@ Js.Array.indexOf(999, [100, 101, 102, 103]) == -1
 */
 external indexOf: 'a => int = "indexOf"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Returns the index of the first element in the array with the given value. The
 search starts at position `~from`. See
@@ -542,7 +542,7 @@ external indexOfFrom: ('a, ~from: int) => int = "indexOf"
 @send @deprecated("please use joinWith instead")
 external join: t<'a> => string = "join"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 This function converts each element of the array to a string (via JavaScript)
 and concatenates them, separated by the string given in the first argument,
@@ -561,7 +561,7 @@ Js.Array.joinWith(";", [2.5, 3.6, 3e-2]) == "2.5;3.6;0.03"
 */
 external joinWith: string => string = "join"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Returns the index of the last element in the array that has the given value.
 If the value is not in the array, returns -1. See
@@ -577,7 +577,7 @@ Js.Array.lastIndexOf("x", ["a", "b", "a", "c"]) == -1
 */
 external lastIndexOf: 'a => int = "lastIndexOf"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Returns the index of the last element in the array that has the given value,
 searching from position `~from` down to the start of the array. If the value
@@ -594,7 +594,7 @@ Js.Array.lastIndexOfFrom("c", ~from=2, ["a", "b", "a", "c", "a", "d"]) == -1
 */
 external lastIndexOfFrom: ('a, ~from: int) => int = "lastIndexOf"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Returns a shallow copy of the given array from the `~start` index up to but
 not including the `~end_` position. Negative numbers indicate an offset from
@@ -613,7 +613,7 @@ Js.Array.slice(~start=9, ~end_=10, arr) == []
 */
 external slice: (~start: int, ~end_: int) => 'this = "slice"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Returns a copy of the entire array. Same as `Js.Array.Slice(~start=0,
 ~end_=Js.Array.length(arr), arr)`. See
@@ -622,7 +622,7 @@ on MDN.
 */
 external copy: 'this = "slice"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Returns a shallow copy of the given array from the given index to the end. 
 See [`Array.slice`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice) on MDN.
@@ -635,7 +635,7 @@ Js.Array.sliceFrom(2, [100, 101, 102, 103, 104]) == [102, 103, 104]
 */
 external sliceFrom: int => 'this = "slice"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Converts the array to a string. Each element is converted to a string using
 JavaScript. Unlike the JavaScript `Array.toString()`, all elements in a
@@ -652,7 +652,7 @@ Js.Array.toString(["a", "b", "c"]) == "a,b,c"
 */
 external toString: string = "toString"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Converts the array to a string using the conventions of the current locale.
 Each element is converted to a string using JavaScript. Unlike the JavaScript
@@ -674,10 +674,10 @@ external toLocaleString: string = "toLocaleString"
 /* Iteration functions
  */
 /* commented out until bs has a plan for iterators
-   external entries : (int * 'a) array_iter = "" [@@bs.send.pipe: 'a t as 'this] (* ES2015 *)
+   external entries : (int * 'a) array_iter = "" [@@send.pipe: 'a t as 'this] (* ES2015 *)
 */
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 The first argument to `every()` is a predicate function that returns a boolean. The `every()` function returns `true` if the predicate function is true for all items in the given array. If given an empty array, returns `true`. See [`Array.every`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every) on MDN.
 
@@ -689,9 +689,9 @@ Js.Array.every(isEven, [6, 22, 8, 4]) == true
 Js.Array.every(isEven, [6, 22, 7, 4]) == false
 ```
 */
-external every: (@uncurry ('a => bool)) => bool = "every"
+external every: ('a => bool) => bool = "every"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 The first argument to `everyi()` is a predicate function with two arguments: an array element and that element’s index; it returns a boolean. The `everyi()` function returns `true` if the predicate function is true for all items in the given array. If given an empty array, returns `true`. See [`Array.every`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every) on MDN.
 
@@ -705,9 +705,9 @@ Js.Array.everyi(evenIndexPositive, [6, -3, 5, 8]) == true
 Js.Array.everyi(evenIndexPositive, [6, 3, -5, 8]) == false
 ```
 */
-external everyi: (@uncurry ('a, int) => bool) => bool = "every"
+external everyi: (('a, int) => bool) => bool = "every"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Applies the given predicate function to each element in the array; the result is an array of those elements for which the predicate function returned `true`. See [`Array.filter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter) on MDN.
 
@@ -718,9 +718,9 @@ let nonEmpty = s => s != ""
 Js.Array.filter(nonEmpty, ["abc", "", "", "def", "ghi"]) == ["abc", "def", "ghi"]
 ```
 */
-external filter: (@uncurry ('a => bool)) => 'this = "filter"
+external filter: ('a => bool) => 'this = "filter"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Each element of the given array are passed to the predicate function. The
 return value is an array of all those elements for which the predicate
@@ -737,10 +737,10 @@ let positiveOddElement = (item, index) => mod(index, 2) == 1 && item > 0
 Js.Array.filteri(positiveOddElement, [6, 3, 5, 8, 7, -4, 1]) == [3, 8]
 ```
 */
-external filteri: (@uncurry ('a, int) => bool) => 'this = "filter"
+external filteri: (('a, int) => bool) => 'this = "filter"
 
-@bs.send.pipe(: t<'a> as 'this)
-@return({undefined_to_opt: undefined_to_opt})
+@send.pipe(: t<'a> as 'this)
+@return(nullable)
 /**
 Returns `Some(value)` for the first element in the array that satisifies the
 given predicate function, or `None` if no element satisifies the predicate.
@@ -756,10 +756,10 @@ Js.Array.find(x => x < 0, [33, 22, -55, 77, -44]) == Some(-55)
 Js.Array.find(x => x < 0, [33, 22, 55, 77, 44]) == None
 ```
 */
-external find: (@uncurry ('a => bool)) => option<'a> = "find"
+external find: ('a => bool) => option<'a> = "find"
 
-@bs.send.pipe(: t<'a> as 'this)
-@return({undefined_to_opt: undefined_to_opt})
+@send.pipe(: t<'a> as 'this)
+@return(nullable)
 /**
 Returns `Some(value)` for the first element in the array that satisifies the given predicate function, or `None` if no element satisifies the predicate. The predicate function takes an array element and an index as its parameters. See [`Array.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find) on MDN.
 
@@ -773,9 +773,9 @@ Js.Array.findi(positiveOddElement, [66, -33, 55, 88, 22]) == Some(88)
 Js.Array.findi(positiveOddElement, [66, -33, 55, -88, 22]) == None
 ```
 */
-external findi: (@uncurry ('a, int) => bool) => option<'a> = "find"
+external findi: (('a, int) => bool) => option<'a> = "find"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Returns the index of the first element in the array that satisifies the given predicate function, or -1 if no element satisifies the predicate. See [`Array.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find) on MDN.
 
@@ -786,9 +786,9 @@ Js.Array.findIndex(x => x < 0, [33, 22, -55, 77, -44]) == 2
 Js.Array.findIndex(x => x < 0, [33, 22, 55, 77, 44]) == -1
 ```
 */
-external findIndex: (@uncurry ('a => bool)) => int = "findIndex"
+external findIndex: ('a => bool) => int = "findIndex"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Returns `Some(value)` for the first element in the array that satisifies the given predicate function, or `None` if no element satisifies the predicate. The predicate function takes an array element and an index as its parameters. See [`Array.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find) on MDN.
 
@@ -802,9 +802,9 @@ Js.Array.findIndexi(positiveOddElement, [66, -33, 55, 88, 22]) == 3
 Js.Array.findIndexi(positiveOddElement, [66, -33, 55, -88, 22]) == -1
 ```
 */
-external findIndexi: (@uncurry ('a, int) => bool) => int = "findIndex"
+external findIndexi: (('a, int) => bool) => int = "findIndex"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 The `forEach()` function applies the function given as the first argument to each element in the array. The function you provide returns `unit`, and the `forEach()` function also returns `unit`. You use `forEach()` when you need to process each element in the array but not return any new array or value; for example, to print the items in an array. See [`Array.forEach`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach) on MDN.
 
@@ -815,9 +815,9 @@ The `forEach()` function applies the function given as the first argument to eac
 Js.Array.forEach(x => Js.log(x), ["a", "b", "c"]) == ()
 ```
 */
-external forEach: (@uncurry ('a => unit)) => unit = "forEach"
+external forEach: ('a => unit) => unit = "forEach"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 The `forEachi()` function applies the function given as the first argument to each element in the array. The function you provide takes an item in the array and its index number, and returns `unit`. The `forEachi()` function also returns `unit`. You use `forEachi()` when you need to process each element in the array but not return any new array or value; for example, to print the items in an array. See [`Array.forEach`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach) on MDN.
 
@@ -828,13 +828,13 @@ The `forEachi()` function applies the function given as the first argument to ea
 Js.Array.forEachi((item, index) => Js.log2(index + 1, item), ["a", "b", "c"]) == ()
 ```
 */
-external forEachi: (@uncurry ('a, int) => unit) => unit = "forEach"
+external forEachi: (('a, int) => unit) => unit = "forEach"
 
 /* commented out until bs has a plan for iterators
-   external keys : int array_iter = "" [@@bs.send.pipe: 'a t as 'this] (* ES2015 *)
+   external keys : int array_iter = "" [@@send.pipe: 'a t as 'this] (* ES2015 *)
 */
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Applies the function (given as the first argument) to each item in the array,
 returning a new array. The result array does not have to have elements of the
@@ -849,9 +849,9 @@ Js.Array.map(x => x * x, [12, 4, 8]) == [144, 16, 64]
 Js.Array.map(Js.String.length, ["animal", "vegetable", "mineral"]) == [6, 9, 7]
 ```
 */
-external map: (@uncurry ('a => 'b)) => t<'b> = "map"
+external map: ('a => 'b) => t<'b> = "map"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Applies the function (given as the first argument) to each item in the array,
 returning a new array. The function acceps two arguments: an item from the
@@ -868,9 +868,9 @@ let product = (item, index) => item * index
 Js.Array.mapi(product, [10, 11, 12]) == [0, 11, 24]
 ```
 */
-external mapi: (@uncurry ('a, int) => 'b) => t<'b> = "map"
+external mapi: (('a, int) => 'b) => t<'b> = "map"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 The `reduce()` function takes three parameters: a *reducer function*, a
 beginning accumulator value, and an array. The reducer function has two
@@ -902,9 +902,9 @@ Js.Array.reduce(
 Js.Array.reduce((acc, item) => item /. acc, 1.0, [2.0, 4.0]) == 2.0 // 4.0 / (2.0 / 1.0)
 ```
 */
-external reduce: (@uncurry ('b, 'a) => 'b, 'b) => 'b = "reduce"
+external reduce: (('b, 'a) => 'b, 'b) => 'b = "reduce"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 The `reducei()` function takes three parameters: a *reducer function*, a
 beginning accumulator value, and an array. The reducer function has three
@@ -937,9 +937,9 @@ let sumOfEvens = (accumulator, item, index) =>
 Js.Array.reducei(sumOfEvens, 0, [2, 5, 1, 4, 3]) == 6
 ```
 */
-external reducei: (@uncurry ('b, 'a, int) => 'b, 'b) => 'b = "reduce"
+external reducei: (('b, 'a, int) => 'b, 'b) => 'b = "reduce"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 The `reduceRight()` function takes three parameters: a *reducer function*, a
 beginning accumulator value, and an array. The reducer function has two
@@ -967,9 +967,9 @@ Js.Array.reduceRight(sumOfSquares, 0, [10, 2, 4]) == 120
 Js.Array.reduceRight((acc, item) => item /. acc, 1.0, [2.0, 4.0]) == 0.5 // 2.0 / (4.0 / 1.0)
 ```
 */
-external reduceRight: (@uncurry ('b, 'a) => 'b, 'b) => 'b = "reduceRight"
+external reduceRight: (('b, 'a) => 'b, 'b) => 'b = "reduceRight"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 The `reduceRighti()` function takes three parameters: a *reducer function*, a
 beginning accumulator value, and an array. The reducer function has three
@@ -1004,9 +1004,9 @@ let sumOfEvens = (accumulator, item, index) =>
 Js.Array.reduceRighti(sumOfEvens, 0, [2, 5, 1, 4, 3]) == 6
 ```
 */
-external reduceRighti: (@uncurry ('b, 'a, int) => 'b, 'b) => 'b = "reduceRight"
+external reduceRighti: (('b, 'a, int) => 'b, 'b) => 'b = "reduceRight"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Returns `true` if the predicate function given as the first argument to
 `some()` returns `true` for any element in the array; `false` otherwise.
@@ -1020,9 +1020,9 @@ Js.Array.some(isEven, [3, 7, 5, 2, 9]) == true
 Js.Array.some(isEven, [3, 7, 5, 1, 9]) == false
 ```
 */
-external some: (@uncurry ('a => bool)) => bool = "some"
+external some: ('a => bool) => bool = "some"
 
-@bs.send.pipe(: t<'a> as 'this)
+@send.pipe(: t<'a> as 'this)
 /**
 Returns `true` if the predicate function given as the first argument to
 `somei()` returns `true` for any element in the array; `false` otherwise. The
@@ -1043,10 +1043,10 @@ Js.Array.somei(sameLength, ["ab", "cd", "ef", "gh"]) == true
 Js.Array.somei(sameLength, ["a", "bc", "def", "gh"]) == false
 ```
 */
-external somei: (@uncurry ('a, int) => bool) => bool = "some"
+external somei: (('a, int) => bool) => bool = "some"
 
 /* commented out until bs has a plan for iterators
-   external values : 'a array_iter = "" [@@bs.send.pipe: 'a t as 'this] (* ES2015 *)
+   external values : 'a array_iter = "" [@@send.pipe: 'a t as 'this] (* ES2015 *)
 */
 /**
 Returns the value at the given position in the array if the position is in

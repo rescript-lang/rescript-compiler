@@ -44,9 +44,7 @@ type error
 */
 
 @new
-external make: ((@uncurry ~resolve: (. 'a) => unit, ~reject: (. exn) => unit) => unit) => promise<
-  'a,
-> = "Promise"
+external make: ((~resolve: 'a => unit, ~reject: exn => unit) => unit) => promise<'a> = "Promise"
 
 /* `make (fun resolve reject -> .. )` */
 @val @scope("Promise") external resolve: 'a => promise<'a> = "resolve"
@@ -83,10 +81,10 @@ external all6: (
 
 @val @scope("Promise") external race: array<promise<'a>> => promise<'a> = "race"
 
-@bs.send.pipe(: promise<'a>) external then_: (@uncurry ('a => promise<'b>)) => promise<'b> = "then"
+@bs.send.pipe(: promise<'a>) external then_: ('a => promise<'b>) => promise<'b> = "then"
 
 @bs.send.pipe(: promise<'a>)
-external catch: (@uncurry (error => promise<'a>)) => promise<'a> = "catch"
+external catch: (error => promise<'a>) => promise<'a> = "catch"
 /* ` p|> catch handler`
     Note in JS the returned promise type is actually runtime dependent,
     if promise is rejected, it will pick the `handler` otherwise the original promise,

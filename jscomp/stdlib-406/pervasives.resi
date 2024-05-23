@@ -24,22 +24,25 @@
    name, without prefixing them by [Pervasives].
 */
 
-module Jsx = JsxC
-module JsxEvent = JsxEventC
-module JsxDOM = JsxDOMC
-module JsxPPXReactSupport = JsxPPXReactSupportC
+@@uncurried
+
+module Jsx = JsxU
+module JsxEvent = JsxEventU
+module JsxDOM = JsxDOMU
+module JsxPPXReactSupport = JsxPPXReactSupportU
 
 /* For autocomplete */
 module JsxModules: {
-  module Jsx = JsxC
-  module JsxEvent = JsxEventC
-  module JsxDOM = JsxDOMC
+  module Jsx = JsxU
+  module JsxEvent = JsxEventU
+  module JsxDOM = JsxDOMU
   // skip JsxPPXReactSupport as it's not user-facing
 }
 
 /* Internal */
 external __unsafe_cast: 'a => 'b = "%identity"
-/* 1 Exceptions} */
+
+/*** {1 Exceptions} */
 
 /** Raise the given exception value */
 external raise: exn => 'a = "%raise"
@@ -59,7 +62,7 @@ let failwith: string => 'a
     provided for use in your programs. */
 exception Exit
 
-/* {1 Comparisons} */
+/*** {1 Comparisons} */
 
 /** [e1 = e2] tests for structural equality of [e1] and [e2].
    Mutable structures (e.g. references and arrays) are equal
@@ -141,7 +144,7 @@ external \"==": ('a, 'a) => bool = "%eq"
     Left-associative operator at precedence level 4/11. */
 external \"!=": ('a, 'a) => bool = "%noteq"
 
-/* {1 Boolean operations} */
+/*** {1 Boolean operations} */
 
 /** The boolean negation. */
 external not: bool => bool = "%boolnot"
@@ -159,7 +162,7 @@ external \"&&": (bool, bool) => bool = "%sequand"
 */
 external \"||": (bool, bool) => bool = "%sequor"
 
-/* {1 Debugging} */
+/*** {1 Debugging} */
 
 /** [__LOC__] returns the location at which this expression appears in
     the file currently being parsed by the compiler, with the standard
@@ -220,7 +223,7 @@ external __LINE_OF__: 'a => (int, 'a) = "%loc_LINE"
  */
 external __POS_OF__: 'a => ((string, int, int, int), 'a) = "%loc_POS"
 
-/* {1 Composition operators} */
+/*** {1 Composition operators} */
 
 /** Reverse-application operator: [x |> f |> g] is exactly equivalent
  to [g (f (x))].
@@ -236,9 +239,9 @@ external \"|>": ('a, 'a => 'b) => 'b = "%revapply"
 */
 external \"@@": ('a => 'b, 'a) => 'b = "%apply"
 
-/* {1 Integer arithmetic} */
+/*** {1 Integer arithmetic} */
 
-/* Integers are 31 bits wide (or 63 bits on 64-bit processors).
+/*** Integers are 31 bits wide (or 63 bits on 64-bit processors).
    All operations are taken modulo 2{^31} (or 2{^63}).
    They do not fail on overflow. */
 
@@ -301,7 +304,7 @@ let max_int: int
 /** The smallest representable integer. */
 let min_int: int
 
-/* {2 Bitwise operations} */
+/*** {2 Bitwise operations} */
 
 /** Bitwise logical and.
     Left-associative operator at precedence level 7/11. */
@@ -338,7 +341,7 @@ external lsr: (int, int) => int = "%lsrint"
    Right-associative operator at precedence level 8/11. */
 external asr: (int, int) => int = "%asrint"
 
-/* {1 Floating-point arithmetic}
+/*** {1 Floating-point arithmetic}
 
    OCaml's floating-point numbers follow the
    IEEE 754 standard, using double precision (64 bits) numbers.
@@ -563,7 +566,7 @@ let classify_float: float => fpclass
     Right-associative operator at precedence level 5/11. */
 external \"^": (string, string) => string = "#string_append"
 
-/* {1 Character operations}
+/*** {1 Character operations}
 
    More character operations are provided in module {!Char}.
 */
@@ -576,7 +579,7 @@ external int_of_char: char => int = "%identity"
    outside the range 0--255. */
 let char_of_int: int => char
 
-/* {1 Unit operations} */
+/*** {1 Unit operations} */
 
 /** Discard the value of its argument and return [()].
    For instance, [ignore(f x)] discards the result of
@@ -586,7 +589,7 @@ let char_of_int: int => char
    avoids the warning. */
 external ignore: 'a => unit = "%ignore"
 
-/* {1 String conversion functions} */
+/*** {1 String conversion functions} */
 
 /** Return the string representation of a boolean. As the returned values
    may be shared, the user should not modify them directly.
@@ -657,7 +660,7 @@ external float_of_string: string => float = "?float_of_string"
 */
 let float_of_string_opt: string => option<float>
 
-/* {1 Pair operations} */
+/*** {1 Pair operations} */
 
 /** Return the first component of a pair. */
 external fst: (('a, 'b)) => 'a = "%field0"
@@ -665,7 +668,7 @@ external fst: (('a, 'b)) => 'a = "%field0"
 /** Return the second component of a pair. */
 external snd: (('a, 'b)) => 'b = "%field1"
 
-/* {1 List operations}
+/*** {1 List operations}
 
    More list operations are provided in module {!List}.
 */
@@ -708,7 +711,7 @@ external prerr_endline: string => unit = "error"
    standard error. */
 let prerr_newline: unit => unit
 
-/* {1 References} */
+/*** {1 References} */
 
 /** The type of references (mutable indirection cells) containing
    a value of type ['a]. */
@@ -735,7 +738,7 @@ external incr: ref<int> => unit = "%incr"
    Equivalent to [fun r -> r := pred !r]. */
 external decr: ref<int> => unit = "%decr"
 
-/* {1 Program termination} */
+/*** {1 Program termination} */
 
 /** Terminate the process, returning the given status code
    to the operating system: usually 0 to indicate no errors,
