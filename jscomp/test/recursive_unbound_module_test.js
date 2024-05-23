@@ -4,7 +4,7 @@
 let Caml_module = require("../../lib/js/caml_module.js");
 
 function Make(X) {
-  let f = function (param) {
+  let f = function () {
     
   };
   let M = {
@@ -33,7 +33,7 @@ let B = Caml_module.init_mod([
     ]]
 });
 
-function f(param) {
+function f() {
   
 }
 

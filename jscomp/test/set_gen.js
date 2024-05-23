@@ -2,7 +2,6 @@
 'use strict';
 
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
@@ -120,7 +119,7 @@ function iter(f, _x) {
       return;
     }
     iter(f, x._0);
-    Curry._1(f, x._1);
+    f(x._1);
     _x = x._2;
     continue;
   };
@@ -133,7 +132,7 @@ function fold(f, _s, _accu) {
     if (typeof s !== "object") {
       return accu;
     }
-    _accu = Curry._2(f, s._1, fold(f, s._0, accu));
+    _accu = f(s._1, fold(f, s._0, accu));
     _s = s._2;
     continue;
   };
@@ -145,7 +144,7 @@ function for_all(p, _x) {
     if (typeof x !== "object") {
       return true;
     }
-    if (!Curry._1(p, x._1)) {
+    if (!p(x._1)) {
       return false;
     }
     if (!for_all(p, x._0)) {
@@ -162,7 +161,7 @@ function exists(p, _x) {
     if (typeof x !== "object") {
       return false;
     }
-    if (Curry._1(p, x._1)) {
+    if (p(x._1)) {
       return true;
     }
     if (exists(p, x._0)) {
@@ -402,7 +401,7 @@ function filter(p, x) {
   }
   let v = x._1;
   let l$p = filter(p, x._0);
-  let pv = Curry._1(p, v);
+  let pv = p(v);
   let r$p = filter(p, x._2);
   if (pv) {
     return internal_join(l$p, v, r$p);
@@ -422,7 +421,7 @@ function partition(p, x) {
   let match = partition(p, x._0);
   let lf = match[1];
   let lt = match[0];
-  let pv = Curry._1(p, v);
+  let pv = p(v);
   let match$1 = partition(p, x._2);
   let rf = match$1[1];
   let rt = match$1[0];
@@ -625,7 +624,7 @@ function is_ordered(cmp, tree) {
       let min_v = match$1[0];
       let match$2 = is_ordered_min_max(r);
       if (typeof match$2 !== "object") {
-        if (match$2 === "Empty" && Curry._2(cmp, max_v, v) < 0) {
+        if (match$2 === "Empty" && cmp(max_v, v) < 0) {
           return {
             NAME: "V",
             VAL: [
@@ -638,7 +637,7 @@ function is_ordered(cmp, tree) {
         }
       }
       let match$3 = match$2.VAL;
-      if (Curry._2(cmp, max_v, match$3[0]) < 0) {
+      if (cmp(max_v, match$3[0]) < 0) {
         return {
           NAME: "V",
           VAL: [
@@ -668,7 +667,7 @@ function is_ordered(cmp, tree) {
       }
     }
     let match$5 = match$4.VAL;
-    if (Curry._2(cmp, v, match$5[0]) < 0) {
+    if (cmp(v, match$5[0]) < 0) {
       return {
         NAME: "V",
         VAL: [
@@ -702,7 +701,7 @@ function compare_aux(cmp, _e1, _e2) {
     if (typeof e2 !== "object") {
       return 1;
     }
-    let c = Curry._2(cmp, e1._0, e2._0);
+    let c = cmp(e1._0, e2._0);
     if (c !== 0) {
       return c;
     }
