@@ -12,64 +12,71 @@ o stdlib-406/pervasives.cmj : cc_cmi stdlib-406/pervasives.res | stdlib-406/perv
     bsc_flags = $bsc_flags -nopervasives
 o stdlib-406/pervasives.cmi : cc stdlib-406/pervasives.resi | $bsc others
     bsc_flags = $bsc_flags -nopervasives
+o stdlib-406/Array.cmj : cc_cmi stdlib-406/Array.res | stdlib-406/Array.cmi stdlib-406/Iterator.cmj stdlib-406/Ordering.cmj stdlib-406/Symbol.cmj $bsc others
+o stdlib-406/Array.cmi : cc stdlib-406/Array.resi | stdlib-406/Iterator.cmi stdlib-406/Ordering.cmj stdlib-406/Symbol.cmj stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/ArrayBuffer.cmi stdlib-406/ArrayBuffer.cmj : cc stdlib-406/ArrayBuffer.res | stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/AsyncIterator.cmj : cc_cmi stdlib-406/AsyncIterator.res | stdlib-406/AsyncIterator.cmi $bsc others
+o stdlib-406/AsyncIterator.cmi : cc stdlib-406/AsyncIterator.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/BigInt.cmi stdlib-406/BigInt.cmj : cc stdlib-406/BigInt.res | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/Console.cmj : cc_cmi stdlib-406/Console.res | stdlib-406/Console.cmi $bsc others
 o stdlib-406/Console.cmi : cc stdlib-406/Console.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/DataView.cmi stdlib-406/DataView.cmj : cc stdlib-406/DataView.res | stdlib-406/ArrayBuffer.cmj stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/Date.cmj : cc_cmi stdlib-406/Date.res | stdlib-406/Date.cmi stdlib-406/Float.cmj $bsc others
 o stdlib-406/Date.cmi : cc stdlib-406/Date.resi | stdlib-406/Ordering.cmj stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/Dict.cmj : cc_cmi stdlib-406/Dict.res | stdlib-406/Dict.cmi stdlib-406/array.cmj $bsc others
-o stdlib-406/Dict.cmi : cc stdlib-406/Dict.resi | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/Error.cmi stdlib-406/Error.cmj : cc stdlib-406/Error.res | stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/Dict.cmj : cc_cmi stdlib-406/Dict.res | stdlib-406/Array.cmj stdlib-406/Dict.cmi stdlib-406/Iterator.cmj $bsc others
+o stdlib-406/Dict.cmi : cc stdlib-406/Dict.resi | stdlib-406/Iterator.cmi stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/Error.cmj : cc_cmi stdlib-406/Error.res | stdlib-406/Error.cmi $bsc others
+o stdlib-406/Error.cmi : cc stdlib-406/Error.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/Float.cmj : cc_cmi stdlib-406/Float.res | stdlib-406/Float.cmi stdlib-406/Ordering.cmj $bsc others
 o stdlib-406/Float.cmi : cc stdlib-406/Float.resi | stdlib-406/Ordering.cmj stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/Global.cmj : cc_cmi stdlib-406/Global.res | stdlib-406/Global.cmi $bsc others
 o stdlib-406/Global.cmi : cc stdlib-406/Global.resi | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/Int.cmj : cc_cmi stdlib-406/Int.res | stdlib-406/Error.cmj stdlib-406/Float.cmj stdlib-406/Int.cmi stdlib-406/Ordering.cmj stdlib-406/array.cmj $bsc others
+o stdlib-406/Int.cmj : cc_cmi stdlib-406/Int.res | stdlib-406/Array.cmj stdlib-406/Error.cmj stdlib-406/Float.cmj stdlib-406/Int.cmi stdlib-406/Ordering.cmj $bsc others
 o stdlib-406/Int.cmi : cc stdlib-406/Int.resi | stdlib-406/Ordering.cmj stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/Intl.cmi stdlib-406/Intl.cmj : cc stdlib-406/Intl.res | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/JSON.cmj : cc_cmi stdlib-406/JSON.res | stdlib-406/Dict.cmj stdlib-406/JSON.cmi stdlib-406/Object.cmj stdlib-406/String.cmj stdlib-406/Type.cmj stdlib-406/array.cmj stdlib-406/obj.cmj $bsc others
-o stdlib-406/JSON.cmi : cc stdlib-406/JSON.resi | stdlib-406/Dict.cmi stdlib-406/Object.cmj stdlib-406/String.cmi stdlib-406/array.cmi stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/List.cmj : cc_cmi stdlib-406/List.res | stdlib-406/List.cmi stdlib-406/Ordering.cmj stdlib-406/array.cmj $bsc others
+o stdlib-406/Iterator.cmj : cc_cmi stdlib-406/Iterator.res | stdlib-406/Iterator.cmi $bsc others
+o stdlib-406/Iterator.cmi : cc stdlib-406/Iterator.resi | stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/JSON.cmj : cc_cmi stdlib-406/JSON.res | stdlib-406/Array.cmj stdlib-406/Dict.cmj stdlib-406/JSON.cmi stdlib-406/Object.cmj stdlib-406/String.cmj stdlib-406/Type.cmj stdlib-406/obj.cmj $bsc others
+o stdlib-406/JSON.cmi : cc stdlib-406/JSON.resi | stdlib-406/Array.cmi stdlib-406/Dict.cmi stdlib-406/Object.cmj stdlib-406/String.cmi stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/List.cmj : cc_cmi stdlib-406/List.res | stdlib-406/Array.cmj stdlib-406/List.cmi stdlib-406/Ordering.cmj $bsc others
 o stdlib-406/List.cmi : cc stdlib-406/List.resi | stdlib-406/Ordering.cmj stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/Map.cmj : cc_cmi stdlib-406/Map.res | stdlib-406/Map.cmi $bsc others
-o stdlib-406/Map.cmi : cc stdlib-406/Map.resi | stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/Map.cmj : cc_cmi stdlib-406/Map.res | stdlib-406/Iterator.cmj stdlib-406/Map.cmi $bsc others
+o stdlib-406/Map.cmi : cc stdlib-406/Map.resi | stdlib-406/Iterator.cmi stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/Math.cmj : cc_cmi stdlib-406/Math.res | stdlib-406/Float.cmj stdlib-406/Int.cmj stdlib-406/Math.cmi $bsc others
 o stdlib-406/Math.cmi : cc stdlib-406/Math.resi | stdlib-406/Int.cmi stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/Nulll.cmj : cc_cmi stdlib-406/Nulll.res | stdlib-406/Nulll.cmi stdlib-406/Option.cmj $bsc others
-o stdlib-406/Nulll.cmi : cc stdlib-406/Nulll.resi | stdlib-406/Ordering.cmj stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/Nullable.cmj : cc_cmi stdlib-406/Nullable.res | stdlib-406/Nullable.cmi stdlib-406/Option.cmj stdlib-406/obj.cmj $bsc others
+o stdlib-406/Nullable.cmi : cc stdlib-406/Nullable.resi | stdlib-406/Ordering.cmj stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/Nulll.cmj : cc_cmi stdlib-406/Nulll.res | stdlib-406/Nullable.cmj stdlib-406/Nulll.cmi stdlib-406/Option.cmj $bsc others
+o stdlib-406/Nulll.cmi : cc stdlib-406/Nulll.resi | stdlib-406/Nullable.cmi stdlib-406/Ordering.cmj stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/Object.cmi stdlib-406/Object.cmj : cc stdlib-406/Object.res | stdlib-406/Symbol.cmj stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/Option.cmj : cc_cmi stdlib-406/Option.res | stdlib-406/Error.cmj stdlib-406/Option.cmi stdlib-406/Ordering.cmj $bsc others
 o stdlib-406/Option.cmi : cc stdlib-406/Option.resi | stdlib-406/Ordering.cmj stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/Ordering.cmi stdlib-406/Ordering.cmj : cc stdlib-406/Ordering.res | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/Promise.cmj : cc_cmi stdlib-406/Promise.res | stdlib-406/Promise.cmi $bsc others
 o stdlib-406/Promise.cmi : cc stdlib-406/Promise.resi | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/RegExp.cmi stdlib-406/RegExp.cmj : cc stdlib-406/RegExp.res | stdlib-406/Result.cmj stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/RegExp.cmj : cc_cmi stdlib-406/RegExp.res | stdlib-406/RegExp.cmi stdlib-406/Result.cmj $bsc others
+o stdlib-406/RegExp.cmi : cc stdlib-406/RegExp.resi | stdlib-406/Result.cmi stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/Result.cmj : cc_cmi stdlib-406/Result.res | stdlib-406/Ordering.cmj stdlib-406/Result.cmi $bsc others
 o stdlib-406/Result.cmi : cc stdlib-406/Result.resi | stdlib-406/Ordering.cmj stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/Set.cmj : cc_cmi stdlib-406/Set.res | stdlib-406/Set.cmi $bsc others
-o stdlib-406/Set.cmi : cc stdlib-406/Set.resi | stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/Set.cmj : cc_cmi stdlib-406/Set.res | stdlib-406/Iterator.cmj stdlib-406/Set.cmi $bsc others
+o stdlib-406/Set.cmi : cc stdlib-406/Set.resi | stdlib-406/Iterator.cmi stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/String.cmj : cc_cmi stdlib-406/String.res | stdlib-406/Ordering.cmj stdlib-406/RegExp.cmj stdlib-406/String.cmi stdlib-406/Symbol.cmj $bsc others
-o stdlib-406/String.cmi : cc stdlib-406/String.resi | stdlib-406/Ordering.cmj stdlib-406/RegExp.cmj stdlib-406/Symbol.cmj stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/String.cmi : cc stdlib-406/String.resi | stdlib-406/Ordering.cmj stdlib-406/RegExp.cmi stdlib-406/Symbol.cmj stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/Symbol.cmi stdlib-406/Symbol.cmj : cc stdlib-406/Symbol.res | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/Type.cmi stdlib-406/Type.cmj : cc stdlib-406/Type.res | stdlib-406/BigInt.cmj stdlib-406/Object.cmj stdlib-406/String.cmj stdlib-406/Symbol.cmj stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/array.cmj : cc_cmi stdlib-406/array.res | stdlib-406/Ordering.cmj stdlib-406/Symbol.cmj stdlib-406/array.cmi $bsc others
-o stdlib-406/array.cmi : cc stdlib-406/array.resi | stdlib-406/Ordering.cmj stdlib-406/Symbol.cmj stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/Type.cmj : cc_cmi stdlib-406/Type.res | stdlib-406/BigInt.cmj stdlib-406/Object.cmj stdlib-406/String.cmj stdlib-406/Symbol.cmj stdlib-406/Type.cmi $bsc others
+o stdlib-406/Type.cmi : cc stdlib-406/Type.resi | stdlib-406/BigInt.cmj stdlib-406/Object.cmj stdlib-406/String.cmi stdlib-406/Symbol.cmj stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/WeakMap.cmi stdlib-406/WeakMap.cmj : cc stdlib-406/WeakMap.res | stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/WeakSet.cmi stdlib-406/WeakSet.cmj : cc stdlib-406/WeakSet.res | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/camlinternalLazy.cmj : cc_cmi stdlib-406/camlinternalLazy.res | stdlib-406/camlinternalLazy.cmi $bsc others
 o stdlib-406/camlinternalLazy.cmi : cc stdlib-406/camlinternalLazy.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/camlinternalMod.cmj : cc_cmi stdlib-406/camlinternalMod.res | stdlib-406/camlinternalMod.cmi stdlib-406/obj.cmj $bsc others
 o stdlib-406/camlinternalMod.cmi : cc stdlib-406/camlinternalMod.resi | stdlib-406/obj.cmi stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/char.cmj : cc_cmi stdlib-406/char.res | stdlib-406/char.cmi $bsc others
 o stdlib-406/char.cmi : cc stdlib-406/char.resi | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/int32.cmj : cc_cmi stdlib-406/int32.res | stdlib-406/int32.cmi $bsc others
-o stdlib-406/int32.cmi : cc stdlib-406/int32.resi | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/int64.cmj : cc_cmi stdlib-406/int64.res | stdlib-406/int64.cmi $bsc others
-o stdlib-406/int64.cmi : cc stdlib-406/int64.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/lazy.cmj : cc_cmi stdlib-406/lazy.res | stdlib-406/camlinternalLazy.cmj stdlib-406/lazy.cmi $bsc others
 o stdlib-406/lazy.cmi : cc stdlib-406/lazy.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/obj.cmj : cc_cmi stdlib-406/obj.res | stdlib-406/obj.cmi $bsc others
 o stdlib-406/obj.cmi : cc stdlib-406/obj.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/pervasivesU.cmj : cc_cmi stdlib-406/pervasivesU.res | stdlib-406/pervasivesU.cmi $bsc others
 o stdlib-406/pervasivesU.cmi : cc stdlib-406/pervasivesU.resi | stdlib-406/pervasives.cmj $bsc others
-o $stdlib : phony stdlib-406/pervasives.cmi stdlib-406/pervasives.cmj stdlib-406/ArrayBuffer.cmi stdlib-406/ArrayBuffer.cmj stdlib-406/BigInt.cmi stdlib-406/BigInt.cmj stdlib-406/Console.cmi stdlib-406/Console.cmj stdlib-406/DataView.cmi stdlib-406/DataView.cmj stdlib-406/Date.cmi stdlib-406/Date.cmj stdlib-406/Dict.cmi stdlib-406/Dict.cmj stdlib-406/Error.cmi stdlib-406/Error.cmj stdlib-406/Float.cmi stdlib-406/Float.cmj stdlib-406/Global.cmi stdlib-406/Global.cmj stdlib-406/Int.cmi stdlib-406/Int.cmj stdlib-406/Intl.cmi stdlib-406/Intl.cmj stdlib-406/JSON.cmi stdlib-406/JSON.cmj stdlib-406/List.cmi stdlib-406/List.cmj stdlib-406/Map.cmi stdlib-406/Map.cmj stdlib-406/Math.cmi stdlib-406/Math.cmj stdlib-406/Nulll.cmi stdlib-406/Nulll.cmj stdlib-406/Object.cmi stdlib-406/Object.cmj stdlib-406/Option.cmi stdlib-406/Option.cmj stdlib-406/Ordering.cmi stdlib-406/Ordering.cmj stdlib-406/Promise.cmi stdlib-406/Promise.cmj stdlib-406/RegExp.cmi stdlib-406/RegExp.cmj stdlib-406/Result.cmi stdlib-406/Result.cmj stdlib-406/Set.cmi stdlib-406/Set.cmj stdlib-406/String.cmi stdlib-406/String.cmj stdlib-406/Symbol.cmi stdlib-406/Symbol.cmj stdlib-406/Type.cmi stdlib-406/Type.cmj stdlib-406/array.cmi stdlib-406/array.cmj stdlib-406/camlinternalLazy.cmi stdlib-406/camlinternalLazy.cmj stdlib-406/camlinternalMod.cmi stdlib-406/camlinternalMod.cmj stdlib-406/char.cmi stdlib-406/char.cmj stdlib-406/int32.cmi stdlib-406/int32.cmj stdlib-406/int64.cmi stdlib-406/int64.cmj stdlib-406/lazy.cmi stdlib-406/lazy.cmj stdlib-406/obj.cmi stdlib-406/obj.cmj stdlib-406/pervasivesU.cmi stdlib-406/pervasivesU.cmj
+o $stdlib : phony stdlib-406/pervasives.cmi stdlib-406/pervasives.cmj stdlib-406/Array.cmi stdlib-406/Array.cmj stdlib-406/ArrayBuffer.cmi stdlib-406/ArrayBuffer.cmj stdlib-406/AsyncIterator.cmi stdlib-406/AsyncIterator.cmj stdlib-406/BigInt.cmi stdlib-406/BigInt.cmj stdlib-406/Console.cmi stdlib-406/Console.cmj stdlib-406/DataView.cmi stdlib-406/DataView.cmj stdlib-406/Date.cmi stdlib-406/Date.cmj stdlib-406/Dict.cmi stdlib-406/Dict.cmj stdlib-406/Error.cmi stdlib-406/Error.cmj stdlib-406/Float.cmi stdlib-406/Float.cmj stdlib-406/Global.cmi stdlib-406/Global.cmj stdlib-406/Int.cmi stdlib-406/Int.cmj stdlib-406/Intl.cmi stdlib-406/Intl.cmj stdlib-406/Iterator.cmi stdlib-406/Iterator.cmj stdlib-406/JSON.cmi stdlib-406/JSON.cmj stdlib-406/List.cmi stdlib-406/List.cmj stdlib-406/Map.cmi stdlib-406/Map.cmj stdlib-406/Math.cmi stdlib-406/Math.cmj stdlib-406/Nullable.cmi stdlib-406/Nullable.cmj stdlib-406/Nulll.cmi stdlib-406/Nulll.cmj stdlib-406/Object.cmi stdlib-406/Object.cmj stdlib-406/Option.cmi stdlib-406/Option.cmj stdlib-406/Ordering.cmi stdlib-406/Ordering.cmj stdlib-406/Promise.cmi stdlib-406/Promise.cmj stdlib-406/RegExp.cmi stdlib-406/RegExp.cmj stdlib-406/Result.cmi stdlib-406/Result.cmj stdlib-406/Set.cmi stdlib-406/Set.cmj stdlib-406/String.cmi stdlib-406/String.cmj stdlib-406/Symbol.cmi stdlib-406/Symbol.cmj stdlib-406/Type.cmi stdlib-406/Type.cmj stdlib-406/WeakMap.cmi stdlib-406/WeakMap.cmj stdlib-406/WeakSet.cmi stdlib-406/WeakSet.cmj stdlib-406/camlinternalLazy.cmi stdlib-406/camlinternalLazy.cmj stdlib-406/camlinternalMod.cmi stdlib-406/camlinternalMod.cmj stdlib-406/char.cmi stdlib-406/char.cmj stdlib-406/lazy.cmi stdlib-406/lazy.cmj stdlib-406/obj.cmi stdlib-406/obj.cmj stdlib-406/pervasivesU.cmi stdlib-406/pervasivesU.cmj
