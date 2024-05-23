@@ -26,6 +26,7 @@
 #### :house: Internal
 
 - Build with OCaml 5.1.1. https://github.com/rescript-lang/rescript-compiler/pull/6641
+- Enable uncurried mode for parser dev cli https://github.com/rescript-lang/rescript-compiler/pull/6765
 
 #### :nail_care: Polish
 
@@ -70,7 +71,7 @@
 
 #### :bug: Bug Fix
 
-- Fix variance setting for builtin `dict` type. Fixes issues around inference. https://github.com/rescript-lang/rescript-compiler/pull/6707 
+- Fix variance setting for builtin `dict` type. Fixes issues around inference. https://github.com/rescript-lang/rescript-compiler/pull/6707
 
 # 11.1.0-rc.6
 
