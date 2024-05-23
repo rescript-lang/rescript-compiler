@@ -7,31 +7,33 @@ let Genlex = require("../../lib/js/genlex.js");
 let Stream = require("../../lib/js/stream.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
-let lexer = Genlex.make_lexer({
-  hd: "+",
-  tl: {
-    hd: "-",
+function lexer(l) {
+  return Genlex.make_lexer({
+    hd: "+",
     tl: {
-      hd: "*",
+      hd: "-",
       tl: {
-        hd: "/",
+        hd: "*",
         tl: {
-          hd: "let",
+          hd: "/",
           tl: {
-            hd: "=",
+            hd: "let",
             tl: {
-              hd: "(",
+              hd: "=",
               tl: {
-                hd: ")",
-                tl: /* [] */0
+                hd: "(",
+                tl: {
+                  hd: ")",
+                  tl: /* [] */0
+                }
               }
             }
           }
         }
       }
     }
-  }
-});
+  }, l);
+}
 
 function to_list(s) {
   let _acc = /* [] */0;
@@ -119,4 +121,4 @@ Mt.from_pair_suites("Genlex_test", suites);
 exports.lexer = lexer;
 exports.to_list = to_list;
 exports.suites = suites;
-/* lexer Not a pure module */
+/*  Not a pure module */
