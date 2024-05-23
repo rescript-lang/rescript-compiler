@@ -96,8 +96,56 @@ jobs:
           name: ${{ env.artifact_name }}
           path: ${{ env.artifact_path }}
 
+  build-rewatch:
+    runs-on: macos-14
+    env:
+      RUST_BACKTRACE: "1"
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: setup sccache
+        uses: mozilla-actions/sccache-action@v0.0.4
+        with:
+          version: "v0.7.7"
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+      - name: Install zig
+        uses: korandoru/setup-zig@v1
+        with:
+          zig-version: 0.11.0
+      - name: Install Rust targets
+        shell: bash
+        run: |
+          rustup target add x86_64-unknown-linux-musl \
+            aarch64-apple-darwin \
+            x86_64-apple-darwin \
+            x86_64-pc-windows-gnu
+
+      - name: Install cargo zigbuild
+        run: cargo install cargo-zigbuild
+        working-directory: rewatch
+      - name: macOS - build universal2
+        run: cargo zigbuild --target universal2-apple-darwin --release
+        working-directory: rewatch
+      - name: Linux - build x86_64 musl
+        run: cargo zigbuild --target x86_64-unknown-linux-musl --release
+        working-directory: rewatch
+      - name: Windows - build x86_64 musl
+        run: cargo zigbuild --target x86_64-pc-windows-gnu --release
+        working-directory: rewatch
+      # - name: Move / Rename Artifacts
+      #   run: |
+      #     mv target/x86_64-unknown-linux-musl/release/rewatch ./rewatch-linux
+      #     mv target/universal2-apple-darwin/release/rewatch ./rewatch-macos
+      #     mv target/x86_64-pc-windows-gnu/release/rewatch.exe ./rewatch-windows.exe
+
   build:
-    needs: static-binaries-linux
+    needs:
+      - build-rewatch
+      - static-binaries-linux
 
     strategy:
       fail-fast: false
