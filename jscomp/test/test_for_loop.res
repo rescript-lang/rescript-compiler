@@ -14,7 +14,7 @@ let for_2 = x =>
 
 let for_3 = x => {
   let v = ref(0)
-  let arr = Array.map((_, _) => (), x)
+  let arr = Array.map((_) => (_) => (), x)
   for i in 0 to Array.length(x) {
     let j = i * 2
     arr[i] = _ => v := v.contents + j
@@ -25,7 +25,7 @@ let for_3 = x => {
 
 let for_4 = x => {
   let v = ref(0)
-  let arr = Array.map((_, _) => (), x)
+  let arr = Array.map((_) => (_) => (), x)
   for i in 0 to Array.length(x) {
     let j = i * 2
     let k = 2 * j
@@ -37,7 +37,7 @@ let for_4 = x => {
 
 let for_5 = (x, u) => {
   let v = ref(0)
-  let arr = Array.map((_, _) => (), x)
+  let arr = Array.map((_) => (_) => (), x)
   for i in 0 to Array.length(x) {
     let _j = i * 2
     let k = 2 * u * u
@@ -49,7 +49,7 @@ let for_5 = (x, u) => {
 
 let for_6 = (x, u) => {
   let v = ref(0)
-  let arr = Array.map((_, _) => (), x)
+  let arr = Array.map((_) => (_) => (), x)
   let v4 = ref(0)
   let v5 = ref(0)
   incr(v4)

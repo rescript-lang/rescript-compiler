@@ -769,10 +769,10 @@ module Re_automata: {
 
   let reset_table = a => Array.fill(a, 0, Array.length(a), false)
 
-  let rec mark_used_indices = tbl =>
+  let rec mark_used_indices = (tbl, list) =>
     List.iter(x =>
       switch x {
-      | E.TSeq(l, _, _) => mark_used_indices(tbl, l)
+      | E.TSeq(l, _, _) => mark_used_indices(tbl, list)
       | E.TExp(marks, _)
       | E.TMatch(marks) =>
         List.iter(((_, i)) =>
@@ -780,7 +780,8 @@ module Re_automata: {
             tbl[i] = true
           }
         , marks.Marks.marks)
-      }
+      },
+      list
     )
 
   let rec find_free = (tbl, idx, len) =>
@@ -804,11 +805,12 @@ module Re_automata: {
 
   /* *** Computation of the next state *** */
 
-  let remove_matches = List.filter(x =>
+  let remove_matches = l => List.filter(x =>
     switch x {
     | E.TMatch(_) => false
     | _ => true
-    }
+    },
+    l
   )
 
   let rec split_at_match_rec = (l', x) =>
@@ -985,7 +987,7 @@ module Re_automata: {
 
   /* ** */
 
-  let prepend_deriv = List.fold_right(((s, x), l) => Cset.prepend(s, x, l))
+  let prepend_deriv = (x, y) => List.fold_right(((s, x), l) => Cset.prepend(s, x, l), x, y)
 
   let rec restrict = (s, x) =>
     switch x {

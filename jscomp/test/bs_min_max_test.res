@@ -2,7 +2,7 @@ let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 
 let eq = (loc, x, y) => Mt.eq_suites(~test_id, ~suites, loc, x, y)
-let b = Mt.bool_suites(~test_id, ~suites)
+let b = (loc, x) => Mt.bool_suites(~test_id, ~suites, loc, x)
 
 let f = (x, y) => Pervasives.compare(x + y, y + x)
 

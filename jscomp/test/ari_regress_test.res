@@ -15,7 +15,7 @@ let g1 = (x, y) => {
 }
 let x = gg(3, 5)(6)
 
-let v = g1(3)(4, 6)
+let v = yy => g1(3, 4)(6, yy)
 
 let suites = {
   open Mt

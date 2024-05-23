@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 
 let g = 7;
 
@@ -20,12 +19,12 @@ function g1(x, y) {
 
 let u = 8;
 
-let x = u + 6 | 0;
+let x = (function (z) {
+  return u + z | 0;
+})(6);
 
-let partial_arg = g1(3, 4);
-
-function v(param) {
-  return partial_arg(6, param);
+function v(yy) {
+  return g1(3, 4)(6, yy);
 }
 
 let suites_0 = [
@@ -46,7 +45,7 @@ let suites_1 = {
       return {
         TAG: "Eq",
         _0: 14,
-        _1: (Curry._1(v, 1), Curry._1(v, 1))
+        _1: (v(1), v(1))
       };
     })
   ],
@@ -84,4 +83,4 @@ let suites = {
 
 Mt.from_pair_suites("Ari_regress_test", suites);
 
-/* partial_arg Not a pure module */
+/* x Not a pure module */
