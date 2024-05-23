@@ -220,6 +220,9 @@ end = struct
         Arg.Unit (fun () -> typechecker := true),
         "Parses the ast as it would be passed to the typechecker and not the \
          printer" );
+      ( "-legacy-curried",
+        Arg.Unit (fun () -> Config.uncurried := Legacy),
+        "Use legacy curried syntax" );
     ]
 
   let parse () = Arg.parse spec (fun f -> file := f) usage
@@ -310,6 +313,7 @@ end
 
 let () =
   if not !Sys.interactive then (
+    Config.uncurried := Uncurried;
     ResClflags.parse ();
     CliArgProcessor.processFile ~isInterface:!ResClflags.interface
       ~width:!ResClflags.width ~recover:!ResClflags.recover
