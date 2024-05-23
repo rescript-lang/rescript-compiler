@@ -129,15 +129,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install musl gcc
+        if: runner.os == 'Linux'
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: musl-tools
+          version: 1.1
       - name: setup sccache
         uses: mozilla-actions/sccache-action@v0.0.4
         with:
-          version: "v0.7.7"
+          version: "v0.8.0"
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-      - name: Install Rust target
-        run: rustup target add ${{matrix.rust-target}}
+          targets: ${{matrix.rust-target}}
       - name: Build rewatch
         run: cargo build --target ${{matrix.rust-target}} --release
         working-directory: rewatch
