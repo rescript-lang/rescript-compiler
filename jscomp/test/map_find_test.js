@@ -357,43 +357,17 @@ let s = List.fold_left((function (acc, param) {
   }
 });
 
-let l_0 = [
-  "int",
-  (function () {
-    return {
-      TAG: "Eq",
-      _0: find(10, m),
-      _1: /* 'a' */97
-    };
-  })
-];
-
-let l_1 = {
+Mt.from_pair_suites("Map_find_test", {
   hd: [
-<<<<<<< HEAD
-    "string",
-=======
     "int",
->>>>>>> 674374e24 (Uncurry some tests)
     (function () {
       return {
         TAG: "Eq",
-        _0: find$1("10", s),
+        _0: find(10, m),
         _1: /* 'a' */97
       };
     })
   ],
-<<<<<<< HEAD
-  tl: /* [] */0
-};
-
-let l = {
-  hd: l_0,
-  tl: l_1
-};
-
-Mt.from_pair_suites("Map_find_test", l);
-=======
   tl: {
     hd: [
       "string",
@@ -408,6 +382,5 @@ Mt.from_pair_suites("Map_find_test", l);
     tl: /* [] */0
   }
 });
->>>>>>> 674374e24 (Uncurry some tests)
 
 /* m Not a pure module */

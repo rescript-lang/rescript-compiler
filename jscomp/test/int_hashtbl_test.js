@@ -11,7 +11,7 @@ function f(H) {
   let tbl = H.create(17);
   H.add(tbl, 1, /* '1' */49);
   H.add(tbl, 2, /* '2' */50);
-  let l = H.fold((function (k, v, acc) {
+  let x = H.fold((function (k, v, acc) {
     return {
       hd: [
         k,
@@ -22,7 +22,7 @@ function f(H) {
   }), tbl, /* [] */0);
   return List.sort((function (param, param$1) {
     return Caml.int_compare(param[0], param$1[0]);
-  }), l);
+  }), x);
 }
 
 function g(H, count) {

@@ -56,8 +56,10 @@ module ArrayBuffer = {
 
   @get external byteLength: t => int = "byteLength"
 
-  @send.pipe(: t) external slice: (~start: int, ~end_: int) => array_buffer = "slice" /* FIXME */
-  @send.pipe(: t) external sliceFrom: int => array_buffer = "slice"
+  @send external _slice: (t, ~start: int, ~end_: int) => array_buffer = "slice" /* FIXME */
+  let slice = (~start: int, ~end_: int, t) => _slice(t, ~start, ~end_)
+  @send external _sliceFrom: (t, int) => array_buffer = "slice"
+  let sliceFrom = (x, y) => _sliceFrom(y, x)
 }
 module type S = {
   /*** Implements functionality common to all the typed arrays */

@@ -62,7 +62,7 @@ let parse = (token: unit => Genlex.token) => {
   let r = parse_expr()
   (r, Queue.fold((acc, x) => list{x, ...acc}, list{}, look_ahead))
 }
-let lexer = Genlex.make_lexer(list{"(", "*", "/", "+", "-", ")"})
+let lexer = input => Genlex.make_lexer(list{"(", "*", "/", "+", "-", ")"}, input)
 let token = chars => {
   let strm = lexer(chars)
   () => Stream.next(strm)

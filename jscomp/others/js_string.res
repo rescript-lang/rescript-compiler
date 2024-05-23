@@ -704,7 +704,7 @@ Js.String.splitAtMost("/", ~limit=9, "ant/bee/cat/dog/elk") == ["ant", "bee", "c
 */
 external splitAtMost: (t, ~limit: int) => array<t> = "split"
 
-@bs.send.pipe(: t)
+@send.pipe(: t)
 @ocaml.doc("
 `splitByRe(regex, str)` splits the given `str` at every occurrence of `regex`
 and returns an array of the resulting substrings.

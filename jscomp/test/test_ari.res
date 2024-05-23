@@ -15,7 +15,7 @@ actually will become
 */
 let f1 = (x, y) => x + y
 let f3 = (g, x) => g(x)
-let f2 = \"+"(3)
+let f2 = x => \"+"(3, x)
 let g = f(3, 4)
 
 @val("test_primit") @module("U") external ext: (int, int) => int = "test_primit"
