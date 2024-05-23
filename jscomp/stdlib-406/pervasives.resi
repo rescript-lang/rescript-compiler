@@ -24,18 +24,16 @@
    name, without prefixing them by [Pervasives].
 */
 
-@@uncurried
-
-module Jsx = JsxU
-module JsxEvent = JsxEventU
-module JsxDOM = JsxDOMU
-module JsxPPXReactSupport = JsxPPXReactSupportU
+module Jsx = Jsx
+module JsxEvent = JsxEvent
+module JsxDOM = JsxDOM
+module JsxPPXReactSupport = JsxPPXReactSupport
 
 /* For autocomplete */
 module JsxModules: {
-  module Jsx = JsxU
-  module JsxEvent = JsxEventU
-  module JsxDOM = JsxDOMU
+  module Jsx = Jsx
+  module JsxEvent = JsxEvent
+  module JsxDOM = JsxDOM
   // skip JsxPPXReactSupport as it's not user-facing
 }
 

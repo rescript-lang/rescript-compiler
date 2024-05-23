@@ -13,16 +13,14 @@
 /*  */
 /* ************************************************************************ */
 
-@@uncurried
-
-module Jsx = JsxU
-module JsxEvent = JsxEventU
-module JsxDOM = JsxDOMU
-module JsxPPXReactSupport = JsxPPXReactSupportU
+module Jsx = Jsx
+module JsxEvent = JsxEvent
+module JsxDOM = JsxDOM
+module JsxPPXReactSupport = JsxPPXReactSupport
 module JsxModules = {
-  module Jsx = JsxU
-  module JsxEvent = JsxEventU
-  module JsxDOM = JsxDOMU
+  module Jsx = Jsx
+  module JsxEvent = JsxEvent
+  module JsxDOM = JsxDOM
 }
 
 /* Internal */

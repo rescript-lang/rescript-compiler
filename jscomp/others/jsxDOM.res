@@ -34,7 +34,7 @@ type domRef
 */
 type domProps = {
   key?: string,
-  children?: JsxU.element,
+  children?: Jsx.element,
   ref?: domRef,
   /* accessibility */
   /* https://www.w3.org/TR/wai-aria-1.1/ */
@@ -208,7 +208,7 @@ type domProps = {
   kind?: string /* has a fixed set of possible values */,
   label?: string,
   list?: string,
-  loading?: [#"lazy" | #eager],
+  loading?: [#lazy | #eager],
   loop?: bool,
   low?: int,
   manifest?: string /* uri */,

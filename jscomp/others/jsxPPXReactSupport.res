@@ -22,8 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-module Jsx = JsxC
-
 %%private(
   @val
   external propsWithKey: ({"key": string}, 'props) => 'props = "Object.assign"
@@ -35,6 +33,8 @@ module Jsx = JsxC
     | None => p
     }
 )
+
+@@uncurried // Can't move this up as @inline not working with uncurried
 
 @module("react")
 external createElement: (Jsx.component<'props>, 'props) => Jsx.element = "createElement"
