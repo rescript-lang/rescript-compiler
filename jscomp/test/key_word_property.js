@@ -46,7 +46,7 @@ let test = {
   window: 3
 };
 
-function u(param) {
+function u() {
   return $$window.switch();
 }
 

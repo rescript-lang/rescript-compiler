@@ -3,7 +3,6 @@
 
 let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 let $$String = require("../../lib/js/string.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 
@@ -518,7 +517,7 @@ function iter(f, _param) {
       return;
     }
     iter(f, param.l);
-    Curry._1(f, param.v);
+    f(param.v);
     _param = param.r;
     continue;
   };
@@ -531,7 +530,7 @@ function fold(f, _s, _accu) {
     if (typeof s !== "object") {
       return accu;
     }
-    _accu = Curry._2(f, s.v, fold(f, s.l, accu));
+    _accu = f(s.v, fold(f, s.l, accu));
     _s = s.r;
     continue;
   };
@@ -543,7 +542,7 @@ function for_all(p, _param) {
     if (typeof param !== "object") {
       return true;
     }
-    if (!Curry._1(p, param.v)) {
+    if (!p(param.v)) {
       return false;
     }
     if (!for_all(p, param.l)) {
@@ -560,7 +559,7 @@ function exists(p, _param) {
     if (typeof param !== "object") {
       return false;
     }
-    if (Curry._1(p, param.v)) {
+    if (p(param.v)) {
       return true;
     }
     if (exists(p, param.l)) {
@@ -579,7 +578,7 @@ function filter(p, param) {
   let v = param.v;
   let l = param.l;
   let l$p = filter(p, l);
-  let pv = Curry._1(p, v);
+  let pv = p(v);
   let r$p = filter(p, r);
   if (pv) {
     if (l === l$p && r === r$p) {
@@ -603,7 +602,7 @@ function partition(p, param) {
   let match = partition(p, param.l);
   let lf = match[1];
   let lt = match[0];
-  let pv = Curry._1(p, v);
+  let pv = p(v);
   let match$1 = partition(p, param.r);
   let rf = match$1[1];
   let rt = match$1[0];
@@ -677,7 +676,7 @@ function find_first(f, _param) {
       };
     }
     let v = param.v;
-    if (Curry._1(f, v)) {
+    if (f(v)) {
       let _v0 = v;
       let _param$1 = param.l;
       while(true) {
@@ -687,7 +686,7 @@ function find_first(f, _param) {
           return v0;
         }
         let v$1 = param$1.v;
-        if (Curry._1(f, v$1)) {
+        if (f(v$1)) {
           _param$1 = param$1.l;
           _v0 = v$1;
           continue;
@@ -708,7 +707,7 @@ function find_first_opt(f, _param) {
       return;
     }
     let v = param.v;
-    if (Curry._1(f, v)) {
+    if (f(v)) {
       let _v0 = v;
       let _param$1 = param.l;
       while(true) {
@@ -718,7 +717,7 @@ function find_first_opt(f, _param) {
           return Caml_option.some(v0);
         }
         let v$1 = param$1.v;
-        if (Curry._1(f, v$1)) {
+        if (f(v$1)) {
           _param$1 = param$1.l;
           _v0 = v$1;
           continue;
@@ -742,7 +741,7 @@ function find_last(f, _param) {
       };
     }
     let v = param.v;
-    if (Curry._1(f, v)) {
+    if (f(v)) {
       let _v0 = v;
       let _param$1 = param.r;
       while(true) {
@@ -752,7 +751,7 @@ function find_last(f, _param) {
           return v0;
         }
         let v$1 = param$1.v;
-        if (Curry._1(f, v$1)) {
+        if (f(v$1)) {
           _param$1 = param$1.r;
           _v0 = v$1;
           continue;
@@ -773,7 +772,7 @@ function find_last_opt(f, _param) {
       return;
     }
     let v = param.v;
-    if (Curry._1(f, v)) {
+    if (f(v)) {
       let _v0 = v;
       let _param$1 = param.r;
       while(true) {
@@ -783,7 +782,7 @@ function find_last_opt(f, _param) {
           return Caml_option.some(v0);
         }
         let v$1 = param$1.v;
-        if (Curry._1(f, v$1)) {
+        if (f(v$1)) {
           _param$1 = param$1.r;
           _v0 = v$1;
           continue;
@@ -821,7 +820,7 @@ function map(f, param) {
   let v = param.v;
   let l = param.l;
   let l$p = map(f, l);
-  let v$p = Curry._1(f, v);
+  let v$p = f(v);
   let r$p = map(f, r);
   if (l === l$p && v === v$p && r === r$p) {
     return param;

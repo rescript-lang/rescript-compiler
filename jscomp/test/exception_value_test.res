@@ -1,7 +1,7 @@
 let f = () => raise(Not_found)
 
 let assert_f = x => {
-  let () = assert (x > 3)
+  let () = assert(x > 3)
   3
 }
 
@@ -25,7 +25,7 @@ let test_not_found = (f, ()) =>
 let test_js_error2 = () =>
   try Js.Json.parseExn(` {"x" : }`) catch {
   | Js.Exn.Error(err) as e =>
-    \"@@"(Js.log, Js.Exn.stack(err))
+    \"@@"(l => Js.log(l), Js.Exn.stack(err))
     raise(e)
   }
 

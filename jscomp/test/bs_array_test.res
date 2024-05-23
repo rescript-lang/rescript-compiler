@@ -32,12 +32,12 @@ let () = {
     (A.get(v, 0), A.get(v, 1), A.get(v, 2), A.get(v, 3), A.get(v, -1)),
     (Some(1), Some(2), None, None, None),
   )
-  throw(__LOC__, _ => A.getExn([0, 1], -1) |> ignore)
-  throw(__LOC__, _ => A.getExn([0, 1], 2) |> ignore)
+  throw(__LOC__, _ => ignore(A.getExn([0, 1], -1)))
+  throw(__LOC__, _ => ignore(A.getExn([0, 1], 2)))
   b(
     __LOC__,
     {
-      let f = A.getExn([0, 1])
+      let f = l => A.getExn([0, 1], l)
       (f(0), f(1)) == (0, 1)
     },
   )
@@ -82,13 +82,13 @@ let id = x => eq(__LOC__, \"@@"(Js.Vector.toList, Js.List.toVector(x)), x)
 
 let () = {
   eq(__LOC__, Js.List.toVector(list{1, 2, 3}), [1, 2, 3])
-  eq(__LOC__, Js.Vector.map((. x) => x + 1, [1, 2, 3]), [2, 3, 4])
+  eq(__LOC__, Js.Vector.map(x => x + 1, [1, 2, 3]), [2, 3, 4])
   eq(__LOC__, Js.Vector.make(5, 3), [3, 3, 3, 3, 3])
   eq(
     __LOC__,
     {
-      let a = Js.Vector.init(5, (. i) => i + 1)
-      Js.Vector.filterInPlace((. j) => mod(j, 2) == 0, a)
+      let a = Js.Vector.init(5, i => i + 1)
+      Js.Vector.filterInPlace(j => mod(j, 2) == 0, a)
       a
     },
     [2, 4],
@@ -97,8 +97,8 @@ let () = {
   eq(
     __LOC__,
     {
-      let a = Js.Vector.init(5, (. i) => i + 1)
-      Js.Vector.filterInPlace((. j) => mod(j, 2) != 0, a)
+      let a = Js.Vector.init(5, i => i + 1)
+      Js.Vector.filterInPlace(j => mod(j, 2) != 0, a)
       a
     },
     [1, 3, 5],
@@ -111,7 +111,7 @@ let () = {
   id(list{1, 2, 3, 4, 5})
   id({
     open Js.Vector
-    \"@@"(toList, init(100, (. i) => i))
+    \"@@"(toList, init(100, i => i))
   })
 }
 
@@ -146,7 +146,7 @@ let () = {
   eq(__LOC__, A.reduceWithIndex([1, 2, 3, 4], 0, (acc, x, i) => acc + x + i), 16)
   b(__LOC__, A.reduceReverse2([1, 2, 3], [1, 2], 0, (acc, x, y) => acc + x + y) == 6)
 }
-let addone = (. x) => x + 1
+let addone = x => x + 1
 
 let makeMatrixExn = (sx, sy, init) => {
   /* let open A in */
@@ -357,8 +357,8 @@ let () = {
 
 let () = {
   module N = {
-    let every2 = (xs, ys) => A.every2(L.toArray(xs), L.toArray(ys))
-    let some2 = (xs, ys) => A.some2(L.toArray(xs), L.toArray(ys))
+    let every2 = (xs, ys, x) => A.every2(L.toArray(xs), L.toArray(ys), x)
+    let some2 = (xs, ys, x) => A.some2(L.toArray(xs), L.toArray(ys), x)
   }
   eq(__LOC__, N.every2(list{}, list{1}, (x, y) => x > y), true)
   eq(__LOC__, N.every2(list{2, 3}, list{1}, (x, y) => x > y), true)

@@ -19,7 +19,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -36,7 +36,7 @@ function b(loc, v) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Ok",
           _0: v
@@ -47,11 +47,15 @@ function b(loc, v) {
   };
 }
 
-let mapOfArray = Belt_MapInt.fromArray;
+function mapOfArray(x) {
+  return Belt_MapInt.fromArray(x);
+}
 
-let setOfArray = Belt_SetInt.fromArray;
+function setOfArray(x) {
+  return Belt_SetInt.fromArray(x);
+}
 
-function emptyMap(param) {
+function emptyMap() {
   
 }
 

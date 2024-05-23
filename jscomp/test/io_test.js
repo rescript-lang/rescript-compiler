@@ -2,7 +2,7 @@
 'use strict';
 
 
-function f(param) {
+function f() {
   console.error("x");
   console.log();
   console.log("hi");

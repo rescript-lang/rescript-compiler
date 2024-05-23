@@ -4,15 +4,15 @@
 let List = require("../../lib/js/list.js");
 let Path = require("path");
 let $$Array = require("../../lib/js/array.js");
-let Curry = require("../../lib/js/curry.js");
 let Assert = require("assert");
 let Process = require("process");
+let Js_promise2 = require("../../lib/js/js_promise2.js");
 
 function assert_fail(msg) {
   Assert.fail(undefined, undefined, msg, "");
 }
 
-function is_mocha(param) {
+function is_mocha() {
   let match = $$Array.to_list(Process.argv);
   if (!match) {
     return false;
@@ -102,7 +102,7 @@ function force_curry(x) {
     tl: /* [] */0
   });
   $$Array.copy([5]);
-  return Curry._1(x, undefined);
+  return x();
 }
 
 let from_pair_suites = (function from_pair_suites(name, suites) {
@@ -234,12 +234,11 @@ function old_from_promise_suites_donotuse(name, suites) {
       describe(name, (function () {
         List.iter((function (param) {
           let code = param[1];
-          it(param[0], (function (param) {
-            let arg1 = function (x) {
+          it(param[0], (function () {
+            return Js_promise2.then(code, (function (x) {
               handleCode(x);
               return val_unit;
-            };
-            return code.then(arg1);
+            }));
           }));
         }), suites);
       }));
