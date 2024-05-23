@@ -5,15 +5,15 @@ let eq = (loc, x, y) => Mt.eq_suites(~test_id, ~suites, loc, x, y)
 open Belt
 let mockMap = MutableMap.Int.make()
 let add = id => {
-  (mockMap->MutableMap.Int.set)(id, id)
+  MutableMap.Int.set(mockMap, id, id)
   id
 }
-let remove = id => (mockMap->MutableMap.Int.remove)(id)
+let remove = id => MutableMap.Int.remove(mockMap, id)
 let _ = add(1726)
 let n = add(6667)
 let _ = add(486)
 let _ = remove(1726)
-let n1 = (mockMap->MutableMap.Int.getExn)(6667)
+let n1 = MutableMap.Int.getExn(mockMap, 6667)
 
 eq(__LOC__, n, n1)
 

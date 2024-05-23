@@ -4,7 +4,7 @@ open Js_typed_array
 
 let mkI8 = a => Int8Array.make(a)
 let via = (make, f, arr) => arrayFrom(f(make(arr)))
-let viaInt8 = (f, arr) => via(Int8Array.make)
+let viaInt8 = (f, arr) => via(Int8Array.make, ...)
 
 /* make sure we expose a type that's easy to refer to */
 let x: Int8Array.t = mkI8([1, 2, 3])
@@ -15,7 +15,7 @@ let suites = {
     /* ArrayBuffer
      */
 
-    ("array_buffer - make", _ => Eq(5, ArrayBuffer.make(5) |> ArrayBuffer.byteLength)),
+    ("array_buffer - make", _ => Eq(5, ArrayBuffer.byteLength(ArrayBuffer.make(5)))),
     /* experimental
     "array_buffer - transfer", (fun _ ->
       Eq(5, ArrayBuffer.make 5 |> ArrayBuffer.transfer |> ArrayBuffer.byteLength));
@@ -24,17 +24,14 @@ let suites = {
       Eq(10,  ArrayBuffer.transferWithLength a 10 |> ArrayBuffer.byteLength));
  */
 
-    ("array_buffer - byteLength", _ => Eq(5, ArrayBuffer.make(5) |> ArrayBuffer.byteLength)),
+    ("array_buffer - byteLength", _ => Eq(5, ArrayBuffer.byteLength(ArrayBuffer.make(5)))),
     (
       "array_buffer - slice",
-      _ => Eq(
-        2,
-        ArrayBuffer.make(5) |> ArrayBuffer.slice(~start=2, ~end_=4) |> ArrayBuffer.byteLength,
-      ),
+      _ => Eq(2, ArrayBuffer.byteLength(ArrayBuffer.slice(ArrayBuffer.make(5), ~start=2, ~end_=4))),
     ),
     (
       "array_buffer - sliceFrom",
-      _ => Eq(3, ArrayBuffer.make(5) |> ArrayBuffer.sliceFrom(2) |> ArrayBuffer.byteLength),
+      _ => Eq(3, ArrayBuffer.byteLength(ArrayBuffer.sliceFrom(2, ArrayBuffer.make(5)))),
     ),
     /* Generic typed array
      */
@@ -53,21 +50,19 @@ let suites = {
       "typed_array - buffer",
       _ => Eq(
         mkI8([3, 4, 5]),
-        mkI8([1, 2, 3, 4, 5])
-        |> Int8Array.buffer
-        |> (
+        (
           x =>
             switch x {
             | a => Int8Array.fromBufferOffset(a, 2)
             }
-        ),
+        )(Int8Array.buffer(mkI8([1, 2, 3, 4, 5]))),
       ),
     ),
     (
       "typed_array - byteLength",
-      _ => Eq(10, Int16Array.make([1, 2, 3, 4, 5]) |> Int16Array.byteLength),
+      _ => Eq(10, Int16Array.byteLength(Int16Array.make([1, 2, 3, 4, 5]))),
     ),
-    ("typed_array - byteOffset", _ => Eq(0, mkI8([1, 2, 3, 4, 5]) |> Int8Array.byteOffset)),
+    ("typed_array - byteOffset", _ => Eq(0, Int8Array.byteOffset(mkI8([1, 2, 3, 4, 5])))),
     (
       "typed_array - setArray",
       _ => {
@@ -76,7 +71,7 @@ let suites = {
           a
         }
 
-        Eq(mkI8([9, 8, 7, 4, 5]), mkI8([1, 2, 3, 4, 5]) |> f)
+        Eq(mkI8([9, 8, 7, 4, 5]), f(mkI8([1, 2, 3, 4, 5])))
       },
     ),
     (
@@ -87,7 +82,7 @@ let suites = {
           a
         }
 
-        Eq(mkI8([1, 2, 9, 8, 7]), mkI8([1, 2, 3, 4, 5]) |> f)
+        Eq(mkI8([1, 2, 9, 8, 7]), f(mkI8([1, 2, 3, 4, 5])))
       },
     ),
     /* These shouldn't compile
@@ -107,82 +102,79 @@ let suites = {
 
     /* Array itnerface(-ish) */
 
-    ("typed_array - length", _ => Eq(5, mkI8([1, 2, 3, 4, 5]) |> Int8Array.length)),
+    ("typed_array - length", _ => Eq(5, Int8Array.length(mkI8([1, 2, 3, 4, 5])))),
     (
       "typed_array - copyWithin",
-      _ => Eq(mkI8([1, 2, 3, 1, 2]), mkI8([1, 2, 3, 4, 5]) |> Int8Array.copyWithin(~to_=-2)),
+      _ => Eq(mkI8([1, 2, 3, 1, 2]), Int8Array.copyWithin(~to_=-2, mkI8([1, 2, 3, 4, 5]))),
     ),
     (
       "typed_array - copyWithinFrom",
       _ => Eq(
         mkI8([4, 5, 3, 4, 5]),
-        mkI8([1, 2, 3, 4, 5]) |> Int8Array.copyWithinFrom(~to_=0, ~from=3),
+        Int8Array.copyWithinFrom(~to_=0, ~from=3, mkI8([1, 2, 3, 4, 5])),
       ),
     ),
     (
       "typed_array - copyWithinFromRange",
       _ => Eq(
         mkI8([4, 2, 3, 4, 5]),
-        mkI8([1, 2, 3, 4, 5]) |> Int8Array.copyWithinFromRange(~to_=0, ~start=3, ~end_=4),
+        Int8Array.copyWithinFromRange(~to_=0, ~start=3, ~end_=4, mkI8([1, 2, 3, 4, 5])),
       ),
     ),
     (
       "typed_array - fillInPlace",
-      _ => Eq(mkI8([4, 4, 4]), mkI8([1, 2, 3]) |> Int8Array.fillInPlace(4)),
+      _ => Eq(mkI8([4, 4, 4]), Int8Array.fillInPlace(4, mkI8([1, 2, 3]))),
     ),
     (
       "typed_array - fillFromInPlace",
-      _ => Eq(mkI8([1, 4, 4]), mkI8([1, 2, 3]) |> Int8Array.fillFromInPlace(4, ~from=1)),
+      _ => Eq(mkI8([1, 4, 4]), Int8Array.fillFromInPlace(4, ~from=1, mkI8([1, 2, 3]))),
     ),
     (
       "typed_array - fillRangeInPlace",
-      _ => Eq(mkI8([1, 4, 3]), mkI8([1, 2, 3]) |> Int8Array.fillRangeInPlace(4, ~start=1, ~end_=2)),
+      _ => Eq(mkI8([1, 4, 3]), Int8Array.fillRangeInPlace(4, ~start=1, ~end_=2, mkI8([1, 2, 3]))),
     ),
     (
       "typed_array - reverseInPlace",
-      _ => Eq(mkI8([3, 2, 1]), mkI8([1, 2, 3]) |> Int8Array.reverseInPlace),
+      _ => Eq(mkI8([3, 2, 1]), Int8Array.reverseInPlace(mkI8([1, 2, 3]))),
     ),
-    (
-      "typed_array - sortInPlace",
-      _ => Eq(mkI8([1, 2, 3]), mkI8([3, 1, 2]) |> Int8Array.sortInPlace),
-    ),
+    ("typed_array - sortInPlace", _ => Eq(mkI8([1, 2, 3]), Int8Array.sortInPlace(mkI8([3, 1, 2])))),
     (
       "typed_array - sortInPlaceWith",
-      _ => Eq(mkI8([3, 2, 1]), mkI8([3, 1, 2]) |> Int8Array.sortInPlaceWith((. a, b) => b - a)),
+      _ => Eq(mkI8([3, 2, 1]), Int8Array.sortInPlaceWith((a, b) => b - a, mkI8([3, 1, 2]))),
     ),
     /* es2016 */
-    ("typed_array - includes", _ => Eq(true, mkI8([1, 2, 3]) |> Int8Array.includes(3))),
-    ("typed_array - indexOf", _ => Eq(1, mkI8([1, 2, 3]) |> Int8Array.indexOf(2))),
+    ("typed_array - includes", _ => Eq(true, Int8Array.includes(3, mkI8([1, 2, 3])))),
+    ("typed_array - indexOf", _ => Eq(1, Int8Array.indexOf(2, mkI8([1, 2, 3])))),
     (
       "typed_array - indexOfFrom",
-      _ => Eq(3, mkI8([1, 2, 3, 2]) |> Int8Array.indexOfFrom(2, ~from=2)),
+      _ => Eq(3, Int8Array.indexOfFrom(2, ~from=2, mkI8([1, 2, 3, 2]))),
     ),
-    ("typed_array - join", _ => Eq("1,2,3", mkI8([1, 2, 3]) |> Int8Array.join)),
-    ("typed_array - joinWith", _ => Eq("1;2;3", mkI8([1, 2, 3]) |> Int8Array.joinWith(";"))),
-    ("typed_array - lastIndexOf", _ => Eq(1, mkI8([1, 2, 3]) |> Int8Array.lastIndexOf(2))),
+    ("typed_array - join", _ => Eq("1,2,3", Int8Array.join(mkI8([1, 2, 3])))),
+    ("typed_array - joinWith", _ => Eq("1;2;3", Int8Array.joinWith(";", mkI8([1, 2, 3])))),
+    ("typed_array - lastIndexOf", _ => Eq(1, Int8Array.lastIndexOf(2, mkI8([1, 2, 3])))),
     (
       "typed_array - lastIndexOfFrom",
-      _ => Eq(1, mkI8([1, 2, 3, 2]) |> Int8Array.lastIndexOfFrom(2, ~from=2)),
+      _ => Eq(1, Int8Array.lastIndexOfFrom(2, ~from=2, mkI8([1, 2, 3, 2]))),
     ),
     (
       "typed_array - slice",
-      _ => Eq(mkI8([2, 3]), mkI8([1, 2, 3, 4, 5]) |> Int8Array.slice(~start=1, ~end_=3)),
+      _ => Eq(mkI8([2, 3]), Int8Array.slice(~start=1, ~end_=3, mkI8([1, 2, 3, 4, 5]))),
     ),
-    ("typed_array - copy", _ => Eq(mkI8([1, 2, 3, 4, 5]), mkI8([1, 2, 3, 4, 5]) |> Int8Array.copy)),
+    ("typed_array - copy", _ => Eq(mkI8([1, 2, 3, 4, 5]), Int8Array.copy(mkI8([1, 2, 3, 4, 5])))),
     (
       "typed_array - sliceFrom",
-      _ => Eq(mkI8([3, 4, 5]), mkI8([1, 2, 3, 4, 5]) |> Int8Array.sliceFrom(2)),
+      _ => Eq(mkI8([3, 4, 5]), Int8Array.sliceFrom(2, mkI8([1, 2, 3, 4, 5]))),
     ),
     (
       "typed_array - subarray",
-      _ => Eq(mkI8([2, 3]), mkI8([1, 2, 3, 4, 5]) |> Int8Array.subarray(~start=1, ~end_=3)),
+      _ => Eq(mkI8([2, 3]), Int8Array.subarray(~start=1, ~end_=3, mkI8([1, 2, 3, 4, 5]))),
     ),
     (
       "typed_array - subarrayFrom",
-      _ => Eq(mkI8([3, 4, 5]), mkI8([1, 2, 3, 4, 5]) |> Int8Array.subarrayFrom(2)),
+      _ => Eq(mkI8([3, 4, 5]), Int8Array.subarrayFrom(2, mkI8([1, 2, 3, 4, 5]))),
     ),
-    ("typed_array - toString", _ => Eq("1,2,3", mkI8([1, 2, 3]) |> Int8Array.toString)),
-    ("typed_array - toLocaleString", _ => Eq("1,2,3", mkI8([1, 2, 3]) |> Int8Array.toLocaleString)),
+    ("typed_array - toString", _ => Eq("1,2,3", Int8Array.toString(mkI8([1, 2, 3])))),
+    ("typed_array - toLocaleString", _ => Eq("1,2,3", Int8Array.toLocaleString(mkI8([1, 2, 3])))),
     /* es2015, iterator
     "typed_array - entries", (fun _ ->
       Eq(mkI8 [| (0, "a"); (1, "b"); (2, "c") |],
@@ -190,46 +182,40 @@ let suites = {
     );
  */
 
-    ("typed_array - every", _ => Eq(true, mkI8([1, 2, 3]) |> Int8Array.every((. n) => n > 0))),
-    (
-      "typed_array - everyi",
-      _ => Eq(false, mkI8([1, 2, 3]) |> Int8Array.everyi((. _, i) => i > 0)),
-    ),
+    ("typed_array - every", _ => Eq(true, Int8Array.every(n => n > 0, mkI8([1, 2, 3])))),
+    ("typed_array - everyi", _ => Eq(false, Int8Array.everyi((_, i) => i > 0, mkI8([1, 2, 3])))),
     (
       "typed_array - filter",
-      _ => Eq(mkI8([2, 4]), mkI8([1, 2, 3, 4]) |> Int8Array.filter((. n) => mod(n, 2) == 0)),
+      _ => Eq(mkI8([2, 4]), Int8Array.filter(n => mod(n, 2) == 0, mkI8([1, 2, 3, 4]))),
     ),
     (
       "typed_array - filteri",
-      _ => Eq(mkI8([1, 3]), mkI8([1, 2, 3, 4]) |> Int8Array.filteri((. _, i) => mod(i, 2) == 0)),
+      _ => Eq(mkI8([1, 3]), Int8Array.filteri((_, i) => mod(i, 2) == 0, mkI8([1, 2, 3, 4]))),
     ),
     (
       "typed_array - find",
-      _ => Eq(
-        Js.Undefined.return(2),
-        mkI8([1, 2, 3, 4]) |> Int8Array.find((. n) => mod(n, 2) == 0),
-      ),
+      _ => Eq(Js.Undefined.return(2), Int8Array.find(n => mod(n, 2) == 0, mkI8([1, 2, 3, 4]))),
     ),
     (
       "typed_array - findi",
       _ => Eq(
         Js.Undefined.return(1),
-        mkI8([1, 2, 3, 4]) |> Int8Array.findi((. _, i) => mod(i, 2) == 0),
+        Int8Array.findi((_, i) => mod(i, 2) == 0, mkI8([1, 2, 3, 4])),
       ),
     ),
     (
       "typed_array - findIndex",
-      _ => Eq(1, mkI8([1, 2, 3, 4]) |> Int8Array.findIndex((. n) => mod(n, 2) == 0)),
+      _ => Eq(1, Int8Array.findIndex(n => mod(n, 2) == 0, mkI8([1, 2, 3, 4]))),
     ),
     (
       "typed_array - findIndexi",
-      _ => Eq(0, mkI8([1, 2, 3, 4]) |> Int8Array.findIndexi((. _, i) => mod(i, 2) == 0)),
+      _ => Eq(0, Int8Array.findIndexi((_, i) => mod(i, 2) == 0, mkI8([1, 2, 3, 4]))),
     ),
     (
       "typed_array - forEach",
       _ => {
         let sum = ref(0)
-        let _ = mkI8([1, 2, 3]) |> Int8Array.forEach((. n) => sum := sum.contents + n)
+        let _ = Int8Array.forEach(n => sum := sum.contents + n, mkI8([1, 2, 3]))
 
         Eq(6, sum.contents)
       },
@@ -238,7 +224,7 @@ let suites = {
       "typed_array - forEachi",
       _ => {
         let sum = ref(0)
-        let _ = mkI8([1, 2, 3]) |> Int8Array.forEachi((. _, i) => sum := sum.contents + i)
+        let _ = Int8Array.forEachi((_, i) => sum := sum.contents + i, mkI8([1, 2, 3]))
 
         Eq(3, sum.contents)
       },
@@ -252,33 +238,30 @@ let suites = {
 
     (
       "typed_array - map",
-      _ => Eq(mkI8([2, 4, 6, 8]), mkI8([1, 2, 3, 4]) |> Int8Array.map((. n) => n * 2)),
+      _ => Eq(mkI8([2, 4, 6, 8]), Int8Array.map(n => n * 2, mkI8([1, 2, 3, 4]))),
     ),
     (
       "typed_array - map",
-      _ => Eq(mkI8([0, 2, 4, 6]), mkI8([1, 2, 3, 4]) |> Int8Array.mapi((. _, i) => i * 2)),
+      _ => Eq(mkI8([0, 2, 4, 6]), Int8Array.mapi((_, i) => i * 2, mkI8([1, 2, 3, 4]))),
     ),
     (
       "typed_array - reduce",
-      _ => Eq(-10, mkI8([1, 2, 3, 4]) |> Int8Array.reduce((. acc, n) => acc - n, 0)),
+      _ => Eq(-10, Int8Array.reduce((acc, n) => acc - n, 0, mkI8([1, 2, 3, 4]))),
     ),
     (
       "typed_array - reducei",
-      _ => Eq(-6, mkI8([1, 2, 3, 4]) |> Int8Array.reducei((. acc, _, i) => acc - i, 0)),
+      _ => Eq(-6, Int8Array.reducei((acc, _, i) => acc - i, 0, mkI8([1, 2, 3, 4]))),
     ),
     (
       "typed_array - reduceRight",
-      _ => Eq(-10, mkI8([1, 2, 3, 4]) |> Int8Array.reduceRight((. acc, n) => acc - n, 0)),
+      _ => Eq(-10, Int8Array.reduceRight((acc, n) => acc - n, 0, mkI8([1, 2, 3, 4]))),
     ),
     (
       "typed_array - reduceRighti",
-      _ => Eq(-6, mkI8([1, 2, 3, 4]) |> Int8Array.reduceRighti((. acc, _, i) => acc - i, 0)),
+      _ => Eq(-6, Int8Array.reduceRighti((acc, _, i) => acc - i, 0, mkI8([1, 2, 3, 4]))),
     ),
-    ("typed_array - some", _ => Eq(false, mkI8([1, 2, 3, 4]) |> Int8Array.some((. n) => n <= 0))),
-    (
-      "typed_array - somei",
-      _ => Eq(true, mkI8([1, 2, 3, 4]) |> Int8Array.somei((. _, i) => i <= 0)),
-    ),
+    ("typed_array - some", _ => Eq(false, Int8Array.some(n => n <= 0, mkI8([1, 2, 3, 4])))),
+    ("typed_array - somei", _ => Eq(true, Int8Array.somei((_, i) => i <= 0, mkI8([1, 2, 3, 4])))),
     /* es2015, iterator
     "typed_array - values", (fun _ ->
       Eq(mkI8 [| "a"; "b"; "c" |],
@@ -291,26 +274,26 @@ let suites = {
 
     ("int8_array - _BYTES_PER_ELEMENT", _ => Eq(1, Int8Array._BYTES_PER_ELEMENT)),
     /* byte length is a decent indicator of the kind of typed array */
-    ("int8_array - make", _ => Eq(3, Int8Array.make([1, 2, 3]) |> Int8Array.byteLength)),
+    ("int8_array - make", _ => Eq(3, Int8Array.byteLength(Int8Array.make([1, 2, 3])))),
     (
       "int8_array - fromBuffer",
-      _ => Eq(32, ArrayBuffer.make(32) |> Int8Array.fromBuffer |> Int8Array.byteLength),
+      _ => Eq(32, Int8Array.byteLength(Int8Array.fromBuffer(ArrayBuffer.make(32)))),
     ),
     (
       "int8_array - fromBufferOffset",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(24, Int8Array.fromBufferOffset(buffer, 8) |> Int8Array.byteLength)
+        Eq(24, Int8Array.byteLength(Int8Array.fromBufferOffset(buffer, 8)))
       },
     ),
     (
       "int8_array - fromBufferRange",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(2, Int8Array.fromBufferRange(buffer, ~offset=8, ~length=2) |> Int8Array.byteLength)
+        Eq(2, Int8Array.byteLength(Int8Array.fromBufferRange(buffer, ~offset=8, ~length=2)))
       },
     ),
-    ("int8_array - fromLength", _ => Eq(3, Int8Array.fromLength(3) |> Int8Array.byteLength)),
+    ("int8_array - fromLength", _ => Eq(3, Int8Array.byteLength(Int8Array.fromLength(3)))),
     /* unable to test because nothing currently implements array_like
     "int8_array - from", (fun _ ->
       Eq(3, [| "a"; "b"; "c" |] |> Js.Array.keys |> Int8Array.from |> Int8Array.byteLength));
@@ -329,26 +312,26 @@ let suites = {
 
     ("uint8_array - _BYTES_PER_ELEMENT", _ => Eq(1, Uint8Array._BYTES_PER_ELEMENT)),
     /* byte length is a decent indicator of the kind of typed array */
-    ("uint8_array - make", _ => Eq(3, Uint8Array.make([1, 2, 3]) |> Uint8Array.byteLength)),
+    ("uint8_array - make", _ => Eq(3, Uint8Array.byteLength(Uint8Array.make([1, 2, 3])))),
     (
       "uint8_array - fromBuffer",
-      _ => Eq(32, ArrayBuffer.make(32) |> Uint8Array.fromBuffer |> Uint8Array.byteLength),
+      _ => Eq(32, Uint8Array.byteLength(Uint8Array.fromBuffer(ArrayBuffer.make(32)))),
     ),
     (
       "uint8_array - fromBufferOffset",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(24, Uint8Array.fromBufferOffset(buffer, 8) |> Uint8Array.byteLength)
+        Eq(24, Uint8Array.byteLength(Uint8Array.fromBufferOffset(buffer, 8)))
       },
     ),
     (
       "uint8_array - fromBufferRange",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(2, Uint8Array.fromBufferRange(buffer, ~offset=8, ~length=2) |> Uint8Array.byteLength)
+        Eq(2, Uint8Array.byteLength(Uint8Array.fromBufferRange(buffer, ~offset=8, ~length=2)))
       },
     ),
-    ("uint8_array - fromLength", _ => Eq(3, Uint8Array.fromLength(3) |> Uint8Array.byteLength)),
+    ("uint8_array - fromLength", _ => Eq(3, Uint8Array.byteLength(Uint8Array.fromLength(3)))),
     /* unable to test because nothing currently implements array_like
     "uint8_array - from", (fun _ ->
       Eq(3, [| "a"; "b"; "c" |] |> Js.Array.keys |> Uint8Array.from |> Uint8Array.byteLength));
@@ -369,20 +352,17 @@ let suites = {
     /* byte length is a decent indicator of the kind of typed array */
     (
       "uint8clamped_array - make",
-      _ => Eq(3, Uint8ClampedArray.make([1, 2, 3]) |> Uint8ClampedArray.byteLength),
+      _ => Eq(3, Uint8ClampedArray.byteLength(Uint8ClampedArray.make([1, 2, 3]))),
     ),
     (
       "uint8clamped_array - fromBuffer",
-      _ => Eq(
-        32,
-        ArrayBuffer.make(32) |> Uint8ClampedArray.fromBuffer |> Uint8ClampedArray.byteLength,
-      ),
+      _ => Eq(32, Uint8ClampedArray.byteLength(Uint8ClampedArray.fromBuffer(ArrayBuffer.make(32)))),
     ),
     (
       "uint8clamped_array - fromBufferOffset",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(24, Uint8ClampedArray.fromBufferOffset(buffer, 8) |> Uint8ClampedArray.byteLength)
+        Eq(24, Uint8ClampedArray.byteLength(Uint8ClampedArray.fromBufferOffset(buffer, 8)))
       },
     ),
     (
@@ -391,17 +371,15 @@ let suites = {
         let buffer = ArrayBuffer.make(32)
         Eq(
           2,
-          Uint8ClampedArray.fromBufferRange(
-            buffer,
-            ~offset=8,
-            ~length=2,
-          ) |> Uint8ClampedArray.byteLength,
+          Uint8ClampedArray.byteLength(
+            Uint8ClampedArray.fromBufferRange(buffer, ~offset=8, ~length=2),
+          ),
         )
       },
     ),
     (
       "uint8clamped_array - fromLength",
-      _ => Eq(3, Uint8ClampedArray.fromLength(3) |> Uint8ClampedArray.byteLength),
+      _ => Eq(3, Uint8ClampedArray.byteLength(Uint8ClampedArray.fromLength(3))),
     ),
     /* unable to test because nothing currently implements array_like
     "uint8clamped_array - from", (fun _ ->
@@ -421,26 +399,26 @@ let suites = {
 
     ("int16_array - _BYTES_PER_ELEMENT", _ => Eq(2, Int16Array._BYTES_PER_ELEMENT)),
     /* byte length is a decent indicator of the kind of typed array */
-    ("int16_array - make", _ => Eq(6, Int16Array.make([1, 2, 3]) |> Int16Array.byteLength)),
+    ("int16_array - make", _ => Eq(6, Int16Array.byteLength(Int16Array.make([1, 2, 3])))),
     (
       "int16_array - fromBuffer",
-      _ => Eq(32, ArrayBuffer.make(32) |> Int16Array.fromBuffer |> Int16Array.byteLength),
+      _ => Eq(32, Int16Array.byteLength(Int16Array.fromBuffer(ArrayBuffer.make(32)))),
     ),
     (
       "int16_array - fromBufferOffset",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(24, Int16Array.fromBufferOffset(buffer, 8) |> Int16Array.byteLength)
+        Eq(24, Int16Array.byteLength(Int16Array.fromBufferOffset(buffer, 8)))
       },
     ),
     (
       "int16_array - fromBufferRange",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(4, Int16Array.fromBufferRange(buffer, ~offset=8, ~length=2) |> Int16Array.byteLength)
+        Eq(4, Int16Array.byteLength(Int16Array.fromBufferRange(buffer, ~offset=8, ~length=2)))
       },
     ),
-    ("int16_array - fromLength", _ => Eq(6, Int16Array.fromLength(3) |> Int16Array.byteLength)),
+    ("int16_array - fromLength", _ => Eq(6, Int16Array.byteLength(Int16Array.fromLength(3)))),
     /* unable to test because nothing currently implements array_like
     "int16_array - from", (fun _ ->
       Eq(3, [| "a"; "b"; "c" |] |> Js.Array.keys |> Int16Array.from |> Int16Array.byteLength));
@@ -459,26 +437,26 @@ let suites = {
 
     ("uint16_array - _BYTES_PER_ELEMENT", _ => Eq(2, Uint16Array._BYTES_PER_ELEMENT)),
     /* byte length is a decent indicator of the kind of typed array */
-    ("uint16_array - make", _ => Eq(6, Uint16Array.make([1, 2, 3]) |> Uint16Array.byteLength)),
+    ("uint16_array - make", _ => Eq(6, Uint16Array.byteLength(Uint16Array.make([1, 2, 3])))),
     (
       "uint16_array - fromBuffer",
-      _ => Eq(32, ArrayBuffer.make(32) |> Uint16Array.fromBuffer |> Uint16Array.byteLength),
+      _ => Eq(32, Uint16Array.byteLength(Uint16Array.fromBuffer(ArrayBuffer.make(32)))),
     ),
     (
       "uint16_array - fromBufferOffset",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(24, Uint16Array.fromBufferOffset(buffer, 8) |> Uint16Array.byteLength)
+        Eq(24, Uint16Array.byteLength(Uint16Array.fromBufferOffset(buffer, 8)))
       },
     ),
     (
       "uint16_array - fromBufferRange",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(4, Uint16Array.fromBufferRange(buffer, ~offset=8, ~length=2) |> Uint16Array.byteLength)
+        Eq(4, Uint16Array.byteLength(Uint16Array.fromBufferRange(buffer, ~offset=8, ~length=2)))
       },
     ),
-    ("uint16_array - fromLength", _ => Eq(6, Uint16Array.fromLength(3) |> Uint16Array.byteLength)),
+    ("uint16_array - fromLength", _ => Eq(6, Uint16Array.byteLength(Uint16Array.fromLength(3)))),
     /* unable to test because nothing currently implements array_like
     "uint16_array - from", (fun _ ->
       Eq(3, [| "a"; "b"; "c" |] |> Js.Array.keys |> Uint16Array.from |> Uint16Array.byteLength));
@@ -499,27 +477,27 @@ let suites = {
     /* byte length is a decent indicator of the kind of typed array */
     (
       "int32_array - make",
-      _ => Eq(12, Int32Array.make([1, 2, 3] |> Array.map(Int32.of_int)) |> Int32Array.byteLength),
+      _ => Eq(12, Int32Array.byteLength(Int32Array.make(Array.map(Int32.of_int, [1, 2, 3])))),
     ),
     (
       "int32_array - fromBuffer",
-      _ => Eq(32, ArrayBuffer.make(32) |> Int32Array.fromBuffer |> Int32Array.byteLength),
+      _ => Eq(32, Int32Array.byteLength(Int32Array.fromBuffer(ArrayBuffer.make(32)))),
     ),
     (
       "int32_array - fromBufferOffset",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(24, Int32Array.fromBufferOffset(buffer, 8) |> Int32Array.byteLength)
+        Eq(24, Int32Array.byteLength(Int32Array.fromBufferOffset(buffer, 8)))
       },
     ),
     (
       "int32_array - fromBufferRange",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(8, Int32Array.fromBufferRange(buffer, ~offset=8, ~length=2) |> Int32Array.byteLength)
+        Eq(8, Int32Array.byteLength(Int32Array.fromBufferRange(buffer, ~offset=8, ~length=2)))
       },
     ),
-    ("int32_array - fromLength", _ => Eq(12, Int32Array.fromLength(3) |> Int32Array.byteLength)),
+    ("int32_array - fromLength", _ => Eq(12, Int32Array.byteLength(Int32Array.fromLength(3)))),
     /* unable to test because nothing currently implements array_like
     "int32_array - from", (fun _ ->
       Eq(3, [| "a"; "b"; "c" |] |> Js.Array.keys |> Int32Array.from |> Int32Array.byteLength));
@@ -527,7 +505,7 @@ let suites = {
     (
       "int32_array - unsafe_set - typed_array sanity check",
       _ => {
-        let a = Int32Array.make([1, 2, 3, 4, 5] |> Array.map(Int32.of_int))
+        let a = Int32Array.make(Array.map(Int32.of_int, [1, 2, 3, 4, 5]))
         let _ = Int32Array.unsafe_set(a, 3, Int32.of_int(14))
 
         Eq(Int32.of_int(14), Int32Array.unsafe_get(a, 3))
@@ -538,26 +516,26 @@ let suites = {
 
     ("uint32_array - _BYTES_PER_ELEMENT", _ => Eq(4, Uint32Array._BYTES_PER_ELEMENT)),
     /* byte length is a decent indicator of the kind of typed array */
-    ("uint32_array - make", _ => Eq(12, Uint32Array.make([1, 2, 3]) |> Uint32Array.byteLength)),
+    ("uint32_array - make", _ => Eq(12, Uint32Array.byteLength(Uint32Array.make([1, 2, 3])))),
     (
       "uint32_array - fromBuffer",
-      _ => Eq(32, ArrayBuffer.make(32) |> Uint32Array.fromBuffer |> Uint32Array.byteLength),
+      _ => Eq(32, Uint32Array.byteLength(Uint32Array.fromBuffer(ArrayBuffer.make(32)))),
     ),
     (
       "uint32_array - fromBufferOffset",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(24, Uint32Array.fromBufferOffset(buffer, 8) |> Uint32Array.byteLength)
+        Eq(24, Uint32Array.byteLength(Uint32Array.fromBufferOffset(buffer, 8)))
       },
     ),
     (
       "uint32_array - fromBufferRange",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(8, Uint32Array.fromBufferRange(buffer, ~offset=8, ~length=2) |> Uint32Array.byteLength)
+        Eq(8, Uint32Array.byteLength(Uint32Array.fromBufferRange(buffer, ~offset=8, ~length=2)))
       },
     ),
-    ("uint32_array - fromLength", _ => Eq(12, Uint32Array.fromLength(3) |> Uint32Array.byteLength)),
+    ("uint32_array - fromLength", _ => Eq(12, Uint32Array.byteLength(Uint32Array.fromLength(3)))),
     /* unable to test because nothing currently implements array_like
     "uint32_array - from", (fun _ ->
       Eq(3, [| "a"; "b"; "c" |] |> Js.Array.keys |> Uint32Array.from |> Uint32Array.byteLength));
@@ -576,31 +554,28 @@ let suites = {
 
     ("float32_array - _BYTES_PER_ELEMENT", _ => Eq(4, Float32Array._BYTES_PER_ELEMENT)),
     /* byte length is a decent indicator of the kind of typed array */
-    (
-      "float32_array - make",
-      _ => Eq(12, Float32Array.make([1., 2., 3.]) |> Float32Array.byteLength),
-    ),
+    ("float32_array - make", _ => Eq(12, Float32Array.byteLength(Float32Array.make([1., 2., 3.])))),
     (
       "float32_array - fromBuffer",
-      _ => Eq(32, ArrayBuffer.make(32) |> Float32Array.fromBuffer |> Float32Array.byteLength),
+      _ => Eq(32, Float32Array.byteLength(Float32Array.fromBuffer(ArrayBuffer.make(32)))),
     ),
     (
       "float32_array - fromBufferOffset",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(24, Float32Array.fromBufferOffset(buffer, 8) |> Float32Array.byteLength)
+        Eq(24, Float32Array.byteLength(Float32Array.fromBufferOffset(buffer, 8)))
       },
     ),
     (
       "float32_array - fromBufferRange",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(8, Float32Array.fromBufferRange(buffer, ~offset=8, ~length=2) |> Float32Array.byteLength)
+        Eq(8, Float32Array.byteLength(Float32Array.fromBufferRange(buffer, ~offset=8, ~length=2)))
       },
     ),
     (
       "float32_array - fromLength",
-      _ => Eq(12, Float32Array.fromLength(3) |> Float32Array.byteLength),
+      _ => Eq(12, Float32Array.byteLength(Float32Array.fromLength(3))),
     ),
     /* unable to test because nothing currently implements array_like
     "float32_array - from", (fun _ ->
@@ -620,34 +595,28 @@ let suites = {
 
     ("float64_array - _BYTES_PER_ELEMENT", _ => Eq(8, Float64Array._BYTES_PER_ELEMENT)),
     /* byte length is a decent indicator of the kind of typed array */
-    (
-      "float64_array - make",
-      _ => Eq(24, Float64Array.make([1., 2., 3.]) |> Float64Array.byteLength),
-    ),
+    ("float64_array - make", _ => Eq(24, Float64Array.byteLength(Float64Array.make([1., 2., 3.])))),
     (
       "float64_array - fromBuffer",
-      _ => Eq(32, ArrayBuffer.make(32) |> Float64Array.fromBuffer |> Float64Array.byteLength),
+      _ => Eq(32, Float64Array.byteLength(Float64Array.fromBuffer(ArrayBuffer.make(32)))),
     ),
     (
       "float64_array - fromBufferOffset",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(24, Float64Array.fromBufferOffset(buffer, 8) |> Float64Array.byteLength)
+        Eq(24, Float64Array.byteLength(Float64Array.fromBufferOffset(buffer, 8)))
       },
     ),
     (
       "float64_array - fromBufferRange",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(
-          16,
-          Float64Array.fromBufferRange(buffer, ~offset=8, ~length=2) |> Float64Array.byteLength,
-        )
+        Eq(16, Float64Array.byteLength(Float64Array.fromBufferRange(buffer, ~offset=8, ~length=2)))
       },
     ),
     (
       "float64_array - fromLength",
-      _ => Eq(24, Float64Array.fromLength(3) |> Float64Array.byteLength),
+      _ => Eq(24, Float64Array.byteLength(Float64Array.fromLength(3))),
     ),
     /* unable to test because nothing currently implements array_like
     "float64_array - from", (fun _ ->
@@ -667,38 +636,38 @@ let suites = {
 
     (
       "DataView - make, byteLength",
-      _ => Eq(32, ArrayBuffer.make(32) |> DataView.make |> DataView.byteLength),
+      _ => Eq(32, DataView.byteLength(DataView.make(ArrayBuffer.make(32)))),
     ),
     (
       "DataView - fromBuffer",
-      _ => Eq(32, ArrayBuffer.make(32) |> DataView.fromBuffer |> DataView.byteLength),
+      _ => Eq(32, DataView.byteLength(DataView.fromBuffer(ArrayBuffer.make(32)))),
     ),
     (
       "DataView - fromBufferOffset",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(24, DataView.fromBufferOffset(buffer, 8) |> DataView.byteLength)
+        Eq(24, DataView.byteLength(DataView.fromBufferOffset(buffer, 8)))
       },
     ),
     (
       "DataView - fromBufferRange",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(4, DataView.fromBufferRange(buffer, ~offset=8, ~length=4) |> DataView.byteLength)
+        Eq(4, DataView.byteLength(DataView.fromBufferRange(buffer, ~offset=8, ~length=4)))
       },
     ),
     (
       "DataView - buffer",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(buffer, DataView.fromBuffer(buffer) |> DataView.buffer)
+        Eq(buffer, DataView.buffer(DataView.fromBuffer(buffer)))
       },
     ),
     (
       "DataView - byteOffset",
       _ => {
         let buffer = ArrayBuffer.make(32)
-        Eq(8, DataView.fromBufferOffset(buffer, 8) |> DataView.byteOffset)
+        Eq(8, DataView.byteOffset(DataView.fromBufferOffset(buffer, 8)))
       },
     ),
     (

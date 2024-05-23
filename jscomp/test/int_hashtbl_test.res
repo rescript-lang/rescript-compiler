@@ -13,7 +13,7 @@ let f = (module(H: Hashtbl.S with type key = int)) => {
   H.add(tbl, 1, '1')
   H.add(tbl, 2, '2')
   \"@@"(
-    List.sort(((a: int, _), (b, _)) => compare(a, b)),
+    l => List.sort(((a: int, _), (b, _)) => compare(a, b), l),
     H.fold((k, v, acc) => list{(k, v), ...acc}, tbl, list{}),
   )
 }
@@ -27,7 +27,7 @@ let g = (module(H: S), count) => {
     H.replace(tbl, i * 2, string_of_int(i))
   }
   let v = H.fold((k, v, acc) => list{(k, v), ...acc}, tbl, list{})
-  let v = \"@@"(List.sort(((x, _), (y: int, _)) => compare(x, y)), v)
+  let v = \"@@"(l => List.sort(((x, _), (y: int, _)) => compare(x, y), l), v)
   Array.of_list(v)
 }
 

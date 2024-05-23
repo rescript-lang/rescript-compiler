@@ -6,7 +6,7 @@ let f = () => {
   let tbl = Hashtbl.create(17)
   add(tbl, 1, '1')
   add(tbl, 2, '2')
-  \"@@"(List.sort(((a: int, _), (b, _)) => compare(a, b)), to_list(tbl))
+  \"@@"(l => List.sort(((a: int, _), (b, _)) => compare(a, b), l), to_list(tbl))
 }
 
 let g = count => {
@@ -18,7 +18,7 @@ let g = count => {
     replace(tbl, i * 2, string_of_int(i))
   }
   let v = to_list(tbl)
-  let v = \"@@"(List.sort(((x, _), (y: int, _)) => compare(x, y)), v)
+  let v = \"@@"(l => List.sort(((x, _), (y: int, _)) => compare(x, y), l), v)
   Array.of_list(v)
 }
 

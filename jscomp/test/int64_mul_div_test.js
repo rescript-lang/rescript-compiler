@@ -1600,12 +1600,12 @@ function from_to_string(xs) {
   }), $$Array.to_list(xs));
 }
 
-Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pairs), Pervasives.$at(from_pairs("small", small_pairs), Pervasives.$at(List.mapi((function (i, param) {
+let l = Pervasives.$at(from_pairs("random", pairs), Pervasives.$at(from_pairs("small", small_pairs), Pervasives.$at(List.mapi((function (i, param) {
   let f = param[1];
   let i64 = param[0];
   return [
     "to_float_" + i,
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: Caml_int64.to_float(i64),
@@ -1618,7 +1618,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
   let f = param[0];
   return [
     "of_float_" + i,
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: Caml_int64.of_float(f),
@@ -1629,7 +1629,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
 }), $$Array.to_list(of_float_pairs)), Pervasives.$at({
   hd: [
     "compare_check_complete",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: $$Array.map((function (param) {
@@ -1643,7 +1643,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
 }, Pervasives.$at(from(simple_divs), Pervasives.$at(from_compare(int64_compare_tests), {
   hd: [
     "div_rem_0",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: Caml_int64.zero,
@@ -1654,7 +1654,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
   tl: {
     hd: [
       "div_rem_1",
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: Caml_int64.neg_one,
@@ -1664,8 +1664,8 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
     ],
     tl: {
       hd: [
-        "File \"int64_mul_div_test.res\", line 263, characters 19-26",
-        (function (param) {
+        "File \"int64_mul_div_test.res\", line 256, characters 19-26",
+        (function () {
           return {
             TAG: "Eq",
             _0: Caml_int64.to_float(Int64.max_int),
@@ -1676,7 +1676,9 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
       tl: /* [] */0
     }
   }
-}))))))));
+})))))));
+
+Mt.from_pair_suites("Int64_mul_div_test", l);
 
 exports.commutative_mul = commutative_mul;
 exports.pairs = pairs;
@@ -1691,4 +1693,4 @@ exports.to_string = to_string;
 exports.int64_compare_tests = int64_compare_tests;
 exports.from_compare = from_compare;
 exports.from_to_string = from_to_string;
-/*  Not a pure module */
+/* l Not a pure module */

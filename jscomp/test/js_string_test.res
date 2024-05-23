@@ -107,14 +107,14 @@ let suites = {
       "splitByRe",
       _ => Eq(
         [Some("a"), Some("#"), None, Some("b"), Some("#"), Some(":"), Some("c")],
-        "a#b#:c" |> Js.String.splitByRe(%re("/(#)(:)?/")),
+        Js.String.splitByRe(%re("/(#)(:)?/"), "a#b#:c"),
       ),
     ),
     (
       "splitByReAtMost",
       _ => Eq(
         [Some("a"), Some("#"), None],
-        "a#b#:c" |> Js.String.splitByReAtMost(%re("/(#)(:)?/"), ~limit=3),
+        Js.String.splitByReAtMost(%re("/(#)(:)?/"), ~limit=3, "a#b#:c"),
       ),
     ),
     /* es2015 */
