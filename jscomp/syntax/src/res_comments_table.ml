@@ -1799,8 +1799,9 @@ and walkCoreType typ t comments =
     attach t.trailing typexpr.ptyp_loc afterTyp
   | Ptyp_variant (rowFields, _, _) ->
     walkList (rowFields |> List.map (fun rf -> RowField rf)) t comments
-  | Ptyp_constr ({txt = Lident "function$"}, [({ptyp_desc = Ptyp_arrow _}) as desc; _]) ->
-      walkCoreType desc t comments
+  | Ptyp_constr
+      ({txt = Lident "function$"}, [({ptyp_desc = Ptyp_arrow _} as desc); _]) ->
+    walkCoreType desc t comments
   | Ptyp_constr (longident, typexprs) ->
     let beforeLongident, _afterLongident =
       partitionLeadingTrailing comments longident.loc
