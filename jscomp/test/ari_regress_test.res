@@ -1,4 +1,4 @@
-let f = x => \"+"(x)
+let f = (x, y) => \"+"(x, y)
 let g = f(3, 4)
 
 let h = ref(0)

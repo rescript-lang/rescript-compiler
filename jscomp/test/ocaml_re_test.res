@@ -653,7 +653,7 @@ module Re_automata: {
   let rec rename = (ids, x) =>
     switch x.def {
     | Cst(_) | Eps | Mark(_) | Pmark(_) | Erase(_) | Before(_) | After(_) => mk_expr(ids, x.def)
-    | Alt(l) => mk_expr(ids, Alt(List.map(rename(ids), l)))
+    | Alt(l) => mk_expr(ids, Alt(List.map(x => rename(ids, x), l)))
     | Seq(k, y, z) => mk_expr(ids, Seq(k, rename(ids, y), rename(ids, z)))
     | Rep(g, k, y) => mk_expr(ids, Rep(g, k, rename(ids, y)))
     }
