@@ -186,7 +186,7 @@ function find(px, _x) {
 Mt.from_pair_suites("Inline_map_demo", {
   hd: [
     "find",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: find(10, m),
