@@ -130,7 +130,7 @@ module Traverse = {
     | #Atom(_) => None
     }
 
-  let to_list_with = (f, e: t) =>
+  let to_list_with = (f) => (e: t) =>
     switch e {
     | #List(l) => map_opt(f, l)
     | #Atom(_) => None

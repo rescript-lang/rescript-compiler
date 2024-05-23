@@ -5,19 +5,19 @@ let Curry = require("../../lib/js/curry.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 
 function t0(x, f) {
-  return Curry._1(f, Curry._1(f, Curry._1(f, x)));
+  return f(f(f(x)));
 }
 
 function t1(x, f) {
-  return Curry._1(f, x);
+  return f(x);
 }
 
 function t2(x, f, g) {
-  return Curry._2(f, Curry._3(g, Curry._1(f, x), x, x), x);
+  return f(g(f(x), x, x));
 }
 
 function t3(x, f) {
-  return Curry._3(f, x, 1, 2);
+  return f(x, 1, 2);
 }
 
 function f(a, b, c) {
@@ -28,7 +28,7 @@ function f(a, b, c) {
 }
 
 function f1(a, b, c, d) {
-  let __ocaml_internal_obj = Curry._1(a, b);
+  let __ocaml_internal_obj = a(b);
   return [
     Curry._1(c, __ocaml_internal_obj),
     Curry._1(d, __ocaml_internal_obj)
@@ -36,18 +36,20 @@ function f1(a, b, c, d) {
 }
 
 function f2(a, b, c, d) {
-  let __ocaml_internal_obj = Curry._1(a, b);
+  let __ocaml_internal_obj = a(b);
   let u = Curry._1(c, __ocaml_internal_obj);
   let v = Curry._1(d, __ocaml_internal_obj);
   return u + v | 0;
 }
 
 function f3(a, b, c, d, e) {
-  let __ocaml_internal_obj = Curry._1(a, b);
-  let u = Curry._2(c, __ocaml_internal_obj, d);
-  let v = Curry._3(d, __ocaml_internal_obj, 1, 2);
-  let h = Curry._1(e, __ocaml_internal_obj);
-  return (u + v | 0) + h | 0;
+  let __ocaml_internal_obj = a(b);
+  let param = [
+    Curry._2(c, __ocaml_internal_obj, d),
+    Curry._3(d, __ocaml_internal_obj, 1, 2),
+    Curry._1(e, __ocaml_internal_obj)
+  ];
+  return (param[0] + param[1] | 0) + param[2] | 0;
 }
 
 function f4(a, b, c) {

@@ -1015,9 +1015,9 @@ module Re_automata: {
     | E.TMatch(m') => E.TMatch(Marks.merge(m, m'))
     }
 
-  and prepend_marks_expr_lst = (m, l) => List.map(prepend_marks_expr(m), l)
+  and prepend_marks_expr_lst = (m, l) => List.map(x => prepend_marks_expr(m, x), l)
 
-  let prepend_marks = m => List.map(((s, x)) => (s, prepend_marks_expr_lst(m, x)))
+  let prepend_marks = (m, l) => List.map(((s, x)) => (s, prepend_marks_expr_lst(m, x)), l)
 
   let rec deriv_1 = (all_chars, categories, marks, cat, x, rem) =>
     switch x.def {
@@ -2453,9 +2453,9 @@ let rec loop info s pos st =
           s
         },
       )
-    | Sequence(l) => Sequence(List.map(handle_case(ign_case), l))
+    | Sequence(l) => Sequence(List.map(x => handle_case(ign_case, x), l))
     | Alternative(l) =>
-      let l' = List.map(handle_case(ign_case), l)
+      let l' = List.map(x => handle_case(ign_case, x), l)
       if is_charset(Alternative(l')) {
         Set(List.fold_left((s, r) => Cset.union(s, as_set(r)), Cset.empty, l'))
       } else {

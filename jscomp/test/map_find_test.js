@@ -370,7 +370,11 @@ let l_0 = [
 
 let l_1 = {
   hd: [
+<<<<<<< HEAD
     "string",
+=======
+    "int",
+>>>>>>> 674374e24 (Uncurry some tests)
     (function () {
       return {
         TAG: "Eq",
@@ -379,6 +383,7 @@ let l_1 = {
       };
     })
   ],
+<<<<<<< HEAD
   tl: /* [] */0
 };
 
@@ -388,5 +393,21 @@ let l = {
 };
 
 Mt.from_pair_suites("Map_find_test", l);
+=======
+  tl: {
+    hd: [
+      "string",
+      (function () {
+        return {
+          TAG: "Eq",
+          _0: find$1("10", s),
+          _1: /* 'a' */97
+        };
+      })
+    ],
+    tl: /* [] */0
+  }
+});
+>>>>>>> 674374e24 (Uncurry some tests)
 
 /* m Not a pure module */
