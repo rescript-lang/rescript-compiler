@@ -17,7 +17,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -29,7 +29,7 @@ function eq(loc, x, y) {
   };
 }
 
-function f(param) {
+function f() {
   let x = new Date();
   let y = new Date();
   return [

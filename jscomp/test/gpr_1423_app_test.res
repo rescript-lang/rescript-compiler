@@ -8,10 +8,10 @@ let eq = (loc, x, y) => {
 
 let foo = f => Js.log(f(~a1="a1", ()))
 
-let _ = foo(Gpr_1423_nav.busted(~a2="a2"))
+let _ = foo(Gpr_1423_nav.busted(~a2="a2", ...))
 
 let foo2 = f => f(~a1="a1", ())
 
-let () = eq(__LOC__, foo2(Gpr_1423_nav.busted(~a2="a2")), "a1a2")
+let () = eq(__LOC__, foo2(Gpr_1423_nav.busted(~a2="a2", ...)), "a1a2")
 
 let () = Mt.from_pair_suites(__MODULE__, suites.contents)
