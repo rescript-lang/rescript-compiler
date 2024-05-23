@@ -29,3 +29,10 @@ let messages = React.useMemo(() =>
   ->Array.toSorted(ChatMessage.compareByDateAsc)
 , [messagesById])
 
+f->(v => g(x))->g
+
+f->(v)->g
+
+x->(v => g(x))->f->(v => g(x)->k)->g
+
+f->(v => g(x)->k->(x => s(x)))->g
