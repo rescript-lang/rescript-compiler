@@ -8,7 +8,7 @@ module I = Array_data_util
 module A = Belt.Array
 module IntCmp = unpack(Belt.Id.comparable(~cmp=(x: int, y) => compare(x, y)))
 module L = Belt.List
-let fromArray = N.fromArray(~id=module(IntCmp))
+let fromArray = l => N.fromArray(~id=module(IntCmp), l)
 let empty = () => N.make(~id=module(IntCmp))
 
 let () = {

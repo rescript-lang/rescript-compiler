@@ -34,7 +34,7 @@ let () = {
 }
 
 let () = {
-  let \"=~" = eq("FLATTEN")
+  let \"=~" = (a, b) => eq("FLATTEN", a, b)
 
   \"=~"(
     {
@@ -48,7 +48,7 @@ let () = {
 }
 
 let () = {
-  let \"=~" = eq("CONCATMANY")
+  let \"=~" = (a, b) => eq("CONCATMANY", a, b)
   \"=~"(
     {
       open N
@@ -64,10 +64,10 @@ let () = {
 
 let () = eq(
   __LOC__,
-  {
+  N.toArray({
     open N
     concat(makeBy(100, i => i), makeBy(100, i => i))
-  } |> N.toArray,
+  }),
   {
     open A
     concat(makeBy(100, i => i), makeBy(100, i => i))
@@ -254,9 +254,9 @@ let () = {
   )
   eq(__LOC__, N.head(list{}), None)
   throw(__LOC__, _ => N.headExn(list{}))
-  throw(__LOC__, _ => N.tailExn(list{}) |> ignore)
-  throw(__LOC__, _ => N.getExn(list{0, 1}, -1) |> ignore)
-  throw(__LOC__, _ => N.getExn(list{0, 1}, 2) |> ignore)
+  throw(__LOC__, _ => ignore(N.tailExn(list{})))
+  throw(__LOC__, _ => ignore(N.getExn(list{0, 1}, -1)))
+  throw(__LOC__, _ => ignore(N.getExn(list{0, 1}, 2)))
   eq(__LOC__, N.map(list{0, 1}, i => N.getExn(list{0, 1}, i)), list{0, 1})
   eq(__LOC__, N.headExn(list{1}), 1)
   eq(__LOC__, N.tailExn(list{1}), list{})

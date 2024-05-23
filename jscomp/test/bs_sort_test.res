@@ -115,7 +115,7 @@ let () = {
   eq(__LOC__, S.binarySearchBy([1, 2, 3, 4, 33, 35, 36], 3, cmp), 2)
   eq(__LOC__, S.binarySearchBy([1, 2, 3, 4, 33, 35, 36], 4, cmp), 3)
   let aa = I.range(0, 1000)
-  \"@@"(b(__LOC__), R.every(0, 1000, i => S.binarySearchBy(aa, i, cmp) == i))
+  \"@@"(l => b(__LOC__, l), R.every(0, 1000, i => S.binarySearchBy(aa, i, cmp) == i))
   /* 0, 2, 4, ... 4000 */
   let cc = A.map(I.range(0, 2000), x => x * 2)
   eq(__LOC__, lnot(S.binarySearchBy(cc, 5000, cmp)), 2001)
@@ -124,11 +124,9 @@ let () = {
 
   eq(__LOC__, lnot(S.binarySearchBy(cc, 1, cmp)), 1)
   \"@@"(
-    b(__LOC__),
-    R.every(0, 1999, i =>
-      lnot(S.binarySearchBy(cc, 2 * i + 1, cmp)) == i + 1
-      /* 1, 3, 5, ... , 3999 */
-    ),
+    l => b(__LOC__, l),
+    R.every(0, 1999, i => lnot(S.binarySearchBy(cc, 2 * i + 1, cmp)) == i + 1),
+    /* 1, 3, 5, ... , 3999 */
   )
 }
 

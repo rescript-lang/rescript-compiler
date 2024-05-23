@@ -55,7 +55,7 @@ for(let i = 0 ,i_finish = r.length; i < i_finish; ++i){
   Belt_MutableSetInt.remove(u, r[i]);
 }
 
-b("File \"bs_mutable_set_test.res\", line 33, characters 8-15", Belt_MutableSetInt.isEmpty(u));
+b("File \"bs_mutable_set_test.res\", line 33, characters 8-15", u.data === undefined);
 
 Belt_MutableSetInt.add(u, 0);
 
@@ -67,13 +67,13 @@ Belt_MutableSetInt.add(u, 0);
 
 eq("File \"bs_mutable_set_test.res\", line 38, characters 9-16", Belt_internalAVLset.size(u.data), 3);
 
-b("File \"bs_mutable_set_test.res\", line 39, characters 8-15", !Belt_MutableSetInt.isEmpty(u));
+b("File \"bs_mutable_set_test.res\", line 39, characters 8-15", u.data !== undefined);
 
 for(let i$1 = 0; i$1 <= 3; ++i$1){
   Belt_MutableSetInt.remove(u, i$1);
 }
 
-b("File \"bs_mutable_set_test.res\", line 43, characters 8-15", Belt_MutableSetInt.isEmpty(u));
+b("File \"bs_mutable_set_test.res\", line 43, characters 8-15", u.data === undefined);
 
 Belt_MutableSetInt.mergeMany(u, Array_data_util.randomRange(0, 20000));
 
@@ -101,11 +101,11 @@ Belt_MutableSetInt.removeMany(u, Array_data_util.randomRange(10000, 19999));
 
 eq("File \"bs_mutable_set_test.res\", line 56, characters 9-16", Belt_internalAVLset.size(u.data), 1);
 
-b("File \"bs_mutable_set_test.res\", line 57, characters 8-15", Belt_internalSetInt.has(u.data, 20000));
+b("File \"bs_mutable_set_test.res\", line 57, characters 8-15", Belt_MutableSetInt.has(u, 20000));
 
 Belt_MutableSetInt.removeMany(u, Array_data_util.randomRange(10000, 30000));
 
-b("File \"bs_mutable_set_test.res\", line 59, characters 8-15", Belt_MutableSetInt.isEmpty(u));
+b("File \"bs_mutable_set_test.res\", line 59, characters 8-15", u.data === undefined);
 
 let xs$1 = Array_data_util.randomRange(1000, 2000);
 
@@ -145,9 +145,11 @@ eq("File \"bs_mutable_set_test.res\", line 82, characters 9-16", indeedAded, 100
 
 eq("File \"bs_mutable_set_test.res\", line 83, characters 9-16", Belt_internalAVLset.size(v.data), 1501);
 
-b("File \"bs_mutable_set_test.res\", line 84, characters 8-15", Belt_MutableSetInt.isEmpty({
+let d = {
   data: undefined
-}));
+};
+
+b("File \"bs_mutable_set_test.res\", line 84, characters 8-15", d.data === undefined);
 
 eq("File \"bs_mutable_set_test.res\", line 85, characters 9-16", Belt_internalAVLset.minimum(v.data), 500);
 
@@ -171,9 +173,9 @@ eq("File \"bs_mutable_set_test.res\", line 91, characters 9-16", Belt_internalAV
 
 Belt_internalAVLset.checkInvariantInternal(v.data);
 
-eq("File \"bs_mutable_set_test.res\", line 93, characters 9-16", Belt_internalSetInt.get(v.data, 3), undefined);
+eq("File \"bs_mutable_set_test.res\", line 93, characters 9-16", Belt_MutableSetInt.get(v, 3), undefined);
 
-eq("File \"bs_mutable_set_test.res\", line 94, characters 9-16", Belt_internalSetInt.get(v.data, 1200), 1200);
+eq("File \"bs_mutable_set_test.res\", line 94, characters 9-16", Belt_MutableSetInt.get(v, 1200), 1200);
 
 let match = Belt_MutableSetInt.split(v, 1000);
 
@@ -197,7 +199,9 @@ b("File \"bs_mutable_set_test.res\", line 99, characters 8-15", Belt_MutableSetI
 
 b("File \"bs_mutable_set_test.res\", line 100, characters 8-15", Belt_MutableSetInt.subset(bb, v));
 
-b("File \"bs_mutable_set_test.res\", line 101, characters 8-15", Belt_MutableSetInt.isEmpty(Belt_MutableSetInt.intersect(aa, bb)));
+let d$1 = Belt_MutableSetInt.intersect(aa, bb);
+
+b("File \"bs_mutable_set_test.res\", line 101, characters 8-15", d$1.data === undefined);
 
 let c = Belt_MutableSetInt.removeCheck(v, 1000);
 
@@ -225,7 +229,9 @@ b("File \"bs_mutable_set_test.res\", line 108, characters 8-15", Belt_MutableSet
 
 b("File \"bs_mutable_set_test.res\", line 109, characters 8-15", Belt_MutableSetInt.subset(bb$1, v));
 
-b("File \"bs_mutable_set_test.res\", line 110, characters 8-15", Belt_MutableSetInt.isEmpty(Belt_MutableSetInt.intersect(aa$1, bb$1)));
+let d$2 = Belt_MutableSetInt.intersect(aa$1, bb$1);
+
+b("File \"bs_mutable_set_test.res\", line 110, characters 8-15", d$2.data === undefined);
 
 let xs$2 = Array_data_util.randomRange(0, 100);
 
@@ -427,8 +433,8 @@ for(let i$2 = 0; i$2 <= 100000; ++i$2){
 
 Belt_internalAVLset.checkInvariantInternal(v$1.data);
 
-b("File \"bs_mutable_set_test.res\", line 188, characters 10-17", Belt_Range.every(0, 100000, (function (i) {
-  return Belt_internalSetInt.has(v$1.data, i);
+b("File \"bs_mutable_set_test.res\", line 188, characters 15-22", Belt_Range.every(0, 100000, (function (i) {
+  return Belt_MutableSetInt.has(v$1, i);
 })));
 
 eq("File \"bs_mutable_set_test.res\", line 189, characters 5-12", Belt_internalAVLset.size(v$1.data), 100001);
@@ -469,7 +475,7 @@ for(let i$4 = 0 ,i_finish$2 = vv.length; i$4 < i_finish$2; ++i$4){
 
 eq("File \"bs_mutable_set_test.res\", line 216, characters 5-12", Belt_internalAVLset.size(v$3.data), 0);
 
-b("File \"bs_mutable_set_test.res\", line 217, characters 4-11", Belt_MutableSetInt.isEmpty(v$3));
+b("File \"bs_mutable_set_test.res\", line 217, characters 4-11", v$3.data === undefined);
 
 let xs$25 = Belt_Array.makeBy(30, (function (i) {
   return i;
@@ -652,11 +658,11 @@ let xs$30 = Belt_Array.map(Array_data_util.randomRange(0, 1000), (function (x) {
   return (x << 1);
 }));
 
-let d = {
+let d$3 = {
   data: Belt_internalSetInt.fromArray(xs$30)
 };
 
-let match$8 = Belt_MutableSetInt.split(d, 1001);
+let match$8 = Belt_MutableSetInt.split(d$3, 1001);
 
 let match$9 = match$8[0];
 

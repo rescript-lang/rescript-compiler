@@ -62,8 +62,8 @@ let () = {
   Js.log(data.contents)
 }
 
-let f = M.fromArray(~id=module(Icmp))
-let \"=~" = (a, b) => M.eq(a, b)
+let f = l => M.fromArray(~id=module(Icmp), l)
+let \"=~" = (a, b) => l => M.eq(a, b, l)
 
 let () = {
   let u0 = f(A.map(I.randomRange(0, 39), x => (x, x)))

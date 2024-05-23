@@ -185,7 +185,7 @@ let () = {
     N.add(v, i)
   }
   N.checkInvariantInternal(v)
-  \"@@"(b(__LOC__), R.every(0, 1_00_000, i => N.has(v, i)))
+  \"@@"(l => b(__LOC__, l), R.every(0, 1_00_000, i => N.has(v, i)))
   eq(__LOC__, N.size(v), 1_00_001)
 }
 
