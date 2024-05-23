@@ -51,7 +51,7 @@ let get_string = () => {
 
 /* The lexer */
 
-let make_lexer = keywords => {
+let make_lexer = (keywords, input) => {
   let kwd_table = Hashtbl.create(17)
   List.iter(s => Hashtbl.add(kwd_table, s, Kwd(s)), keywords)
   let ident_or_keyword = id =>
@@ -349,5 +349,5 @@ let make_lexer = keywords => {
     | _ => raise(Stream.Failure)
     }
 
-  input => Stream.from(_count => next_token(input))
+  Stream.from(_count => next_token(input))
 }
