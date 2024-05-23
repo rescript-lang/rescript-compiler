@@ -109,14 +109,19 @@ jobs:
           ]
         include:
           - os: macos-13
+            platform-name: darwin
             rust-target: x86_64-apple-darwin
           - os: macos-14
+            platform-name: darwinarm64
             rust-target: aarch64-apple-darwin
           - os: ubuntu-latest
+            platform-name: linux
             rust-target: x86_64-unknown-linux-musl
           - os: buildjet-2vcpu-ubuntu-2204-arm
+            platform-name: linuxarm64
             rust-target: aarch64-unknown-linux-musl
           - os: windows-latest
+            platform-name: win32
             rust-target: x86_64-pc-windows-gnu
 
     runs-on: ${{matrix.os}}
@@ -132,33 +137,22 @@ jobs:
       - name: Install musl gcc
         if: runner.os == 'Linux'
         run: sudo apt-get install -y musl-tools
-        # uses: awalsh128/cache-apt-pkgs-action@v1
-        # with:
-        #   packages:
-        #   version: 1.1
-      - name: setup sccache
+      - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.4
         with:
           version: "v0.8.0"
-      - uses: dtolnay/rust-toolchain@master
+      - name: Install rust toolchain
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
           targets: ${{matrix.rust-target}}
       - name: Build rewatch
-        run: cargo build --target ${{matrix.rust-target}} --release
-        working-directory: rewatch
-
-      # - name: "Upload artifacts: binaries"
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: ${{ env.artifact_name }}
-      #     path: ${{ env.artifact_path }}
-
-      # - name: Move / Rename Artifacts
-      #   run: |
-      #     mv target/x86_64-unknown-linux-musl/release/rewatch ./rewatch-linux
-      #     mv target/universal2-apple-darwin/release/rewatch ./rewatch-macos
-      #     mv target/x86_64-pc-windows-gnu/release/rewatch.exe ./rewatch-windows.exe
+        run: cargo build --manifest-path rewatch/Cargo.toml --target ${{matrix.rust-target}} --release
+      - name: "Upload artifact: rewatch binary"
+        uses: actions/upload-artifact@v4
+        with:
+          name: rewatch-${{matrix.platform-name}}
+          path: rewatch/target/${{matrix.rust-target}}/release/rewatch
 
   build:
     needs:
