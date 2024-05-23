@@ -109,7 +109,7 @@ let add_help = speclist => {
 
 let usage_b = (buf, speclist, errmsg) => {
   Buffer.add_string(buf, `${errmsg}\n`)
-  List.iter(print_spec(buf), add_help(speclist))
+  List.iter(l => print_spec(buf, l), add_help(speclist))
 }
 
 let usage_string = (speclist, errmsg) => {
@@ -423,5 +423,5 @@ let align = (~limit=max_int, speclist) => {
   let completed = add_help(speclist)
   let len = List.fold_left(max_arg_len, 0, completed)
   let len = min(len, limit)
-  List.map(add_padding(len), completed)
+  List.map(l => add_padding(len, l), completed)
 }
