@@ -79,3 +79,17 @@ type jsUser = /* before */ {
   // above age
   /* before age */ "age" /* after age */: /* before int */ int /* after int */,
 } /* after */
+
+external test: (
+  // comment 1
+  ~int: int,
+  // comment 2
+  ~int: int,
+) => unit = "test"
+
+external another_test: (
+  // comment 1
+  int,
+  // comment 2
+  int,
+) => unit = "test"
