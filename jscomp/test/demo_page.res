@@ -5,7 +5,8 @@ let rec fib = x =>
   | n => fib(n - 1) + fib(n - 2)
   }
 
-/** Imperative style */ /** List map */
+/** Imperative style */
+/** List map */
 let sum = n => {
   let v = ref(0)
   for i in 0 to n {
@@ -27,7 +28,7 @@ let rec map = (f, x) =>
 
 /** Test curry and uncurry calling convention */
 let test_curry = (x, y) => x + y
-let f = test_curry(32)
+let f = test_curry(32, ...)
 
 /** Create a typed binding for react */
 type t
@@ -43,7 +44,8 @@ type component_class
 
 @obj /** make a json object */
 external config: (~display_name: string=?, ~render: unit => component, unit) => config = ""
-/** make a json object */ @obj
+/** make a json object */
+@obj
 external attrs: (~alt: string=?, ~autoPlay: bool=?, unit) => attrs = ""
 external str: string => component = "%identity"
 

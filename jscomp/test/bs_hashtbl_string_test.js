@@ -10,7 +10,6 @@ let Belt_HashMapInt = require("../../lib/js/belt_HashMapInt.js");
 let Belt_HashSetInt = require("../../lib/js/belt_HashSetInt.js");
 let Belt_HashMapString = require("../../lib/js/belt_HashMapString.js");
 let Caml_hash_primitive = require("../../lib/js/caml_hash_primitive.js");
-let Belt_internalBucketsType = require("../../lib/js/belt_internalBucketsType.js");
 
 function hash_string(s) {
   return Caml_hash_primitive.hash_final_mix(Caml_hash_primitive.hash_mix_string(0, s));
@@ -43,9 +42,9 @@ let Int = Belt_Id.hashable(Hashtbl.hash, (function (x, y) {
   return x === y;
 }));
 
-let empty = Belt_internalBucketsType.make(Int.hash, Int.eq, 500000);
+let empty = Belt_HashMap.make(500000, Int);
 
-function bench(param) {
+function bench() {
   for(let i = 0; i <= 1000000; ++i){
     Belt_HashMap.set(empty, i, i);
   }
@@ -67,7 +66,7 @@ function bench(param) {
 }
 
 function bench2(m) {
-  let empty = Belt_internalBucketsType.make(m.hash, m.eq, 1000000);
+  let empty = Belt_HashMap.make(1000000, m);
   for(let i = 0; i <= 1000000; ++i){
     Belt_HashMap.set(empty, String(i), i);
   }
@@ -142,8 +141,8 @@ function bench3(m) {
 
 let Sx = Belt_Id.comparable(Caml.string_compare);
 
-function bench4(param) {
-  let table = Belt_internalBucketsType.make(undefined, undefined, 1000000);
+function bench4() {
+  let table = Belt_HashMapString.make(1000000);
   for(let i = 0; i <= 1000000; ++i){
     Belt_HashMapString.set(table, String(i), i);
   }
@@ -178,8 +177,8 @@ function bench4(param) {
   };
 }
 
-function bench5(param) {
-  let table = Belt_internalBucketsType.make(Int.hash, Int.eq, 1000000);
+function bench5() {
+  let table = Belt_HashMap.make(1000000, Int);
   console.time("bs_hashtbl_string_test.res 112");
   for(let i = 0; i <= 1000000; ++i){
     Belt_HashMap.set(table, i, i);
@@ -220,8 +219,8 @@ function bench5(param) {
   };
 }
 
-function bench6(param) {
-  let table = Belt_internalBucketsType.make(undefined, undefined, 1000000);
+function bench6() {
+  let table = Belt_HashMapInt.make(1000000);
   for(let i = 0; i <= 1000000; ++i){
     Belt_HashMapInt.set(table, i, i);
   }
@@ -256,8 +255,8 @@ function bench6(param) {
   };
 }
 
-function bench7(param) {
-  let table = Belt_internalBucketsType.make(undefined, undefined, 2000000);
+function bench7() {
+  let table = Belt_HashSetInt.make(2000000);
   for(let i = 0; i <= 1000000; ++i){
     Belt_HashSetInt.add(table, i);
   }

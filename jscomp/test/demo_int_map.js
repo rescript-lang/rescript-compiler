@@ -150,7 +150,7 @@ function find(x, _param) {
   };
 }
 
-function test(param) {
+function test() {
   let m = "Empty";
   for(let i = 0; i <= 1000000; ++i){
     m = add(i, i, m);

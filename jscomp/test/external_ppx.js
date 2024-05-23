@@ -3,16 +3,10 @@
 
 let External_ppxGen = require("./external_ppx.gen");
 
-function renamed(param) {
-  let tmp = {
-    type: "123",
-    normal: 12
-  };
-  if (param !== undefined) {
-    tmp.WIDTH = param;
-  }
-  return tmp;
-}
+let renamed = {
+  type: "123",
+  normal: 12
+};
 
 let u = {
   hi: 2,

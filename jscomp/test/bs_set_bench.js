@@ -3,7 +3,7 @@
 
 let Belt_SetInt = require("../../lib/js/belt_SetInt.js");
 
-function bench(param) {
+function bench() {
   let data;
   console.time("bs_set_bench.res 6");
   for(let i = 0; i <= 1000000; ++i){
