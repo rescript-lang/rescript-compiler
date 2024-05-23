@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -50,15 +50,17 @@ function f3(x) {
   };
 }
 
-eq("File \"arity_deopt.res\", line 47, characters 11-18", 6, 6);
+eq("File \"arity_deopt.res\", line 47, characters 16-23", 6, 6);
 
-eq("File \"arity_deopt.res\", line 48, characters 11-18", 6, (function (y, z) {
+eq("File \"arity_deopt.res\", line 48, characters 16-23", 6, (function (y, z) {
   return (1 + y | 0) + z | 0;
 })(2, 3));
 
-eq("File \"arity_deopt.res\", line 49, characters 11-18", 6, 6);
+eq("File \"arity_deopt.res\", line 49, characters 16-23", 6, (function (z) {
+  return 3 + z | 0;
+})(3));
 
-eq("File \"arity_deopt.res\", line 50, characters 11-18", 6, (function (y, z) {
+eq("File \"arity_deopt.res\", line 50, characters 16-23", 6, (function (y, z) {
   return (1 + y | 0) + z | 0;
 })(2, 3));
 

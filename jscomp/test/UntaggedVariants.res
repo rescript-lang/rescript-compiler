@@ -296,16 +296,16 @@ module OptionUnboxingHeuristic = {
 
 module TestFunctionCase = {
   @unboxed
-  type t = Array(array<int>) | Record({x: int}) | Function((. int) => int)
+  type t = Array(array<int>) | Record({x: int}) | Function(int => int)
 
   let classify = v =>
     switch v {
     | Record({x}) => x
     | Array(a) => a[0]
-    | Function(f) => f(. 3)
+    | Function(f) => f(3)
     }
 
-  let ff = Function((. x) => x + 1)
+  let ff = Function(x => x + 1)
 }
 
 module ComplexPattern = {
@@ -416,14 +416,14 @@ module AllInstanceofTypes = {
 
 module Aliased = {
   type dict = Js.Dict.t<string>
-  type fn = (. unit) => option<string>
+  type fn = unit => option<string>
   @unboxed type t = Object(dict) | String(string) | Function(fn)
 
   let test = (t: t) => {
     switch t {
     | Object(d) => d->Js.Dict.get("Hello")
     | String(s) => Some(s)
-    | Function(fn) => fn(.)
+    | Function(fn) => fn()
     }
   }
 }
