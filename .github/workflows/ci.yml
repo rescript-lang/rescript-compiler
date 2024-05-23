@@ -78,7 +78,7 @@ jobs:
       - name: "Upload artifact: rewatch binary"
         uses: actions/upload-artifact@v4
         with:
-          name: rewatch-${{env.artifact_dir_name}}
+          name: rewatch-${{env.artifact_dir_name}}${{ runner.os == 'Windows' && '.exe' || '' }}
           path: rewatch/target/${{matrix.rust-target}}/release/rewatch
 
   # Build statically linked Linux binaries in an Alpine-based Docker container
