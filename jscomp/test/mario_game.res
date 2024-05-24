@@ -1445,7 +1445,7 @@ module Draw: {
     let context = Dom_html.canvasRenderingContext2DToJsObj(canvas["getContext"]("2d"))
     let cwidth = float_of_int(canvas["width"])
     let cheight = float_of_int(canvas["height"])
-    \"@@"(ignore, context["clearRect"](0., 0., cwidth, cheight))
+    ignore(context["clearRect"](0., 0., cwidth, cheight))
   }
 
   /* Displays the text for score and coins. */
@@ -1454,12 +1454,11 @@ module Draw: {
     let coin_string = string_of_int(coins)
     let canvas = Dom_html.canvasElementToJsObj(canvas)
     let context = Dom_html.canvasRenderingContext2DToJsObj(canvas["getContext"]("2d"))
-    \"@@"(ignore, context["font"] = "10px 'Press Start 2P'")
-    \"@@"(
-      ignore,
+    ignore(context["font"] = "10px 'Press Start 2P'")
+    ignore(
       context["fillText"]("Score: " ++ score_string, float_of_int(canvas["width"]) -. 140., 18.),
     )
-    \"@@"(ignore, context["fillText"]("Coins: " ++ coin_string, 120., 18.))
+    ignore(context["fillText"]("Coins: " ++ coin_string, 120., 18.))
   }
 
   /* Displays the fps. */
@@ -1467,7 +1466,7 @@ module Draw: {
     let fps_str = string_of_int(int_of_float(fps_val))
     let canvas = Dom_html.canvasElementToJsObj(canvas)
     let context = Dom_html.canvasRenderingContext2DToJsObj(canvas["getContext"]("2d"))
-    \"@@"(ignore, context["fillText"](fps_str, 10., 18.))
+    ignore(context["fillText"](fps_str, 10., 18.))
   }
 
   /* game_win displays a black screen when you finish a game. */
@@ -2100,8 +2099,7 @@ module Director: {
           List.iter(part => run_update_particle(state, part), parts)
           Draw.fps(canvas, fps)
           Draw.hud(canvas, state.score, state.coins)
-          \"@@"(
-            ignore,
+          ignore(
             Dom_html.requestAnimationFrame((t: float) =>
               update_helper(t, state, player, collid_objs.contents, particles.contents)
             ),

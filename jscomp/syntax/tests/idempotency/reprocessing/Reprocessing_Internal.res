@@ -32,18 +32,17 @@ let getProgram = (
       if linkedCorrectly {
         Some(program)
       } else {
-        \"@@"(print_endline, "Linking error: " ++ Gl.getProgramInfoLog(~context, program))
+        print_endline("Linking error: " ++ Gl.getProgramInfoLog(~context, program))
         None
       }
     } else {
-      \"@@"(
-        print_endline,
+      print_endline(
         "Fragment shader error: " ++ Gl.getShaderInfoLog(~context, fragmentShader),
       )
       None
     }
   } else {
-    \"@@"(print_endline, "Vertex shader error: " ++ Gl.getShaderInfoLog(~context, vertexShader))
+    print_endline("Vertex shader error: " ++ Gl.getShaderInfoLog(~context, vertexShader))
     None
   }
 }

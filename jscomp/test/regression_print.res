@@ -4,7 +4,7 @@ include (
     let debug = x => print_endline(to_str(x))
 
     let () = {
-      \"@@"(debug, 2)
+      debug(2)
       debug(1)
     }
   }: {}

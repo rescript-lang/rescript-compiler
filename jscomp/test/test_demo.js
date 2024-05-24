@@ -2,7 +2,6 @@
 'use strict';
 
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 
 function fib(x) {
   if (x === 2 || x === 1) {
@@ -26,7 +25,7 @@ function map(f, x) {
   } else {
     return {
       TAG: "Cons",
-      _0: Curry._1(f, x._0),
+      _0: f(x._0),
       _1: map(f, x._1)
     };
   }
@@ -60,13 +59,15 @@ function g1(x, y) {
 
 let u = 8;
 
-let x = u + 6 | 0;
+let x = (function (z) {
+  return u + z | 0;
+})(6);
 
 let u$1 = 7;
 
-function v(param) {
-  return (6 + param | 0) + u$1 | 0;
-}
+let v = (function (xx, yy) {
+  return (xx + yy | 0) + u$1 | 0;
+})(6, 7);
 
 let nil = "Nil";
 
@@ -83,4 +84,4 @@ exports.g = g;
 exports.g1 = g1;
 exports.x = x;
 exports.v = v;
-/* No side effect */
+/* x Not a pure module */

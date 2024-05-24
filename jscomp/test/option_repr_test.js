@@ -112,7 +112,7 @@ let length_10_id = Belt_List.makeBy(10, (function (x) {
   return x;
 }));
 
-function f13$1(param) {
+function f13$1() {
   return Caml_obj.equal(Belt_List.take(length_10_id, 8), {
     hd: 1,
     tl: {
@@ -182,7 +182,7 @@ let xs = {
   tl: /* [] */0
 };
 
-b("File \"option_repr_test.res\", line 125, characters 8-15", Belt_List.every(xs, (function (x) {
+b("File \"option_repr_test.res\", line 125, characters 2-9", Belt_List.every(xs, (function (x) {
   return x;
 })));
 
@@ -227,7 +227,7 @@ let xs$1 = {
   tl: xs_1
 };
 
-b("File \"option_repr_test.res\", line 128, characters 4-11", Belt_List.every(xs$1, (function (x) {
+b("File \"option_repr_test.res\", line 128, characters 2-9", Belt_List.every(xs$1, (function (x) {
   return x;
 })));
 
@@ -252,7 +252,7 @@ let xs$2 = {
   tl: xs_1$1
 };
 
-b("File \"option_repr_test.res\", line 145, characters 4-11", Belt_List.every(xs$2, (function (x) {
+b("File \"option_repr_test.res\", line 145, characters 2-9", Belt_List.every(xs$2, (function (x) {
   return x;
 })));
 

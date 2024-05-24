@@ -57,6 +57,6 @@ type callback<'input, 'output> = 'input => 'output
 external useCallback: ('input => 'output) => callback<'input, 'output> = "useCallback"
 
 let onSubmit = () =>
-  useCallback(async (_a, b) => {
+  useCallback(async (b) => {
     await b
   })

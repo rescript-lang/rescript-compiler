@@ -78,7 +78,7 @@ let () = {
   )
 }
 
-let id = x => eq(__LOC__, \"@@"(Js.Vector.toList, Js.List.toVector(x)), x)
+let id = x => eq(__LOC__, Js.Vector.toList(Js.List.toVector(x)), x)
 
 let () = {
   eq(__LOC__, Js.List.toVector(list{1, 2, 3}), [1, 2, 3])
@@ -111,7 +111,7 @@ let () = {
   id(list{1, 2, 3, 4, 5})
   id({
     open Js.Vector
-    \"@@"(toList, init(100, i => i))
+    toList(init(100, i => i))
   })
 }
 
@@ -324,8 +324,8 @@ let () = {
   eq(__LOC__, sumUsingForEach([0, 1, 2, 3, 4]), 10)
   b(__LOC__, !A.every([0, 1, 2, 3, 4], x => x > 2))
   b(__LOC__, A.some([1, 3, 7, 8], x => mod(x, 2) == 0))
-  b(__LOC__, \"@@"(not, A.some([1, 3, 7], x => mod(x, 2) == 0)))
-  b(__LOC__, \"@@"(not, A.eq([0, 1], [1], \"=")))
+  b(__LOC__, not(A.some([1, 3, 7], x => mod(x, 2) == 0)))
+  b(__LOC__, not(A.eq([0, 1], [1], \"=")))
   b(
     __LOC__,
     {

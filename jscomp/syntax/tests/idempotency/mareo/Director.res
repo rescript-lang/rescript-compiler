@@ -498,8 +498,7 @@ let update_loop = (canvas, (player, objs), map_dim) => {
         List.forEach(parts, part => run_update_particle(state, part))
         Draw.fps(canvas, fps)
         Draw.hud(canvas, state.score, state.coins)
-        \"@@"(
-          ignore,
+        ignore(
           Dom_html.requestAnimationFrame((t: float) =>
             update_helper(t, state, player, collid_objs.contents, particles.contents)
           ),

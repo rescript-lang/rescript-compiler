@@ -91,7 +91,7 @@ let for_8 = () => {
 let for_9 = () => {
   let (collect, get) = {
     let v: ref<list<int>> = ref(list{})
-    (x => v := list{x, ...v.contents}, () => \"@@"(Array.of_list, List.rev(v.contents)))
+    (x => v := list{x, ...v.contents}, () => Array.of_list(List.rev(v.contents)))
   }
 
   let i_len = 2
@@ -158,8 +158,8 @@ console.log(result,u)
 */
 
 let suites = list{
-  ("for_loop_test_3", _ => Mt.Eq(90, \"@@"(for_3, Array.make(10, 2)))),
-  ("for_loop_test_4", _ => Mt.Eq(180, \"@@"(for_4, Array.make(10, 2)))),
+  ("for_loop_test_3", _ => Mt.Eq(90, for_3(Array.make(10, 2)))),
+  ("for_loop_test_4", _ => Mt.Eq(180, for_4(Array.make(10, 2)))),
   ("for_loop_test_5", _ => Mt.Eq(2420, for_5(Array.make(10, 2), 11))),
   ("for_loop_test_6", _ => Mt.Eq([30, 1, 2, 3], for_6(Array.make(3, 0), 0))),
   ("for_loop_test_7", _ => Mt.Eq(84, for_7())),

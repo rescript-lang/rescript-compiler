@@ -49,7 +49,7 @@ let rec dfs2 = (nodes, graph, visited) => {
         aux(xs, graph, aux(nexts(x, graph), graph, list{x, ...visited}))
       }
     }
-  \"@@"(List.rev, aux(nodes, graph, visited))
+  List.rev(aux(nodes, graph, visited))
 }
 
 let () = {
@@ -61,7 +61,7 @@ let () = {
 let dfs3 = (nodes, graph) => {
   let visited = ref(list{})
   let rec aux = (node, graph) =>
-    if \"@@"(not, List.mem(node, visited.contents)) {
+    if not(List.mem(node, visited.contents)) {
       visited := list{node, ...visited.contents}
       List.iter(x => aux(x, graph), nexts(node, graph))
     }
@@ -92,7 +92,7 @@ let unsafe_topsort = graph => {
   let visited = ref(list{})
   let rec sort_nodes = nodes => List.iter(node => sort_node(node), nodes)
   and sort_node = node =>
-    if \"@@"(not, List.mem(node, visited.contents)) {
+    if not(List.mem(node, visited.contents)) {
       /* This check does not prevent cycle ,
            but it is still necessary? yes! 
            since a node can have multiple parents
@@ -128,7 +128,7 @@ let pathsort = graph => {
         raise (Cycle (node::stack))  in */
   let rec sort_nodes = (path, nodes) => List.iter(node => sort_node(path, node), nodes)
   and sort_node = (path, node) =>
-    if \"@@"(not, List.mem(node, visited.contents)) {
+    if not(List.mem(node, visited.contents)) {
       /* check node path ; */
       sort_nodes(\"+>"(node, path), nexts(node, graph))
       /* different from dfs, recorded after its 
@@ -144,7 +144,7 @@ let pathsort = graph => {
 let () = assert (pathsort(grwork) == list{"wake", "shower", "dress", "eat", "washup", "go"})
 
 let () = try {
-  \"@@"(ignore, pathsort(list{("go", "eat"), ...grwork}))
+  ignore(pathsort(list{("go", "eat"), ...grwork}))
   assert(false)
 } catch {
 | Cycle(list{"go", "washup", "eat", "go"}) => ()

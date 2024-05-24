@@ -43,7 +43,7 @@ module Kind: {
   type json = t
   /** Underlying type of a JSON value */
   type rec t<_> =
-    | String: t<Js_string.t>
+    | String: t<string>
     | Number: t<float>
     | Object: t<Js_dict.t<json>>
     | Array: t<array<json>>
@@ -72,7 +72,7 @@ let test: ('a, Kind.t<'b>) => bool
 /**
 `decodeString(json)` returns `Some(s)` if `json` is a `string`, `None` otherwise.
 */
-let decodeString: t => option<Js_string.t>
+let decodeString: t => option<string>
 
 /**
 `decodeNumber(json)` returns `Some(n)` if `json` is a `number`, `None` otherwise.

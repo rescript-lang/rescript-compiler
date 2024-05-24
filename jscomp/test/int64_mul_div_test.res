@@ -26,8 +26,7 @@ let pairs = [
 ]
 
 let from_pairs = (prefix, pairs) =>
-  \"@@"(
-    Array.to_list,
+  Array.to_list(
     Array.mapi(
       (i, (result, a, b)) => (
         "" ++ prefix ++ "_" ++ __unsafe_cast(i),

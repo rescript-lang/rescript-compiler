@@ -207,10 +207,10 @@ let run = (
       )
       () => {
         let (x, y) = (0, 0)
-        let (x1, y1) = (\"@@"(float_of_int, x + width), \"@@"(float_of_int, y))
-        let (x2, y2) = (float_of_int(x), \"@@"(float_of_int, y))
-        let (x3, y3) = (\"@@"(float_of_int, x + width), \"@@"(float_of_int, y + height))
-        let (x4, y4) = (float_of_int(x), \"@@"(float_of_int, y + height))
+        let (x1, y1) = (float_of_int(x + width), float_of_int(y))
+        let (x2, y2) = (float_of_int(x), float_of_int(y))
+        let (x3, y3) = (float_of_int(x + width), float_of_int(y + height))
+        let (x4, y4) = (float_of_int(x), float_of_int(y + height))
         let verticesColorAndTexture = [
           x1,
           y1,
@@ -277,7 +277,7 @@ let run = (
           Reasongl.Gl.Window.setWindowSize(~window=env.window, ~width, ~height)
         }
         if fns.filename != "" {
-          \"@@"(ignore, Reprocessing_Hotreload.checkRebuild(false, fns.filename))
+          ignore(Reprocessing_Hotreload.checkRebuild(false, fns.filename))
         }
         if fns.justHotReloaded {
           let newInitialState = fns.setup(env)

@@ -591,37 +591,37 @@ let suites_1 = {
                                                             ],
                                                             tl: {
                                                               hd: [
-                                                                "join",
+                                                                "joinWith",
                                                                 (function (param) {
                                                                   return {
                                                                     TAG: "Eq",
-                                                                    _0: "1,2,3",
+                                                                    _0: "1;2;3",
                                                                     _1: [
                                                                       1,
                                                                       2,
                                                                       3
-                                                                    ].join()
+                                                                    ].join(";")
                                                                   };
                                                                 })
                                                               ],
                                                               tl: {
                                                                 hd: [
-                                                                  "joinWith",
+                                                                  "lastIndexOf",
                                                                   (function (param) {
                                                                     return {
                                                                       TAG: "Eq",
-                                                                      _0: "1;2;3",
+                                                                      _0: 1,
                                                                       _1: [
                                                                         1,
                                                                         2,
                                                                         3
-                                                                      ].join(";")
+                                                                      ].lastIndexOf(2)
                                                                     };
                                                                   })
                                                                 ],
                                                                 tl: {
                                                                   hd: [
-                                                                    "lastIndexOf",
+                                                                    "lastIndexOfFrom",
                                                                     (function (param) {
                                                                       return {
                                                                         TAG: "Eq",
@@ -629,36 +629,44 @@ let suites_1 = {
                                                                         _1: [
                                                                           1,
                                                                           2,
-                                                                          3
-                                                                        ].lastIndexOf(2)
+                                                                          3,
+                                                                          2
+                                                                        ].lastIndexOf(2, 2)
                                                                       };
                                                                     })
                                                                   ],
                                                                   tl: {
                                                                     hd: [
-                                                                      "lastIndexOfFrom",
+                                                                      "slice",
                                                                       (function (param) {
                                                                         return {
                                                                           TAG: "Eq",
-                                                                          _0: 1,
+                                                                          _0: [
+                                                                            2,
+                                                                            3
+                                                                          ],
                                                                           _1: [
                                                                             1,
                                                                             2,
                                                                             3,
-                                                                            2
-                                                                          ].lastIndexOf(2, 2)
+                                                                            4,
+                                                                            5
+                                                                          ].slice(1, 3)
                                                                         };
                                                                       })
                                                                     ],
                                                                     tl: {
                                                                       hd: [
-                                                                        "slice",
+                                                                        "copy",
                                                                         (function (param) {
                                                                           return {
                                                                             TAG: "Eq",
                                                                             _0: [
+                                                                              1,
                                                                               2,
-                                                                              3
+                                                                              3,
+                                                                              4,
+                                                                              5
                                                                             ],
                                                                             _1: [
                                                                               1,
@@ -666,19 +674,17 @@ let suites_1 = {
                                                                               3,
                                                                               4,
                                                                               5
-                                                                            ].slice(1, 3)
+                                                                            ].slice()
                                                                           };
                                                                         })
                                                                       ],
                                                                       tl: {
                                                                         hd: [
-                                                                          "copy",
+                                                                          "sliceFrom",
                                                                           (function (param) {
                                                                             return {
                                                                               TAG: "Eq",
                                                                               _0: [
-                                                                                1,
-                                                                                2,
                                                                                 3,
                                                                                 4,
                                                                                 5
@@ -689,34 +695,28 @@ let suites_1 = {
                                                                                 3,
                                                                                 4,
                                                                                 5
-                                                                              ].slice()
+                                                                              ].slice(2)
                                                                             };
                                                                           })
                                                                         ],
                                                                         tl: {
                                                                           hd: [
-                                                                            "sliceFrom",
+                                                                            "toString",
                                                                             (function (param) {
                                                                               return {
                                                                                 TAG: "Eq",
-                                                                                _0: [
-                                                                                  3,
-                                                                                  4,
-                                                                                  5
-                                                                                ],
+                                                                                _0: "1,2,3",
                                                                                 _1: [
                                                                                   1,
                                                                                   2,
-                                                                                  3,
-                                                                                  4,
-                                                                                  5
-                                                                                ].slice(2)
+                                                                                  3
+                                                                                ].toString()
                                                                               };
                                                                             })
                                                                           ],
                                                                           tl: {
                                                                             hd: [
-                                                                              "toString",
+                                                                              "toLocaleString",
                                                                               (function (param) {
                                                                                 return {
                                                                                   TAG: "Eq",
@@ -725,212 +725,218 @@ let suites_1 = {
                                                                                     1,
                                                                                     2,
                                                                                     3
-                                                                                  ].toString()
+                                                                                  ].toLocaleString()
                                                                                 };
                                                                               })
                                                                             ],
                                                                             tl: {
                                                                               hd: [
-                                                                                "toLocaleString",
+                                                                                "every",
                                                                                 (function (param) {
                                                                                   return {
                                                                                     TAG: "Eq",
-                                                                                    _0: "1,2,3",
+                                                                                    _0: true,
                                                                                     _1: [
                                                                                       1,
                                                                                       2,
                                                                                       3
-                                                                                    ].toLocaleString()
+                                                                                    ].every(function (n) {
+                                                                                      return n > 0;
+                                                                                    })
                                                                                   };
                                                                                 })
                                                                               ],
                                                                               tl: {
                                                                                 hd: [
-                                                                                  "every",
+                                                                                  "everyi",
                                                                                   (function (param) {
                                                                                     return {
                                                                                       TAG: "Eq",
-                                                                                      _0: true,
+                                                                                      _0: false,
                                                                                       _1: [
                                                                                         1,
                                                                                         2,
                                                                                         3
-                                                                                      ].every(function (n) {
-                                                                                        return n > 0;
+                                                                                      ].every(function (param, i) {
+                                                                                        return i > 0;
                                                                                       })
                                                                                     };
                                                                                   })
                                                                                 ],
                                                                                 tl: {
                                                                                   hd: [
-                                                                                    "everyi",
+                                                                                    "filter",
                                                                                     (function (param) {
                                                                                       return {
                                                                                         TAG: "Eq",
-                                                                                        _0: false,
+                                                                                        _0: [
+                                                                                          2,
+                                                                                          4
+                                                                                        ],
                                                                                         _1: [
                                                                                           1,
                                                                                           2,
-                                                                                          3
-                                                                                        ].every(function (param, i) {
-                                                                                          return i > 0;
+                                                                                          3,
+                                                                                          4
+                                                                                        ].filter(function (n) {
+                                                                                          return n % 2 === 0;
                                                                                         })
                                                                                       };
                                                                                     })
                                                                                   ],
                                                                                   tl: {
                                                                                     hd: [
-                                                                                      "filter",
+                                                                                      "filteri",
                                                                                       (function (param) {
                                                                                         return {
                                                                                           TAG: "Eq",
                                                                                           _0: [
-                                                                                            2,
-                                                                                            4
+                                                                                            1,
+                                                                                            3
                                                                                           ],
                                                                                           _1: [
                                                                                             1,
                                                                                             2,
                                                                                             3,
                                                                                             4
-                                                                                          ].filter(function (n) {
-                                                                                            return n % 2 === 0;
+                                                                                          ].filter(function (param, i) {
+                                                                                            return i % 2 === 0;
                                                                                           })
                                                                                         };
                                                                                       })
                                                                                     ],
                                                                                     tl: {
                                                                                       hd: [
-                                                                                        "filteri",
+                                                                                        "find",
                                                                                         (function (param) {
                                                                                           return {
                                                                                             TAG: "Eq",
-                                                                                            _0: [
-                                                                                              1,
-                                                                                              3
-                                                                                            ],
-                                                                                            _1: [
+                                                                                            _0: 2,
+                                                                                            _1: Caml_option.undefined_to_opt([
                                                                                               1,
                                                                                               2,
                                                                                               3,
                                                                                               4
-                                                                                            ].filter(function (param, i) {
-                                                                                              return i % 2 === 0;
-                                                                                            })
+                                                                                            ].find(function (n) {
+                                                                                              return n % 2 === 0;
+                                                                                            }))
                                                                                           };
                                                                                         })
                                                                                       ],
                                                                                       tl: {
                                                                                         hd: [
-                                                                                          "find",
+                                                                                          "find - no match",
                                                                                           (function (param) {
                                                                                             return {
                                                                                               TAG: "Eq",
-                                                                                              _0: 2,
+                                                                                              _0: undefined,
                                                                                               _1: Caml_option.undefined_to_opt([
                                                                                                 1,
                                                                                                 2,
                                                                                                 3,
                                                                                                 4
                                                                                               ].find(function (n) {
-                                                                                                return n % 2 === 0;
+                                                                                                return n % 2 === 5;
                                                                                               }))
                                                                                             };
                                                                                           })
                                                                                         ],
                                                                                         tl: {
                                                                                           hd: [
-                                                                                            "find - no match",
+                                                                                            "findi",
                                                                                             (function (param) {
                                                                                               return {
                                                                                                 TAG: "Eq",
-                                                                                                _0: undefined,
+                                                                                                _0: 1,
                                                                                                 _1: Caml_option.undefined_to_opt([
                                                                                                   1,
                                                                                                   2,
                                                                                                   3,
                                                                                                   4
-                                                                                                ].find(function (n) {
-                                                                                                  return n % 2 === 5;
+                                                                                                ].find(function (param, i) {
+                                                                                                  return i % 2 === 0;
                                                                                                 }))
                                                                                               };
                                                                                             })
                                                                                           ],
                                                                                           tl: {
                                                                                             hd: [
-                                                                                              "findi",
+                                                                                              "findi - no match",
                                                                                               (function (param) {
                                                                                                 return {
                                                                                                   TAG: "Eq",
-                                                                                                  _0: 1,
+                                                                                                  _0: undefined,
                                                                                                   _1: Caml_option.undefined_to_opt([
                                                                                                     1,
                                                                                                     2,
                                                                                                     3,
                                                                                                     4
                                                                                                   ].find(function (param, i) {
-                                                                                                    return i % 2 === 0;
+                                                                                                    return i % 2 === 5;
                                                                                                   }))
                                                                                                 };
                                                                                               })
                                                                                             ],
                                                                                             tl: {
                                                                                               hd: [
-                                                                                                "findi - no match",
+                                                                                                "findIndex",
                                                                                                 (function (param) {
                                                                                                   return {
                                                                                                     TAG: "Eq",
-                                                                                                    _0: undefined,
-                                                                                                    _1: Caml_option.undefined_to_opt([
+                                                                                                    _0: 1,
+                                                                                                    _1: [
                                                                                                       1,
                                                                                                       2,
                                                                                                       3,
                                                                                                       4
-                                                                                                    ].find(function (param, i) {
-                                                                                                      return i % 2 === 5;
-                                                                                                    }))
+                                                                                                    ].findIndex(function (n) {
+                                                                                                      return n % 2 === 0;
+                                                                                                    })
                                                                                                   };
                                                                                                 })
                                                                                               ],
                                                                                               tl: {
                                                                                                 hd: [
-                                                                                                  "findIndex",
+                                                                                                  "findIndexi",
                                                                                                   (function (param) {
                                                                                                     return {
                                                                                                       TAG: "Eq",
-                                                                                                      _0: 1,
+                                                                                                      _0: 0,
                                                                                                       _1: [
                                                                                                         1,
                                                                                                         2,
                                                                                                         3,
                                                                                                         4
-                                                                                                      ].findIndex(function (n) {
-                                                                                                        return n % 2 === 0;
+                                                                                                      ].findIndex(function (param, i) {
+                                                                                                        return i % 2 === 0;
                                                                                                       })
                                                                                                     };
                                                                                                   })
                                                                                                 ],
                                                                                                 tl: {
                                                                                                   hd: [
-                                                                                                    "findIndexi",
+                                                                                                    "forEach",
                                                                                                     (function (param) {
+                                                                                                      let sum = {
+                                                                                                        contents: 0
+                                                                                                      };
+                                                                                                      [
+                                                                                                        1,
+                                                                                                        2,
+                                                                                                        3
+                                                                                                      ].forEach(function (n) {
+                                                                                                        sum.contents = sum.contents + n | 0;
+                                                                                                      });
                                                                                                       return {
                                                                                                         TAG: "Eq",
-                                                                                                        _0: 0,
-                                                                                                        _1: [
-                                                                                                          1,
-                                                                                                          2,
-                                                                                                          3,
-                                                                                                          4
-                                                                                                        ].findIndex(function (param, i) {
-                                                                                                          return i % 2 === 0;
-                                                                                                        })
+                                                                                                        _0: 6,
+                                                                                                        _1: sum.contents
                                                                                                       };
                                                                                                     })
                                                                                                   ],
                                                                                                   tl: {
                                                                                                     hd: [
-                                                                                                      "forEach",
+                                                                                                      "forEachi",
                                                                                                       (function (param) {
                                                                                                         let sum = {
                                                                                                           contents: 0
@@ -939,34 +945,36 @@ let suites_1 = {
                                                                                                           1,
                                                                                                           2,
                                                                                                           3
-                                                                                                        ].forEach(function (n) {
-                                                                                                          sum.contents = sum.contents + n | 0;
+                                                                                                        ].forEach(function (param, i) {
+                                                                                                          sum.contents = sum.contents + i | 0;
                                                                                                         });
                                                                                                         return {
                                                                                                           TAG: "Eq",
-                                                                                                          _0: 6,
+                                                                                                          _0: 3,
                                                                                                           _1: sum.contents
                                                                                                         };
                                                                                                       })
                                                                                                     ],
                                                                                                     tl: {
                                                                                                       hd: [
-                                                                                                        "forEachi",
+                                                                                                        "map",
                                                                                                         (function (param) {
-                                                                                                          let sum = {
-                                                                                                            contents: 0
-                                                                                                          };
-                                                                                                          [
-                                                                                                            1,
-                                                                                                            2,
-                                                                                                            3
-                                                                                                          ].forEach(function (param, i) {
-                                                                                                            sum.contents = sum.contents + i | 0;
-                                                                                                          });
                                                                                                           return {
                                                                                                             TAG: "Eq",
-                                                                                                            _0: 3,
-                                                                                                            _1: sum.contents
+                                                                                                            _0: [
+                                                                                                              2,
+                                                                                                              4,
+                                                                                                              6,
+                                                                                                              8
+                                                                                                            ],
+                                                                                                            _1: [
+                                                                                                              1,
+                                                                                                              2,
+                                                                                                              3,
+                                                                                                              4
+                                                                                                            ].map(function (n) {
+                                                                                                              return (n << 1);
+                                                                                                            })
                                                                                                           };
                                                                                                         })
                                                                                                       ],
@@ -977,155 +985,131 @@ let suites_1 = {
                                                                                                             return {
                                                                                                               TAG: "Eq",
                                                                                                               _0: [
+                                                                                                                0,
                                                                                                                 2,
                                                                                                                 4,
-                                                                                                                6,
-                                                                                                                8
+                                                                                                                6
                                                                                                               ],
                                                                                                               _1: [
                                                                                                                 1,
                                                                                                                 2,
                                                                                                                 3,
                                                                                                                 4
-                                                                                                              ].map(function (n) {
-                                                                                                                return (n << 1);
+                                                                                                              ].map(function (param, i) {
+                                                                                                                return (i << 1);
                                                                                                               })
                                                                                                             };
                                                                                                           })
                                                                                                         ],
                                                                                                         tl: {
                                                                                                           hd: [
-                                                                                                            "map",
+                                                                                                            "reduce",
                                                                                                             (function (param) {
                                                                                                               return {
                                                                                                                 TAG: "Eq",
-                                                                                                                _0: [
-                                                                                                                  0,
-                                                                                                                  2,
-                                                                                                                  4,
-                                                                                                                  6
-                                                                                                                ],
+                                                                                                                _0: -10,
                                                                                                                 _1: [
                                                                                                                   1,
                                                                                                                   2,
                                                                                                                   3,
                                                                                                                   4
-                                                                                                                ].map(function (param, i) {
-                                                                                                                  return (i << 1);
-                                                                                                                })
+                                                                                                                ].reduce((function (acc, n) {
+                                                                                                                  return acc - n | 0;
+                                                                                                                }), 0)
                                                                                                               };
                                                                                                             })
                                                                                                           ],
                                                                                                           tl: {
                                                                                                             hd: [
-                                                                                                              "reduce",
+                                                                                                              "reducei",
                                                                                                               (function (param) {
                                                                                                                 return {
                                                                                                                   TAG: "Eq",
-                                                                                                                  _0: -10,
+                                                                                                                  _0: -6,
                                                                                                                   _1: [
                                                                                                                     1,
                                                                                                                     2,
                                                                                                                     3,
                                                                                                                     4
-                                                                                                                  ].reduce((function (acc, n) {
-                                                                                                                    return acc - n | 0;
+                                                                                                                  ].reduce((function (acc, param, i) {
+                                                                                                                    return acc - i | 0;
                                                                                                                   }), 0)
                                                                                                                 };
                                                                                                               })
                                                                                                             ],
                                                                                                             tl: {
                                                                                                               hd: [
-                                                                                                                "reducei",
+                                                                                                                "reduceRight",
                                                                                                                 (function (param) {
                                                                                                                   return {
                                                                                                                     TAG: "Eq",
-                                                                                                                    _0: -6,
+                                                                                                                    _0: -10,
                                                                                                                     _1: [
                                                                                                                       1,
                                                                                                                       2,
                                                                                                                       3,
                                                                                                                       4
-                                                                                                                    ].reduce((function (acc, param, i) {
-                                                                                                                      return acc - i | 0;
+                                                                                                                    ].reduceRight((function (acc, n) {
+                                                                                                                      return acc - n | 0;
                                                                                                                     }), 0)
                                                                                                                   };
                                                                                                                 })
                                                                                                               ],
                                                                                                               tl: {
                                                                                                                 hd: [
-                                                                                                                  "reduceRight",
+                                                                                                                  "reduceRighti",
                                                                                                                   (function (param) {
                                                                                                                     return {
                                                                                                                       TAG: "Eq",
-                                                                                                                      _0: -10,
+                                                                                                                      _0: -6,
                                                                                                                       _1: [
                                                                                                                         1,
                                                                                                                         2,
                                                                                                                         3,
                                                                                                                         4
-                                                                                                                      ].reduceRight((function (acc, n) {
-                                                                                                                        return acc - n | 0;
+                                                                                                                      ].reduceRight((function (acc, param, i) {
+                                                                                                                        return acc - i | 0;
                                                                                                                       }), 0)
                                                                                                                     };
                                                                                                                   })
                                                                                                                 ],
                                                                                                                 tl: {
                                                                                                                   hd: [
-                                                                                                                    "reduceRighti",
+                                                                                                                    "some",
                                                                                                                     (function (param) {
                                                                                                                       return {
                                                                                                                         TAG: "Eq",
-                                                                                                                        _0: -6,
+                                                                                                                        _0: false,
                                                                                                                         _1: [
                                                                                                                           1,
                                                                                                                           2,
                                                                                                                           3,
                                                                                                                           4
-                                                                                                                        ].reduceRight((function (acc, param, i) {
-                                                                                                                          return acc - i | 0;
-                                                                                                                        }), 0)
+                                                                                                                        ].some(function (n) {
+                                                                                                                          return n <= 0;
+                                                                                                                        })
                                                                                                                       };
                                                                                                                     })
                                                                                                                   ],
                                                                                                                   tl: {
                                                                                                                     hd: [
-                                                                                                                      "some",
+                                                                                                                      "somei",
                                                                                                                       (function (param) {
                                                                                                                         return {
                                                                                                                           TAG: "Eq",
-                                                                                                                          _0: false,
+                                                                                                                          _0: true,
                                                                                                                           _1: [
                                                                                                                             1,
                                                                                                                             2,
                                                                                                                             3,
                                                                                                                             4
-                                                                                                                          ].some(function (n) {
-                                                                                                                            return n <= 0;
+                                                                                                                          ].some(function (param, i) {
+                                                                                                                            return i <= 0;
                                                                                                                           })
                                                                                                                         };
                                                                                                                       })
                                                                                                                     ],
-                                                                                                                    tl: {
-                                                                                                                      hd: [
-                                                                                                                        "somei",
-                                                                                                                        (function (param) {
-                                                                                                                          return {
-                                                                                                                            TAG: "Eq",
-                                                                                                                            _0: true,
-                                                                                                                            _1: [
-                                                                                                                              1,
-                                                                                                                              2,
-                                                                                                                              3,
-                                                                                                                              4
-                                                                                                                            ].some(function (param, i) {
-                                                                                                                              return i <= 0;
-                                                                                                                            })
-                                                                                                                          };
-                                                                                                                        })
-                                                                                                                      ],
-                                                                                                                      tl: /* [] */0
-                                                                                                                    }
+                                                                                                                    tl: /* [] */0
                                                                                                                   }
                                                                                                                 }
                                                                                                               }

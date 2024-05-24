@@ -15,7 +15,7 @@ let xbs = map([1, 2, 3, 5], x => x + 1)
 
 let f = (cb: int => int) => map([1, 2, 3, 4], cb)
 
-let xs = map([1, 1, 2], (x, y) => y + x + 1)
+let xs = map([1, 1, 2], (x) => (y) => y + x + 1)
 
 @val external map2: (array<'a>, array<'b>, @uncurry ('a, 'b) => 'c) => array<'c> = "map2"
 

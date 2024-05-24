@@ -32,7 +32,7 @@ for i in 0 to 8 {
     __LOC__,
     {
       open Int64
-      to_string(add(min_int, \"@@"(of_int, 100 + i)))
+      to_string(add(min_int, of_int(100 + i)))
     },
     "-922337203685477570" ++ string_of_int(8 - i),
   )
@@ -42,7 +42,7 @@ for i in 0 to 8 {
     __LOC__,
     {
       open Int64
-      to_string(add(min_int, \"@@"(of_int, 1_000_000 + i)))
+      to_string(add(min_int, of_int(1_000_000 + i)))
     },
     "-922337203685377580" ++ string_of_int(8 - i),
   )

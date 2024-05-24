@@ -1,7 +1,7 @@
 module Test = (Queue: module type of Queue) => {
   let to_array = q => {
     let v = Array.make(Queue.length(q), 0)
-    \"@@"(ignore, Queue.fold((i, e) => {
+    ignore(Queue.fold((i, e) => {
         v[i] = e
         i + 1
       }, 0, q))

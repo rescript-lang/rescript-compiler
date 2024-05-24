@@ -102,7 +102,7 @@ module Ticker_map = Map.Make({
 let compute_update_sequences = all_tickers => {
   /* Ranking */
 
-  \"@@"(ignore, List.fold_left((counter, ticker) => {
+  ignore(List.fold_left((counter, ticker) => {
       let rec loop = (counter, {rank, _} as ticker) =>
         switch rank {
         | Ranked(_) => counter

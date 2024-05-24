@@ -24,10 +24,9 @@ function f() {
   let tbl = Hashtbl.create(undefined, 17);
   Hashtbl.add(tbl, 1, /* '1' */49);
   Hashtbl.add(tbl, 2, /* '2' */50);
-  let l = to_list(tbl);
   return List.sort((function (param, param$1) {
     return Caml.int_compare(param[0], param$1[0]);
-  }), l);
+  }), to_list(tbl));
 }
 
 function g(count) {

@@ -371,10 +371,10 @@ let () = {
 }
 
 let () = {
-  b(__LOC__, \"@@"(not, N.eq(list{1, 2, 3}, list{1, 2}, (x, y) => x == y)))
+  b(__LOC__, not(N.eq(list{1, 2, 3}, list{1, 2}, (x, y) => x == y)))
   b(__LOC__, N.eq(list{1, 2, 3}, list{1, 2, 3}, (x, y) => x == y))
-  b(__LOC__, \"@@"(not, N.eq(list{1, 2, 3}, list{1, 2, 4}, (x, y) => x == y)))
-  b(__LOC__, \"@@"(not, N.eq(list{1, 2, 3}, list{1, 2, 3, 4}, \"=")))
+  b(__LOC__, not(N.eq(list{1, 2, 3}, list{1, 2, 4}, (x, y) => x == y)))
+  b(__LOC__, not(N.eq(list{1, 2, 3}, list{1, 2, 3, 4}, \"=")))
 }
 let () = {
   let u0 = N.makeBy(20, x => x)
