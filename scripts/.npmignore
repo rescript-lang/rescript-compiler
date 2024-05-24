@@ -3,3 +3,4 @@
 *
 !bin_path.js
 !rescript_*.js
+!rewatch
