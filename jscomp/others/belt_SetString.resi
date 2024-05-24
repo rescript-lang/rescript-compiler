@@ -23,11 +23,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /***
-This module is [`Belt.Set`]() specialized with value type to be a primitive type.
-It is more efficient in general, the  API is the same with [`Belt_Set`]() except its value type is fixed,
-and identity is not needed(using the built-in one)
+  This module is [`Belt.Set`]() specialized with value type to be a primitive type.
+  It is more efficient in general, the  API is the same with [`Belt_Set`]() except its value type is fixed,
+  and identity is not needed(using the built-in one)
 
-**See** [`Belt.Set`]()
+  **See** [`Belt.Set`]()
 */
 
 /** The type of the set elements. */
@@ -71,13 +71,13 @@ let diff: (t, t) => t
 */
 let subset: (t, t) => bool
 
-/** 
+/**
 Total ordering between sets. Can be used as the ordering function for doing sets
 of sets.
 */
 let cmp: (t, t) => int
 
-/**
+/** 
 `eq(s1, s2)` tests whether the sets `s1` and `s2` are equal, that is, contain
 equal elements.
 */
@@ -85,7 +85,7 @@ let eq: (t, t) => bool
 
 let forEachU: (t, (. value) => unit) => unit
 
-/** 
+/**
 `forEach(s, f)` applies `f` in turn to all elements of `s`. In increasing order
 */
 let forEach: (t, value => unit) => unit
@@ -97,15 +97,15 @@ let reduce: (t, 'a, ('a, value) => 'a) => 'a
 
 let everyU: (t, (. value) => bool) => bool
 
-/** 
-`every(p, s)` checks if all elements of the set satisfy the predicate `p`.
-Order unspecified.
+/**
+`every(p, s)` checks if all elements of the set satisfy the predicate `p`. Order
+unspecified.
 */
 let every: (t, value => bool) => bool
 
 let someU: (t, (. value) => bool) => bool
 
-/**
+/** 
 `some(p, s)` checks if at least one element of the set satisfies the predicate
 `p`. Oder unspecified.
 */
@@ -113,7 +113,7 @@ let some: (t, value => bool) => bool
 
 let keepU: (t, (. value) => bool) => t
 
-/** 
+/**
 `keep(p, s)` returns the set of all elements in `s` that satisfy predicate `p`.
 */
 let keep: (t, value => bool) => t
@@ -121,10 +121,9 @@ let keep: (t, value => bool) => t
 let partitionU: (t, (. value) => bool) => (t, t)
 
 /**
-`partition(p, s)` returns a pair of sets `(s1, s2)`, where
-`s1` is the set of all the elements of `s` that satisfy the
-predicate `p`, and `s2` is the set of all the elements of
-`s` that do not satisfy `p`.
+`partition(p, s)` returns a pair of sets `(s1, s2)`, where `s1` is the set of
+all the elements of `s` that satisfy the predicate `p`, and `s2` is the set of
+all the elements of `s` that do not satisfy `p`.
 */
 let partition: (t, value => bool) => (t, t)
 
@@ -150,13 +149,10 @@ let getUndefined: (t, value) => Js.undefined<value>
 let getExn: (t, value) => value
 
 /**
-`split(x, s)` returns a triple `(l, present, r)`, where
-`l` is the set of elements of `s` that are
-strictly less than `x`;
-`r` is the set of elements of `s` that are
-strictly greater than `x`;
-`present` is `false` if `s` contains no element equal to `x`,
-or `true` if `s` contains an element equal to `x`.
+`split(x, s)` returns a triple `(l, present, r)`, where `l` is the set of
+elements of `s` that are strictly less than `x`;`r` is the set of elements of
+`s` that are strictly greater than `x`; `present` is `false` if `s` contains no
+element equal to `x`, or `true` if `s` contains an element equal to `x`.
 */
 let split: (t, value) => ((t, t), bool)
 
