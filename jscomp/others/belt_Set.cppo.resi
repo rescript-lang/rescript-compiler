@@ -74,7 +74,7 @@ let intersect: (t, t) => t
 let diff: (t, t) => t
 
 /**
-`subset(s1, s20` tests whether the set `s1` is a subset of the set `s2`.
+`subset(s1, s2)` tests whether the set `s1` is a subset of the set `s2`.
 */
 let subset: (t, t) => bool
 
