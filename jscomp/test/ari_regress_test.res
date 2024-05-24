@@ -32,7 +32,7 @@ let suites = {
       ),
     ),
     ("curry3", _ => Eq(x, 14)),
-    (__LOC__, _ => Eq(h.contents, 1)),
+    (__LOC__, _ => Eq(h.contents, 2)),
   }
 }
 

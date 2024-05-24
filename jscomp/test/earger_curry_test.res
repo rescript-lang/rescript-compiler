@@ -144,6 +144,6 @@ let () = {
   eq(__LOC__, b, 11)
   eq(__LOC__, c, 10)
   eq(__LOC__, d, 11)
-  eq(__LOC__, all_v.contents, list{8, 8, 6, 6, 4, 2})
+  eq(__LOC__, all_v.contents, list{8, 6, 6, 4, 4, 2})
 }
 let () = Mt.from_pair_suites(__MODULE__, suites.contents)

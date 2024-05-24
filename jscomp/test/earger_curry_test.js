@@ -151,11 +151,11 @@ eq("File \"earger_curry_test.res\", line 146, characters 5-12", d, 11);
 eq("File \"earger_curry_test.res\", line 147, characters 5-12", all_v.contents, {
   hd: 8,
   tl: {
-    hd: 8,
+    hd: 6,
     tl: {
       hd: 6,
       tl: {
-        hd: 6,
+        hd: 4,
         tl: {
           hd: 4,
           tl: {

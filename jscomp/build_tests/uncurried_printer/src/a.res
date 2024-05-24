@@ -1,1 +1,1 @@
-let a = (. b) => b
+let a = b => b
