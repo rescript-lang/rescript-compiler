@@ -221,47 +221,32 @@ let from_to_string = xs =>
     Array.to_list(xs),
   )
 
-\"@@"(
-  l => Mt.from_pair_suites(__MODULE__, l),
-  \"@"(
-    from_pairs("random", pairs),
-    \"@"(
-      from_pairs("small", small_pairs),
-      \"@"(
-        List.mapi(
-          (i, (i64, f)) => ("to_float_" ++ __unsafe_cast(i), _ => Mt.Eq(Int64.to_float(i64), f)),
-          Array.to_list(to_floats),
-        ),
-        \"@"(
-          List.mapi(
-            (i, (f, i64)) => ("of_float_" ++ __unsafe_cast(i), _ => Mt.Eq(Int64.of_float(f), i64)),
-            Array.to_list(of_float_pairs),
-          ),
-          \"@"(
-            list{
-              (
-                "compare_check_complete",
-                _ => Mt.Eq(Array.map(_ => true, check_complete_compare), check_complete_compare),
-              ),
-            },
-            \"@"(
-              from(simple_divs),
-              \"@"(
-                from_compare(int64_compare_tests),
-                list{
-                  ("div_rem_0", _ => Eq(Int64.div(-1L, 16L), 0L)),
-                  ("div_rem_1", _ => Eq(Int64.rem(-1L, 16L), -1L)),
-                  /* __LOC__, (fun _ -> Eq(Int64.of_float 2e65, -9223372036854775808L)) */
-                  (__LOC__, _ => Eq(Int64.to_float(Int64.max_int), 9.22337203685477581e+18)),
-                },
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
+Mt.from_pair_suites(__MODULE__, list{
+  ...from_pairs("random", pairs),
+  ...from_pairs("small", small_pairs),
+  ...List.mapi(
+    (i, (i64, f)) => ("to_float_" ++ __unsafe_cast(i), _ => Mt.Eq(Int64.to_float(i64), f)),
+    Array.to_list(to_floats),
   ),
-)
+  ...List.mapi(
+    (i, (f, i64)) => ("of_float_" ++ __unsafe_cast(i), _ => Mt.Eq(Int64.of_float(f), i64)),
+    Array.to_list(of_float_pairs),
+  ),
+  ...list{
+    (
+      "compare_check_complete",
+      _ => Mt.Eq(Array.map(_ => true, check_complete_compare), check_complete_compare),
+    ),
+  },
+  ...from(simple_divs),
+  ...from_compare(int64_compare_tests),
+  ...list{
+    ("div_rem_0", _ => Eq(Int64.div(-1L, 16L), 0L)),
+    ("div_rem_1", _ => Eq(Int64.rem(-1L, 16L), -1L)),
+    /* __LOC__, (fun _ -> Eq(Int64.of_float 2e65, -9223372036854775808L)) */
+    (__LOC__, _ => Eq(Int64.to_float(Int64.max_int), 9.22337203685477581e+18)),
+  }
+})
 /*
   Undefined behaviorJ
 

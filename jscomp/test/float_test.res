@@ -132,19 +132,15 @@ let () = {
 
 let () = {
   let (a, b) = modf(32.3)
-  \"@@"(
-    Mt.from_pair_suites(__MODULE__),
-    \"@"(
-      {
-        open Mt
-        list{
-          ("mod_float", _ => Approx(mod_float(3.2, 0.5), 0.200000000000000178)),
-          ("modf_float1", _ => Approx(a, 0.299999999999997158)),
-          ("modf_float2", _ => Approx(b, 32.)),
-          ("int_of_float", _ => Eq(int_of_float(3.2), 3)),
-        }
-      },
-      \"@"(from_pairs(results), suites.contents),
-    ),
-  )
+    Mt.from_pair_suites(__MODULE__, {
+      open Mt
+      list{
+        ("mod_float", _ => Approx(mod_float(3.2, 0.5), 0.200000000000000178)),
+        ("modf_float1", _ => Approx(a, 0.299999999999997158)),
+        ("modf_float2", _ => Approx(b, 32.)),
+        ("int_of_float", _ => Eq(int_of_float(3.2), 3)),
+        ...from_pairs(results),
+        ...suites.contents
+      }
+    })
 }

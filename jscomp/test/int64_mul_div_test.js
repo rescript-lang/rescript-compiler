@@ -5,8 +5,8 @@ let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
 let Int64 = require("../../lib/js/int64.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 let Caml_int64 = require("../../lib/js/caml_int64.js");
-let Pervasives = require("../../lib/js/pervasives.js");
 
 function commutative_mul(result, a, b) {
   return {
@@ -1600,85 +1600,92 @@ function from_to_string(xs) {
   }), $$Array.to_list(xs));
 }
 
-let l = Pervasives.$at(from_pairs("random", pairs), Pervasives.$at(from_pairs("small", small_pairs), Pervasives.$at(List.mapi((function (i, param) {
-  let f = param[1];
-  let i64 = param[0];
-  return [
-    "to_float_" + i,
-    (function () {
-      return {
-        TAG: "Eq",
-        _0: Caml_int64.to_float(i64),
-        _1: f
-      };
-    })
-  ];
-}), $$Array.to_list(to_floats)), Pervasives.$at(List.mapi((function (i, param) {
-  let i64 = param[1];
-  let f = param[0];
-  return [
-    "of_float_" + i,
-    (function () {
-      return {
-        TAG: "Eq",
-        _0: Caml_int64.of_float(f),
-        _1: i64
-      };
-    })
-  ];
-}), $$Array.to_list(of_float_pairs)), Pervasives.$at({
-  hd: [
-    "compare_check_complete",
-    (function () {
-      return {
-        TAG: "Eq",
-        _0: $$Array.map((function (param) {
-          return true;
-        }), check_complete_compare),
-        _1: check_complete_compare
-      };
-    })
-  ],
-  tl: /* [] */0
-}, Pervasives.$at(from(simple_divs), Pervasives.$at(from_compare(int64_compare_tests), {
-  hd: [
-    "div_rem_0",
-    (function () {
-      return {
-        TAG: "Eq",
-        _0: Caml_int64.zero,
-        _1: Caml_int64.zero
-      };
-    })
-  ],
-  tl: {
-    hd: [
-      "div_rem_1",
+Mt.from_pair_suites("Int64_mul_div_test", Belt_List.concatMany([
+  from_pairs("random", pairs),
+  from_pairs("small", small_pairs),
+  List.mapi((function (i, param) {
+    let f = param[1];
+    let i64 = param[0];
+    return [
+      "to_float_" + i,
       (function () {
         return {
           TAG: "Eq",
-          _0: Caml_int64.neg_one,
-          _1: Caml_int64.neg_one
+          _0: Caml_int64.to_float(i64),
+          _1: f
+        };
+      })
+    ];
+  }), $$Array.to_list(to_floats)),
+  List.mapi((function (i, param) {
+    let i64 = param[1];
+    let f = param[0];
+    return [
+      "of_float_" + i,
+      (function () {
+        return {
+          TAG: "Eq",
+          _0: Caml_int64.of_float(f),
+          _1: i64
+        };
+      })
+    ];
+  }), $$Array.to_list(of_float_pairs)),
+  {
+    hd: [
+      "compare_check_complete",
+      (function () {
+        return {
+          TAG: "Eq",
+          _0: $$Array.map((function (param) {
+            return true;
+          }), check_complete_compare),
+          _1: check_complete_compare
+        };
+      })
+    ],
+    tl: /* [] */0
+  },
+  from(simple_divs),
+  from_compare(int64_compare_tests),
+  {
+    hd: [
+      "div_rem_0",
+      (function () {
+        return {
+          TAG: "Eq",
+          _0: Caml_int64.zero,
+          _1: Caml_int64.zero
         };
       })
     ],
     tl: {
       hd: [
-        "File \"int64_mul_div_test.res\", line 255, characters 19-26",
+        "div_rem_1",
         (function () {
           return {
             TAG: "Eq",
-            _0: Caml_int64.to_float(Int64.max_int),
-            _1: 9.22337203685477581e+18
+            _0: Caml_int64.neg_one,
+            _1: Caml_int64.neg_one
           };
         })
       ],
-      tl: /* [] */0
+      tl: {
+        hd: [
+          "File \"int64_mul_div_test.res\", line 247, characters 5-12",
+          (function () {
+            return {
+              TAG: "Eq",
+              _0: Caml_int64.to_float(Int64.max_int),
+              _1: 9.22337203685477581e+18
+            };
+          })
+        ],
+        tl: /* [] */0
+      }
     }
   }
-})))))));
-
-Mt.from_pair_suites("Int64_mul_div_test", l);
+]));
 
 exports.commutative_mul = commutative_mul;
 exports.pairs = pairs;
@@ -1693,4 +1700,4 @@ exports.to_string = to_string;
 exports.int64_compare_tests = int64_compare_tests;
 exports.from_compare = from_compare;
 exports.from_to_string = from_to_string;
-/* l Not a pure module */
+/*  Not a pure module */

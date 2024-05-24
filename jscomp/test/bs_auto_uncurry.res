@@ -48,13 +48,11 @@ let f_02 = xs =>
 let f_03 = (xs, u) => hi(u)
 /* arity adjust to [0] [ function (){return u (0)}] */
 
-let fishy = (x, y, z) => map2(x, y, x => z(x))
-
 let h = (x, y, z) => map2(x, y, z)
 
 let h1 = (x, y, u, z) => map2(x, y, z(u))
 
-let add3 = (x, y, z) => x + y + z
+let add3 = (x) => (y, z) => x + y + z
 
 let h2 = x => ff(x, 2, \"+")
 
@@ -169,4 +167,4 @@ let f_unit_magic = unit_magic()
 
 @variadic @val external f_0002: (string, array<int>) => unit = "f_0002"
 
-let hh = xs => f_0002(xs)
+let hh = (xs, a) => f_0002(xs, a)
