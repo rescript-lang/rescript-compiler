@@ -286,6 +286,8 @@ jobs:
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
+        with:
+          pattern: "@(binaries-*|lib-ocaml)"
 
       - name: Move artifacts
         run: ./scripts/moveArtifacts.sh
