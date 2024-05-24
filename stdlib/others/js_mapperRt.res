@@ -24,8 +24,9 @@
 
 @get_index external unsafeGet: (array<int>, int) => int = ""
 
+external testAny: 'a => bool = "#is_nullable"
 let raiseWhenNotFound = x =>
-  if Js.testAny(x) {
+  if testAny(x) {
     raise(Not_found)
   } else {
     x

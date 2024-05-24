@@ -136,8 +136,8 @@ module type S = {
   external filter: ((. elt) => bool) => t = "filter"
   @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js_undefined.t<elt> = "find"
+  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
   @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
@@ -241,8 +241,8 @@ module Int8Array = {
   @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
   @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js_undefined.t<elt> = "find"
+  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
   @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
@@ -364,8 +364,8 @@ module Uint8Array = {
   @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
   @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js_undefined.t<elt> = "find"
+  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
   @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
@@ -395,7 +395,7 @@ module Uint8Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint8Array"
 
-  @new 
+  @new
   /**
   **raise** Js.Exn.Error raise Js exception
 
@@ -487,8 +487,8 @@ module Uint8ClampedArray = {
   @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
   @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js_undefined.t<elt> = "find"
+  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
   @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
@@ -610,8 +610,8 @@ module Int16Array = {
   @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
   @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js_undefined.t<elt> = "find"
+  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
   @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
@@ -641,7 +641,7 @@ module Int16Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int16Array"
 
-  @new 
+  @new
   /**
   **raise** Js.Exn.Error raise Js exception
 
@@ -733,8 +733,8 @@ module Uint16Array = {
   @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
   @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js_undefined.t<elt> = "find"
+  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
   @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
@@ -764,7 +764,7 @@ module Uint16Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint16Array"
 
-  @new 
+  @new
   /**
   **raise** Js.Exn.Error raise Js exception
 
@@ -856,8 +856,8 @@ module Int32Array = {
   @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
   @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js_undefined.t<elt> = "find"
+  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
   @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
@@ -887,7 +887,7 @@ module Int32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int32Array"
 
-  @new 
+  @new
   /**
   **raise** Js.Exn.Error raise Js exception
 
@@ -982,8 +982,8 @@ module Uint32Array = {
   @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
   @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js_undefined.t<elt> = "find"
+  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
   @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
@@ -1013,7 +1013,7 @@ module Uint32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint32Array"
 
-  @new 
+  @new
   /**
   **raise** Js.Exn.Error raise Js exception
 
@@ -1108,8 +1108,8 @@ module Float32Array = {
   @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
   @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js_undefined.t<elt> = "find"
+  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
   @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
@@ -1139,7 +1139,7 @@ module Float32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Float32Array"
 
-  @new 
+  @new
   /**
   **raise** Js.Exn.Error raise Js exception
 
@@ -1235,8 +1235,8 @@ module Float64Array = {
   @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
   @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js_undefined.t<elt> = "find"
+  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
   @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
@@ -1266,7 +1266,7 @@ module Float64Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Float64Array"
 
-  @new 
+  @new
   /**
   **raise** Js.Exn.Error raise Js exception
 

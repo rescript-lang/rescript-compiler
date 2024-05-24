@@ -46,11 +46,11 @@ let rec get = (n, x: key) =>
 
 let rec getUndefined = (n, x: key) =>
   switch n {
-  | None => Js.undefined
+  | None => Js_undefined.empty
   | Some(n) =>
     let v = n.N.key
     if x == v {
-      Js.Undefined.return(n.N.value)
+      Js_undefined.return(n.N.value)
     } else {
       getUndefined(
         if x < v {

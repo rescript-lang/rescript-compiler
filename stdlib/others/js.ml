@@ -91,15 +91,14 @@ end
 (**
   Nullable value of this type can be either null or 'a. This type is equivalent to Js.Null.t.
 *)
-type +'a null = Value of 'a | Null [@as null] [@@unboxed]
+type +'a null = 'a Js_null.t
 
 type +'a undefined = 'a Js_undefined.t
 (**
   A value of this type can be either undefined or 'a. This type is equivalent to Js.Undefined.t.
 *)
 
-type +'a nullable = Value of 'a | Null [@as null] | Undefined [@as undefined]
-[@@unboxed]
+type +'a nullable = 'a Js_nullable.t
 
 (**
   A value of this type can be undefined, null or 'a. This type is equivalent to Js.Null_undefined.t.
