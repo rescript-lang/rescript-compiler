@@ -3,7 +3,6 @@
 
 let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 let Random = require("../../lib/js/random.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_int32 = require("../../lib/js/caml_int32.js");
@@ -703,11 +702,7 @@ function make_type$1(typ, ctx) {
   switch (typ) {
     case "BrickChunkL" :
     case "BrickChunkR" :
-        return {
-          sprite: make_particle$1(typ, ctx),
-          rot: 0,
-          lifetime: 300
-        };
+        break;
     default:
       return {
         sprite: make_particle$1(typ, ctx),
@@ -715,6 +710,11 @@ function make_type$1(typ, ctx) {
         lifetime: 30
       };
   }
+  return {
+    sprite: make_particle$1(typ, ctx),
+    rot: 0,
+    lifetime: 300
+  };
 }
 
 function make$1(velOpt, accOpt, part_type, pos, ctx) {
@@ -811,10 +811,14 @@ function set_vel_to_speed(obj) {
   }
 }
 
+function make_player() {
+  return setup_obj(undefined, 2.8, undefined);
+}
+
 function make_type$2(x) {
   switch (x.TAG) {
     case "SPlayer" :
-        return setup_obj(undefined, 2.8, undefined);
+        return make_player();
     case "SEnemy" :
         let x$1 = x._0;
         switch (x$1) {
@@ -837,7 +841,7 @@ function make_type$2(x) {
   }
 }
 
-function new_id(param) {
+function new_id() {
   id_counter.contents = id_counter.contents + 1 | 0;
   return id_counter.contents;
 }
@@ -956,9 +960,9 @@ function update_player(player, keys, context) {
   let prev_jumping = player.jumping;
   let prev_dir = player.dir;
   let prev_vx = Math.abs(player.vel.x);
-  List.iter((function (param) {
+  List.iter((function (l) {
     let lr_acc = player.vel.x * 0.2;
-    switch (param) {
+    switch (l) {
       case "CLeft" :
           if (!player.crouch) {
             if (player.vel.x > - player.params.speed) {
@@ -1445,7 +1449,7 @@ function render_bbox(sprite, param) {
   let match = sprite.params.bbox_offset;
   let match$1 = sprite.params.bbox_size;
   context.strokeStyle = "#FF0000";
-  return Curry._4(context.strokeRect, param[0] + match[0], param[1] + match[1], match$1[0], match$1[1]);
+  return context.strokeRect(param[0] + match[0], param[1] + match[1], match$1[0], match$1[1]);
 }
 
 function render(sprite, param) {
@@ -1455,17 +1459,7 @@ function render(sprite, param) {
   let sw = match$1[0];
   let match$2 = sprite.params.frame_size;
   let sx = match[0] + sprite.frame.contents * sw;
-  return Curry.app(context.drawImage, [
-    sprite.img,
-    sx,
-    match[1],
-    sw,
-    match$1[1],
-    param[0],
-    param[1],
-    match$2[0],
-    match$2[1]
-  ]);
+  return context.drawImage(sprite.img, sx, match[1], sw, match$1[1], param[0], param[1], match$2[0], match$2[1]);
 }
 
 function draw_bgd(bgd, off_x) {
@@ -1480,34 +1474,34 @@ function draw_bgd(bgd, off_x) {
 }
 
 function clear_canvas(canvas) {
-  let context = Curry._1(canvas.getContext, "2d");
+  let context = canvas.getContext("2d");
   let cwidth = canvas.width;
   let cheight = canvas.height;
-  Curry._4(context.clearRect, 0, 0, cwidth, cheight);
+  context.clearRect(0, 0, cwidth, cheight);
 }
 
 function hud(canvas, score, coins) {
   let score_string = String(score);
   let coin_string = String(coins);
-  let context = Curry._1(canvas.getContext, "2d");
+  let context = canvas.getContext("2d");
   context.font = "10px 'Press Start 2P'";
-  Curry._3(context.fillText, "Score: " + score_string, canvas.width - 140, 18);
-  Curry._3(context.fillText, "Coins: " + coin_string, 120, 18);
+  context.fillText("Score: " + score_string, canvas.width - 140, 18);
+  context.fillText("Coins: " + coin_string, 120, 18);
 }
 
 function fps(canvas, fps_val) {
   let fps_str = String(fps_val | 0);
-  let context = Curry._1(canvas.getContext, "2d");
-  Curry._3(context.fillText, fps_str, 10, 18);
+  let context = canvas.getContext("2d");
+  context.fillText(fps_str, 10, 18);
 }
 
 function game_win(ctx) {
-  Curry._4(ctx.rect, 0, 0, 512, 512);
+  ctx.rect(0, 0, 512, 512);
   ctx.fillStyle = "black";
-  Curry._1(ctx.fill, undefined);
+  ctx.fill();
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
-  Curry._3(ctx.fillText, "You win!", 180, 128);
+  ctx.fillText("You win!", 180, 128);
   throw {
     RE_EXN_ID: "Failure",
     _1: "Game over.",
@@ -1516,12 +1510,12 @@ function game_win(ctx) {
 }
 
 function game_loss(ctx) {
-  Curry._4(ctx.rect, 0, 0, 512, 512);
+  ctx.rect(0, 0, 512, 512);
   ctx.fillStyle = "black";
-  Curry._1(ctx.fill, undefined);
+  ctx.fill();
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
-  Curry._3(ctx.fillText, "GAME OVER. You lose!", 60, 128);
+  ctx.fillText("GAME OVER. You lose!", 60, 128);
   throw {
     RE_EXN_ID: "Failure",
     _1: "Game over.",
@@ -1656,9 +1650,10 @@ function process_collision(dir, c1, c2, state) {
   let o1$2;
   let t2$1;
   let o2$2;
+  let o1$3;
   switch (c1.TAG) {
     case "Player" :
-        let o1$3 = c1._2;
+        let o1$4 = c1._2;
         let s1$2 = c1._1;
         switch (c2.TAG) {
           case "Player" :
@@ -1672,14 +1667,14 @@ function process_collision(dir, c1, c2, state) {
               let typ$1 = c2._0;
               if (dir === "South") {
                 s1 = s1$2;
-                o1 = o1$3;
+                o1 = o1$4;
                 typ = typ$1;
                 s2 = s2$2;
                 o2 = o2$3;
                 exit = 1;
               } else {
                 s1$1 = s1$2;
-                o1$1 = o1$3;
+                o1$1 = o1$4;
                 t2 = typ$1;
                 s2$1 = s2$2;
                 o2$1 = o2$3;
@@ -1687,7 +1682,7 @@ function process_collision(dir, c1, c2, state) {
               }
               break;
           case "Item" :
-              o1$2 = o1$3;
+              o1$2 = o1$4;
               t2$1 = c2._0;
               o2$2 = c2._2;
               exit = 3;
@@ -1700,14 +1695,14 @@ function process_collision(dir, c1, c2, state) {
                   switch (t) {
                     case "Brick" :
                         if (c1._0 === "BigM") {
-                          collide_block(undefined, dir, o1$3);
+                          collide_block(undefined, dir, o1$4);
                           dec_health(o2$4);
                           return [
                             undefined,
                             undefined
                           ];
                         } else {
-                          collide_block(undefined, dir, o1$3);
+                          collide_block(undefined, dir, o1$4);
                           return [
                             undefined,
                             undefined
@@ -1720,7 +1715,7 @@ function process_collision(dir, c1, c2, state) {
                           undefined
                         ];
                     default:
-                      collide_block(undefined, dir, o1$3);
+                      collide_block(undefined, dir, o1$4);
                       return [
                         undefined,
                         undefined
@@ -1728,8 +1723,8 @@ function process_collision(dir, c1, c2, state) {
                   }
                 } else {
                   let updated_block = evolve_block(o2$4, context);
-                  let spawned_item = spawn_above(o1$3.dir, o2$4, t._0, context);
-                  collide_block(undefined, dir, o1$3);
+                  let spawned_item = spawn_above(o1$4.dir, o2$4, t._0, context);
+                  collide_block(undefined, dir, o1$4);
                   return [
                     spawned_item,
                     updated_block
@@ -1745,20 +1740,20 @@ function process_collision(dir, c1, c2, state) {
                       undefined
                     ];
                   }
-                  exit$1 = 4;
+                  exit$1 = 5;
                 } else {
-                  exit$1 = 4;
+                  exit$1 = 5;
                 }
-                if (exit$1 === 4) {
+                if (exit$1 === 5) {
                   if (dir === "South") {
                     state.multiplier = 1;
-                    collide_block(undefined, dir, o1$3);
+                    collide_block(undefined, dir, o1$4);
                     return [
                       undefined,
                       undefined
                     ];
                   }
-                  collide_block(undefined, dir, o1$3);
+                  collide_block(undefined, dir, o1$4);
                   return [
                     undefined,
                     undefined
@@ -1771,26 +1766,26 @@ function process_collision(dir, c1, c2, state) {
         }
         break;
     case "Enemy" :
-        let o1$4 = c1._2;
+        let o1$5 = c1._2;
         let s1$3 = c1._1;
         let t1 = c1._0;
         switch (c2.TAG) {
           case "Player" :
-              let o1$5 = c2._2;
+              let o1$6 = c2._2;
               let s1$4 = c2._1;
               if (dir === "North") {
                 s1 = s1$4;
-                o1 = o1$5;
+                o1 = o1$6;
                 typ = t1;
                 s2 = s1$3;
-                o2 = o1$4;
+                o2 = o1$5;
                 exit = 1;
               } else {
                 s1$1 = s1$4;
-                o1$1 = o1$5;
+                o1$1 = o1$6;
                 t2 = t1;
                 s2$1 = s1$3;
-                o2$1 = o1$4;
+                o2$1 = o1$5;
                 exit = 2;
               }
               break;
@@ -1842,7 +1837,7 @@ function process_collision(dir, c1, c2, state) {
                         
                       }
                       if (exit$3 === 4) {
-                        rev_dir(o1$4, t1, s1$3);
+                        rev_dir(o1$5, t1, s1$3);
                         rev_dir(o2$5, t2$2, s2$3);
                         return [
                           undefined,
@@ -1854,14 +1849,14 @@ function process_collision(dir, c1, c2, state) {
               }
               switch (exit$2) {
                 case 1 :
-                    dec_health(o1$4);
+                    dec_health(o1$5);
                     dec_health(o2$5);
                     return [
                       undefined,
                       undefined
                     ];
                 case 2 :
-                    if (o1$4.vel.x === 0) {
+                    if (o1$5.vel.x === 0) {
                       rev_dir(o2$5, t2$2, s2$3);
                       return [
                         undefined,
@@ -1876,13 +1871,13 @@ function process_collision(dir, c1, c2, state) {
                     }
                 case 3 :
                     if (o2$5.vel.x === 0) {
-                      rev_dir(o1$4, t1, s1$3);
+                      rev_dir(o1$5, t1, s1$3);
                       return [
                         undefined,
                         undefined
                       ];
                     } else {
-                      dec_health(o1$4);
+                      dec_health(o1$5);
                       return [
                         undefined,
                         undefined
@@ -1902,67 +1897,56 @@ function process_collision(dir, c1, c2, state) {
               switch (dir) {
                 case "North" :
                 case "South" :
-                    collide_block(undefined, dir, o1$4);
-                    return [
-                      undefined,
-                      undefined
-                    ];
+                    o1$3 = o1$5;
+                    exit = 4;
+                    break;
                 case "East" :
                 case "West" :
-                    exit$4 = 4;
+                    exit$4 = 5;
                     break;
                 
               }
-              if (exit$4 === 4) {
+              if (exit$4 === 5) {
                 let exit$5 = 0;
                 let typ$2;
                 switch (t1) {
                   case "GKoopaShell" :
                       if (typeof t2$3 !== "object") {
-                        if (t2$3 === "Brick") {
-                          dec_health(o2$6);
-                          reverse_left_right(o1$4);
-                          return [
-                            undefined,
-                            undefined
-                          ];
-                        }
-                        exit$5 = 5;
+                        exit$5 = t2$3 === "Brick" ? 7 : 6;
                       } else {
                         typ$2 = t2$3._0;
-                        exit$5 = 6;
+                        exit$5 = 8;
                       }
                       break;
                   case "RKoopaShell" :
                       if (typeof t2$3 !== "object") {
-                        if (t2$3 === "Brick") {
-                          dec_health(o2$6);
-                          reverse_left_right(o1$4);
-                          return [
-                            undefined,
-                            undefined
-                          ];
-                        }
-                        exit$5 = 5;
+                        exit$5 = t2$3 === "Brick" ? 7 : 6;
                       } else {
                         typ$2 = t2$3._0;
-                        exit$5 = 6;
+                        exit$5 = 8;
                       }
                       break;
                   default:
-                    exit$5 = 5;
+                    exit$5 = 6;
                 }
                 switch (exit$5) {
-                  case 5 :
-                      rev_dir(o1$4, t1, s1$3);
+                  case 6 :
+                      rev_dir(o1$5, t1, s1$3);
                       return [
                         undefined,
                         undefined
                       ];
-                  case 6 :
+                  case 7 :
+                      dec_health(o2$6);
+                      reverse_left_right(o1$5);
+                      return [
+                        undefined,
+                        undefined
+                      ];
+                  case 8 :
                       let updated_block$1 = evolve_block(o2$6, context);
-                      let spawned_item$1 = spawn_above(o1$4.dir, o2$6, typ$2, context);
-                      rev_dir(o1$4, t1, s1$3);
+                      let spawned_item$1 = spawn_above(o1$5.dir, o2$6, typ$2, context);
+                      rev_dir(o1$5, t1, s1$3);
                       return [
                         updated_block$1,
                         spawned_item$1
@@ -1993,11 +1977,9 @@ function process_collision(dir, c1, c2, state) {
               switch (dir) {
                 case "North" :
                 case "South" :
-                    collide_block(undefined, dir, o2$7);
-                    return [
-                      undefined,
-                      undefined
-                    ];
+                    o1$3 = o2$7;
+                    exit = 4;
+                    break;
                 case "East" :
                 case "West" :
                     reverse_left_right(o2$7);
@@ -2007,6 +1989,7 @@ function process_collision(dir, c1, c2, state) {
                     ];
                 
               }
+              break;
           
         }
         break;
@@ -2091,7 +2074,7 @@ function process_collision(dir, c1, c2, state) {
               ];
           case "FireFlower" :
           case "Star" :
-              exit$6 = 4;
+              exit$6 = 5;
               break;
           case "Coin" :
               state.coins = state.coins + 1 | 0;
@@ -2103,7 +2086,7 @@ function process_collision(dir, c1, c2, state) {
               ];
           
         }
-        if (exit$6 === 4) {
+        if (exit$6 === 5) {
           dec_health(o2$2);
           update_score(state, 1000);
           return [
@@ -2112,19 +2095,25 @@ function process_collision(dir, c1, c2, state) {
           ];
         }
         break;
+    case 4 :
+        collide_block(undefined, dir, o1$3);
+        return [
+          undefined,
+          undefined
+        ];
     
   }
 }
 
 function broad_phase(collid, all_collids, state) {
   let obj = collid._2;
-  return List.filter(function (c) {
+  return List.filter((function (c) {
     if (in_viewport(state.vpt, obj.pos) || is_player(collid)) {
       return true;
     } else {
       return out_of_viewport_below(state.vpt, obj.pos.y);
     }
-  })(all_collids);
+  }), all_collids);
 }
 
 function check_collisions(collid, all_collids, state) {
@@ -2210,7 +2199,7 @@ function update_collidable(state, collid, all_collids) {
   return evolved;
 }
 
-function translate_keys(param) {
+function translate_keys() {
   let ctrls_0 = [
     pressed_keys.left,
     "CLeft"
@@ -2288,7 +2277,7 @@ function run_update_collid(state, collid, all_collids) {
 
 function update_loop(canvas, param, map_dim) {
   let player = param[0];
-  let ctx = Curry._1(canvas.getContext, "2d");
+  let ctx = canvas.getContext("2d");
   let cwidth = canvas.width / 1;
   let cheight = canvas.height / 1;
   let viewport = make$3([
@@ -2305,7 +2294,7 @@ function update_loop(canvas, param, map_dim) {
     multiplier: 1,
     game_over: false
   };
-  Curry._2(state.ctx.scale, 1, 1);
+  state.ctx.scale(1, 1);
   let update_helper = function (time, state, player, objs, parts) {
     if (state.game_over === true) {
       return game_win(state.ctx);
@@ -3293,7 +3282,7 @@ function generate(w, h, context) {
   ];
 }
 
-function init(param) {
+function init() {
   Random.self_init();
 }
 
@@ -3321,7 +3310,7 @@ function load(param) {
       Error: new Error()
     };
   }
-  let context = Curry._1(canvas.getContext, "2d");
+  let context = canvas.getContext("2d");
   document.addEventListener("keydown", keydown, true);
   document.addEventListener("keyup", keyup, true);
   Random.self_init();

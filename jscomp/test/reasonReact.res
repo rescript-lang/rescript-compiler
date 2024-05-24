@@ -30,7 +30,7 @@ external cloneElement: (reactElement, ~props: {..}=?, array<reactElement>) => re
 external createElementVerbatim: 'a = "createElement"
 
 let createDomElement = (s, ~props, children) => {
-  let vararg = [Obj.magic(s), Obj.magic(props)] |> Js.Array.concat(children)
+  let vararg = [Obj.magic(s), Obj.magic(props)]->Js.Array2.concat(children)
   /* Use varargs to avoid warnings on duplicate keys in children */
   Obj.magic(createElementVerbatim)["apply"](Js.Nullable.null, vararg)
 }
@@ -252,56 +252,6 @@ let element = (
     )
   }
 }
-
-let wrapReasonForJs = (
-  ~component,
-  jsPropsToReason: jsPropsToReason<'jsProps, 'state, 'retainedProps, 'action>,
-) => {
-  let jsPropsToReason: jsPropsToReason<jsProps, 'state, 'retainedProps, 'action> = Obj.magic(
-    jsPropsToReason,
-  ) /* cast 'jsProps to jsProps */
-  let uncurriedJsPropsToReason: uncurriedJsPropsToReason<
-    jsProps,
-    'state,
-    'retainedProps,
-    'action,
-  > = (. jsProps) => jsPropsToReason(jsProps)
-  Obj.magic(component.reactClassInternal)["prototype"]["jsPropsToReason"] = Some(
-    uncurriedJsPropsToReason,
-  )
-  component.reactClassInternal
-}
-
-module WrapProps = {
-  /* We wrap the props for reason->reason components, as a marker that "these props were passed from another
-   reason component" */
-  let wrapProps = (
-    ~reactClass,
-    ~props,
-    children,
-    ~key: Js.nullable<string>,
-    ~ref: Js.nullable<Js.nullable<reactRef> => unit>,
-  ) => {
-    let props = Js.Obj.assign(
-      Js.Obj.assign(Js.Obj.empty(), Obj.magic(props)),
-      {"ref": ref, "key": key},
-    )
-    let varargs = [Obj.magic(reactClass), Obj.magic(props)] |> Js.Array.concat(Obj.magic(children))
-    /* Use varargs under the hood */
-    Obj.magic(createElementVerbatim)["apply"](Js.Nullable.null, varargs)
-  }
-  let dummyInteropComponent = basicComponent("interop")
-  let wrapJsForReason = (~reactClass, ~props, children): component<
-    stateless,
-    noRetainedProps,
-    _,
-  > => {
-    let jsElementWrapped = Some(wrapProps(~reactClass, ~props, children))
-    {...dummyInteropComponent, jsElementWrapped: jsElementWrapped}
-  }
-}
-
-let wrapJsForReason = WrapProps.wrapJsForReason
 
 @module("react") external fragment: 'a = "Fragment"
 

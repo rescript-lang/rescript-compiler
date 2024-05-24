@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
-let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -18,7 +17,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -68,7 +67,7 @@ eq("File \"gpr496_test.res\", line 32, characters 12-19", expected, u);
 eq("File \"gpr496_test.res\", line 34, characters 12-19", expected, expected2);
 
 function ff(x, y) {
-  return Caml.bool_min(x, Curry._1(y, undefined));
+  return Caml.bool_min(x, y());
 }
 
 eq("File \"gpr496_test.res\", line 37, characters 12-19", true < false ? true : false, false);

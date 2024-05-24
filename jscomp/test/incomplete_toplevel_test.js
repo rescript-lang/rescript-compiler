@@ -2,7 +2,7 @@
 'use strict';
 
 
-function f(param) {
+function f() {
   console.log("no inline");
   return [
     1,

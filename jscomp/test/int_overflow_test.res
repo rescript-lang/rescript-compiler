@@ -91,8 +91,8 @@ Mt.from_pair_suites(
     ("int_literal_flow2", _ => Eq(-1l, Int32.of_int(0xffffffff))),
     ("int_literal_flow3", _ => Eq(-1l, Int32.of_int(0xfffffffff))),
     ("int32_mul", _ => Eq(-33554431l, Int32.mul(0xffffffl, 0xffffffl))),
-    (__LOC__, _ => Eq(\"@@"(int_of_float, Js.Float.fromString("3")), 3)),
+    (__LOC__, _ => Eq(int_of_float(Js.Float.fromString("3")), 3)),
     /* FIXME */
-    (__LOC__, _ => Eq(\"@@"(int_of_float, Js.Float.fromString("3.2")), 3)),
+    (__LOC__, _ => Eq(int_of_float(Js.Float.fromString("3.2")), 3)),
   },
 )

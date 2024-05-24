@@ -2,7 +2,6 @@
 'use strict';
 
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 let Queue = require("../../lib/js/queue.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -37,7 +36,7 @@ let Q = {
 
 function does_raise(f, q) {
   try {
-    Curry._1(f, q);
+    f(q);
     return false;
   }
   catch (raw_exn){

@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 
 function f(v) {
   if (v % 2 === 0) {
@@ -48,7 +47,7 @@ let vvv = {
   contents: 0
 };
 
-function fff(param) {
+function fff() {
   console.log("x");
   console.log("x");
   vvv.contents = vvv.contents + 1 | 0;
@@ -64,14 +63,16 @@ function abc(x, y, z) {
   return (x + y | 0) + z | 0;
 }
 
-let abc_u = abc;
+function abc_u(x, y, z) {
+  return abc(x, y, z);
+}
 
 fff();
 
 Mt.from_pair_suites("Ffi_arity_test", {
   hd: [
     "File \"ffi_arity_test.res\", line 51, characters 7-14",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: v,
@@ -86,7 +87,7 @@ Mt.from_pair_suites("Ffi_arity_test", {
   tl: {
     hd: [
       "File \"ffi_arity_test.res\", line 52, characters 7-14",
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: vv,
@@ -101,7 +102,7 @@ Mt.from_pair_suites("Ffi_arity_test", {
     tl: {
       hd: [
         "File \"ffi_arity_test.res\", line 53, characters 7-14",
-        (function (param) {
+        (function () {
           return {
             TAG: "Eq",
             _0: hh,
@@ -119,10 +120,10 @@ Mt.from_pair_suites("Ffi_arity_test", {
 });
 
 function bar(fn) {
-  return Curry._1(fn, undefined);
+  return fn();
 }
 
-(Curry._1((function(){console.log("forgiving arity")}), undefined));
+((function(){console.log("forgiving arity")})());
 
 exports.f = f;
 exports.v = v;

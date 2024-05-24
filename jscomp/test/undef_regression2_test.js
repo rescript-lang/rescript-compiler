@@ -17,7 +17,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -34,7 +34,7 @@ function ok(loc, x) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Ok",
           _0: x
@@ -49,7 +49,7 @@ let match = typeof ___undefined_value === "undefined" ? undefined : ___undefined
 
 let a = match !== undefined ? 2 : 1;
 
-function test(param) {
+function test() {
   let match = typeof __DEV__ === "undefined" ? undefined : __DEV__;
   if (match !== undefined) {
     console.log("dev mode");
@@ -58,7 +58,7 @@ function test(param) {
   }
 }
 
-function test2(param) {
+function test2() {
   let f = typeof __filename === "undefined" ? undefined : __filename;
   if (f !== undefined) {
     console.log(f);
@@ -67,7 +67,7 @@ function test2(param) {
   }
 }
 
-function test3(param) {
+function test3() {
   if (Caml_option.undefined_to_opt(typeof __DEV__ === "undefined" ? undefined : __DEV__) === undefined) {
     console.log("production mode");
     return;

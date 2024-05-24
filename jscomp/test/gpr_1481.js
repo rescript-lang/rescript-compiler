@@ -3,7 +3,7 @@
 
 let Moduleid = require("#moduleid");
 
-function f(param) {
+function f() {
   return Moduleid.name;
 }
 

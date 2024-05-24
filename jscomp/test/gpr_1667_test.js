@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -27,6 +27,10 @@ function eq(loc, x, y) {
     tl: suites.contents
   };
 }
+
+(function (z) {
+  return 0;
+})(false) === 0;
 
 eq("File \"gpr_1667_test.res\", line 24, characters 5-12", 0, 0);
 

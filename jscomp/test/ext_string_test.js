@@ -3,7 +3,6 @@
 
 let List = require("../../lib/js/list.js");
 let Bytes = require("../../lib/js/bytes.js");
-let Curry = require("../../lib/js/curry.js");
 let $$String = require("../../lib/js/string.js");
 let Caml_bytes = require("../../lib/js/caml_bytes.js");
 let Caml_string = require("../../lib/js/caml_string.js");
@@ -31,7 +30,7 @@ function split_by(keep_emptyOpt, is_delim, str) {
         };
       }
     }
-    if (Curry._1(is_delim, Caml_string.get(str, pos))) {
+    if (is_delim(Caml_string.get(str, pos))) {
       let new_len = (last_pos - pos | 0) - 1 | 0;
       if (new_len !== 0 || keep_empty) {
         let v = $$String.sub(str, pos + 1 | 0, new_len);
@@ -207,7 +206,7 @@ function unsafe_for_all_range(s, _start, finish, p) {
     if (start > finish) {
       return true;
     }
-    if (!Curry._1(p, s.codePointAt(start))) {
+    if (!p(s.codePointAt(start))) {
       return false;
     }
     _start = start + 1 | 0;
@@ -217,14 +216,14 @@ function unsafe_for_all_range(s, _start, finish, p) {
 
 function for_all_range(s, start, finish, p) {
   let len = s.length;
-  if (start < 0 || finish >= len) {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Ext_string_test.for_all_range",
-      Error: new Error()
-    };
+  if (!(start < 0 || finish >= len)) {
+    return unsafe_for_all_range(s, start, finish, p);
   }
-  return unsafe_for_all_range(s, start, finish, p);
+  throw {
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Ext_string_test.for_all_range",
+    Error: new Error()
+  };
 }
 
 function for_all(p, s) {
@@ -297,25 +296,25 @@ function contain_substring(s, sub) {
 
 function non_overlap_count(sub, s) {
   let sub_len = sub.length;
-  if (sub.length === 0) {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Ext_string_test.non_overlap_count",
-      Error: new Error()
+  if (sub.length !== 0) {
+    let _acc = 0;
+    let _off = 0;
+    while(true) {
+      let off = _off;
+      let acc = _acc;
+      let i = find(off, sub, s);
+      if (i < 0) {
+        return acc;
+      }
+      _off = i + sub_len | 0;
+      _acc = acc + 1 | 0;
+      continue;
     };
   }
-  let _acc = 0;
-  let _off = 0;
-  while(true) {
-    let off = _off;
-    let acc = _acc;
-    let i = find(off, sub, s);
-    if (i < 0) {
-      return acc;
-    }
-    _off = i + sub_len | 0;
-    _acc = acc + 1 | 0;
-    continue;
+  throw {
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Ext_string_test.non_overlap_count",
+    Error: new Error()
   };
 }
 
@@ -545,14 +544,14 @@ function unsafe_no_char_idx(x, ch, _i, last_idx) {
 
 function no_char(x, ch, i, len) {
   let str_len = x.length;
-  if (i < 0 || i >= str_len || len >= str_len) {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Ext_string_test.no_char",
-      Error: new Error()
-    };
+  if (!(i < 0 || i >= str_len || len >= str_len)) {
+    return unsafe_no_char(x, ch, i, len);
   }
-  return unsafe_no_char(x, ch, i, len);
+  throw {
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Ext_string_test.no_char",
+    Error: new Error()
+  };
 }
 
 function no_slash(x) {

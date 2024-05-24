@@ -14,16 +14,12 @@ let suites = {
   contents: /* [] */0
 };
 
-function eq(loc) {
-  return function (param, param$1) {
-    return Mt_global.collect_eq(test_id, suites, loc, param, param$1);
-  };
+function eq(loc, a, b) {
+  Mt_global.collect_eq(test_id, suites, loc, a, b);
 }
 
-function approx(loc) {
-  return function (param, param$1) {
-    return Mt_global.collect_approx(test_id, suites, loc, param, param$1);
-  };
+function approx(loc, a, b) {
+  Mt_global.collect_approx(test_id, suites, loc, a, b);
 }
 
 let bigint_compare = Caml.bigint_compare;
@@ -86,89 +82,89 @@ function bigint_asr(prim0, prim1) {
   return (prim0 >> prim1);
 }
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 26, characters 5-12", Caml.bigint_compare(1n, 1n), 0);
+eq("File \"bigint_test.res\", line 26, characters 5-12", Caml.bigint_compare(1n, 1n), 0);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 27, characters 5-12", Caml_obj.compare(1n, 1n), 0);
+eq("File \"bigint_test.res\", line 27, characters 5-12", Caml_obj.compare(1n, 1n), 0);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 28, characters 5-12", Caml.bigint_compare(-0n, -1n), 1);
+eq("File \"bigint_test.res\", line 28, characters 5-12", Caml.bigint_compare(-0n, -1n), 1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 29, characters 5-12", Caml_obj.compare(-0n, -1n), 1);
+eq("File \"bigint_test.res\", line 29, characters 5-12", Caml_obj.compare(-0n, -1n), 1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 30, characters 5-12", Caml.bigint_compare(0n, -1n), 1);
+eq("File \"bigint_test.res\", line 30, characters 5-12", Caml.bigint_compare(0n, -1n), 1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 31, characters 5-12", Caml_obj.compare(0n, -1n), 1);
+eq("File \"bigint_test.res\", line 31, characters 5-12", Caml_obj.compare(0n, -1n), 1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 32, characters 5-12", Caml.bigint_compare(1n, 2n), -1);
+eq("File \"bigint_test.res\", line 32, characters 5-12", Caml.bigint_compare(1n, 2n), -1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 33, characters 5-12", Caml_obj.compare(1n, 2n), -1);
+eq("File \"bigint_test.res\", line 33, characters 5-12", Caml_obj.compare(1n, 2n), -1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 34, characters 5-12", Caml.bigint_compare(1n, 2n), -1);
+eq("File \"bigint_test.res\", line 34, characters 5-12", Caml.bigint_compare(1n, 2n), -1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 35, characters 5-12", Caml_obj.compare(1n, 2n), -1);
+eq("File \"bigint_test.res\", line 35, characters 5-12", Caml_obj.compare(1n, 2n), -1);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 36, characters 5-12", Caml.bigint_compare(1n, 1n), 0);
+eq("File \"bigint_test.res\", line 36, characters 5-12", Caml.bigint_compare(1n, 1n), 0);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 37, characters 5-12", Caml_obj.compare(1n, 1n), 0);
+eq("File \"bigint_test.res\", line 37, characters 5-12", Caml_obj.compare(1n, 1n), 0);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 38, characters 5-12", 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n === 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, true);
+eq("File \"bigint_test.res\", line 38, characters 5-12", 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n === 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, true);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 39, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), true);
+eq("File \"bigint_test.res\", line 39, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), true);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 40, characters 5-12", 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n === 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001n, false);
+eq("File \"bigint_test.res\", line 40, characters 5-12", 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n === 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001n, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 41, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001n), false);
+eq("File \"bigint_test.res\", line 41, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001n), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 42, characters 5-12", 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n === -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, false);
+eq("File \"bigint_test.res\", line 42, characters 5-12", 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n === -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 43, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), false);
+eq("File \"bigint_test.res\", line 43, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 44, characters 5-12", (
+eq("File \"bigint_test.res\", line 44, characters 5-12", (
   1n !== 1n ? (
       1n !== 2n ? 0n : 4n
     ) : 3n
 ) === 3n, true);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 49, characters 5-12", Caml_obj.equal(1n !== 1n ? (
+eq("File \"bigint_test.res\", line 49, characters 5-12", Caml_obj.equal(1n !== 1n ? (
     1n !== 2n ? 0n : 4n
   ) : 3n, 3n), true);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 54, characters 5-12", (
+eq("File \"bigint_test.res\", line 54, characters 5-12", (
   -1n !== -2n ? (
       -1n !== -1n ? 0n : 3n
     ) : 4n
 ) === 3n, true);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 59, characters 5-12", Caml_obj.equal(-1n !== -1n ? (
+eq("File \"bigint_test.res\", line 59, characters 5-12", Caml_obj.equal(-1n !== -1n ? (
     -1n !== 2n ? 0n : 4n
   ) : 3n, 3n), true);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 64, characters 5-12", (
+eq("File \"bigint_test.res\", line 64, characters 5-12", (
   -1000n !== -1000n ? (
       -1000n !== -2n ? 0n : 4n
     ) : 3n
 ) === 3n, true);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 69, characters 5-12", Caml_obj.equal(-1000n !== -1000n ? (
+eq("File \"bigint_test.res\", line 69, characters 5-12", Caml_obj.equal(-1000n !== -1000n ? (
     -1000n !== -2n ? 0n : 4n
   ) : 3n, 3n), true);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 74, characters 5-12", 9n & 1n, 1n);
+eq("File \"bigint_test.res\", line 74, characters 5-12", 9n & 1n, 1n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 75, characters 5-12", 9n | 1n, 9n);
+eq("File \"bigint_test.res\", line 75, characters 5-12", 9n | 1n, 9n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 76, characters 5-12", 9n ^ 1n, 8n);
+eq("File \"bigint_test.res\", line 76, characters 5-12", 9n ^ 1n, 8n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 77, characters 5-12", (9n << 1n), 18n);
+eq("File \"bigint_test.res\", line 77, characters 5-12", (9n << 1n), 18n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 78, characters 5-12", (9n << -1n), 4n);
+eq("File \"bigint_test.res\", line 78, characters 5-12", (9n << -1n), 4n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 79, characters 5-12", (9n >> 1n), 4n);
+eq("File \"bigint_test.res\", line 79, characters 5-12", (9n >> 1n), 4n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 80, characters 5-12", (9n >> -1n), 18n);
+eq("File \"bigint_test.res\", line 80, characters 5-12", (9n >> -1n), 18n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 81, characters 5-12", (-9n >> 1n), -5n);
+eq("File \"bigint_test.res\", line 81, characters 5-12", (-9n >> 1n), -5n);
 
-Mt_global.collect_eq(test_id, suites, "File \"bigint_test.res\", line 82, characters 5-12", (-9n >> -1n), -18n);
+eq("File \"bigint_test.res\", line 82, characters 5-12", (-9n >> -1n), -18n);
 
 Mt.from_pair_suites("Bigint_test", suites.contents);
 

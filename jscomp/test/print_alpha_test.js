@@ -2,17 +2,18 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 
 function f(h, param) {
   console.log(3);
-  return Curry.__2(h);
+  return function (x, y) {
+    return h(x, y);
+  };
 }
 
 Mt.from_pair_suites("Print_alpha_test", {
   hd: [
     "File \"print_alpha_test.res\", line 16, characters 10-17",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: f((function (prim0, prim1) {

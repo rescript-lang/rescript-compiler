@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let Js_list = require("../../lib/js/js_list.js");
-let Js_vector = require("../../lib/js/js_vector.js");
 
 let suites = {
   contents: /* [] */0
@@ -18,7 +17,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -173,11 +172,9 @@ eq("File \"js_list_test.res\", line 29, characters 5-12", Js_list.countBy((funct
   }
 }), 3);
 
-function f(i) {
+let v = Js_list.init(100000, (function (i) {
   return i;
-}
-
-let v = Js_vector.toList(Js_vector.init(100000, f));
+}));
 
 eq("File \"js_list_test.res\", line 31, characters 5-12", Js_list.countBy((function (x) {
   return x % 2 === 0;
@@ -200,13 +197,11 @@ let vvv = Js_list.filter((function (x) {
 
 eq("File \"js_list_test.res\", line 36, characters 5-12", Js_list.length(vvv), 10000);
 
-function f$1(x) {
-  return Math.imul(x, 10);
-}
-
 eq("File \"js_list_test.res\", line 37, characters 5-12", true, Js_list.equal((function (x, y) {
   return x === y;
-}), vvv, Js_vector.toList(Js_vector.init(10000, f$1))));
+}), vvv, Js_list.init(10000, (function (x) {
+  return Math.imul(x, 10);
+}))));
 
 Mt.from_pair_suites("Js_list_test", suites.contents);
 

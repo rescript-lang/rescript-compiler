@@ -2,7 +2,6 @@
 'use strict';
 
 let Caml = require("../../lib/js/caml.js");
-let Curry = require("../../lib/js/curry.js");
 
 function height(param) {
   if (typeof param !== "object") {
@@ -154,20 +153,20 @@ function find(x, _param) {
 
 function timing(label, f) {
   console.time(label);
-  Curry._1(f, undefined);
+  f();
   console.timeEnd(label);
 }
 
-function assertion_test(param) {
+function assertion_test() {
   let m = {
     contents: "Empty"
   };
-  timing("building", (function (param) {
+  timing("building", (function () {
     for(let i = 0; i <= 1000000; ++i){
       m.contents = add(String(i), String(i), m.contents);
     }
   }));
-  timing("querying", (function (param) {
+  timing("querying", (function () {
     for(let i = 0; i <= 1000000; ++i){
       find(String(i), m.contents);
     }

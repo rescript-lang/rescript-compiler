@@ -1,6 +1,6 @@
 let (test_id, suites) = (ref(0), ref(list{}))
-let eq = loc => Mt_global.collect_eq(test_id, suites, loc)
-let approx = loc => Mt_global.collect_approx(test_id, suites, loc)
+let eq = (loc, a, b) => Mt_global.collect_eq(test_id, suites, loc, a, b)
+let approx = (loc, a, b) => Mt_global.collect_approx(test_id, suites, loc, a, b)
 
 let epsilon_float = Int64.float_of_bits(0x3C_B0_00_00_00_00_00_00L)
 
@@ -132,19 +132,15 @@ let () = {
 
 let () = {
   let (a, b) = modf(32.3)
-  \"@@"(
-    Mt.from_pair_suites(__MODULE__),
-    \"@"(
-      {
-        open Mt
-        list{
-          ("mod_float", _ => Approx(mod_float(3.2, 0.5), 0.200000000000000178)),
-          ("modf_float1", _ => Approx(a, 0.299999999999997158)),
-          ("modf_float2", _ => Approx(b, 32.)),
-          ("int_of_float", _ => Eq(int_of_float(3.2), 3)),
-        }
-      },
-      \"@"(from_pairs(results), suites.contents),
-    ),
-  )
+    Mt.from_pair_suites(__MODULE__, {
+      open Mt
+      list{
+        ("mod_float", _ => Approx(mod_float(3.2, 0.5), 0.200000000000000178)),
+        ("modf_float1", _ => Approx(a, 0.299999999999997158)),
+        ("modf_float2", _ => Approx(b, 32.)),
+        ("int_of_float", _ => Eq(int_of_float(3.2), 3)),
+        ...from_pairs(results),
+        ...suites.contents
+      }
+    })
 }

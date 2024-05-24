@@ -2,7 +2,6 @@
 'use strict';
 
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 
@@ -106,7 +105,7 @@ function map(f, x) {
   if (!x) {
     return /* [] */0;
   }
-  let r = Curry._1(f, x.hd);
+  let r = f(x.hd);
   return {
     hd: r,
     tl: map(f, x.tl)
@@ -117,7 +116,7 @@ function mapi(i, f, x) {
   if (!x) {
     return /* [] */0;
   }
-  let r = Curry._2(f, i, x.hd);
+  let r = f(i, x.hd);
   return {
     hd: r,
     tl: mapi(i + 1 | 0, f, x.tl)
@@ -139,7 +138,7 @@ function rev_map(f, l) {
     }
     _x = x.tl;
     _accu = {
-      hd: Curry._1(f, x.hd),
+      hd: f(x.hd),
       tl: accu
     };
     continue;
@@ -152,7 +151,7 @@ function iter(f, _x) {
     if (!x) {
       return;
     }
-    Curry._1(f, x.hd);
+    f(x.hd);
     _x = x.tl;
     continue;
   };
@@ -167,7 +166,7 @@ function iteri(f, l) {
     if (!x) {
       return;
     }
-    Curry._2(f, i, x.hd);
+    f(i, x.hd);
     _x = x.tl;
     _i = i + 1 | 0;
     continue;
@@ -182,14 +181,14 @@ function fold_left(f, _accu, _l) {
       return accu;
     }
     _l = l.tl;
-    _accu = Curry._2(f, accu, l.hd);
+    _accu = f(accu, l.hd);
     continue;
   };
 }
 
 function fold_right(f, l, accu) {
   if (l) {
-    return Curry._2(f, l.hd, fold_right(f, l.tl, accu));
+    return f(l.hd, fold_right(f, l.tl, accu));
   } else {
     return accu;
   }
@@ -198,7 +197,7 @@ function fold_right(f, l, accu) {
 function map2(f, l1, l2) {
   if (l1) {
     if (l2) {
-      let r = Curry._2(f, l1.hd, l2.hd);
+      let r = f(l1.hd, l2.hd);
       return {
         hd: r,
         tl: map2(f, l1.tl, l2.tl)
@@ -233,7 +232,7 @@ function rev_map2(f, l1, l2) {
         _l2 = l2$1.tl;
         _l1 = l1$1.tl;
         _accu = {
-          hd: Curry._2(f, l1$1.hd, l2$1.hd),
+          hd: f(l1$1.hd, l2$1.hd),
           tl: accu
         };
         continue;
@@ -244,14 +243,14 @@ function rev_map2(f, l1, l2) {
         Error: new Error()
       };
     }
-    if (l2$1) {
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.rev_map2",
-        Error: new Error()
-      };
+    if (!l2$1) {
+      return accu;
     }
-    return accu;
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.rev_map2",
+      Error: new Error()
+    };
   };
 }
 
@@ -261,7 +260,7 @@ function iter2(f, _l1, _l2) {
     let l1 = _l1;
     if (l1) {
       if (l2) {
-        Curry._2(f, l1.hd, l2.hd);
+        f(l1.hd, l2.hd);
         _l2 = l2.tl;
         _l1 = l1.tl;
         continue;
@@ -292,7 +291,7 @@ function fold_left2(f, _accu, _l1, _l2) {
       if (l2) {
         _l2 = l2.tl;
         _l1 = l1.tl;
-        _accu = Curry._3(f, accu, l1.hd, l2.hd);
+        _accu = f(accu, l1.hd, l2.hd);
         continue;
       }
       throw {
@@ -301,21 +300,21 @@ function fold_left2(f, _accu, _l1, _l2) {
         Error: new Error()
       };
     }
-    if (l2) {
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.fold_left2",
-        Error: new Error()
-      };
+    if (!l2) {
+      return accu;
     }
-    return accu;
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.fold_left2",
+      Error: new Error()
+    };
   };
 }
 
 function fold_right2(f, l1, l2, accu) {
   if (l1) {
     if (l2) {
-      return Curry._3(f, l1.hd, l2.hd, fold_right2(f, l1.tl, l2.tl, accu));
+      return f(l1.hd, l2.hd, fold_right2(f, l1.tl, l2.tl, accu));
     }
     throw {
       RE_EXN_ID: "Invalid_argument",
@@ -323,14 +322,14 @@ function fold_right2(f, l1, l2, accu) {
       Error: new Error()
     };
   }
-  if (l2) {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "List.fold_right2",
-      Error: new Error()
-    };
+  if (!l2) {
+    return accu;
   }
-  return accu;
+  throw {
+    RE_EXN_ID: "Invalid_argument",
+    _1: "List.fold_right2",
+    Error: new Error()
+  };
 }
 
 function for_all(p, _x) {
@@ -339,7 +338,7 @@ function for_all(p, _x) {
     if (!x) {
       return true;
     }
-    if (!Curry._1(p, x.hd)) {
+    if (!p(x.hd)) {
       return false;
     }
     _x = x.tl;
@@ -353,7 +352,7 @@ function exists(p, _x) {
     if (!x) {
       return false;
     }
-    if (Curry._1(p, x.hd)) {
+    if (p(x.hd)) {
       return true;
     }
     _x = x.tl;
@@ -367,7 +366,7 @@ function for_all2(p, _l1, _l2) {
     let l1 = _l1;
     if (l1) {
       if (l2) {
-        if (!Curry._2(p, l1.hd, l2.hd)) {
+        if (!p(l1.hd, l2.hd)) {
           return false;
         }
         _l2 = l2.tl;
@@ -397,7 +396,7 @@ function exists2(p, _l1, _l2) {
     let l1 = _l1;
     if (l1) {
       if (l2) {
-        if (Curry._2(p, l1.hd, l2.hd)) {
+        if (p(l1.hd, l2.hd)) {
           return true;
         }
         _l2 = l2.tl;
@@ -550,7 +549,7 @@ function find(p, _x) {
     let x = _x;
     if (x) {
       let x$1 = x.hd;
-      if (Curry._1(p, x$1)) {
+      if (p(x$1)) {
         return x$1;
       }
       _x = x.tl;
@@ -563,29 +562,27 @@ function find(p, _x) {
   };
 }
 
-function find_all(p) {
-  return function (param) {
-    let _accu = /* [] */0;
-    let _x = param;
-    while(true) {
-      let x = _x;
-      let accu = _accu;
-      if (!x) {
-        return rev_append(accu, /* [] */0);
-      }
-      let l = x.tl;
-      let x$1 = x.hd;
-      if (Curry._1(p, x$1)) {
-        _x = l;
-        _accu = {
-          hd: x$1,
-          tl: accu
-        };
-        continue;
-      }
-      _x = l;
+function find_all(p, l) {
+  let _accu = /* [] */0;
+  let _x = l;
+  while(true) {
+    let x = _x;
+    let accu = _accu;
+    if (!x) {
+      return rev_append(accu, /* [] */0);
+    }
+    let l$1 = x.tl;
+    let x$1 = x.hd;
+    if (p(x$1)) {
+      _x = l$1;
+      _accu = {
+        hd: x$1,
+        tl: accu
+      };
       continue;
-    };
+    }
+    _x = l$1;
+    continue;
   };
 }
 
@@ -605,7 +602,7 @@ function partition(p, l) {
     }
     let l$1 = x.tl;
     let x$1 = x.hd;
-    if (Curry._1(p, x$1)) {
+    if (p(x$1)) {
       _x = l$1;
       _yes = {
         hd: x$1,
@@ -679,7 +676,7 @@ function merge(cmp, l1, l2) {
   }
   let h2 = l2.hd;
   let h1 = l1.hd;
-  if (Curry._2(cmp, h1, h2) <= 0) {
+  if (cmp(h1, h2) <= 0) {
     return {
       hd: h1,
       tl: merge(cmp, l1.tl, l2)
@@ -727,8 +724,8 @@ function stable_sort(cmp, l) {
             let x3 = match$1.hd;
             let x2 = match.hd;
             let x1 = l.hd;
-            if (Curry._2(cmp, x1, x2) <= 0) {
-              if (Curry._2(cmp, x2, x3) <= 0) {
+            if (cmp(x1, x2) <= 0) {
+              if (cmp(x2, x3) <= 0) {
                 return {
                   hd: x1,
                   tl: {
@@ -739,7 +736,7 @@ function stable_sort(cmp, l) {
                     }
                   }
                 };
-              } else if (Curry._2(cmp, x1, x3) <= 0) {
+              } else if (cmp(x1, x3) <= 0) {
                 return {
                   hd: x1,
                   tl: {
@@ -762,7 +759,7 @@ function stable_sort(cmp, l) {
                   }
                 };
               }
-            } else if (Curry._2(cmp, x1, x3) <= 0) {
+            } else if (cmp(x1, x3) <= 0) {
               return {
                 hd: x2,
                 tl: {
@@ -773,7 +770,7 @@ function stable_sort(cmp, l) {
                   }
                 }
               };
-            } else if (Curry._2(cmp, x2, x3) <= 0) {
+            } else if (cmp(x2, x3) <= 0) {
               return {
                 hd: x2,
                 tl: {
@@ -807,7 +804,7 @@ function stable_sort(cmp, l) {
       if (match$2) {
         let x2$1 = match$2.hd;
         let x1$1 = l.hd;
-        if (Curry._2(cmp, x1$1, x2$1) <= 0) {
+        if (cmp(x1$1, x2$1) <= 0) {
           return {
             hd: x1$1,
             tl: {
@@ -847,7 +844,7 @@ function stable_sort(cmp, l) {
       }
       let h2 = l2$1.hd;
       let h1 = l1.hd;
-      if (Curry._2(cmp, h1, h2) > 0) {
+      if (cmp(h1, h2) > 0) {
         _accu = {
           hd: h1,
           tl: accu
@@ -873,8 +870,8 @@ function stable_sort(cmp, l) {
             let x3 = match$1.hd;
             let x2 = match.hd;
             let x1 = l.hd;
-            if (Curry._2(cmp, x1, x2) > 0) {
-              if (Curry._2(cmp, x2, x3) > 0) {
+            if (cmp(x1, x2) > 0) {
+              if (cmp(x2, x3) > 0) {
                 return {
                   hd: x1,
                   tl: {
@@ -885,7 +882,7 @@ function stable_sort(cmp, l) {
                     }
                   }
                 };
-              } else if (Curry._2(cmp, x1, x3) > 0) {
+              } else if (cmp(x1, x3) > 0) {
                 return {
                   hd: x1,
                   tl: {
@@ -908,7 +905,7 @@ function stable_sort(cmp, l) {
                   }
                 };
               }
-            } else if (Curry._2(cmp, x1, x3) > 0) {
+            } else if (cmp(x1, x3) > 0) {
               return {
                 hd: x2,
                 tl: {
@@ -919,7 +916,7 @@ function stable_sort(cmp, l) {
                   }
                 }
               };
-            } else if (Curry._2(cmp, x2, x3) > 0) {
+            } else if (cmp(x2, x3) > 0) {
               return {
                 hd: x2,
                 tl: {
@@ -953,7 +950,7 @@ function stable_sort(cmp, l) {
       if (match$2) {
         let x2$1 = match$2.hd;
         let x1$1 = l.hd;
-        if (Curry._2(cmp, x1$1, x2$1) > 0) {
+        if (cmp(x1$1, x2$1) > 0) {
           return {
             hd: x1$1,
             tl: {
@@ -993,7 +990,7 @@ function stable_sort(cmp, l) {
       }
       let h2 = l2$1.hd;
       let h1 = l1.hd;
-      if (Curry._2(cmp, h1, h2) <= 0) {
+      if (cmp(h1, h2) <= 0) {
         _accu = {
           hd: h1,
           tl: accu
@@ -1028,9 +1025,9 @@ function sort_uniq(cmp, l) {
             let x3 = match$1.hd;
             let x2 = match.hd;
             let x1 = l.hd;
-            let c = Curry._2(cmp, x1, x2);
+            let c = cmp(x1, x2);
             if (c === 0) {
-              let c$1 = Curry._2(cmp, x2, x3);
+              let c$1 = cmp(x2, x3);
               if (c$1 === 0) {
                 return {
                   hd: x2,
@@ -1055,7 +1052,7 @@ function sort_uniq(cmp, l) {
               }
             }
             if (c < 0) {
-              let c$2 = Curry._2(cmp, x2, x3);
+              let c$2 = cmp(x2, x3);
               if (c$2 === 0) {
                 return {
                   hd: x1,
@@ -1077,7 +1074,7 @@ function sort_uniq(cmp, l) {
                   }
                 };
               }
-              let c$3 = Curry._2(cmp, x1, x3);
+              let c$3 = cmp(x1, x3);
               if (c$3 === 0) {
                 return {
                   hd: x1,
@@ -1110,7 +1107,7 @@ function sort_uniq(cmp, l) {
                 };
               }
             }
-            let c$4 = Curry._2(cmp, x1, x3);
+            let c$4 = cmp(x1, x3);
             if (c$4 === 0) {
               return {
                 hd: x2,
@@ -1132,7 +1129,7 @@ function sort_uniq(cmp, l) {
                 }
               };
             }
-            let c$5 = Curry._2(cmp, x2, x3);
+            let c$5 = cmp(x2, x3);
             if (c$5 === 0) {
               return {
                 hd: x2,
@@ -1175,7 +1172,7 @@ function sort_uniq(cmp, l) {
       if (match$2) {
         let x2$1 = match$2.hd;
         let x1$1 = l.hd;
-        let c$6 = Curry._2(cmp, x1$1, x2$1);
+        let c$6 = cmp(x1$1, x2$1);
         if (c$6 === 0) {
           return {
             hd: x1$1,
@@ -1223,7 +1220,7 @@ function sort_uniq(cmp, l) {
       let h2 = l2$1.hd;
       let t1 = l1.tl;
       let h1 = l1.hd;
-      let c$7 = Curry._2(cmp, h1, h2);
+      let c$7 = cmp(h1, h2);
       if (c$7 === 0) {
         _accu = {
           hd: h1,
@@ -1259,9 +1256,9 @@ function sort_uniq(cmp, l) {
             let x3 = match$1.hd;
             let x2 = match.hd;
             let x1 = l.hd;
-            let c = Curry._2(cmp, x1, x2);
+            let c = cmp(x1, x2);
             if (c === 0) {
-              let c$1 = Curry._2(cmp, x2, x3);
+              let c$1 = cmp(x2, x3);
               if (c$1 === 0) {
                 return {
                   hd: x2,
@@ -1286,7 +1283,7 @@ function sort_uniq(cmp, l) {
               }
             }
             if (c > 0) {
-              let c$2 = Curry._2(cmp, x2, x3);
+              let c$2 = cmp(x2, x3);
               if (c$2 === 0) {
                 return {
                   hd: x1,
@@ -1308,7 +1305,7 @@ function sort_uniq(cmp, l) {
                   }
                 };
               }
-              let c$3 = Curry._2(cmp, x1, x3);
+              let c$3 = cmp(x1, x3);
               if (c$3 === 0) {
                 return {
                   hd: x1,
@@ -1341,7 +1338,7 @@ function sort_uniq(cmp, l) {
                 };
               }
             }
-            let c$4 = Curry._2(cmp, x1, x3);
+            let c$4 = cmp(x1, x3);
             if (c$4 === 0) {
               return {
                 hd: x2,
@@ -1363,7 +1360,7 @@ function sort_uniq(cmp, l) {
                 }
               };
             }
-            let c$5 = Curry._2(cmp, x2, x3);
+            let c$5 = cmp(x2, x3);
             if (c$5 === 0) {
               return {
                 hd: x2,
@@ -1406,7 +1403,7 @@ function sort_uniq(cmp, l) {
       if (match$2) {
         let x2$1 = match$2.hd;
         let x1$1 = l.hd;
-        let c$6 = Curry._2(cmp, x1$1, x2$1);
+        let c$6 = cmp(x1$1, x2$1);
         if (c$6 === 0) {
           return {
             hd: x1$1,
@@ -1454,7 +1451,7 @@ function sort_uniq(cmp, l) {
       let h2 = l2$1.hd;
       let t1 = l1.tl;
       let h1 = l1.hd;
-      let c$7 = Curry._2(cmp, h1, h2);
+      let c$7 = cmp(h1, h2);
       if (c$7 === 0) {
         _accu = {
           hd: h1,

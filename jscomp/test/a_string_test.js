@@ -79,9 +79,9 @@ let suites_1 = {
           (function (param) {
             return {
               TAG: "Eq",
-              _0: List.filter(function (s) {
+              _0: List.filter((function (s) {
                 return s !== "";
-              })(Ext_string_test.split_by(undefined, (function (x) {
+              }), Ext_string_test.split_by(undefined, (function (x) {
                 if (x === /* ' ' */32) {
                   return true;
                 } else {

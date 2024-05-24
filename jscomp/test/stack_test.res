@@ -2,7 +2,7 @@ open Stack
 
 let to_list = v => {
   let acc = ref(list{})
-  while \"@@"(not, is_empty(v)) {
+  while not(is_empty(v)) {
     acc := list{pop(v), ...acc.contents}
   }
   List.rev(acc.contents)

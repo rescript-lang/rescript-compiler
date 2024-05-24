@@ -3,11 +3,11 @@
 
 let Foo_class = require("xx/foo_class");
 
-function f(param) {
+function f() {
   return new Foo_class(3);
 }
 
-function v(param) {
+function v() {
   return Foo_class.ff(3);
 }
 

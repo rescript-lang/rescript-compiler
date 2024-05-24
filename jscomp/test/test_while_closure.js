@@ -2,22 +2,21 @@
 'use strict';
 
 let $$Array = require("../../lib/js/array.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
 let v = {
   contents: 0
 };
 
-let arr = Caml_array.make(10, (function (param) {
+let arr = Caml_array.make(10, (function () {
   
 }));
 
-function f(param) {
+function f() {
   let n = 0;
   while(n < 10) {
     let j = n;
-    Caml_array.set(arr, j, (function (param) {
+    Caml_array.set(arr, j, (function () {
       v.contents = v.contents + j | 0;
     }));
     n = n + 1 | 0;
@@ -27,7 +26,7 @@ function f(param) {
 f();
 
 $$Array.iter((function (x) {
-  Curry._1(x, undefined);
+  x();
 }), arr);
 
 console.log(String(v.contents));

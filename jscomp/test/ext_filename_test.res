@@ -134,7 +134,7 @@ let relative_path = (file_or_dir_1, file_or_dir_2) => {
 
   switch go(dir1, dir2) {
   | list{x, ..._} as ys if x == node_parent => String.concat(node_sep, ys)
-  | ys => \"@@"(String.concat(node_sep), list{node_current, ...ys})
+  | ys => String.concat(node_sep, list{node_current, ...ys})
   }
 }
 
@@ -214,10 +214,10 @@ let find_package_json_dir = cwd => find_root_filename(~cwd, Test_literals.bsconf
 let package_dir = Lazy.from_fun(() => find_package_json_dir(Lazy.force(cwd)))
 
 let module_name_of_file = file =>
-  String.capitalize_ascii(\"@@"(Filename.chop_extension, Filename.basename(file)))
+  String.capitalize_ascii(Filename.chop_extension(Filename.basename(file)))
 
 let module_name_of_file_if_any = file =>
-  String.capitalize_ascii(\"@@"(chop_extension_if_any, Filename.basename(file)))
+  String.capitalize_ascii(chop_extension_if_any(Filename.basename(file)))
 
 /* For win32 or case insensitve OS 
     [\".cmj\"] is the same as [\".CMJ\"]

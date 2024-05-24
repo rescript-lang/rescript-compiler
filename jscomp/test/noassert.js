@@ -2,7 +2,7 @@
 'use strict';
 
 
-function f(param) {
+function f() {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -14,7 +14,7 @@ function f(param) {
   };
 }
 
-function h(param) {
+function h() {
   
 }
 

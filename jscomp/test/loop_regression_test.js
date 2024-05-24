@@ -3,7 +3,7 @@
 
 let Mt = require("./mt.js");
 
-function f(param) {
+function f() {
   let v = {
     contents: 0
   };

@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -32,19 +32,19 @@ function $$(x, y) {
   return x + y | 0;
 }
 
+let v = 3;
+
 function $$$plus(x, y) {
   return Math.imul(x, y);
 }
 
-eq("File \"dollar_escape_test.res\", line 17, characters 3-10", 3, 3);
+let u = 3;
 
-eq("File \"dollar_escape_test.res\", line 18, characters 3-10", 3, 3);
+eq("File \"dollar_escape_test.res\", line 17, characters 3-10", v, 3);
+
+eq("File \"dollar_escape_test.res\", line 18, characters 3-10", u, 3);
 
 Mt.from_pair_suites("Dollar_escape_test", suites.contents);
-
-let v = 3;
-
-let u = 3;
 
 exports.suites = suites;
 exports.test_id = test_id;

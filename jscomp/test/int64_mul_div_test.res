@@ -26,8 +26,7 @@ let pairs = [
 ]
 
 let from_pairs = (prefix, pairs) =>
-  \"@@"(
-    Array.to_list,
+  Array.to_list(
     Array.mapi(
       (i, (result, a, b)) => (
         "" ++ prefix ++ "_" ++ __unsafe_cast(i),
@@ -199,77 +198,55 @@ let simple_divs = [
 /* let f a b = a,b, div a b, rem a b;; */
 
 let from = xs =>
-  xs
-  |> Array.to_list
-  |> List.mapi((i, (a, b, c, d)) => (
-    "small_divs " ++ __unsafe_cast(i),
-    _ => Mt.Eq((c, d), (Int64.div(a, b), Int64.rem(a, b))),
-  ))
+  List.mapi(
+    (i, (a, b, c, d)) => (
+      "small_divs " ++ __unsafe_cast(i),
+      _ => Mt.Eq((c, d), (Int64.div(a, b), Int64.rem(a, b))),
+    ),
+    Array.to_list(xs),
+  )
 let to_string = [(0L, "0")]
 
 let int64_compare_tests = [(1L, 2L, -1), (2L, 1L, 1), (2L, 1L, 1)]
 
 let from_compare = xs =>
-  xs
-  |> Array.to_list
-  |> List.mapi((i, (a, b, c)) => (
-    "int64_compare " ++ __unsafe_cast(i),
-    _ => Mt.Eq(c, Int64.compare(a, b)),
-  ))
+  List.mapi(
+    (i, (a, b, c)) => ("int64_compare " ++ __unsafe_cast(i), _ => Mt.Eq(c, Int64.compare(a, b))),
+    Array.to_list(xs),
+  )
 
 let from_to_string = xs =>
-  xs
-  |> Array.to_list
-  |> List.mapi((i, (a, str_a)) => (
-    "to_string " ++ __unsafe_cast(i),
-    _ => Mt.Eq(str_a, Int64.to_string(a)),
-  ))
+  List.mapi(
+    (i, (a, str_a)) => ("to_string " ++ __unsafe_cast(i), _ => Mt.Eq(str_a, Int64.to_string(a))),
+    Array.to_list(xs),
+  )
 
-\"@@"(
-  Mt.from_pair_suites(__MODULE__),
-  \"@"(
-    from_pairs("random", pairs),
-    \"@"(
-      from_pairs("small", small_pairs),
-      \"@"(
-        to_floats
-        |> Array.to_list
-        |> List.mapi((i, (i64, f)) => (
-          "to_float_" ++ __unsafe_cast(i),
-          _ => Mt.Eq(Int64.to_float(i64), f),
-        )),
-        \"@"(
-          of_float_pairs
-          |> Array.to_list
-          |> List.mapi((i, (f, i64)) => (
-            "of_float_" ++ __unsafe_cast(i),
-            _ => Mt.Eq(Int64.of_float(f), i64),
-          )),
-          \"@"(
-            list{
-              (
-                "compare_check_complete",
-                _ => Mt.Eq(Array.map(_ => true, check_complete_compare), check_complete_compare),
-              ),
-            },
-            \"@"(
-              from(simple_divs),
-              \"@"(
-                from_compare(int64_compare_tests),
-                list{
-                  ("div_rem_0", _ => Eq(Int64.div(-1L, 16L), 0L)),
-                  ("div_rem_1", _ => Eq(Int64.rem(-1L, 16L), -1L)),
-                  /* __LOC__, (fun _ -> Eq(Int64.of_float 2e65, -9223372036854775808L)) */
-                  (__LOC__, _ => Eq(Int64.to_float(Int64.max_int), 9.22337203685477581e+18)),
-                },
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
+Mt.from_pair_suites(__MODULE__, list{
+  ...from_pairs("random", pairs),
+  ...from_pairs("small", small_pairs),
+  ...List.mapi(
+    (i, (i64, f)) => ("to_float_" ++ __unsafe_cast(i), _ => Mt.Eq(Int64.to_float(i64), f)),
+    Array.to_list(to_floats),
   ),
-)
+  ...List.mapi(
+    (i, (f, i64)) => ("of_float_" ++ __unsafe_cast(i), _ => Mt.Eq(Int64.of_float(f), i64)),
+    Array.to_list(of_float_pairs),
+  ),
+  ...list{
+    (
+      "compare_check_complete",
+      _ => Mt.Eq(Array.map(_ => true, check_complete_compare), check_complete_compare),
+    ),
+  },
+  ...from(simple_divs),
+  ...from_compare(int64_compare_tests),
+  ...list{
+    ("div_rem_0", _ => Eq(Int64.div(-1L, 16L), 0L)),
+    ("div_rem_1", _ => Eq(Int64.rem(-1L, 16L), -1L)),
+    /* __LOC__, (fun _ -> Eq(Int64.of_float 2e65, -9223372036854775808L)) */
+    (__LOC__, _ => Eq(Int64.to_float(Int64.max_int), 9.22337203685477581e+18)),
+  }
+})
 /*
   Undefined behaviorJ
 

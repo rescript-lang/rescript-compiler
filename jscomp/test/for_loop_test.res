@@ -1,6 +1,6 @@
 let for_3 = x => {
   let v = ref(0)
-  let arr = Array.map((_, _) => (), x)
+  let arr = Array.map(_ => _ => (), x)
   for i in 0 to Array.length(x) - 1 {
     let j = i * 2
     arr[i] = _ => v := v.contents + j
@@ -11,7 +11,7 @@ let for_3 = x => {
 
 let for_4 = x => {
   let v = ref(0)
-  let arr = Array.map((_, _) => (), x)
+  let arr = Array.map(_ => _ => (), x)
   for i in 0 to Array.length(x) - 1 {
     let j = i * 2
     let k = 2 * j
@@ -23,7 +23,7 @@ let for_4 = x => {
 
 let for_5 = (x, u) => {
   let v = ref(0)
-  let arr = Array.map((_, _) => (), x)
+  let arr = Array.map(_ => _ => (), x)
   for i in 0 to Array.length(x) - 1 {
     let _j = i * 2
     let k = 2 * u * u
@@ -35,7 +35,7 @@ let for_5 = (x, u) => {
 
 let for_6 = (x, u) => {
   let v = ref(0)
-  let arr = Array.map((_, _) => (), x)
+  let arr = Array.map(_ => _ => (), x)
   let v4 = ref(0)
   let v5 = ref(0)
   let inspect_3 = ref(-1)
@@ -91,7 +91,7 @@ let for_8 = () => {
 let for_9 = () => {
   let (collect, get) = {
     let v: ref<list<int>> = ref(list{})
-    (x => v := list{x, ...v.contents}, () => \"@@"(Array.of_list, List.rev(v.contents)))
+    (x => v := list{x, ...v.contents}, () => Array.of_list(List.rev(v.contents)))
   }
 
   let i_len = 2
@@ -158,8 +158,8 @@ console.log(result,u)
 */
 
 let suites = list{
-  ("for_loop_test_3", _ => Mt.Eq(90, \"@@"(for_3, Array.make(10, 2)))),
-  ("for_loop_test_4", _ => Mt.Eq(180, \"@@"(for_4, Array.make(10, 2)))),
+  ("for_loop_test_3", _ => Mt.Eq(90, for_3(Array.make(10, 2)))),
+  ("for_loop_test_4", _ => Mt.Eq(180, for_4(Array.make(10, 2)))),
   ("for_loop_test_5", _ => Mt.Eq(2420, for_5(Array.make(10, 2), 11))),
   ("for_loop_test_6", _ => Mt.Eq([30, 1, 2, 3], for_6(Array.make(3, 0), 0))),
   ("for_loop_test_7", _ => Mt.Eq(84, for_7())),

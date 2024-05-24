@@ -66,6 +66,8 @@ function h(x) {
   return x === 0;
 }
 
+let g = /* 'b' */98;
+
 let hihi = f3(3, 0);
 
 let hh10 = "3" === 3;
@@ -172,8 +174,6 @@ Mt.from_pair_suites("int_poly_var.res", suites.contents);
 let eq_suites = Mt.eq_suites;
 
 let u = 1;
-
-let g = /* 'b' */98;
 
 let hh9 = true;
 

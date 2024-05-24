@@ -24,7 +24,7 @@ function add_test(loc, test) {
 }
 
 function eq(loc, x, y) {
-  add_test(loc, (function (param) {
+  add_test(loc, (function () {
     return {
       TAG: "Eq",
       _0: x,

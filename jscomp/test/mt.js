@@ -4,15 +4,15 @@
 let List = require("../../lib/js/list.js");
 let Path = require("path");
 let $$Array = require("../../lib/js/array.js");
-let Curry = require("../../lib/js/curry.js");
 let Assert = require("assert");
 let Process = require("process");
+let Js_promise2 = require("../../lib/js/js_promise2.js");
 
 function assert_fail(msg) {
   Assert.fail(undefined, undefined, msg, "");
 }
 
-function is_mocha(param) {
+function is_mocha() {
   let match = $$Array.to_list(Process.argv);
   if (!match) {
     return false;
@@ -36,7 +36,7 @@ let from_suites = (function from_suites(name, suite) {
             return List.iter((function (param) {
                           var partial_arg = param[1];
                           it(param[0], (function () {
-                                  return Curry._1(partial_arg, undefined);
+                                  return partial_arg(undefined);
                                 }));
                         }), suite);
           }));
@@ -102,7 +102,7 @@ function force_curry(x) {
     tl: /* [] */0
   });
   $$Array.copy([5]);
-  return Curry._1(x, undefined);
+  return x();
 }
 
 let from_pair_suites = (function from_pair_suites(name, suites) {
@@ -113,7 +113,7 @@ let from_pair_suites = (function from_pair_suites(name, suites) {
               return List.iter((function (param) {
                             var code = param[1];
                             it(param[0], (function () {
-                                    return handleCode(Curry._1(code, undefined));
+                                    return handleCode(code(undefined));
                                   }));
                           }), suites);
             }));
@@ -125,7 +125,7 @@ let from_pair_suites = (function from_pair_suites(name, suites) {
           ]);
       return List.iter((function (param) {
                     var name = param[0];
-                    var fn = Curry._1(param[1], undefined);
+                    var fn = param[1](undefined);
                     switch (fn.TAG) {
                       case "Eq" :
                           console.log([
@@ -234,12 +234,11 @@ function old_from_promise_suites_donotuse(name, suites) {
       describe(name, (function () {
         List.iter((function (param) {
           let code = param[1];
-          it(param[0], (function (param) {
-            let arg1 = function (x) {
+          it(param[0], (function () {
+            return Js_promise2.then(code, (function (x) {
               handleCode(x);
               return val_unit;
-            };
-            return code.then(arg1);
+            }));
           }));
         }), suites);
       }));

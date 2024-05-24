@@ -68,13 +68,13 @@ let path = () =>
     | "/" => list{}
     | raw =>
       /* remove the preceeding /, which every pathname seems to have */
-      let raw = Js.String.sliceToEnd(~from=1, raw)
+      let raw = Js.String2.sliceToEnd(raw, ~from=1)
       /* remove the trailing /, which some pathnames might have. Ugh */
-      let raw = switch Js.String.get(raw, Js.String.length(raw) - 1) {
-      | "/" => Js.String.slice(~from=0, ~to_=-1, raw)
+      let raw = switch Js.String2.get(raw, Js.String2.length(raw) - 1) {
+      | "/" => Js.String2.slice(raw, ~from=0, ~to_=-1)
       | _ => raw
       }
-      raw |> Js.String.split("/") |> arrayToList
+      raw->Js.String2.split("/")->arrayToList
     }
   }
 let hash = () =>
@@ -87,7 +87,7 @@ let hash = () =>
     | raw =>
       /* remove the preceeding #, which every hash seems to have.
        Why is this even included in location.hash?? */
-      raw |> Js.String.sliceToEnd(~from=1)
+      raw->Js.String2.sliceToEnd(~from=1)
     }
   }
 let search = () =>
@@ -99,7 +99,7 @@ let search = () =>
     | "?" => ""
     | raw =>
       /* remove the preceeding ?, which every search seems to have. */
-      raw |> Js.String.sliceToEnd(~from=1)
+      raw->Js.String2.sliceToEnd(~from=1)
     }
   }
 let push = path =>

@@ -76,8 +76,7 @@ let f = (x: cxt) => {
 }
 
 let f = (g, x: cxt) =>
-  \"@@"(
-    g,
+  g(
     switch x {
     | A => 0
     | B(_) => 1
@@ -89,8 +88,7 @@ let f = (g, x: cxt) =>
   )
 
 let f = (h, g, x) =>
-  \"@@"(
-    h,
+  h(
     try g(x) catch {
     | Not_found => 0
     },
@@ -106,6 +104,6 @@ let g1 = (x, y) => {
   let u = x + y
   (xx, yy) => xx + yy + u
 }
-let x = g(3, 5, 6)
+let x = g(3, 5)(6)
 
-let v = g1(3, 4, 6)
+let v = g1(3, 4)(6, 7)

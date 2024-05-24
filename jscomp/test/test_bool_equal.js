@@ -16,7 +16,7 @@ function bool_equal(x, y) {
   }
 }
 
-function assertions(param) {
+function assertions() {
   if (!bool_equal(true, true)) {
     throw {
       RE_EXN_ID: "Assert_failure",

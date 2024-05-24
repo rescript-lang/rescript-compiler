@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -17,7 +16,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -38,7 +37,7 @@ function f2(h) {
 }
 
 function f3(h, x, y) {
-  return Curry._2(Curry._2(h.paint, x, y).draw, x, y);
+  return h.paint(x, y).draw(x, y);
 }
 
 function f4(h, x, y) {

@@ -30,7 +30,7 @@ let v = {
   contents: 0
 };
 
-function obj_get(param) {
+function obj_get() {
   return v.contents;
 }
 

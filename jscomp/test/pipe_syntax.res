@@ -4,13 +4,13 @@ include (
 
     let t1 = (x, f) => x->f
 
-    let t2 = (x, f, g) => x->f->g(x, x)->f(x)
+    let t2 = (x, f, g) => x->f->g(x, x)->f
 
     let t3 = (x, f) => x->f(~h=1, ~x=2)
   }: {
     let t0: ('a, 'a => 'a) => 'a
     let t1: ('a, 'a => 'b) => 'b
-    let t2: ('a, ('a, 'a) => 'b, ('a => 'b, 'a, 'a) => 'a) => 'b
+    let t2: ('a, 'a => 'a => 'b, ('a => 'b, 'a, 'a) => 'a) => 'a => 'b
     let t3: ('a, ('a, ~h: int, ~x: int) => 'b) => 'b
   }
 )

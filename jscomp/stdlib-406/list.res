@@ -352,7 +352,7 @@ let rec find_opt = (p, param) =>
     }
   }
 
-let find_all = p => {
+let find_all = (p, l) => {
   let rec find = (accu, param) =>
     switch param {
     | list{} => rev(accu)
@@ -363,7 +363,7 @@ let find_all = p => {
         find(accu, l)
       }
     }
-  find(list{})
+  find(list{}, l)
 }
 
 let filter = find_all

@@ -1,8 +1,8 @@
-@val external describe: (string, (. unit) => unit) => unit = "describe"
+@val external describe: (string, unit => unit) => unit = "describe"
 
-@val external it: (string, @uncurry (unit => unit)) => unit = "it"
+@val external it: (string, unit => unit) => unit = "it"
 
-@val external it_promise: (string, @uncurry (unit => Js.Promise.t<_>)) => unit = "it"
+@val external it_promise: (string, unit => Js.Promise.t<_>) => unit = "it"
 
 @val @module("assert") external eq: ('a, 'a) => unit = "deepEqual"
 
@@ -18,9 +18,7 @@
 
 @val @variadic external dump: array<'a> => unit = "console.log"
 
-@val
-@module("assert")
-/** There is a problem --
+@val @module("assert") /** There is a problem --
     it does not return [unit]
 */
 external throws: (unit => unit) => unit = "throws"
@@ -53,7 +51,7 @@ function from_suites(name, suite) {
             return List.iter((function (param) {
                           var partial_arg = param[1];
                           it(param[0], (function () {
-                                  return Curry._1(partial_arg, undefined);
+                                  return partial_arg(undefined);
                                 }));
                         }), suite);
           }));
@@ -132,7 +130,7 @@ function from_pair_suites(name, suites) {
               return List.iter((function (param) {
                             var code = param[1];
                             it(param[0], (function () {
-                                    return handleCode(Curry._1(code, undefined));
+                                    return handleCode(code(undefined));
                                   }));
                           }), suites);
             }));
@@ -144,7 +142,7 @@ function from_pair_suites(name, suites) {
           ]);
       return List.iter((function (param) {
                     var name = param[0];
-                    var fn = Curry._1(param[1], undefined);
+                    var fn = param[1](undefined);
                     switch (fn.TAG) {
                       case "Eq" :
                           console.log([
@@ -253,20 +251,19 @@ let old_from_promise_suites_donotuse = (name, suites: list<(string, Js.Promise.t
   switch Array.to_list(argv) {
   | list{cmd, ..._} =>
     if is_mocha() {
-      describe(name, (. ()) =>
-        suites |> List.iter(((name, code)) =>
+      describe(name, () => List.iter(((name, code)) =>
           it_promise(
             name,
             _ =>
-              code |> Js.Promise.then_(
+              Js.Promise2.then(
+                code,
                 x => {
                   handleCode(x)
                   val_unit
                 },
               ),
           )
-        )
-      )
+        , suites))
     } else {
       Js.log("promise suites")
     } /* TODO */

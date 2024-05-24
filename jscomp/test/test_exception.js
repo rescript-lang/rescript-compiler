@@ -6,7 +6,7 @@ let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 let Local = /* @__PURE__ */Caml_exceptions.create("Test_exception.Local");
 
-function f(param) {
+function f() {
   throw {
     RE_EXN_ID: Local,
     _1: 3,
@@ -14,14 +14,14 @@ function f(param) {
   };
 }
 
-function g(param) {
+function g() {
   throw {
     RE_EXN_ID: "Not_found",
     Error: new Error()
   };
 }
 
-function h(param) {
+function h() {
   throw {
     RE_EXN_ID: Test_common.U,
     _1: 3,
@@ -29,14 +29,14 @@ function h(param) {
   };
 }
 
-function x(param) {
+function x() {
   throw {
     RE_EXN_ID: Test_common.H,
     Error: new Error()
   };
 }
 
-function xx(param) {
+function xx() {
   throw {
     RE_EXN_ID: "Invalid_argument",
     _1: "x",

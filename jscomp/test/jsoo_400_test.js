@@ -4,7 +4,7 @@
 let Mt = require("./mt.js");
 let Caml_int32 = require("../../lib/js/caml_int32.js");
 
-function u(param) {
+function u() {
   let n;
   try {
     n = "123".length;
@@ -18,10 +18,10 @@ function u(param) {
 Mt.from_pair_suites("Jsoo_400_test", {
   hd: [
     "File \"jsoo_400_test.res\", line 7, characters 38-45",
-    (function (param) {
+    (function () {
       return {
         TAG: "ThrowAny",
-        _0: (function (param) {
+        _0: (function () {
           u();
         })
       };

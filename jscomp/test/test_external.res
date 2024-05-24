@@ -15,4 +15,4 @@ let xx = doc()
 
 let () = alert("hehha")
 
-let b = f("x", 3)
+let b = f("x")(3)

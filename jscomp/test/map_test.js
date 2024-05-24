@@ -4,7 +4,6 @@
 let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 
 function height(param) {
   if (typeof param !== "object") {
@@ -175,7 +174,7 @@ function compare(cmp, m1, m2) {
     if (c !== 0) {
       return c;
     }
-    let c$1 = Curry._2(cmp, e1._1, e2._1);
+    let c$1 = cmp(e1._1, e2._1);
     if (c$1 !== 0) {
       return c$1;
     }
@@ -204,7 +203,7 @@ function equal(cmp, m1, m2) {
     if (e1._0 !== e2._0) {
       return false;
     }
-    if (!Curry._2(cmp, e1._1, e2._1)) {
+    if (!cmp(e1._1, e2._1)) {
       return false;
     }
     _e2 = cons_enum(e2._2, e2._3);

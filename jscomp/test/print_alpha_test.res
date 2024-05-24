@@ -13,6 +13,6 @@ Mt.from_pair_suites(
   __MODULE__,
   {
     open Mt
-    list{(__LOC__, _ => Eq(f(\"+", (), 1, 2), 3))}
+    list{(__LOC__, _ => Eq(f(\"+", ())(1, 2), 3))}
   },
 )

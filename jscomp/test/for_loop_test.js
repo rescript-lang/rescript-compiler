@@ -3,24 +3,25 @@
 
 let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function for_3(x) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map((function (param, param$1) {
-    
+  let arr = $$Array.map((function (param) {
+    return function () {
+      
+    };
   }), x);
   for(let i = 0 ,i_finish = x.length; i < i_finish; ++i){
     let j = (i << 1);
-    Caml_array.set(arr, i, (function (param) {
+    Caml_array.set(arr, i, (function () {
       v.contents = v.contents + j | 0;
     }));
   }
   $$Array.iter((function (x) {
-    Curry._1(x, undefined);
+    x();
   }), arr);
   return v.contents;
 }
@@ -29,18 +30,20 @@ function for_4(x) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map((function (param, param$1) {
-    
+  let arr = $$Array.map((function (param) {
+    return function () {
+      
+    };
   }), x);
   for(let i = 0 ,i_finish = x.length; i < i_finish; ++i){
     let j = (i << 1);
     let k = (j << 1);
-    Caml_array.set(arr, i, (function (param) {
+    Caml_array.set(arr, i, (function () {
       v.contents = v.contents + k | 0;
     }));
   }
   $$Array.iter((function (x) {
-    Curry._1(x, undefined);
+    x();
   }), arr);
   return v.contents;
 }
@@ -49,17 +52,19 @@ function for_5(x, u) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map((function (param, param$1) {
-    
+  let arr = $$Array.map((function (param) {
+    return function () {
+      
+    };
   }), x);
   for(let i = 0 ,i_finish = x.length; i < i_finish; ++i){
     let k = Math.imul((u << 1), u);
-    Caml_array.set(arr, i, (function (param) {
+    Caml_array.set(arr, i, (function () {
       v.contents = v.contents + k | 0;
     }));
   }
   $$Array.iter((function (x) {
-    Curry._1(x, undefined);
+    x();
   }), arr);
   return v.contents;
 }
@@ -68,8 +73,10 @@ function for_6(x, u) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map((function (param, param$1) {
-    
+  let arr = $$Array.map((function (param) {
+    return function () {
+      
+    };
   }), x);
   let v4 = {
     contents: 0
@@ -88,14 +95,14 @@ function for_6(x, u) {
       let k = Math.imul((u << 1), u);
       let h = (v5.contents << 1);
       v2.contents = v2.contents + 1 | 0;
-      Caml_array.set(arr, i, (function (param) {
+      Caml_array.set(arr, i, (function () {
         v.contents = (((((v.contents + k | 0) + v2.contents | 0) + v4.contents | 0) + v5.contents | 0) + h | 0) + u | 0;
       }));
     }
     inspect_3 = v2.contents;
   }
   $$Array.iter((function (x) {
-    Curry._1(x, undefined);
+    x();
   }), arr);
   return [
     v.contents,
@@ -105,49 +112,49 @@ function for_6(x, u) {
   ];
 }
 
-function for_7(param) {
+function for_7() {
   let v = {
     contents: 0
   };
-  let arr = Caml_array.make(21, (function (param) {
+  let arr = Caml_array.make(21, (function () {
     
   }));
   for(let i = 0; i <= 6; ++i){
     for(let j = 0; j <= 2; ++j){
-      Caml_array.set(arr, Math.imul(i, 3) + j | 0, (function (param) {
+      Caml_array.set(arr, Math.imul(i, 3) + j | 0, (function () {
         v.contents = (v.contents + i | 0) + j | 0;
       }));
     }
   }
   $$Array.iter((function (f) {
-    Curry._1(f, undefined);
+    f();
   }), arr);
   return v.contents;
 }
 
-function for_8(param) {
+function for_8() {
   let v = {
     contents: 0
   };
-  let arr = Caml_array.make(21, (function (param) {
+  let arr = Caml_array.make(21, (function () {
     
   }));
   for(let i = 0; i <= 6; ++i){
     let k = (i << 1);
     for(let j = 0; j <= 2; ++j){
       let h = i + j | 0;
-      Caml_array.set(arr, Math.imul(i, 3) + j | 0, (function (param) {
+      Caml_array.set(arr, Math.imul(i, 3) + j | 0, (function () {
         v.contents = (((v.contents + i | 0) + j | 0) + h | 0) + k | 0;
       }));
     }
   }
   $$Array.iter((function (f) {
-    Curry._1(f, undefined);
+    f();
   }), arr);
   return v.contents;
 }
 
-function for_9(param) {
+function for_9() {
   let v = {
     contents: /* [] */0
   };
@@ -157,16 +164,19 @@ function for_9(param) {
       tl: v.contents
     };
   };
+  let get = function () {
+    return $$Array.of_list(List.rev(v.contents));
+  };
   let vv = {
     contents: 0
   };
   let vv2 = {
     contents: 0
   };
-  let arr = Caml_array.make(4, (function (param) {
+  let arr = Caml_array.make(4, (function () {
     
   }));
-  let arr2 = Caml_array.make(2, (function (param) {
+  let arr2 = Caml_array.make(2, (function () {
     
   }));
   for(let i = 0; i <= 1; ++i){
@@ -177,23 +187,23 @@ function for_9(param) {
     for(let j = 0; j <= 1; ++j){
       v$1.contents = v$1.contents + 1 | 0;
       collect(v$1.contents);
-      Caml_array.set(arr, (i << 1) + j | 0, (function (param) {
+      Caml_array.set(arr, (i << 1) + j | 0, (function () {
         vv.contents = vv.contents + v$1.contents | 0;
       }));
     }
-    Caml_array.set(arr2, i, (function (param) {
+    Caml_array.set(arr2, i, (function () {
       vv2.contents = vv2.contents + v$1.contents | 0;
     }));
   }
   $$Array.iter((function (f) {
-    Curry._1(f, undefined);
+    f();
   }), arr);
   $$Array.iter((function (f) {
-    Curry._1(f, undefined);
+    f();
   }), arr2);
   return [[
       vv.contents,
-      $$Array.of_list(List.rev(v.contents)),
+      get(),
       vv2.contents
     ]];
 }

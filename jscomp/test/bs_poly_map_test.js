@@ -37,7 +37,7 @@ function setOfArray(x) {
   return Belt_Set.fromArray(x, Icmp);
 }
 
-function emptyMap(param) {
+function emptyMap() {
   return {
     cmp: Icmp.cmp,
     data: undefined
@@ -51,7 +51,8 @@ function mergeInter(s1, s2) {
     }
     
   }));
-  return Belt_Set.fromArray(Belt_MapDict.keysToArray(m.data), Icmp);
+  let x = Belt_MapDict.keysToArray(m.data);
+  return Belt_Set.fromArray(x, Icmp);
 }
 
 function mergeUnion(s1, s2) {
@@ -61,7 +62,8 @@ function mergeUnion(s1, s2) {
     }
     
   }));
-  return Belt_Set.fromArray(Belt_MapDict.keysToArray(m.data), Icmp);
+  let x = Belt_MapDict.keysToArray(m.data);
+  return Belt_Set.fromArray(x, Icmp);
 }
 
 function mergeDiff(s1, s2) {
@@ -71,7 +73,8 @@ function mergeDiff(s1, s2) {
     }
     
   }));
-  return Belt_Set.fromArray(Belt_MapDict.keysToArray(m.data), Icmp);
+  let x = Belt_MapDict.keysToArray(m.data);
+  return Belt_Set.fromArray(x, Icmp);
 }
 
 function randomRange(i, j) {
@@ -83,19 +86,33 @@ function randomRange(i, j) {
   }));
 }
 
-let u0 = Belt_Map.fromArray(randomRange(0, 100), Icmp);
+let x = randomRange(0, 100);
 
-let u1 = Belt_Map.fromArray(randomRange(30, 120), Icmp);
+let u0 = Belt_Map.fromArray(x, Icmp);
 
-b("File \"bs_poly_map_test.res\", line 64, characters 4-11", Belt_Set.eq(mergeInter(u0, u1), Belt_Set.fromArray(Array_data_util.range(30, 100), Icmp)));
+let x$1 = randomRange(30, 120);
 
-b("File \"bs_poly_map_test.res\", line 65, characters 4-11", Belt_Set.eq(mergeUnion(u0, u1), Belt_Set.fromArray(Array_data_util.range(0, 120), Icmp)));
+let u1 = Belt_Map.fromArray(x$1, Icmp);
 
-b("File \"bs_poly_map_test.res\", line 66, characters 4-11", Belt_Set.eq(mergeDiff(u0, u1), Belt_Set.fromArray(Array_data_util.range(0, 29), Icmp)));
+let x$2 = Array_data_util.range(30, 100);
 
-b("File \"bs_poly_map_test.res\", line 67, characters 4-11", Belt_Set.eq(mergeDiff(u1, u0), Belt_Set.fromArray(Array_data_util.range(101, 120), Icmp)));
+b("File \"bs_poly_map_test.res\", line 59, characters 4-11", Belt_Set.eq(mergeInter(u0, u1), Belt_Set.fromArray(x$2, Icmp)));
 
-let a0 = Belt_Map.fromArray(randomRange(0, 10), Icmp);
+let x$3 = Array_data_util.range(0, 120);
+
+b("File \"bs_poly_map_test.res\", line 60, characters 4-11", Belt_Set.eq(mergeUnion(u0, u1), Belt_Set.fromArray(x$3, Icmp)));
+
+let x$4 = Array_data_util.range(0, 29);
+
+b("File \"bs_poly_map_test.res\", line 61, characters 4-11", Belt_Set.eq(mergeDiff(u0, u1), Belt_Set.fromArray(x$4, Icmp)));
+
+let x$5 = Array_data_util.range(101, 120);
+
+b("File \"bs_poly_map_test.res\", line 62, characters 4-11", Belt_Set.eq(mergeDiff(u1, u0), Belt_Set.fromArray(x$5, Icmp)));
+
+let x$6 = randomRange(0, 10);
+
+let a0 = Belt_Map.fromArray(x$6, Icmp);
 
 let a1 = Belt_Map.set(a0, 3, 33);
 
@@ -120,21 +137,21 @@ let a5 = Belt_Map.remove(a0, 3);
 
 let a6 = Belt_Map.remove(a5, 3);
 
-b("File \"bs_poly_map_test.res\", line 88, characters 4-11", a5 === a6);
+b("File \"bs_poly_map_test.res\", line 83, characters 4-11", a5 === a6);
 
-b("File \"bs_poly_map_test.res\", line 89, characters 4-11", Belt_Map.has(a0, 3));
+b("File \"bs_poly_map_test.res\", line 84, characters 4-11", Belt_Map.has(a0, 3));
 
-b("File \"bs_poly_map_test.res\", line 90, characters 4-11", !Belt_Map.has(a5, 3));
+b("File \"bs_poly_map_test.res\", line 85, characters 4-11", !Belt_Map.has(a5, 3));
 
-b("File \"bs_poly_map_test.res\", line 91, characters 4-11", 3 === Belt_Map.getUndefined(a0, 3));
+b("File \"bs_poly_map_test.res\", line 86, characters 4-11", 3 === Belt_Map.getUndefined(a0, 3));
 
-b("File \"bs_poly_map_test.res\", line 92, characters 4-11", 33 === Belt_Map.getUndefined(a1, 3));
+b("File \"bs_poly_map_test.res\", line 87, characters 4-11", 33 === Belt_Map.getUndefined(a1, 3));
 
-b("File \"bs_poly_map_test.res\", line 93, characters 4-11", Belt_Map.getUndefined(a2, 3) === undefined);
+b("File \"bs_poly_map_test.res\", line 88, characters 4-11", Belt_Map.getUndefined(a2, 3) === undefined);
 
-b("File \"bs_poly_map_test.res\", line 95, characters 4-11", 11 === Belt_Map.getUndefined(a3, 3));
+b("File \"bs_poly_map_test.res\", line 90, characters 4-11", 11 === Belt_Map.getUndefined(a3, 3));
 
-b("File \"bs_poly_map_test.res\", line 96, characters 4-11", Belt_Map.getUndefined(a4, 3) === undefined);
+b("File \"bs_poly_map_test.res\", line 91, characters 4-11", Belt_Map.getUndefined(a4, 3) === undefined);
 
 let a7 = Belt_Map.removeMany(a0, [
   7,
@@ -150,22 +167,24 @@ let a7 = Belt_Map.removeMany(a0, [
   6
 ]);
 
-eq("File \"bs_poly_map_test.res\", line 99, characters 5-12", Belt_MapDict.keysToArray(a7.data), [
+eq("File \"bs_poly_map_test.res\", line 94, characters 5-12", Belt_MapDict.keysToArray(a7.data), [
   9,
   10
 ]);
 
 let a8 = Belt_Map.removeMany(a7, Array_data_util.randomRange(0, 100));
 
-b("File \"bs_poly_map_test.res\", line 101, characters 4-11", Belt_MapDict.isEmpty(a8.data));
+b("File \"bs_poly_map_test.res\", line 96, characters 4-11", Belt_MapDict.isEmpty(a8.data));
 
-let u0$1 = Belt_Map.fromArray(randomRange(0, 100), Icmp);
+let x$7 = randomRange(0, 100);
+
+let u0$1 = Belt_Map.fromArray(x$7, Icmp);
 
 let u1$1 = Belt_Map.set(u0$1, 3, 32);
 
-eq("File \"bs_poly_map_test.res\", line 108, characters 5-12", Belt_Map.get(u1$1, 3), 32);
+eq("File \"bs_poly_map_test.res\", line 103, characters 5-12", Belt_Map.get(u1$1, 3), 32);
 
-eq("File \"bs_poly_map_test.res\", line 109, characters 5-12", Belt_Map.get(u0$1, 3), 3);
+eq("File \"bs_poly_map_test.res\", line 104, characters 5-12", Belt_Map.get(u0$1, 3), 3);
 
 function acc(m, is) {
   return Belt_Array.reduce(is, m, (function (a, i) {
@@ -188,12 +207,14 @@ let m = {
 
 let m1 = acc(m, Belt_Array.concat(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));
 
-b("File \"bs_poly_map_test.res\", line 126, characters 4-11", Belt_Map.eq(m1, Belt_Map.fromArray(Belt_Array.makeBy(31, (function (i) {
+let x$8 = Belt_Array.makeBy(31, (function (i) {
   return [
     i,
     i >= 10 && i <= 20 ? 2 : 1
   ];
-})), Icmp), (function (x, y) {
+}));
+
+b("File \"bs_poly_map_test.res\", line 121, characters 4-11", Belt_Map.eq(m1, Belt_Map.fromArray(x$8, Icmp), (function (x, y) {
   return x === y;
 })));
 
@@ -211,14 +232,16 @@ let v1 = Belt_Map.mergeMany(v0, Belt_Array.map(Array_data_util.randomRange(0, 10
   ];
 })));
 
-let v2 = Belt_Map.fromArray(Belt_Array.map(Array_data_util.randomRange(0, 10000), (function (x) {
+let x$9 = Belt_Array.map(Array_data_util.randomRange(0, 10000), (function (x) {
   return [
     x,
     x
   ];
-})), Icmp);
+}));
 
-b("File \"bs_poly_map_test.res\", line 150, characters 4-11", Belt_Map.eq(v1, v2, (function (x, y) {
+let v2 = Belt_Map.fromArray(x$9, Icmp);
+
+b("File \"bs_poly_map_test.res\", line 145, characters 4-11", Belt_Map.eq(v1, v2, (function (x, y) {
   return x === y;
 })));
 
@@ -242,39 +265,39 @@ let match$1 = match[0];
 
 let match$2 = Belt_Map.get(v3, 10);
 
-b("File \"bs_poly_map_test.res\", line 161, characters 4-11", match$2 !== undefined ? match$2 === 11 : false);
+b("File \"bs_poly_map_test.res\", line 156, characters 4-11", match$2 !== undefined ? match$2 === 11 : false);
 
 let match$3 = Belt_Map.get(v3, -10);
 
-b("File \"bs_poly_map_test.res\", line 168, characters 4-11", match$3 === undefined);
+b("File \"bs_poly_map_test.res\", line 163, characters 4-11", match$3 === undefined);
 
 let match$4 = Belt_Map.get(v4, -10);
 
-b("File \"bs_poly_map_test.res\", line 175, characters 4-11", match$4 !== undefined ? match$4 === 0 : false);
+b("File \"bs_poly_map_test.res\", line 170, characters 4-11", match$4 !== undefined ? match$4 === 0 : false);
 
 let map = Belt_Map.remove({
   cmp: Icmp.cmp,
   data: undefined
 }, 0);
 
-b("File \"bs_poly_map_test.res\", line 181, characters 4-11", Belt_MapDict.isEmpty(map.data));
+b("File \"bs_poly_map_test.res\", line 176, characters 4-11", Belt_MapDict.isEmpty(map.data));
 
 let map$1 = Belt_Map.removeMany({
   cmp: Icmp.cmp,
   data: undefined
 }, [0]);
 
-b("File \"bs_poly_map_test.res\", line 182, characters 4-11", Belt_MapDict.isEmpty(map$1.data));
+b("File \"bs_poly_map_test.res\", line 177, characters 4-11", Belt_MapDict.isEmpty(map$1.data));
 
-b("File \"bs_poly_map_test.res\", line 184, characters 4-11", pres !== undefined ? pres === 5000 : false);
+b("File \"bs_poly_map_test.res\", line 179, characters 4-11", pres !== undefined ? pres === 5000 : false);
 
-b("File \"bs_poly_map_test.res\", line 190, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[0].data), Belt_Array.makeBy(5000, (function (i) {
+b("File \"bs_poly_map_test.res\", line 185, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[0].data), Belt_Array.makeBy(5000, (function (i) {
   return i;
 })), (function (prim0, prim1) {
   return prim0 === prim1;
 })));
 
-b("File \"bs_poly_map_test.res\", line 191, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[1].data), Belt_Array.makeBy(5000, (function (i) {
+b("File \"bs_poly_map_test.res\", line 186, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[1].data), Belt_Array.makeBy(5000, (function (i) {
   return 5001 + i | 0;
 })), (function (prim0, prim1) {
   return prim0 === prim1;
@@ -286,15 +309,15 @@ let match$5 = Belt_Map.split(v7, 5000);
 
 let match$6 = match$5[0];
 
-b("File \"bs_poly_map_test.res\", line 196, characters 4-11", match$5[1] === undefined);
+b("File \"bs_poly_map_test.res\", line 191, characters 4-11", match$5[1] === undefined);
 
-b("File \"bs_poly_map_test.res\", line 202, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[0].data), Belt_Array.makeBy(5000, (function (i) {
+b("File \"bs_poly_map_test.res\", line 197, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[0].data), Belt_Array.makeBy(5000, (function (i) {
   return i;
 })), (function (prim0, prim1) {
   return prim0 === prim1;
 })));
 
-b("File \"bs_poly_map_test.res\", line 203, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[1].data), Belt_Array.makeBy(5000, (function (i) {
+b("File \"bs_poly_map_test.res\", line 198, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[1].data), Belt_Array.makeBy(5000, (function (i) {
   return 5001 + i | 0;
 })), (function (prim0, prim1) {
   return prim0 === prim1;

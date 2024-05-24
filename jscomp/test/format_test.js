@@ -3,7 +3,7 @@
 
 let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
-let Bytes = require("../../lib/js/bytes.js");
+let $$String = require("../../lib/js/string.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_format = require("../../lib/js/caml_format.js");
 
@@ -20,7 +20,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -174,9 +174,7 @@ let literals = {
 
 aux_list("File \"format_test.res\", line 72, characters 18-25", literals);
 
-let s = Caml_format.hexstring_of_float(7.875, -1, /* '-' */45);
-
-eq("File \"format_test.res\", line 74, characters 12-19", Bytes.unsafe_to_string(Bytes.uppercase_ascii(Bytes.unsafe_of_string(s))), "0X1.F8P+2");
+eq("File \"format_test.res\", line 74, characters 12-19", $$String.uppercase_ascii(Caml_format.hexstring_of_float(7.875, -1, /* '-' */45)), "0X1.F8P+2");
 
 function scan_float(loc, s, expect) {
   eq(loc, Caml_format.float_of_string(s), expect);

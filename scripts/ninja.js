@@ -19,13 +19,13 @@ var runtimeMlFiles = runtimeFiles.filter(
   x =>
     !x.startsWith("bs_stdlib_mini") &&
     (x.endsWith(".ml") || x.endsWith(".res")) &&
-    x !== "js.ml"
+    x !== "js.res"
 );
 var runtimeMliFiles = runtimeFiles.filter(
   x =>
     !x.startsWith("bs_stdlib_mini") &&
     (x.endsWith(".mli") || x.endsWith(".resi")) &&
-    x !== "js.mli"
+    x !== "js.resi"
 );
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles);
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))];
@@ -832,6 +832,7 @@ async function runtimeNinja(devmode = true) {
   var compilerTarget = pseudoTarget("$bsc");
   var externalDeps = devmode ? [compilerTarget] : [];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
+
   var templateRuntimeRules = `
 bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime  -nopervasives  -unsafe -w +50 -warn-error A
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
@@ -848,7 +849,7 @@ ${ninjaQuickBuildList([
   ],
   [
     ["js.cmj", "js.cmi"],
-    "js.ml",
+    "js.res",
     "cc",
     ninjaCwd,
     [["bsc_flags", "$bsc_no_open_flags"]],
@@ -939,7 +940,7 @@ ${ninjaQuickBuildList([
   ],
   [
     ["js.cmj", "js.cmi"],
-    "js.ml",
+    "js.res",
     "cc",
     ninjaCwd,
     [["bsc_flags", "$bsc_primitive_flags"]],
@@ -961,14 +962,14 @@ ${ninjaQuickBuildList([
   var jsPrefixSourceFiles = othersDirFiles.filter(
     x =>
       x.startsWith("js") &&
+      x !== "js.res" &&
       (x.endsWith(".ml") ||
         x.endsWith(".mli") ||
         x.endsWith(".res") ||
         x.endsWith(".resi")) &&
       !x.includes(".cppo") &&
       !x.includes(".pp") &&
-      !x.includes("#") &&
-      x !== "js.ml"
+      !x.includes("#")
   );
   var othersFiles = othersDirFiles.filter(
     x =>

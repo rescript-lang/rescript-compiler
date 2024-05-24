@@ -500,9 +500,9 @@ async function classify$10(a) {
     return;
   } else {
     if (Array.isArray(a)) {
-      console.log(function (param) {
-        return Belt_Array.joinWith(a, "-", param);
-      });
+      console.log(Belt_Array.joinWith(a, "-", (function (x) {
+        return x;
+      })));
       return;
     }
     if (a instanceof Promise) {
@@ -527,9 +527,9 @@ let Arr = {
 
 async function classifyAll(t) {
   if (Array.isArray(t)) {
-    console.log(function (param) {
-      return Belt_Array.joinWith(t, "-", param);
-    });
+    console.log(Belt_Array.joinWith(t, "-", (function (x) {
+      return x;
+    })));
     return;
   }
   if (t instanceof Promise) {

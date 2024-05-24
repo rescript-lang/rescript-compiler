@@ -1,4 +1,4 @@
-let f = x => \"+"(x)
+let f = (x, y) => \"+"(x, y)
 let g = f(3, 4)
 
 let h = ref(0)
@@ -13,9 +13,9 @@ let g1 = (x, y) => {
   let () = incr(h)
   (xx, yy) => xx + yy + u
 }
-let x = gg(3, 5, 6)
+let x = gg(3, 5)(6)
 
-let v = g1(3, 4, 6)
+let v = yy => g1(3, 4)(6, yy)
 
 let suites = {
   open Mt
@@ -32,7 +32,7 @@ let suites = {
       ),
     ),
     ("curry3", _ => Eq(x, 14)),
-    (__LOC__, _ => Eq(h.contents, 1)),
+    (__LOC__, _ => Eq(h.contents, 2)),
   }
 }
 

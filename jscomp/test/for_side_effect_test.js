@@ -3,13 +3,13 @@
 
 let Mt = require("./mt.js");
 
-function tst(param) {
+function tst() {
   for(let i = (console.log("hi"), 0) ,i_finish = (console.log("hello"), 3); i <= i_finish; ++i){
     
   }
 }
 
-function test2(param) {
+function test2() {
   let v = 0;
   v = 3;
   v = 10;

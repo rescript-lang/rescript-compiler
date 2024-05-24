@@ -22,8 +22,7 @@ let suites = {
           Bytes.fill(b, 0, len, 'c')
           (Bytes.to_string(b), String.init(len, _ => 'c'))
         }
-        let (a, b) = \"@@"(
-          List.split,
+        let (a, b) = List.split(
           List.map(x => f(x), list{1000, 1024, 1025, 4095, 4096, 5000, 10000}),
         )
         Eq(a, b)

@@ -2,7 +2,6 @@
 'use strict';
 
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 
 function h0(x) {
   return x();
@@ -31,7 +30,7 @@ function h33(x) {
 }
 
 function h34(x) {
-  return Curry._1(x(1, 2, 3), 4);
+  return x(1, 2, 3)(4);
 }
 
 function ocaml_run(b, c) {
@@ -43,7 +42,7 @@ function a0() {
   console.log("hi");
 }
 
-function a1(param) {
+function a1() {
   return function (x) {
     return x;
   };
@@ -57,7 +56,7 @@ function a3(x, y, z) {
   return (x + y | 0) + z | 0;
 }
 
-function xx(param) {
+function xx() {
   return function (param) {
     console.log(3);
   };

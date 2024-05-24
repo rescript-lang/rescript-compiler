@@ -25,16 +25,16 @@ let c = [
   5
 ];
 
-function f(param) {
+function f() {
   Caml_array.set(a, 0, 3.0);
   Caml_array.set(b, 0, 3);
 }
 
-function h(param) {
+function h() {
   return c;
 }
 
-function g(param) {
+function g() {
   f();
   return {
     TAG: "Eq",
@@ -57,7 +57,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "avoid_mutable_inline_test",
-    (function (param) {
+    (function () {
       Caml_array.set(c, 0, 3);
       Caml_array.set(c, 1, 4);
       return {

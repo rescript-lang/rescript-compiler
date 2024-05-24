@@ -52,7 +52,7 @@ let u = Belt_SetInt.intersect(Belt_SetInt.fromArray([
   5
 ]));
 
-b("File \"bs_set_int_test.res\", line 27, characters 11-18", Belt_SetInt.eq(Belt_SetInt.fromArray([3]), u));
+b("File \"bs_set_int_test.res\", line 27, characters 11-18", $eq$tilde(u, [3]));
 
 function range(i, j) {
   return $$Array.init((j - i | 0) + 1 | 0, (function (k) {
@@ -68,9 +68,7 @@ function revRange(i, j) {
 
 let v = Belt_SetInt.fromArray($$Array.append(range(100, 1000), revRange(400, 1500)));
 
-let i = range(100, 1500);
-
-b("File \"bs_set_int_test.res\", line 37, characters 4-11", Belt_SetInt.eq(Belt_SetInt.fromArray(i), v));
+b("File \"bs_set_int_test.res\", line 37, characters 4-11", $eq$tilde(v, range(100, 1500)));
 
 let match = Belt_SetInt.partition(v, (function (x) {
   return x % 3 === 0;
@@ -80,11 +78,11 @@ let l;
 
 let r;
 
-for(let i$1 = 100; i$1 <= 1500; ++i$1){
-  if (i$1 % 3 === 0) {
-    l = Belt_SetInt.add(l, i$1);
+for(let i = 100; i <= 1500; ++i){
+  if (i % 3 === 0) {
+    l = Belt_SetInt.add(l, i);
   } else {
-    r = Belt_SetInt.add(r, i$1);
+    r = Belt_SetInt.add(r, i);
   }
 }
 
@@ -96,41 +94,17 @@ b("File \"bs_set_int_test.res\", line 50, characters 4-11", Belt_SetInt.eq(match
 
 b("File \"bs_set_int_test.res\", line 51, characters 4-11", Belt_SetInt.eq(match[1], nr));
 
-let i$2 = range(50, 100);
+b("File \"bs_set_int_test.res\", line 55, characters 2-9", $eq$tilde(Belt_SetInt.intersect(Belt_SetInt.fromArray(range(1, 100)), Belt_SetInt.fromArray(range(50, 200))), range(50, 100)));
 
-let s = Belt_SetInt.intersect(Belt_SetInt.fromArray(range(1, 100)), Belt_SetInt.fromArray(range(50, 200)));
+b("File \"bs_set_int_test.res\", line 66, characters 2-9", $eq$tilde(Belt_SetInt.union(Belt_SetInt.fromArray(range(1, 100)), Belt_SetInt.fromArray(range(50, 200))), range(1, 200)));
 
-b("File \"bs_set_int_test.res\", line 55, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$2), s));
+b("File \"bs_set_int_test.res\", line 77, characters 2-9", $eq$tilde(Belt_SetInt.diff(Belt_SetInt.fromArray(range(1, 100)), Belt_SetInt.fromArray(range(50, 200))), range(1, 49)));
 
-let i$3 = range(1, 200);
+b("File \"bs_set_int_test.res\", line 88, characters 2-9", $eq$tilde(Belt_SetInt.intersect(Belt_SetInt.fromArray(revRange(1, 100)), Belt_SetInt.fromArray(revRange(50, 200))), revRange(50, 100)));
 
-let s$1 = Belt_SetInt.union(Belt_SetInt.fromArray(range(1, 100)), Belt_SetInt.fromArray(range(50, 200)));
+b("File \"bs_set_int_test.res\", line 99, characters 2-9", $eq$tilde(Belt_SetInt.union(Belt_SetInt.fromArray(revRange(1, 100)), Belt_SetInt.fromArray(revRange(50, 200))), revRange(1, 200)));
 
-b("File \"bs_set_int_test.res\", line 66, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$3), s$1));
-
-let i$4 = range(1, 49);
-
-let s$2 = Belt_SetInt.diff(Belt_SetInt.fromArray(range(1, 100)), Belt_SetInt.fromArray(range(50, 200)));
-
-b("File \"bs_set_int_test.res\", line 77, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$4), s$2));
-
-let i$5 = revRange(50, 100);
-
-let s$3 = Belt_SetInt.intersect(Belt_SetInt.fromArray(revRange(1, 100)), Belt_SetInt.fromArray(revRange(50, 200)));
-
-b("File \"bs_set_int_test.res\", line 88, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$5), s$3));
-
-let i$6 = revRange(1, 200);
-
-let s$4 = Belt_SetInt.union(Belt_SetInt.fromArray(revRange(1, 100)), Belt_SetInt.fromArray(revRange(50, 200)));
-
-b("File \"bs_set_int_test.res\", line 99, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$6), s$4));
-
-let i$7 = revRange(1, 49);
-
-let s$5 = Belt_SetInt.diff(Belt_SetInt.fromArray(revRange(1, 100)), Belt_SetInt.fromArray(revRange(50, 200)));
-
-b("File \"bs_set_int_test.res\", line 110, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$7), s$5));
+b("File \"bs_set_int_test.res\", line 110, characters 2-9", $eq$tilde(Belt_SetInt.diff(Belt_SetInt.fromArray(revRange(1, 100)), Belt_SetInt.fromArray(revRange(50, 200))), revRange(1, 49)));
 
 let ss = [
   1,

@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -18,7 +17,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -41,7 +40,7 @@ function Make(U) {
   return U;
 }
 
-function f(param) {
+function f() {
   v.contents = v.contents + 1 | 0;
   v.contents = v.contents + 1 | 0;
   v.contents = v.contents + 1 | 0;
@@ -87,7 +86,7 @@ let H = List;
 
 eq("File \"global_module_alias_test.res\", line 52, characters 12-19", v.contents, 12);
 
-function g(param) {
+function g() {
   return List.length({
     hd: 1,
     tl: {
@@ -103,7 +102,7 @@ function g(param) {
   });
 }
 
-function xx(param) {
+function xx() {
   v.contents = v.contents + 1 | 0;
   v.contents = v.contents + 1 | 0;
   v.contents = v.contents + 1 | 0;
@@ -114,7 +113,7 @@ eq("File \"global_module_alias_test.res\", line 80, characters 12-19", g(), 4);
 
 let V = xx();
 
-eq("File \"global_module_alias_test.res\", line 84, characters 5-12", Curry._1(V.length, {
+eq("File \"global_module_alias_test.res\", line 84, characters 5-12", V.length({
   hd: 1,
   tl: {
     hd: 2,
@@ -129,7 +128,7 @@ eq("File \"global_module_alias_test.res\", line 85, characters 5-12", v.contents
 
 let H$1 = f();
 
-eq("File \"global_module_alias_test.res\", line 87, characters 5-12", Curry._1(H$1.length, {
+eq("File \"global_module_alias_test.res\", line 87, characters 5-12", H$1.length({
   hd: 1,
   tl: {
     hd: 2,

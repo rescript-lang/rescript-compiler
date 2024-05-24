@@ -4,7 +4,7 @@
 
 let bla2 = "";
 
-function concat(param) {
+function concat() {
   return "\n    display:\r flex;\n   " + bla2;
 }
 

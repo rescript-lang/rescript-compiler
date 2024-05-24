@@ -11,7 +11,7 @@ function should(b) {
   
 }
 
-function test(param) {
+function test() {
   let m;
   for(let i = 0; i <= 999999; ++i){
     m = Belt_MapInt.set(m, i, i);

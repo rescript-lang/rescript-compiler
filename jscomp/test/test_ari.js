@@ -4,12 +4,9 @@
 let U = require("U");
 let VV = require("VV");
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 
-function f(x) {
-  return function (param) {
-    return x + param | 0;
-  };
+function f(x, y) {
+  return x + y | 0;
 }
 
 function f1(x, y) {
@@ -17,17 +14,17 @@ function f1(x, y) {
 }
 
 function f3(g, x) {
-  return Curry._1(g, x);
+  return g(x);
 }
 
-function f2(param) {
-  return 3 + param | 0;
+function f2(x) {
+  return 3 + x | 0;
 }
 
 let g = 7;
 
-function ff(param) {
-  return U.test_primit(3, param);
+function ff(x) {
+  return U.test_primit(3, x);
 }
 
 let fff = VV.test_primit2(3);

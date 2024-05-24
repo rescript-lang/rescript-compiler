@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_module = require("../../lib/js/caml_module.js");
 
 let suites = {
@@ -18,7 +17,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -57,17 +56,35 @@ Caml_module.update_mod({
     ]]
 }, Int3, Int3);
 
+let M = Caml_module.init_mod([
+  "recursive_module_test.res",
+  18,
+  20
+], {
+  TAG: "Module",
+  _0: [[
+      "Function",
+      "fact"
+    ]]
+});
+
 function fact(n) {
   if (n <= 1) {
     return 1;
   } else {
-    return Math.imul(n, Curry._1(M.fact, n - 1 | 0));
+    return Math.imul(n, M.fact(n - 1 | 0));
   }
 }
 
-let M = {
+Caml_module.update_mod({
+  TAG: "Module",
+  _0: [[
+      "Function",
+      "fact"
+    ]]
+}, M, {
   fact: fact
-};
+});
 
 let fact$1 = M.fact;
 
@@ -76,15 +93,15 @@ let Fact = {
   fact: fact$1
 };
 
-eq("File \"recursive_module_test.res\", line 29, characters 12-19", 120, Curry._1(fact$1, 5));
+eq("File \"recursive_module_test.res\", line 29, characters 12-19", 120, fact$1(5));
 
 add([
   "File \"recursive_module_test.res\", line 31, characters 14-21",
-  (function (param) {
+  (function () {
     return {
       TAG: "ThrowAny",
-      _0: (function (param) {
-        Curry._1(Int3.u, 3);
+      _0: (function () {
+        Int3.u(3);
       })
     };
   })

@@ -18,7 +18,7 @@ let g = () => {
     i + 1
   }
 
-  print_endline(\"@@"(string_of_int, next(0, true)))
+  print_endline(string_of_int(next(0, true)))
 }
 
 g()

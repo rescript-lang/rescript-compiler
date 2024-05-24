@@ -4,7 +4,7 @@
 let Mt = require("./mt.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 
-function date(param) {
+function date() {
   return new Date("1976-03-08T12:34:56.789+01:23");
 }
 

@@ -183,31 +183,10 @@ type jsPropsToReason<'jsProps, 'state, 'retainedProps, 'action> = 'jsProps => co
   'action,
 >
 
-/* **
- * We *under* constrain the kind of component spec this accepts because we actually extend the *originally*
- * defined component. It uses mutation on the original component, so that even if it is extended with
- * {...component}, all extensions will also see the underlying js class. I can sleep at night because js
- * interop is integrating with untyped, code and it is *possible* to create pure-ReasonReact apps without JS
- * interop entirely. */
-let wrapReasonForJs: (
-  ~component: componentSpec<'state, 'initialState, 'retainedProps, 'initialRetainedProps, 'action>,
-  jsPropsToReason<_>,
-) => reactClass
-
 @deprecated("
 Were you using this because you needed to pass a children array reference to a DOM element?  We now support children spread for DOM elements: `<div> ...children </div>`.
 Alternatively, if you're using this because the prop name contains a hyphen, please use `ReactDOMRe.createElementVariadic` instead.")
 let createDomElement: (string, ~props: {..}, array<reactElement>) => reactElement
-
-/**
- * Wrap props into a JS component
- * Use for interop when Reason components use JS components
- */
-let wrapJsForReason: (
-  ~reactClass: reactClass,
-  ~props: 'a,
-  'b,
-) => component<stateless, noRetainedProps, actionless>
 
 @module("react") external fragment: 'a = "Fragment"
 

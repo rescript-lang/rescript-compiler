@@ -18,7 +18,7 @@ function eq(loc, x, y) {
 function foo(a){return a()}
 ;
 
-function fn(param) {
+function fn() {
   console.log("hi");
   return 1;
 }

@@ -29,7 +29,7 @@ eq("File \"406_primitive_test.res\", line 23, characters 3-10", backend_type, {
   _0: "BS"
 });
 
-function f(param) {
+function f() {
   let A = /* @__PURE__ */Caml_exceptions.create("A");
   try {
     for(let i = 0; i <= 200; ++i){

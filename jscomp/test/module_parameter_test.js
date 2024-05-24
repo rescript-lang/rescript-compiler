@@ -38,7 +38,7 @@ let suites_1 = {
       return {
         TAG: "Eq",
         _0: 3,
-        _1: "abc".length
+        _1: v("abc")
       };
     })
   ],

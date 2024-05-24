@@ -121,7 +121,7 @@ function insert(idl, idh, v, ind, bucket, newNode) {
   });
 }
 
-function resetUnique(param) {
+function resetUnique() {
   sz_1.contents = 8191;
   htab.contents = Caml_array.make(sz_1.contents + 1 | 0, /* [] */0);
   n_items.contents = 0;
@@ -334,16 +334,16 @@ function xor(n1, n2) {
 function hwb(n) {
   let h = function (i, j) {
     if (i === j) {
-      return mkNode("Zero", i, "One");
+      return mkVar(i);
     } else {
-      return xor(and2(not(mkNode("Zero", j, "One")), h(i, j - 1 | 0)), and2(mkNode("Zero", j, "One"), g(i, j - 1 | 0)));
+      return xor(and2(not(mkVar(j)), h(i, j - 1 | 0)), and2(mkVar(j), g(i, j - 1 | 0)));
     }
   };
   let g = function (i, j) {
     if (i === j) {
-      return mkNode("Zero", i, "One");
+      return mkVar(i);
     } else {
-      return xor(and2(not(mkNode("Zero", i, "One")), h(i + 1 | 0, j)), and2(mkNode("Zero", i, "One"), g(i + 1 | 0, j)));
+      return xor(and2(not(mkVar(i)), h(i + 1 | 0, j)), and2(mkVar(i), g(i + 1 | 0, j)));
     }
   };
   return h(0, n - 1 | 0);
@@ -353,7 +353,7 @@ let seed = {
   contents: 0
 };
 
-function random(param) {
+function random() {
   seed.contents = Math.imul(seed.contents, 25173) + 17431 | 0;
   return (seed.contents & 1) > 0;
 }
@@ -391,7 +391,7 @@ function test_hwb(bdd, vars) {
   return bool_equal($$eval(bdd, vars), ntrue > 0 ? Caml_array.get(vars, ntrue - 1 | 0) : false);
 }
 
-function main(param) {
+function main() {
   let bdd = hwb(22);
   let succeeded = true;
   for(let i = 1; i <= 100; ++i){

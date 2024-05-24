@@ -161,7 +161,7 @@ let zero_pos = {
 }
 
 let from_function = f => {
-  refill_buff: lex_refill(f, Bytes.create(512)),
+  refill_buff: a => lex_refill(f, Bytes.create(512), a),
   lex_buffer: Bytes.create(1024),
   lex_buffer_len: 0,
   lex_abs_pos: 0,

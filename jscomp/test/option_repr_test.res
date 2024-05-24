@@ -122,10 +122,10 @@ let neqx = (a, b) => a != b && b != a
 
 let all_true = xs => Belt.List.every(xs, x => x)
 
-\"@@"(b(__LOC__), all_true(list{gtx(Some(Some(Js.null)), Some(None))}))
+b(__LOC__, all_true(list{gtx(Some(Some(Js.null)), Some(None))}))
 
-\"@@"(
-  b(__LOC__),
+
+b(__LOC__,
   all_true(list{
     ltx(Some(None), Some(Some(3))),
     ltx(Some(None), Some(Some(None))),
@@ -141,15 +141,15 @@ let all_true = xs => Belt.List.every(xs, x => x)
   }),
 )
 
-\"@@"(
-  b(__LOC__),
+
+b(__LOC__,
   all_true(list{
     eqx(None, None),
     neqx(None, Some(Js.null)),
     eqx(Some(None), Some(None)),
     eqx(Some(Some(None)), Some(Some(None))),
     neqx(Some(Some(Some(None))), Some(Some(None))),
-  }),
+  })
 )
 
 module N0 = {

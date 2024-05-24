@@ -18,7 +18,7 @@ let map = (f, x) =>
   | Some(x) => Some(f(x))
   }
 
-let make = (~foo: option<int>=?) => make(~foo=?map(string_of_int, foo))
+let make = (~foo: option<int>=?, ()) => make(~foo=?map(string_of_int, foo), ())
 
 let a_ = make()
 let b_ = make(~foo=42, ())

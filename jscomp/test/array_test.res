@@ -15,7 +15,7 @@ module Make = (Array: ARRAY) => {
     } else {
       try {
         for i in 0 to len2 - 1 {
-          if \"@@"(not, p(xs[i], prefix[i])) {
+          if not(p(xs[i], prefix[i])) {
             raise(X.H)
           }
         }
@@ -49,7 +49,7 @@ module Make = (Array: ARRAY) => {
           let aux = (xs: list<(array<int>, list<int>)>) =>
             List.fold_left((acc, (x, y)) => list{(Array.to_list(x), y), ...acc}, list{}, xs)
 
-          let (a, b) = \"@@"(List.split, aux(list{([], list{})}))
+          let (a, b) = List.split(aux(list{([], list{})}))
           Eq(a, b)
         },
       ),

@@ -10,7 +10,7 @@ let a = f(1);
 
 let b = f(2);
 
-function g(param) {
+function g() {
   return 1;
 }
 

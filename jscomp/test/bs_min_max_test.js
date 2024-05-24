@@ -18,8 +18,8 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-function b(param, param$1) {
-  return Mt.bool_suites(test_id, suites, param, param$1);
+function b(loc, x) {
+  Mt.bool_suites(test_id, suites, loc, x);
 }
 
 function f(x, y) {

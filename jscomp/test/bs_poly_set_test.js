@@ -301,11 +301,11 @@ eq("File \"bs_poly_set_test.res\", line 129, characters 5-12", Belt_Set.getExn(a
 
 eq("File \"bs_poly_set_test.res\", line 130, characters 5-12", Belt_Set.getExn(a0, 4), 4);
 
-t("File \"bs_poly_set_test.res\", line 131, characters 4-11", (function (param) {
+t("File \"bs_poly_set_test.res\", line 131, characters 4-11", (function () {
   Belt_Set.getExn(a0, 1002);
 }));
 
-t("File \"bs_poly_set_test.res\", line 132, characters 4-11", (function (param) {
+t("File \"bs_poly_set_test.res\", line 132, characters 4-11", (function () {
   Belt_Set.getExn(a0, -1);
 }));
 

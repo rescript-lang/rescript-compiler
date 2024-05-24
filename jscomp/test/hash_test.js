@@ -16,10 +16,8 @@ let test_id = {
   contents: 0
 };
 
-function eq(f) {
-  return function (param, param$1) {
-    return Mt_global.collect_eq(test_id, suites, f, param, param$1);
-  };
+function eq(f, x, y) {
+  Mt_global.collect_eq(test_id, suites, f, x, y);
 }
 
 let test_strings = $$Array.init(32, (function (i) {
@@ -69,13 +67,13 @@ function caml_hash(x) {
   return Hashtbl.hash(x) & 1073741823;
 }
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.res\", line 44, characters 12-19", $$Array.map(caml_hash, test_strings), test_strings_hash_results);
+eq("File \"hash_test.res\", line 44, characters 12-19", $$Array.map(caml_hash, test_strings), test_strings_hash_results);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.res\", line 46, characters 12-19", Hashtbl.hash(0) & 1073741823, 129913994);
+eq("File \"hash_test.res\", line 46, characters 12-19", Hashtbl.hash(0) & 1073741823, 129913994);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.res\", line 48, characters 12-19", Hashtbl.hash("x") & 1073741823, 780510073);
+eq("File \"hash_test.res\", line 48, characters 12-19", Hashtbl.hash("x") & 1073741823, 780510073);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.res\", line 50, characters 12-19", Hashtbl.hash("xy") & 1073741823, 194127723);
+eq("File \"hash_test.res\", line 50, characters 12-19", Hashtbl.hash("xy") & 1073741823, 194127723);
 
 Mt.from_pair_suites("Hash_test", suites.contents);
 

@@ -2,7 +2,7 @@
 'use strict';
 
 
-function f(param) {
+function f() {
   3;
 }
 

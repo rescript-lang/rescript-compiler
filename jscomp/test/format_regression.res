@@ -10,7 +10,7 @@ type pp_token
 let peek_queue = _ => assert(false)
 let int_of_size = _ => assert(false)
 let take_queue = _ => assert(false)
-let format_pp_token = (_, _) => assert(false)
+let format_pp_token = (_, _, _) => assert(false)
 let pp_infinity = 1000000010
 type pp_queue_elem = {
   mutable elem_size: size,

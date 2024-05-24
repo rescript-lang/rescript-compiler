@@ -36,7 +36,7 @@ type rec t =
 module Kind = {
   type json = t
   type rec t<_> =
-    | String: t<Js_string.t>
+    | String: t<string>
     | Number: t<float>
     | Object: t<Js_dict.t<json>>
     | Array: t<array<json>>

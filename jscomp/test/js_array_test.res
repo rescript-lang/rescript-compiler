@@ -113,7 +113,6 @@ let suites = {
     ("includes", _ => Eq(true, [1, 2, 3]->Js.Array2.includes(3))),
     ("indexOf", _ => Eq(1, [1, 2, 3]->Js.Array2.indexOf(2))),
     ("indexOfFrom", _ => Eq(3, [1, 2, 3, 2]->Js.Array2.indexOfFrom(2, ~from=2))),
-    ("join", _ => Eq("1,2,3", [1, 2, 3]->Js.Array.join)),
     ("joinWith", _ => Eq("1;2;3", [1, 2, 3]->Js.Array2.joinWith(";"))),
     ("lastIndexOf", _ => Eq(1, [1, 2, 3]->Js.Array2.lastIndexOf(2))),
     ("lastIndexOfFrom", _ => Eq(1, [1, 2, 3, 2]->Js.Array2.lastIndexOfFrom(2, ~from=2))),

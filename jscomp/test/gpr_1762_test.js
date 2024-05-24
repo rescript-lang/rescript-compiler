@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -32,7 +32,7 @@ let v = {
   contents: 3
 };
 
-function update(param) {
+function update() {
   v.contents = v.contents + 1 | 0;
   return true;
 }
