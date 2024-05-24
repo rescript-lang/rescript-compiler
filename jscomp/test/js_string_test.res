@@ -33,7 +33,7 @@ let suites = {
       "match - not found capture groups",
       _ => Eq(
         Some([Some("hello "), None]),
-        "hello word"->Js.String2.match_(%re("/hello (world)?/"))->Belt.Option.map(Js.Array.copy),
+        "hello word"->Js.String2.match_(%re("/hello (world)?/"))->Belt.Option.map(Js.Array2.copy),
       ),
     ),
     /* es2015 */
@@ -107,14 +107,14 @@ let suites = {
       "splitByRe",
       _ => Eq(
         [Some("a"), Some("#"), None, Some("b"), Some("#"), Some(":"), Some("c")],
-        Js.String.splitByRe(%re("/(#)(:)?/"), "a#b#:c"),
+        Js.String2.splitByRe("a#b#:c", %re("/(#)(:)?/")),
       ),
     ),
     (
       "splitByReAtMost",
       _ => Eq(
         [Some("a"), Some("#"), None],
-        Js.String.splitByReAtMost(%re("/(#)(:)?/"), ~limit=3, "a#b#:c"),
+        Js.String2.splitByReAtMost( "a#b#:c", %re("/(#)(:)?/"), ~limit=3),
       ),
     ),
     /* es2015 */

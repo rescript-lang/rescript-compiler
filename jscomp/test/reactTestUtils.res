@@ -80,7 +80,7 @@ module Simulate = {
 external querySelector: (Dom.element, string) => option<Dom.element> = "querySelector"
 
 @send
-external querySelectorAll: (Dom.element, string) => Js.Array.array_like<Dom.element> =
+external querySelectorAll: (Dom.element, string) => Js.Array2.array_like<Dom.element> =
   "querySelectorAll"
 
 @get external textContent: Dom.element => string = "textContent"
@@ -91,7 +91,7 @@ external createElement: (Dom.document, string) => Dom.element = "createElement"
 @send
 external appendChild: (Dom.element, Dom.element) => Dom.element = "appendChild"
 
-let querySelectorAll = (element, string) => Js.Array.from(querySelectorAll(element, string))
+let querySelectorAll = (element, string) => Js.Array2.from(querySelectorAll(element, string))
 
 module DOM = {
   open Belt

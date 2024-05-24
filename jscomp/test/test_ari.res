@@ -1,4 +1,4 @@
-let f = x => \"+"(x)
+let f = (x, y) => \"+"(x, y)
 /*
 {[
  f = function (x){ function(x,y){x + y} (x) }
@@ -20,7 +20,7 @@ let g = f(3, 4)
 
 @val("test_primit") @module("U") external ext: (int, int) => int = "test_primit"
 
-let ff = ext(3)
+let ff = x => ext(3, x)
 type u = int => int
 @val("test_primit2") @module("VV") external ext: int => u = "test_primit2"
 let fff = ext(3)
