@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+//@ts-check
+"use strict";
+
+const path = require("path");
+const child_process = require("child_process");
+
+const binAbsolutePath = require("./bin_path").absolutePath;
+const rewatchExe = path.join(binAbsolutePath, "rewatch.exe");
+
+const args = process.argv.slice(2);
+
+child_process.spawnSync(rewatchExe, args, { stdio: "inherit" });

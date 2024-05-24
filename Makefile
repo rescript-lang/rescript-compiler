@@ -2,7 +2,7 @@ SHELL = /bin/bash
 
 DUNE_BIN_DIR = ./_build/install/default/bin
 
-build: ninja
+build: ninja rewatch
 	dune build
 	./scripts/copyExes.js
 
@@ -14,6 +14,10 @@ bench:
 
 dce:
 	reanalyze.exe -dce-cmt _build/default/jscomp
+
+rewatch:
+	cargo build --manifest-path rewatch/Cargo.toml
+	cp rewatch/target/debug/rewatch rewatch
 
 ninja/ninja:
 	./scripts/buildNinjaBinary.js
@@ -78,10 +82,11 @@ clean-gentype:
 
 clean:
 	dune clean
-	./scripts/ninja.js clean
+	cargo clean --manifest-path rewatch/Cargo.toml && rm -f rewatch/rewatch
+	./scripts/ninja.js clean && rm -f ninja/ninja
 
 clean-all: clean clean-gentype
 
 .DEFAULT_GOAL := build
 
-.PHONY: build watch ninja bench dce test test-syntax test-syntax-roundtrip test-gentype test-all lib playground playground-cmijs playground-release artifacts format checkformat clean-gentype clean clean-all
+.PHONY: build watch rewatch ninja bench dce test test-syntax test-syntax-roundtrip test-gentype test-all lib playground playground-cmijs playground-release artifacts format checkformat clean-gentype clean clean-all

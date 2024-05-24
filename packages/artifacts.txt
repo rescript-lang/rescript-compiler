@@ -9,10 +9,12 @@ darwin/bsb_helper.exe
 darwin/bsc.exe
 darwin/ninja.exe
 darwin/rescript.exe
+darwin/rewatch.exe
 darwinarm64/bsb_helper.exe
 darwinarm64/bsc.exe
 darwinarm64/ninja.exe
 darwinarm64/rescript.exe
+darwinarm64/rewatch.exe
 docs/docson/build-schema.json
 lib/bstracing
 lib/es6/arg.js
@@ -1056,10 +1058,12 @@ linux/bsb_helper.exe
 linux/bsc.exe
 linux/ninja.exe
 linux/rescript.exe
+linux/rewatch.exe
 linuxarm64/bsb_helper.exe
 linuxarm64/bsc.exe
 linuxarm64/ninja.exe
 linuxarm64/rescript.exe
+linuxarm64/rewatch.exe
 ninja.COPYING
 package.json
 rescript
@@ -1070,7 +1074,9 @@ scripts/rescript_convert.js
 scripts/rescript_dump.js
 scripts/rescript_format.js
 scripts/rescript_postinstall.js
+scripts/rewatch
 win32/bsb_helper.exe
 win32/bsc.exe
 win32/ninja.exe
 win32/rescript.exe
+win32/rewatch.exe
