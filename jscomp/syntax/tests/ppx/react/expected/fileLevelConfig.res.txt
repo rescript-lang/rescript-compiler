@@ -24,7 +24,7 @@ module V4C = {
     ReactDOM.createDOMElementVariadic("div", [{msg->React.string}])
   }
   let make = {
-    let \"FileLevelConfig$V4C" = (props: props<_>) => make(props)
+    let \"FileLevelConfig$V4C" = React.component((props: props<_>) => make(props))
 
     \"FileLevelConfig$V4C"
   }
@@ -39,7 +39,7 @@ module V4A = {
     ReactDOM.jsx("div", {children: ?ReactDOM.someElement({msg->React.string})})
   }
   let make = {
-    let \"FileLevelConfig$V4A" = (props: props<_>) => make(props)
+    let \"FileLevelConfig$V4A" = React.component((props: props<_>) => make(props))
 
     \"FileLevelConfig$V4A"
   }
