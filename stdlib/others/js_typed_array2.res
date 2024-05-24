@@ -129,8 +129,8 @@ module Int8Array = {
   @send external filter: (t, (. elt) => bool) => t = "filter"
   @send external filteri: (t, (. elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, (. elt) => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
   @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
@@ -162,7 +162,7 @@ module Int8Array = {
 
   @new
   /**
-  **raise** Js.Exn.Error raise Js exception
+  **raise** Js_Exn.Error raise Js exception
 
   **param** offset is in bytes
   */
@@ -170,7 +170,7 @@ module Int8Array = {
 
   @new
   /**
-  **raise** Js.Exn.Error raises Js exception
+  **raise** Js_Exn.Error raises Js exception
 
   **param** offset is in bytes, length in elements
   */
@@ -251,8 +251,8 @@ module Uint8Array = {
   @send external filter: (t, (. elt) => bool) => t = "filter"
   @send external filteri: (t, (. elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, (. elt) => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
   @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
@@ -282,9 +282,9 @@ module Uint8Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint8Array"
 
-  @new 
+  @new
   /**
-  **raise** Js.Exn.Error raise Js exception
+  **raise** Js_Exn.Error raise Js exception
 
   **param** offset is in bytes
   */
@@ -292,7 +292,7 @@ module Uint8Array = {
 
   @new
   /**
-  **raise** Js.Exn.Error raises Js exception
+  **raise** Js_Exn.Error raises Js exception
 
   **param** offset is in bytes, length in elements
   */
@@ -373,8 +373,8 @@ module Uint8ClampedArray = {
   @send external filter: (t, (. elt) => bool) => t = "filter"
   @send external filteri: (t, (. elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, (. elt) => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
   @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
@@ -406,7 +406,7 @@ module Uint8ClampedArray = {
 
   @new
   /**
-  **raise** Js.Exn.Error raise Js exception
+  **raise** Js_Exn.Error raise Js exception
 
   **param** offset is in bytes
   */
@@ -414,7 +414,7 @@ module Uint8ClampedArray = {
 
   @new
   /**
-  **raise** Js.Exn.Error raises Js exception
+  **raise** Js_Exn.Error raises Js exception
 
   **param** offset is in bytes, length in elements
   */
@@ -495,8 +495,8 @@ module Int16Array = {
   @send external filter: (t, (. elt) => bool) => t = "filter"
   @send external filteri: (t, (. elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, (. elt) => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
   @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
@@ -526,9 +526,9 @@ module Int16Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int16Array"
 
-  @new 
+  @new
   /**
-  **raise** Js.Exn.Error raise Js exception
+  **raise** Js_Exn.Error raise Js exception
 
   **param** offset is in bytes
   */
@@ -536,7 +536,7 @@ module Int16Array = {
 
   @new
   /**
-  **raise** Js.Exn.Error raises Js exception
+  **raise** Js_Exn.Error raises Js exception
 
   **param** offset is in bytes, length in elements
   */
@@ -617,8 +617,8 @@ module Uint16Array = {
   @send external filter: (t, (. elt) => bool) => t = "filter"
   @send external filteri: (t, (. elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, (. elt) => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
   @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
@@ -648,9 +648,9 @@ module Uint16Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint16Array"
 
-  @new 
+  @new
   /**
-  **raise** Js.Exn.Error raise Js exception
+  **raise** Js_Exn.Error raise Js exception
 
   **param** offset is in bytes
   */
@@ -658,7 +658,7 @@ module Uint16Array = {
 
   @new
   /**
-  **raise** Js.Exn.Error raises Js exception
+  **raise** Js_Exn.Error raises Js exception
 
   **param** offset is in bytes, length in elements
   */
@@ -739,8 +739,8 @@ module Int32Array = {
   @send external filter: (t, (. elt) => bool) => t = "filter"
   @send external filteri: (t, (. elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, (. elt) => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
   @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
@@ -770,9 +770,9 @@ module Int32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int32Array"
 
-  @new 
+  @new
   /**
-  **raise** Js.Exn.Error raise Js exception
+  **raise** Js_Exn.Error raise Js exception
 
   **param** offset is in bytes
   */
@@ -780,7 +780,7 @@ module Int32Array = {
 
   @new
   /**
-  **raise** Js.Exn.Error raises Js exception
+  **raise** Js_Exn.Error raises Js exception
 
   **param** offset is in bytes, length in elements
   */
@@ -861,8 +861,8 @@ module Uint32Array = {
   @send external filter: (t, (. elt) => bool) => t = "filter"
   @send external filteri: (t, (. elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, (. elt) => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
   @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
@@ -892,9 +892,9 @@ module Uint32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint32Array"
 
-  @new 
+  @new
   /**
-  **raise** Js.Exn.Error raise Js exception
+  **raise** Js_Exn.Error raise Js exception
 
   **param** offset is in bytes
   */
@@ -902,7 +902,7 @@ module Uint32Array = {
 
   @new
   /**
-  **raise** Js.Exn.Error raises Js exception
+  **raise** Js_Exn.Error raises Js exception
 
   **param** offset is in bytes, length in elements
   */
@@ -986,8 +986,8 @@ module Float32Array = {
   @send external filter: (t, (. elt) => bool) => t = "filter"
   @send external filteri: (t, (. elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, (. elt) => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
   @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
@@ -1017,9 +1017,9 @@ module Float32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Float32Array"
 
-  @new 
+  @new
   /**
-  **raise** Js.Exn.Error raise Js exception
+  **raise** Js_Exn.Error raise Js exception
 
   **param** offset is in bytes
   */
@@ -1027,7 +1027,7 @@ module Float32Array = {
 
   @new
   /**
-  **raise** Js.Exn.Error raises Js exception
+  **raise** Js_Exn.Error raises Js exception
 
   **param** offset is in bytes, length in elements
   */
@@ -1108,8 +1108,8 @@ module Float64Array = {
   @send external filter: (t, (. elt) => bool) => t = "filter"
   @send external filteri: (t, (. elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, (. elt) => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (. elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
   @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
@@ -1139,9 +1139,9 @@ module Float64Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Float64Array"
 
-  @new 
+  @new
   /**
-  **raise** Js.Exn.Error raise Js exception
+  **raise** Js_Exn.Error raise Js exception
 
   **param** offset is in bytes
   */
@@ -1149,7 +1149,7 @@ module Float64Array = {
 
   @new
   /**
-  **raise** Js.Exn.Error raises Js exception
+  **raise** Js_Exn.Error raises Js exception
 
   **param** offset is in bytes, length in elements
   */

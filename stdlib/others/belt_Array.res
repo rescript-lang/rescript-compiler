@@ -22,7 +22,7 @@ external getUnsafe: (t<'a>, int) => 'a = "%array_unsafe_get"
 
 external setUnsafe: (t<'a>, int, 'a) => unit = "%array_unsafe_set"
 
-external getUndefined: (t<'a>, int) => Js.undefined<'a> = "%array_unsafe_get"
+external getUndefined: (t<'a>, int) => Js_undefined.t<'a> = "%array_unsafe_get"
 
 /* external get: 'a t -> int -> 'a = "%array_safe_get" */
 let get = (arr, i) =>
@@ -52,7 +52,7 @@ let setExn = (arr, i, v) => {
 
 @set external truncateToLengthUnsafe: (t<'a>, int) => unit = "length"
 
-@new external makeUninitialized: int => array<Js.undefined<'a>> = "Array"
+@new external makeUninitialized: int => array<Js_undefined.t<'a>> = "Array"
 
 @new external makeUninitializedUnsafe: int => array<'a> = "Array"
 
