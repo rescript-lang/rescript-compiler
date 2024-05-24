@@ -38,6 +38,8 @@
 - Fix indent in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6747
 - In generated code, use `let` instead of `var`. https://github.com/rescript-lang/rescript-compiler/pull/6102
 - Turn off transformation for closures inside loops when capturing loop variables, now that `let` is emitted instead of `var`. https://github.com/rescript-lang/rescript-compiler/pull/6480
+- Fix formatter eats comments on the first argument of a uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6763 
+- Fix formatter removes parens in pipe operator with anonymous uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6766
 
 # 11.1.0
 
