@@ -15,6 +15,9 @@ bench:
 dce:
 	reanalyze.exe -dce-cmt _build/default/jscomp
 
+rewatch:
+	cargo build --manifest-path rewatch/Cargo.toml
+
 ninja/ninja:
 	./scripts/buildNinjaBinary.js
 
@@ -44,7 +47,7 @@ test-all: test test-gentype
 reanalyze:
 	reanalyze.exe -set-exit-code -all-cmt _build/default/jscomp -suppress jscomp/syntax/testrunner -exclude-paths jscomp/outcome_printer,jscomp/ounit_tests,jscomp/ml,jscomp/js_parser,jscomp/frontend,jscomp/ext,jscomp/depends,jscomp/core,jscomp/common,jscomp/cmij,jscomp/bsb_helper,jscomp/bsb
 
-lib: build node_modules/.bin/semver
+lib: build rewatch node_modules/.bin/semver
 	node scripts/ninja.js config
 	node scripts/ninja.js build
 	./scripts/prebuilt.js
@@ -84,4 +87,4 @@ clean-all: clean clean-gentype
 
 .DEFAULT_GOAL := build
 
-.PHONY: build watch ninja bench dce test test-syntax test-syntax-roundtrip test-gentype test-all lib playground playground-cmijs playground-release artifacts format checkformat clean-gentype clean clean-all
+.PHONY: build watch rewatch ninja bench dce test test-syntax test-syntax-roundtrip test-gentype test-all lib playground playground-cmijs playground-release artifacts format checkformat clean-gentype clean clean-all
