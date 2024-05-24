@@ -34,7 +34,7 @@ let messages = React.useMemo(() =>
 
 f->(v => g(x))->g
 
-f->(v)->g
+f->v->g
 
 x->(v => g(x))->f->(v => g(x)->k)->g
 
