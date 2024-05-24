@@ -12,6 +12,11 @@
 
 # 11.1.1
 
+#### :bug: Bug Fix
+
+- Fix formatter eats comments on the first argument of a uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6763 
+- Fix formatter removes parens in pipe operator with anonymous uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6766
+
 # 11.1.0
 
 #### :bug: Bug Fix

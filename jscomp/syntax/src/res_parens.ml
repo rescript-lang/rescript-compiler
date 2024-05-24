@@ -180,6 +180,7 @@ let flattenOperandRhs parentOperator rhs =
     let precParent = ParsetreeViewer.operatorPrecedence parentOperator in
     let precChild = ParsetreeViewer.operatorPrecedence operator in
     precParent >= precChild || rhs.pexp_attributes <> []
+  | Pexp_construct ({txt = Lident "Function$"}, Some _) -> true
   | Pexp_constraint ({pexp_desc = Pexp_pack _}, {ptyp_desc = Ptyp_package _}) ->
     false
   | Pexp_fun _ when ParsetreeViewer.isUnderscoreApplySugar rhs -> false
