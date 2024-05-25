@@ -1390,7 +1390,7 @@ and printLiteralDictExpr ~state (e : Parsetree.expression) cmtTbl =
            {pexp_desc = Pexp_constant (Pconst_string (name, _)); pexp_loc}; value;
          ];
     } ->
-      Some (Location.mkloc (Longident.Lident name) pexp_loc, value)
+      Some ((Location.mkloc (Longident.Lident name) pexp_loc, value), e)
     | _ -> None
   in
   let rows =
@@ -1409,7 +1409,11 @@ and printLiteralDictExpr ~state (e : Parsetree.expression) cmtTbl =
                 Doc.join
                   ~sep:(Doc.concat [Doc.text ","; Doc.line])
                   (List.map
-                     (fun row -> printBsObjectRow ~state row cmtTbl)
+                     (fun ((row, e) :
+                            (Longident.t Location.loc * Parsetree.expression)
+                            * Parsetree.expression) ->
+                       let doc = printBsObjectRow ~state row cmtTbl in
+                       printComments doc cmtTbl e.pexp_loc)
                      rows);
               ]);
          Doc.trailingComma;

@@ -3942,20 +3942,26 @@ and parseListExpr ~startPos p =
       [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc listExprs)]
 
 and parseDictExpr ~startPos p =
-  let exprs =
+  let rows =
     parseCommaDelimitedRegion ~grammar:Grammar.DictRows ~closing:Rbrace
       ~f:parseDictExprRow p
   in
-  let loc = mkLoc startPos p.prevEndPos in
-  let toKeyValuePair (recordItem: (Longident.t Location.loc * Parsetree.expression)) =
+  let loc = mkLoc startPos p.endPos in
+  let toKeyValuePair
+      (recordItem : Longident.t Location.loc * Parsetree.expression) =
     match recordItem with
-    | {Location.txt = Longident.Lident key; loc}, valueExpr ->
+    | ( {Location.txt = Longident.Lident key; loc = keyLoc},
+        ({pexp_loc = valueLoc} as valueExpr) ) ->
       Some
-        (Ast_helper.Exp.tuple ~loc:(mkLoc loc.loc_start valueExpr.pexp_loc.loc_end)
-           [Ast_helper.Exp.constant ~loc (Pconst_string (key, None)); valueExpr])
+        (Ast_helper.Exp.tuple
+           ~loc:(mkLoc keyLoc.loc_start valueLoc.loc_end)
+           [
+             Ast_helper.Exp.constant ~loc:keyLoc (Pconst_string (key, None));
+             valueExpr;
+           ])
     | _ -> None
   in
-  let keyValuePairs = List.filter_map toKeyValuePair exprs in
+  let keyValuePairs = List.filter_map toKeyValuePair rows in
   Parser.expect Rbrace p;
   Ast_helper.Exp.apply ~loc
     (Ast_helper.Exp.ident ~loc
