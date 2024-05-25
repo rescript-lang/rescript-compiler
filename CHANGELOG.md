@@ -23,6 +23,10 @@
 - Remove obsolete `@bs.open` feature. https://github.com/rescript-lang/rescript-compiler/pull/6629
 - Drop Node.js version <18 support, due to it reaching End-of-Life. https://github.com/rescript-lang/rescript-compiler/pull/6429
 
+#### :bug: Bug Fix
+
+- Allow to use exotic ParscalCased identifiers for types. https://github.com/rescript-lang/rescript-compiler/pull/6777
+
 #### :house: Internal
 
 - Build with OCaml 5.1.1. https://github.com/rescript-lang/rescript-compiler/pull/6641
