@@ -24,3 +24,8 @@ let x = 1
 )
 let x = 1
 
+#b(@this (t => unit), @this ((x,t) => unit))
+
+#b(@this (t => unit))
+
+#b((t => unit))

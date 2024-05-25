@@ -22,3 +22,9 @@ let x = 1
 
 @inlinePrivate(@module("./logo.svg") external logo: string = "default")
 let x = 1
+
+#b(@this (t => unit), @this ((x,t) => unit))
+
+#b(@this (t => unit))
+
+#b(t => unit)
