@@ -196,11 +196,16 @@ let scan_identifier scanner =
     (String.sub [@doesNotRaise]) scanner.src start_off
       (scanner.offset - start_off)
   in
-  if '{' == scanner.ch && str = "list" then (
+  match (scanner, str) with
+  | {ch = '{'}, "list" ->
     next scanner;
     (* TODO: this isn't great *)
-    Token.lookup_keyword "list{")
-  else Token.lookup_keyword str
+    Token.lookup_keyword "list{"
+  | {ch = '{'}, "dict" ->
+    next scanner;
+    (* TODO: this isn't great *)
+    Token.lookup_keyword "dict{"
+  | _ -> Token.lookup_keyword str
 
 let scan_digits scanner ~base =
   if base <= 10 then

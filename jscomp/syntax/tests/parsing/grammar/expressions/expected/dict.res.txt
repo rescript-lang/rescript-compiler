@@ -1,0 +1,7 @@
+let x = Js.Dict.fromArray [||]
+let x = Js.Dict.fromArray [|("foo", {js|bar|js})|]
+let x = Js.Dict.fromArray [|("foo", {js|bar|js});("bar", {js|baz|js})|]
+let baz = {js|foo|js}
+let x =
+  Js.Dict.fromArray
+    [|("foo", {js|bar|js});("bar", {js|baz|js});("baz", baz)|]

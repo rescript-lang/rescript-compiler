@@ -89,6 +89,7 @@ type t =
   | PercentPercent
   | Comment of Comment.t
   | List
+  | Dict
   | TemplateTail of string * Lexing.position
   | TemplatePart of string * Lexing.position
   | Backtick
@@ -200,6 +201,7 @@ let to_string = function
   | PercentPercent -> "%%"
   | Comment c -> "Comment" ^ Comment.to_string c
   | List -> "list{"
+  | Dict -> "dict{"
   | TemplatePart (text, _) -> text ^ "${"
   | TemplateTail (text, _) -> "TemplateTail(" ^ text ^ ")"
   | Backtick -> "`"
@@ -224,6 +226,7 @@ let keyword_table = function
   | "include" -> Include
   | "let" -> Let
   | "list{" -> List
+  | "dict{" -> Dict
   | "module" -> Module
   | "mutable" -> Mutable
   | "of" -> Of
@@ -242,7 +245,7 @@ let keyword_table = function
 let is_keyword = function
   | Await | And | As | Assert | Constraint | Else | Exception | External | False
   | For | If | In | Include | Land | Let | List | Lor | Module | Mutable | Of
-  | Open | Private | Rec | Switch | True | Try | Typ | When | While ->
+  | Open | Private | Rec | Switch | True | Try | Typ | When | While | Dict ->
     true
   | _ -> false
 
