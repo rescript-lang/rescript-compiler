@@ -523,6 +523,64 @@ let scanEscape scanner =
   (* TODO: do we know it's \' ? *)
   Token.Codepoint {c = codepoint; original = contents}
 
+let scanRegex scanner =
+  let startPos = position scanner in
+  let buf = Buffer.create 0 in
+  let firstCharOffset = scanner.offset in
+  let lastOffsetInBuf = ref firstCharOffset in
+
+  let bringBufUpToDate ~startOffset =
+    let strUpToNow =
+      (String.sub scanner.src !lastOffsetInBuf
+         (startOffset - !lastOffsetInBuf) [@doesNotRaise])
+    in
+    Buffer.add_string buf strUpToNow;
+    lastOffsetInBuf := startOffset
+  in
+
+  let result ~firstCharOffset ~lastCharOffset =
+    if Buffer.length buf = 0 then
+      (String.sub [@doesNotRaise]) scanner.src firstCharOffset
+        (lastCharOffset - firstCharOffset)
+    else (
+      bringBufUpToDate ~startOffset:lastCharOffset;
+      Buffer.contents buf)
+  in
+  let rec scan () =
+    match scanner.ch with
+    | '/' ->
+      let lastCharOffset = scanner.offset in
+      next scanner;
+      let pattern = result ~firstCharOffset ~lastCharOffset in
+      let flags =
+        let flagsBuf = Buffer.create 0 in
+        let rec scanFlags () =
+          match scanner.ch with
+          | 'd' | 'g' | 'i' | 'm' | 's' | 'u' | 'v' | 'y' ->
+            Buffer.add_char flagsBuf scanner.ch;
+            next scanner;
+            scanFlags ()
+          | _ -> Buffer.contents flagsBuf
+        in
+        scanFlags ()
+      in
+      (pattern, flags)
+    | ch when ch == '\n' || ch == hackyEOFChar ->
+      let endPos = position scanner in
+      scanner.err ~startPos ~endPos (Diagnostics.message "unterminated regex");
+      ("", "")
+    | '\\' ->
+      next scanner;
+      next scanner;
+      scan ()
+    | _ ->
+      next scanner;
+      scan ()
+  in
+  let pattern, flags = scan () in
+  let endPos = position scanner in
+  (startPos, endPos, Token.Regex (pattern, flags))
+
 let scanSingleLineComment scanner =
   let startOff = scanner.offset in
   let startPos = position scanner in

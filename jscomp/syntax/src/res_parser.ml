@@ -104,6 +104,13 @@ let nextTemplateLiteralToken p =
   p.startPos <- startPos;
   p.endPos <- endPos
 
+let nextRegexToken p =
+  let startPos, endPos, token = Scanner.scanRegex p.scanner in
+  p.token <- token;
+  p.prevEndPos <- p.endPos;
+  p.startPos <- startPos;
+  p.endPos <- endPos
+
 let checkProgress ~prevEndPos ~result p =
   if p.endPos == prevEndPos then None else Some result
 
