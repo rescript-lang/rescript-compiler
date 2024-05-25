@@ -427,16 +427,6 @@ let isValidNumericPolyvarNumber (x : string) =
          | _ -> false)
   else a >= 48
 
-let isTupleArray (expr : Parsetree.expression) =
-  let isPlainTuple (expr : Parsetree.expression) =
-    match expr with
-    | {pexp_desc = Pexp_tuple _} -> true
-    | _ -> false
-  in
-  match expr with
-  | {pexp_desc = Pexp_array items} -> List.for_all isPlainTuple items
-  | _ -> false
-
 (* Exotic identifiers in poly-vars have a "lighter" syntax: #"ease-in" *)
 let printPolyVarIdent txt =
   (* numeric poly-vars don't need quotes: #644 *)
@@ -4016,7 +4006,7 @@ and printPexpApply ~state expr cmtTbl =
               };
         },
         [(Nolabel, keyValues)] )
-    when isTupleArray keyValues ->
+    when Res_parsetree_viewer.isTupleArray keyValues ->
     Doc.concat
       [
         Doc.text "dict{";
