@@ -138,7 +138,7 @@ let is_atomic_pattern_start = function
 let is_atomic_expr_start = function
   | Token.True | False | Int _ | String _ | Float _ | Codepoint _ | Backtick
   | Uident _ | Lident _ | Hash | Lparen | List | Lbracket | Lbrace | LessThan
-  | Module | Percent | Forwardslash | ForwardslashDot ->
+  | Module | Percent | Forwardslash | ForwardslashDot | Dict ->
     true
   | _ -> false
 
@@ -153,7 +153,7 @@ let is_expr_start = function
   | For | Hash | If | Int _ | Lbrace | Lbracket | LessThan | Lident _ | List
   | Lparen | Minus | MinusDot | Module | Percent | Plus | PlusDot | String _
   | Switch | True | Try | Uident _ | Underscore (* _ => doThings() *)
-  | While | Forwardslash | ForwardslashDot ->
+  | While | Forwardslash | ForwardslashDot | Dict ->
     true
   | _ -> false
 
@@ -266,7 +266,7 @@ let is_block_expr_start = function
   | False | Float _ | For | Forwardslash | ForwardslashDot | Hash | If | Int _
   | Lbrace | Lbracket | LessThan | Let | Lident _ | List | Lparen | Minus
   | MinusDot | Module | Open | Percent | Plus | PlusDot | String _ | Switch
-  | True | Try | Uident _ | Underscore | While ->
+  | True | Try | Uident _ | Underscore | While | Dict ->
     true
   | _ -> false
 
