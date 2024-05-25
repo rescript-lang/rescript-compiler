@@ -2635,46 +2635,63 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
         Doc.concat [Doc.text ": "; typDoc]
       | _ -> Doc.nil
     in
+    let nonGhostAttrs =
+      List.filter
+        (fun (x, _) -> not x.Asttypes.loc.Location.loc_ghost)
+        attrs
+    in
     let attrs = printAttributes ~state attrs cmtTbl in
-    Doc.group
-      (Doc.concat
-         [attrs; parametersDoc; typConstraintDoc; Doc.text " =>"; returnExprDoc])
+    match nonGhostAttrs with
+    | [] 
+    | _  when not (ParsetreeViewer.hasAttributes nonGhostAttrs) ->
+      Doc.group
+        (Doc.concat
+           [
+             attrs;
+             parametersDoc;
+             typConstraintDoc;
+             Doc.text " =>";
+             returnExprDoc;
+           ])
+    | _ ->
+      Doc.group
+        (Doc.concat
+           [
+             attrs;
+             Doc.lparen;
+             parametersDoc;
+             typConstraintDoc;
+             Doc.text " =>";
+             returnExprDoc;
+             Doc.rparen;
+           ])
+  in
+  let uncurried = Ast_uncurried.exprIsUncurriedFun e in
+  let e_fun =
+    if uncurried then Ast_uncurried.exprExtractUncurriedFun e else e
   in
   let printedExpression =
-    match e.pexp_desc with
+    match e_fun.pexp_desc with
     | Pexp_fun
         ( Nolabel,
           None,
           {ppat_desc = Ppat_var {txt = "__x"}},
-          {pexp_desc = Pexp_apply _} ) ->
-      printExpressionWithComments ~state
-        (ParsetreeViewer.rewriteUnderscoreApply e)
-        cmtTbl
+          {pexp_desc = Pexp_apply _} )
     | Pexp_construct
         ( {txt = Lident "Function$"},
           Some
-            ({
-               pexp_desc =
-                 Pexp_fun
-                   ( Nolabel,
-                     None,
-                     {ppat_desc = Ppat_var {txt = "__x"}},
-                     {pexp_desc = Pexp_apply _} );
-             } as e_fun) ) ->
+            {
+              pexp_desc =
+                Pexp_fun
+                  ( Nolabel,
+                    None,
+                    {ppat_desc = Ppat_var {txt = "__x"}},
+                    {pexp_desc = Pexp_apply _} );
+            } ) ->
       (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
       printExpressionWithComments ~state
         (ParsetreeViewer.rewriteUnderscoreApply e_fun)
         cmtTbl
-    | Pexp_construct ({txt = Lident "Function$"}, Some expr) -> (
-      let nonGhostAttrs =
-        List.filter
-          (fun (x, _) -> x.Asttypes.loc.Location.loc_ghost == false)
-          e.pexp_attributes
-      in
-      let doc = printExpressionWithComments ~state expr cmtTbl in
-      match nonGhostAttrs with
-      | [] -> doc
-      | _attrs -> Doc.concat [Doc.lparen; doc; Doc.rparen])
     | Pexp_fun _ | Pexp_newtype _ -> printArrow e
     | Parsetree.Pexp_constant c ->
       printConstant ~templateLiteral:(ParsetreeViewer.isTemplateLiteral e) c
