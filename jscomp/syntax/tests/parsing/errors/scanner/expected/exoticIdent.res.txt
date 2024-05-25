@@ -92,6 +92,11 @@
 
   consecutive statements on a line must be separated by ';' or a newline
 
-type nonrec 
-type nonrec  = int
-let Fatal error: exception Invalid_argument("index out of bounds")
+type nonrec \""
+type nonrec \"" = int
+let \"" = [%rescript.exprhole ]
+let \"a
+ = b
+;;c
+;;{js| = 1
+|js}
