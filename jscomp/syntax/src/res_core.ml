@@ -3947,11 +3947,11 @@ and parseDictExpr ~startPos p =
       ~f:parseDictExprRow p
   in
   let loc = mkLoc startPos p.prevEndPos in
-  let toKeyValuePair recordItem =
+  let toKeyValuePair (recordItem: (Longident.t Location.loc * Parsetree.expression)) =
     match recordItem with
-    | {Location.txt = Longident.Lident key}, valueExpr ->
+    | {Location.txt = Longident.Lident key; loc}, valueExpr ->
       Some
-        (Ast_helper.Exp.tuple ~loc
+        (Ast_helper.Exp.tuple ~loc:(mkLoc loc.loc_start valueExpr.pexp_loc.loc_end)
            [Ast_helper.Exp.constant ~loc (Pconst_string (key, None)); valueExpr])
     | _ -> None
   in
