@@ -3927,14 +3927,14 @@ and parse_dict_expr ~start_pos p =
       ~f:parse_dict_expr_row p
   in
   let loc = mk_loc start_pos p.prev_end_pos in
-  let to_key_value_pair record_item =
+  let to_key_value_pair
+      (record_item : Longident.t Location.loc * Parsetree.expression) =
     match record_item with
-    | {Location.txt = Longident.Lident key}, value_expr ->
+    | {Location.txt = Longident.Lident key; loc}, valueExpr ->
       Some
-        (Ast_helper.Exp.tuple ~loc
-           [
-             Ast_helper.Exp.constant ~loc (Pconst_string (key, None)); value_expr;
-           ])
+        (Ast_helper.Exp.tuple
+           ~loc:(mk_loc loc.loc_start valueExpr.pexp_loc.loc_end)
+           [Ast_helper.Exp.constant ~loc (Pconst_string (key, None)); valueExpr])
     | _ -> None
   in
   let key_value_pairs = List.filter_map to_key_value_pair exprs in
