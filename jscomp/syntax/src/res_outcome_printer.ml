@@ -8,70 +8,7 @@
  * In general it represent messages to show results or errors to the user. *)
 
 module Doc = Res_doc
-module Token = Res_token
-
-let rec unsafe_for_all_range s ~start ~finish p =
-  start > finish
-  || p (String.unsafe_get s start)
-     && unsafe_for_all_range s ~start:(start + 1) ~finish p
-
-let for_all_from s start p =
-  let len = String.length s in
-  unsafe_for_all_range s ~start ~finish:(len - 1) p
-
-(* See https://github.com/rescript-lang/rescript-compiler/blob/726cfa534314b586e5b5734471bc2023ad99ebd9/jscomp/ext/ext_string.ml#L510 *)
-let isValidNumericPolyvarNumber (x : string) =
-  let len = String.length x in
-  len > 0
-  &&
-  let a = Char.code (String.unsafe_get x 0) in
-  a <= 57
-  &&
-  if len > 1 then
-    a > 48
-    && for_all_from x 1 (function
-         | '0' .. '9' -> true
-         | _ -> false)
-  else a >= 48
-
-type identifierStyle = ExoticIdent | NormalIdent
-
-let classifyIdentContent ~allowUident txt =
-  let len = String.length txt in
-  let rec go i =
-    if i == len then NormalIdent
-    else
-      let c = String.unsafe_get txt i in
-      if
-        i == 0
-        && not
-             ((allowUident && c >= 'A' && c <= 'Z')
-             || (c >= 'a' && c <= 'z')
-             || c = '_')
-      then ExoticIdent
-      else if
-        not
-          ((c >= 'a' && c <= 'z')
-          || (c >= 'A' && c <= 'Z')
-          || c = '\'' || c = '_'
-          || (c >= '0' && c <= '9'))
-      then ExoticIdent
-      else go (i + 1)
-  in
-  if Token.isKeywordTxt txt then ExoticIdent else go 0
-
-let printIdentLike ~allowUident txt =
-  match classifyIdentContent ~allowUident txt with
-  | ExoticIdent -> Doc.concat [Doc.text "\\\""; Doc.text txt; Doc.text "\""]
-  | NormalIdent -> Doc.text txt
-
-let printPolyVarIdent txt =
-  (* numeric poly-vars don't need quotes: #644 *)
-  if isValidNumericPolyvarNumber txt then Doc.text txt
-  else
-    match classifyIdentContent ~allowUident:true txt with
-    | ExoticIdent -> Doc.concat [Doc.text "\""; Doc.text txt; Doc.text "\""]
-    | NormalIdent -> Doc.text txt
+module Printer = Res_printer
 
 (* ReScript doesn't have parenthesized identifiers.
  * We don't support custom operators. *)
@@ -119,7 +56,7 @@ let escapeStringContents s =
 
 let rec printOutIdentDoc ?(allowUident = true) (ident : Outcometree.out_ident) =
   match ident with
-  | Oide_ident s -> printIdentLike ~allowUident s
+  | Oide_ident s -> Printer.printIdentLike ~allowUident s
   | Oide_dot (ident, s) ->
     Doc.concat [printOutIdentDoc ident; Doc.dot; Doc.text s]
   | Oide_apply (call, arg) ->
@@ -189,7 +126,8 @@ let rec printOutTypeDoc (outType : Outcometree.out_type) =
                     Doc.space;
                     Doc.join ~sep:Doc.space
                       (List.map
-                         (fun lbl -> printIdentLike ~allowUident:true lbl)
+                         (fun lbl ->
+                           Printer.printIdentLike ~allowUident:true lbl)
                          tags);
                   ]));
            Doc.softLine;
@@ -400,7 +338,7 @@ and printOutVariant variant =
                  (Doc.concat
                     [
                       Doc.text "#";
-                      printPolyVarIdent name;
+                      Printer.printPolyVarIdent name;
                       (match types with
                       | [] -> Doc.nil
                       | types ->
@@ -530,7 +468,7 @@ and printRecordDeclRowDoc (name, mut, opt, arg) =
     (Doc.concat
        [
          (if mut then Doc.text "mutable " else Doc.nil);
-         printIdentLike ~allowUident:false name;
+         Printer.printIdentLike ~allowUident:false name;
          (if opt then Doc.text "?" else Doc.nil);
          Doc.text ": ";
          printOutTypeDoc arg;
@@ -733,7 +671,9 @@ let rec printOutSigItemDoc ?(printNameAsIs = false)
                   attrs;
                   kw;
                   (if printNameAsIs then Doc.text outTypeDecl.otype_name
-                   else printIdentLike ~allowUident:false outTypeDecl.otype_name);
+                   else
+                     Printer.printIdentLike ~allowUident:false
+                       outTypeDecl.otype_name);
                   typeParams;
                   kind;
                 ]);
@@ -865,7 +805,7 @@ and printOutExtensionConstructorDoc
     (Doc.concat
        [
          Doc.text "type ";
-         printIdentLike ~allowUident:false outExt.oext_type_name;
+         Printer.printIdentLike ~allowUident:false outExt.oext_type_name;
          typeParams;
          Doc.text " += ";
          Doc.line;
@@ -904,7 +844,7 @@ and printOutTypeExtensionDoc (typeExtension : Outcometree.out_type_extension) =
     (Doc.concat
        [
          Doc.text "type ";
-         printIdentLike ~allowUident:false typeExtension.otyext_name;
+         Printer.printIdentLike ~allowUident:false typeExtension.otyext_name;
          typeParams;
          Doc.text " += ";
          (if typeExtension.otyext_private = Asttypes.Private then
