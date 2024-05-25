@@ -137,8 +137,8 @@ let isAtomicPatternStart = function
 
 let isAtomicExprStart = function
   | Token.True | False | Int _ | String _ | Float _ | Codepoint _ | Backtick
-  | Uident _ | Lident _ | Hash | Lparen | List | Lbracket | Lbrace | LessThan
-  | Module | Percent ->
+  | Uident _ | Lident _ | Hash | Lparen | List | Dict | Lbracket | Lbrace
+  | LessThan | Module | Percent ->
     true
   | _ -> false
 
@@ -153,7 +153,7 @@ let isExprStart = function
   | For | Hash | If | Int _ | Lbrace | Lbracket | LessThan | Lident _ | List
   | Lparen | Minus | MinusDot | Module | Percent | Plus | PlusDot | String _
   | Switch | True | Try | Uident _ | Underscore (* _ => doThings() *)
-  | While ->
+  | While | Dict ->
     true
   | _ -> false
 
@@ -266,7 +266,7 @@ let isBlockExprStart = function
   | False | Float _ | For | Forwardslash | Hash | If | Int _ | Lbrace | Lbracket
   | LessThan | Let | Lident _ | List | Lparen | Minus | MinusDot | Module | Open
   | Percent | Plus | PlusDot | String _ | Switch | True | Try | Uident _
-  | Underscore | While ->
+  | Underscore | While | Dict ->
     true
   | _ -> false
 
