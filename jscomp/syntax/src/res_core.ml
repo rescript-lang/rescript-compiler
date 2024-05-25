@@ -3922,22 +3922,26 @@ and parse_list_expr ~start_pos p =
       [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc list_exprs)]
 
 and parse_dict_expr ~start_pos p =
-  let exprs =
+  let rows =
     parse_comma_delimited_region ~grammar:Grammar.DictRows ~closing:Rbrace
       ~f:parse_dict_expr_row p
   in
-  let loc = mk_loc start_pos p.prev_end_pos in
+  let loc = mk_loc start_pos p.end_pos in
   let to_key_value_pair
       (record_item : Longident.t Location.loc * Parsetree.expression) =
     match record_item with
-    | {Location.txt = Longident.Lident key; loc}, valueExpr ->
+    | ( {Location.txt = Longident.Lident key; loc = keyLoc},
+        ({pexp_loc = value_loc} as value_expr) ) ->
       Some
         (Ast_helper.Exp.tuple
-           ~loc:(mk_loc loc.loc_start valueExpr.pexp_loc.loc_end)
-           [Ast_helper.Exp.constant ~loc (Pconst_string (key, None)); valueExpr])
+           ~loc:(mk_loc keyLoc.loc_start value_loc.loc_end)
+           [
+             Ast_helper.Exp.constant ~loc:keyLoc (Pconst_string (key, None));
+             value_expr;
+           ])
     | _ -> None
   in
-  let key_value_pairs = List.filter_map to_key_value_pair exprs in
+  let key_value_pairs = List.filter_map to_key_value_pair rows in
   Parser.expect Rbrace p;
   Ast_helper.Exp.apply ~loc
     (Ast_helper.Exp.ident ~loc
