@@ -8,7 +8,7 @@ sleep 1
 if rewatch clean &> /dev/null;
 then
   success "Repo Cleaned"
-else 
+else
   error "Error Cleaning Repo"
   exit 1
 fi
@@ -19,7 +19,7 @@ replace "s/.mjs/.res.js/g" bsconfig.json
 if rewatch build &> /dev/null;
 then
   success "Repo Built"
-else 
+else
   error "Error building repo"
   exit 1
 fi
@@ -27,10 +27,10 @@ fi
 # Count files with new extension
 file_count=$(find . -name *.res.js | wc -l)
 
-if [ "$file_count" -eq 9 ];
+if [ "$file_count" -eq 10 ];
 then
   success "Found files with correct suffix"
-else 
+else
   error "Suffix not correctly used"
   exit 1
 fi
@@ -38,7 +38,7 @@ fi
 if rewatch clean &> /dev/null;
 then
   success "Repo Cleaned"
-else 
+else
   error "Error Cleaning Repo"
   exit 1
 fi
@@ -50,7 +50,7 @@ replace "s/.res.js/.mjs/g" bsconfig.json
 if rewatch build &> /dev/null;
 then
   success "Repo Built"
-else 
+else
   error "Error building repo"
   exit 1
 fi

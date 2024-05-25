@@ -1,0 +1,12 @@
+name: rewatch
+root: "."
+
+on_project_start:
+  - git submodule init --update
+  - cd walnut_monorepo && yarn
+
+windows:
+- vim:
+  - vim .
+- cargo:
+  - cargo watch -x run

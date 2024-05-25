@@ -1,0 +1,74 @@
+---
+name: Release
+on:
+  push:
+  release:
+    types:
+      - published
+
+concurrency:
+  group: ${{ github.ref }}-release
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Release
+    runs-on: macos-latest
+    env:
+      RUST_BACKTRACE: "1"
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: setup sccache
+        uses: mozilla-actions/sccache-action@v0.0.4
+        with:
+          version: "v0.7.7"
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+      - name: Install zig
+        uses: korandoru/setup-zig@v1
+        with:
+          zig-version: 0.11.0
+      - name: Install Rust targets
+        shell: bash
+        run: |
+          rustup target add x86_64-unknown-linux-musl \
+            aarch64-apple-darwin \
+            x86_64-apple-darwin \
+            x86_64-pc-windows-gnu
+      - name: Install cargo zigbuild
+        run: cargo install cargo-zigbuild
+      - name: macOS - build universal2
+        run: cargo zigbuild --target universal2-apple-darwin --release
+      - name: Linux - build x86_64 musl
+        run: cargo zigbuild --target x86_64-unknown-linux-musl --release
+      - name: Windows - build x86_64 musl
+        run: cargo zigbuild --target x86_64-pc-windows-gnu --release
+      - name: Move / Rename Artifacts
+        run: |
+          mv target/x86_64-unknown-linux-musl/release/rewatch ./rewatch-linux
+          mv target/universal2-apple-darwin/release/rewatch ./rewatch-macos
+          mv target/x86_64-pc-windows-gnu/release/rewatch.exe ./rewatch-windows.exe
+
+      - uses: actions/setup-node@v4
+        with:
+          always-auth: true
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Publish
+        if: success() && github.event.action == 'published'
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish Prerelease
+        if: success() && github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/')
+        run: |
+          npm version prerelease -preid $(git rev-parse --short HEAD) -no-git-tag-version
+          npm publish --tag=dev
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

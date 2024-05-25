@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+# Get the directory of the script to work from.
+DIR=$(dirname "$0")
+
+if [ "$(uname)" = "Darwin" ]; then
+    # Run the Mac Version
+    $DIR/rewatch-macos.exe $@
+elif [ "$(expr substr $(uname -s) 1 5)" = "Linux" ]; then
+    # Run the Linux Version
+    $DIR/rewatch-linux.exe $@
+else
+    echo "No release available for '$(uname)'"
+    exit 1
+fi
