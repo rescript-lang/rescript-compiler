@@ -310,7 +310,7 @@ let scanExoticIdentifier scanner =
   let ident =
     (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff)
   in
-  let name = Ext_ident.unwrap_exotic ident in
+  let name = Ext_ident.unwrap_uppercase_exotic ident in
   if name = String.empty then (
     let endPos = position scanner in
     scanner.err ~startPos ~endPos

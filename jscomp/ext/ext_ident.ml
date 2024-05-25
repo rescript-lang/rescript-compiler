@@ -140,15 +140,15 @@ let is_uident name =
     | _ -> false
   else false
 
-let is_exotic name =
+let is_uppercase_exotic name =
   let len = String.length name in
   len >= 3
   && name.[0] = '\\'
   && name.[1] = '\"'
   && name.[len - 1] = '\"'
 
-let unwrap_exotic name =
-  if is_exotic name then
+let unwrap_uppercase_exotic name =
+  if is_uppercase_exotic name then
    let len = String.length name in
    String.sub name 2 (len - 3)
   else name

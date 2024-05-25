@@ -50,9 +50,9 @@ val make_unused : unit -> Ident.t
 
 val is_uident : string -> bool
 
-val is_exotic : string -> bool
+val is_uppercase_exotic : string -> bool
 
-val unwrap_exotic : string -> string
+val unwrap_uppercase_exotic : string -> string
 
 (**
    Invariant: if name is not converted, the reference should be equal

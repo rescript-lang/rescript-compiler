@@ -54,7 +54,8 @@ module SexpAst = struct
     | [] -> [Sexp.list []]
     | items -> List.map f items
 
-  let string txt = Sexp.atom ("\"" ^ Ext_ident.unwrap_exotic txt ^ "\"")
+  let string txt =
+    Sexp.atom ("\"" ^ Ext_ident.unwrap_uppercase_exotic txt ^ "\"")
 
   let char c = Sexp.atom ("'" ^ Char.escaped c ^ "'")
 

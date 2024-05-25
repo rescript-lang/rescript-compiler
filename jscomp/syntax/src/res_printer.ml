@@ -399,7 +399,7 @@ let classifyIdentContent ?(allowUident = false) ?(allowHyphen = false) txt =
     loop 0
 
 let printIdentLike ?allowUident ?allowHyphen txt =
-  let txt = Ext_ident.unwrap_exotic txt in
+  let txt = Ext_ident.unwrap_uppercase_exotic txt in
   match classifyIdentContent ?allowUident ?allowHyphen txt with
   | ExoticIdent -> Doc.concat [Doc.text "\\\""; Doc.text txt; Doc.text "\""]
   | NormalIdent -> Doc.text txt
@@ -433,7 +433,7 @@ let printPolyVarIdent txt =
   (* numeric poly-vars don't need quotes: #644 *)
   if isValidNumericPolyvarNumber txt then Doc.text txt
   else
-    let txt = Ext_ident.unwrap_exotic txt in
+    let txt = Ext_ident.unwrap_uppercase_exotic txt in
     match classifyIdentContent ~allowUident:true txt with
     | ExoticIdent -> Doc.concat [Doc.text "\""; Doc.text txt; Doc.text "\""]
     | NormalIdent -> (
