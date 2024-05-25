@@ -69,7 +69,6 @@ val make_custom_rules :
   gentype_config:Bsb_config_types.gentype_config ->
   has_postbuild:string option ->
   pp_file:string option ->
-  has_builtin:bool ->
   reason_react_jsx:Bsb_config_types.reason_react_jsx option ->
   jsx:Bsb_jsx.t ->
   uncurried:bool ->

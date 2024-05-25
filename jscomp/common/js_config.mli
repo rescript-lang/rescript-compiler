@@ -87,8 +87,6 @@ val js_stdout : bool ref
 
 val all_module_aliases : bool ref
 
-val no_stdlib : bool ref
-
 val no_export : bool ref
 
 val as_ppx : bool ref
