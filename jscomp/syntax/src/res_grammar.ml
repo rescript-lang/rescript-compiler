@@ -59,6 +59,7 @@ type t =
   | Pattern
   | AttributePayload
   | TagNames
+  | DictRows
 
 let toString = function
   | OpenDescription -> "an open description"
@@ -120,6 +121,7 @@ let toString = function
   | ExprFor -> "a for expression"
   | AttributePayload -> "an attribute payload"
   | TagNames -> "tag names"
+  | DictRows -> "rows of a dict"
 
 let isSignatureItemStart = function
   | Token.At | Let | Typ | External | Exception | Open | Include | Module | AtAt
@@ -219,6 +221,10 @@ let isModExprStart = function
     true
   | _ -> false
 
+let isDictRowStart = function
+  | Token.String _ -> true
+  | _ -> false
+
 let isRecordRowStart = function
   | Token.DotDotDot -> true
   | Token.Uident _ | Lident _ -> true
@@ -278,6 +284,7 @@ let isListElement grammar token =
   | FunctorArgs -> isFunctorArgStart token
   | ModExprList -> isModExprStart token
   | TypeParameters -> isTypeParameterStart token
+  | DictRows -> isDictRowStart token
   | RecordRows -> isRecordRowStart token
   | RecordRowsStringKey -> isRecordRowStringKeyStart token
   | ArgumentList -> isArgumentStart token
