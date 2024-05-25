@@ -106,6 +106,13 @@ let next_template_literal_token p =
   p.start_pos <- start_pos;
   p.end_pos <- end_pos
 
+let next_regex_token p =
+  let start_pos, end_pos, token = Scanner.scan_regex p.scanner in
+  p.token <- token;
+  p.prev_end_pos <- p.end_pos;
+  p.start_pos <- start_pos;
+  p.end_pos <- end_pos
+
 let check_progress ~prev_end_pos ~result p =
   if p.end_pos == prev_end_pos then None else Some result
 

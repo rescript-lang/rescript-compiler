@@ -136,7 +136,7 @@ let is_atomic_pattern_start = function
 let is_atomic_expr_start = function
   | Token.True | False | Int _ | String _ | Float _ | Codepoint _ | Backtick
   | Uident _ | Lident _ | Hash | Lparen | List | Lbracket | Lbrace | LessThan
-  | Module | Percent ->
+  | Module | Percent | Forwardslash | ForwardslashDot ->
     true
   | _ -> false
 
@@ -151,7 +151,7 @@ let is_expr_start = function
   | For | Hash | If | Int _ | Lbrace | Lbracket | LessThan | Lident _ | List
   | Lparen | Minus | MinusDot | Module | Percent | Plus | PlusDot | String _
   | Switch | True | Try | Uident _ | Underscore (* _ => doThings() *)
-  | While ->
+  | While | Forwardslash | ForwardslashDot ->
     true
   | _ -> false
 
@@ -257,10 +257,10 @@ let is_jsx_child_start = is_atomic_expr_start
 
 let is_block_expr_start = function
   | Token.Assert | At | Await | Backtick | Bang | Codepoint _ | Exception
-  | False | Float _ | For | Forwardslash | Hash | If | Int _ | Lbrace | Lbracket
-  | LessThan | Let | Lident _ | List | Lparen | Minus | MinusDot | Module | Open
-  | Percent | Plus | PlusDot | String _ | Switch | True | Try | Uident _
-  | Underscore | While ->
+  | False | Float _ | For | Forwardslash | ForwardslashDot | Hash | If | Int _
+  | Lbrace | Lbracket | LessThan | Let | Lident _ | List | Lparen | Minus
+  | MinusDot | Module | Open | Percent | Plus | PlusDot | String _ | Switch
+  | True | Try | Uident _ | Underscore | While ->
     true
   | _ -> false
 

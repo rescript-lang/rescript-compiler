@@ -31,6 +31,7 @@ val optional : t -> Token.t -> bool
 val next : ?prev_end_pos:Lexing.position -> t -> unit
 val next_unsafe : t -> unit (* Does not assert on Eof, makes no progress *)
 val next_template_literal_token : t -> unit
+val next_regex_token : t -> unit
 val lookahead : t -> (t -> 'a) -> 'a
 val err :
   ?start_pos:Lexing.position ->
