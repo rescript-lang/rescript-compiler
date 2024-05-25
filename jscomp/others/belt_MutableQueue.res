@@ -66,8 +66,8 @@ let peek = q =>
 
 let peekUndefined = q =>
   switch q.first {
-  | None => Js.undefined
-  | Some(v) => Js.Undefined.return(v.content)
+  | None => Js_undefined.empty
+  | Some(v) => Js_undefined.return(v.content)
   }
 
 let peekExn = q =>
@@ -111,17 +111,17 @@ let popExn = q =>
 
 let popUndefined = q =>
   switch q.first {
-  | None => Js.undefined
+  | None => Js_undefined.empty
   | Some(x) =>
     let next = x.next
     if next == None {
       /* only one element */
       clear(q)
-      Js.Undefined.return(x.content)
+      Js_undefined.return(x.content)
     } else {
       q.length = q.length - 1
       q.first = next
-      Js.Undefined.return(x.content)
+      Js_undefined.return(x.content)
     }
   }
 

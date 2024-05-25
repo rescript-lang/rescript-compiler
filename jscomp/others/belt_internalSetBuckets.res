@@ -26,9 +26,9 @@
  when buckets become too long. */
 module C = Belt_internalBucketsType
 /* TODO:
-   the current implementation relies on the fact that bucket 
+   the current implementation relies on the fact that bucket
    empty value is `undefined` in both places,
-   in theory, it can be different 
+   in theory, it can be different
 
 */
 type rec bucket<'a> = {
@@ -153,7 +153,7 @@ let getBucketHistogram = h => {
 
 let logStats = h => {
   let histogram = getBucketHistogram(h)
-  Js.log({
+  Js_log.log({
     "bindings": h.C.size,
     "buckets": A.length(h.C.buckets),
     "histogram": histogram,

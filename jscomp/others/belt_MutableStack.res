@@ -39,8 +39,8 @@ let push = (s, x) => s.root = Some({head: x, tail: s.root})
 
 let topUndefined = (s: t<'a>) =>
   switch s.root {
-  | None => Js.undefined
-  | Some(x) => Js.Undefined.return(x.head)
+  | None => Js_undefined.empty
+  | Some(x) => Js_undefined.return(x.head)
   }
 
 let top = s =>
@@ -53,10 +53,10 @@ let isEmpty = s => s.root == None
 
 let popUndefined = s =>
   switch s.root {
-  | None => Js.undefined
+  | None => Js_undefined.empty
   | Some(x) =>
     s.root = x.tail
-    Js.Undefined.return(x.head)
+    Js_undefined.return(x.head)
   }
 
 let pop = s =>

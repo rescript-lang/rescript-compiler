@@ -1,0 +1,3 @@
+[submodule "walnut_monorepo"]
+	path = walnut_monorepo
+	url = git@github.com:teamwalnut/walnut_monorepo.git

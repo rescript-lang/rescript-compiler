@@ -128,7 +128,7 @@ let getBucketHistogram = h => {
 
 let logStats = h => {
   let histogram = getBucketHistogram(h)
-  Js.log({
+  Js_log.log({
     "bindings": h.C.size,
     "buckets": A.length(h.C.buckets),
     "histogram": histogram,

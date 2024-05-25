@@ -25,14 +25,18 @@
 /*** Provides functionality for dealing with the `'a Js.null` type */
 
 @unboxed
-type t<+'a> = Js.null<'a> =
+type t<+'a> =
   | Value('a)
   | @as(null) Null
 
+/**
+  The same as empty in `Js.Null`. Compiles to `null`.
+*/
+external null: t<'a> = "#null"
 external to_opt: t<'a> => option<'a> = "#null_to_opt"
 external toOption: t<'a> => option<'a> = "#null_to_opt"
 external return: 'a => t<'a> = "%identity"
-let test: t<'a> => bool = x => x == Js.null
+let test: t<'a> => bool = x => x == null
 external empty: t<'a> = "#null"
 external getUnsafe: t<'a> => 'a = "%identity"
 

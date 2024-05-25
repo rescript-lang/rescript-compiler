@@ -61,7 +61,7 @@ type tagged_t =
   | JSBigInt(bigint_val)
 
 let classify = (x: 'a): tagged_t => {
-  let ty = Js.typeof(x)
+  let ty = Js_typeof.typeof(x)
   if ty == "undefined" {
     JSUndefined
   } else if x === Obj.magic(Js_null.empty) {
@@ -89,13 +89,13 @@ let classify = (x: 'a): tagged_t => {
 
 let test = (type a, x: 'a, v: t<a>): bool =>
   switch v {
-  | Number => Js.typeof(x) == "number"
-  | Boolean => Js.typeof(x) == "boolean"
-  | Undefined => Js.typeof(x) == "undefined"
+  | Number => Js_typeof.typeof(x) == "number"
+  | Boolean => Js_typeof.typeof(x) == "boolean"
+  | Undefined => Js_typeof.typeof(x) == "undefined"
   | Null => x === Obj.magic(Js_null.empty)
-  | String => Js.typeof(x) == "string"
-  | Function => Js.typeof(x) == "function"
-  | Object => Js.typeof(x) == "object"
-  | Symbol => Js.typeof(x) == "symbol"
-  | BigInt => Js.typeof(x) == "bigint"
+  | String => Js_typeof.typeof(x) == "string"
+  | Function => Js_typeof.typeof(x) == "function"
+  | Object => Js_typeof.typeof(x) == "object"
+  | Symbol => Js_typeof.typeof(x) == "symbol"
+  | BigInt => Js_typeof.typeof(x) == "bigint"
   }

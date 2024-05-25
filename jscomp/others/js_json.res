@@ -24,13 +24,19 @@
 
 /*** Efficient JSON encoding using JavaScript API */
 
+/**
+  The same as empty in `Js.Null`. Compiles to `null`.
+*/
+external null: Js_null.t<'a> = "#null"
+
+
 @unboxed
 type rec t =
   | Boolean(bool)
   | @as(null) Null
   | String(string)
   | Number(float)
-  | Object(Js.Dict.t<t>)
+  | Object(dict<t>)
   | Array(array<t>)
 
 module Kind = {
@@ -54,7 +60,7 @@ type tagged_t =
   | JSONArray(array<t>)
 
 let classify = (x: t): tagged_t => {
-  let ty = Js.typeof(x)
+  let ty = Js_typeof.typeof(x)
   if ty == "string" {
     JSONString(Obj.magic(x))
   } else if ty == "number" {
@@ -65,7 +71,7 @@ let classify = (x: t): tagged_t => {
     } else {
       JSONFalse
     }
-  } else if Obj.magic(x) === Js.null {
+  } else if Obj.magic(x) === null {
     JSONNull
   } else if Js_array2.isArray(x) {
     JSONArray(Obj.magic(x))
@@ -76,23 +82,23 @@ let classify = (x: t): tagged_t => {
 
 let test = (type a, x: 'a, v: Kind.t<a>): bool =>
   switch v {
-  | Kind.Number => Js.typeof(x) == "number"
-  | Kind.Boolean => Js.typeof(x) == "boolean"
-  | Kind.String => Js.typeof(x) == "string"
-  | Kind.Null => Obj.magic(x) === Js.null
+  | Kind.Number => Js_typeof.typeof(x) == "number"
+  | Kind.Boolean => Js_typeof.typeof(x) == "boolean"
+  | Kind.String => Js_typeof.typeof(x) == "string"
+  | Kind.Null => Obj.magic(x) === null
   | Kind.Array => Js_array2.isArray(x)
-  | Kind.Object => Obj.magic(x) !== Js.null && (Js.typeof(x) == "object" && !Js_array2.isArray(x))
+  | Kind.Object => Obj.magic(x) !== null && (Js_typeof.typeof(x) == "object" && !Js_array2.isArray(x))
   }
 
 let decodeString = json =>
-  if Js.typeof(json) == "string" {
+  if Js_typeof.typeof(json) == "string" {
     Some((Obj.magic((json: t)): string))
   } else {
     None
   }
 
 let decodeNumber = json =>
-  if Js.typeof(json) == "number" {
+  if Js_typeof.typeof(json) == "number" {
     Some((Obj.magic((json: t)): float))
   } else {
     None
@@ -100,9 +106,9 @@ let decodeNumber = json =>
 
 let decodeObject = json =>
   if (
-    Js.typeof(json) == "object" &&
+    Js_typeof.typeof(json) == "object" &&
       (!Js_array2.isArray(json) &&
-      !((Obj.magic(json): Js.null<'a>) === Js.null))
+      !((Obj.magic(json): Js_null.t<'a>) === null))
   ) {
     Some((Obj.magic((json: t)): Js_dict.t<t>))
   } else {
@@ -117,15 +123,15 @@ let decodeArray = json =>
   }
 
 let decodeBoolean = (json: t) =>
-  if Js.typeof(json) == "boolean" {
+  if Js_typeof.typeof(json) == "boolean" {
     Some((Obj.magic((json: t)): bool))
   } else {
     None
   }
 
-let decodeNull = (json): option<Js.null<_>> =>
-  if (Obj.magic(json): Js.null<'a>) === Js.null {
-    Some(Js.null)
+let decodeNull = (json): option<Js_null.t<_>> =>
+  if (Obj.magic(json): Js_null.t<'a>) === null {
+    Some(null)
   } else {
     None
   }
@@ -204,12 +210,12 @@ let serializeExn = (type t, x: t): string =>
       }
     return value
   });
-  
+
  if(output === undefined){
    // JSON.stringify will raise TypeError when it detects cylic objects
    throw new TypeError("output is undefined")
  }
- return output 
+ return output
  }
 `)(x)
 

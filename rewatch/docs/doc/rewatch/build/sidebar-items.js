@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["create_ast",""],["generate_asts",""],["get_version",""]],"struct":[["SourceFile",""]]};

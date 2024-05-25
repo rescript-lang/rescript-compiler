@@ -1,0 +1,29 @@
+---
+name: Tests
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+concurrency:
+  group: ${{ github.ref }}-tests
+  cancel-in-progress: true
+
+jobs:
+  run-tests:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+      - name: Build
+        run: cargo build --release
+      - name: Run unit test
+        run: cargo test
+      - name: Install Yarn Dependencies
+        run: cd ./testrepo && yarn install
+      - name: Run Test
+        run: ./tests/suite-ci.sh

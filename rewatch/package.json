@@ -1,0 +1,19 @@
+{
+  "name": "@rolandpeelen/rewatch",
+  "version": "1.0.6",
+  "license": "BSD-3-Clause",
+  "bin": {
+    "rewatch": "rewatch"
+  },
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
+  "files": [
+    "/postinstall.js",
+    "/rewatch",
+    "/rewatch.cmd",
+    "/rewatch-linux",
+    "/rewatch-macos",
+    "/rewatch-windows.exe"
+  ]
+}

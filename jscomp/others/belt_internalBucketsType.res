@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
-type opt<'a> = Js.undefined<'a>
+type opt<'a> = Js_undefined.t<'a>
 
 type container<'hash, 'eq, 'c> = {
   mutable size: int /* number of entries */,
@@ -34,7 +34,7 @@ module A = Belt_Array
 external toOpt: opt<'a> => option<'a> = "#undefined_to_opt"
 external return: 'a => opt<'a> = "%identity"
 
-let emptyOpt = Js.undefined
+let emptyOpt = Js_undefined.empty
 let rec power_2_above = (x, n) =>
   if x >= n {
     x

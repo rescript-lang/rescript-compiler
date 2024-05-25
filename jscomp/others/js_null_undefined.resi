@@ -28,7 +28,7 @@ Contains functionality for dealing with values that can be both `null` and `unde
 
 /** Local alias for `Js.null_undefined<'a>`. */
 @unboxed
-type t<+'a> = Js.nullable<'a> =
+type t<+'a> = Js_nullable.t<'a> =
   | Value('a)
   | @as(null) Null
   | @as(undefined) Undefined

@@ -87,11 +87,11 @@ let rec get = (n: t, x: value) =>
 
 let rec getUndefined = (n: t, x: value) =>
   switch n {
-  | None => Js.undefined
+  | None => Js_undefined.empty
   | Some(t) =>
     let v = t.value
     if x == v {
-      Js.Undefined.return(v)
+      Js_undefined.return(v)
     } else {
       getUndefined(
         if x < v {
