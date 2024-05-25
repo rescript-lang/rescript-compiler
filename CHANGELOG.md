@@ -15,6 +15,7 @@
 #### :rocket: New Feature
 
 - Allow coercing polyvariants to variants when we can guarantee that the runtime representation matches. https://github.com/rescript-lang/rescript-compiler/pull/6981
+- Add new dict literal syntax (`dict{"foo": "bar"}`). https://github.com/rescript-lang/rescript-compiler/pull/6774
 
 #### :nail_care: Polish
 
