@@ -2635,36 +2635,16 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
         Doc.concat [Doc.text ": "; typDoc]
       | _ -> Doc.nil
     in
-    let nonGhostAttrs =
-      List.filter
-        (fun (x, _) -> not x.Asttypes.loc.Location.loc_ghost)
-        attrs
+    let hasThisAttr =
+      List.exists (fun ({Asttypes.txt}, _) -> txt = "this") attrs
     in
     let attrs = printAttributes ~state attrs cmtTbl in
-    match nonGhostAttrs with
-    | [] 
-    | _  when not (ParsetreeViewer.hasAttributes nonGhostAttrs) ->
-      Doc.group
-        (Doc.concat
-           [
-             attrs;
-             parametersDoc;
-             typConstraintDoc;
-             Doc.text " =>";
-             returnExprDoc;
-           ])
-    | _ ->
-      Doc.group
-        (Doc.concat
-           [
-             attrs;
-             Doc.lparen;
-             parametersDoc;
-             typConstraintDoc;
-             Doc.text " =>";
-             returnExprDoc;
-             Doc.rparen;
-           ])
+    let doc =
+      Doc.concat
+        [parametersDoc; typConstraintDoc; Doc.text " =>"; returnExprDoc]
+    in
+    if hasThisAttr then Doc.group (Doc.concat [attrs; addParens doc])
+    else Doc.group (Doc.concat [attrs; doc])
   in
   let uncurried = Ast_uncurried.exprIsUncurriedFun e in
   let e_fun =
