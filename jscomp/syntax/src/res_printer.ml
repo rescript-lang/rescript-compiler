@@ -2640,12 +2640,8 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
       (Doc.concat
          [attrs; parametersDoc; typConstraintDoc; Doc.text " =>"; returnExprDoc])
   in
-  let uncurried = Ast_uncurried.exprIsUncurriedFun e in
-  let e_fun =
-    if uncurried then Ast_uncurried.exprExtractUncurriedFun e else e
-  in
   let printedExpression =
-    match e_fun.pexp_desc with
+    match e.pexp_desc with
     | Pexp_fun
         ( Nolabel,
           None,
@@ -2664,8 +2660,18 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
             } ) ->
       (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
       printExpressionWithComments ~state
-        (ParsetreeViewer.rewriteUnderscoreApply e_fun)
+        (ParsetreeViewer.rewriteUnderscoreApply e)
         cmtTbl
+    | Pexp_construct ({txt = Lident "Function$"}, Some expr) -> (
+      let nonGhostAttrs =
+        List.filter
+          (fun (x, _) -> x.Asttypes.loc.Location.loc_ghost == false)
+          e.pexp_attributes
+      in
+      let doc = printExpressionWithComments ~state expr cmtTbl in
+      match nonGhostAttrs with
+      | [] -> doc
+      | _attrs -> Doc.concat [Doc.lparen; doc; Doc.rparen])
     | Pexp_fun _ | Pexp_newtype _ -> printArrow e
     | Parsetree.Pexp_constant c ->
       printConstant ~templateLiteral:(ParsetreeViewer.isTemplateLiteral e) c
@@ -2889,27 +2895,6 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
               Doc.softLine;
               Doc.rparen;
             ]
-        | Some
-            ({
-               pexp_desc = Pexp_construct ({txt = Lident "Function$"}, Some expr);
-             } as arg) -> (
-          let doc = printExpressionWithComments ~state expr cmtTbl in
-          match arg.pexp_attributes with
-          | [] -> doc
-          | attrs ->
-            addParens
-              (Doc.concat
-                 [
-                   printAttributes ~state attrs cmtTbl;
-                   Doc.lparen;
-                   Doc.concat
-                     [
-                       Doc.indent (Doc.concat [Doc.softLine; doc]);
-                       Doc.trailingComma;
-                       Doc.softLine;
-                     ];
-                   Doc.rparen;
-                 ]))
         | Some arg ->
           let argDoc =
             let doc = printExpressionWithComments ~state arg cmtTbl in
