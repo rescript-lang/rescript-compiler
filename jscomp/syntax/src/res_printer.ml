@@ -2889,6 +2889,27 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
               Doc.softLine;
               Doc.rparen;
             ]
+        | Some
+            ({
+               pexp_desc = Pexp_construct ({txt = Lident "Function$"}, Some expr);
+             } as arg) -> (
+          let doc = printExpressionWithComments ~state expr cmtTbl in
+          match arg.pexp_attributes with
+          | [] -> doc
+          | attrs ->
+            addParens
+              (Doc.concat
+                 [
+                   printAttributes ~state attrs cmtTbl;
+                   Doc.lparen;
+                   Doc.concat
+                     [
+                       Doc.indent (Doc.concat [Doc.softLine; doc]);
+                       Doc.trailingComma;
+                       Doc.softLine;
+                     ];
+                   Doc.rparen;
+                 ]))
         | Some arg ->
           let argDoc =
             let doc = printExpressionWithComments ~state arg cmtTbl in
