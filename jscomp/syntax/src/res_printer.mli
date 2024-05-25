@@ -22,4 +22,9 @@ val printImplementation :
 val printInterface :
   width:int -> Parsetree.signature -> comments:Res_comment.t list -> string
 
+val printIdentLike :
+  ?allowUident:bool -> ?allowHyphen:bool -> string -> Res_doc.t
+
+val printPolyVarIdent : string -> Res_doc.t
+
 val polyVarIdentToString : string -> string [@@live]
