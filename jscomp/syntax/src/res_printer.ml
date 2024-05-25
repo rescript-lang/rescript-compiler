@@ -3014,6 +3014,16 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
                Doc.softLine;
                Doc.rbrace;
              ])
+      | ( {txt = "re"},
+          PStr
+            [
+              {
+                pstr_desc =
+                  Pstr_eval
+                    ({pexp_desc = Pexp_constant (Pconst_string (expr, _))}, []);
+              };
+            ] ) ->
+        Doc.text expr
       | extension -> printExtension ~state ~atModuleLvl:false extension cmtTbl)
     | Pexp_apply (e, [(Nolabel, {pexp_desc = Pexp_array subLists})])
       when ParsetreeViewer.isSpreadBeltArrayConcat e ->
