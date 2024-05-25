@@ -1,15 +1,15 @@
 {
-  "name": "others",
+  "name": "jscomp",
   "sources": [
     {
-      "dir": "."
+      "dir": "jscomp/others"
     }
   ],
   "package-specs": {
-    "module": "esmodule",
+    "module": "commonjs",
     "in-source": true
   },
-  "suffix": ".res.js",
+  "suffix": ".js",
   "bsc-flags": [
     "-no-keep-locs",
     "-no-alias-deps",
