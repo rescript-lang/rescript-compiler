@@ -53,6 +53,9 @@ lib: build node_modules/.bin/semver
 	node scripts/ninja.js build
 	./scripts/prebuilt.js
 
+lib-rewatch: build rewatch node_modules/.bin/semver
+	./scripts/build-lib.sh && ./scripts/prebuilt.js
+
 artifacts: lib
 	./scripts/makeArtifactList.js
 
