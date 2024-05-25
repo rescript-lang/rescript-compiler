@@ -355,9 +355,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-unsafe-empty-array",  set Config.unsafe_empty_array,
     "*internal* Allow [||] to be polymorphic";
 
-    "-nostdlib",  set Js_config.no_stdlib,
-    "*internal* Don't use stdlib";
-
     "-color", string_call set_color_option,
     "*internal* Enable or disable colors in compiler messages\n\
      The following settings are supported:\n\

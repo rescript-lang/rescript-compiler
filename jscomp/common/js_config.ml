@@ -54,7 +54,6 @@ let jsx_module = ref React
 let jsx_mode = ref Automatic
 let js_stdout = ref true
 let all_module_aliases = ref false
-let no_stdlib = ref false
 let no_export = ref false
 let as_ppx = ref false
 
