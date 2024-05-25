@@ -311,13 +311,12 @@ let scanExoticIdentifier scanner =
     (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff)
   in
   let name = Ext_ident.unwrap_exotic ident in
-  let _ =
-    if name = String.empty then
-      let endPos = position scanner in
-      scanner.err ~startPos ~endPos
-        (Diagnostics.message "A quoted identifier can't be empty string.")
-  in
-  if Ext_ident.is_uident name then Token.Lident ident
+  if name = String.empty then (
+    let endPos = position scanner in
+    scanner.err ~startPos ~endPos
+      (Diagnostics.message "A quoted identifier can't be empty string.");
+    Token.Lident ident)
+  else if Ext_ident.is_uident name then Token.Lident ident
     (* Exotic ident with uppercase letter should be encoded to avoid confusing in OCaml parsetree *)
   else Token.Lident name
 
