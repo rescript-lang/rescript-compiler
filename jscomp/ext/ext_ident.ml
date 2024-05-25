@@ -174,19 +174,15 @@ let name_mangle name =
      Ext_ident.convert "^";;
      - : string = "$caret"
    ]}
-   [convert name] if [name] is a js keyword, and also is not explicitly used as exotic identifier, add "$$"
+   [convert name] if [name] is a js keyword,add "$$"
    otherwise do the name mangling to make sure ocaml identifier it is
    a valid js identifier
 *)
 let convert (name : string) =
-  if is_exotic name then
-     let name = unwrap_exotic name in
-     if Js_reserved_map.is_js_keyword name then "$$" ^ name
-     else name_mangle name
-  else
-   if Js_reserved_map.is_js_keyword name || Js_reserved_map.is_js_special_word name || Js_reserved_map.is_reserved name then
-      "$$" ^ name
-   else name_mangle name
+  let name = unwrap_exotic name in
+  if Js_reserved_map.is_reserved name then
+    "$$" ^ name
+  else name_mangle name
 
 (** keyword could be used in property *)
 

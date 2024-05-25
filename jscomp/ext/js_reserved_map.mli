@@ -22,8 +22,4 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val is_js_keyword : string -> bool
-
-val is_js_special_word : string -> bool
-
 val is_reserved : string -> bool

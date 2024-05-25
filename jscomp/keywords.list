@@ -39,6 +39,7 @@ BigUint64Array
 BiquadFilterNode
 Blob
 BlobEvent
+BluetoothUUID
 Boolean
 BroadcastChannel
 BrowserCaptureMediaStreamTrack
@@ -80,11 +81,9 @@ CSSRotate
 CSSRule
 CSSRuleList
 CSSScale
-CSSScopeRule
 CSSSkew
 CSSSkewX
 CSSSkewY
-CSSStartingStyleRule
 CSSStyleDeclaration
 CSSStyleRule
 CSSStyleSheet
@@ -103,7 +102,6 @@ CanvasPattern
 CanvasRenderingContext2D
 ChannelMergerNode
 ChannelSplitterNode
-CharacterBoundsUpdateEvent
 CharacterData
 ClipboardEvent
 CloseEvent
@@ -149,7 +147,6 @@ DocumentTimeline
 DocumentType
 DragEvent
 DynamicsCompressorNode
-EditContext
 Element
 ElementInternals
 EncodedAudioChunk
@@ -297,7 +294,6 @@ Int8Array
 IntersectionObserver
 IntersectionObserverEntry
 Intl
-Iterator
 JSON
 KeyboardEvent
 KeyframeEffect
@@ -330,7 +326,6 @@ MediaStreamTrack
 MediaStreamTrackEvent
 MediaStreamTrackGenerator
 MediaStreamTrackProcessor
-MediaStreamTrackVideoStats
 MessageChannel
 MessageEvent
 MessagePort
@@ -344,7 +339,6 @@ NaN
 NamedNodeMap
 NavigateEvent
 Navigation
-NavigationActivation
 NavigationCurrentEntryChangeEvent
 NavigationDestination
 NavigationHistoryEntry
@@ -366,15 +360,15 @@ OffscreenCanvasRenderingContext2D
 Option
 OscillatorNode
 OverconstrainedError
-PageRevealEvent
 PageTransitionEvent
 PannerNode
 Path2D
+PaymentManager
+PaymentRequestUpdateEvent
 Performance
 PerformanceElementTiming
 PerformanceEntry
 PerformanceEventTiming
-PerformanceLongAnimationFrameTiming
 PerformanceLongTaskTiming
 PerformanceMark
 PerformanceMeasure
@@ -384,7 +378,6 @@ PerformanceObserver
 PerformanceObserverEntryList
 PerformancePaintTiming
 PerformanceResourceTiming
-PerformanceScriptTiming
 PerformanceServerTiming
 PerformanceTiming
 PeriodicSyncManager
@@ -557,11 +550,9 @@ ShadowRoot
 SharedWorker
 SourceBuffer
 SourceBufferList
-SpeechSynthesis
 SpeechSynthesisErrorEvent
 SpeechSynthesisEvent
 SpeechSynthesisUtterance
-SpeechSynthesisVoice
 StaticRange
 StereoPannerNode
 Storage
@@ -585,14 +576,11 @@ TextDecoderStream
 TextEncoder
 TextEncoderStream
 TextEvent
-TextFormat
-TextFormatUpdateEvent
 TextMetrics
 TextTrack
 TextTrackCue
 TextTrackCueList
 TextTrackList
-TextUpdateEvent
 TimeRanges
 ToggleEvent
 Touch

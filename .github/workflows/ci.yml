@@ -83,7 +83,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: npm
 
       - name: Copy exes to platform bin dirs
         run: node ./scripts/copyExes.js
@@ -171,7 +170,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: npm
 
       - name: Install npm packages
         run: npm ci --ignore-scripts
@@ -282,7 +280,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: npm
 
       - name: NPM install
         run: npm ci --ignore-scripts
@@ -346,7 +343,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: npm
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -380,7 +376,6 @@ jobs:
         with:
           node-version: 18
           registry-url: https://registry.npmjs.org # Needed to make auth work for publishing
-          cache: npm
 
       - name: Download artifacts
         uses: actions/download-artifact@v4

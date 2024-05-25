@@ -1404,9 +1404,9 @@ function delta_4(c, next_cat, prev_cat, l, rem) {
   }
 }
 
-function delta(tbl_ref, next_cat, char, st) {
+function delta(tbl_ref, next_cat, $$char, st) {
   let prev_cat = st.category;
-  let match = remove_duplicates(/* [] */0, delta_4(char, next_cat, prev_cat, st.desc, /* [] */0), eps_expr);
+  let match = remove_duplicates(/* [] */0, delta_4($$char, next_cat, prev_cat, st.desc, /* [] */0), eps_expr);
   let expr$p = match[0];
   let idx = free_index(tbl_ref, expr$p);
   let expr$p$p = set_idx(idx, expr$p);
@@ -1587,7 +1587,7 @@ function loop(info, s, pos, st) {
   };
 }
 
-function final(info, st, cat) {
+function $$final(info, st, cat) {
   try {
     return List.assq(cat, st.final);
   }
@@ -3228,7 +3228,7 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
     res = status(st.desc);
   } else {
     let final_cat = last === slen ? Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, category(re, get_color(re, s, last)));
-    let match = final(info, st, final_cat);
+    let match = $$final(info, st, final_cat);
     if (groups) {
       Caml_array.set(info.positions, match[0], last + 1 | 0);
     }
@@ -3688,7 +3688,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       };
     }
   };
-  let char = function (param) {
+  let $$char = function (param) {
     if (i.contents === l) {
       throw {
         RE_EXN_ID: Parse_error,
@@ -3989,7 +3989,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       if (s !== /* [] */0 && accept(/* ']' */93)) {
         return s;
       }
-      let match = char();
+      let match = $$char();
       if (match.NAME === "Char") {
         let c = match.VAL;
         if (accept(/* '-' */45)) {
@@ -4014,7 +4014,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               }
             };
           }
-          let match$1 = char();
+          let match$1 = $$char();
           if (match$1.NAME !== "Char") {
             return {
               hd: {

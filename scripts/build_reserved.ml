@@ -22,148 +22,142 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-module SSet = Set.Make (String)
+ let reserved_words =
+  [|
+    (* keywords *)
+    "break";
+    "case"; "catch"; "continue";
+    "debugger";"default";"delete";"do";
+    "else";
+    "finally";"for";"function";
+    "if"; (* "then";  *) "in";"instanceof";
+    "new";
+    "return";
+    "switch";
+    "this"; "throw"; "try"; "typeof";
+    "var"; "void"; "while"; "with";
 
-(* Words that can never be identifier's name
-   See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#reserved_words
-*)
-let js_keywords =
-  SSet.of_list
-    [
-      "break";
-      "case";
-      "catch";
-      "class";
-      "const";
-      "continue";
-      "debugger";
-      "default";
-      "delete";
-      "do";
-      "else";
-      "export";
-      "extends";
-      "false";
-      "finally";
-      "for";
-      "function";
-      "if";
-      "import";
-      "in";
-      "instanceof";
-      "new";
-      "null";
-      "return";
-      "super";
-      "switch";
-      "this";
-      "throw";
-      "true";
-      "try";
-      "typeof";
-      "var";
-      "void";
-      "while";
-      "with";
-      (* The following are also reserved in strict context, including ESM *)
-      "let";
-      "static";
-      "yield";
-      (* `await` is reserved in async context, including ESM *)
-      "await";
-      (* Future reserved words *)
-      "enum";
-      "implements";
-      "interface";
-      "package";
-      "private";
-      "protected";
-      "public";
-    ]
+    (* reserved in ECMAScript 5 *)
+    "class"; "enum"; "export"; "extends"; "import"; "super";
 
-(* Identifiers with special meanings
-   See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#identifiers_with_special_meanings
+    "implements";"interface";
+    "let";
+    "package";"private";"protected";"public";
+    "static";
+    "yield";
 
-   They can have different meanings depending on the context when used as identifier names, so it should be done carefully.
-*)
-let js_special_words =
-  SSet.of_list
-    [
-      "arguments";
-      "as";
-      "async";
-      "eval";
-      (* However, some of these are actually used with no problems today.
-         Preventing this can be annoying. *)
-      (*
-      "from";
-      "get";
-      "of";
-      "set";
-      *)
-    ]
+    (* other *)
+    "null";
+    "true";
+    "false";
+    "NaN";
 
-(* Other identifier names should be care about *)
-let reserved_words =
-  SSet.of_list
-    [
-      (* Reserved for common globals *)
-      "undefined";
-      "self";
-      "globalThis";
-      "console";
-      "setTimeout";
-      "setInterval";
-      "clearTimeout";
-      "clearInterval";
-      "decodeURI";
-      "decodeURIComponent";
-      "encodeURI";
-      "encodeURIComponent";
-      "escape";
-      "unescape";
-      "fetch";
-      "isNaN";
-      "isFinite";
-      "parseFloat";
-      "parseInt";
-      (* Reserved for common DOM globals *)
-      "event";
-      "window";
-      "document";
-      "location";
-      "navigator";
-      (* Reserved for common Node.js globals *)
-      "Buffer";
-      "setImmediate";
-      "clearImmediate";
-      "global";
-      "process";
-      "require";
-      "module";
-      "exports";
-      "__dirname";
-      "__filename";
-      "__esModule";
-      (* Bun global obj *)
-      "Bun";
-      (* Deno global obj *)
-      "Deno";
-    ]
 
-let get_predefined_words (fn : string) =
-  let v = ref SSet.empty in
-  let in_chan = open_in_bin fn in
+    "undefined";
+    "this";
+
+    (* also reserved in ECMAScript 3 *)
+    "abstract"; "boolean"; "byte"; "char"; "const"; "double";
+    "final"; "float"; "goto"; "int"; "long"; "native"; "short";
+    "synchronized";
+    (* "throws";  *)
+    (* seems to be fine, like nodejs [assert.throws] *)
+    "transient"; "volatile";
+
+    (* also reserved in ECMAScript 6 *)
+    "await";
+
+    "event";
+    "location";
+    "window";
+    "document";
+    "eval";
+    "navigator";
+    (* "self"; *)
+
+    "Array";
+    "Date";
+    "Math";
+    "JSON";
+    "Object";
+    "RegExp";
+    "String";
+    "Boolean";
+    "Number";
+    "Buffer"; (* Node *)
+    "Map"; (* es6*)
+    "Set";
+    "Promise";
+    "Infinity";
+    "isFinite";
+
+    "ActiveXObject";
+    "XMLHttpRequest";
+    "XDomainRequest";
+
+    "DOMException";
+    "Error";
+    "SyntaxError";
+    "arguments";
+
+    "decodeURI";
+    "decodeURIComponent";
+    "encodeURI";
+    "encodeURIComponent";
+    "escape";
+    "unescape";
+    "fetch";
+    "isNaN";
+    "parseFloat";
+    "parseInt";
+
+    (** reserved for commonjs and NodeJS globals*)
+    "require";
+    "exports";
+    "module";
+    "clearImmediate";
+    "clearInterval";
+    "clearTimeout";
+    "console";
+    "global";
+    "process";
+    "require";
+    "setImmediate";
+    "setInterval";
+    "setTimeout";
+    "__dirname";
+    "__filename";
+    "__esModule";
+
+    (* Bun global obj *)
+    "Bun";
+
+    (* Deno global obj *)
+    "Deno";
+  |] 
+
+
+module SSet = Set.Make(String)
+let get_predefined_words (fn : string) = 
+  let v = ref SSet.empty in 
+  let in_chan = open_in_bin fn in 
   (try
-     while true do
-       let new_word = input_line in_chan in
-       if String.length new_word <> 0 then v := SSet.add new_word !v
-     done
+     while true do 
+       let new_word = input_line in_chan in 
+       if String.length new_word <> 0 then 
+         v := SSet.add new_word !v
+     done 
    with End_of_file -> ());
-  !v
+  !v 
 
-let license =
-  {|(* Copyright (C) 2019-Present Hongbo Zhang, Authors of ReScript
+let fill_extra (ss : SSet.t) : SSet.t =   
+  let v = ref ss in 
+  for i  = 0 to Array.length reserved_words - 1 do 
+    v := SSet.add reserved_words.(i) !v
+  done;
+  !v 
+let license = {|
+(* Copyright (C) 2019-Present Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -188,58 +182,58 @@ let license =
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 |}
+let binary_search = {|
 
-let binary_search =
-  {|type element = string 
+type element = string 
 
-let rec binarySearchAux (arr : element array) (lo : int) (hi : int) key : bool =
-  let mid = (lo + hi)/2 in
-  let midVal = Array.unsafe_get arr mid in
-  if key = midVal then true
-  else if key < midVal then (* a[lo] =< key < a[mid] <= a[hi] *)
-    if hi = mid then
-      (Array.unsafe_get arr lo) = key
-    else binarySearchAux arr lo mid key
-  else (* a[lo] =< a[mid] < key <= a[hi] *)
-    if lo = mid then
-      (Array.unsafe_get arr hi) = key
-    else binarySearchAux arr mid hi key
+let rec binarySearchAux (arr : element array) (lo : int) (hi : int) key : bool =   
+    let mid = (lo + hi)/2 in 
+    let midVal = Array.unsafe_get arr mid in 
+    (* let c = cmp key midVal [@bs] in  *)
+    if key = midVal then true 
+    else if key < midVal then  (*  a[lo] =< key < a[mid] <= a[hi] *)
+      if hi = mid then  
+        (Array.unsafe_get arr lo) = key 
+      else binarySearchAux arr lo mid key 
+    else  (*  a[lo] =< a[mid] < key <= a[hi] *)
+      if lo = mid then 
+        (Array.unsafe_get arr hi) = key 
+      else binarySearchAux arr mid hi key 
 
-let binarySearch (key : element) (sorted : element array) : bool =
-  let len = Array.length sorted in
+let binarySearch (sorted : element array) (key : element)  : bool =  
+  let len = Array.length sorted in 
   if len = 0 then false
-  else
-    let lo = Array.unsafe_get sorted 0 in
+  else 
+    let lo = Array.unsafe_get sorted 0 in 
+    (* let c = cmp key lo [@bs] in  *)
     if key < lo then false
     else
-      let hi = Array.unsafe_get sorted (len - 1) in
-      if key > hi then false
-      else binarySearchAux sorted 0 (len - 1) key
+    let hi = Array.unsafe_get sorted (len - 1) in 
+    (* let c2 = cmp key hi [@bs]in  *)
+    if key > hi then false
+    else binarySearchAux sorted 0 (len - 1) key 
 
+let is_reserved s = binarySearch sorted_keywords s     
 |}
-
-let make_predicate tag ss =
-  let array_ident = "sorted_" ^ tag in
-  let array =
-    SSet.fold
-      (fun s acc -> acc ^ "\"" ^ s ^ "\";\n  ")
-      ss
-      ("let " ^ array_ident ^ " = [|\n  ")
-    ^ "|]"
-  in
-  let fn_ident = "is_" ^ tag in
-  let fn = "let " ^ fn_ident ^ " s = binarySearch s " ^ array_ident in
-  array ^ "\n\n" ^ fn ^ "\n\n"
-
-let main words_file output_file =
-  let predefined_words = get_predefined_words words_file in
-  let predefined_words = SSet.union predefined_words reserved_words in
-  let oc = open_out_bin output_file in
-  output_string oc license;
+let main keyword_file output_file =   
+  let ss = get_predefined_words keyword_file in 
+  let ss = fill_extra ss in 
+  let keywords_array = 
+    (SSet.fold 
+      (fun s acc -> acc ^ "\"" ^ s ^ "\";\n  "
+      ) ss "let sorted_keywords = [|\n  ") ^ "|]\n" 
+  in 
+  let oc = open_out_bin output_file in 
+  output_string oc license ; 
+  output_string oc  keywords_array;
   output_string oc binary_search;
-  output_string oc (make_predicate "js_keyword" js_keywords);
-  output_string oc (make_predicate "js_special_word" js_special_words);
-  output_string oc (make_predicate "reserved" predefined_words);
-  close_out oc
-
+  close_out oc 
+(*   
+;;
+for i = 0 to Array.length Sys.argv - 1  do 
+  print_endline ">"; print_string Sys.argv.(i)
+done 
+;; *)
 let () = main Sys.argv.(1) Sys.argv.(2)
+
+
