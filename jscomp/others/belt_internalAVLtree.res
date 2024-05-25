@@ -143,8 +143,8 @@ let minKey = n =>
 
 let minKeyUndefined = n =>
   switch n {
-  | None => Js.undefined
-  | Some(n) => Js.Undefined.return(minKey0Aux(n))
+  | None => Js_undefined.empty
+  | Some(n) => Js_undefined.return(minKey0Aux(n))
   }
 
 let rec maxKey0Aux = n =>
@@ -161,8 +161,8 @@ let maxKey = n =>
 
 let maxKeyUndefined = n =>
   switch n {
-  | None => Js.undefined
-  | Some(n) => Js.Undefined.return(maxKey0Aux(n))
+  | None => Js_undefined.empty
+  | Some(n) => Js_undefined.return(maxKey0Aux(n))
   }
 
 let rec minKV0Aux = n =>
@@ -179,8 +179,8 @@ let minimum = n =>
 
 let minUndefined = n =>
   switch n {
-  | None => Js.undefined
-  | Some(n) => Js.Undefined.return(minKV0Aux(n))
+  | None => Js_undefined.empty
+  | Some(n) => Js_undefined.return(minKV0Aux(n))
   }
 
 let rec maxKV0Aux = n =>
@@ -197,8 +197,8 @@ let maximum = n =>
 
 let maxUndefined = n =>
   switch n {
-  | None => Js.undefined
-  | Some(n) => Js.Undefined.return(maxKV0Aux(n))
+  | None => Js_undefined.empty
+  | Some(n) => Js_undefined.return(maxKV0Aux(n))
   }
 
 /* TODO: use kv ref */
@@ -714,12 +714,12 @@ let rec get = (n, x, ~cmp) =>
 
 let rec getUndefined = (n, x, ~cmp) =>
   switch n {
-  | None => Js.undefined
+  | None => Js_undefined.empty
   | Some(n) =>
     let v = n.key
     let c = Belt_Id.getCmpInternal(cmp)(. x, v)
     if c == 0 {
-      Js.Undefined.return(n.value)
+      Js_undefined.return(n.value)
     } else {
       getUndefined(
         ~cmp,

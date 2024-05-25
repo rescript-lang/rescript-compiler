@@ -25,7 +25,7 @@
 /*** Provides functionality for dealing with the `Js.null<'a>` type */
 
 @unboxed /** Local alias for `Js.null<'a>` */
-type t<+'a> = Js.null<'a> =
+type t<+'a> =
   | Value('a)
   | @as(null) Null
 
