@@ -7,7 +7,7 @@ rule cc
     description = $in -> $out
 rule cc_cmi
     command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags  -I others  $in
-    description = $in -> $out    
+    description = $in -> $out
 
 o others/belt.cmj others/belt.cmi : cc others/belt.res | $bsc
     bsc_flags = $bsc_primitive_flags

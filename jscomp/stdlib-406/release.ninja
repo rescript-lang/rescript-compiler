@@ -6,7 +6,7 @@ rule cc
     description = $in -> $out
 rule cc_cmi
     command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags  -I stdlib-406  $in
-    description = $in -> $out    
+    description = $in -> $out
 
 o stdlib-406/pervasives.cmj : cc_cmi stdlib-406/pervasives.res | stdlib-406/pervasives.cmi $bsc others
     bsc_flags = $bsc_flags -nopervasives

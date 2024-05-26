@@ -4,7 +4,7 @@ var p = require("child_process");
 var assert = require("assert");
 var fs = require("fs");
 var path = require("path");
-var { rescript_exe } = require("#cli/bin_path.js");
+var { rescript_exe } = require("rescript/bin_path");
 p.execSync(rescript_exe, { cwd: __dirname });
 
 var content = fs.readFileSync(path.join(__dirname, "src", "demo.js"), "utf8");

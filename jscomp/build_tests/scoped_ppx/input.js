@@ -1,6 +1,6 @@
 var cp = require("child_process");
 var assert = require("assert");
-var { rescript_exe } = require("#cli/bin_path.js");
+var { rescript_exe } = require("rescript/bin_path");
 cp.execSync(rescript_exe, { cwd: __dirname, encoding: "utf8" });
 
 var output = cp.execSync(`${rescript_exe} build -- -t commands src/hello.ast`, {

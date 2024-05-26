@@ -40,8 +40,9 @@
     "lib",
     "cli"
   ],
-  "imports": {
-    "#cli/*": "./cli/*"
+  "exports": {
+    "./bin_path": "./cli/bin_path.js",
+    "./package.json": "./package.json"
   },
   "repository": {
     "type": "git",

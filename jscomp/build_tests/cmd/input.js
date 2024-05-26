@@ -2,7 +2,7 @@ var p = require("child_process");
 
 var assert = require("assert");
 
-var { bsc_exe: bsc_exe_path } = require("#cli/bin_path.js");
+var { bsc_exe: bsc_exe_path } = require("rescript/bin_path");
 
 var react = `
 type u

@@ -39,7 +39,7 @@ var {
   absolutePath: my_target,
   bsc_exe,
   ninja_exe: vendorNinjaPath,
-} = require("#cli/bin_path.js");
+} = require("rescript/bin_path");
 
 // Let's enforce a Node version >= 16 to make sure M1 users don't trip up on
 // cryptic issues caused by mismatching assembly architectures Node 16 ships
@@ -127,7 +127,7 @@ rule cc
     description = $in -> $out
 rule cc_cmi
     command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags  -I ${ninjaCwd}  $in
-    description = $in -> $out    
+    description = $in -> $out
 `;
 }
 /**
@@ -1299,10 +1299,10 @@ o all: phony runtime others $stdlib test
   writeFileAscii(
     path.join(jscompDir, "..", "lib", "build.ninja"),
     `
-ocamlopt = ocamlopt.opt 
+ocamlopt = ocamlopt.opt
 ext = exe
 INCL= "4.06.1+BS"
-include body.ninja               
+include body.ninja
 `
   );
 
@@ -1360,7 +1360,7 @@ ${cppoList("others", [
 
 rule copy
   command = cp $in $out
-  description = $in -> $out    
+  description = $in -> $out
 `;
   var cppoNinjaFile = "cppoVendor.ninja";
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
@@ -1432,7 +1432,7 @@ function main() {
         break;
       case "help":
         console.log(`supported subcommands:
-[exe] config        
+[exe] config
 [exe] build
 [exe] cleanbuild
 [exe] help
