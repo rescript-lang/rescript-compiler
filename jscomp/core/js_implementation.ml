@@ -156,6 +156,8 @@ let after_parsing_impl ppf outputprefix (ast : Parsetree.structure) =
           ?check_exists:(if !Js_config.force_cmi then None else Some ())
           !Location.input_name outputprefix modulename env ast
       in
+      if !Incremental_error_reporter.enabled && !Incremental_error_reporter.errors |> List.length > 0 then 
+        raise (Incremental_error_reporter.Errors (!Incremental_error_reporter.errors));
       let typedtree_coercion = (typedtree, coercion) in
       print_if ppf Clflags.dump_typedtree
         Printtyped.implementation_with_coercion typedtree_coercion;

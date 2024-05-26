@@ -456,6 +456,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-nopervasives", set Clflags.nopervasives, 
     "*internal*";
     "-uncurried", unit_call (fun () -> Config.uncurried := Uncurried),
+    "*internal*";
+    "-incremental", unit_call (fun () -> Incremental_error_reporter.enabled := true),
     "*internal* Set jsx module";
     "-v", unit_call print_version_string,
     "Print compiler version and location of standard library and exit";  
@@ -531,6 +533,9 @@ let _ : unit =
   with 
   | Bsc_args.Bad msg ->   
     Format.eprintf "%s@." msg ;
+    exit 2
+  | Incremental_error_reporter.Errors exns ->
+    exns |> List.rev |> List.iter(Location.report_exception ppf);
     exit 2
   | x -> 
     begin
