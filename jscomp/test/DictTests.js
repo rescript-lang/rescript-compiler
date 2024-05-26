@@ -17,7 +17,21 @@ let dictCreationCanBeInlined = {
   more: "stuff"
 };
 
+let dictCreationCanBeInlined3 = {
+  name: "hello",
+  age: "what",
+  more: "stuff"
+};
+
+let dictCreationCanBeInlined4 = {
+  name: "hello",
+  age: "what",
+  more: "stuff"
+};
+
 exports.dictCreationCanBeInlined = dictCreationCanBeInlined;
 exports.dictCreationCanNotBeInlined = dictCreationCanNotBeInlined;
 exports.dictCreationCanBeInlined2 = dictCreationCanBeInlined2;
+exports.dictCreationCanBeInlined3 = dictCreationCanBeInlined3;
+exports.dictCreationCanBeInlined4 = dictCreationCanBeInlined4;
 /* dictCreationCanNotBeInlined Not a pure module */
