@@ -27,13 +27,13 @@ let suites = {
     ("lastIndexOf", _ => Eq(3, "foobarbaz"->Js.String2.lastIndexOf("bar"))),
     ("lastIndexOfFrom", _ => Eq(3, "foobarbaz"->Js.String2.lastIndexOfFrom("bar", 4))),
     ("localeCompare", _ => Eq(0., "foo"->Js.String2.localeCompare("foo"))),
-    ("match", _ => Eq(Some([Some("na"), Some("na")]), "banana"->Js.String2.match_(%re("/na+/g")))),
-    ("match - no match", _ => Eq(None, "banana"->Js.String2.match_(%re("/nanana+/g")))),
+    ("match", _ => Eq(Some([Some("na"), Some("na")]), "banana"->Js.String2.match_(/na+/g))),
+    ("match - no match", _ => Eq(None, "banana"->Js.String2.match_(/nanana+/g))),
     (
       "match - not found capture groups",
       _ => Eq(
         Some([Some("hello "), None]),
-        "hello word"->Js.String2.match_(%re("/hello (world)?/"))->Belt.Option.map(Js.Array.copy),
+        "hello word"->Js.String2.match_(/hello (world)?/)->Belt.Option.map(Js.Array.copy),
       ),
     ),
     /* es2015 */
@@ -44,7 +44,7 @@ let suites = {
     ("replace", _ => Eq("fooBORKbaz", "foobarbaz"->Js.String2.replace("bar", "BORK"))),
     (
       "replaceByRe",
-      _ => Eq("fooBORKBORK", "foobarbaz"->Js.String2.replaceByRe(%re("/ba./g"), "BORK")),
+      _ => Eq("fooBORKBORK", "foobarbaz"->Js.String2.replaceByRe(/ba./g, "BORK")),
     ),
     (
       "unsafeReplaceBy0",
@@ -56,7 +56,7 @@ let suites = {
             "DORK"
           }
 
-        Eq("fooBORKDORK", "foobarbaz"->Js.String2.unsafeReplaceBy0(%re("/ba./g"), replace))
+        Eq("fooBORKDORK", "foobarbaz"->Js.String2.unsafeReplaceBy0(/ba./g, replace))
       },
     ),
     (
@@ -69,7 +69,7 @@ let suites = {
             "DORK"
           }
 
-        Eq("fooBORKDORK", "foobarbaz"->Js.String2.unsafeReplaceBy1(%re("/ba./g"), replace))
+        Eq("fooBORKDORK", "foobarbaz"->Js.String2.unsafeReplaceBy1(/ba./g, replace))
       },
     ),
     (
@@ -82,7 +82,7 @@ let suites = {
             "DORK"
           }
 
-        Eq("fooBORKDORK", "foobarbaz"->Js.String2.unsafeReplaceBy2(%re("/ba./g"), replace))
+        Eq("fooBORKDORK", "foobarbaz"->Js.String2.unsafeReplaceBy2(/ba./g, replace))
       },
     ),
     (
@@ -95,10 +95,10 @@ let suites = {
             "DORK"
           }
 
-        Eq("fooBORKDORK", "foobarbaz"->Js.String2.unsafeReplaceBy3(%re("/ba./g"), replace))
+        Eq("fooBORKDORK", "foobarbaz"->Js.String2.unsafeReplaceBy3(/ba./g, replace))
       },
     ),
-    ("search", _ => Eq(3, "foobarbaz"->Js.String2.search(%re("/ba./g")))),
+    ("search", _ => Eq(3, "foobarbaz"->Js.String2.search(/ba./g))),
     ("slice", _ => Eq("bar", "foobarbaz"->Js.String2.slice(~from=3, ~to_=6))),
     ("sliceToEnd", _ => Eq("barbaz", "foobarbaz"->Js.String2.sliceToEnd(~from=3))),
     ("split", _ => Eq(["foo", "bar", "baz"], "foo bar baz"->Js.String2.split(" "))),
@@ -107,14 +107,14 @@ let suites = {
       "splitByRe",
       _ => Eq(
         [Some("a"), Some("#"), None, Some("b"), Some("#"), Some(":"), Some("c")],
-        "a#b#:c" |> Js.String.splitByRe(%re("/(#)(:)?/")),
+        "a#b#:c" |> Js.String.splitByRe(/(#)(:)?/),
       ),
     ),
     (
       "splitByReAtMost",
       _ => Eq(
         [Some("a"), Some("#"), None],
-        "a#b#:c" |> Js.String.splitByReAtMost(%re("/(#)(:)?/"), ~limit=3),
+        "a#b#:c" |> Js.String.splitByReAtMost(/(#)(:)?/, ~limit=3),
       ),
     ),
     /* es2015 */

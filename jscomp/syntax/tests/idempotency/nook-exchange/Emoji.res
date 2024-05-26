@@ -31,7 +31,7 @@ module Styles = {
   let emoji = style(list{verticalAlign(#bottom), position(relative), top(px(-2))})
 }
 
-let emojiRegex = %re(`/(^|\\s)(\\:[a-zA-Z0-9-_+]+\\:)/g`)
+let emojiRegex = /(^|\s)(\:[a-zA-Z0-9-_+]+\:)/g
 
 let parseText = (text: string): React.element => {
   let children = []

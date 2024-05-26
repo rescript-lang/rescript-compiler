@@ -64,7 +64,7 @@ let make = () => {
   let url = ReasonReactRouter.useUrl()
   let (showLogin, setShowLogin) = React.useState(() => false)
   let itemDetails = {
-    let result = url.hash |> Js.Re.exec_(%re("/i(-?\d+)(:(\d+))?/g"))
+    let result = url.hash |> Js.Re.exec_(/i(-?\d+)(:(\d+))?/g)
     switch result {
     | Some(match_) =>
       let captures = Js.Re.captures(match_)
