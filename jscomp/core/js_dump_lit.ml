@@ -66,7 +66,7 @@ let default = "default"
 
 let length = "length"
 
-let codePointAt = "codePointAt"
+let code_point_at = "codePointAt"
 
 let new_ = "new"
 
@@ -136,7 +136,7 @@ let undefined = "undefined"
 
 let string_cap = "String"
 
-let fromCharcode = "fromCharCode"
+let from_charcode = "fromCharCode"
 
 let eq = "="
 

@@ -141,11 +141,11 @@ let deep_flatten (lam : Lam.t) : Lam.t =
               args = [ arg ];
             },
           body ) ->
-        let newId = Ident.rename id in
+        let new_id = Ident.rename id in
         flatten acc
-          (Lam.let_ str newId arg
+          (Lam.let_ str new_id arg
              (Lam.let_ Alias id
-                (Lam.prim ~primitive ~args:[ Lam.var newId ]
+                (Lam.prim ~primitive ~args:[ Lam.var new_id ]
                    Location.none (* FIXME*))
                 body))
     | Llet (str, id, arg, body) -> (

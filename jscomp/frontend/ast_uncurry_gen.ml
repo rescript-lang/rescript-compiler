@@ -93,7 +93,7 @@ let to_uncurry_fn (e : Parsetree.expression) (self : Bs_ast_mapper.mapper)
 
   let arity = List.length rev_extra_args in
   Bs_syntaxerr.err_large_arity loc arity;
-  let fun_exp = Ast_uncurried.uncurriedFun ~loc ~arity body in
+  let fun_exp = Ast_uncurried.uncurried_fun ~loc ~arity body in
   {
     e with
     pexp_desc = fun_exp.pexp_desc;

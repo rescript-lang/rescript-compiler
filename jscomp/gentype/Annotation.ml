@@ -1,49 +1,49 @@
-type import = {importPath: ImportPath.t}
+type import = {import_path: ImportPath.t}
 
-type attributePayload =
+type attribute_payload =
   | BoolPayload of bool
   | FloatPayload of string
   | IdentPayload of Longident.t
   | IntPayload of string
   | StringPayload of string
-  | TuplePayload of attributePayload list
+  | TuplePayload of attribute_payload list
   | UnrecognizedPayload
 
 type t = GenType | GenTypeOpaque | NoGenType
 
-let toString annotation =
+let to_string annotation =
   match annotation with
   | GenType -> "GenType"
   | GenTypeOpaque -> "GenTypeOpaque"
   | NoGenType -> "NoGenType"
 
-let tagIsGenType s = s = "genType" || s = "gentype"
-let tagIsGenTypeAs s = s = "genType.as" || s = "gentype.as"
-let tagIsAs s = s = "as"
-let tagIsInt s = s = "int"
-let tagIsString s = s = "string"
+let tag_is_gen_type s = s = "genType" || s = "gentype"
+let tag_is_gen_type_as s = s = "genType.as" || s = "gentype.as"
+let tag_is_as s = s = "as"
+let tag_is_int s = s = "int"
+let tag_is_string s = s = "string"
 
-let tagIsTag s = s = "tag"
+let tag_is_tag s = s = "tag"
 
-let tagIsUnboxed s = s = "unboxed" || s = "ocaml.unboxed"
-let tagIsGenTypeImport s = s = "genType.import" || s = "gentype.import"
-let tagIsGenTypeOpaque s = s = "genType.opaque" || s = "gentype.opaque"
+let tag_is_unboxed s = s = "unboxed" || s = "ocaml.unboxed"
+let tag_is_gen_type_import s = s = "genType.import" || s = "gentype.import"
+let tag_is_gen_type_opaque s = s = "genType.opaque" || s = "gentype.opaque"
 
-let tagIsOneOfTheGenTypeAnnotations s =
-  tagIsGenType s || tagIsGenTypeAs s || tagIsGenTypeImport s
-  || tagIsGenTypeOpaque s
+let tag_is_one_of_the_gen_type_annotations s =
+  tag_is_gen_type s || tag_is_gen_type_as s || tag_is_gen_type_import s
+  || tag_is_gen_type_opaque s
 
-let tagIsGenTypeIgnoreInterface s =
+let tag_is_gen_type_ignore_interface s =
   s = "genType.ignoreInterface" || s = "gentype.ignoreInterface"
 
-let tagIsDoc s =
+let tag_is_doc s =
   match s with
   | "ocaml.doc" | "res.doc" -> true
   | _ -> false
-let tagIsInternLocal s = s = "internal.local"
+let tag_is_intern_local s = s = "internal.local"
 
-let rec getAttributePayload checkText (attributes : Typedtree.attributes) =
-  let rec fromExpr (expr : Parsetree.expression) =
+let rec get_attribute_payload check_text (attributes : Typedtree.attributes) =
+  let rec from_expr (expr : Parsetree.expression) =
     match expr with
     | {pexp_desc = Pexp_constant (Pconst_string (s, _))} ->
       Some (StringPayload s)
@@ -59,7 +59,7 @@ let rec getAttributePayload checkText (attributes : Typedtree.attributes) =
         exprs |> List.rev
         |> List.fold_left
              (fun payloads expr ->
-               match expr |> fromExpr with
+               match expr |> from_expr with
                | Some payload -> payload :: payloads
                | None -> payloads)
              []
@@ -70,11 +70,11 @@ let rec getAttributePayload checkText (attributes : Typedtree.attributes) =
   in
   match attributes with
   | [] -> None
-  | ({txt; loc}, payload) :: _tl when checkText txt -> (
+  | ({txt; loc}, payload) :: _tl when check_text txt -> (
     let payload =
       match payload with
       | PStr [] -> Some UnrecognizedPayload
-      | PStr ({pstr_desc = Pstr_eval (expr, _)} :: _) -> expr |> fromExpr
+      | PStr ({pstr_desc = Pstr_eval (expr, _)} :: _) -> expr |> from_expr
       | PStr ({pstr_desc = Pstr_extension _} :: _) -> Some UnrecognizedPayload
       | PStr ({pstr_desc = Pstr_value _} :: _) -> Some UnrecognizedPayload
       | PStr ({pstr_desc = Pstr_primitive _} :: _) -> Some UnrecognizedPayload
@@ -96,19 +96,19 @@ let rec getAttributePayload checkText (attributes : Typedtree.attributes) =
     match payload with
     | None -> None
     | Some payload -> Some (loc, payload))
-  | _hd :: tl -> getAttributePayload checkText tl
+  | _hd :: tl -> get_attribute_payload check_text tl
 
-let getGenTypeAsRenaming attributes =
-  match attributes |> getAttributePayload tagIsGenTypeAs with
+let get_gen_type_as_renaming attributes =
+  match attributes |> get_attribute_payload tag_is_gen_type_as with
   | Some (_, StringPayload s) -> Some s
   | None -> (
-    match attributes |> getAttributePayload tagIsGenType with
+    match attributes |> get_attribute_payload tag_is_gen_type with
     | Some (_, StringPayload s) -> Some s
     | _ -> None)
   | _ -> None
 
 (* This is not supported anymore: only use to give a warning *)
-let checkUnsupportedGenTypeAsRenaming attributes =
+let check_unsupported_gen_type_as_renaming attributes =
   let error ~loc =
     Log_.Color.setup ();
     Log_.info ~loc ~name:"Warning genType" (fun ppf () ->
@@ -117,61 +117,61 @@ let checkUnsupportedGenTypeAsRenaming attributes =
            @genType.as is not supported anymore in type definitions. Use @as \
            from the language.")
   in
-  match attributes |> getAttributePayload tagIsGenTypeAs with
+  match attributes |> get_attribute_payload tag_is_gen_type_as with
   | Some (loc, _) -> error ~loc
   | None -> (
-    match attributes |> getAttributePayload tagIsGenType with
+    match attributes |> get_attribute_payload tag_is_gen_type with
     | Some (loc, _) -> error ~loc
     | None -> ())
 
-let getAsString attributes =
-  match attributes |> getAttributePayload tagIsAs with
+let get_as_string attributes =
+  match attributes |> get_attribute_payload tag_is_as with
   | Some (_, StringPayload s) -> Some s
   | _ -> None
 
-let getAsInt attributes =
-  match attributes |> getAttributePayload tagIsAs with
+let get_as_int attributes =
+  match attributes |> get_attribute_payload tag_is_as with
   | Some (_, IntPayload s) -> (
     try Some (int_of_string s) with Failure _ -> None)
   | _ -> None
 
-let getAttributeImportRenaming attributes =
-  let attributeImport = attributes |> getAttributePayload tagIsGenTypeImport in
-  let genTypeAsRenaming = attributes |> getGenTypeAsRenaming in
-  match (attributeImport, genTypeAsRenaming) with
-  | Some (_, StringPayload importString), _ ->
-    (Some importString, genTypeAsRenaming)
+let get_attribute_import_renaming attributes =
+  let attribute_import = attributes |> get_attribute_payload tag_is_gen_type_import in
+  let gen_type_as_renaming = attributes |> get_gen_type_as_renaming in
+  match (attribute_import, gen_type_as_renaming) with
+  | Some (_, StringPayload import_string), _ ->
+    (Some import_string, gen_type_as_renaming)
   | ( Some
         ( _,
-          TuplePayload [StringPayload importString; StringPayload renameString]
+          TuplePayload [StringPayload import_string; StringPayload rename_string]
         ),
       _ ) ->
-    (Some importString, Some renameString)
-  | _ -> (None, genTypeAsRenaming)
+    (Some import_string, Some rename_string)
+  | _ -> (None, gen_type_as_renaming)
 
-let getTag attributes =
-  match attributes |> getAttributePayload tagIsTag with
+let get_tag attributes =
+  match attributes |> get_attribute_payload tag_is_tag with
   | Some (_, StringPayload s) -> Some s
   | _ -> None
 
-let getDocPayload attributes =
-  let docPayload = attributes |> getAttributePayload tagIsDoc in
-  match docPayload with
-  | Some (_, StringPayload docString) when docString <> "" -> Some docString
+let get_doc_payload attributes =
+  let doc_payload = attributes |> get_attribute_payload tag_is_doc in
+  match doc_payload with
+  | Some (_, StringPayload doc_string) when doc_string <> "" -> Some doc_string
   | _ -> None
 
-let docStringFromAttrs attributes = attributes |> getDocPayload
+let doc_string_from_attrs attributes = attributes |> get_doc_payload
 
-let hasAttribute checkText (attributes : Typedtree.attributes) =
-  getAttributePayload checkText attributes <> None
+let has_attribute check_text (attributes : Typedtree.attributes) =
+  get_attribute_payload check_text attributes <> None
 
-let fromAttributes ~(config : GenTypeConfig.t) ~loc
+let from_attributes ~(config : GenTypeConfig.t) ~loc
     (attributes : Typedtree.attributes) =
   let default = if config.everything then GenType else NoGenType in
-  if hasAttribute tagIsGenTypeOpaque attributes then GenTypeOpaque
-  else if hasAttribute (fun s -> tagIsGenType s || tagIsGenTypeAs s) attributes
+  if has_attribute tag_is_gen_type_opaque attributes then GenTypeOpaque
+  else if has_attribute (fun s -> tag_is_gen_type s || tag_is_gen_type_as s) attributes
   then (
-    (match attributes |> getAttributePayload tagIsGenType with
+    (match attributes |> get_attribute_payload tag_is_gen_type with
     | Some (_, UnrecognizedPayload) -> ()
     | Some _ ->
       Log_.Color.setup ();
@@ -181,118 +181,118 @@ let fromAttributes ~(config : GenTypeConfig.t) ~loc
     GenType)
   else default
 
-let rec moduleTypeCheckAnnotation ~checkAnnotation
+let rec module_type_check_annotation ~check_annotation
     ({mty_desc} : Typedtree.module_type) =
   match mty_desc with
   | Tmty_signature signature ->
-    signature |> signatureCheckAnnotation ~checkAnnotation
+    signature |> signature_check_annotation ~check_annotation
   | Tmty_ident _ | Tmty_functor _ | Tmty_with _ | Tmty_typeof _ | Tmty_alias _
     ->
     false
 
-and moduleTypeDeclarationCheckAnnotation ~checkAnnotation
+and module_type_declaration_check_annotation ~check_annotation
     ({mtd_type; mtd_attributes; mtd_loc = loc} :
       Typedtree.module_type_declaration) =
-  mtd_attributes |> checkAnnotation ~loc
+  mtd_attributes |> check_annotation ~loc
   ||
   match mtd_type with
   | None -> false
   | Some module_type ->
-    module_type |> moduleTypeCheckAnnotation ~checkAnnotation
+    module_type |> module_type_check_annotation ~check_annotation
 
-and moduleDeclarationCheckAnnotation ~checkAnnotation
+and module_declaration_check_annotation ~check_annotation
     ({md_attributes; md_type; md_loc = loc} : Typedtree.module_declaration) =
-  md_attributes |> checkAnnotation ~loc
-  || md_type |> moduleTypeCheckAnnotation ~checkAnnotation
+  md_attributes |> check_annotation ~loc
+  || md_type |> module_type_check_annotation ~check_annotation
 
-and signatureItemCheckAnnotation ~checkAnnotation
-    (signatureItem : Typedtree.signature_item) =
-  match signatureItem.sig_desc with
-  | Tsig_type (_, typeDeclarations) ->
-    typeDeclarations
+and signature_item_check_annotation ~check_annotation
+    (signature_item : Typedtree.signature_item) =
+  match signature_item.sig_desc with
+  | Tsig_type (_, type_declarations) ->
+    type_declarations
     |> List.exists
          (fun ({typ_attributes; typ_loc = loc} : Typedtree.type_declaration) ->
-           typ_attributes |> checkAnnotation ~loc)
+           typ_attributes |> check_annotation ~loc)
   | Tsig_value {val_attributes; val_loc = loc} ->
-    val_attributes |> checkAnnotation ~loc
-  | Tsig_module moduleDeclaration ->
-    moduleDeclaration |> moduleDeclarationCheckAnnotation ~checkAnnotation
+    val_attributes |> check_annotation ~loc
+  | Tsig_module module_declaration ->
+    module_declaration |> module_declaration_check_annotation ~check_annotation
   | Tsig_attribute attribute ->
-    [attribute] |> checkAnnotation ~loc:signatureItem.sig_loc
-  | Tsig_modtype moduleTypeDeclaration ->
-    moduleTypeDeclaration
-    |> moduleTypeDeclarationCheckAnnotation ~checkAnnotation
+    [attribute] |> check_annotation ~loc:signature_item.sig_loc
+  | Tsig_modtype module_type_declaration ->
+    module_type_declaration
+    |> module_type_declaration_check_annotation ~check_annotation
   | Tsig_typext _ | Tsig_exception _ | Tsig_recmodule _ | Tsig_open _
   | Tsig_include _ | Tsig_class _ | Tsig_class_type _ ->
     false
 
-and signatureCheckAnnotation ~checkAnnotation (signature : Typedtree.signature)
+and signature_check_annotation ~check_annotation (signature : Typedtree.signature)
     =
   signature.sig_items
-  |> List.exists (signatureItemCheckAnnotation ~checkAnnotation)
+  |> List.exists (signature_item_check_annotation ~check_annotation)
 
-let rec structureItemCheckAnnotation ~checkAnnotation
-    (structureItem : Typedtree.structure_item) =
-  match structureItem.str_desc with
-  | Tstr_type (_, typeDeclarations) ->
-    typeDeclarations
+let rec structure_item_check_annotation ~check_annotation
+    (structure_item : Typedtree.structure_item) =
+  match structure_item.str_desc with
+  | Tstr_type (_, type_declarations) ->
+    type_declarations
     |> List.exists
          (fun ({typ_attributes; typ_loc = loc} : Typedtree.type_declaration) ->
-           typ_attributes |> checkAnnotation ~loc)
-  | Tstr_value (_loc, valueBindings) ->
-    valueBindings
+           typ_attributes |> check_annotation ~loc)
+  | Tstr_value (_loc, value_bindings) ->
+    value_bindings
     |> List.exists
          (fun ({vb_attributes; vb_loc = loc} : Typedtree.value_binding) ->
-           vb_attributes |> checkAnnotation ~loc)
+           vb_attributes |> check_annotation ~loc)
   | Tstr_primitive {val_attributes; val_loc = loc} ->
-    val_attributes |> checkAnnotation ~loc
-  | Tstr_module moduleBinding ->
-    moduleBinding |> moduleBindingCheckAnnotation ~checkAnnotation
-  | Tstr_recmodule moduleBindings ->
-    moduleBindings
-    |> List.exists (moduleBindingCheckAnnotation ~checkAnnotation)
+    val_attributes |> check_annotation ~loc
+  | Tstr_module module_binding ->
+    module_binding |> module_binding_check_annotation ~check_annotation
+  | Tstr_recmodule module_bindings ->
+    module_bindings
+    |> List.exists (module_binding_check_annotation ~check_annotation)
   | Tstr_include {incl_attributes; incl_mod; incl_loc = loc} ->
-    incl_attributes |> checkAnnotation ~loc
-    || incl_mod |> moduleExprCheckAnnotation ~checkAnnotation
-  | Tstr_modtype moduleTypeDeclaration ->
-    moduleTypeDeclaration
-    |> moduleTypeDeclarationCheckAnnotation ~checkAnnotation
+    incl_attributes |> check_annotation ~loc
+    || incl_mod |> module_expr_check_annotation ~check_annotation
+  | Tstr_modtype module_type_declaration ->
+    module_type_declaration
+    |> module_type_declaration_check_annotation ~check_annotation
   | Tstr_attribute attribute ->
-    [attribute] |> checkAnnotation ~loc:structureItem.str_loc
+    [attribute] |> check_annotation ~loc:structure_item.str_loc
   | Tstr_eval _ | Tstr_typext _ | Tstr_exception _ | Tstr_open _ | Tstr_class _
   | Tstr_class_type _ ->
     false
 
-and moduleExprCheckAnnotation ~checkAnnotation
-    (moduleExpr : Typedtree.module_expr) =
-  match moduleExpr.mod_desc with
+and module_expr_check_annotation ~check_annotation
+    (module_expr : Typedtree.module_expr) =
+  match module_expr.mod_desc with
   | Tmod_structure structure ->
-    structure |> structureCheckAnnotation ~checkAnnotation
+    structure |> structure_check_annotation ~check_annotation
   | Tmod_constraint
-      (moduleExpr, _moduleType, moduleTypeConstraint, _moduleCoercion) -> (
-    moduleExpr |> moduleExprCheckAnnotation ~checkAnnotation
+      (module_expr, _moduleType, module_type_constraint, _moduleCoercion) -> (
+    module_expr |> module_expr_check_annotation ~check_annotation
     ||
-    match moduleTypeConstraint with
-    | Tmodtype_explicit moduleType ->
-      moduleType |> moduleTypeCheckAnnotation ~checkAnnotation
+    match module_type_constraint with
+    | Tmodtype_explicit module_type ->
+      module_type |> module_type_check_annotation ~check_annotation
     | Tmodtype_implicit -> false)
   | Tmod_ident _ | Tmod_functor _ | Tmod_apply _ | Tmod_unpack _ -> false
 
-and moduleBindingCheckAnnotation ~checkAnnotation
+and module_binding_check_annotation ~check_annotation
     ({mb_expr; mb_attributes; mb_loc = loc} : Typedtree.module_binding) =
-  mb_attributes |> checkAnnotation ~loc
-  || mb_expr |> moduleExprCheckAnnotation ~checkAnnotation
+  mb_attributes |> check_annotation ~loc
+  || mb_expr |> module_expr_check_annotation ~check_annotation
 
-and structureCheckAnnotation ~checkAnnotation (structure : Typedtree.structure)
+and structure_check_annotation ~check_annotation (structure : Typedtree.structure)
     =
   structure.str_items
-  |> List.exists (structureItemCheckAnnotation ~checkAnnotation)
+  |> List.exists (structure_item_check_annotation ~check_annotation)
 
-let importFromString importString : import =
-  let importPath = ImportPath.fromStringUnsafe importString in
-  {importPath}
+let import_from_string import_string : import =
+  let import_path = ImportPath.from_string_unsafe import_string in
+  {import_path}
 
-let updateConfigForModule ~(config : GenTypeConfig.t) attributes =
-  if attributes |> hasAttribute tagIsGenType then
+let update_config_for_module ~(config : GenTypeConfig.t) attributes =
+  if attributes |> has_attribute tag_is_gen_type then
     {config with everything = true}
   else config

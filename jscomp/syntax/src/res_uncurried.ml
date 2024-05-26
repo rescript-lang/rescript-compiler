@@ -1,11 +1,11 @@
 (* For parsing *)
-let fromDotted ~dotted = function
+let from_dotted ~dotted = function
   | Config.Legacy -> dotted
   | Swap -> not dotted
   | Uncurried -> true
 
 (* For printing *)
-let getDotted ~uncurried = function
+let get_dotted ~uncurried = function
   | Config.Legacy -> uncurried
   | Swap -> not uncurried
   | Uncurried -> false

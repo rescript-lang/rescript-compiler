@@ -1,137 +1,137 @@
 module StringSet = Set.Make (String)
 
-let cmtCheckAnnotations ~checkAnnotation inputCMT =
-  match inputCMT.Cmt_format.cmt_annots with
+let cmt_check_annotations ~check_annotation input_c_m_t =
+  match input_c_m_t.Cmt_format.cmt_annots with
   | Implementation structure ->
-    structure |> Annotation.structureCheckAnnotation ~checkAnnotation
+    structure |> Annotation.structure_check_annotation ~check_annotation
   | Interface signature ->
-    signature |> Annotation.signatureCheckAnnotation ~checkAnnotation
+    signature |> Annotation.signature_check_annotation ~check_annotation
   | _ -> false
 
-let cmtHasTypeErrors inputCMT =
-  match inputCMT.Cmt_format.cmt_annots with
+let cmt_has_type_errors input_c_m_t =
+  match input_c_m_t.Cmt_format.cmt_annots with
   | Partial_implementation _ | Partial_interface _ -> true
   | _ -> false
 
-let structureItemIsDeclaration structItem =
-  match structItem.Typedtree.str_desc with
+let structure_item_is_declaration struct_item =
+  match struct_item.Typedtree.str_desc with
   | Typedtree.Tstr_type _ | Tstr_modtype _ | Tstr_module _ -> true
   | _ -> false
 
-let signatureItemIsDeclaration signatureItem =
-  match signatureItem.Typedtree.sig_desc with
+let signature_item_is_declaration signature_item =
+  match signature_item.Typedtree.sig_desc with
   | Typedtree.Tsig_type _ | Tsig_modtype _ -> true
   | _ -> false
 
-let inputCmtTranslateTypeDeclarations ~config ~outputFileRelative ~resolver
-    inputCMT : CodeItem.translation =
-  let {Cmt_format.cmt_annots} = inputCMT in
-  let typeEnv = TypeEnv.root () in
+let input_cmt_translate_type_declarations ~config ~output_file_relative ~resolver
+    input_c_m_t : CodeItem.translation =
+  let {Cmt_format.cmt_annots} = input_c_m_t in
+  let type_env = TypeEnv.root () in
   let translations =
     match cmt_annots with
     | Implementation structure ->
       {
         structure with
         str_items =
-          structure.str_items |> List.filter structureItemIsDeclaration;
+          structure.str_items |> List.filter structure_item_is_declaration;
       }
-      |> TranslateStructure.translateStructure ~config ~outputFileRelative
-           ~resolver ~typeEnv
+      |> TranslateStructure.translate_structure ~config ~output_file_relative
+           ~resolver ~type_env
     | Interface signature ->
       {
         signature with
         sig_items =
-          signature.sig_items |> List.filter signatureItemIsDeclaration;
+          signature.sig_items |> List.filter signature_item_is_declaration;
       }
-      |> TranslateSignature.translateSignature ~config ~outputFileRelative
-           ~resolver ~typeEnv
+      |> TranslateSignature.translate_signature ~config ~output_file_relative
+           ~resolver ~type_env
     | Packed _ | Partial_implementation _ | Partial_interface _ -> []
   in
   translations |> Translation.combine
-  |> Translation.addTypeDeclarationsFromModuleEquations ~typeEnv
+  |> Translation.add_type_declarations_from_module_equations ~type_env
 
-let translateCMT ~config ~outputFileRelative ~resolver inputCMT : Translation.t
+let translate_c_m_t ~config ~output_file_relative ~resolver input_c_m_t : Translation.t
     =
-  let {Cmt_format.cmt_annots} = inputCMT in
-  let typeEnv = TypeEnv.root () in
+  let {Cmt_format.cmt_annots} = input_c_m_t in
+  let type_env = TypeEnv.root () in
   let translations =
     match cmt_annots with
     | Implementation structure ->
       structure
-      |> TranslateStructure.translateStructure ~config ~outputFileRelative
-           ~resolver ~typeEnv
+      |> TranslateStructure.translate_structure ~config ~output_file_relative
+           ~resolver ~type_env
     | Interface signature ->
       signature
-      |> TranslateSignature.translateSignature ~config ~outputFileRelative
-           ~resolver ~typeEnv
+      |> TranslateSignature.translate_signature ~config ~output_file_relative
+           ~resolver ~type_env
     | _ -> []
   in
   translations |> Translation.combine
-  |> Translation.addTypeDeclarationsFromModuleEquations ~typeEnv
+  |> Translation.add_type_declarations_from_module_equations ~type_env
 
-let emitTranslation ~config ~fileName ~outputFile ~outputFileRelative ~resolver
-    ~sourceFile translation =
-  let codeText =
+let emit_translation ~config ~file_name ~output_file ~output_file_relative ~resolver
+    ~source_file translation =
+  let code_text =
     translation
-    |> EmitJs.emitTranslationAsString ~config ~fileName ~outputFileRelative
-         ~resolver ~inputCmtTranslateTypeDeclarations
+    |> EmitJs.emit_translation_as_string ~config ~file_name ~output_file_relative
+         ~resolver ~input_cmt_translate_type_declarations
   in
-  let fileContents =
-    EmitType.fileHeader ~sourceFile:(Filename.basename sourceFile)
-    ^ "\n" ^ codeText ^ "\n"
+  let file_contents =
+    EmitType.file_header ~source_file:(Filename.basename source_file)
+    ^ "\n" ^ code_text ^ "\n"
   in
-  GeneratedFiles.writeFileIfRequired ~outputFile ~fileContents
+  GeneratedFiles.write_file_if_required ~output_file ~file_contents
 
-let readCmt cmtFile =
-  try Cmt_format.read_cmt cmtFile
+let read_cmt cmt_file =
+  try Cmt_format.read_cmt cmt_file
   with Cmi_format.Error _ ->
-    Log_.item "Error loading %s\n\n" cmtFile;
+    Log_.item "Error loading %s\n\n" cmt_file;
     Log_.item "It looks like you might have stale compilation artifacts.\n";
     Log_.item "Try to clean and rebuild.\n\n";
     assert false
 
-let processCmtFile cmt =
-  let config = Paths.readConfig ~namespace:(cmt |> Paths.findNameSpace) in
+let process_cmt_file cmt =
+  let config = Paths.read_config ~namespace:(cmt |> Paths.find_name_space) in
   if !Debug.basic then Log_.item "Cmt %s\n" cmt;
-  let cmtFile = cmt |> Paths.getCmtFile in
-  if cmtFile <> "" then
-    let outputFile = cmt |> Paths.getOutputFile ~config in
-    let outputFileRelative = cmt |> Paths.getOutputFileRelative ~config in
-    let fileName = cmt |> Paths.getModuleName in
-    let isInterface = Filename.check_suffix cmtFile ".cmti" in
+  let cmt_file = cmt |> Paths.get_cmt_file in
+  if cmt_file <> "" then
+    let output_file = cmt |> Paths.get_output_file ~config in
+    let output_file_relative = cmt |> Paths.get_output_file_relative ~config in
+    let file_name = cmt |> Paths.get_module_name in
+    let is_interface = Filename.check_suffix cmt_file ".cmti" in
     let resolver =
-      ModuleResolver.createLazyResolver ~config ~extensions:[".res"; ".shim.ts"]
-        ~excludeFile:(fun fname ->
+      ModuleResolver.create_lazy_resolver ~config ~extensions:[".res"; ".shim.ts"]
+        ~exclude_file:(fun fname ->
           fname = "React.res" || fname = "ReasonReact.res")
     in
-    let inputCMT, hasGenTypeAnnotations =
-      let inputCMT = readCmt cmtFile in
-      let ignoreInterface = ref false in
-      let checkAnnotation ~loc:_ attributes =
+    let input_c_m_t, has_gen_type_annotations =
+      let input_c_m_t = read_cmt cmt_file in
+      let ignore_interface = ref false in
+      let check_annotation ~loc:_ attributes =
         if
           attributes
-          |> Annotation.getAttributePayload
-               Annotation.tagIsGenTypeIgnoreInterface
+          |> Annotation.get_attribute_payload
+               Annotation.tag_is_gen_type_ignore_interface
           <> None
-        then ignoreInterface := true;
+        then ignore_interface := true;
         attributes
-        |> Annotation.getAttributePayload
-             Annotation.tagIsOneOfTheGenTypeAnnotations
+        |> Annotation.get_attribute_payload
+             Annotation.tag_is_one_of_the_gen_type_annotations
         <> None
       in
-      let hasGenTypeAnnotations =
-        inputCMT |> cmtCheckAnnotations ~checkAnnotation
+      let has_gen_type_annotations =
+        input_c_m_t |> cmt_check_annotations ~check_annotation
       in
-      if isInterface then
-        let cmtFileImpl =
-          (cmtFile |> (Filename.chop_extension [@doesNotRaise])) ^ ".cmt"
+      if is_interface then
+        let cmt_file_impl =
+          (cmt_file |> (Filename.chop_extension [@doesNotRaise])) ^ ".cmt"
         in
-        let inputCMTImpl = readCmt cmtFileImpl in
-        let hasGenTypeAnnotationsImpl =
-          inputCMTImpl
-          |> cmtCheckAnnotations ~checkAnnotation:(fun ~loc attributes ->
-                 if attributes |> checkAnnotation ~loc then (
-                   if not !ignoreInterface then (
+        let input_c_m_t_impl = read_cmt cmt_file_impl in
+        let has_gen_type_annotations_impl =
+          input_c_m_t_impl
+          |> cmt_check_annotations ~check_annotation:(fun ~loc attributes ->
+                 if attributes |> check_annotation ~loc then (
+                   if not !ignore_interface then (
                      Log_.Color.setup ();
                      Log_.info ~loc ~name:"Warning genType" (fun ppf () ->
                          Format.fprintf ppf
@@ -139,32 +139,32 @@ let processCmtFile cmt =
                    true)
                  else false)
         in
-        ( (match !ignoreInterface with
-          | true -> inputCMTImpl
-          | false -> inputCMT),
-          match !ignoreInterface with
-          | true -> hasGenTypeAnnotationsImpl
-          | false -> hasGenTypeAnnotations )
-      else (inputCMT, hasGenTypeAnnotations)
+        ( (match !ignore_interface with
+          | true -> input_c_m_t_impl
+          | false -> input_c_m_t),
+          match !ignore_interface with
+          | true -> has_gen_type_annotations_impl
+          | false -> has_gen_type_annotations )
+      else (input_c_m_t, has_gen_type_annotations)
     in
-    if hasGenTypeAnnotations then
-      let sourceFile =
-        match inputCMT.cmt_annots |> FindSourceFile.cmt with
-        | Some sourceFile -> sourceFile
+    if has_gen_type_annotations then
+      let source_file =
+        match input_c_m_t.cmt_annots |> FindSourceFile.cmt with
+        | Some source_file -> source_file
         | None -> (
-          (fileName |> ModuleName.toString)
+          (file_name |> ModuleName.to_string)
           ^
-          match isInterface with
+          match is_interface with
           | true -> ".resi"
           | false -> ".res")
       in
-      inputCMT
-      |> translateCMT ~config ~outputFileRelative ~resolver
-      |> emitTranslation ~config ~fileName ~outputFile ~outputFileRelative
-           ~resolver ~sourceFile
-    else if inputCMT |> cmtHasTypeErrors then
-      outputFile |> GeneratedFiles.logFileAction TypeError
+      input_c_m_t
+      |> translate_c_m_t ~config ~output_file_relative ~resolver
+      |> emit_translation ~config ~file_name ~output_file ~output_file_relative
+           ~resolver ~source_file
+    else if input_c_m_t |> cmt_has_type_errors then
+      output_file |> GeneratedFiles.log_file_action TypeError
     else (
-      outputFile |> GeneratedFiles.logFileAction NoMatch;
-      if Sys.file_exists outputFile then Sys.remove outputFile)
+      output_file |> GeneratedFiles.log_file_action NoMatch;
+      if Sys.file_exists output_file then Sys.remove output_file)
 [@@live]

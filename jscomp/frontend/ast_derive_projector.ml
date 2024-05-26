@@ -12,10 +12,10 @@ let raise_unsupported_vaiant_record_arg loc =
 
 type tdcls = Parsetree.type_declaration list
 
-let derivingName = "accessors"
+let deriving_name = "accessors"
 
 let init () =
-  Ast_derive.register derivingName (fun (x : Parsetree.expression option) ->
+  Ast_derive.register deriving_name (fun (x : Parsetree.expression option) ->
       Ext_option.iter x invalid_config;
       {
         structure_gen =
@@ -24,7 +24,7 @@ let init () =
               (* Accessors with no params (arity of 0) are simply values and not functions *)
               match Config.uncurried.contents with
               | Uncurried when arity > 0 ->
-                Ast_uncurried.uncurriedFun ~loc ~arity accessor
+                Ast_uncurried.uncurried_fun ~loc ~arity accessor
               | _ -> accessor
             in
             let handle_tdcl tdcl =
@@ -113,7 +113,7 @@ let init () =
                              Ast_compatible.fun_ (Pat.var {loc; txt = var}) b)
                          |> handle_uncurried_accessor_tranform ~loc ~arity))
               | Ptype_abstract | Ptype_open ->
-                Ast_derive_util.notApplicable tdcl.ptype_loc derivingName;
+                Ast_derive_util.not_applicable tdcl.ptype_loc deriving_name;
                 []
               (* Location.raise_errorf "projector only works with record" *)
             in
@@ -124,7 +124,7 @@ let init () =
               match Config.uncurried.contents with
               (* Accessors with no params (arity of 0) are simply values and not functions *)
               | Uncurried when arity > 0 ->
-                Ast_uncurried.uncurriedType ~loc ~arity t
+                Ast_uncurried.uncurried_type ~loc ~arity t
               | _ -> t
             in
             let handle_tdcl tdcl =
@@ -175,7 +175,7 @@ let init () =
                            Ast_compatible.arrow x acc)
                       |> handle_uncurried_type_tranform ~arity ~loc))
               | Ptype_open | Ptype_abstract ->
-                Ast_derive_util.notApplicable tdcl.ptype_loc derivingName;
+                Ast_derive_util.not_applicable tdcl.ptype_loc deriving_name;
                 []
             in
             Ext_list.flat_map tdcls handle_tdcl);

@@ -162,9 +162,9 @@ module ResClflags : sig
   val origin : string ref
   val file : string ref
   val interface : bool ref
-  val jsxVersion : int ref
-  val jsxModule : string ref
-  val jsxMode : string ref
+  val jsx_version : int ref
+  val jsx_module : string ref
+  val jsx_mode : string ref
   val typechecker : bool ref
 
   val parse : unit -> unit
@@ -175,9 +175,9 @@ end = struct
   let print = ref "res"
   let origin = ref ""
   let interface = ref false
-  let jsxVersion = ref (-1)
-  let jsxModule = ref "react"
-  let jsxMode = ref "automatic"
+  let jsx_version = ref (-1)
+  let jsx_module = ref "react"
+  let jsx_mode = ref "automatic"
   let file = ref ""
   let typechecker = ref false
 
@@ -207,14 +207,14 @@ end = struct
         Arg.Unit (fun () -> interface := true),
         "Parse as interface" );
       ( "-jsx-version",
-        Arg.Int (fun i -> jsxVersion := i),
+        Arg.Int (fun i -> jsx_version := i),
         "Apply a specific built-in ppx before parsing, none or 3, 4. Default: \
          none" );
       ( "-jsx-module",
-        Arg.String (fun txt -> jsxModule := txt),
+        Arg.String (fun txt -> jsx_module := txt),
         "Specify the jsx module. Default: react" );
       ( "-jsx-mode",
-        Arg.String (fun txt -> jsxMode := txt),
+        Arg.String (fun txt -> jsx_mode := txt),
         "Specify the jsx mode, classic or automatic. Default: automatic" );
       ( "-typechecker",
         Arg.Unit (fun () -> typechecker := true),
@@ -226,37 +226,37 @@ end = struct
 end
 
 module CliArgProcessor = struct
-  type backend = Parser : 'diagnostics Res_driver.parsingEngine -> backend
+  type backend = Parser : 'diagnostics Res_driver.parsing_engine -> backend
   [@@unboxed]
 
-  let processFile ~isInterface ~width ~recover ~origin ~target ~jsxVersion
-      ~jsxModule ~jsxMode ~typechecker filename =
+  let process_file ~is_interface ~width ~recover ~origin ~target ~jsx_version
+      ~jsx_module ~jsx_mode ~typechecker filename =
     let len = String.length filename in
-    let processInterface =
-      isInterface
+    let process_interface =
+      is_interface
       || (len > 0 && (String.get [@doesNotRaise]) filename (len - 1) = 'i')
     in
-    let parsingEngine =
+    let parsing_engine =
       match origin with
-      | "ml" -> Parser Res_driver_ml_parser.parsingEngine
-      | "res" -> Parser Res_driver.parsingEngine
+      | "ml" -> Parser Res_driver_ml_parser.parsing_engine
+      | "res" -> Parser Res_driver.parsing_engine
       | "" -> (
         match Filename.extension filename with
-        | ".ml" | ".mli" -> Parser Res_driver_ml_parser.parsingEngine
-        | _ -> Parser Res_driver.parsingEngine)
+        | ".ml" | ".mli" -> Parser Res_driver_ml_parser.parsing_engine
+        | _ -> Parser Res_driver.parsing_engine)
       | origin ->
         print_endline
           ("-parse needs to be either ml or res. You provided " ^ origin);
         exit 1
     in
-    let printEngine =
+    let print_engine =
       match target with
-      | "binary" -> Res_driver_binary.printEngine
-      | "ml" -> Res_driver_ml_parser.printEngine
-      | "ast" -> Res_ast_debugger.printEngine
-      | "sexp" -> Res_ast_debugger.sexpPrintEngine
-      | "comments" -> Res_ast_debugger.commentsPrintEngine
-      | "res" -> Res_driver.printEngine
+      | "binary" -> Res_driver_binary.print_engine
+      | "ml" -> Res_driver_ml_parser.print_engine
+      | "ast" -> Res_ast_debugger.print_engine
+      | "sexp" -> Res_ast_debugger.sexp_print_engine
+      | "comments" -> Res_ast_debugger.comments_print_engine
+      | "res" -> Res_driver.print_engine
       | target ->
         print_endline
           ("-print needs to be either binary, ml, ast, sexp, comments or res. \
@@ -264,57 +264,57 @@ module CliArgProcessor = struct
         exit 1
     in
 
-    let forPrinter =
+    let for_printer =
       match target with
       | ("res" | "sexp") when not typechecker -> true
       | _ -> false
     in
 
-    let (Parser backend) = parsingEngine in
+    let (Parser backend) = parsing_engine in
     (* This is the whole purpose of the Color module above *)
     Color.setup None;
-    if processInterface then
-      let parseResult = backend.parseInterface ~forPrinter ~filename in
-      if parseResult.invalid then (
-        backend.stringOfDiagnostics ~source:parseResult.source
-          ~filename:parseResult.filename parseResult.diagnostics;
+    if process_interface then
+      let parse_result = backend.parse_interface ~for_printer ~filename in
+      if parse_result.invalid then (
+        backend.string_of_diagnostics ~source:parse_result.source
+          ~filename:parse_result.filename parse_result.diagnostics;
         if recover then
-          printEngine.printInterface ~width ~filename
-            ~comments:parseResult.comments parseResult.parsetree
+          print_engine.print_interface ~width ~filename
+            ~comments:parse_result.comments parse_result.parsetree
         else exit 1)
       else
         let parsetree =
-          Jsx_ppx.rewrite_signature ~jsxVersion ~jsxModule ~jsxMode
-            parseResult.parsetree
+          Jsx_ppx.rewrite_signature ~jsx_version ~jsx_module ~jsx_mode
+            parse_result.parsetree
         in
-        printEngine.printInterface ~width ~filename
-          ~comments:parseResult.comments parsetree
+        print_engine.print_interface ~width ~filename
+          ~comments:parse_result.comments parsetree
     else
-      let parseResult = backend.parseImplementation ~forPrinter ~filename in
-      if parseResult.invalid then (
-        backend.stringOfDiagnostics ~source:parseResult.source
-          ~filename:parseResult.filename parseResult.diagnostics;
+      let parse_result = backend.parse_implementation ~for_printer ~filename in
+      if parse_result.invalid then (
+        backend.string_of_diagnostics ~source:parse_result.source
+          ~filename:parse_result.filename parse_result.diagnostics;
         if recover then
-          printEngine.printImplementation ~width ~filename
-            ~comments:parseResult.comments parseResult.parsetree
+          print_engine.print_implementation ~width ~filename
+            ~comments:parse_result.comments parse_result.parsetree
         else exit 1)
       else
         let parsetree =
-          Jsx_ppx.rewrite_implementation ~jsxVersion ~jsxModule ~jsxMode
-            parseResult.parsetree
+          Jsx_ppx.rewrite_implementation ~jsx_version ~jsx_module ~jsx_mode
+            parse_result.parsetree
         in
-        printEngine.printImplementation ~width ~filename
-          ~comments:parseResult.comments parsetree
+        print_engine.print_implementation ~width ~filename
+          ~comments:parse_result.comments parsetree
   [@@raises exit]
 end
 
 let () =
   if not !Sys.interactive then (
     ResClflags.parse ();
-    CliArgProcessor.processFile ~isInterface:!ResClflags.interface
+    CliArgProcessor.process_file ~is_interface:!ResClflags.interface
       ~width:!ResClflags.width ~recover:!ResClflags.recover
       ~target:!ResClflags.print ~origin:!ResClflags.origin
-      ~jsxVersion:!ResClflags.jsxVersion ~jsxModule:!ResClflags.jsxModule
-      ~jsxMode:!ResClflags.jsxMode ~typechecker:!ResClflags.typechecker
+      ~jsx_version:!ResClflags.jsx_version ~jsx_module:!ResClflags.jsx_module
+      ~jsx_mode:!ResClflags.jsx_mode ~typechecker:!ResClflags.typechecker
       !ResClflags.file)
 [@@raises exit]

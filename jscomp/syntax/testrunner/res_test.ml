@@ -1,13 +1,13 @@
 module IO = Res_io
 
-let dataDir = "jscomp/syntax/tests"
+let data_dir = "jscomp/syntax/tests"
 
 (* test printing of .res file*)
 let () =
-  let filename = Filename.concat dataDir "api/resSyntax.res" in
-  let prettySource = Res_multi_printer.print `res ~input:filename in
+  let filename = Filename.concat data_dir "api/resSyntax.res" in
+  let pretty_source = Res_multi_printer.print `res ~input:filename in
   assert (
-    prettySource
+    pretty_source
     = {|// test file
 
 if true {
@@ -19,19 +19,19 @@ if true {
 
 (* test printing of .resi file*)
 let () =
-  let filename = Filename.concat dataDir "api/resiSyntax.resi" in
-  let prettySource = Res_multi_printer.print `res ~input:filename in
-  assert (prettySource = {|// test interface file
+  let filename = Filename.concat data_dir "api/resiSyntax.resi" in
+  let pretty_source = Res_multi_printer.print `res ~input:filename in
+  assert (pretty_source = {|// test interface file
 
 let x: int
 |})
 
 (* test printing of ocaml .ml file *)
 let () =
-  let filename = Filename.concat dataDir "api/mlSyntax.ml" in
-  let prettySource = Res_multi_printer.print `ml ~input:filename in
+  let filename = Filename.concat data_dir "api/mlSyntax.ml" in
+  let pretty_source = Res_multi_printer.print `ml ~input:filename in
   assert (
-    prettySource
+    pretty_source
     = {|/* test ml file */
 
 let () = print_endline("hello world")
@@ -43,10 +43,10 @@ let d = `Sehr Schön`
 
 (* test printing of ocaml .mli file *)
 let () =
-  let filename = Filename.concat dataDir "api/mliSyntax.mli" in
-  let prettySource = Res_multi_printer.print `ml ~input:filename in
+  let filename = Filename.concat data_dir "api/mliSyntax.mli" in
+  let pretty_source = Res_multi_printer.print `ml ~input:filename in
   assert (
-    prettySource
+    pretty_source
     = {|/* test mli file */
 
 let x: int
@@ -58,7 +58,7 @@ let y: float
 let () = print_endline "✅ multi printer api tests"
 
 module OutcomePrinterTests = struct
-  let signatureToOutcome structure =
+  let signature_to_outcome structure =
     Lazy.force Res_outcome_printer.setup;
 
     Clflags.include_dirs :=
@@ -99,36 +99,36 @@ module OutcomePrinterTests = struct
    * The outcome tree is printed to a string
    * and stored in a snapshot `tests/oprint/expected/oprint.resi.txt` *)
   let run () =
-    let filename = Filename.concat dataDir "oprint/oprint.res" in
+    let filename = Filename.concat data_dir "oprint/oprint.res" in
     let result =
-      Res_driver.parsingEngine.parseImplementation ~forPrinter:false ~filename
+      Res_driver.parsing_engine.parse_implementation ~for_printer:false ~filename
     in
     let signature =
       if result.Res_driver.invalid then (
-        Res_driver.parsingEngine.stringOfDiagnostics ~source:result.source
+        Res_driver.parsing_engine.string_of_diagnostics ~source:result.source
           ~filename:result.filename result.diagnostics;
         exit 1)
       else result.Res_driver.parsetree
     in
-    IO.writeFile
-      ~filename:(Filename.concat dataDir "oprint/expected/oprint.resi.txt")
-      ~contents:(signatureToOutcome signature)
+    IO.write_file
+      ~filename:(Filename.concat data_dir "oprint/expected/oprint.resi.txt")
+      ~contents:(signature_to_outcome signature)
 end
 
 module ParserApiTest = struct
-  let makeDefault () =
+  let make_default () =
     let src = "   let x = 1\nlet y = 2\nlet z = 3" in
     let parser = Res_parser.make src "test.res" in
     assert (parser.scanner.lnum == 1);
-    assert (parser.scanner.lineOffset == 0);
+    assert (parser.scanner.line_offset == 0);
     assert (parser.scanner.offset == 6);
     assert (parser.token = Res_token.Let);
     print_endline "✅ Parser make: initializes parser and checking offsets"
 
-  let unixLf () =
+  let unix_lf () =
     let src = "let x = 1\nlet y = 2\nlet z = 3" in
     let parser = Res_parser.make src "test.res" in
-    (match Res_core.parseImplementation parser with
+    (match Res_core.parse_implementation parser with
     | [x; y; z] ->
       assert (x.pstr_loc.loc_start.pos_lnum = 1);
       assert (y.pstr_loc.loc_start.pos_lnum = 2);
@@ -136,10 +136,10 @@ module ParserApiTest = struct
     | _ -> assert false);
     print_endline "✅ Parser handles LF correct"
 
-  let windowsCrlf () =
+  let windows_crlf () =
     let src = "let x = 1\r\nlet y = 2\r\nlet z = 3" in
     let parser = Res_parser.make src "test.res" in
-    (match Res_core.parseImplementation parser with
+    (match Res_core.parse_implementation parser with
     | [x; y; z] ->
       assert (x.pstr_loc.loc_start.pos_lnum = 1);
       assert (y.pstr_loc.loc_start.pos_lnum = 2);
@@ -148,9 +148,9 @@ module ParserApiTest = struct
     print_endline "✅ Parser handles CRLF correct"
 
   let run () =
-    makeDefault ();
-    unixLf ();
-    windowsCrlf ()
+    make_default ();
+    unix_lf ();
+    windows_crlf ()
 end
 
 let () = OutcomePrinterTests.run ()

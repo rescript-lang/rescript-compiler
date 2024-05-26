@@ -1,22 +1,22 @@
 type t
 
-val toString : t -> string
+val to_string : t -> string
 
 val loc : t -> Location.t
 val txt : t -> string
-val prevTokEndPos : t -> Lexing.position
+val prev_tok_end_pos : t -> Lexing.position
 
-val setPrevTokEndPos : t -> Lexing.position -> unit
+val set_prev_tok_end_pos : t -> Lexing.position -> unit
 
-val isDocComment : t -> bool
+val is_doc_comment : t -> bool
 
-val isModuleComment : t -> bool
+val is_module_comment : t -> bool
 
-val isSingleLineComment : t -> bool
+val is_single_line_comment : t -> bool
 
-val makeSingleLineComment : loc:Location.t -> string -> t
-val makeMultiLineComment :
-  loc:Location.t -> docComment:bool -> standalone:bool -> string -> t
-val fromOcamlComment :
-  loc:Location.t -> txt:string -> prevTokEndPos:Lexing.position -> t
-val trimSpaces : string -> string
+val make_single_line_comment : loc:Location.t -> string -> t
+val make_multi_line_comment :
+  loc:Location.t -> doc_comment:bool -> standalone:bool -> string -> t
+val from_ocaml_comment :
+  loc:Location.t -> txt:string -> prev_tok_end_pos:Lexing.position -> t
+val trim_spaces : string -> string

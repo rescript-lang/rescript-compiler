@@ -27,9 +27,9 @@ module U = Ast_derive_util
 open Ast_helper
 (* type tdcls = Parsetree.type_declaration list *)
 
-type abstractKind = Not_abstract | Light_abstract | Complex_abstract
+type abstract_kind = Not_abstract | Light_abstract | Complex_abstract
 
-let isAbstract (xs : Ast_payload.action list) =
+let is_abstract (xs : Ast_payload.action list) =
   match xs with
   | [({txt = "abstract"}, None)] -> Complex_abstract
   | [({txt = "abstract"}, Some {pexp_desc = Pexp_ident {txt = Lident "light"}})]
@@ -61,12 +61,12 @@ let get_attrs = [Ast_attributes.bs_get_arity]
 
 let set_attrs = [Ast_attributes.set]
 
-let handleTdcl light (tdcl : Parsetree.type_declaration) :
+let handle_tdcl light (tdcl : Parsetree.type_declaration) :
     Parsetree.type_declaration * Parsetree.value_description list =
   let core_type = U.core_type_of_type_declaration tdcl in
   let loc = tdcl.ptype_loc in
   let type_name = tdcl.ptype_name.txt in
-  let newTdcl =
+  let new_tdcl =
     {
       tdcl with
       ptype_kind = Ptype_abstract;
@@ -80,7 +80,7 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) :
       Ext_list.exists label_declarations (fun x ->
           Ast_attributes.has_bs_optional x.pld_attributes)
     in
-    let setter_accessor, makeType, labels =
+    let setter_accessor, make_type, labels =
       Ext_list.fold_right label_declarations
         ( [],
           (if has_optional_field then
@@ -95,7 +95,7 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) :
                 pld_loc;
               } :
                Parsetree.label_declaration) (acc, maker, labels) ->
-          let prim_as_name, newLabel =
+          let prim_as_name, new_label =
             match Ast_attributes.iter_process_bs_string_as pld_attributes with
             | None -> (label_name, pld_name)
             | Some new_name -> (new_name, {pld_name with txt = new_name})
@@ -141,28 +141,28 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) :
               :: acc
             else acc
           in
-          (acc, maker, (is_optional, newLabel) :: labels))
+          (acc, maker, (is_optional, new_label) :: labels))
     in
-    ( newTdcl,
+    ( new_tdcl,
       if is_private then setter_accessor
       else
-        let myPrims =
+        let my_prims =
           Ast_external_process.pval_prim_of_option_labels labels
             has_optional_field
         in
-        let myMaker =
-          Val.mk ~loc {loc; txt = type_name} ~prim:myPrims makeType
+        let my_maker =
+          Val.mk ~loc {loc; txt = type_name} ~prim:my_prims make_type
         in
-        myMaker :: setter_accessor )
+        my_maker :: setter_accessor )
   | Ptype_abstract | Ptype_variant _ | Ptype_open ->
     (* Looks obvious that it does not make sense to warn *)
     (* U.notApplicable tdcl.ptype_loc derivingName;  *)
     (tdcl, [])
 
-let handleTdclsInStr ~light rf tdcls =
+let handle_tdcls_in_str ~light rf tdcls =
   let tdcls, code =
     Ext_list.fold_right tdcls ([], []) (fun tdcl (tdcls, sts) ->
-        match handleTdcl light tdcl with
+        match handle_tdcl light tdcl with
         | ntdcl, value_descriptions ->
           ( ntdcl :: tdcls,
             Ext_list.map_append value_descriptions sts (fun x ->
@@ -171,10 +171,10 @@ let handleTdclsInStr ~light rf tdcls =
   Ast_compatible.rec_type_str rf tdcls :: code
 (* still need perform transformation for non-abstract type*)
 
-let handleTdclsInSig ~light rf tdcls =
+let handle_tdcls_in_sig ~light rf tdcls =
   let tdcls, code =
     Ext_list.fold_right tdcls ([], []) (fun tdcl (tdcls, sts) ->
-        match handleTdcl light tdcl with
+        match handle_tdcl light tdcl with
         | ntdcl, value_descriptions ->
           ( ntdcl :: tdcls,
             Ext_list.map_append value_descriptions sts (fun x -> Sig.value x) ))

@@ -323,7 +323,7 @@ type function_attribute = {
   return_unit : bool;
   async : bool;
   directive : string option;
-  oneUnitArg : bool;
+  one_unit_arg : bool;
 }
 
 type lambda =
@@ -392,7 +392,7 @@ let default_function_attribute = {
   is_a_functor = false;
   return_unit = false;
   async = false;
-  oneUnitArg = false;
+  one_unit_arg = false;
   directive = None;
 }
 

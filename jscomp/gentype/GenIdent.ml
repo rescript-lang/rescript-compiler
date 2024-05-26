@@ -4,18 +4,18 @@ module IntMap = Map.Make (struct
   let compare (x : int) (y : int) = compare x y
 end)
 
-type typeVarsGen = {
+type type_vars_gen = {
   (* Generate fresh identifiers *)
-  mutable typeNameMap: string IntMap.t;
-  mutable typeNameCounter: int;
+  mutable type_name_map: string IntMap.t;
+  mutable type_name_counter: int;
 }
 
-let createTypeVarsGen () = {typeNameMap = IntMap.empty; typeNameCounter = 0}
+let create_type_vars_gen () = {type_name_map = IntMap.empty; type_name_counter = 0}
 
-let jsTypeNameForAnonymousTypeID ~typeVarsGen id =
-  try typeVarsGen.typeNameMap |> IntMap.find id
+let js_type_name_for_anonymous_type_i_d ~type_vars_gen id =
+  try type_vars_gen.type_name_map |> IntMap.find id
   with Not_found ->
-    typeVarsGen.typeNameCounter <- typeVarsGen.typeNameCounter + 1;
-    let name = "T" ^ string_of_int typeVarsGen.typeNameCounter in
-    typeVarsGen.typeNameMap <- typeVarsGen.typeNameMap |> IntMap.add id name;
+    type_vars_gen.type_name_counter <- type_vars_gen.type_name_counter + 1;
+    let name = "T" ^ string_of_int type_vars_gen.type_name_counter in
+    type_vars_gen.type_name_map <- type_vars_gen.type_name_map |> IntMap.add id name;
     name

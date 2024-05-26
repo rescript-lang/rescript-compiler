@@ -60,7 +60,7 @@ let var ?comment id : t = { expression_desc = Var (Id id); comment }
     Invariant: it should not call an external module .. *)
 
 let js_global ?comment (v : string) = var ?comment (Ext_ident.create_js v)
-let undefined : t = { expression_desc = Undefined {isUnit = false}; comment = None }
+let undefined : t = { expression_desc = Undefined {is_unit = false}; comment = None }
 let nil : t = { expression_desc = Null; comment = None }
 
 let call ?comment ~info e0 args : t =
@@ -72,8 +72,8 @@ let call ?comment ~info e0 args : t =
 let flat_call ?comment e0 es : t =
   { expression_desc = FlatCall (e0, es); comment }
 
-let tagged_template ?comment callExpr stringArgs valueArgs : t =
-  { expression_desc = Tagged_template (callExpr, stringArgs, valueArgs); comment }
+let tagged_template ?comment call_expr string_args value_args : t =
+  { expression_desc = Tagged_template (call_expr, string_args, value_args); comment }
 
 let runtime_var_dot ?comment (x : string) (e1 : string) : J.expression =
   {
@@ -186,7 +186,7 @@ let is_array  (e0 : t) : t =
 let new_ ?comment e0 args : t =
   { expression_desc = New (e0, Some args); comment }
 
-let unit : t = { expression_desc = Undefined {isUnit = true}; comment = None }
+let unit : t = { expression_desc = Undefined {is_unit = true}; comment = None }
 
 (* let math ?comment v args  : t =
    {comment ; expression_desc = Math(v,args)} *)
@@ -207,8 +207,8 @@ let unit : t = { expression_desc = Undefined {isUnit = true}; comment = None }
    [Js_fun_env.empty] is a mutable state ..
 *)
 
-let ocaml_fun ?comment ?immutable_mask ~return_unit ~async ~oneUnitArg ?directive params body : t =
-  let params = if oneUnitArg then [] else params in
+let ocaml_fun ?comment ?immutable_mask ~return_unit ~async ~one_unit_arg ?directive params body : t =
+  let params = if one_unit_arg then [] else params in
   let len = List.length params in
   {
     expression_desc =

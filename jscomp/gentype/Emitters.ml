@@ -1,49 +1,49 @@
 type t = {
-  requireEmitterEarly: string list;
-  exportEmitterEarly: string list;
-  requireEmitter: string list;
-  importEmitter: string list;
-  exportEmitter: string list;
+  require_emitter_early: string list;
+  export_emitter_early: string list;
+  require_emitter: string list;
+  import_emitter: string list;
+  export_emitter: string list;
 }
 
 let initial =
   {
-    requireEmitterEarly = [];
-    exportEmitterEarly = [];
-    requireEmitter = [];
-    importEmitter = [];
-    exportEmitter = [];
+    require_emitter_early = [];
+    export_emitter_early = [];
+    require_emitter = [];
+    import_emitter = [];
+    export_emitter = [];
   }
 
 let string ~emitter s = s :: emitter
 
-let requireEarly ~emitters s =
+let require_early ~emitters s =
   {
     emitters with
-    requireEmitterEarly = s |> string ~emitter:emitters.requireEmitterEarly;
+    require_emitter_early = s |> string ~emitter:emitters.require_emitter_early;
   }
 
-let exportEarly ~emitters s =
+let export_early ~emitters s =
   {
     emitters with
-    exportEmitterEarly = s |> string ~emitter:emitters.exportEmitterEarly;
+    export_emitter_early = s |> string ~emitter:emitters.export_emitter_early;
   }
 
 let require ~emitters s =
-  {emitters with requireEmitter = s |> string ~emitter:emitters.requireEmitter}
+  {emitters with require_emitter = s |> string ~emitter:emitters.require_emitter}
 
 let import ~emitters s =
-  {emitters with importEmitter = s |> string ~emitter:emitters.importEmitter}
+  {emitters with import_emitter = s |> string ~emitter:emitters.import_emitter}
 
 let export ~emitters s =
-  {emitters with exportEmitter = s |> string ~emitter:emitters.exportEmitter}
+  {emitters with export_emitter = s |> string ~emitter:emitters.export_emitter}
 
-let toString ~separator emitters =
+let to_string ~separator emitters =
   [
-    emitters.requireEmitterEarly |> List.rev;
-    emitters.exportEmitterEarly |> List.rev;
-    emitters.requireEmitter |> List.rev;
-    emitters.importEmitter |> List.rev;
-    emitters.exportEmitter |> List.rev;
+    emitters.require_emitter_early |> List.rev;
+    emitters.export_emitter_early |> List.rev;
+    emitters.require_emitter |> List.rev;
+    emitters.import_emitter |> List.rev;
+    emitters.export_emitter |> List.rev;
   ]
   |> List.concat |> String.concat separator

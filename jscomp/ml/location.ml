@@ -170,7 +170,7 @@ let print ?(src = None) ~message_kind intro ppf (loc : t) =
   let (_, end_line, end_char) = get_pos_info loc.loc_end in
   (* line is 1-indexed, column is 0-indexed. We convert all of them to 1-indexed to avoid confusion *)
   (* start_char is inclusive, end_char is exclusive *)
-  let normalizedRange =
+  let normalized_range =
     (* TODO: lots of the handlings here aren't needed anymore because the new
       rescript syntax has much stronger invariants regarding positions, e.g.
       no -1 *)
@@ -189,7 +189,7 @@ let print ?(src = None) ~message_kind intro ppf (loc : t) =
       Some ((start_line, start_char + 1), (end_line, end_char))
   in
   fprintf ppf "  @[%a@]@," print_loc loc;
-  match normalizedRange with
+  match normalized_range with
   | None -> ()
   | Some _ -> begin
       try
@@ -206,8 +206,8 @@ let print ?(src = None) ~message_kind intro ppf (loc : t) =
           (Code_frame.print
             ~is_warning:(message_kind=`warning)
             ~src
-            ~startPos:loc.loc_start
-            ~endPos:loc.loc_end
+            ~start_pos:loc.loc_start
+            ~end_pos:loc.loc_end
           )
       with
       (* this might happen if the file is e.g. "", "_none_" or any of the fake file name placeholders.

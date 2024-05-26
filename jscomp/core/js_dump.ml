@@ -524,7 +524,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
                             params body env
                       | _ ->
                         let el = match el with
-                        | [e] when e.expression_desc = Undefined {isUnit = true} ->
+                        | [e] when e.expression_desc = Undefined {is_unit = true} ->
                           (* omit passing undefined when the call is f() *)
                           []
                         | _ ->
@@ -548,8 +548,8 @@ and expression_desc cxt ~(level : int) f x : cxt =
               P.string f L.null;
               comma_sp f;
               expression ~level:1 cxt f el))
-  | Tagged_template (callExpr, stringArgs, valueArgs) ->
-    let cxt = expression cxt ~level f callExpr in
+  | Tagged_template (call_expr, string_args, value_args) ->
+    let cxt = expression cxt ~level f call_expr in
     P.string f "`";
     let rec aux cxt xs ys = match xs, ys with
     | [], [] -> ()
@@ -563,14 +563,14 @@ and expression_desc cxt ~(level : int) f x : cxt =
         aux cxt x_rest y_rest
     | _ -> assert false
     in
-    aux cxt stringArgs valueArgs;
+    aux cxt string_args value_args;
     P.string f "`";
     cxt
   | String_index (a, b) ->
       P.group f 1 (fun _ ->
           let cxt = expression ~level:15 cxt f a in
           P.string f L.dot;
-          P.string f L.codePointAt;
+          P.string f L.code_point_at;
           (* FIXME: use code_point_at *)
           P.paren_group f 1 (fun _ -> expression ~level:0 cxt f b))
   | Str { delim; txt } ->

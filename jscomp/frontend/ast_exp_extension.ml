@@ -74,7 +74,7 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
   | "time" -> (
     match payload with
     | PStr [{pstr_desc = Pstr_eval (e, _)}] ->
-      let locString =
+      let loc_string =
         if loc.loc_ghost then "GHOST LOC"
         else
           let loc_start = loc.loc_start in
@@ -86,14 +86,14 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
         (Ast_compatible.app1 ~loc
            (Exp.ident ~loc
               {loc; txt = Ldot (Ldot (Lident "Js", "Console"), "timeStart")})
-           (Ast_compatible.const_exp_string ~loc locString))
+           (Ast_compatible.const_exp_string ~loc loc_string))
         (Exp.let_ ~loc Nonrecursive
            [Vb.mk ~loc (Pat.var ~loc {loc; txt = "timed"}) e]
            (Exp.sequence ~loc
               (Ast_compatible.app1 ~loc
                  (Exp.ident ~loc
                     {loc; txt = Ldot (Ldot (Lident "Js", "Console"), "timeEnd")})
-                 (Ast_compatible.const_exp_string ~loc locString))
+                 (Ast_compatible.const_exp_string ~loc loc_string))
               (Exp.ident ~loc {loc; txt = Lident "timed"})))
     | _ ->
       Location.raise_errorf ~loc "expect a boolean expression in the payload")

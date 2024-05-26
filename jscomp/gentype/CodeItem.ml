@@ -1,58 +1,58 @@
 open GenTypeCommon
 
-type exportType = {
+type export_type = {
   loc: Location.t;
-  nameAs: string option;
+  name_as: string option;
   opaque: bool option;
   type_: type_;
-  typeVars: string list;
-  resolvedTypeName: ResolvedName.t;
-  docString: DocString.t;
+  type_vars: string list;
+  resolved_type_name: ResolvedName.t;
+  doc_string: DocString.t;
 }
 
-type importValue = {
-  asPath: string;
-  importAnnotation: Annotation.import;
+type import_value = {
+  as_path: string;
+  import_annotation: Annotation.import;
   type_: type_;
-  valueName: string;
+  value_name: string;
 }
 
-type exportValue = {
-  docString: DocString.t;
-  moduleAccessPath: Runtime.moduleAccessPath;
-  originalName: string;
-  resolvedName: ResolvedName.t;
+type export_value = {
+  doc_string: DocString.t;
+  module_access_path: Runtime.module_access_path;
+  original_name: string;
+  resolved_name: ResolvedName.t;
   type_: type_;
 }
 
-type exportFromTypeDeclaration = {
-  exportType: exportType;
+type export_from_type_declaration = {
+  export_type: export_type;
   annotation: Annotation.t;
 }
 
-type importType = {
-  typeName: string;
-  asTypeName: string option;
-  importPath: ImportPath.t;
+type import_type = {
+  type_name: string;
+  as_type_name: string option;
+  import_path: ImportPath.t;
 }
 
-type exportTypeItem = {
-  typeVars: string list;
+type export_type_item = {
+  type_vars: string list;
   type_: type_;
   annotation: Annotation.t;
 }
 
-type exportTypeMap = exportTypeItem StringMap.t
+type export_type_map = export_type_item StringMap.t
 
-type typeDeclaration = {
-  exportFromTypeDeclaration: exportFromTypeDeclaration;
-  importTypes: importType list;
+type type_declaration = {
+  export_from_type_declaration: export_from_type_declaration;
+  import_types: import_type list;
 }
 
-type t = ExportValue of exportValue | ImportValue of importValue
+type t = ExportValue of export_value | ImportValue of import_value
 
 type translation = {
-  importTypes: importType list;
-  codeItems: t list;
-  typeDeclarations: typeDeclaration list;
+  import_types: import_type list;
+  code_items: t list;
+  type_declarations: type_declaration list;
 }

@@ -25,16 +25,16 @@ let variant_has_relevant_primitive_catch_all (constructors : Types.constructor_d
   variant_has_catch_all_case constructors can_coerce_primitive
 
 (* Checks if every case of the variant has the same runtime representation as the target type. *)
-let variant_has_same_runtime_representation_as_target ~(targetPath : Path.t)
+let variant_has_same_runtime_representation_as_target ~(target_path : Path.t)
     ~unboxed (constructors : Types.constructor_declaration list) =
   (* Helper function to check if a constructor has the same runtime representation as the target type *)
   let has_same_runtime_representation (c : Types.constructor_declaration) =
     let args = c.cd_args in
-    let asPayload = Ast_untagged_variants.process_tag_type c.cd_attributes in
+    let as_payload = Ast_untagged_variants.process_tag_type c.cd_attributes in
 
     match args with
     | Cstr_tuple [{desc = Tconstr (p, [], _)}] when unboxed ->
-      let path_same = check_paths_same p targetPath in
+      let path_same = check_paths_same p target_path in
       (* unboxed String(string) :> string *)
       path_same Predef.path_string
       || (* unboxed Number(float) :> float *)
@@ -44,11 +44,11 @@ let variant_has_same_runtime_representation_as_target ~(targetPath : Path.t)
     | Cstr_tuple [] -> (
       (* Check that @as payloads match with the target path to coerce to.
            No @as means the default encoding, which is string *)
-      match asPayload with
-      | None | Some (String _) -> Path.same targetPath Predef.path_string
-      | Some (Int _) -> Path.same targetPath Predef.path_int
-      | Some (Float _) -> Path.same targetPath Predef.path_float
-      | Some (BigInt _) -> Path.same targetPath Predef.path_bigint
+      match as_payload with
+      | None | Some (String _) -> Path.same target_path Predef.path_string
+      | Some (Int _) -> Path.same target_path Predef.path_int
+      | Some (Float _) -> Path.same target_path Predef.path_float
+      | Some (BigInt _) -> Path.same target_path Predef.path_bigint
       | Some (Null | Undefined | Bool _ | Untagged _) -> false)
     | _ -> false
   in

@@ -1,109 +1,109 @@
 open GenTypeCommon
 
 (** Like translateTypeDeclaration but from Types not Typedtree  *)
-let translateTypeDeclarationFromTypes ~config ~outputFileRelative ~resolver
-    ~typeEnv ~id
+let translate_type_declaration_from_types ~config ~output_file_relative ~resolver
+    ~type_env ~id
     ({type_attributes; type_kind; type_loc; type_manifest; type_params} :
-      Types.type_declaration) : CodeItem.typeDeclaration list =
-  typeEnv |> TypeEnv.newType ~name:(id |> Ident.name);
-  let typeName = Ident.name id in
-  let typeVars = type_params |> TypeVars.extractFromTypeExpr in
+      Types.type_declaration) : CodeItem.type_declaration list =
+  type_env |> TypeEnv.new_type ~name:(id |> Ident.name);
+  let type_name = Ident.name id in
+  let type_vars = type_params |> TypeVars.extract_from_type_expr in
   if !Debug.translation then
-    Log_.item "Translate Types.type_declaration %s\n" typeName;
-  let declarationKind =
+    Log_.item "Translate Types.type_declaration %s\n" type_name;
+  let declaration_kind =
     match type_kind with
-    | Type_record (labelDeclarations, recordRepresentation) ->
+    | Type_record (label_declarations, record_representation) ->
       TranslateTypeDeclarations.RecordDeclarationFromTypes
-        (labelDeclarations, recordRepresentation)
-    | Type_variant constructorDeclarations
+        (label_declarations, record_representation)
+    | Type_variant constructor_declarations
       when not
-             (TranslateTypeDeclarations.hasSomeGADTLeaf constructorDeclarations)
+             (TranslateTypeDeclarations.has_some_g_a_d_t_leaf constructor_declarations)
       ->
-      VariantDeclarationFromTypes constructorDeclarations
+      VariantDeclarationFromTypes constructor_declarations
     | Type_abstract -> GeneralDeclarationFromTypes type_manifest
     | _ -> NoDeclaration
   in
-  declarationKind
-  |> TranslateTypeDeclarations.traslateDeclarationKind ~config ~loc:type_loc
-       ~outputFileRelative ~resolver ~typeAttributes:type_attributes ~typeEnv
-       ~typeName ~typeVars
+  declaration_kind
+  |> TranslateTypeDeclarations.traslate_declaration_kind ~config ~loc:type_loc
+       ~output_file_relative ~resolver ~type_attributes:type_attributes ~type_env
+       ~type_name ~type_vars
 
 (** Like translateModuleDeclaration but from Types not Typedtree *)
-let rec translateModuleDeclarationFromTypes ~config ~outputFileRelative
-    ~resolver ~typeEnv ~id (moduleDeclaration : Types.module_declaration) :
+let rec translate_module_declaration_from_types ~config ~output_file_relative
+    ~resolver ~type_env ~id (module_declaration : Types.module_declaration) :
     Translation.t =
-  match moduleDeclaration.md_type with
+  match module_declaration.md_type with
   | Mty_signature signature ->
     let name = id |> Ident.name in
     signature
-    |> translateSignatureFromTypes ~config ~outputFileRelative ~resolver
-         ~typeEnv:(typeEnv |> TypeEnv.newModule ~name)
+    |> translate_signature_from_types ~config ~output_file_relative ~resolver
+         ~type_env:(type_env |> TypeEnv.new_module ~name)
     |> Translation.combine
   | Mty_ident _ ->
-    logNotImplemented ("Mty_ident " ^ __LOC__);
+    log_not_implemented ("Mty_ident " ^ __LOC__);
     Translation.empty
   | Mty_functor _ ->
-    logNotImplemented ("Mty_functor " ^ __LOC__);
+    log_not_implemented ("Mty_functor " ^ __LOC__);
     Translation.empty
   | Mty_alias _ ->
-    logNotImplemented ("Mty_alias " ^ __LOC__);
+    log_not_implemented ("Mty_alias " ^ __LOC__);
     Translation.empty
 
 (** Like translateSignatureItem but from Types not Typedtree  *)
-and translateSignatureItemFromTypes ~config ~outputFileRelative ~resolver
-    ~typeEnv (signatureItem : Types.signature_item) : Translation.t =
-  match signatureItem with
-  | Types.Sig_type (id, typeDeclaration, _) ->
+and translate_signature_item_from_types ~config ~output_file_relative ~resolver
+    ~type_env (signature_item : Types.signature_item) : Translation.t =
+  match signature_item with
+  | Types.Sig_type (id, type_declaration, _) ->
     {
-      importTypes = [];
-      codeItems = [];
-      typeDeclarations =
-        typeDeclaration
-        |> translateTypeDeclarationFromTypes ~config ~outputFileRelative
-             ~resolver ~typeEnv ~id;
+      import_types = [];
+      code_items = [];
+      type_declarations =
+        type_declaration
+        |> translate_type_declaration_from_types ~config ~output_file_relative
+             ~resolver ~type_env ~id;
     }
-  | Types.Sig_module (id, moduleDeclaration, _) ->
-    let moduleItem = Runtime.newModuleItem ~name:(id |> Ident.name) in
+  | Types.Sig_module (id, module_declaration, _) ->
+    let module_item = Runtime.new_module_item ~name:(id |> Ident.name) in
     let config =
-      moduleDeclaration.md_attributes
-      |> Annotation.updateConfigForModule ~config
+      module_declaration.md_attributes
+      |> Annotation.update_config_for_module ~config
     in
-    typeEnv |> TypeEnv.updateModuleItem ~moduleItem;
-    moduleDeclaration
-    |> translateModuleDeclarationFromTypes ~config ~outputFileRelative ~resolver
-         ~typeEnv ~id
+    type_env |> TypeEnv.update_module_item ~module_item;
+    module_declaration
+    |> translate_module_declaration_from_types ~config ~output_file_relative ~resolver
+         ~type_env ~id
   | Types.Sig_value (id, {val_attributes; val_loc; val_type}) ->
     let name = id |> Ident.name in
     if !Debug.translation then Log_.item "Translate Sig Value %s\n" name;
-    let moduleItem = Runtime.newModuleItem ~name in
-    typeEnv |> TypeEnv.updateModuleItem ~moduleItem;
+    let module_item = Runtime.new_module_item ~name in
+    type_env |> TypeEnv.update_module_item ~module_item;
     if
-      val_attributes |> Annotation.fromAttributes ~config ~loc:val_loc = GenType
+      val_attributes |> Annotation.from_attributes ~config ~loc:val_loc = GenType
     then
       name
-      |> Translation.translateValue ~attributes:val_attributes ~config
-           ~docString:(Annotation.docStringFromAttrs val_attributes)
-           ~outputFileRelative ~resolver ~typeEnv ~typeExpr:val_type
-           ~addAnnotationsToFunction:(fun t -> t)
+      |> Translation.translate_value ~attributes:val_attributes ~config
+           ~doc_string:(Annotation.doc_string_from_attrs val_attributes)
+           ~output_file_relative ~resolver ~type_env ~type_expr:val_type
+           ~add_annotations_to_function:(fun t -> t)
     else Translation.empty
   | Types.Sig_typext _ ->
-    logNotImplemented ("Sig_typext " ^ __LOC__);
+    log_not_implemented ("Sig_typext " ^ __LOC__);
     Translation.empty
   | Types.Sig_modtype _ ->
-    logNotImplemented ("Sig_modtype " ^ __LOC__);
+    log_not_implemented ("Sig_modtype " ^ __LOC__);
     Translation.empty
   | Types.Sig_class _ ->
-    logNotImplemented ("Sig_class " ^ __LOC__);
+    log_not_implemented ("Sig_class " ^ __LOC__);
     Translation.empty
   | Types.Sig_class_type _ ->
-    logNotImplemented ("Sig_class_type " ^ __LOC__);
+    log_not_implemented ("Sig_class_type " ^ __LOC__);
     Translation.empty
 
 (** Like translateSignature but from Types not Typedtree *)
-and translateSignatureFromTypes ~config ~outputFileRelative ~resolver ~typeEnv
+and translate_signature_from_types ~config ~output_file_relative ~resolver ~type_env
     (signature : Types.signature_item list) : Translation.t list =
   if !Debug.translation then Log_.item "Translate Types.signature\n";
   signature
   |> List.map
-       (translateSignatureItemFromTypes ~config ~outputFileRelative ~resolver
-          ~typeEnv)
+       (translate_signature_item_from_types ~config ~output_file_relative ~resolver
+          ~type_env)

@@ -1,61 +1,61 @@
 open GenTypeCommon
 
-let translateSignatureValue ~config ~outputFileRelative ~resolver ~typeEnv
-    (valueDescription : Typedtree.value_description) : Translation.t =
+let translate_signature_value ~config ~output_file_relative ~resolver ~type_env
+    (value_description : Typedtree.value_description) : Translation.t =
   let {Typedtree.val_attributes; val_desc; val_id; val_loc} =
-    valueDescription
+    value_description
   in
   if !Debug.translation then
     Log_.item "Translate Signature Value %s\n" (val_id |> Ident.name);
-  let typeExpr = val_desc.ctyp_type in
-  let addAnnotationsToFunction type_ = type_ in
+  let type_expr = val_desc.ctyp_type in
+  let add_annotations_to_function type_ = type_ in
   match
-    (val_id, val_attributes |> Annotation.fromAttributes ~config ~loc:val_loc)
+    (val_id, val_attributes |> Annotation.from_attributes ~config ~loc:val_loc)
   with
   | id, GenType ->
     id |> Ident.name
-    |> Translation.translateValue ~attributes:val_attributes ~config
-         ~docString:(Annotation.docStringFromAttrs val_attributes)
-         ~outputFileRelative ~resolver ~typeEnv ~typeExpr
-         ~addAnnotationsToFunction
+    |> Translation.translate_value ~attributes:val_attributes ~config
+         ~doc_string:(Annotation.doc_string_from_attrs val_attributes)
+         ~output_file_relative ~resolver ~type_env ~type_expr
+         ~add_annotations_to_function
   | _ -> Translation.empty
 
-let rec translateModuleDeclaration ~config ~outputFileRelative ~resolver
-    ~typeEnv ({md_id; md_type} : Typedtree.module_declaration) =
+let rec translate_module_declaration ~config ~output_file_relative ~resolver
+    ~type_env ({md_id; md_type} : Typedtree.module_declaration) =
   let name = md_id |> Ident.name in
   if !Debug.translation then Log_.item "Translate Module Declaration %s\n" name;
-  let typeEnv = typeEnv |> TypeEnv.newModule ~name in
+  let type_env = type_env |> TypeEnv.new_module ~name in
   match md_type.mty_desc with
   | Tmty_signature signature ->
     signature
-    |> translateSignature ~config ~outputFileRelative ~resolver ~typeEnv
+    |> translate_signature ~config ~output_file_relative ~resolver ~type_env
     |> Translation.combine
   | Tmty_ident (path, _) -> (
-    match typeEnv |> TypeEnv.lookupModuleTypeSignature ~path with
+    match type_env |> TypeEnv.lookup_module_type_signature ~path with
     | None -> Translation.empty
     | Some (signature, _) ->
       signature
-      |> translateSignature ~config ~outputFileRelative ~resolver ~typeEnv
+      |> translate_signature ~config ~output_file_relative ~resolver ~type_env
       |> Translation.combine)
   | Tmty_functor _ ->
-    logNotImplemented ("Tmty_functor " ^ __LOC__);
+    log_not_implemented ("Tmty_functor " ^ __LOC__);
     Translation.empty
   | Tmty_with _ ->
-    logNotImplemented ("Tmty_with " ^ __LOC__);
+    log_not_implemented ("Tmty_with " ^ __LOC__);
     Translation.empty
   | Tmty_typeof _ ->
-    logNotImplemented ("Tmty_typeof " ^ __LOC__);
+    log_not_implemented ("Tmty_typeof " ^ __LOC__);
     Translation.empty
   | Tmty_alias _ ->
-    logNotImplemented ("Tmty_alias " ^ __LOC__);
+    log_not_implemented ("Tmty_alias " ^ __LOC__);
     Translation.empty
 
-and translateModuleTypeDeclaration ~config ~outputFileRelative ~resolver
-    ~typeEnv (moduleTypeDeclaration : Typedtree.module_type_declaration) =
+and translate_module_type_declaration ~config ~output_file_relative ~resolver
+    ~type_env (module_type_declaration : Typedtree.module_type_declaration) =
   if !Debug.translation then
     Log_.item "Translate Module Type Declaration %s\n"
-      (moduleTypeDeclaration.mtd_id |> Ident.name);
-  match moduleTypeDeclaration with
+      (module_type_declaration.mtd_id |> Ident.name);
+  match module_type_declaration with
   | {mtd_type = None} -> Translation.empty
   | {mtd_id; mtd_type = Some mtd_type} -> (
     match mtd_type.mty_desc with
@@ -73,99 +73,99 @@ and translateModuleTypeDeclaration ~config ~outputFileRelative ~resolver
       in
       let translation =
         signature_without_values
-        |> translateSignature ~config ~outputFileRelative ~resolver
-             ~typeEnv:(typeEnv |> TypeEnv.newModuleType ~name ~signature)
+        |> translate_signature ~config ~output_file_relative ~resolver
+             ~type_env:(type_env |> TypeEnv.new_module_type ~name ~signature)
         |> Translation.combine
       in
       translation
     | Tmty_ident _ ->
-      logNotImplemented ("Tmty_ident " ^ __LOC__);
+      log_not_implemented ("Tmty_ident " ^ __LOC__);
       Translation.empty
     | Tmty_functor _ ->
-      logNotImplemented ("Tmty_functor " ^ __LOC__);
+      log_not_implemented ("Tmty_functor " ^ __LOC__);
       Translation.empty
     | Tmty_with _ ->
-      logNotImplemented ("Tmty_with " ^ __LOC__);
+      log_not_implemented ("Tmty_with " ^ __LOC__);
       Translation.empty
     | Tmty_typeof _ ->
-      logNotImplemented ("Tmty_typeof " ^ __LOC__);
+      log_not_implemented ("Tmty_typeof " ^ __LOC__);
       Translation.empty
     | Tmty_alias _ ->
-      logNotImplemented ("Tmty_alias " ^ __LOC__);
+      log_not_implemented ("Tmty_alias " ^ __LOC__);
       Translation.empty)
 
-and translateSignatureItem ~config ~outputFileRelative ~resolver ~typeEnv
-    signatureItem : Translation.t =
-  match signatureItem with
-  | {Typedtree.sig_desc = Typedtree.Tsig_type (recFlag, typeDeclarations)} ->
+and translate_signature_item ~config ~output_file_relative ~resolver ~type_env
+    signature_item : Translation.t =
+  match signature_item with
+  | {Typedtree.sig_desc = Typedtree.Tsig_type (rec_flag, type_declarations)} ->
     {
-      importTypes = [];
-      codeItems = [];
-      typeDeclarations =
-        typeDeclarations
-        |> TranslateTypeDeclarations.translateTypeDeclarations ~config
-             ~outputFileRelative ~recursive:(recFlag = Recursive) ~resolver
-             ~typeEnv;
+      import_types = [];
+      code_items = [];
+      type_declarations =
+        type_declarations
+        |> TranslateTypeDeclarations.translate_type_declarations ~config
+             ~output_file_relative ~recursive:(rec_flag = Recursive) ~resolver
+             ~type_env;
     }
-  | {Typedtree.sig_desc = Tsig_value valueDescription} ->
-    let isImport =
-      valueDescription.val_attributes
-      |> Annotation.hasAttribute Annotation.tagIsGenTypeImport
+  | {Typedtree.sig_desc = Tsig_value value_description} ->
+    let is_import =
+      value_description.val_attributes
+      |> Annotation.has_attribute Annotation.tag_is_gen_type_import
     in
-    if valueDescription.val_prim <> [] || isImport then
-      valueDescription
-      |> Translation.translatePrimitive ~config ~outputFileRelative ~resolver
-           ~typeEnv
+    if value_description.val_prim <> [] || is_import then
+      value_description
+      |> Translation.translate_primitive ~config ~output_file_relative ~resolver
+           ~type_env
     else
-      let moduleItem =
-        Runtime.newModuleItem ~name:(valueDescription.val_id |> Ident.name)
+      let module_item =
+        Runtime.new_module_item ~name:(value_description.val_id |> Ident.name)
       in
-      typeEnv |> TypeEnv.updateModuleItem ~moduleItem;
-      valueDescription
-      |> translateSignatureValue ~config ~outputFileRelative ~resolver ~typeEnv
-  | {Typedtree.sig_desc = Typedtree.Tsig_module moduleDeclaration} ->
-    moduleDeclaration
-    |> translateModuleDeclaration ~config ~outputFileRelative ~resolver ~typeEnv
-  | {Typedtree.sig_desc = Typedtree.Tsig_modtype moduleTypeDeclaration} ->
-    let moduleItem =
-      Runtime.newModuleItem ~name:(moduleTypeDeclaration.mtd_id |> Ident.name)
+      type_env |> TypeEnv.update_module_item ~module_item;
+      value_description
+      |> translate_signature_value ~config ~output_file_relative ~resolver ~type_env
+  | {Typedtree.sig_desc = Typedtree.Tsig_module module_declaration} ->
+    module_declaration
+    |> translate_module_declaration ~config ~output_file_relative ~resolver ~type_env
+  | {Typedtree.sig_desc = Typedtree.Tsig_modtype module_type_declaration} ->
+    let module_item =
+      Runtime.new_module_item ~name:(module_type_declaration.mtd_id |> Ident.name)
     in
     let config =
-      moduleTypeDeclaration.mtd_attributes
-      |> Annotation.updateConfigForModule ~config
+      module_type_declaration.mtd_attributes
+      |> Annotation.update_config_for_module ~config
     in
-    typeEnv |> TypeEnv.updateModuleItem ~moduleItem;
-    moduleTypeDeclaration
-    |> translateModuleTypeDeclaration ~config ~outputFileRelative ~resolver
-         ~typeEnv
+    type_env |> TypeEnv.update_module_item ~module_item;
+    module_type_declaration
+    |> translate_module_type_declaration ~config ~output_file_relative ~resolver
+         ~type_env
   | {Typedtree.sig_desc = Typedtree.Tsig_typext _} ->
-    logNotImplemented ("Tsig_typext " ^ __LOC__);
+    log_not_implemented ("Tsig_typext " ^ __LOC__);
     Translation.empty
   | {Typedtree.sig_desc = Typedtree.Tsig_exception _} ->
-    logNotImplemented ("Tsig_exception " ^ __LOC__);
+    log_not_implemented ("Tsig_exception " ^ __LOC__);
     Translation.empty
   | {Typedtree.sig_desc = Typedtree.Tsig_recmodule _} ->
-    logNotImplemented ("Tsig_recmodule " ^ __LOC__);
+    log_not_implemented ("Tsig_recmodule " ^ __LOC__);
     Translation.empty
   | {Typedtree.sig_desc = Typedtree.Tsig_open _} ->
-    logNotImplemented ("Tsig_open " ^ __LOC__);
+    log_not_implemented ("Tsig_open " ^ __LOC__);
     Translation.empty
   | {Typedtree.sig_desc = Typedtree.Tsig_include _} ->
-    logNotImplemented ("Tsig_include " ^ __LOC__);
+    log_not_implemented ("Tsig_include " ^ __LOC__);
     Translation.empty
   | {Typedtree.sig_desc = Typedtree.Tsig_class _} ->
-    logNotImplemented ("Tsig_class " ^ __LOC__);
+    log_not_implemented ("Tsig_class " ^ __LOC__);
     Translation.empty
   | {Typedtree.sig_desc = Typedtree.Tsig_class_type _} ->
-    logNotImplemented ("Tsig_class_type " ^ __LOC__);
+    log_not_implemented ("Tsig_class_type " ^ __LOC__);
     Translation.empty
   | {Typedtree.sig_desc = Typedtree.Tsig_attribute _} ->
-    logNotImplemented ("Tsig_attribute " ^ __LOC__);
+    log_not_implemented ("Tsig_attribute " ^ __LOC__);
     Translation.empty
 
-and translateSignature ~config ~outputFileRelative ~resolver ~typeEnv signature
+and translate_signature ~config ~output_file_relative ~resolver ~type_env signature
     : Translation.t list =
   if !Debug.translation then Log_.item "Translate Signature\n";
   signature.Typedtree.sig_items
   |> List.map
-       (translateSignatureItem ~config ~outputFileRelative ~resolver ~typeEnv)
+       (translate_signature_item ~config ~output_file_relative ~resolver ~type_env)

@@ -4,7 +4,7 @@ module Printer = {
     comments: CommentAst.t,
   }
   
-  let rec collectPatternsFromListConstruct = (acc, pattern) =>
+  let rec collect_patterns_from_list_construct = (acc, pattern) =>
     {
       open Parsetree
       switch pattern.ppat_desc {
@@ -102,35 +102,35 @@ module Printer = {
     Buffer.contents(b)
   }
   
-  let printConstant = c =>
+  let print_constant = c =>
     switch c {
     | Parsetree.Pconst_integer(s, _) => Doc.text(s)
-    | Pconst_string(s, _) => Doc.text("\"" ++ escapeStringContents(s) ++ "\"")
+    | Pconst_string(s, _) => Doc.text("\"" ++ escape_string_contents(s) ++ "\"")
     | Pconst_float(s, _) => Doc.text(s)
     | Pconst_char(c) => Doc.text("'" ++ Char.escaped(c) ++ "'")
     }
   
-  let rec printStructure = (s: Parsetree.structure) =>
-    interleaveWhitespace(
-      List.map(si => /si.Parsetree.pstr_loc, printStructureItem(si)/, s),
+  let rec print_structure = (s: Parsetree.structure) =>
+    interleave_whitespace(
+      List.map(si => /si.Parsetree.pstr_loc, print_structure_item(si)/, s),
     )
   
-  and printStructureItem = (si: Parsetree.structure_item) =>
+  and print_structure_item = (si: Parsetree.structure_item) =>
     switch si.pstr_desc {
-    | Pstr_value(rec_flag, valueBindings) =>
-      let recFlag = switch rec_flag {
+    | Pstr_value(rec_flag, value_bindings) =>
+      let rec_flag = switch rec_flag {
       | Asttypes.Nonrecursive => Doc.nil
       | Asttypes.Recursive => Doc.text("rec ")
       }
       
-      printValueBindings(~recFlag, valueBindings)
-    | Pstr_type(recFlag, typeDeclarations) =>
+      print_value_bindings(~rec_flag, value_bindings)
+    | Pstr_type(recFlag, type_declarations) =>
       let recFlag = switch recFlag {
       | Asttypes.Nonrecursive => Doc.nil
       | Asttypes.Recursive => Doc.text("rec ")
       }
       
-      printTypeDeclarations(~recFlag, typeDeclarations)
+      print_type_declarations(~rec_flag, type_declarations)
     | Pstr_primitive(valueDescription) =>
       printValueDescription(valueDescription)
     | Pstr_eval(expr, attrs) =>
@@ -140,75 +140,75 @@ module Printer = {
           pexp_desc: Pexp_ifthenelse(_),
         } =>
         false
-      | _ when ParsetreeViewer.hasAttributes(expr.pexp_attributes) => true
+      | _ when ParsetreeViewer.has_attributes(expr.pexp_attributes) => true
       | _ => false
       }
       
-      let exprDoc = {
-        let doc = printExpression(expr)
-        if needsParens {
-          addParens(doc)
+      let expr_doc = {
+        let doc = print_expression(expr)
+        if needs_parens {
+          add_parens(doc)
         } else {
           doc
         }
       }
       
-      Doc.concat(list(printAttributes(attrs), exprDoc))
+      Doc.concat(list(print_attributes(attrs), expr_doc))
     | Pstr_attribute(attr) =>
-      Doc.concat(list(Doc.text("@"), printAttribute(attr)))
+      Doc.concat(list(Doc.text("@"), print_attribute(attr)))
     | Pstr_extension(extension, attrs) =>
       Doc.concat(list(
-        printAttributes(attrs),
-        Doc.concat(list(Doc.text("%"), printExtension(extension))),
+        print_attributes(attrs),
+        Doc.concat(list(Doc.text("%"), print_extension(extension))),
       ))
-    | Pstr_include(includeDeclaration) =>
-      printIncludeDeclaration(includeDeclaration)
-    | Pstr_open(openDescription) => printOpenDescription(openDescription)
-    | Pstr_modtype(modTypeDecl) => printModuleTypeDeclaration(modTypeDecl)
-    | Pstr_module(moduleBinding) =>
-      printModuleBinding(~isRec=false, 0, moduleBinding)
-    | Pstr_recmodule(moduleBindings) =>
+    | Pstr_include(include_declaration) =>
+      print_include_declaration(include_declaration)
+    | Pstr_open(open_description) => print_open_description(open_description)
+    | Pstr_modtype(mod_type_decl) => print_module_type_declaration(mod_type_decl)
+    | Pstr_module(module_binding) =>
+      print_module_binding(~is_rec=false, 0, module_binding)
+    | Pstr_recmodule(module_bindings) =>
       Doc.join(
         ~sep=Doc.line,
         List.mapi(
-          (i, mb) => printModuleBinding(~isRec=true, i, mb),
-          moduleBindings,
+          (i, mb) => print_module_binding(~is_rec=true, i, mb),
+          module_bindings,
         ),
       )
-    | Pstr_exception(extensionConstructor) =>
-      printExceptionDef(extensionConstructor)
-    | Pstr_typext(typeExtension) => printTypeExtension(typeExtension)
+    | Pstr_exception(extension_constructor) =>
+      print_exception_def(extension_constructor)
+    | Pstr_typext(type_extension) => print_type_extension(type_extension)
     | Pstr_class(_) | Pstr_class_type(_) => Doc.nil
     }
   
-  and printTypeExtension = (te: Parsetree.type_extension) => {
+  and print_type_extension = (te: Parsetree.type_extension) => {
     let prefix = Doc.text("type ")
-    let name = printLongident(te.ptyext_path.txt)
-    let typeParams = switch te.ptyext_params {
+    let name = print_longident(te.ptyext_path.txt)
+    let type_params = switch te.ptyext_params {
     | list() => Doc.nil
     | typeParams =>
       Doc.group(
         Doc.concat(list(
-          Doc.lessThan,
+          Doc.less_than,
           Doc.indent(
             Doc.concat(list(
-              Doc.softLine,
+              Doc.soft_line,
               Doc.join(
                 ~sep=Doc.concat(list(Doc.comma, Doc.line)),
-                List.map(printTypeParam, typeParams),
+                List.map(print_type_param, type_params),
               ),
             )),
           ),
-          Doc.trailingComma,
-          Doc.softLine,
-          Doc.greaterThan,
+          Doc.trailing_comma,
+          Doc.soft_line,
+          Doc.greater_than,
         )),
       )
     }
     
-    let extensionConstructors = {
+    let extension_constructors = {
       let ecs = te.ptyext_constructors
-      let forceBreak = switch /ecs, List.rev(ecs)/ {
+      let force_break = switch /ecs, List.rev(ecs)/ {
       | /list(first, ..._), list(last, ..._)/ =>
         first.pext_loc.loc_start.pos_lnum >
         te.ptyext_path.loc.loc_end.pos_lnum ||
@@ -221,13 +221,13 @@ module Printer = {
       | Public => Doc.nil
       }
       
-      Doc.breakableGroup(
-        ~forceBreak,
+      Doc.breakable_group(
+        ~force_break,
         Doc.indent(
           Doc.concat(list(
             Doc.line,
-            privateFlag,
-            Doc.join(~sep=Doc.line, List.mapi(printExtensionConstructor, ecs)),
+            private_flag,
+            Doc.join(~sep=Doc.line, List.mapi(print_extension_constructor, ecs)),
           )),
         ),
       )
@@ -235,21 +235,21 @@ module Printer = {
     
     Doc.group(
       Doc.concat(list(
-        printAttributes(~loc=te.ptyext_path.loc, te.ptyext_attributes),
+        print_attributes(~loc=te.ptyext_path.loc, te.ptyext_attributes),
         prefix,
         name,
-        typeParams,
+        type_params,
         Doc.text(" +="),
-        extensionConstructors,
+        extension_constructors,
       )),
     )
   }
   
-  and printModuleBinding = (~isRec, i, moduleBinding) => {
+  and print_module_binding = (~is_rec, i, module_binding) => {
     let prefix = if i == 0 {
       Doc.concat(list(
         Doc.text("module "),
-        if isRec {
+        if is_rec {
           Doc.text("rec ")
         } else {
           Doc.nil
@@ -259,25 +259,25 @@ module Printer = {
       Doc.text("and ")
     }
     
-    let /modExprDoc, modConstraintDoc/ = switch moduleBinding.pmb_expr {
+    let /mod_expr_doc, mod_constraint_doc/ = switch module_binding.pmb_expr {
     | {pmod_desc: Pmod_constraint(modExpr, modType)} =>
       /
         printModExpr(modExpr),
-        Doc.concat(list(Doc.text(": "), printModType(modType))),
+        Doc.concat(list(Doc.text(": "), printModType(mod_type))),
       /
-    | modExpr => /printModExpr(modExpr), Doc.nil/
+    | mod_expr => /print_mod_expr(mod_expr), Doc.nil/
     }
     
     Doc.concat(list(
-      printAttributes(
-        ~loc=moduleBinding.pmb_name.loc,
-        moduleBinding.pmb_attributes,
+      print_attributes(
+        ~loc=module_binding.pmb_name.loc,
+        module_binding.pmb_attributes,
       ),
       prefix,
-      Doc.text(moduleBinding.pmb_name.Location.txt),
-      modConstraintDoc,
+      Doc.text(module_binding.pmb_name.Location.txt),
+      mod_constraint_doc,
       Doc.text(" = "),
-      modExprDoc,
+      mod_expr_doc,
     ))
   }
   
@@ -285,66 +285,66 @@ module Printer = {
     modTypeDecl: Parsetree.module_type_declaration,
   ) =>
     Doc.concat(list(
-      printAttributes(modTypeDecl.pmtd_attributes),
+      print_attributes(mod_type_decl.pmtd_attributes),
       Doc.text("module type "),
-      Doc.text(modTypeDecl.pmtd_name.txt),
-      switch modTypeDecl.pmtd_type {
+      Doc.text(mod_type_decl.pmtd_name.txt),
+      switch mod_type_decl.pmtd_type {
       | None => Doc.nil
-      | Some(modType) =>
-        Doc.concat(list(Doc.text(" = "), printModType(modType)))
+      | Some(mod_type) =>
+        Doc.concat(list(Doc.text(" = "), print_mod_type(mod_type)))
       },
     ))
   
-  and printModType = modType => {
-    let modTypeDoc = switch modType.pmty_desc {
+  and print_mod_type = mod_type => {
+    let mod_type_doc = switch mod_type.pmty_desc {
     | Parsetree.Pmty_ident({txt: longident, loc}) =>
       Doc.concat(list(
-        printAttributes(~loc, modType.pmty_attributes),
-        printLongident(longident),
+        print_attributes(~loc, mod_type.pmty_attributes),
+        print_longident(longident),
       ))
     | Pmty_signature(signature) =>
-      let signatureDoc = Doc.breakableGroup(
-        ~forceBreak=true,
+      let signature_doc = Doc.breakable_group(
+        ~force_break=true,
         Doc.concat(list(
           Doc.lbrace,
-          Doc.indent(Doc.concat(list(Doc.line, printSignature(signature)))),
+          Doc.indent(Doc.concat(list(Doc.line, print_signature(signature)))),
           Doc.line,
           Doc.rbrace,
         )),
       )
-      Doc.concat(list(printAttributes(modType.pmty_attributes), signatureDoc))
+      Doc.concat(list(print_attributes(mod_type.pmty_attributes), signature_doc))
     | Pmty_functor(_) =>
-      let /parameters, returnType/ = ParsetreeViewer.functorType(modType)
-      let parametersDoc = switch parameters {
+      let /parameters, return_type/ = ParsetreeViewer.functor_type(mod_type)
+      let parameters_doc = switch parameters {
       | list() => Doc.nil
-      | list(/attrs, {Location.txt: "_"}, Some(modType)/) =>
+      | list(/attrs, {Location.txt: "_"}, Some(mod_type)/) =>
         let attrs = switch attrs {
         | list() => Doc.nil
         | attrs =>
           Doc.concat(list(
-            Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)),
+            Doc.join(~sep=Doc.line, List.map(print_attribute, attrs)),
             Doc.line,
           ))
         }
-        Doc.concat(list(attrs, printModType(modType)))
+        Doc.concat(list(attrs, print_mod_type(mod_type)))
       | params =>
         Doc.group(
           Doc.concat(list(
             Doc.lparen,
             Doc.indent(
               Doc.concat(list(
-                Doc.softLine,
+                Doc.soft_line,
                 Doc.join(
                   ~sep=Doc.concat(list(Doc.comma, Doc.line)),
                   List.map(
-                    (/attrs, lbl, modType/) => {
+                    (/attrs, lbl, mod_type/) => {
                       let attrs = switch attrs {
                       | list() => Doc.nil
                       | attrs =>
                         Doc.concat(list(
                           Doc.join(
                             ~sep=Doc.line,
-                            List.map(printAttribute, attrs),
+                            List.map(print_attribute, attrs),
                           ),
                           Doc.line,
                         ))
@@ -358,14 +358,14 @@ module Printer = {
                         },
                         switch modType {
                         | None => Doc.nil
-                        | Some(modType) =>
+                        | Some(mod_type) =>
                           Doc.concat(list(
                             if lbl.txt == "_" {
                               Doc.nil
                             } else {
                               Doc.text(": ")
                             },
-                            printModType(modType),
+                            print_mod_type(mod_type),
                           ))
                         },
                       ))
@@ -375,17 +375,17 @@ module Printer = {
                 ),
               )),
             ),
-            Doc.trailingComma,
-            Doc.softLine,
+            Doc.trailing_comma,
+            Doc.soft_line,
             Doc.rparen,
           )),
         )
       }
       
-      let returnDoc = {
-        let doc = printModType(returnType)
-        if Parens.modTypeFunctorReturn(returnType) {
-          addParens(doc)
+      let return_doc = {
+        let doc = print_mod_type(return_type)
+        if Parens.mod_type_functor_return(return_type) {
+          add_parens(doc)
         } else {
           doc
         }
@@ -393,20 +393,20 @@ module Printer = {
       
       Doc.group(
         Doc.concat(list(
-          parametersDoc,
-          Doc.group(Doc.concat(list(Doc.text(" =>"), Doc.line, returnDoc))),
+          parameters_doc,
+          Doc.group(Doc.concat(list(Doc.text(" =>"), Doc.line, return_doc))),
         )),
       )
-    | Pmty_typeof(modExpr) =>
-      Doc.concat(list(Doc.text("module type of "), printModExpr(modExpr)))
-    | Pmty_extension(extension) => printExtension(extension)
+    | Pmty_typeof(mod_expr) =>
+      Doc.concat(list(Doc.text("module type of "), print_mod_expr(mod_expr)))
+    | Pmty_extension(extension) => print_extension(extension)
     | Pmty_alias({txt: longident}) =>
-      Doc.concat(list(Doc.text("module "), printLongident(longident)))
-    | Pmty_with(modType, withConstraints) =>
+      Doc.concat(list(Doc.text("module "), print_longident(longident)))
+    | Pmty_with(mod_type, with_constraints) =>
       let operand = {
-        let doc = printModType(modType)
-        if Parens.modTypeWithOperand(modType) {
-          addParens(doc)
+        let doc = print_mod_type(mod_type)
+        if Parens.mod_type_with_operand(mod_type) {
+          add_parens(doc)
         } else {
           doc
         }
@@ -416,29 +416,29 @@ module Printer = {
         Doc.concat(list(
           operand,
           Doc.indent(
-            Doc.concat(list(Doc.line, printWithConstraints(withConstraints))),
+            Doc.concat(list(Doc.line, print_with_constraints(with_constraints))),
           ),
         )),
       )
     }
     
-    let attrsAlreadyPrinted = switch modType.pmty_desc {
+    let attrs_already_printed = switch mod_type.pmty_desc {
     | (Pmty_functor(_) | Pmty_signature(_)) | Pmty_ident(_) => true
     | _ => false
     }
     Doc.concat(list(
-      if attrsAlreadyPrinted {
+      if attrs_already_printed {
         Doc.nil
       } else {
-        printAttributes(modType.pmty_attributes)
+        printAttributes(mod_type.pmty_attributes)
       },
-      modTypeDoc,
+      mod_type_doc,
     ))
   }
   
-  and printWithConstraints = withConstraints => {
+  and print_with_constraints = with_constraints => {
     let rows = List.mapi(
-      (i, withConstraint) =>
+      (i, with_constraint) =>
         Doc.group(
           Doc.concat(list(
             if i === 0 {
@@ -446,7 +446,7 @@ module Printer = {
             } else {
               Doc.text("and ")
             },
-            printWithConstraint(withConstraint),
+            printWithConstraint(with_constraint),
           )),
         ),
       withConstraints,
@@ -455,41 +455,41 @@ module Printer = {
     Doc.join(~sep=Doc.line, rows)
   }
   
-  and printWithConstraint = (withConstraint: Parsetree.with_constraint) =>
-    switch withConstraint {
-    | Pwith_type({txt: longident}, typeDeclaration) =>
+  and print_with_constraint = (with_constraint: Parsetree.with_constraint) =>
+    switch with_constraint {
+    | Pwith_type({txt: longident}, type_declaration) =>
       Doc.group(
-        printTypeDeclaration(
-          ~name=printLongident(longident),
-          ~equalSign="=",
-          ~recFlag=Doc.nil,
+        print_type_declaration(
+          ~name=print_longident(longident),
+          ~equal_sign="=",
+          ~rec_flag=Doc.nil,
           0,
-          typeDeclaration,
+          type_declaration,
         ),
       )
     | Pwith_module({txt: longident1}, {txt: longident2}) =>
       Doc.concat(list(
         Doc.text("module "),
-        printLongident(longident1),
+        print_longident(longident1),
         Doc.text(" ="),
-        Doc.indent(Doc.concat(list(Doc.line, printLongident(longident2)))),
+        Doc.indent(Doc.concat(list(Doc.line, print_longident(longident2)))),
       ))
-    | Pwith_typesubst({txt: longident}, typeDeclaration) =>
+    | Pwith_typesubst({txt: longident}, type_declaration) =>
       Doc.group(
-        printTypeDeclaration(
-          ~name=printLongident(longident),
-          ~equalSign=":=",
-          ~recFlag=Doc.nil,
+        print_type_declaration(
+          ~name=print_longident(longident),
+          ~equal_sign=":=",
+          ~rec_flag=Doc.nil,
           0,
-          typeDeclaration,
+          type_declaration,
         ),
       )
     | Pwith_modsubst({txt: longident1}, {txt: longident2}) =>
       Doc.concat(list(
         Doc.text("module "),
-        printLongident(longident1),
+        print_longident(longident1),
         Doc.text(" :="),
-        Doc.indent(Doc.concat(list(Doc.line, printLongident(longident2)))),
+        Doc.indent(Doc.concat(list(Doc.line, print_longident(longident2)))),
       ))
     }
   
@@ -503,7 +503,7 @@ module Printer = {
   
   and printSignatureItem = (si: Parsetree.signature_item) =>
     switch si.psig_desc {
-    | Parsetree.Psig_value(valueDescription) =>
+    | Parsetree.Psig_value(value_description) =>
       printValueDescription(valueDescription)
     | Psig_type(recFlag, typeDeclarations) =>
       let recFlag = switch recFlag {
@@ -524,11 +524,11 @@ module Printer = {
     | Psig_include(includeDescription) =>
       printIncludeDescription(includeDescription)
     | Psig_attribute(attr) =>
-      Doc.concat(list(Doc.text("@"), printAttribute(attr)))
+      Doc.concat(list(Doc.text("@"), print_attribute(attr)))
     | Psig_extension(extension, attrs) =>
       Doc.concat(list(
-        printAttributes(attrs),
-        Doc.concat(list(Doc.text("%"), printExtension(extension))),
+        print_attributes(attrs),
+        Doc.concat(list(Doc.text("%"), print_extension(extension))),
       ))
     | Psig_class(_) | Psig_class_type(_) => Doc.nil
     }
@@ -541,23 +541,23 @@ module Printer = {
           (i, md: Parsetree.module_declaration) => {
             let body = switch md.pmd_type.pmty_desc {
             | Parsetree.Pmty_alias({txt: longident}) =>
-              Doc.concat(list(Doc.text(" = "), printLongident(longident)))
+              Doc.concat(list(Doc.text(" = "), print_longident(longident)))
             | _ =>
-              let needsParens = switch md.pmd_type.pmty_desc {
+              let needs_parens = switch md.pmd_type.pmty_desc {
               | Pmty_with(_) => true
               | _ => false
               }
               
-              let modTypeDoc = {
-                let doc = printModType(md.pmd_type)
-                if needsParens {
-                  addParens(doc)
+              let mod_type_doc = {
+                let doc = print_mod_type(md.pmd_type)
+                if needs_parens {
+                  add_parens(doc)
                 } else {
                   doc
                 }
               }
               
-              Doc.concat(list(Doc.text(": "), modTypeDoc))
+              Doc.concat(list(Doc.text(": "), mod_type_doc))
             }
             
             let prefix = if i < 1 {
@@ -580,61 +580,61 @@ module Printer = {
   and printModuleDeclaration = (md: Parsetree.module_declaration) => {
     let body = switch md.pmd_type.pmty_desc {
     | Parsetree.Pmty_alias({txt: longident}) =>
-      Doc.concat(list(Doc.text(" = "), printLongident(longident)))
-    | _ => Doc.concat(list(Doc.text(": "), printModType(md.pmd_type)))
+      Doc.concat(list(Doc.text(" = "), print_longident(longident)))
+    | _ => Doc.concat(list(Doc.text(": "), print_mod_type(md.pmd_type)))
     }
     
     Doc.concat(list(
-      printAttributes(~loc=md.pmd_name.loc, md.pmd_attributes),
+      print_attributes(~loc=md.pmd_name.loc, md.pmd_attributes),
       Doc.text("module "),
       Doc.text(md.pmd_name.txt),
       body,
     ))
   }
   
-  and printOpenDescription = (openDescription: Parsetree.open_description) =>
+  and print_open_description = (open_description: Parsetree.open_description) =>
     Doc.concat(list(
-      printAttributes(openDescription.popen_attributes),
+      print_attributes(open_description.popen_attributes),
       Doc.text("open"),
-      switch openDescription.popen_override {
+      switch open_description.popen_override {
       | Asttypes.Fresh => Doc.space
       | Asttypes.Override => Doc.text("! ")
       },
-      printLongident(openDescription.popen_lid.txt),
+      printLongident(open_description.popen_lid.txt),
     ))
   
-  and printIncludeDescription = (
-    includeDescription: Parsetree.include_description,
+  and print_include_description = (
+    include_description: Parsetree.include_description,
   ) =>
     Doc.concat(list(
-      printAttributes(includeDescription.pincl_attributes),
+      print_attributes(include_description.pincl_attributes),
       Doc.text("include "),
-      printModType(includeDescription.pincl_mod),
+      print_mod_type(include_description.pincl_mod),
     ))
   
-  and printIncludeDeclaration = (
-    includeDeclaration: Parsetree.include_declaration,
+  and print_include_declaration = (
+    include_declaration: Parsetree.include_declaration,
   ) =>
     Doc.concat(list(
-      printAttributes(includeDeclaration.pincl_attributes),
+      print_attributes(include_declaration.pincl_attributes),
       Doc.text("include "),
-      printModExpr(includeDeclaration.pincl_mod),
+      print_mod_expr(include_declaration.pincl_mod),
     ))
   
-  and printValueBindings = (~recFlag, vbs: list<Parsetree.value_binding>) => {
+  and print_value_bindings = (~rec_flag, vbs: list<Parsetree.value_binding>) => {
     let rows = List.mapi(
       (i, vb) => {
-        let doc = printValueBinding(~recFlag, i, vb)
+        let doc = print_value_binding(~rec_flag, i, vb)
         /vb.Parsetree.pvb_loc, doc/
       },
       vbs,
     )
     
-    interleaveWhitespace(rows)
+    interleave_whitespace(rows)
   }
   
-  and printValueDescription = valueDescription => {
-    let isExternal = switch valueDescription.pval_prim {
+  and print_value_description = value_description => {
+    let is_external = switch value_description.pval_prim {
     | list() => false
     | _ => true
     }
@@ -642,15 +642,15 @@ module Printer = {
     Doc.group(
       Doc.concat(list(
         Doc.text(
-          if isExternal {
+          if is_external {
             "external "
           } else {
             "let "
           },
         ),
-        Doc.text(valueDescription.pval_name.txt),
+        Doc.text(value_description.pval_name.txt),
         Doc.text(": "),
-        printTypExpr(valueDescription.pval_type),
+        printTypExpr(value_description.pval_type),
         if isExternal {
           Doc.group(
             Doc.concat(list(
@@ -667,7 +667,7 @@ module Printer = {
                           Doc.text(s),
                           Doc.text("\""),
                         )),
-                      valueDescription.pval_prim,
+                      value_description.pval_prim,
                     ),
                   ),
                 )),
@@ -681,76 +681,76 @@ module Printer = {
     )
   }
   
-  and printTypeDeclarations = (~recFlag, typeDeclarations) => {
+  and print_type_declarations = (~rec_flag, type_declarations) => {
     let rows = List.mapi(
       (i, td) => {
-        let doc = printTypeDeclaration(
+        let doc = print_type_declaration(
           ~name=Doc.text(td.Parsetree.ptype_name.txt),
-          ~equalSign="=",
-          ~recFlag,
+          ~equal_sign="=",
+          ~rec_flag,
           i,
           td,
         )
         
         /td.Parsetree.ptype_loc, doc/
       },
-      typeDeclarations,
+      type_declarations,
     )
-    interleaveWhitespace(rows)
+    interleave_whitespace(rows)
   }
   
-  and printTypeDeclaration = (
+  and print_type_declaration = (
     ~name,
-    ~equalSign,
-    ~recFlag,
+    ~equal_sign,
+    ~rec_flag,
     i,
     td: Parsetree.type_declaration,
   ) => {
-    let attrs = printAttributes(~loc=td.ptype_loc, td.ptype_attributes)
+    let attrs = print_attributes(~loc=td.ptype_loc, td.ptype_attributes)
     let prefix = if i > 0 {
       Doc.text("and ")
     } else {
-      Doc.concat(list(Doc.text("type "), recFlag))
+      Doc.concat(list(Doc.text("type "), rec_flag))
     }
     
-    let typeName = name
-    let typeParams = switch td.ptype_params {
+    let type_name = name
+    let type_params = switch td.ptype_params {
     | list() => Doc.nil
     | typeParams =>
       Doc.group(
         Doc.concat(list(
-          Doc.lessThan,
+          Doc.less_than,
           Doc.indent(
             Doc.concat(list(
-              Doc.softLine,
+              Doc.soft_line,
               Doc.join(
                 ~sep=Doc.concat(list(Doc.comma, Doc.line)),
-                List.map(printTypeParam, typeParams),
+                List.map(print_type_param, type_params),
               ),
             )),
           ),
-          Doc.trailingComma,
-          Doc.softLine,
-          Doc.greaterThan,
+          Doc.trailing_comma,
+          Doc.soft_line,
+          Doc.greater_than,
         )),
       )
     }
     
-    let manifestAndKind = switch td.ptype_kind {
+    let manifest_and_kind = switch td.ptype_kind {
     | Ptype_abstract =>
       switch td.ptype_manifest {
       | None => Doc.nil
       | Some(typ) =>
         Doc.concat(list(
-          Doc.concat(list(Doc.space, Doc.text(equalSign), Doc.space)),
-          printPrivateFlag(td.ptype_private),
-          printTypExpr(typ),
+          Doc.concat(list(Doc.space, Doc.text(equal_sign), Doc.space)),
+          print_private_flag(td.ptype_private),
+          print_typ_expr(typ),
         ))
       }
     | Ptype_open =>
       Doc.concat(list(
-        Doc.concat(list(Doc.space, Doc.text(equalSign), Doc.space)),
-        printPrivateFlag(td.ptype_private),
+        Doc.concat(list(Doc.space, Doc.text(equal_sign), Doc.space)),
+        print_private_flag(td.ptype_private),
         Doc.text(".."),
       ))
     | Ptype_record(lds) =>
@@ -758,31 +758,31 @@ module Printer = {
       | None => Doc.nil
       | Some(typ) =>
         Doc.concat(list(
-          Doc.concat(list(Doc.space, Doc.text(equalSign), Doc.space)),
-          printTypExpr(typ),
+          Doc.concat(list(Doc.space, Doc.text(equal_sign), Doc.space)),
+          print_typ_expr(typ),
         ))
       }
       
       Doc.concat(list(
         manifest,
-        Doc.concat(list(Doc.space, Doc.text(equalSign), Doc.space)),
-        printPrivateFlag(td.ptype_private),
-        printRecordDeclaration(lds),
+        Doc.concat(list(Doc.space, Doc.text(equal_sign), Doc.space)),
+        print_private_flag(td.ptype_private),
+        print_record_declaration(lds),
       ))
     | Ptype_variant(cds) =>
       let manifest = switch td.ptype_manifest {
       | None => Doc.nil
       | Some(typ) =>
         Doc.concat(list(
-          Doc.concat(list(Doc.space, Doc.text(equalSign), Doc.space)),
-          printTypExpr(typ),
+          Doc.concat(list(Doc.space, Doc.text(equal_sign), Doc.space)),
+          print_typ_expr(typ),
         ))
       }
       
       Doc.concat(list(
         manifest,
-        Doc.concat(list(Doc.space, Doc.text(equalSign))),
-        printConstructorDeclarations(~privateFlag=td.ptype_private, cds),
+        Doc.concat(list(Doc.space, Doc.text(equal_sign))),
+        print_constructor_declarations(~private_flag=td.ptype_private, cds),
       ))
     }
     
@@ -791,15 +791,15 @@ module Printer = {
       Doc.concat(list(
         attrs,
         prefix,
-        typeName,
-        typeParams,
-        manifestAndKind,
+        type_name,
+        type_params,
+        manifest_and_kind,
         constraints,
       )),
     )
   }
   
-  and printTypeDefinitionConstraints = cstrs =>
+  and print_type_definition_constraints = cstrs =>
     switch cstrs {
     | list() => Doc.nil
     | cstrs =>
@@ -810,7 +810,7 @@ module Printer = {
             Doc.group(
               Doc.join(
                 ~sep=Doc.line,
-                List.map(printTypeDefinitionConstraint, cstrs),
+                List.map(print_type_definition_constraint, cstrs),
               ),
             ),
           )),
@@ -818,114 +818,114 @@ module Printer = {
       )
     }
   
-  and printTypeDefinitionConstraint = (
+  and print_type_definition_constraint = (
     /typ1, typ2, _loc/: /Parsetree.core_type, Parsetree.core_type, Location.t/,
   ) =>
     Doc.concat(list(
       Doc.text("constraint "),
-      printTypExpr(typ1),
+      print_typ_expr(typ1),
       Doc.text(" = "),
-      printTypExpr(typ2),
+      print_typ_expr(typ2),
     ))
   
-  and printPrivateFlag = (flag: Asttypes.private_flag) =>
+  and print_private_flag = (flag: Asttypes.private_flag) =>
     switch flag {
     | Private => Doc.text("private ")
     | Public => Doc.nil
     }
   
-  and printTypeParam = (param: /Parsetree.core_type, Asttypes.variance/) => {
+  and print_type_param = (param: /Parsetree.core_type, Asttypes.variance/) => {
     let /typ, variance/ = param
-    let printedVariance = switch variance {
+    let printed_variance = switch variance {
     | Covariant => Doc.text("+")
     | Contravariant => Doc.text("-")
     | Invariant => Doc.nil
     }
     
-    Doc.concat(list(printedVariance, printTypExpr(typ)))
+    Doc.concat(list(printed_variance, print_typ_expr(typ)))
   }
   
-  and printRecordDeclaration = (lds: list<Parsetree.label_declaration>) => {
-    let forceBreak = switch /lds, List.rev(lds)/ {
+  and print_record_declaration = (lds: list<Parsetree.label_declaration>) => {
+    let force_break = switch /lds, List.rev(lds)/ {
     | /list(first, ..._), list(last, ..._)/ =>
       first.pld_loc.loc_start.pos_lnum < last.pld_loc.loc_end.pos_lnum
     | _ => false
     }
     
     Doc.breakableGroup(
-      ~forceBreak,
+      ~force_break,
       Doc.concat(list(
         Doc.lbrace,
         Doc.indent(
           Doc.concat(list(
-            Doc.softLine,
+            Doc.soft_line,
             Doc.join(
               ~sep=Doc.concat(list(Doc.comma, Doc.line)),
-              List.map(printLabelDeclaration, lds),
+              List.map(print_label_declaration, lds),
             ),
           )),
         ),
-        Doc.trailingComma,
-        Doc.softLine,
+        Doc.trailing_comma,
+        Doc.soft_line,
         Doc.rbrace,
       )),
     )
   }
   
-  and printConstructorDeclarations = (
-    ~privateFlag,
+  and print_constructor_declarations = (
+    ~private_flag,
     cds: list<Parsetree.constructor_declaration>,
   ) => {
-    let forceBreak = switch /cds, List.rev(cds)/ {
+    let force_break = switch /cds, List.rev(cds)/ {
     | /list(first, ..._), list(last, ..._)/ =>
       first.pcd_loc.loc_start.pos_lnum < last.pcd_loc.loc_end.pos_lnum
     | _ => false
     }
     
-    let privateFlag = switch privateFlag {
+    let private_flag = switch private_flag {
     | Asttypes.Private => Doc.concat(list(Doc.text("private"), Doc.line))
     | Public => Doc.nil
     }
     
-    Doc.breakableGroup(
-      ~forceBreak,
+    Doc.breakable_group(
+      ~force_break,
       Doc.indent(
         Doc.concat(list(
           Doc.line,
-          privateFlag,
-          Doc.join(~sep=Doc.line, List.mapi(printConstructorDeclaration, cds)),
+          private_flag,
+          Doc.join(~sep=Doc.line, List.mapi(print_constructor_declaration, cds)),
         )),
       ),
     )
   }
   
-  and printConstructorDeclaration = (
+  and print_constructor_declaration = (
     i,
     cd: Parsetree.constructor_declaration,
   ) => {
-    let attrs = printAttributes(cd.pcd_attributes)
+    let attrs = print_attributes(cd.pcd_attributes)
     let bar = if i > 0 {
       Doc.text("| ")
     } else {
       Doc.ifBreaks(Doc.text("| "), Doc.nil)
     }
     
-    let constrName = Doc.text(cd.pcd_name.txt)
-    let constrArgs = printConstructorArguments(cd.pcd_args)
+    let constr_name = Doc.text(cd.pcd_name.txt)
+    let constr_args = print_constructor_arguments(cd.pcd_args)
     let gadt = switch cd.pcd_res {
     | None => Doc.nil
     | Some(typ) =>
-      Doc.indent(Doc.concat(list(Doc.text(": "), printTypExpr(typ))))
+      Doc.indent(Doc.concat(list(Doc.text(": "), print_typ_expr(typ))))
     }
     
     Doc.concat(list(
       bar,
-      Doc.group(Doc.concat(list(attrs, constrName, constrArgs, gadt))),
+      Doc.group(Doc.concat(list(attrs, constr_name, constr_args, gadt))),
     ))
   }
   
-  and printConstructorArguments = (cdArgs: Parsetree.constructor_arguments) =>
-    switch cdArgs {
+  and print_constructor_arguments = (cd_args: Parsetree.constructor_arguments) =>
+    switch cd_args {
     | Pcstr_tuple(list()) => Doc.nil
     | Pcstr_tuple(types) =>
       Doc.group(
@@ -934,15 +934,15 @@ module Printer = {
             Doc.lparen,
             Doc.indent(
               Doc.concat(list(
-                Doc.softLine,
+                Doc.soft_line,
                 Doc.join(
                   ~sep=Doc.concat(list(Doc.comma, Doc.line)),
-                  List.map(printTypExpr, types),
+                  List.map(print_typ_expr, types),
                 ),
               )),
             ),
-            Doc.trailingComma,
-            Doc.softLine,
+            Doc.trailing_comma,
+            Doc.soft_line,
             Doc.rparen,
           )),
         ),
@@ -954,24 +954,24 @@ module Printer = {
           Doc.lbrace,
           Doc.indent(
             Doc.concat(list(
-              Doc.softLine,
+              Doc.soft_line,
               Doc.join(
                 ~sep=Doc.concat(list(Doc.comma, Doc.line)),
-                List.map(printLabelDeclaration, lds),
+                List.map(print_label_declaration, lds),
               ),
             )),
           ),
-          Doc.trailingComma,
-          Doc.softLine,
+          Doc.trailing_comma,
+          Doc.soft_line,
           Doc.rbrace,
           Doc.rparen,
         )),
       )
     }
   
-  and printLabelDeclaration = (ld: Parsetree.label_declaration) => {
-    let attrs = printAttributes(~loc=ld.pld_name.loc, ld.pld_attributes)
-    let mutableFlag = switch ld.pld_mutable {
+  and print_label_declaration = (ld: Parsetree.label_declaration) => {
+    let attrs = print_attributes(~loc=ld.pld_name.loc, ld.pld_attributes)
+    let mutable_flag = switch ld.pld_mutable {
     | Mutable => Doc.text("mutable ")
     | Immutable => Doc.nil
     }
@@ -980,28 +980,28 @@ module Printer = {
     Doc.group(
       Doc.concat(list(
         attrs,
-        mutableFlag,
+        mutable_flag,
         name,
         Doc.text(": "),
-        printTypExpr(ld.pld_type),
+        print_typ_expr(ld.pld_type),
       )),
     )
   }
   
-  and printTypExpr = (typExpr: Parsetree.core_type) => {
-    let renderedType = switch typExpr.ptyp_desc {
+  and print_typ_expr = (typ_expr: Parsetree.core_type) => {
+    let rendered_type = switch typ_expr.ptyp_desc {
     | Ptyp_any => Doc.text("_")
     | Ptyp_var(var) => Doc.text("'" ++ var)
-    | Ptyp_extension(extension) => printExtension(extension)
+    | Ptyp_extension(extension) => print_extension(extension)
     | Ptyp_alias(typ, alias) =>
       let typ = {
-        let needsParens = switch typ.ptyp_desc {
+        let needs_parens = switch typ.ptyp_desc {
         | Ptyp_arrow(_) => true
         | _ => false
         }
         
-        let doc = printTypExpr(typ)
-        if needsParens {
+        let doc = print_typ_expr(typ)
+        if needs_parens {
           Doc.concat(list(Doc.lparen, doc, Doc.rparen))
         } else {
           doc
@@ -1048,57 +1048,57 @@ module Printer = {
             ),
         }) =>
         Doc.concat(list(
-          constrName,
-          Doc.lessThan,
-          printBsObjectSugar(~inline=true, fields, openFlag),
-          Doc.greaterThan,
+          constr_name,
+          Doc.less_than,
+          print_bs_object_sugar(~inline=true, fields, open_flag),
+          Doc.greater_than,
         ))
       | args =>
         Doc.group(
           Doc.concat(list(
-            constrName,
-            Doc.lessThan,
+            constr_name,
+            Doc.less_than,
             Doc.indent(
               Doc.concat(list(
-                Doc.softLine,
+                Doc.soft_line,
                 Doc.join(
                   ~sep=Doc.concat(list(Doc.comma, Doc.line)),
-                  List.map(printTypExpr, constrArgs),
+                  List.map(print_typ_expr, constr_args),
                 ),
               )),
             ),
-            Doc.trailingComma,
-            Doc.softLine,
-            Doc.greaterThan,
+            Doc.trailing_comma,
+            Doc.soft_line,
+            Doc.greater_than,
           )),
         )
       }
     | Ptyp_arrow(_) =>
-      let /attrsBefore, args, returnType/ = ParsetreeViewer.arrowType(typExpr)
-      let returnTypeNeedsParens = switch returnType.ptyp_desc {
+      let /attrs_before, args, return_type/ = ParsetreeViewer.arrow_type(typ_expr)
+      let return_type_needs_parens = switch return_type.ptyp_desc {
       | Ptyp_alias(_) => true
       | _ => false
       }
       
-      let returnDoc = {
-        let doc = printTypExpr(returnType)
-        if returnTypeNeedsParens {
+      let return_doc = {
+        let doc = print_typ_expr(return_type)
+        if return_type_needs_parens {
           Doc.concat(list(Doc.lparen, doc, Doc.rparen))
         } else {
           doc
         }
       }
       
-      let /isUncurried, attrs/ = ParsetreeViewer.processUncurriedAttribute(
-        attrsBefore,
+      let /is_uncurried, attrs/ = ParsetreeViewer.process_uncurried_attribute(
+        attrs_before,
       )
       switch args {
       | list() => Doc.nil
-      | list(/list(), Nolabel, n/) when !isUncurried =>
-        let hasAttrsBefore = !(attrs == list())
-        let attrs = if hasAttrsBefore {
+      | list(/list(), Nolabel, n/) when !is_uncurried =>
+        let has_attrs_before = !(attrs == list())
+        let attrs = if has_attrs_before {
           Doc.concat(list(
-            Doc.join(~sep=Doc.line, List.map(printAttribute, attrsBefore)),
+            Doc.join(~sep=Doc.line, List.map(print_attribute, attrs_before)),
             Doc.space,
           ))
         } else {
@@ -1109,22 +1109,22 @@ module Printer = {
           Doc.concat(list(
             Doc.group(attrs),
             Doc.group(
-              if hasAttrsBefore {
+              if has_attrs_before {
                 Doc.concat(list(
                   Doc.lparen,
                   Doc.indent(
                     Doc.concat(list(
-                      Doc.softLine,
-                      printTypExpr(n),
+                      Doc.soft_line,
+                      print_typ_expr(n),
                       Doc.text(" => "),
-                      returnDoc,
+                      return_doc,
                     )),
                   ),
-                  Doc.softLine,
+                  Doc.soft_line,
                   Doc.rparen,
                 ))
               } else {
-                Doc.concat(list(printTypExpr(n), Doc.text(" => "), returnDoc))
+                Doc.concat(list(print_typ_expr(n), Doc.text(" => "), return_doc))
               },
             ),
           )),
@@ -1134,7 +1134,7 @@ module Printer = {
         | list() => Doc.nil
         | attrs =>
           Doc.concat(list(
-            Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)),
+            Doc.join(~sep=Doc.line, List.map(print_attribute, attrs)),
             Doc.space,
           ))
         }
@@ -1144,45 +1144,45 @@ module Printer = {
           Doc.text("("),
           Doc.indent(
             Doc.concat(list(
-              Doc.softLine,
-              if isUncurried {
+              Doc.soft_line,
+              if is_uncurried {
                 Doc.concat(list(Doc.dot, Doc.space))
               } else {
                 Doc.nil
               },
               Doc.join(
                 ~sep=Doc.concat(list(Doc.comma, Doc.line)),
-                List.map(printTypeParameter, args),
+                List.map(print_type_parameter, args),
               ),
             )),
           ),
-          Doc.trailingComma,
-          Doc.softLine,
+          Doc.trailing_comma,
+          Doc.soft_line,
           Doc.text(")"),
         ))
-        Doc.group(Doc.concat(list(renderedArgs, Doc.text(" => "), returnDoc)))
+        Doc.group(Doc.concat(list(rendered_args, Doc.text(" => "), return_doc)))
       }
-    | Ptyp_tuple(types) => printTupleType(~inline=false, types)
-    | Ptyp_object(fields, openFlag) =>
-      printBsObjectSugar(~inline=false, fields, openFlag)
-    | Ptyp_poly(stringLocs, typ) =>
+    | Ptyp_tuple(types) => print_tuple_type(~inline=false, types)
+    | Ptyp_object(fields, open_flag) =>
+      print_bs_object_sugar(~inline=false, fields, open_flag)
+    | Ptyp_poly(string_locs, typ) =>
       Doc.concat(list(
         Doc.join(
           ~sep=Doc.space,
-          List.map(({Location.txt: txt}) => Doc.text("'" ++ txt), stringLocs),
+          List.map(({Location.txt: txt}) => Doc.text("'" ++ txt), string_locs),
         ),
         Doc.dot,
         Doc.space,
-        printTypExpr(typ),
+        print_typ_expr(typ),
       ))
     | Ptyp_package(packageType) =>
-      printPackageType(~printModuleKeywordAndParens=true, packageType)
+      printPackageType(~printModuleKeywordAndParens=true, package_type)
     | Ptyp_class(_) => failwith("classes are not supported in types")
     | Ptyp_variant(_) =>
       failwith("Polymorphic variants currently not supported")
     }
     
-    let shouldPrintItsOwnAttributes = switch typExpr.ptyp_desc {
+    let should_print_its_own_attributes = switch typ_expr.ptyp_desc {
     | Ptyp_arrow(_)
       | Ptyp_constr({txt: Longident.Ldot(Longident.Lident("Js"), "t")}, _) =>
       true
@@ -1230,14 +1230,14 @@ module Printer = {
       Doc.text("/"),
       Doc.indent(
         Doc.concat(list(
-          Doc.softLine,
+          Doc.soft_line,
           Doc.join(
             ~sep=Doc.concat(list(Doc.comma, Doc.line)),
-            List.map(printTypExpr, types),
+            List.map(print_typ_expr, types),
           ),
         )),
       ),
-      Doc.softLine,
+      Doc.soft_line,
       Doc.text("/"),
     ))
     
@@ -1248,20 +1248,20 @@ module Printer = {
     }
   }
   
-  and printObjectField = (field: Parsetree.object_field) =>
+  and print_object_field = (field: Parsetree.object_field) =>
     switch field {
-    | Otag(labelLoc, attrs, typ) =>
+    | Otag(label_loc, attrs, typ) =>
       Doc.concat(list(
-        Doc.text("\"" ++ labelLoc.txt ++ "\""),
+        Doc.text("\"" ++ label_loc.txt ++ "\""),
         Doc.text(": "),
-        printTypExpr(typ),
+        print_typ_expr(typ),
       ))
     | _ => Doc.nil
     }
   
-  and printTypeParameter = (/attrs, lbl, typ/) => {
-    let /isUncurried, attrs/ = ParsetreeViewer.processUncurriedAttribute(attrs)
-    let uncurried = if isUncurried {
+  and print_type_parameter = (/attrs, lbl, typ/) => {
+    let /is_uncurried, attrs/ = ParsetreeViewer.process_uncurried_attribute(attrs)
+    let uncurried = if is_uncurried {
       Doc.concat(list(Doc.dot, Doc.space))
     } else {
       Doc.nil
@@ -1270,7 +1270,7 @@ module Printer = {
     | list() => Doc.nil
     | attrs =>
       Doc.concat(list(
-        Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)),
+        Doc.join(~sep=Doc.line, List.map(print_attribute, attrs)),
         Doc.line,
       ))
     }
@@ -1280,7 +1280,7 @@ module Printer = {
     | Optional(lbl) => Doc.text("~" ++ lbl ++ ": ")
     }
     
-    let optionalIndicator = switch lbl {
+    let optional_indicator = switch lbl {
     | Asttypes.Nolabel | Labelled(_) => Doc.nil
     | Optional(lbl) => Doc.text("=?")
     }
@@ -1290,25 +1290,25 @@ module Printer = {
         uncurried,
         attrs,
         label,
-        printTypExpr(typ),
-        optionalIndicator,
+        print_typ_expr(typ),
+        optional_indicator,
       )),
     )
   }
   
-  and printValueBinding = (~recFlag, i, vb) => {
-    let isGhost = ParsetreeViewer.isGhostUnitBinding(i, vb)
-    let header = if isGhost {
+  and print_value_binding = (~rec_flag, i, vb) => {
+    let is_ghost = ParsetreeViewer.is_ghost_unit_binding(i, vb)
+    let header = if is_ghost {
       Doc.nil
     } else if i === 0 {
-      Doc.concat(list(Doc.text("let "), recFlag))
+      Doc.concat(list(Doc.text("let "), rec_flag))
     } else {
       Doc.text("and ")
     }
     
-    let printedExpr = {
-      let exprDoc = printExpression(vb.pvb_expr)
-      let needsParens = switch vb.pvb_expr.pexp_desc {
+    let printed_expr = {
+      let expr_doc = print_expression(vb.pvb_expr)
+      let needs_parens = switch vb.pvb_expr.pexp_desc {
       | Pexp_constraint(
           {pexp_desc: Pexp_pack(_)},
           {ptyp_desc: Ptyp_package(_)},
@@ -1325,11 +1325,11 @@ module Printer = {
       }
     }
     
-    if isGhost {
-      printedExpr
+    if is_ghost {
+      printed_expr
     } else {
-      let shouldIndent =
-        ParsetreeViewer.isBinaryExpression(vb.pvb_expr) ||
+      let should_indent =
+        ParsetreeViewer.is_binary_expression(vb.pvb_expr) ||
         switch vb.pvb_expr {
         | {
             pexp_attributes: list(/{Location.txt: "res.ternary"}, _/),
@@ -1349,9 +1349,9 @@ module Printer = {
         printPattern(vb.pvb_pat),
         Doc.text(" ="),
         if shouldIndent {
-          Doc.indent(Doc.concat(list(Doc.line, printedExpr)))
+          Doc.indent(Doc.concat(list(Doc.line, printed_expr)))
         } else {
-          Doc.concat(list(Doc.space, printedExpr))
+          Doc.concat(list(Doc.space, printed_expr))
         },
       ))
     }
@@ -1363,13 +1363,13 @@ module Printer = {
   ) => {
     let doc = switch packageType {
     | /longidentLoc, list()/ =>
-      Doc.group(Doc.concat(list(printLongident(longidentLoc.txt))))
-    | /longidentLoc, packageConstraints/ =>
+      Doc.group(Doc.concat(list(print_longident(longident_loc.txt))))
+    | /longidentLoc, package_constraints/ =>
       Doc.group(
         Doc.concat(list(
-          printLongident(longidentLoc.txt),
-          printPackageConstraints(packageConstraints),
-          Doc.softLine,
+          print_longident(longident_loc.txt),
+          print_package_constraints(package_constraints),
+          Doc.soft_line,
         )),
       )
     }
@@ -1389,13 +1389,13 @@ module Printer = {
           Doc.line,
           Doc.join(
             ~sep=Doc.line,
-            List.mapi(printPackageconstraint, packageConstraints),
+            List.mapi(print_packageconstraint, package_constraints),
           ),
         )),
       ),
     ))
   
-  and printPackageconstraint = (i, /longidentLoc, typ/) => {
+  and print_packageconstraint = (i, /longident_loc, typ/) => {
     let prefix = if i === 0 {
       Doc.text("type ")
     } else {
@@ -1403,59 +1403,59 @@ module Printer = {
     }
     Doc.concat(list(
       prefix,
-      printLongident(longidentLoc.Location.txt),
+      print_longident(longident_loc.Location.txt),
       Doc.text(" = "),
-      printTypExpr(typ),
+      print_typ_expr(typ),
     ))
   }
   
   and printExtension = (/stringLoc, payload/) => {
-    let extName = Doc.text("%" ++ stringLoc.Location.txt)
+    let extName = Doc.text("%" ++ string_loc.Location.txt)
     switch payload {
     | PStr(list({pstr_desc: Pstr_eval(expr, attrs)})) =>
-      let exprDoc = printExpression(expr)
-      let needsParens = switch attrs {
+      let expr_doc = print_expression(expr)
+      let needs_parens = switch attrs {
       | list() => false
       | _ => true
       }
       Doc.group(
         Doc.concat(list(
-          extName,
-          addParens(
+          ext_name,
+          add_parens(
             Doc.concat(list(
-              printAttributes(attrs),
-              if needsParens {
-                addParens(exprDoc)
+              print_attributes(attrs),
+              if needs_parens {
+                addParens(expr_doc)
               } else {
-                exprDoc
+                expr_doc
               },
             )),
           ),
         )),
       )
-    | _ => extName
+    | _ => ext_name
     }
   }
   
-  and printPattern = (p: Parsetree.pattern) => {
-    let patternWithoutAttributes = switch p.ppat_desc {
+  and print_pattern = (p: Parsetree.pattern) => {
+    let pattern_without_attributes = switch p.ppat_desc {
     | Ppat_any => Doc.text("_")
-    | Ppat_var(stringLoc) => Doc.text(stringLoc.txt)
-    | Ppat_constant(c) => printConstant(c)
+    | Ppat_var(string_loc) => Doc.text(string_loc.txt)
+    | Ppat_constant(c) => print_constant(c)
     | Ppat_tuple(patterns) =>
       Doc.group(
         Doc.concat(list(
           Doc.text("/"),
           Doc.indent(
             Doc.concat(list(
-              Doc.softLine,
+              Doc.soft_line,
               Doc.join(
                 ~sep=Doc.concat(list(Doc.text(","), Doc.line)),
-                List.map(printPattern, patterns),
+                List.map(print_pattern, patterns),
               ),
             )),
           ),
-          Doc.softLine,
+          Doc.soft_line,
           Doc.text("/"),
         )),
       )
@@ -1465,15 +1465,15 @@ module Printer = {
           Doc.text("["),
           Doc.indent(
             Doc.concat(list(
-              Doc.softLine,
+              Doc.soft_line,
               Doc.join(
                 ~sep=Doc.concat(list(Doc.text(","), Doc.line)),
-                List.map(printPattern, patterns),
+                List.map(print_pattern, patterns),
               ),
             )),
           ),
-          Doc.ifBreaks(Doc.text(","), Doc.nil),
-          Doc.softLine,
+          Doc.if_breaks(Doc.text(","), Doc.nil),
+          Doc.soft_line,
           Doc.text("]"),
         )),
       )
@@ -2766,7 +2766,7 @@ module Printer = {
       switch lident {
       | Longident.Lident(txt) => list(txt, ...acc)
       | Ldot(lident, txt) =>
-        let acc = if txt == "createElement" {
+        let acc = if txt == "create_element" {
           acc
         } else {
           list(txt, ...acc)

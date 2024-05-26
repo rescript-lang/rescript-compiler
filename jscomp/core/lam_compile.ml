@@ -56,7 +56,7 @@ let rec apply_with_arity_aux (fn : J.expression) (arity : int list)
           let params =
             Ext_list.init (x - len) (fun _ -> Ext_ident.create "param")
           in
-          E.ocaml_fun params ~return_unit:false (* unknown info *) ~async:false ~oneUnitArg:false
+          E.ocaml_fun params ~return_unit:false (* unknown info *) ~async:false ~one_unit_arg:false
             [
               S.return_stmt
                 (E.call
@@ -319,7 +319,7 @@ and compile_external_field_apply ?(dynamic_import = false) (appinfo : Lam.apply)
 and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
     (id : Ident.t) (arg : Lam.t) : Js_output.t * initialization =
   match arg with
-  | Lfunction { params; body; attr = { return_unit; async; oneUnitArg; directive } } ->
+  | Lfunction { params; body; attr = { return_unit; async; one_unit_arg; directive } } ->
       (* TODO: Think about recursive value
          {[
            let rec v = ref (fun _ ...
@@ -357,7 +357,7 @@ and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
              it will be renamed into [method]
              when it is detected by a primitive
           *)
-            ~return_unit ~async ~oneUnitArg ?directive ~immutable_mask:ret.immutable_mask
+            ~return_unit ~async ~one_unit_arg ?directive ~immutable_mask:ret.immutable_mask
             (Ext_list.map params (fun x ->
                  Map_ident.find_default ret.new_params x x))
             [
@@ -368,7 +368,7 @@ and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
             ]
         else
           (* TODO:  save computation of length several times *)
-          E.ocaml_fun params (Js_output.output_as_block output) ~return_unit ~async ~oneUnitArg ?directive
+          E.ocaml_fun params (Js_output.output_as_block output) ~return_unit ~async ~one_unit_arg ?directive
       in
       ( Js_output.output_of_expression
           (Declare (Alias, id))
@@ -772,8 +772,8 @@ and compile_untagged_cases ~cxt ~switch_exp ~default ~block_cases cases =
   let switch ?default ?declaration e clauses =
     let (not_typeof_clauses, typeof_clauses) = List.partition is_not_typeof clauses in
     let rec build_if_chain remaining_clauses = (match remaining_clauses with 
-    | (Ast_untagged_variants.Untagged (InstanceType instanceType), {J.switch_body}) :: rest -> 
-      S.if_ (E.emit_check (IsInstanceOf (instanceType, Expr e)))
+    | (Ast_untagged_variants.Untagged (InstanceType instance_type), {J.switch_body}) :: rest -> 
+      S.if_ (E.emit_check (IsInstanceOf (instance_type, Expr e)))
         (switch_body)
         ~else_:([build_if_chain rest])
     | _ -> S.string_switch ?default ?declaration (E.typeof e) typeof_clauses) in
@@ -1670,10 +1670,10 @@ and compile_prim (prim_info : Lam.prim_info)
 and compile_lambda (lambda_cxt : Lam_compile_context.t) (cur_lam : Lam.t) :
     Js_output.t =
   match cur_lam with
-  | Lfunction { params; body; attr = { return_unit; async; oneUnitArg; directive } } ->
+  | Lfunction { params; body; attr = { return_unit; async; one_unit_arg; directive } } ->
       Js_output.output_of_expression lambda_cxt.continuation
         ~no_effects:no_effects_const
-        (E.ocaml_fun params ~return_unit ~async ~oneUnitArg ?directive
+        (E.ocaml_fun params ~return_unit ~async ~one_unit_arg ?directive
            (* Invariant:  jmp_table can not across function boundary,
               here we share env
            *)
