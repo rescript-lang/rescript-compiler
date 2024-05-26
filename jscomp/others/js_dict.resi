@@ -41,8 +41,6 @@ mostly used with the Js_json.t type.
 */
 type t<'a> = dict<'a>
 
-external _unsafe_create: array<(string, 'a)> => dict<'a> = "?createDict"
-
 /**
   The type for dictionary keys. This means that dictionaries *must* use `string`s as their keys.
 */

@@ -5,12 +5,6 @@ let Js_dict = require("../../lib/js/js_dict.js");
 
 let dictCreationCanNotBeInlined = Js_dict.fromArray(imaginary);
 
-let dictCreationCanBeInlined2 = {
-  name: "hello",
-  age: "what",
-  more: "stuff"
-};
-
 let dictCreationCanBeInlined = {
   name: "hello",
   age: "what",
@@ -31,7 +25,6 @@ let dictCreationCanBeInlined4 = {
 
 exports.dictCreationCanBeInlined = dictCreationCanBeInlined;
 exports.dictCreationCanNotBeInlined = dictCreationCanNotBeInlined;
-exports.dictCreationCanBeInlined2 = dictCreationCanBeInlined2;
 exports.dictCreationCanBeInlined3 = dictCreationCanBeInlined3;
 exports.dictCreationCanBeInlined4 = dictCreationCanBeInlined4;
 /* dictCreationCanNotBeInlined Not a pure module */

@@ -27,8 +27,6 @@
 /** The dict type */
 type t<'a> = dict<'a>
 
-external _unsafe_create: array<(string, 'a)> => dict<'a> = "?createDict"
-
 /** The key type, an alias of string */
 type key = string
 
