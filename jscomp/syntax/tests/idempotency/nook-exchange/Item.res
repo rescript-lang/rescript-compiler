@@ -82,7 +82,7 @@ let loadTranslation: (string, Js.Json.t => unit) => unit = %raw(`function(langua
 
 exception UnexpectedType(string)
 
-let spaceRegex = %re("/\\s/g")
+let spaceRegex = /\s/g
 
 exception Unexpected
 let jsonToItems = (json: Js.Json.t) => {

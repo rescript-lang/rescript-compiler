@@ -94,7 +94,7 @@ let updateEmail = (send, email) => send(UpdateEmail(email, email |> emailInvalid
 let updateTitle = (send, title) => send(UpdateTitle(title, title |> nameOrTitleInvalid))
 
 let updateLinkedInUrl = (send, linkedinUrl) => {
-  let regex = %re(`/(https?)?:?(\\/\\/)?(([w]{3}||\\w\\w)\\.)?linkedin.com(\\w+:{0,1}\\w*@)?(\\S+)(:([0-9])+)?(\\/|\\/([\\w#!:.?+=&%@!\\-\\/]))?/`)
+  let regex = /(https?)?:?(\/\/)?(([w]{3}||\w\w)\.)?linkedin.com(\w+:{0,1}\w*@)?(\S+)(:([0-9])+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
   let hasError = linkedinUrl |> String.length < 1 ? false : !Js.Re.test_(regex, linkedinUrl)
   send(UpdateLinkedInUrl(linkedinUrl, hasError))
 }

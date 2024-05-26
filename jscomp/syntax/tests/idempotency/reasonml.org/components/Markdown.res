@@ -311,7 +311,7 @@ module A = {
       // Ideally one would check if this link is relative first,
       // but it's very unlikely we'd refer to an absolute URL ending
       // with .md
-      let regex = %re("/\\.md(x)?|\\.html$/")
+      let regex = /\.md(x)?|\.html$/
       let href = switch Js.String2.split(href, "#") {
       | [pathname, anchor] => Js.String2.replaceByRe(pathname, regex, "") ++ ("#" ++ anchor)
       | [pathname] => Js.String2.replaceByRe(pathname, regex, "")

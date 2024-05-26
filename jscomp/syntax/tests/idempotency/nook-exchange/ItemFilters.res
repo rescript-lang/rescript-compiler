@@ -206,7 +206,7 @@ let doesItemMatchCategory = (~item: Item.t, ~category: string) =>
   }
 
 let removeAccents = str =>
-  str |> Js.String.normalizeByForm("NFD") |> Js.String.replaceByRe(%re("/[\u0300-\u036f]/g"), "")
+  str |> Js.String.normalizeByForm("NFD") |> Js.String.replaceByRe(/[\u0300-\u036f]/g, "")
 
 let doesItemMatchFilters = (~item: Item.t, ~filters: t) =>
   switch filters.text {
@@ -218,7 +218,7 @@ let doesItemMatchFilters = (~item: Item.t, ~filters: t) =>
     | None => false
     } || {
       let fragments =
-        (textLower |> Js.String.splitByRe(%re(`/[\\s-]+/`)))->Belt.Array.keepMap(x => x)
+        (textLower |> Js.String.splitByRe(/[\s-]+/))->Belt.Array.keepMap(x => x)
       fragments->Belt.Array.every(fragment =>
         Js.String.toLowerCase(Item.getName(item))
         |> removeAccents
@@ -253,8 +253,8 @@ let compareArrays = (a, b) => {
 
 let compareItemsABC = (a: Item.t, b: Item.t) => {
   // hack to sort "wooden-" before "wooden "
-  let aName = Item.getName(a) |> Js.String.replaceByRe(%re("/-/g"), " ")
-  let bName = Item.getName(b) |> Js.String.replaceByRe(%re("/-/g"), " ")
+  let aName = Item.getName(a) |> Js.String.replaceByRe(/-/g, " ")
+  let bName = Item.getName(b) |> Js.String.replaceByRe(/-/g, " ")
   int_of_float(Js.String.localeCompare(bName, aName))
 }
 let compareItemsSellPriceDesc = (a: Item.t, b: Item.t) =>
@@ -798,7 +798,7 @@ let make = (
       | "Escape" =>
         let url = ReasonReactRouter.dangerouslyGetInitialUrl()
         // don't trigger if ItemDetailOverlay is shown
-        if !(url.hash |> Js.Re.test_(%re("/i(-?\d+)(:(\d+))?/g"))) {
+        if !(url.hash |> Js.Re.test_(/i(-?\d+)(:(\d+))?/g)) {
           onChange({...filters, text: ""})
         }
       | "/" =>

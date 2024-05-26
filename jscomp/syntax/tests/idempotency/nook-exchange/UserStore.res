@@ -477,7 +477,7 @@ let toggleCatalogCheckboxSetting = (~enabled) => {
   )
 }
 
-let errorQuotationMarksRegex = %re(`/^"(.*)"$/`)
+let errorQuotationMarksRegex = /^"(.*)"$/
 let register = (~username, ~email, ~password) =>
   %Repromise.JsExn({
     let response = Fetch.fetchWithInit(
