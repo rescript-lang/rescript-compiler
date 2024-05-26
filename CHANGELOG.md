@@ -44,6 +44,7 @@
 - Turn off transformation for closures inside loops when capturing loop variables, now that `let` is emitted instead of `var`. https://github.com/rescript-lang/rescript-compiler/pull/6480
 - Fix formatter eats comments on the first argument of a uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6763 
 - Fix formatter removes parens in pipe operator with anonymous uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6766
+- Optimize usages of `Dict.fromArray` to emit an actual JS object literal when possible. https://github.com/rescript-lang/rescript-compiler/pull/6538
 
 # 11.1.0
 
