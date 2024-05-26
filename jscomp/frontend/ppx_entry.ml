@@ -30,9 +30,9 @@ let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
   let ast =
     match !Js_config.jsx_version with
     | None -> ast
-    | Some jsx_version ->
+    | Some jsx_version_ ->
       let open Js_config in
-      let jsx_version = int_of_jsx_version jsx_version in
+      let jsx_version = int_of_jsx_version jsx_version_ in
       let jsx_module = string_of_jsx_module !jsx_module in
       let jsx_mode = string_of_jsx_mode !jsx_mode in
       Jsx_ppx.rewrite_signature ~jsx_version ~jsx_module ~jsx_mode ast
@@ -50,9 +50,9 @@ let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
   let ast =
     match !Js_config.jsx_version with
     | None -> ast
-    | Some jsx_version ->
+    | Some jsx_version_ ->
       let open Js_config in
-      let jsx_version = int_of_jsx_version jsx_version in
+      let jsx_version = int_of_jsx_version jsx_version_ in
       let jsx_module = string_of_jsx_module !jsx_module in
       let jsx_mode = string_of_jsx_mode !jsx_mode in
       Jsx_ppx.rewrite_implementation ~jsx_version ~jsx_module ~jsx_mode ast
