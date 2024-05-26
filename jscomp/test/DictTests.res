@@ -13,3 +13,15 @@ let dictCreationCanBeInlined2 = Js.Dict._unsafe_create([
   ("age", "what"),
   ("more", "stuff"),
 ])
+
+open Js
+
+let dictCreationCanBeInlined3 = Dict.fromArray([
+  ("name", "hello"),
+  ("age", "what"),
+  ("more", "stuff"),
+])
+
+open Dict
+
+let dictCreationCanBeInlined4 = fromArray([("name", "hello"), ("age", "what"), ("more", "stuff")])

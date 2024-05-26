@@ -810,10 +810,15 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
               wrap (Lprim (prim, argl, e.exp_loc))
               ))
   | Texp_apply
-      ( {exp_desc = Texp_ident (p, _, _)},
+      ( {
+          exp_desc =
+            Texp_ident
+              ( Pdot (Pdot (Pident module_name, "Dict", _), "fromArray", _),
+                _,
+                _ );
+        },
         [(_lbl, Some {exp_desc = Texp_array args})] )
-    when Path.name p = "Js.Dict.fromArray"
-          && args_elgible_for_dict_inlining args ->
+    when Ident.name module_name = "Js" && args_elgible_for_dict_inlining args ->
     let fields = Array.make (List.length args) "" in
     let args =
       args
