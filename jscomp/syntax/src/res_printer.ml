@@ -401,7 +401,6 @@ let classify_ident_content ?(allow_uident = false) ?(allow_hyphen = false) txt =
     loop 0
 
 let print_ident_like ?allow_uident ?allow_hyphen txt =
-  let txt = Ext_ident.unwrap_uppercase_exotic txt in
   match classify_ident_content ?allow_uident ?allow_hyphen txt with
   | ExoticIdent -> Doc.concat [Doc.text "\\\""; Doc.text txt; Doc.text "\""]
   | UppercaseExoticIdent | NormalIdent -> Doc.text txt
