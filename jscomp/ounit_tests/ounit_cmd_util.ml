@@ -2,7 +2,7 @@ let (//) = Filename.concat
 
 (** may nonterminate when [cwd] is '.' *)
 let rec unsafe_root_dir_aux cwd  = 
-  if Sys.file_exists (cwd//Literals.bsconfig_json) then cwd 
+  if Sys.file_exists (cwd // Literals.rescript_json) then cwd 
   else unsafe_root_dir_aux (Filename.dirname cwd)     
 
 let project_root = unsafe_root_dir_aux (Sys.getcwd ())

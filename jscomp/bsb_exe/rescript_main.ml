@@ -156,7 +156,6 @@ let build_subcommand ~start argv argv_len =
           ~package_kind:Toplevel
           ~per_proj_dir:Bsb_global_paths.cwd
           ~forced:!force_regenerate
-          ~warn_legacy_config:true
           ~warn_as_error
         in
       if not !no_deps_mode then Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args warn_as_error;
@@ -190,7 +189,6 @@ let info_subcommand ~start argv =
             ~package_kind:Toplevel
             ~per_proj_dir:Bsb_global_paths.cwd
             ~forced:true
-            ~warn_legacy_config:true
             ~warn_as_error:None
         with
         | None -> assert false
@@ -221,7 +219,6 @@ let () =
           ~package_kind:Toplevel
           ~per_proj_dir:Bsb_global_paths.cwd
           ~forced:false
-          ~warn_legacy_config:true
           ~warn_as_error:None
       in
       Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||] None;

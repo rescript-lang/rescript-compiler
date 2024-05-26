@@ -34,7 +34,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
            we will read such json file to know which [package-specs]
            it wants
         *)
-        Bsb_config_parse.deps_from_bsconfig ()
+        Bsb_config_parse.deps_from_config ()
     | Some config ->
         (config.package_specs, config.jsx, config.uncurried, config.pinned_dependencies)
   in
@@ -70,7 +70,6 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
                    (if is_pinned then Pinned_dependency { package_specs; jsx; uncurried }
                    else Dependency { package_specs; jsx; uncurried })
                  ~per_proj_dir:proj_dir ~forced:false
-                 ~warn_legacy_config:false
                  ~warn_as_error:(if is_pinned then warn_as_error else None)
              in
              let command =

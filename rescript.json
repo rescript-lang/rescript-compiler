@@ -1,0 +1,6 @@
+{
+  "sources": {
+    "dir": "jscomp/test",
+    "dev": true
+  }
+}

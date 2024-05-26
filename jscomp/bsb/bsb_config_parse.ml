@@ -348,13 +348,13 @@ let interpret_json
           Bsb_exception.invalid_spec ("no sources specified in " ^ filename))
   | _ -> Bsb_exception.invalid_spec (filename ^ " expect a json object {}")
 
-let deps_from_bsconfig () =
+let deps_from_config () =
   let cwd = Bsb_global_paths.cwd in
-  match Bsb_config_load.load_json ~per_proj_dir:cwd ~warn_legacy_config:false
+  match Bsb_config_load.load_json ~per_proj_dir:cwd
   with
-  | _, Obj { map } ->
+  | Obj { map } ->
       ( Bsb_package_specs.from_map ~cwd map,
         Bsb_jsx.from_map map,
         extract_uncurried map,
         Bsb_build_util.extract_pinned_dependencies map )
-  | _, _ -> assert false
+  | _ -> assert false

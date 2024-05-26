@@ -74,8 +74,6 @@ let node_modules_length = String.length "node_modules"
 
 let package_json = "package.json"
 
-let bsconfig_json = "bsconfig.json"
-
 let rescript_json = "rescript.json"
 
 let build_ninja = "build.ninja"

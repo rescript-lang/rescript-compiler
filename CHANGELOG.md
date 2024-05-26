@@ -22,6 +22,7 @@
 - Remove handling of attributes with `bs.` prefix (`@bs.as` -> `@as` etc.). https://github.com/rescript-lang/rescript-compiler/pull/6643
 - Remove obsolete `@bs.open` feature. https://github.com/rescript-lang/rescript-compiler/pull/6629
 - Drop Node.js version <18 support, due to it reaching End-of-Life. https://github.com/rescript-lang/rescript-compiler/pull/6429
+- Drop `bsconfig.json` support. https://github.com/rescript-lang/rescript-compiler/pull/6781
 
 #### :bug: Bug Fix
 

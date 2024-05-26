@@ -155,8 +155,8 @@ let extract_pinned_dependencies (map : Ext_json_types.t Map_string.t) : Set_stri
 
 let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
     ~(top : top) (dir : string) (queue : _ Queue.t) ~pinned_dependencies =
-  match Bsb_config_load.load_json ~per_proj_dir:dir ~warn_legacy_config:false with
-  | _, Obj { map; loc } ->
+  match Bsb_config_load.load_json ~per_proj_dir:dir with
+  | Obj { map; loc } ->
       let cur_package_name =
         match Map_string.find_opt map Bsb_build_schemas.name with
         | Some (Str { str; loc }) ->
