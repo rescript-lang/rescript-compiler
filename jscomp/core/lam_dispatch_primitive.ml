@@ -265,18 +265,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
       | [e] -> {e with expression_desc = Await e}
       | _ -> assert false
   )
-  | "?createDict" -> (
-      match args with
-      | [{expression_desc=Array (exprs, _)} as e] -> 
-        let key_values =
-            exprs
-            |> List.filter_map (fun (e : J.expression) ->
-                   match e.expression_desc with
-                   | Caml_block ([{expression_desc = Str {txt}}; value], _, _, _) -> Some (Js_op.Lit txt, value)
-                   | _ -> None) in
-        {e with expression_desc=Object key_values}
-      | _ -> assert false
-  )
   | _ ->
       Bs_warnings.warn_missing_primitive loc prim_name;
       E.resolve_and_apply prim_name args
