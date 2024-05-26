@@ -3,15 +3,15 @@
 import * as React from "react";
 
 function OnClick2(Props) {
-  var onClick = Props.onClick;
+  let onClick = Props.onClick;
   return React.createElement("div", {
-              onClick: onClick
-            });
+    onClick: onClick
+  });
 }
 
-var make = OnClick2;
+let make = OnClick2;
 
 export {
-  make ,
+  make,
 }
 /* react Not a pure module */

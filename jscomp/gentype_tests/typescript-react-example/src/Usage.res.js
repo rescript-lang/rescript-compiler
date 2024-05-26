@@ -2,12 +2,12 @@
 
 import * as MyModule from "./MyModule.res.js";
 
-var b = MyModule.add(5, 3);
+let b = MyModule.add(5, 3);
 
-var a = 5;
+let a = 5;
 
 export {
-  a ,
-  b ,
+  a,
+  b,
 }
 /* b Not a pure module */

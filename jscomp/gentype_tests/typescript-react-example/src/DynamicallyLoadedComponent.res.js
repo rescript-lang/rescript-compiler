@@ -5,9 +5,9 @@ function DynamicallyLoadedComponent(Props) {
   return Props.s;
 }
 
-var make = DynamicallyLoadedComponent;
+let make = DynamicallyLoadedComponent;
 
 export {
-  make ,
+  make,
 }
 /* No side effect */

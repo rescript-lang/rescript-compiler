@@ -6,6 +6,6 @@ function convertT3(x) {
 }
 
 export {
-  convertT3 ,
+  convertT3,
 }
 /* No side effect */

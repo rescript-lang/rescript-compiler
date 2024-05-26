@@ -18,9 +18,9 @@ function printVariantWithPayload(x) {
     } else {
       console.log("printVariantWithPayload: Twenty");
     }
-    return ;
+    return;
   }
-  var payload = x.VAL;
+  let payload = x.VAL;
   console.log("printVariantWithPayload x:", payload.x, "y:", payload.y);
 }
 
@@ -29,16 +29,16 @@ function testManyPayloads(x) {
 }
 
 function printManyPayloads(x) {
-  var variant = x.NAME;
+  let variant = x.NAME;
   if (variant === "two") {
-    var match = x.VAL;
+    let match = x.VAL;
     console.log("printManyPayloads two:", match[0], match[1]);
-    return ;
+    return;
   }
   if (variant === "three") {
-    var payload = x.VAL;
+    let payload = x.VAL;
     console.log("printManyPayloads x:", payload.x, "y:", payload.y);
-    return ;
+    return;
   }
   console.log("printManyPayloads one:", x.VAL);
 }
@@ -54,22 +54,22 @@ function testVariantWithPayloads(x) {
 function printVariantWithPayloads(x) {
   if (typeof x !== "object") {
     console.log("printVariantWithPayloads", "A");
-    return ;
+    return;
   }
   switch (x.TAG) {
     case "B" :
         console.log("printVariantWithPayloads", "B(" + (String(x._0) + ")"));
-        return ;
+        return;
     case "C" :
         console.log("printVariantWithPayloads", "C(" + (String(x._0) + (", " + (String(x._1) + ")"))));
-        return ;
+        return;
     case "D" :
-        var match = x._0;
+        let match = x._0;
         console.log("printVariantWithPayloads", "D((" + (String(match[0]) + (", " + (String(match[1]) + "))"))));
-        return ;
+        return;
     case "E" :
         console.log("printVariantWithPayloads", "E(" + (String(x._0) + (", " + (x._1 + (", " + (String(x._2) + ")"))))));
-        return ;
+        return;
     
   }
 }
@@ -83,14 +83,14 @@ function testVariant1Object(x) {
 }
 
 export {
-  testWithPayload ,
-  printVariantWithPayload ,
-  testManyPayloads ,
-  printManyPayloads ,
-  testSimpleVariant ,
-  testVariantWithPayloads ,
-  printVariantWithPayloads ,
-  testVariant1Int ,
-  testVariant1Object ,
+  testWithPayload,
+  printVariantWithPayload,
+  testManyPayloads,
+  printManyPayloads,
+  testSimpleVariant,
+  testVariantWithPayloads,
+  printVariantWithPayloads,
+  testVariant1Int,
+  testVariant1Object,
 }
 /* No side effect */

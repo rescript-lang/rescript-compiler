@@ -10,7 +10,7 @@ function convertAlias(x) {
 }
 
 export {
-  convert ,
-  convertAlias ,
+  convert,
+  convertAlias,
 }
 /* No side effect */

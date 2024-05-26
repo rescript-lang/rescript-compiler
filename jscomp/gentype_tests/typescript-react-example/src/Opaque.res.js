@@ -10,7 +10,7 @@ function testConvertNestedRecordFromOtherFile(x) {
 }
 
 export {
-  noConversion ,
-  testConvertNestedRecordFromOtherFile ,
+  noConversion,
+  testConvertNestedRecordFromOtherFile,
 }
 /* No side effect */

@@ -5,7 +5,7 @@ function nested3Function(x) {
   return x;
 }
 
-var Nested3 = {
+let Nested3 = {
   x: 0,
   y: 1,
   z: 2,
@@ -18,7 +18,7 @@ function nested2Function(x) {
   return x;
 }
 
-var Nested2 = {
+let Nested2 = {
   x: 0,
   nested2Value: 1,
   y: 2,
@@ -26,17 +26,17 @@ var Nested2 = {
   nested2Function: nested2Function
 };
 
-var Universe = {
+let Universe = {
   theAnswer: 42,
   notExported: 33,
   Nested2: Nested2,
   someString: "some exported string"
 };
 
-var notNested = 1;
+let notNested = 1;
 
 export {
-  notNested ,
-  Universe ,
+  notNested,
+  Universe,
 }
 /* No side effect */

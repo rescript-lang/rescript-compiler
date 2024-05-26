@@ -4,22 +4,22 @@
 function foo(t) {
   if (typeof t !== "object") {
     console.log("A");
-    return ;
+    return;
   }
   console.log("B" + t.name);
 }
 
-var X = {
+let X = {
   foo: foo,
   x: 42
 };
 
-var Y = {
+let Y = {
   x: ""
 };
 
 export {
-  X ,
-  Y ,
+  X,
+  Y,
 }
 /* No side effect */

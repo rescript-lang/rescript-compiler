@@ -16,8 +16,8 @@ function testBeltArraySet(arr) {
 }
 
 export {
-  testImmutableArrayGet ,
-  testBeltArrayGet ,
-  testBeltArraySet ,
+  testImmutableArrayGet,
+  testBeltArrayGet,
+  testBeltArraySet,
 }
 /* No side effect */

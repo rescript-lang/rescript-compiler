@@ -5,21 +5,21 @@ import * as ErrorHandler from "./ErrorHandler.res.js";
 
 function notification(s) {
   return [
-          s,
-          s
-        ];
+    s,
+    s
+  ];
 }
 
-var Error1 = {
+let Error1 = {
   notification: notification
 };
 
-var MyErrorHandler = ErrorHandler.Make(Error1);
+let MyErrorHandler = ErrorHandler.Make(Error1);
 
 Curry._1(MyErrorHandler.notify, "abc");
 
 export {
-  Error1 ,
-  MyErrorHandler ,
+  Error1,
+  MyErrorHandler,
 }
 /* MyErrorHandler Not a pure module */

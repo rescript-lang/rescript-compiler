@@ -5,9 +5,9 @@ function ExportWithRename(Props) {
   return Props.s;
 }
 
-var make = ExportWithRename;
+let make = ExportWithRename;
 
 export {
-  make ,
+  make,
 }
 /* No side effect */

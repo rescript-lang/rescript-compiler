@@ -3,18 +3,18 @@
 
 function submit(param_0) {
   return {
-          TAG: "Submit",
-          _0: param_0
-        };
+    TAG: "Submit",
+    _0: param_0
+  };
 }
 
-var click = "Click";
+let click = "Click";
 
-var cancel = "Cancel";
+let cancel = "Cancel";
 
 export {
-  click ,
-  submit ,
-  cancel ,
+  click,
+  submit,
+  cancel,
 }
 /* No side effect */

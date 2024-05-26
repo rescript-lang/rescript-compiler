@@ -6,19 +6,19 @@ import * as Caml_option from "rescript/lib/es6/caml_option.js";
 
 function convert(param) {
   return Js_promise.then_((function (param) {
-                return Promise.resolve({
-                            result: param.s
-                          });
-              }), param);
+    return Promise.resolve({
+      result: param.s
+    });
+  }), param);
 }
 
 function barx(xOpt, param) {
-  var x = xOpt !== undefined ? Caml_option.valFromOption(xOpt) : Promise.resolve("a");
+  let x = xOpt !== undefined ? Caml_option.valFromOption(xOpt) : Promise.resolve("a");
   return Caml_obj.equal(x, x);
 }
 
 export {
-  convert ,
-  barx ,
+  convert,
+  barx,
 }
 /* No side effect */
