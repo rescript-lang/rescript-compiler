@@ -119,3 +119,6 @@ type arrowPath4 = (. I.t) => string
 type callback1 = ReactEvent.Mouse.t => unit as 'callback
 type callback2 = ReactEvent.Mouse.t => (unit as 'u)
 type callback3 = (ReactEvent.Mouse.t => unit) as 'callback
+
+let partialPipe = x->f(...)
+let partialPipe2 = x->f(y, ...)
