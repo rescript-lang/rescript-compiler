@@ -75,7 +75,7 @@ let translate_dependencies ~config ~output_file_relative ~resolver dependencies 
 let translate_value ~attributes ~config ~doc_string ~output_file_relative ~resolver
     ~type_env ~type_expr ~(add_annotations_to_function : type_ -> type_) name : t =
   let name_as =
-    match Annotation.get_gen_type_as_renaming attributes with
+    match Annotation.get_gentype_as_renaming attributes with
     | Some s -> s
     | _ -> name
   in

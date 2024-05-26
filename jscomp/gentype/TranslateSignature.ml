@@ -110,7 +110,7 @@ and translate_signature_item ~config ~output_file_relative ~resolver ~type_env
   | {Typedtree.sig_desc = Tsig_value value_description} ->
     let is_import =
       value_description.val_attributes
-      |> Annotation.has_attribute Annotation.tag_is_gen_type_import
+      |> Annotation.has_attribute Annotation.tag_is_gentype_import
     in
     if value_description.val_prim <> [] || is_import then
       value_description

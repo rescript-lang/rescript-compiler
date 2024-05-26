@@ -23,7 +23,7 @@ let create_export_type_from_type_declaration ~annotation ~loc ~name_as ~opaque ~
 
 let create_case (label, attributes) ~poly =
   {
-    label_j_s =
+    label_js =
       (match
          attributes |> Annotation.get_attribute_payload Annotation.tag_is_as
        with
@@ -44,7 +44,7 @@ let create_case (label, attributes) ~poly =
  * the identifier contains characters which are invalid as JS property names.
 *)
 let rename_record_field ~attributes ~name =
-  attributes |> Annotation.check_unsupported_gen_type_as_renaming;
+  attributes |> Annotation.check_unsupported_gentype_as_renaming;
   match attributes |> Annotation.get_as_string with
   | Some s -> s |> String.escaped
   | None -> name
@@ -127,7 +127,7 @@ let traslate_declaration_kind ~config ~loc ~output_file_relative ~resolver
                | Option type1 when is_optional name -> (Optional, type1)
                | _ -> (Mandatory, type_)
              in
-             {mutable_; name_j_s = name; optional; type_ = type1; doc_string})
+             {mutable_; name_js = name; optional; type_ = type1; doc_string})
     in
     let type_ =
       match fields with
@@ -309,7 +309,7 @@ let traslate_declaration_kind ~config ~loc ~output_file_relative ~resolver
     {CodeItem.export_from_type_declaration; import_types} |> return_type_declaration
   | NoDeclaration, None -> []
 
-let has_some_g_a_d_t_leaf constructor_declarations =
+let has_some_gadt_leaf constructor_declarations =
   List.exists
     (fun declaration -> declaration.Types.cd_res != None)
     constructor_declarations

@@ -12,7 +12,7 @@ type type_vars_gen = {
 
 let create_type_vars_gen () = {type_name_map = IntMap.empty; type_name_counter = 0}
 
-let js_type_name_for_anonymous_type_i_d ~type_vars_gen id =
+let js_type_name_for_anonymous_type_id ~type_vars_gen id =
   try type_vars_gen.type_name_map |> IntMap.find id
   with Not_found ->
     type_vars_gen.type_name_counter <- type_vars_gen.type_name_counter + 1;

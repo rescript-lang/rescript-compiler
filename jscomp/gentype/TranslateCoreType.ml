@@ -64,7 +64,7 @@ let rec translate_arrow_type ~config ~type_vars_gen ~no_function_return_dependen
   | Ttyp_arrow (((Labelled lbl | Optional lbl) as label), core_type1, core_type2)
     -> (
     let as_label =
-      match core_type.ctyp_attributes |> Annotation.get_gen_type_as_renaming with
+      match core_type.ctyp_attributes |> Annotation.get_gentype_as_renaming with
       | Some s -> s
       | None -> ""
     in
@@ -174,7 +174,7 @@ and translateCoreType_ ~config ~type_vars_gen
       let no_payloads =
         no_payloads
         |> List.map (fun (label, attributes) ->
-               let label_j_s =
+               let label_js =
                  if as_string then
                    match attributes |> Annotation.get_as_string with
                    | Some label_renamed -> StringLabel label_renamed
@@ -192,7 +192,7 @@ and translateCoreType_ ~config ~type_vars_gen
                  else if is_number label then IntLabel label
                  else StringLabel label
                in
-               {label_j_s})
+               {label_js})
       in
       let payloads_translations =
         payloads
@@ -207,7 +207,7 @@ and translateCoreType_ ~config ~type_vars_gen
                {
                  case =
                    {
-                     label_j_s =
+                     label_js =
                        (if is_number label then IntLabel label
                         else StringLabel label);
                    };

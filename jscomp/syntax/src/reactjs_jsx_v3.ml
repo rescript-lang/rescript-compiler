@@ -1132,16 +1132,16 @@ let jsx_mapper ~config =
     (* Does the function application have the @JSX attribute? *)
     | {pexp_desc = Pexp_apply (call_expression, call_arguments); pexp_attributes}
       -> (
-      let jsx_attribute, non_j_s_x_attributes =
+      let jsx_attribute, non_jsx_attributes =
         List.partition
           (fun (attribute, _) -> attribute.txt = "JSX")
           pexp_attributes
       in
-      match (jsx_attribute, non_j_s_x_attributes) with
+      match (jsx_attribute, non_jsx_attributes) with
       (* no JSX attribute *)
       | [], _ -> default_mapper.expr mapper expression
-      | _, non_j_s_x_attributes ->
-        transform_jsx_call mapper call_expression call_arguments non_j_s_x_attributes)
+      | _, non_jsx_attributes ->
+        transform_jsx_call mapper call_expression call_arguments non_jsx_attributes)
     (* is it a list with jsx attribute? Reason <>foo</> desugars to [@JSX][foo]*)
     | {
         pexp_desc =
@@ -1150,15 +1150,15 @@ let jsx_mapper ~config =
           | Pexp_construct ({txt = Lident "[]"; loc}, None) );
         pexp_attributes;
       } as list_items -> (
-      let jsx_attribute, non_j_s_x_attributes =
+      let jsx_attribute, non_jsx_attributes =
         List.partition
           (fun (attribute, _) -> attribute.txt = "JSX")
           pexp_attributes
       in
-      match (jsx_attribute, non_j_s_x_attributes) with
+      match (jsx_attribute, non_jsx_attributes) with
       (* no JSX attribute *)
       | [], _ -> default_mapper.expr mapper expression
-      | _, non_j_s_x_attributes ->
+      | _, non_jsx_attributes ->
         let loc = {loc with loc_ghost = true} in
         let fragment =
           Exp.ident ~loc {loc; txt = Ldot (Lident "ReasonReact", "fragment")}
@@ -1174,7 +1174,7 @@ let jsx_mapper ~config =
         in
         Exp.apply
           ~loc (* throw away the [@JSX] attribute and keep the others, if any *)
-          ~attrs:non_j_s_x_attributes
+          ~attrs:non_jsx_attributes
           (* ReactDOMRe.createElement *)
           (Exp.ident ~loc
              {loc; txt = Ldot (Lident "ReactDOMRe", "createElement")})

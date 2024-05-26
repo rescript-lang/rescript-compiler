@@ -51,9 +51,9 @@ and add_annotations_to_fields ~config (expr : Typedtree.expression)
     in
     let name =
       TranslateTypeDeclarations.rename_record_field
-        ~attributes:expr.exp_attributes ~name:field.name_j_s
+        ~attributes:expr.exp_attributes ~name:field.name_js
     in
-    ({field with name_j_s = name} :: next_fields1, types1)
+    ({field with name_js = name} :: next_fields1, types1)
   | _ -> (fields, arg_types)
 [@@live]
 

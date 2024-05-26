@@ -40,7 +40,7 @@ and export_module_item_to_fields =
          let field_for_type =
            {
              mutable_ = Mutable;
-             name_j_s = field_name;
+             name_js = field_name;
              optional = Mandatory;
              type_ = type_for_type;
              doc_string;

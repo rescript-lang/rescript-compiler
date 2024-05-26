@@ -18,7 +18,7 @@ let log_not_implemented x =
 type optional = Mandatory | Optional
 type mutable_ = Immutable | Mutable
 
-type label_j_s =
+type label_js =
   | NullLabel
   | UndefinedLabel
   | BoolLabel of bool
@@ -26,9 +26,9 @@ type label_j_s =
   | IntLabel of string
   | StringLabel of string
 
-type case = {label_j_s: label_j_s}
+type case = {label_js: label_js}
 
-let is_j_s_safe_property_name name =
+let is_js_safe_property_name name =
   name = ""
   || (match name.[0] [@doesNotRaise] with
      | 'A' .. 'z' -> true
@@ -53,8 +53,8 @@ let is_number s =
   done;
   res.contents
 
-let label_j_s_to_string case =
-  match case.label_j_s with
+let label_js_to_string case =
+  match case.label_js with
   | NullLabel -> "null"
   | UndefinedLabel -> "undefined"
   | BoolLabel b -> b |> string_of_bool
@@ -83,7 +83,7 @@ and arg_type = {a_name: string; a_type: type_}
 
 and field = {
   mutable_: mutable_;
-  name_j_s: string;
+  name_js: string;
   optional: optional;
   type_: type_;
   doc_string: DocString.t;

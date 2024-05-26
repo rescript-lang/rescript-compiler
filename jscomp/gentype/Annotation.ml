@@ -17,8 +17,8 @@ let to_string annotation =
   | GenTypeOpaque -> "GenTypeOpaque"
   | NoGenType -> "NoGenType"
 
-let tag_is_gen_type s = s = "genType" || s = "gentype"
-let tag_is_gen_type_as s = s = "genType.as" || s = "gentype.as"
+let tag_is_gentype s = s = "genType" || s = "gentype"
+let tag_is_gentype_as s = s = "genType.as" || s = "gentype.as"
 let tag_is_as s = s = "as"
 let tag_is_int s = s = "int"
 let tag_is_string s = s = "string"
@@ -26,14 +26,14 @@ let tag_is_string s = s = "string"
 let tag_is_tag s = s = "tag"
 
 let tag_is_unboxed s = s = "unboxed" || s = "ocaml.unboxed"
-let tag_is_gen_type_import s = s = "genType.import" || s = "gentype.import"
-let tag_is_gen_type_opaque s = s = "genType.opaque" || s = "gentype.opaque"
+let tag_is_gentype_import s = s = "genType.import" || s = "gentype.import"
+let tag_is_gentype_opaque s = s = "genType.opaque" || s = "gentype.opaque"
 
-let tag_is_one_of_the_gen_type_annotations s =
-  tag_is_gen_type s || tag_is_gen_type_as s || tag_is_gen_type_import s
-  || tag_is_gen_type_opaque s
+let tag_is_one_of_the_gentype_annotations s =
+  tag_is_gentype s || tag_is_gentype_as s || tag_is_gentype_import s
+  || tag_is_gentype_opaque s
 
-let tag_is_gen_type_ignore_interface s =
+let tag_is_gentype_ignore_interface s =
   s = "genType.ignoreInterface" || s = "gentype.ignoreInterface"
 
 let tag_is_doc s =
@@ -98,17 +98,17 @@ let rec get_attribute_payload check_text (attributes : Typedtree.attributes) =
     | Some payload -> Some (loc, payload))
   | _hd :: tl -> get_attribute_payload check_text tl
 
-let get_gen_type_as_renaming attributes =
-  match attributes |> get_attribute_payload tag_is_gen_type_as with
+let get_gentype_as_renaming attributes =
+  match attributes |> get_attribute_payload tag_is_gentype_as with
   | Some (_, StringPayload s) -> Some s
   | None -> (
-    match attributes |> get_attribute_payload tag_is_gen_type with
+    match attributes |> get_attribute_payload tag_is_gentype with
     | Some (_, StringPayload s) -> Some s
     | _ -> None)
   | _ -> None
 
 (* This is not supported anymore: only use to give a warning *)
-let check_unsupported_gen_type_as_renaming attributes =
+let check_unsupported_gentype_as_renaming attributes =
   let error ~loc =
     Log_.Color.setup ();
     Log_.info ~loc ~name:"Warning genType" (fun ppf () ->
@@ -117,10 +117,10 @@ let check_unsupported_gen_type_as_renaming attributes =
            @genType.as is not supported anymore in type definitions. Use @as \
            from the language.")
   in
-  match attributes |> get_attribute_payload tag_is_gen_type_as with
+  match attributes |> get_attribute_payload tag_is_gentype_as with
   | Some (loc, _) -> error ~loc
   | None -> (
-    match attributes |> get_attribute_payload tag_is_gen_type with
+    match attributes |> get_attribute_payload tag_is_gentype with
     | Some (loc, _) -> error ~loc
     | None -> ())
 
@@ -136,18 +136,18 @@ let get_as_int attributes =
   | _ -> None
 
 let get_attribute_import_renaming attributes =
-  let attribute_import = attributes |> get_attribute_payload tag_is_gen_type_import in
-  let gen_type_as_renaming = attributes |> get_gen_type_as_renaming in
-  match (attribute_import, gen_type_as_renaming) with
+  let attribute_import = attributes |> get_attribute_payload tag_is_gentype_import in
+  let gentype_as_renaming = attributes |> get_gentype_as_renaming in
+  match (attribute_import, gentype_as_renaming) with
   | Some (_, StringPayload import_string), _ ->
-    (Some import_string, gen_type_as_renaming)
+    (Some import_string, gentype_as_renaming)
   | ( Some
         ( _,
           TuplePayload [StringPayload import_string; StringPayload rename_string]
         ),
       _ ) ->
     (Some import_string, Some rename_string)
-  | _ -> (None, gen_type_as_renaming)
+  | _ -> (None, gentype_as_renaming)
 
 let get_tag attributes =
   match attributes |> get_attribute_payload tag_is_tag with
@@ -168,10 +168,10 @@ let has_attribute check_text (attributes : Typedtree.attributes) =
 let from_attributes ~(config : GenTypeConfig.t) ~loc
     (attributes : Typedtree.attributes) =
   let default = if config.everything then GenType else NoGenType in
-  if has_attribute tag_is_gen_type_opaque attributes then GenTypeOpaque
-  else if has_attribute (fun s -> tag_is_gen_type s || tag_is_gen_type_as s) attributes
+  if has_attribute tag_is_gentype_opaque attributes then GenTypeOpaque
+  else if has_attribute (fun s -> tag_is_gentype s || tag_is_gentype_as s) attributes
   then (
-    (match attributes |> get_attribute_payload tag_is_gen_type with
+    (match attributes |> get_attribute_payload tag_is_gentype with
     | Some (_, UnrecognizedPayload) -> ()
     | Some _ ->
       Log_.Color.setup ();
@@ -293,6 +293,6 @@ let import_from_string import_string : import =
   {import_path}
 
 let update_config_for_module ~(config : GenTypeConfig.t) attributes =
-  if attributes |> has_attribute tag_is_gen_type then
+  if attributes |> has_attribute tag_is_gentype then
     {config with everything = true}
   else config

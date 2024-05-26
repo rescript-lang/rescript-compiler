@@ -46,7 +46,7 @@ let translate_obj_type closed_flag fields_translations =
            in
            {
              mutable_;
-             name_j_s = name;
+             name_js = name;
              optional;
              type_;
              doc_string = DocString.empty;
@@ -128,7 +128,7 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
             [
               {
                 mutable_ = Mutable;
-                name_j_s = "contents";
+                name_js = "contents";
                 optional = Mandatory;
                 type_ = param_translation.type_;
                 doc_string = DocString.empty;
@@ -137,7 +137,7 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
     }
   | ( (["Pervasives"; "result"] | ["Belt"; "Result"; "t"] | ["result"]),
       [param_translation1; param_translation2] ) ->
-    let case name type_ = {case = {label_j_s = StringLabel name}; t = type_} in
+    let case name type_ = {case = {label_js = StringLabel name}; t = type_} in
     let variant =
       create_variant ~inherits:[] ~no_payloads:[]
         ~payloads:
@@ -320,7 +320,7 @@ and translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
   match type_expr.desc with
   | Tvar None ->
     let type_name =
-      GenIdent.js_type_name_for_anonymous_type_i_d ~type_vars_gen type_expr.id
+      GenIdent.js_type_name_for_anonymous_type_id ~type_vars_gen type_expr.id
     in
     {dependencies = []; type_ = TypeVar type_name}
   | Tvar (Some s) -> {dependencies = []; type_ = TypeVar s}
@@ -382,7 +382,7 @@ and translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
         no_payloads
         |> List.map (fun label ->
                {
-                 label_j_s =
+                 label_js =
                    (if is_number label then IntLabel label else StringLabel label);
                })
       in
@@ -397,7 +397,7 @@ and translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
       t |> translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
     | {no_payloads; payloads; unknowns = []} ->
       let no_payloads =
-        no_payloads |> List.map (fun label -> {label_j_s = StringLabel label})
+        no_payloads |> List.map (fun label -> {label_js = StringLabel label})
       in
       let payload_translations =
         payloads
@@ -409,7 +409,7 @@ and translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
       let payloads =
         payload_translations
         |> List.map (fun (label, translation) ->
-               {case = {label_j_s = StringLabel label}; t = translation.type_})
+               {case = {label_js = StringLabel label}; t = translation.type_})
       in
       let type_ =
         create_variant ~inherits:[] ~no_payloads ~payloads ~polymorphic:true
@@ -475,7 +475,7 @@ and signature_to_module_runtime_representation ~config ~type_vars_gen ~type_env
              let field =
                {
                  mutable_ = Immutable;
-                 name_j_s = id |> Ident.name;
+                 name_js = id |> Ident.name;
                  optional = Mandatory;
                  type_;
                  doc_string = Annotation.doc_string_from_attrs val_attributes;
@@ -499,7 +499,7 @@ and signature_to_module_runtime_representation ~config ~type_vars_gen ~type_env
              let field =
                {
                  mutable_ = Immutable;
-                 name_j_s = id |> Ident.name;
+                 name_js = id |> Ident.name;
                  optional = Mandatory;
                  type_;
                  doc_string =

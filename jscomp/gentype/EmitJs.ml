@@ -72,13 +72,13 @@ let emit_export_type ~emitters ~config ~type_name_is_interface
     {CodeItem.loc; name_as; opaque; type_; type_vars; resolved_type_name; doc_string}
     =
   let free_type_vars = TypeVars.free type_ in
-  let is_g_a_d_t =
+  let is_gadt =
     free_type_vars |> List.exists (fun s -> not (List.mem s type_vars))
   in
   let opaque =
     match opaque with
     | Some true -> opaque
-    | _ when is_g_a_d_t ->
+    | _ when is_gadt ->
       Log_.Color.setup ();
       Log_.info ~loc ~name:"Warning genType" (fun ppf () ->
           Format.fprintf ppf
@@ -163,7 +163,7 @@ let emit_code_item ~config ~emitters ~module_items_emitter ~env ~file_name
           fields
           |> List.map (fun (field : field) ->
                  match
-                   field.name_j_s = "children"
+                   field.name_js = "children"
                    && field.type_ |> EmitType.is_type_react_element
                  with
                  | true -> {field with type_ = EmitType.type_react_child}
@@ -186,7 +186,7 @@ let emit_code_item ~config ~emitters ~module_items_emitter ~env ~file_name
           (* JSX V3 *)
           let fields =
             Ext_list.filter_map fields (fun (field : field) ->
-                match field.name_j_s with
+                match field.name_js with
                 | "children" when field.type_ |> EmitType.is_type_react_element ->
                   Some {field with type_ = EmitType.type_react_child}
                 | "key" ->
@@ -280,7 +280,7 @@ let emit_code_item ~config ~emitters ~module_items_emitter ~env ~file_name
             fields
             |> List.map (fun (field : field) ->
                    match
-                     field.name_j_s = "children"
+                     field.name_js = "children"
                      && field.type_ |> EmitType.is_type_react_element
                    with
                    | true -> {field with type_ = EmitType.type_react_child}
@@ -314,7 +314,7 @@ let emit_code_item ~config ~emitters ~module_items_emitter ~env ~file_name
             let props_type =
               let fields =
                 Ext_list.filter_map fields (fun (field : field) ->
-                    match field.name_j_s with
+                    match field.name_js with
                     | "children" when field.type_ |> EmitType.is_type_react_element
                       ->
                       Some {field with type_ = EmitType.type_react_child}

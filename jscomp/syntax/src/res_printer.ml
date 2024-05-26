@@ -441,7 +441,7 @@ let print_poly_var_ident txt =
       | "" -> Doc.concat [Doc.text "\""; Doc.text txt; Doc.text "\""]
       | _ -> Doc.text txt)
 
-let poly_var_ident_to_string poly_var_ident =
+let polyvar_ident_to_string poly_var_ident =
   Doc.concat [Doc.text "#"; print_poly_var_ident poly_var_ident]
   |> Doc.to_string ~width:80
 

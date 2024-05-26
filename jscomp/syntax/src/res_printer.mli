@@ -27,4 +27,4 @@ val print_ident_like :
 
 val print_poly_var_ident : string -> Res_doc.t
 
-val poly_var_ident_to_string : string -> string [@@live]
+val polyvar_ident_to_string : string -> string [@@live]

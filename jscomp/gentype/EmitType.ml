@@ -44,7 +44,7 @@ let type_react_ref ~type_ =
       [
         {
           mutable_ = Mutable;
-          name_j_s = react_ref_current;
+          name_js = react_ref_current;
           optional = Mandatory;
           type_ = Null type_;
           doc_string = DocString.empty;
@@ -53,8 +53,8 @@ let type_react_ref ~type_ =
 
 let is_type_react_ref ~fields =
   match fields with
-  | [{mutable_ = Mutable; name_j_s; optional = Mandatory}] ->
-    name_j_s == react_ref_current
+  | [{mutable_ = Mutable; name_js; optional = Mandatory}] ->
+    name_js == react_ref_current
   | _ -> false
 
 let is_type_function_component ~fields type_ =
@@ -162,11 +162,11 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
       |> List.map (fun type_ ->
              type_ |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
     in
-    let no_payloads_rendered = no_payloads |> List.map label_j_s_to_string in
+    let no_payloads_rendered = no_payloads |> List.map label_js_to_string in
     let field ~name value =
       {
         mutable_ = Mutable;
-        name_j_s = name;
+        name_js = name;
         optional = Mandatory;
         type_ = TypeVar value;
         doc_string = DocString.empty;
@@ -182,7 +182,7 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
                t |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type
              in
              let tag_field =
-               case |> label_j_s_to_string
+               case |> label_js_to_string
                |> field ~name:(Runtime.js_variant_tag ~polymorphic:false ~tag)
              in
              match (unboxed, type_) with
@@ -197,7 +197,7 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
              | false, type_ when polymorphic ->
                (* poly variant *)
                [
-                 case |> label_j_s_to_string
+                 case |> label_js_to_string
                  |> field ~name:(Runtime.js_variant_tag ~polymorphic ~tag);
                  type_ |> render
                  |> field ~name:(Runtime.js_variant_value ~polymorphic);
@@ -234,7 +234,7 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
            ^ "| "))
 
 and render_field ~config ~indent ~type_name_is_interface ~in_fun_type
-    {mutable_; name_j_s = lbl; optional; type_; doc_string} =
+    {mutable_; name_js = lbl; optional; type_; doc_string} =
   let opt_marker =
     match optional == Optional with
     | true -> "?"
@@ -246,7 +246,7 @@ and render_field ~config ~indent ~type_name_is_interface ~in_fun_type
     | false -> ""
   in
   let lbl =
-    match is_j_s_safe_property_name lbl with
+    match is_js_safe_property_name lbl with
     | true -> lbl
     | false -> EmitText.quotes lbl
   in

@@ -17,7 +17,7 @@ let translate_type_declaration_from_types ~config ~output_file_relative ~resolve
         (label_declarations, record_representation)
     | Type_variant constructor_declarations
       when not
-             (TranslateTypeDeclarations.has_some_g_a_d_t_leaf constructor_declarations)
+             (TranslateTypeDeclarations.has_some_gadt_leaf constructor_declarations)
       ->
       VariantDeclarationFromTypes constructor_declarations
     | Type_abstract -> GeneralDeclarationFromTypes type_manifest

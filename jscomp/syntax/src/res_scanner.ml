@@ -7,7 +7,7 @@ type mode = Jsx | Diamond
 (* We hide the implementation detail of the scanner reading character. Our char
    will also contain the special -1 value to indicate end-of-file. This isn't
    ideal; we should clean this up *)
-let hacky_e_o_f_char = Char.unsafe_chr (-1)
+let hacky_eof_char = Char.unsafe_chr (-1)
 type char_encoding = Char.t
 
 type t = {
@@ -119,7 +119,7 @@ let next scanner =
   else (
     scanner.offset <- String.length scanner.src;
     scanner.offset16 <- scanner.offset - scanner.line_offset;
-    scanner.ch <- hacky_e_o_f_char)
+    scanner.ch <- hacky_eof_char)
 
 let next2 scanner =
   next scanner;
@@ -133,24 +133,24 @@ let next3 scanner =
 let peek scanner =
   if scanner.offset + 1 < String.length scanner.src then
     String.unsafe_get scanner.src (scanner.offset + 1)
-  else hacky_e_o_f_char
+  else hacky_eof_char
 
 let peek2 scanner =
   if scanner.offset + 2 < String.length scanner.src then
     String.unsafe_get scanner.src (scanner.offset + 2)
-  else hacky_e_o_f_char
+  else hacky_eof_char
 
 let peek3 scanner =
   if scanner.offset + 3 < String.length scanner.src then
     String.unsafe_get scanner.src (scanner.offset + 3)
-  else hacky_e_o_f_char
+  else hacky_eof_char
 
 let make ~filename src =
   {
     filename;
     src;
     err = (fun ~start_pos:_ ~end_pos:_ _ -> ());
-    ch = (if src = "" then hacky_e_o_f_char else String.unsafe_get src 0);
+    ch = (if src = "" then hacky_eof_char else String.unsafe_get src 0);
     offset = 0;
     offset16 = 0;
     line_offset = 0;
@@ -297,7 +297,7 @@ let scan_exotic_identifier scanner =
       scanner.err ~start_pos ~end_pos
         (Diagnostics.message "A quoted identifier can't contain line breaks.");
       next scanner
-    | ch when ch == hacky_e_o_f_char ->
+    | ch when ch == hacky_eof_char ->
       let end_pos = position scanner in
       scanner.err ~start_pos ~end_pos
         (Diagnostics.message "Did you forget a \" here?")
@@ -329,7 +329,7 @@ let scan_string_escape_sequence ~start_pos scanner =
         if d >= base then (
           let pos = position scanner in
           let msg =
-            if scanner.ch == hacky_e_o_f_char then "unclosed escape sequence"
+            if scanner.ch == hacky_eof_char then "unclosed escape sequence"
             else "unknown escape sequence"
           in
           scanner.err ~start_pos ~end_pos:pos (Diagnostics.message msg);
@@ -431,7 +431,7 @@ let scan_string scanner =
       scan_string_escape_sequence ~start_pos scanner;
       let end_offset = scanner.offset in
       convert_octal_to_hex ~start_offset ~end_offset
-    | ch when ch == hacky_e_o_f_char ->
+    | ch when ch == hacky_eof_char ->
       let end_pos = position scanner in
       scanner.err ~start_pos:start_pos_with_quote ~end_pos Diagnostics.unclosed_string;
       let last_char_offset = scanner.offset in
@@ -539,7 +539,7 @@ let scan_single_line_comment scanner =
   let rec skip scanner =
     match scanner.ch with
     | '\n' | '\r' -> ()
-    | ch when ch == hacky_e_o_f_char -> ()
+    | ch when ch == hacky_eof_char -> ()
     | _ ->
       next scanner;
       skip scanner
@@ -569,7 +569,7 @@ let scan_multi_line_comment scanner =
     | '*', '/' ->
       next2 scanner;
       if depth > 1 then scan ~depth:(depth - 1)
-    | ch, _ when ch == hacky_e_o_f_char ->
+    | ch, _ when ch == hacky_eof_char ->
       let end_pos = position scanner in
       scanner.err ~start_pos ~end_pos Diagnostics.unclosed_comment
     | _ ->
@@ -625,7 +625,7 @@ let scan_template_literal_token scanner =
       | _ ->
         next scanner;
         scan ())
-    | ch when ch = hacky_e_o_f_char ->
+    | ch when ch = hacky_eof_char ->
       let end_pos = position scanner in
       scanner.err ~start_pos ~end_pos Diagnostics.unclosed_template;
       let contents =
@@ -907,7 +907,7 @@ let rec scan scanner =
         next scanner;
         Token.Equal)
     (* special cases *)
-    | ch when ch == hacky_e_o_f_char ->
+    | ch when ch == hacky_eof_char ->
       next scanner;
       Token.Eof
     | ch ->

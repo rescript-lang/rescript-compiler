@@ -2994,7 +2994,7 @@ module ParsetreeViewer : sig
     Parsetree.module_expr
   )
 
-  val split_gen_type_attr : Parsetree.attributes -> (bool * Parsetree.attributes)
+  val split_gentype_attr: Parsetree.attributes -> (bool * Parsetree.attributes)
 
   val collect_patterns_from_list_construct:
     Parsetree.pattern list -> Parsetree.pattern ->
@@ -3451,7 +3451,7 @@ end = struct
     in
     loop [] mod_expr
 
-  let split_gen_type_attr attrs =
+  let split_gentype_attr attrs =
     match attrs with
     | ({Location.txt = "genType"}, _)::attrs -> (true, attrs)
     | attrs -> (false, attrs)
@@ -6877,16 +6877,16 @@ module Printer = struct
    *  | Ptype_open
    *)
   and print_type_declaration ~name ~equal_sign ~rec_flag i (td: Parsetree.type_declaration) cmt_tbl =
-    let (has_gen_type, attrs) = ParsetreeViewer.split_gen_type_attr td.ptype_attributes in
+    let (has_gentype, attrs) = ParsetreeViewer.split_gentype_attr td.ptype_attributes in
     let attrs = print_attributes ~loc:td.ptype_loc attrs in
     let prefix = if i > 0 then
       Doc.concat [
         Doc.text "and ";
-        if has_gen_type then Doc.text "export " else Doc.nil
+        if has_gentype then Doc.text "export " else Doc.nil
       ]
     else
       Doc.concat [
-        Doc.text (if has_gen_type then "export type " else "type ");
+        Doc.text (if has_gentype then "export type " else "type ");
         rec_flag
       ]
     in
@@ -6954,16 +6954,16 @@ module Printer = struct
       print_comments doc cmt_tbl td.ptype_name.loc
     in
     let equal_sign = "=" in
-    let (has_gen_type, attrs) = ParsetreeViewer.split_gen_type_attr td.ptype_attributes in
+    let (has_gentype, attrs) = ParsetreeViewer.split_gentype_attr td.ptype_attributes in
     let attrs = print_attributes ~loc:td.ptype_loc attrs in
     let prefix = if i > 0 then
       Doc.concat [
         Doc.text "and ";
-        if has_gen_type then Doc.text "export " else Doc.nil
+        if has_gentype then Doc.text "export " else Doc.nil
       ]
     else
       Doc.concat [
-        Doc.text (if has_gen_type then "export type " else "type ");
+        Doc.text (if has_gentype then "export type " else "type ");
         rec_flag
       ]
     in
@@ -7608,17 +7608,17 @@ module Printer = struct
     print_comments doc cmt_tbl typ.ptyp_loc
 
   and print_value_binding ~rec_flag vb cmt_tbl i =
-    let (has_gen_type, attrs) = ParsetreeViewer.split_gen_type_attr vb.pvb_attributes in
+    let (has_gentype, attrs) = ParsetreeViewer.split_gentype_attr vb.pvb_attributes in
     let attrs = print_attributes ~loc:vb.pvb_pat.ppat_loc attrs in
 		let header =
       if i == 0 then
         Doc.concat [
-          if has_gen_type then Doc.text "export " else Doc.text "let ";
+          if has_gentype then Doc.text "export " else Doc.text "let ";
           rec_flag
       ] else
         Doc.concat [
           Doc.text "and ";
-          if has_gen_type then Doc.text "export " else Doc.nil
+          if has_gentype then Doc.text "export " else Doc.nil
         ]
 		in
     match vb with
@@ -11525,8 +11525,8 @@ module JsFfi = struct
         |> Ast_helper.Exp.constant
         |> Ast_helper.Str.eval
       ] in
-      let gen_type = (Location.mknoloc "genType.import", Parsetree.PStr structure) in
-      [gen_type]
+      let gentype = (Location.mknoloc "genType.import", Parsetree.PStr structure) in
+      [gentype]
     | Scope longident ->
       let structure_item =
         let expr = match Longident.flatten longident |> List.map (fun s ->
@@ -14604,8 +14604,8 @@ end
         | Export ->
           let export_loc = mk_loc p.start_pos p.end_pos in
           Parser.next p;
-          let gen_type_attr = (Location.mkloc "genType" export_loc, Parsetree.PStr []) in
-          gen_type_attr::attrs
+          let gentype_attr = (Location.mkloc "genType" export_loc, Parsetree.PStr []) in
+          gentype_attr::attrs
         | _ -> attrs
         in
         ignore(Parser.optional p Let); (* overparse for fault tolerance *)
@@ -17052,8 +17052,8 @@ end
           | Export ->
             let export_loc = mk_loc p.start_pos p.end_pos in
             Parser.next p;
-            let gen_type_attr = (Location.mkloc "genType" export_loc, Parsetree.PStr []) in
-            gen_type_attr::attrs
+            let gentype_attr = (Location.mkloc "genType" export_loc, Parsetree.PStr []) in
+            gentype_attr::attrs
           | _ -> attrs
           in
           let type_def = parse_type_def ~attrs ~start_pos p in
@@ -17261,8 +17261,8 @@ end
     let export_start = p.Parser.start_pos in
     Parser.expect Token.Export p;
     let export_loc = mk_loc export_start p.prev_end_pos in
-    let gen_type_attr = (Location.mkloc "genType" export_loc, Parsetree.PStr []) in
-    let attrs = gen_type_attr::attrs in
+    let gentype_attr = (Location.mkloc "genType" export_loc, Parsetree.PStr []) in
+    let attrs = gentype_attr::attrs in
     match p.Parser.token with
     | Typ ->
       begin match parse_type_definition_or_extension ~attrs p with

@@ -1,15 +1,15 @@
 module StringSet = Set.Make (String)
 
-let cmt_check_annotations ~check_annotation input_c_m_t =
-  match input_c_m_t.Cmt_format.cmt_annots with
+let cmt_check_annotations ~check_annotation input_cmt =
+  match input_cmt.Cmt_format.cmt_annots with
   | Implementation structure ->
     structure |> Annotation.structure_check_annotation ~check_annotation
   | Interface signature ->
     signature |> Annotation.signature_check_annotation ~check_annotation
   | _ -> false
 
-let cmt_has_type_errors input_c_m_t =
-  match input_c_m_t.Cmt_format.cmt_annots with
+let cmt_has_type_errors input_cmt =
+  match input_cmt.Cmt_format.cmt_annots with
   | Partial_implementation _ | Partial_interface _ -> true
   | _ -> false
 
@@ -24,8 +24,8 @@ let signature_item_is_declaration signature_item =
   | _ -> false
 
 let input_cmt_translate_type_declarations ~config ~output_file_relative ~resolver
-    input_c_m_t : CodeItem.translation =
-  let {Cmt_format.cmt_annots} = input_c_m_t in
+    input_cmt : CodeItem.translation =
+  let {Cmt_format.cmt_annots} = input_cmt in
   let type_env = TypeEnv.root () in
   let translations =
     match cmt_annots with
@@ -50,9 +50,9 @@ let input_cmt_translate_type_declarations ~config ~output_file_relative ~resolve
   translations |> Translation.combine
   |> Translation.add_type_declarations_from_module_equations ~type_env
 
-let translate_c_m_t ~config ~output_file_relative ~resolver input_c_m_t : Translation.t
+let translate_c_m_t ~config ~output_file_relative ~resolver input_cmt : Translation.t
     =
-  let {Cmt_format.cmt_annots} = input_c_m_t in
+  let {Cmt_format.cmt_annots} = input_cmt in
   let type_env = TypeEnv.root () in
   let translations =
     match cmt_annots with
@@ -104,31 +104,31 @@ let process_cmt_file cmt =
         ~exclude_file:(fun fname ->
           fname = "React.res" || fname = "ReasonReact.res")
     in
-    let input_c_m_t, has_gen_type_annotations =
-      let input_c_m_t = read_cmt cmt_file in
+    let input_cmt, has_gentype_annotations =
+      let input_cmt = read_cmt cmt_file in
       let ignore_interface = ref false in
       let check_annotation ~loc:_ attributes =
         if
           attributes
           |> Annotation.get_attribute_payload
-               Annotation.tag_is_gen_type_ignore_interface
+               Annotation.tag_is_gentype_ignore_interface
           <> None
         then ignore_interface := true;
         attributes
         |> Annotation.get_attribute_payload
-             Annotation.tag_is_one_of_the_gen_type_annotations
+             Annotation.tag_is_one_of_the_gentype_annotations
         <> None
       in
-      let has_gen_type_annotations =
-        input_c_m_t |> cmt_check_annotations ~check_annotation
+      let has_gentype_annotations =
+        input_cmt |> cmt_check_annotations ~check_annotation
       in
       if is_interface then
         let cmt_file_impl =
           (cmt_file |> (Filename.chop_extension [@doesNotRaise])) ^ ".cmt"
         in
-        let input_c_m_t_impl = read_cmt cmt_file_impl in
-        let has_gen_type_annotations_impl =
-          input_c_m_t_impl
+        let input_cmt_impl = read_cmt cmt_file_impl in
+        let has_gentype_annotations_impl =
+          input_cmt_impl
           |> cmt_check_annotations ~check_annotation:(fun ~loc attributes ->
                  if attributes |> check_annotation ~loc then (
                    if not !ignore_interface then (
@@ -140,16 +140,16 @@ let process_cmt_file cmt =
                  else false)
         in
         ( (match !ignore_interface with
-          | true -> input_c_m_t_impl
-          | false -> input_c_m_t),
+          | true -> input_cmt_impl
+          | false -> input_cmt),
           match !ignore_interface with
-          | true -> has_gen_type_annotations_impl
-          | false -> has_gen_type_annotations )
-      else (input_c_m_t, has_gen_type_annotations)
+          | true -> has_gentype_annotations_impl
+          | false -> has_gentype_annotations )
+      else (input_cmt, has_gentype_annotations)
     in
-    if has_gen_type_annotations then
+    if has_gentype_annotations then
       let source_file =
-        match input_c_m_t.cmt_annots |> FindSourceFile.cmt with
+        match input_cmt.cmt_annots |> FindSourceFile.cmt with
         | Some source_file -> source_file
         | None -> (
           (file_name |> ModuleName.to_string)
@@ -158,11 +158,11 @@ let process_cmt_file cmt =
           | true -> ".resi"
           | false -> ".res")
       in
-      input_c_m_t
+      input_cmt
       |> translate_c_m_t ~config ~output_file_relative ~resolver
       |> emit_translation ~config ~file_name ~output_file ~output_file_relative
            ~resolver ~source_file
-    else if input_c_m_t |> cmt_has_type_errors then
+    else if input_cmt |> cmt_has_type_errors then
       output_file |> GeneratedFiles.log_file_action TypeError
     else (
       output_file |> GeneratedFiles.log_file_action NoMatch;
