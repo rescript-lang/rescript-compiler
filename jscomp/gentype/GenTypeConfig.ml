@@ -102,13 +102,9 @@ let setDebug ~gtconf =
   | _ -> ()
 
 let compilerConfigFile = "rescript.json"
-let legacyCompilerConfigFile = "bsconfig.json"
 
 let rec findProjectRoot ~dir =
-  if
-    Sys.file_exists (Filename.concat dir compilerConfigFile)
-    || Sys.file_exists (Filename.concat dir legacyCompilerConfigFile)
-  then dir
+  if Sys.file_exists (Filename.concat dir compilerConfigFile) then dir
   else
     let parent = dir |> Filename.dirname in
     if parent = dir then (
