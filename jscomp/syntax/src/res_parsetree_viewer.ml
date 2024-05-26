@@ -747,3 +747,13 @@ let isRewrittenUnderscoreApplySugar expr =
   match expr.pexp_desc with
   | Pexp_ident {txt = Longident.Lident "_"} -> true
   | _ -> false
+
+let isTupleArray (expr : Parsetree.expression) =
+  let isPlainTuple (expr : Parsetree.expression) =
+    match expr with
+    | {pexp_desc = Pexp_tuple _} -> true
+    | _ -> false
+  in
+  match expr with
+  | {pexp_desc = Pexp_array items} -> List.for_all isPlainTuple items
+  | _ -> false

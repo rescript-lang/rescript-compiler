@@ -59,6 +59,7 @@ type t =
   | Pattern
   | AttributePayload
   | TagNames
+  | DictRows
 
 let toString = function
   | OpenDescription -> "an open description"
@@ -120,6 +121,7 @@ let toString = function
   | ExprFor -> "a for expression"
   | AttributePayload -> "an attribute payload"
   | TagNames -> "tag names"
+  | DictRows -> "rows of a dict"
 
 let isSignatureItemStart = function
   | Token.At | Let | Typ | External | Exception | Open | Include | Module | AtAt
@@ -135,8 +137,8 @@ let isAtomicPatternStart = function
 
 let isAtomicExprStart = function
   | Token.True | False | Int _ | String _ | Float _ | Codepoint _ | Backtick
-  | Uident _ | Lident _ | Hash | Lparen | List | Lbracket | Lbrace | LessThan
-  | Module | Percent ->
+  | Uident _ | Lident _ | Hash | Lparen | List | Dict | Lbracket | Lbrace
+  | LessThan | Module | Percent ->
     true
   | _ -> false
 
@@ -151,7 +153,7 @@ let isExprStart = function
   | For | Hash | If | Int _ | Lbrace | Lbracket | LessThan | Lident _ | List
   | Lparen | Minus | MinusDot | Module | Percent | Plus | PlusDot | String _
   | Switch | True | Try | Uident _ | Underscore (* _ => doThings() *)
-  | While ->
+  | While | Dict ->
     true
   | _ -> false
 
@@ -219,6 +221,10 @@ let isModExprStart = function
     true
   | _ -> false
 
+let isDictRowStart = function
+  | Token.String _ -> true
+  | _ -> false
+
 let isRecordRowStart = function
   | Token.DotDotDot -> true
   | Token.Uident _ | Lident _ -> true
@@ -260,7 +266,7 @@ let isBlockExprStart = function
   | False | Float _ | For | Forwardslash | Hash | If | Int _ | Lbrace | Lbracket
   | LessThan | Let | Lident _ | List | Lparen | Minus | MinusDot | Module | Open
   | Percent | Plus | PlusDot | String _ | Switch | True | Try | Uident _
-  | Underscore | While ->
+  | Underscore | While | Dict ->
     true
   | _ -> false
 
@@ -278,6 +284,7 @@ let isListElement grammar token =
   | FunctorArgs -> isFunctorArgStart token
   | ModExprList -> isModExprStart token
   | TypeParameters -> isTypeParameterStart token
+  | DictRows -> isDictRowStart token
   | RecordRows -> isRecordRowStart token
   | RecordRowsStringKey -> isRecordRowStringKeyStart token
   | ArgumentList -> isArgumentStart token

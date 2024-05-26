@@ -1379,6 +1379,49 @@ and printRecordDeclaration ~state (lds : Parsetree.label_declaration list)
          Doc.rbrace;
        ])
 
+and printLiteralDictExpr ~state (e : Parsetree.expression) cmtTbl =
+  let forceBreak =
+    e.pexp_loc.loc_start.pos_lnum < e.pexp_loc.loc_end.pos_lnum
+  in
+  let tupleToRow (e : Parsetree.expression) =
+    match e with
+    | {
+     pexp_desc =
+       Pexp_tuple
+         [
+           {pexp_desc = Pexp_constant (Pconst_string (name, _)); pexp_loc}; value;
+         ];
+    } ->
+      Some ((Location.mkloc (Longident.Lident name) pexp_loc, value), e)
+    | _ -> None
+  in
+  let rows =
+    match e with
+    | {pexp_desc = Pexp_array expressions} ->
+      List.filter_map tupleToRow expressions
+    | _ -> []
+  in
+  Doc.breakableGroup ~forceBreak
+    (Doc.concat
+       [
+         Doc.indent
+           (Doc.concat
+              [
+                Doc.softLine;
+                Doc.join
+                  ~sep:(Doc.concat [Doc.text ","; Doc.line])
+                  (List.map
+                     (fun ((row, e) :
+                            (Longident.t Location.loc * Parsetree.expression)
+                            * Parsetree.expression) ->
+                       let doc = printBsObjectRow ~state row cmtTbl in
+                       printComments doc cmtTbl e.pexp_loc)
+                     rows);
+              ]);
+         Doc.trailingComma;
+         Doc.softLine;
+       ])
+
 and printConstructorDeclarations ~state ~privateFlag
     (cds : Parsetree.constructor_declaration list) cmtTbl =
   let forceBreak =
@@ -3958,6 +4001,24 @@ and printPexpApply ~state expr cmtTbl =
     | [] -> doc
     | attrs -> Doc.group (Doc.concat [printAttributes ~state attrs cmtTbl; doc])
     )
+  | Pexp_apply
+      ( {
+          pexp_desc =
+            Pexp_ident
+              {
+                txt =
+                  Longident.Ldot
+                    (Longident.Ldot (Lident "Js", "Dict"), "fromArray");
+              };
+        },
+        [(Nolabel, keyValues)] )
+    when Res_parsetree_viewer.isTupleArray keyValues ->
+    Doc.concat
+      [
+        Doc.text "dict{";
+        printLiteralDictExpr ~state keyValues cmtTbl;
+        Doc.rbrace;
+      ]
   | Pexp_apply
       ( {pexp_desc = Pexp_ident {txt = Longident.Ldot (Lident "Array", "get")}},
         [(Nolabel, parentExpr); (Nolabel, memberExpr)] )

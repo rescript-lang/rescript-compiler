@@ -56,3 +56,41 @@ React.jsx(
     {"data-foo": (\"data-foo": string)}
   }
 )
+
+// comments
+let x = {/* foo */ "foo": "bar"}
+let x = {"foo": /* foo */ "bar"}
+let x = {"foo": "bar" /* foo */ }
+
+let x = {
+	// foo
+	"foo": "bar",
+	// bar
+	"bar": "baz",
+	// baz
+	"baz": baz
+}
+
+let x = {
+	"foo": "bar", // foo
+	"bar": "baz", // bar
+	"baz": baz // baz
+}
+
+let x = {
+	"foo": /* foo */ "bar",
+	"bar": /* bar */ "baz",
+	"baz": /* bar */ baz
+}
+
+let x = {
+	/* foo */ "foo": "bar",
+	/* bar */ "bar": "baz",
+	/* bar */ "baz": baz
+}
+
+let x = {
+	"foo": "bar" /* foo */,
+	"bar": "baz" /* bar */,
+	"baz": baz /* bar */
+}
