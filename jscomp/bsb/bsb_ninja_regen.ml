@@ -30,7 +30,7 @@ let ( // ) = Ext_path.combine
     return None if we dont need regenerate
     otherwise return Some info
 *)
-let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir ~warn_legacy_config ~warn_as_error
+let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir ~warn_as_error
     : Bsb_config_types.t option =
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let lib_bs_dir = per_proj_dir // lib_artifacts_dir in
@@ -38,9 +38,7 @@ let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir 
   let check_result =
     Bsb_ninja_check.check ~package_kind ~per_proj_dir ~forced ~file:output_deps
   in
-  let config_filename, config_json =
-    Bsb_config_load.load_json ~per_proj_dir ~warn_legacy_config
-  in
+  let config_json = Bsb_config_load.load_json ~per_proj_dir in
   match check_result with
   | Good -> None (* Fast path, no need regenerate ninja *)
   | Bsb_forced | Bsb_bsc_version_mismatch | Bsb_package_kind_inconsistent
@@ -56,7 +54,7 @@ let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir 
 
       let config : Bsb_config_types.t =
         Bsb_config_parse.interpret_json
-          ~filename:config_filename ~json:config_json ~package_kind ~per_proj_dir
+          ~filename:Literals.rescript_json ~json:config_json ~package_kind ~per_proj_dir
       in
 
       let warning = match config.warning with
