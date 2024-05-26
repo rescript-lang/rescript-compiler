@@ -173,6 +173,7 @@
 - Fix issue of incorrect switch cases with identical bodies when mixing object and array. https://github.com/rescript-lang/rescript-compiler/pull/6792
 - Fix formatter eats comments on the first argument of a uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6763
 - Fix formatter removes parens in pipe operator with anonymous uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6766
+- Optimize usages of `Dict.fromArray` to emit an actual JS object literal when possible. https://github.com/rescript-lang/rescript-compiler/pull/6538
 
 # 11.1.0
 
