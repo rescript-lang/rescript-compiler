@@ -92,6 +92,11 @@ make test-syntax-roundtrip
 make artifacts
 ```
 
+## Coding Style
+
+- OCaml Code: snake case format is used, e.g, `to_string`
+- ReScript Code: the camel case format is used, e.g `toString`
+
 ## Adding new Files to the Npm Package
 
 To make sure that no files are added to or removed from the npm package inadvertently, an artifact list is kept at `packages/artifacts.txt`. During CI build, it is verified that only the files that are listed there are actually included in the npm package.
