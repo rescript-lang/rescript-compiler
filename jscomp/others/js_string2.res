@@ -432,11 +432,11 @@ on MDN.
 ## Examples
 
 ```rescript
-Js.String2.match_("The better bats", %re("/b[aeiou]t/")) == Some(["bet"])
-Js.String2.match_("The better bats", %re("/b[aeiou]t/g")) == Some(["bet", "bat"])
-Js.String2.match_("Today is 2018-04-05.", %re("/(\d+)-(\d+)-(\d+)/")) ==
+Js.String2.match_("The better bats", /b[aeiou]t/) == Some(["bet"])
+Js.String2.match_("The better bats", /b[aeiou]t/g) == Some(["bet", "bat"])
+Js.String2.match_("Today is 2018-04-05.", /(\d+)-(\d+)-(\d+)/) ==
   Some(["2018-04-05", "2018", "04", "05"])
-Js.String2.match_("The large container.", %re("/b[aeiou]g/")) == None
+Js.String2.match_("The large container.", /b[aeiou]g/) == None
 ```
 */
 external match_: (t, Js_re.t) => option<array<option<t>>> = "match"
@@ -516,8 +516,8 @@ on MDN.
 ## Examples
 
 ```rescript
-Js.String2.replaceByRe("vowels be gone", %re("/[aeiou]/g"), "x") == "vxwxls bx gxnx"
-Js.String2.replaceByRe("Juan Fulano", %re("/(\w+) (\w+)/"), "$2, $1") == "Fulano, Juan"
+Js.String2.replaceByRe("vowels be gone", /[aeiou]/g, "x") == "vxwxls bx gxnx"
+Js.String2.replaceByRe("Juan Fulano", /(\w+) (\w+)/, "$2, $1") == "Fulano, Juan"
 ```
 */
 external replaceByRe: (t, Js_re.t, t) => t = "replace"
@@ -536,7 +536,7 @@ on MDN.
 
 ```rescript
 let str = "beautiful vowels"
-let re = %re("/[aeiou]/g")
+let re = /[aeiou]/g
 let matchFn = (matchPart, _offset, _wholeString) => Js.String2.toUpperCase(matchPart)
 
 Js.String2.unsafeReplaceBy0(str, re, matchFn) == "bEAUtIfUl vOwEls"
@@ -559,7 +559,7 @@ on MDN.
 
 ```rescript
 let str = "Jony is 40"
-let re = %re("/(Jony is )\d+/g")
+let re = /(Jony is )\d+/g
 let matchFn = (_match, part1, _offset, _wholeString) => {
   part1 ++ "41"
 }
@@ -584,7 +584,7 @@ on MDN.
 
 ```rescript
 let str = "7 times 6"
-let re = %re("/(\d+) times (\d+)/")
+let re = /(\d+) times (\d+)/
 let matchFn = (_match, p1, p2, _offset, _wholeString) => {
   switch (Belt.Int.fromString(p1), Belt.Int.fromString(p2)) {
   | (Some(x), Some(y)) => Belt.Int.toString(x * y)
@@ -621,8 +621,8 @@ on MDN.
 ## Examples
 
 ```rescript
-Js.String2.search("testing 1 2 3", %re("/\d+/")) == 8
-Js.String2.search("no numbers", %re("/\d+/")) == -1
+Js.String2.search("testing 1 2 3", /\d+/) == 8
+Js.String2.search("no numbers", /\d+/) == -1
 ```
 */
 external search: (t, Js_re.t) => int = "search"
@@ -709,7 +709,7 @@ on MDN.
 ## Examples
 
 ```rescript
-Js.String2.splitByRe("art; bed , cog ;dad", %re("/\s*[,;]\s*TODO/")) == [
+Js.String2.splitByRe("art; bed , cog ;dad", /\s*[,;]\s*TODO/) == [
     Some("art"),
     Some("bed"),
     Some("cog"),
@@ -732,15 +732,15 @@ on MDN.
 ## Examples
 
 ```rescript
-Js.String2.splitByReAtMost("one: two: three: four", %re("/\s*:\s*TODO/"), ~limit=3) == [
+Js.String2.splitByReAtMost("one: two: three: four", /\s*:\s*TODO/, ~limit=3) == [
     Some("one"),
     Some("two"),
     Some("three"),
   ]
 
-Js.String2.splitByReAtMost("one: two: three: four", %re("/\s*:\s*TODO/"), ~limit=0) == []
+Js.String2.splitByReAtMost("one: two: three: four", /\s*:\s*TODO/, ~limit=0) == []
 
-Js.String2.splitByReAtMost("one: two: three: four", %re("/\s*:\s*TODO/"), ~limit=8) == [
+Js.String2.splitByReAtMost("one: two: three: four", /\s*:\s*TODO/, ~limit=8) == [
     Some("one"),
     Some("two"),
     Some("three"),
