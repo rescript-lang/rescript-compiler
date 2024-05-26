@@ -2,10 +2,10 @@ var p = require("child_process");
 
 var assert = require("assert");
 
-var bsc_exe_path = require("../../../scripts/bin_path").bsc_exe;
+var { bsc_exe: bsc_exe_path } = require("#cli/bin_path.js");
 
 var react = `
-type u 
+type u
 
 external a : u = "react" [@@module]
 
@@ -23,7 +23,7 @@ external foo : bla = "foo.react" [@@module]
 
 external bar : unit -> bla  = "bar" [@@val] [@@module "foo.react"]
 
-let c = foo 
+let c = foo
 
 let d = bar ()
 `;

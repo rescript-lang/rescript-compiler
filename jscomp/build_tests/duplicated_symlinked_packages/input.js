@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const child_process = require("child_process");
-const rescript_exe = require("../../../scripts/bin_path").rescript_exe;
+const { rescript_exe } = require("#cli/bin_path.js");
 
 const expectedFilePath = path.join(__dirname, "out.expected");
 

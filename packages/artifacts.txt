@@ -1067,14 +1067,6 @@ linuxarm64/rewatch.exe
 ninja.COPYING
 package.json
 rescript
-scripts/bin_path.js
-scripts/rescript_arg.js
-scripts/rescript_bsb.js
-scripts/rescript_convert.js
-scripts/rescript_dump.js
-scripts/rescript_format.js
-scripts/rescript_postinstall.js
-scripts/rewatch
 win32/bsb_helper.exe
 win32/bsc.exe
 win32/ninja.exe

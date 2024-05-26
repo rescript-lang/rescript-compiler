@@ -8,9 +8,8 @@
  * and its content are file/directories with regard to project root
  */
 
-var bsc_exe = require("./scripts/bin_path").bsc_exe;
-var rescript_exe = require("./scripts/bin_path").rescript_exe;
-var bsb = require("./scripts/rescript_bsb");
+var { bsc_exe, rescript_exe } = require("./cli/bin_path.js");
+var bsb = require("./cli/rescript_bsb.js");
 
 var cwd = process.cwd();
 process.env.BSB_PROJECT_ROOT = cwd;
@@ -100,7 +99,7 @@ if (helpArgIndex !== -1 && (firstPositionalArgIndex === -1 || helpArgIndex <= fi
       break;
     }
     case "format": {
-      require("./scripts/rescript_format.js").main(
+      require("./cli/rescript_format.js").main(
         subcmdArgs,
         rescript_exe,
         bsc_exe
@@ -108,7 +107,7 @@ if (helpArgIndex !== -1 && (firstPositionalArgIndex === -1 || helpArgIndex <= fi
       break;
     }
     case "dump": {
-      require("./scripts/rescript_dump.js").main(
+      require("./cli/rescript_dump.js").main(
         subcmdArgs,
         rescript_exe,
         bsc_exe
@@ -116,7 +115,7 @@ if (helpArgIndex !== -1 && (firstPositionalArgIndex === -1 || helpArgIndex <= fi
       break;
     }
     case "convert": {
-      require("./scripts/rescript_convert.js").main(
+      require("./cli/rescript_convert.js").main(
         subcmdArgs,
         rescript_exe,
         bsc_exe

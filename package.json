@@ -38,8 +38,11 @@
     "win32",
     "docs/docson/build-schema.json",
     "lib",
-    "scripts"
+    "cli"
   ],
+  "imports": {
+    "#cli/*": "./cli/*"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rescript-lang/rescript-compiler.git"

@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 var os = require("os");
 const child_process = require("child_process");
-const rescript_exe = require("./bin_path").rescript_exe;
+const { rescript_exe } = require("./bin_path");
 
 const cwd = process.cwd();
 const lockFileName = path.join(cwd, ".bsb.lock");

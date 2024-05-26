@@ -2,7 +2,7 @@
 var child_process = require("child_process");
 var assert = require("assert");
 var fs = require("fs");
-var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
+var { rescript_exe } = require("#cli/bin_path.js");
 
 console.log(
   child_process.execSync(rescript_exe, { encoding: "utf8", cwd: "./a" })

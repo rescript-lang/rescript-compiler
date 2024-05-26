@@ -2,8 +2,7 @@
 const child_process = require("child_process");
 const fs = require("fs");
 
-const bsc_exe = require("./bin_path").bsc_exe;
-const ninja_exe = require("./bin_path").ninja_exe;
+const { bsc_exe, ninja_exe }= require("./bin_path");
 
 function checkNinja() {
   if (!fs.existsSync(ninja_exe)) {

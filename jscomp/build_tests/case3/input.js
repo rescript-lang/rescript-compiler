@@ -4,7 +4,7 @@ var p = require("child_process");
 var fs = require("fs");
 var path = require("path");
 var assert = require("assert");
-var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
+var { rescript_exe } = require("#cli/bin_path.js");
 p.spawnSync(`${rescript_exe} clean && ${rescript_exe} build`, {
   encoding: "utf8",
   cwd: __dirname,

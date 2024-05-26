@@ -35,10 +35,11 @@ var js_package = pseudoTarget("js_pkg");
 var runtimeTarget = pseudoTarget("runtime");
 var othersTarget = pseudoTarget("others");
 var stdlibTarget = pseudoTarget("$stdlib");
-var my_target = require("./bin_path").absolutePath;
-var bsc_exe = require("./bin_path").bsc_exe;
-
-var vendorNinjaPath = require("./bin_path").ninja_exe;
+var {
+  absolutePath: my_target,
+  bsc_exe,
+  ninja_exe: vendorNinjaPath,
+} = require("#cli/bin_path.js");
 
 // Let's enforce a Node version >= 16 to make sure M1 users don't trip up on
 // cryptic issues caused by mismatching assembly architectures Node 16 ships

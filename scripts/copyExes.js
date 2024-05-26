@@ -5,7 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const child_process = require("child_process");
 const { duneBinDir } = require("./dune");
-const { absolutePath: platformBinDir } = require("./bin_path");
+const { absolutePath: platformBinDir } = require("#cli/bin_path.js");
 
 const ninjaDir = path.join(__dirname, "..", "ninja");
 const rewatchDir = path.join(__dirname, "..", "rewatch");

@@ -2,7 +2,7 @@
 
 var cp = require("child_process");
 var assert = require("assert");
-var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
+var { rescript_exe } = require("#cli/bin_path.js");
 
 var out = cp.spawnSync(rescript_exe, {
   cwd: __dirname,
