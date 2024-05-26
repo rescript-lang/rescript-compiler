@@ -1,8 +1,8 @@
 open GenTypeCommon
 open! TranslateTypeExprFromTypes
 
-let remove_option ~(label : Asttypes.arg_label) (core_type : Typedtree.core_type)
-    =
+let remove_option ~(label : Asttypes.arg_label)
+    (core_type : Typedtree.core_type) =
   match (core_type.ctyp_desc, label) with
   | Ttyp_constr (Path.Pident id, _, [t]), Optional lbl
     when Ident.name id = "option" ->
@@ -48,8 +48,9 @@ let process_variant row_fields =
   in
   row_fields |> loop ~no_payloads:[] ~payloads:[] ~inherits:[]
 
-let rec translate_arrow_type ~config ~type_vars_gen ~no_function_return_dependencies
-    ~type_env ~rev_arg_deps ~rev_args (core_type : Typedtree.core_type) =
+let rec translate_arrow_type ~config ~type_vars_gen
+    ~no_function_return_dependencies ~type_env ~rev_arg_deps ~rev_args
+    (core_type : Typedtree.core_type) =
   match core_type.ctyp_desc with
   | Ttyp_arrow (Nolabel, core_type1, core_type2) ->
     let {dependencies; type_} =
@@ -58,8 +59,8 @@ let rec translate_arrow_type ~config ~type_vars_gen ~no_function_return_dependen
     in
     let next_rev_deps = List.rev_append dependencies rev_arg_deps in
     core_type2
-    |> translate_arrow_type ~config ~type_vars_gen ~no_function_return_dependencies
-         ~type_env ~rev_arg_deps:next_rev_deps
+    |> translate_arrow_type ~config ~type_vars_gen
+         ~no_function_return_dependencies ~type_env ~rev_arg_deps:next_rev_deps
          ~rev_args:((Nolabel, type_) :: rev_args)
   | Ttyp_arrow (((Labelled lbl | Optional lbl) as label), core_type1, core_type2)
     -> (
@@ -75,8 +76,9 @@ let rec translate_arrow_type ~config ~type_vars_gen ~no_function_return_dependen
       in
       let next_rev_deps = List.rev_append dependencies rev_arg_deps in
       core_type2
-      |> translate_arrow_type ~config ~type_vars_gen ~no_function_return_dependencies
-           ~type_env ~rev_arg_deps:next_rev_deps
+      |> translate_arrow_type ~config ~type_vars_gen
+           ~no_function_return_dependencies ~type_env
+           ~rev_arg_deps:next_rev_deps
            ~rev_args:
              (( Label
                   (match as_label = "" with
@@ -90,8 +92,9 @@ let rec translate_arrow_type ~config ~type_vars_gen ~no_function_return_dependen
       in
       let next_rev_deps = List.rev_append dependencies rev_arg_deps in
       core_type2
-      |> translate_arrow_type ~config ~type_vars_gen ~no_function_return_dependencies
-           ~type_env ~rev_arg_deps:next_rev_deps
+      |> translate_arrow_type ~config ~type_vars_gen
+           ~no_function_return_dependencies ~type_env
+           ~rev_arg_deps:next_rev_deps
            ~rev_args:((OptLabel lbl, type1) :: rev_args))
   | _ ->
     let {dependencies; type_ = ret_type} =
@@ -137,21 +140,24 @@ and translateCoreType_ ~config ~type_vars_gen
     let params_translation =
       type_params |> translateCoreTypes_ ~config ~type_vars_gen ~type_env
     in
-    TranslateTypeExprFromTypes.translate_constr ~config ~params_translation ~path
-      ~type_env
+    TranslateTypeExprFromTypes.translate_constr ~config ~params_translation
+      ~path ~type_env
   | Ttyp_poly (_, t) ->
     t
-    |> translateCoreType_ ~config ~type_vars_gen ~no_function_return_dependencies
-         ~type_env
+    |> translateCoreType_ ~config ~type_vars_gen
+         ~no_function_return_dependencies ~type_env
   | Ttyp_arrow _ ->
     core_type
-    |> translate_arrow_type ~config ~type_vars_gen ~no_function_return_dependencies
-         ~type_env ~rev_arg_deps:[] ~rev_args:[]
+    |> translate_arrow_type ~config ~type_vars_gen
+         ~no_function_return_dependencies ~type_env ~rev_arg_deps:[]
+         ~rev_args:[]
   | Ttyp_tuple list_exp ->
     let inner_types_translation =
       list_exp |> translateCoreTypes_ ~config ~type_vars_gen ~type_env
     in
-    let inner_types = inner_types_translation |> List.map (fun {type_} -> type_) in
+    let inner_types =
+      inner_types_translation |> List.map (fun {type_} -> type_)
+    in
     let inner_types_deps =
       inner_types_translation
       |> List.map (fun {dependencies} -> dependencies)
@@ -168,7 +174,8 @@ and translateCoreType_ ~config ~type_vars_gen
         |> Annotation.has_attribute Annotation.tag_is_string
       in
       let as_int =
-        core_type.ctyp_attributes |> Annotation.has_attribute Annotation.tag_is_int
+        core_type.ctyp_attributes
+        |> Annotation.has_attribute Annotation.tag_is_int
       in
       let last_bs_int = ref (-1) in
       let no_payloads =
@@ -199,7 +206,8 @@ and translateCoreType_ ~config ~type_vars_gen
         |> List.map (fun (label, attributes, payload) ->
                ( label,
                  attributes,
-                 payload |> translateCoreType_ ~config ~type_vars_gen ~type_env ))
+                 payload |> translateCoreType_ ~config ~type_vars_gen ~type_env
+               ))
       in
       let payloads =
         payloads_translations
@@ -256,7 +264,8 @@ and translateCoreType_ ~config ~type_vars_gen
              ~type_env:type_env1
       in
       {
-        dependencies = dependencies_from_type_equations @ dependencies_from_record_type;
+        dependencies =
+          dependencies_from_type_equations @ dependencies_from_record_type;
         type_;
       }
     | None -> {dependencies = []; type_ = unknown})
@@ -273,5 +282,6 @@ let translate_core_type ~config ~type_env core_type =
   in
   if !Debug.dependencies then
     translation.dependencies
-    |> List.iter (fun dep -> Log_.item "Dependency: %s\n" (dep |> dep_to_string));
+    |> List.iter (fun dep ->
+           Log_.item "Dependency: %s\n" (dep |> dep_to_string));
   translation

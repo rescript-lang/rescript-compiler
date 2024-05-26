@@ -171,10 +171,12 @@ module SexpAst = struct
       | Pstr_recmodule mbs ->
         Sexp.list
           [
-            Sexp.atom "Pstr_recmodule"; Sexp.list (map_empty ~f:module_binding mbs);
+            Sexp.atom "Pstr_recmodule";
+            Sexp.list (map_empty ~f:module_binding mbs);
           ]
       | Pstr_modtype mod_typ_decl ->
-        Sexp.list [Sexp.atom "Pstr_modtype"; module_type_declaration mod_typ_decl]
+        Sexp.list
+          [Sexp.atom "Pstr_modtype"; module_type_declaration mod_typ_decl]
       | Pstr_open open_desc ->
         Sexp.list [Sexp.atom "Pstr_open"; open_description open_desc]
       | Pstr_class _ -> Sexp.atom "Pstr_class"
@@ -237,7 +239,8 @@ module SexpAst = struct
             string lbl.Asttypes.txt;
             (match opt_mod_type with
             | None -> Sexp.atom "None"
-            | Some mod_type -> Sexp.list [Sexp.atom "Some"; module_type mod_type]);
+            | Some mod_type ->
+              Sexp.list [Sexp.atom "Some"; module_type mod_type]);
             module_expression mod_expr;
           ]
       | Pmod_apply (call_mod_expr, mod_expr_arg) ->
@@ -273,7 +276,8 @@ module SexpAst = struct
             string lbl.Asttypes.txt;
             (match opt_mod_type with
             | None -> Sexp.atom "None"
-            | Some mod_type -> Sexp.list [Sexp.atom "Some"; module_type mod_type]);
+            | Some mod_type ->
+              Sexp.list [Sexp.atom "Some"; module_type mod_type]);
             module_type mod_type;
           ]
       | Pmty_alias longident_loc ->
@@ -323,12 +327,14 @@ module SexpAst = struct
           longident l2.Asttypes.txt;
         ]
 
-  and signature s = Sexp.list (Sexp.atom "signature" :: List.map signature_item s)
+  and signature s =
+    Sexp.list (Sexp.atom "signature" :: List.map signature_item s)
 
   and signature_item si =
     let descr =
       match si.psig_desc with
-      | Psig_value vd -> Sexp.list [Sexp.atom "Psig_value"; value_description vd]
+      | Psig_value vd ->
+        Sexp.list [Sexp.atom "Psig_value"; value_description vd]
       | Psig_type (flag, type_declarations) ->
         Sexp.list
           [
@@ -349,7 +355,8 @@ module SexpAst = struct
             Sexp.list (map_empty ~f:module_declaration mod_decls);
           ]
       | Psig_modtype mod_typ_decl ->
-        Sexp.list [Sexp.atom "Psig_modtype"; module_type_declaration mod_typ_decl]
+        Sexp.list
+          [Sexp.atom "Psig_modtype"; module_type_declaration mod_typ_decl]
       | Psig_open open_desc ->
         Sexp.list [Sexp.atom "Psig_open"; open_description open_desc]
       | Psig_include incl_decl ->
@@ -475,7 +482,8 @@ module SexpAst = struct
         Sexp.list
           [
             Sexp.atom "ptyext_constructors";
-            Sexp.list (map_empty ~f:extension_constructor te.ptyext_constructors);
+            Sexp.list
+              (map_empty ~f:extension_constructor te.ptyext_constructors);
           ];
         Sexp.list [Sexp.atom "ptyext_private"; private_flag te.ptyext_private];
         attributes te.ptyext_attributes;
@@ -521,7 +529,10 @@ module SexpAst = struct
         [Sexp.atom "Pcstr_tuple"; Sexp.list (map_empty ~f:core_type types)]
     | Pcstr_record lds ->
       Sexp.list
-        [Sexp.atom "Pcstr_record"; Sexp.list (map_empty ~f:label_declaration lds)]
+        [
+          Sexp.atom "Pcstr_record";
+          Sexp.list (map_empty ~f:label_declaration lds);
+        ]
 
   and label_declaration ld =
     Sexp.list
@@ -795,7 +806,9 @@ module SexpAst = struct
       | Ppat_open (longident_loc, p) ->
         Sexp.list
           [
-            Sexp.atom "Ppat_open"; longident longident_loc.Location.txt; pattern p;
+            Sexp.atom "Ppat_open";
+            longident longident_loc.Location.txt;
+            pattern p;
           ]
     in
     Sexp.list [Sexp.atom "pattern"; descr]
@@ -805,7 +818,10 @@ module SexpAst = struct
     | Otag (lbl_loc, attrs, typexpr) ->
       Sexp.list
         [
-          Sexp.atom "Otag"; string lbl_loc.txt; attributes attrs; core_type typexpr;
+          Sexp.atom "Otag";
+          string lbl_loc.txt;
+          attributes attrs;
+          core_type typexpr;
         ]
     | Oinherit typexpr -> Sexp.list [Sexp.atom "Oinherit"; core_type typexpr]
 
@@ -830,7 +846,8 @@ module SexpAst = struct
         Sexp.list
           (map_empty
              ~f:(fun (mod_name_loc, typexpr) ->
-               Sexp.list [longident mod_name_loc.Asttypes.txt; core_type typexpr])
+               Sexp.list
+                 [longident mod_name_loc.Asttypes.txt; core_type typexpr])
              package_constraints);
       ]
 
@@ -842,7 +859,10 @@ module SexpAst = struct
       | Ptyp_arrow (arg_lbl, typ1, typ2) ->
         Sexp.list
           [
-            Sexp.atom "Ptyp_arrow"; arg_label arg_lbl; core_type typ1; core_type typ2;
+            Sexp.atom "Ptyp_arrow";
+            arg_label arg_lbl;
+            core_type typ1;
+            core_type typ2;
           ]
       | Ptyp_tuple types ->
         Sexp.list

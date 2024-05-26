@@ -189,7 +189,9 @@ let fun_expr expr =
      pexp_desc = Pexp_fun (lbl, default_expr, pattern, return_expr);
      pexp_attributes = [];
     } ->
-      let parameter = Parameter {attrs = []; lbl; default_expr; pat = pattern} in
+      let parameter =
+        Parameter {attrs = []; lbl; default_expr; pat = pattern}
+      in
       collect ~uncurried ~n_fun:(n_fun + 1) attrs_before (parameter :: acc)
         return_expr
     (* If a fun has an attribute, then it stops here and makes currying.
@@ -349,7 +351,9 @@ let flattenable_operators parent_operator child_operator =
   let prec_parent = operator_precedence parent_operator in
   let prec_child = operator_precedence child_operator in
   if prec_parent == prec_child then
-    not (is_equality_operator parent_operator && is_equality_operator child_operator)
+    not
+      (is_equality_operator parent_operator
+      && is_equality_operator child_operator)
   else false
 
 let rec has_if_let_attribute attrs =
@@ -439,7 +443,9 @@ let collect_if_expressions expr =
             {pc_rhs = else_expr};
           ] )
       when is_if_let_expr expr ->
-      collect ((expr_loc, IfLet (pattern, condition), then_expr) :: acc) else_expr
+      collect
+        ((expr_loc, IfLet (pattern, condition), then_expr) :: acc)
+        else_expr
     | _ -> (List.rev acc, Some expr)
   in
   collect [] expr

@@ -98,7 +98,9 @@ let rec next ?prev_end_pos p =
 let next_unsafe p = if p.token <> Eof then next p
 
 let next_template_literal_token p =
-  let start_pos, end_pos, token = Scanner.scan_template_literal_token p.scanner in
+  let start_pos, end_pos, token =
+    Scanner.scan_template_literal_token p.scanner
+  in
   p.token <- token;
   p.prev_end_pos <- p.end_pos;
   p.start_pos <- start_pos;

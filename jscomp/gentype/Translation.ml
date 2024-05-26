@@ -4,7 +4,8 @@ type t = CodeItem.translation
 
 let empty = ({import_types = []; code_items = []; type_declarations = []} : t)
 
-let get_import_type_unique_name ({type_name; as_type_name} : CodeItem.import_type) =
+let get_import_type_unique_name
+    ({type_name; as_type_name} : CodeItem.import_type) =
   type_name
   ^
   match as_type_name with
@@ -66,14 +67,15 @@ let dep_to_import_type ~config ~output_file_relative ~resolver (dep : dep) =
     in
     [{type_name; as_type_name; import_path}]
 
-let translate_dependencies ~config ~output_file_relative ~resolver dependencies :
-    CodeItem.import_type list =
+let translate_dependencies ~config ~output_file_relative ~resolver dependencies
+    : CodeItem.import_type list =
   dependencies
   |> List.map (dep_to_import_type ~config ~output_file_relative ~resolver)
   |> List.concat
 
-let translate_value ~attributes ~config ~doc_string ~output_file_relative ~resolver
-    ~type_env ~type_expr ~(add_annotations_to_function : type_ -> type_) name : t =
+let translate_value ~attributes ~config ~doc_string ~output_file_relative
+    ~resolver ~type_env ~type_expr
+    ~(add_annotations_to_function : type_ -> type_) name : t =
   let name_as =
     match Annotation.get_gentype_as_renaming attributes with
     | Some s -> s
@@ -81,7 +83,8 @@ let translate_value ~attributes ~config ~doc_string ~output_file_relative ~resol
   in
   let type_expr_translation =
     type_expr
-    |> TranslateTypeExprFromTypes.translate_type_expr_from_types ~config ~type_env
+    |> TranslateTypeExprFromTypes.translate_type_expr_from_types ~config
+         ~type_env
   in
   let type_vars = type_expr_translation.type_ |> TypeVars.free in
   let type_ =
@@ -99,7 +102,13 @@ let translate_value ~attributes ~config ~doc_string ~output_file_relative ~resol
   let code_items =
     [
       CodeItem.ExportValue
-        {doc_string; module_access_path; original_name = name; resolved_name; type_};
+        {
+          doc_string;
+          module_access_path;
+          original_name = name;
+          resolved_name;
+          type_;
+        };
     ]
   in
   {
@@ -192,7 +201,8 @@ let add_type_declarations_from_module_equations ~type_env (translation : t) =
                       {
                         CodeItem.export_type = new_export_type;
                         annotation =
-                          type_declaration.export_from_type_declaration.annotation;
+                          type_declaration.export_from_type_declaration
+                            .annotation;
                       };
                     import_types = [];
                   }))

@@ -51,8 +51,8 @@ let handle_tdcls_in_sigi (self : Bs_ast_mapper.mapper)
     let kind = Ast_derive_abstract.is_abstract actions in
     if kind <> Not_abstract then
       let codes =
-        Ast_derive_abstract.handle_tdcls_in_sig ~light:(kind = Light_abstract) rf
-          original_tdcls_new_attrs
+        Ast_derive_abstract.handle_tdcls_in_sig ~light:(kind = Light_abstract)
+          rf original_tdcls_new_attrs
       in
       Ast_signature.fuse_all ~loc
         (Sig.include_ ~loc
@@ -87,8 +87,8 @@ let handle_tdcls_in_stru (self : Bs_ast_mapper.mapper)
     let kind = Ast_derive_abstract.is_abstract actions in
     if kind <> Not_abstract then
       let codes =
-        Ast_derive_abstract.handle_tdcls_in_str ~light:(kind = Light_abstract) rf
-          original_tdcls_new_attrs
+        Ast_derive_abstract.handle_tdcls_in_str ~light:(kind = Light_abstract)
+          rf original_tdcls_new_attrs
       in
       (* use [tdcls2] avoid nonterminating *)
       Ast_structure.fuse_all ~loc

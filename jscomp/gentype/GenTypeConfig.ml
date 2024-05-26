@@ -56,7 +56,8 @@ let bs_platform_lib ~config =
   | ESModule -> config.platform_lib ^ "/lib/es6"
   | CommonJS -> config.platform_lib ^ "/lib/js"
 
-let get_bs_curry_path ~config = Filename.concat (bs_platform_lib ~config) "curry.js"
+let get_bs_curry_path ~config =
+  Filename.concat (bs_platform_lib ~config) "curry.js"
 
 type map = Ext_json_types.t Map_string.t
 
@@ -127,7 +128,9 @@ let read_config ~get_config_file ~namespace =
   in
   let parse_config ~bsconf ~gtconf =
     let module_string = gtconf |> get_string_option "module" in
-    let module_resolution_string = gtconf |> get_string_option "moduleResolution" in
+    let module_resolution_string =
+      gtconf |> get_string_option "moduleResolution"
+    in
     let export_interfaces_bool = gtconf |> get_bool "exportInterfaces" in
     let generated_file_extension_string_option =
       gtconf |> get_string_option "generatedFileExtension"
@@ -139,7 +142,9 @@ let read_config ~get_config_file ~namespace =
              let module_name =
                (from_module |> ModuleName.from_string_unsafe : ModuleName.t)
              in
-             let shim_module_name = to_module |> ModuleName.from_string_unsafe in
+             let shim_module_name =
+               to_module |> ModuleName.from_string_unsafe
+             in
              ModuleNameMap.add module_name shim_module_name map)
            ModuleNameMap.empty
     in

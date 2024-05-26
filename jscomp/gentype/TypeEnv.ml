@@ -98,7 +98,9 @@ let add_type_equations ~type_equations type_env =
   |> List.fold_left
        (fun te (long_ident, type_) ->
          te
-         |> add_type_equation ~flattened:(long_ident |> Longident.flatten) ~type_)
+         |> add_type_equation
+              ~flattened:(long_ident |> Longident.flatten)
+              ~type_)
        type_env
 
 let apply_type_equations ~config ~path type_env =
@@ -110,8 +112,8 @@ let apply_type_equations ~config ~path type_env =
         Log_.item "Typenv.applyTypeEquations %s name:%s type_:%s\n"
           (type_env |> to_string) (id |> Ident.name)
           (type_
-          |> EmitType.type_to_string ~config ~type_name_is_interface:(fun _ -> false)
-          );
+          |> EmitType.type_to_string ~config ~type_name_is_interface:(fun _ ->
+                 false));
       Some type_
     | exception Not_found -> None)
   | _ -> None
@@ -157,11 +159,12 @@ let rec path_to_list path =
 
 let lookup_module_type_signature ~path type_env =
   if !Debug.type_env then
-    Log_.item "TypeEnv.lookupModuleTypeSignature %s %s\n" (type_env |> to_string)
-      (path |> Path.name);
+    Log_.item "TypeEnv.lookupModuleTypeSignature %s %s\n"
+      (type_env |> to_string) (path |> Path.name);
   type_env |> lookup_module_type ~path:(path |> path_to_list |> List.rev)
 
-let update_module_item ~module_item type_env = type_env.module_item <- module_item
+let update_module_item ~module_item type_env =
+  type_env.module_item <- module_item
 
 let rec add_module_path ~type_env name =
   match type_env.parent with
@@ -181,7 +184,10 @@ let rec get_module_equations type_env : ResolvedName.eq list =
   match (type_env.module_equation, type_env.parent) with
   | None, _ | _, None -> sub_equations
   | Some {dep}, Some parent ->
-    [(dep |> dep_to_resolved_name, type_env.name |> add_module_path ~type_env:parent)]
+    [
+      ( dep |> dep_to_resolved_name,
+        type_env.name |> add_module_path ~type_env:parent );
+    ]
 
 let get_module_access_path ~name type_env =
   let rec access_path type_env =

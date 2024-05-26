@@ -219,7 +219,8 @@ let init () =
                         else Exp.constraint_ obj_exp core_type))
                 in
                 let rest = [to_js; from_js] in
-                if create_type then erase_type_str :: new_type_str :: rest else rest
+                if create_type then erase_type_str :: new_type_str :: rest
+                else rest
               | Ptype_abstract -> (
                 match Ast_polyvar.is_enum_polyvar tdcl with
                 | Some row_fields ->
@@ -243,7 +244,8 @@ let init () =
                              ( {txt = "raw"; loc},
                                PStr
                                  [
-                                   Str.eval (Exp.constant (Const.string rev_data));
+                                   Str.eval
+                                     (Exp.constant (Const.string rev_data));
                                  ] )
                          else exp_map);
                       to_js_body
@@ -303,7 +305,8 @@ let init () =
                 in
                 new_type_str
                 +? [
-                     to_js_type (if create_type then new_type else obj_type Closed);
+                     to_js_type
+                       (if create_type then new_type else obj_type Closed);
                      Ast_comb.single_non_rec_val pat_from_js
                        ((if create_type then new_type else obj_type Open)
                        ->~ core_type);

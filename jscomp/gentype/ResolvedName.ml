@@ -48,7 +48,8 @@ let rec apply_equations_to_elements ~(eqs : eq list) ~seen (elements : t list) :
   match new_equations = [] with
   | true -> new_equations
   | false ->
-    new_equations @ (new_elements |> apply_equations_to_elements ~eqs ~seen:new_seen)
+    new_equations
+    @ (new_elements |> apply_equations_to_elements ~eqs ~seen:new_seen)
 
 (* Apply equations of the form e.g. X.Y = A from the alias: module A = X.Y.
    Return a list of equations on types.

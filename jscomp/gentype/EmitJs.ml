@@ -24,16 +24,18 @@ let require_module ~import ~env ~import_path module_name =
   | false -> {env with requires = requires_new}
 
 let create_export_type_map ~config ~file ~from_cmt_read_recursively
-    (type_declarations : CodeItem.type_declaration list) : CodeItem.export_type_map
-    =
+    (type_declarations : CodeItem.type_declaration list) :
+    CodeItem.export_type_map =
   if !Debug.code_items then Log_.item "Create Type Map for %s\n" file;
   let update_export_type_map (export_type_map : CodeItem.export_type_map)
-      (type_declaration : CodeItem.type_declaration) : CodeItem.export_type_map =
+      (type_declaration : CodeItem.type_declaration) : CodeItem.export_type_map
+      =
     let add_export_type ~annotation
         ({resolved_type_name; type_; type_vars} : CodeItem.export_type) =
       let annotation =
         match annotation with
-        | Annotation.NoGenType when from_cmt_read_recursively -> Annotation.GenType
+        | Annotation.NoGenType when from_cmt_read_recursively ->
+          Annotation.GenType
         | _ -> annotation
       in
       if !Debug.code_items then
@@ -58,7 +60,8 @@ let create_export_type_map ~config ~file ~from_cmt_read_recursively
   in
   type_declarations |> List.fold_left update_export_type_map StringMap.empty
 
-let code_item_to_string ~config ~type_name_is_interface (code_item : CodeItem.t) =
+let code_item_to_string ~config ~type_name_is_interface (code_item : CodeItem.t)
+    =
   match code_item with
   | ExportValue {resolved_name; type_} ->
     "ExportValue" ^ " resolvedName:"
@@ -69,8 +72,15 @@ let code_item_to_string ~config ~type_name_is_interface (code_item : CodeItem.t)
     "ImportValue " ^ (import_annotation.import_path |> ImportPath.dump)
 
 let emit_export_type ~emitters ~config ~type_name_is_interface
-    {CodeItem.loc; name_as; opaque; type_; type_vars; resolved_type_name; doc_string}
-    =
+    {
+      CodeItem.loc;
+      name_as;
+      opaque;
+      type_;
+      type_vars;
+      resolved_type_name;
+      doc_string;
+    } =
   let free_type_vars = TypeVars.free type_ in
   let is_gadt =
     free_type_vars |> List.exists (fun s -> not (List.mem s type_vars))
@@ -110,14 +120,15 @@ let type_name_is_interface ~(export_type_map : CodeItem.export_type_map)
     | {type_} -> type_ |> type_is_interface
     | exception Not_found -> false)
 
-let emit_export_from_type_declaration ~config ~emitters ~env ~type_name_is_interface
+let emit_export_from_type_declaration ~config ~emitters ~env
+    ~type_name_is_interface
     (export_from_type_declaration : CodeItem.export_from_type_declaration) =
   ( env,
     export_from_type_declaration.export_type
     |> emit_export_type ~emitters ~config ~type_name_is_interface )
 
-let emit_export_from_type_declarations ~config ~emitters ~env ~type_name_is_interface
-    export_from_type_declarations =
+let emit_export_from_type_declarations ~config ~emitters ~env
+    ~type_name_is_interface export_from_type_declarations =
   export_from_type_declarations
   |> List.fold_left
        (fun (env, emitters) ->
@@ -126,8 +137,8 @@ let emit_export_from_type_declarations ~config ~emitters ~env ~type_name_is_inte
        (env, emitters)
 
 let emit_code_item ~config ~emitters ~module_items_emitter ~env ~file_name
-    ~output_file_relative ~resolver ~inline_one_level ~type_name_is_interface code_item
-    =
+    ~output_file_relative ~resolver ~inline_one_level ~type_name_is_interface
+    code_item =
   if !Debug.code_items then
     Log_.item "Code Item: %s\n"
       (code_item |> code_item_to_string ~config ~type_name_is_interface);
@@ -147,16 +158,18 @@ let emit_code_item ~config ~emitters ~module_items_emitter ~env ~file_name
       let value_name_not_checked = value_name ^ "NotChecked" in
       let emitters =
         import_path
-        |> EmitType.emit_import_value_as_early ~emitters ~name:first_name_in_path
-             ~name_as:(Some value_name_not_checked)
+        |> EmitType.emit_import_value_as_early ~emitters
+             ~name:first_name_in_path ~name_as:(Some value_name_not_checked)
       in
       (emitters, value_name_not_checked, env)
     in
     let type_ =
       match type_ with
       | Function
-          ({arg_types = [{a_type = Object (closed_flag, fields); a_name}]; ret_type}
-           as function_)
+          ({
+             arg_types = [{a_type = Object (closed_flag, fields); a_name}];
+             ret_type;
+           } as function_)
         when ret_type |> EmitType.is_type_function_component ~fields ->
         (* JSX V3 *)
         let fields =
@@ -177,8 +190,10 @@ let emit_code_item ~config ~emitters ~module_items_emitter ~env ~file_name
         in
         Function function_
       | Function
-          ({arg_types = [{a_type = Ident {name} as props_type; a_name}]; ret_type} as
-           function_)
+          ({
+             arg_types = [{a_type = Ident {name} as props_type; a_name}];
+             ret_type;
+           } as function_)
         when Filename.check_suffix name "props"
              && ret_type |> EmitType.is_type_function_component ~fields:[] -> (
         match inline_one_level props_type with
@@ -187,7 +202,8 @@ let emit_code_item ~config ~emitters ~module_items_emitter ~env ~file_name
           let fields =
             Ext_list.filter_map fields (fun (field : field) ->
                 match field.name_js with
-                | "children" when field.type_ |> EmitType.is_type_react_element ->
+                | "children" when field.type_ |> EmitType.is_type_react_element
+                  ->
                   Some {field with type_ = EmitType.type_react_child}
                 | "key" ->
                   (* Filter out key, which is added to the props type definition in V4 *)
@@ -239,8 +255,8 @@ let emit_code_item ~config ~emitters ~module_items_emitter ~env ~file_name
       | false -> emitters
     in
     ({env with imported_value_or_component = true}, emitters)
-  | ExportValue {doc_string; module_access_path; original_name; resolved_name; type_}
-    ->
+  | ExportValue
+      {doc_string; module_access_path; original_name; resolved_name; type_} ->
     let resolved_name_str = ResolvedName.to_string resolved_name in
     let import_path =
       file_name
@@ -315,8 +331,8 @@ let emit_code_item ~config ~emitters ~module_items_emitter ~env ~file_name
               let fields =
                 Ext_list.filter_map fields (fun (field : field) ->
                     match field.name_js with
-                    | "children" when field.type_ |> EmitType.is_type_react_element
-                      ->
+                    | "children"
+                      when field.type_ |> EmitType.is_type_react_element ->
                       Some {field with type_ = EmitType.type_react_child}
                     | "key" ->
                       (* Filter out key, which is added to the props type definition in V4 *)
@@ -336,7 +352,8 @@ let emit_code_item ~config ~emitters ~module_items_emitter ~env ~file_name
     in
 
     resolved_name
-    |> ExportModule.extend_export_modules ~doc_string ~module_items_emitter ~type_;
+    |> ExportModule.extend_export_modules ~doc_string ~module_items_emitter
+         ~type_;
     let emitters =
       match hook_type with
       | Some {props_type; resolved_type_name; type_vars} ->
@@ -371,21 +388,24 @@ let emit_code_item ~config ~emitters ~module_items_emitter ~env ~file_name
     in
     (env_with_requires, emitters)
 
-let emit_code_items ~config ~output_file_relative ~emitters ~module_items_emitter ~env
-    ~file_name ~resolver ~type_name_is_interface ~inline_one_level code_items =
+let emit_code_items ~config ~output_file_relative ~emitters
+    ~module_items_emitter ~env ~file_name ~resolver ~type_name_is_interface
+    ~inline_one_level code_items =
   code_items
   |> List.fold_left
        (fun (env, emitters) ->
          emit_code_item ~config ~emitters ~module_items_emitter ~env ~file_name
-           ~output_file_relative ~resolver ~inline_one_level ~type_name_is_interface)
+           ~output_file_relative ~resolver ~inline_one_level
+           ~type_name_is_interface)
        (env, emitters)
 
-let emit_requires ~imported_value_or_component ~early ~config ~requires emitters =
+let emit_requires ~imported_value_or_component ~early ~config ~requires emitters
+    =
   Config.ModuleNameMap.fold
     (fun module_name import_path emitters ->
       import_path
-      |> EmitType.emit_require ~imported_value_or_component ~early ~emitters ~config
-           ~module_name)
+      |> EmitType.emit_require ~imported_value_or_component ~early ~emitters
+           ~config ~module_name)
     requires emitters
 
 let type_get_inlined ~config ~export_type_map type_ =
@@ -396,8 +416,9 @@ let type_get_inlined ~config ~export_type_map type_ =
 
 (** Read the cmt file referenced in an import type,
    and recursively for the import types obtained from reading the cmt file. *)
-let rec read_cmt_files_recursively ~config ~env ~input_cmt_translate_type_declarations
-    ~output_file_relative ~resolver {CodeItem.type_name; as_type_name; import_path} =
+let rec read_cmt_files_recursively ~config ~env
+    ~input_cmt_translate_type_declarations ~output_file_relative ~resolver
+    {CodeItem.type_name; as_type_name; import_path} =
   let update_type_map_from_other_files ~as_type ~export_type_map_from_cmt env =
     match export_type_map_from_cmt |> StringMap.find type_name with
     | (export_type_item : CodeItem.export_type_item) ->
@@ -439,7 +460,8 @@ let rec read_cmt_files_recursively ~config ~env ~input_cmt_translate_type_declar
               |> (Filename.chop_extension [@doesNotRaise]))
       in
       let cmt_to_export_type_map =
-        env.cmt_to_export_type_map |> StringMap.add cmt_file export_type_map_from_cmt
+        env.cmt_to_export_type_map
+        |> StringMap.add cmt_file export_type_map_from_cmt
       in
       let env =
         {env with cmt_to_export_type_map}
@@ -461,28 +483,31 @@ let rec read_cmt_files_recursively ~config ~env ~input_cmt_translate_type_declar
            env)
   | _ -> env
 
-let emit_import_type ~config ~emitters ~env ~input_cmt_translate_type_declarations
-    ~output_file_relative ~resolver ~type_name_is_interface
+let emit_import_type ~config ~emitters ~env
+    ~input_cmt_translate_type_declarations ~output_file_relative ~resolver
+    ~type_name_is_interface
     ({CodeItem.type_name; as_type_name; import_path} as import_type) =
   let env =
     import_type
-    |> read_cmt_files_recursively ~config ~env ~input_cmt_translate_type_declarations
-         ~output_file_relative ~resolver
+    |> read_cmt_files_recursively ~config ~env
+         ~input_cmt_translate_type_declarations ~output_file_relative ~resolver
   in
   let emitters =
     EmitType.emit_import_type_as ~emitters ~config ~type_name ~as_type_name
-      ~type_name_is_interface:(type_name_is_interface ~env) ~import_path
+      ~type_name_is_interface:(type_name_is_interface ~env)
+      ~import_path
   in
   (env, emitters)
 
-let emit_import_types ~config ~emitters ~env ~input_cmt_translate_type_declarations
-    ~output_file_relative ~resolver ~type_name_is_interface import_types =
+let emit_import_types ~config ~emitters ~env
+    ~input_cmt_translate_type_declarations ~output_file_relative ~resolver
+    ~type_name_is_interface import_types =
   import_types
   |> List.fold_left
        (fun (env, emitters) ->
          emit_import_type ~config ~emitters ~env
-           ~input_cmt_translate_type_declarations ~output_file_relative ~resolver
-           ~type_name_is_interface)
+           ~input_cmt_translate_type_declarations ~output_file_relative
+           ~resolver ~type_name_is_interface)
        (env, emitters)
 
 let get_annotated_typed_declarations ~annotated_set type_declarations =
@@ -491,7 +516,8 @@ let get_annotated_typed_declarations ~annotated_set type_declarations =
          let name_in_annotated_set =
            annotated_set
            |> StringSet.mem
-                (type_declaration.CodeItem.export_from_type_declaration.export_type
+                (type_declaration.CodeItem.export_from_type_declaration
+                   .export_type
                    .resolved_type_name |> ResolvedName.to_string)
          in
          if name_in_annotated_set then
@@ -506,11 +532,12 @@ let get_annotated_typed_declarations ~annotated_set type_declarations =
          else type_declaration)
   |> List.filter
        (fun
-         ({export_from_type_declaration = {annotation}} : CodeItem.type_declaration)
+         ({export_from_type_declaration = {annotation}} :
+           CodeItem.type_declaration)
        -> annotation <> NoGenType)
 
-let propagate_annotation_to_sub_types ~code_items (type_map : CodeItem.export_type_map)
-    =
+let propagate_annotation_to_sub_types ~code_items
+    (type_map : CodeItem.export_type_map) =
   let annotated_set = ref StringSet.empty in
   let initial_annotated_types =
     type_map |> StringMap.bindings
@@ -574,8 +601,9 @@ let propagate_annotation_to_sub_types ~code_items (type_map : CodeItem.export_ty
   in
   (new_type_map, !annotated_set)
 
-let emit_translation_as_string ~config ~file_name ~input_cmt_translate_type_declarations
-    ~output_file_relative ~resolver (translation : Translation.t) =
+let emit_translation_as_string ~config ~file_name
+    ~input_cmt_translate_type_declarations ~output_file_relative ~resolver
+    (translation : Translation.t) =
   let initial_env =
     {
       requires = Config.ModuleNameMap.empty;
@@ -593,7 +621,8 @@ let emit_translation_as_string ~config ~file_name ~input_cmt_translate_type_decl
     |> propagate_annotation_to_sub_types ~code_items:translation.code_items
   in
   let annotated_type_declarations =
-    translation.type_declarations |> get_annotated_typed_declarations ~annotated_set
+    translation.type_declarations
+    |> get_annotated_typed_declarations ~annotated_set
   in
   let import_types_from_type_declarations =
     annotated_type_declarations
@@ -621,8 +650,9 @@ let emit_translation_as_string ~config ~file_name ~input_cmt_translate_type_decl
     (* imports from type declarations go first to build up type tables *)
     import_types_from_type_declarations @ translation.import_types
     |> List.sort_uniq Translation.import_type_compare
-    |> emit_import_types ~config ~emitters ~env ~input_cmt_translate_type_declarations
-         ~output_file_relative ~resolver ~type_name_is_interface
+    |> emit_import_types ~config ~emitters ~env
+         ~input_cmt_translate_type_declarations ~output_file_relative ~resolver
+         ~type_name_is_interface
   in
   let env, emitters =
     export_from_type_declarations
@@ -675,6 +705,7 @@ let emit_translation_as_string ~config ~file_name ~input_cmt_translate_type_decl
   emitters
   |> emit_requires ~imported_value_or_component:false ~early:true ~config
        ~requires:final_env.requires_early
-  |> emit_requires ~imported_value_or_component:final_env.imported_value_or_component
+  |> emit_requires
+       ~imported_value_or_component:final_env.imported_value_or_component
        ~early:false ~config ~requires:final_env.requires
   |> Emitters.to_string ~separator:"\n\n"

@@ -80,7 +80,8 @@ let transform_children_if_list ~loc ~mapper the_list =
   in
   transformChildren_ the_list []
 
-let extract_children ?(remove_last_position_unit = false) ~loc props_and_children =
+let extract_children ?(remove_last_position_unit = false) ~loc
+    props_and_children =
   let rec allButLast_ lst acc =
     match lst with
     | [] -> []
@@ -102,7 +103,8 @@ let extract_children ?(remove_last_position_unit = false) ~loc props_and_childre
     ( Exp.construct ~loc {loc; txt = Lident "[]"} None,
       if remove_last_position_unit then all_but_last props else props )
   | [(_, children_expr)], props ->
-    (children_expr, if remove_last_position_unit then all_but_last props else props)
+    ( children_expr,
+      if remove_last_position_unit then all_but_last props else props )
   | _ ->
     Jsx_common.raise_error ~loc
       "JSX: somehow there's more than one `children` label"
@@ -291,11 +293,13 @@ let make_props_external fn_name loc named_arg_list_with_key_and_ref props_type =
   }
 
 (* Build an AST node for the signature of the `external` definition *)
-let make_props_external_sig fn_name loc named_arg_list_with_key_and_ref props_type =
+let make_props_external_sig fn_name loc named_arg_list_with_key_and_ref
+    props_type =
   {
     psig_loc = loc;
     psig_desc =
-      Psig_value (make_props_value fn_name loc named_arg_list_with_key_and_ref props_type);
+      Psig_value
+        (make_props_value fn_name loc named_arg_list_with_key_and_ref props_type);
   }
 
 (* Build an AST node for the props name when converted to an object inside the function signature  *)
@@ -311,7 +315,8 @@ let make_props_type ~loc named_type_list =
     (Ptyp_object (List.map (make_object_field loc) named_type_list, Closed))
 
 (* Builds an AST node for the entire `external` definition of props *)
-let make_external_decl fn_name loc named_arg_list_with_key_and_ref named_type_list =
+let make_external_decl fn_name loc named_arg_list_with_key_and_ref
+    named_type_list =
   make_props_external fn_name loc
     (List.map pluck_label_default_loc_type named_arg_list_with_key_and_ref)
     (make_props_type ~loc named_type_list)
@@ -334,7 +339,9 @@ let jsx_mapper ~config =
       extract_children ~loc ~remove_last_position_unit:true call_arguments
     in
     let args_for_make = args_with_labels in
-    let children_expr = transform_children_if_list_upper ~loc ~mapper children in
+    let children_expr =
+      transform_children_if_list_upper ~loc ~mapper children
+    in
     let recursively_transformed_args_for_make =
       args_for_make
       |> List.map (fun (label, expression) ->
@@ -516,7 +523,8 @@ let jsx_mapper ~config =
         "React: react.component refs only support plain arguments and type \
          annotations."
     | Pexp_newtype (label, expression) ->
-      recursively_transform_named_args_for_make expression args (label :: newtypes)
+      recursively_transform_named_args_for_make expression args
+        (label :: newtypes)
     | Pexp_constraint (expression, _typ) ->
       recursively_transform_named_args_for_make expression args newtypes
     | _ -> (args, newtypes, None)
@@ -610,7 +618,9 @@ let jsx_mapper ~config =
           | _ -> (full_type, types)
         in
         let inner_type, prop_types = get_prop_types [] pval_type in
-        let named_type_list = List.fold_left arg_to_concrete_type [] prop_types in
+        let named_type_list =
+          List.fold_left arg_to_concrete_type [] prop_types
+        in
         let pluck_label_and_loc (label, loc, type_) =
           (label, None (* default *), loc, Some type_)
         in
@@ -661,7 +671,9 @@ let jsx_mapper ~config =
           in
           let fn_name = get_fn_name binding.pvb_pat in
           let internal_fn_name = fn_name ^ "$Internal" in
-          let full_module_name = make_module_name file_name !nested_modules fn_name in
+          let full_module_name =
+            make_module_name file_name !nested_modules fn_name
+          in
           let modified_binding_old binding =
             let expression = binding.pvb_expr in
             (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
@@ -686,7 +698,8 @@ let jsx_mapper ~config =
                  Pexp_sequence (_wrapperExpression, inner_function_expression);
               } ->
                 spelunk_for_fun_expression inner_function_expression
-              | {pexp_desc = Pexp_constraint (inner_function_expression, _typ)} ->
+              | {pexp_desc = Pexp_constraint (inner_function_expression, _typ)}
+                ->
                 spelunk_for_fun_expression inner_function_expression
               | {pexp_loc} ->
                 Jsx_common.raise_error ~loc:pexp_loc
@@ -700,7 +713,8 @@ let jsx_mapper ~config =
             let wrap_expression_with_binding expression_fn expression =
               Vb.mk ~loc:binding_loc
                 ~attrs:(List.filter other_attrs_pure binding.pvb_attributes)
-                (Pat.var ~loc:binding_pat_loc {loc = binding_pat_loc; txt = fn_name})
+                (Pat.var ~loc:binding_pat_loc
+                   {loc = binding_pat_loc; txt = fn_name})
                 (expression_fn expression)
             in
             let expression = binding.pvb_expr in
@@ -784,7 +798,8 @@ let jsx_mapper ~config =
               (* let make = React.forwardRef((~prop) => ...) *)
               | {
                pexp_desc =
-                 Pexp_apply (wrapper_expression, [(Nolabel, internal_expression)]);
+                 Pexp_apply
+                   (wrapper_expression, [(Nolabel, internal_expression)]);
               } ->
                 let () = has_application := true in
                 let _, has_unit, exp =
@@ -794,7 +809,8 @@ let jsx_mapper ~config =
                   has_unit,
                   exp )
               | {
-               pexp_desc = Pexp_sequence (wrapper_expression, internal_expression);
+               pexp_desc =
+                 Pexp_sequence (wrapper_expression, internal_expression);
               } ->
                 let wrap, has_unit, exp =
                   spelunk_for_fun_expression internal_expression
@@ -812,7 +828,9 @@ let jsx_mapper ~config =
             in
             (wrap_expression_with_binding wrap_expression, has_unit, expression)
           in
-          let binding_wrapper, has_unit, expression = modified_binding binding in
+          let binding_wrapper, has_unit, expression =
+            modified_binding binding
+          in
           let react_component_attribute =
             try Some (List.find Jsx_common.has_attr binding.pvb_attributes)
             with Not_found -> None
@@ -878,7 +896,8 @@ let jsx_mapper ~config =
                 Exp.apply ~loc
                   (Exp.ident ~loc {txt = Lident "##"; loc})
                   [
-                    (nolabel, Exp.ident ~loc {txt = Lident props.props_name; loc});
+                    ( nolabel,
+                      Exp.ident ~loc {txt = Lident props.props_name; loc} );
                     (nolabel, Exp.ident ~loc {txt = Lident label_string; loc});
                   ] )
           in
@@ -1024,7 +1043,9 @@ let jsx_mapper ~config =
       match new_bindings with
       | [] -> []
       | new_bindings ->
-        [{pstr_loc = empty_loc; pstr_desc = Pstr_value (rec_flag, new_bindings)}])
+        [
+          {pstr_loc = empty_loc; pstr_desc = Pstr_value (rec_flag, new_bindings)};
+        ])
     | _ -> [item]
   in
 
@@ -1053,7 +1074,9 @@ let jsx_mapper ~config =
           | _ -> (full_type, types)
         in
         let inner_type, prop_types = get_prop_types [] pval_type in
-        let named_type_list = List.fold_left arg_to_concrete_type [] prop_types in
+        let named_type_list =
+          List.fold_left arg_to_concrete_type [] prop_types
+        in
         let pluck_label_and_loc (label, loc, type_) =
           (label, None, loc, Some type_)
         in
@@ -1130,8 +1153,10 @@ let jsx_mapper ~config =
   let expr mapper expression =
     match expression with
     (* Does the function application have the @JSX attribute? *)
-    | {pexp_desc = Pexp_apply (call_expression, call_arguments); pexp_attributes}
-      -> (
+    | {
+     pexp_desc = Pexp_apply (call_expression, call_arguments);
+     pexp_attributes;
+    } -> (
       let jsx_attribute, non_jsx_attributes =
         List.partition
           (fun (attribute, _) -> attribute.txt = "JSX")
@@ -1141,7 +1166,8 @@ let jsx_mapper ~config =
       (* no JSX attribute *)
       | [], _ -> default_mapper.expr mapper expression
       | _, non_jsx_attributes ->
-        transform_jsx_call mapper call_expression call_arguments non_jsx_attributes)
+        transform_jsx_call mapper call_expression call_arguments
+          non_jsx_attributes)
     (* is it a list with jsx attribute? Reason <>foo</> desugars to [@JSX][foo]*)
     | {
         pexp_desc =
@@ -1163,7 +1189,9 @@ let jsx_mapper ~config =
         let fragment =
           Exp.ident ~loc {loc; txt = Ldot (Lident "ReasonReact", "fragment")}
         in
-        let children_expr = transform_children_if_list ~loc ~mapper list_items in
+        let children_expr =
+          transform_children_if_list ~loc ~mapper list_items
+        in
         let args =
           [
             (* "div" *)

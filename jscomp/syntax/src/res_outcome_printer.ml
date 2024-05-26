@@ -54,14 +54,17 @@ let escape_string_contents s =
      print_ident fmt id2;
      Format.pp_print_char fmt ')' *)
 
-let rec print_out_ident_doc ?(allow_uident = true) (ident : Outcometree.out_ident) =
+let rec print_out_ident_doc ?(allow_uident = true)
+    (ident : Outcometree.out_ident) =
   match ident with
   | Oide_ident s -> Printer.print_ident_like ~allow_uident s
   | Oide_dot (ident, s) ->
     Doc.concat [print_out_ident_doc ident; Doc.dot; Doc.text s]
   | Oide_apply (call, arg) ->
     Doc.concat
-      [print_out_ident_doc call; Doc.lparen; print_out_ident_doc arg; Doc.rparen]
+      [
+        print_out_ident_doc call; Doc.lparen; print_out_ident_doc arg; Doc.rparen;
+      ]
 
 let print_out_attribute_doc (out_attribute : Outcometree.out_attribute) =
   Doc.concat [Doc.text "@"; Doc.text out_attribute.oattr_name]
@@ -72,7 +75,8 @@ let print_out_attributes_doc (attrs : Outcometree.out_attribute list) =
   | attrs ->
     Doc.concat
       [
-        Doc.group (Doc.join ~sep:Doc.line (List.map print_out_attribute_doc attrs));
+        Doc.group
+          (Doc.join ~sep:Doc.line (List.map print_out_attribute_doc attrs));
         Doc.line;
       ]
 
@@ -83,7 +87,8 @@ let rec collect_arrow_args (out_type : Outcometree.out_type) args =
     collect_arrow_args return_type (arg :: args)
   | _ as return_type -> (List.rev args, return_type)
 
-let rec collect_functor_args (out_module_type : Outcometree.out_module_type) args =
+let rec collect_functor_args (out_module_type : Outcometree.out_module_type)
+    args =
   match out_module_type with
   | Omty_functor (lbl, opt_mod_type, return_mod_type) ->
     let arg = (lbl, opt_mod_type) in
@@ -158,9 +163,11 @@ let rec print_out_type_doc (out_type : Outcometree.out_type) =
   | Otyp_constr (Oide_ident "function$", [Otyp_var _; _arity]) ->
     (* function$<'a, arity> -> _ => _ *)
     print_out_type_doc (Otyp_stuff "_ => _")
-  | Otyp_constr (out_ident, []) -> print_out_ident_doc ~allow_uident:false out_ident
+  | Otyp_constr (out_ident, []) ->
+    print_out_ident_doc ~allow_uident:false out_ident
   | Otyp_manifest (typ1, typ2) ->
-    Doc.concat [print_out_type_doc typ1; Doc.text " = "; print_out_type_doc typ2]
+    Doc.concat
+      [print_out_type_doc typ1; Doc.text " = "; print_out_type_doc typ2]
   | Otyp_record record -> print_record_declaration_doc ~inline:true record
   | Otyp_stuff txt -> Doc.text txt
   | Otyp_var (ng, s) ->
@@ -274,7 +281,8 @@ and print_out_arrow_type ~uncurried typ =
                (* the ocaml compiler hardcodes the optional label inside the string of the label in printtyp.ml *)
                match String.unsafe_get lbl 0 with
                | '?' ->
-                 ((String.sub [@doesNotRaise]) lbl 1 (lbl_len - 1), Doc.text "=?")
+                 ( (String.sub [@doesNotRaise]) lbl 1 (lbl_len - 1),
+                   Doc.text "=?" )
                | _ -> (lbl, Doc.nil)
              in
              Doc.group
@@ -495,7 +503,8 @@ and print_record_declaration_doc ~inline rows =
   if not inline then Doc.group content else content
 
 let print_out_type fmt out_type =
-  Format.pp_print_string fmt (Doc.to_string ~width:80 (print_out_type_doc out_type))
+  Format.pp_print_string fmt
+    (Doc.to_string ~width:80 (print_out_type_doc out_type))
 
 let print_type_parameter_doc (typ, (co, cn)) =
   Doc.concat
@@ -612,7 +621,8 @@ let rec print_out_sig_item_doc ?(print_name_as_is = false)
                       Doc.soft_line;
                       Doc.join
                         ~sep:(Doc.concat [Doc.comma; Doc.line])
-                        (List.map print_type_parameter_doc out_type_decl.otype_params);
+                        (List.map print_type_parameter_doc
+                           out_type_decl.otype_params);
                     ]);
                Doc.trailing_comma;
                Doc.soft_line;
@@ -815,7 +825,8 @@ and print_out_extension_constructor_doc
            (out_ext.oext_name, out_ext.oext_args, out_ext.oext_ret_type);
        ])
 
-and print_out_type_extension_doc (type_extension : Outcometree.out_type_extension) =
+and print_out_type_extension_doc
+    (type_extension : Outcometree.out_type_extension) =
   let type_params =
     match type_extension.otyext_params with
     | [] -> Doc.nil

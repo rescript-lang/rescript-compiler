@@ -3,9 +3,12 @@ open GenTypeCommon
 let rec addAnnotationsToTypes_ ~config ~(expr : Typedtree.expression)
     (arg_types : arg_type list) =
   match (expr.exp_desc, expr.exp_type.desc, arg_types) with
-  | Texp_function {arg_label; param; cases = [{c_rhs}]}, _, {a_type} :: next_types
-    ->
-    let next_types1 = next_types |> addAnnotationsToTypes_ ~config ~expr:c_rhs in
+  | ( Texp_function {arg_label; param; cases = [{c_rhs}]},
+      _,
+      {a_type} :: next_types ) ->
+    let next_types1 =
+      next_types |> addAnnotationsToTypes_ ~config ~expr:c_rhs
+    in
     let a_name = Ident.name param in
     let _ = Printtyped.implementation in
     let a_name =
@@ -33,7 +36,10 @@ let rec addAnnotationsToTypes_ ~config ~(expr : Typedtree.expression)
 and add_annotations_to_types ~config ~(expr : Typedtree.expression)
     (arg_types : arg_type list) =
   let arg_types = addAnnotationsToTypes_ ~config ~expr arg_types in
-  if arg_types |> List.filter (fun {a_name} -> a_name = "param") |> List.length > 1
+  if
+    arg_types
+    |> List.filter (fun {a_name} -> a_name = "param")
+    |> List.length > 1
   then
     (* Underscore "_" appears as "param", can occur more than once *)
     arg_types
@@ -62,7 +68,9 @@ let add_annotations_to_function_type ~config (expr : Typedtree.expression)
     (type_ : type_) =
   match type_ with
   | Function function_ ->
-    let arg_types = function_.arg_types |> add_annotations_to_types ~config ~expr in
+    let arg_types =
+      function_.arg_types |> add_annotations_to_types ~config ~expr
+    in
     Function {function_ with arg_types}
   | _ -> type_
 
@@ -71,7 +79,8 @@ let remove_value_binding_duplicates structure_items =
     match bindings with
     | ({vb_pat = {pat_desc = Tpat_var (id, _)}} as binding) :: other_bindings ->
       let name = Ident.name id in
-      if !seen |> StringSet.mem name then other_bindings |> process_bindings ~seen
+      if !seen |> StringSet.mem name then
+        other_bindings |> process_bindings ~seen
       else (
         seen := !seen |> StringSet.add name;
         binding :: (other_bindings |> process_bindings ~seen))
@@ -86,10 +95,12 @@ let remove_value_binding_duplicates structure_items =
       let bindings = value_bindings |> process_bindings ~seen in
       let item = {item with str_desc = Tstr_value (loc, bindings)} in
       other_items |> process_items ~acc:(item :: acc) ~seen
-    | item :: other_items -> other_items |> process_items ~acc:(item :: acc) ~seen
+    | item :: other_items ->
+      other_items |> process_items ~acc:(item :: acc) ~seen
     | [] -> acc
   in
-  structure_items |> List.rev |> process_items ~acc:[] ~seen:(ref StringSet.empty)
+  structure_items |> List.rev
+  |> process_items ~acc:[] ~seen:(ref StringSet.empty)
 
 let translate_value_binding ~config ~output_file_relative ~resolver ~type_env
     {Typedtree.vb_attributes; vb_expr; vb_pat} : Translation.t =
@@ -118,7 +129,9 @@ let rec remove_duplicate_value_bindings
   match structure_items with
   | ({Typedtree.str_desc = Tstr_value (loc, value_bindings)} as structure_item)
     :: rest ->
-    let bound_in_rest, filtered_rest = rest |> remove_duplicate_value_bindings in
+    let bound_in_rest, filtered_rest =
+      rest |> remove_duplicate_value_bindings
+    in
     let value_bindings_filtered =
       value_bindings
       |> List.filter (fun value_binding ->
@@ -141,12 +154,14 @@ let rec remove_duplicate_value_bindings
       {structure_item with str_desc = Tstr_value (loc, value_bindings_filtered)}
       :: filtered_rest )
   | structure_item :: rest ->
-    let bound_in_rest, filtered_rest = rest |> remove_duplicate_value_bindings in
+    let bound_in_rest, filtered_rest =
+      rest |> remove_duplicate_value_bindings
+    in
     (bound_in_rest, structure_item :: filtered_rest)
   | [] -> (StringSet.empty, [])
 
-let rec translate_module_binding ~(config : GenTypeConfig.t) ~output_file_relative
-    ~resolver ~type_env
+let rec translate_module_binding ~(config : GenTypeConfig.t)
+    ~output_file_relative ~resolver ~type_env
     ({mb_id; mb_expr; mb_attributes} : Typedtree.module_binding) : Translation.t
     =
   let name = mb_id |> Ident.name in
@@ -272,7 +287,8 @@ and translate_structure_item ~config ~output_file_relative ~resolver ~type_env
   | {str_desc = Tstr_value (_loc, value_bindings)} ->
     value_bindings
     |> List.map
-         (translate_value_binding ~config ~output_file_relative ~resolver ~type_env)
+         (translate_value_binding ~config ~output_file_relative ~resolver
+            ~type_env)
     |> Translation.combine
   | {str_desc = Tstr_primitive value_description} ->
     (* external declaration *)
@@ -281,7 +297,8 @@ and translate_structure_item ~config ~output_file_relative ~resolver ~type_env
          ~type_env
   | {str_desc = Tstr_module module_binding} ->
     module_binding
-    |> translate_module_binding ~config ~output_file_relative ~resolver ~type_env
+    |> translate_module_binding ~config ~output_file_relative ~resolver
+         ~type_env
   | {str_desc = Tstr_modtype module_type_declaration} ->
     module_type_declaration
     |> TranslateSignature.translate_module_type_declaration ~config
@@ -289,7 +306,8 @@ and translate_structure_item ~config ~output_file_relative ~resolver ~type_env
   | {str_desc = Tstr_recmodule module_bindings} ->
     module_bindings
     |> List.map
-         (translate_module_binding ~config ~output_file_relative ~resolver ~type_env)
+         (translate_module_binding ~config ~output_file_relative ~resolver
+            ~type_env)
     |> Translation.combine
   | {
    str_desc =
@@ -317,7 +335,8 @@ and translate_structure_item ~config ~output_file_relative ~resolver ~type_env
    _;
   } ->
     struct_item1
-    |> translate_structure_item ~config ~output_file_relative ~resolver ~type_env
+    |> translate_structure_item ~config ~output_file_relative ~resolver
+         ~type_env
   | {str_desc = Tstr_include {incl_type = signature}} ->
     signature
     |> TranslateSignatureFromTypes.translate_signature_from_types ~config
@@ -345,8 +364,8 @@ and translate_structure_item ~config ~output_file_relative ~resolver ~type_env
     log_not_implemented ("Tstr_attribute " ^ __LOC__);
     Translation.empty
 
-and translate_structure ~config ~output_file_relative ~resolver ~type_env structure
-    : Translation.t list =
+and translate_structure ~config ~output_file_relative ~resolver ~type_env
+    structure : Translation.t list =
   if !Debug.translation then Log_.item "Translate Structure\n";
   structure.Typedtree.str_items |> remove_value_binding_duplicates
   |> List.map (fun struct_item ->

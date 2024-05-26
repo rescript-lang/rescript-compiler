@@ -145,7 +145,8 @@ let print_report diagnostics src =
       Location.report_error ~src:(Some src) Format.err_formatter
         Location.
           {
-            loc = {loc_start = d.start_pos; loc_end = d.end_pos; loc_ghost = false};
+            loc =
+              {loc_start = d.start_pos; loc_end = d.end_pos; loc_ghost = false};
             msg = explain d;
             sub = [];
             if_highlight = "";

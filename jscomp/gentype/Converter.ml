@@ -10,9 +10,12 @@ let type_get_inlined ~config ~lookup_id ~type_name_is_interface type0 =
       Array (t_normalized, mutable_)
     | Dict _ -> normalized_
     | Function ({arg_types; ret_type} as function_) ->
-      let arg_converted = arg_types |> List.map (arg_type_to_grouped_arg ~visited) in
+      let arg_converted =
+        arg_types |> List.map (arg_type_to_grouped_arg ~visited)
+      in
       let ret_normalized = ret_type |> visit ~visited in
-      Function {function_ with arg_types = arg_converted; ret_type = ret_normalized}
+      Function
+        {function_ with arg_types = arg_converted; ret_type = ret_normalized}
     | Ident {builtin = true} -> normalized_
     | Ident {builtin = false; name; type_args} -> (
       if visited |> StringSet.mem name then (
@@ -37,7 +40,9 @@ let type_get_inlined ~config ~lookup_id ~type_name_is_interface type0 =
           let inlined = type_ |> TypeVars.substitute ~f |> visit ~visited in
           inlined
         | exception Not_found ->
-          let type_args = type_args |> List.map (fun t -> t |> visit ~visited) in
+          let type_args =
+            type_args |> List.map (fun t -> t |> visit ~visited)
+          in
           Ident {builtin = false; name; type_args})
     | Null t ->
       let t_normalized = t |> visit ~visited in

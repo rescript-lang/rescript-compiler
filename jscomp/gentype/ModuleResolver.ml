@@ -191,7 +191,8 @@ let create_lazy_resolver ~config ~extensions ~exclude_file =
              module_name |> find ~bs_dependencies:false ~map:module_name_map
            with
            | None when use_bs_dependencies ->
-             module_name |> find ~bs_dependencies:true ~map:bs_dependencies_file_map
+             module_name
+             |> find ~bs_dependencies:true ~map:bs_dependencies_file_map
            | res -> res);
   }
 
@@ -206,7 +207,9 @@ let resolve_module ~(config : Config.t) ~import_extension ~output_file_relative
     (* e.g. src if we're generating src/File.bs.js *)
     Filename.dirname output_file_relative
   in
-  let output_file_absolute_dir = config.project_root +++ output_file_relative_dir in
+  let output_file_absolute_dir =
+    config.project_root +++ output_file_relative_dir
+  in
   let module_name_res_file =
     (* Check if the module is in the same directory as the file being generated.
        So if e.g. project_root/src/ModuleName.res exists. *)
@@ -248,9 +251,11 @@ let resolve_module ~(config : Config.t) ~import_extension ~output_file_relative
       (match case = Uppercase with
       | true -> module_name
       | false -> module_name |> ModuleName.uncapitalize)
-      |> ImportPath.from_module ~dir:from_output_dir_to_module_dir ~import_extension
+      |> ImportPath.from_module ~dir:from_output_dir_to_module_dir
+           ~import_extension
 
-let resolve_generated_module ~config ~output_file_relative ~resolver module_name =
+let resolve_generated_module ~config ~output_file_relative ~resolver module_name
+    =
   if !Debug.module_resolution then
     Log_.item "Resolve Generated Module: %s\n"
       (module_name |> ModuleName.to_string);
@@ -264,15 +269,17 @@ let resolve_generated_module ~config ~output_file_relative ~resolver module_name
   import_path
 
 (** Returns the path to import a given Reason module name. *)
-let import_path_for_reason_module_name ~(config : Config.t) ~output_file_relative
-    ~resolver module_name =
+let import_path_for_reason_module_name ~(config : Config.t)
+    ~output_file_relative ~resolver module_name =
   if !Debug.module_resolution then
     Log_.item "Resolve Reason Module: %s\n" (module_name |> ModuleName.to_string);
   match config.shims_map |> ModuleNameMap.find module_name with
   | shim_module_name ->
     if !Debug.module_resolution then
       Log_.item "ShimModuleName: %s\n" (shim_module_name |> ModuleName.to_string);
-    let import_extension = ModuleExtension.shim_ts_output_file_extension ~config in
+    let import_extension =
+      ModuleExtension.shim_ts_output_file_extension ~config
+    in
     let import_path =
       resolve_module ~config ~import_extension ~output_file_relative ~resolver
         ~use_bs_dependencies:false shim_module_name
@@ -281,4 +288,5 @@ let import_path_for_reason_module_name ~(config : Config.t) ~output_file_relativ
       Log_.item "Import Path: %s\n" (import_path |> ImportPath.dump);
     import_path
   | exception Not_found ->
-    module_name |> resolve_generated_module ~config ~output_file_relative ~resolver
+    module_name
+    |> resolve_generated_module ~config ~output_file_relative ~resolver

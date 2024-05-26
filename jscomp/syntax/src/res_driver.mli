@@ -16,7 +16,8 @@ type 'diagnostics parsing_engine = {
     for_printer:bool ->
     filename:string ->
     (Parsetree.signature, 'diagnostics) parse_result;
-  string_of_diagnostics: source:string -> filename:string -> 'diagnostics -> unit;
+  string_of_diagnostics:
+    source:string -> filename:string -> 'diagnostics -> unit;
 }
 
 val parse_implementation_from_source :

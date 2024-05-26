@@ -30,7 +30,8 @@ type function_attributes_info = {
 }
 
 (* determines whether a function is async and/or uncurried based on the given attributes *)
-val process_function_attributes : Parsetree.attributes -> function_attributes_info
+val process_function_attributes :
+  Parsetree.attributes -> function_attributes_info
 
 val has_await_attribute : Parsetree.attributes -> bool
 
@@ -101,7 +102,8 @@ val collect_ternary_parts :
 val parameters_should_hug : fun_param_kind list -> bool
 
 val filter_ternary_attributes : Parsetree.attributes -> Parsetree.attributes
-val filter_fragile_match_attributes : Parsetree.attributes -> Parsetree.attributes
+val filter_fragile_match_attributes :
+  Parsetree.attributes -> Parsetree.attributes
 
 val is_jsx_expression : Parsetree.expression -> bool
 val has_jsx_attribute : Parsetree.attributes -> bool

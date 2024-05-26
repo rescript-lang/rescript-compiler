@@ -9,9 +9,9 @@ type declaration_kind =
   | VariantDeclarationFromTypes of Types.constructor_declaration list
   | NoDeclaration
 
-let create_export_type_from_type_declaration ~annotation ~loc ~name_as ~opaque ~type_
-    ~type_env ~doc_string type_name ~type_vars : CodeItem.export_from_type_declaration
-    =
+let create_export_type_from_type_declaration ~annotation ~loc ~name_as ~opaque
+    ~type_ ~type_env ~doc_string type_name ~type_vars :
+    CodeItem.export_from_type_declaration =
   let resolved_type_name =
     type_name |> sanitize_type_name |> TypeEnv.add_module_path ~type_env
   in
@@ -76,12 +76,13 @@ let traslate_declaration_kind ~config ~loc ~output_file_relative ~resolver
       (translation : TranslateTypeExprFromTypes.translation) =
     let export_from_type_declaration =
       type_name
-      |> create_export_type_from_type_declaration ~annotation ~loc ~name_as ~opaque
-           ~type_:translation.type_ ~type_env ~doc_string ~type_vars
+      |> create_export_type_from_type_declaration ~annotation ~loc ~name_as
+           ~opaque ~type_:translation.type_ ~type_env ~doc_string ~type_vars
     in
     let import_types =
       translation.dependencies
-      |> Translation.translate_dependencies ~config ~output_file_relative ~resolver
+      |> Translation.translate_dependencies ~config ~output_file_relative
+           ~resolver
     in
     {CodeItem.import_types; export_from_type_declaration}
   in
@@ -107,8 +108,8 @@ let traslate_declaration_kind ~config ~loc ~output_file_relative ~resolver
              ( name,
                mutability,
                ld_type
-               |> TranslateTypeExprFromTypes.translate_type_expr_from_types ~config
-                    ~type_env,
+               |> TranslateTypeExprFromTypes.translate_type_expr_from_types
+                    ~config ~type_env,
                Annotation.doc_string_from_attrs ld_attributes ))
     in
     let dependencies =
@@ -160,8 +161,8 @@ let traslate_declaration_kind ~config ~loc ~output_file_relative ~resolver
     let export_from_type_declaration =
       (* Make the imported type usable from other modules by exporting it too. *)
       typeName_
-      |> create_export_type_from_type_declaration ~doc_string ~annotation:GenType ~loc
-           ~name_as:None ~opaque:(Some false)
+      |> create_export_type_from_type_declaration ~doc_string
+           ~annotation:GenType ~loc ~name_as:None ~opaque:(Some false)
            ~type_:
              (as_type_name
              |> ident ~type_args:(type_vars |> List.map (fun s -> TypeVar s)))
@@ -180,7 +181,8 @@ let traslate_declaration_kind ~config ~loc ~output_file_relative ~resolver
   | GeneralDeclarationFromTypes (Some type_expr), None ->
     let translation =
       type_expr
-      |> TranslateTypeExprFromTypes.translate_type_expr_from_types ~config ~type_env
+      |> TranslateTypeExprFromTypes.translate_type_expr_from_types ~config
+           ~type_env
     in
     translation |> handle_general_declaration |> return_type_declaration
   | GeneralDeclaration (Some core_type), None ->
@@ -190,7 +192,9 @@ let traslate_declaration_kind ~config ~loc ~output_file_relative ~resolver
     let type_ =
       match (core_type, translation.type_) with
       | {ctyp_desc = Ttyp_variant (row_fields, _, _)}, Variant variant ->
-        let row_fields_variants = row_fields |> TranslateCoreType.process_variant in
+        let row_fields_variants =
+          row_fields |> TranslateCoreType.process_variant
+        in
         let no_payloads =
           row_fields_variants.no_payloads |> List.map (create_case ~poly:true)
         in
@@ -219,7 +223,8 @@ let traslate_declaration_kind ~config ~loc ~output_file_relative ~resolver
     in
     let import_types =
       dependencies
-      |> Translation.translate_dependencies ~config ~output_file_relative ~resolver
+      |> Translation.translate_dependencies ~config ~output_file_relative
+           ~resolver
     in
     {
       CodeItem.import_types;
@@ -258,8 +263,8 @@ let traslate_declaration_kind ~config ~loc ~output_file_relative ~resolver
                |> List.map (fun {TranslateTypeExprFromTypes.dependencies} ->
                       dependencies)
                |> List.concat
-               |> Translation.translate_dependencies ~config ~output_file_relative
-                    ~resolver
+               |> Translation.translate_dependencies ~config
+                    ~output_file_relative ~resolver
              in
              (name, attributes, arg_types, import_types))
     in
@@ -306,7 +311,8 @@ let traslate_declaration_kind ~config ~loc ~output_file_relative ~resolver
       |> List.map (fun (_, _, _, import_types) -> import_types)
       |> List.concat
     in
-    {CodeItem.export_from_type_declaration; import_types} |> return_type_declaration
+    {CodeItem.export_from_type_declaration; import_types}
+    |> return_type_declaration
   | NoDeclaration, None -> []
 
 let has_some_gadt_leaf constructor_declarations =
@@ -336,18 +342,19 @@ let translate_type_declaration ~config ~output_file_relative ~resolver ~type_env
     | _ -> NoDeclaration
   in
   declaration_kind
-  |> traslate_declaration_kind ~config ~loc:typ_loc ~output_file_relative ~resolver
-       ~type_attributes:typ_attributes ~type_env ~type_name ~type_vars
+  |> traslate_declaration_kind ~config ~loc:typ_loc ~output_file_relative
+       ~resolver ~type_attributes:typ_attributes ~type_env ~type_name ~type_vars
 
 let add_type_declaration_id_to_type_env ~type_env
     ({typ_id} : Typedtree.type_declaration) =
   type_env |> TypeEnv.new_type ~name:(typ_id |> Ident.name)
 
-let translate_type_declarations ~config ~output_file_relative ~recursive ~resolver
-    ~type_env (type_declarations : Typedtree.type_declaration list) :
+let translate_type_declarations ~config ~output_file_relative ~recursive
+    ~resolver ~type_env (type_declarations : Typedtree.type_declaration list) :
     CodeItem.type_declaration list =
   if recursive then
-    type_declarations |> List.iter (add_type_declaration_id_to_type_env ~type_env);
+    type_declarations
+    |> List.iter (add_type_declaration_id_to_type_env ~type_env);
   type_declarations
   |> List.map (fun type_declaration ->
          let res =

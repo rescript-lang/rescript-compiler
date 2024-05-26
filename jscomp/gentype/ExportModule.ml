@@ -8,7 +8,11 @@ and export_module_value =
 
 type export_module_items = (string, export_module_item) Hashtbl.t
 
-type types = {type_for_value: type_; type_for_type: type_; doc_string: DocString.t}
+type types = {
+  type_for_value: type_;
+  type_for_type: type_;
+  doc_string: DocString.t;
+}
 
 type field_info = {field_for_value: field; field_for_type: field}
 
@@ -17,7 +21,9 @@ let rec export_module_value_to_type ~config export_module_value =
   | S {name; type_; doc_string} ->
     {type_for_value = ident name; type_for_type = type_; doc_string}
   | M {export_module_item} ->
-    let fields_info = export_module_item |> export_module_item_to_fields ~config in
+    let fields_info =
+      export_module_item |> export_module_item_to_fields ~config
+    in
     let fields_for_value =
       fields_info |> List.map (fun {field_for_value} -> field_for_value)
     in
@@ -61,7 +67,8 @@ let rec extend_export_module_item ~doc_string x
   | field_name :: rest ->
     let inner_export_module_item =
       match Hashtbl.find export_module_item field_name with
-      | M {export_module_item = inner_export_module_item} -> inner_export_module_item
+      | M {export_module_item = inner_export_module_item} ->
+        inner_export_module_item
       | S _ -> assert false
       | exception Not_found ->
         let inner_export_module_item = Hashtbl.create 1 in
@@ -70,8 +77,8 @@ let rec extend_export_module_item ~doc_string x
         inner_export_module_item
     in
     rest
-    |> extend_export_module_item ~doc_string ~export_module_item:inner_export_module_item
-         ~value_name ~type_
+    |> extend_export_module_item ~doc_string
+         ~export_module_item:inner_export_module_item ~value_name ~type_
 
 let extend_export_module_items x ~doc_string
     ~(export_module_items : export_module_items) ~type_ ~value_name =
@@ -88,7 +95,8 @@ let extend_export_module_items x ~doc_string
         export_module_item
     in
     rest
-    |> extend_export_module_item ~doc_string ~export_module_item ~type_ ~value_name
+    |> extend_export_module_item ~doc_string ~export_module_item ~type_
+         ~value_name
 
 let create_module_items_emitter =
   (fun () -> Hashtbl.create 1 : unit -> export_module_items)
@@ -111,13 +119,13 @@ let emit_all_module_items ~config ~emitters ~file_name
            |> ModuleName.to_string
          in
          emitted_module_item
-         |> EmitType.emit_export_const ~doc_string ~early:false ~config ~emitters
-              ~name:module_name ~type_:type_for_type ~type_name_is_interface:(fun _ ->
-                false))
+         |> EmitType.emit_export_const ~doc_string ~early:false ~config
+              ~emitters ~name:module_name ~type_:type_for_type
+              ~type_name_is_interface:(fun _ -> false))
        export_module_items
 
-let extend_export_modules ~(module_items_emitter : export_module_items) ~doc_string
-    ~type_ resolved_name =
+let extend_export_modules ~(module_items_emitter : export_module_items)
+    ~doc_string ~type_ resolved_name =
   resolved_name |> ResolvedName.to_list
   |> extend_export_module_items ~export_module_items:module_items_emitter ~type_
        ~doc_string

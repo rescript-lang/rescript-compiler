@@ -2,8 +2,8 @@ open GenTypeCommon
 
 type translation = {dependencies: dep list; type_: type_}
 
-let rec remove_option ~(label : Asttypes.arg_label) (type_expr : Types.type_expr)
-    =
+let rec remove_option ~(label : Asttypes.arg_label)
+    (type_expr : Types.type_expr) =
   match (type_expr.desc, label) with
   | Tconstr (Path.Pident id, [t], _), Optional lbl when Ident.name id = "option"
     ->
@@ -167,7 +167,8 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
   | ( (["React"; "componentLike"] | ["ReactV3"; "React"; "componentLike"]),
       [props_translation; ret_translation] ) ->
     {
-      dependencies = props_translation.dependencies @ ret_translation.dependencies;
+      dependencies =
+        props_translation.dependencies @ ret_translation.dependencies;
       type_ =
         Function
           {
@@ -255,7 +256,8 @@ let process_variant row_fields =
         ( Types.Rpresent (* no payload *) None
         | Reither ((* constant constructor *) true, _, _, _) ) )
       :: other_fields ->
-      other_fields |> loop ~no_payloads:(label :: no_payloads) ~payloads ~unknowns
+      other_fields
+      |> loop ~no_payloads:(label :: no_payloads) ~payloads ~unknowns
     | (label, Rpresent (Some payload)) :: other_fields ->
       other_fields
       |> loop ~no_payloads ~payloads:((label, payload) :: payloads) ~unknowns
@@ -270,11 +272,12 @@ let process_variant row_fields =
   in
   row_fields |> loop ~no_payloads:[] ~payloads:[] ~unknowns:[]
 
-let rec translate_arrow_type ~config ~type_vars_gen ~type_env ~rev_arg_deps ~rev_args
-    (type_expr : Types.type_expr) =
+let rec translate_arrow_type ~config ~type_vars_gen ~type_env ~rev_arg_deps
+    ~rev_args (type_expr : Types.type_expr) =
   match type_expr.desc with
   | Tlink t ->
-    translate_arrow_type ~config ~type_vars_gen ~type_env ~rev_arg_deps ~rev_args t
+    translate_arrow_type ~config ~type_vars_gen ~type_env ~rev_arg_deps
+      ~rev_args t
   | Tarrow (Nolabel, type_expr1, type_expr2, _) ->
     let {dependencies; type_} =
       type_expr1 |> fun __x ->
@@ -282,14 +285,16 @@ let rec translate_arrow_type ~config ~type_vars_gen ~type_env ~rev_arg_deps ~rev
     in
     let next_rev_deps = List.rev_append dependencies rev_arg_deps in
     type_expr2
-    |> translate_arrow_type ~config ~type_vars_gen ~type_env ~rev_arg_deps:next_rev_deps
+    |> translate_arrow_type ~config ~type_vars_gen ~type_env
+         ~rev_arg_deps:next_rev_deps
          ~rev_args:((Nolabel, type_) :: rev_args)
   | Tarrow (((Labelled lbl | Optional lbl) as label), type_expr1, type_expr2, _)
     -> (
     match type_expr1 |> remove_option ~label with
     | None ->
       let {dependencies; type_ = type1} =
-        type_expr1 |> translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
+        type_expr1
+        |> translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
       in
       let next_rev_deps = List.rev_append dependencies rev_arg_deps in
       type_expr2
@@ -340,7 +345,8 @@ and translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
             match name |> Runtime.is_mutable_object_field with
             | true -> {dependencies = []; type_ = ident ""}
             | false ->
-              t1 |> translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env )
+              t1 |> translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
+          )
           :: fields )
       | Tlink te -> te |> get_field_types
       | Tvar None -> (Open, [])
@@ -353,7 +359,8 @@ and translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
     |> translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
   | Tconstr (path, type_params, _) ->
     let params_translation =
-      type_params |> translateTypeExprsFromTypes_ ~config ~type_vars_gen ~type_env
+      type_params
+      |> translateTypeExprsFromTypes_ ~config ~type_vars_gen ~type_env
     in
     translate_constr ~config ~params_translation ~path ~type_env
   | Tpoly (t, []) ->
@@ -366,7 +373,9 @@ and translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
     let inner_types_translation =
       list_exp |> translateTypeExprsFromTypes_ ~config ~type_vars_gen ~type_env
     in
-    let inner_types = inner_types_translation |> List.map (fun {type_} -> type_) in
+    let inner_types =
+      inner_types_translation |> List.map (fun {type_} -> type_)
+    in
     let inner_types_deps =
       inner_types_translation
       |> List.map (fun {dependencies} -> dependencies)
@@ -383,7 +392,8 @@ and translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
         |> List.map (fun label ->
                {
                  label_js =
-                   (if is_number label then IntLabel label else StringLabel label);
+                   (if is_number label then IntLabel label
+                    else StringLabel label);
                })
       in
       let type_ =
@@ -404,7 +414,8 @@ and translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
         |> List.map (fun (label, payload) ->
                ( label,
                  payload
-                 |> translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env ))
+                 |> translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
+               ))
       in
       let payloads =
         payload_translations
@@ -429,7 +440,8 @@ and translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
         (List.combine ids types [@doesNotRaise])
         |> List.map (fun (x, t) ->
                ( x,
-                 t |> translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
+                 t
+                 |> translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
                ))
       in
       let type_equations =
@@ -448,7 +460,8 @@ and translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
              ~type_env:type_env1
       in
       {
-        dependencies = dependencies_from_type_equations @ dependencies_from_record_type;
+        dependencies =
+          dependencies_from_type_equations @ dependencies_from_record_type;
         type_;
       }
     | None -> {dependencies = []; type_ = unknown})
@@ -484,7 +497,9 @@ and signature_to_module_runtime_representation ~config ~type_vars_gen ~type_env
              (dependencies, [field])
            | Types.Sig_module (id, module_declaration, _recStatus) ->
              let type_env1 =
-               match type_env |> TypeEnv.get_module ~name:(id |> Ident.name) with
+               match
+                 type_env |> TypeEnv.get_module ~name:(id |> Ident.name)
+               with
                | Some type_env1 -> type_env1
                | None -> type_env
              in
@@ -492,8 +507,8 @@ and signature_to_module_runtime_representation ~config ~type_vars_gen ~type_env
                match module_declaration.md_type with
                | Mty_signature signature ->
                  signature
-                 |> signature_to_module_runtime_representation ~config ~type_vars_gen
-                      ~type_env:type_env1
+                 |> signature_to_module_runtime_representation ~config
+                      ~type_vars_gen ~type_env:type_env1
                | Mty_ident _ | Mty_functor _ | Mty_alias _ -> ([], unknown)
              in
              let field =
@@ -503,7 +518,8 @@ and signature_to_module_runtime_representation ~config ~type_vars_gen ~type_env
                  optional = Mandatory;
                  type_;
                  doc_string =
-                   Annotation.doc_string_from_attrs module_declaration.md_attributes;
+                   Annotation.doc_string_from_attrs
+                     module_declaration.md_attributes;
                }
              in
              (dependencies, [field])
@@ -524,7 +540,8 @@ let translate_type_expr_from_types ~config ~type_env type_expr =
   in
   if !Debug.dependencies then
     translation.dependencies
-    |> List.iter (fun dep -> Log_.item "Dependency: %s\n" (dep |> dep_to_string));
+    |> List.iter (fun dep ->
+           Log_.item "Dependency: %s\n" (dep |> dep_to_string));
   translation
 
 let translate_type_exprs_from_types ~config ~type_env type_exprs =

@@ -21,15 +21,19 @@ let rec from_path1 ~config ~type_env (path : Path.t) =
       match type_env1 |> TypeEnv.expand_alias_to_external_module ~name with
       | Some dep -> (type_env2, dep)
       | None ->
-        let resolved_name = name |> TypeEnv.add_module_path ~type_env:type_env1 in
+        let resolved_name =
+          name |> TypeEnv.add_module_path ~type_env:type_env1
+        in
         (type_env2, Internal resolved_name)))
-  | Pdot (Pident id, s, _pos) when id |> ScopedPackage.is_generated_module ~config
-    ->
+  | Pdot (Pident id, s, _pos)
+    when id |> ScopedPackage.is_generated_module ~config ->
     ( type_env,
       External (s |> ScopedPackage.add_generated_module ~generated_module:id) )
   | Pdot (p, s, _pos) -> (
     let type_env_from_p, dep = p |> from_path1 ~config ~type_env in
-    match type_env_from_p |> TypeEnv.expand_alias_to_external_module ~name:s with
+    match
+      type_env_from_p |> TypeEnv.expand_alias_to_external_module ~name:s
+    with
     | Some dep -> (type_env_from_p, dep)
     | None -> (type_env_from_p, Dot (dep, s)))
   | Papply _ ->

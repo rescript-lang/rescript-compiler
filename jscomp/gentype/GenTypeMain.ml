@@ -23,8 +23,8 @@ let signature_item_is_declaration signature_item =
   | Typedtree.Tsig_type _ | Tsig_modtype _ -> true
   | _ -> false
 
-let input_cmt_translate_type_declarations ~config ~output_file_relative ~resolver
-    input_cmt : CodeItem.translation =
+let input_cmt_translate_type_declarations ~config ~output_file_relative
+    ~resolver input_cmt : CodeItem.translation =
   let {Cmt_format.cmt_annots} = input_cmt in
   let type_env = TypeEnv.root () in
   let translations =
@@ -50,8 +50,8 @@ let input_cmt_translate_type_declarations ~config ~output_file_relative ~resolve
   translations |> Translation.combine
   |> Translation.add_type_declarations_from_module_equations ~type_env
 
-let translate_c_m_t ~config ~output_file_relative ~resolver input_cmt : Translation.t
-    =
+let translate_c_m_t ~config ~output_file_relative ~resolver input_cmt :
+    Translation.t =
   let {Cmt_format.cmt_annots} = input_cmt in
   let type_env = TypeEnv.root () in
   let translations =
@@ -69,12 +69,12 @@ let translate_c_m_t ~config ~output_file_relative ~resolver input_cmt : Translat
   translations |> Translation.combine
   |> Translation.add_type_declarations_from_module_equations ~type_env
 
-let emit_translation ~config ~file_name ~output_file ~output_file_relative ~resolver
-    ~source_file translation =
+let emit_translation ~config ~file_name ~output_file ~output_file_relative
+    ~resolver ~source_file translation =
   let code_text =
     translation
-    |> EmitJs.emit_translation_as_string ~config ~file_name ~output_file_relative
-         ~resolver ~input_cmt_translate_type_declarations
+    |> EmitJs.emit_translation_as_string ~config ~file_name
+         ~output_file_relative ~resolver ~input_cmt_translate_type_declarations
   in
   let file_contents =
     EmitType.file_header ~source_file:(Filename.basename source_file)
@@ -100,8 +100,8 @@ let process_cmt_file cmt =
     let file_name = cmt |> Paths.get_module_name in
     let is_interface = Filename.check_suffix cmt_file ".cmti" in
     let resolver =
-      ModuleResolver.create_lazy_resolver ~config ~extensions:[".res"; ".shim.ts"]
-        ~exclude_file:(fun fname ->
+      ModuleResolver.create_lazy_resolver ~config
+        ~extensions:[".res"; ".shim.ts"] ~exclude_file:(fun fname ->
           fname = "React.res" || fname = "ReasonReact.res")
     in
     let input_cmt, has_gentype_annotations =

@@ -193,7 +193,8 @@ let scan_identifier scanner =
   in
   skip_good_chars scanner;
   let str =
-    (String.sub [@doesNotRaise]) scanner.src start_off (scanner.offset - start_off)
+    (String.sub [@doesNotRaise]) scanner.src start_off
+      (scanner.offset - start_off)
   in
   if '{' == scanner.ch && str = "list" then (
     next scanner;
@@ -268,7 +269,8 @@ let scan_number scanner =
     | _ -> is_float
   in
   let literal =
-    (String.sub [@doesNotRaise]) scanner.src start_off (scanner.offset - start_off)
+    (String.sub [@doesNotRaise]) scanner.src start_off
+      (scanner.offset - start_off)
   in
 
   (* suffix *)
@@ -308,7 +310,8 @@ let scan_exotic_identifier scanner =
   scan ();
 
   let ident =
-    (String.sub [@doesNotRaise]) scanner.src start_off (scanner.offset - start_off)
+    (String.sub [@doesNotRaise]) scanner.src start_off
+      (scanner.offset - start_off)
   in
   let name = Ext_ident.unwrap_uppercase_exotic ident in
   if name = String.empty then (
@@ -433,7 +436,8 @@ let scan_string scanner =
       convert_octal_to_hex ~start_offset ~end_offset
     | ch when ch == hacky_eof_char ->
       let end_pos = position scanner in
-      scanner.err ~start_pos:start_pos_with_quote ~end_pos Diagnostics.unclosed_string;
+      scanner.err ~start_pos:start_pos_with_quote ~end_pos
+        Diagnostics.unclosed_string;
       let last_char_offset = scanner.offset in
       result ~first_char_offset ~last_char_offset
     | _ ->
@@ -548,7 +552,8 @@ let scan_single_line_comment scanner =
   let end_pos = position scanner in
   Token.Comment
     (Comment.make_single_line_comment
-       ~loc:Location.{loc_start = start_pos; loc_end = end_pos; loc_ghost = false}
+       ~loc:
+         Location.{loc_start = start_pos; loc_end = end_pos; loc_ghost = false}
        ((String.sub [@doesNotRaise]) scanner.src start_off
           (scanner.offset - start_off)))
 
@@ -583,7 +588,11 @@ let scan_multi_line_comment scanner =
     (Comment.make_multi_line_comment ~doc_comment ~standalone
        ~loc:
          Location.
-           {loc_start = start_pos; loc_end = position scanner; loc_ghost = false}
+           {
+             loc_start = start_pos;
+             loc_end = position scanner;
+             loc_ghost = false;
+           }
        ((String.sub [@doesNotRaise]) scanner.src content_start_off length))
 
 let scan_template_literal_token scanner =

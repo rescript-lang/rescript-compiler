@@ -101,7 +101,8 @@ module OutcomePrinterTests = struct
   let run () =
     let filename = Filename.concat data_dir "oprint/oprint.res" in
     let result =
-      Res_driver.parsing_engine.parse_implementation ~for_printer:false ~filename
+      Res_driver.parsing_engine.parse_implementation ~for_printer:false
+        ~filename
     in
     let signature =
       if result.Res_driver.invalid then (

@@ -315,7 +315,12 @@ let debug t =
              text "ifBreaks(";
              indent
                (concat
-                  [line; to_doc true_doc; concat [text ","; line]; to_doc false_doc]);
+                  [
+                    line;
+                    to_doc true_doc;
+                    concat [text ","; line];
+                    to_doc false_doc;
+                  ]);
              line;
              text ")";
            ])

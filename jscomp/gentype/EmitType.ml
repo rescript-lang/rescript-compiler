@@ -60,8 +60,8 @@ let is_type_react_ref ~fields =
 let is_type_function_component ~fields type_ =
   type_ |> is_type_react_element && not (is_type_react_ref ~fields)
 
-let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interface
-    ~in_fun_type type0 =
+let rec render_type ~(config : Config.t) ?(indent = None)
+    ~type_name_is_interface ~in_fun_type type0 =
   match type0 with
   | Array (t, array_kind) ->
     let type_is_simple =
@@ -70,7 +70,8 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
       | _ -> false
     in
     if type_is_simple && array_kind = Mutable then
-      (t |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type) ^ "[]"
+      (t |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
+      ^ "[]"
     else
       let array_name =
         match array_kind = Mutable with
@@ -85,7 +86,11 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
     ^ (type_ |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
     ^ "}"
   | Function
-      {arg_types = [{a_type = Object (closed_flag, fields)}]; ret_type; type_vars}
+      {
+        arg_types = [{a_type = Object (closed_flag, fields)}];
+        ret_type;
+        type_vars;
+      }
     when ret_type |> is_type_function_component ~fields ->
     let fields =
       fields
@@ -101,18 +106,21 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
     let component_type =
       type_react_component ~props_type:(Object (closed_flag, fields))
     in
-    component_type |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type
+    component_type
+    |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type
   | Function {arg_types; ret_type; type_vars} ->
-    render_fun_type ~config ~indent ~in_fun_type ~type_name_is_interface ~type_vars
-      arg_types ret_type
+    render_fun_type ~config ~indent ~in_fun_type ~type_name_is_interface
+      ~type_vars arg_types ret_type
   | Object (_, fields) ->
     let indent1 = fields |> Indent.heuristic_fields ~indent in
     fields
-    |> render_fields ~config ~indent:indent1 ~in_fun_type ~type_name_is_interface
+    |> render_fields ~config ~indent:indent1 ~in_fun_type
+         ~type_name_is_interface
   | Ident {builtin; name; type_args} ->
     let name = name |> sanitize_type_name in
     (match
-       (not builtin) && config.export_interfaces && name |> type_name_is_interface
+       (not builtin) && config.export_interfaces
+       && name |> type_name_is_interface
      with
     | true -> name |> interface_name ~config
     | false -> name)
@@ -120,7 +128,8 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
         ~type_vars:
           (type_args
           |> List.map
-               (render_type ~config ~indent ~type_name_is_interface ~in_fun_type))
+               (render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
+          )
   | Null type_ ->
     "(null | "
     ^ (type_ |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
@@ -133,7 +142,8 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
     in
     "(null | undefined | "
     ^ use_parens
-        (type_ |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
+        (type_
+        |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
     ^ ")"
   | Option type_ ->
     let use_parens x =
@@ -143,7 +153,8 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
     in
     "(undefined | "
     ^ use_parens
-        (type_ |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
+        (type_
+        |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
     ^ ")"
   | Promise type_ ->
     "Promise" ^ "<"
@@ -152,7 +163,8 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
   | Tuple inner_types ->
     "["
     ^ (inner_types
-      |> List.map (render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
+      |> List.map
+           (render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
       |> String.concat ", ")
     ^ "]"
   | TypeVar s -> s
@@ -160,7 +172,8 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
     let inherits_rendered =
       inherits
       |> List.map (fun type_ ->
-             type_ |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
+             type_
+             |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
     in
     let no_payloads_rendered = no_payloads |> List.map label_js_to_string in
     let field ~name value =
@@ -173,13 +186,16 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
       }
     in
     let fields fields =
-      fields |> render_fields ~config ~indent ~in_fun_type ~type_name_is_interface
+      fields
+      |> render_fields ~config ~indent ~in_fun_type ~type_name_is_interface
     in
     let payloads_rendered =
       payloads
       |> List.map (fun {case; t = type_} ->
              let render t =
-               t |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type
+               t
+               |> render_type ~config ~indent ~type_name_is_interface
+                    ~in_fun_type
              in
              let tag_field =
                case |> label_js_to_string
@@ -221,7 +237,9 @@ let rec render_type ~(config : Config.t) ?(indent = None) ~type_name_is_interfac
                in
                flds |> fields)
     in
-    let rendered = inherits_rendered @ no_payloads_rendered @ payloads_rendered in
+    let rendered =
+      inherits_rendered @ no_payloads_rendered @ payloads_rendered
+    in
     let indent1 = rendered |> Indent.heuristic_variants ~indent in
     (match indent1 = None with
     | true -> ""
@@ -271,14 +289,15 @@ and render_fields ~config ~indent ~in_fun_type ~type_name_is_interface fields =
   let rendered_fields =
     fields
     |> List.map
-         (render_field ~config ~indent:indent1 ~type_name_is_interface ~in_fun_type)
+         (render_field ~config ~indent:indent1 ~type_name_is_interface
+            ~in_fun_type)
   in
   ("{" ^ space)
   ^ String.concat "; " rendered_fields
   ^ Indent.break ~indent ^ space ^ "}"
 
-and render_fun_type ~config ~indent ~in_fun_type ~type_name_is_interface ~type_vars
-    arg_types ret_type =
+and render_fun_type ~config ~indent ~in_fun_type ~type_name_is_interface
+    ~type_vars arg_types ret_type =
   (match in_fun_type with
   | true -> "("
   | false -> "")
@@ -295,11 +314,12 @@ and render_fun_type ~config ~indent ~in_fun_type ~type_name_is_interface ~type_v
            in
            parameter_name
            ^ (a_type
-             |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type:true
-             ))
+             |> render_type ~config ~indent ~type_name_is_interface
+                  ~in_fun_type:true))
          arg_types)
   ^ ") => "
-  ^ (ret_type |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
+  ^ (ret_type
+    |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
   ^
   match in_fun_type with
   | true -> ")"
@@ -309,14 +329,14 @@ let type_to_string ~config ~type_name_is_interface type_ =
   type_ |> render_type ~config ~type_name_is_interface ~in_fun_type:false
 
 let emit_export_const ~early ?(comment = "") ~config
-    ?(doc_string = DocString.empty) ~emitters ~name ~type_ ~type_name_is_interface
-    line =
+    ?(doc_string = DocString.empty) ~emitters ~name ~type_
+    ~type_name_is_interface line =
   let type_string = type_ |> type_to_string ~config ~type_name_is_interface in
   (match comment = "" with
   | true -> comment
   | false -> "// " ^ comment ^ "\n")
-  ^ DocString.render doc_string ^ "export const " ^ name ^ ": " ^ type_string
-  ^ " = " ^ line ^ " as any;"
+  ^ DocString.render doc_string
+  ^ "export const " ^ name ^ ": " ^ type_string ^ " = " ^ line ^ " as any;"
   |> (match early with
      | true -> Emitters.export_early
      | false -> Emitters.export)
@@ -351,16 +371,17 @@ let emit_export_type ~(config : Config.t) ~emitters ~name_as ~opaque ~type_
       | true -> "any"
       | false -> type_vars |> String.concat " | "
     in
-    doc_string ^ "export abstract class " ^ resolved_type_name ^ type_params_string
-    ^ " { protected opaque!: " ^ type_of_opaque_field
+    doc_string ^ "export abstract class " ^ resolved_type_name
+    ^ type_params_string ^ " { protected opaque!: " ^ type_of_opaque_field
     ^ " }; /* simulate opaque types */" ^ export_name_as
     |> Emitters.export ~emitters
   else
     (if is_interface && config.export_interfaces then
-       doc_string ^ "export interface " ^ resolved_type_name ^ type_params_string
-       ^ " "
+       doc_string ^ "export interface " ^ resolved_type_name
+       ^ type_params_string ^ " "
      else
-       doc_string ^ "export type " ^ resolved_type_name ^ type_params_string ^ " = ")
+       doc_string ^ "export type " ^ resolved_type_name ^ type_params_string
+       ^ " = ")
     ^ (match type_ with
       | _ -> type_ |> type_to_string ~config ~type_name_is_interface)
     ^ ";" ^ export_name_as
@@ -376,16 +397,18 @@ let emit_import_value_as_early ~emitters ~name ~name_as import_path =
   ^ "';"
   |> Emitters.require_early ~emitters
 
-let emit_require ~imported_value_or_component ~early ~emitters ~(config : Config.t)
-    ~module_name import_path =
+let emit_require ~imported_value_or_component ~early ~emitters
+    ~(config : Config.t) ~module_name import_path =
   let module_name_string = ModuleName.to_string module_name in
   let import_path_string = ImportPath.emit import_path in
   let output =
     match config.module_ with
     | ESModule when not imported_value_or_component ->
-      "import * as " ^ module_name_string ^ " from '" ^ import_path_string ^ "';"
+      "import * as " ^ module_name_string ^ " from '" ^ import_path_string
+      ^ "';"
     | _ ->
-      "const " ^ module_name_string ^ " = require('" ^ import_path_string ^ "');"
+      "const " ^ module_name_string ^ " = require('" ^ import_path_string
+      ^ "');"
   in
   output
   |> (match early with

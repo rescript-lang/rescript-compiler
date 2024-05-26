@@ -89,7 +89,11 @@ and field = {
   doc_string: DocString.t;
 }
 
-and function_ = {arg_types: arg_type list; ret_type: type_; type_vars: string list}
+and function_ = {
+  arg_types: arg_type list;
+  ret_type: type_;
+  type_vars: string list;
+}
 
 and ident = {builtin: bool; name: string; type_args: type_ list}
 

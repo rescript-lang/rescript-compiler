@@ -30,7 +30,10 @@ let export_early ~emitters s =
   }
 
 let require ~emitters s =
-  {emitters with require_emitter = s |> string ~emitter:emitters.require_emitter}
+  {
+    emitters with
+    require_emitter = s |> string ~emitter:emitters.require_emitter;
+  }
 
 let import ~emitters s =
   {emitters with import_emitter = s |> string ~emitter:emitters.import_emitter}

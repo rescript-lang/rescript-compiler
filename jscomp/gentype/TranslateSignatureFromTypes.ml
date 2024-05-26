@@ -1,8 +1,8 @@
 open GenTypeCommon
 
 (** Like translateTypeDeclaration but from Types not Typedtree  *)
-let translate_type_declaration_from_types ~config ~output_file_relative ~resolver
-    ~type_env ~id
+let translate_type_declaration_from_types ~config ~output_file_relative
+    ~resolver ~type_env ~id
     ({type_attributes; type_kind; type_loc; type_manifest; type_params} :
       Types.type_declaration) : CodeItem.type_declaration list =
   type_env |> TypeEnv.new_type ~name:(id |> Ident.name);
@@ -17,16 +17,16 @@ let translate_type_declaration_from_types ~config ~output_file_relative ~resolve
         (label_declarations, record_representation)
     | Type_variant constructor_declarations
       when not
-             (TranslateTypeDeclarations.has_some_gadt_leaf constructor_declarations)
-      ->
+             (TranslateTypeDeclarations.has_some_gadt_leaf
+                constructor_declarations) ->
       VariantDeclarationFromTypes constructor_declarations
     | Type_abstract -> GeneralDeclarationFromTypes type_manifest
     | _ -> NoDeclaration
   in
   declaration_kind
   |> TranslateTypeDeclarations.traslate_declaration_kind ~config ~loc:type_loc
-       ~output_file_relative ~resolver ~type_attributes:type_attributes ~type_env
-       ~type_name ~type_vars
+       ~output_file_relative ~resolver ~type_attributes ~type_env ~type_name
+       ~type_vars
 
 (** Like translateModuleDeclaration but from Types not Typedtree *)
 let rec translate_module_declaration_from_types ~config ~output_file_relative
@@ -70,15 +70,17 @@ and translate_signature_item_from_types ~config ~output_file_relative ~resolver
     in
     type_env |> TypeEnv.update_module_item ~module_item;
     module_declaration
-    |> translate_module_declaration_from_types ~config ~output_file_relative ~resolver
-         ~type_env ~id
+    |> translate_module_declaration_from_types ~config ~output_file_relative
+         ~resolver ~type_env ~id
   | Types.Sig_value (id, {val_attributes; val_loc; val_type}) ->
     let name = id |> Ident.name in
     if !Debug.translation then Log_.item "Translate Sig Value %s\n" name;
     let module_item = Runtime.new_module_item ~name in
     type_env |> TypeEnv.update_module_item ~module_item;
     if
-      val_attributes |> Annotation.from_attributes ~config ~loc:val_loc = GenType
+      val_attributes
+      |> Annotation.from_attributes ~config ~loc:val_loc
+      = GenType
     then
       name
       |> Translation.translate_value ~attributes:val_attributes ~config
@@ -100,10 +102,10 @@ and translate_signature_item_from_types ~config ~output_file_relative ~resolver
     Translation.empty
 
 (** Like translateSignature but from Types not Typedtree *)
-and translate_signature_from_types ~config ~output_file_relative ~resolver ~type_env
-    (signature : Types.signature_item list) : Translation.t list =
+and translate_signature_from_types ~config ~output_file_relative ~resolver
+    ~type_env (signature : Types.signature_item list) : Translation.t list =
   if !Debug.translation then Log_.item "Translate Types.signature\n";
   signature
   |> List.map
-       (translate_signature_item_from_types ~config ~output_file_relative ~resolver
-          ~type_env)
+       (translate_signature_item_from_types ~config ~output_file_relative
+          ~resolver ~type_env)

@@ -42,13 +42,17 @@ let rec rewrite_ppat_open longident_open pat =
       pat with
       ppat_desc =
         Ppat_construct
-          ( {longident_loc with txt = concat_longidents longident_open constructor},
+          ( {
+              longident_loc with
+              txt = concat_longidents longident_open constructor;
+            },
             opt_pattern );
     }
   | Ppat_record ((({txt = lbl} as longident_loc), first_pat) :: rest, flag) ->
     (* Foo.{x} -> {Foo.x: x} *)
     let first_row =
-      ({longident_loc with txt = concat_longidents longident_open lbl}, first_pat)
+      ( {longident_loc with txt = concat_longidents longident_open lbl},
+        first_pat )
     in
     {pat with ppat_desc = Ppat_record (first_row :: rest, flag)}
   | Ppat_or (pat1, pat2) ->
@@ -69,7 +73,10 @@ let rec rewrite_ppat_open longident_open pat =
       pat with
       ppat_desc =
         Ppat_type
-          {longident_loc with txt = concat_longidents longident_open constructor};
+          {
+            longident_loc with
+            txt = concat_longidents longident_open constructor;
+          };
     }
   | Ppat_lazy p ->
     {pat with ppat_desc = Ppat_lazy (rewrite_ppat_open longident_open p)}
@@ -168,7 +175,8 @@ let looks_like_recursive_type_declaration type_declaration =
     | Ptyp_class _ -> false
     | Ptyp_package _ -> false
     | Ptyp_extension _ -> false
-    | Ptyp_arrow (_lbl, typ1, typ2) -> check_typ_expr typ1 || check_typ_expr typ2
+    | Ptyp_arrow (_lbl, typ1, typ2) ->
+      check_typ_expr typ1 || check_typ_expr typ2
     | Ptyp_tuple types -> List.exists check_typ_expr types
     | Ptyp_constr ({txt = longident}, types) ->
       (match longident with
@@ -301,11 +309,14 @@ let normalize =
             | Some "" -> Some "js"
             | tag -> tag
           in
-          let s = Parsetree.Pconst_string (escape_template_literal txt, new_tag) in
+          let s =
+            Parsetree.Pconst_string (escape_template_literal txt, new_tag)
+          in
           {
             p with
             ppat_attributes =
-              template_literal_attr :: mapper.attributes mapper p.ppat_attributes;
+              template_literal_attr
+              :: mapper.attributes mapper p.ppat_attributes;
             ppat_desc = Ppat_constant s;
           }
         | _ -> default_mapper.pat mapper p);
@@ -332,7 +343,9 @@ let normalize =
             | Some "" -> Some "js"
             | tag -> tag
           in
-          let s = Parsetree.Pconst_string (escape_template_literal txt, new_tag) in
+          let s =
+            Parsetree.Pconst_string (escape_template_literal txt, new_tag)
+          in
           {
             expr with
             pexp_attributes =
@@ -476,7 +489,8 @@ let normalize =
           let flag =
             match type_declarations with
             | [td] ->
-              if looks_like_recursive_type_declaration td then Asttypes.Recursive
+              if looks_like_recursive_type_declaration td then
+                Asttypes.Recursive
               else Asttypes.Nonrecursive
             | _ -> rec_flag
           in
@@ -499,7 +513,8 @@ let normalize =
           let flag =
             match type_declarations with
             | [td] ->
-              if looks_like_recursive_type_declaration td then Asttypes.Recursive
+              if looks_like_recursive_type_declaration td then
+                Asttypes.Recursive
               else Asttypes.Nonrecursive
             | _ -> rec_flag
           in

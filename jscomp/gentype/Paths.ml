@@ -9,7 +9,8 @@ let handle_namespace cmt =
     | exception Not_found -> s
   in
   let no_dir = Filename.basename cmt = cmt in
-  if no_dir then cmt |> (Filename.chop_extension [@doesNotRaise]) |> cut_after_dash
+  if no_dir then
+    cmt |> (Filename.chop_extension [@doesNotRaise]) |> cut_after_dash
   else
     let dir = cmt |> Filename.dirname in
     let base =

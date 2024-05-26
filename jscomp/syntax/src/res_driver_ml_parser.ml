@@ -19,7 +19,9 @@ let extract_ocaml_concrete_syntax filename =
     let token = Lexer.token_with_comments lexbuf in
     match token with
     | OcamlParser.COMMENT (txt, loc) ->
-      let comment = Res_comment.from_ocaml_comment ~loc ~prev_tok_end_pos ~txt in
+      let comment =
+        Res_comment.from_ocaml_comment ~loc ~prev_tok_end_pos ~txt
+      in
       comment_data := comment :: !comment_data;
       next loc.Location.loc_end ()
     | OcamlParser.STRING (_txt, None) ->

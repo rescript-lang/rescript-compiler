@@ -1,7 +1,9 @@
 open GenTypeCommon
 
 type module_item
-type module_access_path = Root of string | Dot of module_access_path * module_item
+type module_access_path =
+  | Root of string
+  | Dot of module_access_path * module_item
 
 val check_mutable_object_field : previous_name:string -> name:string -> bool
 val default : string

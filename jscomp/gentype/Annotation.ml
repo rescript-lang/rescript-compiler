@@ -136,15 +136,17 @@ let get_as_int attributes =
   | _ -> None
 
 let get_attribute_import_renaming attributes =
-  let attribute_import = attributes |> get_attribute_payload tag_is_gentype_import in
+  let attribute_import =
+    attributes |> get_attribute_payload tag_is_gentype_import
+  in
   let gentype_as_renaming = attributes |> get_gentype_as_renaming in
   match (attribute_import, gentype_as_renaming) with
   | Some (_, StringPayload import_string), _ ->
     (Some import_string, gentype_as_renaming)
   | ( Some
         ( _,
-          TuplePayload [StringPayload import_string; StringPayload rename_string]
-        ),
+          TuplePayload
+            [StringPayload import_string; StringPayload rename_string] ),
       _ ) ->
     (Some import_string, Some rename_string)
   | _ -> (None, gentype_as_renaming)
@@ -169,7 +171,8 @@ let from_attributes ~(config : GenTypeConfig.t) ~loc
     (attributes : Typedtree.attributes) =
   let default = if config.everything then GenType else NoGenType in
   if has_attribute tag_is_gentype_opaque attributes then GenTypeOpaque
-  else if has_attribute (fun s -> tag_is_gentype s || tag_is_gentype_as s) attributes
+  else if
+    has_attribute (fun s -> tag_is_gentype s || tag_is_gentype_as s) attributes
   then (
     (match attributes |> get_attribute_payload tag_is_gentype with
     | Some (_, UnrecognizedPayload) -> ()
@@ -226,8 +229,8 @@ and signature_item_check_annotation ~check_annotation
   | Tsig_include _ | Tsig_class _ | Tsig_class_type _ ->
     false
 
-and signature_check_annotation ~check_annotation (signature : Typedtree.signature)
-    =
+and signature_check_annotation ~check_annotation
+    (signature : Typedtree.signature) =
   signature.sig_items
   |> List.exists (signature_item_check_annotation ~check_annotation)
 
@@ -283,8 +286,8 @@ and module_binding_check_annotation ~check_annotation
   mb_attributes |> check_annotation ~loc
   || mb_expr |> module_expr_check_annotation ~check_annotation
 
-and structure_check_annotation ~check_annotation (structure : Typedtree.structure)
-    =
+and structure_check_annotation ~check_annotation
+    (structure : Typedtree.structure) =
   structure.str_items
   |> List.exists (structure_item_check_annotation ~check_annotation)
 

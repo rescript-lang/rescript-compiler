@@ -122,13 +122,16 @@ and translate_signature_item ~config ~output_file_relative ~resolver ~type_env
       in
       type_env |> TypeEnv.update_module_item ~module_item;
       value_description
-      |> translate_signature_value ~config ~output_file_relative ~resolver ~type_env
+      |> translate_signature_value ~config ~output_file_relative ~resolver
+           ~type_env
   | {Typedtree.sig_desc = Typedtree.Tsig_module module_declaration} ->
     module_declaration
-    |> translate_module_declaration ~config ~output_file_relative ~resolver ~type_env
+    |> translate_module_declaration ~config ~output_file_relative ~resolver
+         ~type_env
   | {Typedtree.sig_desc = Typedtree.Tsig_modtype module_type_declaration} ->
     let module_item =
-      Runtime.new_module_item ~name:(module_type_declaration.mtd_id |> Ident.name)
+      Runtime.new_module_item
+        ~name:(module_type_declaration.mtd_id |> Ident.name)
     in
     let config =
       module_type_declaration.mtd_attributes
@@ -163,9 +166,10 @@ and translate_signature_item ~config ~output_file_relative ~resolver ~type_env
     log_not_implemented ("Tsig_attribute " ^ __LOC__);
     Translation.empty
 
-and translate_signature ~config ~output_file_relative ~resolver ~type_env signature
-    : Translation.t list =
+and translate_signature ~config ~output_file_relative ~resolver ~type_env
+    signature : Translation.t list =
   if !Debug.translation then Log_.item "Translate Signature\n";
   signature.Typedtree.sig_items
   |> List.map
-       (translate_signature_item ~config ~output_file_relative ~resolver ~type_env)
+       (translate_signature_item ~config ~output_file_relative ~resolver
+          ~type_env)

@@ -45,8 +45,8 @@ let call_expr expr =
        Pexp_constraint ({pexp_desc = Pexp_pack _}, {ptyp_desc = Ptyp_package _});
     } ->
       Nothing
-    | {pexp_desc = Pexp_fun _} when ParsetreeViewer.is_underscore_apply_sugar expr
-      ->
+    | {pexp_desc = Pexp_fun _}
+      when ParsetreeViewer.is_underscore_apply_sugar expr ->
       Nothing
     | {
      pexp_desc =
@@ -98,8 +98,8 @@ let unary_expr_operand expr =
        Pexp_constraint ({pexp_desc = Pexp_pack _}, {ptyp_desc = Ptyp_package _});
     } ->
       Nothing
-    | {pexp_desc = Pexp_fun _} when ParsetreeViewer.is_underscore_apply_sugar expr
-      ->
+    | {pexp_desc = Pexp_fun _}
+      when ParsetreeViewer.is_underscore_apply_sugar expr ->
       Nothing
     | {
      pexp_desc =
@@ -124,8 +124,8 @@ let binary_expr_operand ~is_lhs expr =
        Pexp_constraint ({pexp_desc = Pexp_pack _}, {ptyp_desc = Ptyp_package _});
     } ->
       Nothing
-    | {pexp_desc = Pexp_fun _} when ParsetreeViewer.is_underscore_apply_sugar expr
-      ->
+    | {pexp_desc = Pexp_fun _}
+      when ParsetreeViewer.is_underscore_apply_sugar expr ->
       Nothing
     | {
      pexp_desc =
@@ -147,7 +147,8 @@ let sub_binary_expr_operand parent_operator child_operator =
   let prec_child = ParsetreeViewer.operator_precedence child_operator in
   prec_parent > prec_child
   || prec_parent == prec_child
-     && not (ParsetreeViewer.flattenable_operators parent_operator child_operator)
+     && not
+          (ParsetreeViewer.flattenable_operators parent_operator child_operator)
   || (* a && b || c, add parens to (a && b) for readability, who knows the difference by heart… *)
   (parent_operator = "||" && child_operator = "&&")
 
@@ -208,16 +209,16 @@ let lazy_or_assert_or_await_expr_rhs ?(in_await = false) expr =
        Pexp_apply ({pexp_desc = Pexp_ident {txt = Longident.Lident operator}}, _);
     }
       when ParsetreeViewer.is_binary_expression expr ->
-      if in_await && not (binary_operator_inside_await_needs_parens operator) then
-        Nothing
+      if in_await && not (binary_operator_inside_await_needs_parens operator)
+      then Nothing
       else Parenthesized
     | {
      pexp_desc =
        Pexp_constraint ({pexp_desc = Pexp_pack _}, {ptyp_desc = Ptyp_package _});
     } ->
       Nothing
-    | {pexp_desc = Pexp_fun _} when ParsetreeViewer.is_underscore_apply_sugar expr
-      ->
+    | {pexp_desc = Pexp_fun _}
+      when ParsetreeViewer.is_underscore_apply_sugar expr ->
       Nothing
     | {
      pexp_desc =
@@ -238,7 +239,8 @@ let is_negative_constant constant =
     len > 0 && (String.get [@doesNotRaise]) txt 0 = '-'
   in
   match constant with
-  | (Parsetree.Pconst_integer (i, _) | Pconst_float (i, _)) when is_neg i -> true
+  | (Parsetree.Pconst_integer (i, _) | Pconst_float (i, _)) when is_neg i ->
+    true
   | _ -> false
 
 let field_expr expr =
@@ -262,8 +264,8 @@ let field_expr expr =
     } ->
       Nothing
     | {pexp_desc = Pexp_constant c} when is_negative_constant c -> Parenthesized
-    | {pexp_desc = Pexp_fun _} when ParsetreeViewer.is_underscore_apply_sugar expr
-      ->
+    | {pexp_desc = Pexp_fun _}
+      when ParsetreeViewer.is_underscore_apply_sugar expr ->
       Nothing
     | {
      pexp_desc =

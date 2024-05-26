@@ -82,7 +82,8 @@ let valid_code_points_tests =
 
 let test_is_valid_code_point () =
   Array.iter
-    (fun (code_point, t) -> assert (Res_utf8.is_valid_code_point code_point = t))
+    (fun (code_point, t) ->
+      assert (Res_utf8.is_valid_code_point code_point = t))
     valid_code_points_tests
 
 let run () =

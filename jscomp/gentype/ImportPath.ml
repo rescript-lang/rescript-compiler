@@ -6,7 +6,8 @@ let bs_curry_path ~config = ("", Config.get_bs_curry_path ~config)
 
 let from_module ~dir ~import_extension module_name =
   let with_no_path =
-    (module_name |> ModuleName.to_string |> ScopedPackage.remove_generated_module)
+    (module_name |> ModuleName.to_string
+   |> ScopedPackage.remove_generated_module)
     ^ import_extension
   in
   (dir, with_no_path)
@@ -20,7 +21,9 @@ let dump (dir, s) = NodeFilename.concat dir s
 
 let to_cmt ~(config : Config.t) ~output_file_relative (dir, s) =
   let open Filename in
-  concat (output_file_relative |> dirname) ((dir, s) |> chop_extension_safe |> dump)
+  concat
+    (output_file_relative |> dirname)
+    ((dir, s) |> chop_extension_safe |> dump)
   ^ (match config.namespace with
     | None -> ""
     | Some name -> "-" ^ name)

@@ -72,10 +72,16 @@ let process_config_attribute attribute config =
   if is_jsx_config_attr attribute then update_config config (snd attribute)
 
 let get_mapper ~config =
-  let expr3, module_binding3, transform_signature_item3, transform_structure_item3 =
+  let ( expr3,
+        module_binding3,
+        transform_signature_item3,
+        transform_structure_item3 ) =
     Reactjs_jsx_v3.jsx_mapper ~config
   in
-  let expr4, module_binding4, transform_signature_item4, transform_structure_item4 =
+  let ( expr4,
+        module_binding4,
+        transform_signature_item4,
+        transform_structure_item4 ) =
     Jsx_v4.jsx_mapper ~config
   in
 
