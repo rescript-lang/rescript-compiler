@@ -55,7 +55,7 @@ external input: result => string = "input"
 
 /**
 Constructs a RegExp object (Js.Re.t) from a `string`.
-Regex literals `%re("/.../")` should generally be preferred, but `fromString`
+Regex literals `/.../` should generally be preferred, but `fromString`
 is useful when you need to dynamically construct a regex using strings,
 exactly like when you do so in JavaScript.
 
@@ -112,7 +112,7 @@ set.
 ## Examples
 
 ```rescript
-let re = %re("/ab*TODO/g")
+let re = /ab*TODO/g
 let str = "abbcdefabh"
 
 let break = ref(false)
@@ -166,7 +166,7 @@ Returns `Some(Js.Re.result)` if a match is found, `None` otherwise.
   * Ignore case
   */
 
-let re = %re("/quick\s(brown).+?(jumps)/ig")
+let re = /quick\s(brown).+?(jumps)/ig
 let result = Js.Re.exec_(re, "The Quick Brown Fox Jumps Over The Lazy Dog")
 ```
 

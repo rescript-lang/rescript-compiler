@@ -654,7 +654,7 @@ let process = value => {
   let resultMap = Js.Dict.empty()
   let missingQueries = []
   rows->Array.forEach(row => {
-    let result = row |> Js.Re.exec_(%re("/(.*?) \[(.*?)\]$/g"))
+    let result = row |> Js.Re.exec_(/(.*?) \[(.*?)\]$/g)
     let itemWithVariant = switch result {
     | Some(match_) =>
       let captures = Js.Re.captures(match_)

@@ -292,10 +292,10 @@ let updateEmbedUrl = (send, event) => {
 }
 
 let embedUrlRegexes = [
-  %re("/https:\\/\\/.*slideshare\\.net/"),
-  %re("/https:\\/\\/.*vimeo\\.com/"),
-  %re("/https:\\/\\/.*youtube\\.com/"),
-  %re("/https:\\/\\/.*youtu\\.be/"),
+  /https:\/\/.*slideshare\.net/,
+  /https:\/\/.*vimeo\.com/,
+  /https:\/\/.*youtube\.com/,
+  /https:\/\/.*youtu\.be/,
 ]
 
 let validEmbedUrl = url => Belt.Array.some(embedUrlRegexes, regex => regex->Js.Re.test_(url))

@@ -1868,6 +1868,22 @@ and parseConstrainedExprRegion p =
     | _ -> Some expr)
   | _ -> None
 
+and parseRegex p pattern flags =
+  let startPos = p.Parser.startPos in
+  Parser.next p;
+  let loc = mkLoc startPos p.prevEndPos in
+  let payload =
+    Parsetree.PStr
+      [
+        Ast_helper.Str.eval ~loc
+          (Ast_helper.Exp.constant ~loc
+             (Pconst_string
+                ( "/" ^ pattern ^ "/" ^ flags,
+                  if p.mode = ParseForTypeChecker then Some "js" else None )));
+      ]
+  in
+  Ast_helper.Exp.extension (Location.mknoloc "re", payload)
+
 (* Atomic expressions represent unambiguous expressions.
  * This means that regardless of the context, these expressions
  * are always interpreted correctly. *)
@@ -1937,6 +1953,18 @@ and parseAtomicExpr p =
       Parser.err ~startPos:p.prevEndPos p
         (Diagnostics.unexpected p.Parser.token p.breadcrumbs);
       Recover.defaultExpr ()
+    | Forwardslash -> (
+      Parser.nextRegexToken p;
+      match p.token with
+      | Regex (pattern, flags) -> parseRegex p pattern flags
+      | _ -> Ast_helper.Exp.extension (Location.mknoloc "re", Parsetree.PStr [])
+      )
+    | ForwardslashDot -> (
+      Parser.nextRegexToken p;
+      match p.token with
+      | Regex (pattern, flags) -> parseRegex p ("." ^ pattern) flags
+      | _ -> Ast_helper.Exp.extension (Location.mknoloc "re", Parsetree.PStr [])
+      )
     | token -> (
       let errPos = p.prevEndPos in
       Parser.err ~startPos:errPos p (Diagnostics.unexpected token p.breadcrumbs);

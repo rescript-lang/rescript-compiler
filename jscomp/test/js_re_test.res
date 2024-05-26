@@ -4,7 +4,7 @@ let suites = {
     (
       "captures",
       _ => {
-        let re = %re("/(\d+)-(?:(\d+))?/g")
+        let re = /(\d+)-(?:(\d+))?/g
         let str = "3-"
         switch re->Js.Re.exec_(str) {
         | Some(result) =>
@@ -35,7 +35,7 @@ let suites = {
     (
       "exec_literal",
       _ =>
-        switch %re("/[^.]+/")->Js.Re.exec_("http://xxx.domain.com") {
+        switch /[^.]+/->Js.Re.exec_("http://xxx.domain.com") {
         | Some(res) => Eq(Js.Nullable.return("http://xxx"), Js.Re.captures(res)[0])
         | None => FailWith("regex should match")
         },
@@ -43,7 +43,7 @@ let suites = {
     (
       "exec_no_match",
       _ =>
-        switch %re("/https:\/\/(.*)/")->Js.Re.exec_("http://xxx.domain.com") {
+        switch /https:\/\/(.*)/->Js.Re.exec_("http://xxx.domain.com") {
         | Some(_) => FailWith("regex should not match")
         | None => Ok(true)
         },
@@ -77,20 +77,20 @@ let suites = {
       _ => {
         let input = "foobar"
 
-        switch %re("/foo/g")->Js.Re.exec_(input) {
+        switch /foo/g->Js.Re.exec_(input) {
         | Some(res) => Eq(input, res |> Js.Re.input)
         | None => Fail()
         }
       },
     ),
     /* es2015 */
-    ("t_flags", _ => Eq("gi", %re("/./ig")->Js.Re.flags)),
-    ("t_global", _ => Eq(true, %re("/./ig")->Js.Re.global)),
-    ("t_ignoreCase", _ => Eq(true, %re("/./ig")->Js.Re.ignoreCase)),
+    ("t_flags", _ => Eq("gi", /./ig->Js.Re.flags)),
+    ("t_global", _ => Eq(true, /./ig->Js.Re.global)),
+    ("t_ignoreCase", _ => Eq(true, /./ig->Js.Re.ignoreCase)),
     (
       "t_lastIndex",
       _ => {
-        let re = %re("/na/g")
+        let re = /na/g
         let _ =
           re->Js.Re.exec_(
             "banana",
@@ -101,7 +101,7 @@ let suites = {
     (
       "t_setLastIndex",
       _ => {
-        let re = %re("/na/g")
+        let re = /na/g
 
         let before = Js.Re.lastIndex(re)
         let () = Js.Re.setLastIndex(re, 42)
@@ -110,11 +110,11 @@ let suites = {
         Eq((0, 42), (before, after))
       },
     ),
-    ("t_multiline", _ => Eq(false, %re("/./ig")->Js.Re.multiline)),
-    ("t_source", _ => Eq("f.+o", %re("/f.+o/ig")->Js.Re.source)),
+    ("t_multiline", _ => Eq(false, /./ig->Js.Re.multiline)),
+    ("t_source", _ => Eq("f.+o", /f.+o/ig->Js.Re.source)),
     /* es2015 */
-    ("t_sticky", _ => Eq(true, %re("/./yg")->Js.Re.sticky)),
-    ("t_unicode", _ => Eq(false, %re("/./yg")->Js.Re.unicode)),
+    ("t_sticky", _ => Eq(true, /./yg->Js.Re.sticky)),
+    ("t_unicode", _ => Eq(false, /./yg->Js.Re.unicode)),
   }
 }
 

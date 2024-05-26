@@ -39,6 +39,7 @@ type t =
   | Backslash [@live]
   | Forwardslash
   | ForwardslashDot
+  | Regex of string * string
   | Asterisk
   | AsteriskDot
   | Exponentiation
@@ -153,6 +154,7 @@ let toString = function
   | PlusPlus -> "++"
   | PlusEqual -> "+="
   | Backslash -> "\\"
+  | Regex (pattern, flags) -> "regex: /" ^ pattern ^ "/" ^ flags
   | Forwardslash -> "/"
   | ForwardslashDot -> "/."
   | Exception -> "exception"

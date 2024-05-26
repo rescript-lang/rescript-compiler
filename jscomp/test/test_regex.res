@@ -1,5 +1,5 @@
-let v = %re("/b/ig")
-let r = %re("/Bucklescript是一个程序语言/")
+let v = /b/ig
+let r = /Bucklescript是一个程序语言/
 
 /* Js.log(v);;
  Js.log(r);; */
