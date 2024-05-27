@@ -9,17 +9,17 @@ function r2Test(x) {
   return x;
 }
 
-var a = "0";
+let a = "0";
 
-var b = "1";
+let b = "1";
 
-var zero = 0;
+let zero = 0;
 
 export {
-  testV1 ,
-  r2Test ,
-  a ,
-  b ,
-  zero ,
+  testV1,
+  r2Test,
+  a,
+  b,
+  zero,
 }
 /* No side effect */

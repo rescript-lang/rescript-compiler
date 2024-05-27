@@ -59,17 +59,17 @@ function sumLblCurried(s, n) {
 }
 
 export {
-  uncurried0 ,
-  uncurried1 ,
-  uncurried2 ,
-  uncurried3 ,
-  curried3 ,
-  callback ,
-  callback2 ,
-  callback2U ,
-  sumU ,
-  sumU2 ,
-  sumCurried ,
-  sumLblCurried ,
+  uncurried0,
+  uncurried1,
+  uncurried2,
+  uncurried3,
+  curried3,
+  callback,
+  callback2,
+  callback2U,
+  sumU,
+  sumU2,
+  sumCurried,
+  sumLblCurried,
 }
 /* No side effect */

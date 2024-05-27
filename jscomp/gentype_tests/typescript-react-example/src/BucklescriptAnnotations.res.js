@@ -2,11 +2,11 @@
 
 
 function bar(x) {
-  var f = x.twoArgs;
+  let f = x.twoArgs;
   return f(3, "a");
 }
 
 export {
-  bar ,
+  bar,
 }
 /* No side effect */

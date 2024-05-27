@@ -3,16 +3,16 @@
 import ImportHookDefaultGen from "./ImportHookDefault.gen";
 import * as ImportHookDefaultGen$1 from "./ImportHookDefault.gen";
 
-var make = ImportHookDefaultGen$1.make;
+let make = ImportHookDefaultGen$1.make;
 
-var make2 = ImportHookDefaultGen;
+let make2 = ImportHookDefaultGen;
 
-var MM = {
+let MM = {
   make2: make2
 };
 
 export {
-  make ,
-  MM ,
+  make,
+  MM,
 }
 /* make Not a pure module */

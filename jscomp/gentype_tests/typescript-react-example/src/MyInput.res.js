@@ -2,9 +2,9 @@
 
 import MyInputGen from "./MyInput.gen";
 
-var make = MyInputGen;
+let make = MyInputGen;
 
 export {
-  make ,
+  make,
 }
 /* make Not a pure module */

@@ -18,9 +18,9 @@ function convertFirstClassModuleWithTypeEquations(x) {
 }
 
 export {
-  convert ,
-  convertInterface ,
-  convertRecord ,
-  convertFirstClassModuleWithTypeEquations ,
+  convert,
+  convertInterface,
+  convertRecord,
+  convertFirstClassModuleWithTypeEquations,
 }
 /* No side effect */

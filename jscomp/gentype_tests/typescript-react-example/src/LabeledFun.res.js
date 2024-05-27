@@ -2,11 +2,11 @@
 
 
 function labelled(a, bOpt, c, d, e, f) {
-  var b = bOpt !== undefined ? bOpt : 3;
+  let b = bOpt !== undefined ? bOpt : 3;
   return ((((a + b | 0) + c | 0) + d | 0) + e | 0) + f | 0;
 }
 
 export {
-  labelled ,
+  labelled,
 }
 /* No side effect */

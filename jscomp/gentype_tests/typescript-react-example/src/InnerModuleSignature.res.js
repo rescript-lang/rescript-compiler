@@ -5,11 +5,11 @@ function make(t) {
   return t + "...";
 }
 
-var InnerModule = {
+let InnerModule = {
   make: make
 };
 
 export {
-  InnerModule ,
+  InnerModule,
 }
 /* No side effect */

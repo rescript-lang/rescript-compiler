@@ -73,27 +73,27 @@ function unitArgWithConversionU() {
   return "A";
 }
 
-var flat = 34;
+let flat = 34;
 
 export {
-  flat ,
-  signMessage ,
-  one ,
-  two ,
-  tree ,
-  oneU ,
-  twoU ,
-  treeU ,
-  useParam ,
-  useParamU ,
-  unnamed1 ,
-  unnamed1U ,
-  unnamed2 ,
-  unnamed2U ,
-  grouped ,
-  unitArgWithoutConversion ,
-  unitArgWithoutConversionU ,
-  unitArgWithConversion ,
-  unitArgWithConversionU ,
+  flat,
+  signMessage,
+  one,
+  two,
+  tree,
+  oneU,
+  twoU,
+  treeU,
+  useParam,
+  useParamU,
+  unnamed1,
+  unnamed1U,
+  unnamed2,
+  unnamed2U,
+  grouped,
+  unitArgWithoutConversion,
+  unitArgWithoutConversionU,
+  unitArgWithConversion,
+  unitArgWithConversionU,
 }
 /* No side effect */

@@ -6,10 +6,10 @@ import * as Belt_Option from "rescript/lib/es6/belt_Option.js";
 
 function swap(tree) {
   return {
-          label: tree.label,
-          left: Belt_Option.map(tree.right, swap),
-          right: Belt_Option.map(tree.left, swap)
-        };
+    label: tree.label,
+    left: Belt_Option.map(tree.right, swap),
+    right: Belt_Option.map(tree.left, swap)
+  };
 }
 
 function selfRecursiveConverter(param) {
@@ -36,7 +36,7 @@ function testConvertLocation(x) {
   return x;
 }
 
-var testMarshalFields = {
+let testMarshalFields = {
   _rec: "rec",
   _switch: "_switch",
   switch: "switch",
@@ -56,15 +56,15 @@ function testInstantiateTypeParameter(x) {
   return x;
 }
 
-var currentTime = new Date();
+let currentTime = new Date();
 
-var optFunction = (function (param) {
-    return 3;
-  });
+let optFunction = (function (param) {
+  return 3;
+});
 
-var ObjectId = {};
+let ObjectId = {};
 
-var someIntList = {
+let someIntList = {
   hd: 1,
   tl: {
     hd: 2,
@@ -75,38 +75,38 @@ var someIntList = {
   }
 };
 
-var map = List.map;
+let map = List.map;
 
-var stringT = "a";
+let stringT = "a";
 
-var jsStringT = "a";
+let jsStringT = "a";
 
-var jsString2T = "a";
+let jsString2T = "a";
 
-var i64Const = [
+let i64Const = [
   0,
   34
 ];
 
 export {
-  someIntList ,
-  map ,
-  swap ,
-  selfRecursiveConverter ,
-  mutuallyRecursiveConverter ,
-  testFunctionOnOptionsAsArgument ,
-  stringT ,
-  jsStringT ,
-  jsString2T ,
-  jsonStringify ,
-  testConvertNull ,
-  testConvertLocation ,
-  testMarshalFields ,
-  setMatch ,
-  testInstantiateTypeParameter ,
-  currentTime ,
-  i64Const ,
-  optFunction ,
-  ObjectId ,
+  someIntList,
+  map,
+  swap,
+  selfRecursiveConverter,
+  mutuallyRecursiveConverter,
+  testFunctionOnOptionsAsArgument,
+  stringT,
+  jsStringT,
+  jsString2T,
+  jsonStringify,
+  testConvertNull,
+  testConvertLocation,
+  testMarshalFields,
+  setMatch,
+  testInstantiateTypeParameter,
+  currentTime,
+  i64Const,
+  optFunction,
+  ObjectId,
 }
 /* currentTime Not a pure module */

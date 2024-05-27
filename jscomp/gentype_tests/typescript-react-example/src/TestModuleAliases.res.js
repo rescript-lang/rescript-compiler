@@ -17,28 +17,28 @@ function testInner2Expanded(x) {
   return x;
 }
 
-var OtherFile;
+let OtherFile;
 
-var OtherFileAlias;
+let OtherFileAlias;
 
-var OuterAlias;
+let OuterAlias;
 
-var OtherFile1;
+let OtherFile1;
 
-var Outer2;
+let Outer2;
 
-var Inner2;
+let Inner2;
 
 export {
-  OtherFile ,
-  OtherFileAlias ,
-  OuterAlias ,
-  OtherFile1 ,
-  Outer2 ,
-  Inner2 ,
-  testInner1 ,
-  testInner1Expanded ,
-  testInner2 ,
-  testInner2Expanded ,
+  OtherFile,
+  OtherFileAlias,
+  OuterAlias,
+  OtherFile1,
+  Outer2,
+  Inner2,
+  testInner1,
+  testInner1Expanded,
+  testInner2,
+  testInner2Expanded,
 }
 /* No side effect */

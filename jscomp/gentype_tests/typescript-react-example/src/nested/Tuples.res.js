@@ -8,14 +8,14 @@ function testTuple(param) {
 
 function computeArea(param) {
   return Math.imul(Math.imul(param[0], param[1]), Belt_Option.mapWithDefault(param[2], 1, (function (n) {
-                    return n;
-                  })));
+    return n;
+  })));
 }
 
 function computeAreaWithIdent(param) {
   return Math.imul(Math.imul(param[0], param[1]), Belt_Option.mapWithDefault(param[2], 1, (function (n) {
-                    return n;
-                  })));
+    return n;
+  })));
 }
 
 function computeAreaNoConverters(param) {
@@ -24,10 +24,10 @@ function computeAreaNoConverters(param) {
 
 function coord2d(x, y) {
   return [
-          x,
-          y,
-          undefined
-        ];
+    x,
+    y,
+    undefined
+  ];
 }
 
 function getFirstName(param) {
@@ -36,37 +36,37 @@ function getFirstName(param) {
 
 function marry(first, second) {
   return [
-          first,
-          second
-        ];
+    first,
+    second
+  ];
 }
 
 function changeSecondAge(param) {
-  var second = param[1];
+  let second = param[1];
   return [
-          param[0],
-          {
-            name: second.name,
-            age: second.age + 1 | 0
-          }
-        ];
+    param[0],
+    {
+      name: second.name,
+      age: second.age + 1 | 0
+    }
+  ];
 }
 
-var origin = [
+let origin = [
   0,
   0,
   0
 ];
 
 export {
-  testTuple ,
-  origin ,
-  computeArea ,
-  computeAreaWithIdent ,
-  computeAreaNoConverters ,
-  coord2d ,
-  getFirstName ,
-  marry ,
-  changeSecondAge ,
+  testTuple,
+  origin,
+  computeArea,
+  computeAreaWithIdent,
+  computeAreaNoConverters,
+  coord2d,
+  getFirstName,
+  marry,
+  changeSecondAge,
 }
 /* No side effect */

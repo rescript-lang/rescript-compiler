@@ -5,11 +5,11 @@ function _placeholder(run, times) {
   
 }
 
-var DecideSubject = {
+let DecideSubject = {
   _placeholder: _placeholder
 };
 
 export {
-  DecideSubject ,
+  DecideSubject,
 }
 /* No side effect */
