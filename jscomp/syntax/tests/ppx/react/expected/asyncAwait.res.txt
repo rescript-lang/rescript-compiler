@@ -8,7 +8,9 @@ module C0 = {
     ReactDOM.jsx("div", {children: ?ReactDOM.someElement({React.int(a)})})
   }
   let make = {
-    let \"AsyncAwait$C0" = (props: props<_>) => JsxPPXReactSupport.asyncComponent(make(props))
+    let \"AsyncAwait$C0" = React.component((props: props<_>) =>
+      JsxPPXReactSupport.asyncComponent(make(props))
+    )
 
     \"AsyncAwait$C0"
   }
@@ -24,7 +26,9 @@ module C1 = {
     }
   }
   let make = {
-    let \"AsyncAwait$C1" = (props: props<_>) => JsxPPXReactSupport.asyncComponent(make(props))
+    let \"AsyncAwait$C1" = React.component((props: props<_>) =>
+      JsxPPXReactSupport.asyncComponent(make(props))
+    )
 
     \"AsyncAwait$C1"
   }

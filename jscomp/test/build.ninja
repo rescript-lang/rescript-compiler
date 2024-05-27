@@ -540,7 +540,7 @@ o test/record_type_spread.cmi test/record_type_spread.cmj : cc test/record_type_
 o test/record_with_test.cmi test/record_with_test.cmj : cc test/record_with_test.res | test/mt.cmj $bsc $stdlib runtime
 o test/recursive_module.cmi test/recursive_module.cmj : cc test/recursive_module.res | test/mt.cmj $bsc $stdlib runtime
 o test/recursive_module_test.cmi test/recursive_module_test.cmj : cc test/recursive_module_test.res | test/mt.cmj $bsc $stdlib runtime
-o test/recursive_react_component.cmi test/recursive_react_component.cmj : cc test/recursive_react_component.res | test/react.cmj $bsc $stdlib runtime
+o test/recursive_react_component.cmi test/recursive_react_component.cmj : cc test/recursive_react_component.res | $bsc $stdlib runtime
 o test/recursive_records_test.cmi test/recursive_records_test.cmj : cc test/recursive_records_test.res | test/mt.cmj $bsc $stdlib runtime
 o test/recursive_unbound_module_test.cmi test/recursive_unbound_module_test.cmj : cc test/recursive_unbound_module_test.res | $bsc $stdlib runtime
 o test/regression_print.cmi test/regression_print.cmj : cc test/regression_print.res | $bsc $stdlib runtime

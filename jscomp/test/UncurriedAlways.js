@@ -44,10 +44,6 @@ function bar3(__x) {
   return foo3(__x, 3, 4);
 }
 
-function q(param) {
-  return null;
-}
-
 function inl() {
   
 }
@@ -216,7 +212,6 @@ exports.foo2 = foo2;
 exports.bar2 = bar2;
 exports.foo3 = foo3;
 exports.bar3 = bar3;
-exports.q = q;
 exports.inl = inl;
 exports.inl2 = inl2;
 exports.AllLabels = AllLabels;

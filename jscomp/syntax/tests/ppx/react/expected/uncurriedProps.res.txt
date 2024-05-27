@@ -10,7 +10,7 @@ let make = ({a: ?__a, _}: props<(. unit) => unit>) => {
   React.null
 }
 let make = {
-  let \"UncurriedProps" = (props: props<_>) => make(props)
+  let \"UncurriedProps" = React.component((props: props<_>) => make(props))
 
   \"UncurriedProps"
 }
@@ -39,7 +39,7 @@ module Foo = {
     }
   }
   let make = {
-    let \"UncurriedProps$Foo" = (props: props<_>) => make(props)
+    let \"UncurriedProps$Foo" = React.component((props: props<_>) => make(props))
 
     \"UncurriedProps$Foo"
   }
@@ -50,7 +50,7 @@ module Bar = {
 
   let make = (_: props) => React.jsx(Foo.make, {callback: (. _, _, _) => ()})
   let make = {
-    let \"UncurriedProps$Bar" = props => make(props)
+    let \"UncurriedProps$Bar" = React.component(props => make(props))
 
     \"UncurriedProps$Bar"
   }

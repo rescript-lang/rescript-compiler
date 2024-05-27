@@ -13,7 +13,7 @@ module C0 = {
     React.int(a + b)
   }
   let make = {
-    let \"DefaultValueProp$C0" = (props: props<_>) => make(props)
+    let \"DefaultValueProp$C0" = React.component((props: props<_>) => make(props))
     \"DefaultValueProp$C0"
   }
 }
@@ -30,7 +30,7 @@ module C1 = {
     React.int(a + b)
   }
   let make = {
-    let \"DefaultValueProp$C1" = (props: props<_>) => make(props)
+    let \"DefaultValueProp$C1" = React.component((props: props<_>) => make(props))
 
     \"DefaultValueProp$C1"
   }
@@ -49,7 +49,7 @@ module C2 = {
     React.string(a)
   }
   let make = {
-    let \"DefaultValueProp$C2" = (props: props<_>) => make(props)
+    let \"DefaultValueProp$C2" = React.component((props: props<_>) => make(props))
 
     \"DefaultValueProp$C2"
   }
@@ -69,7 +69,7 @@ module C3 = {
     }
   }
   let make = {
-    let \"DefaultValueProp$C3" = (props: props<_>) => make(props)
+    let \"DefaultValueProp$C3" = React.component((props: props<_>) => make(props))
 
     \"DefaultValueProp$C3"
   }
