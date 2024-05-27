@@ -11,16 +11,9 @@
   },
   "suffix": ".res.js",
   "bsc-flags": [
-    "-no-keep-locs",
-    "-no-alias-deps",
     "-bs-no-version-header",
-    "-bs-no-check-div-by-zero",
     "-nostdlib",
-    "-bs-cross-module-opt",
     "-nopervasives",
-    "-unsafe",
-    "-w +50",
-    "-warn-error A",
     "-open Belt_internals"
   ],
   "uncurried": false
