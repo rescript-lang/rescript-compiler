@@ -436,12 +436,10 @@ let print_poly_var_ident txt =
   else
     match classify_ident_content ~allow_uident:true txt with
     | UppercaseExoticIdent ->
-      Doc.concat
-        [
-          Doc.text "\"";
-          Doc.text (Ext_ident.unwrap_uppercase_exotic txt);
-          Doc.text "\"";
-        ]
+      let len = String.length txt in
+      (* UppercaseExoticIdent follows the \"..." format,
+         so removing the leading backslash is enough to transform it into polyvar style *)
+      Doc.text ((String.sub [@doesNotRaise]) txt 1 (len - 1))
     | ExoticIdent -> Doc.concat [Doc.text "\""; Doc.text txt; Doc.text "\""]
     | NormalIdent -> (
       match txt with
