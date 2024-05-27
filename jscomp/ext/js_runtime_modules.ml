@@ -63,8 +63,6 @@ let bigint = "Caml_bigint"
 
 let option = "Caml_option"
 
-let module_ = "Caml_module"
-
 let external_polyfill = "Caml_external_polyfill"
 
 let caml_js_exceptions = "Caml_js_exceptions"

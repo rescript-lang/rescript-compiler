@@ -16,11 +16,6 @@
 // Pstr_modtype
 /* c0 */ module type /* c1 */ T /* c2 */ = /* c3 */ MT /* c4 */
 
-// Pstr_recmodule
-/* c0 */ module rec /* c1 */ X1 /* c2 */ = /* c3 */ ME1 /* c4 */
-// above
-and /* c5 */ Xn /* c6 */ = /* c7 */ MEn /* c8 */
-
 // Pstr_module
 /* c0 */ module /* c1 */ X /* c2 */ = /* c3 */ Y /* c4 */
 

@@ -6065,7 +6065,9 @@ and parse_module_type_impl ~attrs start_pos p =
    :  module-type =  module-expr } *)
 and parse_maybe_rec_module_binding ~attrs ~start_pos p =
   match p.Parser.token with
-  | Token.Rec ->
+  | Token.Rec as recToken ->
+    Parser.err ~start_pos ~end_pos:p.end_pos p
+      (Diagnostics.unexpected recToken []);
     Parser.next p;
     Ast_helper.Str.rec_module (parse_module_bindings ~start_pos ~attrs p)
   | _ ->

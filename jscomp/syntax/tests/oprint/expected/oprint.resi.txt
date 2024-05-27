@@ -223,16 +223,6 @@ module type DEVICE = {
   let draw: picture => unit
 }
 let devices: Hashtbl.t<string, module(DEVICE)>
-module rec A: {
-  type t = Leaf(string) | Node(ASet.t)
-  let compare: (t, t) => int
-}
-and ASet: {
-  type rec elt = A.t
-  type rec t
-  let empty: t
-  let compare: (t, t) => int
-}
 type emptyObject = {.}
 let f: (~x: 'a=?, ~y: 'b) => option<'a>
 type call = CleanStart
