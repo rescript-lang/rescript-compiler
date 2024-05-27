@@ -43,6 +43,6 @@ val new_type_of_type_declaration :
    Parsetree.label_declaration list ->
    (Parsetree.core_type * Parsetree.expression) list * string list *)
 
-val notApplicable : Location.t -> string -> unit
+val not_applicable : Location.t -> string -> unit
 
 val invalid_config : Parsetree.expression -> 'a

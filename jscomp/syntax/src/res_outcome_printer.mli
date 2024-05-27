@@ -12,7 +12,7 @@ val parenthesized_ident : string -> bool [@@live]
 val setup : unit lazy_t [@@live]
 
 (* Needed for e.g. the playground to print typedtree data *)
-val printOutTypeDoc : Outcometree.out_type -> Res_doc.t [@@live]
-val printOutSigItemDoc :
-  ?printNameAsIs:bool -> Outcometree.out_sig_item -> Res_doc.t
+val print_out_type_doc : Outcometree.out_type -> Res_doc.t [@@live]
+val print_out_sig_item_doc :
+  ?print_name_as_is:bool -> Outcometree.out_sig_item -> Res_doc.t
 [@@live]

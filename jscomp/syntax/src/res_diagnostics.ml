@@ -17,45 +17,45 @@ type category =
   | UnknownUchar of Char.t
 
 type t = {
-  startPos: Lexing.position;
-  endPos: Lexing.position;
+  start_pos: Lexing.position;
+  end_pos: Lexing.position;
   category: category;
 }
 
 type report = t list
 
-let getStartPos t = t.startPos
-let getEndPos t = t.endPos
+let get_start_pos t = t.start_pos
+let get_end_pos t = t.end_pos
 
-let defaultUnexpected token =
-  "I'm not sure what to parse here when looking at \"" ^ Token.toString token
+let default_unexpected token =
+  "I'm not sure what to parse here when looking at \"" ^ Token.to_string token
   ^ "\"."
 
-let reservedKeyword token =
-  let tokenTxt = Token.toString token in
-  "`" ^ tokenTxt ^ "` is a reserved keyword. Keywords need to be escaped: \\\""
-  ^ tokenTxt ^ "\""
+let reserved_keyword token =
+  let token_txt = Token.to_string token in
+  "`" ^ token_txt ^ "` is a reserved keyword. Keywords need to be escaped: \\\""
+  ^ token_txt ^ "\""
 
 let explain t =
   match t.category with
-  | Uident currentToken -> (
-    match currentToken with
+  | Uident current_token -> (
+    match current_token with
     | Lident lident ->
       let guess = String.capitalize_ascii lident in
       "Did you mean `" ^ guess ^ "` instead of `" ^ lident ^ "`?"
-    | t when Token.isKeyword t ->
-      let token = Token.toString t in
+    | t when Token.is_keyword t ->
+      let token = Token.to_string t in
       "`" ^ token ^ "` is a reserved keyword."
     | _ ->
       "At this point, I'm looking for an uppercased name like `Belt` or `Array`"
     )
-  | Lident currentToken -> (
-    match currentToken with
+  | Lident current_token -> (
+    match current_token with
     | Uident uident ->
       let guess = String.uncapitalize_ascii uident in
       "Did you mean `" ^ guess ^ "` instead of `" ^ uident ^ "`?"
-    | t when Token.isKeyword t ->
-      let token = Token.toString t in
+    | t when Token.is_keyword t ->
+      let token = Token.to_string t in
       "`" ^ token ^ "` is a reserved keyword. Keywords need to be escaped: \\\""
       ^ token ^ "\""
     | Underscore -> "`_` isn't a valid name."
@@ -76,21 +76,21 @@ let explain t =
   | Expected {context; token = t} ->
     let hint =
       match context with
-      | Some grammar -> " It signals the start of " ^ Grammar.toString grammar
+      | Some grammar -> " It signals the start of " ^ Grammar.to_string grammar
       | None -> ""
     in
-    "Did you forget a `" ^ Token.toString t ^ "` here?" ^ hint
+    "Did you forget a `" ^ Token.to_string t ^ "` here?" ^ hint
   | Unexpected {token = t; context = breadcrumbs} -> (
-    let name = Token.toString t in
+    let name = Token.to_string t in
     match breadcrumbs with
     | (AtomicTypExpr, _) :: breadcrumbs -> (
       match (breadcrumbs, t) with
       | ( ((StringFieldDeclarations | FieldDeclarations), _) :: _,
           (String _ | At | Rbrace | Comma | Eof) ) ->
         "I'm missing a type here"
-      | _, t when Grammar.isStructureItemStart t || t = Eof ->
+      | _, t when Grammar.is_structure_item_start t || t = Eof ->
         "Missing a type here"
-      | _ -> defaultUnexpected t)
+      | _ -> default_unexpected t)
     | (ExprOperand, _) :: breadcrumbs -> (
       match (breadcrumbs, t) with
       | (ExprBlock, _) :: _, Rbrace ->
@@ -125,19 +125,19 @@ let explain t =
          to supply a name before `in`?"
       | EqualGreater, (PatternMatchCase, _) :: _ ->
         "I was expecting a pattern to match on before the `=>`"
-      | token, _ when Token.isKeyword t -> reservedKeyword token
-      | token, _ -> defaultUnexpected token)
+      | token, _ when Token.is_keyword t -> reserved_keyword token
+      | token, _ -> default_unexpected token)
     | _ ->
       (* TODO: match on circumstance to verify Lident needed ? *)
-      if Token.isKeyword t then
+      if Token.is_keyword t then
         "`" ^ name
         ^ "` is a reserved keyword. Keywords need to be escaped: \\\""
-        ^ Token.toString t ^ "\""
+        ^ Token.to_string t ^ "\""
       else "I'm not sure what to parse here when looking at \"" ^ name ^ "\".")
 
-let make ~startPos ~endPos category = {startPos; endPos; category}
+let make ~start_pos ~end_pos category = {start_pos; end_pos; category}
 
-let printReport diagnostics src =
+let print_report diagnostics src =
   let rec print diagnostics src =
     match diagnostics with
     | [] -> ()
@@ -145,7 +145,8 @@ let printReport diagnostics src =
       Location.report_error ~src:(Some src) Format.err_formatter
         Location.
           {
-            loc = {loc_start = d.startPos; loc_end = d.endPos; loc_ghost = false};
+            loc =
+              {loc_start = d.start_pos; loc_end = d.end_pos; loc_ghost = false};
             msg = explain d;
             sub = [];
             if_highlight = "";
@@ -163,10 +164,10 @@ let unexpected token context = Unexpected {token; context}
 
 let expected ?grammar pos token = Expected {context = grammar; pos; token}
 
-let uident currentToken = Uident currentToken
-let lident currentToken = Lident currentToken
-let unclosedString = UnclosedString
-let unclosedComment = UnclosedComment
-let unclosedTemplate = UnclosedTemplate
-let unknownUchar code = UnknownUchar code
+let uident current_token = Uident current_token
+let lident current_token = Lident current_token
+let unclosed_string = UnclosedString
+let unclosed_comment = UnclosedComment
+let unclosed_template = UnclosedTemplate
+let unknown_uchar code = UnknownUchar code
 let message txt = Message txt

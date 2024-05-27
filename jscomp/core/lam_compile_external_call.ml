@@ -155,7 +155,7 @@ let keep_non_undefined_args (arg_types : specs) (args : exprs) =
   let rec has_undefined_trailing_args arg_types args =
     match (arg_types, args) with
     | ( [{External_arg_spec.arg_label = Arg_optional; _}],
-        [{J.expression_desc = Undefined {isUnit = false}; _}] ) ->
+        [{J.expression_desc = Undefined {is_unit = false}; _}] ) ->
       true
     | ( _ :: arg_types_rest, _ :: args_rest ) ->
       has_undefined_trailing_args arg_types_rest args_rest
@@ -164,7 +164,7 @@ let keep_non_undefined_args (arg_types : specs) (args : exprs) =
   let rec aux arg_types args =
     match (arg_types, args) with
     | ( {External_arg_spec.arg_label = Arg_optional; _} :: arg_types_rest,
-        {J.expression_desc = Undefined {isUnit = false}; _} :: args_rest ) ->
+        {J.expression_desc = Undefined {is_unit = false}; _} :: args_rest ) ->
           aux arg_types_rest args_rest
     | _ -> args
   in

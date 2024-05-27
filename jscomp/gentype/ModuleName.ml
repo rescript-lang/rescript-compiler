@@ -1,9 +1,9 @@
 type t = string
 
 let curry = "Curry"
-let rescriptPervasives = "RescriptPervasives"
+let rescript_pervasives = "RescriptPervasives"
 
-let sanitizeId s =
+let sanitize_id s =
   let s =
     if String.contains s '.' || String.contains s '[' || String.contains s ']'
     then
@@ -17,12 +17,12 @@ let sanitizeId s =
   then s
   else "_" ^ s
 
-let forJsFile s = sanitizeId s ^ "JS"
+let for_js_file s = sanitize_id s ^ "JS"
 
-let forInnerModule ~fileName ~innerModuleName =
-  (fileName |> forJsFile) ^ "." ^ innerModuleName
+let for_inner_module ~file_name ~inner_module_name =
+  (file_name |> for_js_file) ^ "." ^ inner_module_name
 
-let fromStringUnsafe s = s
-let toString s = s
+let from_string_unsafe s = s
+let to_string s = s
 let compare (s1 : string) s2 = compare s1 s2
 let uncapitalize = String.uncapitalize_ascii

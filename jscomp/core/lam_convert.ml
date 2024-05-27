@@ -455,7 +455,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
     | _ when s = "#null" -> Lam.const Const_js_null
     | _ when s = "#os_type" ->
         prim ~primitive:(Pctconst Ostype) ~args:[ unit ] loc
-    | _ when s = "#undefined" -> Lam.const (Const_js_undefined {isUnit = false})
+    | _ when s = "#undefined" -> Lam.const (Const_js_undefined {is_unit = false})
     | _ when s = "#init_mod" -> (
         let args = Ext_list.map args convert_aux in
         match args with
@@ -596,10 +596,10 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         let body = convert_aux b in
         let handler = convert_aux handler in
         if exception_id_destructed handler id then
-          let newId = Ident.create ("raw_" ^ id.name) in
-          Lam.try_ body newId
+          let new_id = Ident.create ("raw_" ^ id.name) in
+          Lam.try_ body new_id
             (Lam.let_ StrictOpt id
-               (prim ~primitive:Pwrap_exn ~args:[ Lam.var newId ] Location.none)
+               (prim ~primitive:Pwrap_exn ~args:[ Lam.var new_id ] Location.none)
                handler)
         else Lam.try_ body id handler
     | Lifthenelse (b, then_, else_) ->

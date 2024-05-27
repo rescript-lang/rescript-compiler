@@ -7,9 +7,9 @@
  * The purpose of this routine is to place the original string back in
  * the parsetree for printing purposes. Unicode and escape sequences
  * shouldn't be mangled when *)
-val replaceStringLiteralStructure :
+val replace_string_literal_structure :
   (string * Location.t) list -> Parsetree.structure -> Parsetree.structure
-val replaceStringLiteralSignature :
+val replace_string_literal_signature :
   (string * Location.t) list -> Parsetree.signature -> Parsetree.signature
 
 (* transform parts of the parsetree into a suitable parsetree suitable

@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
-  let rec populateApplyInfo (args_arity : int list) (len : int) (fn : Lam.t)
+  let rec populate_apply_info (args_arity : int list) (len : int) (fn : Lam.t)
       (args : Lam.t list) ap_info : Lam.t =
     match args_arity with
     | 0 :: _ | [] -> Lam.apply (simpl fn) (Ext_list.map args simpl) ap_info
@@ -54,7 +54,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
           Lam_arity.extract_arity (Lam_arity_analysis.get_arity meta ap_func)
         in
         let len = List.length ap_args in
-        populateApplyInfo args_arity len ap_func ap_args ap_info
+        populate_apply_info args_arity len ap_func ap_args ap_info
     | Llet (str, v, l1, l2) -> Lam.let_ str v (simpl l1) (simpl l2)
     | Lletrec (bindings, body) ->
         let bindings = Ext_list.map_snd bindings simpl in
@@ -72,7 +72,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
     | Lprim { primitive = Pjs_fn_make_unit; args = [ arg ]; loc } ->
       let arg = match arg with
       | Lfunction ({arity=1; params=[x]; attr; body}) when Ident.name x = "param" (* "()" *) ->
-        Lam.function_ ~params:[x] ~attr:{attr with oneUnitArg=true} ~body ~arity:1
+        Lam.function_ ~params:[x] ~attr:{attr with one_unit_arg=true} ~body ~arity:1
       | _ -> arg in
       simpl arg
     | Lprim { primitive; args; loc } ->

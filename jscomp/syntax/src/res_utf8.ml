@@ -6,8 +6,8 @@ let repl = 0xFFFD
 (* let min = 0x0000 *)
 let max = 0x10FFFF
 
-let surrogateMin = 0xD800
-let surrogateMax = 0xDFFF
+let surrogate_min = 0xD800
+let surrogate_max = 0xDFFF
 
 (*
  * Char. number range  |        UTF-8 octet sequence
@@ -29,7 +29,7 @@ type category = {low: int; high: int; size: int}
 let locb = 0b1000_0000
 let hicb = 0b1011_1111
 
-let categoryTable = [|
+let category_table = [|
   (* 0 *) {low = -1; high= -1; size= 1}; (* invalid *)
   (* 1 *) {low = 1; high= -1; size= 1}; (* ascii *)
   (* 2 *) {low = locb; high= hicb; size= 2};
@@ -62,7 +62,7 @@ let categories = [|
   6; 7; 7 ;7; 8; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0;
 |] [@@ocamlformat "disable"]
 
-let decodeCodePoint i s len =
+let decode_code_point i s len =
   if len < 1 then (repl, 1)
   else
     let first = int_of_char (String.unsafe_get s i) in
@@ -71,7 +71,7 @@ let decodeCodePoint i s len =
       let index = Array.unsafe_get categories first in
       if index = 0 then (repl, 1)
       else
-        let cat = Array.unsafe_get categoryTable index in
+        let cat = Array.unsafe_get category_table index in
         if len < i + cat.size then (repl, 1)
         else if cat.size == 2 then
           let c1 = int_of_char (String.unsafe_get s (i + 1)) in
@@ -108,7 +108,7 @@ let decodeCodePoint i s len =
             let uc = i0 lor i3 lor i2 lor i1 in
             (uc, 4)
 
-let encodeCodePoint c =
+let encode_code_point c =
   if c <= 127 then (
     let bytes = (Bytes.create [@doesNotRaise]) 1 in
     Bytes.unsafe_set bytes 0 (Char.unsafe_chr c);
@@ -139,5 +139,5 @@ let encodeCodePoint c =
       (Char.unsafe_chr (0b1000_0000 lor (c land cont_mask)));
     Bytes.unsafe_to_string bytes
 
-let isValidCodePoint c =
-  (0 <= c && c < surrogateMin) || (surrogateMax < c && c <= max)
+let is_valid_code_point c =
+  (0 <= c && c < surrogate_min) || (surrogate_max < c && c <= max)

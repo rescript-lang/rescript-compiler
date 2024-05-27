@@ -72,13 +72,13 @@ let process_file sourcefile ?(kind ) ppf =
     let sourcefile = set_abs_input_name  sourcefile in     
     setup_compiler_printer `rescript;
     Js_implementation.implementation 
-      ~parser:(Res_driver.parse_implementation ~ignoreParseErrors:!Clflags.ignore_parse_errors)
+      ~parser:(Res_driver.parse_implementation ~ignore_parse_errors:!Clflags.ignore_parse_errors)
       ppf sourcefile 
   | Resi ->   
     let sourcefile = set_abs_input_name  sourcefile in 
     setup_compiler_printer `rescript;
     Js_implementation.interface 
-      ~parser:(Res_driver.parse_interface ~ignoreParseErrors:!Clflags.ignore_parse_errors)
+      ~parser:(Res_driver.parse_interface ~ignore_parse_errors:!Clflags.ignore_parse_errors)
       ppf sourcefile      
   | Intf_ast 
     ->     
@@ -113,32 +113,32 @@ let reprint_source_file sourcefile =
   let sourcefile = set_abs_input_name sourcefile in
   let res = match kind with 
   | Res -> 
-    let parseResult =
-      Res_driver.parsingEngine.parseImplementation ~forPrinter:true ~filename:sourcefile
+    let parse_result =
+      Res_driver.parsing_engine.parse_implementation ~for_printer:true ~filename:sourcefile
     in
-    if parseResult.invalid then (
-      Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
+    if parse_result.invalid then (
+      Res_diagnostics.print_report parse_result.diagnostics parse_result.source;
       exit 1
     );
     Res_compmisc.init_path ();
-    parseResult.parsetree 
+    parse_result.parsetree 
     |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Ml
     |> Ppx_entry.rewrite_implementation
-    |> Res_printer.printImplementation ~width:100 ~comments:parseResult.comments 
+    |> Res_printer.print_implementation ~width:100 ~comments:parse_result.comments 
     |> print_endline
   | Resi ->   
-    let parseResult =
-      Res_driver.parsingEngine.parseInterface ~forPrinter:true ~filename:sourcefile
+    let parse_result =
+      Res_driver.parsing_engine.parse_interface ~for_printer:true ~filename:sourcefile
     in
-    if parseResult.invalid then (
-      Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
+    if parse_result.invalid then (
+      Res_diagnostics.print_report parse_result.diagnostics parse_result.source;
       exit 1
     );
     Res_compmisc.init_path ();
-    parseResult.parsetree 
+    parse_result.parsetree 
     |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Mli
     |> Ppx_entry.rewrite_signature
-    |> Res_printer.printInterface ~width:100 ~comments:parseResult.comments 
+    |> Res_printer.print_interface ~width:100 ~comments:parse_result.comments 
     |> print_endline
   | _ 
     ->     
@@ -198,7 +198,7 @@ let format_file input =
     | Ml | Mli -> `ml
     | Res | Resi -> `res 
     | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
-  let formatted = Res_multi_printer.print ~ignoreParseErrors:!Clflags.ignore_parse_errors syntax ~input in 
+  let formatted = Res_multi_printer.print ~ignore_parse_errors:!Clflags.ignore_parse_errors syntax ~input in 
   match !Clflags.output_name with 
   | None ->
     output_string stdout formatted
@@ -293,11 +293,11 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* Set jsx version";
 
     "-bs-jsx-module", string_call (fun i ->
-      let isGeneric = match i |> String.lowercase_ascii with
+      let is_generic = match i |> String.lowercase_ascii with
       | "react" -> false
       | _ -> true in
       Js_config.jsx_module := Js_config.jsx_module_of_string i;
-      if isGeneric then (
+      if is_generic then (
         Js_config.jsx_mode := Automatic;
         Js_config.jsx_version := Some Jsx_v4
       )),

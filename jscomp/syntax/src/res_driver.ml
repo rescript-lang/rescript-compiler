@@ -1,6 +1,6 @@
 module IO = Res_io
 
-type ('ast, 'diagnostics) parseResult = {
+type ('ast, 'diagnostics) parse_result = {
   filename: string; [@live]
   source: string;
   parsetree: 'ast;
@@ -9,26 +9,27 @@ type ('ast, 'diagnostics) parseResult = {
   comments: Res_comment.t list;
 }
 
-type 'diagnostics parsingEngine = {
-  parseImplementation:
-    forPrinter:bool ->
+type 'diagnostics parsing_engine = {
+  parse_implementation:
+    for_printer:bool ->
     filename:string ->
-    (Parsetree.structure, 'diagnostics) parseResult;
-  parseInterface:
-    forPrinter:bool ->
+    (Parsetree.structure, 'diagnostics) parse_result;
+  parse_interface:
+    for_printer:bool ->
     filename:string ->
-    (Parsetree.signature, 'diagnostics) parseResult;
-  stringOfDiagnostics: source:string -> filename:string -> 'diagnostics -> unit;
+    (Parsetree.signature, 'diagnostics) parse_result;
+  string_of_diagnostics:
+    source:string -> filename:string -> 'diagnostics -> unit;
 }
 
-type printEngine = {
-  printImplementation:
+type print_engine = {
+  print_implementation:
     width:int ->
     filename:string ->
     comments:Res_comment.t list ->
     Parsetree.structure ->
     unit;
-  printInterface:
+  print_interface:
     width:int ->
     filename:string ->
     comments:Res_comment.t list ->
@@ -36,21 +37,21 @@ type printEngine = {
     unit;
 }
 
-let setup ~filename ~forPrinter () =
-  let src = IO.readFile ~filename in
-  let mode = if forPrinter then Res_parser.Default else ParseForTypeChecker in
+let setup ~filename ~for_printer () =
+  let src = IO.read_file ~filename in
+  let mode = if for_printer then Res_parser.Default else ParseForTypeChecker in
   Res_parser.make ~mode src filename
 
-let setupFromSource ~displayFilename ~source ~forPrinter () =
-  let mode = if forPrinter then Res_parser.Default else ParseForTypeChecker in
-  Res_parser.make ~mode source displayFilename
+let setup_from_source ~display_filename ~source ~for_printer () =
+  let mode = if for_printer then Res_parser.Default else ParseForTypeChecker in
+  Res_parser.make ~mode source display_filename
 
-let parsingEngine =
+let parsing_engine =
   {
-    parseImplementation =
-      (fun ~forPrinter ~filename ->
-        let engine = setup ~filename ~forPrinter () in
-        let structure = Res_core.parseImplementation engine in
+    parse_implementation =
+      (fun ~for_printer ~filename ->
+        let engine = setup ~filename ~for_printer () in
+        let structure = Res_core.parse_implementation engine in
         let invalid, diagnostics =
           match engine.diagnostics with
           | [] as diagnostics -> (false, diagnostics)
@@ -64,10 +65,10 @@ let parsingEngine =
           invalid;
           comments = List.rev engine.comments;
         });
-    parseInterface =
-      (fun ~forPrinter ~filename ->
-        let engine = setup ~filename ~forPrinter () in
-        let signature = Res_core.parseSpecification engine in
+    parse_interface =
+      (fun ~for_printer ~filename ->
+        let engine = setup ~filename ~for_printer () in
+        let signature = Res_core.parse_specification engine in
         let invalid, diagnostics =
           match engine.diagnostics with
           | [] as diagnostics -> (false, diagnostics)
@@ -81,14 +82,14 @@ let parsingEngine =
           invalid;
           comments = List.rev engine.comments;
         });
-    stringOfDiagnostics =
+    string_of_diagnostics =
       (fun ~source ~filename:_ diagnostics ->
-        Res_diagnostics.printReport diagnostics source);
+        Res_diagnostics.print_report diagnostics source);
   }
 
-let parseImplementationFromSource ~forPrinter ~displayFilename ~source =
-  let engine = setupFromSource ~displayFilename ~source ~forPrinter () in
-  let structure = Res_core.parseImplementation engine in
+let parse_implementation_from_source ~for_printer ~display_filename ~source =
+  let engine = setup_from_source ~display_filename ~source ~for_printer () in
+  let structure = Res_core.parse_implementation engine in
   let invalid, diagnostics =
     match engine.diagnostics with
     | [] as diagnostics -> (false, diagnostics)
@@ -103,9 +104,9 @@ let parseImplementationFromSource ~forPrinter ~displayFilename ~source =
     comments = List.rev engine.comments;
   }
 
-let parseInterfaceFromSource ~forPrinter ~displayFilename ~source =
-  let engine = setupFromSource ~displayFilename ~source ~forPrinter () in
-  let signature = Res_core.parseSpecification engine in
+let parse_interface_from_source ~for_printer ~display_filename ~source =
+  let engine = setup_from_source ~display_filename ~source ~for_printer () in
+  let signature = Res_core.parse_specification engine in
   let invalid, diagnostics =
     match engine.diagnostics with
     | [] as diagnostics -> (false, diagnostics)
@@ -120,42 +121,42 @@ let parseInterfaceFromSource ~forPrinter ~displayFilename ~source =
     comments = List.rev engine.comments;
   }
 
-let printEngine =
+let print_engine =
   {
-    printImplementation =
+    print_implementation =
       (fun ~width ~filename:_ ~comments structure ->
         print_string
-          (Res_printer.printImplementation ~width structure ~comments));
-    printInterface =
+          (Res_printer.print_implementation ~width structure ~comments));
+    print_interface =
       (fun ~width ~filename:_ ~comments signature ->
-        print_string (Res_printer.printInterface ~width signature ~comments));
+        print_string (Res_printer.print_interface ~width signature ~comments));
   }
 
-let parse_implementation ?(ignoreParseErrors = false) sourcefile =
+let parse_implementation ?(ignore_parse_errors = false) sourcefile =
   Location.input_name := sourcefile;
-  let parseResult =
-    parsingEngine.parseImplementation ~forPrinter:false ~filename:sourcefile
+  let parse_result =
+    parsing_engine.parse_implementation ~for_printer:false ~filename:sourcefile
   in
-  if parseResult.invalid then (
-    Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
-    if not ignoreParseErrors then exit 1);
-  parseResult.parsetree
+  if parse_result.invalid then (
+    Res_diagnostics.print_report parse_result.diagnostics parse_result.source;
+    if not ignore_parse_errors then exit 1);
+  parse_result.parsetree
 [@@raises exit]
 
-let parse_interface ?(ignoreParseErrors = false) sourcefile =
+let parse_interface ?(ignore_parse_errors = false) sourcefile =
   Location.input_name := sourcefile;
-  let parseResult =
-    parsingEngine.parseInterface ~forPrinter:false ~filename:sourcefile
+  let parse_result =
+    parsing_engine.parse_interface ~for_printer:false ~filename:sourcefile
   in
-  if parseResult.invalid then (
-    Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
-    if not ignoreParseErrors then exit 1);
-  parseResult.parsetree
+  if parse_result.invalid then (
+    Res_diagnostics.print_report parse_result.diagnostics parse_result.source;
+    if not ignore_parse_errors then exit 1);
+  parse_result.parsetree
 [@@raises exit]
 
 (* suppress unused optional arg *)
 let _ =
  fun s ->
-  ( parse_implementation ~ignoreParseErrors:false s,
-    parse_interface ~ignoreParseErrors:false s )
+  ( parse_implementation ~ignore_parse_errors:false s,
+    parse_interface ~ignore_parse_errors:false s )
 [@@raises exit]

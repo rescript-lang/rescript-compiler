@@ -1,28 +1,28 @@
-let defaultPrintWidth = 100
+let default_print_width = 100
 
 (* Look at rescript.json (or bsconfig.json) to set Uncurried or Legacy mode if it contains "uncurried": false *)
-let getUncurriedFromConfig ~filename =
-  let rec findConfig ~dir =
+let get_uncurried_from_config ~filename =
+  let rec find_config ~dir =
     let config = Filename.concat dir "rescript.json" in
-    if Sys.file_exists config then Some (Res_io.readFile ~filename:config)
+    if Sys.file_exists config then Some (Res_io.read_file ~filename:config)
     else
       let config = Filename.concat dir "bsconfig.json" in
-      if Sys.file_exists config then Some (Res_io.readFile ~filename:config)
+      if Sys.file_exists config then Some (Res_io.read_file ~filename:config)
       else
         let parent = Filename.dirname dir in
-        if parent = dir then None else findConfig ~dir:parent
+        if parent = dir then None else find_config ~dir:parent
   in
-  let rec findFromNodeModules ~dir =
+  let rec find_from_node_modules ~dir =
     let parent = Filename.dirname dir in
     if Filename.basename dir = "node_modules" then
       let config = Filename.concat parent "rescript.json" in
-      if Sys.file_exists config then Some (Res_io.readFile ~filename:config)
+      if Sys.file_exists config then Some (Res_io.read_file ~filename:config)
       else
         let config = Filename.concat parent "bsconfig.json" in
-        if Sys.file_exists config then Some (Res_io.readFile ~filename:config)
+        if Sys.file_exists config then Some (Res_io.read_file ~filename:config)
         else None
     else if parent = dir then None
-    else findFromNodeModules ~dir:parent
+    else find_from_node_modules ~dir:parent
   in
   let dir =
     if Filename.is_relative filename then
@@ -30,12 +30,12 @@ let getUncurriedFromConfig ~filename =
     else Filename.dirname filename
   in
   let config () =
-    match findConfig ~dir with
+    match find_config ~dir with
     | None ->
       (* The editor calls format on a temporary file. So bsconfig can't be found.
          This looks outside the node_modules containing the bsc binary *)
       let dir = (Filename.dirname Sys.argv.(0) [@doesNotRaise]) in
-      findFromNodeModules ~dir
+      find_from_node_modules ~dir
     | x -> x
   in
   match config () with
@@ -65,55 +65,55 @@ let getUncurriedFromConfig ~filename =
     if not is_legacy_uncurried then Config.uncurried := Uncurried
 
 (* print res files to res syntax *)
-let printRes ~ignoreParseErrors ~isInterface ~filename =
-  getUncurriedFromConfig ~filename;
-  if isInterface then (
-    let parseResult =
-      Res_driver.parsingEngine.parseInterface ~forPrinter:true ~filename
+let print_res ~ignore_parse_errors ~is_interface ~filename =
+  get_uncurried_from_config ~filename;
+  if is_interface then (
+    let parse_result =
+      Res_driver.parsing_engine.parse_interface ~for_printer:true ~filename
     in
-    if parseResult.invalid then (
-      Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
-      if not ignoreParseErrors then exit 1);
-    Res_printer.printInterface ~width:defaultPrintWidth
-      ~comments:parseResult.comments parseResult.parsetree)
+    if parse_result.invalid then (
+      Res_diagnostics.print_report parse_result.diagnostics parse_result.source;
+      if not ignore_parse_errors then exit 1);
+    Res_printer.print_interface ~width:default_print_width
+      ~comments:parse_result.comments parse_result.parsetree)
   else
-    let parseResult =
-      Res_driver.parsingEngine.parseImplementation ~forPrinter:true ~filename
+    let parse_result =
+      Res_driver.parsing_engine.parse_implementation ~for_printer:true ~filename
     in
-    if parseResult.invalid then (
-      Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
-      if not ignoreParseErrors then exit 1);
-    Res_printer.printImplementation ~width:defaultPrintWidth
-      ~comments:parseResult.comments parseResult.parsetree
+    if parse_result.invalid then (
+      Res_diagnostics.print_report parse_result.diagnostics parse_result.source;
+      if not ignore_parse_errors then exit 1);
+    Res_printer.print_implementation ~width:default_print_width
+      ~comments:parse_result.comments parse_result.parsetree
 [@@raises exit]
 
 (* print ocaml files to res syntax *)
-let printMl ~isInterface ~filename =
-  if isInterface then
-    let parseResult =
-      Res_driver_ml_parser.parsingEngine.parseInterface ~forPrinter:true
+let print_ml ~is_interface ~filename =
+  if is_interface then
+    let parse_result =
+      Res_driver_ml_parser.parsing_engine.parse_interface ~for_printer:true
         ~filename
     in
-    Res_printer.printInterface ~width:defaultPrintWidth
-      ~comments:parseResult.comments parseResult.parsetree
+    Res_printer.print_interface ~width:default_print_width
+      ~comments:parse_result.comments parse_result.parsetree
   else
-    let parseResult =
-      Res_driver_ml_parser.parsingEngine.parseImplementation ~forPrinter:true
+    let parse_result =
+      Res_driver_ml_parser.parsing_engine.parse_implementation ~for_printer:true
         ~filename
     in
-    Res_printer.printImplementation ~width:defaultPrintWidth
-      ~comments:parseResult.comments parseResult.parsetree
+    Res_printer.print_implementation ~width:default_print_width
+      ~comments:parse_result.comments parse_result.parsetree
 
 (* print the given file named input to from "language" to res, general interface exposed by the compiler *)
-let print ?(ignoreParseErrors = false) language ~input =
-  let isInterface =
+let print ?(ignore_parse_errors = false) language ~input =
+  let is_interface =
     let len = String.length input in
     len > 0 && String.unsafe_get input (len - 1) = 'i'
   in
   match language with
-  | `res -> printRes ~ignoreParseErrors ~isInterface ~filename:input
-  | `ml -> printMl ~isInterface ~filename:input
+  | `res -> print_res ~ignore_parse_errors ~is_interface ~filename:input
+  | `ml -> print_ml ~is_interface ~filename:input
 [@@raises exit]
 
 (* suppress unused optional arg *)
-let _ = fun s -> print ~ignoreParseErrors:false s [@@raises exit]
+let _ = fun s -> print ~ignore_parse_errors:false s [@@raises exit]

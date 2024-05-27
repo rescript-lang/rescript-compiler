@@ -25,23 +25,23 @@
 (* Invariant: the same as encoding Map_string.compare_key  *)
 let cmp = Ext_string.compare
 
-let rec binarySearchAux (arr : string array) (lo : int) (hi : int)
+let rec binary_search_aux (arr : string array) (lo : int) (hi : int)
     (key : string) : _ option =
   let mid = (lo + hi) / 2 in
-  let midVal = Array.unsafe_get arr mid in
-  let c = cmp key midVal in
+  let mid_val = Array.unsafe_get arr mid in
+  let c = cmp key mid_val in
   if c = 0 then Some mid
   else if c < 0 then
     (*  a[lo] =< key < a[mid] <= a[hi] *)
     if hi = mid then
-      let loVal = Array.unsafe_get arr lo in
-      if loVal = key then Some lo else None
-    else binarySearchAux arr lo mid key
+      let lo_val = Array.unsafe_get arr lo in
+      if lo_val = key then Some lo else None
+    else binary_search_aux arr lo mid key
   else if (*  a[lo] =< a[mid] < key <= a[hi] *)
           lo = mid then
-    let hiVal = Array.unsafe_get arr hi in
-    if hiVal = key then Some hi else None
-  else binarySearchAux arr mid hi key
+    let hi_val = Array.unsafe_get arr hi in
+    if hi_val = key then Some hi else None
+  else binary_search_aux arr mid hi key
 
 let find_sorted sorted key : int option =
   let len = Array.length sorted in
@@ -53,25 +53,25 @@ let find_sorted sorted key : int option =
     else
       let hi = Array.unsafe_get sorted (len - 1) in
       let c2 = cmp key hi in
-      if c2 > 0 then None else binarySearchAux sorted 0 (len - 1) key
+      if c2 > 0 then None else binary_search_aux sorted 0 (len - 1) key
 
-let rec binarySearchAssoc (arr : (string * _) array) (lo : int) (hi : int)
+let rec binary_search_assoc (arr : (string * _) array) (lo : int) (hi : int)
     (key : string) : _ option =
   let mid = (lo + hi) / 2 in
-  let midVal = Array.unsafe_get arr mid in
-  let c = cmp key (fst midVal) in
-  if c = 0 then Some (snd midVal)
+  let mid_val = Array.unsafe_get arr mid in
+  let c = cmp key (fst mid_val) in
+  if c = 0 then Some (snd mid_val)
   else if c < 0 then
     (*  a[lo] =< key < a[mid] <= a[hi] *)
     if hi = mid then
-      let loVal = Array.unsafe_get arr lo in
-      if fst loVal = key then Some (snd loVal) else None
-    else binarySearchAssoc arr lo mid key
+      let lo_val = Array.unsafe_get arr lo in
+      if fst lo_val = key then Some (snd lo_val) else None
+    else binary_search_assoc arr lo mid key
   else if (*  a[lo] =< a[mid] < key <= a[hi] *)
           lo = mid then
-    let hiVal = Array.unsafe_get arr hi in
-    if fst hiVal = key then Some (snd hiVal) else None
-  else binarySearchAssoc arr mid hi key
+    let hi_val = Array.unsafe_get arr hi in
+    if fst hi_val = key then Some (snd hi_val) else None
+  else binary_search_assoc arr mid hi key
 
 let find_sorted_assoc (type a) (sorted : (string * a) array) (key : string) :
     a option =
@@ -84,4 +84,4 @@ let find_sorted_assoc (type a) (sorted : (string * a) array) (key : string) :
     else
       let hi = Array.unsafe_get sorted (len - 1) in
       let c2 = cmp key (fst hi) in
-      if c2 > 0 then None else binarySearchAssoc sorted 0 (len - 1) key
+      if c2 > 0 then None else binary_search_assoc sorted 0 (len - 1) key

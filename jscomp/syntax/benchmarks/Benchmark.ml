@@ -5,18 +5,18 @@ module Parser = Res_parser
 module Printer = Res_printer
 
 module IO : sig
-  val readFile : string -> string
+  val read_file : string -> string
 end = struct
   (* random chunk size: 2^15, TODO: why do we guess randomly? *)
-  let chunkSize = 32768
+  let chunk_size = 32768
 
-  let readFile filename =
+  let read_file filename =
     let chan = open_in filename in
-    let buffer = Buffer.create chunkSize in
-    let chunk = (Bytes.create [@doesNotRaise]) chunkSize in
+    let buffer = Buffer.create chunk_size in
+    let chunk = (Bytes.create [@doesNotRaise]) chunk_size in
     let rec loop () =
       let len =
-        try input chan chunk 0 chunkSize with Invalid_argument _ -> 0
+        try input chan chunk 0 chunk_size with Invalid_argument _ -> 0
       in
       if len == 0 then (
         close_in_noerr chan;
@@ -33,7 +33,7 @@ module Time : sig
 
   val now : unit -> t
 
-  val toUint64 : t -> int64 [@@live]
+  val to_uint64 : t -> int64 [@@live]
 
   (* let of_uint64_ns ns = ns *)
 
@@ -55,7 +55,7 @@ end = struct
 
   let zero = 0L
 
-  let toUint64 s = s
+  let to_uint64 s = s
 
   let nanosecond = 1L
   let microsecond = Int64.mul 1000L nanosecond
@@ -86,15 +86,15 @@ end = struct
     mutable start: Time.t;
     mutable n: int; (* current iterations count *)
     mutable duration: Time.t;
-    benchFunc: t -> unit;
-    mutable timerOn: bool;
+    bench_func: t -> unit;
+    mutable timer_on: bool;
     (* mutable result: benchmarkResult; *)
     (* The initial states *)
-    mutable startAllocs: float;
-    mutable startBytes: float;
+    mutable start_allocs: float;
+    mutable start_bytes: float;
     (* The net total of this test after being run. *)
-    mutable netAllocs: float;
-    mutable netBytes: float;
+    mutable net_allocs: float;
+    mutable net_bytes: float;
   }
 
   let report b =
@@ -107,10 +107,10 @@ end = struct
          (Time.print b.duration /. float_of_int b.n));
     print_endline
       (Format.sprintf "Allocs/op: %d"
-         (int_of_float (b.netAllocs /. float_of_int b.n)));
+         (int_of_float (b.net_allocs /. float_of_int b.n)));
     print_endline
       (Format.sprintf "B/op: %d"
-         (int_of_float (b.netBytes /. float_of_int b.n)));
+         (int_of_float (b.net_bytes /. float_of_int b.n)));
 
     (* return (float64(r.Bytes) * float64(r.N) / 1e6) / r.T.Seconds() *)
     print_newline ();
@@ -121,13 +121,13 @@ end = struct
       name;
       start = Time.zero;
       n = 0;
-      benchFunc = f;
+      bench_func = f;
       duration = Time.zero;
-      timerOn = false;
-      startAllocs = 0.;
-      startBytes = 0.;
-      netAllocs = 0.;
-      netBytes = 0.;
+      timer_on = false;
+      start_allocs = 0.;
+      start_bytes = 0.;
+      net_allocs = 0.;
+      net_bytes = 0.;
     }
 
   (* total amount of memory allocated by the program since it started in words *)
@@ -135,44 +135,44 @@ end = struct
     let stats = Gc.quick_stat () in
     stats.minor_words +. stats.major_words -. stats.promoted_words
 
-  let startTimer b =
-    if not b.timerOn then (
-      let allocatedWords = mallocs () in
-      b.startAllocs <- allocatedWords;
-      b.startBytes <- allocatedWords *. 8.;
+  let start_timer b =
+    if not b.timer_on then (
+      let allocated_words = mallocs () in
+      b.start_allocs <- allocated_words;
+      b.start_bytes <- allocated_words *. 8.;
       b.start <- Time.now ();
-      b.timerOn <- true)
+      b.timer_on <- true)
 
-  let stopTimer b =
-    if b.timerOn then (
-      let allocatedWords = mallocs () in
+  let stop_timer b =
+    if b.timer_on then (
+      let allocated_words = mallocs () in
       let diff = Time.diff b.start (Time.now ()) in
       b.duration <- Time.add b.duration diff;
-      b.netAllocs <- b.netAllocs +. (allocatedWords -. b.startAllocs);
-      b.netBytes <- b.netBytes +. ((allocatedWords *. 8.) -. b.startBytes);
-      b.timerOn <- false)
+      b.net_allocs <- b.net_allocs +. (allocated_words -. b.start_allocs);
+      b.net_bytes <- b.net_bytes +. ((allocated_words *. 8.) -. b.start_bytes);
+      b.timer_on <- false)
 
-  let resetTimer b =
-    if b.timerOn then (
-      let allocatedWords = mallocs () in
-      b.startAllocs <- allocatedWords;
-      b.netAllocs <- allocatedWords *. 8.;
+  let reset_timer b =
+    if b.timer_on then (
+      let allocated_words = mallocs () in
+      b.start_allocs <- allocated_words;
+      b.net_allocs <- allocated_words *. 8.;
       b.start <- Time.now ());
-    b.netAllocs <- 0.;
-    b.netBytes <- 0.
+    b.net_allocs <- 0.;
+    b.net_bytes <- 0.
 
-  let runIteration b n =
+  let run_iteration b n =
     Gc.full_major ();
     b.n <- n;
-    resetTimer b;
-    startTimer b;
-    b.benchFunc b;
-    stopTimer b
+    reset_timer b;
+    start_timer b;
+    b.bench_func b;
+    stop_timer b
 
   let launch b =
     (* 150 runs * all the benchmarks means around 1m of benchmark time *)
     for n = 1 to 150 do
-      runIteration b n
+      run_iteration b n
     done
 end
 
@@ -192,64 +192,64 @@ end = struct
     | Ocaml -> "ocaml"
     | Rescript -> "rescript"
 
-  let parseOcaml src filename =
+  let parse_ocaml src filename =
     let lexbuf = Lexing.from_string src in
     Location.init lexbuf filename;
     Parse.implementation lexbuf
 
-  let parseRescript src filename =
+  let parse_rescript src filename =
     let p = Parser.make src filename in
-    let structure = ResParser.parseImplementation p in
+    let structure = ResParser.parse_implementation p in
     assert (p.diagnostics == []);
     structure
 
   let benchmark filename lang action =
-    let src = IO.readFile filename in
+    let src = IO.read_file filename in
     let name =
       filename ^ " " ^ string_of_lang lang ^ " " ^ string_of_action action
     in
-    let benchmarkFn =
+    let benchmark_fn =
       match (lang, action) with
       | Rescript, Parse ->
         fun _ ->
-          let _ = Sys.opaque_identity (parseRescript src filename) in
+          let _ = Sys.opaque_identity (parse_rescript src filename) in
           ()
       | Ocaml, Parse ->
         fun _ ->
-          let _ = Sys.opaque_identity (parseOcaml src filename) in
+          let _ = Sys.opaque_identity (parse_ocaml src filename) in
           ()
       | Rescript, Print ->
         let p = Parser.make src filename in
-        let ast = ResParser.parseImplementation p in
+        let ast = ResParser.parse_implementation p in
         fun _ ->
           let _ =
             Sys.opaque_identity
-              (let cmtTbl = CommentTable.make () in
+              (let cmt_tbl = CommentTable.make () in
                let comments = List.rev p.Parser.comments in
-               let () = CommentTable.walkStructure ast cmtTbl comments in
-               Doc.toString ~width:80 (Printer.printStructure ast cmtTbl))
+               let () = CommentTable.walk_structure ast cmt_tbl comments in
+               Doc.to_string ~width:80 (Printer.print_structure ast cmt_tbl))
           in
           ()
       | _ -> fun _ -> ()
     in
-    let b = Benchmark.make ~name ~f:benchmarkFn () in
+    let b = Benchmark.make ~name ~f:benchmark_fn () in
     Benchmark.launch b;
     Benchmark.report b
 
   let run () =
-    let dataDir = "jscomp/syntax/benchmarks/data" in
-    benchmark (Filename.concat dataDir "RedBlackTree.res") Rescript Parse;
-    benchmark (Filename.concat dataDir "RedBlackTree.ml") Ocaml Parse;
-    benchmark (Filename.concat dataDir "RedBlackTree.res") Rescript Print;
+    let data_dir = "jscomp/syntax/benchmarks/data" in
+    benchmark (Filename.concat data_dir "RedBlackTree.res") Rescript Parse;
+    benchmark (Filename.concat data_dir "RedBlackTree.ml") Ocaml Parse;
+    benchmark (Filename.concat data_dir "RedBlackTree.res") Rescript Print;
     benchmark
-      (Filename.concat dataDir "RedBlackTreeNoComments.res")
+      (Filename.concat data_dir "RedBlackTreeNoComments.res")
       Rescript Print;
-    benchmark (Filename.concat dataDir "Napkinscript.res") Rescript Parse;
-    benchmark (Filename.concat dataDir "Napkinscript.ml") Ocaml Parse;
-    benchmark (Filename.concat dataDir "Napkinscript.res") Rescript Print;
-    benchmark (Filename.concat dataDir "HeroGraphic.res") Rescript Parse;
-    benchmark (Filename.concat dataDir "HeroGraphic.ml") Ocaml Parse;
-    benchmark (Filename.concat dataDir "HeroGraphic.res") Rescript Print
+    benchmark (Filename.concat data_dir "Napkinscript.res") Rescript Parse;
+    benchmark (Filename.concat data_dir "Napkinscript.ml") Ocaml Parse;
+    benchmark (Filename.concat data_dir "Napkinscript.res") Rescript Print;
+    benchmark (Filename.concat data_dir "HeroGraphic.res") Rescript Parse;
+    benchmark (Filename.concat data_dir "HeroGraphic.ml") Ocaml Parse;
+    benchmark (Filename.concat data_dir "HeroGraphic.res") Rescript Print
 end
 
 let () = Benchmarks.run ()

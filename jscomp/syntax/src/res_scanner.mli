@@ -1,20 +1,20 @@
 type mode = Jsx | Diamond
 
-type charEncoding
+type char_encoding
 
 type t = {
   filename: string;
   src: string;
   mutable err:
-    startPos:Lexing.position ->
-    endPos:Lexing.position ->
+    start_pos:Lexing.position ->
+    end_pos:Lexing.position ->
     Res_diagnostics.category ->
     unit;
-  mutable ch: charEncoding; (* current character *)
+  mutable ch: char_encoding; (* current character *)
   mutable offset: int; (* current byte offset *)
   mutable offset16: int;
       (* current number of utf16 code units since line start *)
-  mutable lineOffset: int; (* current line offset *)
+  mutable line_offset: int; (* current line offset *)
   mutable lnum: int; (* current line number *)
   mutable mode: mode list;
 }
@@ -24,13 +24,13 @@ val make : filename:string -> string -> t
 (* TODO: make this a record *)
 val scan : t -> Lexing.position * Lexing.position * Res_token.t
 
-val isBinaryOp : string -> int -> int -> bool
+val is_binary_op : string -> int -> int -> bool
 
-val setJsxMode : t -> unit
-val setDiamondMode : t -> unit
-val popMode : t -> mode -> unit
+val set_jsx_mode : t -> unit
+val set_diamond_mode : t -> unit
+val pop_mode : t -> mode -> unit
 
-val reconsiderLessThan : t -> Res_token.t
+val reconsider_less_than : t -> Res_token.t
 
-val scanTemplateLiteralToken :
+val scan_template_literal_token :
   t -> Lexing.position * Lexing.position * Res_token.t

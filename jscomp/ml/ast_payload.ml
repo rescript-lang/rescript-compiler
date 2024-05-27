@@ -184,7 +184,7 @@ type action = lid * Parsetree.expression option
     {[ { x = exp }]}
 *)
 
-let unrecognizedConfigRecord loc text =
+let unrecognized_config_record loc text =
   Location.prerr_warning loc (Warnings.Bs_derive_warning text)
 
 let ident_or_record_as_config loc (x : t) :
@@ -211,7 +211,7 @@ let ident_or_record_as_config loc (x : t) :
           | {txt = Lident name; loc}, y -> ({Asttypes.txt = name; loc}, Some y)
           | _ -> Location.raise_errorf ~loc "Qualified label is not allowed")
     | Some _ ->
-      unrecognizedConfigRecord loc "`with` is not supported, discarding";
+      unrecognized_config_record loc "`with` is not supported, discarding";
       [])
   | PStr
       [
@@ -224,7 +224,7 @@ let ident_or_record_as_config loc (x : t) :
     [({Asttypes.txt; loc = lloc}, None)]
   | PStr [] -> []
   | _ ->
-    unrecognizedConfigRecord loc "invalid attribute config-record, ignoring";
+    unrecognized_config_record loc "invalid attribute config-record, ignoring";
     []
 
 let assert_strings loc (x : t) : string list =

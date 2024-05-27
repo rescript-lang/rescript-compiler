@@ -1,2 +1,2 @@
-val parseImplementation : Res_parser.t -> Parsetree.structure
-val parseSpecification : Res_parser.t -> Parsetree.signature
+val parse_implementation : Res_parser.t -> Parsetree.structure
+val parse_specification : Res_parser.t -> Parsetree.signature

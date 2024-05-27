@@ -790,21 +790,21 @@ let sorted_keywords = [|
 
 type element = string 
 
-let rec binarySearchAux (arr : element array) (lo : int) (hi : int) key : bool =   
+let rec binary_search_aux (arr : element array) (lo : int) (hi : int) key : bool =   
     let mid = (lo + hi)/2 in 
-    let midVal = Array.unsafe_get arr mid in 
+    let mid_val = Array.unsafe_get arr mid in 
     (* let c = cmp key midVal [@bs] in  *)
-    if key = midVal then true 
-    else if key < midVal then  (*  a[lo] =< key < a[mid] <= a[hi] *)
+    if key = mid_val then true 
+    else if key < mid_val then  (*  a[lo] =< key < a[mid] <= a[hi] *)
       if hi = mid then  
         (Array.unsafe_get arr lo) = key 
-      else binarySearchAux arr lo mid key 
+      else binary_search_aux arr lo mid key 
     else  (*  a[lo] =< a[mid] < key <= a[hi] *)
       if lo = mid then 
         (Array.unsafe_get arr hi) = key 
-      else binarySearchAux arr mid hi key 
+      else binary_search_aux arr mid hi key 
 
-let binarySearch (sorted : element array) (key : element)  : bool =  
+let binary_search (sorted : element array) (key : element)  : bool =  
   let len = Array.length sorted in 
   if len = 0 then false
   else 
@@ -815,6 +815,6 @@ let binarySearch (sorted : element array) (key : element)  : bool =
     let hi = Array.unsafe_get sorted (len - 1) in 
     (* let c2 = cmp key hi [@bs]in  *)
     if key > hi then false
-    else binarySearchAux sorted 0 (len - 1) key 
+    else binary_search_aux sorted 0 (len - 1) key 
 
-let is_reserved s = binarySearch sorted_keywords s     
+let is_reserved s = binary_search sorted_keywords s     

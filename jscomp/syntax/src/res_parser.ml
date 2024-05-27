@@ -8,54 +8,54 @@ module Comment = Res_comment
 
 type mode = ParseForTypeChecker | Default
 
-type regionStatus = Report | Silent
+type region_status = Report | Silent
 
 type t = {
   mode: mode;
   mutable scanner: Scanner.t;
   mutable token: Token.t;
-  mutable startPos: Lexing.position;
-  mutable endPos: Lexing.position;
-  mutable prevEndPos: Lexing.position;
+  mutable start_pos: Lexing.position;
+  mutable end_pos: Lexing.position;
+  mutable prev_end_pos: Lexing.position;
   mutable breadcrumbs: (Grammar.t * Lexing.position) list;
-  mutable errors: Reporting.parseError list;
+  mutable errors: Reporting.parse_error list;
   mutable diagnostics: Diagnostics.t list;
   mutable comments: Comment.t list;
-  mutable regions: regionStatus ref list;
+  mutable regions: region_status ref list;
   mutable uncurried_config: Config.uncurried;
 }
 
-let err ?startPos ?endPos p error =
+let err ?start_pos ?end_pos p error =
   match p.regions with
   | ({contents = Report} as region) :: _ ->
     let d =
       Diagnostics.make
-        ~startPos:
-          (match startPos with
+        ~start_pos:
+          (match start_pos with
           | Some pos -> pos
-          | None -> p.startPos)
-        ~endPos:
-          (match endPos with
+          | None -> p.start_pos)
+        ~end_pos:
+          (match end_pos with
           | Some pos -> pos
-          | None -> p.endPos)
+          | None -> p.end_pos)
         error
     in
     p.diagnostics <- d :: p.diagnostics;
     region := Silent
   | _ -> ()
 
-let beginRegion p = p.regions <- ref Report :: p.regions
-let endRegion p =
+let begin_region p = p.regions <- ref Report :: p.regions
+let end_region p =
   match p.regions with
   | [] -> ()
   | _ :: rest -> p.regions <- rest
 
-let docCommentToAttributeToken comment =
+let doc_comment_to_attribute_token comment =
   let txt = Comment.txt comment in
   let loc = Comment.loc comment in
   Token.DocComment (loc, txt)
 
-let moduleCommentToAttributeToken comment =
+let module_comment_to_attribute_token comment =
   let txt = Comment.txt comment in
   let loc = Comment.loc comment in
   Token.ModuleComment (loc, txt)
@@ -63,60 +63,62 @@ let moduleCommentToAttributeToken comment =
 (* Advance to the next non-comment token and store any encountered comment
    * in the parser's state. Every comment contains the end position of its
    * previous token to facilite comment interleaving *)
-let rec next ?prevEndPos p =
+let rec next ?prev_end_pos p =
   if p.token = Eof then assert false;
-  let prevEndPos =
-    match prevEndPos with
+  let prev_end_pos =
+    match prev_end_pos with
     | Some pos -> pos
-    | None -> p.endPos
+    | None -> p.end_pos
   in
-  let startPos, endPos, token = Scanner.scan p.scanner in
+  let start_pos, end_pos, token = Scanner.scan p.scanner in
   match token with
   | Comment c ->
-    if Comment.isDocComment c then (
-      p.token <- docCommentToAttributeToken c;
-      p.prevEndPos <- prevEndPos;
-      p.startPos <- startPos;
-      p.endPos <- endPos)
-    else if Comment.isModuleComment c then (
-      p.token <- moduleCommentToAttributeToken c;
-      p.prevEndPos <- prevEndPos;
-      p.startPos <- startPos;
-      p.endPos <- endPos)
+    if Comment.is_doc_comment c then (
+      p.token <- doc_comment_to_attribute_token c;
+      p.prev_end_pos <- prev_end_pos;
+      p.start_pos <- start_pos;
+      p.end_pos <- end_pos)
+    else if Comment.is_module_comment c then (
+      p.token <- module_comment_to_attribute_token c;
+      p.prev_end_pos <- prev_end_pos;
+      p.start_pos <- start_pos;
+      p.end_pos <- end_pos)
     else (
-      Comment.setPrevTokEndPos c p.endPos;
+      Comment.set_prev_tok_end_pos c p.end_pos;
       p.comments <- c :: p.comments;
-      p.prevEndPos <- p.endPos;
-      p.endPos <- endPos;
-      next ~prevEndPos p)
+      p.prev_end_pos <- p.end_pos;
+      p.end_pos <- end_pos;
+      next ~prev_end_pos p)
   | _ ->
     p.token <- token;
-    p.prevEndPos <- prevEndPos;
-    p.startPos <- startPos;
-    p.endPos <- endPos
+    p.prev_end_pos <- prev_end_pos;
+    p.start_pos <- start_pos;
+    p.end_pos <- end_pos
 
-let nextUnsafe p = if p.token <> Eof then next p
+let next_unsafe p = if p.token <> Eof then next p
 
-let nextTemplateLiteralToken p =
-  let startPos, endPos, token = Scanner.scanTemplateLiteralToken p.scanner in
+let next_template_literal_token p =
+  let start_pos, end_pos, token =
+    Scanner.scan_template_literal_token p.scanner
+  in
   p.token <- token;
-  p.prevEndPos <- p.endPos;
-  p.startPos <- startPos;
-  p.endPos <- endPos
+  p.prev_end_pos <- p.end_pos;
+  p.start_pos <- start_pos;
+  p.end_pos <- end_pos
 
-let checkProgress ~prevEndPos ~result p =
-  if p.endPos == prevEndPos then None else Some result
+let check_progress ~prev_end_pos ~result p =
+  if p.end_pos == prev_end_pos then None else Some result
 
 let make ?(mode = ParseForTypeChecker) src filename =
   let scanner = Scanner.make ~filename src in
-  let parserState =
+  let parser_state =
     {
       mode;
       scanner;
       token = Token.Semicolon;
-      startPos = Lexing.dummy_pos;
-      prevEndPos = Lexing.dummy_pos;
-      endPos = Lexing.dummy_pos;
+      start_pos = Lexing.dummy_pos;
+      prev_end_pos = Lexing.dummy_pos;
+      end_pos = Lexing.dummy_pos;
       breadcrumbs = [];
       errors = [];
       diagnostics = [];
@@ -125,18 +127,18 @@ let make ?(mode = ParseForTypeChecker) src filename =
       uncurried_config = !Config.uncurried;
     }
   in
-  parserState.scanner.err <-
-    (fun ~startPos ~endPos error ->
-      let diagnostic = Diagnostics.make ~startPos ~endPos error in
-      parserState.diagnostics <- diagnostic :: parserState.diagnostics);
-  next parserState;
-  parserState
+  parser_state.scanner.err <-
+    (fun ~start_pos ~end_pos error ->
+      let diagnostic = Diagnostics.make ~start_pos ~end_pos error in
+      parser_state.diagnostics <- diagnostic :: parser_state.diagnostics);
+  next parser_state;
+  parser_state
 
-let leaveBreadcrumb p circumstance =
-  let crumb = (circumstance, p.startPos) in
+let leave_breadcrumb p circumstance =
+  let crumb = (circumstance, p.start_pos) in
   p.breadcrumbs <- crumb :: p.breadcrumbs
 
-let eatBreadcrumb p =
+let eat_breadcrumb p =
   match p.breadcrumbs with
   | [] -> ()
   | _ :: crumbs -> p.breadcrumbs <- crumbs
@@ -150,8 +152,8 @@ let optional p token =
 let expect ?grammar token p =
   if p.token = token then next p
   else
-    let error = Diagnostics.expected ?grammar p.prevEndPos token in
-    err ~startPos:p.prevEndPos p error
+    let error = Diagnostics.expected ?grammar p.prev_end_pos token in
+    err ~start_pos:p.prev_end_pos p error
 
 (* Don't use immutable copies here, it trashes certain heuristics
  * in the ocaml compiler, resulting in massive slowdowns of the parser *)
@@ -160,13 +162,13 @@ let lookahead p callback =
   let ch = p.scanner.ch in
   let offset = p.scanner.offset in
   let offset16 = p.scanner.offset16 in
-  let lineOffset = p.scanner.lineOffset in
+  let line_offset = p.scanner.line_offset in
   let lnum = p.scanner.lnum in
   let mode = p.scanner.mode in
   let token = p.token in
-  let startPos = p.startPos in
-  let endPos = p.endPos in
-  let prevEndPos = p.prevEndPos in
+  let start_pos = p.start_pos in
+  let end_pos = p.end_pos in
+  let prev_end_pos = p.prev_end_pos in
   let breadcrumbs = p.breadcrumbs in
   let errors = p.errors in
   let diagnostics = p.diagnostics in
@@ -179,13 +181,13 @@ let lookahead p callback =
   p.scanner.ch <- ch;
   p.scanner.offset <- offset;
   p.scanner.offset16 <- offset16;
-  p.scanner.lineOffset <- lineOffset;
+  p.scanner.line_offset <- line_offset;
   p.scanner.lnum <- lnum;
   p.scanner.mode <- mode;
   p.token <- token;
-  p.startPos <- startPos;
-  p.endPos <- endPos;
-  p.prevEndPos <- prevEndPos;
+  p.start_pos <- start_pos;
+  p.end_pos <- end_pos;
+  p.prev_end_pos <- prev_end_pos;
   p.breadcrumbs <- breadcrumbs;
   p.errors <- errors;
   p.diagnostics <- diagnostics;

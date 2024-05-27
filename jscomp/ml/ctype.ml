@@ -2396,9 +2396,9 @@ and unify3 env t1 t1' t2 t2' =
       link_type t2' t1;
   | (Tfield _, Tfield _) -> (* special case for GADTs *)
       unify_fields env t1' t2'
-  | (Tconstr (Pident {name="function$"}, [tFun; _], _), Tarrow _) when !Config.uncurried = Uncurried ->
+  | (Tconstr (Pident {name="function$"}, [t_fun; _], _), Tarrow _) when !Config.uncurried = Uncurried ->
       (* subtype: an uncurried function is cast to a curried one *)
-      unify2 env tFun t2
+      unify2 env t_fun t2
   | _ ->
     begin match !umode with
     | Expression ->
@@ -3983,7 +3983,7 @@ let rec subtype_rec env trace t1 t2 cstrs =
       (* type coercion for variants to primitives *)
       (match Variant_coercion.can_try_coerce_variant_to_primitive_opt (extract_concrete_typedecl_opt env t1) with
       | Some (constructors, unboxed) -> 
-        if constructors |> Variant_coercion.variant_has_same_runtime_representation_as_target ~targetPath:path ~unboxed then
+        if constructors |> Variant_coercion.variant_has_same_runtime_representation_as_target ~target_path:path ~unboxed then
           cstrs
         else 
           (trace, t1, t2, !univar_pairs)::cstrs

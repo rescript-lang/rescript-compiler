@@ -7,18 +7,18 @@ module DocString = struct
   let render t =
     match t with
     | None | Some "" -> ""
-    | Some docString -> "/** " ^ String.trim docString ^ " */\n"
+    | Some doc_string -> "/** " ^ String.trim doc_string ^ " */\n"
   let empty = None
-  let hasContent docString = Option.is_some docString
+  let has_content doc_string = Option.is_some doc_string
 end
 
-let logNotImplemented x =
-  if !Debug.notImplemented then Log_.item "Not Implemented: %s\n" x
+let log_not_implemented x =
+  if !Debug.not_implemented then Log_.item "Not Implemented: %s\n" x
 
 type optional = Mandatory | Optional
 type mutable_ = Immutable | Mutable
 
-type labelJS =
+type label_js =
   | NullLabel
   | UndefinedLabel
   | BoolLabel of bool
@@ -26,9 +26,9 @@ type labelJS =
   | IntLabel of string
   | StringLabel of string
 
-type case = {labelJS: labelJS}
+type case = {label_js: label_js}
 
-let isJSSafePropertyName name =
+let is_js_safe_property_name name =
   name = ""
   || (match name.[0] [@doesNotRaise] with
      | 'A' .. 'z' -> true
@@ -38,7 +38,7 @@ let isJSSafePropertyName name =
              | 'A' .. 'z' | '0' .. '9' -> true
              | _ -> false)
 
-let isNumber s =
+let is_number s =
   let len = String.length s in
   len > 0
   && (match len > 1 with
@@ -53,8 +53,8 @@ let isNumber s =
   done;
   res.contents
 
-let labelJSToString case =
-  match case.labelJS with
+let label_js_to_string case =
+  match case.label_js with
   | NullLabel -> "null"
   | UndefinedLabel -> "undefined"
   | BoolLabel b -> b |> string_of_bool
@@ -62,7 +62,7 @@ let labelJSToString case =
   | IntLabel i -> i
   | StringLabel s -> s |> EmitText.quotes
 
-type closedFlag = Open | Closed | Inline
+type closed_flag = Open | Closed | Inline
 
 type type_ =
   | Array of type_ * mutable_
@@ -71,7 +71,7 @@ type type_ =
   | Ident of ident
   | Null of type_
   | Nullable of type_
-  | Object of closedFlag * fields
+  | Object of closed_flag * fields
   | Option of type_
   | Promise of type_
   | Tuple of type_ list
@@ -79,23 +79,27 @@ type type_ =
   | Variant of variant (* ordinary and polymorphic variants *)
 
 and fields = field list
-and argType = {aName: string; aType: type_}
+and arg_type = {a_name: string; a_type: type_}
 
 and field = {
   mutable_: mutable_;
-  nameJS: string;
+  name_js: string;
   optional: optional;
   type_: type_;
-  docString: DocString.t;
+  doc_string: DocString.t;
 }
 
-and function_ = {argTypes: argType list; retType: type_; typeVars: string list}
+and function_ = {
+  arg_types: arg_type list;
+  ret_type: type_;
+  type_vars: string list;
+}
 
-and ident = {builtin: bool; name: string; typeArgs: type_ list}
+and ident = {builtin: bool; name: string; type_args: type_ list}
 
 and variant = {
   inherits: type_ list;
-  noPayloads: case list;
+  no_payloads: case list;
   payloads: payload list;
   polymorphic: bool; (* If true, this is a polymorphic variant *)
   tag: string option; (* The name of the tag field at runtime *)
@@ -134,99 +138,99 @@ struct
     Buffer.contents buf
 
   (** @demo/some-library -> DemoSomelibrary *)
-  let packageNameToGeneratedModuleName packageName =
-    if String.contains packageName '/' then
-      Some (packageName |> namespace_of_package_name)
+  let package_name_to_generated_module_name package_name =
+    if String.contains package_name '/' then
+      Some (package_name |> namespace_of_package_name)
     else None
 
-  let isGeneratedModule id ~(config : Config.t) =
-    config.bsDependencies
-    |> List.exists (fun packageName ->
-           packageName |> packageNameToGeneratedModuleName
+  let is_generated_module id ~(config : Config.t) =
+    config.bs_dependencies
+    |> List.exists (fun package_name ->
+           package_name |> package_name_to_generated_module_name
            = Some (id |> Ident.name))
 
   (** (Common, DemoSomelibrary) -> Common-DemoSomelibrary *)
-  let addGeneratedModule s ~generatedModule =
-    s ^ "-" ^ Ident.name generatedModule
+  let add_generated_module s ~generated_module =
+    s ^ "-" ^ Ident.name generated_module
 
   (** Common-DemoSomelibrary -> Common *)
-  let removeGeneratedModule s =
+  let remove_generated_module s =
     match s |> String.split_on_char '-' with
     | [name; _scope] -> name
     | _ -> s
 end
 
-let rec depToString dep =
+let rec dep_to_string dep =
   match dep with
-  | External name -> name |> ScopedPackage.removeGeneratedModule
-  | Internal resolvedName -> resolvedName |> ResolvedName.toString
-  | Dot (d, s) -> depToString d ^ "_" ^ s
+  | External name -> name |> ScopedPackage.remove_generated_module
+  | Internal resolved_name -> resolved_name |> ResolvedName.to_string
+  | Dot (d, s) -> dep_to_string d ^ "_" ^ s
 
-let rec depToResolvedName (dep : dep) =
+let rec dep_to_resolved_name (dep : dep) =
   match dep with
-  | External name -> name |> ResolvedName.fromString
-  | Internal resolvedName -> resolvedName
-  | Dot (p, s) -> ResolvedName.dot s (p |> depToResolvedName)
+  | External name -> name |> ResolvedName.from_string
+  | Internal resolved_name -> resolved_name
+  | Dot (p, s) -> ResolvedName.dot s (p |> dep_to_resolved_name)
 
-let createVariant ~inherits ~noPayloads ~payloads ~polymorphic ~tag ~unboxed =
-  Variant {inherits; noPayloads; payloads; polymorphic; tag; unboxed}
+let create_variant ~inherits ~no_payloads ~payloads ~polymorphic ~tag ~unboxed =
+  Variant {inherits; no_payloads; payloads; polymorphic; tag; unboxed}
 
-let ident ?(builtin = true) ?(typeArgs = []) name =
-  Ident {builtin; name; typeArgs}
+let ident ?(builtin = true) ?(type_args = []) name =
+  Ident {builtin; name; type_args}
 
-let sanitizeTypeName name =
+let sanitize_type_name name =
   name
   |> String.map (function
        | '\'' -> '_'
        | c -> c)
 let unknown = ident "unknown"
-let bigintT = ident "BigInt"
-let booleanT = ident "boolean"
-let dateT = ident "Date"
-let mapT (x, y) = ident ~typeArgs:[x; y] "Map"
-let numberT = ident "number"
-let regexpT = ident "RegExp"
-let setT x = ident ~typeArgs:[x] "Set"
-let stringT = ident "string"
-let unitT = ident "void"
-let weakmapT (x, y) = ident ~typeArgs:[x; y] "WeakMap"
-let weaksetT x = ident ~typeArgs:[x] "WeakSet"
-let int64T = Tuple [numberT; numberT]
+let bigint_t = ident "BigInt"
+let boolean_t = ident "boolean"
+let date_t = ident "Date"
+let map_t (x, y) = ident ~type_args:[x; y] "Map"
+let number_t = ident "number"
+let regexp_t = ident "RegExp"
+let set_t x = ident ~type_args:[x] "Set"
+let string_t = ident "string"
+let unit_t = ident "void"
+let weakmap_t (x, y) = ident ~type_args:[x; y] "WeakMap"
+let weakset_t x = ident ~type_args:[x] "WeakSet"
+let int64_t = Tuple [number_t; number_t]
 
 module NodeFilename = struct
   include Filename
 
   (* Force "/" separator. *)
-  let dirSep = "/"
+  let dir_sep = "/"
 
   module Path : sig
     type t
 
     val normalize : string -> t
     val concat : t -> string -> t
-    val toString : t -> string
+    val to_string : t -> string
   end = struct
     type t = string
 
     let normalize path : t =
       match Sys.os_type with
-      | "Win32" -> path |> String.split_on_char '\\' |> String.concat dirSep
+      | "Win32" -> path |> String.split_on_char '\\' |> String.concat dir_sep
       | _ -> path
 
-    let toString path = path
+    let to_string path = path
     let length path = String.length path
 
     let concat dirname filename =
-      let isDirSep s i =
+      let is_dir_sep s i =
         let c = (s.[i] [@doesNotRaise]) in
         c = '/' || c = '\\' || c = ':'
       in
       let l = length dirname in
-      if l = 0 || isDirSep dirname (l - 1) then dirname ^ filename
-      else dirname ^ dirSep ^ filename
+      if l = 0 || is_dir_sep dirname (l - 1) then dirname ^ filename
+      else dirname ^ dir_sep ^ filename
   end
 
   let concat (dirname : string) filename =
     let open Path in
-    Path.concat (normalize dirname) filename |> toString
+    Path.concat (normalize dirname) filename |> to_string
 end

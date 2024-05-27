@@ -293,7 +293,7 @@ type function_attribute = {
   return_unit : bool;
   async : bool;
   directive : string option;
-  oneUnitArg : bool;
+  one_unit_arg : bool;
 }
 
 type lambda =

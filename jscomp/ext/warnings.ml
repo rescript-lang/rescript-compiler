@@ -26,7 +26,7 @@ type loc = {
   loc_ghost : bool;
 }
 
-type topLevelUnitHelp = FunctionCall | Other
+type top_level_unit_help = FunctionCall | Other
 
 type t =
   | Comment_start (*  1 *)
@@ -85,7 +85,7 @@ type t =
   | Bs_unimplemented_primitive of string (* 106 *)
   | Bs_integer_literal_overflow (* 107 *)
   | Bs_uninterpreted_delimiters of string (* 108 *)
-  | Bs_toplevel_expression_unit of (string * topLevelUnitHelp) option (* 109 *)
+  | Bs_toplevel_expression_unit of (string * top_level_unit_help) option (* 109 *)
   | Bs_todo of string option (* 110 *)
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
@@ -501,15 +501,15 @@ let message = function
         | _ -> " ") 
 
         (match help with 
-        | Some (returnType, _) -> Printf.sprintf "`%s`" returnType 
+        | Some (return_type, _) -> Printf.sprintf "`%s`" return_type 
         | None -> "something that is not `unit`")
 
         (match help with 
-        | Some (_, helpTyp) ->
-          let helpText = (match helpTyp with 
+        | Some (_, help_typ) ->
+          let help_text = (match help_typ with 
           | FunctionCall -> "yourFunctionCall()" 
           | Other -> "yourExpression") in
-          Printf.sprintf "\n\n  Possible solutions:\n  - Assigning to a value that is then ignored: `let _ = %s`\n  - Piping into the built-in ignore function to ignore the result: `%s->ignore`" helpText helpText
+          Printf.sprintf "\n\n  Possible solutions:\n  - Assigning to a value that is then ignored: `let _ = %s`\n  - Piping into the built-in ignore function to ignore the result: `%s->ignore`" help_text help_text
         | _ -> "") 
     | Bs_todo maybe_text -> (
       match maybe_text with 

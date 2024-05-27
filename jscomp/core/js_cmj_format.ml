@@ -104,57 +104,57 @@ let to_file name ~check_exists (v : t) =
     output_string oc s;
     close_out oc)
 
-let keyComp (a : string) b = Map_string.compare_key a b.name
+let key_comp (a : string) b = Map_string.compare_key a b.name
 
 let not_found key =
   { name = key; arity = single_na; persistent_closed_lambda = None }
 
-let get_result midVal =
-  match midVal.persistent_closed_lambda with
+let get_result mid_val =
+  match mid_val.persistent_closed_lambda with
   | Some
       (Lconst
         (Const_js_null | Const_js_undefined _ | Const_js_true | Const_js_false))
   | None ->
-      midVal
+      mid_val
   | Some _ ->
-      if !Js_config.cross_module_inline then midVal
-      else { midVal with persistent_closed_lambda = None }
+      if !Js_config.cross_module_inline then mid_val
+      else { mid_val with persistent_closed_lambda = None }
 
-let rec binarySearchAux arr lo hi (key : string) =
+let rec binary_search_aux arr lo hi (key : string) =
   let mid = (lo + hi) / 2 in
-  let midVal = Array.unsafe_get arr mid in
-  let c = keyComp key midVal in
-  if c = 0 then get_result midVal
+  let mid_val = Array.unsafe_get arr mid in
+  let c = key_comp key mid_val in
+  if c = 0 then get_result mid_val
   else if c < 0 then
     (*  a[lo] =< key < a[mid] <= a[hi] *)
     if hi = mid then
-      let loVal = Array.unsafe_get arr lo in
-      if loVal.name = key then get_result loVal else not_found key
-    else binarySearchAux arr lo mid key
+      let lo_val = Array.unsafe_get arr lo in
+      if lo_val.name = key then get_result lo_val else not_found key
+    else binary_search_aux arr lo mid key
   else if (*  a[lo] =< a[mid] < key <= a[hi] *)
           lo = mid then
-    let hiVal = Array.unsafe_get arr hi in
-    if hiVal.name = key then get_result hiVal else not_found key
-  else binarySearchAux arr mid hi key
+    let hi_val = Array.unsafe_get arr hi in
+    if hi_val.name = key then get_result hi_val else not_found key
+  else binary_search_aux arr mid hi key
 
-let binarySearch (sorted : keyed_cmj_values) (key : string) : keyed_cmj_value =
+let binary_search (sorted : keyed_cmj_values) (key : string) : keyed_cmj_value =
   let len = Array.length sorted in
   if len = 0 then not_found key
   else
     let lo = Array.unsafe_get sorted 0 in
-    let c = keyComp key lo in
+    let c = key_comp key lo in
     if c < 0 then not_found key
     else
       let hi = Array.unsafe_get sorted (len - 1) in
-      let c2 = keyComp key hi in
-      if c2 > 0 then not_found key else binarySearchAux sorted 0 (len - 1) key
+      let c2 = key_comp key hi in
+      if c2 > 0 then not_found key else binary_search_aux sorted 0 (len - 1) key
 
 (* FIXME: better error message when ocamldep
    get self-cycle
 *)
 let query_by_name (cmj_table : t) name : keyed_cmj_value =
   let values = cmj_table.values in
-  binarySearch values name
+  binary_search values name
 
 type path = string
 

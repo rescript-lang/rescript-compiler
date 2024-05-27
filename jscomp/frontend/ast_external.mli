@@ -22,13 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val handleExternalInSig :
+val handle_external_in_sig :
   Bs_ast_mapper.mapper ->
   Parsetree.value_description ->
   Parsetree.signature_item ->
   Parsetree.signature_item
 
-val handleExternalInStru :
+val handle_external_in_stru :
   Bs_ast_mapper.mapper ->
   Parsetree.value_description ->
   Parsetree.structure_item ->

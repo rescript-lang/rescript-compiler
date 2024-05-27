@@ -167,11 +167,11 @@ let report_type_mismatch0 first second decl ppf err =
       let default () = pr "Their internal representations differ" in
       ( match rep1, rep2 with
         | Record_optional_labels lbls1, Record_optional_labels lbls2 ->
-          let onlyInLhs =
+          let only_in_lhs =
             Ext_list.find_first lbls1 (fun l -> not (Ext_list.mem_string lbls2 l)) in
-          let onlyInRhs =
+          let only_in_rhs =
             Ext_list.find_first lbls2 (fun l -> not (Ext_list.mem_string lbls1 l)) in
-          (match onlyInLhs, onlyInRhs with
+          (match only_in_lhs, only_in_rhs with
             | Some l, _ ->
               pr "@optional label %s only in %s" l second
             | _, Some l ->

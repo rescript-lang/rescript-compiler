@@ -51,7 +51,7 @@ module Loc = struct
     | "_none_" | "" -> Format.fprintf ppf "(No file name)"
     | real_file -> Format.fprintf ppf "%s" (Location.show_filename real_file)
 
-  let print_loc ~normalizedRange ppf (loc : Location.t) =
+  let print_loc ~normalized_range ppf (loc : Location.t) =
     let file, _, _ = Location.get_pos_info loc.loc_start in
     if file = "//toplevel//" then
       Format.fprintf ppf "Characters %i-%i" loc.loc_start.pos_cnum
@@ -74,12 +74,12 @@ module Loc = struct
               start_line_start_char end_line end_line_end_char
       in
       Format.fprintf ppf "@{<filename>%a@}%a" print_filename file dim_loc
-        normalizedRange
+        normalized_range
 
   let print ppf (loc : Location.t) =
     let _file, start_line, start_char = Location.get_pos_info loc.loc_start in
     let _, end_line, end_char = Location.get_pos_info loc.loc_end in
-    let normalizedRange =
+    let normalized_range =
       if start_char == -1 || end_char == -1 then None
       else if start_line = end_line && start_char >= end_char then
         let same_char = start_char + 1 in
@@ -87,15 +87,15 @@ module Loc = struct
       else Some ((start_line, start_char + 1), (end_line, end_char))
     in
 
-    Format.fprintf ppf "@[%a@]" (print_loc ~normalizedRange) loc
+    Format.fprintf ppf "@[%a@]" (print_loc ~normalized_range) loc
 end
 
 let item x =
   Format.fprintf Format.std_formatter "  ";
   Format.fprintf Format.std_formatter x
 
-let logKind body ~color ~loc ~name =
+let log_kind body ~color ~loc ~name =
   Format.fprintf Format.std_formatter "@[<v 2>@,%a@,%a@,%a@]@." color name
     Loc.print loc body ()
 
-let info body ~loc ~name = logKind body ~color:Color.info ~loc ~name
+let info body ~loc ~name = log_kind body ~color:Color.info ~loc ~name

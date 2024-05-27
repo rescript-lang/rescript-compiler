@@ -1,4 +1,4 @@
-type fileAction =
+type file_action =
   | NoMatch (* No @genType annotation found. *)
   | Replace (* Replace existing file on disk with new contents. *)
   | Identical (* File already on disk with identical contents. Skip. *)
@@ -6,18 +6,18 @@ type fileAction =
     (* The cmt file was produced after a type error -- don't delete generated files. *)
   | Write (* File not present on disk. *)
 
-let logFileAction fileAction fileName =
+let log_file_action file_action file_name =
   if !Debug.basic then
     Log_.item "%s  %s\n"
-      (match fileAction with
+      (match file_action with
       | NoMatch -> "NoMatch"
       | Replace -> "Replace"
       | Identical -> "Identical"
       | TypeError -> "TypeError"
       | Write -> "Write")
-      fileName
+      file_name
 
-let readLines (file : string) : string list =
+let read_lines (file : string) : string list =
   let lines = ref [] in
   let chan = open_in file in
   let finished_lines =
@@ -32,21 +32,21 @@ let readLines (file : string) : string list =
   in
   finished_lines
 
-let readFile (file : string) : string = String.concat "\n" (readLines file)
+let read_file (file : string) : string = String.concat "\n" (read_lines file)
 
-let writeFile (filePath : string) (contents : string) =
-  let outFile = open_out filePath in
-  output_string outFile contents;
-  close_out outFile [@doesNotRaise]
+let write_file (file_path : string) (contents : string) =
+  let out_file = open_out file_path in
+  output_string out_file contents;
+  close_out out_file [@doesNotRaise]
 
-let writeFileIfRequired ~outputFile ~fileContents =
-  if Sys.file_exists outputFile then
-    let oldContents = readFile outputFile in
-    let identical = oldContents = fileContents in
-    if identical then outputFile |> logFileAction Identical
+let write_file_if_required ~output_file ~file_contents =
+  if Sys.file_exists output_file then
+    let old_contents = read_file output_file in
+    let identical = old_contents = file_contents in
+    if identical then output_file |> log_file_action Identical
     else (
-      outputFile |> logFileAction Replace;
-      writeFile outputFile fileContents)
+      output_file |> log_file_action Replace;
+      write_file output_file file_contents)
   else (
-    outputFile |> logFileAction Write;
-    writeFile outputFile fileContents)
+    output_file |> log_file_action Write;
+    write_file output_file file_contents)

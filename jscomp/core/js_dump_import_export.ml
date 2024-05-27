@@ -27,7 +27,7 @@ module L = Js_dump_lit
 
 let default_export = "default"
 
-let esModule = ("__esModule", "true")
+let es_module = ("__esModule", "true")
 (* Exports printer *)
 
 let rev_iter_inter lst f inter =
@@ -50,7 +50,7 @@ let exports cxt f (idents : Ident.t list) =
         ( cxt,
           if id_name = default_export then
             (* TODO check how it will affect AMDJS*)
-            esModule :: (default_export, str) :: acc
+            es_module :: (default_export, str) :: acc
           else (s, str) :: acc ))
   in
   P.at_least_two_lines f;
@@ -124,23 +124,23 @@ let requires require_lit cxt f (modules : (Ident.t * string * bool) list) =
       P.newline f);
   outer_cxt
 
-let dumpImportAttributes f (importAttributes : External_ffi_types.import_attributes option) = 
-  match importAttributes with 
+let dump_import_attributes f (import_attributes : External_ffi_types.import_attributes option) = 
+  match import_attributes with 
   | None -> () 
-  | Some importAttributes -> 
+  | Some import_attributes -> 
     P.space f;
     P.string f "with";
     P.space f;
-    let total = Hashtbl.length importAttributes in
+    let total = Hashtbl.length import_attributes in
     let idx = ref 1 in
     P.brace_group f 0 (
       fun _ -> 
-        importAttributes |> Hashtbl.iter(fun key value ->
+        import_attributes |> Hashtbl.iter(fun key value ->
           Js_dump_string.pp_string f key;
           P.string f L.colon_space;
           Js_dump_string.pp_string f value;
-          let shouldAddComma = !idx < total in
-          if shouldAddComma then (
+          let should_add_comma = !idx < total in
+          if should_add_comma then (
             P.string f L.comma;
             P.space f
           );
@@ -166,7 +166,7 @@ let imports cxt f (modules : (Ident.t * string * bool * External_ffi_types.impor
         P.string f L.from;
         P.space f;
         Js_dump_string.pp_string f file;
-        dumpImportAttributes f import_attributes)
+        dump_import_attributes f import_attributes)
       else (
         P.string f L.star;
         P.space f;
@@ -178,7 +178,7 @@ let imports cxt f (modules : (Ident.t * string * bool * External_ffi_types.impor
         P.string f L.from;
         P.space f;
         Js_dump_string.pp_string f file;
-        dumpImportAttributes f import_attributes);
+        dump_import_attributes f import_attributes);
       P.string f L.semi;
       P.newline f);
   outer_cxt

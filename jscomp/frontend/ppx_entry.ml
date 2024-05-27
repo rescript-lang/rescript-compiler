@@ -30,12 +30,12 @@ let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
   let ast =
     match !Js_config.jsx_version with
     | None -> ast
-    | Some jsxVersion ->
+    | Some jsx_version_ ->
       let open Js_config in
-      let jsxVersion = int_of_jsx_version jsxVersion in
-      let jsxModule = string_of_jsx_module !jsx_module in
-      let jsxMode = string_of_jsx_mode !jsx_mode in
-      Jsx_ppx.rewrite_signature ~jsxVersion ~jsxModule ~jsxMode ast
+      let jsx_version = int_of_jsx_version jsx_version_ in
+      let jsx_module = string_of_jsx_module !jsx_module in
+      let jsx_mode = string_of_jsx_mode !jsx_mode in
+      Jsx_ppx.rewrite_signature ~jsx_version ~jsx_module ~jsx_mode ast
   in
   if !Js_config.no_builtin_ppx then ast
   else
@@ -50,12 +50,12 @@ let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
   let ast =
     match !Js_config.jsx_version with
     | None -> ast
-    | Some jsxVersion ->
+    | Some jsx_version_ ->
       let open Js_config in
-      let jsxVersion = int_of_jsx_version jsxVersion in
-      let jsxModule = string_of_jsx_module !jsx_module in
-      let jsxMode = string_of_jsx_mode !jsx_mode in
-      Jsx_ppx.rewrite_implementation ~jsxVersion ~jsxModule ~jsxMode ast
+      let jsx_version = int_of_jsx_version jsx_version_ in
+      let jsx_module = string_of_jsx_module !jsx_module in
+      let jsx_mode = string_of_jsx_mode !jsx_mode in
+      Jsx_ppx.rewrite_implementation ~jsx_version ~jsx_module ~jsx_mode ast
   in
   if !Js_config.no_builtin_ppx then ast
   else

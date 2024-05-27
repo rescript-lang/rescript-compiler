@@ -37,7 +37,7 @@ let rec nested_some_none n none =
 let rec translate_some (x : Lam_constant.t) : J.expression =
   let depth = is_some_none_aux x 0 in
   if depth < 0 then E.optional_not_nest_block (translate x)
-  else nested_some_none depth (E.optional_block (translate (Const_js_undefined {isUnit = false})))
+  else nested_some_none depth (E.optional_block (translate (Const_js_undefined {is_unit = false})))
 
 and translate (x : Lam_constant.t) : J.expression =
   match x with
@@ -46,8 +46,8 @@ and translate (x : Lam_constant.t) : J.expression =
   | Const_js_true -> E.bool true
   | Const_js_false -> E.bool false
   | Const_js_null -> E.nil
-  | Const_js_undefined {isUnit = true} -> E.unit
-  | Const_js_undefined {isUnit = false} -> E.undefined
+  | Const_js_undefined {is_unit = true} -> E.unit
+  | Const_js_undefined {is_unit = false} -> E.undefined
   | Const_int { i; comment = Pt_constructor {cstr_name={name; tag_type=None}}} when name <> "[]" ->
       E.str name
   | Const_int { i; comment = Pt_constructor {cstr_name={tag_type = Some t}}}  ->

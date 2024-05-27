@@ -42,7 +42,7 @@ let output_deps_set name set =
   output_string stdout "\n"
 
 let process_with_gentype cmt_file =
-  if !Clflags.bs_gentype then GenTypeMain.processCmtFile cmt_file
+  if !Clflags.bs_gentype then GenTypeMain.process_cmt_file cmt_file
 
 let after_parsing_sig ppf outputprefix ast =
   if !Clflags.only_parse = false then (

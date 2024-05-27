@@ -1,15 +1,19 @@
-type moduleItem = string
-type moduleAccessPath = Root of string | Dot of moduleAccessPath * moduleItem
+type module_item = string
+type module_access_path =
+  | Root of string
+  | Dot of module_access_path * module_item
 
-let newModuleItem ~name = name
+let new_module_item ~name = name
 
-let rec emitModuleAccessPath ~config moduleAccessPath =
-  match moduleAccessPath with
+let rec emit_module_access_path ~config module_access_path =
+  match module_access_path with
   | Root s -> s
-  | Dot (p, moduleItem) ->
-    p |> emitModuleAccessPath ~config |> EmitText.fieldAccess ~label:moduleItem
+  | Dot (p, module_item) ->
+    p
+    |> emit_module_access_path ~config
+    |> EmitText.field_access ~label:module_item
 
-let jsVariantTag ~polymorphic ~tag =
+let js_variant_tag ~polymorphic ~tag =
   match polymorphic with
   | true -> "NAME"
   | false -> (
@@ -17,20 +21,21 @@ let jsVariantTag ~polymorphic ~tag =
     | Some tag -> tag
     | None -> "TAG")
 
-let jsVariantPayloadTag ~n = "_" ^ string_of_int n
+let js_variant_payload_tag ~n = "_" ^ string_of_int n
 
-let jsVariantValue ~polymorphic =
+let js_variant_value ~polymorphic =
   match polymorphic with
   | true -> "VAL"
   | false -> "value"
 
-let isMutableObjectField name =
+let is_mutable_object_field name =
   String.length name >= 2
   && (String.sub name (String.length name - 2) 2 [@doesNotRaise]) = "#="
 
 (** Mutable fields, i.e. fields annotated "[@set]"
    are represented as extra fields called "fieldName#="
    preceding the normal field. *)
-let checkMutableObjectField ~previousName ~name = previousName = name ^ "#="
+let check_mutable_object_field ~previous_name ~name =
+  previous_name = name ^ "#="
 
 let default = "$$default"

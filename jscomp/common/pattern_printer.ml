@@ -7,11 +7,11 @@ let mkpat desc = Ast_helper.Pat.mk desc
 let untype typed =
   let rec loop pat =
     match pat.pat_desc with
-    | Tpat_or (p1, { pat_desc = Tpat_or (p2, p3, rI) }, rO) ->
+    | Tpat_or (p1, { pat_desc = Tpat_or (p2, p3, r_i) }, r_o) ->
       (* Turn A | (B | C) into (A | B) | C for pretty printing without parens *)
-        let newInner = { pat with pat_desc = Tpat_or (p1, p2, rI) } in
-        let newOuter = { pat with pat_desc = Tpat_or (newInner, p3, rO) } in
-        loop newOuter
+        let new_inner = { pat with pat_desc = Tpat_or (p1, p2, r_i) } in
+        let new_outer = { pat with pat_desc = Tpat_or (new_inner, p3, r_o) } in
+        loop new_outer
     | Tpat_or (pa, pb, _) -> mkpat (Ppat_or (loop pa, loop pb))
     | Tpat_any | Tpat_var _ -> mkpat Ppat_any
     | Tpat_constant c -> mkpat (Ppat_constant (Untypeast.constant c))
@@ -44,5 +44,5 @@ let untype typed =
 
 let print_pattern typed =
   let pat = untype typed in
-  let doc = Res_printer.printPattern pat Res_comments_table.empty in
-  Res_doc.toString ~width:80 doc
+  let doc = Res_printer.print_pattern pat Res_comments_table.empty in
+  Res_doc.to_string ~width:80 doc

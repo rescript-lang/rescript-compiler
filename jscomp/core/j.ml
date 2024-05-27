@@ -160,7 +160,7 @@ and expression_desc =
   *)
   | Number of number
   | Object of property_map
-  | Undefined of {isUnit: bool}
+  | Undefined of {is_unit: bool}
   | Null
   | Await of expression
 
