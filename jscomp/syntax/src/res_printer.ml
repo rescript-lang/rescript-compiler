@@ -2637,10 +2637,16 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
         Doc.concat [Doc.text ": "; typDoc]
       | _ -> Doc.nil
     in
+    let hasThisAttr =
+      List.exists (fun ({Asttypes.txt}, _) -> txt = "this") attrs
+    in
     let attrs = printAttributes ~state attrs cmtTbl in
-    Doc.group
-      (Doc.concat
-         [attrs; parametersDoc; typConstraintDoc; Doc.text " =>"; returnExprDoc])
+    let doc =
+      Doc.concat
+        [parametersDoc; typConstraintDoc; Doc.text " =>"; returnExprDoc]
+    in
+    if hasThisAttr then Doc.group (Doc.concat [attrs; addParens doc])
+    else Doc.group (Doc.concat [attrs; doc])
   in
   let uncurried = Ast_uncurried.exprIsUncurriedFun e in
   let e_fun =
