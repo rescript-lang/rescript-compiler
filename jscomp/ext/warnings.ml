@@ -477,10 +477,10 @@ let message = function
   | Constraint_on_gadt ->
       "Type constraints do not apply to GADT cases of variant types."
   | Bs_unused_attribute s ->
-      "Unused attribute: " ^ s
+      "Unused attribute: @" ^ s
       ^ "\n\
-         This means such annotation is not annotated properly. \n\
-         for example, some annotations is only meaningful in externals \n"
+         This attribute has no effect here.\n\
+         For example, some attributes are only meaningful in externals.\n"
   | Bs_polymorphic_comparison ->
       "Polymorphic comparison introduced (maybe unsafe)"
   | Bs_ffi_warning s -> "FFI warning: " ^ s
