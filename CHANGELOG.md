@@ -19,6 +19,7 @@
 #### :house: Internal
 
 - Convert OCaml codebase to snake case style. https://github.com/rescript-lang/rescript-compiler/pull/6702
+- Fix location of let bindings with attributes. https://github.com/rescript-lang/rescript-compiler/pull/6791
 
 #### :boom: Breaking Change
 
