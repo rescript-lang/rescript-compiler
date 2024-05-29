@@ -12,6 +12,10 @@
 
 # 11.1.2-rc.1
 
+#### :bug: Bug Fix
+
+- Fix location of let bindings with attributes. https://github.com/rescript-lang/rescript-compiler/pull/6791
+
 # 11.1.1
 
 #### :bug: Bug Fix
