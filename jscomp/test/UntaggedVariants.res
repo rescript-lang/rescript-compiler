@@ -432,3 +432,30 @@ module OnlyOne = {
   @unboxed type onlyOne = OnlyOne
   let onlyOne = OnlyOne
 }
+
+module MergeCases = {
+  type obj = {name: string}
+
+  @unboxed
+  type t =
+    | Boolean(bool)
+    | Object(obj)
+    | Array(array<int>)
+    | Date(Js.Date.t)
+
+  let should_not_merge = x =>
+    switch x {
+    | Object(_) => "do not merge"
+    | Array(_) => "do not merge"
+    | Date(_) => "do not merge"
+    | Boolean(_) => "boolean"
+    }
+
+  let can_merge = x =>
+    switch x {
+    | Object(_) => "merge"
+    | Array(_) => "do not merge"
+    | Date(_) => "do not merge"
+    | Boolean(_) => "merge"
+    }
+}
