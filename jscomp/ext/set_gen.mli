@@ -5,7 +5,7 @@ type 'a t = private
 
 val empty : 'a t
 
-val is_empty : 'a t -> bool [@@inline]
+val is_empty : 'a t -> bool
 
 val unsafe_two_elements : 'a -> 'a -> 'a t
 

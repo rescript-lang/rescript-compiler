@@ -21,13 +21,13 @@
   (ocaml
    (>= 4.10))
   (ocamlformat
-   (= 0.26.1))
+   (= 0.26.2))
   (cppo
    (= 1.6.9))
   (js_of_ocaml-compiler
-   (= 5.6.0))
+   (= 5.8.1))
   (ounit2
    (= 2.2.7))
   (reanalyze
-   (= 2.24.0))
+   (= 2.25.1))
   dune))

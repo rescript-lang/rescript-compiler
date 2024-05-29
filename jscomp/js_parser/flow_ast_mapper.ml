@@ -1504,7 +1504,7 @@ class ['loc] mapper =
         updated to override those individually. *)
     method function_expression_or_method loc (stmt : ('loc, 'loc) Ast.Function.t) =
       this#function_ loc stmt
-    [@@alert deprecated "Use either function_expression or class_method"]
+    (* [@@alert deprecated "Use either function_expression or class_method"] *)
 
     (* Internal helper for function declarations, function expressions and arrow functions *)
     method function_ _loc (expr : ('loc, 'loc) Ast.Function.t) =

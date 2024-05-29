@@ -99,12 +99,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build compiler binaries
-        uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.19-ocaml-5.1.1-01
+        uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.20-ocaml-5.2.0-01
         with:
           args: opam exec -- dune build --display quiet --profile static
 
       - name: Build ninja binary
-        uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.19-ocaml-5.1.1-01
+        uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.20-ocaml-5.2.0-01
         with:
           args: sh -c "cd ninja && LDFLAGS=-static python3 configure.py --bootstrap"
 
@@ -172,7 +172,7 @@ jobs:
             ubuntu-latest,
             windows-latest,
           ]
-        ocaml_compiler: [5.1.1]
+        ocaml_compiler: [5.2.0]
 
     runs-on: ${{matrix.os}}
 
@@ -225,7 +225,7 @@ jobs:
         uses: ocaml/setup-ocaml@v2
         if: matrix.os == 'windows-latest'
         with:
-          ocaml-compiler: ocaml-variants.5.1.1+options,ocaml-option-mingw
+          ocaml-compiler: ocaml-variants.5.2.0+options,ocaml-option-mingw
           opam-pin: false
           opam-depext: false
           opam-repositories: |
@@ -306,7 +306,7 @@ jobs:
       # Build the playground compiler on the fastest runner (ubuntu-latest)
       - name: Install JSOO
         if: matrix.os == 'ubuntu-latest'
-        run: opam install js_of_ocaml.5.6.0
+        run: opam install js_of_ocaml.5.8.1
 
       - name: Build playground compiler
         if: matrix.os == 'ubuntu-latest'
