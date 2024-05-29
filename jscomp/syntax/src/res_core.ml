@@ -2574,8 +2574,7 @@ and parse_attributes_and_binding (p : Parser.t) =
   | _ -> []
 
 (* definition	::=	let [rec] let-binding  { and let-binding }   *)
-and parse_let_bindings ~attrs p =
-  let start_pos = p.Parser.start_pos in
+and parse_let_bindings ~attrs ~start_pos p =
   Parser.optional p Let |> ignore;
   let rec_flag =
     if Parser.optional p Token.Rec then Asttypes.Recursive
@@ -3249,7 +3248,7 @@ and parse_expr_block_item p =
     let loc = mk_loc start_pos p.prev_end_pos in
     Ast_helper.Exp.open_ ~loc od.popen_override od.popen_lid block_expr
   | Let ->
-    let rec_flag, let_bindings = parse_let_bindings ~attrs p in
+    let rec_flag, let_bindings = parse_let_bindings ~attrs ~start_pos p in
     parse_newline_or_semicolon_expr_block p;
     let next =
       if Grammar.is_block_expr_start p.Parser.token then parse_expr_block p
@@ -5693,7 +5692,7 @@ and parse_structure_item_region p =
     let loc = mk_loc start_pos p.prev_end_pos in
     Some (Ast_helper.Str.open_ ~loc open_description)
   | Let ->
-    let rec_flag, let_bindings = parse_let_bindings ~attrs p in
+    let rec_flag, let_bindings = parse_let_bindings ~attrs ~start_pos p in
     parse_newline_or_semicolon_structure p;
     let loc = mk_loc start_pos p.prev_end_pos in
     Some (Ast_helper.Str.value ~loc rec_flag let_bindings)
