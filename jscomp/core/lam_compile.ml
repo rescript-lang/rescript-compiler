@@ -121,10 +121,10 @@ let morph_declare_to_assign (cxt : Lam_compile_context.t) k =
       k { cxt with continuation = Assign did } (Some (kind, did))
   | _ -> k cxt None
 
-let group_apply cases callback =
+let group_apply ~merge_cases cases callback =
   Ext_list.flat_map
-    (Ext_list.stable_group cases (fun (_, lam) (_, lam1) ->
-         Lam.eq_approx lam lam1))
+    (Ext_list.stable_group cases (fun (tag1, lam) (tag2, lam1) ->
+         merge_cases tag1 tag2 && Lam.eq_approx lam lam1))
     (fun group -> Ext_list.map_last group callback)
 (* TODO:
     for expression generation,
@@ -509,6 +509,7 @@ and compile_general_cases :
         _ -> ('a * J.case_clause) list -> J.statement) ->
       switch_exp: J.expression ->
       default: default_case ->
+      ?merge_cases: ('a -> 'a -> bool) ->
       ('a * Lam.t) list ->
       J.block =
   fun (type a)
@@ -522,6 +523,7 @@ and compile_general_cases :
     )
     ~(switch_exp : J.expression)
     ~(default : default_case)
+    ?(merge_cases = fun _ _ -> true)
     (cases : (a * Lam.t) list) ->
   match (cases, default) with
   | [], Default lam -> Js_output.output_as_block (compile_lambda cxt lam)
@@ -584,7 +586,7 @@ and compile_general_cases :
                 Some (Js_output.output_as_block (compile_lambda cxt lam))
           in
           let body =
-            group_apply cases (fun last (switch_case, lam) ->
+            group_apply ~merge_cases cases (fun last (switch_case, lam) ->
                 if last then
                   (* merge and shared *)
                   let switch_body, should_break =
@@ -766,11 +768,12 @@ and compile_untagged_cases ~cxt ~switch_exp ~default ~block_cases cases =
     in
     E.emit_check check
   in
-  let is_not_typeof (l, _) = match l with 
-  | Ast_untagged_variants.Untagged (InstanceType _) -> true
-  | _ -> false in
+  let tag_is_not_typeof = function
+    | Ast_untagged_variants.Untagged (InstanceType _) -> true
+    | _ -> false in
+  let clause_is_not_typeof (tag, _) = tag_is_not_typeof tag in
   let switch ?default ?declaration e clauses =
-    let (not_typeof_clauses, typeof_clauses) = List.partition is_not_typeof clauses in
+    let (not_typeof_clauses, typeof_clauses) = List.partition clause_is_not_typeof clauses in
     let rec build_if_chain remaining_clauses = (match remaining_clauses with 
     | (Ast_untagged_variants.Untagged (InstanceType instance_type), {J.switch_body}) :: rest -> 
       S.if_ (E.emit_check (IsInstanceOf (instance_type, Expr e)))
@@ -778,6 +781,8 @@ and compile_untagged_cases ~cxt ~switch_exp ~default ~block_cases cases =
         ~else_:([build_if_chain rest])
     | _ -> S.string_switch ?default ?declaration (E.typeof e) typeof_clauses) in
     build_if_chain not_typeof_clauses in
+  let merge_cases tag1 tag2 = (* only merge typeof cases, as instanceof cases are pulled out into if-then-else *)
+    not (tag_is_not_typeof tag1 || tag_is_not_typeof tag2) in
   cases |> compile_general_cases
     ~make_exp: E.tag_type
     ~eq_exp: mk_eq
@@ -785,6 +790,7 @@ and compile_untagged_cases ~cxt ~switch_exp ~default ~block_cases cases =
     ~switch
     ~switch_exp
     ~default
+    ~merge_cases
 
 and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
   (* TODO might better optimization according to the number of cases

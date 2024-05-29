@@ -31,6 +31,7 @@
 #### :bug: Bug Fix
 
 - Allow to use exotic ParscalCased identifiers for types. https://github.com/rescript-lang/rescript-compiler/pull/6777
+- Fix issue of incorrect switch cases with identical bodies when mixing object and array. https://github.com/rescript-lang/rescript-compiler/pull/6792
 
 #### :house: Internal
 
