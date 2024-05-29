@@ -587,6 +587,42 @@ var OnlyOne = {
   onlyOne: "OnlyOne"
 };
 
+function should_not_merge(x) {
+  if (Array.isArray(x)) {
+    return "do not merge";
+  }
+  if (x instanceof Date) {
+    return "do not merge";
+  }
+  switch (typeof x) {
+    case "boolean" :
+        return "boolean";
+    case "object" :
+        return "do not merge";
+    
+  }
+}
+
+function can_merge(x) {
+  if (Array.isArray(x)) {
+    return "do not merge";
+  }
+  if (x instanceof Date) {
+    return "do not merge";
+  }
+  switch (typeof x) {
+    case "boolean" :
+    case "object" :
+        return "merge";
+    
+  }
+}
+
+var MergeCases = {
+  should_not_merge: should_not_merge,
+  can_merge: can_merge
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -634,4 +670,5 @@ exports.Arr = Arr;
 exports.AllInstanceofTypes = AllInstanceofTypes;
 exports.Aliased = Aliased;
 exports.OnlyOne = OnlyOne;
+exports.MergeCases = MergeCases;
 /* l2 Not a pure module */
