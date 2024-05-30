@@ -378,7 +378,7 @@ let print_longident = function
   | Longident.Lident txt -> Doc.text txt
   | lid -> Doc.join ~sep:Doc.dot (print_longident_aux [] lid)
 
-type identifier_style = ExoticIdent | NormalIdent
+type identifier_style = UppercaseExoticIdent | ExoticIdent | NormalIdent
 
 let classify_ident_content ?(allow_uident = false) ?(allow_hyphen = false) txt =
   if Token.is_keyword_txt txt then ExoticIdent
@@ -388,9 +388,9 @@ let classify_ident_content ?(allow_uident = false) ?(allow_hyphen = false) txt =
       if i == len then NormalIdent
       else if i == 0 then
         match String.unsafe_get txt i with
+        | '\\' -> UppercaseExoticIdent
         | 'A' .. 'Z' when allow_uident -> loop (i + 1)
         | 'a' .. 'z' | '_' -> loop (i + 1)
-        | '-' when allow_hyphen -> loop (i + 1)
         | _ -> ExoticIdent
       else
         match String.unsafe_get txt i with
@@ -401,10 +401,9 @@ let classify_ident_content ?(allow_uident = false) ?(allow_hyphen = false) txt =
     loop 0
 
 let print_ident_like ?allow_uident ?allow_hyphen txt =
-  let txt = Ext_ident.unwrap_uppercase_exotic txt in
   match classify_ident_content ?allow_uident ?allow_hyphen txt with
   | ExoticIdent -> Doc.concat [Doc.text "\\\""; Doc.text txt; Doc.text "\""]
-  | NormalIdent -> Doc.text txt
+  | UppercaseExoticIdent | NormalIdent -> Doc.text txt
 
 let rec unsafe_for_all_range s ~start ~finish p =
   start > finish
@@ -435,8 +434,12 @@ let print_poly_var_ident txt =
   (* numeric poly-vars don't need quotes: #644 *)
   if is_valid_numeric_polyvar_number txt then Doc.text txt
   else
-    let txt = Ext_ident.unwrap_uppercase_exotic txt in
     match classify_ident_content ~allow_uident:true txt with
+    | UppercaseExoticIdent ->
+      let len = String.length txt in
+      (* UppercaseExoticIdent follows the \"..." format,
+         so removing the leading backslash is enough to transform it into polyvar style *)
+      Doc.text ((String.sub [@doesNotRaise]) txt 1 (len - 1))
     | ExoticIdent -> Doc.concat [Doc.text "\""; Doc.text txt; Doc.text "\""]
     | NormalIdent -> (
       match txt with
