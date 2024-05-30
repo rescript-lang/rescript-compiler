@@ -25,7 +25,7 @@
 (** Browser is not set via command line only for internal use *)
 
 type jsx_version = Jsx_v3 | Jsx_v4
-type jsx_module = React | Generic of {moduleName: string}
+type jsx_module = React | Generic of {module_name: string}
 type jsx_mode = Classic | Automatic
 
 let no_version_header = ref false
@@ -54,7 +54,6 @@ let jsx_module = ref React
 let jsx_mode = ref Automatic
 let js_stdout = ref true
 let all_module_aliases = ref false
-let no_stdlib = ref false
 let no_export = ref false
 let as_ppx = ref false
 
@@ -64,7 +63,7 @@ let int_of_jsx_version = function
 
 let string_of_jsx_module = function
 | React -> "react"
-| Generic {moduleName} -> moduleName
+| Generic {module_name} -> module_name
 
 let string_of_jsx_mode = function
 | Classic -> "classic"
@@ -77,7 +76,7 @@ let jsx_version_of_int = function
 
 let jsx_module_of_string = function
 | "react" -> React
-| moduleName -> Generic {moduleName}
+| module_name -> Generic {module_name}
 
 let jsx_mode_of_string = function
 | "classic" -> Classic

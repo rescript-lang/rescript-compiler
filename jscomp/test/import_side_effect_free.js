@@ -2,9 +2,9 @@
 'use strict';
 
 
-var a = await import("./side_effect_free.js").then(function (m) {
-      return m.a;
-    });
+let a = await import("./side_effect_free.js").then(function (m) {
+  return m.a;
+});
 
 exports.a = a;
 /* a Not a pure module */

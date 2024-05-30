@@ -22,14 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val handleTdclsInSigi :
+val handle_tdcls_in_sigi :
   Bs_ast_mapper.mapper ->
   Parsetree.signature_item ->
   Asttypes.rec_flag ->
   Parsetree.type_declaration list ->
   Ast_signature.item
 
-val handleTdclsInStru :
+val handle_tdcls_in_stru :
   Bs_ast_mapper.mapper ->
   Parsetree.structure_item ->
   Asttypes.rec_flag ->

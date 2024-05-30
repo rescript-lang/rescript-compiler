@@ -2,9 +2,9 @@
 'use strict';
 
 
-var revData = {"x":"a","b":"b"};
+let revData = {"x":"a","b":"b"};
 
-var data = {"a":"x","b":"b"};
+let data = {"a":"x","b":"b"};
 
 function tToJs(x) {
   return data[x];

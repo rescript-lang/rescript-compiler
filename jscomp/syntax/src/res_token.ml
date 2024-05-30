@@ -110,7 +110,7 @@ let precedence = function
   | Dot -> 9
   | _ -> 0
 
-let toString = function
+let to_string = function
   | Await -> "await"
   | Open -> "open"
   | True -> "true"
@@ -196,7 +196,7 @@ let toString = function
   | AtAt -> "@@"
   | Percent -> "%"
   | PercentPercent -> "%%"
-  | Comment c -> "Comment" ^ Comment.toString c
+  | Comment c -> "Comment" ^ Comment.to_string c
   | List -> "list{"
   | TemplatePart (text, _) -> text ^ "${"
   | TemplateTail (text, _) -> "TemplateTail(" ^ text ^ ")"
@@ -206,7 +206,7 @@ let toString = function
   | DocComment (_loc, s) -> "DocComment " ^ s
   | ModuleComment (_loc, s) -> "ModuleComment " ^ s
 
-let keywordTable = function
+let keyword_table = function
   | "and" -> And
   | "as" -> As
   | "assert" -> Assert
@@ -237,23 +237,23 @@ let keywordTable = function
   | _ -> raise Not_found
 [@@raises Not_found]
 
-let isKeyword = function
+let is_keyword = function
   | Await | And | As | Assert | Constraint | Else | Exception | External | False
   | For | If | In | Include | Land | Let | List | Lor | Module | Mutable | Of
   | Open | Private | Rec | Switch | True | Try | Typ | When | While ->
     true
   | _ -> false
 
-let lookupKeyword str =
-  try keywordTable str
+let lookup_keyword str =
+  try keyword_table str
   with Not_found -> (
     match str.[0] [@doesNotRaise] with
     | 'A' .. 'Z' -> Uident str
     | _ -> Lident str)
 
-let isKeywordTxt str =
+let is_keyword_txt str =
   try
-    let _ = keywordTable str in
+    let _ = keyword_table str in
     true
   with Not_found -> false
 

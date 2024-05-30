@@ -98,36 +98,36 @@ function someFunWithNullUndefinedArg(prim0, prim1) {
   return CoreGen.someFunWithNullUndefinedArg(prim0, prim1);
 }
 
-var $$Map;
+let $$Map;
 
-var $$Set;
+let $$Set;
 
 export {
-  null0 ,
-  null1 ,
-  nullable0 ,
-  nullable1 ,
-  undefined0 ,
-  undefined1 ,
-  dict0 ,
-  dict1 ,
-  promise0 ,
-  promise1 ,
-  date0 ,
-  date1 ,
-  bigint0 ,
-  bigint1 ,
-  regexp0 ,
-  regexp1 ,
-  $$Map ,
-  $$Set ,
-  map1 ,
-  weakmap1 ,
-  set1 ,
-  weakset1 ,
-  option0 ,
-  option1 ,
-  someFunWithNullThenOptionalArgs ,
-  someFunWithNullUndefinedArg ,
+  null0,
+  null1,
+  nullable0,
+  nullable1,
+  undefined0,
+  undefined1,
+  dict0,
+  dict1,
+  promise0,
+  promise1,
+  date0,
+  date1,
+  bigint0,
+  bigint1,
+  regexp0,
+  regexp1,
+  $$Map,
+  $$Set,
+  map1,
+  weakmap1,
+  set1,
+  weakset1,
+  option0,
+  option1,
+  someFunWithNullThenOptionalArgs,
+  someFunWithNullUndefinedArg,
 }
 /* ./Core.gen Not a pure module */

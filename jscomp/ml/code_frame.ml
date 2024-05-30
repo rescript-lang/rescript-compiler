@@ -119,12 +119,12 @@ type line = {
   - center snippet when it's heavily indented
   - ellide intermediate lines when the reported range is huge
 *)
-let print ~is_warning ~src ~(startPos : Lexing.position) ~(endPos:Lexing.position) =
+let print ~is_warning ~src ~(start_pos : Lexing.position) ~(end_pos:Lexing.position) =
   let indent = 2 in
-  let highlight_line_start_line = startPos.pos_lnum in
-  let highlight_line_end_line = endPos.pos_lnum in
-  let (start_line_line_offset, first_shown_line) = seek_2_lines_before src startPos in
-  let (end_line_line_end_offset, last_shown_line) = seek_2_lines_after src endPos in
+  let highlight_line_start_line = start_pos.pos_lnum in
+  let highlight_line_end_line = end_pos.pos_lnum in
+  let (start_line_line_offset, first_shown_line) = seek_2_lines_before src start_pos in
+  let (end_line_line_end_offset, last_shown_line) = seek_2_lines_after src end_pos in
 
   let more_than_5_highlighted_lines =
     highlight_line_end_line - highlight_line_start_line + 1 > 5
@@ -167,8 +167,8 @@ let print ~is_warning ~src ~(startPos : Lexing.position) ~(endPos:Lexing.positio
           match gutter with
           | Elided -> {s = line; start = 0; end_ = 0}
           | Number line_number ->
-            let highlight_line_start_offset = startPos.pos_cnum - startPos.pos_bol in
-            let highlight_line_end_offset = endPos.pos_cnum - endPos.pos_bol in
+            let highlight_line_start_offset = start_pos.pos_cnum - start_pos.pos_bol in
+            let highlight_line_end_offset = end_pos.pos_cnum - end_pos.pos_bol in
             let start =
               if i = 0 && line_number = highlight_line_start_line then
                 highlight_line_start_offset - leading_space_to_cut

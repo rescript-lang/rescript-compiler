@@ -1,8 +1,8 @@
 type t
 type eq = t * t
 
-val applyEquations : eqs:eq list -> t -> eq list
+val apply_equations : eqs:eq list -> t -> eq list
 val dot : string -> t -> t
-val fromString : string -> t
-val toList : t -> string list
-val toString : t -> string
+val from_string : string -> t
+val to_list : t -> string list
+val to_string : t -> string

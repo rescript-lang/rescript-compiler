@@ -1,42 +1,42 @@
 let basic = ref false
-let codeItems = ref false
+let code_items = ref false
 let config = ref false
 let converter = ref false
 let dependencies = ref false
-let moduleResolution = ref false
-let notImplemented = ref false
+let module_resolution = ref false
+let not_implemented = ref false
 let translation = ref false
-let typeEnv = ref false
-let typeResolution = ref false
+let type_env = ref false
+let type_resolution = ref false
 
-let setAll () =
+let set_all () =
   basic := true;
-  codeItems := true;
+  code_items := true;
   config := true;
   converter := true;
   dependencies := true;
-  moduleResolution := true;
-  notImplemented := true;
+  module_resolution := true;
+  not_implemented := true;
   translation := true;
-  typeEnv := true;
-  typeResolution := true
+  type_env := true;
+  type_resolution := true
 
-let setItem debugItem debugValue =
-  let isOn =
-    match debugValue with
+let set_item debug_item debug_value =
+  let is_on =
+    match debug_value with
     | Ext_json_types.True _ -> true
     | _ -> false
   in
-  match debugItem with
-  | "all" when isOn -> setAll ()
-  | "basic" -> basic := isOn
-  | "codeItems" -> codeItems := isOn
-  | "config" -> config := isOn
-  | "converter" -> converter := isOn
-  | "dependencies" -> dependencies := isOn
-  | "moduleResolution" -> moduleResolution := isOn
-  | "notImplemented" -> notImplemented := isOn
-  | "translation" -> translation := isOn
-  | "typeEnv" -> typeEnv := isOn
-  | "typeResolution" -> typeResolution := isOn
+  match debug_item with
+  | "all" when is_on -> set_all ()
+  | "basic" -> basic := is_on
+  | "codeItems" -> code_items := is_on
+  | "config" -> config := is_on
+  | "converter" -> converter := is_on
+  | "dependencies" -> dependencies := is_on
+  | "moduleResolution" -> module_resolution := is_on
+  | "notImplemented" -> not_implemented := is_on
+  | "translation" -> translation := is_on
+  | "typeEnv" -> type_env := is_on
+  | "typeResolution" -> type_resolution := is_on
   | _ -> ()

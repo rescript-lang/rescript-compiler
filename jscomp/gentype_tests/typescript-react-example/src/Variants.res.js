@@ -47,17 +47,17 @@ function id2(x) {
 
 function polyWithOpt(foo) {
   if (foo === "bar") {
-    return ;
+    return;
   } else if (foo !== "baz") {
     return {
-            NAME: "One",
-            VAL: foo
-          };
+      NAME: "One",
+      VAL: foo
+    };
   } else {
     return {
-            NAME: "Two",
-            VAL: 1
-          };
+      NAME: "Two",
+      VAL: 1
+    };
   }
 }
 
@@ -73,34 +73,34 @@ function restResult3(x) {
   return x;
 }
 
-var monday = "monday";
+let monday = "monday";
 
-var saturday = "saturday";
+let saturday = "saturday";
 
-var sunday = "sunday";
+let sunday = "sunday";
 
-var fortytwoOK = "fortytwo";
+let fortytwoOK = "fortytwo";
 
-var fortytwoBAD = "fortytwo";
+let fortytwoBAD = "fortytwo";
 
 export {
-  isWeekend ,
-  monday ,
-  saturday ,
-  sunday ,
-  onlySunday ,
-  swap ,
-  testConvert ,
-  fortytwoOK ,
-  fortytwoBAD ,
-  testConvert2 ,
-  testConvert3 ,
-  testConvert2to3 ,
-  id1 ,
-  id2 ,
-  polyWithOpt ,
-  restResult1 ,
-  restResult2 ,
-  restResult3 ,
+  isWeekend,
+  monday,
+  saturday,
+  sunday,
+  onlySunday,
+  swap,
+  testConvert,
+  fortytwoOK,
+  fortytwoBAD,
+  testConvert2,
+  testConvert3,
+  testConvert2to3,
+  id1,
+  id2,
+  polyWithOpt,
+  restResult1,
+  restResult2,
+  restResult3,
 }
 /* No side effect */

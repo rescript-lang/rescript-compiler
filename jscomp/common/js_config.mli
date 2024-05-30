@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type jsx_version = Jsx_v3 | Jsx_v4
-type jsx_module = React | Generic of {moduleName: string}
+type jsx_module = React | Generic of {module_name: string}
 type jsx_mode = Classic | Automatic
 
 (* val get_packages_info :
@@ -86,8 +86,6 @@ val jsx_mode: jsx_mode ref
 val js_stdout : bool ref
 
 val all_module_aliases : bool ref
-
-val no_stdlib : bool ref
 
 val no_export : bool ref
 

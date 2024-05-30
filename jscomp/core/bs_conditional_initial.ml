@@ -49,7 +49,7 @@ let setup_env () =
   
     Rescript_cpp.replace_directive_bool "BS" true;
   Rescript_cpp.replace_directive_bool "JS" true;
-  Printtyp.print_res_poly_identifier := Res_printer.polyVarIdentToString;
+  Printtyp.print_res_poly_identifier := Res_printer.polyvar_ident_to_string;
   Rescript_cpp.replace_directive_string "BS_VERSION"  Bs_version.version
   (*; Switch.cut := 100*) (* tweakable but not very useful *)
   

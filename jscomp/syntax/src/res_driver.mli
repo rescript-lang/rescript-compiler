@@ -1,4 +1,4 @@
-type ('ast, 'diagnostics) parseResult = {
+type ('ast, 'diagnostics) parse_result = {
   filename: string; [@live]
   source: string;
   parsetree: 'ast;
@@ -7,40 +7,41 @@ type ('ast, 'diagnostics) parseResult = {
   comments: Res_comment.t list;
 }
 
-type 'diagnostics parsingEngine = {
-  parseImplementation:
-    forPrinter:bool ->
+type 'diagnostics parsing_engine = {
+  parse_implementation:
+    for_printer:bool ->
     filename:string ->
-    (Parsetree.structure, 'diagnostics) parseResult;
-  parseInterface:
-    forPrinter:bool ->
+    (Parsetree.structure, 'diagnostics) parse_result;
+  parse_interface:
+    for_printer:bool ->
     filename:string ->
-    (Parsetree.signature, 'diagnostics) parseResult;
-  stringOfDiagnostics: source:string -> filename:string -> 'diagnostics -> unit;
+    (Parsetree.signature, 'diagnostics) parse_result;
+  string_of_diagnostics:
+    source:string -> filename:string -> 'diagnostics -> unit;
 }
 
-val parseImplementationFromSource :
-  forPrinter:bool ->
-  displayFilename:string ->
+val parse_implementation_from_source :
+  for_printer:bool ->
+  display_filename:string ->
   source:string ->
-  (Parsetree.structure, Res_diagnostics.t list) parseResult
+  (Parsetree.structure, Res_diagnostics.t list) parse_result
 [@@live]
 
-val parseInterfaceFromSource :
-  forPrinter:bool ->
-  displayFilename:string ->
+val parse_interface_from_source :
+  for_printer:bool ->
+  display_filename:string ->
   source:string ->
-  (Parsetree.signature, Res_diagnostics.t list) parseResult
+  (Parsetree.signature, Res_diagnostics.t list) parse_result
 [@@live]
 
-type printEngine = {
-  printImplementation:
+type print_engine = {
+  print_implementation:
     width:int ->
     filename:string ->
     comments:Res_comment.t list ->
     Parsetree.structure ->
     unit;
-  printInterface:
+  print_interface:
     width:int ->
     filename:string ->
     comments:Res_comment.t list ->
@@ -48,15 +49,15 @@ type printEngine = {
     unit;
 }
 
-val parsingEngine : Res_diagnostics.t list parsingEngine
+val parsing_engine : Res_diagnostics.t list parsing_engine
 
-val printEngine : printEngine
+val print_engine : print_engine
 
 (* ReScript implementation parsing compatible with ocaml pparse driver. Used by the compiler. *)
 val parse_implementation :
-  ?ignoreParseErrors:bool -> string -> Parsetree.structure
+  ?ignore_parse_errors:bool -> string -> Parsetree.structure
 [@@live] [@@raises Location.Error]
 
 (* ReScript interface parsing compatible with ocaml pparse driver. Used by the compiler *)
-val parse_interface : ?ignoreParseErrors:bool -> string -> Parsetree.signature
+val parse_interface : ?ignore_parse_errors:bool -> string -> Parsetree.signature
 [@@live] [@@raises Location.Error]

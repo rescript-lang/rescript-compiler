@@ -2,14 +2,14 @@
 'use strict';
 
 
-var N = {};
+let N = {};
 
-var u = [
+let u = [
   undefined,
   3
 ];
 
-var h;
+let h;
 
 exports.N = N;
 exports.u = u;

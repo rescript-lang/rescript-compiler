@@ -12,7 +12,8 @@
   "bin": {
     "bsc": "bsc",
     "bstracing": "lib/bstracing",
-    "rescript": "rescript"
+    "rescript": "rescript",
+    "rewatch": "scripts/rewatch"
   },
   "scripts": {
     "test": "node scripts/ciTest.js -all",

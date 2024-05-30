@@ -123,7 +123,7 @@ let no_side_effect_obj =
     statement =
       (fun self s ->
         match s.statement_desc with
-        | Throw _ | Debugger | Break | Variable _ | Continue _ ->
+        | Throw _ | Debugger | Break | Variable _ | Continue ->
             raise_notrace Not_found
         | Exp e -> self.expression self e
         | Int_switch _ | String_switch _ | ForRange _ | If _ | While _ | Block _
@@ -158,6 +158,8 @@ let rec eq_expression ({ expression_desc = x0 } : J.expression)
   | Undefined x -> y0 = Undefined x
   | Number (Int { i }) -> (
       match y0 with Number (Int { i = j }) -> i = j | _ -> false)
+  | Number (BigInt {positive = p0; value = v0}) -> (
+    match y0 with Number (BigInt {positive = p1; value = v1}) -> p0 = p1 && v0 = v1 | _ -> false)
   | Number (Float _) -> false
   (* begin match y0 with
      | Number (Float j) ->
@@ -224,7 +226,7 @@ and eq_statement ({ statement_desc = x0 } : J.statement)
   | Debugger -> y0 = Debugger
   | Break -> y0 = Break
   | Block xs0 -> ( match y0 with Block ys0 -> eq_block xs0 ys0 | _ -> false)
-  | Variable _ | If _ | While _ | ForRange _ | Continue _ | Int_switch _
+  | Variable _ | If _ | While _ | ForRange _ | Continue | Int_switch _
   | String_switch _ | Throw _ | Try _ ->
       false
 

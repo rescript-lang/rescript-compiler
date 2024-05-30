@@ -42,7 +42,6 @@ type exports = Js_op.exports
 type tag_info = Js_op.tag_info
 type property_name = Js_op.property_name
 
-type label = string
 and ident = Ident.t
 (* we override `method ident` *)
 
@@ -136,6 +135,7 @@ and expression_desc =
       env : Js_fun_env.t;
       return_unit : bool;
       async : bool;
+      directive : string option;
     }
   | Str of { delim : delim; txt : string }
   (* A string is UTF-8 encoded, and may contain
@@ -160,7 +160,7 @@ and expression_desc =
   *)
   | Number of number
   | Object of property_map
-  | Undefined of {isUnit: bool}
+  | Undefined of {is_unit: bool}
   | Null
   | Await of expression
 
@@ -254,7 +254,7 @@ and statement_desc =
   (* Function declaration and Variable declaration  *)
   | Exp of expression
   | If of expression * block * block
-  | While of label option * expression * block * Js_closure.t
+  | While of expression * block
     (* check if it contains loop mutable values, happens in nested loop *)
   | ForRange of
       for_ident_expression option
@@ -262,8 +262,7 @@ and statement_desc =
       * for_ident
       * for_direction
       * block
-      * Js_closure.t
-  | Continue of label
+  | Continue
   | Break (* only used when inline a fucntion *)
   | Return of expression
   (* Here we need track back a bit ?, move Return to Function ...

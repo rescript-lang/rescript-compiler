@@ -10,7 +10,7 @@ function useTypeImportedInOtherModule(x) {
 }
 
 export {
-  useGetProp ,
-  useTypeImportedInOtherModule ,
+  useGetProp,
+  useTypeImportedInOtherModule,
 }
 /* No side effect */

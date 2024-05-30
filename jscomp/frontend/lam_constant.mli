@@ -38,7 +38,7 @@ val string_of_pointer_info : pointer_info -> string option
 
 type t =
   | Const_js_null
-  | Const_js_undefined of {isUnit: bool}
+  | Const_js_undefined of {is_unit: bool}
   | Const_js_true
   | Const_js_false
   | Const_int of {i: int32; comment: pointer_info}
@@ -46,6 +46,7 @@ type t =
   | Const_string of {s: string; unicode: bool}
   | Const_float of string
   | Const_int64 of int64
+  | Const_bigint of bool * string
   | Const_pointer of string
   | Const_block of int * Lambda.tag_info * t list
   | Const_float_array of string list

@@ -10,7 +10,7 @@ function testWithoutRenaming(x) {
 }
 
 export {
-  testWithRenaming ,
-  testWithoutRenaming ,
+  testWithRenaming,
+  testWithoutRenaming,
 }
 /* No side effect */

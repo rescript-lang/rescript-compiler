@@ -16,6 +16,7 @@ Happy hacking!
 
 - [NodeJS v18](https://nodejs.org/)
 - C compiler toolchain (usually installed with `xcode` on Mac)
+- Rust toolchain (required to build rewatch; follow the instructions at https://www.rust-lang.org/tools/install)
 - `opam` (OCaml Package Manager)
 - VSCode (+ [OCaml Platform Extension](https://marketplace.visualstudio.com/items?itemName=ocamllabs.ocaml-platform))
 
@@ -90,6 +91,11 @@ make test-syntax-roundtrip
 # Populate lib/ocaml and update artifact list
 make artifacts
 ```
+
+## Coding Style
+
+- OCaml Code: snake case format is used, e.g, `to_string`
+- ReScript Code: the camel case format is used, e.g `toString`
 
 ## Adding new Files to the Npm Package
 

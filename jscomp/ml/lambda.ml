@@ -229,6 +229,12 @@ type primitive =
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of comparison
+  (* BigInt operations *)
+  | Pnegbigint | Paddbigint | Psubbigint | Ppowbigint
+  | Pmulbigint | Pdivbigint | Pmodbigint
+  | Pandbigint | Porbigint | Pxorbigint
+  | Plslbigint | Pasrbigint
+  | Pbigintcomp of comparison
   (* String operations *)
   | Pstringlength | Pstringrefu  | Pstringrefs
   | Pbyteslength | Pbytesrefu | Pbytessetu | Pbytesrefs | Pbytessets
@@ -273,7 +279,7 @@ and value_kind =
 
 
 and boxed_integer = Primitive.boxed_integer =
-    Pnativeint | Pint32 | Pint64
+    Pbigint | Pint32 | Pint64
 
 
 and raise_kind =
@@ -314,10 +320,10 @@ type let_kind = Strict | Alias | StrictOpt | Variable
 type function_attribute = {
   inline : inline_attribute;
   is_a_functor: bool;
-  stub: bool;
   return_unit : bool;
   async : bool;
-  oneUnitArg : bool;
+  directive : string option;
+  one_unit_arg : bool;
 }
 
 type lambda =
@@ -384,14 +390,11 @@ let lambda_unit = Lconst const_unit
 let default_function_attribute = {
   inline = Default_inline;
   is_a_functor = false;
-  stub = false;
   return_unit = false;
   async = false;
-  oneUnitArg = false;
+  one_unit_arg = false;
+  directive = None;
 }
-
-let default_stub_attribute =
-  { default_function_attribute with stub = true }
 
 (* Build sharing keys *)
 (*

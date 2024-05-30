@@ -32,39 +32,39 @@ function a4(x, y) {
   return a3(x, y) + 1 | 0;
 }
 
-var A4 = {
+let A4 = {
   a4: a4
 };
 
-var A3 = {
+let A3 = {
   a3: a3,
   A4: A4
 };
 
-var A2 = {
+let A2 = {
   a2: a2,
   A3: A3
 };
 
-var A1 = {
+let A1 = {
   a1: a1,
   A2: A2
 };
 
-var A0 = {
+let A0 = {
   a0: a0,
   A1: A1
 };
 
-var v1 = a1(1, 2);
+let v1 = a1(1, 2);
 
-var v2 = a2(1, 2);
+let v2 = a2(1, 2);
 
-var v3 = a3(1, 2);
+let v3 = a3(1, 2);
 
-var v4 = a4(1, 2);
+let v4 = a4(1, 2);
 
-var v0 = 4;
+let v0 = 4;
 
 exports.A0 = A0;
 exports.v0 = v0;

@@ -51,7 +51,7 @@
  * v4: Added `config.open_modules` to the BundleConfig to enable implicitly opened
  * modules in the playground.
  * *)
-let apiVersion = "4"
+let api_version = "4"
 
 module Js = Js_of_ocaml.Js
 
@@ -62,19 +62,19 @@ let export (field : string) v =
 module Lang = struct
   type t = OCaml | Res
 
-  let fromString t = match t with
+  let from_string t = match t with
     | "ocaml" | "ml" -> Some OCaml
     | "res" -> Some Res
     | _ -> None
 
-  let toString t = match t with
+  let to_string t = match t with
     | OCaml -> "ml"
     | Res -> "res"
 end
 
 module BundleConfig = struct
   type t = {
-    mutable module_system: Js_packages_info.module_system;
+    mutable module_system: Ext_module_system.t;
     mutable filename: string option;
     mutable warn_flags: string;
     mutable open_modules: string list;
@@ -86,7 +86,7 @@ module BundleConfig = struct
   }
 
   let make () = {
-    module_system=Js_packages_info.NodeJS;
+    module_system=Ext_module_system.Commonjs;
     filename=None;
     warn_flags=Bsc_warnings.defaults_w;
     open_modules=[];
@@ -94,105 +94,105 @@ module BundleConfig = struct
   }
 
 
-  let default_filename (lang: Lang.t) = "playground." ^ (Lang.toString lang)
+  let default_filename (lang: Lang.t) = "playground." ^ (Lang.to_string lang)
 
   let string_of_module_system m = (match m with
-    | Js_packages_info.NodeJS -> "nodejs"
-    | Es6 -> "es6"
+    | Ext_module_system.Commonjs -> "nodejs"
+    | Esmodule -> "es6"
     | Es6_global -> "es6_global")
 end
 
-type locErrInfo = {
-  fullMsg: string; (* Full report string with all context *)
-  shortMsg: string; (* simple explain message without any extra context *)
+type loc_err_info = {
+  full_msg: string; (* Full report string with all context *)
+  short_msg: string; (* simple explain message without any extra context *)
   loc: Location.t;
 }
 
 module LocWarnInfo = struct
   type t = {
-    fullMsg: string; (* Full super_error related warn string *)
-    shortMsg: string; (* Plain warn message without any context *)
-    warnNumber: int;
-    isError: bool;
+    full_msg: string; (* Full super_error related warn string *)
+    short_msg: string; (* Plain warn message without any context *)
+    warn_number: int;
+    is_error: bool;
     loc: Location.t;
   }
 end
 
 
-exception RescriptParsingErrors of locErrInfo list
+exception RescriptParsingErrors of loc_err_info list
 
 module ErrorRet = struct
-  let locErrorAttributes ~(type_: string) ~(fullMsg: string) ~(shortMsg: string) (loc: Location.t) =
+  let loc_error_attributes ~(type_: string) ~(full_msg: string) ~(short_msg: string) (loc: Location.t) =
     let (_file,line,startchar) = Location.get_pos_info loc.Location.loc_start in
     let (_file,endline,endchar) = Location.get_pos_info loc.Location.loc_end in
     Js.Unsafe.([|
-      "fullMsg", inject @@ Js.string fullMsg;
+      "fullMsg", inject @@ Js.string full_msg;
       "row"    , inject line;
       "column" , inject startchar;
       "endRow" , inject endline;
       "endColumn" , inject endchar;
-      "shortMsg" , inject @@ Js.string shortMsg;
+      "shortMsg" , inject @@ Js.string short_msg;
       "type" , inject @@ Js.string type_;
     |])
 
-  let makeWarning (e: LocWarnInfo.t) =
-    let locAttrs = locErrorAttributes
+  let make_warning (e: LocWarnInfo.t) =
+    let loc_attrs = loc_error_attributes
         ~type_:"warning"
-        ~fullMsg: e.fullMsg
-        ~shortMsg: e.shortMsg
+        ~full_msg: e.full_msg
+        ~short_msg: e.short_msg
         e.loc in
-    let warnAttrs =  Js.Unsafe.([|
-        "warnNumber", inject @@ (e.warnNumber |> float_of_int |> Js.number_of_float);
-        "isError", inject @@ Js.bool e.isError;
+    let warn_attrs =  Js.Unsafe.([|
+        "warnNumber", inject @@ (e.warn_number |> float_of_int |> Js.number_of_float);
+        "isError", inject @@ Js.bool e.is_error;
       |]) in
-    let attrs = Array.append locAttrs warnAttrs in
+    let attrs = Array.append loc_attrs warn_attrs in
     Js.Unsafe.obj attrs
 
-  let fromLocErrors ?(warnings: LocWarnInfo.t array option) ~(type_: string) (errors: locErrInfo array) =
-    let jsErrors = Array.map
-        (fun (e: locErrInfo) ->
+  let from_loc_errors ?(warnings: LocWarnInfo.t array option) ~(type_: string) (errors: loc_err_info array) =
+    let js_errors = Array.map
+        (fun (e: loc_err_info) ->
            Js.Unsafe.(obj
-                        (locErrorAttributes
+                        (loc_error_attributes
                            ~type_
-                           ~fullMsg: e.fullMsg
-                           ~shortMsg: e.shortMsg
+                           ~full_msg: e.full_msg
+                           ~short_msg: e.short_msg
                            e.loc))) errors
     in
-    let locErrAttrs = Js.Unsafe.([|
-        "errors" , inject @@ Js.array jsErrors;
+    let loc_err_attrs = Js.Unsafe.([|
+        "errors" , inject @@ Js.array js_errors;
         "type" , inject @@ Js.string type_
       |])
     in
-    let warningAttr = match warnings with
+    let warning_attr = match warnings with
       | Some warnings -> Js.Unsafe.([|
           "warnings",
-          inject @@ Js.array (Array.map makeWarning warnings)
+          inject @@ Js.array (Array.map make_warning warnings)
         |])
       | None -> [||]
     in
-    let attrs = Array.append locErrAttrs warningAttr in
+    let attrs = Array.append loc_err_attrs warning_attr in
     Js.Unsafe.(obj attrs)
 
-  let fromSyntaxErrors (errors: locErrInfo array) =
-    fromLocErrors ~type_:"syntax_error" errors
+  let from_syntax_errors (errors: loc_err_info array) =
+    from_loc_errors ~type_:"syntax_error" errors
 
   (* for raised errors caused by malformed warning / warning_error flags *)
-  let makeWarningFlagError ~(warn_flags: string) (msg: string)  =
+  let make_warning_flag_error ~(warn_flags: string) (msg: string)  =
     Js.Unsafe.(obj [|
         "msg" , inject @@ Js.string msg;
         "warn_flags", inject @@ Js.string warn_flags;
         "type" , inject @@ Js.string "warning_flag_error"
       |])
 
-  let makeWarningError (errors: LocWarnInfo.t array) =
+  let make_warning_error (errors: LocWarnInfo.t array) =
     let type_ = "warning_error" in
-    let jsErrors = Array.map makeWarning errors in
+    let js_errors = Array.map make_warning errors in
     Js.Unsafe.(obj [|
-        "errors" , inject @@ Js.array jsErrors;
+        "errors" , inject @@ Js.array js_errors;
         "type" , inject @@ Js.string type_
       |])
 
-  let makeUnexpectedError msg =
+  let make_unexpected_error msg =
     Js.Unsafe.(obj [|
         "msg" , inject @@ Js.string msg;
         "type" , inject @@ Js.string "unexpected_error"
@@ -235,19 +235,19 @@ module ResDriver = struct
   open Res_driver
 
   (* adds ~src parameter *)
-  let setup ~src ~filename ~forPrinter () =
-    let mode = if forPrinter
+  let setup ~src ~filename ~for_printer () =
+    let mode = if for_printer
       then Res_parser.Default
       else ParseForTypeChecker
     in
     Res_parser.make ~mode src filename
 
   (* get full super error message *)
-  let diagnosticToString ~(src: string) (d: Res_diagnostics.t) =
-    let startPos = Res_diagnostics.getStartPos(d) in
-    let endPos = Res_diagnostics.getEndPos(d) in
+  let diagnostic_to_string ~(src: string) (d: Res_diagnostics.t) =
+    let start_pos = Res_diagnostics.get_start_pos(d) in
+    let end_pos = Res_diagnostics.get_end_pos(d) in
     let msg = Res_diagnostics.explain(d) in
-    let loc = {loc_start = startPos; Location.loc_end=endPos; loc_ghost=false} in
+    let loc = {loc_start = start_pos; Location.loc_end=end_pos; loc_ghost=false} in
     let err = { Location.loc; msg; sub=[]; if_highlight=""} in
     Location.default_error_reporter
       ~src:(Some src)
@@ -255,11 +255,11 @@ module ResDriver = struct
       err;
     Format.flush_str_formatter ()
 
-  let parse_implementation ~sourcefile ~forPrinter ~src =
+  let parse_implementation ~sourcefile ~for_printer ~src =
     Location.input_name := sourcefile;
-    let parseResult =
-      let engine = setup ~filename:sourcefile ~forPrinter ~src () in
-      let structure = Res_core.parseImplementation engine in
+    let parse_result =
+      let engine = setup ~filename:sourcefile ~for_printer ~src () in
+      let structure = Res_core.parse_implementation engine in
       let (invalid, diagnostics) = match engine.diagnostics with
         | [] as diagnostics -> (false, diagnostics)
         | _ as diagnostics -> (true, diagnostics)
@@ -272,19 +272,19 @@ module ResDriver = struct
         comments = List.rev engine.comments;
       }
     in
-    let () = if parseResult.invalid then
-        let errors = parseResult.diagnostics
+    let () = if parse_result.invalid then
+        let errors = parse_result.diagnostics
                      |> List.map (fun d ->
-                         let fullMsg = diagnosticToString ~src:parseResult.source d in
-                         let shortMsg = Res_diagnostics.explain d in
+                         let full_msg = diagnostic_to_string ~src:parse_result.source d in
+                         let short_msg = Res_diagnostics.explain d in
                          let loc = {
-                           Location.loc_start = Res_diagnostics.getStartPos d;
-                           Location.loc_end = Res_diagnostics.getEndPos d;
+                           Location.loc_start = Res_diagnostics.get_start_pos d;
+                           Location.loc_end = Res_diagnostics.get_end_pos d;
                            loc_ghost = false
                          } in
                          {
-                           fullMsg;
-                           shortMsg;
+                           full_msg;
+                           short_msg;
                            loc;
                          }
                        )
@@ -292,28 +292,28 @@ module ResDriver = struct
         in
         raise (RescriptParsingErrors errors)
     in
-    (parseResult.parsetree, parseResult.comments)
+    (parse_result.parsetree, parse_result.comments)
 end
 
 let rescript_parse ~filename src =
-  let (structure, _ ) = ResDriver.parse_implementation ~forPrinter:false ~sourcefile:filename ~src
+  let (structure, _ ) = ResDriver.parse_implementation ~for_printer:false ~sourcefile:filename ~src
   in
   structure
 
 
 module Printer = struct
-  let printExpr typ =
+  let print_expr typ =
     Printtyp.reset_names();
     Printtyp.reset_and_mark_loops typ;
-    Res_doc.toString
-      ~width:60 (Res_outcome_printer.printOutTypeDoc (Printtyp.tree_of_typexp false typ))
+    Res_doc.to_string
+      ~width:60 (Res_outcome_printer.print_out_type_doc (Printtyp.tree_of_typexp false typ))
 
 
-  let printDecl ~recStatus name decl =
+  let print_decl ~rec_status name decl =
     Printtyp.reset_names();
-    Res_doc.toString
+    Res_doc.to_string
       ~width:60
-      (Res_outcome_printer.printOutSigItemDoc (Printtyp.tree_of_type_declaration (Ident.create name) decl recStatus))
+      (Res_outcome_printer.print_out_sig_item_doc (Printtyp.tree_of_type_declaration (Ident.create name) decl rec_status))
 end
 
 module Compile = struct
@@ -339,13 +339,13 @@ module Compile = struct
       | `Active { Warnings. number; is_error; } ->
         Location.default_warning_printer loc ppf w;
         let open LocWarnInfo in
-        let fullMsg = flush_warning_buffer () in
-        let shortMsg = Warnings.message w in
+        let full_msg = flush_warning_buffer () in
+        let short_msg = Warnings.message w in
         let info = {
-          fullMsg;
-          shortMsg;
-          warnNumber=number;
-          isError=is_error;
+          full_msg;
+          short_msg;
+          warn_number=number;
+          is_error=is_error;
           loc;
         } in
         warning_infos := Array.append !warning_infos [|info|]
@@ -371,22 +371,22 @@ module Compile = struct
          | Syntaxerr.Error _ -> "syntax_error"
          | _ -> "other_error"
        in
-       let fullMsg =
+       let full_msg =
          Location.report_error Format.str_formatter error;
          Format.flush_str_formatter ()
        in
-       let err = { fullMsg; shortMsg=error.msg; loc=error.loc; } in
-       ErrorRet.fromLocErrors ~type_ [|err|]
+       let err = { full_msg; short_msg=error.msg; loc=error.loc; } in
+       ErrorRet.from_loc_errors ~type_ [|err|]
      | None ->
        match e with
        | RescriptParsingErrors errors ->
-         ErrorRet.fromSyntaxErrors(Array.of_list errors)
+         ErrorRet.from_syntax_errors(Array.of_list errors)
        | _ ->
          let msg = Printexc.to_string e in
          match e with
          | Warnings.Errors ->
-           ErrorRet.makeWarningError !warning_infos
-         | _ -> ErrorRet.makeUnexpectedError msg)
+           ErrorRet.make_warning_error !warning_infos
+         | _ -> ErrorRet.make_unexpected_error msg)
 
   (* Responsible for resetting all compiler state as if it were a new instance *)
   let reset_compiler () =
@@ -401,9 +401,9 @@ module Compile = struct
    *
    * Note: start / end positions
    * *)
-  let collectTypeHints typed_tree =
+  let collect_type_hints typed_tree =
     let open Typedtree in
-    let createTypeHintObj loc kind hint =
+    let create_type_hint_obj loc kind hint =
       let open Location in
       let (_ , startline, startcol) = Location.get_pos_info loc.loc_start in
       let (_ , endline, endcol) = Location.get_pos_info loc.loc_end in
@@ -428,22 +428,22 @@ module Compile = struct
         let cur_rec_status = ref None
 
         let enter_expression expr =
-          let hint = Printer.printExpr expr.exp_type in
-          let obj = createTypeHintObj expr.exp_loc "expression" hint in
+          let hint = Printer.print_expr expr.exp_type in
+          let obj = create_type_hint_obj expr.exp_loc "expression" hint in
           acc := obj :: !acc
 
         let enter_binding binding =
-          let hint = Printer.printExpr binding.vb_expr.exp_type in
-          let obj = createTypeHintObj binding.vb_loc "binding" hint in
+          let hint = Printer.print_expr binding.vb_expr.exp_type in
+          let obj = create_type_hint_obj binding.vb_loc "binding" hint in
           acc := obj :: !acc
 
         let enter_core_type ct =
-          let hint = Printer.printExpr ct.ctyp_type in
-          let obj = createTypeHintObj ct.ctyp_loc "core_type" hint in
+          let hint = Printer.print_expr ct.ctyp_type in
+          let obj = create_type_hint_obj ct.ctyp_loc "core_type" hint in
           acc := obj :: !acc
 
-        let enter_type_declarations recFlag =
-          let status = match recFlag with
+        let enter_type_declarations rec_flag =
+          let status = match rec_flag with
           | Asttypes.Nonrecursive -> Types.Trec_not
           | Recursive -> Trec_first
           in
@@ -452,11 +452,11 @@ module Compile = struct
         let enter_type_declaration tdecl =
           let open Types in
           match !cur_rec_status with
-          | Some recStatus ->
-            let hint = Printer.printDecl ~recStatus tdecl.typ_name.Asttypes.txt tdecl.typ_type in
-            let obj = createTypeHintObj tdecl.typ_loc "type_declaration" hint in
+          | Some rec_status ->
+            let hint = Printer.print_decl ~rec_status tdecl.typ_name.Asttypes.txt tdecl.typ_type in
+            let obj = create_type_hint_obj tdecl.typ_loc "type_declaration" hint in
             acc := obj :: !acc;
-            (match recStatus with
+            (match rec_status with
               | Trec_not
               | Trec_first -> cur_rec_status := Some Trec_next
               | _ -> ())
@@ -505,24 +505,24 @@ module Compile = struct
               (Lam_compile_main.compile "" exports lam)
               (Ext_pp.from_buffer buffer) in
           let v = Buffer.contents buffer in
-          let typeHints = collectTypeHints typed_tree in
+          let type_hints = collect_type_hints typed_tree in
           Js.Unsafe.(obj [|
               "js_code", inject @@ Js.string v;
               "warnings",
               inject @@ (
                 !warning_infos
-                |> Array.map ErrorRet.makeWarning
+                |> Array.map ErrorRet.make_warning
                 |> Js.array
                 |> inject
               );
-              "type_hints", inject @@ typeHints;
+              "type_hints", inject @@ type_hints;
               "type" , inject @@ Js.string "success"
             |]))
     with
     | e ->
       match e with
       | Arg.Bad msg ->
-        ErrorRet.makeWarningFlagError ~warn_flags msg
+        ErrorRet.make_warning_flag_error ~warn_flags msg
       | _ -> handle_err e;;
 
   let syntax_format ?(filename: string option) ~(from:Lang.t) ~(to_:Lang.t) (src: string) =
@@ -535,10 +535,10 @@ module Compile = struct
             |> lexbuf_from_string ~filename
             |> Parse.implementation
           in
-          Res_printer.printImplementation ~width:80 structure ~comments:[]
+          Res_printer.print_implementation ~width:80 structure ~comments:[]
         | (Res, OCaml) ->
           let (structure, _) =
-            ResDriver.parse_implementation ~forPrinter:false ~sourcefile:filename ~src
+            ResDriver.parse_implementation ~for_printer:false ~sourcefile:filename ~src
           in
           Pprintast.structure Format.str_formatter structure;
           Format.flush_str_formatter ()
@@ -547,15 +547,15 @@ module Compile = struct
            * IMPORTANT: we need forPrinter:true when parsing code here,
            * otherwise we will loose some information for the ReScript printer *)
           let (structure, comments) =
-            ResDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
+            ResDriver.parse_implementation ~for_printer:true ~sourcefile:filename ~src
           in
-          Res_printer.printImplementation ~width:80 structure ~comments
+          Res_printer.print_implementation ~width:80 structure ~comments
         | (OCaml, OCaml) -> src
       in
       Js.Unsafe.(obj [|
           "code", inject @@ Js.string code;
-          "fromLang", inject @@ Js.string (Lang.toString from);
-          "toLang", inject @@ Js.string (Lang.toString to_);
+          "fromLang", inject @@ Js.string (Lang.to_string from);
+          "toLang", inject @@ Js.string (Lang.to_string to_);
           "type" , inject @@ Js.string "success"
         |])
     with
@@ -573,7 +573,7 @@ module Export = struct
   let make_compiler ~config ~lang =
     let open Lang in
     let open Js.Unsafe in
-    let baseAttrs =
+    let base_attrs =
       [|"compile",
         inject @@
         Js.wrap_meth_callback
@@ -588,17 +588,17 @@ module Export = struct
       |] in
     let attrs =
       if lang != OCaml then
-        Array.append baseAttrs [|
+        Array.append base_attrs [|
           ("format",
            inject @@
            Js.wrap_meth_callback
              (fun _ code ->
                 (match lang with
-                 | OCaml -> ErrorRet.makeUnexpectedError ("OCaml pretty printing not supported")
+                 | OCaml -> ErrorRet.make_unexpected_error ("OCaml pretty printing not supported")
                  | _ -> Compile.syntax_format ?filename:config.filename ~from:lang ~to_:lang (Js.to_string code))))
         |]
       else
-        baseAttrs
+        base_attrs
     in
     obj attrs
 
@@ -608,10 +608,10 @@ module Export = struct
     let config = BundleConfig.make () in
     let set_module_system value =
       match value with
-      | "es6" ->
-        config.module_system <- Js_packages_info.Es6; true
-      | "nodejs" ->
-        config.module_system <- NodeJS; true
+      | "esmodule" | "es6" ->
+        config.module_system <- Ext_module_system.Esmodule; true
+      | "commonjs" | "nodejs" ->
+        config.module_system <- Commonjs; true
       | _ -> false in
     let set_filename value =
       config.filename <- Some value; true
@@ -622,19 +622,19 @@ module Export = struct
     let set_open_modules value =
       config.open_modules <- value; true
     in
-    let convert_syntax ~(fromLang: string) ~(toLang: string) (src: string) =
+    let convert_syntax ~(from_lang: string) ~(to_lang: string) (src: string) =
       let open Lang in
-      match (fromString fromLang, fromString toLang) with
+      match (from_string from_lang, from_string to_lang) with
       | (Some from, Some to_) ->
         Compile.syntax_format ?filename:config.filename ~from ~to_ src
       | other ->
         let msg = match other with
-          | (None, None) -> "Unknown from / to language: " ^ fromLang ^ ", " ^ toLang
-          | (None, Some _) -> "Unknown from language: " ^ fromLang
-          | (Some _, None) -> "Unknown to language: " ^ toLang
-          | (Some _, Some _) -> "Can't convert from " ^ fromLang ^ " to " ^ toLang
+          | (None, None) -> "Unknown from / to language: " ^ from_lang ^ ", " ^ to_lang
+          | (None, Some _) -> "Unknown from language: " ^ from_lang
+          | (Some _, None) -> "Unknown to language: " ^ to_lang
+          | (Some _, Some _) -> "Can't convert from " ^ from_lang ^ " to " ^ to_lang
         in
-        ErrorRet.makeUnexpectedError(msg)
+        ErrorRet.make_unexpected_error(msg)
     in
     Js.Unsafe.(obj [|
         "version",
@@ -646,8 +646,8 @@ module Export = struct
         "convertSyntax",
         inject @@
         Js.wrap_meth_callback
-          (fun _ fromLang toLang src ->
-             (convert_syntax ~fromLang:(Js.to_string fromLang) ~toLang:(Js.to_string toLang) (Js.to_string src))
+          (fun _ from_lang to_lang src ->
+             (convert_syntax ~from_lang:(Js.to_string from_lang) ~to_lang:(Js.to_string to_lang) (Js.to_string src))
           );
         "setModuleSystem",
         inject @@
@@ -700,7 +700,7 @@ let () =
     (Js.Unsafe.(obj
                   [|
                     "api_version",
-                    inject @@ Js.string apiVersion;
+                    inject @@ Js.string api_version;
                     "version",
                     inject @@ Js.string Bs_version.version;
                     "make",

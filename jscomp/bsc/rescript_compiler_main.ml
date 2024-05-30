@@ -72,13 +72,13 @@ let process_file sourcefile ?(kind ) ppf =
     let sourcefile = set_abs_input_name  sourcefile in     
     setup_compiler_printer `rescript;
     Js_implementation.implementation 
-      ~parser:(Res_driver.parse_implementation ~ignoreParseErrors:!Clflags.ignore_parse_errors)
+      ~parser:(Res_driver.parse_implementation ~ignore_parse_errors:!Clflags.ignore_parse_errors)
       ppf sourcefile 
   | Resi ->   
     let sourcefile = set_abs_input_name  sourcefile in 
     setup_compiler_printer `rescript;
     Js_implementation.interface 
-      ~parser:(Res_driver.parse_interface ~ignoreParseErrors:!Clflags.ignore_parse_errors)
+      ~parser:(Res_driver.parse_interface ~ignore_parse_errors:!Clflags.ignore_parse_errors)
       ppf sourcefile      
   | Intf_ast 
     ->     
@@ -106,6 +106,48 @@ let process_file sourcefile ?(kind ) ppf =
   in
   Config.uncurried := uncurried;
   res
+
+let reprint_source_file sourcefile = 
+  let uncurried = !Config.uncurried in
+  let kind = Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile) in
+  let sourcefile = set_abs_input_name sourcefile in
+  let res = match kind with 
+  | Res -> 
+    let parse_result =
+      Res_driver.parsing_engine.parse_implementation ~for_printer:true ~filename:sourcefile
+    in
+    if parse_result.invalid then (
+      Res_diagnostics.print_report parse_result.diagnostics parse_result.source;
+      exit 1
+    );
+    Res_compmisc.init_path ();
+    parse_result.parsetree 
+    |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Ml
+    |> Ppx_entry.rewrite_implementation
+    |> Res_printer.print_implementation ~width:100 ~comments:parse_result.comments 
+    |> print_endline
+  | Resi ->   
+    let parse_result =
+      Res_driver.parsing_engine.parse_interface ~for_printer:true ~filename:sourcefile
+    in
+    if parse_result.invalid then (
+      Res_diagnostics.print_report parse_result.diagnostics parse_result.source;
+      exit 1
+    );
+    Res_compmisc.init_path ();
+    parse_result.parsetree 
+    |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Mli
+    |> Ppx_entry.rewrite_signature
+    |> Res_printer.print_interface ~width:100 ~comments:parse_result.comments 
+    |> print_endline
+  | _ 
+    ->     
+    print_endline ("Invalid input for reprinting ReScript source. Must be a ReScript file: " ^ sourcefile);
+    exit 2
+  in
+  Config.uncurried := uncurried;
+  res
+
 let usage = "Usage: bsc <options> <files>\nOptions are:"
 
 let ppf = Format.err_formatter
@@ -156,7 +198,7 @@ let format_file input =
     | Ml | Mli -> `ml
     | Res | Resi -> `res 
     | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
-  let formatted = Res_multi_printer.print ~ignoreParseErrors:!Clflags.ignore_parse_errors syntax ~input in 
+  let formatted = Res_multi_printer.print ~ignore_parse_errors:!Clflags.ignore_parse_errors syntax ~input in 
   match !Clflags.output_name with 
   | None ->
     output_string stdout formatted
@@ -251,11 +293,11 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* Set jsx version";
 
     "-bs-jsx-module", string_call (fun i ->
-      let isGeneric = match i |> String.lowercase_ascii with
+      let is_generic = match i |> String.lowercase_ascii with
       | "react" -> false
       | _ -> true in
       Js_config.jsx_module := Js_config.jsx_module_of_string i;
-      if isGeneric then (
+      if is_generic then (
         Js_config.jsx_mode := Automatic;
         Js_config.jsx_version := Some Jsx_v4
       )),
@@ -312,9 +354,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-bs-unsafe-empty-array",  set Config.unsafe_empty_array,
     "*internal* Allow [||] to be polymorphic";
-
-    "-nostdlib",  set Js_config.no_stdlib,
-    "*internal* Don't use stdlib";
 
     "-color", string_call set_color_option,
     "*internal* Enable or disable colors in compiler messages\n\
@@ -389,6 +428,9 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-dsource", set Clflags.dump_source, 
     "*internal* print source";
+
+    "-reprint-source", string_call reprint_source_file, 
+    "*internal* transform the target ReScript file using PPXes provided, and print the transformed ReScript code to stdout";
 
     "-format", string_call format_file,
     "*internal* Format as Res syntax";

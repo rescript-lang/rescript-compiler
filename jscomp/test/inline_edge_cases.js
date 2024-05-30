@@ -4,46 +4,46 @@
 
 function test3(_n) {
   while(true) {
-    var n = _n;
+    let n = _n;
     if (n === 0) {
       return (n + 5 | 0) + 4 | 0;
     }
     _n = n - 1 | 0;
-    continue ;
+    continue;
   };
 }
 
 function test2(_n) {
   while(true) {
-    var n = _n;
+    let n = _n;
     if (n === 0) {
       return test3(n) + 3 | 0;
     }
     _n = n - 1 | 0;
-    continue ;
+    continue;
   };
 }
 
 function test0(_n) {
   while(true) {
-    var n = _n;
+    let n = _n;
     if (n === 0) {
-      var _n$1 = n;
+      let _n$1 = n;
       while(true) {
-        var n$1 = _n$1;
+        let n$1 = _n$1;
         if (n$1 === 0) {
           return test2(n$1) + 2 | 0;
         }
         _n$1 = n$1 - 1 | 0;
-        continue ;
+        continue;
       };
     }
     _n = n - 1 | 0;
-    continue ;
+    continue;
   };
 }
 
-var v = test0(10);
+let v = test0(10);
 
 test0(10) + 2 | 0;
 

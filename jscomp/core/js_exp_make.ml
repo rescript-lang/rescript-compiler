@@ -60,7 +60,7 @@ let var ?comment id : t = { expression_desc = Var (Id id); comment }
     Invariant: it should not call an external module .. *)
 
 let js_global ?comment (v : string) = var ?comment (Ext_ident.create_js v)
-let undefined : t = { expression_desc = Undefined {isUnit = false}; comment = None }
+let undefined : t = { expression_desc = Undefined {is_unit = false}; comment = None }
 let nil : t = { expression_desc = Null; comment = None }
 
 let call ?comment ~info e0 args : t =
@@ -72,8 +72,8 @@ let call ?comment ~info e0 args : t =
 let flat_call ?comment e0 es : t =
   { expression_desc = FlatCall (e0, es); comment }
 
-let tagged_template ?comment callExpr stringArgs valueArgs : t =
-  { expression_desc = Tagged_template (callExpr, stringArgs, valueArgs); comment }
+let tagged_template ?comment call_expr string_args value_args : t =
+  { expression_desc = Tagged_template (call_expr, string_args, value_args); comment }
 
 let runtime_var_dot ?comment (x : string) (e1 : string) : J.expression =
   {
@@ -186,7 +186,7 @@ let is_array  (e0 : t) : t =
 let new_ ?comment e0 args : t =
   { expression_desc = New (e0, Some args); comment }
 
-let unit : t = { expression_desc = Undefined {isUnit = true}; comment = None }
+let unit : t = { expression_desc = Undefined {is_unit = true}; comment = None }
 
 (* let math ?comment v args  : t =
    {comment ; expression_desc = Math(v,args)} *)
@@ -207,8 +207,8 @@ let unit : t = { expression_desc = Undefined {isUnit = true}; comment = None }
    [Js_fun_env.empty] is a mutable state ..
 *)
 
-let ocaml_fun ?comment ?immutable_mask ~return_unit ~async ~oneUnitArg params body : t =
-  let params = if oneUnitArg then [] else params in
+let ocaml_fun ?comment ?immutable_mask ~return_unit ~async ~one_unit_arg ?directive params body : t =
+  let params = if one_unit_arg then [] else params in
   let len = List.length params in
   {
     expression_desc =
@@ -220,6 +220,7 @@ let ocaml_fun ?comment ?immutable_mask ~return_unit ~async ~oneUnitArg params bo
           env = Js_fun_env.make ?immutable_mask len;
           return_unit;
           async;
+          directive;
         };
     comment;
   }
@@ -236,6 +237,7 @@ let method_ ?comment ?immutable_mask ~return_unit params body : t =
           env = Js_fun_env.make ?immutable_mask len;
           return_unit;
           async = false;
+          directive = None;
         };
     comment;
   }
@@ -311,6 +313,10 @@ let obj_int_tag_literal : t =
   { expression_desc = Number (Int { i = 248l; c = None }); comment = None }
 
 let int ?comment ?c i : t = { expression_desc = Number (Int { i; c }); comment }
+
+let bigint ?comment sign i : t = { expression_desc = Number (BigInt {positive=sign; value=i}); comment}
+
+let zero_bigint_literal : t = {expression_desc = Number (BigInt {positive=true; value="0"}); comment = None}
 
 let small_int i : t =
   match i with
@@ -803,11 +809,15 @@ let tag_type = function
   | Ast_untagged_variants.String s -> str s ~delim:DStarJ
   | Int i -> small_int i
   | Float f -> float f
+  | BigInt i -> 
+    let sign, i = Bigint_utils.parse_bigint i in
+    bigint sign i
   | Bool b -> bool b
   | Null -> nil
   | Undefined -> undefined
   | Untagged IntType -> str "number"
   | Untagged FloatType -> str "number"
+  | Untagged BigintType -> str "bigint"
   | Untagged BooleanType -> str "boolean"
   | Untagged FunctionType -> str "function"
   | Untagged StringType -> str "string"
@@ -1253,6 +1263,23 @@ let rec int32_band ?comment (e1 : J.expression) (e2 : J.expression) :
 (* let int32_bin ?comment op e1 e2 : J.expression =  *)
 (*   {expression_desc = Int32_bin(op,e1, e2); comment} *)
 
+let bigint_op ?comment op (e1: t) (e2: t) = bin ?comment op e1 e2
+
+let bigint_comp (cmp : Lam_compat.comparison) ?comment (e0: t) (e1: t) =
+  bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+
+let bigint_div ~checked ?comment (e0: t) (e1: t) =
+  if checked then
+    runtime_call Js_runtime_modules.bigint "div" [e0; e1]
+  else
+    bigint_op ?comment Div e0 e1
+    
+let bigint_mod ~checked ?comment (e0: t) (e1: t) =
+  if checked then
+    runtime_call Js_runtime_modules.bigint "mod_" [e0; e1]
+  else
+    bigint_op ?comment Mod e0 e1
+
 (* TODO -- alpha conversion
     remember to add parens..
 *)
@@ -1276,6 +1303,7 @@ let of_block ?comment ?e block : t =
             env = Js_fun_env.make 0;
             return_unit;
             async = false;
+            directive = None;
           };
     }
     []

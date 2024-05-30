@@ -9,12 +9,12 @@ function test$1(param) {
   return "a";
 }
 
-var M = {
+let M = {
   test: test$1
 };
 
 export {
-  test ,
-  M ,
+  test,
+  M,
 }
 /* No side effect */

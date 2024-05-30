@@ -56,7 +56,7 @@ let rec apply_with_arity_aux (fn : J.expression) (arity : int list)
           let params =
             Ext_list.init (x - len) (fun _ -> Ext_ident.create "param")
           in
-          E.ocaml_fun params ~return_unit:false (* unknown info *) ~async:false ~oneUnitArg:false
+          E.ocaml_fun params ~return_unit:false (* unknown info *) ~async:false ~one_unit_arg:false
             [
               S.return_stmt
                 (E.call
@@ -121,10 +121,10 @@ let morph_declare_to_assign (cxt : Lam_compile_context.t) k =
       k { cxt with continuation = Assign did } (Some (kind, did))
   | _ -> k cxt None
 
-let group_apply cases callback =
+let group_apply ~merge_cases cases callback =
   Ext_list.flat_map
-    (Ext_list.stable_group cases (fun (_, lam) (_, lam1) ->
-         Lam.eq_approx lam lam1))
+    (Ext_list.stable_group cases (fun (tag1, lam) (tag2, lam1) ->
+         merge_cases tag1 tag2 && Lam.eq_approx lam lam1))
     (fun group -> Ext_list.map_last group callback)
 (* TODO:
     for expression generation,
@@ -272,7 +272,7 @@ and compile_external_field_apply ?(dynamic_import = false) (appinfo : Lam.apply)
   let ap_args = appinfo.ap_args in
   match ident_info.persistent_closed_lambda with
   | Some (Lfunction ({ params; body; _ } as lfunction))
-    when Ext_list.same_length params ap_args && Lam_analysis.lfunction_can_be_beta_reduced lfunction ->
+    when Ext_list.same_length params ap_args && Lam_analysis.lfunction_can_be_inlined lfunction ->
       (* TODO: serialize it when exporting to save compile time *)
       let _, param_map =
         Lam_closure.is_closed_with_map Set_ident.empty params body
@@ -319,8 +319,7 @@ and compile_external_field_apply ?(dynamic_import = false) (appinfo : Lam.apply)
 and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
     (id : Ident.t) (arg : Lam.t) : Js_output.t * initialization =
   match arg with
-  | Lfunction { params; body; attr = { return_unit; async; oneUnitArg } } ->
-      let continue_label = Lam_util.generate_label ~name:id.name () in
+  | Lfunction { params; body; attr = { return_unit; async; one_unit_arg; directive } } ->
       (* TODO: Think about recursive value
          {[
            let rec v = ref (fun _ ...
@@ -331,7 +330,6 @@ and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
       let ret : Lam_compile_context.return_label =
         {
           id;
-          label = continue_label;
           params;
           immutable_mask = Array.make (List.length params) true;
           new_params = Map_ident.empty;
@@ -359,18 +357,18 @@ and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
              it will be renamed into [method]
              when it is detected by a primitive
           *)
-            ~return_unit ~async ~oneUnitArg ~immutable_mask:ret.immutable_mask
+            ~return_unit ~async ~one_unit_arg ?directive ~immutable_mask:ret.immutable_mask
             (Ext_list.map params (fun x ->
                  Map_ident.find_default ret.new_params x x))
             [
-              S.while_ (* ~label:continue_label *) E.true_
+              S.while_ E.true_
                 (Map_ident.fold ret.new_params body_block
                    (fun old new_param acc ->
                      S.define_variable ~kind:Alias old (E.var new_param) :: acc));
             ]
         else
           (* TODO:  save computation of length several times *)
-          E.ocaml_fun params (Js_output.output_as_block output) ~return_unit ~async ~oneUnitArg
+          E.ocaml_fun params (Js_output.output_as_block output) ~return_unit ~async ~one_unit_arg ?directive
       in
       ( Js_output.output_of_expression
           (Declare (Alias, id))
@@ -511,6 +509,7 @@ and compile_general_cases :
         _ -> ('a * J.case_clause) list -> J.statement) ->
       switch_exp: J.expression ->
       default: default_case ->
+      ?merge_cases: ('a -> 'a -> bool) ->
       ('a * Lam.t) list ->
       J.block =
   fun (type a)
@@ -524,6 +523,7 @@ and compile_general_cases :
     )
     ~(switch_exp : J.expression)
     ~(default : default_case)
+    ?(merge_cases = fun _ _ -> true)
     (cases : (a * Lam.t) list) ->
   match (cases, default) with
   | [], Default lam -> Js_output.output_as_block (compile_lambda cxt lam)
@@ -586,7 +586,7 @@ and compile_general_cases :
                 Some (Js_output.output_as_block (compile_lambda cxt lam))
           in
           let body =
-            group_apply cases (fun last (switch_case, lam) ->
+            group_apply ~merge_cases cases (fun last (switch_case, lam) ->
                 if last then
                   (* merge and shared *)
                   let switch_body, should_break =
@@ -768,18 +768,21 @@ and compile_untagged_cases ~cxt ~switch_exp ~default ~block_cases cases =
     in
     E.emit_check check
   in
-  let is_not_typeof (l, _) = match l with 
-  | Ast_untagged_variants.Untagged (InstanceType _) -> true
-  | _ -> false in
+  let tag_is_not_typeof = function
+    | Ast_untagged_variants.Untagged (InstanceType _) -> true
+    | _ -> false in
+  let clause_is_not_typeof (tag, _) = tag_is_not_typeof tag in
   let switch ?default ?declaration e clauses =
-    let (not_typeof_clauses, typeof_clauses) = List.partition is_not_typeof clauses in
+    let (not_typeof_clauses, typeof_clauses) = List.partition clause_is_not_typeof clauses in
     let rec build_if_chain remaining_clauses = (match remaining_clauses with 
-    | (Ast_untagged_variants.Untagged (InstanceType instanceType), {J.switch_body}) :: rest -> 
-      S.if_ (E.emit_check (IsInstanceOf (instanceType, Expr e)))
+    | (Ast_untagged_variants.Untagged (InstanceType instance_type), {J.switch_body}) :: rest -> 
+      S.if_ (E.emit_check (IsInstanceOf (instance_type, Expr e)))
         (switch_body)
         ~else_:([build_if_chain rest])
     | _ -> S.string_switch ?default ?declaration (E.typeof e) typeof_clauses) in
     build_if_chain not_typeof_clauses in
+  let merge_cases tag1 tag2 = (* only merge typeof cases, as instanceof cases are pulled out into if-then-else *)
+    not (tag_is_not_typeof tag1 || tag_is_not_typeof tag2) in
   cases |> compile_general_cases
     ~make_exp: E.tag_type
     ~eq_exp: mk_eq
@@ -787,6 +790,7 @@ and compile_untagged_cases ~cxt ~switch_exp ~default ~block_cases cases =
     ~switch
     ~switch_exp
     ~default
+    ~merge_cases
 
 and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
   (* TODO might better optimization according to the number of cases
@@ -1672,10 +1676,10 @@ and compile_prim (prim_info : Lam.prim_info)
 and compile_lambda (lambda_cxt : Lam_compile_context.t) (cur_lam : Lam.t) :
     Js_output.t =
   match cur_lam with
-  | Lfunction { params; body; attr = { return_unit; async; oneUnitArg } } ->
+  | Lfunction { params; body; attr = { return_unit; async; one_unit_arg; directive } } ->
       Js_output.output_of_expression lambda_cxt.continuation
         ~no_effects:no_effects_const
-        (E.ocaml_fun params ~return_unit ~async ~oneUnitArg
+        (E.ocaml_fun params ~return_unit ~async ~one_unit_arg ?directive
            (* Invariant:  jmp_table can not across function boundary,
               here we share env
            *)

@@ -151,6 +151,27 @@ type specs = External_arg_spec.params
 
 type exprs = E.t list
 
+let keep_non_undefined_args (arg_types : specs) (args : exprs) =
+  let rec has_undefined_trailing_args arg_types args =
+    match (arg_types, args) with
+    | ( [{External_arg_spec.arg_label = Arg_optional; _}],
+        [{J.expression_desc = Undefined {is_unit = false}; _}] ) ->
+      true
+    | ( _ :: arg_types_rest, _ :: args_rest ) ->
+      has_undefined_trailing_args arg_types_rest args_rest
+    | _ -> false
+  in
+  let rec aux arg_types args =
+    match (arg_types, args) with
+    | ( {External_arg_spec.arg_label = Arg_optional; _} :: arg_types_rest,
+        {J.expression_desc = Undefined {is_unit = false}; _} :: args_rest ) ->
+          aux arg_types_rest args_rest
+    | _ -> args
+  in
+  if (has_undefined_trailing_args arg_types args) then 
+    aux (List.rev arg_types) (List.rev args) |> List.rev
+  else args 
+
 (* TODO: fix splice,
    we need a static guarantee that it is static array construct
    otherwise, we should provide a good error message here,
@@ -176,7 +197,7 @@ let assemble_args_no_splice (arg_types : specs) (args : exprs) :
     | _ :: _, [] -> assert false
   in
   let args, eff = aux arg_types args in
-  ( args,
+  ( keep_non_undefined_args arg_types args,
     match eff with
     | [] -> None
     | x :: xs ->
@@ -271,16 +292,6 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
           else E.call ~info:{ arity = Full; call_info = Call_na } fn args)
       else
         let args, eff = assemble_args_no_splice arg_types args in
-        let rec keepNonUndefinedArgs argsList (argTypes : specs) =
-          match (argsList, argTypes) with
-          | ( {J.expression_desc = Undefined {isUnit = false}; _} :: rest,
-              {External_arg_spec.arg_label = Arg_optional; _} :: argTypes ) ->
-            keepNonUndefinedArgs rest argTypes
-          | _ -> argsList
-        in
-        let args =
-          keepNonUndefinedArgs (List.rev args) (List.rev arg_types) |> List.rev
-        in
         add_eff eff
         @@ E.call ~info:{ arity = Full; call_info = Call_na } fn args
   | Js_module_as_fn { external_module_name; splice } ->

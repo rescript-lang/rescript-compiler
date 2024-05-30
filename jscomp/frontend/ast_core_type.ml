@@ -125,8 +125,8 @@ let get_uncurry_arity (ty : t) =
   | _ -> None
 
 let get_curry_arity (ty : t) =
-  if Ast_uncurried.coreTypeIsUncurriedFun ty then
-    let arity, _ = Ast_uncurried.typeExtractUncurriedFun ty in
+  if Ast_uncurried.core_type_is_uncurried_fun ty then
+    let arity, _ = Ast_uncurried.core_type_extract_uncurried_fun ty in
     arity
   else get_uncurry_arity_aux ty 0
 

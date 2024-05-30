@@ -2,7 +2,7 @@ type 'a compare = 'a -> 'a -> int
 
 type ('a, 'id) cmp
 
-external getCmp : ('a, 'id) cmp -> 'a compare = "%identity"
+external get_cmp : ('a, 'id) cmp -> 'a compare = "%identity"
 (** only used for data structures, not exported for client usage *)
 
 module type S = sig

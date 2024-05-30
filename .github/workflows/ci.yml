@@ -20,6 +20,67 @@ env:
   OCAMLRUNPARAM: b
 
 jobs:
+  build-rewatch:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [
+            macos-13, # x64
+            macos-14, # ARM
+            ubuntu-latest, # x64
+            buildjet-2vcpu-ubuntu-2204-arm, # ARM
+            windows-latest,
+          ]
+        include:
+          - os: macos-13
+            rust-target: x86_64-apple-darwin
+          - os: macos-14
+            rust-target: aarch64-apple-darwin
+          - os: ubuntu-latest
+            rust-target: x86_64-unknown-linux-musl
+          - os: buildjet-2vcpu-ubuntu-2204-arm
+            rust-target: aarch64-unknown-linux-musl
+          - os: windows-latest
+            rust-target: x86_64-pc-windows-gnu
+
+    runs-on: ${{matrix.os}}
+
+    env:
+      RUST_BACKTRACE: "1"
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install musl gcc
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y musl-tools
+
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.4
+        with:
+          version: "v0.8.0"
+
+      - name: Install rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+          targets: ${{matrix.rust-target}}
+
+      - name: Build rewatch
+        run: cargo build --manifest-path rewatch/Cargo.toml --target ${{matrix.rust-target}} --release
+
+      - name: Get artifact dir name
+        run: node .github/workflows/get_artifact_dir_name.js
+
+      - name: "Upload artifact: rewatch binary"
+        uses: actions/upload-artifact@v4
+        with:
+          name: rewatch-${{env.artifact_dir_name}}
+          path: rewatch/target/${{matrix.rust-target}}/release/rewatch${{ runner.os == 'Windows' && '.exe' || '' }}
+
   # Build statically linked Linux binaries in an Alpine-based Docker container
   # See https://ocamlpro.com/blog/2021_09_02_generating_static_and_portable_executables_with_ocaml
   # for more info.
@@ -59,6 +120,7 @@ jobs:
   # Therefore, only upload the binaries from the static build
   upload-linux-arm64-binaries:
     needs:
+      - build-rewatch
       - static-binaries-linux
 
     runs-on: buildjet-2vcpu-ubuntu-2204-arm
@@ -73,31 +135,33 @@ jobs:
         with:
           name: static-binaries-linux-${{ runner.arch }}
 
-      - name: Make static linux binaries executable
-        if: runner.os == 'Linux'
-        run: |
-          chmod +x ninja/ninja
-          chmod +x _build/install/default/bin/*
-
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
+      - name: Get artifact dir name
+        run: node .github/workflows/get_artifact_dir_name.js
+
+      - name: Download rewatch binary
+        uses: actions/download-artifact@v4
+        with:
+          name: rewatch-${{ env.artifact_dir_name }}
+          path: rewatch
+
       - name: Copy exes to platform bin dirs
         run: node ./scripts/copyExes.js
-
-      - name: Prepare artifact upload
-        run: node .github/workflows/get_artifact_info.js
 
       - name: "Upload artifacts: binaries"
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.artifact_name }}
-          path: ${{ env.artifact_path }}
+          name: binaries-${{ env.artifact_dir_name }}
+          path: ${{ env.artifact_dir_name }}
 
   build:
-    needs: static-binaries-linux
+    needs:
+      - build-rewatch
+      - static-binaries-linux
 
     strategy:
       fail-fast: false
@@ -133,10 +197,20 @@ jobs:
         with:
           name: static-binaries-linux-${{ runner.arch }}
 
+      - name: Get artifact dir name
+        run: node .github/workflows/get_artifact_dir_name.js
+
+      - name: Download rewatch binary
+        uses: actions/download-artifact@v4
+        with:
+          name: rewatch-${{ env.artifact_dir_name }}
+          path: rewatch
+
       - name: Make static linux binaries executable
         if: runner.os == 'Linux'
         run: |
           chmod +x ninja/ninja
+          chmod +x rewatch/rewatch
           chmod +x _build/install/default/bin/*
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
@@ -252,14 +326,11 @@ jobs:
           KEYCDN_PASSWORD: ${{ secrets.KEYCDN_PASSWORD }}
         run: bash playground/upload_bundle.sh
 
-      - name: Prepare artifact upload
-        run: node .github/workflows/get_artifact_info.js
-
       - name: "Upload artifacts: binaries"
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.artifact_name }}
-          path: ${{ env.artifact_path }}
+          name: binaries-${{ env.artifact_dir_name }}
+          path: ${{ env.artifact_dir_name }}
 
       - name: "Upload artifacts: lib/ocaml"
         if: runner.os == 'Linux'
@@ -286,6 +357,8 @@ jobs:
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
+        with:
+          pattern: "@(binaries-*|lib-ocaml)"
 
       - name: Move artifacts
         run: ./scripts/moveArtifacts.sh

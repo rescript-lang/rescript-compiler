@@ -1,59 +1,59 @@
 open GenTypeCommon
 
-let extractFromTypeExpr typeParams =
-  typeParams
+let extract_from_type_expr type_params =
+  type_params
   |> List.fold_left
-       (fun soFar typeExpr ->
-         match typeExpr with
+       (fun so_far type_expr ->
+         match type_expr with
          | {Types.desc = Tvar (Some s)} ->
-           let typeName = s in
-           typeName :: soFar
+           let type_name = s in
+           type_name :: so_far
          | {Types.desc = Tlink _} ->
            (* see if we need to collect more type vars here: t as 'a *)
-           soFar
+           so_far
          | _ -> assert false)
        []
   |> List.rev
 
-let extractFromCoreType typeParams =
-  typeParams
+let extract_from_core_type type_params =
+  type_params
   |> List.fold_left
-       (fun soFar typeExpr ->
-         match typeExpr.Typedtree.ctyp_desc with
+       (fun so_far type_expr ->
+         match type_expr.Typedtree.ctyp_desc with
          | Ttyp_var s ->
-           let typeName = s in
-           typeName :: soFar
-         | _ -> soFar)
+           let type_name = s in
+           type_name :: so_far
+         | _ -> so_far)
        []
   |> List.rev
 
 let rec substitute ~f type0 =
   match type0 with
-  | Array (t, arrayKind) -> Array (t |> substitute ~f, arrayKind)
+  | Array (t, array_kind) -> Array (t |> substitute ~f, array_kind)
   | Dict type_ -> Dict (type_ |> substitute ~f)
   | Function function_ ->
     Function
       {
         function_ with
-        argTypes =
-          function_.argTypes
-          |> List.map (fun {aName; aType = t} ->
-                 {aName; aType = t |> substitute ~f});
+        arg_types =
+          function_.arg_types
+          |> List.map (fun {a_name; a_type = t} ->
+                 {a_name; a_type = t |> substitute ~f});
       }
-  | Ident {typeArgs = []} -> type0
-  | Ident ({typeArgs} as ident) ->
-    Ident {ident with typeArgs = typeArgs |> List.map (substitute ~f)}
+  | Ident {type_args = []} -> type0
+  | Ident ({type_args} as ident) ->
+    Ident {ident with type_args = type_args |> List.map (substitute ~f)}
   | Null type_ -> Null (type_ |> substitute ~f)
   | Nullable type_ -> Nullable (type_ |> substitute ~f)
-  | Object (closedFlag, fields) ->
+  | Object (closed_flag, fields) ->
     Object
-      ( closedFlag,
+      ( closed_flag,
         fields
         |> List.map (fun field ->
                {field with type_ = field.type_ |> substitute ~f}) )
   | Option type_ -> Option (type_ |> substitute ~f)
   | Promise type_ -> Promise (type_ |> substitute ~f)
-  | Tuple innerTypes -> Tuple (innerTypes |> List.map (substitute ~f))
+  | Tuple inner_types -> Tuple (inner_types |> List.map (substitute ~f))
   | TypeVar s -> (
     match f s with
     | None -> type0
@@ -71,26 +71,26 @@ let rec substitute ~f type0 =
 let rec free_ type0 : StringSet.t =
   match type0 with
   | Array (t, _) -> t |> free_
-  | Function {argTypes; retType; typeVars} ->
+  | Function {arg_types; ret_type; type_vars} ->
     StringSet.diff
-      ((argTypes |> freeOfList_) +++ (retType |> free_))
-      (typeVars |> StringSet.of_list)
+      ((arg_types |> freeOfList_) +++ (ret_type |> free_))
+      (type_vars |> StringSet.of_list)
   | Object (_, fields) ->
     fields
     |> List.fold_left
          (fun s {type_} -> StringSet.union s (type_ |> free_))
          StringSet.empty
-  | Ident {typeArgs} ->
-    typeArgs
+  | Ident {type_args} ->
+    type_args
     |> List.fold_left
-         (fun s typeArg -> StringSet.union s (typeArg |> free_))
+         (fun s type_arg -> StringSet.union s (type_arg |> free_))
          StringSet.empty
   | Dict type_ | Null type_ | Nullable type_ -> type_ |> free_
   | Option type_ | Promise type_ -> type_ |> free_
-  | Tuple innerTypes ->
-    innerTypes
+  | Tuple inner_types ->
+    inner_types
     |> List.fold_left
-         (fun s typeArg -> StringSet.union s (typeArg |> free_))
+         (fun s type_arg -> StringSet.union s (type_arg |> free_))
          StringSet.empty
   | TypeVar s -> s |> StringSet.singleton
   | Variant {payloads} ->
@@ -101,7 +101,7 @@ let rec free_ type0 : StringSet.t =
 
 and freeOfList_ types =
   types
-  |> List.fold_left (fun s {aType} -> s +++ (aType |> free_)) StringSet.empty
+  |> List.fold_left (fun s {a_type} -> s +++ (a_type |> free_)) StringSet.empty
 
 and ( +++ ) = StringSet.union
 

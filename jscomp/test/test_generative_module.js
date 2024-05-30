@@ -4,11 +4,11 @@
 
 function M($star) {
   return {
-          v: 3
-        };
+    v: 3
+  };
 }
 
-var V = {
+let V = {
   v: 3
 };
 

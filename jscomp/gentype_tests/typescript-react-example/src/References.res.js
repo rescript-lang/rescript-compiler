@@ -3,8 +3,8 @@
 
 function create(x) {
   return {
-          contents: x
-        };
+    contents: x
+  };
 }
 
 function access(r) {
@@ -21,15 +21,15 @@ function get(r) {
 
 function make(prim) {
   return {
-          contents: prim
-        };
+    contents: prim
+  };
 }
 
 function set(r, v) {
   r.contents = v;
 }
 
-var R = {
+let R = {
   get: get,
   make: make,
   set: set
@@ -44,14 +44,14 @@ function preserveRefIdentity(x) {
 }
 
 export {
-  create ,
-  access ,
-  update ,
-  R ,
-  get ,
-  make ,
-  set ,
-  destroysRefIdentity ,
-  preserveRefIdentity ,
+  create,
+  access,
+  update,
+  R,
+  get,
+  make,
+  set,
+  destroysRefIdentity,
+  preserveRefIdentity,
 }
 /* No side effect */

@@ -48,7 +48,11 @@ val create_tmp :  ?name:string -> unit -> Ident.t
 
 val make_unused : unit -> Ident.t 
 
+val is_uident : string -> bool
 
+val is_uppercase_exotic : string -> bool
+
+val unwrap_uppercase_exotic : string -> string
 
 (**
    Invariant: if name is not converted, the reference should be equal

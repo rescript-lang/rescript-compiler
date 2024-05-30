@@ -5,14 +5,14 @@
 function construct(b) {
   if (b) {
     return {
-            n: 0
-          };
+      n: 0
+    };
   } else {
     return {};
   }
 }
 
-var er = {};
+let er = {};
 
 exports.construct = construct;
 exports.er = er;

@@ -8,6 +8,7 @@ const { duneBinDir } = require("./dune");
 const { absolutePath: platformBinDir } = require("./bin_path");
 
 const ninjaDir = path.join(__dirname, "..", "ninja");
+const rewatchDir = path.join(__dirname, "..", "rewatch");
 
 if (!fs.existsSync(platformBinDir)) {
   fs.mkdirSync(platformBinDir);
@@ -34,3 +35,4 @@ copyExe(duneBinDir, "rescript");
 copyExe(duneBinDir, "bsc");
 copyExe(duneBinDir, "bsb_helper");
 copyExe(ninjaDir, "ninja");
+copyExe(rewatchDir, "rewatch");

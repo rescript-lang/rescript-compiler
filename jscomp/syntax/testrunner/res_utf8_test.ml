@@ -1,6 +1,6 @@
-type utf8Test = {codepoint: int; str: string; size: int}
+type utf8_test = {codepoint: int; str: string; size: int}
 
-let utf8CodePointTests =
+let utf8_code_point_tests =
   [|
     {codepoint = 0x00; str = "\x00"; size = 1};
     {codepoint = 0x01; str = "\x01"; size = 1};
@@ -36,38 +36,38 @@ let utf8CodePointTests =
     {codepoint = 0xFFFD; str = "\xef\xbf\xbd"; size = 3};
   |]
 
-let surrogateRange =
+let surrogate_range =
   [|
     {codepoint = 0xFFFD; str = "\xed\xa0\x80"; size = 1};
     {codepoint = 0xFFFD; str = "\xed\xbf\xbf"; size = 1};
   |]
 
-let testDecode () =
+let test_decode () =
   Array.iter
     (fun t ->
       let len = String.length t.str in
-      let codepoint, size = Res_utf8.decodeCodePoint 0 t.str len in
+      let codepoint, size = Res_utf8.decode_code_point 0 t.str len in
       assert (codepoint = t.codepoint);
       assert (size = t.size))
-    utf8CodePointTests
+    utf8_code_point_tests
 
-let testDecodeSurrogateRange () =
+let test_decode_surrogate_range () =
   Array.iter
     (fun t ->
       let len = String.length t.str in
-      let codepoint, size = Res_utf8.decodeCodePoint 0 t.str len in
+      let codepoint, size = Res_utf8.decode_code_point 0 t.str len in
       assert (codepoint = t.codepoint);
       assert (size = t.size))
-    surrogateRange
+    surrogate_range
 
-let testEncode () =
+let test_encode () =
   Array.iter
     (fun t ->
-      let encodedString = Res_utf8.encodeCodePoint t.codepoint in
-      assert (encodedString = t.str))
-    utf8CodePointTests
+      let encoded_string = Res_utf8.encode_code_point t.codepoint in
+      assert (encoded_string = t.str))
+    utf8_code_point_tests
 
-let validCodePointsTests =
+let valid_code_points_tests =
   [|
     (0, true);
     (Char.code 'e', true);
@@ -80,14 +80,15 @@ let validCodePointsTests =
     (-1, false);
   |]
 
-let testIsValidCodePoint () =
+let test_is_valid_code_point () =
   Array.iter
-    (fun (codePoint, t) -> assert (Res_utf8.isValidCodePoint codePoint = t))
-    validCodePointsTests
+    (fun (code_point, t) ->
+      assert (Res_utf8.is_valid_code_point code_point = t))
+    valid_code_points_tests
 
 let run () =
-  testDecode ();
-  testDecodeSurrogateRange ();
-  testEncode ();
-  testIsValidCodePoint ();
+  test_decode ();
+  test_decode_surrogate_range ();
+  test_encode ();
+  test_is_valid_code_point ();
   print_endline "✅ utf8 tests"

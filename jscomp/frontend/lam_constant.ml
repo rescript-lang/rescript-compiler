@@ -42,7 +42,7 @@ let string_of_pointer_info (x : pointer_info) : string option =
 
 type t =
   | Const_js_null
-  | Const_js_undefined of {isUnit: bool}
+  | Const_js_undefined of {is_unit: bool}
   | Const_js_true
   | Const_js_false
   | Const_int of {i: int32; comment: pointer_info}
@@ -50,6 +50,7 @@ type t =
   | Const_string of {s: string; unicode: bool}
   | Const_float of string
   | Const_int64 of int64
+  | Const_bigint of bool * string
   | Const_pointer of string
   | Const_block of int * Lambda.tag_info * t list
   | Const_float_array of string list
@@ -86,6 +87,10 @@ let rec eq_approx (x : t) (y : t) =
     match y with
     | Const_int64 iy -> ix = iy
     | _ -> false)
+  | Const_bigint (sx, ix) -> (
+    match y with
+    | Const_bigint (sy, iy) -> sx = sy && ix = iy
+    | _ -> false)
   | Const_pointer ix -> (
     match y with
     | Const_pointer iy -> ix = iy
@@ -104,4 +109,4 @@ let rec eq_approx (x : t) (y : t) =
     | Const_some iy -> eq_approx ix iy
     | _ -> false)
 
-let lam_none : t = Const_js_undefined {isUnit = false}
+let lam_none : t = Const_js_undefined {is_unit = false}

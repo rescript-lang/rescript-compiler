@@ -1,7 +1,7 @@
 open GenTypeCommon
 
-let fileHeader ~sourceFile =
-  let makeHeader ~lines =
+let file_header ~source_file =
+  let make_header ~lines =
     match lines with
     | [line] -> "/* " ^ line ^ " */\n\n"
     | _ ->
@@ -9,84 +9,89 @@ let fileHeader ~sourceFile =
       ^ (lines |> List.map (fun line -> " * " ^ line) |> String.concat "\n")
       ^ "\n */\n\n"
   in
-  makeHeader
-    ~lines:["TypeScript file generated from " ^ sourceFile ^ " by genType."]
+  make_header
+    ~lines:["TypeScript file generated from " ^ source_file ^ " by genType."]
   ^ "/* eslint-disable */\n" ^ "/* tslint:disable */\n"
 
-let interfaceName ~(config : Config.t) name =
-  match config.exportInterfaces with
+let interface_name ~(config : Config.t) name =
+  match config.export_interfaces with
   | true -> "I" ^ name
   | false -> name
 
-let typeAny = ident ~builtin:true "any"
+let type_any = ident ~builtin:true "any"
 
-let typeReactComponent ~propsType =
-  "React.ComponentType" |> ident ~builtin:true ~typeArgs:[propsType]
+let type_react_component ~props_type =
+  "React.ComponentType" |> ident ~builtin:true ~type_args:[props_type]
 
-let typeReactContext ~type_ =
-  "React.Context" |> ident ~builtin:true ~typeArgs:[type_]
+let type_react_context ~type_ =
+  "React.Context" |> ident ~builtin:true ~type_args:[type_]
 
-let typeReactElementTypeScript = ident ~builtin:true "JSX.Element"
-let typeReactChildTypeScript = ident ~builtin:true "React.ReactNode"
-let typeReactElement = typeReactElementTypeScript
-let typeReactChild = typeReactChildTypeScript
-let isTypeReactElement type_ = type_ == typeReactElement
+let type_react_element_type_script = ident ~builtin:true "JSX.Element"
+let type_react_child_type_script = ident ~builtin:true "React.ReactNode"
+let type_react_element = type_react_element_type_script
+let type_react_child = type_react_child_type_script
+let is_type_react_element type_ = type_ == type_react_element
 
-let typeReactDOMReDomRef =
-  "React.Ref" |> ident ~builtin:true ~typeArgs:[unknown]
+let type_react_d_o_m_re_dom_ref =
+  "React.Ref" |> ident ~builtin:true ~type_args:[unknown]
 
-let typeReactEventMouseT = "MouseEvent" |> ident ~builtin:true
-let reactRefCurrent = "current"
+let type_react_event_mouse_t = "MouseEvent" |> ident ~builtin:true
+let react_ref_current = "current"
 
-let typeReactRef ~type_ =
+let type_react_ref ~type_ =
   Object
     ( Open,
       [
         {
           mutable_ = Mutable;
-          nameJS = reactRefCurrent;
+          name_js = react_ref_current;
           optional = Mandatory;
           type_ = Null type_;
-          docString = DocString.empty;
+          doc_string = DocString.empty;
         };
       ] )
 
-let isTypeReactRef ~fields =
+let is_type_react_ref ~fields =
   match fields with
-  | [{mutable_ = Mutable; nameJS; optional = Mandatory}] ->
-    nameJS == reactRefCurrent
+  | [{mutable_ = Mutable; name_js; optional = Mandatory}] ->
+    name_js == react_ref_current
   | _ -> false
 
-let isTypeFunctionComponent ~fields type_ =
-  type_ |> isTypeReactElement && not (isTypeReactRef ~fields)
+let is_type_function_component ~fields type_ =
+  type_ |> is_type_react_element && not (is_type_react_ref ~fields)
 
-let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
-    ~inFunType type0 =
+let rec render_type ~(config : Config.t) ?(indent = None)
+    ~type_name_is_interface ~in_fun_type type0 =
   match type0 with
-  | Array (t, arrayKind) ->
-    let typeIsSimple =
+  | Array (t, array_kind) ->
+    let type_is_simple =
       match t with
       | Ident _ | TypeVar _ -> true
       | _ -> false
     in
-    if typeIsSimple && arrayKind = Mutable then
-      (t |> renderType ~config ~indent ~typeNameIsInterface ~inFunType) ^ "[]"
+    if type_is_simple && array_kind = Mutable then
+      (t |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
+      ^ "[]"
     else
-      let arrayName =
-        match arrayKind = Mutable with
+      let array_name =
+        match array_kind = Mutable with
         | true -> "Array"
         | false -> "ReadonlyArray"
       in
-      arrayName ^ "<"
-      ^ (t |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+      array_name ^ "<"
+      ^ (t |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
       ^ ">"
   | Dict type_ ->
     "{[id: string]: "
-    ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+    ^ (type_ |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
     ^ "}"
   | Function
-      {argTypes = [{aType = Object (closedFlag, fields)}]; retType; typeVars}
-    when retType |> isTypeFunctionComponent ~fields ->
+      {
+        arg_types = [{a_type = Object (closed_flag, fields)}];
+        ret_type;
+        type_vars;
+      }
+    when ret_type |> is_type_function_component ~fields ->
     let fields =
       fields
       |> List.map (fun field ->
@@ -95,117 +100,128 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
                type_ =
                  field.type_
                  |> TypeVars.substitute ~f:(fun s ->
-                        if typeVars |> List.mem s then Some typeAny else None);
+                        if type_vars |> List.mem s then Some type_any else None);
              })
     in
-    let componentType =
-      typeReactComponent ~propsType:(Object (closedFlag, fields))
+    let component_type =
+      type_react_component ~props_type:(Object (closed_flag, fields))
     in
-    componentType |> renderType ~config ~indent ~typeNameIsInterface ~inFunType
-  | Function {argTypes; retType; typeVars} ->
-    renderFunType ~config ~indent ~inFunType ~typeNameIsInterface ~typeVars
-      argTypes retType
+    component_type
+    |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type
+  | Function {arg_types; ret_type; type_vars} ->
+    render_fun_type ~config ~indent ~in_fun_type ~type_name_is_interface
+      ~type_vars arg_types ret_type
   | Object (_, fields) ->
-    let indent1 = fields |> Indent.heuristicFields ~indent in
+    let indent1 = fields |> Indent.heuristic_fields ~indent in
     fields
-    |> renderFields ~config ~indent:indent1 ~inFunType ~typeNameIsInterface
-  | Ident {builtin; name; typeArgs} ->
-    let name = name |> sanitizeTypeName in
+    |> render_fields ~config ~indent:indent1 ~in_fun_type
+         ~type_name_is_interface
+  | Ident {builtin; name; type_args} ->
+    let name = name |> sanitize_type_name in
     (match
-       (not builtin) && config.exportInterfaces && name |> typeNameIsInterface
+       (not builtin) && config.export_interfaces
+       && name |> type_name_is_interface
      with
-    | true -> name |> interfaceName ~config
+    | true -> name |> interface_name ~config
     | false -> name)
-    ^ EmitText.genericsString
-        ~typeVars:
-          (typeArgs
+    ^ EmitText.generics_string
+        ~type_vars:
+          (type_args
           |> List.map
-               (renderType ~config ~indent ~typeNameIsInterface ~inFunType))
+               (render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
+          )
   | Null type_ ->
     "(null | "
-    ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+    ^ (type_ |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
     ^ ")"
   | Nullable type_ ->
-    let useParens x =
+    let use_parens x =
       match type_ with
       | Function _ | Variant _ -> EmitText.parens [x]
       | _ -> x
     in
     "(null | undefined | "
-    ^ useParens
-        (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+    ^ use_parens
+        (type_
+        |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
     ^ ")"
   | Option type_ ->
-    let useParens x =
+    let use_parens x =
       match type_ with
       | Function _ | Variant _ -> EmitText.parens [x]
       | _ -> x
     in
     "(undefined | "
-    ^ useParens
-        (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+    ^ use_parens
+        (type_
+        |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
     ^ ")"
   | Promise type_ ->
     "Promise" ^ "<"
-    ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+    ^ (type_ |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
     ^ ">"
-  | Tuple innerTypes ->
+  | Tuple inner_types ->
     "["
-    ^ (innerTypes
-      |> List.map (renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+    ^ (inner_types
+      |> List.map
+           (render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
       |> String.concat ", ")
     ^ "]"
   | TypeVar s -> s
-  | Variant {inherits; noPayloads; payloads; polymorphic; tag; unboxed} ->
-    let inheritsRendered =
+  | Variant {inherits; no_payloads; payloads; polymorphic; tag; unboxed} ->
+    let inherits_rendered =
       inherits
       |> List.map (fun type_ ->
-             type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+             type_
+             |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
     in
-    let noPayloadsRendered = noPayloads |> List.map labelJSToString in
+    let no_payloads_rendered = no_payloads |> List.map label_js_to_string in
     let field ~name value =
       {
         mutable_ = Mutable;
-        nameJS = name;
+        name_js = name;
         optional = Mandatory;
         type_ = TypeVar value;
-        docString = DocString.empty;
+        doc_string = DocString.empty;
       }
     in
     let fields fields =
-      fields |> renderFields ~config ~indent ~inFunType ~typeNameIsInterface
+      fields
+      |> render_fields ~config ~indent ~in_fun_type ~type_name_is_interface
     in
-    let payloadsRendered =
+    let payloads_rendered =
       payloads
       |> List.map (fun {case; t = type_} ->
              let render t =
-               t |> renderType ~config ~indent ~typeNameIsInterface ~inFunType
+               t
+               |> render_type ~config ~indent ~type_name_is_interface
+                    ~in_fun_type
              in
-             let tagField =
-               case |> labelJSToString
-               |> field ~name:(Runtime.jsVariantTag ~polymorphic:false ~tag)
+             let tag_field =
+               case |> label_js_to_string
+               |> field ~name:(Runtime.js_variant_tag ~polymorphic:false ~tag)
              in
              match (unboxed, type_) with
              | true, type_ ->
-               let needParens =
+               let need_parens =
                  match type_ with
                  | Function _ -> true
                  | _ -> false
                in
                let t = type_ |> render in
-               if needParens then EmitText.parens [t] else t
+               if need_parens then EmitText.parens [t] else t
              | false, type_ when polymorphic ->
                (* poly variant *)
                [
-                 case |> labelJSToString
-                 |> field ~name:(Runtime.jsVariantTag ~polymorphic ~tag);
+                 case |> label_js_to_string
+                 |> field ~name:(Runtime.js_variant_tag ~polymorphic ~tag);
                  type_ |> render
-                 |> field ~name:(Runtime.jsVariantValue ~polymorphic);
+                 |> field ~name:(Runtime.js_variant_value ~polymorphic);
                ]
                |> fields
              | false, Object (Inline, flds) ->
                (* inlined record *)
-               tagField :: flds |> fields
+               tag_field :: flds |> fields
              | false, type_ ->
                (* ordinary variant *)
                let payloads =
@@ -214,15 +230,17 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
                  | _ -> [type_]
                in
                let flds =
-                 tagField
+                 tag_field
                  :: Ext_list.mapi payloads (fun n t ->
                         t |> render
-                        |> field ~name:(Runtime.jsVariantPayloadTag ~n))
+                        |> field ~name:(Runtime.js_variant_payload_tag ~n))
                in
                flds |> fields)
     in
-    let rendered = inheritsRendered @ noPayloadsRendered @ payloadsRendered in
-    let indent1 = rendered |> Indent.heuristicVariants ~indent in
+    let rendered =
+      inherits_rendered @ no_payloads_rendered @ payloads_rendered
+    in
+    let indent1 = rendered |> Indent.heuristic_variants ~indent in
     (match indent1 = None with
     | true -> ""
     | false -> Indent.break ~indent:indent1 ^ "  ")
@@ -233,200 +251,205 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
             | false -> Indent.break ~indent:indent1)
            ^ "| "))
 
-and renderField ~config ~indent ~typeNameIsInterface ~inFunType
-    {mutable_; nameJS = lbl; optional; type_; docString} =
-  let optMarker =
+and render_field ~config ~indent ~type_name_is_interface ~in_fun_type
+    {mutable_; name_js = lbl; optional; type_; doc_string} =
+  let opt_marker =
     match optional == Optional with
     | true -> "?"
     | false -> ""
   in
-  let mutMarker =
+  let mut_marker =
     match mutable_ = Immutable with
     | true -> "readonly "
     | false -> ""
   in
   let lbl =
-    match isJSSafePropertyName lbl with
+    match is_js_safe_property_name lbl with
     | true -> lbl
     | false -> EmitText.quotes lbl
   in
 
-  let defStr =
-    mutMarker ^ lbl ^ optMarker ^ ": "
-    ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+  let def_str =
+    mut_marker ^ lbl ^ opt_marker ^ ": "
+    ^ (type_ |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
   in
-  if DocString.hasContent docString then
+  if DocString.has_content doc_string then
     (* Always print comments on newline before definition. *)
-    let indentStr = indent |> Option.value ~default:"" in
-    "\n" ^ indentStr ^ DocString.render docString ^ indentStr ^ defStr
-  else Indent.break ~indent ^ defStr
+    let indent_str = indent |> Option.value ~default:"" in
+    "\n" ^ indent_str ^ DocString.render doc_string ^ indent_str ^ def_str
+  else Indent.break ~indent ^ def_str
 
-and renderFields ~config ~indent ~inFunType ~typeNameIsInterface fields =
+and render_fields ~config ~indent ~in_fun_type ~type_name_is_interface fields =
   let indent1 = indent |> Indent.more in
   let space =
     match indent = None && fields <> [] with
     | true -> " "
     | false -> ""
   in
-  let renderedFields =
+  let rendered_fields =
     fields
     |> List.map
-         (renderField ~config ~indent:indent1 ~typeNameIsInterface ~inFunType)
+         (render_field ~config ~indent:indent1 ~type_name_is_interface
+            ~in_fun_type)
   in
   ("{" ^ space)
-  ^ String.concat "; " renderedFields
+  ^ String.concat "; " rendered_fields
   ^ Indent.break ~indent ^ space ^ "}"
 
-and renderFunType ~config ~indent ~inFunType ~typeNameIsInterface ~typeVars
-    argTypes retType =
-  (match inFunType with
+and render_fun_type ~config ~indent ~in_fun_type ~type_name_is_interface
+    ~type_vars arg_types ret_type =
+  (match in_fun_type with
   | true -> "("
   | false -> "")
-  ^ EmitText.genericsString ~typeVars
+  ^ EmitText.generics_string ~type_vars
   ^ "("
   ^ String.concat ", "
       (List.mapi
-         (fun i {aName; aType} ->
-           let parameterName =
-             (match aName = "" with
+         (fun i {a_name; a_type} ->
+           let parameter_name =
+             (match a_name = "" with
              | true -> "_" ^ string_of_int (i + 1)
-             | false -> aName)
+             | false -> a_name)
              ^ ":"
            in
-           parameterName
-           ^ (aType
-             |> renderType ~config ~indent ~typeNameIsInterface ~inFunType:true
-             ))
-         argTypes)
+           parameter_name
+           ^ (a_type
+             |> render_type ~config ~indent ~type_name_is_interface
+                  ~in_fun_type:true))
+         arg_types)
   ^ ") => "
-  ^ (retType |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+  ^ (ret_type
+    |> render_type ~config ~indent ~type_name_is_interface ~in_fun_type)
   ^
-  match inFunType with
+  match in_fun_type with
   | true -> ")"
   | false -> ""
 
-let typeToString ~config ~typeNameIsInterface type_ =
-  type_ |> renderType ~config ~typeNameIsInterface ~inFunType:false
+let type_to_string ~config ~type_name_is_interface type_ =
+  type_ |> render_type ~config ~type_name_is_interface ~in_fun_type:false
 
-let emitExportConst ~early ?(comment = "") ~config
-    ?(docString = DocString.empty) ~emitters ~name ~type_ ~typeNameIsInterface
-    line =
-  let typeString = type_ |> typeToString ~config ~typeNameIsInterface in
+let emit_export_const ~early ?(comment = "") ~config
+    ?(doc_string = DocString.empty) ~emitters ~name ~type_
+    ~type_name_is_interface line =
+  let type_string = type_ |> type_to_string ~config ~type_name_is_interface in
   (match comment = "" with
   | true -> comment
   | false -> "// " ^ comment ^ "\n")
-  ^ DocString.render docString ^ "export const " ^ name ^ ": " ^ typeString
-  ^ " = " ^ line ^ " as any;"
+  ^ DocString.render doc_string
+  ^ "export const " ^ name ^ ": " ^ type_string ^ " = " ^ line ^ " as any;"
   |> (match early with
-     | true -> Emitters.exportEarly
+     | true -> Emitters.export_early
      | false -> Emitters.export)
        ~emitters
 
-let emitExportDefault ~emitters name =
+let emit_export_default ~emitters name =
   "export default " ^ name ^ ";" |> Emitters.export ~emitters
 
-let emitExportType ~(config : Config.t) ~emitters ~nameAs ~opaque ~type_
-    ~typeNameIsInterface ~typeVars ~docString resolvedTypeName =
-  let docString = DocString.render docString in
-  let typeParamsString = EmitText.genericsString ~typeVars in
-  let isInterface = resolvedTypeName |> typeNameIsInterface in
-  let resolvedTypeName =
-    match config.exportInterfaces && isInterface with
-    | true -> resolvedTypeName |> interfaceName ~config
-    | false -> resolvedTypeName
+let emit_export_type ~(config : Config.t) ~emitters ~name_as ~opaque ~type_
+    ~type_name_is_interface ~type_vars ~doc_string resolved_type_name =
+  let doc_string = DocString.render doc_string in
+  let type_params_string = EmitText.generics_string ~type_vars in
+  let is_interface = resolved_type_name |> type_name_is_interface in
+  let resolved_type_name =
+    match config.export_interfaces && is_interface with
+    | true -> resolved_type_name |> interface_name ~config
+    | false -> resolved_type_name
   in
-  let exportNameAs =
-    match nameAs with
+  let export_name_as =
+    match name_as with
     | None -> ""
     | Some s ->
-      "\nexport type " ^ s ^ typeParamsString ^ " = " ^ resolvedTypeName
-      ^ typeParamsString ^ ";"
+      "\nexport type " ^ s ^ type_params_string ^ " = " ^ resolved_type_name
+      ^ type_params_string ^ ";"
   in
   if opaque then
     (* Represent an opaque type as an absract class with a field called 'opaque'.
        Any type parameters must occur in the type of opaque, so that different
        instantiations are considered different types. *)
-    let typeOfOpaqueField =
-      match typeVars = [] with
+    let type_of_opaque_field =
+      match type_vars = [] with
       | true -> "any"
-      | false -> typeVars |> String.concat " | "
+      | false -> type_vars |> String.concat " | "
     in
-    docString ^ "export abstract class " ^ resolvedTypeName ^ typeParamsString
-    ^ " { protected opaque!: " ^ typeOfOpaqueField
-    ^ " }; /* simulate opaque types */" ^ exportNameAs
+    doc_string ^ "export abstract class " ^ resolved_type_name
+    ^ type_params_string ^ " { protected opaque!: " ^ type_of_opaque_field
+    ^ " }; /* simulate opaque types */" ^ export_name_as
     |> Emitters.export ~emitters
   else
-    (if isInterface && config.exportInterfaces then
-       docString ^ "export interface " ^ resolvedTypeName ^ typeParamsString
-       ^ " "
+    (if is_interface && config.export_interfaces then
+       doc_string ^ "export interface " ^ resolved_type_name
+       ^ type_params_string ^ " "
      else
-       docString ^ "export type " ^ resolvedTypeName ^ typeParamsString ^ " = ")
+       doc_string ^ "export type " ^ resolved_type_name ^ type_params_string
+       ^ " = ")
     ^ (match type_ with
-      | _ -> type_ |> typeToString ~config ~typeNameIsInterface)
-    ^ ";" ^ exportNameAs
+      | _ -> type_ |> type_to_string ~config ~type_name_is_interface)
+    ^ ";" ^ export_name_as
     |> Emitters.export ~emitters
 
-let emitImportValueAsEarly ~emitters ~name ~nameAs importPath =
+let emit_import_value_as_early ~emitters ~name ~name_as import_path =
   "import "
-  ^ (match nameAs with
-    | Some nameAs -> "{" ^ name ^ " as " ^ nameAs ^ "}"
+  ^ (match name_as with
+    | Some name_as -> "{" ^ name ^ " as " ^ name_as ^ "}"
     | None -> name)
   ^ " from " ^ "'"
-  ^ (importPath |> ImportPath.emit)
+  ^ (import_path |> ImportPath.emit)
   ^ "';"
-  |> Emitters.requireEarly ~emitters
+  |> Emitters.require_early ~emitters
 
-let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
-    ~moduleName importPath =
-  let moduleNameString = ModuleName.toString moduleName in
-  let importPathString = ImportPath.emit importPath in
+let emit_require ~imported_value_or_component ~early ~emitters
+    ~(config : Config.t) ~module_name import_path =
+  let module_name_string = ModuleName.to_string module_name in
+  let import_path_string = ImportPath.emit import_path in
   let output =
     match config.module_ with
-    | ES6 when not importedValueOrComponent ->
-      "import * as " ^ moduleNameString ^ " from '" ^ importPathString ^ "';"
+    | ESModule when not imported_value_or_component ->
+      "import * as " ^ module_name_string ^ " from '" ^ import_path_string
+      ^ "';"
     | _ ->
-      "const " ^ moduleNameString ^ " = require('" ^ importPathString ^ "');"
+      "const " ^ module_name_string ^ " = require('" ^ import_path_string
+      ^ "');"
   in
   output
   |> (match early with
-     | true -> Emitters.requireEarly
+     | true -> Emitters.require_early
      | false -> Emitters.require)
        ~emitters
 
 let require ~early =
   match early with
-  | true -> Emitters.requireEarly
+  | true -> Emitters.require_early
   | false -> Emitters.require
 
-let emitImportReact ~emitters =
+let emit_import_react ~emitters =
   "import * as React from 'react';" |> require ~early:true ~emitters
 
-let emitImportTypeAs ~emitters ~config ~typeName ~asTypeName
-    ~typeNameIsInterface ~importPath =
-  let typeName = sanitizeTypeName typeName in
-  let asTypeName =
-    match asTypeName with
-    | None -> asTypeName
-    | Some s -> Some (sanitizeTypeName s)
+let emit_import_type_as ~emitters ~config ~type_name ~as_type_name
+    ~type_name_is_interface ~import_path =
+  let type_name = sanitize_type_name type_name in
+  let as_type_name =
+    match as_type_name with
+    | None -> as_type_name
+    | Some s -> Some (sanitize_type_name s)
   in
-  let typeName, asTypeName =
-    match asTypeName with
-    | Some asName -> (
-      match asName |> typeNameIsInterface with
+  let type_name, as_type_name =
+    match as_type_name with
+    | Some as_name -> (
+      match as_name |> type_name_is_interface with
       | true ->
-        ( typeName |> interfaceName ~config,
-          Some (asName |> interfaceName ~config) )
-      | false -> (typeName, asTypeName))
-    | None -> (typeName, asTypeName)
+        ( type_name |> interface_name ~config,
+          Some (as_name |> interface_name ~config) )
+      | false -> (type_name, as_type_name))
+    | None -> (type_name, as_type_name)
   in
-  let importPathString = importPath |> ImportPath.emit in
-  let importPrefix = "import type" in
-  importPrefix ^ " " ^ "{" ^ typeName
-  ^ (match asTypeName with
-    | Some asT -> " as " ^ asT
+  let import_path_string = import_path |> ImportPath.emit in
+  let import_prefix = "import type" in
+  import_prefix ^ " " ^ "{" ^ type_name
+  ^ (match as_type_name with
+    | Some as_t -> " as " ^ as_t
     | None -> "")
-  ^ "} from '" ^ importPathString ^ "';"
+  ^ "} from '" ^ import_path_string ^ "';"
   |> Emitters.import ~emitters
 
-let emitTypeCast ~config ~type_ ~typeNameIsInterface s =
-  s ^ " as " ^ (type_ |> typeToString ~config ~typeNameIsInterface)
+let emit_type_cast ~config ~type_ ~type_name_is_interface s =
+  s ^ " as " ^ (type_ |> type_to_string ~config ~type_name_is_interface)

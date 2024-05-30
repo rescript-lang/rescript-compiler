@@ -26,6 +26,35 @@ open Ast_helper
 let handle_extension e (self : Bs_ast_mapper.mapper)
     (({txt; loc}, payload) : Parsetree.extension) =
   match txt with
+  | "todo" ->
+    let todo_message =
+      match Ast_payload.is_single_string payload with
+      | Some (s, _) -> Some s
+      | None -> None
+    in
+    Location.prerr_warning e.Parsetree.pexp_loc (Bs_todo todo_message);
+    let pretext =
+      loc.loc_start.pos_fname ^ ":"
+      ^ string_of_int loc.loc_start.pos_lnum
+      ^ ":"
+      ^ string_of_int loc.loc_start.pos_cnum
+      ^ "-"
+      ^ string_of_int loc.loc_end.pos_cnum
+    in
+
+    Exp.apply ~loc
+      (Exp.ident ~loc {txt = Longident.parse "Js.Exn.raiseError"; loc})
+      [
+        ( Nolabel,
+          Exp.constant ~loc
+            (Pconst_string
+               ( (pretext
+                 ^
+                 match todo_message with
+                 | None -> " - Todo"
+                 | Some msg -> " - Todo: " ^ msg),
+                 None )) );
+      ]
   | "ffi" -> Ast_exp_handle_external.handle_ffi ~loc ~payload
   | "raw" -> Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload
   | "re" ->
@@ -45,7 +74,7 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
   | "time" -> (
     match payload with
     | PStr [{pstr_desc = Pstr_eval (e, _)}] ->
-      let locString =
+      let loc_string =
         if loc.loc_ghost then "GHOST LOC"
         else
           let loc_start = loc.loc_start in
@@ -57,14 +86,14 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
         (Ast_compatible.app1 ~loc
            (Exp.ident ~loc
               {loc; txt = Ldot (Ldot (Lident "Js", "Console"), "timeStart")})
-           (Ast_compatible.const_exp_string ~loc locString))
+           (Ast_compatible.const_exp_string ~loc loc_string))
         (Exp.let_ ~loc Nonrecursive
            [Vb.mk ~loc (Pat.var ~loc {loc; txt = "timed"}) e]
            (Exp.sequence ~loc
               (Ast_compatible.app1 ~loc
                  (Exp.ident ~loc
                     {loc; txt = Ldot (Ldot (Lident "Js", "Console"), "timeEnd")})
-                 (Ast_compatible.const_exp_string ~loc locString))
+                 (Ast_compatible.const_exp_string ~loc loc_string))
               (Exp.ident ~loc {loc; txt = Lident "timed"})))
     | _ ->
       Location.raise_errorf ~loc "expect a boolean expression in the payload")

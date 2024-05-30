@@ -4,19 +4,19 @@
 
 function isfree(id, _x) {
   while(true) {
-    var x = _x;
+    let x = _x;
     switch (x.TAG) {
       case "Pident" :
           return id === x._0;
       case "Pdot" :
           _x = x._0;
-          continue ;
+          continue;
       case "Papply" :
           if (isfree(id, x._0)) {
             return true;
           }
           _x = x._1;
-          continue ;
+          continue;
       
     }
   };

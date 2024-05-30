@@ -1,6 +1,6 @@
 type style = SingleLine | MultiLine | DocComment | ModuleComment
 
-let styleToString s =
+let style_to_string s =
   match s with
   | SingleLine -> "SingleLine"
   | MultiLine -> "MultiLine"
@@ -11,46 +11,46 @@ type t = {
   txt: string;
   style: style;
   loc: Location.t;
-  mutable prevTokEndPos: Lexing.position;
+  mutable prev_tok_end_pos: Lexing.position;
 }
 
 let loc t = t.loc
 let txt t = t.txt
-let prevTokEndPos t = t.prevTokEndPos
+let prev_tok_end_pos t = t.prev_tok_end_pos
 
-let setPrevTokEndPos t pos = t.prevTokEndPos <- pos
+let set_prev_tok_end_pos t pos = t.prev_tok_end_pos <- pos
 
-let isSingleLineComment t = t.style = SingleLine
+let is_single_line_comment t = t.style = SingleLine
 
-let isDocComment t = t.style = DocComment
+let is_doc_comment t = t.style = DocComment
 
-let isModuleComment t = t.style = ModuleComment
+let is_module_comment t = t.style = ModuleComment
 
-let toString t =
+let to_string t =
   let {Location.loc_start; loc_end} = t.loc in
   Format.sprintf "(txt: %s\nstyle: %s\nlocation: %d,%d-%d,%d)" t.txt
-    (styleToString t.style) loc_start.pos_lnum
+    (style_to_string t.style) loc_start.pos_lnum
     (loc_start.pos_cnum - loc_start.pos_bol)
     loc_end.pos_lnum
     (loc_end.pos_cnum - loc_end.pos_bol)
 
-let makeSingleLineComment ~loc txt =
-  {txt; loc; style = SingleLine; prevTokEndPos = Lexing.dummy_pos}
+let make_single_line_comment ~loc txt =
+  {txt; loc; style = SingleLine; prev_tok_end_pos = Lexing.dummy_pos}
 
-let makeMultiLineComment ~loc ~docComment ~standalone txt =
+let make_multi_line_comment ~loc ~doc_comment ~standalone txt =
   {
     txt;
     loc;
     style =
-      (if docComment then if standalone then ModuleComment else DocComment
+      (if doc_comment then if standalone then ModuleComment else DocComment
        else MultiLine);
-    prevTokEndPos = Lexing.dummy_pos;
+    prev_tok_end_pos = Lexing.dummy_pos;
   }
 
-let fromOcamlComment ~loc ~txt ~prevTokEndPos =
-  {txt; loc; style = MultiLine; prevTokEndPos}
+let from_ocaml_comment ~loc ~txt ~prev_tok_end_pos =
+  {txt; loc; style = MultiLine; prev_tok_end_pos}
 
-let trimSpaces s =
+let trim_spaces s =
   let len = String.length s in
   if len = 0 then s
   else if String.unsafe_get s 0 = ' ' || String.unsafe_get s (len - 1) = ' '

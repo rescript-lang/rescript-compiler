@@ -6,15 +6,15 @@ function get_uint8(str, off) {
   return 33;
 }
 
-var BigEndian = {
+let BigEndian = {
   get_uint8: get_uint8
 };
 
-var ExtUnixAll = {
+let ExtUnixAll = {
   BigEndian: BigEndian
 };
 
-var ExtUnix = {
+let ExtUnix = {
   All: undefined
 };
 
@@ -22,9 +22,9 @@ function test_endian_string(x) {
   return 33;
 }
 
-var v = 33;
+let v = 33;
 
-var Test = {
+let Test = {
   test_endian_string: test_endian_string,
   v: v
 };

@@ -18,7 +18,7 @@ function f3(x) {
   }
 }
 
-var v0;
+let v0;
 
 exports.f0 = f0;
 exports.f1 = f1;

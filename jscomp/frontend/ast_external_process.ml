@@ -68,8 +68,8 @@ let spec_of_ptyp (nolabel : bool) (ptyp : Parsetree.core_type) :
     | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type)
   | `Uncurry opt_arity -> (
     let real_arity =
-      if Ast_uncurried.coreTypeIsUncurriedFun ptyp then
-        let arity, _ = Ast_uncurried.typeExtractUncurriedFun ptyp in
+      if Ast_uncurried.core_type_is_uncurried_fun ptyp then
+        let arity, _ = Ast_uncurried.core_type_extract_uncurried_fun ptyp in
         Some arity
       else Ast_core_type.get_uncurry_arity ptyp
     in
@@ -277,7 +277,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                     _;
                   };
                 ] -> (
-              let fromName = ref None in
+              let from_name = ref None in
               let with_ = ref None in
               fields
               |> List.iter
@@ -288,11 +288,11 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                      match (l, exp.pexp_desc) with
                      | ( {txt = Lident "from"; _},
                          Pexp_constant (Pconst_string (s, _)) ) ->
-                       fromName := Some s
+                       from_name := Some s
                      | {txt = Lident "with"; _}, Pexp_record (fields, _) ->
                        with_ := Some fields
                      | _ -> ());
-              match (!fromName, !with_) with
+              match (!from_name, !with_) with
               | None, _ ->
                 Location.raise_errorf ~loc:pexp_loc
                   "@module annotations with import attributes must have a \
@@ -304,9 +304,9 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                   "@module annotations with import attributes must have a \
                    \"with\" field. This \"with\" field should hold a record of \
                    the import attributes you want applied to the import."
-              | Some fromName, Some withFields ->
-                let importAttributesFromRecord =
-                  withFields
+              | Some from_name, Some with_fields ->
+                let import_attributes_from_record =
+                  with_fields
                   |> List.filter_map
                        (fun
                          ((l, exp) :
@@ -325,9 +325,9 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                              "Only string values are allowed here.")
                 in
                 let import_attributes =
-                  Hashtbl.create (List.length importAttributesFromRecord)
+                  Hashtbl.create (List.length import_attributes_from_record)
                 in
-                importAttributesFromRecord
+                import_attributes_from_record
                 |> List.iter (fun (key, value) ->
                        Hashtbl.replace import_attributes key value);
                 {
@@ -335,7 +335,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                   external_module_name =
                     Some
                       {
-                        bundle = fromName;
+                        bundle = from_name;
                         module_bind_name = Phint_nothing;
                         import_attributes = Some import_attributes;
                       };
@@ -492,7 +492,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                 Location.raise_errorf ~loc
                   "expect label, optional, or unit here")
             | Labelled label -> (
-              let fieldName =
+              let field_name =
                 match
                   Ast_attributes.iter_process_bs_string_as param_type.attr
                 with
@@ -507,7 +507,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                   result_types )
               | Arg_cst _ ->
                 ( {
-                    obj_arg_label = External_arg_spec.obj_label fieldName;
+                    obj_arg_label = External_arg_spec.obj_label field_name;
                     obj_arg_type;
                   },
                   arg_types,
@@ -515,31 +515,31 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                   result_types )
               | Nothing ->
                 ( {
-                    obj_arg_label = External_arg_spec.obj_label fieldName;
+                    obj_arg_label = External_arg_spec.obj_label field_name;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
-                  Parsetree.Otag ({Asttypes.txt = fieldName; loc}, [], ty)
+                  Parsetree.Otag ({Asttypes.txt = field_name; loc}, [], ty)
                   :: result_types )
               | Int _ ->
                 ( {
-                    obj_arg_label = External_arg_spec.obj_label fieldName;
+                    obj_arg_label = External_arg_spec.obj_label field_name;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
                   Otag
-                    ( {Asttypes.txt = fieldName; loc},
+                    ( {Asttypes.txt = field_name; loc},
                       [],
                       Ast_literal.type_int ~loc () )
                   :: result_types )
               | Poly_var_string _ ->
                 ( {
-                    obj_arg_label = External_arg_spec.obj_label fieldName;
+                    obj_arg_label = External_arg_spec.obj_label field_name;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
                   Otag
-                    ( {Asttypes.txt = fieldName; loc},
+                    ( {Asttypes.txt = field_name; loc},
                       [],
                       Ast_literal.type_string ~loc () )
                   :: result_types )
@@ -554,7 +554,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                 Location.raise_errorf ~loc
                   "%@obj label %s does not support %@unwrap arguments" label)
             | Optional label -> (
-              let fieldName =
+              let field_name =
                 match
                   Ast_attributes.iter_process_bs_string_as param_type.attr
                 with
@@ -576,35 +576,35 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                 in
                 ( {
                     obj_arg_label =
-                      External_arg_spec.optional for_sure_not_nested fieldName;
+                      External_arg_spec.optional for_sure_not_nested field_name;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
                   Parsetree.Otag
-                    ( {Asttypes.txt = fieldName; loc},
+                    ( {Asttypes.txt = field_name; loc},
                       [],
                       Ast_comb.to_undefined_type loc ty )
                   :: result_types )
               | Int _ ->
                 ( {
-                    obj_arg_label = External_arg_spec.optional true fieldName;
+                    obj_arg_label = External_arg_spec.optional true field_name;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
                   Otag
-                    ( {Asttypes.txt = fieldName; loc},
+                    ( {Asttypes.txt = field_name; loc},
                       [],
                       Ast_comb.to_undefined_type loc
                       @@ Ast_literal.type_int ~loc () )
                   :: result_types )
               | Poly_var_string _ ->
                 ( {
-                    obj_arg_label = External_arg_spec.optional true fieldName;
+                    obj_arg_label = External_arg_spec.optional true field_name;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
                   Otag
-                    ( {Asttypes.txt = fieldName; loc},
+                    ( {Asttypes.txt = field_name; loc},
                       [],
                       Ast_comb.to_undefined_type loc
                       @@ Ast_literal.type_string ~loc () )
@@ -966,12 +966,12 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
     | Ptyp_constr (({txt = Lident "function$"; _} as lid), [t; arity_]) ->
       ( t,
         fun ~arity x ->
-          let tArity =
+          let t_arity =
             match arity with
-            | Some arity -> Ast_uncurried.arityType ~loc arity
+            | Some arity -> Ast_uncurried.arity_type ~loc arity
             | None -> arity_
           in
-          {x with Parsetree.ptyp_desc = Ptyp_constr (lid, [x; tArity])} )
+          {x with Parsetree.ptyp_desc = Ptyp_constr (lid, [x; t_arity])} )
     | _ -> (type_annotation, fun ~arity:_ x -> x)
   in
   let result_type, arg_types_ty =

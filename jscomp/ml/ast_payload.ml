@@ -61,10 +61,10 @@ let is_single_int (x : t) : int option =
         {
           pstr_desc =
             Pstr_eval
-              ({pexp_desc = Pexp_constant (Pconst_integer (name, _)); _}, _);
+              ({pexp_desc = Pexp_constant (Pconst_integer (name, char)); _}, _);
           _;
         };
-      ] ->
+      ] when (match char with Some n when n = 'n' -> false | _ -> true) ->
     Some (int_of_string name)
   | _ -> None
 
@@ -76,6 +76,20 @@ let is_single_float (x : t) : string option =
           pstr_desc =
             Pstr_eval
               ({pexp_desc = Pexp_constant (Pconst_float (name, _)); _}, _);
+          _;
+        };
+      ] ->
+    Some name
+  | _ -> None
+
+let is_single_bigint (x : t) : string option =
+  match x with
+  | PStr
+      [
+        {
+          pstr_desc =
+            Pstr_eval
+              ({pexp_desc = Pexp_constant (Pconst_integer (name, Some 'n')); _}, _);
           _;
         };
       ] ->
@@ -170,7 +184,7 @@ type action = lid * Parsetree.expression option
     {[ { x = exp }]}
 *)
 
-let unrecognizedConfigRecord loc text =
+let unrecognized_config_record loc text =
   Location.prerr_warning loc (Warnings.Bs_derive_warning text)
 
 let ident_or_record_as_config loc (x : t) :
@@ -197,7 +211,7 @@ let ident_or_record_as_config loc (x : t) :
           | {txt = Lident name; loc}, y -> ({Asttypes.txt = name; loc}, Some y)
           | _ -> Location.raise_errorf ~loc "Qualified label is not allowed")
     | Some _ ->
-      unrecognizedConfigRecord loc "`with` is not supported, discarding";
+      unrecognized_config_record loc "`with` is not supported, discarding";
       [])
   | PStr
       [
@@ -210,7 +224,7 @@ let ident_or_record_as_config loc (x : t) :
     [({Asttypes.txt; loc = lloc}, None)]
   | PStr [] -> []
   | _ ->
-    unrecognizedConfigRecord loc "invalid attribute config-record, ignoring";
+    unrecognized_config_record loc "invalid attribute config-record, ignoring";
     []
 
 let assert_strings loc (x : t) : string list =

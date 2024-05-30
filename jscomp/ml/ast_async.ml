@@ -15,7 +15,7 @@ let add_async_attribute ~async (body : Parsetree.expression) =
   if async then
    (   
       match body.pexp_desc with
-      | Pexp_construct (x, Some e) when Ast_uncurried.exprIsUncurriedFun body ->
+      | Pexp_construct (x, Some e) when Ast_uncurried.expr_is_uncurried_fun body ->
         {body with pexp_desc = Pexp_construct (x, Some {e  with pexp_attributes =
         ({txt = "res.async"; loc = Location.none}, PStr []) :: e.pexp_attributes} )}
       | _ ->

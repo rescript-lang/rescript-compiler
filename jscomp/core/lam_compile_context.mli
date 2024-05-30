@@ -33,7 +33,6 @@ type jbl_label = int
 
 type return_label = {
   id : Ident.t;
-  label : J.label;
   params : Ident.t list;
   immutable_mask : bool array;
   mutable new_params : Ident.t Map_ident.t;

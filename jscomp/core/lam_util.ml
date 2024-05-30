@@ -212,16 +212,6 @@ let field_flatten_get
   | Some _
   | None -> lam ()
 
-
-(* TODO: check that if label belongs to a different 
-    namesape
-*)
-let count = ref 0 
-
-let generate_label ?(name="") ()  = 
-  incr count; 
-  Printf.sprintf "%s_tailcall_%04d" name !count
-
 #if (defined BROWSER || defined RELEASE)
 let dump ext  lam = 
   ()

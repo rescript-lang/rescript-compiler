@@ -47,8 +47,6 @@ class fold =
             let _self = _self#list _f_a _x_i1 in
             _self
 
-    method label : label -> 'self_type = unknown _self
-
     method ident : ident -> 'self_type = unknown _self
 
     method module_id : module_id -> 'self_type =
@@ -217,12 +215,11 @@ class fold =
           let _self = _self#block _x1 in
           let _self = _self#block _x2 in
           _self
-      | While (_x0, _x1, _x2, _x3) ->
-          let _self = option (fun _self -> _self#label) _self _x0 in
-          let _self = _self#expression _x1 in
-          let _self = _self#block _x2 in
+      | While (_x0, _x1) ->
+          let _self = _self#expression _x0 in
+          let _self = _self#block _x1 in
           _self
-      | ForRange (_x0, _x1, _x2, _x3, _x4, _x5) ->
+      | ForRange (_x0, _x1, _x2, _x3, _x4) ->
           let _self =
             option (fun _self -> _self#for_ident_expression) _self _x0
           in
@@ -231,9 +228,7 @@ class fold =
           let _self = _self#for_direction _x3 in
           let _self = _self#block _x4 in
           _self
-      | Continue _x0 ->
-          let _self = _self#label _x0 in
-          _self
+      | Continue -> _self
       | Break -> _self
       | Return _x0 ->
           let _self = _self#expression _x0 in

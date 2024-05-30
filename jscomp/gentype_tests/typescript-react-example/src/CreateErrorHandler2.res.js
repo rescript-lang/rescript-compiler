@@ -4,19 +4,19 @@ import * as ErrorHandler from "./ErrorHandler.res.js";
 
 function notification(n) {
   return [
-          String(n),
-          ""
-        ];
+    String(n),
+    ""
+  ];
 }
 
-var Error2 = {
+let Error2 = {
   notification: notification
 };
 
-var MyErrorHandler = ErrorHandler.Make(Error2);
+let MyErrorHandler = ErrorHandler.Make(Error2);
 
 export {
-  Error2 ,
-  MyErrorHandler ,
+  Error2,
+  MyErrorHandler,
 }
 /* MyErrorHandler Not a pure module */

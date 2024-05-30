@@ -2,9 +2,9 @@
 'use strict';
 
 
-var a = 4;
+let a = 4;
 
-var b = 2;
+let b = 2;
 
 exports.a = a;
 exports.b = b;

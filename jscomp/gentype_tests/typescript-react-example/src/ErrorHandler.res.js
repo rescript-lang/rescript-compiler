@@ -3,18 +3,18 @@
 import * as Curry from "rescript/lib/es6/curry.js";
 
 function Make($$Error) {
-  var notify = function (x) {
+  let notify = function (x) {
     return Curry._1($$Error.notification, x);
   };
   return {
-          notify: notify
-        };
+    notify: notify
+  };
 }
 
-var x = 42;
+let x = 42;
 
 export {
-  Make ,
-  x ,
+  Make,
+  x,
 }
 /* No side effect */

@@ -132,6 +132,27 @@ let [@inline] no_escape (c : char) =
   | '0' .. '9' | '_' | '$' -> true 
   | _ -> false
 
+let is_uident name =
+  let len = String.length name in
+  if len > 0 then
+    match name.[0] with
+    | 'A' .. 'Z' -> true
+    | _ -> false
+  else false
+
+let is_uppercase_exotic name =
+  let len = String.length name in
+  len >= 3
+  && name.[0] = '\\'
+  && name.[1] = '\"'
+  && name.[len - 1] = '\"'
+
+let unwrap_uppercase_exotic name =
+  if is_uppercase_exotic name then
+   let len = String.length name in
+   String.sub name 2 (len - 3)
+  else name
+
 exception Not_normal_letter of int
 let name_mangle name =
   let len = String.length name  in

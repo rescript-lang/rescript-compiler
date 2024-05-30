@@ -26,7 +26,7 @@ type loc = {
   loc_ghost : bool;
 }
 
-type topLevelUnitHelp = FunctionCall | Other
+type top_level_unit_help = FunctionCall | Other
 
 type t =
   | Comment_start (*  1 *)
@@ -85,7 +85,8 @@ type t =
   | Bs_unimplemented_primitive of string (* 106 *)
   | Bs_integer_literal_overflow (* 107 *)
   | Bs_uninterpreted_delimiters of string (* 108 *)
-  | Bs_toplevel_expression_unit of (string * topLevelUnitHelp) option (* 109 *)
+  | Bs_toplevel_expression_unit of (string * top_level_unit_help) option (* 109 *)
+  | Bs_todo of string option (* 110 *)
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
    the numbers of existing warnings.
@@ -151,6 +152,7 @@ let number = function
   | Bs_integer_literal_overflow -> 107
   | Bs_uninterpreted_delimiters _ -> 108
   | Bs_toplevel_expression_unit _ -> 109
+  | Bs_todo _ -> 110
 
 let last_warning_number = 110
 
@@ -475,10 +477,10 @@ let message = function
   | Constraint_on_gadt ->
       "Type constraints do not apply to GADT cases of variant types."
   | Bs_unused_attribute s ->
-      "Unused attribute: " ^ s
+      "Unused attribute: @" ^ s
       ^ "\n\
-         This means such annotation is not annotated properly. \n\
-         for example, some annotations is only meaningful in externals \n"
+         This attribute has no effect here.\n\
+         For example, some attributes are only meaningful in externals.\n"
   | Bs_polymorphic_comparison ->
       "Polymorphic comparison introduced (maybe unsafe)"
   | Bs_ffi_warning s -> "FFI warning: " ^ s
@@ -499,16 +501,21 @@ let message = function
         | _ -> " ") 
 
         (match help with 
-        | Some (returnType, _) -> Printf.sprintf "`%s`" returnType 
+        | Some (return_type, _) -> Printf.sprintf "`%s`" return_type 
         | None -> "something that is not `unit`")
 
         (match help with 
-        | Some (_, helpTyp) ->
-          let helpText = (match helpTyp with 
+        | Some (_, help_typ) ->
+          let help_text = (match help_typ with 
           | FunctionCall -> "yourFunctionCall()" 
           | Other -> "yourExpression") in
-          Printf.sprintf "\n\n  Possible solutions:\n  - Assigning to a value that is then ignored: `let _ = %s`\n  - Piping into the built-in ignore function to ignore the result: `%s->ignore`" helpText helpText
+          Printf.sprintf "\n\n  Possible solutions:\n  - Assigning to a value that is then ignored: `let _ = %s`\n  - Piping into the built-in ignore function to ignore the result: `%s->ignore`" help_text help_text
         | _ -> "") 
+    | Bs_todo maybe_text -> (
+      match maybe_text with 
+      | None -> "Todo found." 
+      | Some todo -> "Todo found: " ^ todo
+    ) ^ "\n\n  This code is not implemented yet and will crash at runtime. Make sure you implement this before running the code."
 
 let sub_locs = function
   | Deprecated (_, def, use) ->
@@ -640,7 +647,7 @@ let descriptions =
     );
     (108, "Uninterpreted delimiters (for unicode)");
     (109, "Toplevel expression has unit type");
-    (110, "Expression has nested promise type");
+    (110, "Todo found");
   ]
 
 let help_warnings () =

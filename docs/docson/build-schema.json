@@ -2,8 +2,8 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "definitions": {
     "module-format": {
-      "enum": ["commonjs", "es6", "es6-global"],
-      "description": "es6-global generate relative `require` paths instead of relying on NodeJS' module resolution. Default: commonjs."
+      "enum": ["esmodule", "commonjs", "es6", "es6-global"],
+      "description": "es6 and es6-global are deprecated. Default: commonjs."
     },
     "suffix-spec": {
       "type": "string",
@@ -471,10 +471,6 @@
     "package-specs": {
       "$ref": "#/definitions/package-specs",
       "description": "ReScript can currently output to [Commonjs](https://en.wikipedia.org/wiki/CommonJS), and [ES6 modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)"
-    },
-    "use-stdlib": {
-      "type": "boolean",
-      "description": "(Experimental) whether to use the OCaml standard library. Default: true"
     },
     "external-stdlib": {
       "type": "string",

@@ -2,22 +2,22 @@
 'use strict';
 
 
-var N = {};
+let N = {};
 
-var hh = "hellohello";
+let hh = "hellohello";
 
 console.log([
-      3e-6,
-      3e-6
-    ]);
+  3e-6,
+  3e-6
+]);
 
-var x = true;
+let x = true;
 
 function N1(funarg) {
   return {};
 }
 
-var h = "hello";
+let h = "hello";
 
 exports.x = x;
 exports.N = N;

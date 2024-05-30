@@ -3,16 +3,16 @@
 import * as MyCssCss from "./myCss.css" with {"type": "css", "some-identifier": "yep"};
 import MyJsonJson from "./myJson.json" with {"type": "json", "some-identifier": "yep"};
 
-var myJson = MyJsonJson;
+let myJson = MyJsonJson;
 
 console.log(myJson);
 
-var buttonCss = MyCssCss.button;
+let buttonCss = MyCssCss.button;
 
 console.log(buttonCss);
 
 export {
-  myJson ,
-  buttonCss ,
+  myJson,
+  buttonCss,
 }
 /* myJson Not a pure module */

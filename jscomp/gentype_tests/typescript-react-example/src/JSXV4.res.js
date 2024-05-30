@@ -6,7 +6,7 @@ function JSXV4$CompV4(props) {
   return props.x + props.y;
 }
 
-var CompV4 = {
+let CompV4 = {
   make: JSXV4$CompV4
 };
 
@@ -14,15 +14,15 @@ function JSXV4$CompV3(Props) {
   return Props.x + Props.y;
 }
 
-var CompV3 = {
+let CompV3 = {
   make: JSXV4$CompV3
 };
 
-var make = JSXV4Gen.make;
+let make = JSXV4Gen.make;
 
 export {
-  CompV4 ,
-  CompV3 ,
-  make ,
+  CompV4,
+  CompV3,
+  make,
 }
 /* make Not a pure module */

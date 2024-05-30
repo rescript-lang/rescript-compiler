@@ -98,7 +98,6 @@ and apply_coercion_result loc strict funct params args cc_res =
                 {
                   Lambda.default_function_attribute with
                   is_a_functor = true;
-                  stub = true;
                 };
               loc;
               body =
@@ -274,10 +273,10 @@ let rec compile_functor mexp coercion root_path loc =
         {
           inline = inline_attribute;
           is_a_functor = true;
-          stub = false;
           return_unit = false;
           async = false;
-          oneUnitArg = false;
+          one_unit_arg = false;
+          directive = None;
         };
       loc;
       body;

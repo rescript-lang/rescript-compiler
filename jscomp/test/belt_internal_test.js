@@ -14,16 +14,16 @@ function copy(n) {
   if (n === undefined) {
     return n;
   }
-  var v = n.value;
-  var h = n.height;
-  var l = n.left;
-  var r = n.right;
+  let v = n.value;
+  let h = n.height;
+  let l = n.left;
+  let r = n.right;
   return {
-          value: v,
-          height: h,
-          left: copy(l),
-          right: copy(r)
-        };
+    value: v,
+    height: h,
+    left: copy(l),
+    right: copy(r)
+  };
 }
 
 exports.treeHeight = treeHeight;

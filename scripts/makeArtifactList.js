@@ -18,28 +18,21 @@ const isCheckMode = process.argv.includes("-check");
 const rootPath = path.join(__dirname, "..");
 const fileListPath = path.join(rootPath, "packages", "artifacts.txt");
 
-const output = spawnSync(`npm pack --dry-run`, {
+const output = spawnSync(`npm pack --dry-run --json`, {
   cwd: rootPath,
   encoding: "utf8",
   shell: true,
-}).stderr;
+}).stdout;
 
-let files = output
-  .slice(
-    output.indexOf("Tarball Contents"),
-    output.lastIndexOf("npm notice === Tarball Details ===")
-  )
-  .split("\n")
-  .map(x => x.split(" ").filter(Boolean))
-  .filter(x => x[0] === "npm" && x[1] === "notice")
-  .map(x => x[x.length - 1]);
+const [{ files }] = JSON.parse(output);
+let filePaths = files.map(file => file.path);
 
 if (!isCheckMode) {
-  files = Array.from(new Set(files.concat(getFilesAddedByCI())));
+  filePaths = Array.from(new Set(filePaths.concat(getFilesAddedByCI())));
 }
 
-files.sort();
-fs.writeFileSync(fileListPath, files.join("\n"));
+filePaths.sort();
+fs.writeFileSync(fileListPath, filePaths.join("\n"));
 
 if (isCheckMode) {
   execSync(`git diff --exit-code ${fileListPath}`, { stdio: "inherit" });
@@ -47,7 +40,13 @@ if (isCheckMode) {
 
 function getFilesAddedByCI() {
   const platforms = ["darwin", "darwinarm64", "linux", "linuxarm64", "win32"];
-  const exes = ["bsb_helper.exe", "bsc.exe", "ninja.exe", "rescript.exe"];
+  const exes = [
+    "bsb_helper.exe",
+    "bsc.exe",
+    "ninja.exe",
+    "rescript.exe",
+    "rewatch.exe",
+  ];
 
   const files = ["ninja.COPYING"];
 

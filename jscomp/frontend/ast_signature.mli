@@ -26,4 +26,4 @@ type item = Parsetree.signature_item
 
 type t = item list
 
-val fuseAll : ?loc:Ast_helper.loc -> t -> item
+val fuse_all : ?loc:Ast_helper.loc -> t -> item

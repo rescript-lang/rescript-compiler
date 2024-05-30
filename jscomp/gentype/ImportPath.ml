@@ -2,25 +2,28 @@ open GenTypeCommon
 
 type t = string * string
 
-let bsCurryPath ~config = ("", Config.getBsCurryPath ~config)
+let bs_curry_path ~config = ("", Config.get_bs_curry_path ~config)
 
-let fromModule ~dir ~importExtension moduleName =
-  let withNoPath =
-    (moduleName |> ModuleName.toString |> ScopedPackage.removeGeneratedModule)
-    ^ importExtension
+let from_module ~dir ~import_extension module_name =
+  let with_no_path =
+    (module_name |> ModuleName.to_string
+   |> ScopedPackage.remove_generated_module)
+    ^ import_extension
   in
-  (dir, withNoPath)
+  (dir, with_no_path)
 
-let fromStringUnsafe s = ("", s)
+let from_string_unsafe s = ("", s)
 
-let chopExtensionSafe (dir, s) =
+let chop_extension_safe (dir, s) =
   try (dir, s |> Filename.chop_extension) with Invalid_argument _ -> (dir, s)
 
 let dump (dir, s) = NodeFilename.concat dir s
 
-let toCmt ~(config : Config.t) ~outputFileRelative (dir, s) =
+let to_cmt ~(config : Config.t) ~output_file_relative (dir, s) =
   let open Filename in
-  concat (outputFileRelative |> dirname) ((dir, s) |> chopExtensionSafe |> dump)
+  concat
+    (output_file_relative |> dirname)
+    ((dir, s) |> chop_extension_safe |> dump)
   ^ (match config.namespace with
     | None -> ""
     | Some name -> "-" ^ name)

@@ -1,124 +1,132 @@
 open GenTypeCommon
 
-type exportModuleItem = (string, exportModuleValue) Hashtbl.t
+type export_module_item = (string, export_module_value) Hashtbl.t
 
-and exportModuleValue =
-  | S of {name: string; type_: type_; docString: DocString.t}
-  | M of {exportModuleItem: exportModuleItem}
+and export_module_value =
+  | S of {name: string; type_: type_; doc_string: DocString.t}
+  | M of {export_module_item: export_module_item}
 
-type exportModuleItems = (string, exportModuleItem) Hashtbl.t
+type export_module_items = (string, export_module_item) Hashtbl.t
 
-type types = {typeForValue: type_; typeForType: type_; docString: DocString.t}
+type types = {
+  type_for_value: type_;
+  type_for_type: type_;
+  doc_string: DocString.t;
+}
 
-type fieldInfo = {fieldForValue: field; fieldForType: field}
+type field_info = {field_for_value: field; field_for_type: field}
 
-let rec exportModuleValueToType ~config exportModuleValue =
-  match exportModuleValue with
-  | S {name; type_; docString} ->
-    {typeForValue = ident name; typeForType = type_; docString}
-  | M {exportModuleItem} ->
-    let fieldsInfo = exportModuleItem |> exportModuleItemToFields ~config in
-    let fieldsForValue =
-      fieldsInfo |> List.map (fun {fieldForValue} -> fieldForValue)
+let rec export_module_value_to_type ~config export_module_value =
+  match export_module_value with
+  | S {name; type_; doc_string} ->
+    {type_for_value = ident name; type_for_type = type_; doc_string}
+  | M {export_module_item} ->
+    let fields_info =
+      export_module_item |> export_module_item_to_fields ~config
     in
-    let fieldsForType =
-      fieldsInfo |> List.map (fun {fieldForType} -> fieldForType)
+    let fields_for_value =
+      fields_info |> List.map (fun {field_for_value} -> field_for_value)
+    in
+    let fields_for_type =
+      fields_info |> List.map (fun {field_for_type} -> field_for_type)
     in
     {
-      typeForValue = Object (Open, fieldsForValue);
-      typeForType = Object (Open, fieldsForType);
-      docString = DocString.empty;
+      type_for_value = Object (Open, fields_for_value);
+      type_for_type = Object (Open, fields_for_type);
+      doc_string = DocString.empty;
     }
 
-and exportModuleItemToFields =
-  (fun ~config exportModuleItem ->
+and export_module_item_to_fields =
+  (fun ~config export_module_item ->
      Hashtbl.fold
-       (fun fieldName exportModuleValue fields ->
-         let {typeForValue; typeForType; docString} =
-           exportModuleValue |> exportModuleValueToType ~config
+       (fun field_name export_module_value fields ->
+         let {type_for_value; type_for_type; doc_string} =
+           export_module_value |> export_module_value_to_type ~config
          in
-         let fieldForType =
+         let field_for_type =
            {
              mutable_ = Mutable;
-             nameJS = fieldName;
+             name_js = field_name;
              optional = Mandatory;
-             type_ = typeForType;
-             docString;
+             type_ = type_for_type;
+             doc_string;
            }
          in
-         let fieldForValue = {fieldForType with type_ = typeForValue} in
-         {fieldForValue; fieldForType} :: fields)
-       exportModuleItem []
-    : config:Config.t -> exportModuleItem -> fieldInfo list)
+         let field_for_value = {field_for_type with type_ = type_for_value} in
+         {field_for_value; field_for_type} :: fields)
+       export_module_item []
+    : config:Config.t -> export_module_item -> field_info list)
 
-let rec extendExportModuleItem ~docString x
-    ~(exportModuleItem : exportModuleItem) ~type_ ~valueName =
+let rec extend_export_module_item ~doc_string x
+    ~(export_module_item : export_module_item) ~type_ ~value_name =
   match x with
   | [] -> ()
-  | [fieldName] ->
-    Hashtbl.replace exportModuleItem fieldName
-      (S {name = valueName; type_; docString})
-  | fieldName :: rest ->
-    let innerExportModuleItem =
-      match Hashtbl.find exportModuleItem fieldName with
-      | M {exportModuleItem = innerExportModuleItem} -> innerExportModuleItem
+  | [field_name] ->
+    Hashtbl.replace export_module_item field_name
+      (S {name = value_name; type_; doc_string})
+  | field_name :: rest ->
+    let inner_export_module_item =
+      match Hashtbl.find export_module_item field_name with
+      | M {export_module_item = inner_export_module_item} ->
+        inner_export_module_item
       | S _ -> assert false
       | exception Not_found ->
-        let innerExportModuleItem = Hashtbl.create 1 in
-        Hashtbl.replace exportModuleItem fieldName
-          (M {exportModuleItem = innerExportModuleItem});
-        innerExportModuleItem
+        let inner_export_module_item = Hashtbl.create 1 in
+        Hashtbl.replace export_module_item field_name
+          (M {export_module_item = inner_export_module_item});
+        inner_export_module_item
     in
     rest
-    |> extendExportModuleItem ~docString ~exportModuleItem:innerExportModuleItem
-         ~valueName ~type_
+    |> extend_export_module_item ~doc_string
+         ~export_module_item:inner_export_module_item ~value_name ~type_
 
-let extendExportModuleItems x ~docString
-    ~(exportModuleItems : exportModuleItems) ~type_ ~valueName =
+let extend_export_module_items x ~doc_string
+    ~(export_module_items : export_module_items) ~type_ ~value_name =
   match x with
   | [] -> assert false
   | [_valueName] -> ()
-  | moduleName :: rest ->
-    let exportModuleItem =
-      match Hashtbl.find exportModuleItems moduleName with
-      | exportModuleItem -> exportModuleItem
+  | module_name :: rest ->
+    let export_module_item =
+      match Hashtbl.find export_module_items module_name with
+      | export_module_item -> export_module_item
       | exception Not_found ->
-        let exportModuleItem = Hashtbl.create 1 in
-        Hashtbl.replace exportModuleItems moduleName exportModuleItem;
-        exportModuleItem
+        let export_module_item = Hashtbl.create 1 in
+        Hashtbl.replace export_module_items module_name export_module_item;
+        export_module_item
     in
     rest
-    |> extendExportModuleItem ~docString ~exportModuleItem ~type_ ~valueName
+    |> extend_export_module_item ~doc_string ~export_module_item ~type_
+         ~value_name
 
-let createModuleItemsEmitter =
-  (fun () -> Hashtbl.create 1 : unit -> exportModuleItems)
+let create_module_items_emitter =
+  (fun () -> Hashtbl.create 1 : unit -> export_module_items)
 
 let rev_fold f tbl base =
   let list = Hashtbl.fold (fun k v l -> (k, v) :: l) tbl [] in
   List.fold_left (fun x (k, v) -> f k v x) base list
 
-let emitAllModuleItems ~config ~emitters ~fileName
-    (exportModuleItems : exportModuleItems) =
+let emit_all_module_items ~config ~emitters ~file_name
+    (export_module_items : export_module_items) =
   emitters
   |> rev_fold
-       (fun moduleName exportModuleItem emitters ->
-         let {typeForType; docString} =
-           M {exportModuleItem} |> exportModuleValueToType ~config
+       (fun module_name export_module_item emitters ->
+         let {type_for_type; doc_string} =
+           M {export_module_item} |> export_module_value_to_type ~config
          in
-         if !Debug.codeItems then Log_.item "EmitModule %s @." moduleName;
-         let emittedModuleItem =
-           ModuleName.forInnerModule ~fileName ~innerModuleName:moduleName
-           |> ModuleName.toString
+         if !Debug.code_items then Log_.item "EmitModule %s @." module_name;
+         let emitted_module_item =
+           ModuleName.for_inner_module ~file_name ~inner_module_name:module_name
+           |> ModuleName.to_string
          in
-         emittedModuleItem
-         |> EmitType.emitExportConst ~docString ~early:false ~config ~emitters
-              ~name:moduleName ~type_:typeForType ~typeNameIsInterface:(fun _ ->
-                false))
-       exportModuleItems
+         emitted_module_item
+         |> EmitType.emit_export_const ~doc_string ~early:false ~config
+              ~emitters ~name:module_name ~type_:type_for_type
+              ~type_name_is_interface:(fun _ -> false))
+       export_module_items
 
-let extendExportModules ~(moduleItemsEmitter : exportModuleItems) ~docString
-    ~type_ resolvedName =
-  resolvedName |> ResolvedName.toList
-  |> extendExportModuleItems ~exportModuleItems:moduleItemsEmitter ~type_
-       ~docString
-       ~valueName:(resolvedName |> ResolvedName.toString)
+let extend_export_modules ~(module_items_emitter : export_module_items)
+    ~doc_string ~type_ resolved_name =
+  resolved_name |> ResolvedName.to_list
+  |> extend_export_module_items ~export_module_items:module_items_emitter ~type_
+       ~doc_string
+       ~value_name:(resolved_name |> ResolvedName.to_string)

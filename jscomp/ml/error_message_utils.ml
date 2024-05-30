@@ -1,5 +1,5 @@
-type typeClashStatement = FunctionCall
-type typeClashContext =
+type type_clash_statement = FunctionCall
+type type_clash_context =
   | SetRecordField
   | ArrayValue
   | FunctionReturn
@@ -10,20 +10,20 @@ type typeClashContext =
   | StringConcat
   | ComparisonOperator
   | MathOperator of {
-      forFloat: bool;
+      for_float: bool;
       operator: string;
-      isConstant: string option;
+      is_constant: string option;
     }
   | FunctionArgument
-  | Statement of typeClashStatement
+  | Statement of type_clash_statement
 
 let fprintf = Format.fprintf
 
-let errorTypeText ppf typeClashContext =
+let error_type_text ppf type_clash_context =
   let text =
-    match typeClashContext with
+    match type_clash_context with
     | Some (Statement FunctionCall) -> "This function call returns:"
-    | Some (MathOperator {isConstant = Some _}) -> "This value has type:"
+    | Some (MathOperator {is_constant = Some _}) -> "This value has type:"
     | Some ArrayValue -> "This array item has type:"
     | Some SetRecordField ->
       "You're assigning something to this field that has type:"
@@ -31,8 +31,8 @@ let errorTypeText ppf typeClashContext =
   in
   fprintf ppf "%s" text
 
-let errorExpectedTypeText ppf typeClashContext =
-  match typeClashContext with
+let error_expected_type_text ppf type_clash_context =
+  match type_clash_context with
   | Some FunctionArgument ->
     fprintf ppf "But this function argument is expecting:"
   | Some ComparisonOperator ->
@@ -54,10 +54,10 @@ let errorExpectedTypeText ppf typeClashContext =
     fprintf ppf "But this function is expecting you to return:"
   | _ -> fprintf ppf "But it's expected to have type:"
 
-let printExtraTypeClashHelp ppf trace typeClashContext =
-  match (typeClashContext, trace) with
-  | Some (MathOperator {forFloat; operator; isConstant}), _ -> (
-    let operatorForOtherType =
+let print_extra_type_clash_help ppf trace type_clash_context =
+  match (type_clash_context, trace) with
+  | Some (MathOperator {for_float; operator; is_constant}), _ -> (
+    let operator_for_other_type =
       match operator with
       | "+" -> "+."
       | "+." -> "+"
@@ -68,7 +68,7 @@ let printExtraTypeClashHelp ppf trace typeClashContext =
       | "*." -> "*"
       | v -> v
     in
-    let operatorText =
+    let operator_text =
       match operator.[0] with
       | '+' -> "add"
       | '-' -> "subtract"
@@ -100,11 +100,11 @@ let printExtraTypeClashHelp ppf trace typeClashContext =
         \  - Ensure all values in this calculation has the type @{<info>%s@}. \
          You can convert between floats and ints via \
          @{<info>Belt.Float.toInt@} and @{<info>Belt.Int.fromFloat@}."
-        operatorText
-        (if forFloat then "float" else "int"));
-    match (isConstant, trace) with
+        operator_text
+        (if for_float then "float" else "int"));
+    match (is_constant, trace) with
     | Some constant, _ ->
-      if forFloat then
+      if for_float then
         fprintf ppf
           "\n\
           \  - Make @{<info>%s@} a @{<info>float@} by adding a trailing dot: \
@@ -126,8 +126,8 @@ let printExtraTypeClashHelp ppf trace typeClashContext =
         fprintf ppf
           "\n\
           \  - Change the operator to @{<info>%s@}, which works on @{<info>%s@}"
-          operatorForOtherType
-          (if forFloat then "int" else "float")
+          operator_for_other_type
+          (if for_float then "int" else "float")
       | _ -> ())
     | _ -> ())
   | Some Switch, _ ->
@@ -164,8 +164,8 @@ let printExtraTypeClashHelp ppf trace typeClashContext =
        myTuple = (10, \"hello\", 15.5, true)"
   | _ -> ()
 
-let typeClashContextFromFunction sexp sfunct =
-  let isConstant =
+let type_clash_context_from_function sexp sfunct =
+  let is_constant =
     match sexp.Parsetree.pexp_desc with
     | Pexp_constant (Pconst_integer (txt, _) | Pconst_float (txt, _)) ->
       Some txt
@@ -177,38 +177,39 @@ let typeClashContextFromFunction sexp sfunct =
     Some ComparisonOperator
   | Pexp_ident {txt = Lident "++"} -> Some StringConcat
   | Pexp_ident {txt = Lident (("/." | "*." | "+." | "-.") as operator)} ->
-    Some (MathOperator {forFloat = true; operator; isConstant})
+    Some (MathOperator {for_float = true; operator; is_constant})
   | Pexp_ident {txt = Lident (("/" | "*" | "+" | "-") as operator)} ->
-    Some (MathOperator {forFloat = false; operator; isConstant})
+    Some (MathOperator {for_float = false; operator; is_constant})
   | _ -> Some FunctionArgument
 
-let typeClashContextForFunctionArgument typeClashContext sarg0 =
-  match typeClashContext with
-  | Some (MathOperator {forFloat; operator}) ->
+let type_clash_context_for_function_argument type_clash_context sarg0 =
+  match type_clash_context with
+  | Some (MathOperator {for_float; operator}) ->
     Some
       (MathOperator
          {
-           forFloat;
+           for_float;
            operator;
-           isConstant =
+           is_constant =
              (match sarg0.Parsetree.pexp_desc with
              | Pexp_constant (Pconst_integer (txt, _) | Pconst_float (txt, _))
                ->
                Some txt
              | _ -> None);
          })
-  | typeClashContext -> typeClashContext
+  | type_clash_context -> type_clash_context
 
-let typeClashContextMaybeOption ty_expected ty_res =
+let type_clash_context_maybe_option ty_expected ty_res =
   match (ty_expected, ty_res) with
-  | ( {Types.desc = Tconstr (expectedPath, _, _)},
-      {Types.desc = Tconstr (typePath, _, _)} )
-    when Path.same Predef.path_option typePath
-         && Path.same expectedPath Predef.path_option = false ->
+  | ( {Types.desc = Tconstr (expected_path, _, _)},
+      {Types.desc = Tconstr (type_path, _, _)} )
+    when Path.same Predef.path_option type_path
+         && Path.same expected_path Predef.path_option = false 
+         && Path.same expected_path Predef.path_uncurried = false ->
     Some MaybeUnwrapOption
   | _ -> None
 
-let typeClashContextInStatement sexp =
+let type_clash_context_in_statement sexp =
   match sexp.Parsetree.pexp_desc with
   | Pexp_apply _ -> Some (Statement FunctionCall)
   | _ -> None

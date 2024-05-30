@@ -40,19 +40,29 @@ let ( .?() ) = Map_string.find_opt
 let bad_module_format_message_exn ~loc format =
   Bsb_exception.errorf ~loc
     "package-specs: `%s` isn't a valid output module format. It has to be one \
-     of:  %s, %s or %s"
-    format Literals.commonjs Literals.es6 Literals.es6_global
+     of:  %s or %s"
+    format Literals.esmodule Literals.commonjs
 
 let supported_format (x : string) loc : Ext_module_system.t =
-  if x = Literals.commonjs then NodeJS
-  else if x = Literals.es6 then Es6
+  let _ =
+    if x = Literals.es6 || x = Literals.es6_global then
+      let loc_end =
+        {loc with Lexing.pos_cnum = loc.Lexing.pos_cnum + String.length x}
+      in
+      let loc = {Warnings.loc_start = loc; loc_end; loc_ghost = false} in
+      Location.deprecated loc
+        (Printf.sprintf "Option \"%s\" is deprecated. Use \"%s\" instead." x
+           Literals.esmodule)
+  in
+  if x = Literals.es6 || x = Literals.esmodule then Esmodule
+  else if x = Literals.commonjs then Commonjs
   else if x = Literals.es6_global then Es6_global
   else bad_module_format_message_exn ~loc x
 
 let string_of_format (x : Ext_module_system.t) =
   match x with
-  | NodeJS -> Literals.commonjs
-  | Es6 -> Literals.es6
+  | Commonjs -> Literals.commonjs
+  | Esmodule -> Literals.esmodule
   | Es6_global -> Literals.es6_global
 
 let js_suffix_regexp = Str.regexp "[A-Za-z0-9-_.]*\\.[cm]?js"
@@ -158,7 +168,8 @@ let package_flag_of_package_specs (package_specs : t) ~(dirname : string) :
   | Some x -> Ext_string.inter3 res "-runtime" x
 
 let default_package_specs suffix =
-  Spec_set.singleton { format = NodeJS; in_source = false; suffix }
+  (* TODO: swap default to Esmodule in v12 *)
+  Spec_set.singleton { format = Commonjs; in_source = false; suffix }
 
 (**
     [get_list_of_output_js specs "src/hi/hello"]

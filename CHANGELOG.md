@@ -12,6 +12,11 @@
 
 # 12.0.0-alpha.1 (Unreleased)
 
+#### :rocket: New Feature
+
+- Allow `@directive` on functions for emitting function level directive code (`let serverAction = @directive("'use server'") (~name) => {...}`). https://github.com/rescript-lang/rescript-compiler/pull/6756
+- Add `rewatch` to the npm package as an alternative build tool. https://github.com/rescript-lang/rescript-compiler/pull/6762
+
 #### :boom: Breaking Change
 
 - `lazy` syntax is no longer supported. If you're using it, use `Lazy` module or `React.lazy_` instead. https://github.com/rescript-lang/rescript-compiler/pull/6342
@@ -19,13 +24,74 @@
 - Remove obsolete `@bs.open` feature. https://github.com/rescript-lang/rescript-compiler/pull/6629
 - Drop Node.js version <18 support, due to it reaching End-of-Life. https://github.com/rescript-lang/rescript-compiler/pull/6429
 
+#### :bug: Bug Fix
+
+- Fix unhandled cases for exotic idents (allow to use exotic PascalCased identifiers for types). https://github.com/rescript-lang/rescript-compiler/pull/6777
+- Fix issue of incorrect switch cases with identical bodies when mixing object and array. https://github.com/rescript-lang/rescript-compiler/pull/6792
+- Fix formatter eats comments on the first argument of an uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6763 
+- Fix formatter removes parens in pipe operator with anonymous uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6766
+
 #### :house: Internal
 
 - Build with OCaml 5.1.1. https://github.com/rescript-lang/rescript-compiler/pull/6641
+- Convert OCaml codebase to snake case style. https://github.com/rescript-lang/rescript-compiler/pull/6702
+- Fix location of let bindings with attributes. https://github.com/rescript-lang/rescript-compiler/pull/6791
+- Refactor uppercase exotic ident handling. https://github.com/rescript-lang/rescript-compiler/pull/6779
 
 #### :nail_care: Polish
 
 - Make the `--help` arg be prioritized in the CLI, so correctly prints help message and skip other commands. https://github.com/rescript-lang/rescript-compiler/pull/6667
+- Remove redundant space for empty return in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6745
+- Remove redundant space for export in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6560
+- Remove redundant space after continue in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6743
+- Remove empty export blocks in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6744
+- Fix indent for returned/thrown/wrapped in parentheses objects in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6746
+- Fix indent in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6747
+- In generated code, use `let` instead of `var`. https://github.com/rescript-lang/rescript-compiler/pull/6102
+- Turn off transformation for closures inside loops when capturing loop variables, now that `let` is emitted instead of `var`. https://github.com/rescript-lang/rescript-compiler/pull/6480
+- Improve unused attribute warning message. https://github.com/rescript-lang/rescript-compiler/pull/6787
+- Remove unused -no-stdlib compiler option. https://github.com/rescript-lang/rescript-compiler/pull/6778
+
+# 11.1.0
+
+#### :bug: Bug Fix
+
+- Revert escape JSX prop names with hyphens (#6705). https://github.com/rescript-lang/rescript-compiler/pull/6731
+
+# 11.1.0-rc.8
+
+#### :rocket: New Feature
+
+- Add `%todo` extension for leaving implementation for later. https://github.com/rescript-lang/rescript-compiler/pull/6713
+- Add `-warn-error` argument for generating errors in CI. Useful for `%todo` extension. https://github.com/rescript-lang/rescript-compiler/pull/6717
+
+#### :bug: Bug Fix
+
+- Improve error when using `@deriving(accessors)` on a variant with record arguments. https://github.com/rescript-lang/rescript-compiler/pull/6712
+- Stop escaping JSX prop names with hyphens. https://github.com/rescript-lang/rescript-compiler/pull/6705
+- Fix trailing undefined for optional parameters not omitted with `@send` and `@new`. https://github.com/rescript-lang/rescript-compiler/pull/6716
+- Fix JSX4 adding the incorrect type annotation for the prop `ref` in `React.forwardRef` component. https://github.com/rescript-lang/rescript-compiler/pull/6718
+- Fix description for warning number 110. https://github.com/rescript-lang/rescript-compiler/pull/6725
+
+#### :nail_care: Polish
+
+- Module spec `es6` and `es6-global` is deprecated in favor of `esmodule`. https://github.com/rescript-lang/rescript-compiler/pull/6709
+
+# 11.1.0-rc.7
+
+#### :bug: Bug Fix
+
+- Fix variance setting for builtin `dict` type. Fixes issues around inference. https://github.com/rescript-lang/rescript-compiler/pull/6707 
+
+# 11.1.0-rc.6
+
+#### :rocket: New Feature
+
+- Add experimental BigInt support. https://github.com/rescript-lang/rescript-compiler/pull/6670, https://github.com/rescript-lang/rescript-compiler/pull/6696
+
+#### :bug: Bug Fix
+
+- Fix mishandling of uncurried functions in super errors. https://github.com/rescript-lang/rescript-compiler/pull/6694
 
 # 11.1.0-rc.5
 

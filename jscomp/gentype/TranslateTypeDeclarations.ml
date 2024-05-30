@@ -1,6 +1,6 @@
 open GenTypeCommon
 
-type declarationKind =
+type declaration_kind =
   | RecordDeclarationFromTypes of
       Types.label_declaration list * Types.record_representation
   | GeneralDeclaration of Typedtree.core_type option
@@ -9,32 +9,32 @@ type declarationKind =
   | VariantDeclarationFromTypes of Types.constructor_declaration list
   | NoDeclaration
 
-let createExportTypeFromTypeDeclaration ~annotation ~loc ~nameAs ~opaque ~type_
-    ~typeEnv ~docString typeName ~typeVars : CodeItem.exportFromTypeDeclaration
-    =
-  let resolvedTypeName =
-    typeName |> sanitizeTypeName |> TypeEnv.addModulePath ~typeEnv
+let create_export_type_from_type_declaration ~annotation ~loc ~name_as ~opaque
+    ~type_ ~type_env ~doc_string type_name ~type_vars :
+    CodeItem.export_from_type_declaration =
+  let resolved_type_name =
+    type_name |> sanitize_type_name |> TypeEnv.add_module_path ~type_env
   in
   {
-    exportType =
-      {loc; nameAs; opaque; type_; typeVars; resolvedTypeName; docString};
+    export_type =
+      {loc; name_as; opaque; type_; type_vars; resolved_type_name; doc_string};
     annotation;
   }
 
-let createCase (label, attributes) ~poly =
+let create_case (label, attributes) ~poly =
   {
-    labelJS =
+    label_js =
       (match
-         attributes |> Annotation.getAttributePayload Annotation.tagIsAs
+         attributes |> Annotation.get_attribute_payload Annotation.tag_is_as
        with
       | Some (_, IdentPayload (Lident "null")) -> NullLabel
       | Some (_, IdentPayload (Lident "undefined")) -> UndefinedLabel
       | Some (_, BoolPayload b) -> BoolLabel b
       | Some (_, FloatPayload s) -> FloatLabel s
       | Some (_, IntPayload i) -> IntLabel i
-      | Some (_, StringPayload asLabel) -> StringLabel asLabel
+      | Some (_, StringPayload as_label) -> StringLabel as_label
       | _ ->
-        if poly && isNumber label then IntLabel label else StringLabel label);
+        if poly && is_number label then IntLabel label else StringLabel label);
   }
 
 (**
@@ -43,60 +43,61 @@ let createCase (label, attributes) ~poly =
  * If @as is used (with records-as-objects active), escape and quote if
  * the identifier contains characters which are invalid as JS property names.
 *)
-let renameRecordField ~attributes ~name =
-  attributes |> Annotation.checkUnsupportedGenTypeAsRenaming;
-  match attributes |> Annotation.getAsString with
+let rename_record_field ~attributes ~name =
+  attributes |> Annotation.check_unsupported_gentype_as_renaming;
+  match attributes |> Annotation.get_as_string with
   | Some s -> s |> String.escaped
   | None -> name
 
-let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
-    ~typeAttributes ~typeEnv ~typeName ~typeVars declarationKind :
-    CodeItem.typeDeclaration list =
-  let docString = typeAttributes |> Annotation.docStringFromAttrs in
-  let annotation = typeAttributes |> Annotation.fromAttributes ~config ~loc in
+let traslate_declaration_kind ~config ~loc ~output_file_relative ~resolver
+    ~type_attributes ~type_env ~type_name ~type_vars declaration_kind :
+    CodeItem.type_declaration list =
+  let doc_string = type_attributes |> Annotation.doc_string_from_attrs in
+  let annotation = type_attributes |> Annotation.from_attributes ~config ~loc in
   let opaque =
     match annotation = Annotation.GenTypeOpaque with
     | true -> Some true
     | false -> None
     (* one means don't know *)
   in
-  let importStringOpt, nameAs =
-    typeAttributes |> Annotation.getAttributeImportRenaming
+  let import_string_opt, name_as =
+    type_attributes |> Annotation.get_attribute_import_renaming
   in
-  let unboxedAnnotation =
-    typeAttributes |> Annotation.hasAttribute Annotation.tagIsUnboxed
+  let unboxed_annotation =
+    type_attributes |> Annotation.has_attribute Annotation.tag_is_unboxed
   in
-  let tagAnnotation = typeAttributes |> Annotation.getTag in
-  let returnTypeDeclaration (typeDeclaration : CodeItem.typeDeclaration) =
+  let tag_annotation = type_attributes |> Annotation.get_tag in
+  let return_type_declaration (type_declaration : CodeItem.type_declaration) =
     match opaque = Some true with
-    | true -> [{typeDeclaration with importTypes = []}]
-    | false -> [typeDeclaration]
+    | true -> [{type_declaration with import_types = []}]
+    | false -> [type_declaration]
   in
-  let handleGeneralDeclaration
+  let handle_general_declaration
       (translation : TranslateTypeExprFromTypes.translation) =
-    let exportFromTypeDeclaration =
-      typeName
-      |> createExportTypeFromTypeDeclaration ~annotation ~loc ~nameAs ~opaque
-           ~type_:translation.type_ ~typeEnv ~docString ~typeVars
+    let export_from_type_declaration =
+      type_name
+      |> create_export_type_from_type_declaration ~annotation ~loc ~name_as
+           ~opaque ~type_:translation.type_ ~type_env ~doc_string ~type_vars
     in
-    let importTypes =
+    let import_types =
       translation.dependencies
-      |> Translation.translateDependencies ~config ~outputFileRelative ~resolver
+      |> Translation.translate_dependencies ~config ~output_file_relative
+           ~resolver
     in
-    {CodeItem.importTypes; exportFromTypeDeclaration}
+    {CodeItem.import_types; export_from_type_declaration}
   in
-  let translateLabelDeclarations ?(inline = false) ~recordRepresentation
-      labelDeclarations =
-    let isOptional l =
-      match recordRepresentation with
+  let translate_label_declarations ?(inline = false) ~record_representation
+      label_declarations =
+    let is_optional l =
+      match record_representation with
       | Types.Record_optional_labels lbls -> List.mem l lbls
       | _ -> false
     in
-    let fieldTranslations =
-      labelDeclarations
+    let field_translations =
+      label_declarations
       |> List.map (fun {Types.ld_id; ld_mutable; ld_type; ld_attributes} ->
              let name =
-               renameRecordField ~attributes:ld_attributes
+               rename_record_field ~attributes:ld_attributes
                  ~name:(ld_id |> Ident.name)
              in
              let mutability =
@@ -107,255 +108,261 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
              ( name,
                mutability,
                ld_type
-               |> TranslateTypeExprFromTypes.translateTypeExprFromTypes ~config
-                    ~typeEnv,
-               Annotation.docStringFromAttrs ld_attributes ))
+               |> TranslateTypeExprFromTypes.translate_type_expr_from_types
+                    ~config ~type_env,
+               Annotation.doc_string_from_attrs ld_attributes ))
     in
     let dependencies =
-      fieldTranslations
+      field_translations
       |> List.map (fun (_, _, {TranslateTypeExprFromTypes.dependencies}, _) ->
              dependencies)
       |> List.concat
     in
     let fields =
-      fieldTranslations
+      field_translations
       |> List.map
            (fun
-             (name, mutable_, {TranslateTypeExprFromTypes.type_}, docString) ->
+             (name, mutable_, {TranslateTypeExprFromTypes.type_}, doc_string) ->
              let optional, type1 =
                match type_ with
-               | Option type1 when isOptional name -> (Optional, type1)
+               | Option type1 when is_optional name -> (Optional, type1)
                | _ -> (Mandatory, type_)
              in
-             {mutable_; nameJS = name; optional; type_ = type1; docString})
+             {mutable_; name_js = name; optional; type_ = type1; doc_string})
     in
     let type_ =
       match fields with
-      | [field] when unboxedAnnotation -> field.type_
+      | [field] when unboxed_annotation -> field.type_
       | _ -> Object ((if inline then Inline else Closed), fields)
     in
     {TranslateTypeExprFromTypes.dependencies; type_}
   in
-  match (declarationKind, importStringOpt) with
-  | _, Some importString ->
+  match (declaration_kind, import_string_opt) with
+  | _, Some import_string ->
     (* import type *)
-    let typeName_ = typeName in
-    let nameWithModulePath =
-      typeName_ |> TypeEnv.addModulePath ~typeEnv |> ResolvedName.toString
+    let typeName_ = type_name in
+    let name_with_module_path =
+      typeName_ |> TypeEnv.add_module_path ~type_env |> ResolvedName.to_string
     in
-    let typeName, asTypeName =
-      match nameAs with
-      | Some asString -> (asString, "$$" ^ nameWithModulePath)
-      | None -> (nameWithModulePath, "$$" ^ nameWithModulePath)
+    let type_name, as_type_name =
+      match name_as with
+      | Some as_string -> (as_string, "$$" ^ name_with_module_path)
+      | None -> (name_with_module_path, "$$" ^ name_with_module_path)
     in
-    let importTypes =
+    let import_types =
       [
         {
-          CodeItem.typeName;
-          asTypeName = Some asTypeName;
-          importPath = importString |> ImportPath.fromStringUnsafe;
+          CodeItem.type_name;
+          as_type_name = Some as_type_name;
+          import_path = import_string |> ImportPath.from_string_unsafe;
         };
       ]
     in
-    let exportFromTypeDeclaration =
+    let export_from_type_declaration =
       (* Make the imported type usable from other modules by exporting it too. *)
       typeName_
-      |> createExportTypeFromTypeDeclaration ~docString ~annotation:GenType ~loc
-           ~nameAs:None ~opaque:(Some false)
+      |> create_export_type_from_type_declaration ~doc_string
+           ~annotation:GenType ~loc ~name_as:None ~opaque:(Some false)
            ~type_:
-             (asTypeName
-             |> ident ~typeArgs:(typeVars |> List.map (fun s -> TypeVar s)))
-           ~typeEnv ~typeVars
+             (as_type_name
+             |> ident ~type_args:(type_vars |> List.map (fun s -> TypeVar s)))
+           ~type_env ~type_vars
     in
-    [{CodeItem.importTypes; exportFromTypeDeclaration}]
+    [{CodeItem.import_types; export_from_type_declaration}]
   | (GeneralDeclarationFromTypes None | GeneralDeclaration None), None ->
     {
-      CodeItem.importTypes = [];
-      exportFromTypeDeclaration =
-        typeName
-        |> createExportTypeFromTypeDeclaration ~docString ~annotation ~loc
-             ~nameAs ~opaque:(Some true) ~type_:unknown ~typeEnv ~typeVars;
+      CodeItem.import_types = [];
+      export_from_type_declaration =
+        type_name
+        |> create_export_type_from_type_declaration ~doc_string ~annotation ~loc
+             ~name_as ~opaque:(Some true) ~type_:unknown ~type_env ~type_vars;
     }
-    |> returnTypeDeclaration
-  | GeneralDeclarationFromTypes (Some typeExpr), None ->
+    |> return_type_declaration
+  | GeneralDeclarationFromTypes (Some type_expr), None ->
     let translation =
-      typeExpr
-      |> TranslateTypeExprFromTypes.translateTypeExprFromTypes ~config ~typeEnv
+      type_expr
+      |> TranslateTypeExprFromTypes.translate_type_expr_from_types ~config
+           ~type_env
     in
-    translation |> handleGeneralDeclaration |> returnTypeDeclaration
-  | GeneralDeclaration (Some coreType), None ->
+    translation |> handle_general_declaration |> return_type_declaration
+  | GeneralDeclaration (Some core_type), None ->
     let translation =
-      coreType |> TranslateCoreType.translateCoreType ~config ~typeEnv
+      core_type |> TranslateCoreType.translate_core_type ~config ~type_env
     in
     let type_ =
-      match (coreType, translation.type_) with
-      | {ctyp_desc = Ttyp_variant (rowFields, _, _)}, Variant variant ->
-        let rowFieldsVariants = rowFields |> TranslateCoreType.processVariant in
-        let noPayloads =
-          rowFieldsVariants.noPayloads |> List.map (createCase ~poly:true)
+      match (core_type, translation.type_) with
+      | {ctyp_desc = Ttyp_variant (row_fields, _, _)}, Variant variant ->
+        let row_fields_variants =
+          row_fields |> TranslateCoreType.process_variant
+        in
+        let no_payloads =
+          row_fields_variants.no_payloads |> List.map (create_case ~poly:true)
         in
         let payloads =
           if
             variant.payloads |> List.length
-            = (rowFieldsVariants.payloads |> List.length)
+            = (row_fields_variants.payloads |> List.length)
           then
-            (List.combine variant.payloads rowFieldsVariants.payloads
+            (List.combine variant.payloads row_fields_variants.payloads
              [@doesNotRaise])
             |> List.map (fun (payload, (label, attributes, _)) ->
-                   let case = (label, attributes) |> createCase ~poly:true in
+                   let case = (label, attributes) |> create_case ~poly:true in
                    {payload with case})
           else variant.payloads
         in
-        createVariant ~inherits:variant.inherits ~noPayloads ~payloads
+        create_variant ~inherits:variant.inherits ~no_payloads ~payloads
           ~polymorphic:true ~tag:None ~unboxed:false
       | _ -> translation.type_
     in
-    {translation with type_} |> handleGeneralDeclaration
-    |> returnTypeDeclaration
-  | RecordDeclarationFromTypes (labelDeclarations, recordRepresentation), None
+    {translation with type_} |> handle_general_declaration
+    |> return_type_declaration
+  | RecordDeclarationFromTypes (label_declarations, record_representation), None
     ->
     let {TranslateTypeExprFromTypes.dependencies; type_} =
-      labelDeclarations |> translateLabelDeclarations ~recordRepresentation
+      label_declarations |> translate_label_declarations ~record_representation
     in
-    let importTypes =
+    let import_types =
       dependencies
-      |> Translation.translateDependencies ~config ~outputFileRelative ~resolver
+      |> Translation.translate_dependencies ~config ~output_file_relative
+           ~resolver
     in
     {
-      CodeItem.importTypes;
-      exportFromTypeDeclaration =
-        typeName
-        |> createExportTypeFromTypeDeclaration ~docString ~annotation ~loc
-             ~nameAs ~opaque ~type_ ~typeEnv ~typeVars;
+      CodeItem.import_types;
+      export_from_type_declaration =
+        type_name
+        |> create_export_type_from_type_declaration ~doc_string ~annotation ~loc
+             ~name_as ~opaque ~type_ ~type_env ~type_vars;
     }
-    |> returnTypeDeclaration
-  | VariantDeclarationFromTypes constructorDeclarations, None ->
+    |> return_type_declaration
+  | VariantDeclarationFromTypes constructor_declarations, None ->
     let variants =
-      constructorDeclarations
-      |> List.map (fun constructorDeclaration ->
-             let constructorArgs = constructorDeclaration.Types.cd_args in
-             let attributes = constructorDeclaration.cd_attributes in
-             let name = constructorDeclaration.cd_id |> Ident.name in
-             let argsTranslation =
-               match constructorArgs with
-               | Cstr_tuple typeExprs ->
-                 typeExprs
-                 |> TranslateTypeExprFromTypes.translateTypeExprsFromTypes
-                      ~config ~typeEnv
-               | Cstr_record labelDeclarations ->
+      constructor_declarations
+      |> List.map (fun constructor_declaration ->
+             let constructor_args = constructor_declaration.Types.cd_args in
+             let attributes = constructor_declaration.cd_attributes in
+             let name = constructor_declaration.cd_id |> Ident.name in
+             let args_translation =
+               match constructor_args with
+               | Cstr_tuple type_exprs ->
+                 type_exprs
+                 |> TranslateTypeExprFromTypes.translate_type_exprs_from_types
+                      ~config ~type_env
+               | Cstr_record label_declarations ->
                  [
-                   labelDeclarations
-                   |> translateLabelDeclarations ~inline:true
-                        ~recordRepresentation:Types.Record_regular;
+                   label_declarations
+                   |> translate_label_declarations ~inline:true
+                        ~record_representation:Types.Record_regular;
                  ]
              in
-             let argTypes =
-               argsTranslation
+             let arg_types =
+               args_translation
                |> List.map (fun {TranslateTypeExprFromTypes.type_} -> type_)
              in
-             let importTypes =
-               argsTranslation
+             let import_types =
+               args_translation
                |> List.map (fun {TranslateTypeExprFromTypes.dependencies} ->
                       dependencies)
                |> List.concat
-               |> Translation.translateDependencies ~config ~outputFileRelative
-                    ~resolver
+               |> Translation.translate_dependencies ~config
+                    ~output_file_relative ~resolver
              in
-             (name, attributes, argTypes, importTypes))
+             (name, attributes, arg_types, import_types))
     in
-    let variantsNoPayload, variantsWithPayload =
-      variants |> List.partition (fun (_, _, argTypes, _) -> argTypes = [])
+    let variants_no_payload, variants_with_payload =
+      variants |> List.partition (fun (_, _, arg_types, _) -> arg_types = [])
     in
-    let noPayloads =
-      variantsNoPayload
+    let no_payloads =
+      variants_no_payload
       |> List.map (fun (name, attributes, _argTypes, _importTypes) ->
-             (name, attributes) |> createCase ~poly:false)
+             (name, attributes) |> create_case ~poly:false)
     in
     let payloads =
-      variantsWithPayload
-      |> List.map (fun (name, attributes, argTypes, _importTypes) ->
+      variants_with_payload
+      |> List.map (fun (name, attributes, arg_types, _importTypes) ->
              let type_ =
-               match argTypes with
+               match arg_types with
                | [type_] -> type_
-               | _ -> Tuple argTypes
+               | _ -> Tuple arg_types
              in
-             {case = (name, attributes) |> createCase ~poly:false; t = type_})
+             {case = (name, attributes) |> create_case ~poly:false; t = type_})
     in
-    let variantTyp =
-      createVariant ~inherits:[] ~noPayloads ~payloads ~polymorphic:false
-        ~tag:tagAnnotation ~unboxed:unboxedAnnotation
+    let variant_typ =
+      create_variant ~inherits:[] ~no_payloads ~payloads ~polymorphic:false
+        ~tag:tag_annotation ~unboxed:unboxed_annotation
     in
-    let resolvedTypeName = typeName |> TypeEnv.addModulePath ~typeEnv in
-    let exportFromTypeDeclaration =
+    let resolved_type_name = type_name |> TypeEnv.add_module_path ~type_env in
+    let export_from_type_declaration =
       {
-        CodeItem.exportType =
+        CodeItem.export_type =
           {
             loc;
-            nameAs;
+            name_as;
             opaque;
-            type_ = variantTyp;
-            typeVars;
-            resolvedTypeName;
-            docString;
+            type_ = variant_typ;
+            type_vars;
+            resolved_type_name;
+            doc_string;
           };
         annotation;
       }
     in
-    let importTypes =
+    let import_types =
       variants
-      |> List.map (fun (_, _, _, importTypes) -> importTypes)
+      |> List.map (fun (_, _, _, import_types) -> import_types)
       |> List.concat
     in
-    {CodeItem.exportFromTypeDeclaration; importTypes} |> returnTypeDeclaration
+    {CodeItem.export_from_type_declaration; import_types}
+    |> return_type_declaration
   | NoDeclaration, None -> []
 
-let hasSomeGADTLeaf constructorDeclarations =
+let has_some_gadt_leaf constructor_declarations =
   List.exists
     (fun declaration -> declaration.Types.cd_res != None)
-    constructorDeclarations
+    constructor_declarations
 
-let translateTypeDeclaration ~config ~outputFileRelative ~resolver ~typeEnv
+let translate_type_declaration ~config ~output_file_relative ~resolver ~type_env
     ({typ_attributes; typ_id; typ_loc; typ_manifest; typ_params; typ_type} :
-      Typedtree.type_declaration) : CodeItem.typeDeclaration list =
+      Typedtree.type_declaration) : CodeItem.type_declaration list =
   if !Debug.translation then
     Log_.item "Translate Type Declaration %s\n" (typ_id |> Ident.name);
 
-  let typeName = Ident.name typ_id in
-  let typeVars =
+  let type_name = Ident.name typ_id in
+  let type_vars =
     typ_params
-    |> List.map (fun (coreType, _) -> coreType)
-    |> TypeVars.extractFromCoreType
+    |> List.map (fun (core_type, _) -> core_type)
+    |> TypeVars.extract_from_core_type
   in
-  let declarationKind =
+  let declaration_kind =
     match typ_type.type_kind with
-    | Type_record (labelDeclarations, recordRepresentation) ->
-      RecordDeclarationFromTypes (labelDeclarations, recordRepresentation)
-    | Type_variant constructorDeclarations ->
-      VariantDeclarationFromTypes constructorDeclarations
+    | Type_record (label_declarations, record_representation) ->
+      RecordDeclarationFromTypes (label_declarations, record_representation)
+    | Type_variant constructor_declarations ->
+      VariantDeclarationFromTypes constructor_declarations
     | Type_abstract -> GeneralDeclaration typ_manifest
     | _ -> NoDeclaration
   in
-  declarationKind
-  |> traslateDeclarationKind ~config ~loc:typ_loc ~outputFileRelative ~resolver
-       ~typeAttributes:typ_attributes ~typeEnv ~typeName ~typeVars
+  declaration_kind
+  |> traslate_declaration_kind ~config ~loc:typ_loc ~output_file_relative
+       ~resolver ~type_attributes:typ_attributes ~type_env ~type_name ~type_vars
 
-let addTypeDeclarationIdToTypeEnv ~typeEnv
+let add_type_declaration_id_to_type_env ~type_env
     ({typ_id} : Typedtree.type_declaration) =
-  typeEnv |> TypeEnv.newType ~name:(typ_id |> Ident.name)
+  type_env |> TypeEnv.new_type ~name:(typ_id |> Ident.name)
 
-let translateTypeDeclarations ~config ~outputFileRelative ~recursive ~resolver
-    ~typeEnv (typeDeclarations : Typedtree.type_declaration list) :
-    CodeItem.typeDeclaration list =
+let translate_type_declarations ~config ~output_file_relative ~recursive
+    ~resolver ~type_env (type_declarations : Typedtree.type_declaration list) :
+    CodeItem.type_declaration list =
   if recursive then
-    typeDeclarations |> List.iter (addTypeDeclarationIdToTypeEnv ~typeEnv);
-  typeDeclarations
-  |> List.map (fun typeDeclaration ->
+    type_declarations
+    |> List.iter (add_type_declaration_id_to_type_env ~type_env);
+  type_declarations
+  |> List.map (fun type_declaration ->
          let res =
-           typeDeclaration
-           |> translateTypeDeclaration ~config ~outputFileRelative ~resolver
-                ~typeEnv
+           type_declaration
+           |> translate_type_declaration ~config ~output_file_relative ~resolver
+                ~type_env
          in
          if not recursive then
-           typeDeclaration |> addTypeDeclarationIdToTypeEnv ~typeEnv;
+           type_declaration |> add_type_declaration_id_to_type_env ~type_env;
          res)
   |> List.concat

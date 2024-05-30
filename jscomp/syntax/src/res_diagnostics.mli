@@ -5,8 +5,8 @@ type t
 type category
 type report
 
-val getStartPos : t -> Lexing.position [@@live] (* for playground *)
-val getEndPos : t -> Lexing.position [@@live] (* for playground *)
+val get_start_pos : t -> Lexing.position [@@live] (* for playground *)
+val get_end_pos : t -> Lexing.position [@@live] (* for playground *)
 
 val explain : t -> string [@@live] (* for playground *)
 
@@ -14,12 +14,12 @@ val unexpected : Token.t -> (Grammar.t * Lexing.position) list -> category
 val expected : ?grammar:Grammar.t -> Lexing.position -> Token.t -> category
 val uident : Token.t -> category
 val lident : Token.t -> category
-val unclosedString : category
-val unclosedTemplate : category
-val unclosedComment : category
-val unknownUchar : Char.t -> category
+val unclosed_string : category
+val unclosed_template : category
+val unclosed_comment : category
+val unknown_uchar : Char.t -> category
 val message : string -> category
 
-val make : startPos:Lexing.position -> endPos:Lexing.position -> category -> t
+val make : start_pos:Lexing.position -> end_pos:Lexing.position -> category -> t
 
-val printReport : t list -> string -> unit
+val print_report : t list -> string -> unit

@@ -27,7 +27,7 @@ let rec struct_const ppf = function
   | Const_base(Const_float f) -> fprintf ppf "%s" f
   | Const_base(Const_int32 n) -> fprintf ppf "%lil" n
   | Const_base(Const_int64 n) -> fprintf ppf "%LiL" n
-  | Const_base(Const_nativeint n) -> fprintf ppf "%nin" n
+  | Const_base(Const_bigint (sign, n)) -> fprintf ppf "%sn" (Bigint_utils.to_string sign n)
   | Const_pointer (n,_) -> fprintf ppf "%ia" n
   | Const_block(tag_info, []) ->
       let tag = Lambda.tag_of_tag_info tag_info in 
@@ -47,7 +47,7 @@ let rec struct_const ppf = function
   | Const_false -> fprintf ppf "false"      
   | Const_true -> fprintf ppf "true"
 let boxed_integer_name = function
-  | Pnativeint -> "nativeint"
+  | Pbigint -> "bigint"
   | Pint32 -> "int32"
   | Pint64 -> "int64"
 
@@ -64,7 +64,7 @@ let print_boxed_integer_conversion ppf bi1 bi2 =
   fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
 
 let boxed_integer_mark name = function
-  | Pnativeint -> Printf.sprintf "Nativeint.%s" name
+  | Pbigint -> Printf.sprintf "BigInt.%s" name
   | Pint32 -> Printf.sprintf "Int32.%s" name
   | Pint64 -> Printf.sprintf "Int64.%s" name
 
@@ -177,6 +177,24 @@ let primitive ppf = function
   | Pfloatcomp(Cle) -> fprintf ppf "<=."
   | Pfloatcomp(Cgt) -> fprintf ppf ">."
   | Pfloatcomp(Cge) -> fprintf ppf ">=."
+  | Pnegbigint -> fprintf ppf "~"
+  | Paddbigint -> fprintf ppf "+"
+  | Psubbigint -> fprintf ppf "-"
+  | Pmulbigint -> fprintf ppf "*"
+  | Ppowbigint -> fprintf ppf "**"
+  | Pandbigint -> fprintf ppf "and"
+  | Porbigint -> fprintf ppf "or"
+  | Pxorbigint -> fprintf ppf "xor"
+  | Plslbigint -> fprintf ppf "lsl"
+  | Pasrbigint -> fprintf ppf "asr"
+  | Pdivbigint -> fprintf ppf "/"
+  | Pmodbigint -> fprintf ppf "mod"
+  | Pbigintcomp(Ceq) -> fprintf ppf "==,"
+  | Pbigintcomp(Cneq) -> fprintf ppf "!=,"
+  | Pbigintcomp(Clt) -> fprintf ppf "<,"
+  | Pbigintcomp(Cle) -> fprintf ppf "<=,"
+  | Pbigintcomp(Cgt) -> fprintf ppf ">,"
+  | Pbigintcomp(Cge) -> fprintf ppf ">=,"
   | Pstringlength -> fprintf ppf "string.length"
   | Pstringrefu -> fprintf ppf "string.unsafe_get"
   | Pstringrefs -> fprintf ppf "string.get"
@@ -278,6 +296,19 @@ let name_of_primitive = function
   | Pmulfloat -> "Pmulfloat"
   | Pdivfloat -> "Pdivfloat"
   | Pfloatcomp _ -> "Pfloatcomp"
+  | Pnegbigint -> "Pnegbigint"
+  | Paddbigint -> "Paddbigint"
+  | Psubbigint -> "Psubbigint"
+  | Pmulbigint -> "Pmulbigint"
+  | Pdivbigint -> "Pdivbigint"
+  | Pmodbigint -> "Pmodbigint"
+  | Ppowbigint -> "Ppowbigint"
+  | Pandbigint -> "Pandbigint"
+  | Porbigint -> "Porbigint"
+  | Pxorbigint -> "Pxorbigint"
+  | Plslbigint -> "Plslbigint"
+  | Pasrbigint -> "Pasrbigint"
+  | Pbigintcomp _ -> "Pbigintcomp"
   | Pstringlength -> "Pstringlength"
   | Pstringrefu -> "Pstringrefu"
   | Pstringrefs -> "Pstringrefs"
@@ -314,11 +345,9 @@ let name_of_primitive = function
   | Popaque -> "Popaque"
   | Pcreate_extension _ -> "Pcreate_extension"
 
-let function_attribute ppf { inline; is_a_functor; stub; return_unit } =
+let function_attribute ppf { inline; is_a_functor; return_unit } =
   if is_a_functor then
     fprintf ppf "is_a_functor@ ";
-  if stub then
-    fprintf ppf "stub@ ";
   if return_unit then 
     fprintf ppf "void@ ";  
   begin match inline with

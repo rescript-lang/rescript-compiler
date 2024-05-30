@@ -23,11 +23,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /***
-This module is [`Belt.Set`]() specialized with value type to be a primitive type.
-It is more efficient in general, the  API is the same with [`Belt_Set`]() except its value type is fixed,
-and identity is not needed(using the built-in one)
+  This module is [`Belt.Set`]() specialized with value type to be a primitive type.
+  It is more efficient in general, the  API is the same with [`Belt_Set`]() except its value type is fixed,
+  and identity is not needed(using the built-in one)
 
-**See** [`Belt.Set`]()
+  **See** [`Belt.Set`]()
 */
 
 /** The type of the set elements. */
@@ -47,14 +47,14 @@ let isEmpty: t => bool
 let has: (t, value) => bool
 
 /**
-`add(s, x)` if `x` was already in `s`, `s` is returned unchanged.
+`add(s, x)` If `x` was already in `s`, `s` is returned unchanged.
 */
 let add: (t, value) => t
 
 let mergeMany: (t, array<value>) => t
 
 /**
-`remove(m, x)` if `x` was not in `m`, `m` is returned reference unchanged.
+`remove(m, x)` If `x` was not in `m`, `m` is returned reference unchanged.
 */
 let remove: (t, value) => t
 
@@ -77,7 +77,7 @@ of sets.
 */
 let cmp: (t, t) => int
 
-/**
+/** 
 `eq(s1, s2)` tests whether the sets `s1` and `s2` are equal, that is, contain
 equal elements.
 */
@@ -97,7 +97,7 @@ let reduce: (t, 'a, ('a, value) => 'a) => 'a
 
 let everyU: (t, (. value) => bool) => bool
 
-/** 
+/**
 `every(p, s)` checks if all elements of the set satisfy the predicate `p`. Order
 unspecified.
 */
@@ -105,7 +105,7 @@ let every: (t, value => bool) => bool
 
 let someU: (t, (. value) => bool) => bool
 
-/**
+/** 
 `some(p, s)` checks if at least one element of the set satisfies the predicate
 `p`. Oder unspecified.
 */
@@ -149,13 +149,10 @@ let getUndefined: (t, value) => Js.undefined<value>
 let getExn: (t, value) => value
 
 /**
-`split(x, s)` returns a triple `(l, present, r)`, where
-`l` is the set of elements of `s` that are
-strictly less than `x`;
-`r` is the set of elements of `s` that are
-strictly greater than `x`;
-`present` is `false` if `s` contains no element equal to `x`,
-or `true` if `s` contains an element equal to `x`.
+`split(x, s)` returns a triple `(l, present, r)`, where `l` is the set of
+elements of `s` that are strictly less than `x`;`r` is the set of elements of
+`s` that are strictly greater than `x`; `present` is `false` if `s` contains no
+element equal to `x`, or `true` if `s` contains an element equal to `x`.
 */
 let split: (t, value) => ((t, t), bool)
 

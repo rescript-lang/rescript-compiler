@@ -12,4 +12,4 @@ When you use this library, the config would be adding such things in bsconfig.js
 
 ## Contributing
 
-See the [CONTRIBUTING.md](CONTRIBUTING.md).
+See the [CONTRIBUTING.md](https://github.com/rescript-lang/rescript-compiler/blob/1e822bb7db03a5fc1ecf9f95cfaf7ca06027b140/CONTRIBUTING.md).

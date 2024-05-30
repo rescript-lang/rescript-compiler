@@ -51,7 +51,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
         | {times = 1; captured = true }, (Lconst _ | Lvar _)
         |  _, (Lconst 
                  ((
-                   Const_int _ | Const_char _ | Const_float _ 
+                   Const_int _ | Const_char _ | Const_float _ | Const_bigint _
                  )
                  | Const_pointer _ |Const_js_true | Const_js_false | Const_js_undefined _) (* could be poly-variant [`A] -> [65a]*)
               | Lprim {primitive = Pfield (_);
@@ -147,7 +147,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
     | Lsequence(l1, l2) -> Lam.seq (simplif l1) (simplif l2)
 
     | Lapply{ap_func = Lfunction ({params; body} as lfunction);  ap_args = args; _}
-      when  Ext_list.same_length params args && Lam_analysis.lfunction_can_be_beta_reduced lfunction ->
+      when  Ext_list.same_length params args && Lam_analysis.lfunction_can_be_inlined lfunction ->
       simplif (Lam_beta_reduce.no_names_beta_reduce  params body args)
     (* | Lapply{ fn = Lfunction{function_kind = Tupled; params; body}; *)
     (*           args = [Lprim {primitive = Pmakeblock _;  args; _}]; _} *)

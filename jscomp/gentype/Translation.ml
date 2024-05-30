@@ -2,206 +2,216 @@ open GenTypeCommon
 
 type t = CodeItem.translation
 
-let empty = ({importTypes = []; codeItems = []; typeDeclarations = []} : t)
+let empty = ({import_types = []; code_items = []; type_declarations = []} : t)
 
-let getImportTypeUniqueName ({typeName; asTypeName} : CodeItem.importType) =
-  typeName
+let get_import_type_unique_name
+    ({type_name; as_type_name} : CodeItem.import_type) =
+  type_name
   ^
-  match asTypeName with
+  match as_type_name with
   | None -> ""
   | Some s -> "_as_" ^ s
 
-let importTypeCompare i1 i2 =
-  compare (i1 |> getImportTypeUniqueName) (i2 |> getImportTypeUniqueName)
+let import_type_compare i1 i2 =
+  compare (i1 |> get_import_type_unique_name) (i2 |> get_import_type_unique_name)
 
 let combine (translations : t list) : t =
   ( translations
-  |> List.map (fun {CodeItem.importTypes; codeItems; typeDeclarations} ->
-         ((importTypes, codeItems), typeDeclarations))
+  |> List.map (fun {CodeItem.import_types; code_items; type_declarations} ->
+         ((import_types, code_items), type_declarations))
   |> List.split
   |> fun (x, y) -> (x |> List.split, y) )
-  |> fun ((importTypes, codeItems), typeDeclarations) ->
+  |> fun ((import_types, code_items), type_declarations) ->
   {
-    CodeItem.importTypes = importTypes |> List.concat;
-    codeItems = codeItems |> List.concat;
-    typeDeclarations = typeDeclarations |> List.concat;
+    CodeItem.import_types = import_types |> List.concat;
+    code_items = code_items |> List.concat;
+    type_declarations = type_declarations |> List.concat;
   }
 
 (** Applies type parameters to types (for all) *)
-let abstractTheTypeParameters ~typeVars type_ =
+let abstract_the_type_parameters ~type_vars type_ =
   match type_ with
-  | Function function_ -> Function {function_ with typeVars}
+  | Function function_ -> Function {function_ with type_vars}
   | _ -> type_
 
-let depToImportType ~config ~outputFileRelative ~resolver (dep : dep) =
+let dep_to_import_type ~config ~output_file_relative ~resolver (dep : dep) =
   match dep with
-  | _ when dep |> Dependencies.isInternal -> []
+  | _ when dep |> Dependencies.is_internal -> []
   | External name when name = "list" ->
     [
       {
-        CodeItem.typeName = "list";
-        asTypeName = None;
-        importPath =
-          ModuleName.rescriptPervasives
-          |> ModuleResolver.importPathForReasonModuleName ~config
-               ~outputFileRelative ~resolver;
+        CodeItem.type_name = "list";
+        as_type_name = None;
+        import_path =
+          ModuleName.rescript_pervasives
+          |> ModuleResolver.import_path_for_reason_module_name ~config
+               ~output_file_relative ~resolver;
       };
     ]
   | External _ -> []
   | Internal _ -> []
   | Dot _ ->
-    let moduleName = dep |> Dependencies.getOuterModuleName in
-    let typeName =
-      dep |> Dependencies.removeExternalOuterModule |> depToString
+    let module_name = dep |> Dependencies.get_outer_module_name in
+    let type_name =
+      dep |> Dependencies.remove_external_outer_module |> dep_to_string
     in
-    let asTypeName =
-      match dep |> Dependencies.isInternal with
+    let as_type_name =
+      match dep |> Dependencies.is_internal with
       | true -> None
-      | false -> Some (dep |> depToString)
+      | false -> Some (dep |> dep_to_string)
     in
-    let importPath =
-      moduleName
-      |> ModuleResolver.importPathForReasonModuleName ~config
-           ~outputFileRelative ~resolver
+    let import_path =
+      module_name
+      |> ModuleResolver.import_path_for_reason_module_name ~config
+           ~output_file_relative ~resolver
     in
-    [{typeName; asTypeName; importPath}]
+    [{type_name; as_type_name; import_path}]
 
-let translateDependencies ~config ~outputFileRelative ~resolver dependencies :
-    CodeItem.importType list =
+let translate_dependencies ~config ~output_file_relative ~resolver dependencies
+    : CodeItem.import_type list =
   dependencies
-  |> List.map (depToImportType ~config ~outputFileRelative ~resolver)
+  |> List.map (dep_to_import_type ~config ~output_file_relative ~resolver)
   |> List.concat
 
-let translateValue ~attributes ~config ~docString ~outputFileRelative ~resolver
-    ~typeEnv ~typeExpr ~(addAnnotationsToFunction : type_ -> type_) name : t =
-  let nameAs =
-    match Annotation.getGenTypeAsRenaming attributes with
+let translate_value ~attributes ~config ~doc_string ~output_file_relative
+    ~resolver ~type_env ~type_expr
+    ~(add_annotations_to_function : type_ -> type_) name : t =
+  let name_as =
+    match Annotation.get_gentype_as_renaming attributes with
     | Some s -> s
     | _ -> name
   in
-  let typeExprTranslation =
-    typeExpr
-    |> TranslateTypeExprFromTypes.translateTypeExprFromTypes ~config ~typeEnv
+  let type_expr_translation =
+    type_expr
+    |> TranslateTypeExprFromTypes.translate_type_expr_from_types ~config
+         ~type_env
   in
-  let typeVars = typeExprTranslation.type_ |> TypeVars.free in
+  let type_vars = type_expr_translation.type_ |> TypeVars.free in
   let type_ =
-    typeExprTranslation.type_
-    |> abstractTheTypeParameters ~typeVars
-    |> addAnnotationsToFunction
+    type_expr_translation.type_
+    |> abstract_the_type_parameters ~type_vars
+    |> add_annotations_to_function
   in
-  let resolvedNameOriginal =
-    name |> TypeEnv.addModulePath ~typeEnv |> ResolvedName.toString
+  let resolved_name_original =
+    name |> TypeEnv.add_module_path ~type_env |> ResolvedName.to_string
   in
-  let resolvedName = nameAs |> TypeEnv.addModulePath ~typeEnv in
-  let moduleAccessPath =
-    typeEnv |> TypeEnv.getModuleAccessPath ~name:resolvedNameOriginal
+  let resolved_name = name_as |> TypeEnv.add_module_path ~type_env in
+  let module_access_path =
+    type_env |> TypeEnv.get_module_access_path ~name:resolved_name_original
   in
-  let codeItems =
+  let code_items =
     [
       CodeItem.ExportValue
-        {docString; moduleAccessPath; originalName = name; resolvedName; type_};
+        {
+          doc_string;
+          module_access_path;
+          original_name = name;
+          resolved_name;
+          type_;
+        };
     ]
   in
   {
-    importTypes =
-      typeExprTranslation.dependencies
-      |> translateDependencies ~config ~outputFileRelative ~resolver;
-    codeItems;
-    typeDeclarations = [];
+    import_types =
+      type_expr_translation.dependencies
+      |> translate_dependencies ~config ~output_file_relative ~resolver;
+    code_items;
+    type_declarations = [];
   }
 
 (**
  [@genType]
  [@module] external myBanner : ReasonReact.reactClass = "./MyBanner";
 *)
-let translatePrimitive ~config ~outputFileRelative ~resolver ~typeEnv
-    (valueDescription : Typedtree.value_description) : t =
+let translate_primitive ~config ~output_file_relative ~resolver ~type_env
+    (value_description : Typedtree.value_description) : t =
   if !Debug.translation then Log_.item "Translate Primitive\n";
-  let valueName =
-    match valueDescription.val_prim with
-    | "" :: _ | [] -> valueDescription.val_id |> Ident.name
-    | nameOfExtern :: _ ->
+  let value_name =
+    match value_description.val_prim with
+    | "" :: _ | [] -> value_description.val_id |> Ident.name
+    | name_of_extern :: _ ->
       (* extern foo : someType = "abc"
          The first element of val_prim is "abc" *)
-      nameOfExtern
+      name_of_extern
   in
-  let typeExprTranslation =
-    valueDescription.val_desc
-    |> TranslateCoreType.translateCoreType ~config ~typeEnv
+  let type_expr_translation =
+    value_description.val_desc
+    |> TranslateCoreType.translate_core_type ~config ~type_env
   in
-  let attributeImport, attributeRenaming =
-    valueDescription.val_attributes |> Annotation.getAttributeImportRenaming
+  let attribute_import, attribute_renaming =
+    value_description.val_attributes |> Annotation.get_attribute_import_renaming
   in
-  match (typeExprTranslation.type_, attributeImport) with
-  | _, Some importString ->
-    let asPath =
-      match attributeRenaming with
-      | Some asPath -> asPath
-      | None -> valueName
+  match (type_expr_translation.type_, attribute_import) with
+  | _, Some import_string ->
+    let as_path =
+      match attribute_renaming with
+      | Some as_path -> as_path
+      | None -> value_name
     in
-    let typeVars = typeExprTranslation.type_ |> TypeVars.free in
+    let type_vars = type_expr_translation.type_ |> TypeVars.free in
     let type_ =
-      typeExprTranslation.type_ |> abstractTheTypeParameters ~typeVars
+      type_expr_translation.type_ |> abstract_the_type_parameters ~type_vars
     in
     {
-      importTypes =
-        typeExprTranslation.dependencies
-        |> translateDependencies ~config ~outputFileRelative ~resolver;
-      codeItems =
+      import_types =
+        type_expr_translation.dependencies
+        |> translate_dependencies ~config ~output_file_relative ~resolver;
+      code_items =
         [
           ImportValue
             {
-              asPath;
-              importAnnotation = importString |> Annotation.importFromString;
+              as_path;
+              import_annotation = import_string |> Annotation.import_from_string;
               type_;
-              valueName;
+              value_name;
             };
         ];
-      typeDeclarations = [];
+      type_declarations = [];
     }
-  | _ -> {importTypes = []; codeItems = []; typeDeclarations = []}
+  | _ -> {import_types = []; code_items = []; type_declarations = []}
 
-let addTypeDeclarationsFromModuleEquations ~typeEnv (translation : t) =
-  let eqs = typeEnv |> TypeEnv.getModuleEquations in
-  let newTypeDeclarations =
-    translation.typeDeclarations
-    |> List.map (fun (typeDeclaration : CodeItem.typeDeclaration) ->
-           let exportType =
-             typeDeclaration.exportFromTypeDeclaration.exportType
+let add_type_declarations_from_module_equations ~type_env (translation : t) =
+  let eqs = type_env |> TypeEnv.get_module_equations in
+  let new_type_declarations =
+    translation.type_declarations
+    |> List.map (fun (type_declaration : CodeItem.type_declaration) ->
+           let export_type =
+             type_declaration.export_from_type_declaration.export_type
            in
            let equations =
-             exportType.resolvedTypeName |> ResolvedName.applyEquations ~eqs
+             export_type.resolved_type_name |> ResolvedName.apply_equations ~eqs
            in
            equations
            |> List.map (fun (x, y) ->
-                  let newExportType =
+                  let new_export_type =
                     {
-                      exportType with
-                      nameAs = None;
+                      export_type with
+                      name_as = None;
                       type_ =
-                        y |> ResolvedName.toString
+                        y |> ResolvedName.to_string
                         |> ident ~builtin:false
-                             ~typeArgs:
-                               (exportType.typeVars
+                             ~type_args:
+                               (export_type.type_vars
                                |> List.map (fun s -> TypeVar s));
-                      resolvedTypeName = x;
+                      resolved_type_name = x;
                     }
                   in
                   {
-                    CodeItem.exportFromTypeDeclaration =
+                    CodeItem.export_from_type_declaration =
                       {
-                        CodeItem.exportType = newExportType;
+                        CodeItem.export_type = new_export_type;
                         annotation =
-                          typeDeclaration.exportFromTypeDeclaration.annotation;
+                          type_declaration.export_from_type_declaration
+                            .annotation;
                       };
-                    importTypes = [];
+                    import_types = [];
                   }))
     |> List.concat
   in
-  match newTypeDeclarations = [] with
+  match new_type_declarations = [] with
   | true -> translation
   | false ->
     {
       translation with
-      typeDeclarations = translation.typeDeclarations @ newTypeDeclarations;
+      type_declarations = translation.type_declarations @ new_type_declarations;
     }

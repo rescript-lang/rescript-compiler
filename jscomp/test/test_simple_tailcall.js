@@ -4,7 +4,7 @@
 
 function tailcall(x) {
   while(true) {
-    continue ;
+    continue;
   };
 }
 
@@ -18,18 +18,18 @@ function non_length(x) {
 
 function length(_acc, _x) {
   while(true) {
-    var x = _x;
-    var acc = _acc;
+    let x = _x;
+    let acc = _acc;
     if (!x) {
       return acc;
     }
-    var tl = x.tl;
+    let tl = x.tl;
     if (tl) {
       return 1 + length(acc + 1 | 0, tl.tl) | 0;
     }
     _x = tl;
     _acc = acc + 1 | 0;
-    continue ;
+    continue;
   };
 }
 

@@ -6,23 +6,23 @@ function foo(x, y) {
   return x + y | 0;
 }
 
-var z = 7;
+let z = 7;
 
 function bar(x, y) {
   return x + y | 0;
 }
 
-var b = 7;
+let b = 7;
 
-var w = 7;
+let w = 7;
 
-var a = 7;
+let a = 7;
 
 console.log(a);
 
 [1].map(function (x) {
-      return x + 1 | 0;
-    });
+  return x + 1 | 0;
+});
 
 function ptl(extra) {
   return 10 + extra | 0;
@@ -58,21 +58,21 @@ function inl2(x, y) {
 
 function foo$1(x, y, z) {
   return [
-          x,
-          y,
-          z
-        ];
+    x,
+    y,
+    z
+  ];
 }
 
 function ptl$1(none, extra) {
   return [
-          none,
-          "y",
-          extra
-        ];
+    none,
+    "y",
+    extra
+  ];
 }
 
-var a1 = [
+let a1 = [
   "x",
   "y",
   "z"
@@ -80,35 +80,35 @@ var a1 = [
 
 console.log("a1:", a1);
 
-var AllLabels = {
+let AllLabels = {
   foo: foo$1,
   ptl: ptl$1,
   a1: a1
 };
 
 function foo$2(x, y, z, dOpt) {
-  var d = dOpt !== undefined ? dOpt : "d=0";
+  let d = dOpt !== undefined ? dOpt : "d=0";
   return [
-          x,
-          y,
-          z,
-          d
-        ];
+    x,
+    y,
+    z,
+    d
+  ];
 }
 
 function ptl$2(none, extra, extra$1) {
   return foo$2(none, "y", extra, extra$1);
 }
 
-var b1 = ptl$2("x", "z", undefined);
+let b1 = ptl$2("x", "z", undefined);
 
 console.log("b1:", b1);
 
-var b2 = ptl$2("x", "z", "d<-100");
+let b2 = ptl$2("x", "z", "d<-100");
 
 console.log("b2:", b2);
 
-var OptAtEnd = {
+let OptAtEnd = {
   foo: foo$2,
   ptl: ptl$2,
   b1: b1,
@@ -116,41 +116,41 @@ var OptAtEnd = {
 };
 
 function foo$3(d1Opt, x, d2Opt, y, d3Opt, z, d4Opt, w, d5Opt) {
-  var d1 = d1Opt !== undefined ? d1Opt : "d1=0";
-  var d2 = d2Opt !== undefined ? d2Opt : "d2=0";
-  var d3 = d3Opt !== undefined ? d3Opt : "d3=0";
-  var d4 = d4Opt !== undefined ? d4Opt : "d4=0";
-  var d5 = d5Opt !== undefined ? d5Opt : "d5=0";
+  let d1 = d1Opt !== undefined ? d1Opt : "d1=0";
+  let d2 = d2Opt !== undefined ? d2Opt : "d2=0";
+  let d3 = d3Opt !== undefined ? d3Opt : "d3=0";
+  let d4 = d4Opt !== undefined ? d4Opt : "d4=0";
+  let d5 = d5Opt !== undefined ? d5Opt : "d5=0";
   return [
-          d1,
-          x,
-          d2,
-          y,
-          d3,
-          z,
-          d4,
-          w,
-          d5
-        ];
+    d1,
+    x,
+    d2,
+    y,
+    d3,
+    z,
+    d4,
+    w,
+    d5
+  ];
 }
 
 function ptl$3(none, none$1, none$2, none$3, none$4, none$5, extra) {
   return foo$3(none, none$1, none$2, "y", none$3, none$4, none$5, "w", extra);
 }
 
-var c1 = ptl$3(undefined, "x", undefined, undefined, "z", undefined, undefined);
+let c1 = ptl$3(undefined, "x", undefined, undefined, "z", undefined, undefined);
 
 console.log("c1:", c1);
 
-var c2 = ptl$3("d1<-100", "x", undefined, undefined, "z", undefined, undefined);
+let c2 = ptl$3("d1<-100", "x", undefined, undefined, "z", undefined, undefined);
 
 console.log("c2:", c2);
 
-var c3 = ptl$3(undefined, "x", "d2<-200", undefined, "z", "d4<-400", undefined);
+let c3 = ptl$3(undefined, "x", "d2<-200", undefined, "z", "d4<-400", undefined);
 
 console.log("c3:", c3);
 
-var OptMixed = {
+let OptMixed = {
   foo: foo$3,
   ptl: ptl$3,
   c1: c1,
@@ -163,11 +163,11 @@ function fn(cb) {
 }
 
 ((function (s) {
-        console.log({
-              NAME: "foo",
-              VAL: s
-            });
-      })());
+    console.log({
+      NAME: "foo",
+      VAL: s
+    });
+  })());
 
 function fn1(a, b, param) {
   return a() + b | 0;
@@ -175,8 +175,8 @@ function fn1(a, b, param) {
 
 function a$1(__x) {
   return fn1((function () {
-                return 1;
-              }), 2, __x);
+    return 1;
+  }), 2, __x);
 }
 
 function f3(x, y, z) {
@@ -196,9 +196,9 @@ function fz(none, none$1) {
   return f3(none, none$1, 1);
 }
 
-var fxyz = f3(1, 1, 1);
+let fxyz = f3(1, 1, 1);
 
-var PartialApplication = {
+let PartialApplication = {
   f3: f3,
   fx: fx,
   fy: fy,

@@ -7,12 +7,12 @@ function f(x) {
 }
 
 function M(S) {
-  var f = function (x) {
+  let f = function (x) {
     return x;
   };
   return {
-          f: f
-        };
+    f: f
+  };
 }
 
 function fff(param, param$1) {

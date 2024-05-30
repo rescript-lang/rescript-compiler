@@ -114,16 +114,16 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
     async_context := false;
     default_expr_mapper self e
   | _
-    when Ast_uncurried.exprIsUncurriedFun e
+    when Ast_uncurried.expr_is_uncurried_fun e
          &&
          match
            Ast_attributes.process_attributes_rev
-             (Ast_uncurried.exprExtractUncurriedFun e).pexp_attributes
+             (Ast_uncurried.expr_extract_uncurried_fun e).pexp_attributes
          with
          | Meth_callback _, _ -> true
          | _ -> false ->
     (* Treat @this (. x, y, z) => ... just like @this (x, y, z) => ... *)
-    let fun_expr = Ast_uncurried.exprExtractUncurriedFun e in
+    let fun_expr = Ast_uncurried.expr_extract_uncurried_fun e in
     self.expr self fun_expr
   | Pexp_newtype (s, body) ->
     let async = Ast_attributes.has_async_payload e.pexp_attributes <> None in
@@ -217,7 +217,7 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
   (* module M = await Belt.List *)
   | Pexp_letmodule
       (lid, ({pmod_desc = Pmod_ident {txt}; pmod_attributes} as me), expr)
-    when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
+    when Res_parsetree_viewer.has_await_attribute pmod_attributes ->
     let safe_module_type_lid : Ast_helper.lid =
       {txt = Lident (local_module_type_name txt); loc = me.pmod_loc}
     in
@@ -240,7 +240,7 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
            pmod_attributes;
          } as me),
         expr )
-    when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
+    when Res_parsetree_viewer.has_await_attribute pmod_attributes ->
     {
       e with
       pexp_desc =
@@ -287,11 +287,11 @@ let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) :
     Parsetree.signature_item =
   match sigi.psig_desc with
-  | Psig_type (rf, tdcls) -> Ast_tdcls.handleTdclsInSigi self sigi rf tdcls
+  | Psig_type (rf, tdcls) -> Ast_tdcls.handle_tdcls_in_sigi self sigi rf tdcls
   | Psig_value ({pval_attributes; pval_prim} as value_desc) -> (
     let pval_attributes = self.attributes self pval_attributes in
     if Ast_attributes.rs_externals pval_attributes pval_prim then
-      Ast_external.handleExternalInSig self value_desc sigi
+      Ast_external.handle_external_in_sig self value_desc sigi
     else
       match Ast_attributes.has_inline_payload pval_attributes with
       | Some ((_, PStr [{pstr_desc = Pstr_eval ({pexp_desc}, _)}]) as attr) -> (
@@ -334,6 +334,18 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) :
                   pval_attributes = [];
                 };
           }
+        | Pexp_constant (Pconst_integer (s, Some 'n')) ->
+          succeed attr pval_attributes;
+          {
+            sigi with
+            psig_desc =
+              Psig_value
+                {
+                  value_desc with
+                  pval_prim = External_ffi_types.inline_bigint_primitive s;
+                  pval_attributes = [];
+                };
+          }
         | Pexp_constant (Pconst_float (s, None)) ->
           succeed attr pval_attributes;
           {
@@ -367,10 +379,10 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) :
     Parsetree.structure_item =
   match str.pstr_desc with
   | Pstr_type (rf, tdcls) (* [ {ptype_attributes} as tdcl ] *) ->
-    Ast_tdcls.handleTdclsInStru self str rf tdcls
+    Ast_tdcls.handle_tdcls_in_stru self str rf tdcls
   | Pstr_primitive prim
     when Ast_attributes.rs_externals prim.pval_attributes prim.pval_prim ->
-    Ast_external.handleExternalInStru self prim str
+    Ast_external.handle_external_in_stru self prim str
   | Pstr_value
       ( Nonrecursive,
         [
@@ -543,7 +555,7 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
     | Pstr_module
         ({pmb_expr = {pmod_desc = Pmod_ident {txt; loc}; pmod_attributes} as me}
          as mb)
-      when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
+      when Res_parsetree_viewer.has_await_attribute pmod_attributes ->
       let item = self.structure_item self item in
       let safe_module_type_name = local_module_type_name txt in
       let has_local_module_name =
@@ -593,7 +605,7 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
                 ( _,
                   ({pmod_desc = Pmod_ident {txt; loc}; pmod_attributes} as me),
                   expr )
-              when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes -> (
+              when Res_parsetree_viewer.has_await_attribute pmod_attributes -> (
               let safe_module_type_name = local_module_type_name txt in
               let has_local_module_name =
                 Hashtbl.find_opt !await_context safe_module_type_name

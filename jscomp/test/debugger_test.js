@@ -4,9 +4,9 @@
 
 function f(x, y) {
   console.log([
-        x,
-        y
-      ]);
+    x,
+    y
+  ]);
   return x + y | 0;
 }
 
@@ -21,7 +21,7 @@ function g(param) {
 function exterme_g(param) {
   f(1, 2);
   debugger;
-  var v;
+  let v;
   console.log(v);
   f(1, 2);
   debugger;

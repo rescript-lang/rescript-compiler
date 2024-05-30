@@ -2,9 +2,9 @@
 'use strict';
 
 
-var fib = 3;
+let fib = 3;
 
-var u = 3;
+let u = 3;
 
 exports.fib = fib;
 exports.u = u;

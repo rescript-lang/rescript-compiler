@@ -29,7 +29,7 @@ let function_ = "function"
 
 let function_async ~async = if async then "async function" else "function"
 
-let var = "var" (* should be able to switch to [let] easily*)
+let let_ = "let"
 
 let return = "return"
 
@@ -66,7 +66,7 @@ let default = "default"
 
 let length = "length"
 
-let codePointAt = "codePointAt"
+let code_point_at = "codePointAt"
 
 let new_ = "new"
 
@@ -136,7 +136,7 @@ let undefined = "undefined"
 
 let string_cap = "String"
 
-let fromCharcode = "fromCharCode"
+let from_charcode = "fromCharCode"
 
 let eq = "="
 
