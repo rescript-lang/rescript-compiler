@@ -311,6 +311,12 @@ let extract_concrete_variant env ty =
   | (p0, p, {type_kind=Type_open}) -> (p0, p, [])
   | _ -> raise Not_found
 
+let has_optional_labels ld =
+  match ld.lbl_repres with
+  | Record_optional_labels _ -> true
+  | Record_inlined {optional_labels} -> optional_labels <> []
+  | _ -> false
+
 let label_is_optional ld =
   match ld.lbl_repres with
   | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
@@ -843,9 +849,15 @@ let disambiguate_label_by_ids keep closed ids labels =
   let check_ids (lbl, _) =
     let lbls = Hashtbl.create 8 in
     Array.iter (fun lbl -> Hashtbl.add lbls lbl.lbl_name ()) lbl.lbl_all;
-    List.for_all (Hashtbl.mem lbls) ids
-  and check_closed (lbl, _) =
-    (not closed || List.length ids = Array.length lbl.lbl_all)
+    List.for_all (Hashtbl.mem lbls) ids in
+  let mandatory_labels_are_present num_ids lbl = (* check that all mandatory labels are present *)
+    if has_optional_labels lbl then (
+      let mandatory_lbls = ref 0 in
+      Ext_array.iter lbl.lbl_all (fun l -> if not (label_is_optional l) then incr mandatory_lbls);
+      num_ids >= !mandatory_lbls)
+    else num_ids = Array.length lbl.lbl_all in
+  let check_closed (lbl, _) =
+    (not closed || mandatory_labels_are_present (List.length ids) lbl)
   in
   let labels' = Ext_list.filter labels check_ids in
   if keep && labels' = [] then (false, labels) else
