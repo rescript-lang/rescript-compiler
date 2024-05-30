@@ -97,7 +97,9 @@ function rollback_path(subst, p) {
         
       }
     } else {
-      throw exn;
+      throw new Error(exn.RE_EXN_ID, {
+            cause: exn
+          });
     }
   }
 }
@@ -134,7 +136,9 @@ function fooExn(f) {
       let match = n._1;
       return match[0] + match[1] | 0;
     }
-    throw n;
+    throw new Error(n.RE_EXN_ID, {
+          cause: n
+        });
   }
 }
 

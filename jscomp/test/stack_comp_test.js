@@ -66,7 +66,9 @@ function does_raise(f, s) {
     if (exn.RE_EXN_ID === Stack.Empty) {
       return true;
     }
-    throw exn;
+    throw new Error(exn.RE_EXN_ID, {
+          cause: exn
+        });
   }
 }
 

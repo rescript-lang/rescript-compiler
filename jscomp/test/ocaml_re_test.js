@@ -321,11 +321,12 @@ function bal(l, x, d, r) {
   hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal",
-        Error: new Error()
-      };
+      throw new Error("Invalid_argument", {
+            cause: {
+              RE_EXN_ID: "Invalid_argument",
+              _1: "Map.bal"
+            }
+          });
     }
     let lr = l.r;
     let ld = l.d;
@@ -337,11 +338,12 @@ function bal(l, x, d, r) {
     if (typeof lr === "object") {
       return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.bal",
-      Error: new Error()
-    };
+    throw new Error("Invalid_argument", {
+          cause: {
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Map.bal"
+          }
+        });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -354,11 +356,12 @@ function bal(l, x, d, r) {
     };
   }
   if (typeof r !== "object") {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.bal",
-      Error: new Error()
-    };
+    throw new Error("Invalid_argument", {
+          cause: {
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Map.bal"
+          }
+        });
   }
   let rr = r.r;
   let rd = r.d;
@@ -370,11 +373,12 @@ function bal(l, x, d, r) {
   if (typeof rl === "object") {
     return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "Map.bal",
-    Error: new Error()
-  };
+  throw new Error("Invalid_argument", {
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
+        }
+      });
 }
 
 function add(x, data, param) {
@@ -518,11 +522,12 @@ function bal$1(l, v, r) {
   hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal",
-        Error: new Error()
-      };
+      throw new Error("Invalid_argument", {
+            cause: {
+              RE_EXN_ID: "Invalid_argument",
+              _1: "Set.bal"
+            }
+          });
     }
     let lr = l.r;
     let lv = l.v;
@@ -533,11 +538,12 @@ function bal$1(l, v, r) {
     if (typeof lr === "object") {
       return create$1(create$1(ll, lv, lr.l), lr.v, create$1(lr.r, v, r));
     }
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Set.bal",
-      Error: new Error()
-    };
+    throw new Error("Invalid_argument", {
+          cause: {
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Set.bal"
+          }
+        });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -549,11 +555,12 @@ function bal$1(l, v, r) {
     };
   }
   if (typeof r !== "object") {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Set.bal",
-      Error: new Error()
-    };
+    throw new Error("Invalid_argument", {
+          cause: {
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Set.bal"
+          }
+        });
   }
   let rr = r.r;
   let rv = r.v;
@@ -564,11 +571,12 @@ function bal$1(l, v, r) {
   if (typeof rl === "object") {
     return create$1(create$1(l, v, rl.l), rl.v, create$1(rl.r, rv, rr));
   }
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "Set.bal",
-    Error: new Error()
-  };
+  throw new Error("Invalid_argument", {
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.bal"
+        }
+      });
 }
 
 function add$1(x, param) {
@@ -1078,15 +1086,16 @@ function split_at_match_rec(_l$p, _x) {
         
       }
     } else {
-      throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "ocaml_re_test.res",
-          816,
-          16
-        ],
-        Error: new Error()
-      };
+      throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "ocaml_re_test.res",
+                816,
+                16
+              ]
+            }
+          });
     }
   };
 }
@@ -1529,7 +1538,9 @@ function find_state(re, desc) {
       Curry._3(Re_automata_State.Table.add, re.states, desc, st);
       return st;
     }
-    throw exn;
+    throw new Error(exn.RE_EXN_ID, {
+          cause: exn
+        });
   }
 }
 
@@ -1610,7 +1621,9 @@ function $$final(info, st, cat) {
       };
       return res;
     }
-    throw exn;
+    throw new Error(exn.RE_EXN_ID, {
+          cause: exn
+        });
   }
 }
 
@@ -1631,7 +1644,9 @@ function find_initial_state(re, cat) {
       };
       return st;
     }
-    throw exn;
+    throw new Error(exn.RE_EXN_ID, {
+          cause: exn
+        });
   }
 }
 
@@ -1734,10 +1749,11 @@ function trans_set(cache, cm, s) {
     while(true) {
       let param = _param;
       if (typeof param !== "object") {
-        throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+        throw new Error("Not_found", {
+              cause: {
+                RE_EXN_ID: "Not_found"
+              }
+            });
       }
       let c = compare(v, param.v);
       if (c === 0) {
@@ -1756,7 +1772,9 @@ function trans_set(cache, cm, s) {
       cache.contents = add(v, l, cache.contents);
       return l;
     }
-    throw exn;
+    throw new Error(exn.RE_EXN_ID, {
+          cause: exn
+        });
   }
 }
 
@@ -1896,15 +1914,16 @@ function colorize(c, regexp) {
               _regexp = regexp._1;
               continue;
           default:
-            throw {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "ocaml_re_test.res",
-                2169,
-                8
-              ],
-              Error: new Error()
-            };
+            throw new Error("Assert_failure", {
+                  cause: {
+                    RE_EXN_ID: "Assert_failure",
+                    _1: [
+                      "ocaml_re_test.res",
+                      2169,
+                      8
+                    ]
+                  }
+                });
         }
       }
     };
@@ -2516,15 +2535,16 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
               match$5[1]
             ];
         default:
-          throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "ocaml_re_test.res",
-              2403,
-              80
-            ],
-            Error: new Error()
-          };
+          throw new Error("Assert_failure", {
+                cause: {
+                  RE_EXN_ID: "Assert_failure",
+                  _1: [
+                    "ocaml_re_test.res",
+                    2403,
+                    80
+                  ]
+                }
+              });
       }
     }
   };
@@ -2558,28 +2578,30 @@ function case_insens(s) {
 
 function as_set(x) {
   if (typeof x !== "object") {
-    throw {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "ocaml_re_test.res",
-        2438,
-        11
-      ],
-      Error: new Error()
-    };
+    throw new Error("Assert_failure", {
+          cause: {
+            RE_EXN_ID: "Assert_failure",
+            _1: [
+              "ocaml_re_test.res",
+              2438,
+              11
+            ]
+          }
+        });
   }
   if (x.TAG === "Set") {
     return x._0;
   }
-  throw {
-    RE_EXN_ID: "Assert_failure",
-    _1: [
-      "ocaml_re_test.res",
-      2438,
-      11
-    ],
-    Error: new Error()
-  };
+  throw new Error("Assert_failure", {
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "ocaml_re_test.res",
+            2438,
+            11
+          ]
+        }
+      });
 }
 
 function handle_case(_ign_case, _x) {
@@ -2792,18 +2814,20 @@ let epsilon = {
 
 function repn(r, i, j) {
   if (i < 0) {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Re.repn",
-      Error: new Error()
-    };
+    throw new Error("Invalid_argument", {
+          cause: {
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Re.repn"
+          }
+        });
   }
   if (j !== undefined && j < i) {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Re.repn",
-      Error: new Error()
-    };
+    throw new Error("Invalid_argument", {
+          cause: {
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Re.repn"
+          }
+        });
   }
   return {
     TAG: "Repeat",
@@ -2832,11 +2856,12 @@ function compl(l) {
   if (is_charset(r)) {
     return r;
   }
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "Re.compl",
-    Error: new Error()
-  };
+  throw new Error("Invalid_argument", {
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Re.compl"
+        }
+      });
 }
 
 let any = {
@@ -3186,11 +3211,12 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
   let pos = posOpt !== undefined ? posOpt : 0;
   let len = lenOpt !== undefined ? lenOpt : -1;
   if (pos < 0 || len < -1 || (pos + len | 0) > s.length) {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: name,
-      Error: new Error()
-    };
+    throw new Error("Invalid_argument", {
+          cause: {
+            RE_EXN_ID: "Invalid_argument",
+            _1: name
+          }
+        });
   }
   let partial = false;
   let slen = s.length;
@@ -3256,17 +3282,19 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
 
 function offset$1(t, i) {
   if (((i << 1) + 1 | 0) >= t.marks.length) {
-    throw {
-      RE_EXN_ID: "Not_found",
-      Error: new Error()
-    };
+    throw new Error("Not_found", {
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
   }
   let m1 = Caml_array.get(t.marks, (i << 1));
   if (m1 === -1) {
-    throw {
-      RE_EXN_ID: "Not_found",
-      Error: new Error()
-    };
+    throw new Error("Not_found", {
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
   }
   let p1 = Caml_array.get(t.gpos, m1) - 1 | 0;
   let p2 = Caml_array.get(t.gpos, Caml_array.get(t.marks, (i << 1) + 1 | 0)) - 1 | 0;
@@ -3316,11 +3344,12 @@ function posix_class_of_string(x) {
         return xdigit;
     default:
       let s = "Invalid pcre class: " + x;
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: s,
-        Error: new Error()
-      };
+      throw new Error("Invalid_argument", {
+            cause: {
+              RE_EXN_ID: "Invalid_argument",
+              _1: s
+            }
+          });
   }
 }
 
@@ -3349,18 +3378,20 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       for(let j = 0; j < len; ++j){
         try {
           if (Caml_string.get(s$p, j) !== Caml_string.get(s, i.contents + j | 0)) {
-            throw {
-              RE_EXN_ID: Pervasives.Exit,
-              Error: new Error()
-            };
+            throw new Error(Pervasives.Exit, {
+                  cause: {
+                    RE_EXN_ID: Pervasives.Exit
+                  }
+                });
           }
           
         }
         catch (exn){
-          throw {
-            RE_EXN_ID: Pervasives.Exit,
-            Error: new Error()
-          };
+          throw new Error(Pervasives.Exit, {
+                cause: {
+                  RE_EXN_ID: Pervasives.Exit
+                }
+              });
         }
       }
       i.contents = i.contents + len | 0;
@@ -3371,7 +3402,9 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       if (exn$1.RE_EXN_ID === Pervasives.Exit) {
         return false;
       }
-      throw exn$1;
+      throw new Error(exn$1.RE_EXN_ID, {
+            cause: exn$1
+          });
     }
   };
   let get = function (param) {
@@ -3409,10 +3442,11 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         if (accept(/* ':' */58)) {
           let r = regexp$p(branch$p(/* [] */0));
           if (!accept(/* ')' */41)) {
-            throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
+            throw new Error(Parse_error, {
+                  cause: {
+                    RE_EXN_ID: Parse_error
+                  }
+                });
           }
           return r;
         }
@@ -3427,17 +3461,19 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             continue;
           };
         }
-        throw {
-          RE_EXN_ID: Parse_error,
-          Error: new Error()
-        };
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
       }
       let r$1 = regexp$p(branch$p(/* [] */0));
       if (!accept(/* ')' */41)) {
-        throw {
-          RE_EXN_ID: Parse_error,
-          Error: new Error()
-        };
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
       }
       return {
         TAG: "Group",
@@ -3469,10 +3505,11 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
     if (accept(/* '\\' */92)) {
       if (i.contents === l) {
-        throw {
-          RE_EXN_ID: Parse_error,
-          Error: new Error()
-        };
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
       }
       let c = get();
       switch (c) {
@@ -3486,10 +3523,11 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 55 :
         case 56 :
         case 57 :
-            throw {
-              RE_EXN_ID: Not_supported,
-              Error: new Error()
-            };
+            throw new Error(Not_supported, {
+                  cause: {
+                    RE_EXN_ID: Not_supported
+                  }
+                });
         case 65 :
             return "Beg_of_str";
         case 66 :
@@ -3594,10 +3632,11 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 118 :
         case 120 :
         case 121 :
-            throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
+            throw new Error(Parse_error, {
+                  cause: {
+                    RE_EXN_ID: Parse_error
+                  }
+                });
         case 122 :
             return "End_of_str";
         default:
@@ -3608,10 +3647,11 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
     } else {
       if (i.contents === l) {
-        throw {
-          RE_EXN_ID: Parse_error,
-          Error: new Error()
-        };
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
       }
       let c$1 = get();
       if (c$1 >= 64) {
@@ -3622,22 +3662,25 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               _0: single(c$1)
             };
           }
-          throw {
-            RE_EXN_ID: Parse_error,
-            Error: new Error()
-          };
+          throw new Error(Parse_error, {
+                cause: {
+                  RE_EXN_ID: Parse_error
+                }
+              });
         }
-        throw {
-          RE_EXN_ID: Parse_error,
-          Error: new Error()
-        };
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
       }
       if (c$1 >= 44) {
         if (c$1 >= 63) {
-          throw {
-            RE_EXN_ID: Parse_error,
-            Error: new Error()
-          };
+          throw new Error(Parse_error, {
+                cause: {
+                  RE_EXN_ID: Parse_error
+                }
+              });
         }
         return {
           TAG: "Set",
@@ -3645,10 +3688,11 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         };
       }
       if (c$1 >= 42) {
-        throw {
-          RE_EXN_ID: Parse_error,
-          Error: new Error()
-        };
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
       }
       return {
         TAG: "Set",
@@ -3678,10 +3722,11 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         }
         let i$p = Math.imul(10, i$1) + (d$1 - /* '0' */48 | 0) | 0;
         if (i$p < i$1) {
-          throw {
-            RE_EXN_ID: Parse_error,
-            Error: new Error()
-          };
+          throw new Error(Parse_error, {
+                cause: {
+                  RE_EXN_ID: Parse_error
+                }
+              });
         }
         _i = i$p;
         continue;
@@ -3690,18 +3735,20 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   };
   let $$char = function (param) {
     if (i.contents === l) {
-      throw {
-        RE_EXN_ID: Parse_error,
-        Error: new Error()
-      };
+      throw new Error(Parse_error, {
+            cause: {
+              RE_EXN_ID: Parse_error
+            }
+          });
     }
     let c = get();
     if (c === /* '[' */91) {
       if (accept(/* '=' */61)) {
-        throw {
-          RE_EXN_ID: Not_supported,
-          Error: new Error()
-        };
+        throw new Error(Not_supported, {
+              cause: {
+                RE_EXN_ID: Not_supported
+              }
+            });
       }
       if (accept(/* ':' */58)) {
         let compl$1 = accept(/* '^' */94);
@@ -3751,18 +3798,22 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         catch (raw_exn){
           let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
           if (exn.RE_EXN_ID === "Not_found") {
-            throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
+            throw new Error(Parse_error, {
+                  cause: {
+                    RE_EXN_ID: Parse_error
+                  }
+                });
           }
-          throw exn;
+          throw new Error(exn.RE_EXN_ID, {
+                cause: exn
+              });
         }
         if (!accept_s(":]")) {
-          throw {
-            RE_EXN_ID: Parse_error,
-            Error: new Error()
-          };
+          throw new Error(Parse_error, {
+                cause: {
+                  RE_EXN_ID: Parse_error
+                }
+              });
         }
         let posix_class = posix_class_of_string(cls);
         let re = compl$1 ? compl({
@@ -3781,23 +3832,26 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         };
       }
       if (i.contents === l) {
-        throw {
-          RE_EXN_ID: Parse_error,
-          Error: new Error()
-        };
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
       }
       let c$1 = get();
       if (!accept(/* '.' */46)) {
-        throw {
-          RE_EXN_ID: Not_supported,
-          Error: new Error()
-        };
+        throw new Error(Not_supported, {
+              cause: {
+                RE_EXN_ID: Not_supported
+              }
+            });
       }
       if (!accept(/* ']' */93)) {
-        throw {
-          RE_EXN_ID: Parse_error,
-          Error: new Error()
-        };
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
       }
       return {
         NAME: "Char",
@@ -3964,18 +4018,20 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 120 :
         case 121 :
         case 122 :
-            throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
+            throw new Error(Parse_error, {
+                  cause: {
+                    RE_EXN_ID: Parse_error
+                  }
+                });
         
       }
     } else {
       if (c$2 >= 48) {
-        throw {
-          RE_EXN_ID: Not_supported,
-          Error: new Error()
-        };
+        throw new Error(Not_supported, {
+              cause: {
+                RE_EXN_ID: Not_supported
+              }
+            });
       }
       return {
         NAME: "Char",
@@ -4082,16 +4138,18 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (i$1 !== undefined) {
       let j = accept(/* ',' */44) ? integer() : i$1;
       if (!accept(/* '}' */125)) {
-        throw {
-          RE_EXN_ID: Parse_error,
-          Error: new Error()
-        };
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
       }
       if (j !== undefined && j < i$1) {
-        throw {
-          RE_EXN_ID: Parse_error,
-          Error: new Error()
-        };
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
       }
       return greedy_mod(repn(r, i$1, j));
     }
@@ -4129,10 +4187,11 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   };
   let res = regexp$p(branch$p(/* [] */0));
   if (i.contents !== l) {
-    throw {
-      RE_EXN_ID: Parse_error,
-      Error: new Error()
-    };
+    throw new Error(Parse_error, {
+          cause: {
+            RE_EXN_ID: Parse_error
+          }
+        });
   }
   return res;
 }
@@ -4175,15 +4234,17 @@ function exec(rex, pos, s) {
     return substr._0;
   }
   if (substr === "Failed") {
-    throw {
-      RE_EXN_ID: "Not_found",
-      Error: new Error()
-    };
+    throw new Error("Not_found", {
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
   }
-  throw {
-    RE_EXN_ID: "Not_found",
-    Error: new Error()
-  };
+  throw new Error("Not_found", {
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
 }
 
 let s = "a".repeat(1048575) + "b";

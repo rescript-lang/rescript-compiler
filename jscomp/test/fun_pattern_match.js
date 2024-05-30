@@ -24,15 +24,16 @@ function f3(param) {
       }
       rhs === "Uninitialized";
     }
-    throw {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "fun_pattern_match.res",
-        33,
-        9
-      ],
-      Error: new Error()
-    };
+    throw new Error("Assert_failure", {
+          cause: {
+            RE_EXN_ID: "Assert_failure",
+            _1: [
+              "fun_pattern_match.res",
+              33,
+              9
+            ]
+          }
+        });
   };
 }
 
@@ -48,15 +49,16 @@ function f4(param) {
       }
       rhs === "Uninitialized";
     }
-    throw {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "fun_pattern_match.res",
-        39,
-        9
-      ],
-      Error: new Error()
-    };
+    throw new Error("Assert_failure", {
+          cause: {
+            RE_EXN_ID: "Assert_failure",
+            _1: [
+              "fun_pattern_match.res",
+              39,
+              9
+            ]
+          }
+        });
   };
 }
 

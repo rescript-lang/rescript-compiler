@@ -7,41 +7,46 @@ let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Local = /* @__PURE__ */Caml_exceptions.create("Test_exception.Local");
 
 function f(param) {
-  throw {
-    RE_EXN_ID: Local,
-    _1: 3,
-    Error: new Error()
-  };
+  throw new Error(Local, {
+        cause: {
+          RE_EXN_ID: Local,
+          _1: 3
+        }
+      });
 }
 
 function g(param) {
-  throw {
-    RE_EXN_ID: "Not_found",
-    Error: new Error()
-  };
+  throw new Error("Not_found", {
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
 }
 
 function h(param) {
-  throw {
-    RE_EXN_ID: Test_common.U,
-    _1: 3,
-    Error: new Error()
-  };
+  throw new Error(Test_common.U, {
+        cause: {
+          RE_EXN_ID: Test_common.U,
+          _1: 3
+        }
+      });
 }
 
 function x(param) {
-  throw {
-    RE_EXN_ID: Test_common.H,
-    Error: new Error()
-  };
+  throw new Error(Test_common.H, {
+        cause: {
+          RE_EXN_ID: Test_common.H
+        }
+      });
 }
 
 function xx(param) {
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "x",
-    Error: new Error()
-  };
+  throw new Error("Invalid_argument", {
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "x"
+        }
+      });
 }
 
 let Nullary = /* @__PURE__ */Caml_exceptions.create("Test_exception.Nullary");

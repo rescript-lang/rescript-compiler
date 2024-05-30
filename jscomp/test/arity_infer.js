@@ -10,19 +10,21 @@ function f0(x) {
       return x + 1 | 0;
     });
   } else {
-    throw {
-      RE_EXN_ID: "Not_found",
-      Error: new Error()
-    };
+    throw new Error("Not_found", {
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
   }
   return tmp(3);
 }
 
 function f1(x) {
-  throw {
-    RE_EXN_ID: "Not_found",
-    Error: new Error()
-  };
+  throw new Error("Not_found", {
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
   return Curry._1(undefined, x);
 }
 
@@ -50,10 +52,11 @@ function f3(x) {
         });
         break;
     default:
-      throw {
-        RE_EXN_ID: "Not_found",
-        Error: new Error()
-      };
+      throw new Error("Not_found", {
+            cause: {
+              RE_EXN_ID: "Not_found"
+            }
+          });
   }
   return tmp(3);
 }

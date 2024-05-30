@@ -17,7 +17,9 @@ catch (raw_e){
     console.log(e._1);
     hh = /* 'a' */97;
   } else {
-    throw e;
+    throw new Error(e.RE_EXN_ID, {
+          cause: e
+        });
   }
 }
 
