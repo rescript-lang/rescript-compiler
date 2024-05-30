@@ -21,8 +21,8 @@ function should(b) {
     return;
   }
   throw new Error(new Error("impossible").RE_EXN_ID, {
-            cause: new Error("impossible")
-          });
+        cause: new Error("impossible")
+      });
 }
 
 let shuffledDataAdd = Belt_Array.makeByAndShuffle(1000001, (function (i) {

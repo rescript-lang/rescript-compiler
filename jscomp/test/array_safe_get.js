@@ -21,8 +21,8 @@ catch (raw_msg){
     y = 0;
   } else {
     throw new Error(msg.RE_EXN_ID, {
-              cause: msg
-            });
+          cause: msg
+        });
   }
 }
 

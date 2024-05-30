@@ -7,18 +7,18 @@ function isA(c) {
     return true;
   }
   throw new Error("Match_failure", {
-            cause: {
-              RE_EXN_ID: "Match_failure",
-              _1: [
-                "gpr_5557.res",
-                5,
-                2
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Match_failure",
+          _1: [
+            "gpr_5557.res",
+            5,
+            2
+          ]
+        }
+      });
 }
 
-var h = /* 'a' */97;
+let h = /* 'a' */97;
 
 exports.isA = isA;
 exports.h = h;

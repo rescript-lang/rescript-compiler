@@ -2,7 +2,7 @@
 'use strict';
 
 
-var T0_myList = {
+let T0_myList = {
   hd: 1,
   tl: {
     hd: 2,
@@ -10,27 +10,27 @@ var T0_myList = {
   }
 };
 
-var T0_tail = {
+let T0_tail = {
   hd: 2,
   tl: /* [] */0
 };
 
-var T0 = {
+let T0 = {
   myList: T0_myList,
   head: 1,
   tail: T0_tail
 };
 
 throw new Error("Match_failure", {
-          cause: {
-            RE_EXN_ID: "Match_failure",
-            _1: [
-              "gpr_4632.res",
-              12,
-              6
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Match_failure",
+        _1: [
+          "gpr_4632.res",
+          12,
+          6
+        ]
+      }
+    });
 
 exports.T0 = T0;
 exports.T1 = T1;

@@ -18,8 +18,8 @@ catch (raw_e){
     hh = /* 'a' */97;
   } else {
     throw new Error(e.RE_EXN_ID, {
-              cause: e
-            });
+          cause: e
+        });
   }
 }
 

@@ -4,7 +4,7 @@
 
 function is_number(_expr) {
   while(true) {
-    var expr = _expr;
+    let expr = _expr;
     switch (expr.TAG) {
       case "Val" :
           if (expr._0.TAG === "Natural") {
@@ -14,7 +14,7 @@ function is_number(_expr) {
           }
       case "Neg" :
           _expr = expr._0;
-          continue ;
+          continue;
       case "Sum" :
       case "Pow" :
       case "Frac" :
@@ -27,16 +27,16 @@ function is_number(_expr) {
 
 function compare(context, state, _a, _b) {
   while(true) {
-    var b = _b;
-    var a = _a;
-    var exit = 0;
-    var na;
-    var da;
-    var nb;
-    var db;
-    var exit$1 = 0;
-    var exit$2 = 0;
-    var exit$3 = 0;
+    let b = _b;
+    let a = _a;
+    let exit = 0;
+    let na;
+    let da;
+    let nb;
+    let db;
+    let exit$1 = 0;
+    let exit$2 = 0;
+    let exit$3 = 0;
     switch (a.TAG) {
       case "Val" :
           switch (b.TAG) {
@@ -50,15 +50,15 @@ function compare(context, state, _a, _b) {
                 break;
             case "Frac" :
                 throw new Error("Assert_failure", {
-                          cause: {
-                            RE_EXN_ID: "Assert_failure",
-                            _1: [
-                              "gpr_1698_test.res",
-                              41,
-                              9
-                            ]
-                          }
-                        });
+                      cause: {
+                        RE_EXN_ID: "Assert_failure",
+                        _1: [
+                          "gpr_1698_test.res",
+                          41,
+                          9
+                        ]
+                      }
+                    });
             case "Pow" :
             case "Gcd" :
                 exit = 1;
@@ -68,7 +68,7 @@ function compare(context, state, _a, _b) {
           break;
       case "Neg" :
           _a = a._0;
-          continue ;
+          continue;
       case "Sum" :
       case "Pow" :
           exit$3 = 5;
@@ -77,15 +77,15 @@ function compare(context, state, _a, _b) {
           switch (b.TAG) {
             case "Val" :
                 throw new Error("Assert_failure", {
-                          cause: {
-                            RE_EXN_ID: "Assert_failure",
-                            _1: [
-                              "gpr_1698_test.res",
-                              41,
-                              9
-                            ]
-                          }
-                        });
+                      cause: {
+                        RE_EXN_ID: "Assert_failure",
+                        _1: [
+                          "gpr_1698_test.res",
+                          41,
+                          9
+                        ]
+                      }
+                    });
             case "Neg" :
                 exit$3 = 5;
                 break;
@@ -130,7 +130,7 @@ function compare(context, state, _a, _b) {
     if (exit$3 === 5) {
       if (b.TAG === "Neg") {
         _b = b._0;
-        continue ;
+        continue;
       }
       if (a.TAG === "Sum") {
         if (is_number(b)) {
@@ -174,19 +174,19 @@ function compare(context, state, _a, _b) {
               return -1;
           }
       case 2 :
-          var denom = compare(context, state, da, db);
+          let denom = compare(context, state, da, db);
           if (denom !== 0) {
             return denom;
           }
           _b = nb;
           _a = na;
-          continue ;
+          continue;
       
     }
   };
 }
 
-var a = {
+let a = {
   TAG: "Sum",
   _0: {
     hd: {
@@ -209,7 +209,7 @@ var a = {
   }
 };
 
-var b = {
+let b = {
   TAG: "Val",
   _0: {
     TAG: "Symbol",
@@ -218,7 +218,7 @@ var b = {
 };
 
 console.log(compare("InSum", {
-          complex: true
-        }, a, b));
+  complex: true
+}, a, b));
 
 /*  Not a pure module */

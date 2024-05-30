@@ -98,8 +98,8 @@ function rollback_path(subst, p) {
       }
     } else {
       throw new Error(exn.RE_EXN_ID, {
-                cause: exn
-              });
+            cause: exn
+          });
     }
   }
 }
@@ -137,8 +137,8 @@ function fooExn(f) {
       return match[0] + match[1] | 0;
     }
     throw new Error(n.RE_EXN_ID, {
-              cause: n
-            });
+          cause: n
+        });
   }
 }
 

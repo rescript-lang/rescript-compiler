@@ -22,20 +22,20 @@ function ff(x) {
         return "c";
     default:
       throw new Error("Assert_failure", {
-                cause: {
-                  RE_EXN_ID: "Assert_failure",
-                  _1: [
-                    "bb.res",
-                    13,
-                    9
-                  ]
-                }
-              });
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bb.res",
+                13,
+                9
+              ]
+            }
+          });
   }
 }
 
 function test(x) {
-  var match;
+  let match;
   switch (x) {
     case "a" :
         match = "a";
@@ -48,15 +48,15 @@ function test(x) {
         break;
     default:
       throw new Error("Assert_failure", {
-                cause: {
-                  RE_EXN_ID: "Assert_failure",
-                  _1: [
-                    "bb.res",
-                    21,
-                    9
-                  ]
-                }
-              });
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bb.res",
+                21,
+                9
+              ]
+            }
+          });
   }
   if (match === "b") {
     return "b";
@@ -67,13 +67,13 @@ function test(x) {
   }
 }
 
-var test_poly = "a";
+let test_poly = "a";
 
-var c = f("a");
+let c = f("a");
 
-var d = f("b");
+let d = f("b");
 
-var e = f("c");
+let e = f("c");
 
 exports.f = f;
 exports.ff = ff;

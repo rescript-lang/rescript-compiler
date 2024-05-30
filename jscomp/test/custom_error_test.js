@@ -16,8 +16,8 @@ function test_js_error(param) {
       return;
     }
     throw new Error(err.RE_EXN_ID, {
-              cause: err
-            });
+          cause: err
+        });
   }
   return e;
 }
@@ -31,12 +31,12 @@ function test_js_error2(param) {
     if (e.RE_EXN_ID === Js_exn.$$Error) {
       console.log(e._1.stack);
       throw new Error(e.RE_EXN_ID, {
-                cause: e
-              });
+            cause: e
+          });
     }
     throw new Error(e.RE_EXN_ID, {
-              cause: e
-            });
+          cause: e
+        });
   }
 }
 
@@ -52,8 +52,8 @@ function example1(param) {
       return;
     }
     throw new Error(err.RE_EXN_ID, {
-              cause: err
-            });
+          cause: err
+        });
   }
   return v;
 }
@@ -68,8 +68,8 @@ function example2(param) {
       return;
     }
     throw new Error(exn.RE_EXN_ID, {
-              cause: exn
-            });
+          cause: exn
+        });
   }
 }
 

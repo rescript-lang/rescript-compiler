@@ -14,8 +14,8 @@ function f(g, x) {
       return 3;
     }
     throw new Error(exn.RE_EXN_ID, {
-              cause: exn
-            });
+          cause: exn
+        });
   }
 }
 

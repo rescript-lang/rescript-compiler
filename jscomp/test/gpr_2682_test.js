@@ -2,19 +2,19 @@
 'use strict';
 
 
-var sum = ((a,b) => a + b);
+let sum = ((a,b) => a + b);
 
-var v = sum(1, 2);
+let v = sum(1, 2);
 
 function f(a) {
   return a + 3 | 0;
 }
 
-var b = f(1);
+let b = f(1);
 
-var c = f(2);
+let c = f(2);
 
-var forIn = ((o,foo)=> {
+let forIn = ((o,foo)=> {
   for (var i in o){
     foo(o)
   }
@@ -24,38 +24,38 @@ function log(x) {
   console.log(x);
 }
 
-var N = {
+let N = {
   log2: log
 };
 
 forIn({
-      x: 3
-    }, (function (x) {
-        console.log(x);
-      }));
+  x: 3
+}, (function (x) {
+  console.log(x);
+}));
 
 forIn({
-      x: 3,
-      y: 3
-    }, (function (x) {
-        console.log(x);
-      }));
+  x: 3,
+  y: 3
+}, (function (x) {
+  console.log(x);
+}));
 
-var f3 = (()=>true);
+let f3 = (()=>true);
 
-var bbbb = f3();
+let bbbb = f3();
 
 if (!bbbb) {
   throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "gpr_2682_test.res",
-                52,
-                0
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "gpr_2682_test.res",
+            52,
+            0
+          ]
+        }
+      });
 }
 
 exports.sum = sum;
