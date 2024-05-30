@@ -15,11 +15,7 @@
 #### :rocket: New Feature
 
 - Allow `@directive` on functions for emitting function level directive code (`let serverAction = @directive("'use server'") (~name) => {...}`). https://github.com/rescript-lang/rescript-compiler/pull/6756
-
-#### :house: Internal
-
-- Convert OCaml codebase to snake case style. https://github.com/rescript-lang/rescript-compiler/pull/6702
-- Fix location of let bindings with attributes. https://github.com/rescript-lang/rescript-compiler/pull/6791
+- Add `rewatch` to the npm package as an alternative build tool. https://github.com/rescript-lang/rescript-compiler/pull/6762
 
 #### :boom: Breaking Change
 
@@ -30,12 +26,17 @@
 
 #### :bug: Bug Fix
 
-- Allow to use exotic ParscalCased identifiers for types. https://github.com/rescript-lang/rescript-compiler/pull/6777
+- Fix unhandled cases for exotic idents (allow to use exotic PascalCased identifiers for types). https://github.com/rescript-lang/rescript-compiler/pull/6777
 - Fix issue of incorrect switch cases with identical bodies when mixing object and array. https://github.com/rescript-lang/rescript-compiler/pull/6792
+- Fix formatter eats comments on the first argument of an uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6763 
+- Fix formatter removes parens in pipe operator with anonymous uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6766
 
 #### :house: Internal
 
 - Build with OCaml 5.1.1. https://github.com/rescript-lang/rescript-compiler/pull/6641
+- Convert OCaml codebase to snake case style. https://github.com/rescript-lang/rescript-compiler/pull/6702
+- Fix location of let bindings with attributes. https://github.com/rescript-lang/rescript-compiler/pull/6791
+- Refactor uppercase exotic ident handling. https://github.com/rescript-lang/rescript-compiler/pull/6779
 
 #### :nail_care: Polish
 
@@ -48,8 +49,8 @@
 - Fix indent in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6747
 - In generated code, use `let` instead of `var`. https://github.com/rescript-lang/rescript-compiler/pull/6102
 - Turn off transformation for closures inside loops when capturing loop variables, now that `let` is emitted instead of `var`. https://github.com/rescript-lang/rescript-compiler/pull/6480
-- Fix formatter eats comments on the first argument of a uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6763 
-- Fix formatter removes parens in pipe operator with anonymous uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6766
+- Improve unused attribute warning message. https://github.com/rescript-lang/rescript-compiler/pull/6787
+- Remove unused -no-stdlib compiler option. https://github.com/rescript-lang/rescript-compiler/pull/6778
 
 # 11.1.0
 
