@@ -59,7 +59,7 @@ let rec iter_on_bs_config_str (x : Parsetree.structure) =
   | [] -> ()
   | {pstr_desc = Pstr_attribute (({txt = "config"; loc}, payload) as attr)} :: _
     ->
-    Bs_ast_invariant.mark_used_bs_attribute attr;
+    Used_attributes.mark_used_attribute attr;
     Ext_list.iter
       (Ast_payload.ident_or_record_as_config loc payload)
       (Ast_payload.table_dispatch !structural_config_table)
@@ -75,7 +75,7 @@ let rec iter_on_bs_config_sig (x : Parsetree.signature) =
   | [] -> ()
   | {psig_desc = Psig_attribute (({txt = "config"; loc}, payload) as attr)} :: _
     ->
-    Bs_ast_invariant.mark_used_bs_attribute attr;
+    Used_attributes.mark_used_attribute attr;
     Ext_list.iter
       (Ast_payload.ident_or_record_as_config loc payload)
       (Ast_payload.table_dispatch !signature_config_table)

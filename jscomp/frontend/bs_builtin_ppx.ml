@@ -55,7 +55,7 @@ let succeed attr attrs =
   match attrs with
   | [_] -> ()
   | _ ->
-    Bs_ast_invariant.mark_used_bs_attribute attr;
+    Used_attributes.mark_used_attribute attr;
     Bs_ast_invariant.warn_discarded_unused_attributes attrs
 
 type mapper = Bs_ast_mapper.mapper
