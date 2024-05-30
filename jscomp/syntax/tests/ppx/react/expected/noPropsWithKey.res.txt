@@ -12,6 +12,7 @@ module V4CA = {
 }
 
 module V4CB = {
+  @live
   type props = {}
 
   @module("c")
@@ -51,6 +52,7 @@ module V4CA = {
 }
 
 module V4CB = {
+  @live
   type props = {}
 
   @module("c")

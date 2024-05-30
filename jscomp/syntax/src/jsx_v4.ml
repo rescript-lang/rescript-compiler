@@ -327,7 +327,7 @@ let make_label_decls named_type_list =
            Type.field ~loc ~attrs {txt = label; loc}
              (Typ.var @@ safe_type_from_value @@ Labelled label))
 
-let make_type_decls props_name loc named_type_list =
+let make_type_decls ~attrs props_name loc named_type_list =
   let label_decl_list = make_label_decls named_type_list in
   (* 'id, 'className, ... *)
   let params =
@@ -335,7 +335,7 @@ let make_type_decls props_name loc named_type_list =
     |> List.map (fun core_type -> (core_type, Invariant))
   in
   [
-    Type.mk ~loc ~params {txt = props_name; loc}
+    Type.mk ~attrs ~loc ~params {txt = props_name; loc}
       ~kind:(Ptype_record label_decl_list);
   ]
 
@@ -346,22 +346,26 @@ let make_type_decls_with_core_type props_name loc core_type typ_vars =
       ~manifest:core_type;
   ]
 
+let live_attr = ({txt = "live"; loc = Location.none}, PStr [])
+
 (* type props<'x, 'y, ...> = { x: 'x, y?: 'y, ... } *)
-let make_props_record_type ~core_type_of_attr ~typ_vars_of_core_type props_name
-    loc named_type_list =
+let make_props_record_type ~core_type_of_attr ~external_ ~typ_vars_of_core_type
+    props_name loc named_type_list =
+  let attrs = if external_ then [live_attr] else [] in
   Str.type_ Nonrecursive
     (match core_type_of_attr with
-    | None -> make_type_decls props_name loc named_type_list
+    | None -> make_type_decls ~attrs props_name loc named_type_list
     | Some core_type ->
       make_type_decls_with_core_type props_name loc core_type
         typ_vars_of_core_type)
 
 (* type props<'x, 'y, ...> = { x: 'x, y?: 'y, ... } *)
-let make_props_record_type_sig ~core_type_of_attr ~typ_vars_of_core_type
-    props_name loc named_type_list =
+let make_props_record_type_sig ~core_type_of_attr ~external_
+    ~typ_vars_of_core_type props_name loc named_type_list =
+  let attrs = if external_ then [live_attr] else [] in
   Sig.type_ Nonrecursive
     (match core_type_of_attr with
-    | None -> make_type_decls props_name loc named_type_list
+    | None -> make_type_decls ~attrs props_name loc named_type_list
     | Some core_type ->
       make_type_decls_with_core_type props_name loc core_type
         typ_vars_of_core_type)
@@ -950,8 +954,8 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
     let named_type_list = List.fold_left arg_to_type [] named_arg_list in
     (* type props = { ... } *)
     let props_record_type =
-      make_props_record_type ~core_type_of_attr ~typ_vars_of_core_type "props"
-        pstr_loc named_type_list
+      make_props_record_type ~core_type_of_attr ~external_:false
+        ~typ_vars_of_core_type "props" pstr_loc named_type_list
     in
     let inner_expression =
       Exp.apply
@@ -1211,8 +1215,8 @@ let transform_structure_item ~config item =
       in
       (* type props<'x, 'y> = { x: 'x, y?: 'y, ... } *)
       let props_record_type =
-        make_props_record_type ~core_type_of_attr ~typ_vars_of_core_type "props"
-          pstr_loc named_type_list
+        make_props_record_type ~core_type_of_attr ~external_:true
+          ~typ_vars_of_core_type "props" pstr_loc named_type_list
       in
       (* can't be an arrow because it will defensively uncurry *)
       let new_external_type =
@@ -1317,9 +1321,10 @@ let transform_signature_item ~config item =
             | [] -> []
             | _ -> [Typ.any ()]))
       in
+      let external_ = psig_desc.pval_prim <> [] in
       let props_record_type =
-        make_props_record_type_sig ~core_type_of_attr ~typ_vars_of_core_type
-          "props" psig_loc named_type_list
+        make_props_record_type_sig ~core_type_of_attr ~external_
+          ~typ_vars_of_core_type "props" psig_loc named_type_list
       in
       (* can't be an arrow because it will defensively uncurry *)
       let new_external_type =
