@@ -88,6 +88,7 @@ module External = {
     type key
     type t
   }
+  @live
   type props<'model, 'selected, 'onChange, 'items> = {
     model: 'model,
     selected: 'selected,

@@ -323,7 +323,7 @@ let makeLabelDecls namedTypeList =
            Type.field ~loc ~attrs {txt = label; loc}
              (Typ.var @@ safeTypeFromValue @@ Labelled label))
 
-let makeTypeDecls propsName loc namedTypeList =
+let makeTypeDecls ~attrs propsName loc namedTypeList =
   let labelDeclList = makeLabelDecls namedTypeList in
   (* 'id, 'className, ... *)
   let params =
@@ -331,7 +331,7 @@ let makeTypeDecls propsName loc namedTypeList =
     |> List.map (fun coreType -> (coreType, Invariant))
   in
   [
-    Type.mk ~loc ~params {txt = propsName; loc}
+    Type.mk ~attrs ~loc ~params {txt = propsName; loc}
       ~kind:(Ptype_record labelDeclList);
   ]
 
@@ -342,21 +342,25 @@ let makeTypeDeclsWithCoreType propsName loc coreType typVars =
       ~manifest:coreType;
   ]
 
+let live_attr = ({txt = "live"; loc = Location.none}, PStr [])
+
 (* type props<'x, 'y, ...> = { x: 'x, y?: 'y, ... } *)
-let makePropsRecordType ~coreTypeOfAttr ~typVarsOfCoreType propsName loc
-    namedTypeList =
+let makePropsRecordType ~coreTypeOfAttr ~external_ ~typVarsOfCoreType propsName
+    loc namedTypeList =
+  let attrs = if external_ then [live_attr] else [] in
   Str.type_ Nonrecursive
     (match coreTypeOfAttr with
-    | None -> makeTypeDecls propsName loc namedTypeList
+    | None -> makeTypeDecls ~attrs propsName loc namedTypeList
     | Some coreType ->
       makeTypeDeclsWithCoreType propsName loc coreType typVarsOfCoreType)
 
 (* type props<'x, 'y, ...> = { x: 'x, y?: 'y, ... } *)
-let makePropsRecordTypeSig ~coreTypeOfAttr ~typVarsOfCoreType propsName loc
-    namedTypeList =
+let makePropsRecordTypeSig ~coreTypeOfAttr ~external_ ~typVarsOfCoreType
+    propsName loc namedTypeList =
+  let attrs = if external_ then [live_attr] else [] in
   Sig.type_ Nonrecursive
     (match coreTypeOfAttr with
-    | None -> makeTypeDecls propsName loc namedTypeList
+    | None -> makeTypeDecls ~attrs propsName loc namedTypeList
     | Some coreType ->
       makeTypeDeclsWithCoreType propsName loc coreType typVarsOfCoreType)
 
@@ -934,8 +938,8 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
     let namedTypeList = List.fold_left argToType [] namedArgList in
     (* type props = { ... } *)
     let propsRecordType =
-      makePropsRecordType ~coreTypeOfAttr ~typVarsOfCoreType "props" pstr_loc
-        namedTypeList
+      makePropsRecordType ~coreTypeOfAttr ~external_:false ~typVarsOfCoreType
+        "props" pstr_loc namedTypeList
     in
     let innerExpression =
       Exp.apply
@@ -1188,8 +1192,8 @@ let transformStructureItem ~config item =
       in
       (* type props<'x, 'y> = { x: 'x, y?: 'y, ... } *)
       let propsRecordType =
-        makePropsRecordType ~coreTypeOfAttr ~typVarsOfCoreType "props" pstr_loc
-          namedTypeList
+        makePropsRecordType ~coreTypeOfAttr ~external_:true ~typVarsOfCoreType
+          "props" pstr_loc namedTypeList
       in
       (* can't be an arrow because it will defensively uncurry *)
       let newExternalType =
@@ -1294,9 +1298,10 @@ let transformSignatureItem ~config item =
             | [] -> []
             | _ -> [Typ.any ()]))
       in
+      let external_ = psig_desc.pval_prim <> [] in
       let propsRecordType =
-        makePropsRecordTypeSig ~coreTypeOfAttr ~typVarsOfCoreType "props"
-          psig_loc namedTypeList
+        makePropsRecordTypeSig ~coreTypeOfAttr ~external_ ~typVarsOfCoreType
+          "props" psig_loc namedTypeList
       in
       (* can't be an arrow because it will defensively uncurry *)
       let newExternalType =
