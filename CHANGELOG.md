@@ -28,9 +28,6 @@
 #### :bug: Bug Fix
 
 - Fix unhandled cases for exotic idents (allow to use exotic PascalCased identifiers for types). https://github.com/rescript-lang/rescript-compiler/pull/6777
-- Fix issue of incorrect switch cases with identical bodies when mixing object and array. https://github.com/rescript-lang/rescript-compiler/pull/6792
-- Fix formatter eats comments on the first argument of an uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6763 
-- Fix formatter removes parens in pipe operator with anonymous uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6766
 - PPX v4: mark props type in externals as `@live` to avoid dead code warnings for prop fields in the editor tooling. https://github.com/rescript-lang/rescript-compiler/pull/6796
 
 #### :house: Internal
