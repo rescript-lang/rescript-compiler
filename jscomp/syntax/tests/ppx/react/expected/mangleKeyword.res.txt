@@ -47,6 +47,7 @@ module C4C0 = {
   }
 }
 module C4C1 = {
+  @live
   type props<'T_open, 'T_type> = {@as("open") _open: 'T_open, @as("type") _type: 'T_type}
 
   external make: @as("open") React.componentLike<props<string, string>, React.element> = "default"
@@ -68,6 +69,7 @@ module C4A0 = {
   }
 }
 module C4A1 = {
+  @live
   type props<'T_open, 'T_type> = {@as("open") _open: 'T_open, @as("type") _type: 'T_type}
 
   external make: @as("open") React.componentLike<props<string, string>, React.element> = "default"
