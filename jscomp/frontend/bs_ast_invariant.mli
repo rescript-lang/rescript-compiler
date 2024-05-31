@@ -24,8 +24,6 @@
 
 type iterator = Ast_iterator.iterator
 
-val mark_used_bs_attribute : Parsetree.attribute -> unit
-
 (** [warn_discarded_unused_attributes discarded]
     warn if [discarded] has unused bs attribute
 *)

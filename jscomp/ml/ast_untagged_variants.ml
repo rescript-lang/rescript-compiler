@@ -111,7 +111,7 @@ let expand_head: (Env.t -> Types.type_expr -> Types.type_expr) ref = ref (Obj.ma
 
 let process_tag_type (attrs : Parsetree.attributes) =
   let st : tag_type option ref = ref None in
-  Ext_list.iter attrs (fun ({txt; loc}, payload) ->
+  Ext_list.iter attrs (fun (({txt; loc}, payload) as attr) ->
       match txt with
       | "as" ->
         if !st = None then (
@@ -135,7 +135,8 @@ let process_tag_type (attrs : Parsetree.attributes) =
           | Some (Lident "null") -> st := Some Null
           | Some (Lident "undefined") -> st := Some Undefined
           | Some _ -> raise (Error (loc, InvalidVariantAsAnnotation)));
-          if !st = None then raise (Error (loc, InvalidVariantAsAnnotation)))
+          if !st = None then raise (Error (loc, InvalidVariantAsAnnotation))
+          else Used_attributes.mark_used_attribute attr)
         else raise (Error (loc, Duplicated_bs_as))
       | _ -> ());
   !st

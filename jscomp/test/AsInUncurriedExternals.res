@@ -12,5 +12,5 @@ let mo = makeOptions
 
 let options = mo(~name="foo", ())
 
-let shouldNotFail: (~objectMode: @as(json`false`) _, ~name: string) => int = (~objectMode, ~name) =>
+let shouldNotFail: (~objectMode: _, ~name: string) => int = (~objectMode, ~name) =>
   3

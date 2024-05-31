@@ -212,7 +212,7 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
   let st = ref `Nothing in
   let assign v (({loc; _}, _) as attr : attr) =
     if !st = `Nothing then (
-      Bs_ast_invariant.mark_used_bs_attribute attr;
+      Used_attributes.mark_used_attribute attr;
       st := v)
     else Bs_syntaxerr.err loc Conflict_attributes
   in
@@ -235,7 +235,7 @@ let iter_process_bs_string_as (attrs : t) : string option =
           match Ast_payload.is_single_string payload with
           | None -> Bs_syntaxerr.err loc Expect_string_literal
           | Some (v, _dec) ->
-            Bs_ast_invariant.mark_used_bs_attribute attr;
+            Used_attributes.mark_used_attribute attr;
             st := Some v)
         else raise (Ast_untagged_variants.Error (loc, Duplicated_bs_as))
       | _ -> ());
@@ -244,7 +244,7 @@ let has_bs_optional (attrs : t) : bool =
   Ext_list.exists attrs (fun (({txt}, _) as attr) ->
       match txt with
       | "optional" ->
-        Bs_ast_invariant.mark_used_bs_attribute attr;
+        Used_attributes.mark_used_attribute attr;
         true
       | _ -> false)
 
@@ -257,7 +257,7 @@ let iter_process_bs_int_as (attrs : t) =
           match Ast_payload.is_single_int payload with
           | None -> Bs_syntaxerr.err loc Expect_int_literal
           | Some _ as v ->
-            Bs_ast_invariant.mark_used_bs_attribute attr;
+            Used_attributes.mark_used_attribute attr;
             st := v)
         else raise (Ast_untagged_variants.Error (loc, Duplicated_bs_as))
       | _ -> ());
@@ -271,7 +271,7 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
       match txt with
       | "as" ->
         if !st = None then (
-          Bs_ast_invariant.mark_used_bs_attribute attr;
+          Used_attributes.mark_used_attribute attr;
           match Ast_payload.is_single_int payload with
           | None -> (
             match payload with
