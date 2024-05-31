@@ -34,11 +34,12 @@ function f(param) {
   try {
     for(let i = 0; i <= 200; ++i){
       if (i === 10) {
-        throw {
-          RE_EXN_ID: A,
-          _1: 0,
-          Error: new Error()
-        };
+        throw new Error(A, {
+              cause: {
+                RE_EXN_ID: A,
+                _1: 0
+              }
+            });
       }
       
     }
@@ -49,7 +50,9 @@ function f(param) {
     if (exn.RE_EXN_ID === A) {
       return;
     }
-    throw exn;
+    throw new Error(exn.RE_EXN_ID, {
+          cause: exn
+        });
   }
 }
 

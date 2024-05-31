@@ -9,10 +9,11 @@ let Foo = /* @__PURE__ */Caml_exceptions.create("Gpr_1701_test.Foo");
 
 function test(n) {
   if (n === 0) {
-    throw {
-      RE_EXN_ID: Foo,
-      Error: new Error()
-    };
+    throw new Error(Foo, {
+          cause: {
+            RE_EXN_ID: Foo
+          }
+        });
   }
   try {
     return test(n - 1 | 0);
@@ -22,7 +23,9 @@ function test(n) {
     if (exn.RE_EXN_ID === Foo) {
       return;
     }
-    throw exn;
+    throw new Error(exn.RE_EXN_ID, {
+          cause: exn
+        });
   }
 }
 
@@ -41,7 +44,9 @@ function read_lines(inc) {
       if (exn.RE_EXN_ID === "End_of_file") {
         l = undefined;
       } else {
-        throw exn;
+        throw new Error(exn.RE_EXN_ID, {
+              cause: exn
+            });
       }
     }
     if (l === undefined) {
@@ -68,7 +73,9 @@ function read_lines2(inc) {
       if (exn.RE_EXN_ID === "End_of_file") {
         return List.rev(acc);
       }
-      throw exn;
+      throw new Error(exn.RE_EXN_ID, {
+            cause: exn
+          });
     }
     _acc = {
       hd: l,
@@ -92,7 +99,9 @@ function read_lines3(inc) {
       if (exn.RE_EXN_ID === "End_of_file") {
         return List.rev(acc);
       }
-      throw exn;
+      throw new Error(exn.RE_EXN_ID, {
+            cause: exn
+          });
     }
   };
   return loop(/* [] */0);

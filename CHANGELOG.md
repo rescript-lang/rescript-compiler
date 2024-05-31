@@ -16,6 +16,7 @@
 
 - Allow `@directive` on functions for emitting function level directive code (`let serverAction = @directive("'use server'") (~name) => {...}`). https://github.com/rescript-lang/rescript-compiler/pull/6756
 - Add `rewatch` to the npm package as an alternative build tool. https://github.com/rescript-lang/rescript-compiler/pull/6762
+- Throws an instance of JavaScript's `new Error()` and adds the extension payload for `cause` option. https://github.com/rescript-lang/rescript-compiler/pull/6611
 
 #### :boom: Breaking Change
 
@@ -52,6 +53,14 @@
 - Turn off transformation for closures inside loops when capturing loop variables, now that `let` is emitted instead of `var`. https://github.com/rescript-lang/rescript-compiler/pull/6480
 - Improve unused attribute warning message. https://github.com/rescript-lang/rescript-compiler/pull/6787
 - Remove unused -no-stdlib compiler option. https://github.com/rescript-lang/rescript-compiler/pull/6778
+
+# 11.1.1
+
+#### :bug: Bug Fix
+
+- Fix issue of incorrect switch cases with identical bodies when mixing object and array. https://github.com/rescript-lang/rescript-compiler/pull/6792
+- Fix formatter eats comments on the first argument of a uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6763 
+- Fix formatter removes parens in pipe operator with anonymous uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6766
 
 # 11.1.0
 

@@ -51,15 +51,16 @@ function bench(param) {
   }
   for(let i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(empty, i$1)) {
-      throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_hashtbl_string_test.res",
-          37,
-          4
-        ],
-        Error: new Error()
-      };
+      throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_hashtbl_string_test.res",
+                37,
+                4
+              ]
+            }
+          });
     }
     
   }
@@ -73,15 +74,16 @@ function bench2(m) {
   }
   for(let i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(empty, String(i$1))) {
-      throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_hashtbl_string_test.res",
-          61,
-          4
-        ],
-        Error: new Error()
-      };
+      throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_hashtbl_string_test.res",
+                61,
+                4
+              ]
+            }
+          });
     }
     
   }
@@ -91,15 +93,16 @@ function bench2(m) {
   if (empty.size === 0) {
     return;
   }
-  throw {
-    RE_EXN_ID: "Assert_failure",
-    _1: [
-      "bs_hashtbl_string_test.res",
-      66,
-      2
-    ],
-    Error: new Error()
-  };
+  throw new Error("Assert_failure", {
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "bs_hashtbl_string_test.res",
+            66,
+            2
+          ]
+        }
+      });
 }
 
 function bench3(m) {
@@ -111,15 +114,16 @@ function bench3(m) {
   }
   for(let i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_MapDict.has(table, String(i$1), cmp)) {
-      throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_hashtbl_string_test.res",
-          81,
-          4
-        ],
-        Error: new Error()
-      };
+      throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_hashtbl_string_test.res",
+                81,
+                4
+              ]
+            }
+          });
     }
     
   }
@@ -129,15 +133,16 @@ function bench3(m) {
   if (Belt_MapDict.size(table) === 0) {
     return;
   }
-  throw {
-    RE_EXN_ID: "Assert_failure",
-    _1: [
-      "bs_hashtbl_string_test.res",
-      86,
-      2
-    ],
-    Error: new Error()
-  };
+  throw new Error("Assert_failure", {
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "bs_hashtbl_string_test.res",
+            86,
+            2
+          ]
+        }
+      });
 }
 
 let Sx = Belt_Id.comparable(Caml.string_compare);
@@ -149,15 +154,16 @@ function bench4(param) {
   }
   for(let i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMapString.has(table, String(i$1))) {
-      throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_hashtbl_string_test.res",
-          98,
-          4
-        ],
-        Error: new Error()
-      };
+      throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_hashtbl_string_test.res",
+                98,
+                4
+              ]
+            }
+          });
     }
     
   }
@@ -167,15 +173,16 @@ function bench4(param) {
   if (Belt_HashMapString.isEmpty(table)) {
     return;
   }
-  throw {
-    RE_EXN_ID: "Assert_failure",
-    _1: [
-      "bs_hashtbl_string_test.res",
-      103,
-      2
-    ],
-    Error: new Error()
-  };
+  throw new Error("Assert_failure", {
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "bs_hashtbl_string_test.res",
+            103,
+            2
+          ]
+        }
+      });
 }
 
 function bench5(param) {
@@ -188,15 +195,16 @@ function bench5(param) {
   console.time("bs_hashtbl_string_test.res 117");
   for(let i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(table, i$1)) {
-      throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_hashtbl_string_test.res",
-          119,
-          6
-        ],
-        Error: new Error()
-      };
+      throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_hashtbl_string_test.res",
+                119,
+                6
+              ]
+            }
+          });
     }
     
   }
@@ -209,15 +217,16 @@ function bench5(param) {
   if (Belt_HashMap.isEmpty(table)) {
     return;
   }
-  throw {
-    RE_EXN_ID: "Assert_failure",
-    _1: [
-      "bs_hashtbl_string_test.res",
-      127,
-      2
-    ],
-    Error: new Error()
-  };
+  throw new Error("Assert_failure", {
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "bs_hashtbl_string_test.res",
+            127,
+            2
+          ]
+        }
+      });
 }
 
 function bench6(param) {
@@ -227,15 +236,16 @@ function bench6(param) {
   }
   for(let i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMapInt.has(table, i$1)) {
-      throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_hashtbl_string_test.res",
-          138,
-          4
-        ],
-        Error: new Error()
-      };
+      throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_hashtbl_string_test.res",
+                138,
+                4
+              ]
+            }
+          });
     }
     
   }
@@ -245,15 +255,16 @@ function bench6(param) {
   if (table.size === 0) {
     return;
   }
-  throw {
-    RE_EXN_ID: "Assert_failure",
-    _1: [
-      "bs_hashtbl_string_test.res",
-      143,
-      2
-    ],
-    Error: new Error()
-  };
+  throw new Error("Assert_failure", {
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "bs_hashtbl_string_test.res",
+            143,
+            2
+          ]
+        }
+      });
 }
 
 function bench7(param) {
@@ -263,15 +274,16 @@ function bench7(param) {
   }
   for(let i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashSetInt.has(table, i$1)) {
-      throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_hashtbl_string_test.res",
-          160,
-          4
-        ],
-        Error: new Error()
-      };
+      throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bs_hashtbl_string_test.res",
+                160,
+                4
+              ]
+            }
+          });
     }
     
   }
@@ -281,15 +293,16 @@ function bench7(param) {
   if (table.size === 0) {
     return;
   }
-  throw {
-    RE_EXN_ID: "Assert_failure",
-    _1: [
-      "bs_hashtbl_string_test.res",
-      170,
-      2
-    ],
-    Error: new Error()
-  };
+  throw new Error("Assert_failure", {
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "bs_hashtbl_string_test.res",
+            170,
+            2
+          ]
+        }
+      });
 }
 
 console.time("bs_hashtbl_string_test.res 181");

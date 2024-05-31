@@ -140,11 +140,12 @@ let yynames_block = "\
 
 let yyact = [
   (function (param) {
-    throw {
-      RE_EXN_ID: "Failure",
-      _1: "parser",
-      Error: new Error()
-    };
+    throw new Error("Failure", {
+          cause: {
+            RE_EXN_ID: "Failure",
+            _1: "parser"
+          }
+        });
   }),
   (function (__caml_parser_env) {
     return Parsing.peek_val(__caml_parser_env, 1);
@@ -210,11 +211,12 @@ let yyact = [
     return Parsing.peek_val(__caml_parser_env, 1);
   }),
   (function (__caml_parser_env) {
-    throw {
-      RE_EXN_ID: Parsing.YYexit,
-      _1: Parsing.peek_val(__caml_parser_env, 0),
-      Error: new Error()
-    };
+    throw new Error(Parsing.YYexit, {
+          cause: {
+            RE_EXN_ID: Parsing.YYexit,
+            _1: Parsing.peek_val(__caml_parser_env, 0)
+          }
+        });
   })
 ];
 

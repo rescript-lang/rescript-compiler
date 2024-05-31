@@ -13,7 +13,9 @@ function f(g, x) {
     if (exn.RE_EXN_ID === "Not_found") {
       return 3;
     }
-    throw exn;
+    throw new Error(exn.RE_EXN_ID, {
+          cause: exn
+        });
   }
 }
 

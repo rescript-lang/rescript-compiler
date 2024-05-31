@@ -21,15 +21,16 @@ let T0 = {
   tail: T0_tail
 };
 
-throw {
-  RE_EXN_ID: "Match_failure",
-  _1: [
-    "gpr_4632.res",
-    12,
-    6
-  ],
-  Error: new Error()
-};
+throw new Error("Match_failure", {
+      cause: {
+        RE_EXN_ID: "Match_failure",
+        _1: [
+          "gpr_4632.res",
+          12,
+          6
+        ]
+      }
+    });
 
 exports.T0 = T0;
 exports.T1 = T1;

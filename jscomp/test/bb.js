@@ -21,15 +21,16 @@ function ff(x) {
     case "c" :
         return "c";
     default:
-      throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bb.res",
-          13,
-          9
-        ],
-        Error: new Error()
-      };
+      throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bb.res",
+                13,
+                9
+              ]
+            }
+          });
   }
 }
 
@@ -46,15 +47,16 @@ function test(x) {
         match = "c";
         break;
     default:
-      throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bb.res",
-          21,
-          9
-        ],
-        Error: new Error()
-      };
+      throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bb.res",
+                21,
+                9
+              ]
+            }
+          });
   }
   if (match === "b") {
     return "b";

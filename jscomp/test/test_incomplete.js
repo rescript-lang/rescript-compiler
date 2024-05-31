@@ -6,15 +6,16 @@ function f(x) {
   if (!(x > 3 || x < 1)) {
     return /* 'a' */97;
   }
-  throw {
-    RE_EXN_ID: "Match_failure",
-    _1: [
-      "test_incomplete.res",
-      3,
-      2
-    ],
-    Error: new Error()
-  };
+  throw new Error("Match_failure", {
+        cause: {
+          RE_EXN_ID: "Match_failure",
+          _1: [
+            "test_incomplete.res",
+            3,
+            2
+          ]
+        }
+      });
 }
 
 function f2(x) {

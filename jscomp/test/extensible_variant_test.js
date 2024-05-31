@@ -24,15 +24,16 @@ function to_int(x) {
   if (x.RE_EXN_ID === Int$1) {
     return x._2;
   }
-  throw {
-    RE_EXN_ID: "Assert_failure",
-    _1: [
-      "extensible_variant_test.res",
-      16,
-      9
-    ],
-    Error: new Error()
-  };
+  throw new Error("Assert_failure", {
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "extensible_variant_test.res",
+            16,
+            9
+          ]
+        }
+      });
 }
 
 let suites_0 = [

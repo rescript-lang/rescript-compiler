@@ -42,33 +42,37 @@ function parse(token) {
               if (match._0 === ")") {
                 return v;
               }
-              throw {
-                RE_EXN_ID: Parse_error,
-                _1: "Unbalanced parens",
-                Error: new Error()
-              };
+              throw new Error(Parse_error, {
+                    cause: {
+                      RE_EXN_ID: Parse_error,
+                      _1: "Unbalanced parens"
+                    }
+                  });
             }
-            throw {
-              RE_EXN_ID: Parse_error,
-              _1: "Unbalanced parens",
-              Error: new Error()
-            };
+            throw new Error(Parse_error, {
+                  cause: {
+                    RE_EXN_ID: Parse_error,
+                    _1: "Unbalanced parens"
+                  }
+                });
           }
           Queue.push(n, look_ahead);
-          throw {
-            RE_EXN_ID: Parse_error,
-            _1: "unexpected token",
-            Error: new Error()
-          };
+          throw new Error(Parse_error, {
+                cause: {
+                  RE_EXN_ID: Parse_error,
+                  _1: "unexpected token"
+                }
+              });
       case "Int" :
           return n._0;
       default:
         Queue.push(n, look_ahead);
-        throw {
-          RE_EXN_ID: Parse_error,
-          _1: "unexpected token",
-          Error: new Error()
-        };
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error,
+                _1: "unexpected token"
+              }
+            });
     }
   };
   let parse_term_aux = function (e1) {
@@ -197,31 +201,35 @@ function l_parse(token) {
               if (t._0 === ")") {
                 return v;
               }
-              throw {
-                RE_EXN_ID: Parse_error,
-                _1: "Unbalanced )",
-                Error: new Error()
-              };
+              throw new Error(Parse_error, {
+                    cause: {
+                      RE_EXN_ID: Parse_error,
+                      _1: "Unbalanced )"
+                    }
+                  });
             }
-            throw {
-              RE_EXN_ID: Parse_error,
-              _1: "Unbalanced )",
-              Error: new Error()
-            };
+            throw new Error(Parse_error, {
+                  cause: {
+                    RE_EXN_ID: Parse_error,
+                    _1: "Unbalanced )"
+                  }
+                });
           }
-          throw {
-            RE_EXN_ID: Parse_error,
-            _1: "Unexpected token",
-            Error: new Error()
-          };
+          throw new Error(Parse_error, {
+                cause: {
+                  RE_EXN_ID: Parse_error,
+                  _1: "Unexpected token"
+                }
+              });
       case "Int" :
           return i._0;
       default:
-        throw {
-          RE_EXN_ID: Parse_error,
-          _1: "Unexpected token",
-          Error: new Error()
-        };
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error,
+                _1: "Unexpected token"
+              }
+            });
     }
   };
   let parse_t_aux = function (_a) {
