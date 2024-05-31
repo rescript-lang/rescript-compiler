@@ -28,8 +28,8 @@
 *)
 let is_bs_attribute txt =
   match txt with
-  (* TODO #6636: | "as "| "int" *)
-  | "bs" | "config" | "ignore" | "optional" | "string" | "uncurry" | "unwrap" ->
+  (* TODO #6636: "int" *)
+  | "as" | "bs" | "config" | "ignore" | "optional" | "string" | "uncurry" | "unwrap" ->
     true
   | _ -> false
 
@@ -113,6 +113,10 @@ let emit_external_warnings : iterator =
         super.label_declaration self lbl);
     constructor_declaration =
       (fun self ({pcd_name = {txt; loc}} as ctr) ->
+        let _ =
+          Ast_untagged_variants.process_tag_type
+            ctr.pcd_attributes (* mark @as used in variant cases *)
+        in
         (match txt with
         | "false" | "true" | "()" ->
           Location.raise_errorf ~loc "%s can not be redefined " txt
