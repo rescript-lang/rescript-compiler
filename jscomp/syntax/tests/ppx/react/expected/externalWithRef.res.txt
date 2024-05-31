@@ -18,6 +18,7 @@ module V3 = {
 @@jsxConfig({version: 4, mode: "classic"})
 
 module V4C = {
+  @live
   type props<'x, 'ref> = {
     x: 'x,
     ref?: 'ref,
@@ -28,9 +29,21 @@ module V4C = {
     "component"
 }
 
+module type V4CType = {
+  @live
+  type props<'x, 'y> = {
+    x: 'x,
+    y: 'y,
+  }
+
+  @module("someModule")
+  external make: React.componentLike<props<string, string>, React.element> = "component"
+}
+
 @@jsxConfig({version: 4, mode: "automatic"})
 
 module V4C = {
+  @live
   type props<'x, 'ref> = {
     x: 'x,
     ref?: 'ref,

@@ -15,6 +15,7 @@
 #### :bug: Bug Fix
 
 - Fix location of let bindings with attributes. https://github.com/rescript-lang/rescript-compiler/pull/6791
+- PPX v4: mark props type in externals as `@live` to avoid dead code warnings for prop fields in the editor tooling. https://github.com/rescript-lang/rescript-compiler/pull/6796
 
 # 11.1.1
 

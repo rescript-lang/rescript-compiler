@@ -35,12 +35,14 @@ module type TUncurried = {
 }
 
 module E = {
+  @live
   type props<'x> = {x: 'x}
 
   external make: React.componentLike<props<string>, React.element> = "default"
 }
 
 module EUncurried = {
+  @live
   type props<'x> = {x: 'x}
 
   external make: React.componentLike<props<string>, React.element> = "default"
