@@ -30,6 +30,7 @@
 - Fix unhandled cases for exotic idents (allow to use exotic PascalCased identifiers for types). https://github.com/rescript-lang/rescript-compiler/pull/6777
 - PPX v4: mark props type in externals as `@live` to avoid dead code warnings for prop fields in the editor tooling. https://github.com/rescript-lang/rescript-compiler/pull/6796
 - Fix unused attribute check for `@as`. https://github.com/rescript-lang/rescript-compiler/pull/6795
+- Reactivate unused attribute check for `@int`. https://github.com/rescript-lang/rescript-compiler/pull/6802
 
 #### :house: Internal
 

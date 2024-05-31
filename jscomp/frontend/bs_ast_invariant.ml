@@ -28,9 +28,8 @@
 *)
 let is_bs_attribute txt =
   match txt with
-  (* TODO #6636: "int" *)
-  | "as" | "bs" | "config" | "ignore" | "optional" | "string" | "uncurry"
-  | "unwrap" ->
+  | "as" | "bs" | "config" | "ignore" | "int" | "optional" | "string"
+  | "uncurry" | "unwrap" ->
     true
   | _ -> false
 
