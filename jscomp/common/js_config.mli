@@ -79,9 +79,9 @@ val force_cmj : bool ref
 
 val jsx_version : jsx_version option ref
 
-val jsx_module: jsx_module ref
+val jsx_module : jsx_module ref
 
-val jsx_mode: jsx_mode ref
+val jsx_mode : jsx_mode ref
 
 val js_stdout : bool ref
 

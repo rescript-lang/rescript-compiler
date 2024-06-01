@@ -58,30 +58,30 @@ let no_export = ref false
 let as_ppx = ref false
 
 let int_of_jsx_version = function
-| Jsx_v3 -> 3
-| Jsx_v4 -> 4
+  | Jsx_v3 -> 3
+  | Jsx_v4 -> 4
 
 let string_of_jsx_module = function
-| React -> "react"
-| Generic {module_name} -> module_name
+  | React -> "react"
+  | Generic {module_name} -> module_name
 
 let string_of_jsx_mode = function
-| Classic -> "classic"
-| Automatic -> "automatic"
+  | Classic -> "classic"
+  | Automatic -> "automatic"
 
 let jsx_version_of_int = function
-| 3 -> Some Jsx_v3
-| 4 -> Some Jsx_v4
-| _ -> None
+  | 3 -> Some Jsx_v3
+  | 4 -> Some Jsx_v4
+  | _ -> None
 
 let jsx_module_of_string = function
-| "react" -> React
-| module_name -> Generic {module_name}
+  | "react" -> React
+  | module_name -> Generic {module_name}
 
 let jsx_mode_of_string = function
-| "classic" -> Classic
-| "automatic" -> Automatic
-| _ -> Classic
+  | "classic" -> Classic
+  | "automatic" -> Automatic
+  | _ -> Classic
 
 (* option to config `@rescript/std`*)
 let customize_runtime : string option ref = ref None
