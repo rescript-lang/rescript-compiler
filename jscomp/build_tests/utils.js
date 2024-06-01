@@ -44,7 +44,7 @@ async function exec(command, args, options) {
         code = signals[signal] + 128;
       }
 
-      resolve({ code, stdout, stderr });
+      resolve({ status: code, stdout, stderr });
     });
   });
 }

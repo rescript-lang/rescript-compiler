@@ -71,7 +71,7 @@ async function runTests() {
         const out = await exec(`node`, ["input.js"], { cwd: testDir });
         console.log(out.stdout);
 
-        if (out.code === 0) {
+        if (out.status === 0) {
           console.log("✅ success in", file);
         } else {
           console.log(`❌ error in ${file} with stderr:\n`, out.stderr);
