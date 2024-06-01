@@ -75,7 +75,7 @@ format:
 	dune build @fmt --auto-promote
 
 checkformat:
-	dune build @fmt
+	node scripts/check_format.sh
 
 clean-gentype:
 	make -C jscomp/gentype_tests/typescript-react-example clean
