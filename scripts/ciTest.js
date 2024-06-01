@@ -90,6 +90,11 @@ async function runTests() {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2],
     });
+
+    cp.execSync("bash scripts/check_format.sh", {
+      cwd: path.join(__dirname, ".."),
+      stdio: [0, 1, 2],
+    });
   }
 }
 
