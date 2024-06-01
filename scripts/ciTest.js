@@ -1,17 +1,16 @@
 //@ts-check
-var cp = require("child_process");
-var path = require("path");
-var fs = require("fs");
+const cp = require("child_process");
+const path = require("path");
+const fs = require("fs");
 
-var duneBinDir = require("./dune").duneBinDir;
+const duneBinDir = require("./dune").duneBinDir;
 
 const { exec } = require("../jscomp/build_tests/utils.js");
 
-var ounitTest = false;
-var mochaTest = false;
-var bsbTest = false;
-var formatTest = false;
-var all = false;
+let ounitTest = false;
+let mochaTest = false;
+let bsbTest = false;
+let formatTest = false;
 
 if (process.argv.includes("-ounit")) {
   ounitTest = true;
@@ -30,9 +29,6 @@ if (process.argv.includes("-format")) {
 }
 
 if (process.argv.includes("-all")) {
-  all = true;
-}
-if (all) {
   ounitTest = true;
   mochaTest = true;
   bsbTest = true;
@@ -56,10 +52,10 @@ async function runTests() {
 
   if (bsbTest) {
     console.log("Doing build_tests");
-    var buildTestDir = path.join(__dirname, "..", "jscomp", "build_tests");
-    var files = fs.readdirSync(buildTestDir);
+    const buildTestDir = path.join(__dirname, "..", "jscomp", "build_tests");
+    const files = fs.readdirSync(buildTestDir);
     for (const file of files) {
-      var testDir = path.join(buildTestDir, file);
+      const testDir = path.join(buildTestDir, file);
       if (file === "node_modules" || !fs.lstatSync(testDir).isDirectory()) {
         break;
       }
