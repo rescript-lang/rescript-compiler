@@ -30,7 +30,7 @@ let dwarn ?(__POS__ : (string * int * int * int) option) f =
     match __POS__ with
     | None -> Format.fprintf Format.err_formatter ("WARN: " ^^ f ^^ "@.")
     | Some (file, line, _, _) ->
-        Format.fprintf Format.err_formatter
-          ("WARN: %s,%d " ^^ f ^^ "@.")
-          file line
+      Format.fprintf Format.err_formatter
+        ("WARN: %s,%d " ^^ f ^^ "@.")
+        file line
   else Format.ifprintf Format.err_formatter ("WARN: " ^^ f ^^ "@.")

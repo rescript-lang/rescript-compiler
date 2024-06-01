@@ -23,9 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type t = Location.t = {
-  loc_start : Lexing.position;
-  loc_end : Lexing.position;
-  loc_ghost : bool;
+  loc_start: Lexing.position;
+  loc_end: Lexing.position;
+  loc_ghost: bool;
 }
 
 (* val is_ghost : t -> bool *)
