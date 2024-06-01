@@ -54,6 +54,9 @@ async function runTests() {
     console.log("Doing build_tests");
     const buildTestDir = path.join(__dirname, "..", "jscomp", "build_tests");
     const files = fs.readdirSync(buildTestDir);
+
+    let hasError = false;
+
     for (const file of files) {
       const testDir = path.join(buildTestDir, file);
       if (file === "node_modules" || !fs.lstatSync(testDir).isDirectory()) {
@@ -72,8 +75,13 @@ async function runTests() {
           console.log("✅ success in", file);
         } else {
           console.log(`❌ error in ${file} with stderr:\n`, out.stderr);
+          hasError = true;
         }
       }
+    }
+
+    if (hasError) {
+      process.exit(1);
     }
   }
 
