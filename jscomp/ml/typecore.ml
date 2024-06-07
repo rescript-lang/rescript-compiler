@@ -845,8 +845,8 @@ module Label = NameChoice (struct
   let unbound_name_error = Typetexp.unbound_label_error
 end)
 
-let disambiguate_label_by_ids keep closed ids labels =
-  let check_ids (lbl, _) =
+let disambiguate_label_by_ids closed ids labels =
+  let check_ids (lbl, _) = (* check that all ids are present *)
     let lbls = Hashtbl.create 8 in
     Array.iter (fun lbl -> Hashtbl.add lbls lbl.lbl_name ()) lbl.lbl_all;
     List.for_all (Hashtbl.mem lbls) ids in
@@ -860,9 +860,9 @@ let disambiguate_label_by_ids keep closed ids labels =
     (not closed || mandatory_labels_are_present (List.length ids) lbl)
   in
   let labels' = Ext_list.filter labels check_ids in
-  if keep && labels' = [] then (false, labels) else
+  if labels' = [] then (false, labels) else
   let labels'' = Ext_list.filter labels' check_closed in
-  if keep && labels'' = [] then (false, labels') else (true, labels'')
+  if labels'' = [] then (false, labels') else (true, labels'')
 
 (* Only issue warnings once per record constructor/pattern *)
 let disambiguate_lid_a_list loc closed env opath lid_a_list =
@@ -891,8 +891,8 @@ let disambiguate_lid_a_list loc closed env opath lid_a_list =
       Typetexp.unbound_label_error env lid;
     let (ok, labels) =
       match opath with
-        Some (_, _) -> (true, scope) (* disambiguate only checks scope *)
-      | _  -> disambiguate_label_by_ids (opath=None) closed ids scope
+        Some _ -> (true, scope) (* disambiguate only checks scope *)
+      | _  -> disambiguate_label_by_ids closed ids scope
     in
     if ok then Label.disambiguate lid env opath labels ~warn ~scope
           else fst (List.hd labels) (* will fail later *)
