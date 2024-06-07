@@ -17,6 +17,7 @@
 - Fix location of let bindings with attributes. https://github.com/rescript-lang/rescript-compiler/pull/6791
 - PPX v4: mark props type in externals as `@live` to avoid dead code warnings for prop fields in the editor tooling. https://github.com/rescript-lang/rescript-compiler/pull/6796
 - Fix issue where optional labels were not taken into account when disambiguating record value construction. https://github.com/rescript-lang/rescript-compiler/pull/6798
+- Fix issue in gentype when type `Jsx.element` surfaces to the user. https://github.com/rescript-lang/rescript-compiler/pull/6808
 
 # 11.1.1
 
