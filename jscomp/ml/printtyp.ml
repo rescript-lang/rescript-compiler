@@ -881,6 +881,7 @@ let rec tree_of_type_decl id decl =
   in
   let (name, args) = type_defined decl in
   let constraints = tree_of_constraints params in
+  let untagged = ref false in
   let ty, priv =
     match decl.type_kind with
     | Type_abstract ->
@@ -890,6 +891,7 @@ let rec tree_of_type_decl id decl =
             tree_of_typexp false ty, decl.type_private
         end
     | Type_variant cstrs ->
+        untagged := Ast_untagged_variants.process_untagged decl.type_attributes;
         tree_of_manifest (Otyp_sum (List.map tree_of_constructor cstrs)),
         decl.type_private
     | Type_record(lbls, _rep) ->
@@ -907,7 +909,7 @@ let rec tree_of_type_decl id decl =
       otype_type = ty;
       otype_private = priv;
       otype_immediate = immediate;
-      otype_unboxed = decl.type_unboxed.unboxed;
+      otype_unboxed = decl.type_unboxed.unboxed || !untagged;
       otype_cstrs = constraints ;
       }
 

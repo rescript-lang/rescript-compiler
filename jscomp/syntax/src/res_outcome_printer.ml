@@ -683,7 +683,6 @@ let rec print_out_sig_item_doc ?(print_name_as_is = false)
            Doc.group
              (Doc.concat
                 [
-                  attrs;
                   kw;
                   (if print_name_as_is then Doc.text out_type_decl.otype_name
                    else
