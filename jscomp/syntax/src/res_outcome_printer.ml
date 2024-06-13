@@ -430,12 +430,12 @@ and print_out_constructors_doc constructors =
           ]))
 
 and print_out_constructor_doc (name, args, gadt, repr) =
-  let reprDoc =
+  let repr_doc =
     match repr with
     | None -> Doc.nil
     | Some s -> Doc.text (s ^ " ")
   in
-  let gadtDoc =
+  let gadt_doc =
     match gadt with
     | Some out_type -> Doc.concat [Doc.text ": "; print_out_type_doc out_type]
     | None -> Doc.nil
@@ -474,7 +474,7 @@ and print_out_constructor_doc (name, args, gadt, repr) =
              Doc.rparen;
            ])
   in
-  Doc.group (Doc.concat [reprDoc; Doc.text name; args_doc; gadtDoc])
+  Doc.group (Doc.concat [repr_doc; Doc.text name; args_doc; gadt_doc])
 
 and print_record_decl_row_doc (name, mut, opt, arg) =
   Doc.group
