@@ -33,6 +33,7 @@
 - Reactivate unused attribute check for `@int`. https://github.com/rescript-lang/rescript-compiler/pull/6802
 - Fix issue where optional labels were not taken into account when disambiguating record value construction. https://github.com/rescript-lang/rescript-compiler/pull/6798
 - Fix issue in gentype when type `Jsx.element` surfaces to the user. https://github.com/rescript-lang/rescript-compiler/pull/6808
+- Fix inclusion check (impl vs interface) for untagged variants, and fix the outcome printer to show tags. https://github.com/rescript-lang/rescript-compiler/pull/6669
 
 #### :house: Internal
 
