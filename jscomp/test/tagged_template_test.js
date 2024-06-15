@@ -37,7 +37,7 @@ function foo(strings, values) {
 }
 
 let res = foo([
-  "| 5 * 10 = ",
+  "| 5 × 10 = ",
   " |"
 ], [5]);
 
@@ -76,12 +76,12 @@ Mt.from_pair_suites("tagged templates", {
       ],
       tl: {
         hd: [
-          "with rescript function, it should return a string with the correct interpolations",
+          "with rescript function, it should return a string with the correct encoding and interpolations",
           (function (param) {
             return {
               TAG: "Eq",
               _0: res,
-              _1: "| 5 * 10 = 50 |"
+              _1: "| 5 × 10 = 50 |"
             };
           })
         ],
