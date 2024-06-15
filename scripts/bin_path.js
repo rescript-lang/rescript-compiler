@@ -8,9 +8,13 @@ var path = require("path");
  * For compatibility reasons, if the architecture is x64, omit it from the bin directory name.
  * So we'll have "darwin", "linux" and "win32" for x64 arch,
  * but "darwinarm64" and "linuxarm64" for arm64 arch.
+ * Also, we do not have Windows ARM binaries yet. But the x64 binaries do work on Windows 11 ARM.
+ * So omit the architecture for Windows, too.
  */
 var binDirName =
-  process.arch === "x64" ? process.platform : process.platform + process.arch;
+  process.arch === "x64" || process.platform === "win32"
+    ? process.platform
+    : process.platform + process.arch;
 
 /**
  *
