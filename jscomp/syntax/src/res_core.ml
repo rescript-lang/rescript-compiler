@@ -2265,8 +2265,7 @@ and parseTemplateExpr ?prefix p =
     match prefix with
     | Some {txt = Longident.Lident (("js" | "j" | "json") as prefix); _} ->
       Some prefix
-    | Some _ -> None
-    | None -> Some "js"
+    | _ -> Some "js"
   in
   let startPos = p.Parser.startPos in
 

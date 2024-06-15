@@ -26,7 +26,7 @@ let foo = (strings, values) => {
   res.contents ++ strings[valueCount]
 }
 
-let res = foo`| 5 * 10 = ${5} |`
+let res = foo`| 5 × 10 = ${5} |`
 
 Mt.from_pair_suites(
   "tagged templates",
@@ -44,8 +44,8 @@ Mt.from_pair_suites(
       () => Eq(length, 52),
     ),
     (
-      "with rescript function, it should return a string with the correct interpolations",
-      () => Eq(res, "| 5 * 10 = 50 |"),
+      "with rescript function, it should return a string with the correct encoding and interpolations",
+      () => Eq(res, "| 5 × 10 = 50 |"),
     ),
     (
       "a template literal tagged with json should generate a regular string interpolation for now",
