@@ -12,6 +12,10 @@
 
 # 11.1.2-rc.1
 
+#### :rocket: New Feature
+
+- Support Windows 11 ARM (using the x64 binaries in emulation). https://github.com/rescript-lang/rescript-compiler/pull/6813
+
 #### :bug: Bug Fix
 
 - Fix location of let bindings with attributes. https://github.com/rescript-lang/rescript-compiler/pull/6791
