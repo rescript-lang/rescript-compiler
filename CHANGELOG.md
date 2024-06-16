@@ -40,7 +40,7 @@
 
 #### :house: Internal
 
-- Build with OCaml 5.1.1. https://github.com/rescript-lang/rescript-compiler/pull/6641
+- Build with OCaml 5.2.0. https://github.com/rescript-lang/rescript-compiler/pull/6797
 - Convert OCaml codebase to snake case style. https://github.com/rescript-lang/rescript-compiler/pull/6702
 - Fix location of let bindings with attributes. https://github.com/rescript-lang/rescript-compiler/pull/6791
 - Refactor uppercase exotic ident handling. https://github.com/rescript-lang/rescript-compiler/pull/6779
