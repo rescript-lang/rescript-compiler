@@ -96,7 +96,19 @@ Mt.from_pair_suites("tagged templates", {
               };
             })
           ],
-          tl: /* [] */0
+          tl: {
+            hd: [
+              "a regular string interpolation should continue working",
+              (function (param) {
+                return {
+                  TAG: "Eq",
+                  _0: "some random string interpolation",
+                  _1: "some random string interpolation"
+                };
+              })
+            ],
+            tl: /* [] */0
+          }
         }
       }
     }

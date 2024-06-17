@@ -13,12 +13,12 @@ let make = (~clickAction=() => ()) => {
 
   let connectedNetworkName = networkId =>
     switch networkId {
-    | 1 => j`MAINNET\\xa0`->React.string
-    | 3 => j`ROPSTEN\\xa0`->React.string
-    | 4 => j`RINKEBY\\xa0`->React.string
-    | 5 => j`GOERLI\\xa0`->React.string
-    | 42 => j`KOVAN\\xa0`->React.string
-    | _ => j`Unknown\\xa0`->React.string
+    | 1 => `MAINNET\\xa0`->React.string
+    | 3 => `ROPSTEN\\xa0`->React.string
+    | 4 => `RINKEBY\\xa0`->React.string
+    | 5 => `GOERLI\\xa0`->React.string
+    | 42 => `KOVAN\\xa0`->React.string
+    | _ => `Unknown\\xa0`->React.string
     }
 
   let web3Button = switch networkIdOpt {

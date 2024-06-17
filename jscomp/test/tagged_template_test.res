@@ -51,5 +51,9 @@ Mt.from_pair_suites(
       "a template literal tagged with json should generate a regular string interpolation for now",
       () => Eq(json`some random ${"string"}`, "some random string"),
     ),
+    (
+      "a regular string interpolation should continue working",
+      () => Eq(`some random ${"string"} interpolation`, "some random string interpolation"),
+    ),
   },
 )

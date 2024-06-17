@@ -11,14 +11,14 @@ let y = "\n"
 (<> {"\n"->React.string} </>)
 
 // The `//` should not result into an extra comment
-let x = j`https://www.apple.com`
+let x = `https://www.apple.com`
 let x = `https://www.apple.com`
 let x = `https://www.apple.com`
 let x = `https://www.apple.com`
 let x = sql`https://www.apple.com`
 
 // /* */ should not result in an extra comments
-let x = j`/* https://www.apple.com */`
+let x = `/* https://www.apple.com */`
 let x = `/* https://www.apple.com*/`
 let x = `/*https://www.apple.com*/`
 let x = `/*https://www.apple.com*/`

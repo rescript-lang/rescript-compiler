@@ -148,11 +148,11 @@ type itemDestination = [
 
 let itemDestinationToEmoji = destination =>
   switch destination {
-  | #ForTrade => j`🤝`
-  | #CanCraft => j`🔨`
-  | #CatalogOnly => j`📖`
-  | #Wishlist => j`🙏`
-  | #Ignore => j`🤝`
+  | #ForTrade => `🤝`
+  | #CanCraft => `🔨`
+  | #CatalogOnly => `📖`
+  | #Wishlist => `🙏`
+  | #Ignore => `🤝`
   }
 
 module VariantRow = {
@@ -729,7 +729,7 @@ let make = (~showLogin, ~url: ReasonReactRouter.url) => {
       setIsFetchingFromCatalogScanner(_ => true)
       %Repromise.Js({
         let response = Fetch.fetchWithInit(
-          j`https://ehsan.lol/$catalogScannerId/raw`,
+          `https://ehsan.lol/$catalogScannerId/raw`,
           Fetch.RequestInit.make(~method_=Get, ~mode=CORS, ()),
         )
         setIsFetchingFromCatalogScanner(_ => false)

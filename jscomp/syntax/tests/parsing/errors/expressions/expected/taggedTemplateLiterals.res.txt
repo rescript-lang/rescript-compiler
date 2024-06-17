@@ -5,6 +5,6 @@
   1 │ foo()`null`
   2 │ 
 
-  Tagged template literals are currently restricted to names like: json`null`.
+  Tagged template literals are currently restricted to names like: myTagFunction`foo ${bar}`.
 
 ;;(({js|null|js})[@res.template ])

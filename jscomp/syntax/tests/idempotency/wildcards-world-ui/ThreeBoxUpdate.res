@@ -393,7 +393,7 @@ module TwitterVerification = {
         </React.Fragment>
       | PreparePostToTwitter => <p> {"Please login to 3box!"->React.string} </p>
       | PostToTwitter(did) =>
-        let link = j`https://twitter.com/intent/tweet?text=This Tweet links my Twitter account to my 3Box profile!\\n%0D%0A%0D%0Ahttps://wildcards.world/%23user/$currentUser\\n%0D%0A%0D%0ASupport Animal conservation @wildcards_world\\n%0D%0A✅\\n%0D%0A$did\\n%0D%0A✅`
+        let link = `https://twitter.com/intent/tweet?text=This Tweet links my Twitter account to my 3Box profile!\\n%0D%0A%0D%0Ahttps://wildcards.world/%23user/$currentUser\\n%0D%0A%0D%0ASupport Animal conservation @wildcards_world\\n%0D%0A✅\\n%0D%0A$did\\n%0D%0A✅`
 
         <React.Fragment>
           <p> {"Post the following proof to twitter"->React.string} </p>

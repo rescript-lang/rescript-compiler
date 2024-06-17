@@ -35,20 +35,20 @@ let languages: array<language> = [
 
 let languageToString = (language: language) =>
   switch language {
-  | #German => j`Deutsch`
-  | #SpanishEurope => j`Español (Europe)`
-  | #SpanishAmerica => j`Español (America)`
-  | #FrenchEurope => j`Français (Europe)`
-  | #FrenchAmerica => j`Français (America)`
-  | #Italian => j`Italiano`
-  | #Japanese => j`日本語`
-  | #Korean => j`한국어`
-  | #Dutch => j`Nederlands`
-  | #Russian => j`Русский`
-  | #ChineseSimplified => j`中文`
-  | #ChineseTraditional => j`繁體中文`
-  | #English => j`English`
-  | #EnglishEurope => j`English (UK)`
+  | #German => `Deutsch`
+  | #SpanishEurope => `Español (Europe)`
+  | #SpanishAmerica => `Español (America)`
+  | #FrenchEurope => `Français (Europe)`
+  | #FrenchAmerica => `Français (America)`
+  | #Italian => `Italiano`
+  | #Japanese => `日本語`
+  | #Korean => `한국어`
+  | #Dutch => `Nederlands`
+  | #Russian => `Русский`
+  | #ChineseSimplified => `中文`
+  | #ChineseTraditional => `繁體中文`
+  | #English => `English`
+  | #EnglishEurope => `English (UK)`
   }
 
 @val @scope("navigator")

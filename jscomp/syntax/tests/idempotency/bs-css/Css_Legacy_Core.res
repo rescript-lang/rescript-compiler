@@ -1701,8 +1701,8 @@ let fontFace = (~fontFamily, ~src, ~fontStyle=?, ~fontWeight=?, ~fontDisplay=?, 
     src
     |> List.map(x =>
       switch x {
-      | #localUrl(value) => j`local("$(value)")`
-      | #url(value) => j`url("$(value)")`
+      | #localUrl(value) => `local("$(value)")`
+      | #url(value) => `url("$(value)")`
       }
     )
     |> String.concat(", ")
@@ -1721,7 +1721,7 @@ let fontFace = (~fontFamily, ~src, ~fontStyle=?, ~fontWeight=?, ~fontDisplay=?, 
     "font-display: " ++ (FontDisplay.toString(f) ++ ";")
   )
 
-  j`@font-face {
+  `@font-face {
      font-family: $fontFamily;
      src: $src;
      $(fontStyle)

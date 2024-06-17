@@ -21,6 +21,7 @@
 
 #### :boom: Breaking Change
 
+- Make `j` and `js` allowed names for tag functions. https://github.com/rescript-lang/rescript-compiler/pull/6817
 - `lazy` syntax is no longer supported. If you're using it, use `Lazy` module or `React.lazy_` instead. https://github.com/rescript-lang/rescript-compiler/pull/6342
 - Remove handling of attributes with `bs.` prefix (`@bs.as` -> `@as` etc.). https://github.com/rescript-lang/rescript-compiler/pull/6643
 - Remove obsolete `@bs.open` feature. https://github.com/rescript-lang/rescript-compiler/pull/6629

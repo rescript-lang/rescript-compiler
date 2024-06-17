@@ -544,9 +544,9 @@ let make = (~item: Item.t, ~isLoggedIn, ~showLogin) => {
                   </span>
                   {React.string(
                     switch userItem.status {
-                    | Wishlist => j`In your Wishlist`
-                    | ForTrade => j`In your For Trade list`
-                    | CanCraft => j`In your Can Craft list`
+                    | Wishlist => `In your Wishlist`
+                    | ForTrade => `In your For Trade list`
+                    | CanCraft => `In your Can Craft list`
                     | _ => raise(Constants.Uhoh)
                     },
                   )}

@@ -243,7 +243,7 @@ module Followee = {
                     })}
                   />
                 </Link>
-              : <div> {React.string(followee.username ++ (" has no items! " ++ j`😞`))} </div>}
+              : <div> {React.string(followee.username ++ (" has no items! " ++ `😞`))} </div>}
           </div>
         : React.null}
     </div>

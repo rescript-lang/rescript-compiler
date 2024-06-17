@@ -7,10 +7,10 @@ type itemStatus =
 
 let itemStatusToEmoji = itemStatus =>
   switch itemStatus {
-  | Wishlist => j`🙏`
-  | ForTrade => j`🤝`
-  | CanCraft => j`🔨`
-  | CatalogOnly => j`📖`
+  | Wishlist => `🙏`
+  | ForTrade => `🤝`
+  | CanCraft => `🔨`
+  | CatalogOnly => `📖`
   }
 let itemStatusToString = itemStatus =>
   switch itemStatus {

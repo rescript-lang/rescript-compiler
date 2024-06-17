@@ -88,7 +88,7 @@ module CollapsibleLink = {
 
 let useOutsideClick: (ReactDOMRe.Ref.t, unit => unit) => unit = %raw(
   (outerRef, trigger) =>
-    j`{
+    `{
       function handleClickOutside(event) {
         if (outerRef.current && !outerRef.current.contains(event.target)) {
           trigger();
@@ -107,7 +107,7 @@ let useOutsideClick: (ReactDOMRe.Ref.t, unit => unit) => unit = %raw(
 
 let useWindowWidth: unit => option<int> = %raw(
   () =>
-    j`{
+    `{
   const isClient = typeof window === 'object';
 
   function getSize() {

@@ -211,7 +211,7 @@ let make = (
                     onBlur
                     className=Styles.catalogStatusButton
                     ref={ReactDOMRe.Ref.domRef(ref)}>
-                    {React.string(userItemStatus == Some(ForTrade) ? j`🤝` : j`🔨`)}
+                    {React.string(userItemStatus == Some(ForTrade) ? `🤝` : `🔨`)}
                   </div>}
               </ReactAtmosphere.Tooltip>
             | _ => React.null
