@@ -280,12 +280,8 @@ module Delim = struct
   type interpolation =
     | Js (* string interpolation *)
     | Unrecognized (* no interpolation: delimiter not recognized *)
-  let parse_unprocessed loc = function
+  let parse_unprocessed = function
     | "js" -> Js
-    | "j" ->
-      Location.raise_errorf ~loc
-        "The unsafe j`$(a)$(b)` interpolation was removed, use string template \
-         `${a}${b}` instead."
     | _ -> Unrecognized
 
   let escaped_j_delimiter = "*j" (* not user level syntax allowed *)
@@ -294,14 +290,14 @@ module Delim = struct
 end
 
 let transform_exp (e : Parsetree.expression) s delim : Parsetree.expression =
-  match Delim.parse_unprocessed e.pexp_loc delim with
+  match Delim.parse_unprocessed delim with
   | Js ->
     let js_str = Ast_utf8_string.transform e.pexp_loc s in
     {e with pexp_desc = Pexp_constant (Pconst_string (js_str, Delim.escaped))}
   | Unrecognized -> e
 
 let transform_pat (p : Parsetree.pattern) s delim : Parsetree.pattern =
-  match Delim.parse_unprocessed p.ppat_loc delim with
+  match Delim.parse_unprocessed delim with
   | Js ->
     let js_str = Ast_utf8_string.transform p.ppat_loc s in
     {p with ppat_desc = Ppat_constant (Pconst_string (js_str, Delim.escaped))}

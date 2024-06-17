@@ -142,7 +142,7 @@ module Sidebar = {
         {Belt.Array.map(items, m => {
           let hidden = isHidden ? "hidden" : "block"
           let active = isItemActive(m)
-            ? j` bg-primary-15 text-primary-dark rounded -mx-2 px-2 font-bold block `
+            ? ` bg-primary-15 text-primary-dark rounded -mx-2 px-2 font-bold block `
             : ""
           <li
             key=m.name
@@ -213,7 +213,7 @@ module Sidebar = {
         <ul className="mt-3 text-night">
           {Belt.Array.mapWithIndex(items, (idx, m) => {
             let active = isItemActive(m)
-              ? j` bg-primary-15 text-primary-dark -ml-1 px-2 font-bold block `
+              ? ` bg-primary-15 text-primary-dark -ml-1 px-2 font-bold block `
               : ""
             <li
               key=m.href

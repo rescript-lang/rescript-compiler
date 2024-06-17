@@ -1802,7 +1802,7 @@ module Content = {
     | #noOpenQuote => "no-open-quote"
     | #noCloseQuote => "no-close-quote"
     | #attr(name) => "attr(" ++ (name ++ ")")
-    | #text(string) => j`"$string"`
+    | #text(string) => `"$string"`
     }
 }
 

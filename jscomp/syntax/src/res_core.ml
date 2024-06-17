@@ -2104,7 +2104,7 @@ and parse_primary_expr ~operand ?(no_call = false) p =
           ~end_pos:expr.pexp_loc.loc_end p
           (Diagnostics.message
              "Tagged template literals are currently restricted to names like: \
-              json`null`.");
+              myTagFunction`foo ${bar}`.");
         parse_template_expr p)
     | _ -> expr
   in
@@ -2279,11 +2279,10 @@ and parse_binary_expr ?(context = OrdinaryExpr) ?a p prec =
 
 and parse_template_expr ?prefix p =
   let part_prefix =
-    (* we could stop treating js and j prefix as something special
-       for json, we would first need to remove @as(json`true`) feature *)
+    (* we could stop treating json prefix as something special
+       but we would first need to remove @as(json`true`) feature *)
     match prefix with
-    | Some {txt = Longident.Lident (("js" | "j" | "json") as prefix); _} ->
-      Some prefix
+    | Some {txt = Longident.Lident ("json" as prefix); _} -> Some prefix
     | _ -> Some "js"
   in
 
@@ -2367,8 +2366,7 @@ and parse_template_expr ?prefix p =
   in
 
   match prefix with
-  | Some {txt = Longident.Lident ("js" | "j" | "json"); _} | None ->
-    gen_interpolated_string ()
+  | Some {txt = Longident.Lident "json"; _} | None -> gen_interpolated_string ()
   | Some lident_loc -> gen_tagged_template_call lident_loc
 
 (* Overparse: let f = a : int => a + 1, is it (a : int) => or (a): int =>

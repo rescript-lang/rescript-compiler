@@ -21,10 +21,10 @@ let urlToViewingList = url =>
   }
 let viewingListToEmoji = viewingList =>
   switch viewingList {
-  | Wishlist => j`🙏`
-  | ForTrade => j`🤝`
-  | CanCraft => j`🔨`
-  | Catalog => j`📖`
+  | Wishlist => `🙏`
+  | ForTrade => `🤝`
+  | CanCraft => `🔨`
+  | Catalog => `📖`
   }
 let viewingListToString = viewingList =>
   switch viewingList {

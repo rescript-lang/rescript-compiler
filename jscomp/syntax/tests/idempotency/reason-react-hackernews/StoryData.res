@@ -2,9 +2,9 @@ open Belt
 
 let apiBaseUrl = "https://serverless-api.hackernewsmobile.com"
 
-let topStoriesUrl = page => j`$apiBaseUrl/topstories-25-$page.json`
+let topStoriesUrl = page => `$apiBaseUrl/topstories-25-$page.json`
 
-let storyUrl = id => j`$apiBaseUrl/stories/$id.json`
+let storyUrl = id => `$apiBaseUrl/stories/$id.json`
 
 type story = {
   by: string,
