@@ -12,6 +12,10 @@
 
 # 11.1.3
 
+#### :bug: Bug Fix
+
+- Fix tag function location on compiler error. https://github.com/rescript-lang/rescript-compiler/pull/6816
+
 # 11.1.3-rc.1
 
 #### :bug: Bug Fix
