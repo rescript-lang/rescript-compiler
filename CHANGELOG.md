@@ -29,6 +29,7 @@
 
 #### :bug: Bug Fix
 
+- Fix tag function location on compiler error. https://github.com/rescript-lang/rescript-compiler/pull/6816
 - Fix encoding inside tagged template literals. https://github.com/rescript-lang/rescript-compiler/pull/6810
 - Fix unhandled cases for exotic idents (allow to use exotic PascalCased identifiers for types). https://github.com/rescript-lang/rescript-compiler/pull/6777
 - PPX v4: mark props type in externals as `@live` to avoid dead code warnings for prop fields in the editor tooling. https://github.com/rescript-lang/rescript-compiler/pull/6796
