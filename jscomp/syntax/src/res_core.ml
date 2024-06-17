@@ -2267,7 +2267,6 @@ and parseTemplateExpr ?prefix p =
       Some prefix
     | _ -> Some "js"
   in
-  let startPos = p.Parser.startPos in
 
   let parseParts p =
     let rec aux acc =
@@ -2300,13 +2299,9 @@ and parseTemplateExpr ?prefix p =
   let parts = parseParts p in
   let strings = List.map fst parts in
   let values = Ext_list.filter_map parts snd in
-  let endPos = p.Parser.endPos in
 
-  let genTaggedTemplateCall lident =
-    let ident =
-      Ast_helper.Exp.ident ~attrs:[] ~loc:Location.none
-        (Location.mknoloc lident)
-    in
+  let genTaggedTemplateCall (lident_loc : Longident.t Location.loc) =
+    let ident = Ast_helper.Exp.ident ~attrs:[] ~loc:lident_loc.loc lident_loc in
     let strings_array =
       Ast_helper.Exp.array ~attrs:[] ~loc:Location.none strings
     in
@@ -2315,7 +2310,7 @@ and parseTemplateExpr ?prefix p =
     in
     Ast_helper.Exp.apply
       ~attrs:[taggedTemplateLiteralAttr]
-      ~loc:(mkLoc startPos endPos) ident
+      ~loc:lident_loc.loc ident
       [(Nolabel, strings_array); (Nolabel, values_array)]
   in
 
@@ -2355,7 +2350,7 @@ and parseTemplateExpr ?prefix p =
   match prefix with
   | Some {txt = Longident.Lident ("js" | "j" | "json"); _} | None ->
     genInterpolatedString ()
-  | Some {txt = lident} -> genTaggedTemplateCall lident
+  | Some lident_loc -> genTaggedTemplateCall lident_loc
 
 (* Overparse: let f = a : int => a + 1, is it (a : int) => or (a): int =>
  * Also overparse constraints:
