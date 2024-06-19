@@ -59,3 +59,12 @@ let t: list<{.. @attr "age": int, @attr "name": string,}> = x // Note: this comp
 
 // >= isn't an infix op
 let t: list<string>= x
+
+// capitalised type variable in record
+type id_6<'T, 'E> = | Ok('T) | Err({payload: 'E})
+
+// capitalised type variable in as pattern
+let foo = (x: int as 'X) => x
+
+// capitalised type variable in type constraint
+module type A = Foo with type t = 'X constraint 'X = int
