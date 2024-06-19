@@ -56,3 +56,9 @@ let (t : < age: int [@attr ]  ;.. >  list) = x
 let (t : < age: int  ;name: string   ;.. >  list) = x
 let (t : < age: int [@attr ] ;name: string [@attr ]  ;.. >  list) = x
 let (t : string list) = x
+type nonrec ('T, 'E) id_6 =
+  | Ok of 'T 
+  | Err of {
+  payload: 'E } 
+let foo (x : int as 'X) = x
+module type A  = (Foo with type  t =  'X constraint 'X = int)
