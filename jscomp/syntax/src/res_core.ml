@@ -4024,7 +4024,9 @@ and parseTypeVarList p =
     match p.Parser.token with
     | SingleQuote ->
       Parser.next p;
-      let lident, loc = parseLident p in
+      let lident, loc =
+        parseIdent ~msg:ErrorMessages.typeParam ~startPos:p.startPos p
+      in
       let var = Location.mkloc lident loc in
       loop p (var :: vars)
     | _ -> List.rev vars
@@ -4194,7 +4196,9 @@ and parseTypeAlias p typ =
   | As ->
     Parser.next p;
     Parser.expect SingleQuote p;
-    let ident, _loc = parseLident p in
+    let ident, _loc =
+      parseIdent ~msg:ErrorMessages.typeParam ~startPos:p.startPos p
+    in
     (* TODO: how do we parse attributes here? *)
     Ast_helper.Typ.alias
       ~loc:(mkLoc typ.Parsetree.ptyp_loc.loc_start p.prevEndPos)
@@ -4988,7 +4992,7 @@ and parseTypeConstraint p =
     Parser.next p;
     Parser.expect SingleQuote p;
     match p.Parser.token with
-    | Lident ident ->
+    | Lident ident | Uident ident ->
       let identLoc = mkLoc startPos p.endPos in
       Parser.next p;
       Parser.expect Equal p;
