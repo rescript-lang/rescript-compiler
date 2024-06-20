@@ -1,6 +1,0 @@
-# Ignore all scripts used in dev time only,
-# keep only those actually needed in the npm package.
-*
-!bin_path.js
-!rescript_*.js
-!rewatch
