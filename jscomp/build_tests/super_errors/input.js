@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const child_process = require("child_process");
 
-var bsc = require("../../../scripts/bin_path").bsc_exe;
+const { bsc_exe: bsc } = require("#cli/bin_path");
 
 const expectedDir = path.join(__dirname, "expected");
 

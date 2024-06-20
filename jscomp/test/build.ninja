@@ -6,7 +6,7 @@ rule cc
     description = $in -> $out
 rule cc_cmi
     command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags  -I test  $in
-    description = $in -> $out    
+    description = $in -> $out
 
 
 

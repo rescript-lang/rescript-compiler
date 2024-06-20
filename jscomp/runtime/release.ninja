@@ -7,7 +7,7 @@ rule cc
     description = $in -> $out
 rule cc_cmi
     command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags  -I runtime  $in
-    description = $in -> $out    
+    description = $in -> $out
 
 o runtime/bs_stdlib_mini.cmi : cc runtime/bs_stdlib_mini.resi
     bsc_flags = -nopervasives

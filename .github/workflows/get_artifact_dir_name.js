@@ -1,7 +1,7 @@
 const fs = require("fs");
 const os = require("os");
 
-const artifactDirName = require("../../scripts/bin_path").dirName;
+const { dirName: artifactDirName } = require("../../cli/bin_path.js");
 
 // Pass artifactDirName to subsequent GitHub actions
 fs.appendFileSync(
