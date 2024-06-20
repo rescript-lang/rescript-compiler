@@ -39,7 +39,7 @@ var {
   absolutePath: my_target,
   bsc_exe,
   ninja_exe: vendorNinjaPath,
-} = require("rescript/bin_path");
+} = require("#cli/bin_path");
 
 // Let's enforce a Node version >= 16 to make sure M1 users don't trip up on
 // cryptic issues caused by mismatching assembly architectures Node 16 ships

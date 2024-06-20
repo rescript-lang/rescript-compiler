@@ -1,6 +1,6 @@
 var p = require("child_process");
 var assert = require("assert");
-var { rescript_exe } = require("rescript/bin_path");
+var { rescript_exe } = require("#cli/bin_path");
 try {
   var output = p.spawnSync(`${rescript_exe} build -regen`, {
     shell: true,

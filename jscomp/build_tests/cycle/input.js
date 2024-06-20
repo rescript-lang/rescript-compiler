@@ -3,7 +3,7 @@ const cp = require("child_process");
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
-var { rescript_exe } = require("rescript/bin_path");
+var { rescript_exe } = require("#cli/bin_path");
 
 var output = cp.spawnSync(rescript_exe, { encoding: "utf8", shell: true });
 

@@ -41,8 +41,10 @@
     "cli"
   ],
   "exports": {
-    "./bin_path": "./cli/bin_path.js",
     "./package.json": "./package.json"
+  },
+  "imports": {
+    "#cli/bin_path": "./cli/bin_path.js"
   },
   "repository": {
     "type": "git",
