@@ -111,6 +111,8 @@ let suffix_cmti = ".cmti"
 
 let suffix_ast = ".ast"
 
+let suffix_embeds = ".embeds"
+
 let suffix_iast = ".iast"
 
 let suffix_d = ".d"

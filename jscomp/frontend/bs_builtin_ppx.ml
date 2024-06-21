@@ -373,6 +373,11 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) :
 
 let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) :
     Parsetree.structure_item =
+  let str =
+    match !Js_config.embeds with
+    | [] -> str
+    | _ -> Bs_embed_lang.structure_item str
+  in
   match str.pstr_desc with
   | Pstr_type (rf, tdcls) (* [ {ptype_attributes} as tdcl ] *) ->
     Ast_tdcls.handle_tdcls_in_stru self str rf tdcls
