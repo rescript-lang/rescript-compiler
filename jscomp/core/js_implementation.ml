@@ -127,6 +127,15 @@ let no_export (rest : Parsetree.structure) : Parsetree.structure =
         ]
   | _ -> rest
 
+let write_embeds outputprefix (ast : Parsetree.structure) =
+  if !Clflags.only_parse = false && !Js_config.binary_ast then (
+    match !Js_config.embeds with
+    | [] -> ()
+    | embeds -> Js_embeds.write_embeds ~extension_points:embeds 
+      ~output:(outputprefix ^ Literals.suffix_embeds) 
+      ast);
+    ast
+
 let after_parsing_impl ppf outputprefix (ast : Parsetree.structure) =
   if !Clflags.only_parse = false then (
     Js_config.all_module_aliases :=
@@ -180,6 +189,7 @@ let implementation ~parser ppf ?outputprefix fname =
   in
   Res_compmisc.init_path ();
   parser fname
+  |> write_embeds outputprefix
   |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name
        Ml
   |> Ppx_entry.rewrite_implementation
