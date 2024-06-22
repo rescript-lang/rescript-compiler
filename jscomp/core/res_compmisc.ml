@@ -27,7 +27,9 @@ let init_path () =
   let exp_dirs =
     List.map (Misc.expand_directory Config.standard_library) dirs
   in
-  Config.load_path := List.rev_append exp_dirs [Config.standard_library];
+  Config.load_path :=
+    if !Js_config.no_stdlib then exp_dirs
+    else (List.rev_append exp_dirs [Config.standard_library]);
   Env.reset_cache ()
 
 (* Return the initial environment in which compilation proceeds. *)

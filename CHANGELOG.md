@@ -12,6 +12,10 @@
 
 # 11.1.3-rc.1
 
+#### :bug: Bug Fix
+
+- Omit standard library dir from load path if -nostdlib is set. https://github.com/rescript-lang/rescript-compiler/pull/6833
+
 # 11.1.2
 
 #### :bug: Bug Fix
