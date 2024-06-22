@@ -47,6 +47,7 @@
 - Convert OCaml codebase to snake case style. https://github.com/rescript-lang/rescript-compiler/pull/6702
 - Fix location of let bindings with attributes. https://github.com/rescript-lang/rescript-compiler/pull/6791
 - Refactor uppercase exotic ident handling. https://github.com/rescript-lang/rescript-compiler/pull/6779
+- Fix `-nostdlib` internal compiler option. https://github.com/rescript-lang/rescript-compiler/pull/6824
 
 #### :nail_care: Polish
 
@@ -60,7 +61,7 @@
 - In generated code, use `let` instead of `var`. https://github.com/rescript-lang/rescript-compiler/pull/6102
 - Turn off transformation for closures inside loops when capturing loop variables, now that `let` is emitted instead of `var`. https://github.com/rescript-lang/rescript-compiler/pull/6480
 - Improve unused attribute warning message. https://github.com/rescript-lang/rescript-compiler/pull/6787
-- Remove unused -no-stdlib compiler option. https://github.com/rescript-lang/rescript-compiler/pull/6778
+- Remove internal option `use-stdlib` from build schema. https://github.com/rescript-lang/rescript-compiler/pull/6778
 
 # 11.1.1
 
