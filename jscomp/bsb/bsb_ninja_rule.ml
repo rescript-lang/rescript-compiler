@@ -89,6 +89,7 @@ type builtin = {
 
 let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     ~(has_postbuild : string option) ~(pp_file : string option)
+    ~(has_builtin : bool)
     ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
     ~(jsx : Bsb_jsx.t) ~(uncurried: bool)  ~(digest : string) ~(package_specs : Bsb_package_specs.t)
     ~(namespace : string option) ~package_name ~warnings
@@ -113,6 +114,7 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     if is_dev then Ext_buffer.add_char_string buf ' ' dev_incls;
     Ext_buffer.add_char_string buf ' ' lib_incls;
     if is_dev then Ext_buffer.add_char_string buf ' ' dpkg_incls;
+    if not has_builtin then Ext_buffer.add_string buf " -nostdlib";
     Ext_buffer.add_char_string buf ' ' bsc_flags;
     Ext_buffer.add_char_string buf ' ' warnings;
     (* we need "-w a" in the end position to take effect

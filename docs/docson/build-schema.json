@@ -472,6 +472,10 @@
       "$ref": "#/definitions/package-specs",
       "description": "ReScript can currently output to [Commonjs](https://en.wikipedia.org/wiki/CommonJS), and [ES6 modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)"
     },
+    "use-stdlib": {
+      "type": "boolean",
+      "description": "(Experimental) whether to use the OCaml standard library. Default: true"
+    },
     "external-stdlib": {
       "type": "string",
       "description": "Use the external stdlib library instead of the one shipped with the compiler package"
