@@ -82,12 +82,6 @@ let extract_package_name_and_namespace (map : json_map) : string * string option
       bsc -runtime runtime_dir@version
       ```
 *)
-let check_stdlib (map : json_map) : bool =
-  (*built_in_package*)
-  match map.?(Bsb_build_schemas.use_stdlib) with
-  | Some (False _) -> false
-  | None | Some _ -> true
-
 let extract_gentype_config (map : json_map) : Bsb_config_types.gentype_config =
   match map.?(Bsb_build_schemas.gentypeconfig) with
   | None -> false
@@ -266,9 +260,6 @@ let interpret_json
       (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries
            array from the bsconfig and set the backend_ref to the first entry, if any. *)
 
-      (* The default situation is empty *)
-      let built_in_package : bool = check_stdlib map in
-
       let pp_flags : string option =
         extract_string map Bsb_build_schemas.pp_flags (fun p ->
             if p = "" then
@@ -343,7 +334,6 @@ let interpret_json
               | Pinned_dependency x | Dependency x -> x.package_specs);
             file_groups = groups;
             files_to_install = Queue.create ();
-            built_in_dependency = built_in_package;
             reason_react_jsx;
             jsx;
             generators = extract_generators map;
