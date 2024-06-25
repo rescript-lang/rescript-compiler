@@ -236,8 +236,7 @@ let rec add_expr bv exp =
   | Pexp_assert (e) -> add_expr bv e
   | Pexp_lazy (e) -> add_expr bv e
   | Pexp_poly (e, t) -> add_expr bv e; add_opt add_type bv t
-  | Pexp_object { pcstr_self = pat; pcstr_fields = fieldl } ->
-      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
+  | Pexp_object () -> ()
   | Pexp_newtype (_, e) -> add_expr bv e
   | Pexp_pack m -> add_module bv m
   | Pexp_open (_ovf, m, e) ->
@@ -457,18 +456,4 @@ and add_implementation bv l =
 
 and add_implementation_binding bv l =
   snd (add_structure_binding bv l)
-
-
-
-and add_class_field bv pcf =
-  match pcf.pcf_desc with
-    Pcf_inherit() -> ()
-  | Pcf_val(_, _, Cfk_concrete (_, e))
-  | Pcf_method(_, _, Cfk_concrete (_, e)) -> add_expr bv e
-  | Pcf_val(_, _, Cfk_virtual ty)
-  | Pcf_method(_, _, Cfk_virtual ty) -> add_type bv ty
-  | Pcf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
-  | Pcf_initializer e -> add_expr bv e
-  | Pcf_attribute _ -> ()
-  | Pcf_extension e -> handle_extension e
 

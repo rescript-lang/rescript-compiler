@@ -165,7 +165,6 @@ module Exp:
     val lazy_: ?loc:loc -> ?attrs:attrs -> expression -> expression
     val poly: ?loc:loc -> ?attrs:attrs -> expression -> core_type option
               -> expression
-    val object_: ?loc:loc -> ?attrs:attrs -> class_structure -> expression
     val newtype: ?loc:loc -> ?attrs:attrs -> str -> expression -> expression
     val pack: ?loc:loc -> ?attrs:attrs -> module_expr -> expression
     val open_: ?loc:loc -> ?attrs:attrs -> override_flag -> lid -> expression
