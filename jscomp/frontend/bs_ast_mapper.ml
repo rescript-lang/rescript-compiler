@@ -280,8 +280,7 @@ module MT = struct
     | Psig_open x -> open_ ~loc (sub.open_description sub x)
     | Psig_include x -> include_ ~loc (sub.include_description sub x)
     | Psig_class () -> assert false
-    | Psig_class_type l ->
-      class_type ~loc (List.map (sub.class_type_declaration sub) l)
+    | Psig_class_type () -> assert false
     | Psig_extension (x, attrs) ->
       extension ~loc (sub.extension sub x) ~attrs:(sub.attributes sub attrs)
     | Psig_attribute x -> attribute ~loc (sub.attribute sub x)
@@ -336,8 +335,7 @@ module M = struct
     | Pstr_modtype x -> modtype ~loc (sub.module_type_declaration sub x)
     | Pstr_open x -> open_ ~loc (sub.open_description sub x)
     | Pstr_class () -> {pstr_loc = loc; pstr_desc = Pstr_class ()}
-    | Pstr_class_type l ->
-      class_type ~loc (List.map (sub.class_type_declaration sub) l)
+    | Pstr_class_type () -> {pstr_loc = loc; pstr_desc = Pstr_class_type ()}
     | Pstr_include x -> include_ ~loc (sub.include_declaration sub x)
     | Pstr_extension (x, attrs) ->
       extension ~loc (sub.extension sub x) ~attrs:(sub.attributes sub attrs)

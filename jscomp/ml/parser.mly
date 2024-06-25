@@ -694,7 +694,7 @@ structure_item:
   | open_statement
       { let (body, ext) = $1 in mkstr_ext (Pstr_open body) ext }
   | class_type_declarations
-      { let (l, ext) = $1 in mkstr_ext (Pstr_class_type (List.rev l)) ext }
+      { let (_l, ext) = $1 in mkstr_ext (Pstr_class_type ()) ext }
   | str_include_statement
       { let (body, ext) = $1 in mkstr_ext (Pstr_include body) ext }
   | item_extension post_item_attributes
@@ -806,7 +806,7 @@ signature_item:
   | sig_include_statement
       { let (body, ext) = $1 in mksig_ext (Psig_include body) ext }
   | class_type_declarations
-      { let (l, ext) = $1 in mksig_ext (Psig_class_type (List.rev l)) ext }
+      { let (l, ext) = $1 in mksig_ext (Psig_class_type ()) ext }
   | item_extension post_item_attributes
       { mksig(Psig_extension ($1, (add_docs_attrs (symbol_docs ()) $2))) }
   | floating_attribute

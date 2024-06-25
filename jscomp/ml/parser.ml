@@ -6710,7 +6710,7 @@ let yyact = [|
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'class_type_declarations) in
     Obj.repr(
 # 697 "ml/parser.mly"
-      ( let (l, ext) = _1 in mkstr_ext (Pstr_class_type (List.rev l)) ext )
+      ( let (_l, ext) = _1 in mkstr_ext (Pstr_class_type ()) ext )
 # 6715 "ml/parser.ml"
                : 'structure_item))
 ; (fun __caml_parser_env ->
@@ -7014,7 +7014,7 @@ let yyact = [|
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'class_type_declarations) in
     Obj.repr(
 # 809 "ml/parser.mly"
-      ( let (l, ext) = _1 in mksig_ext (Psig_class_type (List.rev l)) ext )
+      ( let (_l, ext) = _1 in mksig_ext (Psig_class_type ()) ext )
 # 7019 "ml/parser.ml"
                : 'signature_item))
 ; (fun __caml_parser_env ->

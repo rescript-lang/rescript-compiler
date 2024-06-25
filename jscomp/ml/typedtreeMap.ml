@@ -125,14 +125,7 @@ module MakeMap(Map : MapArgument) = struct
           Tstr_modtype (map_module_type_declaration mtd)
         | Tstr_open od -> Tstr_open od
         | Tstr_class () -> assert false        
-        | Tstr_class_type list ->
-          let list =
-            List.map
-              (fun (id, name, ct) ->
-               id, name, map_class_type_declaration ct)
-              list
-          in
-            Tstr_class_type list
+        | Tstr_class_type () -> assert false
         | Tstr_include incl ->
           Tstr_include {incl with incl_mod = map_module_expr incl.incl_mod}
         | Tstr_attribute x -> Tstr_attribute x
@@ -430,8 +423,7 @@ module MakeMap(Map : MapArgument) = struct
         | Tsig_include incl ->
             Tsig_include {incl with incl_mod = map_module_type incl.incl_mod}
         | Tsig_class () -> Tsig_class ()
-        | Tsig_class_type list ->
-            Tsig_class_type (List.map map_class_type_declaration list)
+        | Tsig_class_type () -> Tsig_class_type ()
         | Tsig_attribute _ as x -> x
     in
     Map.leave_signature_item { item with sig_desc = sig_desc }
@@ -441,14 +433,6 @@ module MakeMap(Map : MapArgument) = struct
     let mtd = {mtd with mtd_type = may_map map_module_type mtd.mtd_type} in
     Map.leave_module_type_declaration mtd
 
-
-
-  and map_class_type_declaration cd =
-    let cd = Map.enter_class_type_declaration cd in
-    let ci_params = List.map map_type_parameter cd.ci_params in
-    let ci_expr = map_class_type cd.ci_expr in
-    Map.leave_class_type_declaration
-      { cd with ci_params = ci_params; ci_expr = ci_expr }
 
   and map_module_type mty =
     let mty = Map.enter_module_type mty in
@@ -505,42 +489,6 @@ module MakeMap(Map : MapArgument) = struct
     in
     Map.leave_module_expr { mexpr with mod_desc = mod_desc }
 
-  and map_class_type ct =
-    let ct = Map.enter_class_type ct in
-    let cltyp_desc =
-      match ct.cltyp_desc with
-          Tcty_signature csg -> Tcty_signature (map_class_signature csg)
-        | Tcty_constr (path, lid, list) ->
-          Tcty_constr (path, lid, List.map map_core_type list)
-        | Tcty_arrow (label, ct, cl) ->
-          Tcty_arrow (label, map_core_type ct, map_class_type cl)
-        | Tcty_open (ovf, p, lid, env, e) ->
-          Tcty_open (ovf, p, lid, env, map_class_type e)
-    in
-    Map.leave_class_type { ct with cltyp_desc = cltyp_desc }
-
-  and map_class_signature cs =
-    let cs = Map.enter_class_signature cs in
-    let csig_self = map_core_type cs.csig_self in
-    let csig_fields = List.map map_class_type_field cs.csig_fields in
-    Map.leave_class_signature { cs with
-      csig_self = csig_self; csig_fields = csig_fields }
-
-
-  and map_class_type_field ctf =
-    let ctf = Map.enter_class_type_field ctf in
-    let ctf_desc =
-      match ctf.ctf_desc with
-          Tctf_inherit ct -> Tctf_inherit (map_class_type ct)
-        | Tctf_val (s, mut, virt, ct) ->
-          Tctf_val (s, mut, virt, map_core_type ct)
-        | Tctf_method (s, priv, virt, ct) ->
-          Tctf_method (s, priv, virt, map_core_type ct)
-        | Tctf_constraint (ct1, ct2) ->
-          Tctf_constraint (map_core_type ct1, map_core_type ct2)
-        | Tctf_attribute _ as x -> x
-    in
-    Map.leave_class_type_field { ctf with ctf_desc = ctf_desc }
 
   and map_core_type ct =
     let ct = Map.enter_core_type ct in

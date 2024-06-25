@@ -3429,6 +3429,116 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       };
     }
   };
+  let regexp$p = function (_left) {
+    while(true) {
+      let left = _left;
+      if (!accept(/* '|' */124)) {
+        return left;
+      }
+      _left = alt$1({
+        hd: left,
+        tl: {
+          hd: branch$p(/* [] */0),
+          tl: /* [] */0
+        }
+      });
+      continue;
+    };
+  };
+  let branch$p = function (_left) {
+    while(true) {
+      let left = _left;
+      if (i.contents === l || test(/* '|' */124) || test(/* ')' */41)) {
+        return seq$2(List.rev(left));
+      }
+      _left = {
+        hd: piece(),
+        tl: left
+      };
+      continue;
+    };
+  };
+  let bracket = function (_s) {
+    while(true) {
+      let s = _s;
+      if (s !== /* [] */0 && accept(/* ']' */93)) {
+        return s;
+      }
+      let match = $$char();
+      if (match.NAME === "Char") {
+        let c = match.VAL;
+        if (accept(/* '-' */45)) {
+          if (accept(/* ']' */93)) {
+            return {
+              hd: {
+                TAG: "Set",
+                _0: single(c)
+              },
+              tl: {
+                hd: {
+                  TAG: "Set",
+                  _0: {
+                    hd: [
+                      /* '-' */45,
+                      /* '-' */45
+                    ],
+                    tl: /* [] */0
+                  }
+                },
+                tl: s
+              }
+            };
+          }
+          let match$1 = $$char();
+          if (match$1.NAME !== "Char") {
+            return {
+              hd: {
+                TAG: "Set",
+                _0: single(c)
+              },
+              tl: {
+                hd: {
+                  TAG: "Set",
+                  _0: {
+                    hd: [
+                      /* '-' */45,
+                      /* '-' */45
+                    ],
+                    tl: /* [] */0
+                  }
+                },
+                tl: {
+                  hd: match$1.VAL,
+                  tl: s
+                }
+              }
+            };
+          }
+          _s = {
+            hd: {
+              TAG: "Set",
+              _0: seq(c, match$1.VAL)
+            },
+            tl: s
+          };
+          continue;
+        }
+        _s = {
+          hd: {
+            TAG: "Set",
+            _0: single(c)
+          },
+          tl: s
+        };
+        continue;
+      }
+      _s = {
+        hd: match.VAL,
+        tl: s
+      };
+      continue;
+    };
+  };
   let atom = function (param) {
     if (accept(/* '.' */46)) {
       if (dotall) {
@@ -3732,6 +3842,42 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         continue;
       };
     }
+  };
+  let piece = function (param) {
+    let r = atom();
+    if (accept(/* '*' */42)) {
+      return greedy_mod(repn(r, 0, undefined));
+    }
+    if (accept(/* '+' */43)) {
+      return greedy_mod(repn(r, 1, undefined));
+    }
+    if (accept(/* '?' */63)) {
+      return greedy_mod(repn(r, 0, 1));
+    }
+    if (!accept(/* '{' */123)) {
+      return r;
+    }
+    let i$1 = integer();
+    if (i$1 !== undefined) {
+      let j = accept(/* ',' */44) ? integer() : i$1;
+      if (!accept(/* '}' */125)) {
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
+      }
+      if (j !== undefined && j < i$1) {
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
+      }
+      return greedy_mod(repn(r, i$1, j));
+    }
+    i.contents = i.contents - 1 | 0;
+    return r;
   };
   let $$char = function (param) {
     if (i.contents === l) {
@@ -4038,152 +4184,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         VAL: c$2
       };
     }
-  };
-  let bracket = function (_s) {
-    while(true) {
-      let s = _s;
-      if (s !== /* [] */0 && accept(/* ']' */93)) {
-        return s;
-      }
-      let match = $$char();
-      if (match.NAME === "Char") {
-        let c = match.VAL;
-        if (accept(/* '-' */45)) {
-          if (accept(/* ']' */93)) {
-            return {
-              hd: {
-                TAG: "Set",
-                _0: single(c)
-              },
-              tl: {
-                hd: {
-                  TAG: "Set",
-                  _0: {
-                    hd: [
-                      /* '-' */45,
-                      /* '-' */45
-                    ],
-                    tl: /* [] */0
-                  }
-                },
-                tl: s
-              }
-            };
-          }
-          let match$1 = $$char();
-          if (match$1.NAME !== "Char") {
-            return {
-              hd: {
-                TAG: "Set",
-                _0: single(c)
-              },
-              tl: {
-                hd: {
-                  TAG: "Set",
-                  _0: {
-                    hd: [
-                      /* '-' */45,
-                      /* '-' */45
-                    ],
-                    tl: /* [] */0
-                  }
-                },
-                tl: {
-                  hd: match$1.VAL,
-                  tl: s
-                }
-              }
-            };
-          }
-          _s = {
-            hd: {
-              TAG: "Set",
-              _0: seq(c, match$1.VAL)
-            },
-            tl: s
-          };
-          continue;
-        }
-        _s = {
-          hd: {
-            TAG: "Set",
-            _0: single(c)
-          },
-          tl: s
-        };
-        continue;
-      }
-      _s = {
-        hd: match.VAL,
-        tl: s
-      };
-      continue;
-    };
-  };
-  let piece = function (param) {
-    let r = atom();
-    if (accept(/* '*' */42)) {
-      return greedy_mod(repn(r, 0, undefined));
-    }
-    if (accept(/* '+' */43)) {
-      return greedy_mod(repn(r, 1, undefined));
-    }
-    if (accept(/* '?' */63)) {
-      return greedy_mod(repn(r, 0, 1));
-    }
-    if (!accept(/* '{' */123)) {
-      return r;
-    }
-    let i$1 = integer();
-    if (i$1 !== undefined) {
-      let j = accept(/* ',' */44) ? integer() : i$1;
-      if (!accept(/* '}' */125)) {
-        throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
-      }
-      if (j !== undefined && j < i$1) {
-        throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
-      }
-      return greedy_mod(repn(r, i$1, j));
-    }
-    i.contents = i.contents - 1 | 0;
-    return r;
-  };
-  let branch$p = function (_left) {
-    while(true) {
-      let left = _left;
-      if (i.contents === l || test(/* '|' */124) || test(/* ')' */41)) {
-        return seq$2(List.rev(left));
-      }
-      _left = {
-        hd: piece(),
-        tl: left
-      };
-      continue;
-    };
-  };
-  let regexp$p = function (_left) {
-    while(true) {
-      let left = _left;
-      if (!accept(/* '|' */124)) {
-        return left;
-      }
-      _left = alt$1({
-        hd: left,
-        tl: {
-          hd: branch$p(/* [] */0),
-          tl: /* [] */0
-        }
-      });
-      continue;
-    };
   };
   let res = regexp$p(branch$p(/* [] */0));
   if (i.contents !== l) {
