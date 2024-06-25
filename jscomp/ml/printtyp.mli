@@ -68,9 +68,6 @@ val class_type: formatter -> class_type -> unit
 val tree_of_class_declaration:
     Ident.t -> class_declaration -> rec_status -> out_sig_item
 val class_declaration: Ident.t -> formatter -> class_declaration -> unit
-val tree_of_cltype_declaration:
-    Ident.t -> class_type_declaration -> rec_status -> out_sig_item
-val cltype_declaration: Ident.t -> formatter -> class_type_declaration -> unit
 val type_expansion: type_expr -> Format.formatter -> type_expr -> unit
 val prepare_expansion: type_expr * type_expr -> type_expr * type_expr
 val trace:
