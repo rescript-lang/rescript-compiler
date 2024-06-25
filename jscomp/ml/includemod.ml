@@ -31,9 +31,6 @@ type symptom =
   | Modtype_infos of Ident.t * modtype_declaration * modtype_declaration
   | Modtype_permutation
   | Interface_mismatch of string * string
-  | Class_type_declarations of
-      Ident.t * class_type_declaration * class_type_declaration *
-      Ctype.class_match_failure list
   | Unbound_modtype_path of Path.t
   | Unbound_module_path of Path.t
   | Invalid_module_alias of Path.t
@@ -569,13 +566,6 @@ let include_err ~env ppf = function
   | Interface_mismatch(impl_name, intf_name) ->
       fprintf ppf "@[The implementation %s@ does not match the interface %s:"
        impl_name intf_name
-  | Class_type_declarations(id, d1, d2, reason) ->
-      fprintf ppf
-       "@[<hv 2>Class type declarations do not match:@ \
-        %a@;<1 -2>does not match@ %a@]@ %a"
-      (Printtyp.cltype_declaration id) d1
-      (Printtyp.cltype_declaration id) d2
-      Includeclass.report_error reason
   | Unbound_modtype_path path ->
       fprintf ppf "Unbound module type %a" Printtyp.path path
   | Unbound_module_path path ->

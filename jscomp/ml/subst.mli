@@ -53,7 +53,6 @@ val type_declaration: t -> type_declaration -> type_declaration
 val extension_constructor:
         t -> extension_constructor -> extension_constructor
 
-val cltype_declaration: t -> class_type_declaration -> class_type_declaration
 val modtype: t -> module_type -> module_type
 val signature: t -> signature -> signature
 val modtype_declaration: t -> modtype_declaration -> modtype_declaration

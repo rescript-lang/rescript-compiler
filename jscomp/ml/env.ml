@@ -446,7 +446,6 @@ type t = {
   modtypes: modtype_declaration IdTbl.t;
   components: module_components IdTbl.t;
   classes: class_declaration IdTbl.t;
-  cltypes: class_type_declaration IdTbl.t;
   functor_args: unit Ident.tbl;
   summary: summary;
   local_constraints: type_declaration PathMap.t;
@@ -531,7 +530,6 @@ let empty = {
   labels = TycompTbl.empty; types = IdTbl.empty;
   modules = IdTbl.empty; modtypes = IdTbl.empty;
   components = IdTbl.empty; classes = IdTbl.empty;
-  cltypes = IdTbl.empty;
   summary = Env_empty; local_constraints = PathMap.empty; gadt_instances = [];
   flags = 0;
   functor_args = Ident.empty;

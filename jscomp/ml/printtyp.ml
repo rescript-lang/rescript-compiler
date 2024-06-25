@@ -1166,39 +1166,6 @@ let tree_of_class_declaration id cl rs =
 let class_declaration id ppf cl =
   !Oprint.out_sig_item ppf (tree_of_class_declaration id cl Trec_first)
 
-let tree_of_cltype_declaration id cl rs =
-  let params = List.map repr cl.clty_params in
-
-  reset ();
-  List.iter add_alias params;
-  prepare_class_type params cl.clty_type;
-  let sty = Ctype.self_type cl.clty_type in
-  List.iter mark_loops params;
-
-  List.iter check_name_of_type (List.map proxy params);
-  if is_aliased sty then check_name_of_type (proxy sty);
-
-  let sign = Ctype.signature_of_class_type cl.clty_type in
-
-  let virt =
-    let (fields, _) =
-      Ctype.flatten_fields (Ctype.object_fields sign.csig_self) in
-    List.exists
-      (fun (lab, _, _) ->
-         not (lab = dummy_method || Concr.mem lab sign.csig_concr))
-      fields
-    || Vars.fold (fun _ (_,vr,_) b -> vr = Virtual || b) sign.csig_vars false
-  in
-
-  Osig_class_type
-    (virt, Ident.name id,
-     List.map2 tree_of_class_param params (class_variance cl.clty_variance),
-     tree_of_class_type true params cl.clty_type,
-     tree_of_rec rs)
-
-let cltype_declaration id ppf cl =
-  !Oprint.out_sig_item ppf (tree_of_cltype_declaration id cl Trec_first)
-
 (* Print a module type *)
 
 let wrap_env fenv ftree arg =

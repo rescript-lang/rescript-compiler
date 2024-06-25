@@ -330,19 +330,6 @@ let rec class_type s =
 
 
 
-let cltype_declaration s decl =
-  let decl =
-    { clty_params = List.map (typexp s) decl.clty_params;
-      clty_variance = decl.clty_variance;
-      clty_type = class_type s decl.clty_type;
-      clty_path = type_path s decl.clty_path;
-      clty_loc = loc s decl.clty_loc;
-      clty_attributes = attrs s decl.clty_attributes;
-    }
-  in
-  (* Do clean up even if saving: type_declaration may be recursive *)
-  cleanup_types ();
-  decl
 
 let class_type s cty =
   let cty = class_type s cty in
