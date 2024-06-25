@@ -540,14 +540,6 @@ and extension_constructor_kind =
     Text_decl of constructor_arguments * core_type option
   | Text_rebind of Path.t * Longident.t loc
 
-and class_type =
-    {
-     cltyp_type: Types.class_type;
-     cltyp_env: Env.t;
-     cltyp_loc: Location.t;
-     cltyp_attributes: attributes;
-    }
-
 (* Auxiliary functions over the a.s.t. *)
 
 val iter_pattern_desc: (pattern -> unit) -> pattern_desc -> unit
