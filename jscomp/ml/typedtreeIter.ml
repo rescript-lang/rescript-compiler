@@ -40,7 +40,6 @@ module type IteratorArgument = sig
     val enter_class_signature : class_signature -> unit
 
     val enter_class_type : class_type -> unit
-    val enter_class_type_field : class_type_field -> unit
     val enter_core_type : core_type -> unit
     val enter_structure_item : structure_item -> unit
 
@@ -61,7 +60,6 @@ module type IteratorArgument = sig
     val leave_class_signature : class_signature -> unit
 
     val leave_class_type : class_type -> unit
-    val leave_class_type_field : class_type_field -> unit
     val leave_core_type : core_type -> unit
     val leave_structure_item : structure_item -> unit
 
@@ -497,7 +495,6 @@ module DefaultIteratorArgument = struct
       let enter_class_signature _ = ()
 
       let enter_class_type _ = ()
-      let enter_class_type_field _ = ()
       let enter_core_type _ = ()
     let enter_structure_item _ = ()
 
@@ -518,7 +515,6 @@ module DefaultIteratorArgument = struct
       let leave_class_signature _ = ()
 
       let leave_class_type _ = ()
-      let leave_class_type_field _ = ()
       let leave_core_type _ = ()
     let leave_structure_item _ = ()
 

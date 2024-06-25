@@ -35,7 +35,6 @@ module type MapArgument = sig
   val enter_class_signature : class_signature -> class_signature
 
   val enter_class_type : class_type -> class_type
-  val enter_class_type_field : class_type_field -> class_type_field
   val enter_core_type : core_type -> core_type
   val enter_structure_item : structure_item -> structure_item
 
@@ -58,7 +57,6 @@ module type MapArgument = sig
   val leave_class_signature : class_signature -> class_signature
 
   val leave_class_type : class_type -> class_type
-  val leave_class_type_field : class_type_field -> class_type_field
   val leave_core_type : core_type -> core_type
   val leave_structure_item : structure_item -> structure_item
 
@@ -542,7 +540,6 @@ module DefaultMapArgument = struct
   let enter_class_signature t = t
 
   let enter_class_type t = t
-  let enter_class_type_field t = t
   let enter_core_type t = t
   let enter_structure_item t = t
 
@@ -564,7 +561,6 @@ module DefaultMapArgument = struct
   let leave_class_signature t = t
 
   let leave_class_type t = t
-  let leave_class_type_field t = t
   let leave_core_type t = t
   let leave_structure_item t = t
 
