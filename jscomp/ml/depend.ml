@@ -160,33 +160,6 @@ let add_type_extension bv te =
   add bv te.ptyext_path;
   List.iter (add_extension_constructor bv) te.ptyext_constructors
 
-let rec add_class_type bv cty =
-  match cty.pcty_desc with
-    Pcty_constr(l, tyl) ->
-      add bv l; List.iter (add_type bv) tyl
-  | Pcty_signature { pcsig_self = ty; pcsig_fields = fieldl } ->
-      add_type bv ty;
-      List.iter (add_class_type_field bv) fieldl
-  | Pcty_arrow(_, ty1, cty2) ->
-      add_type bv ty1; add_class_type bv cty2
-  | Pcty_extension e -> handle_extension e
-  | Pcty_open (_ovf, m, e) ->
-      let bv = open_module bv m.txt in add_class_type bv e
-
-and add_class_type_field bv pctf =
-  match pctf.pctf_desc with
-    Pctf_inherit cty -> add_class_type bv cty
-  | Pctf_val(_, _, _, ty) -> add_type bv ty
-  | Pctf_method(_, _, _, ty) -> add_type bv ty
-  | Pctf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
-  | Pctf_attribute _ -> ()
-  | Pctf_extension e -> handle_extension e
-
-let add_class_description bv infos =
-  add_class_type bv infos.pci_expr
-
-let add_class_type_declaration = add_class_description
-
 let pattern_bv = ref StringMap.empty
 
 let rec add_pattern bv pat =
@@ -378,8 +351,8 @@ and add_sig_item (bv, m) item =
       (add bv, add m)
   | Psig_class () ->
       (bv, m)
-  | Psig_class_type cdtl ->
-      List.iter (add_class_type_declaration bv) cdtl; (bv, m)
+  | Psig_class_type () ->
+      (bv, m)
   | Psig_attribute _ -> (bv, m)
   | Psig_extension (e, _) ->
       handle_extension e;
@@ -464,8 +437,8 @@ and add_struct_item (bv, m) item : _ StringMap.t * _ StringMap.t =
       (open_module bv od.popen_lid.txt, m)
   | Pstr_class () ->
       (bv,m)
-  | Pstr_class_type cdtl ->
-      List.iter (add_class_type_declaration bv) cdtl; (bv, m)
+  | Pstr_class_type () ->
+      (bv, m)
   | Pstr_include incl ->
       let Node (s, m') = add_module_binding bv incl.pincl_mod in
       add_names s;

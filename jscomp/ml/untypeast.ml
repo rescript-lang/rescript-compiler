@@ -154,13 +154,10 @@ let structure_item sub item =
         Pstr_modtype (sub.module_type_declaration sub mtd)
     | Tstr_open od ->
         Pstr_open (sub.open_description sub od)
-    | Tstr_class _list ->
+    | Tstr_class () ->
         Pstr_class ()
-    | Tstr_class_type list ->
-        Pstr_class_type
-          (List.map
-             (fun (_id, _name, ct) -> sub.class_type_declaration sub ct)
-             list)
+    | Tstr_class_type () ->
+        Pstr_class_type ()
     | Tstr_include incl ->
         Pstr_include (sub.include_declaration sub incl)
     | Tstr_attribute x ->
@@ -499,8 +496,8 @@ let signature_item sub item =
         Psig_include (sub.include_description sub incl)
     | Tsig_class () ->
         Psig_class ()
-    | Tsig_class_type list ->
-        Psig_class_type (List.map (sub.class_type_declaration sub) list)
+    | Tsig_class_type () ->
+        Psig_class_type ()
     | Tsig_attribute x ->
         Psig_attribute x
   in

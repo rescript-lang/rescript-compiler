@@ -249,8 +249,7 @@ module MT = struct
     | Psig_open x -> sub.open_description sub x
     | Psig_include x -> sub.include_description sub x
     | Psig_class () -> ()
-    | Psig_class_type l ->
-        List.iter (sub.class_type_declaration sub) l
+    | Psig_class_type () -> ()
     | Psig_extension (x, attrs) ->
         sub.extension sub x; sub.attributes sub attrs
     | Psig_attribute x -> sub.attribute sub x
@@ -292,8 +291,7 @@ module M = struct
     | Pstr_modtype x -> sub.module_type_declaration sub x
     | Pstr_open x -> sub.open_description sub x
     | Pstr_class () -> ()
-    | Pstr_class_type l ->
-        List.iter (sub.class_type_declaration sub) l
+    | Pstr_class_type () -> ()
     | Pstr_include x -> sub.include_declaration sub x
     | Pstr_extension (x, attrs) ->
         sub.extension sub x; sub.attributes sub attrs

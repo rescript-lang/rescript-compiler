@@ -208,9 +208,6 @@ let constant f = function
 let mutable_flag f = function
   | Immutable -> ()
   | Mutable -> pp f "mutable@;"
-let virtual_flag f  = function
-  | Concrete -> ()
-  | Virtual -> pp f "virtual@;"
 
 (* trailing space added *)
 let rec_flag f rf =
@@ -233,14 +230,8 @@ let tyvar f str = pp f "'%s" str
 let tyvar_loc f str = pp f "'%s" str.txt
 let string_quot f x = pp f "`%s" x
 
-(* c ['a,'b] *)
-let rec class_params_def ctxt f =  function
-  | [] -> ()
-  | l ->
-      pp f "[%a] " (* space *)
-        (list (type_param ctxt) ~sep:",") l
 
-and type_with_label ctxt f (label, c) =
+let rec type_with_label ctxt f (label, c) =
   match label with
   | Nolabel    -> core_type1 ctxt f c (* otherwise parenthesize *)
   | Labelled s -> pp f "%s:%a" s (core_type1 ctxt) c
@@ -797,76 +788,6 @@ and item_extension ctxt f (s, e) =
 and exception_declaration ctxt f ext =
   pp f "@[<hov2>exception@ %a@]" (extension_constructor ctxt) ext
 
-and class_signature ctxt f { pcsig_self = ct; pcsig_fields = l ;_} =
-  let class_type_field f x =
-    match x.pctf_desc with
-    | Pctf_inherit (ct) ->
-        pp f "@[<2>inherit@ %a@]%a" (class_type ctxt) ct
-          (item_attributes ctxt) x.pctf_attributes
-    | Pctf_val (s, mf, vf, ct) ->
-        pp f "@[<2>val @ %a%a%s@ :@ %a@]%a"
-          mutable_flag mf virtual_flag vf s.txt (core_type ctxt) ct
-          (item_attributes ctxt) x.pctf_attributes
-    | Pctf_method (s, pf, vf, ct) ->
-        pp f "@[<2>method %a %a%s :@;%a@]%a"
-          private_flag pf virtual_flag vf s.txt (core_type ctxt) ct
-          (item_attributes ctxt) x.pctf_attributes
-    | Pctf_constraint (ct1, ct2) ->
-        pp f "@[<2>constraint@ %a@ =@ %a@]%a"
-          (core_type ctxt) ct1 (core_type ctxt) ct2
-          (item_attributes ctxt) x.pctf_attributes
-    | Pctf_attribute a -> floating_attribute ctxt f a
-    | Pctf_extension e ->
-        item_extension ctxt f e;
-        item_attributes ctxt f x.pctf_attributes
-  in
-  pp f "@[<hv0>@[<hv2>object@[<1>%a@]@ %a@]@ end@]"
-    (fun f -> function
-         {ptyp_desc=Ptyp_any; ptyp_attributes=[]; _} -> ()
-       | ct -> pp f " (%a)" (core_type ctxt) ct) ct
-    (list class_type_field ~sep:"@;") l
-
-(* call [class_signature] called by [class_signature] *)
-and class_type ctxt f x =
-  match x.pcty_desc with
-  | Pcty_signature cs ->
-      class_signature ctxt f cs;
-      attributes ctxt f x.pcty_attributes
-  | Pcty_constr (li, l) ->
-      pp f "%a%a%a"
-        (fun f l -> match l with
-           | [] -> ()
-           | _  -> pp f "[%a]@ " (list (core_type ctxt) ~sep:"," ) l) l
-        longident_loc li
-        (attributes ctxt) x.pcty_attributes
-  | Pcty_arrow (l, co, cl) ->
-      pp f "@[<2>%a@;->@;%a@]" (* FIXME remove parens later *)
-        (type_with_label ctxt) (l,co)
-        (class_type ctxt) cl
-  | Pcty_extension e ->
-      extension ctxt f e;
-      attributes ctxt f x.pcty_attributes
-  | Pcty_open (ovf, lid, e) ->
-      pp f "@[<2>let open%s %a in@;%a@]" (override ovf) longident_loc lid
-        (class_type ctxt) e
-
-(* [class type a = object end] *)
-and class_type_declaration_list ctxt f l =
-  let class_type_declaration kwd f x =
-    let { pci_params=ls; pci_name={ txt; _ }; _ } = x in
-    pp f "@[<2>%s %a%a%s@ =@ %a@]%a" kwd
-      virtual_flag x.pci_virt
-      (class_params_def ctxt) ls txt
-      (class_type ctxt) x.pci_expr
-      (item_attributes ctxt) x.pci_attributes
-  in
-  match l with
-  | [] -> ()
-  | [x] -> class_type_declaration "class type" f x
-  | x :: xs ->
-      pp f "@[<v>%a@,%a@]"
-        (class_type_declaration "class type") x
-        (list ~sep:"@," (class_type_declaration "and")) xs
 
 and class_field ctxt f x =
   match x.pcf_desc with
@@ -1023,7 +944,7 @@ and signature_item ctxt f x : unit =
                pp f "@ =@ %a" (module_type ctxt) mt
         ) md
         (item_attributes ctxt) attrs
-  | Psig_class_type (l) -> class_type_declaration_list ctxt f l
+  | Psig_class_type () -> ()
   | Psig_recmodule decls ->
       let rec  string_x_module_type_list f ?(first=true) l =
         match l with
@@ -1222,7 +1143,7 @@ and structure_item ctxt f x =
         ) md
         (item_attributes ctxt) attrs
   | Pstr_class () -> ()
-  | Pstr_class_type l -> class_type_declaration_list ctxt f l
+  | Pstr_class_type () -> ()
   | Pstr_primitive vd ->
       pp f "@[<hov2>external@ %a@ :@ %a@]%a"
         protect_ident vd.pval_name.txt

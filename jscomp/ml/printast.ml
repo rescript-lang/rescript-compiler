@@ -73,12 +73,6 @@ let fmt_mutable_flag f x =
   | Mutable -> fprintf f "Mutable";
 ;;
 
-let fmt_virtual_flag f x =
-  match x with
-  | Virtual -> fprintf f "Virtual";
-  | Concrete -> fprintf f "Concrete";
-;;
-
 let fmt_override_flag f x =
   match x with
   | Override -> fprintf f "Override";
@@ -467,74 +461,6 @@ and extension_constructor_kind i ppf x =
         line i ppf "Pext_rebind\n";
         line (i+1) ppf "%a\n" fmt_longident_loc li;
 
-and class_type i ppf x =
-  line i ppf "class_type %a\n" fmt_location x.pcty_loc;
-  attributes i ppf x.pcty_attributes;
-  let i = i+1 in
-  match x.pcty_desc with
-  | Pcty_constr (li, l) ->
-      line i ppf "Pcty_constr %a\n" fmt_longident_loc li;
-      list i core_type ppf l;
-  | Pcty_signature (cs) ->
-      line i ppf "Pcty_signature\n";
-      class_signature i ppf cs;
-  | Pcty_arrow (l, co, cl) ->
-      line i ppf "Pcty_arrow\n";
-      arg_label i ppf l;
-      core_type i ppf co;
-      class_type i ppf cl;
-  | Pcty_extension (s, arg) ->
-      line i ppf "Pcty_extension \"%s\"\n" s.txt;
-      payload i ppf arg
-  | Pcty_open (ovf, m, e) ->
-      line i ppf "Pcty_open %a \"%a\"\n" fmt_override_flag ovf
-        fmt_longident_loc m;
-      class_type i ppf e
-
-and class_signature i ppf cs =
-  line i ppf "class_signature\n";
-  core_type (i+1) ppf cs.pcsig_self;
-  list (i+1) class_type_field ppf cs.pcsig_fields;
-
-and class_type_field i ppf x =
-  line i ppf "class_type_field %a\n" fmt_location x.pctf_loc;
-  let i = i+1 in
-  attributes i ppf x.pctf_attributes;
-  match x.pctf_desc with
-  | Pctf_inherit (ct) ->
-      line i ppf "Pctf_inherit\n";
-      class_type i ppf ct;
-  | Pctf_val (s, mf, vf, ct) ->
-      line i ppf "Pctf_val \"%s\" %a %a\n" s.txt fmt_mutable_flag mf
-           fmt_virtual_flag vf;
-      core_type (i+1) ppf ct;
-  | Pctf_method (s, pf, vf, ct) ->
-      line i ppf "Pctf_method \"%s\" %a %a\n" s.txt fmt_private_flag pf
-           fmt_virtual_flag vf;
-      core_type (i+1) ppf ct;
-  | Pctf_constraint (ct1, ct2) ->
-      line i ppf "Pctf_constraint\n";
-      core_type (i+1) ppf ct1;
-      core_type (i+1) ppf ct2;
-  | Pctf_attribute (s, arg) ->
-      line i ppf "Pctf_attribute \"%s\"\n" s.txt;
-      payload i ppf arg
-  | Pctf_extension (s, arg) ->
-      line i ppf "Pctf_extension \"%s\"\n" s.txt;
-     payload i ppf arg
-
-
-and class_type_declaration i ppf x =
-  line i ppf "class_type_declaration %a\n" fmt_location x.pci_loc;
-  attributes i ppf x.pci_attributes;
-  let i = i+1 in
-  line i ppf "pci_virt = %a\n" fmt_virtual_flag x.pci_virt;
-  line i ppf "pci_params =\n";
-  list (i+1) type_parameter ppf x.pci_params;
-  line i ppf "pci_name = %a\n" fmt_string_loc x.pci_name;
-  line i ppf "pci_expr =\n";
-  class_type (i+1) ppf x.pci_expr;
-
 and class_structure i ppf { pcstr_self = p; pcstr_fields = l } =
   line i ppf "class_structure\n";
   pattern (i+1) ppf p;
@@ -640,9 +566,7 @@ and signature_item i ppf x =
       module_type i ppf incl.pincl_mod;
       attributes i ppf incl.pincl_attributes
   | Psig_class () -> ()  
-  | Psig_class_type (l) ->
-      line i ppf "Psig_class_type\n";
-      list i class_type_declaration ppf l;
+  | Psig_class_type () -> ()
   | Psig_extension ((s, arg), attrs) ->
       line i ppf "Psig_extension \"%s\"\n" s.txt;
       attributes i ppf attrs;
@@ -741,9 +665,7 @@ and structure_item i ppf x =
         fmt_longident_loc od.popen_lid;
       attributes i ppf od.popen_attributes
   | Pstr_class () -> ()
-  | Pstr_class_type (l) ->
-      line i ppf "Pstr_class_type\n";
-      list i class_type_declaration ppf l;
+  | Pstr_class_type () -> ()
   | Pstr_include incl ->
       line i ppf "Pstr_include";
       attributes i ppf incl.pincl_attributes;

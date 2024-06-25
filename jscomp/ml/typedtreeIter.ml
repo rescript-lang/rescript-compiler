@@ -140,10 +140,7 @@ module MakeIterator(Iter : IteratorArgument) : sig
         | Tstr_modtype mtd -> iter_module_type_declaration mtd
         | Tstr_open _ -> ()
         | Tstr_class () -> ()
-        | Tstr_class_type list ->
-            List.iter
-              (fun (_, _, ct) -> iter_class_type_declaration ct)
-              list
+        | Tstr_class_type () -> ()
         | Tstr_include incl -> iter_module_expr incl.incl_mod
         | Tstr_attribute _ ->
             ()
@@ -381,8 +378,7 @@ module MakeIterator(Iter : IteratorArgument) : sig
         | Tsig_open _ -> ()
         | Tsig_include incl -> iter_module_type incl.incl_mod
         | Tsig_class () -> ()
-        | Tsig_class_type list ->
-            List.iter iter_class_type_declaration list
+        | Tsig_class_type () -> ()
         | Tsig_attribute _ -> ()
       end;
       Iter.leave_signature_item item;
@@ -396,13 +392,6 @@ module MakeIterator(Iter : IteratorArgument) : sig
       end;
       Iter.leave_module_type_declaration mtd
 
-
-
-    and iter_class_type_declaration cd =
-      Iter.enter_class_type_declaration cd;
-      List.iter iter_type_parameter cd.ci_params;
-      iter_class_type cd.ci_expr;
-      Iter.leave_class_type_declaration cd;
 
     and iter_module_type mty =
       Iter.enter_module_type mty;
@@ -457,44 +446,6 @@ module MakeIterator(Iter : IteratorArgument) : sig
       end;
       Iter.leave_module_expr mexpr;
 
-
-    and iter_class_type ct =
-      Iter.enter_class_type ct;
-      begin
-        match ct.cltyp_desc with
-          Tcty_signature csg -> iter_class_signature csg
-        | Tcty_constr (_path, _, list) ->
-            List.iter iter_core_type list
-        | Tcty_arrow (_label, ct, cl) ->
-            iter_core_type ct;
-            iter_class_type cl
-        | Tcty_open (_, _, _, _, e) ->
-            iter_class_type e
-      end;
-      Iter.leave_class_type ct;
-
-    and iter_class_signature cs =
-      Iter.enter_class_signature cs;
-      iter_core_type cs.csig_self;
-      List.iter iter_class_type_field cs.csig_fields;
-      Iter.leave_class_signature cs
-
-
-    and iter_class_type_field ctf =
-      Iter.enter_class_type_field ctf;
-      begin
-        match ctf.ctf_desc with
-          Tctf_inherit ct -> iter_class_type ct
-        | Tctf_val (_s, _mut, _virt, ct) ->
-            iter_core_type ct
-        | Tctf_method (_s, _priv, _virt, ct) ->
-            iter_core_type ct
-        | Tctf_constraint  (ct1, ct2) ->
-            iter_core_type ct1;
-            iter_core_type ct2
-        | Tctf_attribute _ -> ()
-      end;
-      Iter.leave_class_type_field ctf
 
     and iter_core_type ct =
       Iter.enter_core_type ct;

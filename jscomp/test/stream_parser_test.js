@@ -168,28 +168,6 @@ function l_parse(token) {
       };
     }
   };
-  let parse_f_aux = function (_a) {
-    while(true) {
-      let a = _a;
-      let t = token$1();
-      if (t.TAG === "Kwd") {
-        switch (t._0) {
-          case "*" :
-              _a = Math.imul(a, parse_f());
-              continue;
-          case "/" :
-              _a = Caml_int32.div(a, parse_f());
-              continue;
-          default:
-            Queue.push(t, look_ahead);
-            return a;
-        }
-      } else {
-        Queue.push(t, look_ahead);
-        return a;
-      }
-    };
-  };
   let parse_f = function (param) {
     let i = token$1();
     switch (i.TAG) {
@@ -231,6 +209,28 @@ function l_parse(token) {
               }
             });
     }
+  };
+  let parse_f_aux = function (_a) {
+    while(true) {
+      let a = _a;
+      let t = token$1();
+      if (t.TAG === "Kwd") {
+        switch (t._0) {
+          case "*" :
+              _a = Math.imul(a, parse_f());
+              continue;
+          case "/" :
+              _a = Caml_int32.div(a, parse_f());
+              continue;
+          default:
+            Queue.push(t, look_ahead);
+            return a;
+        }
+      } else {
+        Queue.push(t, look_ahead);
+        return a;
+      }
+    };
   };
   let parse_t_aux = function (_a) {
     while(true) {
