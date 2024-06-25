@@ -119,9 +119,8 @@ and expression =
 and exp_extra =
   | Texp_constraint of core_type
         (** E : T *)
-  | Texp_coerce of core_type option * core_type
-        (** E :> T           [Texp_coerce (None, T)]
-            E : T0 :> T      [Texp_coerce (Some T0, T)]
+  | Texp_coerce of core_type
+        (** E :> T           [Texp_coerce T]
          *)
   | Texp_open of override_flag * Path.t * Longident.t loc * Env.t
         (** let open[!] M in    [Texp_open (!, P, M, env)]

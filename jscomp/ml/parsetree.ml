@@ -307,9 +307,8 @@ and expression_desc =
          *)
   | Pexp_constraint of expression * core_type
         (* (E : T) *)
-  | Pexp_coerce of expression * core_type option * core_type
+  | Pexp_coerce of expression * unit * core_type
         (* (E :> T)        (None, T)
-           (E : T0 :> T)   (Some T0, T)
          *)
   | Pexp_send of expression * label loc
         (*  E # m *)

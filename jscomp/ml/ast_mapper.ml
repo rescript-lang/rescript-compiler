@@ -314,8 +314,8 @@ module E = struct
     | Pexp_for (p, e1, e2, d, e3) ->
         for_ ~loc ~attrs (sub.pat sub p) (sub.expr sub e1) (sub.expr sub e2) d
           (sub.expr sub e3)
-    | Pexp_coerce (e, t1, t2) ->
-        coerce ~loc ~attrs (sub.expr sub e) (map_opt (sub.typ sub) t1)
+    | Pexp_coerce (e, (), t2) ->
+        coerce ~loc ~attrs (sub.expr sub e)
           (sub.typ sub t2)
     | Pexp_constraint (e, t) ->
         constraint_ ~loc ~attrs (sub.expr sub e) (sub.typ sub t)

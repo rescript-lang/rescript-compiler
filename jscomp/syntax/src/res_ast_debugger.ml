@@ -678,16 +678,8 @@ module SexpAst = struct
       | Pexp_constraint (expr, typexpr) ->
         Sexp.list
           [Sexp.atom "Pexp_constraint"; expression expr; core_type typexpr]
-      | Pexp_coerce (expr, opt_typ, typexpr) ->
-        Sexp.list
-          [
-            Sexp.atom "Pexp_coerce";
-            expression expr;
-            (match opt_typ with
-            | None -> Sexp.atom "None"
-            | Some typ -> Sexp.list [Sexp.atom "Some"; core_type typ]);
-            core_type typexpr;
-          ]
+      | Pexp_coerce (expr, (), typexpr) ->
+        Sexp.list [Sexp.atom "Pexp_coerce"; expression expr; core_type typexpr]
       | Pexp_send _ -> Sexp.list [Sexp.atom "Pexp_send"]
       | Pexp_new _ -> Sexp.list [Sexp.atom "Pexp_new"]
       | Pexp_setinstvar _ -> Sexp.list [Sexp.atom "Pexp_setinstvar"]

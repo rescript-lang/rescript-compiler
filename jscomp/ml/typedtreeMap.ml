@@ -362,11 +362,8 @@ module MakeMap(Map : MapArgument) = struct
     match desc with
       | Texp_constraint ct ->
         Texp_constraint (map_core_type ct), loc, attrs
-      | Texp_coerce (None, ct) ->
-        Texp_coerce (None, map_core_type ct), loc, attrs
-      | Texp_coerce (Some ct1, ct2) ->
-        Texp_coerce (Some (map_core_type ct1),
-                         map_core_type ct2), loc, attrs
+      | Texp_coerce ct ->
+        Texp_coerce (map_core_type ct), loc, attrs
       | Texp_poly (Some ct) ->
         Texp_poly (Some ( map_core_type ct )), loc, attrs
       | Texp_newtype _

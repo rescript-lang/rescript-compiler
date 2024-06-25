@@ -305,9 +305,9 @@ let exp_extra sub (extra, loc, attrs) sexp =
   let attrs = sub.attributes sub attrs in
   let desc =
     match extra with
-      Texp_coerce (cty1, cty2) ->
+      Texp_coerce cty2 ->
         Pexp_coerce (sexp,
-                     map_opt (sub.typ sub) cty1,
+                     (),
                      sub.typ sub cty2)
     | Texp_constraint cty ->
         Pexp_constraint (sexp, sub.typ sub cty)

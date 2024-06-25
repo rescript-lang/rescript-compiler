@@ -3300,17 +3300,10 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
         ]
     | Pexp_function cases ->
       Doc.concat [Doc.text "x => switch x "; print_cases ~state cases cmt_tbl]
-    | Pexp_coerce (expr, typ_opt, typ) ->
+    | Pexp_coerce (expr, (), typ) ->
       let doc_expr = print_expression_with_comments ~state expr cmt_tbl in
       let doc_typ = print_typ_expr ~state typ cmt_tbl in
-      let of_type =
-        match typ_opt with
-        | None -> Doc.nil
-        | Some typ1 ->
-          Doc.concat [Doc.text ": "; print_typ_expr ~state typ1 cmt_tbl]
-      in
-      Doc.concat
-        [Doc.lparen; doc_expr; of_type; Doc.text " :> "; doc_typ; Doc.rparen]
+      Doc.concat [Doc.lparen; doc_expr; Doc.text " :> "; doc_typ; Doc.rparen]
     | Pexp_send (parent_expr, label) ->
       let parent_doc =
         let doc = print_expression_with_comments ~state parent_expr cmt_tbl in

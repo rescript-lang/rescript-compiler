@@ -707,9 +707,8 @@ and simple_expr ctxt f x =
         pp f "@[<hov2>(%a)@]" (list (simple_expr ctxt) ~sep:",@;") l
     | Pexp_constraint (e, ct) ->
         pp f "(%a : %a)" (expression ctxt) e (core_type ctxt) ct
-    | Pexp_coerce (e, cto1, ct) ->
-        pp f "(%a%a :> %a)" (expression ctxt) e
-          (option (core_type ctxt) ~first:" : " ~last:" ") cto1 (* no sep hint*)
+    | Pexp_coerce (e, (), ct) ->
+        pp f "(%a :> %a)" (expression ctxt) e
           (core_type ctxt) ct
     | Pexp_variant (l, None) -> pp f "`%s" l
     | Pexp_record (l, eo) ->
