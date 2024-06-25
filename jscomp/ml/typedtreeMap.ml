@@ -33,7 +33,6 @@ module type MapArgument = sig
   val enter_module_expr : module_expr -> module_expr
   val enter_with_constraint : with_constraint -> with_constraint
 
-  val enter_class_type : class_type -> class_type
   val enter_core_type : core_type -> core_type
   val enter_structure_item : structure_item -> structure_item
 
@@ -54,7 +53,6 @@ module type MapArgument = sig
   val leave_module_expr : module_expr -> module_expr
   val leave_with_constraint : with_constraint -> with_constraint
 
-  val leave_class_type : class_type -> class_type
   val leave_core_type : core_type -> core_type
   val leave_structure_item : structure_item -> structure_item
 
@@ -536,7 +534,6 @@ module DefaultMapArgument = struct
   let enter_module_expr t = t
   let enter_with_constraint t = t
 
-  let enter_class_type t = t
   let enter_core_type t = t
   let enter_structure_item t = t
 
@@ -556,7 +553,6 @@ module DefaultMapArgument = struct
   let leave_module_expr t = t
   let leave_with_constraint t = t
 
-  let leave_class_type t = t
   let leave_core_type t = t
   let leave_structure_item t = t
 
