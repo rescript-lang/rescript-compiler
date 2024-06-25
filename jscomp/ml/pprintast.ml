@@ -671,7 +671,7 @@ and expression ctxt f x =
 and expression1 ctxt f x =
   if x.pexp_attributes <> [] then expression ctxt f x
   else match x.pexp_desc with
-    | Pexp_object cs -> pp f "%a" (class_structure ctxt) cs
+    | Pexp_object () -> assert false
     | _ -> expression2 ctxt f x
 (* used in [Pexp_apply] *)
 
@@ -787,68 +787,6 @@ and item_extension ctxt f (s, e) =
 
 and exception_declaration ctxt f ext =
   pp f "@[<hov2>exception@ %a@]" (extension_constructor ctxt) ext
-
-
-and class_field ctxt f x =
-  match x.pcf_desc with
-  | Pcf_inherit () -> ()  
-  | Pcf_val (s, mf, Cfk_concrete (ovf, e)) ->
-      pp f "@[<2>val%s %a%s =@;%a@]%a" (override ovf)
-        mutable_flag mf s.txt
-        (expression ctxt) e
-        (item_attributes ctxt) x.pcf_attributes
-  | Pcf_method (s, pf, Cfk_virtual ct) ->
-      pp f "@[<2>method virtual %a %s :@;%a@]%a"
-        private_flag pf s.txt
-        (core_type ctxt) ct
-        (item_attributes ctxt) x.pcf_attributes
-  | Pcf_val (s, mf, Cfk_virtual ct) ->
-      pp f "@[<2>val virtual %a%s :@ %a@]%a"
-        mutable_flag mf s.txt
-        (core_type ctxt) ct
-        (item_attributes ctxt) x.pcf_attributes
-  | Pcf_method (s, pf, Cfk_concrete (ovf, e)) ->
-      let bind e =
-        binding ctxt f
-          {pvb_pat=
-             {ppat_desc=Ppat_var s;ppat_loc=Location.none;ppat_attributes=[]};
-           pvb_expr=e;
-           pvb_attributes=[];
-           pvb_loc=Location.none;
-          }
-      in
-      pp f "@[<2>method%s %a%a@]%a"
-        (override ovf)
-        private_flag pf
-        (fun f -> function
-           | {pexp_desc=Pexp_poly (e, Some ct); pexp_attributes=[]; _} ->
-               pp f "%s :@;%a=@;%a"
-                 s.txt (core_type ctxt) ct (expression ctxt) e
-           | {pexp_desc=Pexp_poly (e, None); pexp_attributes=[]; _} ->
-               bind e
-           | _ -> bind e) e
-        (item_attributes ctxt) x.pcf_attributes
-  | Pcf_constraint (ct1, ct2) ->
-      pp f "@[<2>constraint %a =@;%a@]%a"
-        (core_type ctxt) ct1
-        (core_type ctxt) ct2
-        (item_attributes ctxt) x.pcf_attributes
-  | Pcf_initializer (e) ->
-      pp f "@[<2>initializer@ %a@]%a"
-        (expression ctxt) e
-        (item_attributes ctxt) x.pcf_attributes
-  | Pcf_attribute a -> floating_attribute ctxt f a
-  | Pcf_extension e ->
-      item_extension ctxt f e;
-      item_attributes ctxt f x.pcf_attributes
-
-and class_structure ctxt f { pcstr_self = p; pcstr_fields =  l } =
-  pp f "@[<hv0>@[<hv2>object%a@;%a@]@;end@]"
-    (fun f p -> match p.ppat_desc with
-       | Ppat_any -> ()
-       | Ppat_constraint _ -> pp f " %a" (pattern ctxt) p
-       | _ -> pp f " (%a)" (pattern ctxt) p) p
-    (list (class_field ctxt)) l
 
 and module_type ctxt f x =
   if x.pmty_attributes <> [] then begin

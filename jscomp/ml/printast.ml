@@ -356,9 +356,7 @@ and expression i ppf x =
       line i ppf "Pexp_poly\n";
       expression i ppf e;
       option i core_type ppf cto;
-  | Pexp_object s ->
-      line i ppf "Pexp_object\n";
-      class_structure i ppf s
+  | Pexp_object () -> ()
   | Pexp_newtype (s, e) ->
       line i ppf "Pexp_newtype \"%s\"\n" s.txt;
       expression i ppf e
@@ -461,46 +459,6 @@ and extension_constructor_kind i ppf x =
         line i ppf "Pext_rebind\n";
         line (i+1) ppf "%a\n" fmt_longident_loc li;
 
-and class_structure i ppf { pcstr_self = p; pcstr_fields = l } =
-  line i ppf "class_structure\n";
-  pattern (i+1) ppf p;
-  list (i+1) class_field ppf l;
-
-and class_field i ppf x =
-  line i ppf "class_field %a\n" fmt_location x.pcf_loc;
-  let i = i + 1 in
-  attributes i ppf x.pcf_attributes;
-  match x.pcf_desc with
-  | Pcf_inherit () -> ()
-  | Pcf_val (s, mf, k) ->
-      line i ppf "Pcf_val %a\n" fmt_mutable_flag mf;
-      line (i+1) ppf "%a\n" fmt_string_loc s;
-      class_field_kind (i+1) ppf k
-  | Pcf_method (s, pf, k) ->
-      line i ppf "Pcf_method %a\n" fmt_private_flag pf;
-      line (i+1) ppf "%a\n" fmt_string_loc s;
-      class_field_kind (i+1) ppf k
-  | Pcf_constraint (ct1, ct2) ->
-      line i ppf "Pcf_constraint\n";
-      core_type (i+1) ppf ct1;
-      core_type (i+1) ppf ct2;
-  | Pcf_initializer (e) ->
-      line i ppf "Pcf_initializer\n";
-      expression (i+1) ppf e;
-  | Pcf_attribute (s, arg) ->
-      line i ppf "Pcf_attribute \"%s\"\n" s.txt;
-      payload i ppf arg
-  | Pcf_extension (s, arg) ->
-      line i ppf "Pcf_extension \"%s\"\n" s.txt;
-      payload i ppf arg
-
-and class_field_kind i ppf = function
-  | Cfk_concrete (o, e) ->
-      line i ppf "Concrete %a\n" fmt_override_flag o;
-      expression i ppf e
-  | Cfk_virtual t ->
-      line i ppf "Virtual\n";
-      core_type i ppf t
 
 and module_type i ppf x =
   line i ppf "module_type %a\n" fmt_location x.pmty_loc;

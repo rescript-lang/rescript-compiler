@@ -8271,7 +8271,7 @@ let yyact = [|
     let _3 = (Parsing.peek_val __caml_parser_env 1 : 'class_structure) in
     Obj.repr(
 # 1220 "ml/parser.mly"
-      ( mkexp_attrs (Pexp_object _3) _2 )
+      ( mkexp_attrs (Pexp_object ()) _2 )
 # 8276 "ml/parser.ml"
                : 'expr))
 ; (fun __caml_parser_env ->
