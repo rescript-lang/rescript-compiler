@@ -15,7 +15,6 @@
 
 open Asttypes
 open Types
-open Format
 
 type 'a class_info = {
   cls_id : Ident.t;
@@ -43,20 +42,4 @@ type class_type_info = {
   clsty_info : Typedtree.class_type_declaration;
 }
 
-
-
-
-
-val class_type_declarations:
-  Env.t -> Parsetree.class_type_declaration list -> class_type_info list * Env.t
-
-
 val virtual_methods: Types.class_signature -> label list
-
-
-type error 
-
-exception Error of Location.t * Env.t * error
-exception Error_forward of Location.error
-
-val report_error : Env.t -> formatter -> error -> unit

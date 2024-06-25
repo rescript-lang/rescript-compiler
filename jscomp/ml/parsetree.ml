@@ -524,11 +524,6 @@ and 'a class_infos =
    Also used for "class type" declaration.
 *)
 
-
-
-and class_type_declaration = class_type class_infos
-
-
 (** {1 Module language} *)
 
 (* Type expressions for the module language *)
