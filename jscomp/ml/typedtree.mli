@@ -542,23 +542,11 @@ and extension_constructor_kind =
 
 and class_type =
     {
-     cltyp_desc: class_type_desc;
      cltyp_type: Types.class_type;
      cltyp_env: Env.t;
      cltyp_loc: Location.t;
      cltyp_attributes: attributes;
     }
-
-and class_type_desc =
-    Tcty_constr of Path.t * Longident.t loc * core_type list
-  | Tcty_signature of class_signature
-  | Tcty_arrow of arg_label * core_type * class_type
-  | Tcty_open of override_flag * Path.t * Longident.t loc * Env.t * class_type
-
-and class_signature = {
-    csig_self : core_type;
-    csig_type : Types.class_signature;
-  }
 
 (* Auxiliary functions over the a.s.t. *)
 
