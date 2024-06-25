@@ -7232,8 +7232,8 @@ let yyact = [|
     let _3 = (Parsing.peek_val __caml_parser_env 0 : 'post_item_attributes) in
     Obj.repr(
 # 909 "ml/parser.mly"
-      ( let v, attrs = _2 in
-        mkcf (Pcf_val v) ~attrs:(attrs@_3) ~docs:(symbol_docs ()) )
+      ( let _v, attrs = _2 in
+        mkcf (assert false) ~attrs:(attrs@_3) ~docs:(symbol_docs ()) )
 # 7240 "ml/parser.ml"
                : 'class_field))
 ; (fun __caml_parser_env ->
@@ -7241,8 +7241,8 @@ let yyact = [|
     let _3 = (Parsing.peek_val __caml_parser_env 0 : 'post_item_attributes) in
     Obj.repr(
 # 912 "ml/parser.mly"
-      ( let meth, attrs = _2 in
-        mkcf (Pcf_method meth) ~attrs:(attrs@_3) ~docs:(symbol_docs ()) )
+      ( let _meth, attrs = _2 in
+        mkcf (assert false) ~attrs:(attrs@_3) ~docs:(symbol_docs ()) )
 # 7249 "ml/parser.ml"
                : 'class_field))
 ; (fun __caml_parser_env ->
@@ -7251,7 +7251,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'post_item_attributes) in
     Obj.repr(
 # 915 "ml/parser.mly"
-      ( mkcf (Pcf_constraint _3) ~attrs:(_2@_4) ~docs:(symbol_docs ()) )
+      ( mkcf (assert false) ~attrs:(_2@_4) ~docs:(symbol_docs ()) )
 # 7258 "ml/parser.ml"
                : 'class_field))
 ; (fun __caml_parser_env ->
@@ -7260,7 +7260,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'post_item_attributes) in
     Obj.repr(
 # 917 "ml/parser.mly"
-      ( mkcf (Pcf_initializer _3) ~attrs:(_2@_4) ~docs:(symbol_docs ()) )
+      ( mkcf (assert false) ~attrs:(_2@_4) ~docs:(symbol_docs ()) )
 # 7267 "ml/parser.ml"
                : 'class_field))
 ; (fun __caml_parser_env ->
@@ -7268,7 +7268,7 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'post_item_attributes) in
     Obj.repr(
 # 919 "ml/parser.mly"
-      ( mkcf (Pcf_extension _1) ~attrs:_2 ~docs:(symbol_docs ()) )
+      ( mkcf (assert false) ~attrs:_2 ~docs:(symbol_docs ()) )
 # 7275 "ml/parser.ml"
                : 'class_field))
 ; (fun __caml_parser_env ->
@@ -7276,7 +7276,7 @@ let yyact = [|
     Obj.repr(
 # 921 "ml/parser.mly"
       ( mark_symbol_docs ();
-        mkcf (Pcf_attribute _1) )
+        mkcf (assert false) )
 # 7283 "ml/parser.ml"
                : 'class_field))
 ; (fun __caml_parser_env ->
@@ -7287,7 +7287,7 @@ let yyact = [|
     Obj.repr(
 # 927 "ml/parser.mly"
       ( if _1 = Override then syntax_error ();
-        (mkloc _5 (rhs_loc 5), Mutable, Cfk_virtual _7), _2 )
+        (mkloc _5 (rhs_loc 5), Mutable, assert false), _2 )
 # 7294 "ml/parser.ml"
                : 'value))
 ; (fun __caml_parser_env ->
@@ -7299,7 +7299,7 @@ let yyact = [|
     Obj.repr(
 # 930 "ml/parser.mly"
       ( if _1 = Override then syntax_error ();
-        (mkrhs _5 5, _4, Cfk_virtual _7), _2 )
+        (mkrhs _5 5, _4, assert false), _2 )
 # 7306 "ml/parser.ml"
                : 'value))
 ; (fun __caml_parser_env ->
@@ -7310,7 +7310,7 @@ let yyact = [|
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'seq_expr) in
     Obj.repr(
 # 933 "ml/parser.mly"
-      ( (mkrhs _4 4, _3, Cfk_concrete (_1, _6)), _2 )
+      ( (mkrhs _4 4, _3, assert false), _2 )
 # 7317 "ml/parser.ml"
                : 'value))
 ; (fun __caml_parser_env ->
@@ -7323,8 +7323,8 @@ let yyact = [|
     Obj.repr(
 # 935 "ml/parser.mly"
       (
-       let e = mkexp_constraint _7 _5 in
-       (mkrhs _4 4, _3, Cfk_concrete (_1, e)), _2
+       let _e = mkexp_constraint _7 _5 in
+       (mkrhs _4 4, _3, assert false), _2
       )
 # 7332 "ml/parser.ml"
                : 'value))
@@ -7336,7 +7336,7 @@ let yyact = [|
     Obj.repr(
 # 943 "ml/parser.mly"
       ( if _1 = Override then syntax_error ();
-        (mkloc _5 (rhs_loc 5), Private, Cfk_virtual _7), _2 )
+        (mkloc _5 (rhs_loc 5), Private, assert false), _2 )
 # 7343 "ml/parser.ml"
                : 'method_))
 ; (fun __caml_parser_env ->
@@ -7348,7 +7348,7 @@ let yyact = [|
     Obj.repr(
 # 946 "ml/parser.mly"
       ( if _1 = Override then syntax_error ();
-        (mkloc _5 (rhs_loc 5), _4, Cfk_virtual _7), _2 )
+        (mkloc _5 (rhs_loc 5), _4, assert false), _2 )
 # 7355 "ml/parser.ml"
                : 'method_))
 ; (fun __caml_parser_env ->
@@ -7360,7 +7360,7 @@ let yyact = [|
     Obj.repr(
 # 949 "ml/parser.mly"
       ( (mkloc _4 (rhs_loc 4), _3,
-        Cfk_concrete (_1, ghexp(Pexp_poly (_5, None)))), _2 )
+        assert false), _2 )
 # 7367 "ml/parser.ml"
                : 'method_))
 ; (fun __caml_parser_env ->
@@ -7373,7 +7373,7 @@ let yyact = [|
     Obj.repr(
 # 952 "ml/parser.mly"
       ( (mkloc _4 (rhs_loc 4), _3,
-        Cfk_concrete (_1, ghexp(Pexp_poly(_8, Some _6)))), _2 )
+        assert false), _2 )
 # 7380 "ml/parser.ml"
                : 'method_))
 ; (fun __caml_parser_env ->
@@ -7386,9 +7386,9 @@ let yyact = [|
     let _11 = (Parsing.peek_val __caml_parser_env 0 : 'seq_expr) in
     Obj.repr(
 # 956 "ml/parser.mly"
-      ( let exp, poly = wrap_type_annotation _7 _9 _11 in
+      ( let _exp, _poly = wrap_type_annotation _7 _9 _11 in
         (mkloc _4 (rhs_loc 4), _3,
-        Cfk_concrete (_1, ghexp(Pexp_poly(exp, Some poly)))), _2 )
+        assert false), _2 )
 # 7395 "ml/parser.ml"
                : 'method_))
 ; (fun __caml_parser_env ->

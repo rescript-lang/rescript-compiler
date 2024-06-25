@@ -561,38 +561,6 @@ and 'a class_infos =
 
 and class_type_declaration = class_type class_infos
 
-(* Value expressions for the class language *)
-
-
-and class_field_desc =
-  | Pcf_inherit of unit
-        (* inherit CE
-           inherit CE as x
-           inherit! CE
-           inherit! CE as x
-         *)
-  | Pcf_val of (label loc * mutable_flag * class_field_kind)
-        (* val x = E
-           val virtual x: T
-         *)
-  | Pcf_method of (label loc * private_flag * class_field_kind)
-        (* method x = E            (E can be a Pexp_poly)
-           method virtual x: T     (T can be a Ptyp_poly)
-         *)
-  | Pcf_constraint of (core_type * core_type)
-        (* constraint T1 = T2 *)
-  | Pcf_initializer of expression
-        (* initializer E *)
-  | Pcf_attribute of attribute
-        (* [@@@id] *)
-  | Pcf_extension of extension
-        (* [%%id] *)
-
-and class_field_kind =
-  | Cfk_virtual of core_type
-  | Cfk_concrete of override_flag * expression
-
-
 
 (** {1 Module language} *)
 
