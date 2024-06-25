@@ -531,34 +531,6 @@ type closed_class_failure =
     CC_Method of type_expr * bool * string * type_expr
   | CC_Value of type_expr * bool * string * type_expr
 
-exception CCFailure of closed_class_failure
-
-let closed_class params sign =
-  let ty = object_fields (repr sign.csig_self) in
-  let (fields, rest) = flatten_fields ty in
-  List.iter mark_type params;
-  mark_type rest;
-  List.iter
-    (fun (lab, _, ty) -> if lab = dummy_method then mark_type ty)
-    fields;
-  try
-    mark_type_node (repr sign.csig_self);
-    List.iter
-      (fun (lab, kind, ty) ->
-        if field_kind_repr kind = Fpresent then
-        try closed_type ty with Non_closed (ty0, real) ->
-          raise (CCFailure (CC_Method (ty0, real, lab, ty))))
-      fields;
-    mark_type_params (repr sign.csig_self);
-    List.iter unmark_type params;
-    unmark_class_signature sign;
-    None
-  with CCFailure reason ->
-    mark_type_params (repr sign.csig_self);
-    List.iter unmark_type params;
-    unmark_class_signature sign;
-    Some reason
-
 
                             (**********************)
                             (*  Type duplication  *)

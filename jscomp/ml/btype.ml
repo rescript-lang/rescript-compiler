@@ -500,9 +500,6 @@ let unmark_extension_constructor ext =
   iter_type_expr_cstr_args unmark_type ext.ext_args;
   Misc.may unmark_type ext.ext_ret_type
 
-let unmark_class_signature sign =
-  unmark_type sign.csig_self;
-  Vars.iter (fun _l (_m, _v, t) -> unmark_type t) sign.csig_vars
 
 
                   (*******************************************)

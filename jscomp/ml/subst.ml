@@ -309,16 +309,6 @@ let type_declaration s decl =
   cleanup_types ();
   decl
 
-let class_signature s sign =
-  { csig_self = typexp s sign.csig_self;
-    csig_vars =
-      Vars.map (function (m, v, t) -> (m, v, typexp s t)) sign.csig_vars;
-    csig_concr = sign.csig_concr;
-    csig_inher =
-      List.map (fun (p, tl) -> (type_path s p, List.map (typexp s) tl))
-        sign.csig_inher;
-  }
-
 
 let value_description s descr =
   { val_type = type_expr s descr.val_type;
