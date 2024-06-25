@@ -23,9 +23,6 @@ type mapper =
   {
     case: mapper -> case -> case;
     cases: mapper -> case list -> case list;
-    class_signature: mapper -> class_signature -> class_signature;
-    class_type: mapper -> class_type -> class_type;
-    class_type_field: mapper -> class_type_field -> class_type_field;
     env: mapper -> Env.t -> Env.t;
     expr: mapper -> expression -> expression;
     extension_constructor: mapper -> extension_constructor ->
@@ -447,49 +444,6 @@ let module_binding sub x =
   let mb_expr = sub.module_expr sub x.mb_expr in
   {x with mb_expr}
 
-
-let class_type sub x =
-  let cltyp_env = sub.env sub x.cltyp_env in
-  let cltyp_desc =
-    match x.cltyp_desc with
-    | Tcty_signature csg -> Tcty_signature (sub.class_signature sub csg)
-    | Tcty_constr (path, lid, list) ->
-        Tcty_constr (
-          path,
-          lid,
-          List.map (sub.typ sub) list
-        )
-    | Tcty_arrow (label, ct, cl) ->
-        Tcty_arrow
-          (label,
-           sub.typ sub ct,
-           sub.class_type sub cl
-          )
-    | Tcty_open (ovf, p, lid, env, e) ->
-        Tcty_open (ovf, p, lid, sub.env sub env, sub.class_type sub e)
-  in
-  {x with cltyp_desc; cltyp_env}
-
-let class_signature sub x =
-  let csig_self = sub.typ sub x.csig_self in
-  let csig_fields = List.map (sub.class_type_field sub) x.csig_fields in
-  {x with csig_self; csig_fields}
-
-let class_type_field sub x =
-  let ctf_desc =
-    match x.ctf_desc with
-    | Tctf_inherit ct ->
-        Tctf_inherit (sub.class_type sub ct)
-    | Tctf_val (s, mut, virt, ct) ->
-        Tctf_val (s, mut, virt, sub.typ sub ct)
-    | Tctf_method (s, priv, virt, ct) ->
-        Tctf_method (s, priv, virt, sub.typ sub ct)
-    | Tctf_constraint  (ct1, ct2) ->
-        Tctf_constraint (sub.typ sub ct1, sub.typ sub ct2)
-    | Tctf_attribute _ as d -> d
-  in
-  {x with ctf_desc}
-
 let typ sub x =
   let ctyp_env = sub.env sub x.ctyp_env in
   let ctyp_desc =
@@ -552,9 +506,6 @@ let default =
   {
     case;
     cases;
-    class_signature;
-    class_type;
-    class_type_field;
     env;
     expr;
     extension_constructor;
