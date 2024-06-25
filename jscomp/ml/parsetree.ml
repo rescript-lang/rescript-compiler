@@ -563,49 +563,7 @@ and class_type_declaration = class_type class_infos
 
 (* Value expressions for the class language *)
 
-and class_expr =
-    {
-     pcl_desc: class_expr_desc;
-     pcl_loc: Location.t;
-     pcl_attributes: attributes; (* ... [@id1] [@id2] *)
-    }
 
-and class_expr_desc =
-  | Pcl_constr of Longident.t loc * core_type list
-        (* c
-           ['a1, ..., 'an] c *)
-  | Pcl_structure of class_structure
-        (* object ... end *)
-  | Pcl_fun of arg_label * expression option * pattern * class_expr
-        (* fun P -> CE                          (Simple, None)
-           fun ~l:P -> CE                       (Labelled l, None)
-           fun ?l:P -> CE                       (Optional l, None)
-           fun ?l:(P = E0) -> CE                (Optional l, Some E0)
-         *)
-  | Pcl_apply of class_expr * (arg_label * expression) list
-        (* CE ~l1:E1 ... ~ln:En
-           li can be empty (non labeled argument) or start with '?'
-           (optional argument).
-
-           Invariant: n > 0
-         *)
-  | Pcl_let of rec_flag * value_binding list * class_expr
-        (* let P1 = E1 and ... and Pn = EN in CE      (flag = Nonrecursive)
-           let rec P1 = E1 and ... and Pn = EN in CE  (flag = Recursive)
-         *)
-  | Pcl_constraint of class_expr * class_type
-        (* (CE : CT) *)
-  | Pcl_extension of extension
-  (* [%id] *)
-  | Pcl_open of override_flag * Longident.t loc * class_expr
-  (* let open M in CE *)
-
-
-and class_structure =
-    {
-     pcstr_self: pattern;
-     pcstr_fields: class_field list;
-    }
 (* object(selfpat) ... end
    object ... end           (self = Ppat_any)
  *)

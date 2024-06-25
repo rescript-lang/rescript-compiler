@@ -29,13 +29,8 @@ type mapper = {
   attributes: mapper -> attribute list -> attribute list;
   case: mapper -> case -> case;
   cases: mapper -> case list -> case list;
-  class_expr: mapper -> class_expr -> class_expr;
-  class_field: mapper -> class_field -> class_field;
   class_signature: mapper -> class_signature -> class_signature;
-  class_structure: mapper -> class_structure -> class_structure;
   class_type: mapper -> class_type -> class_type;
-  class_type_declaration:
-    mapper -> class_type_declaration -> class_type_declaration;
   class_type_field: mapper -> class_type_field -> class_type_field;
   constructor_declaration:
     mapper -> constructor_declaration -> constructor_declaration;
@@ -463,72 +458,6 @@ module P = struct
     | Ppat_extension x -> extension ~loc ~attrs (sub.extension sub x)
 end
 
-module CE = struct
-  (* Value expressions for the class language *)
-
-  let map sub {pcl_loc = loc; pcl_desc = desc; pcl_attributes = attrs} =
-    let open Cl in
-    let loc = sub.location sub loc in
-    let attrs = sub.attributes sub attrs in
-    match desc with
-    | Pcl_constr (lid, tys) ->
-      constr ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tys)
-    | Pcl_structure s -> structure ~loc ~attrs (sub.class_structure sub s)
-    | Pcl_fun (lab, e, p, ce) ->
-      fun_ ~loc ~attrs lab
-        (map_opt (sub.expr sub) e)
-        (sub.pat sub p) (sub.class_expr sub ce)
-    | Pcl_apply (ce, l) ->
-      apply ~loc ~attrs (sub.class_expr sub ce)
-        (List.map (map_snd (sub.expr sub)) l)
-    | Pcl_let (r, vbs, ce) ->
-      (* #if false then
-              let_ ~loc ~attrs r (List.map (sub.value_binding sub) vbs)
-                (sub.class_expr sub ce)
-         #else *)
-      let_ ~loc ~attrs r
-        ((if r = Recursive then sub.value_bindings_rec else sub.value_bindings)
-           sub vbs)
-        (sub.class_expr sub ce)
-    (* #end           *)
-    | Pcl_constraint (ce, ct) ->
-      constraint_ ~loc ~attrs (sub.class_expr sub ce) (sub.class_type sub ct)
-    | Pcl_extension x -> extension ~loc ~attrs (sub.extension sub x)
-    | Pcl_open (ovf, lid, ce) ->
-      open_ ~loc ~attrs ovf (map_loc sub lid) (sub.class_expr sub ce)
-
-  let map_kind sub = function
-    | Cfk_concrete (o, e) -> Cfk_concrete (o, sub.expr sub e)
-    | Cfk_virtual t -> Cfk_virtual (sub.typ sub t)
-
-  let map_field sub {pcf_desc = desc; pcf_loc = loc; pcf_attributes = attrs} =
-    let open Cf in
-    let loc = sub.location sub loc in
-    let attrs = sub.attributes sub attrs in
-    match desc with
-    | Pcf_inherit () -> {pcf_loc = loc; pcf_attributes = attrs; pcf_desc = desc}
-    | Pcf_val (s, m, k) -> val_ ~loc ~attrs (map_loc sub s) m (map_kind sub k)
-    | Pcf_method (s, p, k) ->
-      method_ ~loc ~attrs (map_loc sub s) p (map_kind sub k)
-    | Pcf_constraint (t1, t2) ->
-      constraint_ ~loc ~attrs (sub.typ sub t1) (sub.typ sub t2)
-    | Pcf_initializer e -> initializer_ ~loc ~attrs (sub.expr sub e)
-    | Pcf_attribute x -> attribute ~loc (sub.attribute sub x)
-    | Pcf_extension x -> extension ~loc ~attrs (sub.extension sub x)
-
-  let map_structure sub {pcstr_self; pcstr_fields} =
-    {
-      pcstr_self = sub.pat sub pcstr_self;
-      pcstr_fields = List.map (sub.class_field sub) pcstr_fields;
-    }
-
-  let class_infos sub f
-      {pci_virt; pci_params = pl; pci_name; pci_expr; pci_loc; pci_attributes} =
-    Ci.mk ~virt:pci_virt
-      ~params:(List.map (map_fst (sub.typ sub)) pl)
-      (map_loc sub pci_name) (f pci_expr) ~loc:(sub.location sub pci_loc)
-      ~attrs:(sub.attributes sub pci_attributes)
-end
 
 (* Now, a generic AST mapper, to be extended to cover all kinds and
    cases of the OCaml grammar.  The default behavior of the mapper is
@@ -543,14 +472,9 @@ let default_mapper =
     signature_item = MT.map_signature_item;
     module_type = MT.map;
     with_constraint = MT.map_with_constraint;
-    class_expr = CE.map;
-    class_field = CE.map_field;
-    class_structure = CE.map_structure;
     class_type = CT.map;
     class_type_field = CT.map_field;
     class_signature = CT.map_signature;
-    class_type_declaration =
-      (fun this -> CE.class_infos this (this.class_type this));
     type_declaration = T.map_type_declaration;
     (* #if true then      *)
     type_declaration_list = T.map_type_declaration_list;
