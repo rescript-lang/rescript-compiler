@@ -883,13 +883,7 @@ module SexpAst = struct
             closed_flag flag;
             Sexp.list (map_empty ~f:object_field fields);
           ]
-      | Ptyp_class (longident_loc, types) ->
-        Sexp.list
-          [
-            Sexp.atom "Ptyp_class";
-            longident longident_loc.Location.txt;
-            Sexp.list (map_empty ~f:core_type types);
-          ]
+      | Ptyp_class () -> assert false
       | Ptyp_variant (fields, flag, opt_labels) ->
         Sexp.list
           [

@@ -518,12 +518,7 @@ let typ sub x =
         Ttyp_constr (path, lid, List.map (sub.typ sub) list)
     | Ttyp_object (list, closed) ->
         Ttyp_object ((List.map (sub.object_field sub) list), closed)
-    | Ttyp_class (path, lid, list) ->
-        Ttyp_class
-          (path,
-           lid,
-           List.map (sub.typ sub) list
-          )
+    | Ttyp_class () -> Ttyp_class ()
     | Ttyp_alias (ct, s) ->
         Ttyp_alias (sub.typ sub ct, s)
     | Ttyp_variant (list, closed, labels) ->

@@ -97,11 +97,8 @@ and core_type_desc =
         (* < l1:T1; ...; ln:Tn >     (flag = Closed)
            < l1:T1; ...; ln:Tn; .. > (flag = Open)
          *)
-  | Ptyp_class of Longident.t loc * core_type list
-        (* #tconstr
-           T #tconstr
-           (T1, ..., Tn) #tconstr
-         *)
+  | Ptyp_class of unit
+        (* dummy AST node *)
   | Ptyp_alias of core_type * string
         (* T as 'a *)
   | Ptyp_variant of row_field list * closed_flag * label list option

@@ -2038,11 +2038,11 @@ simple_core_type2:
   | LESS GREATER
       { mktyp(Ptyp_object ([], Closed)) }
   | HASH class_longident
-      { mktyp(Ptyp_class(mkrhs $2 2, [])) }
+      { mktyp(Ptyp_class()) }
   | simple_core_type2 HASH class_longident
-      { mktyp(Ptyp_class(mkrhs $3 3, [$1])) }
+      { mktyp(Ptyp_class()) }
   | LPAREN core_type_comma_list RPAREN HASH class_longident
-      { mktyp(Ptyp_class(mkrhs $5 5, List.rev $2)) }
+      { mktyp(Ptyp_class()) }
   | LBRACKET tag_field RBRACKET
       { mktyp(Ptyp_variant([$2], Closed, None)) }
 /* PR#3835: this is not LR(1), would need lookahead=2
