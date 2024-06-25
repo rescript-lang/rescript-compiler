@@ -162,10 +162,8 @@ let nondep_supertype env mid mty =
                                      mtd_attributes=[]}) :: rem'
             | _  -> raise Not_found
           end
-      | Sig_class _ -> assert false
-      | Sig_class_type(id, d, rs) ->
-          Sig_class_type(id, Ctype.nondep_cltype_declaration env mid d, rs)
-          :: rem'
+      | Sig_class () -> assert false
+      | Sig_class_type () -> assert false
 
   and nondep_modtype_decl env mtd =
     {mtd with mtd_type = Misc.may_map (nondep_mty env Strict) mtd.mtd_type}

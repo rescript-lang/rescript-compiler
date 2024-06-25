@@ -1295,8 +1295,7 @@ and trees_of_sigitem = function
       [tree_of_modtype_declaration id decl]
   | Sig_class() ->
       []
-  | Sig_class_type(id, decl, rs) ->
-      [tree_of_cltype_declaration id decl rs]
+  | Sig_class_type() -> []
 
 and tree_of_modtype_declaration id decl =
   let mty =

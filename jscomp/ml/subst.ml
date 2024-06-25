@@ -381,10 +381,7 @@ let rec rename_bound_idents s idents = function
       let id' = Ident.rename id in
       rename_bound_idents (add_modtype id (Mty_ident(Pident id')) s)
                           (id' :: idents) sg
-  |  Sig_class_type(id, _, _) :: sg ->
-      (* cheat and pretend they are types cf. PR#6650 *)
-      let id' = Ident.rename id in
-      rename_bound_idents (add_type id (Pident id') s) (id' :: idents) sg
+  |  Sig_class_type () :: _ -> assert false
   | (Sig_value(id, _) | Sig_typext(id, _, _)) :: sg ->
       let id' = Ident.rename id in
       rename_bound_idents s (id' :: idents) sg
@@ -430,8 +427,8 @@ and signature_component s comp newid =
       Sig_modtype(newid, modtype_declaration s d)
   | Sig_class() ->
       Sig_class()
-  | Sig_class_type(_id, d, rs) ->
-      Sig_class_type(newid, cltype_declaration s d, rs)
+  | Sig_class_type () ->
+      Sig_class_type ()
 
 and module_declaration s decl =
   {
