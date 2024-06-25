@@ -26,7 +26,6 @@ type iterator = {
   attributes: iterator -> attribute list -> unit;
   case: iterator -> case -> unit;
   cases: iterator -> case list -> unit;
-  class_signature: iterator -> class_signature -> unit;
   class_type: iterator -> class_type -> unit;
   class_type_field: iterator -> class_type_field -> unit;
   constructor_declaration: iterator -> constructor_declaration -> unit;

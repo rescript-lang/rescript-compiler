@@ -30,7 +30,6 @@ type mapper = {
   attributes: mapper -> attribute list -> attribute list;
   case: mapper -> case -> case;
   cases: mapper -> case list -> case list;
-  class_signature: mapper -> class_signature -> class_signature;
   class_type: mapper -> class_type -> class_type;
   class_type_field: mapper -> class_type_field -> class_type_field;
   constructor_declaration: mapper -> constructor_declaration
@@ -184,7 +183,7 @@ module CT = struct
     match desc with
     | Pcty_constr (lid, tys) ->
         constr ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tys)
-    | Pcty_signature x -> signature ~loc ~attrs (sub.class_signature sub x)
+    | Pcty_signature () -> assert false
     | Pcty_arrow (lab, t, ct) ->
         arrow ~loc ~attrs lab (sub.typ sub t) (sub.class_type sub ct)
     | Pcty_extension x -> extension ~loc ~attrs (sub.extension sub x)
@@ -207,10 +206,6 @@ module CT = struct
     | Pctf_attribute x -> attribute ~loc (sub.attribute sub x)
     | Pctf_extension x -> extension ~loc ~attrs (sub.extension sub x)
 
-  let map_signature sub {pcsig_self; pcsig_fields} =
-    Csig.mk
-      (sub.typ sub pcsig_self)
-      (List.map (sub.class_type_field sub) pcsig_fields)
 end
 
 module MT = struct
@@ -439,7 +434,6 @@ let default_mapper =
     with_constraint = MT.map_with_constraint;
     class_type = CT.map;
     class_type_field = CT.map_field;
-    class_signature = CT.map_signature;
     type_declaration = T.map_type_declaration;
     type_kind = T.map_type_kind;
     typ = T.map;

@@ -29,7 +29,6 @@ type iterator = {
   attributes: iterator -> attribute list -> unit;
   case: iterator -> case -> unit;
   cases: iterator -> case list -> unit;
-  class_signature: iterator -> class_signature -> unit;
   class_type: iterator -> class_type -> unit;
   class_type_field: iterator -> class_type_field -> unit;
   constructor_declaration: iterator -> constructor_declaration -> unit;
@@ -176,7 +175,7 @@ module CT = struct
     match desc with
     | Pcty_constr (lid, tys) ->
         iter_loc sub lid; List.iter (sub.typ sub) tys
-    | Pcty_signature x -> sub.class_signature sub x
+    | Pcty_signature () -> assert false
     | Pcty_arrow (_lab, t, ct) ->
         sub.typ sub t; sub.class_type sub ct
     | Pcty_extension x -> sub.extension sub x
@@ -196,9 +195,6 @@ module CT = struct
     | Pctf_attribute x -> sub.attribute sub x
     | Pctf_extension x -> sub.extension sub x
 
-  let iter_signature sub {pcsig_self; pcsig_fields} =
-    sub.typ sub pcsig_self;
-    List.iter (sub.class_type_field sub) pcsig_fields
 end
 
 module MT = struct
@@ -418,7 +414,6 @@ let default_iterator =
     with_constraint = MT.iter_with_constraint;
     class_type = CT.iter;
     class_type_field = CT.iter_field;
-    class_signature = CT.iter_signature;
     type_declaration = T.iter_type_declaration;
     type_kind = T.iter_type_kind;
     typ = T.iter;

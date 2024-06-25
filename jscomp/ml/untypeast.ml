@@ -591,7 +591,7 @@ let class_type sub ct =
   let loc = sub.location sub ct.cltyp_loc in
   let attrs = sub.attributes sub ct.cltyp_attributes in
   let desc = match ct.cltyp_desc with
-      Tcty_signature csg -> Pcty_signature (sub.class_signature sub csg)
+      Tcty_signature _ -> assert false
     | Tcty_constr (_path, lid, list) ->
         Pcty_constr (map_loc sub lid, List.map (sub.typ sub) list)
     | Tcty_arrow (label, ct, cl) ->

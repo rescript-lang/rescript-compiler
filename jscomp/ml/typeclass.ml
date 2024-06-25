@@ -46,10 +46,6 @@ type class_type_info = {
 }
 
 type error =
-    Unconsistent_constraint of (type_expr * type_expr) list
-  | Field_type_mismatch of string * string * (type_expr * type_expr) list
-  | Structure_expected of class_type
-  | Pattern_type_clash of type_expr
   | Repeated_parameter
   | Unbound_class_type_2 of Longident.t
   | Abbrev_type_clash of type_expr * type_expr * type_expr
@@ -64,17 +60,12 @@ type error =
   | Cannot_coerce_self of type_expr
   | Non_collapsable_conjunction of
       Ident.t * Types.class_declaration * (type_expr * type_expr) list
-  | No_overriding of string * string
  
 
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
 open Typedtree
-
-let ctyp desc typ env loc =
-  { ctyp_desc = desc; ctyp_type = typ; ctyp_loc = loc; ctyp_env = env;
-    ctyp_attributes = [] }
 
                        (**********************)
                        (*  Useful constants  *)
@@ -98,12 +89,6 @@ let unbound_class = Path.Pident (Ident.create "*undef*")
                 (*  Some operations on class types  *)
                 (************************************)
 
-
-(* Fully expand the head of a class type *)
-let rec scrape_class_type =
-  function
-    Cty_constr (_, _, cty) -> scrape_class_type cty
-  | cty                     -> cty
 
 (* Generalize a class type *)
 let rec generalize_class_type gen =
@@ -201,211 +186,13 @@ let rec limited_generalize rv =
 
 
 
-(* Enter an instance variable in the environment *)
-let concr_vals vars =
-  Vars.fold
-    (fun id (_, vf, _) s -> if vf = Virtual then s else Concr.add id s)
-    vars Concr.empty
-
-let inheritance self_type env ovf concr_meths warn_vals loc parent =
-  match scrape_class_type parent with
-    Cty_signature cl_sig ->
-
-      (* Methods *)
-      begin try
-        Ctype.unify env self_type cl_sig.csig_self
-      with Ctype.Unify trace ->
-        match trace with
-          _::_::_::({desc = Tfield(n, _, _, _)}, _)::rem ->
-            raise(Error(loc, env, Field_type_mismatch ("method", n, rem)))
-        | _ ->
-            assert false
-      end;
-
-      (* Overriding *)
-      let over_meths = Concr.inter cl_sig.csig_concr concr_meths in
-      let concr_vals = concr_vals cl_sig.csig_vars in
-      let over_vals = Concr.inter concr_vals warn_vals in
-      begin match ovf with
-        Some Fresh ->
-          let cname =
-            match parent with
-              Cty_constr (p, _, _) -> Path.name p
-            | _ -> "inherited"
-          in
-          if not (Concr.is_empty over_meths) then
-            Location.prerr_warning loc
-              (Warnings.Method_override (cname :: Concr.elements over_meths));
-          if not (Concr.is_empty over_vals) then
-            Location.prerr_warning loc
-              (Warnings.Instance_variable_override
-                 (cname :: Concr.elements over_vals));
-      | Some Override
-        when Concr.is_empty over_meths && Concr.is_empty over_vals ->
-        raise (Error(loc, env, No_overriding ("","")))
-      | _ -> ()
-      end;
-
-      let concr_meths = Concr.union cl_sig.csig_concr concr_meths
-      and warn_vals = Concr.union concr_vals warn_vals in
-
-      (cl_sig, concr_meths, warn_vals)
-
-  | _ ->
-      raise(Error(loc, env, Structure_expected parent))
-
-
 let delayed_meth_specs = ref []
-
-let declare_method val_env meths self_type lab priv sty loc =
-  let (_, ty') =
-     Ctype.filter_self_method val_env lab priv meths self_type
-  in
-  let unif ty =
-    try Ctype.unify val_env ty ty' with Ctype.Unify trace ->
-      raise(Error(loc, val_env, Field_type_mismatch ("method", lab, trace)))
-  in
-  let sty = Ast_helper.Typ.force_poly sty in
-  match sty.ptyp_desc, priv with
-    Ptyp_poly ([],sty'), Public ->
-(* TODO: we moved the [transl_simple_type_univars] outside of the lazy,
-so that we can get an immediate value. Is that correct ? Ask Jacques. *)
-      let returned_cty = ctyp Ttyp_any (Ctype.newty Tnil) val_env loc in
-      delayed_meth_specs :=
-      Warnings.mk_lazy (fun () ->
-            let cty = transl_simple_type_univars val_env sty' in
-            let ty = cty.ctyp_type in
-            unif ty;
-            returned_cty.ctyp_desc <- Ttyp_poly ([], cty);
-            returned_cty.ctyp_type <- ty;
-          ) ::
-      !delayed_meth_specs;
-      returned_cty
-  | _ ->
-      let cty = transl_simple_type val_env false sty in
-      let ty = cty.ctyp_type in
-      unif ty;
-      cty
-
-let type_constraint val_env sty sty' loc =
-  let cty  = transl_simple_type val_env false sty in
-  let ty = cty.ctyp_type in
-  let cty' = transl_simple_type val_env false sty' in
-  let ty' = cty'.ctyp_type in
-  begin
-    try Ctype.unify val_env ty ty' with Ctype.Unify trace ->
-        raise(Error(loc, val_env, Unconsistent_constraint trace));
-  end;
-  (cty, cty')
 
 
 (*******************************)
 
-let add_val lab (mut, virt, ty) val_sig =
-  let virt =
-    try
-      let (_mut', virt', _ty') = Vars.find lab val_sig in
-      if virt' = Concrete then virt' else virt
-    with Not_found -> virt
-  in
-  Vars.add lab (mut, virt, ty) val_sig
 
-let rec class_type_field env self_type meths arg ctf =
-  Builtin_attributes.warning_scope ctf.pctf_attributes
-    (fun () -> class_type_field_aux env self_type meths arg ctf)
-
-and class_type_field_aux env self_type meths
-    (fields, val_sig, concr_meths, inher) ctf =
-
-  let loc = ctf.pctf_loc in
-  let mkctf desc =
-    { ctf_desc = desc; ctf_loc = loc; ctf_attributes = ctf.pctf_attributes }
-  in
-  match ctf.pctf_desc with
-    Pctf_inherit sparent ->
-      let parent = class_type env sparent in
-      let inher =
-        match parent.cltyp_type with
-          Cty_constr (p, tl, _) -> (p, tl) :: inher
-        | _ -> inher
-      in
-      let (cl_sig, concr_meths, _) =
-        inheritance self_type env None concr_meths Concr.empty sparent.pcty_loc
-          parent.cltyp_type
-      in
-      let val_sig =
-        Vars.fold add_val cl_sig.csig_vars val_sig in
-      (mkctf (Tctf_inherit parent) :: fields,
-       val_sig, concr_meths, inher)
-
-  | Pctf_val ({txt=lab}, mut, virt, sty) ->
-      let cty = transl_simple_type env false sty in
-      let ty = cty.ctyp_type in
-      (mkctf (Tctf_val (lab, mut, virt, cty)) :: fields,
-      add_val lab (mut, virt, ty) val_sig, concr_meths, inher)
-
-  | Pctf_method ({txt=lab}, priv, virt, sty)  ->
-      let cty =
-        declare_method env meths self_type lab priv sty  ctf.pctf_loc in
-      let concr_meths =
-        match virt with
-        | Concrete -> Concr.add lab concr_meths
-        | Virtual -> concr_meths
-      in
-      (mkctf (Tctf_method (lab, priv, virt, cty)) :: fields,
-        val_sig, concr_meths, inher)
-
-  | Pctf_constraint (sty, sty') ->
-      let (cty, cty') = type_constraint env sty sty'  ctf.pctf_loc in
-      (mkctf (Tctf_constraint (cty, cty')) :: fields,
-        val_sig, concr_meths, inher)
-
-  | Pctf_attribute x ->
-      Builtin_attributes.warning_attribute x;
-      (mkctf (Tctf_attribute x) :: fields,
-        val_sig, concr_meths, inher)
-
-  | Pctf_extension ext ->
-      raise (Error_forward (Builtin_attributes.error_of_extension ext))
-
-and class_signature env {pcsig_self=sty; pcsig_fields=sign} =
-  let meths = ref Meths.empty in
-  let self_cty = transl_simple_type env false sty in
-  let self_cty = { self_cty with
-    ctyp_type = Ctype.expand_head env self_cty.ctyp_type } in
-  let self_type =  self_cty.ctyp_type in
-
-  (* Check that the binder is a correct type, and introduce a dummy
-     method preventing self type from being closed. *)
-  let dummy_obj = Ctype.newvar () in
-  Ctype.unify env (Ctype.filter_method env dummy_method Private dummy_obj)
-    (Ctype.newty (Ttuple []));
-  begin try
-    Ctype.unify env self_type dummy_obj
-  with Ctype.Unify _ ->
-    raise(Error(sty.ptyp_loc, env, Pattern_type_clash self_type))
-  end;
-
-  (* Class type fields *)
-  let (rev_fields, val_sig, concr_meths, inher) =
-    Builtin_attributes.warning_scope []
-      (fun () ->
-         List.fold_left (class_type_field env self_type meths)
-           ([], Vars.empty, Concr.empty, [])
-           sign
-      )
-  in
-  let cty =   {csig_self = self_type;
-   csig_vars = val_sig;
-   csig_concr = concr_meths;
-   csig_inher = inher}
-  in
-  { csig_self = self_cty;
-    csig_fields = List.rev rev_fields;
-    csig_type = cty;
-  }
-
-and class_type env scty =
+let rec class_type env scty =
   Builtin_attributes.warning_scope scty.pcty_attributes
     (fun () -> class_type_aux env scty)
 
@@ -445,10 +232,7 @@ and class_type_aux env scty =
       let typ = Cty_constr (path, params, clty) in
       cltyp (Tcty_constr ( path, lid , ctys)) typ
 
-  | Pcty_signature pcsig ->
-      let clsig = class_signature env pcsig in
-      let typ = Cty_signature clsig.csig_type in
-      cltyp (Tcty_signature clsig) typ
+  | Pcty_signature () -> assert false
 
   | Pcty_arrow (l, sty, scty) ->
       let cty = transl_simple_type env false sty in
@@ -949,20 +733,6 @@ let class_type_declarations env cls =
      decls,
    env)
 
-
-
-(*******************************)
-
-(* Approximate the class declaration as class ['params] id = object end *)
-let approx_class sdecl =
-  let open Ast_helper in
-  let self' = Typ.any () in
-  let clty' = Cty.signature ~loc:sdecl.pci_expr.pcty_loc (Csig.mk self' []) in
-  { sdecl with pci_expr = clty' }
-
-let approx_class_declarations env sdecls =
-  fst (class_type_declarations env (List.map approx_class sdecls))
-
 (*******************************)
 
 (* Error report *)
@@ -972,28 +742,6 @@ open Format
 let report_error env ppf = function
   | Repeated_parameter ->
       fprintf ppf "A type parameter occurs several times"
-  | Unconsistent_constraint trace ->
-      fprintf ppf "The class constraints are not consistent.@.";
-      Printtyp.report_unification_error ppf env trace
-        (fun ppf -> fprintf ppf "Type")
-        (fun ppf -> fprintf ppf "is not compatible with type")
-  | Field_type_mismatch (k, m, trace) ->
-      Printtyp.report_unification_error ppf env trace
-        (function ppf ->
-           fprintf ppf "The %s %s@ has type" k m)
-        (function ppf ->
-           fprintf ppf "but is expected to have type")
-  | Structure_expected clty ->
-      fprintf ppf
-        "@[This class expression is not a class structure; it has type@ %a@]"
-        Printtyp.class_type clty
-  | Pattern_type_clash ty ->
-      (* XXX Trace *)
-      (* XXX Revoir message d'erreur | Improve error message *)
-      Printtyp.reset_and_mark_loops ty;
-      fprintf ppf "@[%s@ %a@]"
-        "This pattern cannot match self: it only matches values of type"
-        Printtyp.type_expr ty
   | Unbound_class_type_2 cl ->
       fprintf ppf "@[The class type@ %a@ is not yet completely defined@]"
       Printtyp.longident cl
@@ -1084,11 +832,6 @@ let report_error env ppf = function
       Printtyp.report_unification_error ppf env trace
         (fun ppf -> fprintf ppf "Type")
         (fun ppf -> fprintf ppf "is not compatible with type")
-  | No_overriding (_, "") ->
-      fprintf ppf "@[This inheritance does not override any method@ %s@]"
-        "instance variable"
-  | No_overriding (kind, name) ->
-      fprintf ppf "@[The %s `%s'@ has no previous definition@]" kind name
 
 let report_error env ppf err =
   Printtyp.wrap_printing_env env (fun () -> report_error env ppf err)

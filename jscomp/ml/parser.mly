@@ -250,7 +250,6 @@ let extra_text text pos items =
 
 let extra_str pos items = extra_text Str.text pos items
 let extra_sig pos items = extra_text Sig.text pos items
-let extra_csig pos items = extra_text Ctf.text pos items
 
 let extra_rhs_core_type ct ~pos =
   let docs = rhs_info pos in
@@ -976,7 +975,7 @@ class_signature:
 ;
 class_sig_body:
     class_self_type class_sig_fields
-      { Csig.mk $1 (extra_csig 2 (List.rev $2)) }
+      { assert false }
 ;
 class_self_type:
     LPAREN core_type RPAREN
