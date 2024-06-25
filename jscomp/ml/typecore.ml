@@ -2576,51 +2576,49 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
       (* Also see PR#7199 for a problem with the following:
          let separate =  Env.has_local_constraints env in*)
       let (arg, ty',cty') =
-        match () with
-        | () ->
-            let (cty', force) =
-              Typetexp.transl_simple_type_delayed env sty'
-            in
-            let ty' = cty'.ctyp_type in
-            if separate then begin_def ();
-            let arg = type_exp env sarg in
-            let gen =
-              if separate then begin
-                end_def ();
-                let tv = newvar () in
-                let gen = generalizable tv.level arg.exp_type in
-                (try unify_var env tv arg.exp_type with Unify trace ->
-                  raise(Error(arg.exp_loc, env, Expr_type_clash (trace, type_clash_context))));
-                gen
-              end else true
-            in
-            begin match arg.exp_desc, !self_coercion, (repr ty').desc with
-            | _ when free_variables ~env arg.exp_type = []
-                  && free_variables ~env ty' = [] ->
-                if not gen && (* first try a single coercion *)
-                  let snap = snapshot () in
-                  let ty, _b = enlarge_type env ty' in
-                  try
-                    force (); Ctype.unify env arg.exp_type ty; true
-                  with Unify _ ->
-                    backtrack snap; false
-                then ()
-                else begin try
-                  let force' = subtype env arg.exp_type ty' in
-                  force (); force' ();
-                with Subtype (tr1, tr2) ->
-                  (* prerr_endline "coercion failed"; *)
-                  raise(Error(loc, env, Not_subtype(tr1, tr2)))
-                end;
-            | _ ->
-                let ty, b = enlarge_type env ty' in
-                force ();
-                begin try Ctype.unify env arg.exp_type ty with Unify trace ->
-                  raise(Error(sarg.pexp_loc, env,
-                        Coercion_failure(ty', full_expand env ty', trace, b)))
-                end
-            end;
-            (arg, ty', cty')
+          let (cty', force) =
+            Typetexp.transl_simple_type_delayed env sty'
+          in
+          let ty' = cty'.ctyp_type in
+          if separate then begin_def ();
+          let arg = type_exp env sarg in
+          let gen =
+            if separate then begin
+              end_def ();
+              let tv = newvar () in
+              let gen = generalizable tv.level arg.exp_type in
+              (try unify_var env tv arg.exp_type with Unify trace ->
+                raise(Error(arg.exp_loc, env, Expr_type_clash (trace, type_clash_context))));
+              gen
+            end else true
+          in
+          begin match arg.exp_desc, !self_coercion, (repr ty').desc with
+          | _ when free_variables ~env arg.exp_type = []
+                && free_variables ~env ty' = [] ->
+              if not gen && (* first try a single coercion *)
+                let snap = snapshot () in
+                let ty, _b = enlarge_type env ty' in
+                try
+                  force (); Ctype.unify env arg.exp_type ty; true
+                with Unify _ ->
+                  backtrack snap; false
+              then ()
+              else begin try
+                let force' = subtype env arg.exp_type ty' in
+                force (); force' ();
+              with Subtype (tr1, tr2) ->
+                (* prerr_endline "coercion failed"; *)
+                raise(Error(loc, env, Not_subtype(tr1, tr2)))
+              end;
+          | _ ->
+              let ty, b = enlarge_type env ty' in
+              force ();
+              begin try Ctype.unify env arg.exp_type ty with Unify trace ->
+                raise(Error(sarg.pexp_loc, env,
+                      Coercion_failure(ty', full_expand env ty', trace, b)))
+              end
+          end;
+          (arg, ty', cty')
       in
       rue {
         exp_desc = arg.exp_desc;
