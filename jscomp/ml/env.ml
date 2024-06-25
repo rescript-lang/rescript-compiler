@@ -159,7 +159,7 @@ type summary =
   | Env_module of summary * Ident.t * module_declaration
   | Env_modtype of summary * Ident.t * modtype_declaration
   | Env_class of unit
-  | Env_cltype of summary * Ident.t * class_type_declaration
+  | Env_cltype of unit
   | Env_open of summary * Path.t
   | Env_functor_arg of summary * Ident.t
   | Env_constraints of summary * type_declaration PathMap.t
@@ -479,7 +479,6 @@ and structure_components = {
   mutable comp_modtypes: modtype_declaration comp_tbl;
   mutable comp_components: module_components comp_tbl;
   comp_classes: class_declaration comp_tbl; (* warning -69*)
-  mutable comp_cltypes: class_type_declaration comp_tbl;
 }
 
 and functor_components = {
@@ -621,7 +620,7 @@ let empty_structure =
     comp_types = Tbl.empty;
     comp_modules = Tbl.empty; comp_modtypes = Tbl.empty;
     comp_components = Tbl.empty; comp_classes = Tbl.empty;
-    comp_cltypes = Tbl.empty }
+    }
 
 let get_components c =
   match get_components_opt c with
@@ -877,8 +876,6 @@ and find_type_full =
   find (fun env -> env.types) (fun sc -> sc.comp_types)
 and find_modtype =
   find (fun env -> env.modtypes) (fun sc -> sc.comp_modtypes)
-and find_cltype =
-  find (fun env -> env.cltypes) (fun sc -> sc.comp_cltypes)
 
 let type_of_cstr path = function
   | {cstr_inlined = Some d; _} ->
@@ -1236,8 +1233,6 @@ let lookup_type =
   lookup (fun env -> env.types) (fun sc -> sc.comp_types)
 let lookup_modtype =
   lookup (fun env -> env.modtypes) (fun sc -> sc.comp_modtypes)
-let lookup_cltype =
-  lookup (fun env -> env.cltypes) (fun sc -> sc.comp_cltypes)
 
 let copy_types l env =
   let f desc = {desc with val_type = Subst.type_expr Subst.identity desc.val_type} in
@@ -1366,12 +1361,6 @@ let lookup_all_labels ?loc lid env =
   with
     Not_found when is_lident lid -> []
 
-let lookup_cltype ?loc lid env =
-  let (_, desc) as r = lookup_cltype ?loc lid env in
-  if Path.name desc.clty_path = "" then ignore (lookup_type ?loc lid env)
-  else mark_type_path env desc.clty_path;
-  mark_type_path env desc.clty_path;
-  r
 
 (* Iter on an environment (ignoring the body of functors and
    not yet evaluated structures) *)
@@ -1623,7 +1612,7 @@ and components_of_module_maker (env, sub, path, mty) =
           comp_labels = Tbl.empty; comp_types = Tbl.empty;
           comp_modules = Tbl.empty; comp_modtypes = Tbl.empty;
           comp_components = Tbl.empty; comp_classes = Tbl.empty;
-          comp_cltypes = Tbl.empty } in
+          } in
       let pl, sub = prefix_idents path sub sg in
       let env = ref env in
       let pos = ref 0 in
@@ -1839,12 +1828,6 @@ and store_modtype id info env =
     modtypes = IdTbl.add id info env.modtypes;
     summary = Env_modtype(env.summary, id, info) }
 
-
-and store_cltype id desc env =
-  { env with
-    cltypes = IdTbl.add id desc env.cltypes;
-    summary = Env_cltype(env.summary, id, desc) }
-
 (* Compute the components of a functor application in a path. *)
 
 let components_of_functor_appl f env p1 p2 =
@@ -1891,10 +1874,6 @@ and add_modtype id info env =
   store_modtype id info env
 
 
-
-and add_cltype id ty env =
-  store_cltype id ty env
-
 let add_module ?arg id mty env =
   add_module_declaration ~check:false ?arg id (md mty) env
 
@@ -1925,7 +1904,6 @@ and enter_module_declaration ?arg id md env =
   (id, add_functor_arg ?arg id env) *)
 and enter_modtype = enter store_modtype
 
-and enter_cltype = enter store_cltype
 
 let enter_module ?arg s mty env =
   let id = Ident.create s in
@@ -1976,9 +1954,6 @@ let add_components slot root env0 comps =
   let classes =
     add (fun x -> `Class x) comps.comp_classes env0.classes
   in
-  let cltypes =
-    add (fun x -> `Class_type x) comps.comp_cltypes env0.cltypes
-  in
   let components =
     add (fun x -> `Component x) comps.comp_components env0.components
   in
@@ -1995,7 +1970,6 @@ let add_components slot root env0 comps =
     types;
     modtypes;
     classes;
-    cltypes;
     components;
     modules;
   }
@@ -2211,8 +2185,6 @@ and fold_modtypes f =
   find_all (fun env -> env.modtypes) (fun sc -> sc.comp_modtypes) f
 and fold_classs f =
   find_all (fun env -> env.classes) (fun sc -> sc.comp_classes) f
-and fold_cltypes f =
-  find_all (fun env -> env.cltypes) (fun sc -> sc.comp_cltypes) f
 
 
 (* Make the initial environment *)
