@@ -22,9 +22,6 @@ type mapper =
   {
     case: mapper -> case -> case;
     cases: mapper -> case list -> case list;
-    class_signature: mapper -> class_signature -> class_signature;
-    class_type: mapper -> class_type -> class_type;
-    class_type_field: mapper -> class_type_field -> class_type_field;
     env: mapper -> Env.t -> Env.t;
     expr: mapper -> expression -> expression;
     extension_constructor: mapper -> extension_constructor ->
