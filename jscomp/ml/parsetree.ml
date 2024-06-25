@@ -481,32 +481,6 @@ and extension_constructor_kind =
          | C = D
        *)
 
-(** {1 Class language} *)
-
-(* Type expressions for the class language *)
-
-and class_type =
-    {
-     pcty_desc: class_type_desc;
-     pcty_loc: Location.t;
-     pcty_attributes: attributes; (* ... [@id1] [@id2] *)
-    }
-
-and class_type_desc =
-  | Pcty_constr of Longident.t loc * core_type list
-        (* c
-           ['a1, ..., 'an] c *)
-  | Pcty_signature of unit
-        (* dummy AST node *)
-  | Pcty_arrow of arg_label * core_type * class_type
-        (* T -> CT       Simple
-           ~l:T -> CT    Labelled l
-           ?l:T -> CT    Optional l
-         *)
-  | Pcty_extension of extension
-        (* [%id] *)
-  | Pcty_open of override_flag * Longident.t loc * class_type
-        (* let open M in CT *)
 
 (** {1 Module language} *)
 

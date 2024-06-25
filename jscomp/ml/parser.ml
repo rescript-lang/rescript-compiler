@@ -136,7 +136,7 @@ let mkmty ?attrs d = Mty.mk ~loc:(symbol_rloc()) ?attrs d
 let mksig d = Sig.mk ~loc:(symbol_rloc()) d
 let mkmod ?attrs d = Mod.mk ~loc:(symbol_rloc()) ?attrs d
 let mkstr d = Str.mk ~loc:(symbol_rloc()) d
-let mkcty ?attrs d = Cty.mk ~loc:(symbol_rloc()) ?attrs d
+let mkcty ?attrs _d = let _ = attrs in assert false
 let mkctf ?attrs ?docs _d = let _ = (attrs, docs) in assert false
 let mkcf ?attrs ?docs _d = let _ = (attrs, docs) in assert false
 
@@ -319,8 +319,7 @@ let wrap_pat_attrs pat (ext, attrs) =
 let mkpat_attrs d attrs =
   wrap_pat_attrs (mkpat d) attrs
 
-let wrap_class_type_attrs body attrs =
-  {body with pcty_attributes = attrs @ body.pcty_attributes}
+let wrap_class_type_attrs _body _attrs = assert false
 let wrap_mod_attrs body attrs =
   {body with pmod_attributes = attrs @ body.pmod_attributes}
 let wrap_mty_attrs body attrs =
@@ -7394,14 +7393,14 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'clty_longident) in
     Obj.repr(
 # 965 "ml/parser.mly"
-      ( mkcty(Pcty_constr (mkloc _4 (rhs_loc 4), List.rev _2)) )
+      ( mkcty(assert false) )
 # 7403 "ml/parser.ml"
                : 'class_signature))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'clty_longident) in
     Obj.repr(
 # 967 "ml/parser.mly"
-      ( mkcty(Pcty_constr (mkrhs _1 1, [])) )
+      ( mkcty(assert false) )
 # 7410 "ml/parser.ml"
                : 'class_signature))
 ; (fun __caml_parser_env ->
@@ -7409,7 +7408,7 @@ let yyact = [|
     let _3 = (Parsing.peek_val __caml_parser_env 1 : 'class_sig_body) in
     Obj.repr(
 # 969 "ml/parser.mly"
-      ( mkcty ~attrs:_2 (Pcty_signature _3) )
+      ( mkcty ~attrs:_2 (assert false) )
 # 7418 "ml/parser.ml"
                : 'class_signature))
 ; (fun __caml_parser_env ->
@@ -7425,14 +7424,14 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'attribute) in
     Obj.repr(
 # 973 "ml/parser.mly"
-      ( Cty.attr _1 _2 )
+      ( assert false )
 # 7434 "ml/parser.ml"
                : 'class_signature))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'extension) in
     Obj.repr(
 # 975 "ml/parser.mly"
-      ( mkcty(Pcty_extension _1) )
+      ( mkcty(assert false) )
 # 7441 "ml/parser.ml"
                : 'class_signature))
 ; (fun __caml_parser_env ->
@@ -7442,7 +7441,7 @@ let yyact = [|
     let _7 = (Parsing.peek_val __caml_parser_env 0 : 'class_signature) in
     Obj.repr(
 # 977 "ml/parser.mly"
-      ( wrap_class_type_attrs (mkcty(Pcty_open(_3, mkrhs _5 5, _7))) _4 )
+      ( wrap_class_type_attrs (mkcty(assert false)) _4 )
 # 7451 "ml/parser.ml"
                : 'class_signature))
 ; (fun __caml_parser_env ->

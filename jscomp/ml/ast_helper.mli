@@ -332,20 +332,3 @@ module Vb:
     val mk: ?loc: loc -> ?attrs:attrs -> ?docs:docs -> ?text:text ->
       pattern -> expression -> value_binding
   end
-
-
-(** {1 Class language} *)
-
-(** Class type expressions *)
-module Cty:
-  sig
-    val mk: ?loc:loc -> ?attrs:attrs -> class_type_desc -> class_type
-    val attr: class_type -> attribute -> class_type
-
-    val constr: ?loc:loc -> ?attrs:attrs -> lid -> core_type list -> class_type
-    val arrow: ?loc:loc -> ?attrs:attrs -> arg_label -> core_type ->
-      class_type -> class_type
-    val extension: ?loc:loc -> ?attrs:attrs -> extension -> class_type
-    val open_: ?loc:loc -> ?attrs:attrs -> override_flag -> lid -> class_type
-               -> class_type
-  end

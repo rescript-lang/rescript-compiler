@@ -25,7 +25,6 @@ type mapper = {
   attributes: mapper -> T.attribute list -> attribute list;
   case: mapper -> T.case -> case;
   cases: mapper -> T.case list -> case list;
-  class_type: mapper -> T.class_type -> class_type;
   constructor_declaration: mapper -> T.constructor_declaration
                            -> constructor_declaration;
   expr: mapper -> T.expression -> expression;
@@ -571,22 +570,6 @@ let module_expr sub mexpr =
         Mod.mk ~loc ~attrs desc
 
 
-
-let class_type sub ct =
-  let loc = sub.location sub ct.cltyp_loc in
-  let attrs = sub.attributes sub ct.cltyp_attributes in
-  let desc = match ct.cltyp_desc with
-      Tcty_signature _ -> assert false
-    | Tcty_constr (_path, lid, list) ->
-        Pcty_constr (map_loc sub lid, List.map (sub.typ sub) list)
-    | Tcty_arrow (label, ct, cl) ->
-        Pcty_arrow (label, sub.typ sub ct, sub.class_type sub cl)
-    | Tcty_open (ovf, _p, lid, _env, e) ->
-        Pcty_open (ovf, lid, sub.class_type sub e)
-  in
-  Cty.mk ~loc ~attrs desc
-
-
 let core_type sub ct =
   let loc = sub.location sub ct.ctyp_loc in
   let attrs = sub.attributes sub ct.ctyp_attributes in
@@ -643,7 +626,6 @@ let default_mapper =
     signature_item = signature_item;
     module_type = module_type;
     with_constraint = with_constraint;
-    class_type = class_type;
     type_declaration = type_declaration;
     type_kind = type_kind;
     typ = core_type;

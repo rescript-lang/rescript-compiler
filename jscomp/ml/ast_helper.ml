@@ -271,23 +271,6 @@ module Str = struct
       f_txt
 end
 
-
-module Cty = struct
-  let mk ?(loc = !default_loc) ?(attrs = []) d =
-    {
-     pcty_desc = d;
-     pcty_loc = loc;
-     pcty_attributes = attrs;
-    }
-  let attr d a = {d with pcty_attributes = d.pcty_attributes @ [a]}
-
-  let constr ?loc ?attrs a b = mk ?loc ?attrs (Pcty_constr (a, b))
-  let arrow ?loc ?attrs a b c = mk ?loc ?attrs (Pcty_arrow (a, b, c))
-  let extension ?loc ?attrs a = mk ?loc ?attrs (Pcty_extension a)
-  let open_ ?loc ?attrs a b c = mk ?loc ?attrs (Pcty_open (a, b, c))
-end
-
-
 module Val = struct
   let mk ?(loc = !default_loc) ?(attrs = []) ?(docs = empty_docs)
         ?(prim = []) name typ =

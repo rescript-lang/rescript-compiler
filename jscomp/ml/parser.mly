@@ -30,7 +30,7 @@ let mkmty ?attrs d = Mty.mk ~loc:(symbol_rloc()) ?attrs d
 let mksig d = Sig.mk ~loc:(symbol_rloc()) d
 let mkmod ?attrs d = Mod.mk ~loc:(symbol_rloc()) ?attrs d
 let mkstr d = Str.mk ~loc:(symbol_rloc()) d
-let mkcty ?attrs d = Cty.mk ~loc:(symbol_rloc()) ?attrs d
+let mkcty ?attrs _d = let _ = attrs in assert false
 let mkctf ?attrs ?docs d = let _ = (attrs, docs) in assert false
 let mkcf ?attrs ?docs d = assert false
 
@@ -213,8 +213,7 @@ let wrap_pat_attrs pat (ext, attrs) =
 let mkpat_attrs d attrs =
   wrap_pat_attrs (mkpat d) attrs
 
-let wrap_class_type_attrs body attrs =
-  {body with pcty_attributes = attrs @ body.pcty_attributes}
+let wrap_class_type_attrs _body _attrs = assert false
 let wrap_mod_attrs body attrs =
   {body with pmod_attributes = attrs @ body.pmod_attributes}
 let wrap_mty_attrs body attrs =
@@ -966,7 +965,7 @@ class_signature:
   | OBJECT attributes class_sig_body error
       { unclosed "object" 1 "end" 4 }
   | class_signature attribute
-      { Cty.attr $1 $2 }
+      { assert false }
   | extension
       { mkcty(Pcty_extension $1) }
   | LET OPEN override_flag attributes mod_longident IN class_signature
