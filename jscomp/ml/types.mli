@@ -383,14 +383,6 @@ type class_declaration =
     cty_attributes: Parsetree.attributes;
   }
 
-type class_type_declaration =
-  { clty_params: type_expr list;
-    clty_type: class_type;
-    clty_path: Path.t;
-    clty_variance: Variance.t list;
-    clty_loc: Location.t;
-    clty_attributes: Parsetree.attributes;
-  }
 
 (* Type expressions for the module language *)
 

@@ -4580,19 +4580,6 @@ let nondep_class_declaration env id decl =
   clear_hash ();
   decl
 
-let nondep_cltype_declaration env id decl =
-  assert (not (Path.isfree id decl.clty_path));
-  let decl =
-    { clty_params = List.map (nondep_type_rec env id) decl.clty_params;
-      clty_variance = decl.clty_variance;
-      clty_type = nondep_class_type env id decl.clty_type;
-      clty_path = decl.clty_path;
-      clty_loc = decl.clty_loc;
-      clty_attributes = decl.clty_attributes;
-    }
-  in
-  clear_hash ();
-  decl
 
 (* collapse conjunctive types in class parameters *)
 let rec collapse_conj env visited ty =

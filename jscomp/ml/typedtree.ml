@@ -460,9 +460,6 @@ and class_type_field_desc =
 and class_description =
   class_type class_infos
 
-and class_type_declaration =
-  class_type class_infos
-
 and 'a class_infos =
   { ci_virt: virtual_flag;
     ci_params: (core_type * variance) list;
@@ -473,7 +470,6 @@ and 'a class_infos =
     ci_id_typehash: Ident.t;
     ci_expr: 'a;
     ci_decl: Types.class_declaration;
-    ci_type_decl: Types.class_type_declaration;
     ci_loc: Location.t;
     ci_attributes: attribute list;
    }

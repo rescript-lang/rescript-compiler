@@ -1266,29 +1266,6 @@ let add_injectivity =
       | Invariant -> (false, false, false)
     )
 
-(* for typeclass.ml *)
-let compute_variance_decls env cldecls =
-  let decls, required =
-    List.fold_right
-      (fun (obj_id, obj_abbr, _cl_abbr, _clty, _cltydef, ci) (decls, req) ->
-        let variance = List.map snd ci.ci_params in
-        (obj_id, obj_abbr) :: decls,
-        (add_injectivity variance, ci.ci_loc) :: req)
-      cldecls ([],[])
-  in
-  let (decls, _) =
-    compute_properties_fixpoint env decls required
-      (List.map init_variance decls)
-      (List.map (fun _ -> false) decls)
-  in
-  List.map2
-    (fun (_,decl) (_, _, cl_abbr, clty, cltydef, _) ->
-      let variance = decl.type_variance in
-      (decl, {cl_abbr with type_variance = variance},
-       {clty with cty_variance = variance},
-       {cltydef with clty_variance = variance}))
-    decls cldecls
-
 (* Check multiple declarations of labels/constructors *)
 
 let check_duplicates sdecl_list =
