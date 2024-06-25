@@ -144,12 +144,6 @@ let find_label =
 let find_all_labels =
   find_component Env.lookup_all_labels (fun lid -> Unbound_label lid)
 
-let find_class env loc lid =
-  let (path, decl) as r =
-    find_component Env.lookup_class (fun lid -> Unbound_class lid) env loc lid
-  in
-  Builtin_attributes.check_deprecated loc decl.cty_attributes (Path.name path);
-  r
 
 let find_value env loc lid =
   Env.check_value_name (Longident.last lid) loc;
@@ -175,14 +169,6 @@ let find_modtype env loc lid =
       env loc lid
   in
   Builtin_attributes.check_deprecated loc decl.mtd_attributes (Path.name path);
-  r
-
-let find_class_type env loc lid =
-  let (path, decl) as r =
-    find_component Env.lookup_cltype (fun lid -> Unbound_cltype lid)
-      env loc lid
-  in
-  Builtin_attributes.check_deprecated loc decl.clty_attributes (Path.name path);
   r
 
 let unbound_constructor_error env lid =
