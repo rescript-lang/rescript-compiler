@@ -10,7 +10,11 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.1.2-rc.2
+# 11.1.2
+
+#### :bug: Bug Fix
+
+- Fix issue where capitalised type variables were only allowed in certain positions. https://github.com/rescript-lang/rescript-compiler/pull/6820
 
 # 11.1.2-rc.1
 
@@ -26,7 +30,6 @@
 - Fix issue in gentype when type `Jsx.element` surfaces to the user. https://github.com/rescript-lang/rescript-compiler/pull/6808
 - Fix inclusion check (impl vs interface) for untagged variants, and fix the outcome printer to show tags. https://github.com/rescript-lang/rescript-compiler/pull/6669
 - Fix encoding inside tagged template literals. https://github.com/rescript-lang/rescript-compiler/pull/6810
-- Fix issue where capitalised type variables were only allowed in certain positions. https://github.com/rescript-lang/rescript-compiler/pull/6820
 
 # 11.1.1
 
