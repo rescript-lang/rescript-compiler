@@ -31,8 +31,7 @@ let mksig d = Sig.mk ~loc:(symbol_rloc()) d
 let mkmod ?attrs d = Mod.mk ~loc:(symbol_rloc()) ?attrs d
 let mkstr d = Str.mk ~loc:(symbol_rloc()) d
 let mkcty ?attrs d = Cty.mk ~loc:(symbol_rloc()) ?attrs d
-let mkctf ?attrs ?docs d =
-  Ctf.mk ~loc:(symbol_rloc()) ?attrs ?docs d
+let mkctf ?attrs ?docs d = let _ = (attrs, docs) in assert false
 let mkcf ?attrs ?docs d = assert false
 
 let mkrhs rhs pos = mkloc rhs (rhs_loc pos)
@@ -240,7 +239,7 @@ let mksig_ext d ext =
 let text_str pos = Str.text (rhs_text pos)
 let text_sig pos = Sig.text (rhs_text pos)
 let text_cstr pos = assert false
-let text_csig pos = Ctf.text (rhs_text pos)
+let text_csig _pos = assert false
 
 
 let extra_text text pos items =

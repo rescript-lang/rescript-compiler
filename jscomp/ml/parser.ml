@@ -137,8 +137,7 @@ let mksig d = Sig.mk ~loc:(symbol_rloc()) d
 let mkmod ?attrs d = Mod.mk ~loc:(symbol_rloc()) ?attrs d
 let mkstr d = Str.mk ~loc:(symbol_rloc()) d
 let mkcty ?attrs d = Cty.mk ~loc:(symbol_rloc()) ?attrs d
-let mkctf ?attrs ?docs d =
-  Ctf.mk ~loc:(symbol_rloc()) ?attrs ?docs d
+let mkctf ?attrs ?docs _d = let _ = (attrs, docs) in assert false
 let mkcf ?attrs ?docs _d = let _ = (attrs, docs) in assert false
 
 let mkrhs rhs pos = mkloc rhs (rhs_loc pos)
@@ -346,7 +345,7 @@ let mksig_ext d ext =
 let text_str pos = Str.text (rhs_text pos)
 let text_sig pos = Sig.text (rhs_text pos)
 let text_cstr _pos = assert false
-let text_csig pos = Ctf.text (rhs_text pos)
+let text_csig _pos = assert false
 
 
 let extra_text text pos items =
@@ -7487,7 +7486,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'post_item_attributes) in
     Obj.repr(
 # 995 "ml/parser.mly"
-      ( mkctf (Pctf_inherit _3) ~attrs:(_2@_4) ~docs:(symbol_docs ()) )
+      ( mkctf (assert false) ~attrs:(_2@_4) ~docs:(symbol_docs ()) )
 # 7495 "ml/parser.ml"
                : 'class_sig_field))
 ; (fun __caml_parser_env ->
@@ -7496,7 +7495,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'post_item_attributes) in
     Obj.repr(
 # 997 "ml/parser.mly"
-      ( mkctf (Pctf_val _3) ~attrs:(_2@_4) ~docs:(symbol_docs ()) )
+      ( mkctf (assert false) ~attrs:(_2@_4) ~docs:(symbol_docs ()) )
 # 7504 "ml/parser.ml"
                : 'class_sig_field))
 ; (fun __caml_parser_env ->
@@ -7508,8 +7507,8 @@ let yyact = [|
     Obj.repr(
 # 1000 "ml/parser.mly"
       (
-       let (p, v) = _3 in
-       mkctf (Pctf_method (mkrhs _4 4, p, v, _6)) ~attrs:(_2@_7) ~docs:(symbol_docs ())
+       let (_p, _v) = _3 in
+       mkctf (assert false) ~attrs:(_2@_7) ~docs:(symbol_docs ())
       )
 # 7518 "ml/parser.ml"
                : 'class_sig_field))
@@ -7519,7 +7518,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'post_item_attributes) in
     Obj.repr(
 # 1005 "ml/parser.mly"
-      ( mkctf (Pctf_constraint _3) ~attrs:(_2@_4) ~docs:(symbol_docs ()) )
+      ( mkctf (assert false) ~attrs:(_2@_4) ~docs:(symbol_docs ()) )
 # 7527 "ml/parser.ml"
                : 'class_sig_field))
 ; (fun __caml_parser_env ->
@@ -7527,7 +7526,7 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'post_item_attributes) in
     Obj.repr(
 # 1007 "ml/parser.mly"
-      ( mkctf (Pctf_extension _1) ~attrs:_2 ~docs:(symbol_docs ()) )
+      ( mkctf (assert false) ~attrs:_2 ~docs:(symbol_docs ()) )
 # 7535 "ml/parser.ml"
                : 'class_sig_field))
 ; (fun __caml_parser_env ->
@@ -7535,7 +7534,7 @@ let yyact = [|
     Obj.repr(
 # 1009 "ml/parser.mly"
       ( mark_symbol_docs ();
-        mkctf(Pctf_attribute _1) )
+        mkctf(assert false) )
 # 7543 "ml/parser.ml"
                : 'class_sig_field))
 ; (fun __caml_parser_env ->

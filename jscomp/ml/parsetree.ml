@@ -508,30 +508,6 @@ and class_type_desc =
   | Pcty_open of override_flag * Longident.t loc * class_type
         (* let open M in CT *)
 
-and class_type_field =
-    {
-     pctf_desc: class_type_field_desc;
-     pctf_loc: Location.t;
-     pctf_attributes: attributes; (* ... [@@id1] [@@id2] *)
-    }
-
-and class_type_field_desc =
-  | Pctf_inherit of class_type
-        (* inherit CT *)
-  | Pctf_val of (label loc * mutable_flag * virtual_flag * core_type)
-        (* val x: T *)
-  | Pctf_method  of (label loc * private_flag * virtual_flag * core_type)
-        (* method x: T
-
-           Note: T can be a Ptyp_poly.
-         *)
-  | Pctf_constraint  of (core_type * core_type)
-        (* constraint T1 = T2 *)
-  | Pctf_attribute of attribute
-        (* [@@@id] *)
-  | Pctf_extension of extension
-        (* [%%id] *)
-
 and 'a class_infos =
     {
      pci_virt: virtual_flag;

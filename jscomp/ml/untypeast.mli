@@ -25,7 +25,6 @@ type mapper = {
   class_type: mapper -> Typedtree.class_type -> class_type;
   class_type_declaration: mapper -> Typedtree.class_type_declaration
                           -> class_type_declaration;
-  class_type_field: mapper -> Typedtree.class_type_field -> class_type_field;
   constructor_declaration: mapper -> Typedtree.constructor_declaration
                            -> constructor_declaration;
   expr: mapper -> Typedtree.expression -> expression;

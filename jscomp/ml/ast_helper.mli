@@ -350,25 +350,6 @@ module Cty:
                -> class_type
   end
 
-(** Class type fields *)
-module Ctf:
-  sig
-    val mk: ?loc:loc -> ?attrs:attrs -> ?docs:docs ->
-      class_type_field_desc -> class_type_field
-    val attr: class_type_field -> attribute -> class_type_field
-
-    val inherit_: ?loc:loc -> ?attrs:attrs -> class_type -> class_type_field
-    val val_: ?loc:loc -> ?attrs:attrs -> str -> mutable_flag ->
-      virtual_flag -> core_type -> class_type_field
-    val method_: ?loc:loc -> ?attrs:attrs -> str -> private_flag ->
-      virtual_flag -> core_type -> class_type_field
-    val constraint_: ?loc:loc -> ?attrs:attrs -> core_type -> core_type ->
-      class_type_field
-    val extension: ?loc:loc -> ?attrs:attrs -> extension -> class_type_field
-    val attribute: ?loc:loc -> attribute -> class_type_field
-    val text: text -> class_type_field list
-  end
-
 (** Classes *)
 module Ci:
   sig

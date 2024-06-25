@@ -287,31 +287,6 @@ module Cty = struct
   let open_ ?loc ?attrs a b c = mk ?loc ?attrs (Pcty_open (a, b, c))
 end
 
-module Ctf = struct
-  let mk ?(loc = !default_loc) ?(attrs = [])
-           ?(docs = empty_docs) d =
-    {
-     pctf_desc = d;
-     pctf_loc = loc;
-     pctf_attributes = add_docs_attrs docs attrs;
-    }
-
-  let inherit_ ?loc ?attrs a = mk ?loc ?attrs (Pctf_inherit a)
-  let val_ ?loc ?attrs a b c d = mk ?loc ?attrs (Pctf_val (a, b, c, d))
-  let method_ ?loc ?attrs a b c d = mk ?loc ?attrs (Pctf_method (a, b, c, d))
-  let constraint_ ?loc ?attrs a b = mk ?loc ?attrs (Pctf_constraint (a, b))
-  let extension ?loc ?attrs a = mk ?loc ?attrs (Pctf_extension a)
-  let attribute ?loc a = mk ?loc (Pctf_attribute a)
-  let text txt =
-   let f_txt = Ext_list.filter txt (fun ds -> docstring_body ds <> "")in
-     List.map
-      (fun ds -> attribute ~loc:(docstring_loc ds) (text_attr ds))
-      f_txt
-
-  let attr d a = {d with pctf_attributes = d.pctf_attributes @ [a]}
-
-end
-
 
 module Val = struct
   let mk ?(loc = !default_loc) ?(attrs = []) ?(docs = empty_docs)
