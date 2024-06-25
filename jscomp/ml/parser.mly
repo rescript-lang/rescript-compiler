@@ -1029,16 +1029,13 @@ class_type_declaration:
     CLASS TYPE ext_attributes virtual_flag class_type_parameters LIDENT EQUAL
     class_signature post_item_attributes
       { let (ext, attrs) = $3 in
-        Ci.mk (mkrhs $6 6) $8 ~virt:$4 ~params:$5 ~attrs:(attrs@$9)
-            ~loc:(symbol_rloc ()) ~docs:(symbol_docs ())
+        assert false
       , ext}
 ;
 and_class_type_declaration:
     AND attributes virtual_flag class_type_parameters LIDENT EQUAL
     class_signature post_item_attributes
-      { Ci.mk (mkrhs $5 5) $7 ~virt:$3 ~params:$4
-         ~attrs:($2@$8) ~loc:(symbol_rloc ())
-         ~text:(symbol_text ()) ~docs:(symbol_docs ()) }
+      { assert false }
 ;
 
 /* Core expressions */
