@@ -2593,7 +2593,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
             end else true
           in
           begin match arg.exp_desc, !self_coercion, (repr ty').desc with
-          | _ when free_variables ~env arg.exp_type = []
+          | _ when true || free_variables ~env arg.exp_type = []
                 && free_variables ~env ty' = [] ->
               if not gen && (* first try a single coercion *)
                 let snap = snapshot () in
