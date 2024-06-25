@@ -54,7 +54,6 @@ module Typ = struct
   let tuple ?loc ?attrs a = mk ?loc ?attrs (Ptyp_tuple a)
   let constr ?loc ?attrs a b = mk ?loc ?attrs (Ptyp_constr (a, b))
   let object_ ?loc ?attrs a b = mk ?loc ?attrs (Ptyp_object (a, b))
-  let class_ ?loc ?attrs a b = mk ?loc ?attrs (Ptyp_class (a, b))
   let alias ?loc ?attrs a b = mk ?loc ?attrs (Ptyp_alias (a, b))
   let variant ?loc ?attrs a b c = mk ?loc ?attrs (Ptyp_variant (a, b, c))
   let poly ?loc ?attrs a b = mk ?loc ?attrs (Ptyp_poly (a, b))
@@ -88,8 +87,7 @@ module Typ = struct
             Ptyp_constr(longident, List.map loop lst)
         | Ptyp_object (lst, o) ->
             Ptyp_object (List.map loop_object_field lst, o)
-        | Ptyp_class (longident, lst) ->
-            Ptyp_class (longident, List.map loop lst)
+        | Ptyp_class () -> assert false
         | Ptyp_alias(core_type, string) ->
             check_variable var_names t.ptyp_loc string;
             Ptyp_alias(loop core_type, string)

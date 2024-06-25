@@ -10679,7 +10679,7 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'class_longident) in
     Obj.repr(
 # 2049 "ml/parser.mly"
-      ( mktyp(Ptyp_class(mkrhs _2 2, [])) )
+      ( mktyp(Ptyp_class()) )
 # 10692 "ml/parser.ml"
                : 'simple_core_type2))
 ; (fun __caml_parser_env ->
@@ -10687,7 +10687,7 @@ let yyact = [|
     let _3 = (Parsing.peek_val __caml_parser_env 0 : 'class_longident) in
     Obj.repr(
 # 2051 "ml/parser.mly"
-      ( mktyp(Ptyp_class(mkrhs _3 3, [_1])) )
+      ( mktyp(Ptyp_class()) )
 # 10700 "ml/parser.ml"
                : 'simple_core_type2))
 ; (fun __caml_parser_env ->
@@ -10695,7 +10695,7 @@ let yyact = [|
     let _5 = (Parsing.peek_val __caml_parser_env 0 : 'class_longident) in
     Obj.repr(
 # 2053 "ml/parser.mly"
-      ( mktyp(Ptyp_class(mkrhs _5 5, List.rev _2)) )
+      ( mktyp(Ptyp_class()) )
 # 10708 "ml/parser.ml"
                : 'simple_core_type2))
 ; (fun __caml_parser_env ->

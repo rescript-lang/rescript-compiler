@@ -18,7 +18,6 @@
 (* Typechecking of type expressions for the core language *)
 
 open Asttypes
-open Misc
 open Parsetree
 open Typedtree
 open Types
@@ -388,86 +387,7 @@ and transl_type_aux env policy styp =
   | Ptyp_object (fields, o) ->
       let ty, fields = transl_fields env policy o fields in
       ctyp (Ttyp_object (fields, o)) (newobj ty)
-  | Ptyp_class(lid, stl) ->
-      let (path, decl, _is_variant) =
-        try
-          let path = Env.lookup_type lid.txt env in
-          let decl = Env.find_type path env in
-          let rec check decl =
-            match decl.type_manifest with
-              None -> raise Not_found
-            | Some ty ->
-                match (repr ty).desc with
-                  Tvariant row when Btype.static_row row -> ()
-                | Tconstr (path, _, _) ->
-                    check (Env.find_type path env)
-                | _ -> raise Not_found
-          in check decl;
-          Location.deprecated styp.ptyp_loc
-            "old syntax for polymorphic variant type";
-          (path, decl,true)
-        with Not_found -> try
-          let lid2 =
-            match lid.txt with
-              Longident.Lident s     -> Longident.Lident ("#" ^ s)
-            | Longident.Ldot(r, s)   -> Longident.Ldot (r, "#" ^ s)
-            | Longident.Lapply(_, _) -> fatal_error "Typetexp.transl_type"
-          in
-          let path = Env.lookup_type lid2 env in
-          let decl = Env.find_type path env in
-          (path, decl, false)
-        with Not_found ->
-          ignore (find_class env lid.loc lid.txt); assert false
-      in
-      if List.length stl <> decl.type_arity then
-        raise(Error(styp.ptyp_loc, env,
-                    Type_arity_mismatch(lid.txt, decl.type_arity,
-                                        List.length stl)));
-      let args = List.map (transl_type env policy) stl in
-      let params = instance_list decl.type_params in
-      List.iter2
-        (fun (sty, cty) ty' ->
-           try unify_var env ty' cty.ctyp_type with Unify trace ->
-             raise (Error(sty.ptyp_loc, env, Type_mismatch (swap_list trace))))
-        (List.combine stl args) params;
-        let ty_args = List.map (fun ctyp -> ctyp.ctyp_type) args in
-      let ty =
-        try Ctype.expand_head env (newconstr path ty_args)
-        with Unify trace ->
-          raise (Error(styp.ptyp_loc, env, Type_mismatch trace))
-      in
-      let ty = match ty.desc with
-        Tvariant row ->
-          let row = Btype.row_repr row in
-          let fields =
-            List.map
-              (fun (l,f) -> l,
-                match Btype.row_field_repr f with
-                | Rpresent (Some ty) ->
-                    Reither(false, [ty], false, ref None)
-                | Rpresent None ->
-                    Reither (true, [], false, ref None)
-                | _ -> f)
-              row.row_fields
-          in
-          let row = { row_closed = true; row_fields = fields;
-                      row_bound = (); row_name = Some (path, ty_args);
-                      row_fixed = false; row_more = newvar () } in
-          let static = Btype.static_row row in
-          let row =
-            if static then { row with row_more = newty Tnil }
-            else if policy <> Univars then row
-            else { row with row_more = new_pre_univar () }
-          in
-          newty (Tvariant row)
-      | Tobject (fi, _) ->
-          let _, tv = flatten_fields fi in
-          if policy = Univars then pre_univars := tv :: !pre_univars;
-          ty
-      | _ ->
-          assert false
-      in
-      ctyp (Ttyp_class (path, lid, args)) ty
+  | Ptyp_class() -> assert false
   | Ptyp_alias(st, alias) ->
       let cty =
         try

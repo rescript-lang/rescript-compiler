@@ -168,9 +168,7 @@ let rec core_type i ppf x =
               line i ppf "Oinherit\n";
               core_type (i + 1) ppf ct
       ) l
-  | Ptyp_class (li, l) ->
-      line i ppf "Ptyp_class %a\n" fmt_longident_loc li;
-      list i core_type ppf l
+  | Ptyp_class () -> ()
   | Ptyp_alias (ct, s) ->
       line i ppf "Ptyp_alias \"%s\"\n" s;
       core_type i ppf ct;
