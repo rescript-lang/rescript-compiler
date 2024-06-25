@@ -23,8 +23,6 @@ type mapper = {
   case: mapper -> Typedtree.case -> case;
   cases: mapper -> Typedtree.case list -> case list;
   class_type: mapper -> Typedtree.class_type -> class_type;
-  class_type_declaration: mapper -> Typedtree.class_type_declaration
-                          -> class_type_declaration;
   constructor_declaration: mapper -> Typedtree.constructor_declaration
                            -> constructor_declaration;
   expr: mapper -> Typedtree.expression -> expression;

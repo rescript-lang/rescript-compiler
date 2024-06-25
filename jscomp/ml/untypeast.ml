@@ -26,8 +26,6 @@ type mapper = {
   case: mapper -> T.case -> case;
   cases: mapper -> T.case list -> case list;
   class_type: mapper -> T.class_type -> class_type;
-  class_type_declaration: mapper -> T.class_type_declaration
-                          -> class_type_declaration;
   constructor_declaration: mapper -> T.constructor_declaration
                            -> constructor_declaration;
   expr: mapper -> T.expression -> expression;
@@ -517,17 +515,6 @@ let include_infos f sub incl =
 let include_declaration sub = include_infos sub.module_expr sub
 let include_description sub = include_infos sub.module_type sub
 
-let class_infos f sub ci =
-  let loc = sub.location sub ci.ci_loc in
-  let attrs = sub.attributes sub ci.ci_attributes in
-  Ci.mk ~loc ~attrs
-    ~virt:ci.ci_virt
-    ~params:(List.map (type_parameter sub) ci.ci_params)
-    (map_loc sub ci.ci_id_name)
-    (f sub ci.ci_expr)
-
-let class_type_declaration sub = class_infos sub.class_type sub
-
 let module_type sub mty =
   let loc = sub.location sub mty.mty_loc in
   let attrs = sub.attributes sub mty.mty_attributes in
@@ -657,7 +644,6 @@ let default_mapper =
     module_type = module_type;
     with_constraint = with_constraint;
     class_type = class_type;
-    class_type_declaration = class_type_declaration;
     type_declaration = type_declaration;
     type_kind = type_kind;
     typ = core_type;
