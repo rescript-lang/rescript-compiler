@@ -376,9 +376,3 @@ module Ci:
       ?virt:virtual_flag -> ?params:(core_type * variance) list ->
       str -> 'a -> 'a class_infos
   end
-
-(** Class signatures *)
-module Csig:
-  sig
-    val mk: core_type -> class_type_field list -> class_signature
-  end

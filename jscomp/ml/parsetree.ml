@@ -508,15 +508,6 @@ and class_type_desc =
   | Pcty_open of override_flag * Longident.t loc * class_type
         (* let open M in CT *)
 
-and class_signature =
-    {
-     pcsig_self: core_type;
-     pcsig_fields: class_type_field list;
-    }
-(* object('selfpat) ... end
-   object ... end             (self = Ptyp_any)
- *)
-
 and class_type_field =
     {
      pctf_desc: class_type_field_desc;
