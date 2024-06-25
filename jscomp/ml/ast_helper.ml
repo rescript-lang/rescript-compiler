@@ -492,11 +492,3 @@ module Te = struct
     }
 
 end
-
-module Csig = struct
-  let mk self fields =
-    {
-     pcsig_self = self;
-     pcsig_fields = fields;
-    }
-end

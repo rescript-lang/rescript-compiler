@@ -25,7 +25,6 @@ type mapper = {
   attributes: mapper -> T.attribute list -> attribute list;
   case: mapper -> T.case -> case;
   cases: mapper -> T.case list -> case list;
-  class_signature: mapper -> T.class_signature -> class_signature;
   class_type: mapper -> T.class_type -> class_type;
   class_type_declaration: mapper -> T.class_type_declaration
                           -> class_type_declaration;
@@ -601,12 +600,6 @@ let class_type sub ct =
   in
   Cty.mk ~loc ~attrs desc
 
-let class_signature sub cs =
-  {
-    pcsig_self = sub.typ sub cs.csig_self;
-    pcsig_fields = List.map (sub.class_type_field sub) cs.csig_fields;
-  }
-
 let class_type_field sub ctf =
   let loc = sub.location sub ctf.ctf_loc in
   let attrs = sub.attributes sub ctf.ctf_attributes in
@@ -680,7 +673,6 @@ let default_mapper =
     with_constraint = with_constraint;
     class_type = class_type;
     class_type_field = class_type_field;
-    class_signature = class_signature;
     class_type_declaration = class_type_declaration;
     type_declaration = type_declaration;
     type_kind = type_kind;
