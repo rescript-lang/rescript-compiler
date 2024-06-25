@@ -29,7 +29,6 @@ type iterator = {
   attributes: iterator -> attribute list -> unit;
   case: iterator -> case -> unit;
   cases: iterator -> case list -> unit;
-  class_type: iterator -> class_type -> unit;
   constructor_declaration: iterator -> constructor_declaration -> unit;
   expr: iterator -> expression -> unit;
   extension: iterator -> extension -> unit;
@@ -165,22 +164,6 @@ module T = struct
 
 end
 
-module CT = struct
-  (* Type expressions for the class language *)
-
-  let iter sub {pcty_loc = loc; pcty_desc = desc; pcty_attributes = attrs} =
-    sub.location sub loc;
-    sub.attributes sub attrs;
-    match desc with
-    | Pcty_constr (lid, tys) ->
-        iter_loc sub lid; List.iter (sub.typ sub) tys
-    | Pcty_signature () -> assert false
-    | Pcty_arrow (_lab, t, ct) ->
-        sub.typ sub t; sub.class_type sub ct
-    | Pcty_extension x -> sub.extension sub x
-    | Pcty_open (_ovf, lid, e) ->
-        iter_loc sub lid; sub.class_type sub e
-end
 
 module MT = struct
   (* Type expressions for the module language *)
@@ -397,7 +380,6 @@ let default_iterator =
     signature_item = MT.iter_signature_item;
     module_type = MT.iter;
     with_constraint = MT.iter_with_constraint;
-    class_type = CT.iter;
     type_declaration = T.iter_type_declaration;
     type_kind = T.iter_type_kind;
     typ = T.iter;

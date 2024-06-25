@@ -30,7 +30,6 @@ type mapper = {
   attributes: mapper -> attribute list -> attribute list;
   case: mapper -> case -> case;
   cases: mapper -> case list -> case list;
-  class_type: mapper -> class_type -> class_type;
   constructor_declaration: mapper -> constructor_declaration
                            -> constructor_declaration;
   expr: mapper -> expression -> expression;
@@ -170,24 +169,6 @@ module T = struct
       ~loc:(sub.location sub pext_loc)
       ~attrs:(sub.attributes sub pext_attributes)
 
-end
-
-module CT = struct
-  (* Type expressions for the class language *)
-
-  let map sub {pcty_loc = loc; pcty_desc = desc; pcty_attributes = attrs} =
-    let open Cty in
-    let loc = sub.location sub loc in
-    let attrs = sub.attributes sub attrs in
-    match desc with
-    | Pcty_constr (lid, tys) ->
-        constr ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tys)
-    | Pcty_signature () -> assert false
-    | Pcty_arrow (lab, t, ct) ->
-        arrow ~loc ~attrs lab (sub.typ sub t) (sub.class_type sub ct)
-    | Pcty_extension x -> extension ~loc ~attrs (sub.extension sub x)
-    | Pcty_open (ovf, lid, ct) ->
-        open_ ~loc ~attrs ovf (map_loc sub lid) (sub.class_type sub ct)
 end
 
 module MT = struct
@@ -414,7 +395,6 @@ let default_mapper =
     signature_item = MT.map_signature_item;
     module_type = MT.map;
     with_constraint = MT.map_with_constraint;
-    class_type = CT.map;
     type_declaration = T.map_type_declaration;
     type_kind = T.map_type_kind;
     typ = T.map;
