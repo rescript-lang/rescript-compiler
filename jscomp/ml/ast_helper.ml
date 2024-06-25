@@ -271,24 +271,6 @@ module Str = struct
       f_txt
 end
 
-module Cl = struct
-  let mk ?(loc = !default_loc) ?(attrs = []) d =
-    {
-     pcl_desc = d;
-     pcl_loc = loc;
-     pcl_attributes = attrs;
-    }
-  let attr d a = {d with pcl_attributes = d.pcl_attributes @ [a]}
-
-  let constr ?loc ?attrs a b = mk ?loc ?attrs (Pcl_constr (a, b))
-  let structure ?loc ?attrs a = mk ?loc ?attrs (Pcl_structure a)
-  let fun_ ?loc ?attrs a b c d = mk ?loc ?attrs (Pcl_fun (a, b, c, d))
-  let apply ?loc ?attrs a b = mk ?loc ?attrs (Pcl_apply (a, b))
-  let let_ ?loc ?attrs a b c = mk ?loc ?attrs (Pcl_let (a, b, c))
-  let constraint_ ?loc ?attrs a b = mk ?loc ?attrs (Pcl_constraint (a, b))
-  let extension ?loc ?attrs a = mk ?loc ?attrs (Pcl_extension a)
-  let open_ ?loc ?attrs a b c = mk ?loc ?attrs (Pcl_open (a, b, c))
-end
 
 module Cty = struct
   let mk ?(loc = !default_loc) ?(attrs = []) d =
@@ -545,13 +527,5 @@ module Csig = struct
     {
      pcsig_self = self;
      pcsig_fields = fields;
-    }
-end
-
-module Cstr = struct
-  let mk self fields =
-    {
-     pcstr_self = self;
-     pcstr_fields = fields;
     }
 end

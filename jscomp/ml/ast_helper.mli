@@ -370,27 +370,6 @@ module Ctf:
     val text: text -> class_type_field list
   end
 
-(** Class expressions *)
-module Cl:
-  sig
-    val mk: ?loc:loc -> ?attrs:attrs -> class_expr_desc -> class_expr
-    val attr: class_expr -> attribute -> class_expr
-
-    val constr: ?loc:loc -> ?attrs:attrs -> lid -> core_type list -> class_expr
-    val structure: ?loc:loc -> ?attrs:attrs -> class_structure -> class_expr
-    val fun_: ?loc:loc -> ?attrs:attrs -> arg_label -> expression option ->
-      pattern -> class_expr -> class_expr
-    val apply: ?loc:loc -> ?attrs:attrs -> class_expr ->
-      (arg_label * expression) list -> class_expr
-    val let_: ?loc:loc -> ?attrs:attrs -> rec_flag -> value_binding list ->
-      class_expr -> class_expr
-    val constraint_: ?loc:loc -> ?attrs:attrs -> class_expr -> class_type ->
-      class_expr
-    val extension: ?loc:loc -> ?attrs:attrs -> extension -> class_expr
-    val open_: ?loc:loc -> ?attrs:attrs -> override_flag -> lid -> class_expr
-               -> class_expr
-  end
-
 (** Class fields *)
 module Cf:
   sig
@@ -426,10 +405,4 @@ module Ci:
 module Csig:
   sig
     val mk: core_type -> class_type_field list -> class_signature
-  end
-
-(** Class structures *)
-module Cstr:
-  sig
-    val mk: pattern -> class_field list -> class_structure
   end

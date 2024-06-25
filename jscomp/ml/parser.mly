@@ -251,7 +251,6 @@ let extra_text text pos items =
 
 let extra_str pos items = extra_text Str.text pos items
 let extra_sig pos items = extra_text Sig.text pos items
-let extra_cstr pos items = extra_text Cf.text pos items
 let extra_csig pos items = extra_text Ctf.text pos items
 
 let extra_rhs_core_type ct ~pos =
@@ -888,7 +887,7 @@ class_type_parameters:
 ;
 class_structure:
   |  class_self_pattern class_fields
-       { Cstr.mk $1 (extra_cstr 2 (List.rev $2)) }
+       { assert false }
 ;
 class_self_pattern:
     LPAREN pattern RPAREN

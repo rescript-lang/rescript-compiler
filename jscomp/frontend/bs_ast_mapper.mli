@@ -57,13 +57,8 @@ type mapper = {
   attributes: mapper -> attribute list -> attribute list;
   case: mapper -> case -> case;
   cases: mapper -> case list -> case list;
-  class_expr: mapper -> class_expr -> class_expr;
-  class_field: mapper -> class_field -> class_field;
   class_signature: mapper -> class_signature -> class_signature;
-  class_structure: mapper -> class_structure -> class_structure;
   class_type: mapper -> class_type -> class_type;
-  class_type_declaration:
-    mapper -> class_type_declaration -> class_type_declaration;
   class_type_field: mapper -> class_type_field -> class_type_field;
   constructor_declaration:
     mapper -> constructor_declaration -> constructor_declaration;

@@ -101,14 +101,6 @@ let iterator =
     | Pext_rebind id -> simple_longident id
     | _ -> ()
   in
-  let class_expr self ce =
-    super.class_expr self ce;
-    let loc = ce.pcl_loc in
-    match ce.pcl_desc with
-    | Pcl_apply (_, []) -> no_args loc
-    | Pcl_constr (id, _) -> simple_longident id
-    | _ -> ()
-  in
   let module_type self mty =
     super.module_type self mty;
     match mty.pmty_desc with
@@ -153,7 +145,6 @@ let iterator =
   ; pat
   ; expr
   ; extension_constructor
-  ; class_expr
   ; module_expr
   ; module_type
   ; open_description
