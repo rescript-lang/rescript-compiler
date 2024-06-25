@@ -313,34 +313,6 @@ module Ctf = struct
 
 end
 
-module Cf = struct
-  let mk ?(loc = !default_loc) ?(attrs = [])
-        ?(docs = empty_docs) d =
-    {
-     pcf_desc = d;
-     pcf_loc = loc;
-     pcf_attributes = add_docs_attrs docs attrs;
-    }
-
-  
-  let val_ ?loc ?attrs a b c = mk ?loc ?attrs (Pcf_val (a, b, c))
-  let method_ ?loc ?attrs a b c = mk ?loc ?attrs (Pcf_method (a, b, c))
-  let constraint_ ?loc ?attrs a b = mk ?loc ?attrs (Pcf_constraint (a, b))
-  let initializer_ ?loc ?attrs a = mk ?loc ?attrs (Pcf_initializer a)
-  let extension ?loc ?attrs a = mk ?loc ?attrs (Pcf_extension a)
-  let attribute ?loc a = mk ?loc (Pcf_attribute a)
-  let text txt =
-    let f_txt = Ext_list.filter txt (fun ds -> docstring_body ds <> "")in
-    List.map
-      (fun ds -> attribute ~loc:(docstring_loc ds) (text_attr ds))
-      f_txt
-
-  let virtual_ ct = Cfk_virtual ct
-  let concrete o e = Cfk_concrete (o, e)
-
-  let attr d a = {d with pcf_attributes = d.pcf_attributes @ [a]}
-
-end
 
 module Val = struct
   let mk ?(loc = !default_loc) ?(attrs = []) ?(docs = empty_docs)

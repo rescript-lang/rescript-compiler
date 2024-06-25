@@ -458,7 +458,6 @@ module P = struct
     | Ppat_extension x -> extension ~loc ~attrs (sub.extension sub x)
 end
 
-
 (* Now, a generic AST mapper, to be extended to cover all kinds and
    cases of the OCaml grammar.  The default behavior of the mapper is
    the identity. *)
