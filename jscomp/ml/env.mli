@@ -28,7 +28,7 @@ type summary =
   | Env_module of summary * Ident.t * module_declaration
   | Env_modtype of summary * Ident.t * modtype_declaration
   | Env_class of unit
-  | Env_cltype of summary * Ident.t * class_type_declaration
+  | Env_cltype of unit
   | Env_open of summary * Path.t
   | Env_functor_arg of summary * Ident.t
   | Env_constraints of summary * type_declaration PathMap.t
@@ -65,7 +65,6 @@ val find_type: Path.t -> t -> type_declaration
 val find_type_descrs: Path.t -> t -> type_descriptions
 val find_module: Path.t -> t -> module_declaration
 val find_modtype: Path.t -> t -> modtype_declaration
-val find_cltype: Path.t -> t -> class_type_declaration
 
 val find_type_expansion:
     Path.t -> t -> type_expr list * type_expr * int option
@@ -118,8 +117,6 @@ val lookup_module:
   load:bool -> ?loc:Location.t -> Longident.t -> t -> Path.t
 val lookup_modtype:
   ?loc:Location.t -> Longident.t -> t -> Path.t * modtype_declaration
-val lookup_cltype:
-  ?loc:Location.t -> Longident.t -> t -> Path.t * class_type_declaration
 
 val copy_types: string list -> t -> t
   (* Used only in Typecore.duplicate_ident_types. *)
@@ -140,7 +137,6 @@ val add_module_declaration: ?arg:bool -> check:bool -> Ident.t ->
   module_declaration -> t -> t
 val add_modtype: Ident.t -> modtype_declaration -> t -> t
 
-val add_cltype: Ident.t -> class_type_declaration -> t -> t
 val add_local_constraint: Path.t -> type_declaration -> int -> t -> t
 val add_local_type: Path.t -> type_declaration -> t -> t
 
@@ -171,7 +167,6 @@ val enter_module_declaration:
     ?arg:bool -> Ident.t -> module_declaration -> t -> t
 val enter_modtype: string -> modtype_declaration -> t -> Ident.t * t
 
-val enter_cltype: string -> class_type_declaration -> t -> Ident.t * t
 
 (* Initialize the cache of in-core module interfaces. *)
 val reset_cache: unit -> unit
@@ -299,9 +294,6 @@ val fold_modtypes:
   Longident.t option -> t -> 'a -> 'a
 val fold_classs:
   (string -> Path.t -> class_declaration -> 'a -> 'a) ->
-  Longident.t option -> t -> 'a -> 'a
-val fold_cltypes:
-  (string -> Path.t -> class_type_declaration -> 'a -> 'a) ->
   Longident.t option -> t -> 'a -> 'a
 
 (** Utilities *)

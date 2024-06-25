@@ -50,7 +50,6 @@ type error =
   | Unbound_module of Longident.t
   | Unbound_class of Longident.t
   | Unbound_modtype of Longident.t
-  | Unbound_cltype of Longident.t
   | Ill_typed_functor_application of Longident.t
   | Illegal_reference_to_recursive_module
   | Access_functor_as_structure of Longident.t
@@ -777,7 +776,6 @@ let fold_constructors = fold_descr Env.fold_constructors (fun d -> d.cstr_name)
 let fold_labels = fold_descr Env.fold_labels (fun d -> d.lbl_name)
 let fold_classs = fold_simple Env.fold_classs
 let fold_modtypes = fold_simple Env.fold_modtypes
-let fold_cltypes = fold_simple Env.fold_cltypes
 
 let report_error env ppf = function
   | Unbound_type_variable name ->
@@ -938,9 +936,6 @@ let report_error env ppf = function
   | Unbound_modtype lid ->
       fprintf ppf "Unbound module type %a" longident lid;
       spellcheck ppf fold_modtypes env lid;
-  | Unbound_cltype lid ->
-      fprintf ppf "Unbound class type %a" longident lid;
-      spellcheck ppf fold_cltypes env lid;
   | Ill_typed_functor_application lid ->
       fprintf ppf "Ill-typed functor application %a" longident lid
   | Illegal_reference_to_recursive_module ->
