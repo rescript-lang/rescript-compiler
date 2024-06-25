@@ -361,8 +361,6 @@ and type_transparence =
 
 module Concr : Set.S with type elt = string
 
-type class_type
-
 (* Type expressions for the module language *)
 
 type module_type =
