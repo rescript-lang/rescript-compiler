@@ -356,7 +356,6 @@ let extra_text text pos items =
 
 let extra_str pos items = extra_text Str.text pos items
 let extra_sig pos items = extra_text Sig.text pos items
-let extra_csig pos items = extra_text Ctf.text pos items
 
 let extra_rhs_core_type ct ~pos =
   let docs = rhs_info pos in
@@ -7452,7 +7451,7 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'class_sig_fields) in
     Obj.repr(
 # 981 "ml/parser.mly"
-      ( Csig.mk _1 (extra_csig 2 (List.rev _2)) )
+      ( assert false )
 # 7459 "ml/parser.ml"
                : 'class_sig_body))
 ; (fun __caml_parser_env ->

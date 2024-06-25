@@ -496,8 +496,8 @@ and class_type_desc =
   | Pcty_constr of Longident.t loc * core_type list
         (* c
            ['a1, ..., 'an] c *)
-  | Pcty_signature of class_signature
-        (* object ... end *)
+  | Pcty_signature of unit
+        (* dummy AST node *)
   | Pcty_arrow of arg_label * core_type * class_type
         (* T -> CT       Simple
            ~l:T -> CT    Labelled l

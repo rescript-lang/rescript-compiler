@@ -51,9 +51,6 @@ val class_type_declarations:
   Env.t -> Parsetree.class_type_declaration list -> class_type_info list * Env.t
 
 
-val approx_class_declarations:
-  Env.t -> Parsetree.class_type_declaration list -> class_type_info list
-
 val virtual_methods: Types.class_signature -> label list
 
 
