@@ -370,29 +370,6 @@ module Ctf:
     val text: text -> class_type_field list
   end
 
-(** Class fields *)
-module Cf:
-  sig
-    val mk: ?loc:loc -> ?attrs:attrs -> ?docs:docs -> class_field_desc ->
-      class_field
-    val attr: class_field -> attribute -> class_field
-
-    val val_: ?loc:loc -> ?attrs:attrs -> str -> mutable_flag ->
-      class_field_kind -> class_field
-    val method_: ?loc:loc -> ?attrs:attrs -> str -> private_flag ->
-      class_field_kind -> class_field
-    val constraint_: ?loc:loc -> ?attrs:attrs -> core_type -> core_type ->
-      class_field
-    val initializer_: ?loc:loc -> ?attrs:attrs -> expression -> class_field
-    val extension: ?loc:loc -> ?attrs:attrs -> extension -> class_field
-    val attribute: ?loc:loc -> attribute -> class_field
-    val text: text -> class_field list
-
-    val virtual_: core_type -> class_field_kind
-    val concrete: override_flag -> expression -> class_field_kind
-
-  end
-
 (** Classes *)
 module Ci:
   sig

@@ -564,17 +564,6 @@ and class_type_declaration = class_type class_infos
 (* Value expressions for the class language *)
 
 
-(* object(selfpat) ... end
-   object ... end           (self = Ppat_any)
- *)
-
-and class_field =
-    {
-     pcf_desc: class_field_desc;
-     pcf_loc: Location.t;
-     pcf_attributes: attributes; (* ... [@@id1] [@@id2] *)
-    }
-
 and class_field_desc =
   | Pcf_inherit of unit
         (* inherit CE
