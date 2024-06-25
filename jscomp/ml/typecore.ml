@@ -98,7 +98,7 @@ let type_open :
 let type_package =
   ref (fun _ -> assert false)
 
-(* Forward declaration, to be filled in by Typeclass.class_structure *)
+(* Forward declaration, to be filled in by Typemod.type_package *)
 
 (*
   Saving and outputting type information.
@@ -200,7 +200,7 @@ let iter_expression f e =
     | Pstr_exception _
     | Pstr_modtype _
     | Pstr_open _
-    | Pstr_class_type _
+    | Pstr_class_type ()
     | Pstr_attribute _
     | Pstr_extension _ -> ()
     | Pstr_include {pincl_mod = me}
@@ -1638,7 +1638,7 @@ and is_nonexpansive_mod mexp =
       List.for_all
         (fun item -> match item.str_desc with
           | Tstr_eval _ | Tstr_primitive _ | Tstr_type _
-          | Tstr_modtype _ | Tstr_open _ | Tstr_class_type _  -> true
+          | Tstr_modtype _ | Tstr_open _ | Tstr_class_type ()  -> true
           | Tstr_value (_, pat_exp_list) ->
               List.for_all (fun vb -> is_nonexpansive vb.vb_expr) pat_exp_list
           | Tstr_module {mb_expr=m;_}
@@ -1654,7 +1654,7 @@ and is_nonexpansive_mod mexp =
                 (function {ext_kind = Text_decl _} -> false
                         | {ext_kind = Text_rebind _} -> true)
                 te.tyext_constructors
-          | Tstr_class _ -> false (* could be more precise *)
+          | Tstr_class () -> assert false (* impossible *)
           | Tstr_attribute _ -> true
         )
         str.str_items

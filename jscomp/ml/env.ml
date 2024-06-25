@@ -877,8 +877,6 @@ and find_type_full =
   find (fun env -> env.types) (fun sc -> sc.comp_types)
 and find_modtype =
   find (fun env -> env.modtypes) (fun sc -> sc.comp_modtypes)
-and find_class =
-  find (fun env -> env.classes) (fun sc -> sc.comp_classes)
 and find_cltype =
   find (fun env -> env.cltypes) (fun sc -> sc.comp_cltypes)
 
@@ -1238,8 +1236,6 @@ let lookup_type =
   lookup (fun env -> env.types) (fun sc -> sc.comp_types)
 let lookup_modtype =
   lookup (fun env -> env.modtypes) (fun sc -> sc.comp_modtypes)
-let lookup_class =
-  lookup (fun env -> env.classes) (fun sc -> sc.comp_classes)
 let lookup_cltype =
   lookup (fun env -> env.cltypes) (fun sc -> sc.comp_cltypes)
 
@@ -1369,13 +1365,6 @@ let lookup_all_labels ?loc lid env =
     List.map (fun (lbl, use) -> (lbl, wrap_use lbl use)) lbls
   with
     Not_found when is_lident lid -> []
-
-let lookup_class ?loc lid env =
-  let (_, desc) as r = lookup_class ?loc lid env in
-  (* special support for Typeclass.unbound_class *)
-  if Path.name desc.cty_path = "" then ignore (lookup_type ?loc lid env)
-  else mark_type_path env desc.cty_path;
-  r
 
 let lookup_cltype ?loc lid env =
   let (_, desc) as r = lookup_cltype ?loc lid env in
