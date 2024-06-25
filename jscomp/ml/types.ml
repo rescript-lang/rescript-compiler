@@ -209,8 +209,6 @@ and type_transparence =
 
 module Concr = Set.Make(OrderedString)
 
-type class_type
-
 (* Type expressions for the module language *)
 
 type module_type =
