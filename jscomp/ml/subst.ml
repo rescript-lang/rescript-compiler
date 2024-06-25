@@ -319,22 +319,6 @@ let class_signature s sign =
         sign.csig_inher;
   }
 
-let rec class_type s =
-  function
-    Cty_constr (p, tyl, cty) ->
-      Cty_constr (type_path s p, List.map (typexp s) tyl, class_type s cty)
-  | Cty_signature sign ->
-      Cty_signature (class_signature s sign)
-  | Cty_arrow (l, ty, cty) ->
-      Cty_arrow (l, typexp s ty, class_type s cty)
-
-
-
-
-let class_type s cty =
-  let cty = class_type s cty in
-  cleanup_types ();
-  cty
 
 let value_description s descr =
   { val_type = type_expr s descr.val_type;

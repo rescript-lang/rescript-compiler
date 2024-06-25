@@ -103,9 +103,7 @@ type type_iterators =
     it_extension_constructor: type_iterators -> extension_constructor -> unit;
     it_module_declaration: type_iterators -> module_declaration -> unit;
     it_modtype_declaration: type_iterators -> modtype_declaration -> unit;
-    it_class_declaration: type_iterators -> class_declaration -> unit;
     it_module_type: type_iterators -> module_type -> unit;
-    it_class_type: type_iterators -> class_type -> unit;
     it_type_kind: type_iterators -> type_kind -> unit;
     it_do_type_expr: type_iterators -> type_expr -> unit;
     it_type_expr: type_iterators -> type_expr -> unit;
@@ -144,7 +142,6 @@ val mark_type_params: type_expr -> unit
 val unmark_type: type_expr -> unit
 val unmark_type_decl: type_declaration -> unit
 val unmark_extension_constructor: extension_constructor -> unit
-val unmark_class_type: class_type -> unit
 val unmark_class_signature: class_signature -> unit
         (* Remove marks from a type *)
 

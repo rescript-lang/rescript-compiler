@@ -361,27 +361,13 @@ and type_transparence =
 
 module Concr : Set.S with type elt = string
 
-type class_type =
-    Cty_constr of Path.t * type_expr list * class_type
-  | Cty_signature of class_signature
-  | Cty_arrow of arg_label * type_expr * class_type
-
+type class_type
 and class_signature =
   { csig_self: type_expr;
     csig_vars:
       (Asttypes.mutable_flag * Asttypes.virtual_flag * type_expr) Vars.t;
     csig_concr: Concr.t;
     csig_inher: (Path.t * type_expr list) list }
-
-type class_declaration =
-  { cty_params: type_expr list;
-    mutable cty_type: class_type;
-    cty_path: Path.t;
-    cty_new: type_expr option;
-    cty_variance: Variance.t list;
-    cty_loc: Location.t;
-    cty_attributes: Parsetree.attributes;
-  }
 
 
 (* Type expressions for the module language *)

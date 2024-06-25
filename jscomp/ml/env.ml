@@ -445,7 +445,6 @@ type t = {
   modules: (Subst.t * module_declaration, module_declaration) EnvLazy.t IdTbl.t;
   modtypes: modtype_declaration IdTbl.t;
   components: module_components IdTbl.t;
-  classes: class_declaration IdTbl.t;
   functor_args: unit Ident.tbl;
   summary: summary;
   local_constraints: type_declaration PathMap.t;
@@ -476,8 +475,7 @@ and structure_components = {
   mutable comp_modules:
    (Subst.t * module_declaration, module_declaration) EnvLazy.t comp_tbl;
   mutable comp_modtypes: modtype_declaration comp_tbl;
-  mutable comp_components: module_components comp_tbl;
-  comp_classes: class_declaration comp_tbl; (* warning -69*)
+  mutable comp_components: module_components comp_tbl; (* warning -69*)
 }
 
 and functor_components = {
@@ -529,7 +527,7 @@ let empty = {
   values = IdTbl.empty; constrs = TycompTbl.empty;
   labels = TycompTbl.empty; types = IdTbl.empty;
   modules = IdTbl.empty; modtypes = IdTbl.empty;
-  components = IdTbl.empty; classes = IdTbl.empty;
+  components = IdTbl.empty;
   summary = Env_empty; local_constraints = PathMap.empty; gadt_instances = [];
   flags = 0;
   functor_args = Ident.empty;
@@ -559,8 +557,7 @@ let is_local_ext = function
 let diff env1 env2 =
   IdTbl.diff_keys env1.values env2.values @
   TycompTbl.diff_keys is_local_ext env1.constrs env2.constrs @
-  IdTbl.diff_keys env1.modules env2.modules @
-  IdTbl.diff_keys env1.classes env2.classes
+  IdTbl.diff_keys env1.modules env2.modules
 
 type can_load_cmis =
   | Can_load_cmis
@@ -617,7 +614,7 @@ let empty_structure =
     comp_labels = Tbl.empty;
     comp_types = Tbl.empty;
     comp_modules = Tbl.empty; comp_modtypes = Tbl.empty;
-    comp_components = Tbl.empty; comp_classes = Tbl.empty;
+    comp_components = Tbl.empty;
     }
 
 let get_components c =
@@ -1609,7 +1606,7 @@ and components_of_module_maker (env, sub, path, mty) =
           comp_constrs = Tbl.empty;
           comp_labels = Tbl.empty; comp_types = Tbl.empty;
           comp_modules = Tbl.empty; comp_modtypes = Tbl.empty;
-          comp_components = Tbl.empty; comp_classes = Tbl.empty;
+          comp_components = Tbl.empty;
           } in
       let pl, sub = prefix_idents path sub sg in
       let env = ref env in
@@ -1949,9 +1946,6 @@ let add_components slot root env0 comps =
   let modtypes =
     add (fun x -> `Module_type x) comps.comp_modtypes env0.modtypes
   in
-  let classes =
-    add (fun x -> `Class x) comps.comp_classes env0.classes
-  in
   let components =
     add (fun x -> `Component x) comps.comp_components env0.components
   in
@@ -1967,7 +1961,6 @@ let add_components slot root env0 comps =
     values;
     types;
     modtypes;
-    classes;
     components;
     modules;
   }
@@ -2181,8 +2174,6 @@ and fold_types f =
   find_all (fun env -> env.types) (fun sc -> sc.comp_types) f
 and fold_modtypes f =
   find_all (fun env -> env.modtypes) (fun sc -> sc.comp_modtypes) f
-and fold_classs f =
-  find_all (fun env -> env.classes) (fun sc -> sc.comp_classes) f
 
 
 (* Make the initial environment *)

@@ -23,8 +23,6 @@ type mapper =
   {
     case: mapper -> case -> case;
     cases: mapper -> case list -> case list;
-    class_description: mapper -> class_description -> class_description;
-
     class_signature: mapper -> class_signature -> class_signature;
     class_type: mapper -> class_type -> class_type;
     class_type_field: mapper -> class_type_field -> class_type_field;
@@ -70,12 +68,6 @@ let structure sub {str_items; str_type; str_final_env} =
     str_items = List.map (sub.structure_item sub) str_items;
     str_final_env = sub.env sub str_final_env;
     str_type;
-  }
-
-let class_infos sub f x =
-  {x with
-   ci_params = List.map (tuple2 (sub.typ sub) id) x.ci_params;
-   ci_expr = f x.ci_expr;
   }
 
 let module_type_declaration sub x =
@@ -367,8 +359,6 @@ let signature_item sub x =
   in
   {x with sig_desc; sig_env}
 
-let class_description sub x =
-  class_infos sub (sub.class_type sub) x
 
 let module_type sub x =
   let mty_env = sub.env sub x.mty_env in
@@ -562,7 +552,6 @@ let default =
   {
     case;
     cases;
-    class_description;
     class_signature;
     class_type;
     class_type_field;
