@@ -28,7 +28,6 @@ type mapper = {
   class_type: mapper -> T.class_type -> class_type;
   class_type_declaration: mapper -> T.class_type_declaration
                           -> class_type_declaration;
-  class_type_field: mapper -> T.class_type_field -> class_type_field;
   constructor_declaration: mapper -> T.constructor_declaration
                            -> constructor_declaration;
   expr: mapper -> T.expression -> expression;
@@ -600,20 +599,6 @@ let class_type sub ct =
   in
   Cty.mk ~loc ~attrs desc
 
-let class_type_field sub ctf =
-  let loc = sub.location sub ctf.ctf_loc in
-  let attrs = sub.attributes sub ctf.ctf_attributes in
-  let desc = match ctf.ctf_desc with
-      Tctf_inherit ct -> Pctf_inherit (sub.class_type sub ct)
-    | Tctf_val (s, mut, virt, ct) ->
-        Pctf_val (mkloc s loc, mut, virt, sub.typ sub ct)
-    | Tctf_method  (s, priv, virt, ct) ->
-        Pctf_method  (mkloc s loc, priv, virt, sub.typ sub ct)
-    | Tctf_constraint  (ct1, ct2) ->
-        Pctf_constraint (sub.typ sub ct1, sub.typ sub ct2)
-    | Tctf_attribute x -> Pctf_attribute x
-  in
-  Ctf.mk ~loc ~attrs desc
 
 let core_type sub ct =
   let loc = sub.location sub ct.ctyp_loc in
@@ -672,7 +657,6 @@ let default_mapper =
     module_type = module_type;
     with_constraint = with_constraint;
     class_type = class_type;
-    class_type_field = class_type_field;
     class_type_declaration = class_type_declaration;
     type_declaration = type_declaration;
     type_kind = type_kind;

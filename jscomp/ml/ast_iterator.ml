@@ -30,7 +30,6 @@ type iterator = {
   case: iterator -> case -> unit;
   cases: iterator -> case list -> unit;
   class_type: iterator -> class_type -> unit;
-  class_type_field: iterator -> class_type_field -> unit;
   constructor_declaration: iterator -> constructor_declaration -> unit;
   expr: iterator -> expression -> unit;
   extension: iterator -> extension -> unit;
@@ -181,20 +180,6 @@ module CT = struct
     | Pcty_extension x -> sub.extension sub x
     | Pcty_open (_ovf, lid, e) ->
         iter_loc sub lid; sub.class_type sub e
-
-  let iter_field sub {pctf_desc = desc; pctf_loc = loc; pctf_attributes = attrs}
-    =
-    sub.location sub loc;
-    sub.attributes sub attrs;
-    match desc with
-    | Pctf_inherit ct -> sub.class_type sub ct
-    | Pctf_val (_s, _m, _v, t) -> sub.typ sub t
-    | Pctf_method (_s, _p, _v, t) -> sub.typ sub t
-    | Pctf_constraint (t1, t2) ->
-        sub.typ sub t1; sub.typ sub t2
-    | Pctf_attribute x -> sub.attribute sub x
-    | Pctf_extension x -> sub.extension sub x
-
 end
 
 module MT = struct
@@ -413,7 +398,6 @@ let default_iterator =
     module_type = MT.iter;
     with_constraint = MT.iter_with_constraint;
     class_type = CT.iter;
-    class_type_field = CT.iter_field;
     type_declaration = T.iter_type_declaration;
     type_kind = T.iter_type_kind;
     typ = T.iter;

@@ -31,7 +31,6 @@ type mapper = {
   case: mapper -> case -> case;
   cases: mapper -> case list -> case list;
   class_type: mapper -> class_type -> class_type;
-  class_type_field: mapper -> class_type_field -> class_type_field;
   constructor_declaration: mapper -> constructor_declaration
                            -> constructor_declaration;
   expr: mapper -> expression -> expression;
@@ -189,23 +188,6 @@ module CT = struct
     | Pcty_extension x -> extension ~loc ~attrs (sub.extension sub x)
     | Pcty_open (ovf, lid, ct) ->
         open_ ~loc ~attrs ovf (map_loc sub lid) (sub.class_type sub ct)
-
-  let map_field sub {pctf_desc = desc; pctf_loc = loc; pctf_attributes = attrs}
-    =
-    let open Ctf in
-    let loc = sub.location sub loc in
-    let attrs = sub.attributes sub attrs in
-    match desc with
-    | Pctf_inherit ct -> inherit_ ~loc ~attrs (sub.class_type sub ct)
-    | Pctf_val (s, m, v, t) ->
-        val_ ~loc ~attrs (map_loc sub s) m v (sub.typ sub t)
-    | Pctf_method (s, p, v, t) ->
-        method_ ~loc ~attrs (map_loc sub s) p v (sub.typ sub t)
-    | Pctf_constraint (t1, t2) ->
-        constraint_ ~loc ~attrs (sub.typ sub t1) (sub.typ sub t2)
-    | Pctf_attribute x -> attribute ~loc (sub.attribute sub x)
-    | Pctf_extension x -> extension ~loc ~attrs (sub.extension sub x)
-
 end
 
 module MT = struct
@@ -433,7 +415,6 @@ let default_mapper =
     module_type = MT.map;
     with_constraint = MT.map_with_constraint;
     class_type = CT.map;
-    class_type_field = CT.map_field;
     type_declaration = T.map_type_declaration;
     type_kind = T.map_type_kind;
     typ = T.map;
