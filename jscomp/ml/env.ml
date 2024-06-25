@@ -512,11 +512,9 @@ let check_shadowing env = function
   | `Type (Some _) -> Some "type"
   | `Module (Some _) | `Component (Some _) -> Some "module"
   | `Module_type (Some _) -> Some "module type"
-  | `Class (Some _) -> Some "class"
-  | `Class_type (Some _) -> Some "class type"
   | `Constructor _ | `Label _
   | `Value None | `Type None | `Module None | `Module_type None
-  | `Class None | `Class_type None | `Component None ->
+  | `Component None ->
       None
 
 let subst_modtype_maker (subst, md) =
