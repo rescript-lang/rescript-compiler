@@ -142,8 +142,6 @@ val mark_type_params: type_expr -> unit
 val unmark_type: type_expr -> unit
 val unmark_type_decl: type_declaration -> unit
 val unmark_extension_constructor: extension_constructor -> unit
-val unmark_class_signature: class_signature -> unit
-        (* Remove marks from a type *)
 
 (**** Memorization of abbreviation expansion ****)
 
