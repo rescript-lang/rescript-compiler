@@ -381,21 +381,6 @@ let hide_private_methods ty =
                               (*******************************)
 
 
-let rec signature_of_class_type =
-  function
-    Cty_constr (_, _, cty) -> signature_of_class_type cty
-  | Cty_signature sign     -> sign
-  | Cty_arrow (_, _, cty)   -> signature_of_class_type cty
-
-let self_type cty =
-  repr (signature_of_class_type cty).csig_self
-
-let rec class_type_arity =
-  function
-    Cty_constr (_, _, cty) ->  class_type_arity cty
-  | Cty_signature _        ->  0
-  | Cty_arrow (_, _, cty)    ->  1 + class_type_arity cty
-
 
                   (*******************************************)
                   (*  Miscellaneous operations on row types  *)
@@ -585,8 +570,6 @@ let duplicate_type ty =
   Subst.type_expr Subst.identity ty
 
 (* Same, for class types *)
-let duplicate_class_type ty =
-  Subst.class_type Subst.identity ty
 
 
                          (*****************************)
@@ -1174,28 +1157,6 @@ let instance_declaration decl =
   in
   cleanup_types ();
   decl
-
-let instance_class params cty =
-  let rec copy_class_type =
-    function
-      Cty_constr (path, tyl, cty) ->
-        Cty_constr (path, List.map simple_copy tyl, copy_class_type cty)
-    | Cty_signature sign ->
-        Cty_signature
-          {csig_self = copy sign.csig_self;
-           csig_vars =
-             Vars.map (function (m, v, ty) -> (m, v, copy ty)) sign.csig_vars;
-           csig_concr = sign.csig_concr;
-           csig_inher =
-             List.map (fun (p,tl) -> (p, List.map simple_copy tl))
-               sign.csig_inher}
-    | Cty_arrow (l, ty, cty) ->
-        Cty_arrow (l, copy ty, copy_class_type cty)
-  in
-  let params' = List.map simple_copy params in
-  let cty' = copy_class_type cty in
-  cleanup_types ();
-  (params', cty')
 
 (**** Instantiation for types with free universal variables ****)
 
@@ -3346,9 +3307,6 @@ let eqtype_list rename type_pairs subst env tl1 tl2 =
   try eqtype_list rename type_pairs subst env tl1 tl2; backtrack snap
   with exn -> backtrack snap; raise exn
 
-let eqtype rename type_pairs subst env t1 t2 =
-  eqtype_list rename type_pairs subst env [t1] [t2]
-
 (* Two modes: with or without renaming of variables *)
 let equal env rename tyl1 tyl2 =
   try
@@ -3366,7 +3324,6 @@ type class_match_failure =
     CM_Virtual_class
   | CM_Parameter_arity_mismatch of int * int
   | CM_Type_parameter_mismatch of Env.t * (type_expr * type_expr) list
-  | CM_Class_type_mismatch of Env.t * class_type * class_type
   | CM_Parameter_mismatch of Env.t * (type_expr * type_expr) list
   | CM_Val_type_mismatch of string * Env.t * (type_expr * type_expr) list
   | CM_Meth_type_mismatch of string * Env.t * (type_expr * type_expr) list
@@ -3380,285 +3337,7 @@ type class_match_failure =
   | CM_Private_method of string
   | CM_Virtual_method of string
 
-exception Failure of class_match_failure list
 
-let rec moregen_clty trace type_pairs env cty1 cty2 =
-  try
-    match cty1, cty2 with
-      Cty_constr (_, _, cty1), _ ->
-        moregen_clty true type_pairs env cty1 cty2
-    | _, Cty_constr (_, _, cty2) ->
-        moregen_clty true type_pairs env cty1 cty2
-    | Cty_arrow (l1, ty1, cty1'), Cty_arrow (l2, ty2, cty2') when Asttypes.same_arg_label l1  l2 ->
-        begin try moregen true type_pairs env ty1 ty2 with Unify trace ->
-          raise (Failure [CM_Parameter_mismatch (env, expand_trace env trace)])
-        end;
-        moregen_clty false type_pairs env cty1' cty2'
-    | Cty_signature sign1, Cty_signature sign2 ->
-        let ty1 = object_fields (repr sign1.csig_self) in
-        let ty2 = object_fields (repr sign2.csig_self) in
-        let (fields1, _rest1) = flatten_fields ty1
-        and (fields2, _rest2) = flatten_fields ty2 in
-        let (pairs, _miss1, _miss2) = associate_fields fields1 fields2 in
-        List.iter
-          (fun (lab, _k1, t1, _k2, t2) ->
-            begin try moregen true type_pairs env t1 t2 with Unify trace ->
-              raise (Failure [CM_Meth_type_mismatch
-                                 (lab, env, expand_trace env trace)])
-           end)
-        pairs;
-      Vars.iter
-        (fun lab (_mut, _v, ty) ->
-           let (_mut', _v', ty') = Vars.find lab sign1.csig_vars in
-           try moregen true type_pairs env ty' ty with Unify trace ->
-             raise (Failure [CM_Val_type_mismatch
-                                (lab, env, expand_trace env trace)]))
-        sign2.csig_vars
-  | _ ->
-      raise (Failure [])
-  with
-    Failure error when trace || error = [] ->
-      raise (Failure (CM_Class_type_mismatch (env, cty1, cty2)::error))
-
-let match_class_types ?(trace=true) env pat_sch subj_sch =
-  let type_pairs = TypePairs.create 53 in
-  let old_level = !current_level in
-  current_level := generic_level - 1;
-  (*
-     Generic variables are first duplicated with [instance].  So,
-     their levels are lowered to [generic_level - 1].  The subject is
-     then copied with [duplicate_type].  That way, its levels won't be
-     changed.
-  *)
-  let (_, subj_inst) = instance_class [] subj_sch in
-  let subj = duplicate_class_type subj_inst in
-  current_level := generic_level;
-  (* Duplicate generic variables *)
-  let (_, patt) = instance_class [] pat_sch in
-  let res =
-    let sign1 = signature_of_class_type patt in
-    let sign2 = signature_of_class_type subj in
-    let t1 = repr sign1.csig_self in
-    let t2 = repr sign2.csig_self in
-    TypePairs.add type_pairs (t1, t2) ();
-    let (fields1, rest1) = flatten_fields (object_fields t1)
-    and (fields2, rest2) = flatten_fields (object_fields t2) in
-    let (pairs, miss1, miss2) = associate_fields fields1 fields2 in
-    let error =
-      List.fold_right
-        (fun (lab, k, _) err ->
-           let err =
-             let k = field_kind_repr k in
-             begin match k with
-               Fvar r -> set_kind r Fabsent; err
-             | _      -> CM_Hide_public lab::err
-             end
-           in
-           if Concr.mem lab sign1.csig_concr then err
-           else CM_Hide_virtual ("method", lab) :: err)
-        miss1 []
-    in
-    let missing_method = List.map (fun (m, _, _) -> m) miss2 in
-    let error =
-      (List.map (fun m -> CM_Missing_method m) missing_method) @ error
-    in
-    (* Always succeeds *)
-    moregen true type_pairs env rest1 rest2;
-    let error =
-      List.fold_right
-        (fun (lab, k1, _t1, k2, _t2) err ->
-           try moregen_kind k1 k2; err with
-             Unify _ -> CM_Public_method lab::err)
-        pairs error
-    in
-    let error =
-      Vars.fold
-        (fun lab (mut, vr, _ty) err ->
-          try
-            let (mut', vr', _ty') = Vars.find lab sign1.csig_vars in
-            if mut = Mutable && mut' <> Mutable then
-              CM_Non_mutable_value lab::err
-            else if vr = Concrete && vr' <> Concrete then
-              CM_Non_concrete_value lab::err
-            else
-              err
-          with Not_found ->
-            CM_Missing_value lab::err)
-        sign2.csig_vars error
-    in
-    let error =
-      Vars.fold
-        (fun lab (_,vr,_) err ->
-          if vr = Virtual && not (Vars.mem lab sign2.csig_vars) then
-            CM_Hide_virtual ("instance variable", lab) :: err
-          else err)
-        sign1.csig_vars error
-    in
-    let error =
-      List.fold_right
-        (fun e l ->
-           if List.mem e missing_method then l else CM_Virtual_method e::l)
-        (Concr.elements (Concr.diff sign2.csig_concr sign1.csig_concr))
-        error
-    in
-    match error with
-      [] ->
-        begin try
-          moregen_clty trace type_pairs env patt subj;
-          []
-        with
-          Failure r -> r
-        end
-    | error ->
-        CM_Class_type_mismatch (env, patt, subj)::error
-  in
-  current_level := old_level;
-  res
-
-let rec equal_clty trace type_pairs subst env cty1 cty2 =
-  try
-    match cty1, cty2 with
-      Cty_constr (_, _, cty1), Cty_constr (_, _, cty2) ->
-        equal_clty true type_pairs subst env cty1 cty2
-    | Cty_constr (_, _, cty1), _ ->
-        equal_clty true type_pairs subst env cty1 cty2
-    | _, Cty_constr (_, _, cty2) ->
-        equal_clty true type_pairs subst env cty1 cty2
-    | Cty_arrow (l1, ty1, cty1'), Cty_arrow (l2, ty2, cty2') when Asttypes.same_arg_label l1 l2 ->
-        begin try eqtype true type_pairs subst env ty1 ty2 with Unify trace ->
-          raise (Failure [CM_Parameter_mismatch (env, expand_trace env trace)])
-        end;
-        equal_clty false type_pairs subst env cty1' cty2'
-    | Cty_signature sign1, Cty_signature sign2 ->
-        let ty1 = object_fields (repr sign1.csig_self) in
-        let ty2 = object_fields (repr sign2.csig_self) in
-        let (fields1, _rest1) = flatten_fields ty1
-        and (fields2, _rest2) = flatten_fields ty2 in
-        let (pairs, _miss1, _miss2) = associate_fields fields1 fields2 in
-        List.iter
-          (fun (lab, _k1, t1, _k2, t2) ->
-             begin try eqtype true type_pairs subst env t1 t2 with
-               Unify trace ->
-                 raise (Failure [CM_Meth_type_mismatch
-                                    (lab, env, expand_trace env trace)])
-             end)
-          pairs;
-        Vars.iter
-          (fun lab (_, _, ty) ->
-             let (_, _, ty') = Vars.find lab sign1.csig_vars in
-             try eqtype true type_pairs subst env ty' ty with Unify trace ->
-               raise (Failure [CM_Val_type_mismatch
-                                  (lab, env, expand_trace env trace)]))
-          sign2.csig_vars
-    | _ ->
-        raise
-          (Failure (if trace then []
-                    else [CM_Class_type_mismatch (env, cty1, cty2)]))
-  with
-    Failure error when trace ->
-      raise (Failure (CM_Class_type_mismatch (env, cty1, cty2)::error))
-
-let match_class_declarations env patt_params patt_type subj_params subj_type =
-  let type_pairs = TypePairs.create 53 in
-  let subst = ref [] in
-  let sign1 = signature_of_class_type patt_type in
-  let sign2 = signature_of_class_type subj_type in
-  let t1 = repr sign1.csig_self in
-  let t2 = repr sign2.csig_self in
-  TypePairs.add type_pairs (t1, t2) ();
-  let (fields1, rest1) = flatten_fields (object_fields t1)
-  and (fields2, rest2) = flatten_fields (object_fields t2) in
-  let (pairs, miss1, miss2) = associate_fields fields1 fields2 in
-  let error =
-    List.fold_right
-      (fun (lab, k, _) err ->
-        let err =
-          let k = field_kind_repr k in
-          begin match k with
-            Fvar _ -> err
-          | _      -> CM_Hide_public lab::err
-          end
-        in
-        if Concr.mem lab sign1.csig_concr then err
-        else CM_Hide_virtual ("method", lab) :: err)
-      miss1 []
-  in
-  let missing_method = List.map (fun (m, _, _) -> m) miss2 in
-  let error =
-    (List.map (fun m -> CM_Missing_method m) missing_method) @ error
-  in
-  (* Always succeeds *)
-  eqtype true type_pairs subst env rest1 rest2;
-  let error =
-    List.fold_right
-      (fun (lab, k1, _t1, k2, _t2) err ->
-        let k1 = field_kind_repr k1 in
-        let k2 = field_kind_repr k2 in
-        match k1, k2 with
-          (Fvar _, Fvar _)
-        | (Fpresent, Fpresent) -> err
-        | (Fvar _, Fpresent)   -> CM_Private_method lab::err
-        | (Fpresent, Fvar _)  -> CM_Public_method lab::err
-        | _                    -> assert false)
-      pairs error
-  in
-  let error =
-    Vars.fold
-      (fun lab (mut, vr, _ty) err ->
-         try
-           let (mut', vr', _ty') = Vars.find lab sign1.csig_vars in
-           if mut = Mutable && mut' <> Mutable then
-             CM_Non_mutable_value lab::err
-           else if vr = Concrete && vr' <> Concrete then
-             CM_Non_concrete_value lab::err
-           else
-             err
-         with Not_found ->
-           CM_Missing_value lab::err)
-      sign2.csig_vars error
-  in
-  let error =
-    Vars.fold
-      (fun lab (_,vr,_) err ->
-        if vr = Virtual && not (Vars.mem lab sign2.csig_vars) then
-          CM_Hide_virtual ("instance variable", lab) :: err
-        else err)
-      sign1.csig_vars error
-  in
-  let error =
-    List.fold_right
-      (fun e l ->
-        if List.mem e missing_method then l else CM_Virtual_method e::l)
-      (Concr.elements (Concr.diff sign2.csig_concr sign1.csig_concr))
-      error
-  in
-  match error with
-    [] ->
-      begin try
-        let lp = List.length patt_params in
-        let ls = List.length subj_params in
-        if lp  <> ls then
-          raise (Failure [CM_Parameter_arity_mismatch (lp, ls)]);
-        List.iter2 (fun p s ->
-          try eqtype true type_pairs subst env p s with Unify trace ->
-            raise (Failure [CM_Type_parameter_mismatch
-                               (env, expand_trace env trace)]))
-          patt_params subj_params;
-     (* old code: equal_clty false type_pairs subst env patt_type subj_type; *)
-        equal_clty false type_pairs subst env
-          (Cty_signature sign1) (Cty_signature sign2);
-        (* Use moregeneral for class parameters, need to recheck everything to
-           keeps relationships (PR#4824) *)
-        let clty_params =
-          List.fold_right (fun ty cty -> Cty_arrow (Labelled "*",ty,cty)) in
-        match_class_types ~trace:false env
-          (clty_params patt_params patt_type)
-          (clty_params subj_params subj_type)
-      with
-        Failure r -> r
-      end
-  | error ->
-      error
 
 
                               (***************)
@@ -4536,49 +4215,6 @@ let nondep_extension_constructor env mid ext =
   with Not_found ->
     clear_hash ();
     raise Not_found
-
-
-(* Preserve sharing inside class types. *)
-let nondep_class_signature env id sign =
-  { csig_self = nondep_type_rec env id sign.csig_self;
-    csig_vars =
-      Vars.map (function (m, v, t) -> (m, v, nondep_type_rec env id t))
-        sign.csig_vars;
-    csig_concr = sign.csig_concr;
-    csig_inher =
-      List.map (fun (p,tl) -> (p, List.map (nondep_type_rec env id) tl))
-        sign.csig_inher }
-
-let rec nondep_class_type env id =
-  function
-    Cty_constr (p, _, cty) when Path.isfree id p ->
-      nondep_class_type env id cty
-  | Cty_constr (p, tyl, cty) ->
-      Cty_constr (p, List.map (nondep_type_rec env id) tyl,
-                   nondep_class_type env id cty)
-  | Cty_signature sign ->
-      Cty_signature (nondep_class_signature env id sign)
-  | Cty_arrow (l, ty, cty) ->
-      Cty_arrow (l, nondep_type_rec env id ty, nondep_class_type env id cty)
-
-let nondep_class_declaration env id decl =
-  assert (not (Path.isfree id decl.cty_path));
-  let decl =
-    { cty_params = List.map (nondep_type_rec env id) decl.cty_params;
-      cty_variance = decl.cty_variance;
-      cty_type = nondep_class_type env id decl.cty_type;
-      cty_path = decl.cty_path;
-      cty_new =
-        begin match decl.cty_new with
-          None    -> None
-        | Some ty -> Some (nondep_type_rec env id ty)
-        end;
-      cty_loc = decl.cty_loc;
-      cty_attributes = decl.cty_attributes;
-    }
-  in
-  clear_hash ();
-  decl
 
 
 (* collapse conjunctive types in class parameters *)

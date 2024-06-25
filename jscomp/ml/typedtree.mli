@@ -574,24 +574,6 @@ and class_type_field_desc =
   | Tctf_constraint of (core_type * core_type)
   | Tctf_attribute of attribute
 
-
-and class_description =
-  class_type class_infos
-
-and 'a class_infos =
-  { ci_virt: virtual_flag;
-    ci_params: (core_type * variance) list;
-    ci_id_name : string loc;
-    ci_id_class: Ident.t;
-    ci_id_class_type : Ident.t;
-    ci_id_object : Ident.t;
-    ci_id_typehash : Ident.t;
-    ci_expr: 'a;
-    ci_decl: Types.class_declaration;
-    ci_loc: Location.t;
-    ci_attributes: attributes;
-   }
-
 (* Auxiliary functions over the a.s.t. *)
 
 val iter_pattern_desc: (pattern -> unit) -> pattern_desc -> unit

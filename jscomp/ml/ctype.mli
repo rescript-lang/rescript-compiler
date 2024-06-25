@@ -129,8 +129,6 @@ val instance_parameterized_type_2:
         type_expr list -> type_expr list -> type_expr ->
         type_expr list * type_expr list * type_expr
 val instance_declaration: type_declaration -> type_declaration
-val instance_class:
-        type_expr list -> class_type -> type_expr list * class_type
 val instance_poly:
         ?keep_names:bool ->
         bool -> type_expr list -> type_expr -> type_expr list * type_expr
@@ -196,7 +194,6 @@ type class_match_failure =
     CM_Virtual_class
   | CM_Parameter_arity_mismatch of int * int
   | CM_Type_parameter_mismatch of Env.t * (type_expr * type_expr) list
-  | CM_Class_type_mismatch of Env.t * class_type * class_type
   | CM_Parameter_mismatch of Env.t * (type_expr * type_expr) list
   | CM_Val_type_mismatch of string * Env.t * (type_expr * type_expr) list
   | CM_Meth_type_mismatch of string * Env.t * (type_expr * type_expr) list
@@ -209,17 +206,10 @@ type class_match_failure =
   | CM_Public_method of string
   | CM_Private_method of string
   | CM_Virtual_method of string
-val match_class_types:
-    ?trace:bool -> Env.t -> class_type -> class_type -> class_match_failure list
-        (* Check if the first class type is more general than the second. *)
 val equal: Env.t -> bool -> type_expr list -> type_expr list -> bool
         (* [equal env [x1...xn] tau [y1...yn] sigma]
            checks whether the parameterized types
            [/\x1.../\xn.tau] and [/\y1.../\yn.sigma] are equivalent. *)
-val match_class_declarations:
-        Env.t -> type_expr list -> class_type -> type_expr list ->
-        class_type -> class_match_failure list
-        (* Check if the first class type is more general than the second. *)
 
 val enlarge_type: Env.t -> type_expr -> type_expr * bool
         (* Make a type larger, flag is true if some pruning had to be done *)
@@ -241,10 +231,6 @@ val nondep_extension_constructor:
         Env.t -> Ident.t -> extension_constructor ->
         extension_constructor
           (* Same for extension constructor *)
-val nondep_class_declaration:
-        Env.t -> Ident.t -> class_declaration -> class_declaration
-        (* Same for class declarations. *)
-        (* Same for class type declarations. *)
 (*val correct_abbrev: Env.t -> Path.t -> type_expr list -> type_expr -> unit*)
 val cyclic_abbrev: Env.t -> Ident.t -> type_expr -> bool
 val is_contractive: Env.t -> Path.t -> bool
@@ -266,9 +252,6 @@ val closed_class:
         (* Check whether all type variables are bound *)
 
 val unalias: type_expr -> type_expr
-val signature_of_class_type: class_type -> class_signature
-val self_type: class_type -> type_expr
-val class_type_arity: class_type -> int
 val arity: type_expr -> int
         (* Return the arity (as for curried functions) of the given type. *)
 
