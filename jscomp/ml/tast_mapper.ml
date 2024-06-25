@@ -27,8 +27,6 @@ type mapper =
 
     class_signature: mapper -> class_signature -> class_signature;
     class_type: mapper -> class_type -> class_type;
-    class_type_declaration: mapper -> class_type_declaration ->
-      class_type_declaration;
     class_type_field: mapper -> class_type_field -> class_type_field;
     env: mapper -> Env.t -> Env.t;
     expr: mapper -> expression -> expression;
@@ -89,9 +87,6 @@ let module_declaration sub x =
   {x with md_type}
 
 let include_infos f x = {x with incl_mod = f x.incl_mod}
-
-let class_type_declaration sub x =
-  class_infos sub (sub.class_type sub) x
 
 
 let structure_item sub {str_desc; str_loc; str_env} =
@@ -570,7 +565,6 @@ let default =
     class_description;
     class_signature;
     class_type;
-    class_type_declaration;
     class_type_field;
     env;
     expr;
