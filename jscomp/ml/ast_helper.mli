@@ -349,11 +349,3 @@ module Cty:
     val open_: ?loc:loc -> ?attrs:attrs -> override_flag -> lid -> class_type
                -> class_type
   end
-
-(** Classes *)
-module Ci:
-  sig
-    val mk: ?loc:loc -> ?attrs:attrs -> ?docs:docs -> ?text:text ->
-      ?virt:virtual_flag -> ?params:(core_type * variance) list ->
-      str -> 'a -> 'a class_infos
-  end

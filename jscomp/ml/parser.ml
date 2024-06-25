@@ -7603,9 +7603,8 @@ let yyact = [|
     let _9 = (Parsing.peek_val __caml_parser_env 0 : 'post_item_attributes) in
     Obj.repr(
 # 1035 "ml/parser.mly"
-      ( let (ext, attrs) = _3 in
-        Ci.mk (mkrhs _6 6) _8 ~virt:_4 ~params:_5 ~attrs:(attrs@_9)
-            ~loc:(symbol_rloc ()) ~docs:(symbol_docs ())
+      ( let (ext, _attrs) = _3 in
+        assert false
       , ext)
 # 7615 "ml/parser.ml"
                : 'class_type_declaration))
@@ -7618,9 +7617,7 @@ let yyact = [|
     let _8 = (Parsing.peek_val __caml_parser_env 0 : 'post_item_attributes) in
     Obj.repr(
 # 1043 "ml/parser.mly"
-      ( Ci.mk (mkrhs _5 5) _7 ~virt:_3 ~params:_4
-         ~attrs:(_2@_8) ~loc:(symbol_rloc ())
-         ~text:(symbol_text ()) ~docs:(symbol_docs ()) )
+      ( assert false )
 # 7629 "ml/parser.ml"
                : 'and_class_type_declaration))
 ; (fun __caml_parser_env ->

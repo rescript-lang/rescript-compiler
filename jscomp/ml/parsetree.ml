@@ -508,22 +508,6 @@ and class_type_desc =
   | Pcty_open of override_flag * Longident.t loc * class_type
         (* let open M in CT *)
 
-and 'a class_infos =
-    {
-     pci_virt: virtual_flag;
-     pci_params: (core_type * variance) list;
-     pci_name: string loc;
-     pci_expr: 'a;
-     pci_loc: Location.t;
-     pci_attributes: attributes;  (* ... [@@id1] [@@id2] *)
-    }
-(* class c = ...
-   class ['a1,...,'an] c = ...
-   class virtual c = ...
-
-   Also used for "class type" declaration.
-*)
-
 (** {1 Module language} *)
 
 (* Type expressions for the module language *)
