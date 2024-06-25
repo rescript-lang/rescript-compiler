@@ -439,22 +439,8 @@ and class_type_desc =
 
 and class_signature = {
     csig_self: core_type;
-    csig_fields: class_type_field list;
     csig_type: Types.class_signature;
   }
-
-and class_type_field = {
-    ctf_desc: class_type_field_desc;
-    ctf_loc: Location.t;
-    ctf_attributes: attribute list;
-  }
-
-and class_type_field_desc =
-  | Tctf_inherit of class_type
-  | Tctf_val of (string * mutable_flag * virtual_flag * core_type)
-  | Tctf_method of (string * private_flag * virtual_flag * core_type)
-  | Tctf_constraint of (core_type * core_type)
-  | Tctf_attribute of attribute
 
 (* Auxiliary functions over the a.s.t. *)
 
