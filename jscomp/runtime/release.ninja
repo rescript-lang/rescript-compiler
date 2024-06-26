@@ -1,5 +1,5 @@
 
-bsc_no_open_flags =  -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero  -bs-cross-module-opt -make-runtime  -nopervasives  -unsafe -w +50 -warn-error A
+bsc_no_open_flags =  -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime  -nopervasives  -unsafe -w +50 -warn-error A
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 
 rule cc
@@ -10,7 +10,7 @@ rule cc_cmi
     description = $in -> $out
 
 o runtime/bs_stdlib_mini.cmi : cc runtime/bs_stdlib_mini.resi
-    bsc_flags = -nopervasives
+    bsc_flags = -nostdlib -nopervasives
 o runtime/js.cmj runtime/js.cmi : cc runtime/js.ml
     bsc_flags = $bsc_no_open_flags
 o runtime/caml.cmj : cc_cmi runtime/caml.res | runtime/caml.cmi runtime/caml_int64_extern.cmj

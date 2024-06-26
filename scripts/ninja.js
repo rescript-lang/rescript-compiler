@@ -30,7 +30,7 @@ var runtimeMliFiles = runtimeFiles.filter(
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles);
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))];
 
-var commonBsFlags = `-no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero `;
+var commonBsFlags = `-no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib `;
 var js_package = pseudoTarget("js_pkg");
 var runtimeTarget = pseudoTarget("runtime");
 var othersTarget = pseudoTarget("others");
@@ -843,7 +843,7 @@ ${ninjaQuickBuildList([
     "bs_stdlib_mini.resi",
     "cc",
     ninjaCwd,
-    [["bsc_flags", "-nopervasives"]],
+    [["bsc_flags", "-nostdlib -nopervasives"]],
     [],
     externalDeps,
   ],
