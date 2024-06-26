@@ -17,7 +17,6 @@
 - Allow `@directive` on functions for emitting function level directive code (`let serverAction = @directive("'use server'") (~name) => {...}`). https://github.com/rescript-lang/rescript-compiler/pull/6756
 - Add `rewatch` to the npm package as an alternative build tool. https://github.com/rescript-lang/rescript-compiler/pull/6762
 - Throws an instance of JavaScript's `new Error()` and adds the extension payload for `cause` option. https://github.com/rescript-lang/rescript-compiler/pull/6611
-- Support Windows 11 ARM (using the x64 binaries in emulation). https://github.com/rescript-lang/rescript-compiler/pull/6813
 
 #### :boom: Breaking Change
 
@@ -31,21 +30,14 @@
 #### :bug: Bug Fix
 
 - Fix tag function location on compiler error. https://github.com/rescript-lang/rescript-compiler/pull/6816
-- Fix encoding inside tagged template literals. https://github.com/rescript-lang/rescript-compiler/pull/6810
 - Fix unhandled cases for exotic idents (allow to use exotic PascalCased identifiers for types). https://github.com/rescript-lang/rescript-compiler/pull/6777
-- PPX v4: mark props type in externals as `@live` to avoid dead code warnings for prop fields in the editor tooling. https://github.com/rescript-lang/rescript-compiler/pull/6796
 - Fix unused attribute check for `@as`. https://github.com/rescript-lang/rescript-compiler/pull/6795
 - Reactivate unused attribute check for `@int`. https://github.com/rescript-lang/rescript-compiler/pull/6802
-- Fix issue where optional labels were not taken into account when disambiguating record value construction. https://github.com/rescript-lang/rescript-compiler/pull/6798
-- Fix issue in gentype when type `Jsx.element` surfaces to the user. https://github.com/rescript-lang/rescript-compiler/pull/6808
-- Fix inclusion check (impl vs interface) for untagged variants, and fix the outcome printer to show tags. https://github.com/rescript-lang/rescript-compiler/pull/6669
-- Fix issue where capitalised type variables were only allowed in certain positions. https://github.com/rescript-lang/rescript-compiler/pull/6820
 
 #### :house: Internal
 
 - Build with OCaml 5.2.0. https://github.com/rescript-lang/rescript-compiler/pull/6797
 - Convert OCaml codebase to snake case style. https://github.com/rescript-lang/rescript-compiler/pull/6702
-- Fix location of let bindings with attributes. https://github.com/rescript-lang/rescript-compiler/pull/6791
 - Refactor uppercase exotic ident handling. https://github.com/rescript-lang/rescript-compiler/pull/6779
 - Fix `-nostdlib` internal compiler option. https://github.com/rescript-lang/rescript-compiler/pull/6824
 
@@ -62,6 +54,27 @@
 - Turn off transformation for closures inside loops when capturing loop variables, now that `let` is emitted instead of `var`. https://github.com/rescript-lang/rescript-compiler/pull/6480
 - Improve unused attribute warning message. https://github.com/rescript-lang/rescript-compiler/pull/6787
 - Remove internal option `use-stdlib` from build schema. https://github.com/rescript-lang/rescript-compiler/pull/6778
+
+# 11.1.2
+
+#### :bug: Bug Fix
+
+- Fix issue where capitalised type variables were only allowed in certain positions. https://github.com/rescript-lang/rescript-compiler/pull/6820
+
+# 11.1.2-rc.1
+
+#### :rocket: New Feature
+
+- Support Windows 11 ARM (using the x64 binaries in emulation). https://github.com/rescript-lang/rescript-compiler/pull/6813
+
+#### :bug: Bug Fix
+
+- Fix location of let bindings with attributes. https://github.com/rescript-lang/rescript-compiler/pull/6791
+- PPX v4: mark props type in externals as `@live` to avoid dead code warnings for prop fields in the editor tooling. https://github.com/rescript-lang/rescript-compiler/pull/6796
+- Fix issue where optional labels were not taken into account when disambiguating record value construction. https://github.com/rescript-lang/rescript-compiler/pull/6798
+- Fix issue in gentype when type `Jsx.element` surfaces to the user. https://github.com/rescript-lang/rescript-compiler/pull/6808
+- Fix inclusion check (impl vs interface) for untagged variants, and fix the outcome printer to show tags. https://github.com/rescript-lang/rescript-compiler/pull/6669
+- Fix encoding inside tagged template literals. https://github.com/rescript-lang/rescript-compiler/pull/6810
 
 # 11.1.1
 
