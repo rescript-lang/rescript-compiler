@@ -230,31 +230,22 @@ ${printPredicate(
     // See https://developer.mozilla.org/en-US/docs/Web/API/Window
     // See https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope
     //
+    // But we don't actually need to protect these names.
+    //
     // "window",
     // "self",
     // "document",
     // "location",
     // "navigator",
     // "origin",
+    // ...
 
     // A few of the Node.js globals
     //
-    // See https://nodejs.org/api/globals.html
-    //
-    // This is only useful for CommonJS modules in Node.js, where redeclaration is not allowed.
-    // It is a workaround, not a solution.
+    // Specifically related to the CommonJS module system
+    // They cannot be redeclared in nested scope.
     "__dirname",
     "__filename",
-    "Buffer",
-    "setImmediate",
-    "clearImmediate",
-    "setTimeout",
-    "clearTimeout",
-    "setInterval",
-    "clearInterval",
-    "global",
-    "console",
-    "process",
     "require",
     "module",
     "exports",

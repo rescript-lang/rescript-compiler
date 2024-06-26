@@ -139,7 +139,6 @@ let sorted_js_globals = [|
   "BigInt64Array";
   "BigUint64Array";
   "Boolean";
-  "Buffer";
   "Bun";
   "DataView";
   "Date";
@@ -188,28 +187,19 @@ let sorted_js_globals = [|
   "WeakSet";
   "__dirname";
   "__filename";
-  "clearImmediate";
-  "clearInterval";
-  "clearTimeout";
-  "console";
   "decodeURI";
   "decodeURIComponent";
   "encodeURI";
   "encodeURIComponent";
   "eval";
   "exports";
-  "global";
   "globalThis";
   "isFinite";
   "isNaN";
   "module";
   "parseFloat";
   "parseInt";
-  "process";
   "require";
-  "setImmediate";
-  "setInterval";
-  "setTimeout";
   "undefined";
 |]
 

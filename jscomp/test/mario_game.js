@@ -772,7 +772,7 @@ function update_vel(part) {
   part.vel.y = part.vel.y + part.acc.y;
 }
 
-function $$process(part) {
+function process(part) {
   part.life = part.life - 1 | 0;
   if (part.life === 0) {
     part.kill = true;
@@ -785,7 +785,7 @@ function $$process(part) {
 let Particle = {
   make: make$1,
   make_score: make_score,
-  $$process: $$process
+  process: process
 };
 
 let id_counter = {
@@ -2338,7 +2338,7 @@ function update_loop(canvas, param, map_dim) {
       run_update_collid(state$1, obj, objs);
     }), objs);
     List.iter((function (part) {
-      $$process(part);
+      process(part);
       let x = part.pos.x - state$1.vpt.pos.x;
       let y = part.pos.y - state$1.vpt.pos.y;
       render(part.params.sprite, [

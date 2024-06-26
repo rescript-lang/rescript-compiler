@@ -7,7 +7,7 @@ let Char = require("../../lib/js/char.js");
 let List = require("../../lib/js/list.js");
 let Bytes = require("../../lib/js/bytes.js");
 let Curry = require("../../lib/js/curry.js");
-let $$Buffer = require("../../lib/js/buffer.js");
+let Buffer = require("../../lib/js/buffer.js");
 let $$String = require("../../lib/js/string.js");
 let Caml_bytes = require("../../lib/js/caml_bytes.js");
 let Pervasives = require("../../lib/js/pervasives.js");
@@ -98,35 +98,35 @@ function to_buf(b, t) {
     let l = t.VAL;
     if (l) {
       if (l.tl) {
-        $$Buffer.add_char(b, /* '(' */40);
+        Buffer.add_char(b, /* '(' */40);
         List.iteri((function (i, t$p) {
           if (i > 0) {
-            $$Buffer.add_char(b, /* ' ' */32);
+            Buffer.add_char(b, /* ' ' */32);
           }
           to_buf(b, t$p);
         }), l);
-        return $$Buffer.add_char(b, /* ')' */41);
+        return Buffer.add_char(b, /* ')' */41);
       } else {
-        $$Buffer.add_string(b, "(");
+        Buffer.add_string(b, "(");
         to_buf(b, l.hd);
-        return $$Buffer.add_string(b, ")");
+        return Buffer.add_string(b, ")");
       }
     } else {
-      return $$Buffer.add_string(b, "()");
+      return Buffer.add_string(b, "()");
     }
   }
   let s = t.VAL;
   if (_must_escape(s)) {
-    return $$Buffer.add_string(b, "\"" + ($$String.escaped(s) + "\""));
+    return Buffer.add_string(b, "\"" + ($$String.escaped(s) + "\""));
   } else {
-    return $$Buffer.add_string(b, s);
+    return Buffer.add_string(b, s);
   }
 }
 
 function to_string(t) {
-  let b = $$Buffer.create(128);
+  let b = Buffer.create(128);
   to_buf(b, t);
-  return $$Buffer.contents(b);
+  return Buffer.contents(b);
 }
 
 function make(bufsizeOpt, refill) {
@@ -135,7 +135,7 @@ function make(bufsizeOpt, refill) {
   return {
     buf: Caml_bytes.create(bufsize$1),
     refill: refill,
-    atom: $$Buffer.create(32),
+    atom: Buffer.create(32),
     i: 0,
     len: 0,
     line: 1,
@@ -190,10 +190,10 @@ function _error(param) {
   let line = param.line;
   let col = param.col;
   return function (msg) {
-    let b = $$Buffer.create(32);
-    $$Buffer.add_string(b, "at " + (line + (", " + (col + ": "))));
-    $$Buffer.add_string(b, msg);
-    let msg$p = $$Buffer.contents(b);
+    let b = Buffer.create(32);
+    Buffer.add_string(b, "at " + (line + (", " + (col + ": "))));
+    Buffer.add_string(b, msg);
+    let msg$p = Buffer.contents(b);
     return {
       NAME: "Error",
       VAL: msg$p
@@ -280,7 +280,7 @@ function expr_starting_with(c, k, t) {
           }
         });
   }
-  $$Buffer.add_char(t.atom, c);
+  Buffer.add_char(t.atom, c);
   return atom(k, t);
 }
 
@@ -339,7 +339,7 @@ function expr_list(acc, k, t) {
 }
 
 function _return_atom(last, k, t) {
-  let s = $$Buffer.contents(t.atom);
+  let s = Buffer.contents(t.atom);
   t.atom.position = 0;
   return Curry._2(k, last, {
     NAME: "Atom",
@@ -388,7 +388,7 @@ function atom(k, t) {
     }
     switch (exit) {
       case 1 :
-          $$Buffer.add_char(t.atom, c);
+          Buffer.add_char(t.atom, c);
           continue;
       case 2 :
           return _return_atom(c, k, t);
@@ -410,11 +410,11 @@ function quoted(k, t) {
     }
     if (c === 92) {
       return escaped((function (c) {
-        $$Buffer.add_char(t.atom, c);
+        Buffer.add_char(t.atom, c);
         return quoted(k, t);
       }), t);
     }
-    $$Buffer.add_char(t.atom, c);
+    Buffer.add_char(t.atom, c);
     continue;
   };
 }
