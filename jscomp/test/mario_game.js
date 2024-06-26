@@ -2601,7 +2601,7 @@ function generate_clouds(cbx, cby, typ, num) {
 function generate_coins(_block_coord) {
   while(true) {
     let block_coord = _block_coord;
-    let place_coin = Random.$$int(2);
+    let place_coin = Random.int(2);
     if (!block_coord) {
       return /* [] */0;
     }
@@ -2630,9 +2630,9 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
   if (cbx > blockw || cby > blockh) {
     return /* [] */0;
   }
-  let block_typ = Random.$$int(4);
-  let stair_typ = Random.$$int(2);
-  let life_block_chance = Random.$$int(5);
+  let block_typ = Random.int(4);
+  let stair_typ = Random.int(2);
+  let life_block_chance = Random.int(5);
   let middle_block = life_block_chance === 0 ? 3 : stair_typ;
   switch (prob) {
     case 0 :
@@ -2698,7 +2698,7 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
           };
         }
     case 1 :
-        let num_clouds = Random.$$int(5) + 5 | 0;
+        let num_clouds = Random.int(5) + 5 | 0;
         if (cby < 5) {
           return generate_clouds(cbx, cby, 2, num_clouds);
         } else {
@@ -3074,7 +3074,7 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
       _cby = cby + 1;
       continue;
     }
-    let prob = Random.$$int(30);
+    let prob = Random.int(30);
     if (prob < 3 && blockh - 1 === cby) {
       let enemy_0 = [
         prob,
@@ -3097,8 +3097,8 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
 function generate_block_enemies(_block_coord) {
   while(true) {
     let block_coord = _block_coord;
-    let place_enemy = Random.$$int(20);
-    let enemy_typ = Random.$$int(3);
+    let place_enemy = Random.int(20);
+    let enemy_typ = Random.int(3);
     if (!block_coord) {
       return /* [] */0;
     }
@@ -3143,7 +3143,7 @@ function generate_block_locs(blockw, blockh, _cbx, _cby, _acc) {
       _cby = cby + 1;
       continue;
     }
-    let prob = Random.$$int(100);
+    let prob = Random.int(100);
     if (prob < 5) {
       let newacc = choose_block_pattern(blockw, blockh, cbx, cby, prob);
       let undup_lst = avoid_overlap(newacc, acc);
@@ -3175,7 +3175,7 @@ function generate_ground(blockw, blockh, _inc, _acc) {
       return acc;
     }
     if (inc > 10) {
-      let skip = Random.$$int(10);
+      let skip = Random.int(10);
       let newacc = Pervasives.$at(acc, {
         hd: [
           4,

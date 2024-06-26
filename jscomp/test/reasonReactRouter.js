@@ -8,17 +8,17 @@ function safeMakeEvent(eventName) {
   if (typeof Event === "function") {
     return new Event(eventName);
   }
-  let $$event = document.createEvent("Event");
-  $$event.initEvent(eventName, true, true);
-  return $$event;
+  let event = document.createEvent("Event");
+  event.initEvent(eventName, true, true);
+  return event;
 }
 
 function path(param) {
-  let $$window = typeof window === "undefined" ? undefined : window;
-  if ($$window === undefined) {
+  let window = typeof window === "undefined" ? undefined : window;
+  if (window === undefined) {
     return /* [] */0;
   }
-  let raw = $$window.location.pathname;
+  let raw = window.location.pathname;
   switch (raw) {
     case "" :
     case "/" :
@@ -47,11 +47,11 @@ function path(param) {
 }
 
 function hash(param) {
-  let $$window = typeof window === "undefined" ? undefined : window;
-  if ($$window === undefined) {
+  let window = typeof window === "undefined" ? undefined : window;
+  if (window === undefined) {
     return "";
   }
-  let raw = $$window.location.hash;
+  let raw = window.location.hash;
   switch (raw) {
     case "" :
     case "#" :
@@ -62,11 +62,11 @@ function hash(param) {
 }
 
 function search(param) {
-  let $$window = typeof window === "undefined" ? undefined : window;
-  if ($$window === undefined) {
+  let window = typeof window === "undefined" ? undefined : window;
+  if (window === undefined) {
     return "";
   }
-  let raw = $$window.location.search;
+  let raw = window.location.search;
   switch (raw) {
     case "" :
     case "?" :
@@ -136,8 +136,8 @@ function url(param) {
 }
 
 function watchUrl(callback) {
-  let $$window = typeof window === "undefined" ? undefined : window;
-  if ($$window === undefined) {
+  let window = typeof window === "undefined" ? undefined : window;
+  if (window === undefined) {
     return function (param) {
       
     };
@@ -145,14 +145,14 @@ function watchUrl(callback) {
   let watcherID = function (param) {
     Curry._1(callback, url());
   };
-  $$window.addEventListener("popstate", watcherID);
+  window.addEventListener("popstate", watcherID);
   return watcherID;
 }
 
 function unwatchUrl(watcherID) {
-  let $$window = typeof window === "undefined" ? undefined : window;
-  if ($$window !== undefined) {
-    $$window.removeEventListener("popstate", watcherID);
+  let window = typeof window === "undefined" ? undefined : window;
+  if (window !== undefined) {
+    window.removeEventListener("popstate", watcherID);
     return;
   }
   

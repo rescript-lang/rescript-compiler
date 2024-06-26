@@ -23,12 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-
-
-
-
 let js_flag = 0b1_000 (* check with ocaml compiler *)
 
 (* let js_module_flag = 0b10_000 (\* javascript external modules *\) *)
@@ -172,18 +166,14 @@ let name_mangle name =
         Ext_buffer.add_string buffer (convert ~op:(i=0) c)        
     done; Ext_buffer.contents buffer
 
-(* TODO:
-    check name conflicts with javascript conventions
-   {[
-     Ext_ident.convert "^";;
-     - : string = "$caret"
-   ]}
-   [convert name] if [name] is a js keyword,add "$$"
+(**
+   [convert name] if [name] is a js keyword or js global, add "$$"
    otherwise do the name mangling to make sure ocaml identifier it is
    a valid js identifier
 *)
 let convert (name : string) =
-  if  Js_reserved_map.is_reserved name  then
+  let name = unwrap_uppercase_exotic name in
+  if Js_reserved_map.is_js_keyword name || Js_reserved_map.is_js_global name then
     "$$" ^ name
   else name_mangle name
 
