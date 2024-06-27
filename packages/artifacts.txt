@@ -805,7 +805,7 @@ lib/ocaml/js_mapperRt.resi
 lib/ocaml/js_math.cmi
 lib/ocaml/js_math.cmj
 lib/ocaml/js_math.cmt
-lib/ocaml/js_math.ml
+lib/ocaml/js_math.res
 lib/ocaml/js_null.cmi
 lib/ocaml/js_null.cmj
 lib/ocaml/js_null.cmt
