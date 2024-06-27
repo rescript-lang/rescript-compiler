@@ -10,13 +10,21 @@ let extract_extension str =
 
 let transformed_count = Hashtbl.create 10
 
-let increment_transformed_count (ext_name : string) =
-  match Hashtbl.find_opt transformed_count ext_name with
-  | None -> Hashtbl.add transformed_count ext_name 1
-  | Some count -> Hashtbl.replace transformed_count ext_name (count + 1)
+let escaped_name_for_ext ?fn_name (ext_name : string) =
+  match fn_name with
+  | Some fn_name -> ext_name ^ "_" ^ fn_name
+  | None -> ext_name
 
-let get_transformed_count ext_name =
-  match Hashtbl.find_opt transformed_count ext_name with
+let increment_transformed_count ?fn_name (ext_name : string) =
+  let name = escaped_name_for_ext ?fn_name ext_name in
+  match Hashtbl.find_opt transformed_count name with
+  | None -> Hashtbl.add transformed_count name 1
+  | Some count -> Hashtbl.replace transformed_count name (count + 1)
+
+let get_transformed_count ?fn_name ext_name =
+  match
+    Hashtbl.find_opt transformed_count (escaped_name_for_ext ?fn_name ext_name)
+  with
   | None -> 0
   | Some count -> count
 
@@ -24,12 +32,15 @@ type transformMode = LetBinding | ModuleBinding
 
 let make_lident ?fn_name ~extension_name ~transform_mode filename =
   Longident.parse
-    (Printf.sprintf "%s__%s.M%i%s"
+    (Printf.sprintf "%s__%s%s__M%i%s"
        (if String.ends_with filename ~suffix:".res" then
           Filename.(chop_suffix (basename filename) ".res")
         else Filename.(chop_suffix (basename filename) ".resi"))
        extension_name
-       (get_transformed_count extension_name)
+       (match fn_name with
+       | None -> ""
+       | Some fn_name -> "_" ^ fn_name)
+       (get_transformed_count ?fn_name extension_name)
        (match (transform_mode, fn_name) with
        | LetBinding, Some fn_name -> "." ^ fn_name
        | LetBinding, None -> ".default"
@@ -50,7 +61,7 @@ let transform_expr expr =
     match extract_extension ext_name with
     | None -> expr
     | Some (extension_name, fn_name) ->
-      increment_transformed_count extension_name;
+      increment_transformed_count ?fn_name extension_name;
       let loc = expr.pexp_loc in
       let filename = loc.loc_start.pos_fname in
       let lid =
@@ -87,8 +98,8 @@ let structure_item structure_item =
     when ext_name |> should_transform -> (
     match extract_extension ext_name with
     | None -> structure_item
-    | Some (extension_name, _fn_name) ->
-      increment_transformed_count extension_name;
+    | Some (extension_name, fn_name) ->
+      increment_transformed_count ?fn_name extension_name;
       {
         structure_item with
         pstr_desc =
@@ -117,8 +128,8 @@ let structure_item structure_item =
     when ext_name |> should_transform -> (
     match extract_extension ext_name with
     | None -> structure_item
-    | Some (extension_name, _fn_name) ->
-      increment_transformed_count extension_name;
+    | Some (extension_name, fn_name) ->
+      increment_transformed_count ?fn_name extension_name;
       {
         structure_item with
         pstr_desc =
