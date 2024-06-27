@@ -127,13 +127,17 @@ let no_export (rest : Parsetree.structure) : Parsetree.structure =
         ]
   | _ -> rest
 
-let write_embeds outputprefix (ast : Parsetree.structure) =
-  if !Clflags.only_parse = false && !Js_config.binary_ast then (
-    match !Js_config.embeds with
-    | [] -> ()
-    | embeds -> Js_embeds.write_embeds ~extension_points:embeds 
-      ~output:(outputprefix ^ Literals.suffix_embeds) 
-      ast);
+  let write_embeds outputprefix (ast : Parsetree.structure) =
+    (if !Clflags.only_parse = false && !Js_config.binary_ast then
+       let wrote_embeds =
+         match !Js_config.embeds with
+         | [] -> false
+         | embeds ->
+           Js_embeds.write_embeds ~extension_points:embeds
+             ~output:(outputprefix ^ Literals.suffix_embeds)
+             ast
+       in
+       if wrote_embeds then print_endline "1" else print_endline "0");
     ast
 
 let after_parsing_impl ppf outputprefix (ast : Parsetree.structure) =
