@@ -24,7 +24,7 @@ let write_embeds ~extension_points ~output ast =
   let iterator = {Ast_iterator.default_iterator with extension} in
   iterator.structure iterator ast;
   match !content with
-  | [] -> ()
+  | [] -> false
   | content ->
     let text =
       content
@@ -36,4 +36,5 @@ let write_embeds ~extension_points ~output ast =
     in
     let oc = open_out_bin output in
     output_string oc text;
-    close_out oc
+    close_out oc;
+    true
