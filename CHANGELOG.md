@@ -40,6 +40,7 @@
 - Convert OCaml codebase to snake case style. https://github.com/rescript-lang/rescript-compiler/pull/6702
 - Refactor uppercase exotic ident handling. https://github.com/rescript-lang/rescript-compiler/pull/6779
 - Fix `-nostdlib` internal compiler option. https://github.com/rescript-lang/rescript-compiler/pull/6824
+- Remove a number of ast nodes never populated by the .res parser, and resulting dead code. https://github.com/rescript-lang/rescript-compiler/pull/6830
 
 #### :nail_care: Polish
 
