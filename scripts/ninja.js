@@ -19,7 +19,7 @@ var runtimeMlFiles = runtimeFiles.filter(
   x =>
     !x.startsWith("bs_stdlib_mini") &&
     (x.endsWith(".ml") || x.endsWith(".res")) &&
-    x !== "js.ml",
+    x !== "js.res"
 );
 var runtimeMliFiles = runtimeFiles.filter(
   x =>
@@ -849,7 +849,7 @@ ${ninjaQuickBuildList([
   ],
   [
     ["js.cmj", "js.cmi"],
-    "js.ml",
+    "js.res",
     "cc",
     ninjaCwd,
     [["bsc_flags", "$bsc_no_open_flags"]],
@@ -940,7 +940,7 @@ ${ninjaQuickBuildList([
   ],
   [
     ["js.cmj", "js.cmi"],
-    "js.ml",
+    "js.res",
     "cc",
     ninjaCwd,
     [["bsc_flags", "$bsc_primitive_flags"]],
@@ -969,7 +969,7 @@ ${ninjaQuickBuildList([
       !x.includes(".cppo") &&
       !x.includes(".pp") &&
       !x.includes("#") &&
-      x !== "js.ml",
+      x !== "js.res"
   );
   var othersFiles = othersDirFiles.filter(
     x =>
