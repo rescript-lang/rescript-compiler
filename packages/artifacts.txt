@@ -717,7 +717,7 @@ lib/ocaml/int64.resi
 lib/ocaml/js.cmi
 lib/ocaml/js.cmj
 lib/ocaml/js.cmt
-lib/ocaml/js.ml
+lib/ocaml/js.res
 lib/ocaml/js_OO.cmi
 lib/ocaml/js_OO.cmj
 lib/ocaml/js_OO.cmt
