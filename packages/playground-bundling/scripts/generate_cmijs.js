@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+"use strict";
+
 /*
  * Requires the version matching `rescript` binary to be `npm link`ed in this
  * project. Or in other words: You need to build cmij files with the same
@@ -78,22 +80,22 @@ function buildCompilerCmij() {
 }
 
 function buildThirdPartyCmijs() {
-  packages.forEach(function installLib(package) {
+  packages.forEach(function installLib(pkg) {
     const libOcamlFolder = path.join(
       PROJECT_ROOT_DIR,
       "node_modules",
-      package,
+      pkg,
       "lib",
       "ocaml"
     );
     const libEs6Folder = path.join(
       PROJECT_ROOT_DIR,
       "node_modules",
-      package,
+      pkg,
       "lib",
       "es6"
     );
-    const outputFolder = path.join(PACKAGES_DIR, package);
+    const outputFolder = path.join(PACKAGES_DIR, pkg);
 
     const cmijFile = path.join(outputFolder, `cmij.js`);
 
