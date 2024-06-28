@@ -2,9 +2,9 @@
   "name": "rescript",
   "version": "12.0.0-alpha.1",
   "devDependencies": {
+    "@biomejs/biome": "1.8.3",
     "mocha": "10.1.0",
-    "nyc": "15.0.0",
-    "prettier": "2.7.1"
+    "nyc": "15.0.0"
   },
   "engines": {
     "node": ">=18"
@@ -20,8 +20,10 @@
     "test": "node scripts/ciTest.js -all",
     "test-bsb": "node scripts/ciTest.js -bsb",
     "test-ocaml": "node scripts/ciTest.js -ounit",
-    "format": "prettier --write .",
-    "checkFormat": "prettier --check .",
+    "format": "biome format --changed --write .",
+    "format:all": "biome format --write .",
+    "checkFormat": "biome format --changed .",
+    "checkFormat:all": "biome format .",
     "coverage": "nyc --timeout=3000 --reporter=html mocha jscomp/test/*test.js && open ./coverage/index.html"
   },
   "description": "ReScript toolchain",
