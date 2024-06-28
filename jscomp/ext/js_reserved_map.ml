@@ -22,39 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-type element = string 
-
-let rec binarySearchAux (arr : element array) (lo : int) (hi : int) key : bool =
-  let mid = (lo + hi)/2 in
-  let midVal = Array.unsafe_get arr mid in
-  if key = midVal then true
-  else if key < midVal then (* a[lo] =< key < a[mid] <= a[hi] *)
-    if hi = mid then
-      (Array.unsafe_get arr lo) = key
-    else binarySearchAux arr lo mid key
-  else (* a[lo] =< a[mid] < key <= a[hi] *)
-    if lo = mid then
-      (Array.unsafe_get arr hi) = key
-    else binarySearchAux arr mid hi key
-
-let binarySearch (key : element) (sorted : element array) : bool =
-  let len = Array.length sorted in
-  if len = 0 then false
-  else
-    let lo = Array.unsafe_get sorted 0 in
-    if key < lo then false
-    else
-      let hi = Array.unsafe_get sorted (len - 1) in
-      if key > hi then false
-      else binarySearchAux sorted 0 (len - 1) key
+module SSet = Set.Make (String)
 
 (** Words that can never be identifier's name.
 
     See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#reserved_words
  *)
-let sorted_js_keywords = [|
-  "await";
+let js_keywords = SSet.of_list [
   "break";
   "case";
   "catch";
@@ -66,7 +40,6 @@ let sorted_js_keywords = [|
   "delete";
   "do";
   "else";
-  "enum";
   "export";
   "extends";
   "false";
@@ -74,20 +47,12 @@ let sorted_js_keywords = [|
   "for";
   "function";
   "if";
-  "implements";
   "import";
   "in";
   "instanceof";
-  "interface";
-  "let";
   "new";
   "null";
-  "package";
-  "private";
-  "protected";
-  "public";
   "return";
-  "static";
   "super";
   "switch";
   "this";
@@ -99,10 +64,23 @@ let sorted_js_keywords = [|
   "void";
   "while";
   "with";
+  (* The following are also reserved in strict context, including ESM *)
+  "let";
+  "static";
   "yield";
-|]
+  (* `await` is reserved in async context, including ESM *)
+  "await";
+  (* Future reserved words *)
+  "enum";
+  "implements";
+  "interface";
+  "package";
+  "private";
+  "protected";
+  "public";
+]
 
-let is_js_keyword s = binarySearch s sorted_js_keywords
+let is_js_keyword s = SSet.exists (fun x -> x = s) js_keywords
 
 (** Identifiers with special meanings.
 
@@ -112,7 +90,7 @@ let is_js_keyword s = binarySearch s sorted_js_keywords
 
     However, these names are actually used with no problems today. Preventing this can be annoying.
  *)
-let sorted_js_special_words = [|
+let js_special_words = SSet.of_list [
   "arguments";
   "as";
   "async";
@@ -121,12 +99,15 @@ let sorted_js_special_words = [|
   "get";
   "of";
   "set";
-|]
+]
 
-let is_js_special_word s = binarySearch s sorted_js_special_words
+let is_js_special_word s = SSet.exists (fun x -> x = s) js_special_words
 
 (** Identifier names _might_ need to care about *)
-let sorted_js_globals = [|
+let js_globals = SSet.of_list [
+  (* JavaScript standards built-ins
+     See https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects
+  *)
   "AggregateError";
   "Array";
   "ArrayBuffer";
@@ -139,11 +120,14 @@ let sorted_js_globals = [|
   "BigInt64Array";
   "BigUint64Array";
   "Boolean";
-  "Bun";
   "DataView";
   "Date";
-  "Deno";
+  "decodeURI";
+  "decodeURIComponent";
+  "encodeURI";
+  "encodeURIComponent";
   "Error";
+  "eval";
   "EvalError";
   "FinalizationRegistry";
   "Float16Array";
@@ -152,11 +136,14 @@ let sorted_js_globals = [|
   "Function";
   "Generator";
   "GeneratorFunction";
+  "globalThis";
   "Infinity";
   "Int16Array";
   "Int32Array";
   "Int8Array";
   "Intl";
+  "isFinite";
+  "isNaN";
   "Iterator";
   "JSON";
   "Map";
@@ -164,6 +151,8 @@ let sorted_js_globals = [|
   "NaN";
   "Number";
   "Object";
+  "parseFloat";
+  "parseInt";
   "Promise";
   "Proxy";
   "RangeError";
@@ -175,32 +164,49 @@ let sorted_js_globals = [|
   "String";
   "Symbol";
   "SyntaxError";
-  "TypeError";
   "TypedArray";
-  "URIError";
+  "TypeError";
   "Uint16Array";
   "Uint32Array";
   "Uint8Array";
   "Uint8ClampedArray";
+  "undefined";
+  "URIError";
   "WeakMap";
   "WeakRef";
   "WeakSet";
+
+  (* A few of the HTML standard globals
+  
+     See https://developer.mozilla.org/en-US/docs/Web/API/Window
+     See https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope
+    
+     But we don't actually need to protect these names.
+   
+  "window";
+  "self";
+  "document";
+  "location";
+  "navigator";
+  "origin";
+  *)
+
+  (* A few of the Node.js globals
+  
+     Specifically related to the CommonJS module system
+     They cannot be redeclared in nested scope.
+  *)
   "__dirname";
   "__filename";
-  "decodeURI";
-  "decodeURIComponent";
-  "encodeURI";
-  "encodeURIComponent";
-  "eval";
-  "exports";
-  "globalThis";
-  "isFinite";
-  "isNaN";
-  "module";
-  "parseFloat";
-  "parseInt";
   "require";
-  "undefined";
-|]
+  "module";
+  "exports";
 
-let is_js_global s = binarySearch s sorted_js_globals
+  (* Bun's global namespace *)
+  "Bun";
+
+  (* Deno's global namespace *)
+  "Deno";
+]
+
+let is_js_global s = SSet.exists (fun x -> x = s) js_globals

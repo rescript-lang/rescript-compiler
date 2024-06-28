@@ -300,17 +300,6 @@ To generate the html:
 ../scripts/ninja docs
 ```
 
-## Update JS Reserved Keywords Map
-
-The compiler sources include a list of reserved JS keywords in `jscomp/ext/js_reserved_map.ml` which includes all identifiers in global scope (`window`). This list should be updated from time to time for newer browser versions.
-
-To update it, run:
-
-```sh
-npm install puppeteer
-node scripts/build_reserved.js
-```
-
 ## Code structure
 
 The highlevel architecture is illustrated as below:
