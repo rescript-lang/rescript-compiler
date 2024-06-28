@@ -37,7 +37,7 @@ if (process.argv.includes("-all")) {
 
 async function runTests() {
   if (formatTest) {
-    cp.execSync("npm run checkFormat:all", {
+    cp.execSync("npm run checkFormat", {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2],
     });
