@@ -22,13 +22,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-module SSet = Set.Make (String)
+module STbl = struct
+  include Hashtbl.Make (String)
+
+  let of_array arr =
+    let tbl = create (Array.length arr) in
+    let () = Array.iter (fun el -> add tbl el ()) arr in
+    tbl
+end
 
 (** Words that can never be identifier's name.
 
     See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#reserved_words
  *)
-let js_keywords = SSet.of_list [
+let js_keywords = STbl.of_array [|
   "break";
   "case";
   "catch";
@@ -78,9 +85,9 @@ let js_keywords = SSet.of_list [
   "private";
   "protected";
   "public";
-]
+|]
 
-let is_js_keyword s = SSet.exists (fun x -> x = s) js_keywords
+let is_js_keyword s = STbl.mem js_keywords s
 
 (** Identifiers with special meanings.
 
@@ -90,7 +97,7 @@ let is_js_keyword s = SSet.exists (fun x -> x = s) js_keywords
 
     However, these names are actually used with no problems today. Preventing this can be annoying.
  *)
-let js_special_words = SSet.of_list [
+let js_special_words = STbl.of_array [|
   "arguments";
   "as";
   "async";
@@ -99,12 +106,12 @@ let js_special_words = SSet.of_list [
   "get";
   "of";
   "set";
-]
+|]
 
-let is_js_special_word s = SSet.exists (fun x -> x = s) js_special_words
+let is_js_special_word s = STbl.mem js_special_words s
 
 (** Identifier names _might_ need to care about *)
-let js_globals = SSet.of_list [
+let js_globals = STbl.of_array [|
   (* JavaScript standards built-ins
      See https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects
   *)
@@ -207,6 +214,6 @@ let js_globals = SSet.of_list [
 
   (* Deno's global namespace *)
   "Deno";
-]
+|]
 
-let is_js_global s = SSet.exists (fun x -> x = s) js_globals
+let is_js_global s = STbl.mem js_globals s
