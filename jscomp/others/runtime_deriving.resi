@@ -23,10 +23,3 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 let raiseWhenNotFound: 'a => 'a
-
-/**
-`fromInt(len, array, int)` return the mapped `enum`
-*/
-let fromInt: (int, array<int>, int) => option<int>
-
-let fromIntAssert: (int /* len */, array<int>, int) => int
