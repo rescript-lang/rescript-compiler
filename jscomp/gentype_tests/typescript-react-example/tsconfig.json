@@ -6,7 +6,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "sourceMap": true,
     "allowJs": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "skipLibCheck": true,
     "moduleResolution": "node",
     "rootDir": ".",
