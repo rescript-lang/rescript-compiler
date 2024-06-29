@@ -220,7 +220,8 @@ jobs:
           path: |
             ${{ runner.tool_cache }}/opam
             ~/.opam
-          key: opam-tool-v1-${{ matrix.os }}-${{ hashFiles('dune-project') }}
+            _opam
+          key: opam-tool-v2-${{ matrix.os }}-${{ hashFiles('dune-project') }}
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
         uses: ocaml/setup-ocaml@v2
@@ -253,7 +254,8 @@ jobs:
           path: |
             ${{ runner.tool_cache }}/opam
             ~/.opam
-          key: opam-tool-v1-${{ matrix.os }}-${{ hashFiles('dune-project') }}
+            _opam
+          key: opam-tool-v2-${{ matrix.os }}-${{ hashFiles('dune-project') }}
 
       - name: Get OPAM env
         if: steps.cache-opam-tool.outputs.cache-hit != 'true'
@@ -269,7 +271,7 @@ jobs:
           path: |
             .opam-path
             .opam-env
-          key: opam-path-${{ matrix.os }}
+          key: opam-env-v1-${{ matrix.os }}
 
       - name: Restore OPAM env
         if: steps.cache-opam-tool.outputs.cache-hit == 'true'
@@ -278,7 +280,7 @@ jobs:
           path: |
             .opam-path
             .opam-env
-          key: opam-path-${{ matrix.os }}
+          key: opam-env-v1-${{ matrix.os }}
 
       - name: Use cached OPAM env - $PATH
         if: steps.cache-opam-tool.outputs.cache-hit == 'true'
@@ -290,8 +292,7 @@ jobs:
       - name: Use cached OPAM env - Environment variables
         if: steps.cache-opam-tool.outputs.cache-hit == 'true'
         run: |
-          OPAM_ENV="$(cat .opam-env)"
-          sed "s/'//g; s/; export .*//g" "$OPAM_ENV" >> "$GITHUB_ENV"
+          sed "s/'//g; s/; export .*//g" .opam-env >> "$GITHUB_ENV"
 
       - name: "Build compiler"
         if: runner.os != 'Linux'
