@@ -275,8 +275,10 @@ jobs:
       - name: Use cached OPAM env
         if: steps.cache-opam-env.outputs.cache-hit == 'true'
         run: |
+          ls -al "$(dirname "$(cat .opam-path)")"
+          ls -al "$(cat .opam-path)"
           chmod +x "$(cat .opam-path)"
-          dirname "$(cat .opam-path)" >> $GITHUB_PATH
+          echo "$(dirname "$(cat .opam-path)")" >> $GITHUB_PATH
 
       - name: Use cached OPAM env
         if: steps.cache-opam-env.outputs.cache-hit == 'true'
