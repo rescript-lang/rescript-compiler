@@ -2,16 +2,17 @@
 
 class InnerClass {
   static InnerStuff = {
-    innerStuffContents: { x: 34 }
+    innerStuffContents: { x: 34 },
   };
 }
 
 export class TopLevelClass {
   static MiddleLevelElements = {
-    stuff: InnerClass
+    stuff: InnerClass,
   };
 }
 
-export const ValueStartingWithUpperCaseLetter = "ValueStartingWithUpperCaseLetter";
+export const ValueStartingWithUpperCaseLetter =
+  "ValueStartingWithUpperCaseLetter";
 
 export default 42;

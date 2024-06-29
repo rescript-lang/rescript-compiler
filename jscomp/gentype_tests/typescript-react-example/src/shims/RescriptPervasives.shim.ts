@@ -13,12 +13,12 @@ export abstract class Cons<T> {
 
 export type list<T> = Cons<T> | EmptyList;
 
-export function cons<T>(itm: T, lst: list<T>) : list<T> {
+export function cons<T>(itm: T, lst: list<T>): list<T> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return /* :: */ [itm, lst] as any;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const emptyList : EmptyList = /* [] */ 0 as any;
+export const emptyList: EmptyList = /* [] */ 0 as any;
 
 export const fromArray = $$Array.to_list;

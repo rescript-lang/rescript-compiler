@@ -4,14 +4,14 @@ export const round: (_: number) => number = Math.round;
 
 export const round2 = round;
 
-export const area = function(point: { x: number; y?: number }): number {
+export const area = function (point: { x: number; y?: number }): number {
   return point.x * (point.y === undefined ? 1 : point.y);
 };
 
 export type numberOrString = number | string;
 
-export const returnMixedArray = function() : Array<number | string> {
-  return [1,2];
+export const returnMixedArray = function (): Array<number | string> {
+  return [1, 2];
 };
 
 export class AbsoluteValue {
@@ -27,7 +27,7 @@ export class AbsoluteValue {
 export type stringFunction = (_: string) => string;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const useColor = function(x: "tomato" | "gray"): number {
+export const useColor = function (x: "tomato" | "gray"): number {
   return 0;
 };
 

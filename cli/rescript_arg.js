@@ -112,7 +112,7 @@ function parse_exn(
   annofun,
   start = 0,
   // first 3 are [node, rescript, subcommand]
-  finish = argv.length
+  finish = argv.length,
 ) {
   var current = start;
   var list = [];

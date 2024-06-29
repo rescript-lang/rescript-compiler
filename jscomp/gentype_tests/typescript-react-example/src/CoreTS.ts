@@ -1,9 +1,9 @@
 export declare function someFunWithNullThenOptionalArgs(
   nullable: null | string,
-  app?: string
+  app?: string,
 ): string;
 
 export declare function someFunWithNullUndefinedArg(
   nullUndefined: null | undefined | string,
-  other: number
+  other: number,
 ): string;

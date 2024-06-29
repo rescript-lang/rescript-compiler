@@ -19,7 +19,7 @@ function run() {
 
   cp.execSync(
     `git clean -dfx stubs ext common syntax depends core bsb main .`,
-    { cwd: jscompDir, encoding: "utf8", stdio: [0, 1, 2] }
+    { cwd: jscompDir, encoding: "utf8", stdio: [0, 1, 2] },
   );
   cp.execSync(`ninja -t clean -g && ninja`, {
     cwd: jscompDir,

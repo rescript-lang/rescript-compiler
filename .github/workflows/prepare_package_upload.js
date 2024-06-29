@@ -9,15 +9,15 @@ const commitHashShort = commitHash.substring(0, 7);
 
 fs.renameSync(
   `rescript-${version}.tgz`,
-  `rescript-${version}-${commitHashShort}.tgz`
+  `rescript-${version}-${commitHashShort}.tgz`,
 );
 fs.renameSync(
   `packages/std/rescript-std-${version}.tgz`,
-  `rescript-std-${version}-${commitHashShort}.tgz`
+  `rescript-std-${version}-${commitHashShort}.tgz`,
 );
 
 // Pass information to subsequent GitHub actions
 fs.appendFileSync(
   process.env.GITHUB_ENV,
-  `rescript_version=${version}-${commitHashShort}${os.EOL}`
+  `rescript_version=${version}-${commitHashShort}${os.EOL}`,
 );

@@ -11,7 +11,7 @@ var ocamlopt = path.join(
   "native",
   "4.06.1",
   "bin",
-  "ocamlopt.opt"
+  "ocamlopt.opt",
 );
 
 var base = process.argv[2];
@@ -37,7 +37,7 @@ function dsource(file) {
       cwd,
       encoding: "utf8",
       shell: true,
-    }
+    },
   );
   // check output.status
   if (output.status === 0) {
@@ -67,7 +67,7 @@ function checkDiff(file, msg) {
   if (output.status !== 0) {
     var output = cp.spawnSync(
       `git add ${file} && git commit -m "${msg} for ${file}"`,
-      { shell: true, encoding: "utf8", cwd }
+      { shell: true, encoding: "utf8", cwd },
     );
     if (output.status !== 0) {
       console.error(`diff failure for ${file} -- ${msg}`);
@@ -91,7 +91,7 @@ function shake(file) {
       cwd,
       encoding: "utf8",
       shell: true,
-    }
+    },
   );
   if (output.status !== 0) {
     console.error(`shake failure`);

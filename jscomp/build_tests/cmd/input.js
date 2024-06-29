@@ -35,7 +35,7 @@ function evalCode(code) {
       encoding: "utf8",
       shell: true,
       cwd: __dirname,
-    }
+    },
   );
 
   return bsc_exe;
@@ -51,10 +51,10 @@ test(react);
 
 assert.ok(
   evalCode(react + foo_react).stdout.match(/require/g).length === 2,
-  "foo react twice "
+  "foo react twice ",
 );
 
 assert.ok(
   evalCode(foo_react).stdout.match(/require/g).length === 1,
-  "foo react one"
+  "foo react one",
 );

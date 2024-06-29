@@ -19,6 +19,6 @@ if (out.stdout !== "") {
       "Error: package weird not found or built ",
       "- Did you install it?",
       "",
-    ].join("\n")
+    ].join("\n"),
   );
 }

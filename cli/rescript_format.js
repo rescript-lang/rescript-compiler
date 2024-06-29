@@ -92,7 +92,7 @@ async function formatFiles(files, bsc_exe, isSupportedFile, checkFormatting) {
           }
         }
         return null;
-      })
+      }),
     );
   } catch (err) {
     console.error(err);
@@ -103,7 +103,7 @@ async function formatFiles(files, bsc_exe, isSupportedFile, checkFormatting) {
       console.error("The file listed above needs formatting");
     } else {
       console.error(
-        `The ${incorrectlyFormattedFiles} files listed above need formatting`
+        `The ${incorrectlyFormattedFiles} files listed above need formatting`,
       );
     }
     process.exit(3);
@@ -135,7 +135,7 @@ async function main(argv, rescript_exe, bsc_exe) {
     // Require: -all or path to a file
     if (check.val && !format_project && files.length == 0) {
       console.error(
-        "format check require path to a file or use `-all` to check the whole project"
+        "format check require path to a file or use `-all` to check the whole project",
       );
       process.exit(2);
     }
@@ -152,7 +152,7 @@ async function main(argv, rescript_exe, bsc_exe) {
         ["info", "-list-files"],
         {
           encoding: "utf-8",
-        }
+        },
       );
       if (output.status !== 0) {
         console.error(output.stdout);
@@ -173,7 +173,7 @@ async function main(argv, rescript_exe, bsc_exe) {
           os.tmpdir(),
           "rescript_" +
             crypto.randomBytes(8).toString("hex") +
-            path.parse(use_stdin).base
+            path.parse(use_stdin).base,
         );
         (async function () {
           var content = await readStdin();
@@ -191,7 +191,7 @@ async function main(argv, rescript_exe, bsc_exe) {
                 console.error(stderr);
                 process.exit(2);
               }
-            }
+            },
           );
         })();
       } else {

@@ -363,7 +363,7 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
   function outputError(error, highlight) {
     if (isTtyError && highlight) {
       process.stderr.write(
-        error.replace(highlight, "\x1b[1;31m" + highlight + "\x1b[0m")
+        error.replace(highlight, "\x1b[1;31m" + highlight + "\x1b[0m"),
       );
     } else {
       process.stderr.write(error);
@@ -408,7 +408,7 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
     // it could fail due to other issues like .bsb.lock
     else {
       dlog(
-        `Acquire lock failed, do the build later ${depth} : ${reasonsToRebuild}`
+        `Acquire lock failed, do the build later ${depth} : ${reasonsToRebuild}`,
       );
       const waitTime = Math.pow(2, depth) * 40;
       setTimeout(() => {

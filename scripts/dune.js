@@ -6,7 +6,7 @@ var duneBinDir = path.join(
   "_build",
   "install",
   "default",
-  "bin"
+  "bin",
 );
 
 exports.duneBinDir = duneBinDir;

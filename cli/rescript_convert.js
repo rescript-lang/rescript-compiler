@@ -59,7 +59,7 @@ function handleOneFile(file, bsc_exe) {
         console.error(`Error when converting ${file}`);
         console.log(stderr);
       }
-    }
+    },
   );
 }
 /**
@@ -91,7 +91,7 @@ function main(argv, rescript_exe, bsc_exe) {
         ["info", "-list-files"],
         {
           encoding: "utf-8",
-        }
+        },
       );
       if (output.status !== 0) {
         console.error(output.stdout);
