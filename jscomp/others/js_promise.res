@@ -94,9 +94,6 @@ external catch: (@uncurry (error => promise<'a>)) => promise<'a> = "catch"
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
 */
 
-external unsafe_async: 'a => promise<'a> = "%identity"
-external unsafe_await: promise<'a> => 'a = "?await"
-
 /*
 let errorAsExn (x :  error) (e  : (exn ->'a option))=
   if Caml_exceptions.isCamlExceptionOrOpenVariant (Obj.magic x ) then

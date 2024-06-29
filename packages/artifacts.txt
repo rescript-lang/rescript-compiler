@@ -179,6 +179,7 @@ lib/es6/pervasivesU.js
 lib/es6/queue.js
 lib/es6/random.js
 lib/es6/runtime_deriving.js
+lib/es6/runtime_promise.js
 lib/es6/set.js
 lib/es6/setLabels.js
 lib/es6/sort.js
@@ -343,6 +344,7 @@ lib/js/pervasivesU.js
 lib/js/queue.js
 lib/js/random.js
 lib/js/runtime_deriving.js
+lib/js/runtime_promise.js
 lib/js/set.js
 lib/js/setLabels.js
 lib/js/sort.js
@@ -1003,6 +1005,10 @@ lib/ocaml/runtime_deriving.cmt
 lib/ocaml/runtime_deriving.cmti
 lib/ocaml/runtime_deriving.res
 lib/ocaml/runtime_deriving.resi
+lib/ocaml/runtime_promise.cmi
+lib/ocaml/runtime_promise.cmj
+lib/ocaml/runtime_promise.cmt
+lib/ocaml/runtime_promise.res
 lib/ocaml/set.cmi
 lib/ocaml/set.cmj
 lib/ocaml/set.cmt
