@@ -22,12 +22,14 @@
     "attributePosition": "auto",
     "ignore": [
       "jscomp/build_tests/**/lib/**",
-      "jscomp/build_tests/**/*.bs.js",
-      "jscomp/build_tests/**/*.res.js",
-      "jscomp/test/*.js",
+      "jscomp/build_tests/**/src/**",
+      "jscomp/test/**",
       "lib/**",
       "ninja/**",
       "playground/**",
+      "**/*.bs.js",
+      "**/*.res.js",
+      "**/*.gen.ts*",
       "package.json"
     ]
   },
