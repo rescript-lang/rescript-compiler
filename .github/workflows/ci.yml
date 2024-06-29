@@ -213,18 +213,18 @@ jobs:
           chmod +x rewatch/rewatch
           chmod +x _build/install/default/bin/*
 
-      - name: Restore OPAM env
-        id: cache-opam-env
+      - name: Restore OPAM tool
+        id: cache-opam-tool
         uses: actions/cache/restore@v4
         with:
           path: |
             ${{ runner.tool_cache }}/opam
             ~/.opam
-          key: opam-env-v1-${{ runner.os }}-${{ hashFiles('dune-project') }}
+          key: opam-tool-v1-${{ matrix.os }}-${{ hashFiles('dune-project') }}
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
         uses: ocaml/setup-ocaml@v2
-        if: steps.cache-opam-env.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
+        if: steps.cache-opam-tool.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
           opam-pin: false
@@ -232,7 +232,7 @@ jobs:
 
       - name: Use OCaml ${{matrix.ocaml_compiler}} (Win)
         uses: ocaml/setup-ocaml@v2
-        if: steps.cache-opam-env.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
+        if: steps.cache-opam-tool.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
         with:
           ocaml-compiler: ocaml-variants.5.2.0+options,ocaml-option-mingw
           opam-pin: false
@@ -243,50 +243,55 @@ jobs:
             default: https://github.com/ocaml/opam-repository.git
 
       - name: Install OPAM dependencies
-        if: steps.cache-opam-env.outputs.cache-hit != 'true'
+        if: steps.cache-opam-tool.outputs.cache-hit != 'true'
         run: opam install . --deps-only
 
-      - name: Cache OPAM env
-        if: steps.cache-opam-env.outputs.cache-hit != 'true'
+      - name: Save OPAM tool
+        if: steps.cache-opam-tool.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: |
             ${{ runner.tool_cache }}/opam
             ~/.opam
-          key: opam-env-v1-${{ runner.os }}-${{ hashFiles('dune-project') }}
+          key: opam-tool-v1-${{ matrix.os }}-${{ hashFiles('dune-project') }}
 
-      - name: Get OPAM path
-        if: steps.cache-opam-env.outputs.cache-hit != 'true'
+      - name: Get OPAM env
+        if: steps.cache-opam-tool.outputs.cache-hit != 'true'
         run: |
-          which opam
           which opam > .opam-path
+          opam env > .opam-env
 
-      - name: Cache OPAM path
-        id: cache-opam-path
-        if: steps.cache-opam-env.outputs.cache-hit != 'true'
+      - name: Save OPAM env
+        id: cache-opam-env
+        if: steps.cache-opam-tool.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: .opam-path
-          key: opam-path-${{ runner.os }}
+          path: |
+            .opam-path
+            .opam-env
+          key: opam-path-${{ matrix.os }}
 
-      - name: Restore OPAM path
-        if: steps.cache-opam-env.outputs.cache-hit == 'true'
+      - name: Restore OPAM env
+        if: steps.cache-opam-tool.outputs.cache-hit == 'true'
         uses: actions/cache/restore@v4
         with:
-          path: .opam-path
-          key: opam-path-${{ runner.os }}
+          path: |
+            .opam-path
+            .opam-env
+          key: opam-path-${{ matrix.os }}
 
-      - name: Use cached OPAM env
-        if: steps.cache-opam-env.outputs.cache-hit == 'true'
+      - name: Use cached OPAM env - $PATH
+        if: steps.cache-opam-tool.outputs.cache-hit == 'true'
         run: |
           OPAM_PATH="$(cat .opam-path)"
-          chmod +x $OPAM_PATH
-          dirname $OPAM_PATH >> $GITHUB_PATH
+          chmod +x "$OPAM_PATH"
+          dirname "$OPAM_PATH" >> "$GITHUB_PATH"
 
-      - name: Use cached OPAM env
-        if: steps.cache-opam-env.outputs.cache-hit == 'true'
+      - name: Use cached OPAM env - Environment variables
+        if: steps.cache-opam-tool.outputs.cache-hit == 'true'
         run: |
-          opam env | sed "s/'//g; s/; export .*//g" >> $GITHUB_ENV
+          OPAM_ENV="$(cat .opam-env)"
+          sed "s/'//g; s/; export .*//g" "$OPAM_ENV" >> "$GITHUB_ENV"
 
       - name: "Build compiler"
         if: runner.os != 'Linux'
