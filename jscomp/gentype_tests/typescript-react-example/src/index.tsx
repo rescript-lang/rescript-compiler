@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import * as ReactDOM from "react-dom";
 import App from "./App";
 import * as ImportJsValue from "./ImportJsValue.gen";
@@ -125,9 +125,9 @@ TestPromise.convert(Promise.resolve({ x: 3, s: "hello" })).then(x =>
 type Props = {
   readonly method?: "push" | "replace";
 };
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 export const make: React.FC<Props> = (x: Props) => {
-  return <div></div>;
+  return <div />;
 };
 
 const signedMessage = DocStrings.signMessage("hello", 42);
