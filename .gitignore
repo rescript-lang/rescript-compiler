@@ -93,3 +93,6 @@ playground/*.cmj
 playground/*.cmi
 playground/.netrc
 playground/compiler.js
+
+rewatch/target/
+rewatch/rewatch

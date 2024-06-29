@@ -21,17 +21,14 @@
     "lineWidth": 80,
     "attributePosition": "auto",
     "ignore": [
-      "_build/**",
-      "_opam/**",
       "jscomp/build_tests/**/lib/**",
       "jscomp/build_tests/**/*.bs.js",
       "jscomp/build_tests/**/*.res.js",
       "jscomp/test/*.js",
       "lib/**",
       "ninja/**",
-      "package.json",
       "playground/**",
-      "rewatch/target/**"
+      "package.json"
     ]
   },
   "javascript": {
