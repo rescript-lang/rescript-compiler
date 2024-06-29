@@ -26,6 +26,7 @@
       "jscomp/build_tests/**/lib/**",
       "jscomp/build_tests/**/*.bs.js",
       "jscomp/build_tests/**/*.res.js",
+      "jscomp/test/*.js",
       "lib/**",
       "ninja/**",
       "package.json",
