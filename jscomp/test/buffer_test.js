@@ -3,7 +3,7 @@
 
 let Mt = require("./mt.js");
 let Bytes = require("../../lib/js/bytes.js");
-let $$Buffer = require("../../lib/js/buffer.js");
+let Buffer = require("../../lib/js/buffer.js");
 let Caml_bytes = require("../../lib/js/caml_bytes.js");
 let Caml_string = require("../../lib/js/caml_string.js");
 
@@ -49,13 +49,13 @@ let suites_1 = {
     hd: [
       "buffer",
       (function (param) {
-        let v = $$Buffer.create(30);
+        let v = Buffer.create(30);
         for(let i = 0; i <= 10; ++i){
-          $$Buffer.add_string(v, String(i));
+          Buffer.add_string(v, String(i));
         }
         return {
           TAG: "Eq",
-          _0: $$Buffer.contents(v),
+          _0: Buffer.contents(v),
           _1: "012345678910"
         };
       })

@@ -5,8 +5,8 @@ let Curry = require("../../lib/js/curry.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 
-function f($$window, a, b) {
-  return $$window.location(a, b);
+function f(window, a, b) {
+  return window.location(a, b);
 }
 
 let v0 = {

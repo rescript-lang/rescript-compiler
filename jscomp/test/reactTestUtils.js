@@ -21,21 +21,21 @@ function actAsync(func) {
 }
 
 function changeWithValue(element, value) {
-  let $$event = {
+  let event = {
     target: {
       value: value
     }
   };
-  TestUtils.Simulate.change(element, $$event);
+  TestUtils.Simulate.change(element, event);
 }
 
 function changeWithChecked(element, value) {
-  let $$event = {
+  let event = {
     target: {
       checked: value
     }
   };
-  TestUtils.Simulate.change(element, $$event);
+  TestUtils.Simulate.change(element, event);
 }
 
 let Simulate = {

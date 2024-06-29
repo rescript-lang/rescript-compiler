@@ -15,19 +15,19 @@ let oefault = OmeEs6Module;
 
 let oefault2 = OmeEs6Module$1.default2;
 
-let $$window = Vscode.window;
+let window = Vscode.window;
 
-function mk($$window, $$default) {
+function mk(window, $$default) {
   return {
-    window: $$window,
+    window: window,
     default: $$default
   };
 }
 
-function mk2($$window, $$default) {
+function mk2(window, $$default) {
   return {
     hd: {
-      window: $$window,
+      window: window,
       default: $$default
     },
     tl: /* [] */0
@@ -47,7 +47,7 @@ let test = {
 };
 
 function u(param) {
-  return $$window.switch();
+  return window.switch();
 }
 
 let $$case = 3;
@@ -57,7 +57,7 @@ exports.__esModule = true;
 exports.default2 = default2;
 exports.oefault = oefault;
 exports.oefault2 = oefault2;
-exports.$$window = $$window;
+exports.window = window;
 exports.mk = mk;
 exports.mk2 = mk2;
 exports.des = des;
