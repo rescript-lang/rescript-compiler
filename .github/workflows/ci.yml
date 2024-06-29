@@ -217,8 +217,10 @@ jobs:
         id: cache-opam-env
         uses: actions/cache/restore@v4
         with:
-          path: ~/.opam
-          key: opam-env-${{ runner.os }}-${{ hashFiles('dune-project') }}
+          path: |
+            ${{ runner.tool_cache }}/opam
+            ~/.opam
+          key: opam-env-v1-${{ runner.os }}-${{ hashFiles('dune-project') }}
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
         uses: ocaml/setup-ocaml@v2
@@ -248,8 +250,10 @@ jobs:
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: ~/.opam
-          key: opam-env-${{ runner.os }}-${{ hashFiles('dune-project') }}
+          path: |
+            ${{ runner.tool_cache }}/opam
+            ~/.opam
+          key: opam-env-v1-${{ runner.os }}-${{ hashFiles('dune-project') }}
 
       - name: Get OPAM path
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
@@ -275,10 +279,9 @@ jobs:
       - name: Use cached OPAM env
         if: steps.cache-opam-env.outputs.cache-hit == 'true'
         run: |
-          ls -al "$(dirname "$(cat .opam-path)")"
-          ls -al "$(cat .opam-path)"
-          chmod +x "$(cat .opam-path)"
-          echo "$(dirname "$(cat .opam-path)")" >> $GITHUB_PATH
+          OPAM_PATH="$(cat .opam-path)"
+          chmod +x $OPAM_PATH
+          dirname $OPAM_PATH >> $GITHUB_PATH
 
       - name: Use cached OPAM env
         if: steps.cache-opam-env.outputs.cache-hit == 'true'
