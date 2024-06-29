@@ -222,8 +222,7 @@ jobs:
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
         uses: ocaml/setup-ocaml@v2
-        # if: steps.cache-opam-env.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
-        if: matrix.os != 'windows-latest'
+        if: steps.cache-opam-env.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
           opam-pin: false
@@ -231,8 +230,7 @@ jobs:
 
       - name: Use OCaml ${{matrix.ocaml_compiler}} (Win)
         uses: ocaml/setup-ocaml@v2
-        # if: steps.cache-opam-env.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
-        if: matrix.os == 'windows-latest'
+        if: steps.cache-opam-env.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
         with:
           ocaml-compiler: ocaml-variants.5.2.0+options,ocaml-option-mingw
           opam-pin: false
@@ -242,8 +240,8 @@ jobs:
             sunset: https://github.com/ocaml-opam/opam-repository-mingw.git#sunset
             default: https://github.com/ocaml/opam-repository.git
 
-      - name: "Install OPAM dependencies"
-        # if: steps.cache-opam-env.outputs.cache-hit != 'true'
+      - name: Install OPAM dependencies
+        if: steps.cache-opam-env.outputs.cache-hit != 'true'
         run: opam install . --deps-only
 
       - name: Cache OPAM env
@@ -254,7 +252,7 @@ jobs:
           key: opam-env-${{ runner.os }}-${{ hashFiles('dune-project') }}
 
       - name: Get OPAM path
-        # if: steps.cache-opam-env.outputs.cache-hit != 'true'
+        if: steps.cache-opam-env.outputs.cache-hit != 'true'
         run: |
           which opam
           which opam > .opam-path
@@ -277,10 +275,8 @@ jobs:
       - name: Use cached OPAM env
         if: steps.cache-opam-env.outputs.cache-hit == 'true'
         run: |
-          cat .opam-path
-          dirname $(cat .opam-path)
-          ls $(dirname $(cat .opam-path))
-          dirname $(cat .opam-path) >> $GITHUB_PATH
+          chmod +x "$(cat .opam-path)"
+          dirname "$(cat .opam-path)" >> $GITHUB_PATH
 
       - name: Use cached OPAM env
         if: steps.cache-opam-env.outputs.cache-hit == 'true'
