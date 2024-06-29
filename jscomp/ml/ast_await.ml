@@ -24,7 +24,7 @@ let create_await_module_expression ~module_type_lid (e : Parsetree.module_expr)
            (Exp.apply ~loc:e.pmod_loc
               (Exp.ident ~loc:e.pmod_loc
                  {
-                   txt = Longident.Ldot (Lident "Js", "import");
+                   txt = Longident.Ldot (Lident Js_runtime_modules.promise, "import");
                    loc = e.pmod_loc;
                  })
               [
