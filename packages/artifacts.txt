@@ -137,7 +137,6 @@ lib/es6/js_int.js
 lib/es6/js_json.js
 lib/es6/js_list.js
 lib/es6/js_map.js
-lib/es6/js_mapperRt.js
 lib/es6/js_math.js
 lib/es6/js_null.js
 lib/es6/js_null_undefined.js
@@ -180,6 +179,7 @@ lib/es6/pervasives.js
 lib/es6/pervasivesU.js
 lib/es6/queue.js
 lib/es6/random.js
+lib/es6/runtime_deriving.js
 lib/es6/set.js
 lib/es6/setLabels.js
 lib/es6/sort.js
@@ -302,7 +302,6 @@ lib/js/js_int.js
 lib/js/js_json.js
 lib/js/js_list.js
 lib/js/js_map.js
-lib/js/js_mapperRt.js
 lib/js/js_math.js
 lib/js/js_null.js
 lib/js/js_null_undefined.js
@@ -344,6 +343,7 @@ lib/js/pervasives.js
 lib/js/pervasivesU.js
 lib/js/queue.js
 lib/js/random.js
+lib/js/runtime_deriving.js
 lib/js/set.js
 lib/js/setLabels.js
 lib/js/sort.js
@@ -796,12 +796,6 @@ lib/ocaml/js_map.cmi
 lib/ocaml/js_map.cmj
 lib/ocaml/js_map.cmt
 lib/ocaml/js_map.res
-lib/ocaml/js_mapperRt.cmi
-lib/ocaml/js_mapperRt.cmj
-lib/ocaml/js_mapperRt.cmt
-lib/ocaml/js_mapperRt.cmti
-lib/ocaml/js_mapperRt.res
-lib/ocaml/js_mapperRt.resi
 lib/ocaml/js_math.cmi
 lib/ocaml/js_math.cmj
 lib/ocaml/js_math.cmt
