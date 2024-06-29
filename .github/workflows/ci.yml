@@ -274,7 +274,7 @@ jobs:
       - name: Use cached OPAM env
         if: steps.cache-opam-env.outputs.cache-hit == 'true'
         run: |
-          cat .opam-path >> $GITHUB_PATH
+          dirname $(cat .opam-path) >> $GITHUB_PATH
 
       - name: Use cached OPAM env
         if: steps.cache-opam-env.outputs.cache-hit == 'true'
