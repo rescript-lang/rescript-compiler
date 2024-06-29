@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Js_mapperRt = require("../../lib/js/js_mapperRt.js");
+let Runtime_deriving = require("../../lib/js/runtime_deriving.js");
 
 let suites = {
   contents: /* [] */0
@@ -64,7 +64,7 @@ function xToJs(param) {
 }
 
 function xFromJs(param) {
-  return Js_mapperRt.raiseWhenNotFound(_map[param]);
+  return Runtime_deriving.raiseWhenNotFound(_map[param]);
 }
 
 function idx(v) {
