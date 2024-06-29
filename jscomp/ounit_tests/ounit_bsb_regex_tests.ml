@@ -51,7 +51,6 @@ let suites =
   ],
   "reason" : { "react-jsx" : true},
   "bs-dependencies" : [
-      // add your bs-dependencies here 
   ]
 }
 |} {|
@@ -63,7 +62,6 @@ let suites =
   ],
   "reason" : { "react-jsx" : true},
   "bs-dependencies" : [
-      // add your bs-dependencies here 
   ]
 }
 |}

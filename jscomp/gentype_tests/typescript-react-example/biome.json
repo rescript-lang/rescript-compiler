@@ -6,9 +6,6 @@
     "rules": {
       "recommended": true
     },
-    "ignore": [
-      "**/*.res.js",
-      "**/*.gen.ts*"
-    ]
+    "ignore": ["**/*.res.js", "**/*.gen.ts*"]
   }
 }
