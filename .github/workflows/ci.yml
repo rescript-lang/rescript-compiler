@@ -294,7 +294,7 @@ jobs:
           path: |
             .opam-path
             .opam-env
-          key: opam-env-v1-${{ matrix.os }}
+          key: opam-env-v2-${{ matrix.os }}
 
       - name: Restore OPAM env
         if: steps.cache-opam-tool.outputs.cache-hit == 'true'
@@ -303,7 +303,7 @@ jobs:
           path: |
             .opam-path
             .opam-env
-          key: opam-env-v1-${{ matrix.os }}
+          key: opam-env-v2-${{ matrix.os }}
 
       - name: Use cached OPAM env - $PATH
         if: steps.cache-opam-tool.outputs.cache-hit == 'true'
