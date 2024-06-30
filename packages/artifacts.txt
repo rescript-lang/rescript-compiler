@@ -1004,6 +1004,16 @@ lib/ocaml/random.cmt
 lib/ocaml/random.cmti
 lib/ocaml/random.res
 lib/ocaml/random.resi
+lib/ocaml/runtime_deriving.cmi
+lib/ocaml/runtime_deriving.cmj
+lib/ocaml/runtime_deriving.cmt
+lib/ocaml/runtime_deriving.cmti
+lib/ocaml/runtime_deriving.res
+lib/ocaml/runtime_deriving.resi
+lib/ocaml/runtime_promise.cmi
+lib/ocaml/runtime_promise.cmj
+lib/ocaml/runtime_promise.cmt
+lib/ocaml/runtime_promise.res
 lib/ocaml/set.cmi
 lib/ocaml/set.cmj
 lib/ocaml/set.cmt
