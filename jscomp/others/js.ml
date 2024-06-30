@@ -76,8 +76,6 @@ Prefer `Js.Array2` over `Js.Array`, `Js.String2` over `Js.String`, etc. The latt
 type 'a t = < .. > as 'a
 (** JS object type *)
 
-module MapperRt = Js_mapperRt
-
 module Internal = struct
   external opaqueFullApply : 'a -> 'a = "%uncurried_apply"
 

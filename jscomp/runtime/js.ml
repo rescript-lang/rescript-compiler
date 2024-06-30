@@ -46,7 +46,6 @@
 type 'a t = < .. > as 'a
 (** Types for JS objects *)
 
-module MapperRt = Js_mapperRt
 module Internal = struct
   external opaqueFullApply : 'a -> 'a = "%uncurried_apply"
 

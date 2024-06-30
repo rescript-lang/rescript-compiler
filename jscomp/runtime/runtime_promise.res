@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Authors of ReScript
+/* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,11 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-let raiseWhenNotFound: 'a => 'a
+external unsafe_async: 'a => promise<'a> = "%identity"
+external unsafe_await: promise<'a> => 'a = "?await"
 
-/**
-`fromInt(len, array, int)` return the mapped `enum`
-*/
-let fromInt: (int, array<int>, int) => option<int>
-
-let fromIntAssert: (int /* len */, array<int>, int) => int
+external import: 'a => promise<'a> = "#import"

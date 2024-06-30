@@ -129,13 +129,12 @@ let app2 = Ast_compatible.app2
 
 let ( ->~ ) a b = Ast_compatible.arrow a b
 
-let js_mapper_rt = Longident.Ldot (Lident "Js", "MapperRt")
+let raise_when_not_found_ident =
+  Longident.Ldot (Lident Js_runtime_modules.deriving, "raiseWhenNotFound")
 
 let raise_when_not_found x =
-  app1
-    (Exp.ident
-       {loc = noloc; txt = Longident.Ldot (js_mapper_rt, "raiseWhenNotFound")})
-    x
+  app1 (Exp.ident {loc = noloc; txt = raise_when_not_found_ident}) x
+
 let deriving_name = "jsConverter"
 
 let init () =

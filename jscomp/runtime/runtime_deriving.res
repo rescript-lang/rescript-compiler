@@ -22,40 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-@get_index external unsafeGet: (array<int>, int) => int = ""
-
 let raiseWhenNotFound = x =>
   if Js.testAny(x) {
     raise(Not_found)
   } else {
     x
   }
-
-let rec fromIntAux = (enum: int, i, len, xs) =>
-  if i == len {
-    None
-  } else {
-    let k = unsafeGet(xs, i)
-    if k == enum {
-      Some(i)
-    } else {
-      fromIntAux(enum, i + 1, len, xs)
-    }
-  }
-
-let fromInt = (len, xs: array<int>, enum: int): option<'variant> => fromIntAux(enum, 0, len, xs)
-
-let rec fromIntAssertAux = (len, enum: int, i, xs) =>
-  if i == len {
-    raise(Not_found)
-  } else {
-    let k = unsafeGet(xs, i)
-    if k == enum {
-      i
-    } else {
-      fromIntAssertAux(len, enum, i + 1, xs)
-    }
-  }
-
-/** `length` is not relevant any more */
-let fromIntAssert = (len, xs: array<int>, enum: int) => fromIntAssertAux(len, enum, 0, xs)

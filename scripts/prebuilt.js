@@ -70,11 +70,6 @@ function populateLibDir() {
     fs.mkdirSync(ocaml_dir);
   }
 
-  installDirBy(runtime_dir, ocaml_dir, function (file) {
-    var y = path.parse(file);
-    return y.name === "js";
-  });
-
   // for merlin or other IDE
   var installed_suffixes = [
     ".ml",
@@ -86,6 +81,14 @@ function populateLibDir() {
     ".cmt",
     ".cmti",
   ];
+  installDirBy(runtime_dir, ocaml_dir, function (file) {
+    var y = path.parse(file);
+    return (
+      y.name === "js" ||
+      (installed_suffixes.includes(y.ext) && y.name.startsWith("runtime_"))
+    );
+  });
+
   installDirBy(others_dir, ocaml_dir, file => {
     var y = path.parse(file);
     if (y.ext === ".cmi") {
