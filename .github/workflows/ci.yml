@@ -278,7 +278,11 @@ jobs:
       - name: Get OPAM env
         if: steps.cache-opam-tool.outputs.cache-hit != 'true'
         run: |
-          which opam > .opam-path
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            which opam.exe > .opam-path
+          else
+            which opam > .opam-path
+          fi
           opam env > .opam-env
         shell: bash
 
