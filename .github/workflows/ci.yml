@@ -54,22 +54,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Restore build cache
+        id: build-cache
+        uses: actions/cache@v4
+        with:
+          path: rewatch/target
+          key: rewatch-build-${{ matrix.rust-target }}-${{ hashFiles('rewatch/src/**', 'rewatch/Cargo.lock') }}
+
       - name: Install musl gcc
-        if: runner.os == 'Linux'
-        run: sudo apt-get install -y musl-tools
+        if: steps.build-cache.outputs.cache-hit != 'true' && runner.os == 'Linux'
+        run: sudo apt-get install -y --no-install-recommends musl-tools
 
       - name: Set up sccache
+        if: steps.build-cache.outputs.cache-hit != 'true'
         uses: mozilla-actions/sccache-action@v0.0.4
         with:
           version: "v0.8.0"
 
       - name: Install rust toolchain
+        if: steps.build-cache.outputs.cache-hit != 'true'
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
           targets: ${{matrix.rust-target}}
 
       - name: Build rewatch
+        if: steps.build-cache.outputs.cache-hit != 'true'
         run: cargo build --manifest-path rewatch/Cargo.toml --target ${{matrix.rust-target}} --release
 
       - name: Get artifact dir name
@@ -106,7 +116,7 @@ jobs:
       - name: Build ninja binary
         uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.20-ocaml-5.2.0-01
         with:
-          args: sh -c "cd ninja && LDFLAGS=-static python3 configure.py --bootstrap"
+          args: sh -c "cd ninja && LDFLAGS=-static python configure.py --bootstrap"
 
       - name: "Upload artifacts"
         uses: actions/upload-artifact@v4
@@ -213,17 +223,44 @@ jobs:
           chmod +x rewatch/rewatch
           chmod +x _build/install/default/bin/*
 
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        uses: awalsh128/cache-apt-pkgs-action@v1.4.2
+        with:
+          # See https://github.com/ocaml/setup-ocaml/blob/b2105f9/packages/setup-ocaml/src/unix.ts#L9
+          packages: bubblewrap darcs g++-multilib gcc-multilib mercurial musl-tools rsync
+          version: v1
+
+      - name: Setup Python for ninja build
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Restore OPAM environment
+        id: cache-opam-env
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ${{ runner.tool_cache }}/opam
+            ~/.opam
+            _opam
+            .opam-path
+            .opam-env
+            D:\cygwin
+            D:\.opam
+          key: opam-env-v8-${{ matrix.os }}-${{ hashFiles('dune-project') }}
+
       - name: Use OCaml ${{matrix.ocaml_compiler}}
         uses: ocaml/setup-ocaml@v2
-        if: matrix.os != 'windows-latest'
+        if: steps.cache-opam-env.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
           opam-pin: false
           opam-depext: false
 
-      - name: Use OCaml ${{matrix.ocaml_compiler}} (Win)
+      - name: Use OCaml ${{matrix.ocaml_compiler}} (Windows)
         uses: ocaml/setup-ocaml@v2
-        if: matrix.os == 'windows-latest'
+        if: steps.cache-opam-env.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
         with:
           ocaml-compiler: ocaml-variants.5.2.0+options,ocaml-option-mingw
           opam-pin: false
@@ -233,10 +270,74 @@ jobs:
             sunset: https://github.com/ocaml-opam/opam-repository-mingw.git#sunset
             default: https://github.com/ocaml/opam-repository.git
 
-      - name: "Install OPAM dependencies"
+      - name: Get OPAM environment
+        if: steps.cache-opam-env.outputs.cache-hit != 'true'
+        run: |
+          command -v opam | tee .opam-path
+          opam env > .opam-env
+
+      - name: Install OPAM dependencies
+        if: steps.cache-opam-env.outputs.cache-hit != 'true'
         run: opam install . --deps-only
 
-      - name: "Build compiler"
+      - name: Cache OPAM environment
+        if: steps.cache-opam-env.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{ runner.tool_cache }}/opam
+            ~/.opam
+            _opam
+            .opam-path
+            .opam-env
+            D:\cygwin
+            D:\.opam
+          key: opam-env-v8-${{ matrix.os }}-${{ hashFiles('dune-project') }}
+
+      - name: Use cached OPAM environment
+        if: steps.cache-opam-env.outputs.cache-hit == 'true'
+        run: |
+          # https://github.com/ocaml/setup-ocaml/blob/b2105f9/packages/setup-ocaml/src/installer.ts#L33
+          echo "OPAMVERBOSE=$RUNNER_DEBUG"   >> "$GITHUB_ENV"
+          echo "OPAMCOLOR=always"            >> "$GITHUB_ENV"
+          echo "OPAMCONFIRMLEVEL=unsafe-yes" >> "$GITHUB_ENV"
+          echo "OPAMERRLOGLEN=0"             >> "$GITHUB_ENV"
+          echo "OPAMPRECISETRACKING=1"       >> "$GITHUB_ENV"
+          echo "OPAMYES=1"                   >> "$GITHUB_ENV"
+
+          if [[ "$RUNNER_OS" != "Windows" ]]; then
+            echo "OPAMROOT=$HOME/.opam"      >> "$GITHUB_ENV"
+          else
+            echo "OPAMROOT=D:\\.opam"         >> "$GITHUB_ENV"
+          fi
+
+          if [[ "$RUNNER_OS" != "Windows" ]]; then
+            OPAM_PATH="$(cat .opam-path)"
+            chmod +x "$OPAM_PATH"
+            dirname "$OPAM_PATH" >> "$GITHUB_PATH"
+
+          else
+            fsutil behavior query SymlinkEvaluation
+            fsutil behavior set symlinkEvaluation R2L:1 R2R:1
+            fsutil behavior query SymlinkEvaluation
+
+            CYGWIN="winsymlinks:native"
+            CYGWIN_ROOT="D:\\cygwin"
+            CYGWIN_ROOT_BIN="D:\\cygwin\\bin"
+            CYGWIN_ROOT_WRAPPERBIN="D:\\cygwin\\wrapperbin"
+
+            echo "HOME=$USERPROFILE" >> "$GITHUB_ENV"
+            echo "MSYS=winsymlinks:native" >> "$GITHUB_ENV"
+            echo "CYGWIN=$CYGWIN" >> "$GITHUB_ENV"
+            echo "CYGWIN_ROOT=$CYGWIN_ROOT" >> "$GITHUB_ENV"
+            echo "CYGWIN_ROOT_BIN=$CYGWIN_ROOT_BIN" >> "$GITHUB_ENV"
+            echo "CYGWIN_ROOT_WRAPPERBIN=$CYGWIN_ROOT_WRAPPERBIN" >> "$GITHUB_ENV"
+
+            echo "$CYGWIN_ROOT_WRAPPERBIN" >> "$GITHUB_PATH"
+          fi
+        shell: bash
+
+      - name: Build compiler
         if: runner.os != 'Linux'
         run: opam exec -- dune build --display quiet --profile release
 
@@ -248,7 +349,7 @@ jobs:
       - name: Install npm packages
         run: npm ci --ignore-scripts
 
-      - name: "Windows: Use MSVC for ninja build"
+      - name: Setup MSVC for ninja build (Windows)
         if: runner.os == 'Windows'
         uses: TheMrMilchmann/setup-msvc-dev@v3
         with:
@@ -304,10 +405,6 @@ jobs:
         run: node scripts/ciTest.js -mocha -theme -format
 
       # Build the playground compiler on the fastest runner (ubuntu-latest)
-      - name: Install JSOO
-        if: matrix.os == 'ubuntu-latest'
-        run: opam install js_of_ocaml.5.8.1
-
       - name: Build playground compiler
         if: matrix.os == 'ubuntu-latest'
         run: |

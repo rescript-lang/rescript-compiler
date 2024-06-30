@@ -24,7 +24,7 @@
    (= 0.26.2))
   (cppo
    (= 1.6.9))
-  (js_of_ocaml-compiler
+  (js_of_ocaml
    (= 5.8.1))
   (ounit2
    (= 2.2.7))
