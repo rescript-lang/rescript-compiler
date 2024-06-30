@@ -231,19 +231,21 @@ jobs:
           packages: bubblewrap darcs g++-multilib gcc-multilib mercurial musl-tools rsync
           version: v1
 
-      - name: Restore OPAM tool
-        id: cache-opam-tool
+      - name: Restore OPAM environment
+        id: cache-opam-env
         uses: actions/cache/restore@v4
         with:
           path: |
             ${{ runner.tool_cache }}/opam
             ~/.opam
             _opam
-          key: opam-tool-v2-${{ matrix.os }}-${{ hashFiles('dune-project') }}
+            .opam-path
+            .opam-env
+          key: opam-env-v3-${{ matrix.os }}-${{ hashFiles('dune-project') }}
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
         uses: ocaml/setup-ocaml@v2
-        if: steps.cache-opam-tool.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
+        if: steps.cache-opam-env.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
           opam-pin: false
@@ -251,7 +253,7 @@ jobs:
 
       - name: Use OCaml ${{matrix.ocaml_compiler}} (Win)
         uses: ocaml/setup-ocaml@v2
-        if: steps.cache-opam-tool.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
+        if: steps.cache-opam-env.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
         with:
           ocaml-compiler: ocaml-variants.5.2.0+options,ocaml-option-mingw
           opam-pin: false
@@ -261,22 +263,8 @@ jobs:
             sunset: https://github.com/ocaml-opam/opam-repository-mingw.git#sunset
             default: https://github.com/ocaml/opam-repository.git
 
-      - name: Install OPAM dependencies
-        if: steps.cache-opam-tool.outputs.cache-hit != 'true'
-        run: opam install . --deps-only
-
-      - name: Save OPAM tool
-        if: steps.cache-opam-tool.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            ${{ runner.tool_cache }}/opam
-            ~/.opam
-            _opam
-          key: opam-tool-v2-${{ matrix.os }}-${{ hashFiles('dune-project') }}
-
-      - name: Get OPAM env
-        if: steps.cache-opam-tool.outputs.cache-hit != 'true'
+      - name: Get OPAM environment
+        if: steps.cache-opam-env.outputs.cache-hit != 'true'
         run: |
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             which opam.exe > .opam-path
@@ -286,40 +274,32 @@ jobs:
           opam env > .opam-env
         shell: bash
 
-      - name: Save OPAM env
-        id: cache-opam-env
-        if: steps.cache-opam-tool.outputs.cache-hit != 'true'
+      - name: Install OPAM dependencies
+        if: steps.cache-opam-env.outputs.cache-hit != 'true'
+        run: opam install . --deps-only
+
+      - name: Cache OPAM environment
+        if: steps.cache-opam-env.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: |
+            ${{ runner.tool_cache }}/opam
+            ~/.opam
+            _opam
             .opam-path
             .opam-env
-          key: opam-env-v2-${{ matrix.os }}
+          key: opam-env-v3-${{ matrix.os }}-${{ hashFiles('dune-project') }}
 
-      - name: Restore OPAM env
-        if: steps.cache-opam-tool.outputs.cache-hit == 'true'
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            .opam-path
-            .opam-env
-          key: opam-env-v2-${{ matrix.os }}
-
-      - name: Use cached OPAM env - $PATH
-        if: steps.cache-opam-tool.outputs.cache-hit == 'true'
+      - name: Use cached OPAM environment
+        if: steps.cache-opam-env.outputs.cache-hit == 'true'
         run: |
           OPAM_PATH="$(cat .opam-path)"
           chmod +x "$OPAM_PATH"
           dirname "$OPAM_PATH" >> "$GITHUB_PATH"
-        shell: bash
-
-      - name: Use cached OPAM env - Environment variables
-        if: steps.cache-opam-tool.outputs.cache-hit == 'true'
-        run: |
           sed "s/'//g; s/; export .*//g" .opam-env >> "$GITHUB_ENV"
         shell: bash
 
-      - name: "Build compiler"
+      - name: Build compiler
         if: runner.os != 'Linux'
         run: opam exec -- dune build --display quiet --profile release
 
