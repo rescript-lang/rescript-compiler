@@ -54,31 +54,42 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Restore build cache
+        id: build-cache
+        uses: actions/cache@v4
+        with:
+          path: rewatch/target
+          key: rewatch-build-${{ matrix.rust-target }}-${{ hashFiles('rewatch/src/**', 'rewatch/Cargo.lock') }}
+
       - name: Install musl gcc
-        if: runner.os == 'Linux'
+        if: steps.build-cache.outputs.cache-hit != 'true' && runner.os == 'Linux'
         run: sudo apt-get install -y --no-install-recommends musl-tools
 
       - name: Set up sccache
+        if: steps.build-cache.outputs.cache-hit != 'true'
         uses: mozilla-actions/sccache-action@v0.0.4
         with:
           version: "v0.8.0"
 
       - name: Install rust toolchain
+        if: steps.build-cache.outputs.cache-hit != 'true'
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
           targets: ${{matrix.rust-target}}
 
       - name: Build rewatch
+        if: steps.build-cache.outputs.cache-hit != 'true'
         run: cargo build --manifest-path rewatch/Cargo.toml --target ${{matrix.rust-target}} --release
 
       - name: Get artifact dir name
+        id: artifact-dir
         run: node .github/workflows/get_artifact_dir_name.js
 
       - name: "Upload artifact: rewatch binary"
         uses: actions/upload-artifact@v4
         with:
-          name: rewatch-${{env.artifact_dir_name}}
+          name: rewatch-${{ steps.artifact-dir.outputs.dirname }}
           path: rewatch/target/${{matrix.rust-target}}/release/rewatch${{ runner.os == 'Windows' && '.exe' || '' }}
 
   # Build statically linked Linux binaries in an Alpine-based Docker container
@@ -373,6 +384,7 @@ jobs:
       - name: Build playground compiler
         if: matrix.os == 'ubuntu-latest'
         run: |
+          opam install js_of_ocaml.5.8.1
           opam exec -- node packages/playground-bundling/scripts/generate_cmijs.js
           opam exec -- dune build --profile browser
           cp ./_build/default/jscomp/jsoo/jsoo_playground_main.bc.js playground/compiler.js
