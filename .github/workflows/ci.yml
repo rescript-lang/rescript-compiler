@@ -103,27 +103,23 @@ jobs:
         os: [ubuntu-latest, buildjet-2vcpu-ubuntu-2204-arm]
 
     runs-on: ${{matrix.os}}
+    container: ghcr.io/rescript-lang/rescript-ci-build:alpine-3.20-ocaml-5.2.0-01
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python for ninja build
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
       - name: Build compiler binaries
-        uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.20-ocaml-5.2.0-01
-        with:
-          args: opam exec -- dune build --display quiet --profile static
+        run: |
+          opam exec -- dune build --display quiet --profile static
 
       - name: Build ninja binary
-        uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.20-ocaml-5.2.0-01
-        with:
-          args: sh -c "cd ninja && LDFLAGS=-static python configure.py --bootstrap"
+        run: |
+          cd ninja
+          LDFLAGS=-static python configure.py --bootstrap
+          cd ..
 
-      - name: "Upload artifacts"
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: static-binaries-linux-${{runner.arch}}
