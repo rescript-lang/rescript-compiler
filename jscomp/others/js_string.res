@@ -214,7 +214,7 @@ Js.String.concat("bell", "cow") == "cowbell"
 */
 external concat: t => t = "concat"
 
-@bs.send.pipe(: t)
+@send.pipe(: t)
 @variadic
 /**
 `concat(arr, original)` returns a new `string` consisting of each item of an
@@ -410,8 +410,8 @@ Js.String.localeCompare("cat", "CAT") > 0.0
 */
 external localeCompare: t => float = "localeCompare"
 
-@bs.send.pipe(: t)
-@return({null_to_opt: null_to_opt})
+@send.pipe(: t)
+@return(nullable)
 /**
 `match(regexp, str)` matches a `string` against the given `regexp`. If there is
 no match, it returns `None`. For regular expressions without the g modifier, if
@@ -540,7 +540,7 @@ let matchFn = (matchPart, _offset, _wholeString) => Js.String.toUpperCase(matchP
 Js.String.unsafeReplaceBy0(re, matchFn, str) == "bEAUtIfUl vOwEls"
 ```
 */
-external unsafeReplaceBy0: (Js_re.t, @uncurry (t, int, t) => t) => t = "replace"
+external unsafeReplaceBy0: (Js_re.t, (t, int, t) => t) => t = "replace"
 
 @bs.send.pipe(: t)
 /**
@@ -565,7 +565,7 @@ let matchFn = (_match, part1, _offset, _wholeString) => {
 Js.String.unsafeReplaceBy1(re, matchFn, str) == "Jony is 41"
 ```
 */
-external unsafeReplaceBy1: (Js_re.t, @uncurry (t, t, int, t) => t) => t = "replace"
+external unsafeReplaceBy1: (Js_re.t, (t, t, int, t) => t) => t = "replace"
 
 @bs.send.pipe(: t)
 /**
@@ -593,7 +593,7 @@ let matchFn = (_match, p1, p2, _offset, _wholeString) => {
 Js.String.unsafeReplaceBy2(re, matchFn, str) == "42"
 ```
 */
-external unsafeReplaceBy2: (Js_re.t, @uncurry (t, t, t, int, t) => t) => t = "replace"
+external unsafeReplaceBy2: (Js_re.t, (t, t, t, int, t) => t) => t = "replace"
 
 @bs.send.pipe(: t)
 /**
@@ -606,7 +606,7 @@ matched.
 See [`String.replace`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
 on MDN.
 */
-external unsafeReplaceBy3: (Js_re.t, @uncurry (t, t, t, t, int, t) => t) => t = "replace"
+external unsafeReplaceBy3: (Js_re.t, (t, t, t, t, int, t) => t) => t = "replace"
 
 @bs.send.pipe(: t)
 /**
