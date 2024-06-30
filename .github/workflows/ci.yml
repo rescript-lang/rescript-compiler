@@ -108,11 +108,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python for ninja build
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
       - name: Build compiler binaries
         uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.20-ocaml-5.2.0-01
         with:
