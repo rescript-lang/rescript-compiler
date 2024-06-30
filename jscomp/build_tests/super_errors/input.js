@@ -19,7 +19,7 @@ function postProcessErrorOutput(output) {
   output = output.trimRight();
   output = output.replace(
     /\/[^ ]+?jscomp\/build_tests\/super_errors\//g,
-    "/.../"
+    "/.../",
   );
   return output;
 }
@@ -43,11 +43,11 @@ fixtures.forEach(fileName => {
       fs.writeFileSync(expectedFilePath, actualErrorOutput);
     } else {
       const expectedErrorOutput = postProcessErrorOutput(
-        fs.readFileSync(expectedFilePath, { encoding: "utf-8" })
+        fs.readFileSync(expectedFilePath, { encoding: "utf-8" }),
       );
       if (expectedErrorOutput !== actualErrorOutput) {
         console.error(
-          `The old and new error output for the test ${fullFilePath} aren't the same`
+          `The old and new error output for the test ${fullFilePath} aren't the same`,
         );
         console.error("\n=== Old:");
         console.error(expectedErrorOutput);

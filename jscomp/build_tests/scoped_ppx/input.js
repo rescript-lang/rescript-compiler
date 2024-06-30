@@ -9,6 +9,6 @@ var output = cp.execSync(`${rescript_exe} build -- -t commands src/hello.ast`, {
 });
 assert(
   /-ppx '.*\/test\.js -hello' -ppx '.*\/test\.js -heyy' -ppx .*test\.js/.test(
-    output
-  )
+    output,
+  ),
 );

@@ -16,7 +16,7 @@ assert.throws(
       return true;
     }
     return false;
-  }
+  },
 );
 
 // assert.throws(()=>{

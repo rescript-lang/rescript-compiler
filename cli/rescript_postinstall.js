@@ -7,7 +7,7 @@ const { bsc_exe, ninja_exe } = require("./bin_path");
 function checkNinja() {
   if (!fs.existsSync(ninja_exe)) {
     throw new Error(
-      `No ninja binary found for this platform. ${ninja_exe} does not exist.`
+      `No ninja binary found for this platform. ${ninja_exe} does not exist.`,
     );
   }
 
@@ -15,7 +15,7 @@ function checkNinja() {
     return String(child_process.execFileSync(ninja_exe, ["--version"])).trim();
   } catch (e) {
     throw new Error(
-      `Error getting ninja version. The ninja binary at ${ninja_exe} may not be compatible with this platform: ${e}`
+      `Error getting ninja version. The ninja binary at ${ninja_exe} may not be compatible with this platform: ${e}`,
     );
   }
 }
@@ -23,7 +23,7 @@ function checkNinja() {
 function checkCompiler() {
   if (!fs.existsSync(bsc_exe)) {
     throw new Error(
-      `No ReScript compiler binary found for this platform. ${bsc_exe} does not exist.`
+      `No ReScript compiler binary found for this platform. ${bsc_exe} does not exist.`,
     );
   }
 
@@ -31,7 +31,7 @@ function checkCompiler() {
     return String(child_process.execFileSync(bsc_exe, ["-v"])).trim();
   } catch (e) {
     throw new Error(
-      `Error getting ReScript compiler version. The compiler binary at ${bsc_exe} may not be compatible with this platform: ${e}`
+      `Error getting ReScript compiler version. The compiler binary at ${bsc_exe} may not be compatible with this platform: ${e}`,
     );
   }
 }

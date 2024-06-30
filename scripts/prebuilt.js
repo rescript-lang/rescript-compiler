@@ -8,7 +8,7 @@ const assert = require("assert");
 const package_config = require(path.join(__dirname, "..", "package.json"));
 const bsVersion = fs.readFileSync(
   path.join(__dirname, "..", "jscomp", "common", "bs_version.ml"),
-  "utf-8"
+  "utf-8",
 );
 
 /**
@@ -26,7 +26,7 @@ function verifyVersion(bsVersion, version) {
       .split(".");
     let [specifiedMajor, specifiedMinor] = version.split(".");
     console.log(
-      `Version check: package.json: ${specifiedMajor}.${specifiedMinor} vs ABI: ${major}.${minor}`
+      `Version check: package.json: ${specifiedMajor}.${specifiedMinor} vs ABI: ${major}.${minor}`,
     );
     return major === specifiedMajor && minor === specifiedMinor;
   } catch (e) {

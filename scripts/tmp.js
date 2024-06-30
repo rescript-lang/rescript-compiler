@@ -62,7 +62,7 @@ var code = n => {
  */
 var polyCode = n => {
   var content = `type t = [ \n ${polyConstructors(
-    n
+    n,
   )}\n ] [@@deriving jsConverter] `;
   var eq = `
         let eq (x : t option) (y: t option) = 
@@ -84,14 +84,14 @@ var run = () => {
   fs.writeFileSync(
     path.join(__dirname, "..", "jscomp", "test", "big_enum.ml"),
     code(300),
-    "utf8"
+    "utf8",
   );
 };
 
 var runPol = () => {
   fs.writeFileSync(
     path.join(__dirname, "..", "jscomp", "test", "big_polyvar_test.ml"),
-    polyCode(300)
+    polyCode(300),
   );
 };
 

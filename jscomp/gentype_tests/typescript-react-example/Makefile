@@ -2,9 +2,9 @@ SHELL = /bin/bash
 
 test:
 	npm install
+	npm run lint
 	npm run build
 	npm run tsc
-	npm run lint
 	@git diff --quiet src/ \
 		|| { echo; echo "Please review the Gentype outputs too!"; echo; false; } \
 		|| exit 1

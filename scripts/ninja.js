@@ -19,13 +19,13 @@ var runtimeMlFiles = runtimeFiles.filter(
   x =>
     !x.startsWith("bs_stdlib_mini") &&
     (x.endsWith(".ml") || x.endsWith(".res")) &&
-    x !== "js.ml"
+    x !== "js.ml",
 );
 var runtimeMliFiles = runtimeFiles.filter(
   x =>
     !x.startsWith("bs_stdlib_mini") &&
     (x.endsWith(".mli") || x.endsWith(".resi")) &&
-    x !== "js.mli"
+    x !== "js.mli",
 );
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles);
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))];
@@ -404,7 +404,7 @@ function ninjaQuickBuild(
   cwd,
   overrides,
   fileDeps,
-  extraDeps
+  extraDeps,
 ) {
   var os = Array.isArray(outputs)
     ? fileTargets(outputs)
@@ -423,7 +423,7 @@ function ninjaQuickBuild(
     cwd,
     overrides.map(x => {
       return { key: x[0], value: x[1] };
-    })
+    }),
   );
 }
 
@@ -575,7 +575,7 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
             {
               cwd: dir,
               encoding: "ascii",
-            }
+            },
           );
           mlfiles.push(mlfile);
         } catch (err) {
@@ -586,7 +586,7 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
     const minusI = tmpdir == null ? "" : `-I ${tmpdir}`;
     cp.exec(
       `ocamldep.opt -allow-approx -one-line ${minusI} -native ${files.join(
-        " "
+        " ",
       )} ${mlfiles.join(" ")}`,
       {
         cwd: dir,
@@ -608,13 +608,13 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
               updateDepsKVsByFile(
                 source,
                 deps.map(x => replaceCmj(path.basename(x))),
-                depsMap
+                depsMap,
               );
             }
           });
           return resolve();
         }
-      }
+      },
     );
   });
 }
@@ -668,10 +668,10 @@ function depModulesForBscAsync(files, dir, depsMap) {
     new Promise((resolve, reject) => {
       cp.exec(
         `${bsc_exe}  -modules -bs-syntax-only ${resFiles.join(
-          " "
+          " ",
         )} ${ocamlFiles.join(" ")}`,
         config,
-        cb(resolve, reject)
+        cb(resolve, reject),
       );
     }),
   ];
@@ -796,7 +796,7 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
      */
     let mk = (outputs, inputs, rule = "cc") => {
       return build_stmts.push(
-        buildStmt(outputs, inputs, rule, depsMap, cwd, overrides, extraDeps)
+        buildStmt(outputs, inputs, rule, depsMap, cwd, overrides, extraDeps),
       );
     };
     switch (x) {
@@ -888,11 +888,11 @@ ${ninjaQuickBuildList([
     ]);
     var stmts = generateNinja(depsMap, allTargets, ninjaCwd, externalDeps);
     stmts.push(
-      phony(runtimeTarget, fileTargets(allFileTargetsInRuntime), ninjaCwd)
+      phony(runtimeTarget, fileTargets(allFileTargetsInRuntime), ninjaCwd),
     );
     writeFileAscii(
       path.join(runtimeDir, ninjaOutput),
-      templateRuntimeRules + stmts.join("\n") + "\n"
+      templateRuntimeRules + stmts.join("\n") + "\n",
     );
   } catch (e) {
     console.log(e);
@@ -969,7 +969,7 @@ ${ninjaQuickBuildList([
       !x.includes(".cppo") &&
       !x.includes(".pp") &&
       !x.includes("#") &&
-      x !== "js.ml"
+      x !== "js.ml",
   );
   var othersFiles = othersDirFiles.filter(
     x =>
@@ -981,7 +981,7 @@ ${ninjaQuickBuildList([
         x.endsWith(".res") ||
         x.endsWith(".resi")) &&
       !x.includes("#") &&
-      !x.includes(".cppo")
+      !x.includes(".cppo"),
   );
   var jsTargets = collectTarget(jsPrefixSourceFiles);
   var allJsTargets = scanFileTargets(jsTargets, []);
@@ -1015,7 +1015,7 @@ ${ninjaQuickBuildList([
       jsOutput.join("\n") +
       "\n" +
       beltOutput.join("\n") +
-      "\n"
+      "\n",
   );
 }
 /**
@@ -1098,7 +1098,7 @@ ${ninjaQuickBuildList([
 
   writeFileAscii(
     path.join(stdlibDir, ninjaOutput),
-    templateStdlibRules + output.join("\n") + "\n"
+    templateStdlibRules + output.join("\n") + "\n",
   );
 }
 
@@ -1116,7 +1116,7 @@ function getDeps(text) {
     function (_, ignore, id) {
       if (!ignore) deps.push(id);
       return ""; // TODO: examine the regex
-    }
+    },
   );
   return deps;
 }
@@ -1188,12 +1188,12 @@ ${mllList(ninjaCwd, [
     phony(
       pseudoTarget("test"),
       fileTargets(scanFileTargets(targets, [])),
-      ninjaCwd
-    )
+      ninjaCwd,
+    ),
   );
   writeFileAscii(
     path.join(testDir, ninjaOutput),
-    templateTestRules + output.join("\n") + "\n"
+    templateTestRules + output.join("\n") + "\n",
   );
 }
 
@@ -1270,7 +1270,7 @@ function checkEffect() {
   // @ts-ignore
   assert(
     effect.length === black_list.size &&
-      effect.every(x => black_list.has(x.file))
+      effect.every(x => black_list.has(x.file)),
   );
 
   console.log(effect);
@@ -1294,7 +1294,7 @@ subninja others/build.ninja
 subninja $stdlib/build.ninja
 subninja test/build.ninja
 o all: phony runtime others $stdlib test
-`
+`,
   );
   writeFileAscii(
     path.join(jscompDir, "..", "lib", "build.ninja"),
@@ -1303,7 +1303,7 @@ ocamlopt = ocamlopt.opt
 ext = exe
 INCL= "4.06.1+BS"
 include body.ninja
-`
+`,
   );
 
   preprocessorNinjaSync(); // This is needed so that ocamldep makes sense
@@ -1406,7 +1406,7 @@ function main() {
             encoding: "utf8",
             cwd: path.join(__dirname, ".."),
             stdio: [0, 1, 2],
-          }
+          },
         );
         break;
       case "config":

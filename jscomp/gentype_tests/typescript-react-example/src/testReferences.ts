@@ -1,5 +1,3 @@
-/* @flow strict */
-
 import * as References from "./References.gen";
 
 const r: { contents: number } = { contents: 34 };

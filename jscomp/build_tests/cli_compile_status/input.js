@@ -12,7 +12,7 @@ assert.match(
   out.stdout,
   new RegExp(`>>>> Start compiling
 Dependency Finished
->>>> Finish compiling \\d+ mseconds`)
+>>>> Finish compiling \\d+ mseconds`),
 );
 
 // Shows compile time for `rescript` command
@@ -24,7 +24,7 @@ assert.match(
   out.stdout,
   new RegExp(`>>>> Start compiling
 Dependency Finished
->>>> Finish compiling \\d+ mseconds`)
+>>>> Finish compiling \\d+ mseconds`),
 );
 
 // Doesn't show compile time for `rescript build -verbose` command
@@ -38,6 +38,6 @@ out = child_process.spawnSync(`../../../rescript`, ["build", "-verbose"], {
 assert.match(
   out.stdout,
   new RegExp(
-    `Package stack: test  \nDependency Finished\nninja.exe -C lib/bs \n`
-  )
+    `Package stack: test  \nDependency Finished\nninja.exe -C lib/bs \n`,
+  ),
 );

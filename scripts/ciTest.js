@@ -36,6 +36,18 @@ if (process.argv.includes("-all")) {
 }
 
 async function runTests() {
+  if (formatTest) {
+    cp.execSync("npm run checkFormat", {
+      cwd: path.join(__dirname, ".."),
+      stdio: [0, 1, 2],
+    });
+
+    cp.execSync("bash scripts/check_format.sh", {
+      cwd: path.join(__dirname, ".."),
+      stdio: [0, 1, 2],
+    });
+  }
+
   if (ounitTest) {
     cp.execSync(path.join(duneBinDir, "ounit_tests"), {
       stdio: [0, 1, 2],
@@ -83,18 +95,6 @@ async function runTests() {
     if (hasError) {
       process.exit(1);
     }
-  }
-
-  if (formatTest) {
-    cp.execSync("npm run checkFormat", {
-      cwd: path.join(__dirname, ".."),
-      stdio: [0, 1, 2],
-    });
-
-    cp.execSync("bash scripts/check_format.sh", {
-      cwd: path.join(__dirname, ".."),
-      stdio: [0, 1, 2],
-    });
   }
 }
 

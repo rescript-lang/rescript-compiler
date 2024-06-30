@@ -22,5 +22,5 @@ assert.equal(
   This untagged variant definition is invalid: At most one case can be a boolean type.
 
 FAILED: cannot make progress due to previous errors.
-`
+`,
 );

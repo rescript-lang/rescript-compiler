@@ -19,7 +19,7 @@ child_process.exec(rescript_exe, { cwd: __dirname }, (err, stdout, stderr) => {
     fs.writeFileSync(expectedFilePath, actualErrorOutput);
   } else {
     const expectedErrorOutput = postProcessErrorOutput(
-      fs.readFileSync(expectedFilePath, { encoding: "utf-8" })
+      fs.readFileSync(expectedFilePath, { encoding: "utf-8" }),
     );
     if (expectedErrorOutput !== actualErrorOutput) {
       console.error(`The old and new error output aren't the same`);

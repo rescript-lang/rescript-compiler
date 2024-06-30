@@ -1,18 +1,13 @@
-/* @flow strict */
-
 export const round: (_: number) => number = Math.round;
 
 export const round2 = round;
 
-export const area = function(point: { x: number; y?: number }): number {
-  return point.x * (point.y === undefined ? 1 : point.y);
-};
+export const area = (point: { x: number; y?: number }): number =>
+  point.x * (point.y === undefined ? 1 : point.y);
 
 export type numberOrString = number | string;
 
-export const returnMixedArray = function() : Array<number | string> {
-  return [1,2];
-};
+export const returnMixedArray = (): Array<number | string> => [1, 2];
 
 export class AbsoluteValue {
   public prop!: number;
@@ -26,15 +21,12 @@ export class AbsoluteValue {
 
 export type stringFunction = (_: string) => string;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const useColor = function(x: "tomato" | "gray"): number {
-  return 0;
-};
+export const useColor = (x: "tomato" | "gray"): number => 0;
 
 export const higherOrder = (foo: (_1: number, _2: number) => number) =>
   foo(3, 4);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: intended use
 export const convertVariant = (x: any) => x;
 
 export const polymorphic = <T>(x: T): T => x;

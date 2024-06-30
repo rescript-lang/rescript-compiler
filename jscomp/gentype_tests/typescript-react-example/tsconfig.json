@@ -3,14 +3,10 @@
     "outDir": "build/dist",
     "module": "esnext",
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "sourceMap": true,
     "allowJs": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "skipLibCheck": true,
     "moduleResolution": "node",
     "rootDir": ".",
@@ -29,9 +25,7 @@
     "noEmit": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "exclude": [
     "node_modules",
     "build",
