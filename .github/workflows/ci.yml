@@ -83,13 +83,12 @@ jobs:
         run: cargo build --manifest-path rewatch/Cargo.toml --target ${{matrix.rust-target}} --release
 
       - name: Get artifact dir name
-        id: artifact-dir
         run: node .github/workflows/get_artifact_dir_name.js
 
       - name: "Upload artifact: rewatch binary"
         uses: actions/upload-artifact@v4
         with:
-          name: rewatch-${{ steps.artifact-dir.outputs.dirname }}
+          name: rewatch-${{env.artifact_dir_name}}
           path: rewatch/target/${{matrix.rust-target}}/release/rewatch${{ runner.os == 'Windows' && '.exe' || '' }}
 
   # Build statically linked Linux binaries in an Alpine-based Docker container
@@ -384,7 +383,6 @@ jobs:
       - name: Build playground compiler
         if: matrix.os == 'ubuntu-latest'
         run: |
-          opam install js_of_ocaml.5.8.1
           opam exec -- node packages/playground-bundling/scripts/generate_cmijs.js
           opam exec -- dune build --profile browser
           cp ./_build/default/jscomp/jsoo/jsoo_playground_main.bc.js playground/compiler.js
