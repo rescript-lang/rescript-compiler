@@ -238,10 +238,11 @@ jobs:
           path: |
             ${{ runner.tool_cache }}/opam
             ~/.opam
+            ~/cygwin
             _opam
             .opam-path
             .opam-env
-          key: opam-env-v3-${{ matrix.os }}-${{ hashFiles('dune-project') }}
+          key: opam-env-v5-${{ matrix.os }}-${{ hashFiles('dune-project') }}
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
         uses: ocaml/setup-ocaml@v2
@@ -266,13 +267,8 @@ jobs:
       - name: Get OPAM environment
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
         run: |
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            which opam.exe > .opam-path
-          else
-            which opam > .opam-path
-          fi
+          command -v opam | tee .opam-path
           opam env > .opam-env
-        shell: bash
 
       - name: Install OPAM dependencies
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
@@ -285,17 +281,35 @@ jobs:
           path: |
             ${{ runner.tool_cache }}/opam
             ~/.opam
+            ~/cygwin
             _opam
             .opam-path
             .opam-env
-          key: opam-env-v3-${{ matrix.os }}-${{ hashFiles('dune-project') }}
+          key: opam-env-v5-${{ matrix.os }}-${{ hashFiles('dune-project') }}
 
       - name: Use cached OPAM environment
         if: steps.cache-opam-env.outputs.cache-hit == 'true'
         run: |
-          OPAM_PATH="$(cat .opam-path)"
-          chmod +x "$OPAM_PATH"
-          dirname "$OPAM_PATH" >> "$GITHUB_PATH"
+          if [[ "$RUNNER_OS" != "Windows" ]]; then
+            OPAM_PATH="$(cat .opam-path)"
+            chmod +x "$OPAM_PATH"
+            dirname "$OPAM_PATH" >> "$GITHUB_PATH"
+
+          else
+            CYGWIN="winsymlinks:native"
+            CYGWIN_ROOT="D:\\cygwin"
+            CYGWIN_ROOT_BIN="D:\\cygwin\\bin"
+            CYGWIN_ROOT_WRAPPERBIN="D:\\cygwin\\wrapperbin"
+
+            echo "CYGWIN=$CYGWIN" >> "$GITHUB_ENV"
+            echo "CYGWIN_ROOT=$CYGWIN_ROOT" >> "$GITHUB_ENV"
+            echo "CYGWIN_ROOT_BIN=$CYGWIN_ROOT_BIN" >> "$GITHUB_ENV"
+            echo "CYGWIN_ROOT_WRAPPERBIN=$CYGWIN_ROOT_WRAPPERBIN" >> "$GITHUB_ENV"
+
+            echo "$CYGWIN_ROOT_BIN" >> "$GITHUB_PATH"
+            echo "$CYGWIN_ROOT_WRAPPERBIN" >> "$GITHUB_PATH"
+          fi
+
           sed "s/'//g; s/; export .*//g" .opam-env >> "$GITHUB_ENV"
         shell: bash
 
