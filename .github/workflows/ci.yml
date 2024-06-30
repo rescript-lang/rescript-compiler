@@ -323,7 +323,7 @@ jobs:
 
             CYGWIN="winsymlinks:native"
             CYGWIN_ROOT="D:\\cygwin"
-            CYGWIN_ROOT_BIN="D:\\cygwin/bin"
+            CYGWIN_ROOT_BIN="D:\\cygwin\\bin"
             CYGWIN_ROOT_WRAPPERBIN="D:\\cygwin\\wrapperbin"
 
             echo "HOME=$USERPROFILE" >> "$GITHUB_ENV"
