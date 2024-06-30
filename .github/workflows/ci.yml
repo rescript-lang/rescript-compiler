@@ -54,20 +54,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Restore APT state cache
-        if: runner.os == 'Linux'
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            /var/lib/apt/lists
-            /var/cache/apt
-          key: apt-dependencies-v1
-
       - name: Install musl gcc
         if: runner.os == 'Linux'
-        run: |
-          sudo apt-get install -y --no-install-recommends \
-            musl-tools
+        run: sudo apt-get install -y --no-install-recommends musl-tools
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.4
@@ -224,27 +213,13 @@ jobs:
           chmod +x rewatch/rewatch
           chmod +x _build/install/default/bin/*
 
-      - name: Cache APT state
-        if: runner.os == 'Linux'
-        uses: actions/cache@v4
-        with:
-          path: |
-            /var/lib/apt/lists
-            /var/cache/apt
-          key: apt-dependencies-v1
-
       - name: Install dependencies
         if: runner.os == 'Linux'
-        run: |
+        uses: awalsh128/cache-apt-pkgs-action@v1.4.2
+        with:
           # See https://github.com/ocaml/setup-ocaml/blob/92dde8cf/packages/setup-ocaml/src/unix.ts#L13
-          sudo apt-get install -y --no-install-recommends \
-            bubblewrap \
-            darcs \
-            g++-multilib \
-            gcc-multilib \
-            mercurial \
-            musl-tools \
-            rsync
+          packages: bubblewrap darcs g++-multilib gcc-multilib mercurial musl-tools rsync
+          version: v1
 
       - name: Restore OPAM tool
         id: cache-opam-tool
@@ -395,10 +370,6 @@ jobs:
         run: node scripts/ciTest.js -mocha -theme -format
 
       # Build the playground compiler on the fastest runner (ubuntu-latest)
-      - name: Install JSOO
-        if: matrix.os == 'ubuntu-latest'
-        run: opam install js_of_ocaml.5.8.1
-
       - name: Build playground compiler
         if: matrix.os == 'ubuntu-latest'
         run: |
