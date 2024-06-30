@@ -280,6 +280,7 @@ jobs:
         run: |
           which opam > .opam-path
           opam env > .opam-env
+        shell: bash
 
       - name: Save OPAM env
         id: cache-opam-env
@@ -306,11 +307,13 @@ jobs:
           OPAM_PATH="$(cat .opam-path)"
           chmod +x "$OPAM_PATH"
           dirname "$OPAM_PATH" >> "$GITHUB_PATH"
+        shell: bash
 
       - name: Use cached OPAM env - Environment variables
         if: steps.cache-opam-tool.outputs.cache-hit == 'true'
         run: |
           sed "s/'//g; s/; export .*//g" .opam-env >> "$GITHUB_ENV"
+        shell: bash
 
       - name: "Build compiler"
         if: runner.os != 'Linux'
