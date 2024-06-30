@@ -26,8 +26,6 @@
    (= 1.6.9))
   (js_of_ocaml
    (= 5.8.1))
-  (js_of_ocaml-compiler
-   (= 5.8.1))
   (ounit2
    (= 2.2.7))
   (reanalyze
