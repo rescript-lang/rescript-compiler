@@ -135,7 +135,7 @@ let mkstrexp e attrs =
 let mkexp_constraint e (t1, t2) =
   match t1, t2 with
   | Some t, None -> ghexp(Pexp_constraint(e, t))
-  | _, Some t -> ghexp(Pexp_coerce(e, t1, t))
+  | _, Some t -> ghexp(Pexp_coerce(e, (), t))
   | None, None -> assert false
 
 let mkexp_opt_constraint e = function

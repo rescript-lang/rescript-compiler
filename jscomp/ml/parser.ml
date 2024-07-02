@@ -241,7 +241,7 @@ let mkstrexp e attrs =
 let mkexp_constraint e (t1, t2) =
   match t1, t2 with
   | Some t, None -> ghexp(Pexp_constraint(e, t))
-  | _, Some t -> ghexp(Pexp_coerce(e, t1, t))
+  | _, Some t -> ghexp(Pexp_coerce(e, (), t))
   | None, None -> assert false
 
 let mkexp_opt_constraint e = function
@@ -6554,7 +6554,7 @@ let yyact = [|
 # 648 "ml/parser.mly"
       ( mkmod ~attrs:_3
           (Pmod_unpack(
-               ghexp(Pexp_coerce(_4, Some(ghtyp(Ptyp_package _6)),
+               ghexp(Pexp_coerce(_4, (),
                                  ghtyp(Ptyp_package _8))))) )
 # 6565 "ml/parser.ml"
                : 'paren_module_expr))
@@ -6566,7 +6566,7 @@ let yyact = [|
 # 653 "ml/parser.mly"
       ( mkmod ~attrs:_3
           (Pmod_unpack(
-               ghexp(Pexp_coerce(_4, None, ghtyp(Ptyp_package _6))))) )
+               ghexp(Pexp_coerce(_4, (), ghtyp(Ptyp_package _6))))) )
 # 6576 "ml/parser.ml"
                : 'paren_module_expr))
 ; (fun __caml_parser_env ->

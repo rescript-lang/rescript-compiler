@@ -236,8 +236,8 @@ module MakeIterator(Iter : IteratorArgument) : sig
         match cstr with
           Texp_constraint ct ->
             iter_core_type ct
-        | Texp_coerce (cty1, cty2) ->
-            option iter_core_type cty1; iter_core_type cty2
+        | Texp_coerce ((), cty2) ->
+            iter_core_type cty2
         | Texp_open _ -> ()
         | Texp_poly cto -> option iter_core_type cto
         | Texp_newtype _ -> ())

@@ -1860,7 +1860,7 @@ and parse_coerced_expr ~(expr : Parsetree.expression) p =
   Parser.expect ColonGreaterThan p;
   let typ = parse_typ_expr p in
   let loc = mk_loc expr.pexp_loc.loc_start p.prev_end_pos in
-  Ast_helper.Exp.coerce ~loc expr None typ
+  Ast_helper.Exp.coerce ~loc expr typ
 
 and parse_constrained_or_coerced_expr p =
   let expr = parse_expr p in

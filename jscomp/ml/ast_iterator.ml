@@ -303,8 +303,8 @@ module E = struct
     | Pexp_for (p, e1, e2, _d, e3) ->
         sub.pat sub p; sub.expr sub e1; sub.expr sub e2;
         sub.expr sub e3
-    | Pexp_coerce (e, t1, t2) ->
-        sub.expr sub e; iter_opt (sub.typ sub) t1;
+    | Pexp_coerce (e, (), t2) ->
+        sub.expr sub e;
         sub.typ sub t2
     | Pexp_constraint (e, t) ->
         sub.expr sub e; sub.typ sub t

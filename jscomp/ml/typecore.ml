@@ -1709,13 +1709,13 @@ let rec type_approx env sexp =
         raise(Error(sexp.pexp_loc, env, Expr_type_clash (trace, None)))
       end;
       ty1
-  | Pexp_coerce (e, sty1, sty2) ->
+  | Pexp_coerce (e, (), sty2) ->
       let approx_ty_opt = function
         | None -> newvar ()
         | Some sty -> approx_type env sty
       in
       let ty = type_approx env e
-      and ty1 = approx_ty_opt sty1
+      and ty1 = approx_ty_opt None
       and ty2 = approx_type env sty2 in
       begin try unify env ty ty1 with Unify trace ->
         raise(Error(sexp.pexp_loc, env, Expr_type_clash (trace, None)))
@@ -2571,79 +2571,54 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
         exp_extra =
           (Texp_constraint cty, loc, sexp.pexp_attributes) :: arg.exp_extra;
       }
-  | Pexp_coerce(sarg, sty, sty') ->
+  | Pexp_coerce(sarg, (), sty') ->
       let separate = true in (* always separate, 1% slowdown for lablgtk *)
       (* Also see PR#7199 for a problem with the following:
          let separate =  Env.has_local_constraints env in*)
-      let (arg, ty',cty,cty') =
-        match sty with
-        | None ->
-            let (cty', force) =
-              Typetexp.transl_simple_type_delayed env sty'
-            in
-            let ty' = cty'.ctyp_type in
-            if separate then begin_def ();
-            let arg = type_exp env sarg in
-            let gen =
-              if separate then begin
-                end_def ();
-                let tv = newvar () in
-                let gen = generalizable tv.level arg.exp_type in
-                (try unify_var env tv arg.exp_type with Unify trace ->
-                  raise(Error(arg.exp_loc, env, Expr_type_clash (trace, type_clash_context))));
-                gen
-              end else true
-            in
-            begin match arg.exp_desc, !self_coercion, (repr ty').desc with
-            | _ when free_variables ~env arg.exp_type = []
-                  && free_variables ~env ty' = [] ->
-                if not gen && (* first try a single coercion *)
-                  let snap = snapshot () in
-                  let ty, _b = enlarge_type env ty' in
-                  try
-                    force (); Ctype.unify env arg.exp_type ty; true
-                  with Unify _ ->
-                    backtrack snap; false
-                then ()
-                else begin try
-                  let force' = subtype env arg.exp_type ty' in
-                  force (); force' ();
-                with Subtype (tr1, tr2) ->
-                  (* prerr_endline "coercion failed"; *)
-                  raise(Error(loc, env, Not_subtype(tr1, tr2)))
-                end;
-            | _ ->
-                let ty, b = enlarge_type env ty' in
-                force ();
-                begin try Ctype.unify env arg.exp_type ty with Unify trace ->
-                  raise(Error(sarg.pexp_loc, env,
-                        Coercion_failure(ty', full_expand env ty', trace, b)))
-                end
-            end;
-            (arg, ty', None, cty')
-        | Some sty ->
-            if separate then begin_def ();
-            let (cty, force) =
-              Typetexp.transl_simple_type_delayed env sty
-            and (cty', force') =
-              Typetexp.transl_simple_type_delayed env sty'
-            in
-            let ty = cty.ctyp_type in
-            let ty' = cty'.ctyp_type in
-            begin try
-              let force'' = subtype env ty ty' in
-              force (); force' (); force'' ()
-            with Subtype (tr1, tr2) ->
-              raise(Error(loc, env, Not_subtype(tr1, tr2)))
-            end;
+      let (arg, ty',cty') =
+          let (cty', force) =
+            Typetexp.transl_simple_type_delayed env sty'
+          in
+          let ty' = cty'.ctyp_type in
+          if separate then begin_def ();
+          let arg = type_exp env sarg in
+          let gen =
             if separate then begin
               end_def ();
-              generalize_structure ty;
-              generalize_structure ty';
-              (type_argument env sarg ty (instance env ty),
-               instance env ty', Some cty, cty')
-            end else
-              (type_argument env sarg ty ty, ty', Some cty, cty')
+              let tv = newvar () in
+              let gen = generalizable tv.level arg.exp_type in
+              (try unify_var env tv arg.exp_type with Unify trace ->
+                raise(Error(arg.exp_loc, env, Expr_type_clash (trace, type_clash_context))));
+              gen
+            end else true
+          in
+          begin match arg.exp_desc, !self_coercion, (repr ty').desc with
+          | _ when free_variables ~env arg.exp_type = []
+                && free_variables ~env ty' = [] ->
+              if not gen && (* first try a single coercion *)
+                let snap = snapshot () in
+                let ty, _b = enlarge_type env ty' in
+                try
+                  force (); Ctype.unify env arg.exp_type ty; true
+                with Unify _ ->
+                  backtrack snap; false
+              then ()
+              else begin try
+                let force' = subtype env arg.exp_type ty' in
+                force (); force' ();
+              with Subtype (tr1, tr2) ->
+                (* prerr_endline "coercion failed"; *)
+                raise(Error(loc, env, Not_subtype(tr1, tr2)))
+              end;
+          | _ ->
+              let ty, b = enlarge_type env ty' in
+              force ();
+              begin try Ctype.unify env arg.exp_type ty with Unify trace ->
+                raise(Error(sarg.pexp_loc, env,
+                      Coercion_failure(ty', full_expand env ty', trace, b)))
+              end
+          end;
+          (arg, ty', cty')
       in
       rue {
         exp_desc = arg.exp_desc;
@@ -2651,7 +2626,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
         exp_type = ty';
         exp_attributes = arg.exp_attributes;
         exp_env = env;
-        exp_extra = (Texp_coerce (cty, cty'), loc, sexp.pexp_attributes) ::
+        exp_extra = (Texp_coerce ((), cty'), loc, sexp.pexp_attributes) ::
                        arg.exp_extra;
       }
   | Pexp_send (e, {txt=met}) ->

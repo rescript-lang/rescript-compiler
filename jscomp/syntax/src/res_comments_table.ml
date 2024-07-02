@@ -1005,27 +1005,12 @@ and walk_expression expr t comments =
       attach t.leading expr.pexp_loc leading;
       walk_expression expr t inside;
       attach t.trailing expr.pexp_loc trailing
-  | Pexp_coerce (expr, opt_typexpr, typexpr) ->
+  | Pexp_coerce (expr, (), typexpr) ->
     let leading, inside, trailing = partition_by_loc comments expr.pexp_loc in
     attach t.leading expr.pexp_loc leading;
     walk_expression expr t inside;
     let after_expr, rest = partition_adjacent_trailing expr.pexp_loc trailing in
     attach t.trailing expr.pexp_loc after_expr;
-    let rest =
-      match opt_typexpr with
-      | Some typexpr ->
-        let leading, inside, trailing =
-          partition_by_loc comments typexpr.ptyp_loc
-        in
-        attach t.leading typexpr.ptyp_loc leading;
-        walk_core_type typexpr t inside;
-        let after_typ, rest =
-          partition_adjacent_trailing typexpr.ptyp_loc trailing
-        in
-        attach t.trailing typexpr.ptyp_loc after_typ;
-        rest
-      | None -> rest
-    in
     let leading, inside, trailing = partition_by_loc rest typexpr.ptyp_loc in
     attach t.leading typexpr.ptyp_loc leading;
     walk_core_type typexpr t inside;
