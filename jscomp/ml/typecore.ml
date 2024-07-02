@@ -46,8 +46,6 @@ type error =
   | Private_label of Longident.t * type_expr
 
   | Not_subtype of (type_expr * type_expr) list * (type_expr * type_expr) list
-  | Coercion_failure of
-      type_expr * type_expr * (type_expr * type_expr) list * bool
   | Too_many_arguments of bool * type_expr
   | Abstract_wrong_label of arg_label * type_expr
   | Scoping_let_module of string * type_expr
@@ -1783,9 +1781,6 @@ let generalizable level ty =
   try check ty; unmark_type ty; true
   with Exit -> unmark_type ty; false
 
-(* Hack to allow coercion of self. Will clean-up later. *)
-let self_coercion = ref ([] : (Path.t * Location.t list ref) list)
-
 (* Helpers for packaged modules. *)
 let create_package_type loc env (p, l) =
   let s = !Typetexp.transl_modtype_longident loc env p in
@@ -2592,31 +2587,20 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
               gen
             end else true
           in
-          begin match arg.exp_desc, !self_coercion, (repr ty').desc with
-          | _ when free_variables ~env arg.exp_type = []
-                && free_variables ~env ty' = [] ->
-              if not gen && (* first try a single coercion *)
-                let snap = snapshot () in
-                let ty, _b = enlarge_type env ty' in
-                try
-                  force (); Ctype.unify env arg.exp_type ty; true
-                with Unify _ ->
-                  backtrack snap; false
-              then ()
-              else begin try
-                let force' = subtype env arg.exp_type ty' in
-                force (); force' ();
-              with Subtype (tr1, tr2) ->
-                (* prerr_endline "coercion failed"; *)
-                raise(Error(loc, env, Not_subtype(tr1, tr2)))
-              end;
-          | _ ->
-              let ty, b = enlarge_type env ty' in
-              force ();
-              begin try Ctype.unify env arg.exp_type ty with Unify trace ->
-                raise(Error(sarg.pexp_loc, env,
-                      Coercion_failure(ty', full_expand env ty', trace, b)))
-              end
+          if not gen && (* first try a single coercion *)
+            let snap = snapshot () in
+            let ty, _b = enlarge_type env ty' in
+            try
+              force (); Ctype.unify env arg.exp_type ty; true
+            with Unify _ ->
+              backtrack snap; false
+          then ()
+          else begin try
+            let force' = subtype env arg.exp_type ty' in
+            force (); force' ();
+          with Subtype (tr1, tr2) ->
+            (* prerr_endline "coercion failed"; *)
+            raise(Error(loc, env, Not_subtype(tr1, tr2)))
           end;
           (arg, ty', cty')
       in
@@ -3925,20 +3909,6 @@ let report_error env ppf = function
       end
   | Not_subtype(tr1, tr2) ->
       report_subtyping_error ppf env tr1 "is not a subtype of" tr2
-  | Coercion_failure (ty, ty', trace, b) ->
-    (* modified *)
-    super_report_unification_error ppf env trace
-      (function ppf ->
-         let ty, ty' = Printtyp.prepare_expansion (ty, ty') in
-         fprintf ppf
-           "This expression cannot be coerced to type@;<1 2>%a;@ it has type"
-           (Printtyp.type_expansion ty) ty')
-      (function ppf ->
-         fprintf ppf "but is here used with type");
-    if b then
-      fprintf ppf ".@.@[<hov>%s@ %s@]"
-        "This simple coercion was not fully general."
-        "Consider using a double coercion."
   | Too_many_arguments (in_function, ty) ->
     (* modified *)
     reset_and_mark_loops ty;
