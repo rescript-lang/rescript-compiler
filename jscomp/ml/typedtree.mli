@@ -119,7 +119,7 @@ and expression =
 and exp_extra =
   | Texp_constraint of core_type
         (** E : T *)
-  | Texp_coerce of core_type
+  | Texp_coerce of unit * core_type
         (** E :> T           [Texp_coerce T]
          *)
   | Texp_open of override_flag * Path.t * Longident.t loc * Env.t

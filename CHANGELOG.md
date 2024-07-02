@@ -42,6 +42,7 @@
 - Refactor uppercase exotic ident handling. https://github.com/rescript-lang/rescript-compiler/pull/6779
 - Fix `-nostdlib` internal compiler option. https://github.com/rescript-lang/rescript-compiler/pull/6824
 - Remove a number of ast nodes never populated by the .res parser, and resulting dead code. https://github.com/rescript-lang/rescript-compiler/pull/6830
+- Remove coercion with 2 types from internal representation. Coercion `e : t1 :> t2` was only supported in `.ml` syntax and never by the `.res` parser. https://github.com/rescript-lang/rescript-compiler/pull/6829 
 
 #### :nail_care: Polish
 

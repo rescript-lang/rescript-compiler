@@ -305,7 +305,7 @@ let exp_extra sub (extra, loc, attrs) sexp =
   let attrs = sub.attributes sub attrs in
   let desc =
     match extra with
-      Texp_coerce cty2 ->
+      Texp_coerce ((), cty2) ->
         Pexp_coerce (sexp,
                      (),
                      sub.typ sub cty2)
