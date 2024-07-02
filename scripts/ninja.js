@@ -19,7 +19,7 @@ var runtimeMlFiles = runtimeFiles.filter(
   x =>
     !x.startsWith("bs_stdlib_mini") &&
     (x.endsWith(".ml") || x.endsWith(".res")) &&
-    x !== "js.res"
+    x !== "js.res",
 );
 var runtimeMliFiles = runtimeFiles.filter(
   x =>
@@ -969,7 +969,7 @@ ${ninjaQuickBuildList([
       !x.includes(".cppo") &&
       !x.includes(".pp") &&
       !x.includes("#") &&
-      x !== "js.res"
+      x !== "js.res",
   );
   var othersFiles = othersDirFiles.filter(
     x =>

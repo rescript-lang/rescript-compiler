@@ -56,18 +56,6 @@ let process_file sourcefile ?(kind ) ppf =
     | None -> Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile)  
     | Some kind -> kind in 
   let res = match kind with 
-  | Ml ->
-    let sourcefile = set_abs_input_name  sourcefile in     
-    setup_compiler_printer `ml;
-    Js_implementation.implementation 
-      ~parser:Pparse_driver.parse_implementation
-      ppf sourcefile 
-  | Mli  ->   
-    let sourcefile = set_abs_input_name  sourcefile in   
-    setup_compiler_printer `ml;
-    Js_implementation.interface 
-      ~parser:Pparse_driver.parse_interface
-      ppf sourcefile 
   | Res -> 
     let sourcefile = set_abs_input_name  sourcefile in     
     setup_compiler_printer `rescript;
@@ -185,17 +173,16 @@ let anonymous ~(rev_args : string list) =
 (** used by -impl -intf *)
 let impl filename =
   Js_config.js_stdout := false;  
-  process_file filename ~kind:Ml ppf ;;
+  process_file filename ~kind:Res ppf ;;
 let intf filename =
   Js_config.js_stdout := false ;  
-  process_file filename ~kind:Mli ppf;;
+  process_file filename ~kind:Resi ppf;;
 
 
 let format_file input =  
   let ext = Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe input) in 
   let syntax = 
     match ext with 
-    | Ml | Mli -> `ml
     | Res | Resi -> `res 
     | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
   let formatted = Res_multi_printer.print ~ignore_parse_errors:!Clflags.ignore_parse_errors syntax ~input in 
@@ -368,9 +355,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-bs-list-conditionals", unit_call (fun () -> Pp.list_variables Format.err_formatter),
     "*internal* List existing conditional variables";  
-
-    "-bs-eval", string_call (fun  s -> eval s ~suffix:Literals.suffix_ml), 
-    "*internal* (experimental) set the string to be evaluated in OCaml syntax";
 
     "-e",  string_call (fun  s -> eval s ~suffix:Literals.suffix_res), 
     "(experimental) set the string to be evaluated in ReScript syntax";  

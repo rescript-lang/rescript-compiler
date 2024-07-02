@@ -104,9 +104,6 @@ let perform_bsc args =
          stdlib_dir
        |] args)
 
-let bsc_check_eval str = 
-  perform_bsc [|"-bs-eval"; str|]        
-
   let debug_output o = 
   Printf.printf "\nexit_code:%d\nstdout:%s\nstderr:%s\n"
     o.exit_code o.stdout o.stderr
