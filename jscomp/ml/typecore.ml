@@ -1783,9 +1783,6 @@ let generalizable level ty =
   try check ty; unmark_type ty; true
   with Exit -> unmark_type ty; false
 
-(* Hack to allow coercion of self. Will clean-up later. *)
-let self_coercion = ref ([] : (Path.t * Location.t list ref) list)
-
 (* Helpers for packaged modules. *)
 let create_package_type loc env (p, l) =
   let s = !Typetexp.transl_modtype_longident loc env p in
