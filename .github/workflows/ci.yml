@@ -40,8 +40,6 @@ jobs:
 
     env:
       RUST_BACKTRACE: "1"
-      SCCACHE_GHA_ENABLED: "true"
-      RUSTC_WRAPPER: "sccache"
 
     steps:
       - name: Checkout
@@ -52,17 +50,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: rewatch/target
-          key: rewatch-build-${{ matrix.rust-target }}-${{ hashFiles('rewatch/src/**', 'rewatch/Cargo.lock') }}
+          key: rewatch-build-v2-${{ matrix.rust-target }}-${{ hashFiles('rewatch/src/**', 'rewatch/Cargo.lock') }}
 
       - name: Install musl gcc
         if: steps.build-cache.outputs.cache-hit != 'true' && runner.os == 'Linux'
         run: sudo apt-get install -y --no-install-recommends musl-tools
-
-      - name: Set up sccache
-        if: steps.build-cache.outputs.cache-hit != 'true'
-        uses: mozilla-actions/sccache-action@v0.0.4
-        with:
-          version: "v0.8.0"
 
       - name: Install rust toolchain
         if: steps.build-cache.outputs.cache-hit != 'true'
