@@ -32,6 +32,9 @@ type jsx_mode = Classic | Automatic
 val no_version_header : bool ref
 (** set/get header *)
 
+val embeds : string list ref
+(** embeds *)
+
 val directives : string list ref
 (** directives printed verbatims just after the version header *)
 
