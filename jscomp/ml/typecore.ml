@@ -2592,31 +2592,20 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
               gen
             end else true
           in
-          begin match arg.exp_desc, !self_coercion, (repr ty').desc with
-          | _ when true || free_variables ~env arg.exp_type = []
-                && free_variables ~env ty' = [] ->
-              if not gen && (* first try a single coercion *)
-                let snap = snapshot () in
-                let ty, _b = enlarge_type env ty' in
-                try
-                  force (); Ctype.unify env arg.exp_type ty; true
-                with Unify _ ->
-                  backtrack snap; false
-              then ()
-              else begin try
-                let force' = subtype env arg.exp_type ty' in
-                force (); force' ();
-              with Subtype (tr1, tr2) ->
-                (* prerr_endline "coercion failed"; *)
-                raise(Error(loc, env, Not_subtype(tr1, tr2)))
-              end;
-          | _ ->
-              let ty, b = enlarge_type env ty' in
-              force ();
-              begin try Ctype.unify env arg.exp_type ty with Unify trace ->
-                raise(Error(sarg.pexp_loc, env,
-                      Coercion_failure(ty', full_expand env ty', trace, b)))
-              end
+          if not gen && (* first try a single coercion *)
+            let snap = snapshot () in
+            let ty, _b = enlarge_type env ty' in
+            try
+              force (); Ctype.unify env arg.exp_type ty; true
+            with Unify _ ->
+              backtrack snap; false
+          then ()
+          else begin try
+            let force' = subtype env arg.exp_type ty' in
+            force (); force' ();
+          with Subtype (tr1, tr2) ->
+            (* prerr_endline "coercion failed"; *)
+            raise(Error(loc, env, Not_subtype(tr1, tr2)))
           end;
           (arg, ty', cty')
       in
