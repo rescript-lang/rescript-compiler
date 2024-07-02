@@ -46,8 +46,6 @@ type error =
   | Private_label of Longident.t * type_expr
 
   | Not_subtype of (type_expr * type_expr) list * (type_expr * type_expr) list
-  | Coercion_failure of
-      type_expr * type_expr * (type_expr * type_expr) list * bool
   | Too_many_arguments of bool * type_expr
   | Abstract_wrong_label of arg_label * type_expr
   | Scoping_let_module of string * type_expr
@@ -3911,20 +3909,6 @@ let report_error env ppf = function
       end
   | Not_subtype(tr1, tr2) ->
       report_subtyping_error ppf env tr1 "is not a subtype of" tr2
-  | Coercion_failure (ty, ty', trace, b) ->
-    (* modified *)
-    super_report_unification_error ppf env trace
-      (function ppf ->
-         let ty, ty' = Printtyp.prepare_expansion (ty, ty') in
-         fprintf ppf
-           "This expression cannot be coerced to type@;<1 2>%a;@ it has type"
-           (Printtyp.type_expansion ty) ty')
-      (function ppf ->
-         fprintf ppf "but is here used with type");
-    if b then
-      fprintf ppf ".@.@[<hov>%s@ %s@]"
-        "This simple coercion was not fully general."
-        "Consider using a double coercion."
   | Too_many_arguments (in_function, ty) ->
     (* modified *)
     reset_and_mark_loops ty;
