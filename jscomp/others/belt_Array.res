@@ -64,10 +64,16 @@ let swapUnsafe = (xs, i, j) => {
   setUnsafe(xs, j, tmp)
 }
 
+
+@val @scope("Math") external random : unit => float = "random"
+@val @scope("Math") external floor : float => int = "floor"
+external toFloat: int => float = "%floatofint"
+
 let shuffleInPlace = xs => {
   let len = length(xs)
+  let random_int = (min, max) => floor(random() *. toFloat(max - min)) + min
   for i in 0 to len - 1 {
-    swapUnsafe(xs, i, Js_math.random_int(i, len)) /* [i,len) */
+    swapUnsafe(xs, i, random_int(i, len)) /* [i,len) */
   }
 }
 
