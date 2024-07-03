@@ -26,35 +26,6 @@ let () =
 let x: int
 |})
 
-(* test printing of ocaml .ml file *)
-let () =
-  let filename = Filename.concat data_dir "api/mlSyntax.ml" in
-  let pretty_source = Res_multi_printer.print `ml ~input:filename in
-  assert (
-    pretty_source
-    = {|/* test ml file */
-
-let () = print_endline("hello world")
-
-let unicode = "🙈 😅 🙌"
-
-let d = `Sehr Schön`
-|})
-
-(* test printing of ocaml .mli file *)
-let () =
-  let filename = Filename.concat data_dir "api/mliSyntax.mli" in
-  let pretty_source = Res_multi_printer.print `ml ~input:filename in
-  assert (
-    pretty_source
-    = {|/* test mli file */
-
-let x: int
-
-/* comment */
-let y: float
-|})
-
 let () = print_endline "✅ multi printer api tests"
 
 module OutcomePrinterTests = struct

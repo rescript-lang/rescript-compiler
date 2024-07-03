@@ -195,9 +195,10 @@ end = struct
     [
       ("-recover", Arg.Unit (fun () -> recover := true), "Emit partial ast");
       ( "-parse",
-        Arg.String (fun txt ->
-          let _ = assert (txt <> "ml") in
-          origin := txt),
+        Arg.String
+          (fun txt ->
+            let _ = assert (txt <> "ml") in
+            origin := txt),
         "Parse ml or res. Default: res" );
       ( "-print",
         Arg.String (fun txt -> print := txt),

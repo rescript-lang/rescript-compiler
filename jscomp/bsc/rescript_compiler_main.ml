@@ -195,7 +195,6 @@ let format_file input =
   let ext = Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe input) in 
   let syntax = 
     match ext with 
-    | Ml | Mli -> `ml
     | Res | Resi -> `res 
     | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
   let formatted = Res_multi_printer.print ~ignore_parse_errors:!Clflags.ignore_parse_errors syntax ~input in 
