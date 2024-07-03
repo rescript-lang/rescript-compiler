@@ -53,7 +53,7 @@ const formatHelp =
   "`rescript format` formats the current directory\n" +
   "\n" +
   "Options:\n" +
-  "  -stdin  [.res|.resi|.ml|.mli] Read the code from stdin and print\n" +
+  "  -stdin  [.res|.resi] Read the code from stdin and print\n" +
   "          the formatted code to stdout in ReScript syntax\n" +
   "  -all    Format the whole project \n" +
   "  -check  Check formatting for file or the whole project. Use `-all` to check the whole project\n";
