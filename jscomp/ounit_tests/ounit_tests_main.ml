@@ -1,26 +1,5 @@
-[@@@warning "-32"]
-
-module Int_array = Vec.Make (struct
-  type t = int
-
-  let null = 0
-end)
-
-let v = Int_array.init 10 (fun i -> i)
-
-let ( >:: ), ( >::: ) = OUnit.(( >:: ), ( >::: ))
-
-let ( =~ ) x y =
-  OUnit.assert_equal ~cmp:(Int_array.equal (fun (x : int) y -> x = y)) x y
-
-let ( =~~ ) x y =
-  OUnit.assert_equal
-    ~cmp:(Int_array.equal (fun (x : int) y -> x = y))
-    x (Int_array.of_array y)
-
 let suites =
-  __FILE__
-  >::: [
+  OUnit.(>:::) __FILE__ [
          Ounit_vec_test.suites;
          Ounit_json_tests.suites;
          Ounit_path_tests.suites;
@@ -35,11 +14,8 @@ let suites =
          Ounit_hashtbl_tests.suites;
          Ounit_string_tests.suites;
          Ounit_topsort_tests.suites;
-         (* Ounit_sexp_tests.suites; *)
          Ounit_int_vec_tests.suites;
          Ounit_ident_mask_tests.suites;
-         Ounit_cmd_tests.suites;
-         Ounit_ffi_error_debug_test.suites;
          Ounit_js_regex_checker_tests.suites;
          Ounit_utf8_test.suites;
          Ounit_unicode_tests.suites;

@@ -40,10 +40,6 @@ let h0 = x => x(.)
 let h00 = x => x(.)
 
 let h1 = (x, y) => x(. y) /* weird case */
-/*
-bucklescript$bsc -bs-syntax-only -dsource -bs-eval 'let h1 x = fun y -> x y'
-let h1 x y = x y
-*/
 let h10 = x => x(. 3)
 
 let h30 = x => (. a) => x(. 3, 3, a)
