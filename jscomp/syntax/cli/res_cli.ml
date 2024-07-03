@@ -195,7 +195,9 @@ end = struct
     [
       ("-recover", Arg.Unit (fun () -> recover := true), "Emit partial ast");
       ( "-parse",
-        Arg.String (fun txt -> origin := txt),
+        Arg.String (fun txt ->
+          let _ = assert (txt <> "ml") in
+          origin := txt),
         "Parse ml or res. Default: res" );
       ( "-print",
         Arg.String (fun txt -> print := txt),
@@ -238,11 +240,11 @@ module CliArgProcessor = struct
     in
     let parsing_engine =
       match origin with
-      | "ml" -> Parser Res_driver_ml_parser.parsing_engine
+      | "ml" -> assert false
       | "res" -> Parser Res_driver.parsing_engine
       | "" -> (
         match Filename.extension filename with
-        | ".ml" | ".mli" -> Parser Res_driver_ml_parser.parsing_engine
+        | ".ml" | ".mli" -> assert false
         | _ -> Parser Res_driver.parsing_engine)
       | origin ->
         print_endline
