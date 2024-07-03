@@ -17,6 +17,7 @@
 - Allow `@directive` on functions for emitting function level directive code (`let serverAction = @directive("'use server'") (~name) => {...}`). https://github.com/rescript-lang/rescript-compiler/pull/6756
 - Add `rewatch` to the npm package as an alternative build tool. https://github.com/rescript-lang/rescript-compiler/pull/6762
 - Throws an instance of JavaScript's `new Error()` and adds the extension payload for `cause` option. https://github.com/rescript-lang/rescript-compiler/pull/6611
+- Allow free vars in types for type coercion `e :> t`. https://github.com/rescript-lang/rescript-compiler/pull/6828
 
 #### :boom: Breaking Change
 

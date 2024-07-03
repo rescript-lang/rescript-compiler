@@ -58,8 +58,6 @@ val generalizable: int -> type_expr -> bool
 val id_of_pattern : Typedtree.pattern -> Ident.t option
 val name_pattern : string -> Typedtree.case list -> Ident.t
 
-val self_coercion : (Path.t * Location.t list ref) list ref
-
 type error =
     Polymorphic_label of Longident.t
   | Constructor_arity_mismatch of Longident.t * int * int
@@ -81,8 +79,6 @@ type error =
   | Private_type of type_expr
   | Private_label of Longident.t * type_expr
   | Not_subtype of (type_expr * type_expr) list * (type_expr * type_expr) list
-  | Coercion_failure of
-      type_expr * type_expr * (type_expr * type_expr) list * bool
   | Too_many_arguments of bool * type_expr
   | Abstract_wrong_label of arg_label * type_expr
   | Scoping_let_module of string * type_expr
