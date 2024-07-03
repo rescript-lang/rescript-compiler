@@ -46,6 +46,7 @@
 - Remove coercion with 2 types from internal representation. Coercion `e : t1 :> t2` was only supported in `.ml` syntax and never by the `.res` parser. https://github.com/rescript-lang/rescript-compiler/pull/6829 
 - Convert `caml_format` and `js_math` to `.res`. https://github.com/rescript-lang/rescript-compiler/pull/6834
 - Convert `js.ml` files to `.res`. https://github.com/rescript-lang/rescript-compiler/pull/6835
+- Remove old `.ml` tests. https://github.com/rescript-lang/rescript-compiler/pull/6847
 
 #### :nail_care: Polish
 

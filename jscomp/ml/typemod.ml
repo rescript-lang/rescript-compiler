@@ -1688,14 +1688,14 @@ let type_implementation_more ?check_exists sourcefile outputprefix modulename in
     type_structure initial_env ast (Location.in_file sourcefile) in
   let simple_sg = simplify_signature sg in
   begin
-    let sourceintf =
-      Filename.remove_extension sourcefile ^ !Config.interface_suffix in
     let mli_status = !Clflags.assume_no_mli in 
     if mli_status = Clflags.Mli_exists then begin
       let intf_file =
         try
           find_in_path_uncap !Config.load_path (modulename ^ ".cmi")
         with Not_found ->
+          let sourceintf =
+            Filename.remove_extension sourcefile ^ Literals.suffix_resi in      
           raise(Error(Location.in_file sourcefile, Env.empty,
                       Interface_not_compiled sourceintf)) in
       let dclsig = Env.read_signature modulename intf_file in

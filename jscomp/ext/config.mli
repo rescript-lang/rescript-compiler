@@ -30,9 +30,6 @@ val unsafe_empty_array : bool ref
 val load_path : string list ref
 (* Directories in the search path for .cmi and .cmo files *)
 
-val interface_suffix : string ref
-(* Suffix for interface file names *)
-
 val cmi_magic_number : string
 
 (* Magic number for compiled interface files *)
