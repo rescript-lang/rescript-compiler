@@ -300,12 +300,11 @@ jobs:
             echo "OPAMROOT=D:\\.opam"         >> "$GITHUB_ENV"
           fi
 
-          if [[ "$RUNNER_OS" != "Windows" ]]; then
-            OPAM_PATH="$(cat .opam-path)"
-            chmod +x "$OPAM_PATH"
-            dirname "$OPAM_PATH" >> "$GITHUB_PATH"
+          OPAM_PATH="$(cat .opam-path)"
+          chmod +x "$OPAM_PATH"
+          dirname "$OPAM_PATH" >> "$GITHUB_PATH"
 
-          else
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
             fsutil behavior query SymlinkEvaluation
             fsutil behavior set symlinkEvaluation R2L:1 R2R:1
             fsutil behavior query SymlinkEvaluation
