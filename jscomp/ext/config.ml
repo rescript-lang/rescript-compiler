@@ -26,8 +26,6 @@ and cmt_magic_number = "Caml1999T022"
 
 let load_path = ref ([] : string list)
 
-let interface_suffix = ref ".mli"
-
 (* This is normally the same as in obj.ml, but we have to define it
    separately because it can differ when we're in the middle of a
    bootstrapping phase. *)

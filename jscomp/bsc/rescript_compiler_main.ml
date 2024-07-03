@@ -369,9 +369,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-list-conditionals", unit_call (fun () -> Pp.list_variables Format.err_formatter),
     "*internal* List existing conditional variables";  
 
-    "-bs-eval", string_call (fun  s -> eval s ~suffix:Literals.suffix_ml), 
-    "*internal* (experimental) set the string to be evaluated in OCaml syntax";
-
     "-e",  string_call (fun  s -> eval s ~suffix:Literals.suffix_res), 
     "(experimental) set the string to be evaluated in ReScript syntax";  
 
