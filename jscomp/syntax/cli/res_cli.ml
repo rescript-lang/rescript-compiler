@@ -159,7 +159,6 @@ module ResClflags : sig
   val recover : bool ref
   val print : string ref
   val width : int ref
-  val origin : string ref
   val file : string ref
   val interface : bool ref
   val jsx_version : int ref
@@ -173,7 +172,6 @@ end = struct
   let width = ref 100
 
   let print = ref "res"
-  let origin = ref ""
   let interface = ref false
   let jsx_version = ref (-1)
   let jsx_module = ref "react"
@@ -194,12 +192,6 @@ end = struct
   let spec =
     [
       ("-recover", Arg.Unit (fun () -> recover := true), "Emit partial ast");
-      ( "-parse",
-        Arg.String
-          (fun txt ->
-            let _ = assert (txt <> "ml") in
-            origin := txt),
-        "Parse ml or res. Default: res" );
       ( "-print",
         Arg.String (fun txt -> print := txt),
         "Print either binary, ml, ast, sexp, comments or res. Default: res" );
@@ -232,26 +224,14 @@ module CliArgProcessor = struct
   type backend = Parser : 'diagnostics Res_driver.parsing_engine -> backend
   [@@unboxed]
 
-  let process_file ~is_interface ~width ~recover ~origin ~target ~jsx_version
+  let process_file ~is_interface ~width ~recover ~target ~jsx_version
       ~jsx_module ~jsx_mode ~typechecker filename =
     let len = String.length filename in
     let process_interface =
       is_interface
       || (len > 0 && (String.get [@doesNotRaise]) filename (len - 1) = 'i')
     in
-    let parsing_engine =
-      match origin with
-      | "ml" -> assert false
-      | "res" -> Parser Res_driver.parsing_engine
-      | "" -> (
-        match Filename.extension filename with
-        | ".ml" | ".mli" -> assert false
-        | _ -> Parser Res_driver.parsing_engine)
-      | origin ->
-        print_endline
-          ("-parse needs to be either ml or res. You provided " ^ origin);
-        exit 1
-    in
+    let parsing_engine = Parser Res_driver.parsing_engine in
     let print_engine =
       match target with
       | "binary" -> Res_driver_binary.print_engine
@@ -316,8 +296,7 @@ let () =
     ResClflags.parse ();
     CliArgProcessor.process_file ~is_interface:!ResClflags.interface
       ~width:!ResClflags.width ~recover:!ResClflags.recover
-      ~target:!ResClflags.print ~origin:!ResClflags.origin
-      ~jsx_version:!ResClflags.jsx_version ~jsx_module:!ResClflags.jsx_module
-      ~jsx_mode:!ResClflags.jsx_mode ~typechecker:!ResClflags.typechecker
-      !ResClflags.file)
+      ~target:!ResClflags.print ~jsx_version:!ResClflags.jsx_version
+      ~jsx_module:!ResClflags.jsx_module ~jsx_mode:!ResClflags.jsx_mode
+      ~typechecker:!ResClflags.typechecker !ResClflags.file)
 [@@raises exit]

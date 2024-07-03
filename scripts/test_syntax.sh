@@ -72,7 +72,7 @@ if [[ $ROUNDTRIP_TEST = 1 ]]; then
   roundtripTestsResult="temp/result.txt"
   touch $roundtripTestsResult
 
-  find tests/{idempotency,printer} -name "*.res" -o -name "*.resi" -o -name "*.ml" -o -name "*.mli" >temp/files.txt
+  find tests/{idempotency,printer} -name "*.res" -o -name "*.resi" >temp/files.txt
   while read file; do {
     mkdir -p temp/$(dirname $file)
     sexpAst1=temp/$file.sexp
@@ -81,14 +81,12 @@ if [[ $ROUNDTRIP_TEST = 1 ]]; then
     rescript2=temp/$file.2.res
 
     case $file in
-      *.ml   ) class="ml" ; resIntf=""         ;;
-      *.mli  ) class="ml" ; resIntf=-interface ;;
-      *.res  ) class="res"; resIntf=""         ;;
-      *.resi ) class="res"; resIntf=-interface ;;
+      *.res  ) resIntf=""         ;;
+      *.resi ) resIntf=-interface ;;
     esac
 
-    $DUNE_BIN_DIR/res_parser $resIntf -parse $class -print sexp $file > $sexpAst1
-    $DUNE_BIN_DIR/res_parser $resIntf -parse $class -print res $file > $rescript1
+    $DUNE_BIN_DIR/res_parser $resIntf -print sexp $file > $sexpAst1
+    $DUNE_BIN_DIR/res_parser $resIntf -print res $file > $rescript1
 
     $DUNE_BIN_DIR/res_parser $resIntf -print sexp $rescript1 > $sexpAst2
     $DUNE_BIN_DIR/res_parser $resIntf -print res $rescript1 > $rescript2
