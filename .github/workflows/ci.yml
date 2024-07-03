@@ -255,7 +255,6 @@ jobs:
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
-          allow-prerelease-opam: true
           opam-pin: false
 
       - name: Get OPAM environment
