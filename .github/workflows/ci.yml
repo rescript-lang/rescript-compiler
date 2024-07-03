@@ -262,7 +262,7 @@ jobs:
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          command -v opam | tee .opam-path
+          which opam | tee .opam-path
           opam env > .opam-env
 
       - name: Install OPAM dependencies
