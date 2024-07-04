@@ -37,6 +37,7 @@
 - Fix unhandled cases for exotic idents (allow to use exotic PascalCased identifiers for types). https://github.com/rescript-lang/rescript-compiler/pull/6777
 - Fix unused attribute check for `@as`. https://github.com/rescript-lang/rescript-compiler/pull/6795
 - Reactivate unused attribute check for `@int`. https://github.com/rescript-lang/rescript-compiler/pull/6802
+- Fix Deno compatibility issues on Windows. https://github.com/rescript-lang/rescript-compiler/pull/6850 
 
 #### :house: Internal
 
