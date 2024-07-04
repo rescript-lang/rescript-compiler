@@ -43,6 +43,8 @@
     "cli"
   ],
   "exports": {
+    "./lib/es6/*": "./lib/es6/*",
+    "./lib/js/*": "./lib/js/*",
     "./package.json": "./package.json"
   },
   "imports": {
