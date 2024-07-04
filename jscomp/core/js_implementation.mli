@@ -36,7 +36,7 @@ val interface :
 *)
 
 val interface_mliast :
-  Format.formatter -> string -> ([ `ml | `rescript | `default ] -> unit) -> unit
+  Format.formatter -> string -> unit
 
 (* val after_parsing_impl :
    Format.formatter ->
@@ -57,6 +57,6 @@ val implementation :
 (** [implementation ppf sourcefile outprefix] compiles to JS directly *)
 
 val implementation_mlast :
-  Format.formatter -> string -> ([ `ml | `rescript | `default ] -> unit) -> unit
+  Format.formatter -> string -> unit
 
 val implementation_map : Format.formatter -> string -> unit

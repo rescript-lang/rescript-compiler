@@ -32,7 +32,6 @@ let setup_env () =
   Matching.call_switcher_variant_constr := Polyvar_pattern_match.call_switcher_variant_constr;
   Ctype.variant_is_subtype := Matching_polyfill.variant_is_subtype;
   Clflags.dump_location := false;  
-  Config.syntax_kind := `rescript;
   Parmatch.print_res_pat := Pattern_printer.print_pattern;
   (* default true
      otherwise [bsc -I sc src/hello.ml ] will include current directory to search path

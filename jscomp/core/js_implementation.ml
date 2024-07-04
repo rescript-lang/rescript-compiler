@@ -96,9 +96,9 @@ let interface ~parser ppf ?outputprefix fname =
   |> print_if_pipe ppf Clflags.dump_source Pprintast.signature
   |> after_parsing_sig ppf outputprefix
 
-let interface_mliast ppf fname setup =
+let interface_mliast ppf fname =
   Res_compmisc.init_path ();
-  Binary_ast.read_ast_exn ~fname Mli setup
+  Binary_ast.read_ast_exn ~fname Mli
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.interface
   |> print_if_pipe ppf Clflags.dump_source Pprintast.signature
   |> after_parsing_sig ppf (Config_util.output_prefix fname)
@@ -187,9 +187,9 @@ let implementation ~parser ppf ?outputprefix fname =
   |> print_if_pipe ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf outputprefix
 
-let implementation_mlast ppf fname setup =
+let implementation_mlast ppf fname =
   Res_compmisc.init_path ();
-  Binary_ast.read_ast_exn ~fname Ml setup
+  Binary_ast.read_ast_exn ~fname Ml
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.implementation
   |> print_if_pipe ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf (Config_util.output_prefix fname)

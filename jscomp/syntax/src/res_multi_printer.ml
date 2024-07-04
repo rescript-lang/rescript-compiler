@@ -88,13 +88,12 @@ let print_res ~ignore_parse_errors ~is_interface ~filename =
 [@@raises exit]
 
 (* print the given file named input to from "language" to res, general interface exposed by the compiler *)
-let print ?(ignore_parse_errors = false) language ~input =
+let print ?(ignore_parse_errors = false) input =
   let is_interface =
     let len = String.length input in
     len > 0 && String.unsafe_get input (len - 1) = 'i'
   in
-  match language with
-  | `res -> print_res ~ignore_parse_errors ~is_interface ~filename:input
+  print_res ~ignore_parse_errors ~is_interface ~filename:input
 [@@raises exit]
 
 (* suppress unused optional arg *)

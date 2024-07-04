@@ -29,7 +29,7 @@ type 'a kind = 'a Ml_binary.kind =
   | Ml : Parsetree.structure kind
   | Mli : Parsetree.signature kind
 
-let read_ast_exn (type t) ~fname (_ : t kind) setup : t =
+let read_ast_exn (type t) ~fname (_ : t kind) : t =
   let ic = open_in_bin fname in
   let dep_size = input_binary_int ic in
   seek_in ic (pos_in ic + dep_size);
@@ -37,12 +37,6 @@ let read_ast_exn (type t) ~fname (_ : t kind) setup : t =
   Location.set_input_name sourcefile;
   let ast = input_value ic in
   close_in ic;
-  (match
-     Ext_file_extensions.classify_input
-       (Ext_filename.get_extension_maybe sourcefile)
-   with
-  | Res | Resi -> setup `rescript
-  | _ -> ());
   ast
 
 let magic_sep_char = '\n'
