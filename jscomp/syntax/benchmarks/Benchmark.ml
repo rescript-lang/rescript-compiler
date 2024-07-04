@@ -186,16 +186,10 @@ end = struct
     | Print -> "printer"
 
   (* TODO: we could at Reason here *)
-  type lang = Ocaml | Rescript
+  type lang = Rescript
   let string_of_lang lang =
     match lang with
-    | Ocaml -> "ocaml"
     | Rescript -> "rescript"
-
-  let parse_ocaml src filename =
-    let lexbuf = Lexing.from_string src in
-    Location.init lexbuf filename;
-    Parse.implementation lexbuf
 
   let parse_rescript src filename =
     let p = Parser.make src filename in
@@ -214,10 +208,6 @@ end = struct
         fun _ ->
           let _ = Sys.opaque_identity (parse_rescript src filename) in
           ()
-      | Ocaml, Parse ->
-        fun _ ->
-          let _ = Sys.opaque_identity (parse_ocaml src filename) in
-          ()
       | Rescript, Print ->
         let p = Parser.make src filename in
         let ast = ResParser.parse_implementation p in
@@ -230,7 +220,6 @@ end = struct
                Doc.to_string ~width:80 (Printer.print_structure ast cmt_tbl))
           in
           ()
-      | _ -> fun _ -> ()
     in
     let b = Benchmark.make ~name ~f:benchmark_fn () in
     Benchmark.launch b;
@@ -239,16 +228,13 @@ end = struct
   let run () =
     let data_dir = "jscomp/syntax/benchmarks/data" in
     benchmark (Filename.concat data_dir "RedBlackTree.res") Rescript Parse;
-    benchmark (Filename.concat data_dir "RedBlackTree.ml") Ocaml Parse;
     benchmark (Filename.concat data_dir "RedBlackTree.res") Rescript Print;
     benchmark
       (Filename.concat data_dir "RedBlackTreeNoComments.res")
       Rescript Print;
     benchmark (Filename.concat data_dir "Napkinscript.res") Rescript Parse;
-    benchmark (Filename.concat data_dir "Napkinscript.ml") Ocaml Parse;
     benchmark (Filename.concat data_dir "Napkinscript.res") Rescript Print;
     benchmark (Filename.concat data_dir "HeroGraphic.res") Rescript Parse;
-    benchmark (Filename.concat data_dir "HeroGraphic.ml") Ocaml Parse;
     benchmark (Filename.concat data_dir "HeroGraphic.res") Rescript Print
 end
 
