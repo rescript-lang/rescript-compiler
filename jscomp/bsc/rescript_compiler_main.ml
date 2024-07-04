@@ -34,6 +34,8 @@ let setup_runtime_path path =
      Bs_version.package_name := std);
   Js_config.customize_runtime := Some path
 
+let curry_specified = ref false
+
 
 let process_file sourcefile ?(kind ) ppf = 
   (* This is a better default then "", it will be changed later 
@@ -46,6 +48,11 @@ let process_file sourcefile ?(kind ) ppf =
     match kind with 
     | None -> Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile)  
     | Some kind -> kind in 
+  (if !curry_specified = false && !Clflags.dump_source = false && !Js_config.syntax_only = false && List.mem kind [Res; Resi] then
+    let _ = Printf.eprintf "XXX curry not specified %s\n%!" sourcefile in
+    let _ = assert false in
+    ()
+  );
   let res = match kind with 
   | Res -> 
     let sourcefile = set_abs_input_name  sourcefile in     
@@ -406,8 +413,10 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-nopervasives", set Clflags.nopervasives, 
     "*internal*";
-    "-uncurried", unit_call (fun () -> Config.uncurried := Uncurried),
-    "*internal* Set jsx module";
+    "-uncurried", unit_call (fun () -> curry_specified := true; Config.uncurried := Uncurried),
+    "*internal*";
+    "-curried", unit_call (fun () -> curry_specified := true; Config.uncurried := Legacy),
+    "*internal*";
     "-v", unit_call print_version_string,
     "Print compiler version and location of standard library and exit";  
 
