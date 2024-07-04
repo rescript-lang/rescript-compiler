@@ -67,7 +67,6 @@ let define ~command ?dyndep ?restat rule_name : t =
 type command = string
 
 type builtin = {
-  build_ast : t;  (** TODO: Implement it on top of pp_flags *)
   build_ast_from_re : t;
   (* build_ast_from_rei : t ; *)
   (* platform dependent, on Win32,
@@ -179,7 +178,6 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     Ext_buffer.add_string buf " -absname -bs-ast -o $out $i";
     Ext_buffer.contents buf
   in
-  let build_ast = define ~command:mk_ast "ast" in
   let build_ast_from_re = define ~command:mk_ast "astj" in
 
   let copy_resources =
@@ -223,7 +221,6 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
       ~restat:() "build_package"
   in
   {
-    build_ast;
     build_ast_from_re;
     (* platform dependent, on Win32,
         invoking cmd.exe

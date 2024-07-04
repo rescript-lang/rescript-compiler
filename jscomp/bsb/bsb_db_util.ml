@@ -39,13 +39,12 @@ let sanity_check (map : t) =
 (* invariant check:
    ml and mli should have the same case, same path
 *)
-let check (x : module_info) name_sans_extension case syntax_kind
+let check (x : module_info) name_sans_extension case
     (module_info : Bsb_db.info) =
   let x_ml_info = x.info in
   if
     x.name_sans_extension <> name_sans_extension
     || x.case <> case
-    || x.syntax_kind <> syntax_kind
     || x_ml_info = module_info || x_ml_info = Impl_intf
   then
     Bsb_exception.invalid_spec
@@ -75,19 +74,14 @@ let add_basename ~(dir : string) (map : t) ?error_on_invalid_suffix basename : t
   if is_editor_temporary_files basename then map
   else
     let info = ref Bsb_db.Impl in
-    let syntax_kind = ref Bsb_db.Ml in
     let invalid_suffix = ref false in
     let file_suffix = Ext_filename.get_extension_maybe basename in
     (match () with
-    | _ when file_suffix = Literals.suffix_ml -> ()
-    | _ when file_suffix = Literals.suffix_res -> syntax_kind := Res
-    | _ when file_suffix = Literals.suffix_mli -> info := Intf
+    | _ when file_suffix = Literals.suffix_res -> ()
     | _ when file_suffix = Literals.suffix_resi ->
-        info := Intf;
-        syntax_kind := Res
+        info := Intf
     | _ -> invalid_suffix := true);
     let info = !info in
-    let syntax_kind = !syntax_kind in
     let invalid_suffix = !invalid_suffix in
     if invalid_suffix then
       match error_on_invalid_suffix with
@@ -105,5 +99,5 @@ let add_basename ~(dir : string) (map : t) ?error_on_invalid_suffix basename : t
           let dir = Filename.dirname name_sans_extension in
           Map_string.adjust map module_name (fun opt_module_info ->
               match opt_module_info with
-              | None -> { dir; name_sans_extension; info; syntax_kind; case }
-              | Some x -> check x name_sans_extension case syntax_kind info)
+              | None -> { dir; name_sans_extension; info; case }
+              | Some x -> check x name_sans_extension case info)

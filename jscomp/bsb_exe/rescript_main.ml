@@ -197,14 +197,12 @@ let info_subcommand ~start argv =
         | Some { file_groups = { files } } ->
             Ext_list.iter files (fun { sources } ->
                 Map_string.iter sources
-                  (fun _ { info; syntax_kind; name_sans_extension } ->
+                  (fun _ { info; name_sans_extension } ->
                     let extensions =
-                      match (syntax_kind, info) with
-                      | _, Intf -> assert false
-                      | Ml, Impl -> [ ".ml" ]
-                      | Ml, Impl_intf -> [ ".ml"; ".mli" ]
-                      | Res, Impl -> [ ".res" ]
-                      | Res, Impl_intf -> [ ".res"; ".resi" ]
+                      match info with
+                      | Intf -> assert false
+                      | Impl -> [ ".res" ]
+                      | Impl_intf -> [ ".res"; ".resi" ]
                     in
                     Ext_list.iter extensions (fun x ->
                         print_endline (name_sans_extension ^ x)))))

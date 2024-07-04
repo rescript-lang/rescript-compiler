@@ -99,10 +99,6 @@ let suffix_cmxa = ".cmxa"
 
 let suffix_mll = ".mll"
 
-let suffix_ml = ".ml"
-
-let suffix_mli = ".mli"
-
 let suffix_res = ".res"
 
 let suffix_resi = ".resi"

@@ -31,12 +31,10 @@ type info =
   | Impl
   | Impl_intf
 
-type syntax_kind = Ml | Res
 
 type module_info = {
   mutable info : info;
   dir : string;
-  syntax_kind : syntax_kind;
   case : bool;
   name_sans_extension : string;
 }

@@ -37,16 +37,10 @@ type info =
   | Impl
   | Impl_intf
 
-type syntax_kind = Ml | Res
 
 type module_info = {
   mutable info : info;
   dir : string;
-  syntax_kind : syntax_kind;
-  (* This is actually not stored in bsbuild meta info
-     since creating .d file only emit .cmj/.cmi dependencies, so it does not
-     need know which syntax it is written
-  *)
   case : bool;
   name_sans_extension : string;
 }

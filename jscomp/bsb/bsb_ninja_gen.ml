@@ -94,7 +94,7 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
   let essentials = Ext_buffer.create 1_000 in
   files_to_install
   |> Queue.iter
-       (fun ({ name_sans_extension; syntax_kind; info } : Bsb_db.module_info) ->
+       (fun ({ name_sans_extension; info } : Bsb_db.module_info) ->
          let base = Filename.basename name_sans_extension in
          let dest = Ext_namespace_encode.make ?ns:namespace base in
          let ns_origin =
@@ -110,22 +110,14 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
          Ext_buffer.add_string essentials dest;
          Ext_buffer.add_string_char essentials Literals.suffix_cmj ' ';
 
-         let suffix =
-           match syntax_kind with
-           | Ml -> Literals.suffix_ml
-           | Res -> Literals.suffix_res
-         in
-         oo suffix ~dest:base ~src:(sb // name_sans_extension);
+         let suffix_impl = Literals.suffix_res in
+         oo suffix_impl ~dest:base ~src:(sb // name_sans_extension);
          match info with
          | Intf -> assert false
          | Impl -> ()
          | Impl_intf ->
-             let suffix_b =
-               match syntax_kind with
-               | Ml -> Literals.suffix_mli
-               | Res -> Literals.suffix_resi
-             in
-             oo suffix_b ~dest:base ~src:(sb // name_sans_extension);
+             let suffix_intf = Literals.suffix_resi in
+             oo suffix_intf ~dest:base ~src:(sb // name_sans_extension);
              oo Literals.suffix_cmti ~dest ~src);
   (match namespace with
   | None -> ()

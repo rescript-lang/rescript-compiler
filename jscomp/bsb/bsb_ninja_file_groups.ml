@@ -40,20 +40,13 @@ let handle_generators oc (group : Bsb_file_groups.file_group) custom_rules =
 
 type suffixes = { impl : string; intf : string }
 
-let ml_suffixes = { impl = Literals.suffix_ml; intf = Literals.suffix_mli }
-
 let res_suffixes = { impl = Literals.suffix_res; intf = Literals.suffix_resi }
 
 let emit_module_build (rules : Bsb_ninja_rule.builtin)
     (package_specs : Bsb_package_specs.t) (is_dev : bool) oc namespace
     (module_info : Bsb_db.module_info) : unit =
   let has_intf_file = module_info.info = Impl_intf in
-  let config, ast_rule =
-    match module_info.syntax_kind with
-    | Ml -> (ml_suffixes, rules.build_ast)
-    | Res -> (res_suffixes, rules.build_ast_from_re)
-    (* FIXME: better names *)
-  in
+  let config, ast_rule = (res_suffixes, rules.build_ast_from_re) in
   let filename_sans_extension = module_info.name_sans_extension in
   let input_impl =
     Bsb_config.proj_rel (filename_sans_extension ^ config.impl)
