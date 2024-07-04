@@ -60,15 +60,13 @@ let export (field : string) v =
 ;;
 
 module Lang = struct
-  type t = OCaml | Res
+  type t = Res
 
   let from_string t = match t with
-    | "ocaml" | "ml" -> Some OCaml
     | "res" -> Some Res
     | _ -> None
 
   let to_string t = match t with
-    | OCaml -> "ml"
     | Res -> "res"
 end
 
@@ -221,15 +219,6 @@ let get_filename ~(lang: Lang.t) opt =
   | Some fname -> fname
   | None -> BundleConfig.default_filename lang
 
-let lexbuf_from_string ~filename str =
-  let lexbuf = Lexing.from_string str in
-  lexbuf.lex_start_p <- { lexbuf.lex_start_p with pos_fname = filename };
-  lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename };
-  lexbuf
-
-let ocaml_parse ~filename str =
-  lexbuf_from_string ~filename str |> Parse.implementation
-
 module ResDriver = struct
   (* For now we are basically overriding functionality from Res_driver *)
   open Res_driver
@@ -367,8 +356,6 @@ module Compile = struct
          | Typetexp.Error _
          | Typecore.Error _
          | Typemod.Error _ -> "type_error"
-         | Lexer.Error _
-         | Syntaxerr.Error _ -> "syntax_error"
          | _ -> "other_error"
        in
        let full_msg =
@@ -473,10 +460,7 @@ module Compile = struct
       Warnings.parse_options false warn_flags;
       let filename = get_filename ~lang config.filename in
       let modulename = "Playground" in
-      let impl = match lang with
-        | Lang.OCaml -> ocaml_parse ~filename
-        | Res -> rescript_parse ~filename
-      in
+      let impl = rescript_parse ~filename in
       Clflags.open_modules := open_modules;
       (* let env = !Toploop.toplevel_env in *)
       (* Res_compmisc.init_path (); *)
@@ -529,19 +513,6 @@ module Compile = struct
     let filename = get_filename ~lang:from filename in
     try
       let code = match (from, to_) with
-        | (OCaml, Res) ->
-          let structure =
-            src
-            |> lexbuf_from_string ~filename
-            |> Parse.implementation
-          in
-          Res_printer.print_implementation ~width:80 structure ~comments:[]
-        | (Res, OCaml) ->
-          let (structure, _) =
-            ResDriver.parse_implementation ~for_printer:false ~sourcefile:filename ~src
-          in
-          Pprintast.structure Format.str_formatter structure;
-          Format.flush_str_formatter ()
         | (Res, Res) ->
           (* Essentially pretty printing.
            * IMPORTANT: we need forPrinter:true when parsing code here,
@@ -550,7 +521,6 @@ module Compile = struct
             ResDriver.parse_implementation ~for_printer:true ~sourcefile:filename ~src
           in
           Res_printer.print_implementation ~width:80 structure ~comments
-        | (OCaml, OCaml) -> src
       in
       Js.Unsafe.(obj [|
           "code", inject @@ Js.string code;
@@ -571,7 +541,6 @@ let () =
 
 module Export = struct
   let make_compiler ~config ~lang =
-    let open Lang in
     let open Js.Unsafe in
     let base_attrs =
       [|"compile",
@@ -581,24 +550,16 @@ module Export = struct
              (Compile.implementation ~config ~lang (Js.to_string code)));
         "version",
         inject @@
-        Js.string
-          (match lang with
-           | Res -> Bs_version.version
-           | OCaml -> Sys.ocaml_version);
+        Js.string Bs_version.version;
       |] in
     let attrs =
-      if lang != OCaml then
-        Array.append base_attrs [|
-          ("format",
-           inject @@
-           Js.wrap_meth_callback
-             (fun _ code ->
-                (match lang with
-                 | OCaml -> ErrorRet.make_unexpected_error ("OCaml pretty printing not supported")
-                 | _ -> Compile.syntax_format ?filename:config.filename ~from:lang ~to_:lang (Js.to_string code))))
-        |]
-      else
-        base_attrs
+      Array.append base_attrs [|
+        ("format",
+          inject @@
+          Js.wrap_meth_callback
+            (fun _ code ->
+              (Compile.syntax_format ?filename:config.filename ~from:lang ~to_:lang (Js.to_string code))))
+      |]
     in
     obj attrs
 
@@ -639,8 +600,6 @@ module Export = struct
     Js.Unsafe.(obj [|
         "version",
         inject @@ Js.string Bs_version.version;
-        "ocaml",
-        inject @@ make_compiler ~config ~lang:OCaml;
         "rescript",
         inject @@ make_compiler ~config ~lang:Res;
         "convertSyntax",
