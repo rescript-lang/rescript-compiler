@@ -29,6 +29,7 @@
 - Remove deprecated -bs-super-errors option. https://github.com/rescript-lang/rescript-compiler/pull/6814
 - Some global names and old keywords are no longer prefixed. https://github.com/rescript-lang/rescript-compiler/pull/6831
 - Remove ml parsing tests and conversion from `.ml` to `.res` via format. https://github.com/rescript-lang/rescript-compiler/pull/6848
+- Remove support for compiling `.ml` files, and general cleanup. https://github.com/rescript-lang/rescript-compiler/pull/6852
 
 #### :bug: Bug Fix
 
