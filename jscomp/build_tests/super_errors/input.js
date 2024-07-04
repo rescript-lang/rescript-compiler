@@ -11,7 +11,7 @@ const fixtures = fs
   .filter(fileName => path.extname(fileName) === ".res");
 
 // const runtime = path.join(__dirname, '..', '..', 'runtime')
-const prefix = `${bsc} -w +A`;
+const prefix = `${bsc} -w +A -curried`;
 
 const updateTests = process.argv[2] === "update";
 
