@@ -713,12 +713,12 @@ let float_of_string: (string, exn) => float = %raw(`function(s,exn){
 }
 `)
 
-@ocaml.doc("
+/**
    Pervasives.float_of_string : string -> float = \"?float_of_string\"
    Semantics is slightly different from javascript :
    console.assert(float_of_string('infinity')===Infinity)
    console.assert(float_of_string('Infinity')===Infinity
    parseFloat('Infinity') === Infinity
    parseFloat('infinity') === Nan
-")
+*/
 let float_of_string = (s: string): float => float_of_string(s, Failure("float_of_string"))

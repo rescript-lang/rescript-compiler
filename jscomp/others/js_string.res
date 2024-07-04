@@ -705,7 +705,7 @@ Js.String.splitAtMost("/", ~limit=9, "ant/bee/cat/dog/elk") == ["ant", "bee", "c
 external splitAtMost: (t, ~limit: int) => array<t> = "split"
 
 @bs.send.pipe(: t)
-@ocaml.doc("
+/**
 `splitByRe(regex, str)` splits the given `str` at every occurrence of `regex`
 and returns an array of the resulting substrings.
 
@@ -715,18 +715,18 @@ on MDN.
 ## Examples
 
 ```rescript
-Js.String.splitByRe(%re(\"/\s*[,;]\s*/\"), \"art; bed , cog ;dad\") == [
-    Some(\"art\"),
-    Some(\"bed\"),
-    Some(\"cog\"),
-    Some(\"dad\"),
+Js.String.splitByRe(%re("/\s*[,;]\s*TODO/"), "art; bed , cog ;dad") == [
+    Some("art"),
+    Some("bed"),
+    Some("cog"),
+    Some("dad"),
   ]
 ```
-")
+*/
 external splitByRe: Js_re.t => array<option<t>> = "split"
 
 @bs.send.pipe(: t)
-@ocaml.doc("
+/**
 `splitByReAtMost(regex, ~limit:n, str)` splits the given `str` at every
 occurrence of `regex` and returns an array of the first `n` resulting
 substrings. If `n` is negative or greater than the number of substrings, the
@@ -738,22 +738,22 @@ on MDN.
 ## Examples
 
 ```rescript
-Js.String.splitByReAtMost(%re(\"/\s*:\s*/\"), ~limit=3, \"one: two: three: four\") == [
-    Some(\"one\"),
-    Some(\"two\"),
-    Some(\"three\"),
+Js.String.splitByReAtMost(%re("/\s*[,;]\s*TODO/"), ~limit=3, "one: two: three: four") == [
+    Some("one"),
+    Some("two"),
+    Some("three"),
   ]
 
-Js.String.splitByReAtMost(%re(\"/\s*:\s*/\"), ~limit=0, \"one: two: three: four\") == []
+Js.String.splitByReAtMost(%re("/\s*[,;]\s*TODO/"), ~limit=0, "one: two: three: four") == []
 
-Js.String.splitByReAtMost(%re(\"/\s*:\s*/\"), ~limit=8, \"one: two: three: four\") == [
-    Some(\"one\"),
-    Some(\"two\"),
-    Some(\"three\"),
-    Some(\"four\"),
+Js.String.splitByReAtMost(%re("/\s*[,;]\s*TODO/"), ~limit=8, "one: two: three: four") == [
+    Some("one"),
+    Some("two"),
+    Some("three"),
+    Some("four"),
   ]
 ```
-")
+*/
 external splitByReAtMost: (Js_re.t, ~limit: int) => array<option<t>> = "split"
 
 @bs.send.pipe(: t)
