@@ -514,7 +514,9 @@ jobs:
           path: packages/test
 
       - name: Install ReScript package
-        run: npm i rescript-${{ needs.package.outputs.rescript_version }}.tgz
+        run: |
+          npm i --ignore-scripts --no-audit \
+            rescript-${{ needs.package.outputs.rescript_version }}.tgz
         shell: bash
         working-directory: packages/test
 
