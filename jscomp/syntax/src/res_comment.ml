@@ -47,9 +47,6 @@ let make_multi_line_comment ~loc ~doc_comment ~standalone txt =
     prev_tok_end_pos = Lexing.dummy_pos;
   }
 
-let from_ocaml_comment ~loc ~txt ~prev_tok_end_pos =
-  {txt; loc; style = MultiLine; prev_tok_end_pos}
-
 let trim_spaces s =
   let len = String.length s in
   if len = 0 then s

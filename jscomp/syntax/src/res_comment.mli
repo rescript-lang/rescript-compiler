@@ -17,6 +17,4 @@ val is_single_line_comment : t -> bool
 val make_single_line_comment : loc:Location.t -> string -> t
 val make_multi_line_comment :
   loc:Location.t -> doc_comment:bool -> standalone:bool -> string -> t
-val from_ocaml_comment :
-  loc:Location.t -> txt:string -> prev_tok_end_pos:Lexing.position -> t
 val trim_spaces : string -> string
