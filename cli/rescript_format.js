@@ -32,7 +32,7 @@ var specs = [
   [
     "-stdin",
     { kind: "String", data: { kind: "String_set", data: stdin } },
-    `[.res|.resi|.ml|.mli] Read the code from stdin and print
+    `[.res|.resi] Read the code from stdin and print
 the formatted code to stdout in ReScript syntax`,
   ],
   [
@@ -46,7 +46,7 @@ the formatted code to stdout in ReScript syntax`,
     "Check formatting for file or the whole project. Use `-all` to check the whole project",
   ],
 ];
-var formattedStdExtensions = [".res", ".resi", ".ml", ".mli"];
+var formattedStdExtensions = [".res", ".resi"];
 var formattedFileExtensions = [".res", ".resi"];
 
 /**

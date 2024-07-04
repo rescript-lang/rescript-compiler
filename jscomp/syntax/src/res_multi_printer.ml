@@ -87,23 +87,6 @@ let print_res ~ignore_parse_errors ~is_interface ~filename =
       ~comments:parse_result.comments parse_result.parsetree
 [@@raises exit]
 
-(* print ocaml files to res syntax *)
-let print_ml ~is_interface ~filename =
-  if is_interface then
-    let parse_result =
-      Res_driver_ml_parser.parsing_engine.parse_interface ~for_printer:true
-        ~filename
-    in
-    Res_printer.print_interface ~width:default_print_width
-      ~comments:parse_result.comments parse_result.parsetree
-  else
-    let parse_result =
-      Res_driver_ml_parser.parsing_engine.parse_implementation ~for_printer:true
-        ~filename
-    in
-    Res_printer.print_implementation ~width:default_print_width
-      ~comments:parse_result.comments parse_result.parsetree
-
 (* print the given file named input to from "language" to res, general interface exposed by the compiler *)
 let print ?(ignore_parse_errors = false) language ~input =
   let is_interface =
@@ -112,7 +95,6 @@ let print ?(ignore_parse_errors = false) language ~input =
   in
   match language with
   | `res -> print_res ~ignore_parse_errors ~is_interface ~filename:input
-  | `ml -> print_ml ~is_interface ~filename:input
 [@@raises exit]
 
 (* suppress unused optional arg *)

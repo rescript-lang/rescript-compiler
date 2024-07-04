@@ -1,12 +1,6 @@
 module OcamlParser = Parser
 module IO = Res_io
 
-let setup ~filename =
-  if String.length filename > 0 then (
-    Location.input_name := filename;
-    IO.read_file ~filename |> Lexing.from_string)
-  else Lexing.from_channel stdin
-
 let extract_ocaml_concrete_syntax filename =
   let lexbuf =
     if String.length filename > 0 then
@@ -46,49 +40,6 @@ let extract_ocaml_concrete_syntax filename =
   in
   next lexbuf.Lexing.lex_start_p ();
   (List.rev !string_locs, List.rev !comment_data)
-
-let parsing_engine =
-  {
-    Res_driver.parse_implementation =
-      (fun ~for_printer:_ ~filename ->
-        let lexbuf = setup ~filename in
-        let string_data, comments =
-          extract_ocaml_concrete_syntax !Location.input_name
-        in
-        let structure =
-          Parse.implementation lexbuf
-          |> Res_ast_conversion.replace_string_literal_structure string_data
-          |> Res_ast_conversion.structure
-        in
-        {
-          filename = !Location.input_name;
-          source = Bytes.to_string lexbuf.lex_buffer;
-          parsetree = structure;
-          diagnostics = ();
-          invalid = false;
-          comments;
-        });
-    parse_interface =
-      (fun ~for_printer:_ ~filename ->
-        let lexbuf = setup ~filename in
-        let string_data, comments =
-          extract_ocaml_concrete_syntax !Location.input_name
-        in
-        let signature =
-          Parse.interface lexbuf
-          |> Res_ast_conversion.replace_string_literal_signature string_data
-          |> Res_ast_conversion.signature
-        in
-        {
-          filename = !Location.input_name;
-          source = Bytes.to_string lexbuf.lex_buffer;
-          parsetree = signature;
-          diagnostics = ();
-          invalid = false;
-          comments;
-        });
-    string_of_diagnostics = (fun ~source:_ ~filename:_ _diagnostics -> ());
-  }
 
 let print_engine =
   Res_driver.

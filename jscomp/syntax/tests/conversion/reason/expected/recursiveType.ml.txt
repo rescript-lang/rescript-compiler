@@ -1,3 +1,0 @@
-type rec tree = {"label": string, "left": option<tree>, "right": option<tree>}
-
-type t = t
