@@ -24,17 +24,10 @@
 
 val at_bol : Lexing.lexbuf -> bool
 
-val interpret_directive :
-  Lexing.lexbuf ->
-  cont:(Lexing.lexbuf -> Parser.token) ->
-  token_with_comments:(Lexing.lexbuf -> Parser.token) ->
-  Parser.token
 
 val eof_check : Lexing.lexbuf -> unit
 
 val init : unit -> unit
-
-val check_sharp_look_ahead : (unit -> Parser.token) -> Parser.token
 
 (* Methods below are used for cpp, they are not needed by the compiler patches*)
 val remove_directive_built_in_value : string -> unit
@@ -47,8 +40,3 @@ val define_key_value : string -> string -> bool
 (** @return false means failed to define *)
 
 val list_variables : Format.formatter -> unit
-
-val filter_directive_from_lexbuf :
-  Lexing.lexbuf ->
-  token_with_comments:(Lexing.lexbuf -> Parser.token) ->
-  (int * int) list
