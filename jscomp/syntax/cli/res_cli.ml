@@ -235,7 +235,7 @@ module CliArgProcessor = struct
     let print_engine =
       match target with
       | "binary" -> Res_driver_binary.print_engine
-      | "ml" -> Res_driver_ml_parser.print_engine
+      | "ml" -> Res_driver_ml_printer.print_engine
       | "ast" -> Res_ast_debugger.print_engine
       | "sexp" -> Res_ast_debugger.sexp_print_engine
       | "comments" -> Res_ast_debugger.comments_print_engine
