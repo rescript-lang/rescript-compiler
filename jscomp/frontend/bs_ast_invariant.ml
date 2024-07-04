@@ -84,8 +84,7 @@ let emit_external_warnings : iterator =
         match str_item.pstr_desc with
         | Pstr_type
             ( Nonrecursive,
-              [{ptype_kind = Ptype_variant ({pcd_res = Some _} :: _)}] )
-          when !Config.syntax_kind = `rescript ->
+              [{ptype_kind = Ptype_variant ({pcd_res = Some _} :: _)}] ) ->
           Location.raise_errorf ~loc:str_item.pstr_loc
             "GADT has to be recursive types, please try `type rec'"
         | Pstr_class _ ->

@@ -785,7 +785,7 @@ let report_error env ppf = function
     (* modified *)
     Format.fprintf ppf "@[<v>This type constructor, `%a`, can't be found.@ "  Printtyp.longident lid;
     let has_candidate = super_spellcheck ppf Env.fold_types env lid in
-    if !Config.syntax_kind = `rescript && not has_candidate then 
+    if not has_candidate then 
       Format.fprintf ppf "If you wanted to write a recursive type, don't forget the `rec` in `type rec`@]"
   | Unbound_type_constructor_2 p ->
     fprintf ppf "The type constructor@ %a@ is not yet completely defined"

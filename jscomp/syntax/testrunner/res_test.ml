@@ -5,7 +5,7 @@ let data_dir = "jscomp/syntax/tests"
 (* test printing of .res file*)
 let () =
   let filename = Filename.concat data_dir "api/resSyntax.res" in
-  let pretty_source = Res_multi_printer.print `res ~input:filename in
+  let pretty_source = Res_multi_printer.print filename in
   assert (
     pretty_source
     = {|// test file
@@ -20,7 +20,7 @@ if true {
 (* test printing of .resi file*)
 let () =
   let filename = Filename.concat data_dir "api/resiSyntax.resi" in
-  let pretty_source = Res_multi_printer.print `res ~input:filename in
+  let pretty_source = Res_multi_printer.print filename in
   assert (pretty_source = {|// test interface file
 
 let x: int

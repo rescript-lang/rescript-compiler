@@ -18,18 +18,8 @@ let set_abs_input_name sourcefile =
     else sourcefile in 
   Location.set_input_name sourcefile;
   sourcefile  
-
-type syntax_kind = [`ml | `rescript]
-let setup_compiler_printer (syntax_kind : [ syntax_kind | `default])= 
-  (match syntax_kind with 
-   | `default -> ()  
-   | #syntax_kind as k -> Config.syntax_kind := k);   
-  let syntax_kind = !Config.syntax_kind in
-  if syntax_kind = `rescript then begin
-    Lazy.force Res_outcome_printer.setup  
-  end  
-
-
+let setup_outcome_printer () =
+  Lazy.force Res_outcome_printer.setup  
 
 let setup_runtime_path path = 
   let u0 = Filename.dirname path in 
@@ -51,53 +41,37 @@ let process_file sourcefile ?(kind ) ppf =
      properly
   *)
   let uncurried = !Config.uncurried in
+  setup_outcome_printer ();
   let kind =
     match kind with 
     | None -> Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile)  
     | Some kind -> kind in 
   let res = match kind with 
-  | Ml ->
-    let sourcefile = set_abs_input_name  sourcefile in     
-    setup_compiler_printer `ml;
-    Js_implementation.implementation 
-      ~parser:Pparse_driver.parse_implementation
-      ppf sourcefile 
-  | Mli  ->   
-    let sourcefile = set_abs_input_name  sourcefile in   
-    setup_compiler_printer `ml;
-    Js_implementation.interface 
-      ~parser:Pparse_driver.parse_interface
-      ppf sourcefile 
   | Res -> 
     let sourcefile = set_abs_input_name  sourcefile in     
-    setup_compiler_printer `rescript;
     Js_implementation.implementation 
       ~parser:(Res_driver.parse_implementation ~ignore_parse_errors:!Clflags.ignore_parse_errors)
       ppf sourcefile 
   | Resi ->   
     let sourcefile = set_abs_input_name  sourcefile in 
-    setup_compiler_printer `rescript;
     Js_implementation.interface 
       ~parser:(Res_driver.parse_interface ~ignore_parse_errors:!Clflags.ignore_parse_errors)
       ppf sourcefile      
   | Intf_ast 
     ->     
     Js_implementation.interface_mliast ppf sourcefile
-      setup_compiler_printer 
   (* The printer setup is done in the runtime depends on
      the content of ast
   *)  
   | Impl_ast 
     -> 
-    Js_implementation.implementation_mlast ppf sourcefile 
-      setup_compiler_printer
+    Js_implementation.implementation_mlast ppf sourcefile
   | Mlmap 
     -> 
     Location.set_input_name  sourcefile;    
     Js_implementation.implementation_map ppf sourcefile 
   | Cmi
     ->
-    setup_compiler_printer `default;
     let cmi_sign = (Cmi_format.read_cmi sourcefile).cmi_sign in 
     Printtyp.signature Format.std_formatter cmi_sign ; 
     Format.pp_print_newline Format.std_formatter ()      
@@ -182,22 +156,12 @@ let anonymous ~(rev_args : string list) =
           Bsc_args.bad_arg "can not handle multiple files"
     end
 
-(** used by -impl -intf *)
-let impl filename =
-  Js_config.js_stdout := false;  
-  process_file filename ~kind:Ml ppf ;;
-let intf filename =
-  Js_config.js_stdout := false ;  
-  process_file filename ~kind:Mli ppf;;
-
-
 let format_file input =  
   let ext = Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe input) in 
-  let syntax = 
-    match ext with 
-    | Res | Resi -> `res 
-    | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
-  let formatted = Res_multi_printer.print ~ignore_parse_errors:!Clflags.ignore_parse_errors syntax ~input in 
+  ( match ext with 
+    | Res | Resi -> ()
+    | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) ); 
+  let formatted = Res_multi_printer.print ~ignore_parse_errors:!Clflags.ignore_parse_errors input in 
   match !Clflags.output_name with 
   | None ->
     output_string stdout formatted
@@ -406,12 +370,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-bs-loc", set Clflags.dump_location, 
     "*internal*  dont display location with -dtypedtree, -dparsetree";
-
-    "-impl",  string_call impl,
-    "*internal* <file>  Compile <file> as a .ml file";
-
-    "-intf", string_call intf,
-    "*internal* <file>  Compile <file> as a .mli file";
 
     "-dtypedtree", set Clflags.dump_typedtree, 
     "*internal* debug typedtree";
