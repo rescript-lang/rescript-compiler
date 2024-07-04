@@ -15,6 +15,7 @@
 #### :bug: Bug Fix
 
 - Fix tag function location on compiler error. https://github.com/rescript-lang/rescript-compiler/pull/6816
+- Fix Deno compatibility issues on Windows. https://github.com/rescript-lang/rescript-compiler/pull/6850 
 
 # 11.1.3-rc.1
 
