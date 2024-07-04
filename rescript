@@ -61,10 +61,15 @@ process.on("uncaughtException", onUncaughtException);
 // Ctrl+C
 process.on("SIGINT", exitProcess);
 // kill pid
-process.on("SIGUSR1", exitProcess);
-process.on("SIGUSR2", exitProcess);
-process.on("SIGTERM", exitProcess);
-process.on("SIGHUP", exitProcess);
+try {
+  process.on("SIGUSR1", exitProcess);
+  process.on("SIGUSR2", exitProcess);
+  process.on("SIGTERM", exitProcess);
+  process.on("SIGHUP", exitProcess);
+} catch (_e) {
+  // Deno might throw an error here, see https://github.com/denoland/deno/issues/9995
+  // TypeError: Windows only supports ctrl-c (SIGINT) and ctrl-break (SIGBREAK).
+}
 
 const args = process.argv.slice(2);
 const argPatterns = {
