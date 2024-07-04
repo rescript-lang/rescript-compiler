@@ -187,6 +187,9 @@ jobs:
     runs-on: ${{matrix.os}}
 
     env:
+      # setup-ocaml opam version cannot be configured
+      # we do track its version mannually
+      OPAM_VERSION: 2.2.0
       DUNE_PROFILE: release
 
     steps:
@@ -245,10 +248,9 @@ jobs:
             ~/.opam
             _opam
             .opam-path
-            .opam-env
             D:\cygwin
             D:\.opam
-          key: opam-env-v10-${{ matrix.os }}-${{ hashFiles('dune-project') }}
+          key: opam-env-v1-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
         uses: ocaml/setup-ocaml@v3.0.0
@@ -257,12 +259,17 @@ jobs:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
           opam-pin: false
 
-      - name: Get OPAM environment
+      - name: Get OPAM executable path
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          which opam | tee .opam-path
-          opam env > .opam-env
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const opamPath = await io.which('opam', true);
+            console.log('opam executable found: %s', opamPath);
+
+            const fs = require('fs/promises');
+            await fs.writeFile('.opam-path', opamPath, 'utf-8');
+            console.log('stored path to .opam-path');
 
       - name: Install OPAM dependencies
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
@@ -277,10 +284,9 @@ jobs:
             ~/.opam
             _opam
             .opam-path
-            .opam-env
             D:\cygwin
             D:\.opam
-          key: opam-env-v10-${{ matrix.os }}-${{ hashFiles('dune-project') }}
+          key: opam-env-v1-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}
 
       - name: Use cached OPAM environment
         if: steps.cache-opam-env.outputs.cache-hit == 'true'
@@ -296,7 +302,7 @@ jobs:
           if [[ "$RUNNER_OS" != "Windows" ]]; then
             echo "OPAMROOT=$HOME/.opam"      >> "$GITHUB_ENV"
           else
-            echo "OPAMROOT=D:\\.opam"         >> "$GITHUB_ENV"
+            echo "OPAMROOT=D:\\.opam"        >> "$GITHUB_ENV"
           fi
 
           OPAM_PATH="$(cat .opam-path)"
