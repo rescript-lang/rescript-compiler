@@ -51,7 +51,7 @@
  * v4: Added `config.open_modules` to the BundleConfig to enable implicitly opened
  * modules in the playground.
  * *)
-let api_version = "4"
+let api_version = "5"
 
 module Js = Js_of_ocaml.Js
 
