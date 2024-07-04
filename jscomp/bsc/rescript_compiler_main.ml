@@ -306,9 +306,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-unboxed-types", set Clflags.unboxed_types,
     "*internal* Unannotated unboxable types will be unboxed";
 
-    "-bs-ml-out", unit_call (fun _ -> Config.syntax_kind := `ml),
-    "*internal* Print compiler output in ML syntax";
-
     "-bs-D",  string_call define_variable,
     "Define conditional variable e.g, -D DEBUG=true";
 
