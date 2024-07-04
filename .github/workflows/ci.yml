@@ -187,6 +187,9 @@ jobs:
     runs-on: ${{matrix.os}}
 
     env:
+      # setup-ocaml opam version cannot be configured
+      # we do track its version mannually
+      OPAM_VERSION: 2.2.0
       DUNE_PROFILE: release
 
     steps:
@@ -245,36 +248,28 @@ jobs:
             ~/.opam
             _opam
             .opam-path
-            .opam-env
             D:\cygwin
             D:\.opam
-          key: opam-env-v8-${{ matrix.os }}-${{ hashFiles('dune-project') }}
+          key: opam-env-v1-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
-        uses: ocaml/setup-ocaml@v2
-        if: steps.cache-opam-env.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
+        uses: ocaml/setup-ocaml@v3.0.0
+        if: steps.cache-opam-env.outputs.cache-hit != 'true'
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
           opam-pin: false
-          opam-depext: false
 
-      - name: Use OCaml ${{matrix.ocaml_compiler}} (Windows)
-        uses: ocaml/setup-ocaml@v2
-        if: steps.cache-opam-env.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
-        with:
-          ocaml-compiler: ocaml-variants.5.2.0+options,ocaml-option-mingw
-          opam-pin: false
-          opam-depext: false
-          opam-repositories: |
-            windows-5.0: https://github.com/dra27/opam-repository.git#windows-5.0
-            sunset: https://github.com/ocaml-opam/opam-repository-mingw.git#sunset
-            default: https://github.com/ocaml/opam-repository.git
-
-      - name: Get OPAM environment
+      - name: Get OPAM executable path
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
-        run: |
-          command -v opam | tee .opam-path
-          opam env > .opam-env
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const opamPath = await io.which('opam', true);
+            console.log('opam executable found: %s', opamPath);
+
+            const fs = require('fs/promises');
+            await fs.writeFile('.opam-path', opamPath, 'utf-8');
+            console.log('stored path to .opam-path');
 
       - name: Install OPAM dependencies
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
@@ -289,10 +284,9 @@ jobs:
             ~/.opam
             _opam
             .opam-path
-            .opam-env
             D:\cygwin
             D:\.opam
-          key: opam-env-v8-${{ matrix.os }}-${{ hashFiles('dune-project') }}
+          key: opam-env-v1-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}
 
       - name: Use cached OPAM environment
         if: steps.cache-opam-env.outputs.cache-hit == 'true'
@@ -308,15 +302,14 @@ jobs:
           if [[ "$RUNNER_OS" != "Windows" ]]; then
             echo "OPAMROOT=$HOME/.opam"      >> "$GITHUB_ENV"
           else
-            echo "OPAMROOT=D:\\.opam"         >> "$GITHUB_ENV"
+            echo "OPAMROOT=D:\\.opam"        >> "$GITHUB_ENV"
           fi
 
-          if [[ "$RUNNER_OS" != "Windows" ]]; then
-            OPAM_PATH="$(cat .opam-path)"
-            chmod +x "$OPAM_PATH"
-            dirname "$OPAM_PATH" >> "$GITHUB_PATH"
+          OPAM_PATH="$(cat .opam-path)"
+          chmod +x "$OPAM_PATH"
+          dirname "$OPAM_PATH" >> "$GITHUB_PATH"
 
-          else
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
             fsutil behavior query SymlinkEvaluation
             fsutil behavior set symlinkEvaluation R2L:1 R2R:1
             fsutil behavior query SymlinkEvaluation
@@ -365,6 +358,8 @@ jobs:
       - name: "Check if syntax subfolder has changed"
         id: syntax-diff
         shell: bash
+        env:
+          SHELLOPTS: igncr # see https://github.com/ocaml/setup-ocaml/issues/815
         run: |
           if git diff --name-only --exit-code HEAD^ HEAD -- jscomp/syntax; then
             echo "syntax_status=unchanged" >> $GITHUB_ENV
@@ -519,7 +514,9 @@ jobs:
           path: packages/test
 
       - name: Install ReScript package
-        run: npm i rescript-${{ needs.package.outputs.rescript_version }}.tgz
+        run: |
+          npm i --ignore-scripts --no-audit \
+            rescript-${{ needs.package.outputs.rescript_version }}.tgz
         shell: bash
         working-directory: packages/test
 
