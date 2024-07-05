@@ -47,8 +47,6 @@ val get_uncurry_arity : t -> int option
    None -- means not a function
 *)
 
-val get_curry_labels : t -> Asttypes.arg_label list
-
 type param_type = {
   label: Asttypes.arg_label;
   ty: t;

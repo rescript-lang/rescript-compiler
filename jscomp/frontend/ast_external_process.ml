@@ -222,7 +222,6 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
     (prim_attributes : Ast_attributes.t) : Ast_attributes.t * external_desc =
   (* shared by `[@@val]`, `[@@send]`,
      `[@@set]`, `[@@get]` , `[@@new]`
-     `[@@bs.send.pipe]` does not use it
   *)
   let name_from_payload_or_prim ~loc (payload : Parsetree.payload) :
       bundle_source =
