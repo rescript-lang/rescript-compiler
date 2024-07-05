@@ -139,7 +139,6 @@ Js.String2.get(`Rẽasöń`, 5) == `ń`
 */
 external get: (t, int) => t = ""
 
-@bs.send.pipe(: t)
 /**
 `charAt(n, s)` gets the character at index `n` within string `s`. If `n` is
 negative or greater than the length of `s`, it returns the empty string. If the
@@ -157,9 +156,10 @@ Js.String.charAt(12, "Reason") == ""
 Js.String.charAt(5, `Rẽasöń`) == `ń`
 ```
 */
-external charAt: int => t = "charAt"
+@send
+external charAt: (t, int) => t = "charAt"
+let charAt = (arg1, obj) => charAt(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 `charCodeAt(n, s)` returns the character code at position `n` in string `s`;
 the result is in the range 0-65535, unlke `codePointAt`, so it will not work
@@ -177,9 +177,10 @@ Js.String.charCodeAt(0, `😺`) == 0xd83d->Belt.Int.toFloat
 Js.String.codePointAt(0, `😺`) == Some(0x1f63a)
 ```
 */
-external charCodeAt: int => float = "charCodeAt"
+@send
+external charCodeAt: (t, int) => float = "charCodeAt"
+let charCodeAt = (arg1, obj) => charCodeAt(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 `codePointAt(n, s)` returns the code point at position `n` within string `s` as
 a `Some(value)`. The return value handles code points greater than or equal to
@@ -196,9 +197,10 @@ Js.String.codePointAt(1, `¿😺?`) == Some(0x1f63a)
 Js.String.codePointAt(5, "abc") == None
 ```
 */
-external codePointAt: int => option<int> = "codePointAt"
+@send
+external codePointAt: (t, int) => option<int> = "codePointAt"
+let codePointAt = (arg1, obj) => codePointAt(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 `concat(append, original)` returns a new `string` with `append` added after
 `original`.
@@ -212,10 +214,10 @@ on MDN.
 Js.String.concat("bell", "cow") == "cowbell"
 ```
 */
-external concat: t => t = "concat"
+@send
+external concat: (t, t) => t = "concat"
+let concat = (arg1, obj) => concat(obj, arg1)
 
-@bs.send.pipe(: t)
-@variadic
 /**
 `concat(arr, original)` returns a new `string` consisting of each item of an
 array of strings added to the `original` string.
@@ -229,9 +231,11 @@ on MDN.
 Js.String.concatMany(["2nd", "3rd", "4th"], "1st") == "1st2nd3rd4th"
 ```
 */
-external concatMany: array<t> => t = "concat"
+@send
+@variadic
+external concatMany: (t, array<t>) => t = "concat"
+let concatMany = (arg1, obj) => concatMany(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 ES2015: `endsWith(substr, str)` returns `true` if the `str` ends with `substr`,
 `false` otherwise.
@@ -246,9 +250,10 @@ Js.String.endsWith("Script", "ReScript") == true
 Js.String.endsWith("Script", "C++") == false
 ```
 */
-external endsWith: t => bool = "endsWith"
+@send
+external endsWith: (t, t) => bool = "endsWith"
+let endsWith = (arg1, obj) => endsWith(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 `endsWithFrom(ending, len, str)` returns `true` if the first len characters of
 `str` end with `ending`, `false` otherwise. If `len` is greater than or equal
@@ -267,9 +272,10 @@ Js.String.endsWithFrom("cde", 99, "abcde") == true
 Js.String.endsWithFrom("ple", 7, "example.dat") == true
 ```
 */
-external endsWithFrom: (t, int) => bool = "endsWith"
+@send
+external endsWithFrom: (t, t, int) => bool = "endsWith"
+let endsWithFrom = (arg1, arg2, obj) => endsWithFrom(obj, arg1, arg2)
 
-@bs.send.pipe(: t)
 /**
 ES2015: `includes(searchValue, str)` returns `true` if `searchValue` is found
 anywhere within `str`, false otherwise.
@@ -286,9 +292,10 @@ Js.String.includes("pro", "programmer") == true
 Js.String.includes("xyz", "programmer.dat") == false
 ```
 */
-external includes: t => bool = "includes"
+@send
+external includes: (t, t) => bool = "includes"
+let includes = (arg1, obj) => includes(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 ES2015: `includes(searchValue start, str)` returns `true` if `searchValue` is
 found anywhere within `str` starting at character number `start` (where 0 is
@@ -305,9 +312,10 @@ Js.String.includesFrom("gram", 4, "programmer") == false
 Js.String.includesFrom(`한`, 1, `대한민국`) == true
 ```
 */
-external includesFrom: (t, int) => bool = "includes"
+@send
+external includesFrom: (t, t, int) => bool = "includes"
+let includesFrom = (arg1, arg2, obj) => includesFrom(obj, arg1, arg2)
 
-@bs.send.pipe(: t)
 /**
 ES2015: `indexOf(searchValue, str)` returns the position at which `searchValue`
 was first found within `str`, or -1 if `searchValue` is not in `str`.
@@ -324,9 +332,10 @@ Js.String.indexOf("ee", "beekeeper") == 1
 Js.String.indexOf("xyz", "bookseller") == -1
 ```
 */
-external indexOf: t => int = "indexOf"
+@send
+external indexOf: (t, t) => int = "indexOf"
+let indexOf = (arg1, obj) => indexOf(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 `indexOfFrom(searchValue, start, str)` returns the position at which
 `searchValue` was found within `str` starting at character position `start`, or
@@ -345,9 +354,10 @@ Js.String.indexOfFrom("sell", 2, "bookseller") == 4
 Js.String.indexOfFrom("sell", 5, "bookseller") == -1
 ```
 */
-external indexOfFrom: (t, int) => int = "indexOf"
+@send
+external indexOfFrom: (t, t, int) => int = "indexOf"
+let indexOfFrom = (arg1, arg2, obj) => indexOfFrom(obj, arg1, arg2)
 
-@bs.send.pipe(: t)
 /**
 `lastIndexOf(searchValue, str)` returns the position of the last occurrence of
 `searchValue` within `str`, searching backwards from the end of the string.
@@ -365,9 +375,10 @@ Js.String.lastIndexOf("ee", "beekeeper") == 4
 Js.String.lastIndexOf("xyz", "abcdefg") == -1
 ```
 */
-external lastIndexOf: t => int = "lastIndexOf"
+@send
+external lastIndexOf: (t, t) => int = "lastIndexOf"
+let lastIndexOf = (arg1, obj) => lastIndexOf(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 `lastIndexOfFrom(searchValue, start, str)` returns the position of the last
 occurrence of `searchValue` within `str`, searching backwards from the given
@@ -386,11 +397,12 @@ Js.String.lastIndexOfFrom("ee", 3, "beekeeper") == 1
 Js.String.lastIndexOfFrom("xyz", 4, "abcdefg") == -1
 ```
 */
-external lastIndexOfFrom: (t, int) => int = "lastIndexOf"
+@send
+external lastIndexOfFrom: (t, t, int) => int = "lastIndexOf"
+let lastIndexOfFrom = (arg1, arg2, obj) => lastIndexOfFrom(obj, arg1, arg2)
 
 /* extended by ECMA-402 */
 
-@bs.send.pipe(: t)
 /**
 `localeCompare(comparison, reference)` returns
 - a negative value if reference comes before comparison in sort order
@@ -408,10 +420,10 @@ Js.String.localeCompare("cat", "cat") == 0.0
 Js.String.localeCompare("cat", "CAT") > 0.0
 ```
 */
-external localeCompare: t => float = "localeCompare"
+@send
+external localeCompare: (t, t) => float = "localeCompare"
+let localeCompare = (arg1, obj) => localeCompare(obj, arg1)
 
-@bs.send.pipe(: t)
-@return({null_to_opt: null_to_opt})
 /**
 `match(regexp, str)` matches a `string` against the given `regexp`. If there is
 no match, it returns `None`. For regular expressions without the g modifier, if
@@ -435,9 +447,11 @@ Js.String.match_(%re("/(\d+)-(\d+)-(\d+)/"), "Today is 2018-04-05.") ==
 Js.String.match_(%re("/b[aeiou]g/"), "The large container.") == None
 ```
 */
-external match_: Js_re.t => option<array<option<t>>> = "match"
+@send
+@return(null_to_opt)
+external match_: (t, Js_re.t) => option<array<option<t>>> = "match"
+let match_ = (arg1, obj) => match_(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 `normalize(str)` returns the normalized Unicode string using Normalization Form
 Canonical (NFC) Composition. Consider the character ã, which can be represented
@@ -451,9 +465,9 @@ on MDN.
 See also [Unicode technical report #15](https://unicode.org/reports/tr15/) for
 details.
 */
-external normalize: t = "normalize"
+@send
+external normalize: t => t = "normalize"
 
-@bs.send.pipe(: t)
 /**
 ES2015: `normalize(form, str)` returns the normalized Unicode string using the specified form of normalization, which may be one of:
 - "NFC" — Normalization Form Canonical Composition.
@@ -465,9 +479,10 @@ See [`String.normalize`](https://developer.mozilla.org/en-US/docs/Web/JavaScript
 
 See also [Unicode technical report #15](https://unicode.org/reports/tr15/) for details.
 */
-external normalizeByForm: t => t = "normalize"
+@send
+external normalizeByForm: (t, t) => t = "normalize"
+let normalizeByForm = (arg1, obj) => normalizeByForm(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 `repeat(n, str)` returns a `string` that consists of `n` repetitions of `str`.
 Raises `RangeError` if `n` is negative.
@@ -482,9 +497,10 @@ Js.String.repeat(3, "ha") == "hahaha"
 Js.String.repeat(0, "empty") == ""
 ```
 */
-external repeat: int => t = "repeat"
+@send
+external repeat: (t, int) => t = "repeat"
+let repeat = (arg1, obj) => repeat(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 ES2015: `replace(substr, newSubstr, str)` returns a new `string` which is
 identical to `str` except with the first matching instance of `substr` replaced
@@ -501,9 +517,10 @@ Js.String.replace("old", "new", "old string") == "new string"
 Js.String.replace("the", "this", "the cat and the dog") == "this cat and the dog"
 ```
 */
-external replace: (t, t) => t = "replace"
+@send
+external replace: (t, t, t) => t = "replace"
+let replace = (arg1, arg2, obj) => replace(obj, arg1, arg2)
 
-@bs.send.pipe(: t)
 /**
 `replaceByRe(regex, replacement, str)` returns a new `string` where occurrences
 matching regex have been replaced by `replacement`.
@@ -518,9 +535,10 @@ Js.String.replaceByRe(%re("/[aeiou]/g"), "x", "vowels be gone") == "vxwxls bx gx
 Js.String.replaceByRe(%re("/(\w+) (\w+)/"), "$2, $1", "Juan Fulano") == "Fulano, Juan"
 ```
 */
-external replaceByRe: (Js_re.t, t) => t = "replace"
+@send
+external replaceByRe: (t, Js_re.t, t) => t = "replace"
+let replaceByRe = (arg1, arg2, obj) => replaceByRe(obj, arg1, arg2)
 
-@bs.send.pipe(: t)
 /**
 Returns a new `string` with some or all matches of a pattern with no capturing
 parentheses replaced by the value returned from the given function. The
@@ -540,9 +558,10 @@ let matchFn = (matchPart, _offset, _wholeString) => Js.String.toUpperCase(matchP
 Js.String.unsafeReplaceBy0(re, matchFn, str) == "bEAUtIfUl vOwEls"
 ```
 */
-external unsafeReplaceBy0: (Js_re.t, @uncurry (t, int, t) => t) => t = "replace"
+@send
+external unsafeReplaceBy0: (t, Js_re.t, @uncurry (t, int, t) => t) => t = "replace"
+let unsafeReplaceBy0 = (arg1, arg2, obj) => unsafeReplaceBy0(obj, arg1, arg2)
 
-@bs.send.pipe(: t)
 /**
 Returns a new `string` with some or all matches of a pattern with one set of
 capturing parentheses replaced by the value returned from the given function.
@@ -565,9 +584,10 @@ let matchFn = (_match, part1, _offset, _wholeString) => {
 Js.String.unsafeReplaceBy1(re, matchFn, str) == "Jony is 41"
 ```
 */
-external unsafeReplaceBy1: (Js_re.t, @uncurry (t, t, int, t) => t) => t = "replace"
+@send
+external unsafeReplaceBy1: (t, Js_re.t, @uncurry (t, t, int, t) => t) => t = "replace"
+let unsafeReplaceBy1 = (arg1, arg2, obj) => unsafeReplaceBy1(obj, arg1, arg2)
 
-@bs.send.pipe(: t)
 /**
 Returns a new `string` with some or all matches of a pattern with two sets of
 capturing parentheses replaced by the value returned from the given function.
@@ -593,9 +613,10 @@ let matchFn = (_match, p1, p2, _offset, _wholeString) => {
 Js.String.unsafeReplaceBy2(re, matchFn, str) == "42"
 ```
 */
-external unsafeReplaceBy2: (Js_re.t, @uncurry (t, t, t, int, t) => t) => t = "replace"
+@send
+external unsafeReplaceBy2: (t, Js_re.t, @uncurry (t, t, t, int, t) => t) => t = "replace"
+let unsafeReplaceBy2 = (arg1, arg2, obj) => unsafeReplaceBy2(obj, arg1, arg2)
 
-@bs.send.pipe(: t)
 /**
 Returns a new `string` with some or all matches of a pattern with three sets of
 capturing parentheses replaced by the value returned from the given function.
@@ -606,9 +627,10 @@ matched.
 See [`String.replace`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
 on MDN.
 */
-external unsafeReplaceBy3: (Js_re.t, @uncurry (t, t, t, t, int, t) => t) => t = "replace"
+@send
+external unsafeReplaceBy3: (t, Js_re.t, @uncurry (t, t, t, t, int, t) => t) => t = "replace"
+let unsafeReplaceBy3 = (arg1, arg2, obj) => unsafeReplaceBy3(obj, arg1, arg2)
 
-@bs.send.pipe(: t)
 /**
 `search(regexp, str)` returns the starting position of the first match of
 `regexp` in the given `str`, or -1 if there is no match.
@@ -623,9 +645,10 @@ Js.String.search(%re("/\d+/"), "testing 1 2 3") == 8
 Js.String.search(%re("/\d+/"), "no numbers") == -1
 ```
 */
-external search: Js_re.t => int = "search"
+@send
+external search: (t, Js_re.t) => int = "search"
+let search = (arg1, obj) => search(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 `slice(from:n1, to_:n2, str)` returns the substring of `str` starting at
 character `n1` up to but not including `n2`.
@@ -644,9 +667,10 @@ Js.String.slice(~from=-4, ~to_=-2, "abcdefg") == "de"
 Js.String.slice(~from=5, ~to_=1, "abcdefg") == ""
 ```
 */
-external slice: (~from: int, ~to_: int) => t = "slice"
+@send
+external slice: (t, ~from: int, ~to_: int) => t = "slice"
+let slice = (~from, ~to_, obj) => slice(obj, ~from, ~to_)
 
-@bs.send.pipe(: t)
 /**
 `sliceToEnd(str, from:n)` returns the substring of `str` starting at character
 `n` to the end of the string.
@@ -663,9 +687,10 @@ Js.String.sliceToEnd(~from=-2, "abcdefg") == "fg"
 Js.String.sliceToEnd(~from=7, "abcdefg") == ""
 ```
 */
-external sliceToEnd: (~from: int) => t = "slice"
+@send
+external sliceToEnd: (t, ~from: int) => t = "slice"
+let sliceToEnd = (~from, obj) => sliceToEnd(obj, ~from)
 
-@bs.send.pipe(: t)
 /**
 `split(delimiter, str)` splits the given `str` at every occurrence of
 `delimiter` and returns an array of the resulting substrings.
@@ -682,9 +707,10 @@ Js.String.split("::", "good::bad as great::awful") == ["good", "bad as great", "
 Js.String.split(";", "has-no-delimiter") == ["has-no-delimiter"]
 ```
 */
-external split: t => array<t> = "split"
+@send
+external split: (t, t) => array<t> = "split"
+let split = (arg1, obj) => split(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 `splitAtMost(delimiter, ~limit:n, str)` splits the given `str` at every
 occurrence of `delimiter` and returns an array of the first `n` resulting
@@ -702,9 +728,10 @@ Js.String.splitAtMost("/", ~limit=0, "ant/bee/cat/dog/elk") == []
 Js.String.splitAtMost("/", ~limit=9, "ant/bee/cat/dog/elk") == ["ant", "bee", "cat", "dog", "elk"]
 ```
 */
-external splitAtMost: (t, ~limit: int) => array<t> = "split"
+@send
+external splitAtMost: (t, t, ~limit: int) => array<t> = "split"
+let splitAtMost = (arg1, ~limit, obj) => splitAtMost(obj, ~limit, arg1)
 
-@bs.send.pipe(: t)
 /**
 `splitByRe(regex, str)` splits the given `str` at every occurrence of `regex`
 and returns an array of the resulting substrings.
@@ -723,9 +750,10 @@ Js.String.splitByRe(%re("/\s*[,;]\s*TODO/"), "art; bed , cog ;dad") == [
   ]
 ```
 */
-external splitByRe: Js_re.t => array<option<t>> = "split"
+@send
+external splitByRe: (t, Js_re.t) => array<option<t>> = "split"
+let splitByRe = (arg1, obj) => splitByRe(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 `splitByReAtMost(regex, ~limit:n, str)` splits the given `str` at every
 occurrence of `regex` and returns an array of the first `n` resulting
@@ -754,9 +782,10 @@ Js.String.splitByReAtMost(%re("/\s*[,;]\s*TODO/"), ~limit=8, "one: two: three: f
   ]
 ```
 */
-external splitByReAtMost: (Js_re.t, ~limit: int) => array<option<t>> = "split"
+@send
+external splitByReAtMost: (t, Js_re.t, ~limit: int) => array<option<t>> = "split"
+let splitByReAtMost = (arg1, ~limit, obj) => splitByReAtMost(obj, arg1, ~limit)
 
-@bs.send.pipe(: t)
 /**
 ES2015: `startsWith(substr, str)` returns `true` if the `str` starts with
 `substr`, `false` otherwise.
@@ -772,9 +801,10 @@ Js.String.startsWith("", "ReScript") == true
 Js.String.startsWith("Re", "JavaScript") == false
 ```
 */
-external startsWith: t => bool = "startsWith"
+@send
+external startsWith: (t, t) => bool = "startsWith"
+let startsWith = (arg1, obj) => startsWith(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 ES2015: `startsWithFrom(substr, n, str)` returns `true` if the `str` starts
 with `substr` starting at position `n`, false otherwise. If `n` is negative,
@@ -791,9 +821,10 @@ Js.String.startsWithFrom("", 2, "ReScript") == true
 Js.String.startsWithFrom("Scri", 2, "JavaScript") == false
 ```
 */
-external startsWithFrom: (t, int) => bool = "startsWith"
+@send
+external startsWithFrom: (t, t, int) => bool = "startsWith"
+let startsWithFrom = (arg1, arg2, obj) => startsWithFrom(obj, arg1, arg2)
 
-@bs.send.pipe(: t)
 /**
 `substr(~from:n, str)` returns the substring of `str` from position `n` to the
 end of the string.
@@ -814,9 +845,10 @@ Js.String.substr(~from=-3, "abcdefghij") == "hij"
 Js.String.substr(~from=12, "abcdefghij") == ""
 ```
 */
-external substr: (~from: int) => t = "substr"
+@send
+external substr: (t, ~from: int) => t = "substr"
+let substr = (~from, obj) => substr(obj, ~from)
 
-@bs.send.pipe(: t)
 /**
 `substrAtMost(~from: pos, ~length: n, str)` returns the substring of `str` of
 length `n` starting at position `pos`.
@@ -838,9 +870,10 @@ Js.String.substrAtMost(~from=-3, ~length=4, "abcdefghij") == "hij"
 Js.String.substrAtMost(~from=12, ~length=2, "abcdefghij") == ""
 ```
 */
-external substrAtMost: (~from: int, ~length: int) => t = "substr"
+@send
+external substrAtMost: (t, ~from: int, ~length: int) => t = "substr"
+let substrAtMost = (~from, ~length, obj) => substrAtMost(obj, ~from, ~length)
 
-@bs.send.pipe(: t)
 /**
 `substring(~from: start, ~to_: finish, str)` returns characters `start` up to
 but not including finish from `str`.
@@ -858,9 +891,10 @@ Js.String.substring(~from=6, ~to_=3, "playground") == "ygr"
 Js.String.substring(~from=4, ~to_=12, "playground") == "ground"
 ```
 */
-external substring: (~from: int, ~to_: int) => t = "substring"
+@send
+external substring: (t, ~from: int, ~to_: int) => t = "substring"
+let substring = (~from, ~to_, obj) => substring(obj, ~from, ~to_)
 
-@bs.send.pipe(: t)
 /**
 `substringToEnd(~from: start, str)` returns the substring of `str` from
 position `start` to the end.
@@ -877,9 +911,10 @@ Js.String.substringToEnd(~from=-3, "playground") == "playground"
 Js.String.substringToEnd(~from=12, "playground") == ""
 ```
 */
-external substringToEnd: (~from: int) => t = "substring"
+@send
+external substringToEnd: (t, ~from: int) => t = "substring"
+let substringToEnd = (~from, obj) => substringToEnd(obj, ~from)
 
-@bs.send.pipe(: t)
 /**
 `toLowerCase(str)` converts `str` to lower case using the locale-insensitive
 case mappings in the Unicode Character Database. Notice that the conversion can
@@ -898,18 +933,18 @@ Js.String.toLowerCase(`ΣΠ`) == `σπ`
 Js.String.toLowerCase(`ΠΣ`) == `πς`
 ```
 */
-external toLowerCase: t = "toLowerCase"
+@send
+external toLowerCase: t => t = "toLowerCase"
 
-@bs.send.pipe(: t)
 /**
 `toLocaleLowerCase(str)` converts `str` to lower case using the current locale.
 
 See [`String.toLocaleLowerCase`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toLocaleLowerCase)
 on MDN.
 */
-external toLocaleLowerCase: t = "toLocaleLowerCase"
+@send
+external toLocaleLowerCase: t => t = "toLocaleLowerCase"
 
-@bs.send.pipe(: t)
 /**
 `toUpperCase(str)` converts `str` to upper case using the locale-insensitive
 case mappings in the Unicode Character Database. Notice that the conversion can
@@ -927,18 +962,18 @@ Js.String.toUpperCase(`Straße`) == `STRASSE`
 Js.String.toUpperCase(`πς`) == `ΠΣ`
 ```
 */
-external toUpperCase: t = "toUpperCase"
+@send
+external toUpperCase: t => t = "toUpperCase"
 
-@bs.send.pipe(: t)
 /**
 `toLocaleUpperCase(str)` converts `str` to upper case using the current locale.
 
 See [`String.to:LocaleUpperCase`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toLocaleUpperCase)
 on MDN.
 */
-external toLocaleUpperCase: t = "toLocaleUpperCase"
+@send
+external toLocaleUpperCase: t => t = "toLocaleUpperCase"
 
-@bs.send.pipe(: t)
 /**
 `trim(str)` returns a string that is `str` with whitespace stripped from both
 ends. Internal whitespace is not removed.
@@ -953,11 +988,11 @@ Js.String.trim("   abc def   ") == "abc def"
 Js.String.trim("\n\r\t abc def \n\n\t\r ") == "abc def"
 ```
 */
-external trim: t = "trim"
+@send
+external trim: t => t = "trim"
 
 /* HTML wrappers */
 
-@bs.send.pipe(: t)
 /**
 `anchor(anchorName, anchorText)` creates a string with an HTML `<a>` element
 with name attribute of `anchorName` and `anchorText` as its content. Please do
@@ -972,9 +1007,10 @@ on MDN.
 Js.String.anchor("page1", "Page One") == "<a name="page1">Page One</a>"
 ```
 */
-external anchor: t => t = "anchor"
+@send
+external anchor: (t, t) => t = "anchor"
+let anchor = (arg1, obj) => anchor(obj, arg1)
 
-@bs.send.pipe(: t)
 /**
 ES2015: `link(urlText, linkText)` creates a string with an HTML `<a>` element
 with href attribute of `urlText` and `linkText` as its content. Please do not
@@ -989,7 +1025,9 @@ on MDN.
 Js.String.link("page2.html", "Go to page two") == "<a href="page2.html">Go to page two</a>"
 ```
 */
-external link: t => t = "link"
+@send
+external link: (t, t) => t = "link"
+let link = (arg1, obj) => link(obj, arg1)
 
 /**
 Casts its argument to an `array_like` entity that can be processed by functions
