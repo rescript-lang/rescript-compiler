@@ -6,12 +6,6 @@ type cssRule /* TODO: Move to Webapi__Dom */
 @get external length: t => int = ""
 @get external parentRule: t => cssRule = ""
 
-@bs.send.pipe(: t) external getPropertyPriority: string => string = ""
-@bs.send.pipe(: t) external getPropertyValue: string => string = ""
-@bs.send.pipe(: t) external item: int => string = ""
-@bs.send.pipe(: t) external removeProperty: string => string = ""
-@bs.send.pipe(: t) external setProperty: (string, string, string) => unit = ""
-/* [@@bs.send.pipe : t] external setPropertyValue : (string, string) => unit = ""; */ /* not mentioned by MDN and not implemented by chrome, but in the CSSOM spec:  https://drafts.csswg.org/cssom/#the-cssstyledeclaration-interface */
 
 /* CSS2Properties */
 @get external azimuth: t => string = ""

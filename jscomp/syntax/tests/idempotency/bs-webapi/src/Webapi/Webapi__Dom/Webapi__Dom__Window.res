@@ -73,64 +73,6 @@ module Impl = (
   external window: t_window => t_window =
     "" /* This is pointless I think, it's just here because window is the implicit global scope, and it's needed to be able to get a reference to it */
 
-  @bs.send.pipe(: t_window) external alert: string => unit = ""
-  @bs.send.pipe(: t_window) external blur: unit = ""
-  @bs.send.pipe(: t_window)
-  external cancelIdleCallback: idleCallbackId => unit =
-    "" /* experimental, Cooperative Scheduling of Background Tasks */
-  @bs.send.pipe(: t_window) external close: unit = ""
-  @bs.send.pipe(: t_window) external confirm: string => bool = ""
-  @bs.send.pipe(: t_window) external focus: unit = ""
-  @bs.send.pipe(: t_window) external getComputedStyle: Dom.element => Dom.cssStyleDeclaration = ""
-  @bs.send.pipe(: t_window)
-  external getComputedStyleWithPseudoElement: (Dom.element, string) => Dom.cssStyleDeclaration =
-    "getComputedStyle"
-  @bs.send.pipe(: t_window) external getSelection: Dom.selection = ""
-  @bs.send.pipe(: t_window)
-  external matchMedia: string => mediaQueryList = "" /* experimental, CSSOM View module */
-  @bs.send.pipe(: t_window)
-  external moveBy: (int, int) => unit = "" /* experimental, CSSOM View module */
-  @bs.send.pipe(: t_window)
-  external moveTo: (int, int) => unit = "" /* experimental, CSSOM View module */
-  @bs.send.pipe(: t_window) @return(nullable)
-  external open_: (~url: string, ~name: string, ~features: string=?) => option<Dom.window> =
-    "open" /* yes, features is a stringly typed list of key value pairs, sigh */
-  @bs.send.pipe(: t_window)
-  external postMessage: ('a, string) => unit = "" /* experimental-ish?, Web Messaging */
-  @bs.send.pipe(: t_window)
-  external postMessageWithTransfers: ('a, string, array<transferable>) => unit =
-    "postMessage" /* experimental-ish?, Web Messaging */
-  @bs.send.pipe(: t_window) external print: unit = ""
-  @bs.send.pipe(: t_window) external prompt: string => string = ""
-  @bs.send.pipe(: t_window) external promptWithDefault: (string, string) => string = "prompt"
-  /* requestAnimationFrame: accessed directly via Webapi */
-  @bs.send.pipe(: t_window)
-  external requestIdleCallback: (idleDeadline => unit) => idleCallbackId =
-    "" /* experimental, Cooperative Scheduling of Background Tasks */
-  @bs.send.pipe(: t_window)
-  external requestIdleCallbackWithOptions: (
-    idleDeadline => unit,
-    {"timeout": int},
-  ) => idleCallbackId =
-    "requestIdleCallback" /* experimental, Cooperative Scheduling of Background Tasks */
-  @bs.send.pipe(: t_window)
-  external resizeBy: (int, int) => unit = "" /* experimental, CSSOM View module */
-  @bs.send.pipe(: t_window)
-  external resizeTo: (int, int) => unit = "" /* experimental, CSSOM View module */
-  @bs.send.pipe(: t_window)
-  external scroll: (float, float) => unit = "" /* experimental, CSSOM View module */
-  @bs.send.pipe(: t_window)
-  external scrollBy: (float, float) => unit = "" /* experimental, CSSOM View module */
-  @bs.send.pipe(: t_window)
-  external scrollTo: (float, float) => unit = "" /* experimental, CSSOM View module */
-  @bs.send.pipe(: t_window) external stop: unit = ""
-
-  @bs.send.pipe(: t_window)
-  external addPopStateEventListener: (@as("popstate") _, Dom.popStateEvent => unit) => unit =
-    "addEventListener"
-  @bs.send.pipe(: t_window)
-  external removePopStateEventListener: (@as("popstate") _, Dom.popStateEvent => unit) => unit =
-    "removeEventListener"
 
   @set
   external setOnLoad: (t_window, unit => unit) => unit =

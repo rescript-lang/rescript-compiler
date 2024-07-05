@@ -22,9 +22,3 @@ type t = Dom.location
 @get external password: t => string = ""
 @set external setPassword: (t, string) => unit = "password"
 @get external origin: t => string = ""
-
-@bs.send.pipe(: t) external assign: string => unit = ""
-@bs.send.pipe(: t) external reload: unit = ""
-@bs.send.pipe(: t) external reloadWithForce: @as(json`true`) _ => unit = "reload"
-@bs.send.pipe(: t) external replace: string => unit = ""
-@bs.send.pipe(: t) external toString: string = ""

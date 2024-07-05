@@ -16,9 +16,6 @@ module Impl = (
   @get external type_: T.t => string = "type"
   @get external isTrusted: T.t => bool = ""
 
-  @bs.send.pipe(: T.t) external preventDefault: unit = ""
-  @bs.send.pipe(: T.t) external stopImmediatePropagation: unit = ""
-  @bs.send.pipe(: T.t) external stopPropagation: unit = ""
 }
 
 type t = Dom.event

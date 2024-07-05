@@ -31,10 +31,6 @@ module Impl = (
   @get external encoding: t_htmlFormElement => string = ""
   @set external setEncoding: (t_htmlFormElement, string) => unit = "encoding"
 
-  @bs.send.pipe(: t_htmlFormElement) external submit: unit = ""
-  @bs.send.pipe(: t_htmlFormElement) external reset: unit = ""
-  @bs.send.pipe(: t_htmlFormElement) external checkValidity: bool = ""
-  @bs.send.pipe(: t_htmlFormElement) external reportValidity: bool = ""
 }
 
 type t = Dom.htmlFormElement

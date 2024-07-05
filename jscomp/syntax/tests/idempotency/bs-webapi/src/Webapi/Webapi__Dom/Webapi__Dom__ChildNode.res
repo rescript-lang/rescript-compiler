@@ -4,5 +4,5 @@ module Impl = (
     type t
   },
 ) => {
-  @bs.send.pipe(: T.t) external remove: unit = ""
+  external remove: unit = ""
 }
