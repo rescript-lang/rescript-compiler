@@ -23,30 +23,62 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 @@config({flags: ["-unboxed-types", "-w", "-49"]})
-@@ocaml.text(/* DESIGN:
+
+/* DESIGN:
    - It does not have any code, all its code will be inlined so that
        there will never be
    {[ require('js')]}
    - Its interface should be minimal
 */
 
-" This library provides bindings and necessary support for JS FFI.
-    It contains all bindings into [Js] namespace.
+/***
+The Js module mostly contains ReScript bindings to _standard JavaScript APIs_
+like [console.log](https://developer.mozilla.org/en-US/docs/Web/API/Console/log),
+or the JavaScript
+[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String),
+[Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date), and
+[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+classes.
 
-    @example {[
-      [| 1;2;3;4|]
-      |. Js.Array2.map (fun x -> x + 1 )
-      |. Js.Array2.reduce (+) 0
-      |. Js.log
-    ]}
-")
+It is meant as a zero-abstraction interop layer and directly exposes JavaScript functions as they are. If you can find your API in this module, prefer this over an equivalent Belt helper. For example, prefer [Js.Array2](js/array2) over [Belt.Array](belt/array)
 
-@@ocaml.text("/*")
+## Argument Order
 
-@ocaml.doc(" Types for JS objects ")
+For historical reasons, some APIs in the Js namespace (e.g. [Js.String](js/string)) are
+using the data-last argument order whereas others (e.g. [Js.Date](js/date)) are using data-first.
+
+For more information about these argument orders and the trade-offs between them, see
+[this blog post](https://www.javierchavarri.com/data-first-and-data-last-a-comparison/).
+
+_Eventually, all modules in the Js namespace are going to be migrated to data-first though._
+
+In the meantime, there are several options for dealing with the data-last APIs:
+
+## Examples
+
+```rescript
+/* Js.String (data-last API used with pipe last operator) */
+Js.log("2019-11-10" |> Js.String.split("-"))
+Js.log("ReScript" |> Js.String.startsWith("Re"))
+
+/* Js.String (data-last API used with pipe first operator) */
+Js.log("2019-11-10"->Js.String.split("-", _))
+Js.log("ReScript"->Js.String.startsWith("Re", _))
+
+/* Js.String (data-last API used without any piping) */
+Js.log(Js.String.split("-", "2019-11-10"))
+Js.log(Js.String.startsWith("Re", "ReScript"))
+```
+## Js.Xxx2 Modules
+
+Prefer `Js.Array2` over `Js.Array`, `Js.String2` over `Js.String`, etc. The latters are old modules.
+ */
+
+/** JS object type */
 type t<'a> = {..} as 'a
 
 module MapperRt = Js_mapperRt
+
 module Internal = {
   external opaqueFullApply: 'a => 'a = "%uncurried_apply"
 
@@ -55,190 +87,199 @@ module Internal = {
   external opaque: 'a => 'a = "%opaque"
 }
 
-@@ocaml.text("/*")
-
-@ocaml.doc(" nullable, value of this type can be either [null] or ['a]
-    this type is the same as type [t] in {!Null}
-")
+/**
+  Nullable value of this type can be either null or 'a. This type is equivalent to Js.Null.t.
+*/
 @unboxed
 type null<+'a> = Value('a) | @as(null) Null
 
-@ocaml.doc(" value of this type can be either [undefined] or ['a]
-    this type is the same as type [t] in {!Undefined}  ")
+/**
+  A value of this type can be either undefined or 'a. This type is equivalent to Js.Undefined.t.
+*/
 type undefined<+'a>
 
-@ocaml.doc(" value of this type can be [undefined], [null] or ['a]
-    this type is the same as type [t] n {!Null_undefined} ")
-@unboxed
-type nullable<+'a> = Value('a) | @as(null) Null | @as(undefined) Undefined
+@unboxed type nullable<+'a> = Value('a) | @as(null) Null | @as(undefined) Undefined
+
+/***
+  A value of this type can be undefined, null or 'a. This type is equivalent to Js.Null_undefined.t.
+*/
 
 type null_undefined<+'a> = nullable<'a>
 
 external toOption: nullable<'a> => option<'a> = "#nullable_to_opt"
 external undefinedToOption: undefined<'a> => option<'a> = "#undefined_to_opt"
 external nullToOption: null<'a> => option<'a> = "#null_to_opt"
-
 external isNullable: nullable<'a> => bool = "#is_nullable"
-
 external import: 'a => promise<'a> = "#import"
 
-@ocaml.doc(" The same as {!test} except that it is more permissive on the types of input ")
+/** The same as {!test} except that it is more permissive on the types of input */
 external testAny: 'a => bool = "#is_nullable"
 
-@ocaml.doc(" The promise type, defined here for interoperation across packages
-    @deprecated please use {!Js.Promise}
-")
+/**
+  The promise type, defined here for interoperation across packages.
+*/
 type promise<+'a, +'e>
 
-@ocaml.doc(" The same as [empty] in {!Js.Null} will be compiled as [null]")
+/**
+  The same as empty in `Js.Null`. Compiles to `null`.
+*/
 external null: null<'a> = "#null"
 
-@ocaml.doc(" The same as  [empty] {!Js.Undefined} will be compiled as [undefined]")
+/**
+  The same as empty `Js.Undefined`. Compiles to `undefined`.
+*/
 external undefined: undefined<'a> = "#undefined"
 
-@ocaml.doc(" [typeof x] will be compiled as [typeof x] in JS
-    Please consider functions in {!Types} for a type safe way of reflection
-")
+/**
+`typeof x` will be compiled as `typeof x` in JS. Please consider functions in
+`Js.Types` for a type safe way of reflection.
+*/
 external typeof: 'a => string = "#typeof"
 
-@val @scope("console") @ocaml.doc(" A convenience function to log everything ")
+@val @scope("console") /** Equivalent to console.log any value. */
 external log: 'a => unit = "log"
 
 @val @scope("console") external log2: ('a, 'b) => unit = "log"
 @val @scope("console") external log3: ('a, 'b, 'c) => unit = "log"
+
 @val @scope("console") external log4: ('a, 'b, 'c, 'd) => unit = "log"
 
-@val @scope("console") @variadic @ocaml.doc(" A convenience function to log more than 4 arguments ")
+@val @scope("console") @variadic /** A convenience function to console.log more than 4 arguments */
 external logMany: array<'a> => unit = "log"
 
 external eqNull: ('a, null<'a>) => bool = "%bs_equal_null"
 external eqUndefined: ('a, undefined<'a>) => bool = "%bs_equal_undefined"
 external eqNullable: ('a, nullable<'a>) => bool = "%bs_equal_nullable"
 
-@@ocaml.text(" {4 operators }")
+/* ## Operators */
 
-@ocaml.doc(" [unsafe_lt a b] will be compiled as [a < b].
+/**
+   `unsafe_lt(a, b)` will be compiled as `a < b`.
     It is marked as unsafe, since it is impossible
     to give a proper semantics for comparision which applies to any type
-")
+*/
 external unsafe_lt: ('a, 'a) => bool = "#unsafe_lt"
 
-@ocaml.doc("  [unsafe_le a b] will be compiled as [a <= b].
-     See also {!unsafe_lt}
-")
+/**
+   `unsafe_le(a, b)` will be compiled as `a <= b`.
+   See also `Js.unsafe_lt`.
+*/
 external unsafe_le: ('a, 'a) => bool = "#unsafe_le"
 
-@ocaml.doc("  [unsafe_gt a b] will be compiled as [a > b].
-     See also {!unsafe_lt}
-")
+/**
+   `unsafe_gt(a, b)` will be compiled as `a > b`.
+    See also `Js.unsafe_lt`.
+*/
 external unsafe_gt: ('a, 'a) => bool = "#unsafe_gt"
 
-@ocaml.doc("  [unsafe_ge a b] will be compiled as [a >= b].
-     See also {!unsafe_lt}
-")
+/**
+   `unsafe_ge(a, b)` will be compiled as `a >= b`.
+   See also `Js.unsafe_lt`.
+*/
 external unsafe_ge: ('a, 'a) => bool = "#unsafe_ge"
 
-@@ocaml.text(" {12 nested modules}")
+/* ## Nested Modules */
 
-@ocaml.doc(" Provide utilities around ['a null] ")
+/** Provide utilities for `Js.null<'a>` */
 module Null = Js_null
 
-@ocaml.doc(" Provide utilities around {!undefined} ")
+/** Provide utilities for `Js.undefined<'a>` */
 module Undefined = Js_undefined
 
-@ocaml.doc(" Provide utilities around {!null_undefined} ")
+/** Provide utilities for `Js.null_undefined` */
 module Nullable = Js_null_undefined
 
-@ocaml.doc(" @deprecated please use {!Js.Nullable} ")
 module Null_undefined = Js_null_undefined
 
-@ocaml.doc(" Provide utilities for dealing with Js exceptions ")
+/** Provide utilities for dealing with Js exceptions */
 module Exn = Js_exn
 
-@ocaml.doc(" Provide bindings to Js array")
+/** Provide bindings to JS array*/
 module Array = Js_array
 
-@ocaml.doc(" Provide bindings to Js array")
+/** Provide bindings to JS array*/
 module Array2 = Js_array2
 
-@ocaml.doc(" Provide bindings to JS string ")
+/** Provide bindings to JS string */
 module String = Js_string
 
-@ocaml.doc(" Provide bindings to JS string ")
+/** Provide bindings to JS string */
 module String2 = Js_string2
 
-@ocaml.doc(" Provide bindings to Js regex expression ")
+/** Provide bindings to JS regex expression */
 module Re = Js_re
 
-@ocaml.doc(" Provide bindings to JS promise ")
+/** Provide bindings to JS Promise */
 module Promise = Js_promise
 
-@ocaml.doc(" Provide bindings to JS promise ")
+/** Provide bindings to JS Promise */
 module Promise2 = Js_promise2
 
-@ocaml.doc(" Provide bindings for JS Date ")
+/** Provide bindings for JS Date */
 module Date = Js_date
 
-@ocaml.doc(" Provide utilities for JS dictionary object ")
+/** Provide utilities for JS dictionary object */
 module Dict = Js_dict
 
-@ocaml.doc(" Provide bindings to JS global functions in global namespace")
+/** Provide bindings to JS global functions in global namespace*/
 module Global = Js_global
 
-@ocaml.doc(" Provide utilities for json ")
+/** Provide utilities for json */
 module Json = Js_json
 
-@ocaml.doc(" Provide bindings for JS [Math] object ")
+/** Provide bindings for JS `Math` object */
 module Math = Js_math
 
-@ocaml.doc(" Provide utilities for {!Js.t} ")
+/** Provide utilities for `Js.t` */
 module Obj = Js_obj
 
-@ocaml.doc(" Provide bindings for JS typed array ")
+/** Provide bindings for JS typed array */
 module Typed_array = Js_typed_array
 
-@ocaml.doc(" Provide bindings for JS typed array ")
+/** Provide bindings for JS typed array */
 module TypedArray2 = Js_typed_array2
 
-@ocaml.doc(" Provide utilities for manipulating JS types  ")
+/** Provide utilities for manipulating JS types  */
 module Types = Js_types
 
-@ocaml.doc(" Provide utilities for JS float ")
+/** Provide utilities for JS float */
 module Float = Js_float
 
-@ocaml.doc(" Provide utilities for int ")
+/** Provide utilities for int */
 module Int = Js_int
 
-@ocaml.doc(" Provide utilities for bigint ")
+/** Provide utilities for bigint */
 module BigInt = Js_bigint
 
-@ocaml.doc(" Provide utilities for File ")
+/** Provide utilities for File */
 module File = Js_file
 
-@ocaml.doc(" Provide utilities for Blob ")
+/** Provide utilities for Blob */
 module Blob = Js_blob
 
-@ocaml.doc(" Provide utilities for option ")
+/** Provide utilities for option */
 module Option = Js_option
 
-@ocaml.doc(" Define the interface for result ")
+/** Define the interface for result */
 module Result = Js_result
 
-@ocaml.doc(" Provide utilities for list ")
+/** Provide utilities for list */
 module List = Js_list
 
+/** Provides bindings for JS Vector */
 module Vector = Js_vector
 
+/** Provides bindings for console */
 module Console = Js_console
 
-@ocaml.doc(" Provides bindings for ES6 Set ")
+/** Provides bindings for ES6 Set */
 module Set = Js_set
 
-@ocaml.doc(" Provides bindings for ES6 WeakSet ")
+/** Provides bindings for ES6 WeakSet */
 module WeakSet = Js_weakset
 
-@ocaml.doc(" Provides bindings for ES6 Map ")
+/** Provides bindings for ES6 Map */
 module Map = Js_map
 
-@ocaml.doc(" Provides bindings for ES6 WeakMap ")
+/** Provides bindings for ES6 WeakMap */
 module WeakMap = Js_weakmap
