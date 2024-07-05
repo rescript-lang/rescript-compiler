@@ -16,7 +16,5 @@ list{1, 2, 3}->map(a => a + 1)->filter(a => modulo(a, 2) == 0)->Js.log
 
 type t
 @new external make: unit => t = "DOMParser"
-@bs.send.pipe(: t)
-external parseHtmlFromString: (string, @as("text/html") _) => Dom.htmlDocument = "parseFromString"
 
 Js.log(make() |> parseHtmlFromString("sdsd"))

@@ -25,29 +25,12 @@ module Synthetic: {
   @deprecated("Please use ReactEvent.Synthetic.nativeEvent") @get
   external nativeEvent: ReactEvent.synthetic<'a> => {..} = "nativeEvent"
   @deprecated("Please use myEvent->ReactEvent.Synthetic.preventDefault")
-  @bs.send.pipe(: ReactEvent.synthetic<'a>)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.Synthetic.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.synthetic<'a>)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Synthetic.stopPropagation")
-  @bs.send.pipe(: ReactEvent.synthetic<'a>)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Synthetic.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.synthetic<'a>)
-  external isPropagationStopped: bool = "isPropagationStopped"
-  @deprecated(
-    "Please use ReactEvent.Synthetic.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
-  )
   @get
   external target: ReactEvent.synthetic<'a> => Dom.element = "target"
   @deprecated("Please use ReactEvent.Synthetic.timeStamp") @get
   external timeStamp: ReactEvent.synthetic<'a> => float = "timeStamp"
   @deprecated("Please use ReactEvent.Synthetic.type_") @get
   external _type: ReactEvent.synthetic<'a> => string = "type"
-  @deprecated("Please use myEvent->ReactEvent.Synthetic.persist")
-  @bs.send.pipe(: ReactEvent.synthetic<'a>)
-  external persist: unit = "persist"
 }
 
 /* Cast any event type to the general synthetic type. This is safe, since synthetic is more general */
@@ -77,17 +60,6 @@ module Clipboard: {
   @deprecated("Please use ReactEvent.Clipboard.nativeEvent") @get
   external nativeEvent: ReactEvent.Clipboard.t => {..} = "nativeEvent"
   @deprecated("Please use myEvent->ReactEvent.Clipboard.preventDefault")
-  @bs.send.pipe(: ReactEvent.Clipboard.t)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.Clipboard.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.Clipboard.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Clipboard.stopPropagation")
-  @bs.send.pipe(: ReactEvent.Clipboard.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Clipboard.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.Clipboard.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
   @deprecated(
     "Please use ReactEvent.Clipboard.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
   )
@@ -98,8 +70,6 @@ module Clipboard: {
   @deprecated("Please use ReactEvent.Clipboard.type_") @get
   external _type: ReactEvent.Clipboard.t => string = "type"
   @deprecated("Please use myEvent->ReactEvent.Clipboard.persist")
-  @bs.send.pipe(: ReactEvent.Clipboard.t)
-  external persist: unit = "persist"
   @deprecated("Please use ReactEvent.Clipboard.clipboardData") @get
   external clipboardData: ReactEvent.Clipboard.t => {..} =
     "clipboardData" /* Should return Dom.dataTransfer */
@@ -128,20 +98,6 @@ module Composition: {
   @deprecated("Please use ReactEvent.Composition.nativeEvent") @get
   external nativeEvent: ReactEvent.Composition.t => {..} = "nativeEvent"
   @deprecated("Please use myEvent->ReactEvent.Composition.preventDefault")
-  @bs.send.pipe(: ReactEvent.Composition.t)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.Composition.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.Composition.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Composition.stopPropagation")
-  @bs.send.pipe(: ReactEvent.Composition.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Composition.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.Composition.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
-  @deprecated(
-    "Please use ReactEvent.Composition.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
-  )
   @get
   external target: ReactEvent.Composition.t => Dom.element = "target"
   @deprecated("Please use ReactEvent.Composition.timeStamp") @get
@@ -149,8 +105,6 @@ module Composition: {
   @deprecated("Please use ReactEvent.Composition.type_") @get
   external _type: ReactEvent.Composition.t => string = "type"
   @deprecated("Please use myEvent->ReactEvent.Composition.persist")
-  @bs.send.pipe(: ReactEvent.Composition.t)
-  external persist: unit = "persist"
   @deprecated("Please use ReactEvent.Composition.data") @get
   external data: ReactEvent.Composition.t => string = "data"
 }
@@ -177,18 +131,7 @@ module Keyboard: {
   external isTrusted: ReactEvent.Keyboard.t => bool = "isTrusted"
   @deprecated("Please use ReactEvent.Keyboard.nativeEvent") @get
   external nativeEvent: ReactEvent.Keyboard.t => {..} = "nativeEvent"
-  @deprecated("Please use myEvent->ReactEvent.Keyboard.preventDefault")
-  @bs.send.pipe(: ReactEvent.Keyboard.t)
-  external preventDefault: unit = "preventDefault"
   @deprecated("Please use myEvent->ReactEvent.Keyboard.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.Keyboard.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Keyboard.stopPropagation")
-  @bs.send.pipe(: ReactEvent.Keyboard.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Keyboard.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.Keyboard.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
   @deprecated(
     "Please use ReactEvent.Keyboard.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
   )
@@ -198,18 +141,12 @@ module Keyboard: {
   external timeStamp: ReactEvent.Keyboard.t => float = "timeStamp"
   @deprecated("Please use ReactEvent.Keyboard.type_") @get
   external _type: ReactEvent.Keyboard.t => string = "type"
-  @deprecated("Please use myEvent->ReactEvent.Keyboard.persist")
-  @bs.send.pipe(: ReactEvent.Keyboard.t)
-  external persist: unit = "persist"
   @deprecated("Please use ReactEvent.Keyboard.altKey") @get
   external altKey: ReactEvent.Keyboard.t => bool = "altKey"
   @deprecated("Please use ReactEvent.Keyboard.charCode") @get
   external charCode: ReactEvent.Keyboard.t => int = "charCode"
   @deprecated("Please use ReactEvent.Keyboard.ctrlKey") @get
   external ctrlKey: ReactEvent.Keyboard.t => bool = "ctrlKey"
-  @deprecated("Please use myEvent->ReactEvent.Keyboard.getModifierState")
-  @bs.send.pipe(: ReactEvent.Keyboard.t)
-  external getModifierState: string => bool = "getModifierState"
   @deprecated("Please use ReactEvent.Keyboard.key") @get
   external key: ReactEvent.Keyboard.t => string = "key"
   @deprecated("Please use ReactEvent.Keyboard.keyCode") @get
@@ -250,18 +187,6 @@ module Focus: {
   external isTrusted: ReactEvent.Focus.t => bool = "isTrusted"
   @deprecated("Please use ReactEvent.Focus.nativeEvent") @get
   external nativeEvent: ReactEvent.Focus.t => {..} = "nativeEvent"
-  @deprecated("Please use myEvent->ReactEvent.Focus.preventDefault")
-  @bs.send.pipe(: ReactEvent.Focus.t)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.Focus.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.Focus.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Focus.stopPropagation")
-  @bs.send.pipe(: ReactEvent.Focus.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Focus.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.Focus.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
   @deprecated(
     "Please use ReactEvent.Focus.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
   )
@@ -271,8 +196,6 @@ module Focus: {
   external timeStamp: ReactEvent.Focus.t => float = "timeStamp"
   @deprecated("Please use ReactEvent.Focus.type_") @get
   external _type: ReactEvent.Focus.t => string = "type"
-  @deprecated("Please use myEvent->ReactEvent.Focus.persist") @bs.send.pipe(: ReactEvent.Focus.t)
-  external persist: unit = "persist"
   @deprecated(
     "Please use ReactEvent.Focus.relatedTarget and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
   )
@@ -304,17 +227,6 @@ module Form: {
   @deprecated("Please use ReactEvent.Form.nativeEvent") @get
   external nativeEvent: ReactEvent.Form.t => {..} = "nativeEvent"
   @deprecated("Please use myEvent->ReactEvent.Form.preventDefault")
-  @bs.send.pipe(: ReactEvent.Form.t)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.Form.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.Form.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Form.stopPropagation")
-  @bs.send.pipe(: ReactEvent.Form.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Form.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.Form.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
   @deprecated(
     "Please use ReactEvent.Form.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
   )
@@ -324,8 +236,6 @@ module Form: {
   external timeStamp: ReactEvent.Form.t => float = "timeStamp"
   @deprecated("Please use ReactEvent.Form.type_") @get
   external _type: ReactEvent.Form.t => string = "type"
-  @deprecated("Please use myEvent->ReactEvent.Form.persist") @bs.send.pipe(: ReactEvent.Form.t)
-  external persist: unit = "persist"
 }
 
 module Mouse: {
@@ -350,18 +260,6 @@ module Mouse: {
   external isTrusted: ReactEvent.Mouse.t => bool = "isTrusted"
   @deprecated("Please use ReactEvent.Mouse.nativeEvent") @get
   external nativeEvent: ReactEvent.Mouse.t => {..} = "nativeEvent"
-  @deprecated("Please use myEvent->ReactEvent.Mouse.preventDefault")
-  @bs.send.pipe(: ReactEvent.Mouse.t)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.Mouse.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.Mouse.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Mouse.stopPropagation")
-  @bs.send.pipe(: ReactEvent.Mouse.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Mouse.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.Mouse.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
   @deprecated(
     "Please use ReactEvent.Mouse.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
   )
@@ -371,8 +269,6 @@ module Mouse: {
   external timeStamp: ReactEvent.Mouse.t => float = "timeStamp"
   @deprecated("Please use ReactEvent.Mouse.type_") @get
   external _type: ReactEvent.Mouse.t => string = "type"
-  @deprecated("Please use myEvent->ReactEvent.Mouse.persist") @bs.send.pipe(: ReactEvent.Mouse.t)
-  external persist: unit = "persist"
   @deprecated("Please use ReactEvent.Mouse.altKey") @get
   external altKey: ReactEvent.Mouse.t => bool = "altKey"
   @deprecated("Please use ReactEvent.Mouse.button") @get
@@ -385,9 +281,6 @@ module Mouse: {
   external clientY: ReactEvent.Mouse.t => int = "clientY"
   @deprecated("Please use ReactEvent.Mouse.ctrlKey") @get
   external ctrlKey: ReactEvent.Mouse.t => bool = "ctrlKey"
-  @deprecated("Please use myEvent->ReactEvent.Mouse.getModifierState")
-  @bs.send.pipe(: ReactEvent.Mouse.t)
-  external getModifierState: string => bool = "getModifierState"
   @deprecated("Please use ReactEvent.Mouse.metaKey") @get
   external metaKey: ReactEvent.Mouse.t => bool = "metaKey"
   @deprecated("Please use ReactEvent.Mouse.pageX") @get
@@ -430,17 +323,6 @@ module Selection: {
   external isTrusted: ReactEvent.Selection.t => bool = "isTrusted"
   @deprecated("Please use ReactEvent.Selection.nativeEvent") @get
   external nativeEvent: ReactEvent.Selection.t => {..} = "nativeEvent"
-  @deprecated("Please use myEvent->ReactEvent.Selection.preventDefault")
-  @bs.send.pipe(: ReactEvent.Selection.t)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.Selection.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.Selection.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Selection.stopPropagation")
-  @bs.send.pipe(: ReactEvent.Selection.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Selection.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.Selection.t)
   external isPropagationStopped: bool = "isPropagationStopped"
   @deprecated(
     "Please use ReactEvent.Selection.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
@@ -451,9 +333,6 @@ module Selection: {
   external timeStamp: ReactEvent.Selection.t => float = "timeStamp"
   @deprecated("Please use ReactEvent.Selection.type_") @get
   external _type: ReactEvent.Selection.t => string = "type"
-  @deprecated("Please use myEvent->ReactEvent.Selection.persist")
-  @bs.send.pipe(: ReactEvent.Selection.t)
-  external persist: unit = "persist"
 }
 
 module Touch: {
@@ -479,17 +358,6 @@ module Touch: {
   @deprecated("Please use ReactEvent.Touch.nativeEvent") @get
   external nativeEvent: ReactEvent.Touch.t => {..} = "nativeEvent"
   @deprecated("Please use myEvent->ReactEvent.Touch.preventDefault")
-  @bs.send.pipe(: ReactEvent.Touch.t)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.Touch.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.Touch.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Touch.stopPropagation")
-  @bs.send.pipe(: ReactEvent.Touch.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Touch.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.Touch.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
   @deprecated(
     "Please use ReactEvent.Touch.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
   )
@@ -499,8 +367,6 @@ module Touch: {
   external timeStamp: ReactEvent.Touch.t => float = "timeStamp"
   @deprecated("Please use ReactEvent.Touch.type_") @get
   external _type: ReactEvent.Touch.t => string = "type"
-  @deprecated("Please use myEvent->ReactEvent.Touch.persist") @bs.send.pipe(: ReactEvent.Touch.t)
-  external persist: unit = "persist"
   @deprecated("Please use ReactEvent.Touch.altKey") @get
   external altKey: ReactEvent.Touch.t => bool = "altKey"
   @deprecated("Please use ReactEvent.Touch.changedTouches") @get
@@ -508,9 +374,6 @@ module Touch: {
     "changedTouches" /* Should return Dom.touchList */
   @deprecated("Please use ReactEvent.Touch.ctrlKey") @get
   external ctrlKey: ReactEvent.Touch.t => bool = "ctrlKey"
-  @deprecated("Please use myEvent->ReactEvent.Touch.getModifierState")
-  @bs.send.pipe(: ReactEvent.Touch.t)
-  external getModifierState: string => bool = "getModifierState"
   @deprecated("Please use ReactEvent.Touch.metaKey") @get
   external metaKey: ReactEvent.Touch.t => bool = "metaKey"
   @deprecated("Please use ReactEvent.Touch.shiftKey") @get
@@ -544,16 +407,6 @@ module UI: {
   external isTrusted: ReactEvent.UI.t => bool = "isTrusted"
   @deprecated("Please use ReactEvent.UI.nativeEvent") @get
   external nativeEvent: ReactEvent.UI.t => {..} = "nativeEvent"
-  @deprecated("Please use myEvent->ReactEvent.UI.preventDefault") @bs.send.pipe(: ReactEvent.UI.t)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.UI.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.UI.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.UI.stopPropagation") @bs.send.pipe(: ReactEvent.UI.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.UI.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.UI.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
   @deprecated(
     "Please use ReactEvent.UI.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
   )
@@ -563,8 +416,6 @@ module UI: {
   external timeStamp: ReactEvent.UI.t => float = "timeStamp"
   @deprecated("Please use ReactEvent.UI.type_") @get
   external _type: ReactEvent.UI.t => string = "type"
-  @deprecated("Please use myEvent->ReactEvent.UI.persist") @bs.send.pipe(: ReactEvent.UI.t)
-  external persist: unit = "persist"
   @deprecated("Please use ReactEvent.UI.detail") @get
   external detail: ReactEvent.UI.t => int = "detail"
   @deprecated("Please use ReactEvent.UI.view") @get
@@ -594,18 +445,6 @@ module Wheel: {
   external isTrusted: ReactEvent.Wheel.t => bool = "isTrusted"
   @deprecated("Please use ReactEvent.Wheel.nativeEvent") @get
   external nativeEvent: ReactEvent.Wheel.t => {..} = "nativeEvent"
-  @deprecated("Please use myEvent->ReactEvent.Wheel.preventDefault")
-  @bs.send.pipe(: ReactEvent.Wheel.t)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.Wheel.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.Wheel.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Wheel.stopPropagation")
-  @bs.send.pipe(: ReactEvent.Wheel.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Wheel.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.Wheel.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
   @deprecated(
     "Please use ReactEvent.Wheel.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
   )
@@ -615,8 +454,6 @@ module Wheel: {
   external timeStamp: ReactEvent.Wheel.t => float = "timeStamp"
   @deprecated("Please use ReactEvent.Wheel.type_") @get
   external _type: ReactEvent.Wheel.t => string = "type"
-  @deprecated("Please use myEvent->ReactEvent.Wheel.persist") @bs.send.pipe(: ReactEvent.Wheel.t)
-  external persist: unit = "persist"
   @deprecated("Please use ReactEvent.Wheel.deltaMode") @get
   external deltaMode: ReactEvent.Wheel.t => int = "deltaMode"
   @deprecated("Please use ReactEvent.Wheel.deltaX") @get
@@ -649,18 +486,6 @@ module Media: {
   external isTrusted: ReactEvent.Media.t => bool = "isTrusted"
   @deprecated("Please use ReactEvent.Media.nativeEvent") @get
   external nativeEvent: ReactEvent.Media.t => {..} = "nativeEvent"
-  @deprecated("Please use myEvent->ReactEvent.Media.preventDefault")
-  @bs.send.pipe(: ReactEvent.Media.t)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.Media.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.Media.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Media.stopPropagation")
-  @bs.send.pipe(: ReactEvent.Media.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Media.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.Media.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
   @deprecated(
     "Please use ReactEvent.Media.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
   )
@@ -670,8 +495,6 @@ module Media: {
   external timeStamp: ReactEvent.Media.t => float = "timeStamp"
   @deprecated("Please use ReactEvent.Media.type_") @get
   external _type: ReactEvent.Media.t => string = "type"
-  @deprecated("Please use myEvent->ReactEvent.Media.persist") @bs.send.pipe(: ReactEvent.Media.t)
-  external persist: unit = "persist"
 }
 
 module Image: {
@@ -696,18 +519,6 @@ module Image: {
   external isTrusted: ReactEvent.Image.t => bool = "isTrusted"
   @deprecated("Please use ReactEvent.Image.nativeEvent") @get
   external nativeEvent: ReactEvent.Image.t => {..} = "nativeEvent"
-  @deprecated("Please use myEvent->ReactEvent.Image.preventDefault")
-  @bs.send.pipe(: ReactEvent.Image.t)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.Image.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.Image.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Image.stopPropagation")
-  @bs.send.pipe(: ReactEvent.Image.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Image.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.Image.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
   @deprecated(
     "Please use ReactEvent.Image.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
   )
@@ -717,8 +528,6 @@ module Image: {
   external timeStamp: ReactEvent.Image.t => float = "timeStamp"
   @deprecated("Please use ReactEvent.Image.type_") @get
   external _type: ReactEvent.Image.t => string = "type"
-  @deprecated("Please use myEvent->ReactEvent.Image.persist") @bs.send.pipe(: ReactEvent.Image.t)
-  external persist: unit = "persist"
 }
 
 module Animation: {
@@ -743,18 +552,6 @@ module Animation: {
   external isTrusted: ReactEvent.Animation.t => bool = "isTrusted"
   @deprecated("Please use ReactEvent.Animation.nativeEvent") @get
   external nativeEvent: ReactEvent.Animation.t => {..} = "nativeEvent"
-  @deprecated("Please use myEvent->ReactEvent.Animation.preventDefault")
-  @bs.send.pipe(: ReactEvent.Animation.t)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.Animation.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.Animation.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Animation.stopPropagation")
-  @bs.send.pipe(: ReactEvent.Animation.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Animation.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.Animation.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
   @deprecated(
     "Please use ReactEvent.Animation.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
   )
@@ -764,9 +561,6 @@ module Animation: {
   external timeStamp: ReactEvent.Animation.t => float = "timeStamp"
   @deprecated("Please use ReactEvent.Animation.type_") @get
   external _type: ReactEvent.Animation.t => string = "type"
-  @deprecated("Please use myEvent->ReactEvent.Animation.persist")
-  @bs.send.pipe(: ReactEvent.Animation.t)
-  external persist: unit = "persist"
   @deprecated("Please use ReactEvent.Animation.animationName") @get
   external animationName: ReactEvent.Animation.t => string = "animationName"
   @deprecated("Please use ReactEvent.Animation.pseudoElement") @get
@@ -797,18 +591,6 @@ module Transition: {
   external isTrusted: ReactEvent.Transition.t => bool = "isTrusted"
   @deprecated("Please use ReactEvent.Transition.nativeEvent") @get
   external nativeEvent: ReactEvent.Transition.t => {..} = "nativeEvent"
-  @deprecated("Please use myEvent->ReactEvent.Transition.preventDefault")
-  @bs.send.pipe(: ReactEvent.Transition.t)
-  external preventDefault: unit = "preventDefault"
-  @deprecated("Please use myEvent->ReactEvent.Transition.isDefaultPrevented")
-  @bs.send.pipe(: ReactEvent.Transition.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @deprecated("Please use myEvent->ReactEvent.Transition.stopPropagation")
-  @bs.send.pipe(: ReactEvent.Transition.t)
-  external stopPropagation: unit = "stopPropagation"
-  @deprecated("Please use myEvent->ReactEvent.Transition.isPropagationStopped")
-  @bs.send.pipe(: ReactEvent.Transition.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
   @deprecated(
     "Please use ReactEvent.Transition.target and remove the surrounding ReactDOMRe.domElementToObj wrapper if any (no longer needed)"
   )
@@ -818,8 +600,6 @@ module Transition: {
   external timeStamp: ReactEvent.Transition.t => float = "timeStamp"
   @deprecated("Please use ReactEvent.Transition.type_") @get
   external _type: ReactEvent.Transition.t => string = "type"
-  @deprecated("Please use myEvent->ReactEvent.Transition.persist")
-  @bs.send.pipe(: ReactEvent.Transition.t)
   external persist: unit = "persist"
   @deprecated("Please use ReactEvent.Transition.propertyName") @get
   external propertyName: ReactEvent.Transition.t => string = "propertyName"

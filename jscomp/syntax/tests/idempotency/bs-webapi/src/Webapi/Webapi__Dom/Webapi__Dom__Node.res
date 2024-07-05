@@ -32,33 +32,6 @@ module Impl = (
   @get external textContent: T.t => string = ""
   @set external setTextContent: (T.t, string) => unit = "textContent"
 
-  @bs.send.pipe(: T.t) external appendChild: Dom.node_like<'a> => unit = ""
-  @bs.send.pipe(: T.t) external cloneNode: T.t = ""
-  @bs.send.pipe(: T.t) external cloneNodeDeep: @as(json`true`) _ => T.t = "cloneNode"
-  @bs.send.pipe(: T.t)
-  external compareDocumentPosition: Dom.node_like<'a> => int =
-    "" /* returns a bitmask which could also be represeneted as an enum, see https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition */
-  @bs.send.pipe(: T.t) external contains: Dom.node_like<'a> => bool = ""
-  @bs.send.pipe(: T.t) external getRootNode: Dom.node = ""
-  @bs.send.pipe(: T.t)
-  external getRootNodeComposed: @as(json`{ "composed": true }`) _ => Dom.node = "getRootNode"
-  @bs.send.pipe(: T.t) external hasChildNodes: bool = ""
-  @bs.send.pipe(: T.t)
-  external insertBefore: (Dom.node_like<'a>, Dom.node_like<'b>) => Dom.node_like<'a> = ""
-  /* (temporarily?) removed to reduce codegen size. This variant is just for convenience, `appendChild` can be used in place of passing `null` to `insertBefore`
-  external insertBefore : Dom.node_like 'a => Js.null (Dom.node_like 'b) => Dom.node_like 'a = "" [@@bs.send.pipe: T.t];
-  let insertBefore : Dom.node_like 'a => option (Dom.node_like 'b) => T.t => Dom.node_like 'a = fun node reference self => insertBefore node (Js.Null.fromOption reference) self;
- */
-  @bs.send.pipe(: T.t) external isDefaultNamespace: string => bool = ""
-  @bs.send.pipe(: T.t) external isEqualNode: Dom.node_like<'a> => bool = ""
-  @bs.send.pipe(: T.t) external isSameNode: Dom.node_like<'a> => bool = ""
-  @bs.send.pipe(: T.t) @return(nullable) external lookupNamespaceURI: string => option<string> = ""
-  @bs.send.pipe(: T.t) @return(nullable)
-  external lookupDefaultNamespaceURI: @as(json`null`) _ => option<string> = "lookupNamespaceURI"
-  @bs.send.pipe(: T.t) external lookupPrefix: string = "lookupPrefix"
-  @bs.send.pipe(: T.t) external normalize: unit = ""
-  @bs.send.pipe(: T.t) external removeChild: Dom.node_like<'a> => Dom.node_like<'a> = ""
-  /* replacChild */
 }
 
 type t = Dom.node

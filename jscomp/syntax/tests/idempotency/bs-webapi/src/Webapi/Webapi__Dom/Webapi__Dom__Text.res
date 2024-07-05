@@ -8,7 +8,6 @@ module Impl = (
 ) => {
   let ofNode: Dom.node => option<T.t> = ofNode
 
-  @bs.send.pipe(: T.t) external splitText: (~offset: int, unit) => Dom.text = ""
   @get external wholeText: T.t => string = ""
 }
 

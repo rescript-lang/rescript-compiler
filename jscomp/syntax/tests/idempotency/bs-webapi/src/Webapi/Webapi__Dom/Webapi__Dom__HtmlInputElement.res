@@ -106,8 +106,7 @@ module Impl = (
   @set external setValueAsDate: (t_htmlInputElement, Js.Date.t) => unit = "valueAsDate"
   @get external valueAsNumber: t_htmlInputElement => float = ""
 
-  @bs.send.pipe(: t_htmlInputElement) external select: unit = ""
-
+ 
   module SelectionDirection = {
     type t =
       | Forward
@@ -122,9 +121,6 @@ module Impl = (
       }
   }
 
-  @bs.send.pipe(: t_htmlInputElement) external setSelectionRange: (int, int) => unit = ""
-  @bs.send.pipe(: t_htmlInputElement)
-  external setSelectionRangeWithDirection_: (int, int, string) => unit = "setSelectionRange"
   let setSelectionRangeWithDirection = (
     selectionStart,
     selectionEnd,
@@ -153,13 +149,6 @@ module Impl = (
       }
   }
 
-  @bs.send.pipe(: t_htmlInputElement)
-  external setRangeTextWithinSelection: string => unit = "setRangeText"
-  @bs.send.pipe(: t_htmlInputElement)
-  external setRangeTextWithinInterval: (string, int, int) => unit = "setRangeText"
-  @bs.send.pipe(: t_htmlInputElement)
-  external setRangeTextWithinIntervalWithSelectionMode_: (string, int, int, string) => unit =
-    "setRangeText"
   let setRangeTextWithinIntervalWithSelectionMode = (
     text,
     selectionStart,
@@ -174,13 +163,6 @@ module Impl = (
       selectionMode |> SelectionMode.toString,
     )
 
-  @bs.send.pipe(: t_htmlInputElement) external setCustomValidity: string => unit = ""
-  @bs.send.pipe(: t_htmlInputElement) external checkValidity: bool = ""
-  @bs.send.pipe(: t_htmlInputElement) external reportValidity: bool = ""
-  @bs.send.pipe(: t_htmlInputElement) external stepDownBy: int => unit = "stepDown"
-  @bs.send.pipe(: t_htmlInputElement) external stepDownByOne: unit = "stepDown"
-  @bs.send.pipe(: t_htmlInputElement) external stepUpBy: int => unit = "stepUp"
-  @bs.send.pipe(: t_htmlInputElement) external stepUpByOne: unit = "stepUp"
 }
 
 type t = Dom.htmlInputElement

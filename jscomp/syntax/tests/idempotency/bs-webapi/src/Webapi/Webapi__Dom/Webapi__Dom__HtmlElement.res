@@ -75,12 +75,6 @@ module Impl = (
   @set external setTranslate: (t_htmlElement, bool) => unit = "translate" /* experimental */
   /* let setTranslate : t_htmlElement => bool => unit = fun self value => setTranslate self (Js.Boolean.to_js_boolean value); */ /* temproarily removed to reduce codegen size */
 
-  @bs.send.pipe(: t_htmlElement) external blur: unit = ""
-  @bs.send.pipe(: t_htmlElement) external click: unit = ""
-  @bs.send.pipe(: t_htmlElement) external focus: unit = ""
-  @bs.send.pipe(: t_htmlElement)
-  external focusPreventScroll: @as(json`{ "preventScroll": true }`) _ => unit = "focus"
-  @bs.send.pipe(: t_htmlElement) external forceSpellCheck: unit = "" /* experimental */
 
   /* TODO: element-spcific, should be pulled out */
   @get external value: t_htmlElement => string = "" /* HTMLInputElement */

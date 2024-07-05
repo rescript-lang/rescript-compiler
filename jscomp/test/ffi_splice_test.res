@@ -44,7 +44,6 @@ type t
 @send @variadic external test: (t, array<string>) => t = "test" /* FIXME */
 
 /* compile error */
-/* external test2 : int -> string -> t= "" [@@bs.send.pipe: t ] [@@variadic] */
 let u = ["x", "d"]
 let f = x => x->test(["a", "b"])->test(["a", "b"])
 /* |> test u */

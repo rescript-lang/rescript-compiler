@@ -13,16 +13,6 @@ module MakeSyntheticWrapper = (
   @get external eventPhase: Type.t => int = "eventPhase"
   @get external isTrusted: Type.t => bool = "isTrusted"
   @get external nativeEvent: Type.t => {..} = "nativeEvent" /* Should return Dom.event */
-  @bs.send.pipe(: Type.t) external preventDefault: unit = "preventDefault"
-  @bs.send.pipe(: Type.t)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @bs.send.pipe(: Type.t) external stopPropagation: unit = "stopPropagation"
-  @bs.send.pipe(: Type.t)
-  external isPropagationStopped: bool = "isPropagationStopped"
-  @get external target: Type.t => Dom.element = "target" /* Should return Dom.evetTarget */
-  @get external timeStamp: Type.t => float = "timeStamp"
-  @get external _type: Type.t => string = "type"
-  @bs.send.pipe(: Type.t) external persist: unit = "persist"
 }
 
 module Synthetic = {
@@ -39,18 +29,6 @@ module Synthetic = {
   @get external isTrusted: synthetic<'a> => bool = "isTrusted"
   @get
   external nativeEvent: synthetic<'a> => {..} = "nativeEvent" /* Should return Dom.event */
-  @bs.send.pipe(: synthetic<'a>)
-  external preventDefault: unit = "preventDefault"
-  @bs.send.pipe(: synthetic<'a>)
-  external isDefaultPrevented: bool = "isDefaultPrevented"
-  @bs.send.pipe(: synthetic<'a>)
-  external stopPropagation: unit = "stopPropagation"
-  @bs.send.pipe(: synthetic<'a>)
-  external isPropagationStopped: bool = "isPropagationStopped"
-  @get external target: synthetic<'a> => Dom.element = "target" /* Should return Dom.evetTarget */
-  @get external timeStamp: synthetic<'a> => float = "timeStamp"
-  @get external _type: synthetic<'a> => string = "type"
-  @bs.send.pipe(: synthetic<'a>) external persist: unit = "persist"
 }
 
 /* Cast any event type to the general synthetic type. This is safe, since synthetic is more general */
@@ -83,8 +61,6 @@ module Keyboard = {
   @get external altKey: t => bool = "altKey"
   @get external charCode: t => int = "charCode"
   @get external ctrlKey: t => bool = "ctrlKey"
-  @bs.send.pipe(: t)
-  external getModifierState: string => bool = "getModifierState"
   @get external key: t => string = "key"
   @get external keyCode: t => int = "keyCode"
   @get external locale: t => string = "locale"
@@ -125,8 +101,6 @@ module Mouse = {
   @get external clientX: t => int = "clientX"
   @get external clientY: t => int = "clientY"
   @get external ctrlKey: t => bool = "ctrlKey"
-  @bs.send.pipe(: t)
-  external getModifierState: string => bool = "getModifierState"
   @get external metaKey: t => bool = "metaKey"
   @get external pageX: t => int = "pageX"
   @get external pageY: t => int = "pageY"
@@ -154,8 +128,6 @@ module Touch = {
   @get external altKey: t => bool = "altKey"
   @get external changedTouches: t => {..} = "changedTouches" /* Should return Dom.touchList */
   @get external ctrlKey: t => bool = "ctrlKey"
-  @bs.send.pipe(: t)
-  external getModifierState: string => bool = "getModifierState"
   @get external metaKey: t => bool = "metaKey"
   @get external shiftKey: t => bool = "shiftKey"
   @get external targetTouches: t => {..} = "targetTouches" /* Should return Dom.touchList */
