@@ -22,7 +22,6 @@ val dump_typedtree : bool ref
 val dump_rawlambda : bool ref
 val dump_lambda : bool ref
 val dont_write_files : bool ref
-val keep_docs : bool ref
 val keep_locs : bool ref
 val only_parse : bool ref
 val ignore_parse_errors: bool ref

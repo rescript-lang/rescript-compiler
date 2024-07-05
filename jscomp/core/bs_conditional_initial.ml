@@ -22,9 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Clflags.keep_docs := false; *)
-(* default to false -check later*)
-(* Clflags.keep_locs := false; *)
 let setup_env () =
   Env.Persistent_signature.load := Bs_cmi_load.load_cmi;    
   Matching.make_test_sequence_variant_constant := Polyvar_pattern_match.make_test_sequence_variant_constant;

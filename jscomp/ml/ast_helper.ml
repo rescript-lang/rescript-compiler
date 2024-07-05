@@ -17,7 +17,6 @@
 
 open Asttypes
 open Parsetree
-open Docstrings
 
 type lid = Longident.t loc
 type str = string loc
@@ -239,11 +238,6 @@ module Sig = struct
 
   let extension ?loc ?(attrs = []) a = mk ?loc (Psig_extension (a, attrs))
   let attribute ?loc a = mk ?loc (Psig_attribute a)
-  let text txt =
-    let f_txt = Ext_list.filter txt (fun ds -> docstring_body ds <> "") in
-    List.map
-      (fun ds -> attribute ~loc:(docstring_loc ds) (text_attr ds))
-      f_txt
 end
 
 module Str = struct
@@ -262,20 +256,15 @@ module Str = struct
   let include_ ?loc a = mk ?loc (Pstr_include a)
   let extension ?loc ?(attrs = []) a = mk ?loc (Pstr_extension (a, attrs))
   let attribute ?loc a = mk ?loc (Pstr_attribute a)
-  let text txt =
-    let f_txt = Ext_list.filter txt (fun ds -> docstring_body ds <> "") in
-    List.map
-      (fun ds -> attribute ~loc:(docstring_loc ds) (text_attr ds))
-      f_txt
 end
 
 module Val = struct
-  let mk ?(loc = !default_loc) ?(attrs = []) ?(docs = empty_docs)
+  let mk ?(loc = !default_loc) ?(attrs = [])
         ?(prim = []) name typ =
     {
      pval_name = name;
      pval_type = typ;
-     pval_attributes = add_docs_attrs docs attrs;
+     pval_attributes = attrs;
      pval_loc = loc;
      pval_prim = prim;
     }
@@ -283,76 +272,71 @@ end
 
 module Md = struct
   let mk ?(loc = !default_loc) ?(attrs = [])
-        ?(docs = empty_docs) ?(text = []) name typ =
+        name typ =
     {
      pmd_name = name;
      pmd_type = typ;
-     pmd_attributes =
-       add_text_attrs text (add_docs_attrs docs attrs);
+     pmd_attributes = attrs;
      pmd_loc = loc;
     }
 end
 
 module Mtd = struct
   let mk ?(loc = !default_loc) ?(attrs = [])
-        ?(docs = empty_docs) ?(text = []) ?typ name =
+        ?typ name =
     {
      pmtd_name = name;
      pmtd_type = typ;
-     pmtd_attributes =
-       add_text_attrs text (add_docs_attrs docs attrs);
+     pmtd_attributes = attrs;
      pmtd_loc = loc;
     }
 end
 
 module Mb = struct
   let mk ?(loc = !default_loc) ?(attrs = [])
-        ?(docs = empty_docs) ?(text = []) name expr =
+        name expr =
     {
      pmb_name = name;
      pmb_expr = expr;
-     pmb_attributes =
-       add_text_attrs text (add_docs_attrs docs attrs);
+     pmb_attributes = attrs;
      pmb_loc = loc;
     }
 end
 
 module Opn = struct
-  let mk ?(loc = !default_loc) ?(attrs = []) ?(docs = empty_docs)
+  let mk ?(loc = !default_loc) ?(attrs = [])
         ?(override = Fresh) lid =
     {
      popen_lid = lid;
      popen_override = override;
      popen_loc = loc;
-     popen_attributes = add_docs_attrs docs attrs;
+     popen_attributes = attrs;
     }
 end
 
 module Incl = struct
-  let mk ?(loc = !default_loc) ?(attrs = []) ?(docs = empty_docs) mexpr =
+  let mk ?(loc = !default_loc) ?(attrs = []) mexpr =
     {
      pincl_mod = mexpr;
      pincl_loc = loc;
-     pincl_attributes = add_docs_attrs docs attrs;
+     pincl_attributes = attrs;
     }
 
 end
 
 module Vb = struct
-  let mk ?(loc = !default_loc) ?(attrs = []) ?(docs = empty_docs)
-        ?(text = []) pat expr =
+  let mk ?(loc = !default_loc) ?(attrs = [])
+        pat expr =
     {
      pvb_pat = pat;
      pvb_expr = expr;
-     pvb_attributes =
-       add_text_attrs text (add_docs_attrs docs attrs);
+     pvb_attributes = attrs;
      pvb_loc = loc;
     }
 end
 
 module Type = struct
-  let mk ?(loc = !default_loc) ?(attrs = [])
-        ?(docs = empty_docs) ?(text = [])
+  let mk ?(loc = !default_loc) ?(attrs = [])        
       ?(params = [])
       ?(cstrs = [])
       ?(kind = Ptype_abstract)
@@ -366,70 +350,69 @@ module Type = struct
      ptype_kind = kind;
      ptype_private = priv;
      ptype_manifest = manifest;
-     ptype_attributes =
-       add_text_attrs text (add_docs_attrs docs attrs);
+     ptype_attributes = attrs;
      ptype_loc = loc;
     }
 
-  let constructor ?(loc = !default_loc) ?(attrs = []) ?(info = empty_info)
+  let constructor ?(loc = !default_loc) ?(attrs = [])
         ?(args = Pcstr_tuple []) ?res name =
     {
      pcd_name = name;
      pcd_args = args;
      pcd_res = res;
      pcd_loc = loc;
-     pcd_attributes = add_info_attrs info attrs;
+     pcd_attributes = attrs;
     }
 
-  let field ?(loc = !default_loc) ?(attrs = []) ?(info = empty_info)
+  let field ?(loc = !default_loc) ?(attrs = [])
         ?(mut = Immutable) name typ =
     {
      pld_name = name;
      pld_mutable = mut;
      pld_type = typ;
      pld_loc = loc;
-     pld_attributes = add_info_attrs info attrs;
+     pld_attributes = attrs;
     }
 
 end
 
 (** Type extensions *)
 module Te = struct
-  let mk ?(attrs = []) ?(docs = empty_docs)
+  let mk ?(attrs = [])
         ?(params = []) ?(priv = Public) path constructors =
     {
      ptyext_path = path;
      ptyext_params = params;
      ptyext_constructors = constructors;
      ptyext_private = priv;
-     ptyext_attributes = add_docs_attrs docs attrs;
+     ptyext_attributes = attrs;
     }
 
   let constructor ?(loc = !default_loc) ?(attrs = [])
-        ?(docs = empty_docs) ?(info = empty_info) name kind =
+        name kind =
     {
      pext_name = name;
      pext_kind = kind;
      pext_loc = loc;
-     pext_attributes = add_docs_attrs docs (add_info_attrs info attrs);
+     pext_attributes = attrs;
     }
 
-  let decl ?(loc = !default_loc) ?(attrs = []) ?(docs = empty_docs)
-             ?(info = empty_info) ?(args = Pcstr_tuple []) ?res name =
+  let decl ?(loc = !default_loc) ?(attrs = [])
+             ?(args = Pcstr_tuple []) ?res name =
     {
      pext_name = name;
      pext_kind = Pext_decl(args, res);
      pext_loc = loc;
-     pext_attributes = add_docs_attrs docs (add_info_attrs info attrs);
+     pext_attributes = attrs;
     }
 
   let rebind ?(loc = !default_loc) ?(attrs = [])
-        ?(docs = empty_docs) ?(info = empty_info) name lid =
+        name lid =
     {
      pext_name = name;
      pext_kind = Pext_rebind lid;
      pext_loc = loc;
-     pext_attributes = add_docs_attrs docs (add_info_attrs info attrs);
+     pext_attributes = attrs;
     }
 
 end

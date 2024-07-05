@@ -36,10 +36,8 @@ let tag_is_one_of_the_gentype_annotations s =
 let tag_is_gentype_ignore_interface s =
   s = "genType.ignoreInterface" || s = "gentype.ignoreInterface"
 
-let tag_is_doc s =
-  match s with
-  | "ocaml.doc" | "res.doc" -> true
-  | _ -> false
+let tag_is_doc s = s = "res.doc"
+
 let tag_is_intern_local s = s = "internal.local"
 
 let rec get_attribute_payload check_text (attributes : Typedtree.attributes) =
