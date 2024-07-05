@@ -8,7 +8,6 @@ bsc
 cli/bin_path.js
 cli/rescript_arg.js
 cli/rescript_bsb.js
-cli/rescript_convert.js
 cli/rescript_dump.js
 cli/rescript_format.js
 cli/rescript_postinstall.js
