@@ -16,16 +16,11 @@ var jsDir = path.join(__dirname, "..", "lib", "js");
 
 var runtimeFiles = fs.readdirSync(runtimeDir, "ascii");
 var runtimeMlFiles = runtimeFiles.filter(
-  x =>
-    !x.startsWith("bs_stdlib_mini") &&
-    (x.endsWith(".ml") || x.endsWith(".res")) &&
-    x !== "js.res"
+  x => !x.startsWith("bs_stdlib_mini") && x.endsWith(".res") && x !== "js.res",
 );
 var runtimeMliFiles = runtimeFiles.filter(
   x =>
-    !x.startsWith("bs_stdlib_mini") &&
-    (x.endsWith(".mli") || x.endsWith(".resi")) &&
-    x !== "js.mli",
+    !x.startsWith("bs_stdlib_mini") && x.endsWith(".resi") && x !== "js.resi",
 );
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles);
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))];
@@ -462,20 +457,6 @@ function cppoList(cwd, xs) {
     })
     .join("\n");
 }
-/**
- *
- * @param {string} cwd
- * @param {string[]} xs
- * @returns {string}
- */
-function mllList(cwd, xs) {
-  return xs
-    .map(x => {
-      var output = baseName(x) + ".ml";
-      return ninjaQuickBuild(output, x, mllRuleName, cwd, [], [], []);
-    })
-    .join("\n");
-}
 
 /**
  *
@@ -541,9 +522,9 @@ function replaceCmj(x) {
  * @param {string} y
  */
 function sourceToTarget(y) {
-  if (y.endsWith(".ml") || y.endsWith(".res")) {
+  if (y.endsWith(".res")) {
     return replaceExt(y, ".cmj");
-  } else if (y.endsWith(".mli") || y.endsWith(".resi")) {
+  } else if (y.endsWith(".resi")) {
     return replaceExt(y, ".cmi");
   }
   return y;
@@ -629,7 +610,6 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
  * By default `ocamldep.opt` only list dependencies in its args
  */
 function depModulesForBscAsync(files, dir, depsMap) {
-  let ocamlFiles = files.filter(x => x.endsWith(".ml") || x.endsWith(".mli"));
   let resFiles = files.filter(x => x.endsWith(".res") || x.endsWith(".resi"));
   /**
    *
@@ -667,9 +647,7 @@ function depModulesForBscAsync(files, dir, depsMap) {
   return [
     new Promise((resolve, reject) => {
       cp.exec(
-        `${bsc_exe}  -modules -bs-syntax-only ${resFiles.join(
-          " ",
-        )} ${ocamlFiles.join(" ")}`,
+        `${bsc_exe} -modules -bs-syntax-only ${resFiles.join(" ")}`,
         config,
         cb(resolve, reject),
       );
@@ -678,7 +656,7 @@ function depModulesForBscAsync(files, dir, depsMap) {
 }
 
 /**
- * @typedef {('HAS_ML' | 'HAS_MLI' | 'HAS_BOTH' | 'HAS_RES' | 'HAS_RESI' | 'HAS_BOTH_RES')} FileInfo
+ * @typedef {('HAS_RES' | 'HAS_RESI' | 'HAS_BOTH_RES')} FileInfo
  * @param {string[]} sourceFiles
  * @returns {Map<string, FileInfo>}
  * We make a set to ensure that `sourceFiles` are not duplicated
@@ -692,30 +670,16 @@ function collectTarget(sourceFiles) {
     var { ext, name } = path.parse(x);
     var existExt = allTargets.get(name);
     if (existExt === undefined) {
-      if (ext === ".ml") {
-        allTargets.set(name, "HAS_ML");
-      } else if (ext === ".mli") {
-        allTargets.set(name, "HAS_MLI");
-      } else if (ext === ".res") {
+      if (ext === ".res") {
         allTargets.set(name, "HAS_RES");
       } else if (ext === ".resi") {
         allTargets.set(name, "HAS_RESI");
       }
     } else {
       switch (existExt) {
-        case "HAS_ML":
-          if (ext === ".mli") {
-            allTargets.set(name, "HAS_BOTH");
-          }
-          break;
         case "HAS_RES":
           if (ext === ".resi") {
             allTargets.set(name, "HAS_BOTH_RES");
-          }
-          break;
-        case "HAS_MLI":
-          if (ext === ".ml") {
-            allTargets.set(name, "HAS_BOTH");
           }
           break;
         case "HAS_RESI":
@@ -723,7 +687,6 @@ function collectTarget(sourceFiles) {
             allTargets.set(name, "HAS_BOTH_RES");
           }
           break;
-        case "HAS_BOTH":
         case "HAS_BOTH_RES":
           break;
       }
@@ -744,15 +707,12 @@ function scanFileTargets(allTargets, collIn) {
   allTargets.forEach((ext, mod) => {
     switch (ext) {
       case "HAS_RESI":
-      case "HAS_MLI":
         coll.push(`${mod}.cmi`);
         break;
       case "HAS_BOTH_RES":
-      case "HAS_BOTH":
         coll.push(`${mod}.cmi`, `${mod}.cmj`);
         break;
       case "HAS_RES":
-      case "HAS_ML":
         coll.push(`${mod}.cmi`, `${mod}.cmj`);
         break;
     }
@@ -776,8 +736,6 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
   allTargets.forEach((x, mod) => {
     let ouptput_cmj = mod + ".cmj";
     let output_cmi = mod + ".cmi";
-    let input_ml = mod + ".ml";
-    let input_mli = mod + ".mli";
     let input_res = mod + ".res";
     let input_resi = mod + ".resi";
     /**
@@ -800,10 +758,6 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
       );
     };
     switch (x) {
-      case "HAS_BOTH":
-        mk([ouptput_cmj], [input_ml], "cc_cmi");
-        mk([output_cmi], [input_mli]);
-        break;
       case "HAS_BOTH_RES":
         mk([ouptput_cmj], [input_res], "cc_cmi");
         mk([output_cmi], [input_resi]);
@@ -811,14 +765,8 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
       case "HAS_RES":
         mk([output_cmi, ouptput_cmj], [input_res]);
         break;
-      case "HAS_ML":
-        mk([output_cmi, ouptput_cmj], [input_ml]);
-        break;
       case "HAS_RESI":
         mk([output_cmi], [input_resi]);
-        break;
-      case "HAS_MLI":
-        mk([output_cmi], [input_mli]);
         break;
     }
   });
@@ -867,13 +815,10 @@ ${ninjaQuickBuildList([
   var allFileTargetsInRuntime = scanFileTargets(allTargets, manualDeps);
   allTargets.forEach((ext, mod) => {
     switch (ext) {
-      case "HAS_MLI":
-      case "HAS_BOTH":
       case "HAS_RESI":
       case "HAS_BOTH_RES":
         updateDepsKVsByFile(mod + ".cmi", manualDeps, depsMap);
         break;
-      case "HAS_ML":
       case "HAS_RES":
         updateDepsKVsByFile(mod + ".cmj", manualDeps, depsMap);
         break;
@@ -904,13 +849,6 @@ var cppoRuleName = `cppo`;
 var cppoRule = (flags = "") => `
 rule ${cppoRuleName}
     command = cppo -V OCAML:${getVersionString()} ${flags} $type $in -o $out
-    generator = true
-`;
-
-var mllRuleName = `mll`;
-var mllRule = `
-rule ${mllRuleName}
-    command = $ocamllex $in
     generator = true
 `;
 
@@ -962,24 +900,18 @@ ${ninjaQuickBuildList([
   var jsPrefixSourceFiles = othersDirFiles.filter(
     x =>
       x.startsWith("js") &&
-      (x.endsWith(".ml") ||
-        x.endsWith(".mli") ||
-        x.endsWith(".res") ||
-        x.endsWith(".resi")) &&
+      (x.endsWith(".res") || x.endsWith(".resi")) &&
       !x.includes(".cppo") &&
       !x.includes(".pp") &&
       !x.includes("#") &&
-      x !== "js.res"
+      x !== "js.res",
   );
   var othersFiles = othersDirFiles.filter(
     x =>
       !x.startsWith("js") &&
       x !== "belt.res" &&
       x !== "belt_internals.resi" &&
-      (x.endsWith(".ml") ||
-        x.endsWith(".mli") ||
-        x.endsWith(".res") ||
-        x.endsWith(".resi")) &&
+      (x.endsWith(".res") || x.endsWith(".resi")) &&
       !x.includes("#") &&
       !x.includes(".cppo"),
   );
@@ -994,7 +926,7 @@ ${ninjaQuickBuildList([
   var jsOutput = generateNinja(jsDepsMap, jsTargets, ninjaCwd, externalDeps);
   jsOutput.push(phony(js_package, fileTargets(allJsTargets), ninjaCwd));
 
-  // Note compiling belt.ml still try to read
+  // Note compiling belt.res still try to read
   // belt_xx.cmi we need enforce the order to
   // avoid data race issues
   var beltPackage = fileTarget("belt.cmi");
@@ -1008,7 +940,6 @@ ${ninjaQuickBuildList([
   var allOthersTarget = scanFileTargets(beltTargets, []);
   var beltOutput = generateNinja(depsMap, beltTargets, ninjaCwd, externalDeps);
   beltOutput.push(phony(othersTarget, fileTargets(allOthersTarget), ninjaCwd));
-  // ninjaBuild([`belt_HashSetString.ml`,])
   writeFileAscii(
     path.join(othersDir, ninjaOutput),
     templateOthersRules +
@@ -1081,13 +1012,10 @@ ${ninjaQuickBuildList([
   ]);
   targets.forEach((ext, mod) => {
     switch (ext) {
-      case "HAS_MLI":
-      case "HAS_BOTH":
       case "HAS_RESI":
       case "HAS_BOTH_RES":
         updateDepsKVByFile(mod + ".cmi", "pervasives.cmj", depsMap);
         break;
-      case "HAS_ML":
       case "HAS_RES":
         updateDepsKVByFile(mod + ".cmj", "pervasives.cmj", depsMap);
         break;
@@ -1157,23 +1085,10 @@ async function testNinja() {
   var templateTestRules = `
 bsc_flags = -bs-cross-module-opt -make-runtime-test -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104 -warn-error A  -I runtime -I $stdlib -I others
 ${ruleCC(ninjaCwd)}
-
-
-${mllRule}
-${mllList(ninjaCwd, [
-  "arith_lexer.mll",
-  "number_lexer.mll",
-  "simple_lexer_test.mll",
-])}
 `;
   var testDirFiles = fs.readdirSync(testDir, "ascii");
   var sources = testDirFiles.filter(x => {
-    return (
-      x.endsWith(".resi") ||
-      x.endsWith(".res") ||
-      x.endsWith(".ml") ||
-      x.endsWith(".mli")
-    );
+    return x.endsWith(".resi") || x.endsWith(".res");
   });
 
   let depsMap = createDepsMapWithTargets(sources);
@@ -1216,7 +1131,7 @@ function runJSCheckAsync(depsMap) {
       fs.readFile(jsFile, "utf8", function (err, fileContent) {
         if (err === null) {
           var deps = getDeps(fileContent).map(x => path.parse(x).name + ".cmj");
-          fs.exists(path.join(runtimeDir, name + ".mli"), exist => {
+          fs.exists(path.join(runtimeDir, name + ".resi"), exist => {
             if (exist) {
               deps.push(name + ".cmi");
             }
