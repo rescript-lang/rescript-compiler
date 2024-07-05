@@ -8,16 +8,6 @@ rule cc_cmi
     command = $bsc -bs-read-cmi -bs-cmi -bs-cmj $bsc_flags  -I test  $in
     description = $in -> $out
 
-
-
-
-rule mll
-    command = $ocamllex $in
-    generator = true
-
-o test/arith_lexer.ml : mll test/arith_lexer.mll
-o test/number_lexer.ml : mll test/number_lexer.mll
-o test/simple_lexer_test.ml : mll test/simple_lexer_test.mll
 o test/406_primitive_test.cmi test/406_primitive_test.cmj : cc test/406_primitive_test.res | test/mt.cmj $bsc $stdlib runtime
 o test/AsInUncurriedExternals.cmi test/AsInUncurriedExternals.cmj : cc test/AsInUncurriedExternals.res | $bsc $stdlib runtime
 o test/Coercion.cmi test/Coercion.cmj : cc test/Coercion.res | $bsc $stdlib runtime
