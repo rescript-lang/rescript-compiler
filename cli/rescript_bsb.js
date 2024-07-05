@@ -322,10 +322,7 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
     if (!fileName) return true;
 
     return (
-      ((fileName.endsWith(".res") ||
-        fileName.endsWith(".resi") ||
-        fileName.endsWith(".ml") ||
-        fileName.endsWith(".mli")) &&
+      ((fileName.endsWith(".res") || fileName.endsWith(".resi")) &&
         !watchGenerated.includes(fileName)) ||
       fileName === resConfig
     );
