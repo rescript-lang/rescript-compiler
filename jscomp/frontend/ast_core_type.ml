@@ -129,14 +129,6 @@ let get_curry_arity (ty : t) =
     let arity, _ = Ast_uncurried.core_type_extract_uncurried_fun ty in
     arity
   else get_uncurry_arity_aux ty 0
-
-(* add hoc for bs.send.pipe *)
-let rec get_curry_labels (ty : t) acc =
-  match ty.ptyp_desc with
-  | Ptyp_arrow (label, _, rest) -> get_curry_labels rest (label :: acc)
-  | _ -> acc
-
-let get_curry_labels ty = List.rev (get_curry_labels ty [])
 let is_arity_one ty = get_curry_arity ty = 1
 
 type param_type = {
