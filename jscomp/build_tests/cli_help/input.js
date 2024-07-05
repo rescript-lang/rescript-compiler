@@ -16,7 +16,6 @@ const cliHelp =
   "  build\n" +
   "  clean\n" +
   "  format\n" +
-  "  convert\n" +
   "  dump\n" +
   "  help\n" +
   "\n" +
@@ -57,17 +56,6 @@ const formatHelp =
   "          the formatted code to stdout in ReScript syntax\n" +
   "  -all    Format the whole project \n" +
   "  -check  Check formatting for file or the whole project. Use `-all` to check the whole project\n";
-
-const convertHelp =
-  "Usage: rescript convert <options> [files]\n" +
-  "\n" +
-  "`rescript convert` converts the current directory\n" +
-  "\n" +
-  "**This command removes old OCaml files and creates new ReScript \n" +
-  "files. Make sure your work is saved first!**\n" +
-  "\n" +
-  "Options:\n" +
-  "  -all  Convert the whole project\n";
 
 const dumpHelp =
   "Usage: rescript dump <options> [target]\n" +
@@ -228,26 +216,6 @@ async function test() {
       cwd: __dirname,
     });
     assert.equal(out.stdout, formatHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
-
-  {
-    // Shows convert help with --help arg
-    const out = await exec(`../../../rescript`, ["convert", "--help"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, convertHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
-
-  {
-    // Shows convert help with -h arg
-    const out = await exec(`../../../rescript`, ["convert", "-h"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, convertHelp);
     assert.equal(out.stderr, "");
     assert.equal(out.status, 0);
   }

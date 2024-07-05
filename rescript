@@ -36,7 +36,6 @@ Subcommands:
   build
   clean
   format
-  convert
   dump
   help
 
@@ -113,14 +112,6 @@ if (helpArgIndex !== -1 && (firstPositionalArgIndex === -1 || helpArgIndex <= fi
     }
     case "dump": {
       require("./cli/rescript_dump.js").main(
-        subcmdArgs,
-        rescript_exe,
-        bsc_exe
-      );
-      break;
-    }
-    case "convert": {
-      require("./cli/rescript_convert.js").main(
         subcmdArgs,
         rescript_exe,
         bsc_exe
