@@ -85,14 +85,21 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
       Exp.sequence ~loc
         (Ast_compatible.app1 ~loc
            (Exp.ident ~loc
-              {loc; txt = Ldot (Ldot (Lident "Js", "Console"), "timeStart")})
+              {
+                loc;
+                txt = Ldot (Lident Js_runtime_modules.astExtensions, "timeStart");
+              })
            (Ast_compatible.const_exp_string ~loc loc_string))
         (Exp.let_ ~loc Nonrecursive
            [Vb.mk ~loc (Pat.var ~loc {loc; txt = "timed"}) e]
            (Exp.sequence ~loc
               (Ast_compatible.app1 ~loc
                  (Exp.ident ~loc
-                    {loc; txt = Ldot (Ldot (Lident "Js", "Console"), "timeEnd")})
+                    {
+                      loc;
+                      txt =
+                        Ldot (Lident Js_runtime_modules.astExtensions, "timeEnd");
+                    })
                  (Ast_compatible.const_exp_string ~loc loc_string))
               (Exp.ident ~loc {loc; txt = Lident "timed"})))
     | _ ->
