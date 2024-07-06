@@ -8,6 +8,7 @@ module type A = Foo
   with type t = 'st constraint 'st = int constraint 'x = int
    and type t = 'st constraint 'st = int constraint 'x = int
    and type t = 'st constraint 'st = int constraint 'x = int
+module type A = Foo with type t = private string
 
 module type A = Foo with type t := string
 module type A = Foo with type t<'a> := string

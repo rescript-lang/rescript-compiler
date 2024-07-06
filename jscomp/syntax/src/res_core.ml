@@ -6269,12 +6269,16 @@ and parse_with_constraint p =
             (Location.mkloc (Longident.last type_constr.txt) type_constr.loc) )
     | Equal ->
       Parser.next p;
+      let private_flag =
+        if Parser.optional p Token.Private then Asttypes.Private
+        else Asttypes.Public
+      in
       let typ_expr = parse_typ_expr p in
       let type_constraints = parse_type_constraints p in
       Parsetree.Pwith_type
         ( type_constr,
-          Ast_helper.Type.mk ~loc:type_constr.loc ~params ~manifest:typ_expr
-            ~cstrs:type_constraints
+          Ast_helper.Type.mk ~loc:type_constr.loc ~priv:private_flag ~params
+            ~manifest:typ_expr ~cstrs:type_constraints
             (Location.mkloc (Longident.last type_constr.txt) type_constr.loc) )
     | token ->
       (* TODO: revisit *)
