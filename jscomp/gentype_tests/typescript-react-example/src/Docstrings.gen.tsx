@@ -10,7 +10,11 @@ export type t = "A" | "B";
 /** hello */
 export const flat: number = DocstringsJS.flat as any;
 
-/** \n  * Sign a message with a key.\n  *\n  * @param message - A message to be signed\n  * @param key - The key with which to sign the message\n  * @returns A signed message\n */
+/** * Sign a message with a key.
+  *
+  * @param message - A message to be signed
+  * @param key - The key with which to sign the message
+  * @returns A signed message */
 export const signMessage: (message:string, key:number) => string = DocstringsJS.signMessage as any;
 
 export const one: (a:number) => number = DocstringsJS.one as any;
