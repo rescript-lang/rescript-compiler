@@ -41,7 +41,6 @@ end
 
 
 
-let keep_docs = ref false              (* -keep-docs *)
 let keep_locs = ref true               (* -keep-locs *)
 
 

@@ -1,13 +1,14 @@
-@ocaml.doc(" hello ") @genType
+/** hello */
+@genType
 let flat = 34
 
-@ocaml.doc("
+/**
   * Sign a message with a key.
   *
   * @param message - A message to be signed
   * @param key - The key with which to sign the message
   * @returns A signed message
- ")
+  */
 @genType
 let signMessage = (. message, key) => message ++ string_of_int(key)
 

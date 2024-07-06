@@ -16,7 +16,6 @@
 (** Helpers to produce Parsetree fragments *)
 
 open Asttypes
-open Docstrings
 open Parsetree
 
 type lid = Longident.t loc
@@ -177,40 +176,40 @@ module Exp:
 (** Value declarations *)
 module Val:
   sig
-    val mk: ?loc:loc -> ?attrs:attrs -> ?docs:docs ->
+    val mk: ?loc:loc -> ?attrs:attrs ->
       ?prim:string list -> str -> core_type -> value_description
   end
 
 (** Type declarations *)
 module Type:
   sig
-    val mk: ?loc:loc -> ?attrs:attrs -> ?docs:docs -> ?text:text ->
+    val mk: ?loc:loc -> ?attrs:attrs ->
       ?params:(core_type * variance) list ->
       ?cstrs:(core_type * core_type * loc) list ->
       ?kind:type_kind -> ?priv:private_flag -> ?manifest:core_type -> str ->
       type_declaration
 
-    val constructor: ?loc:loc -> ?attrs:attrs -> ?info:info ->
+    val constructor: ?loc:loc -> ?attrs:attrs ->
       ?args:constructor_arguments -> ?res:core_type -> str ->
       constructor_declaration
-    val field: ?loc:loc -> ?attrs:attrs -> ?info:info ->
+    val field: ?loc:loc -> ?attrs:attrs ->
       ?mut:mutable_flag -> str -> core_type -> label_declaration
   end
 
 (** Type extensions *)
 module Te:
   sig
-    val mk: ?attrs:attrs -> ?docs:docs ->
+    val mk: ?attrs:attrs ->
       ?params:(core_type * variance) list -> ?priv:private_flag ->
       lid -> extension_constructor list -> type_extension
 
-    val constructor: ?loc:loc -> ?attrs:attrs -> ?docs:docs -> ?info:info ->
+    val constructor: ?loc:loc -> ?attrs:attrs ->
       str -> extension_constructor_kind -> extension_constructor
 
-    val decl: ?loc:loc -> ?attrs:attrs -> ?docs:docs -> ?info:info ->
+    val decl: ?loc:loc -> ?attrs:attrs ->
       ?args:constructor_arguments -> ?res:core_type -> str ->
       extension_constructor
-    val rebind: ?loc:loc -> ?attrs:attrs -> ?docs:docs -> ?info:info ->
+    val rebind: ?loc:loc -> ?attrs:attrs ->
       str -> lid -> extension_constructor
   end
 
@@ -267,7 +266,6 @@ module Sig:
     val include_: ?loc:loc -> include_description -> signature_item
     val extension: ?loc:loc -> ?attrs:attrs -> extension -> signature_item
     val attribute: ?loc:loc -> attribute -> signature_item
-    val text: text -> signature_item list
   end
 
 (** Structure items *)
@@ -288,46 +286,45 @@ module Str:
     val include_: ?loc:loc -> include_declaration -> structure_item
     val extension: ?loc:loc -> ?attrs:attrs -> extension -> structure_item
     val attribute: ?loc:loc -> attribute -> structure_item
-    val text: text -> structure_item list
   end
 
 (** Module declarations *)
 module Md:
   sig
-    val mk: ?loc:loc -> ?attrs:attrs -> ?docs:docs -> ?text:text ->
+    val mk: ?loc:loc -> ?attrs:attrs ->
       str -> module_type -> module_declaration
   end
 
 (** Module type declarations *)
 module Mtd:
   sig
-    val mk: ?loc:loc -> ?attrs:attrs -> ?docs:docs -> ?text:text ->
+    val mk: ?loc:loc -> ?attrs:attrs ->
       ?typ:module_type -> str -> module_type_declaration
   end
 
 (** Module bindings *)
 module Mb:
   sig
-    val mk: ?loc:loc -> ?attrs:attrs -> ?docs:docs -> ?text:text ->
+    val mk: ?loc:loc -> ?attrs:attrs ->
       str -> module_expr -> module_binding
   end
 
 (** Opens *)
 module Opn:
   sig
-    val mk: ?loc: loc -> ?attrs:attrs -> ?docs:docs ->
+    val mk: ?loc: loc -> ?attrs:attrs ->
       ?override:override_flag -> lid -> open_description
   end
 
 (** Includes *)
 module Incl:
   sig
-    val mk: ?loc: loc -> ?attrs:attrs -> ?docs:docs -> 'a -> 'a include_infos
+    val mk: ?loc: loc -> ?attrs:attrs -> 'a -> 'a include_infos
   end
 
 (** Value bindings *)
 module Vb:
   sig
-    val mk: ?loc: loc -> ?attrs:attrs -> ?docs:docs -> ?text:text ->
+    val mk: ?loc: loc -> ?attrs:attrs ->
       pattern -> expression -> value_binding
   end
