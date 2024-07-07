@@ -52,6 +52,7 @@
 - Convert `caml_format` and `js_math` to `.res`. https://github.com/rescript-lang/rescript-compiler/pull/6834
 - Convert `js.ml` files to `.res`. https://github.com/rescript-lang/rescript-compiler/pull/6835
 - Remove old `.ml` tests. https://github.com/rescript-lang/rescript-compiler/pull/6847
+- Make compiler libs ready for uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6861
 
 #### :nail_care: Polish
 
