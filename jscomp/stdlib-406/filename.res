@@ -114,9 +114,9 @@ module Unix = {
   let temp_dir_name = try Sys.getenv("TMPDIR") catch {
   | Not_found => "/tmp"
   }
-  let quote = generic_quote("'\\''")
-  let basename = generic_basename(is_dir_sep, current_dir_name)
-  let dirname = generic_dirname(is_dir_sep, current_dir_name)
+  let quote = x => generic_quote("'\\''", x)
+  let basename = x => generic_basename(is_dir_sep, current_dir_name, x)
+  let dirname = x => generic_dirname(is_dir_sep, current_dir_name, x)
 }
 
 module Win32 = {
@@ -221,8 +221,8 @@ module Cygwin = {
   let check_suffix = Win32.check_suffix
   let temp_dir_name = Unix.temp_dir_name
   let quote = Unix.quote
-  let basename = generic_basename(is_dir_sep, current_dir_name)
-  let dirname = generic_dirname(is_dir_sep, current_dir_name)
+  let basename = x => generic_basename(is_dir_sep, current_dir_name, x)
+  let dirname = x => generic_dirname(is_dir_sep, current_dir_name, x)
 }
 
 let (

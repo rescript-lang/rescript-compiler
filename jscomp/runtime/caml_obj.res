@@ -283,8 +283,8 @@ and aux_obj_compare = (a: Obj.t, b: Obj.t) => {
       }
     }
 
-  let do_key_a = do_key((a, b, min_key_rhs))
-  let do_key_b = do_key((b, a, min_key_lhs))
+  let do_key_a = key => do_key((a, b, min_key_rhs), key)
+  let do_key_b = key => do_key((b, a, min_key_lhs), key)
   O.for_in(a, do_key_a)
   O.for_in(b, do_key_b)
   let res = switch (min_key_lhs.contents, min_key_rhs.contents) {
