@@ -70,4 +70,4 @@ type token =
    Blanks and newlines are skipped. Comments delimited by [(*] and [*)]
    are skipped as well, and can be nested. A {!Stream.Failure} exception
    is raised if end of stream is unexpectedly reached.*/
-let make_lexer: (list<string>, Stream.t<char>) => Stream.t<token>
+let make_lexer: list<string> => (Stream.t<char> => Stream.t<token>)

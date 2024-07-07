@@ -1052,16 +1052,18 @@ function free_index(tbl_ref, l) {
   return idx;
 }
 
-let remove_matches = List.filter(function (x) {
-  switch (x.TAG) {
-    case "TSeq" :
-    case "TExp" :
-        return true;
-    case "TMatch" :
-        return false;
-    
-  }
-});
+function remove_matches(param) {
+  return List.filter((function (x) {
+    switch (x.TAG) {
+      case "TSeq" :
+      case "TExp" :
+          return true;
+      case "TMatch" :
+          return false;
+      
+    }
+  }), param);
+}
 
 function split_at_match_rec(_l$p, _x) {
   while(true) {
@@ -1081,7 +1083,7 @@ function split_at_match_rec(_l$p, _x) {
         case "TMatch" :
             return [
               List.rev(l$p),
-              Curry._1(remove_matches, x.tl)
+              remove_matches(x.tl)
             ];
         
       }
@@ -1208,14 +1210,14 @@ function set_idx(idx, x) {
 
 function filter_marks(b, e, marks) {
   return {
-    marks: List.filter(function (param) {
+    marks: List.filter((function (param) {
       let i = param[0];
       if (i < b) {
         return true;
       } else {
         return i > e;
       }
-    })(marks.marks),
+    }), marks.marks),
     pmarks: marks.pmarks
   };
 }
@@ -1264,7 +1266,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
           }
         }), y$p$1);
         let match = marks$p !== undefined ? [
-            Curry._1(remove_matches, y$p$1),
+            remove_matches(y$p$1),
             marks$p
           ] : [
             y$p$1,
@@ -1382,10 +1384,10 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
     return tseq(kind, y, z, rem);
   }
   if (kind === "Longest") {
-    return tseq(kind, Curry._1(remove_matches, y), z, delta_1(marks, c, next_cat, prev_cat, z, rem));
+    return tseq(kind, remove_matches(y), z, delta_1(marks, c, next_cat, prev_cat, z, rem));
   }
   if (kind !== "First") {
-    return delta_1(marks, c, next_cat, prev_cat, z, tseq(kind, Curry._1(remove_matches, y), z, rem));
+    return delta_1(marks, c, next_cat, prev_cat, z, tseq(kind, remove_matches(y), z, rem));
   }
   let match = split_at_match_rec(/* [] */0, y);
   return tseq(kind, match[0], z, delta_1(marks, c, next_cat, prev_cat, z, tseq(kind, match[1], z, rem)));

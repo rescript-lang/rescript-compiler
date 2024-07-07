@@ -2120,13 +2120,13 @@ function process_collision(dir, c1, c2, state) {
 
 function broad_phase(collid, all_collids, state) {
   let obj = collid._2;
-  return List.filter(function (c) {
+  return List.filter((function (c) {
     if (in_viewport(state.vpt, obj.pos) || is_player(collid)) {
       return true;
     } else {
       return out_of_viewport_below(state.vpt, obj.pos.y);
     }
-  })(all_collids);
+  }), all_collids);
 }
 
 function check_collisions(collid, all_collids, state) {
