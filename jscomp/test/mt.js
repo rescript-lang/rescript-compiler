@@ -235,11 +235,10 @@ function old_from_promise_suites_donotuse(name, suites) {
         List.iter((function (param) {
           let code = param[1];
           it(param[0], (function (param) {
-            let arg1 = function (x) {
+            return code.then(function (x) {
               handleCode(x);
               return val_unit;
-            };
-            return code.then(arg1);
+            });
           }));
         }), suites);
       }));
