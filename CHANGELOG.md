@@ -55,7 +55,7 @@
 - Remove old `.ml` tests. https://github.com/rescript-lang/rescript-compiler/pull/6847
 - Make compiler libs ready for uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6861
 - Make tests ready for uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6862
-
+- Make gentype tests uncurried. https://github.com/rescript-lang/rescript-compiler/pull/6866
 #### :nail_care: Polish
 
 - Make the `--help` arg be prioritized in the CLI, so correctly prints help message and skip other commands. https://github.com/rescript-lang/rescript-compiler/pull/6667
