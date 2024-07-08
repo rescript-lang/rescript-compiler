@@ -2,7 +2,6 @@
 'use strict';
 
 let $$Array = require("../../lib/js/array.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_module = require("../../lib/js/caml_module.js");
 
 let PA = Caml_module.init_mod([
@@ -57,7 +56,7 @@ Caml_module.update_mod({
   print: print$1
 });
 
-Curry._1(PA.print, [
+PA.print([
   1,
   2
 ]);

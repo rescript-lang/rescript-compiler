@@ -18,9 +18,13 @@ function size(a) {
   return a.length;
 }
 
-let get = Belt_Array.get;
+function get(a, x) {
+  return Belt_Array.get(a, x);
+}
 
-let getExn = Belt_Array.getExn;
+function getExn(a, x) {
+  return Belt_Array.getExn(a, x);
+}
 
 function getUnsafe(a, x) {
   return a[x];
@@ -30,9 +34,13 @@ function getUndefined(a, x) {
   return a[x];
 }
 
-let shuffle = Belt_Array.shuffle;
+function shuffle(x) {
+  return Belt_Array.shuffle(x);
+}
 
-let reverse = Belt_Array.reverse;
+function reverse(x) {
+  return Belt_Array.reverse(x);
+}
 
 function makeUninitialized(x) {
   return new Array(x);
@@ -42,13 +50,21 @@ function makeUninitializedUnsafe(x) {
   return new Array(x);
 }
 
-let make = Belt_Array.make;
+function make(x, y) {
+  return Belt_Array.make(x, y);
+}
 
-let range = Belt_Array.range;
+function range(x, y) {
+  return Belt_Array.range(x, y);
+}
 
-let rangeBy = Belt_Array.rangeBy;
+function rangeBy(x, y, step) {
+  return Belt_Array.rangeBy(x, y, step);
+}
 
-let makeByU = Belt_Array.makeByU;
+function makeByU(c, f) {
+  return Belt_Array.makeByU(c, f);
+}
 
 function makeBy(c, f) {
   return Belt_Array.makeBy(c, (function (x) {
@@ -56,7 +72,9 @@ function makeBy(c, f) {
   }));
 }
 
-let makeByAndShuffleU = Belt_Array.makeByAndShuffleU;
+function makeByAndShuffleU(c, f) {
+  return Belt_Array.makeByAndShuffleU(c, f);
+}
 
 function makeByAndShuffle(c, f) {
   return Belt_Array.makeByAndShuffle(c, (function (x) {
@@ -64,9 +82,13 @@ function makeByAndShuffle(c, f) {
   }));
 }
 
-let zip = Belt_Array.zip;
+function zip(a1, a2) {
+  return Belt_Array.zip(a1, a2);
+}
 
-let zipByU = Belt_Array.zipByU;
+function zipByU(a1, a2, f) {
+  return Belt_Array.zipByU(a1, a2, f);
+}
 
 function zipBy(a1, a2, f) {
   return Belt_Array.zipBy(a1, a2, (function (x, y) {
@@ -74,21 +96,33 @@ function zipBy(a1, a2, f) {
   }));
 }
 
-let unzip = Belt_Array.unzip;
+function unzip(a) {
+  return Belt_Array.unzip(a);
+}
 
-let concat = Belt_Array.concat;
+function concat(a1, a2) {
+  return Belt_Array.concat(a1, a2);
+}
 
-let concatMany = Belt_Array.concatMany;
+function concatMany(a) {
+  return Belt_Array.concatMany(a);
+}
 
-let slice = Belt_Array.slice;
+function slice(a, offset, len) {
+  return Belt_Array.slice(a, offset, len);
+}
 
-let sliceToEnd = Belt_Array.sliceToEnd;
+function sliceToEnd(a, b) {
+  return Belt_Array.sliceToEnd(a, b);
+}
 
 function copy(a) {
   return a.slice(0);
 }
 
-let forEachU = Belt_Array.forEachU;
+function forEachU(a, f) {
+  Belt_Array.forEachU(a, f);
+}
 
 function forEach(a, f) {
   Belt_Array.forEach(a, (function (x) {
@@ -96,7 +130,9 @@ function forEach(a, f) {
   }));
 }
 
-let mapU = Belt_Array.mapU;
+function mapU(a, f) {
+  return Belt_Array.mapU(a, f);
+}
 
 function map(a, f) {
   return Belt_Array.map(a, (function (x) {
@@ -104,7 +140,9 @@ function map(a, f) {
   }));
 }
 
-let keepWithIndexU = Belt_Array.keepWithIndexU;
+function keepWithIndexU(a, f) {
+  return Belt_Array.keepWithIndexU(a, f);
+}
 
 function keepWithIndex(a, f) {
   return Belt_Array.keepWithIndex(a, (function (x, y) {
@@ -112,7 +150,9 @@ function keepWithIndex(a, f) {
   }));
 }
 
-let keepMapU = Belt_Array.keepMapU;
+function keepMapU(a, f) {
+  return Belt_Array.keepMapU(a, f);
+}
 
 function keepMap(a, f) {
   return Belt_Array.keepMap(a, (function (x) {
@@ -120,7 +160,9 @@ function keepMap(a, f) {
   }));
 }
 
-let forEachWithIndexU = Belt_Array.forEachWithIndexU;
+function forEachWithIndexU(a, f) {
+  Belt_Array.forEachWithIndexU(a, f);
+}
 
 function forEachWithIndex(a, f) {
   Belt_Array.forEachWithIndex(a, (function (x, y) {
@@ -128,7 +170,9 @@ function forEachWithIndex(a, f) {
   }));
 }
 
-let mapWithIndexU = Belt_Array.mapWithIndexU;
+function mapWithIndexU(a, f) {
+  return Belt_Array.mapWithIndexU(a, f);
+}
 
 function mapWithIndex(a, f) {
   return Belt_Array.mapWithIndex(a, (function (x, y) {
@@ -136,7 +180,9 @@ function mapWithIndex(a, f) {
   }));
 }
 
-let partitionU = Belt_Array.partitionU;
+function partitionU(a, f) {
+  return Belt_Array.partitionU(a, f);
+}
 
 function partition(a, f) {
   return Belt_Array.partition(a, (function (x) {
@@ -144,7 +190,9 @@ function partition(a, f) {
   }));
 }
 
-let reduceU = Belt_Array.reduceU;
+function reduceU(a, b, f) {
+  return Belt_Array.reduceU(a, b, f);
+}
 
 function reduce(a, b, f) {
   return Belt_Array.reduce(a, b, (function (x, y) {
@@ -152,7 +200,9 @@ function reduce(a, b, f) {
   }));
 }
 
-let reduceReverseU = Belt_Array.reduceReverseU;
+function reduceReverseU(a, b, f) {
+  return Belt_Array.reduceReverseU(a, b, f);
+}
 
 function reduceReverse(a, b, f) {
   return Belt_Array.reduceReverse(a, b, (function (x, y) {
@@ -160,7 +210,9 @@ function reduceReverse(a, b, f) {
   }));
 }
 
-let reduceReverse2U = Belt_Array.reduceReverse2U;
+function reduceReverse2U(a1, a2, c, f) {
+  return Belt_Array.reduceReverse2U(a1, a2, c, f);
+}
 
 function reduceReverse2(a1, a2, c, f) {
   return Belt_Array.reduceReverse2(a1, a2, c, (function (x, y, z) {
@@ -168,7 +220,9 @@ function reduceReverse2(a1, a2, c, f) {
   }));
 }
 
-let someU = Belt_Array.someU;
+function someU(a, f) {
+  return Belt_Array.someU(a, f);
+}
 
 function some(a, f) {
   return Belt_Array.some(a, (function (x) {
@@ -176,7 +230,9 @@ function some(a, f) {
   }));
 }
 
-let everyU = Belt_Array.everyU;
+function everyU(a, f) {
+  return Belt_Array.everyU(a, f);
+}
 
 function every(a, f) {
   return Belt_Array.every(a, (function (x) {
@@ -184,7 +240,9 @@ function every(a, f) {
   }));
 }
 
-let every2U = Belt_Array.every2U;
+function every2U(a1, a2, f) {
+  return Belt_Array.every2U(a1, a2, f);
+}
 
 function every2(a1, a2, f) {
   return Belt_Array.every2(a1, a2, (function (x, y) {
@@ -192,7 +250,9 @@ function every2(a1, a2, f) {
   }));
 }
 
-let some2U = Belt_Array.some2U;
+function some2U(a1, a2, f) {
+  return Belt_Array.some2U(a1, a2, f);
+}
 
 function some2(a1, a2, f) {
   return Belt_Array.some2(a1, a2, (function (x, y) {
@@ -200,7 +260,9 @@ function some2(a1, a2, f) {
   }));
 }
 
-let cmpU = Belt_Array.cmpU;
+function cmpU(a1, a2, f) {
+  return Belt_Array.cmpU(a1, a2, f);
+}
 
 function cmp(a1, a2, f) {
   return Belt_Array.cmp(a1, a2, (function (x, y) {
@@ -208,7 +270,9 @@ function cmp(a1, a2, f) {
   }));
 }
 
-let eqU = Belt_Array.eqU;
+function eqU(a1, a2, f) {
+  return Belt_Array.eqU(a1, a2, f);
+}
 
 function eq(a1, a2, f) {
   return Belt_Array.eq(a1, a2, (function (x, y) {

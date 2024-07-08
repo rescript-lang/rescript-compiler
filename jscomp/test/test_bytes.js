@@ -3,7 +3,9 @@
 
 let Bytes = require("../../lib/js/bytes.js");
 
-let f = Bytes.unsafe_to_string;
+function f(v) {
+  return Bytes.unsafe_to_string(v);
+}
 
 let ff = Bytes.to_string;
 

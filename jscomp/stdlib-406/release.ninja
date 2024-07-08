@@ -1,5 +1,5 @@
 
-bsc_flags = -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-3-106 -warn-error A -I others -curried
+bsc_flags = -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-3-106 -warn-error A -I others -uncurried
 
 rule cc
     command = $bsc -bs-cmi -bs-cmj $bsc_flags   -I stdlib-406  $in
@@ -9,13 +9,13 @@ rule cc_cmi
     description = $in -> $out
 
 o stdlib-406/pervasives.cmj : cc_cmi stdlib-406/pervasives.res | stdlib-406/pervasives.cmi $bsc others
-    bsc_flags = $bsc_flags -nopervasives -curried
+    bsc_flags = $bsc_flags -nopervasives -uncurried
 o stdlib-406/pervasives.cmi : cc stdlib-406/pervasives.resi | $bsc others
-    bsc_flags = $bsc_flags -nopervasives -curried
+    bsc_flags = $bsc_flags -nopervasives -uncurried
 o stdlib-406/pervasivesU.cmj : cc_cmi stdlib-406/pervasivesU.res | stdlib-406/pervasivesU.cmi $bsc others
-    bsc_flags = $bsc_flags -nopervasives -curried
+    bsc_flags = $bsc_flags -nopervasives -uncurried
 o stdlib-406/pervasivesU.cmi : cc stdlib-406/pervasivesU.resi | $bsc others
-    bsc_flags = $bsc_flags -nopervasives -curried
+    bsc_flags = $bsc_flags -nopervasives -uncurried
 o stdlib-406/arg.cmj : cc_cmi stdlib-406/arg.res | stdlib-406/arg.cmi stdlib-406/array.cmj stdlib-406/buffer.cmj stdlib-406/list.cmj stdlib-406/string.cmj stdlib-406/sys.cmj $bsc others
 o stdlib-406/arg.cmi : cc stdlib-406/arg.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/array.cmj : cc_cmi stdlib-406/array.res | stdlib-406/array.cmi $bsc others

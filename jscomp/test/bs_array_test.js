@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
-let Curry = require("../../lib/js/curry.js");
 let Js_list = require("../../lib/js/js_list.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Belt_List = require("../../lib/js/belt_List.js");
@@ -36,7 +35,7 @@ function neq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Neq",
           _0: x,
@@ -84,45 +83,43 @@ eq("File \"bs_array_test.res\", line 31, characters 4-11", [
   undefined
 ]);
 
-$$throw("File \"bs_array_test.res\", line 35, characters 8-15", (function (param) {
+$$throw("File \"bs_array_test.res\", line 35, characters 8-15", (function () {
   Belt_Array.getExn([
     0,
     1
   ], -1);
 }));
 
-$$throw("File \"bs_array_test.res\", line 36, characters 8-15", (function (param) {
+$$throw("File \"bs_array_test.res\", line 36, characters 8-15", (function () {
   Belt_Array.getExn([
     0,
     1
   ], 2);
 }));
 
-let partial_arg = [
-  0,
-  1
-];
-
-function f(param) {
-  return Belt_Array.getExn(partial_arg, param);
+function f(extra) {
+  return Belt_Array.getExn([
+    0,
+    1
+  ], extra);
 }
 
 b("File \"bs_array_test.res\", line 38, characters 4-11", Caml_obj.equal([
-  Curry._1(f, 0),
-  Curry._1(f, 1)
+  f(0),
+  f(1)
 ], [
   0,
   1
 ]));
 
-$$throw("File \"bs_array_test.res\", line 44, characters 8-15", (function (param) {
+$$throw("File \"bs_array_test.res\", line 44, characters 8-15", (function () {
   Belt_Array.setExn([
     0,
     1
   ], -1, 0);
 }));
 
-$$throw("File \"bs_array_test.res\", line 45, characters 8-15", (function (param) {
+$$throw("File \"bs_array_test.res\", line 45, characters 8-15", (function () {
   Belt_Array.setExn([
     0,
     1
@@ -310,7 +307,11 @@ let u = Belt_Array.shuffle(v$5);
 
 neq("File \"bs_array_test.res\", line 122, characters 6-13", u, v$5);
 
-eq("File \"bs_array_test.res\", line 124, characters 5-12", Belt_Array.reduce(u, 0, add), Belt_Array.reduce(v$5, 0, add));
+function sum(x) {
+  return Belt_Array.reduce(x, 0, add);
+}
+
+eq("File \"bs_array_test.res\", line 124, characters 5-12", sum(u), sum(v$5));
 
 b("File \"bs_array_test.res\", line 129, characters 4-11", Caml_obj.equal(Belt_Array.range(0, 3), [
   0,

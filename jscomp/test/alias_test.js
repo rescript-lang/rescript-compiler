@@ -13,7 +13,7 @@ let a21 = a20 + a20;
 
 let a22 = "test " + (a21 + "hello");
 
-function ff(param) {
+function ff() {
   return "cool " + a22;
 }
 

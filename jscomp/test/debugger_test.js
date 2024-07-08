@@ -10,7 +10,7 @@ function f(x, y) {
   return x + y | 0;
 }
 
-function g(param) {
+function g() {
   f(1, 2);
   debugger;
   f(1, 2);
@@ -18,7 +18,7 @@ function g(param) {
   return 3;
 }
 
-function exterme_g(param) {
+function exterme_g() {
   f(1, 2);
   debugger;
   let v;

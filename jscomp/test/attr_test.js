@@ -15,7 +15,7 @@ function max2(x, y) {
 let hh = 1 + 2;
 
 function f(x) {
-  des(x, (function (param) {
+  des(x, (function () {
     console.log("hei");
   }));
 }

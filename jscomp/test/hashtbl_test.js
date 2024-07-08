@@ -20,13 +20,14 @@ function to_list(tbl) {
   }), tbl, /* [] */0);
 }
 
-function f(param) {
+function f() {
   let tbl = Hashtbl.create(undefined, 17);
   Hashtbl.add(tbl, 1, /* '1' */49);
   Hashtbl.add(tbl, 2, /* '2' */50);
+  let extra = to_list(tbl);
   return List.sort((function (param, param$1) {
     return Caml.int_compare(param[0], param$1[0]);
-  }), to_list(tbl));
+  }), extra);
 }
 
 function g(count) {
@@ -38,9 +39,10 @@ function g(count) {
     Hashtbl.replace(tbl, (i$1 << 1), String(i$1));
   }
   let v = to_list(tbl);
-  return $$Array.of_list(List.sort((function (param, param$1) {
+  let v$1 = List.sort((function (param, param$1) {
     return Caml.int_compare(param[0], param$1[0]);
-  }), v));
+  }), v);
+  return $$Array.of_list(v$1);
 }
 
 let suites_0 = [

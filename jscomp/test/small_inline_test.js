@@ -4,7 +4,7 @@
 let Curry = require("../../lib/js/curry.js");
 
 function $pipe$great(x, f) {
-  return Curry._1(f, x);
+  return f(x);
 }
 
 function hello1(y, f) {

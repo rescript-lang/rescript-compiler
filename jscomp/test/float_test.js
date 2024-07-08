@@ -8,7 +8,7 @@ let Caml_obj = require("../../lib/js/caml_obj.js");
 let Mt_global = require("./mt_global.js");
 let Caml_float = require("../../lib/js/caml_float.js");
 let Caml_int64 = require("../../lib/js/caml_int64.js");
-let Pervasives = require("../../lib/js/pervasives.js");
+let PervasivesU = require("../../lib/js/pervasivesU.js");
 
 let test_id = {
   contents: 0
@@ -174,7 +174,7 @@ function float_greaterequal(x, y) {
 
 let generic_greaterequal = Caml_obj.greaterequal;
 
-eq("File \"float_test.res\", line 59, characters 5-12", Pervasives.classify_float(3), "FP_normal");
+eq("File \"float_test.res\", line 59, characters 5-12", PervasivesU.classify_float(3), "FP_normal");
 
 eq("File \"float_test.res\", line 60, characters 5-12", Caml_float.modf_float(-3.125), [
   -0.125,
@@ -236,13 +236,13 @@ eq("File \"float_test.res\", line 89, characters 5-12", Caml.float_compare(NaN, 
 
 eq("File \"float_test.res\", line 90, characters 5-12", Caml_obj.compare(NaN, NaN), 0);
 
-eq("File \"float_test.res\", line 91, characters 5-12", Caml.float_compare(NaN, Pervasives.neg_infinity), -1);
+eq("File \"float_test.res\", line 91, characters 5-12", Caml.float_compare(NaN, PervasivesU.neg_infinity), -1);
 
-eq("File \"float_test.res\", line 92, characters 5-12", Caml_obj.compare(NaN, Pervasives.neg_infinity), -1);
+eq("File \"float_test.res\", line 92, characters 5-12", Caml_obj.compare(NaN, PervasivesU.neg_infinity), -1);
 
-eq("File \"float_test.res\", line 93, characters 5-12", Caml.float_compare(Pervasives.neg_infinity, NaN), 1);
+eq("File \"float_test.res\", line 93, characters 5-12", Caml.float_compare(PervasivesU.neg_infinity, NaN), 1);
 
-eq("File \"float_test.res\", line 94, characters 5-12", Caml_obj.compare(Pervasives.neg_infinity, NaN), 1);
+eq("File \"float_test.res\", line 94, characters 5-12", Caml_obj.compare(PervasivesU.neg_infinity, NaN), 1);
 
 eq("File \"float_test.res\", line 95, characters 5-12", NaN === NaN, false);
 
@@ -322,10 +322,10 @@ let b = match$4[1];
 
 let a = match$4[0];
 
-Mt.from_pair_suites("Float_test", Pervasives.$at({
+let extra = PervasivesU.$at({
   hd: [
     "mod_float",
-    (function (param) {
+    (function () {
       return {
         TAG: "Approx",
         _0: 3.2 % 0.5,
@@ -336,7 +336,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
   tl: {
     hd: [
       "modf_float1",
-      (function (param) {
+      (function () {
         return {
           TAG: "Approx",
           _0: a,
@@ -347,7 +347,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
     tl: {
       hd: [
         "modf_float2",
-        (function (param) {
+        (function () {
           return {
             TAG: "Approx",
             _0: b,
@@ -358,7 +358,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
       tl: {
         hd: [
           "int_of_float",
-          (function (param) {
+          (function () {
             return {
               TAG: "Eq",
               _0: 3,
@@ -370,7 +370,9 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
       }
     }
   }
-}, Pervasives.$at(from_pairs(results), suites.contents)));
+}, PervasivesU.$at(from_pairs(results), suites.contents));
+
+Mt.from_pair_suites("Float_test", extra);
 
 exports.test_id = test_id;
 exports.suites = suites;

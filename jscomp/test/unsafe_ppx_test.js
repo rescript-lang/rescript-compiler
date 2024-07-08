@@ -2,9 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
-let Pervasives = require("../../lib/js/pervasives.js");
 let Ffi_js_test = require("./ffi_js_test.js");
+let PervasivesU = require("../../lib/js/pervasivesU.js");
 
 let x = "\\x01\\x02\\x03";
 
@@ -24,8 +23,8 @@ function g(a) {
    return ""
 });
   let regression2 = Math.max;
-  regression(a, Pervasives.failwith);
-  Curry._2(regression2, 3, 2);
+  regression(a, PervasivesU.failwith);
+  regression2(3, 2);
   regression3(3, 2);
   regression4(3, (function (x) {
     return x;
@@ -55,7 +54,7 @@ let v = $$test(1, 2);
 Mt.from_pair_suites("Unsafe_ppx_test", {
   hd: [
     "unsafe_max",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: 2,
@@ -66,7 +65,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", {
   tl: {
     hd: [
       "unsafe_test",
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: 3,
@@ -77,7 +76,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", {
     tl: {
       hd: [
         "unsafe_max2",
-        (function (param) {
+        (function () {
           return {
             TAG: "Eq",
             _0: 2,
@@ -88,7 +87,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", {
       tl: {
         hd: [
           "ffi_keys",
-          (function (param) {
+          (function () {
             return {
               TAG: "Eq",
               _0: ["a"],

@@ -112,7 +112,7 @@ let length_10_id = Belt_List.makeBy(10, (function (x) {
   return x;
 }));
 
-function f13$1(param) {
+function f13$1() {
   return Caml_obj.equal(Belt_List.take(length_10_id, 8), {
     hd: 1,
     tl: {

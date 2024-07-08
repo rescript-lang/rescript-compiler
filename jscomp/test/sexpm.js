@@ -6,11 +6,10 @@ let Caml = require("../../lib/js/caml.js");
 let Char = require("../../lib/js/char.js");
 let List = require("../../lib/js/list.js");
 let Bytes = require("../../lib/js/bytes.js");
-let Curry = require("../../lib/js/curry.js");
 let Buffer = require("../../lib/js/buffer.js");
 let $$String = require("../../lib/js/string.js");
 let Caml_bytes = require("../../lib/js/caml_bytes.js");
-let Pervasives = require("../../lib/js/pervasives.js");
+let PervasivesU = require("../../lib/js/pervasivesU.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function _must_escape(s) {
@@ -23,16 +22,16 @@ function _must_escape(s) {
           if (c !== 92) {
             exit = 1;
           } else {
-            throw new Error(Pervasives.Exit, {
+            throw new Error(PervasivesU.Exit, {
                   cause: {
-                    RE_EXN_ID: Pervasives.Exit
+                    RE_EXN_ID: PervasivesU.Exit
                   }
                 });
           }
         } else {
-          throw new Error(Pervasives.Exit, {
+          throw new Error(PervasivesU.Exit, {
                 cause: {
-                  RE_EXN_ID: Pervasives.Exit
+                  RE_EXN_ID: PervasivesU.Exit
                 }
               });
         }
@@ -51,9 +50,9 @@ function _must_escape(s) {
             case 34 :
             case 40 :
             case 41 :
-                throw new Error(Pervasives.Exit, {
+                throw new Error(PervasivesU.Exit, {
                       cause: {
-                        RE_EXN_ID: Pervasives.Exit
+                        RE_EXN_ID: PervasivesU.Exit
                       }
                     });
             
@@ -63,18 +62,18 @@ function _must_escape(s) {
         }
       } else {
         if (c >= 9) {
-          throw new Error(Pervasives.Exit, {
+          throw new Error(PervasivesU.Exit, {
                 cause: {
-                  RE_EXN_ID: Pervasives.Exit
+                  RE_EXN_ID: PervasivesU.Exit
                 }
               });
         }
         exit = 1;
       }
       if (exit === 1 && c > 127) {
-        throw new Error(Pervasives.Exit, {
+        throw new Error(PervasivesU.Exit, {
               cause: {
-                RE_EXN_ID: Pervasives.Exit
+                RE_EXN_ID: PervasivesU.Exit
               }
             });
       }
@@ -84,7 +83,7 @@ function _must_escape(s) {
   }
   catch (raw_exn){
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.RE_EXN_ID === Pervasives.Exit) {
+    if (exn.RE_EXN_ID === PervasivesU.Exit) {
       return true;
     }
     throw new Error(exn.RE_EXN_ID, {
@@ -152,13 +151,13 @@ function _is_digit(c) {
 }
 
 function _refill(t, k_succ, k_fail) {
-  let n = Curry._3(t.refill, t.buf, 0, t.buf.length);
+  let n = t.refill(t.buf, 0, t.buf.length);
   t.i = 0;
   t.len = n;
   if (n === 0) {
-    return Curry._1(k_fail, t);
+    return k_fail(t);
   } else {
-    return Curry._1(k_succ, t);
+    return k_succ(t);
   }
 }
 
@@ -186,30 +185,28 @@ function _get(t) {
   return c;
 }
 
-function _error(param) {
+function _error(param, param$1) {
   let line = param.line;
   let col = param.col;
-  return function (msg) {
-    let b = Buffer.create(32);
-    Buffer.add_string(b, "at " + (line + (", " + (col + ": "))));
-    Buffer.add_string(b, msg);
-    let msg$p = Buffer.contents(b);
-    return {
-      NAME: "Error",
-      VAL: msg$p
-    };
+  let b = Buffer.create(32);
+  Buffer.add_string(b, "at " + (line + (", " + (col + ": "))));
+  Buffer.add_string(b, param$1);
+  let msg$p = Buffer.contents(b);
+  return {
+    NAME: "Error",
+    VAL: msg$p
   };
 }
 
 function _error_eof(t) {
-  return _error(t)("unexpected end of input");
+  return _error(t, "unexpected end of input");
 }
 
 function expr(k, t) {
   while(true) {
     if (t.i === t.len) {
-      return _refill(t, (function (param) {
-        return expr(k, param);
+      return _refill(t, (function (extra) {
+        return expr(k, extra);
       }), _error_eof);
     }
     let c = _get(t);
@@ -234,7 +231,7 @@ function expr_starting_with(c, k, t) {
       }), t);
     }
     if (c === 92) {
-      return _error(t)("unexpected '\\'");
+      return _error(t, "unexpected '\\'");
     }
     
   } else if (c >= 11) {
@@ -263,7 +260,7 @@ function expr_starting_with(c, k, t) {
         case 40 :
             return expr_list(/* [] */0, k, t);
         case 41 :
-            return _error(t)("unexpected ')'");
+            return _error(t, "unexpected ')'");
         
       }
     }
@@ -287,14 +284,14 @@ function expr_starting_with(c, k, t) {
 function expr_list(acc, k, t) {
   while(true) {
     if (t.i === t.len) {
-      return _refill(t, (function (param) {
-        return expr_list(acc, k, param);
+      return _refill(t, (function (extra) {
+        return expr_list(acc, k, extra);
       }), _error_eof);
     }
     let c = _get(t);
     if (c > 32 || c < 9) {
       if (c === 41) {
-        return Curry._2(k, undefined, {
+        return k(undefined, {
           NAME: "List",
           VAL: List.rev(acc)
         });
@@ -305,22 +302,7 @@ function expr_list(acc, k, t) {
     }
     return expr_starting_with(c, (function (last, e) {
       if (last !== undefined) {
-        if (last !== 40) {
-          if (last !== 41) {
-            return expr_list({
-              hd: e,
-              tl: acc
-            }, k, t);
-          } else {
-            return Curry._2(k, undefined, {
-              NAME: "List",
-              VAL: List.rev({
-                hd: e,
-                tl: acc
-              })
-            });
-          }
-        } else {
+        if (last === 40) {
           return expr_list(/* [] */0, (function (param, l) {
             return expr_list({
               hd: l,
@@ -328,12 +310,21 @@ function expr_list(acc, k, t) {
             }, k, t);
           }), t);
         }
-      } else {
-        return expr_list({
-          hd: e,
-          tl: acc
-        }, k, t);
+        if (last === 41) {
+          return k(undefined, {
+            NAME: "List",
+            VAL: List.rev({
+              hd: e,
+              tl: acc
+            })
+          });
+        }
+        
       }
+      return expr_list({
+        hd: e,
+        tl: acc
+      }, k, t);
     }), t);
   };
 }
@@ -341,7 +332,7 @@ function expr_list(acc, k, t) {
 function _return_atom(last, k, t) {
   let s = Buffer.contents(t.atom);
   t.atom.position = 0;
-  return Curry._2(k, last, {
+  return k(last, {
     NAME: "Atom",
     VAL: s
   });
@@ -350,10 +341,10 @@ function _return_atom(last, k, t) {
 function atom(k, t) {
   while(true) {
     if (t.i === t.len) {
-      return _refill(t, (function (param) {
-        return atom(k, param);
-      }), (function (param) {
-        return _return_atom(undefined, k, param);
+      return _refill(t, (function (extra) {
+        return atom(k, extra);
+      }), (function (extra) {
+        return _return_atom(undefined, k, extra);
       }));
     }
     let c = _get(t);
@@ -361,7 +352,7 @@ function atom(k, t) {
     if (c >= 35) {
       if (c >= 42) {
         if (c === 92) {
-          return _error(t)("unexpected '\\' in non-quoted string");
+          return _error(t, "unexpected '\\' in non-quoted string");
         }
         exit = 1;
       } else {
@@ -377,7 +368,7 @@ function atom(k, t) {
               exit = 1;
               break;
           case 34 :
-              return _error(t)("unexpected '\"' in the middle of an atom");
+              return _error(t, "unexpected '\"' in the middle of an atom");
           
         }
       } else {
@@ -400,8 +391,8 @@ function atom(k, t) {
 function quoted(k, t) {
   while(true) {
     if (t.i === t.len) {
-      return _refill(t, (function (param) {
-        return quoted(k, param);
+      return _refill(t, (function (extra) {
+        return quoted(k, extra);
       }), _error_eof);
     }
     let c = _get(t);
@@ -421,8 +412,8 @@ function quoted(k, t) {
 
 function escaped(k, t) {
   if (t.i === t.len) {
-    return _refill(t, (function (param) {
-      return escaped(k, param);
+    return _refill(t, (function (extra) {
+      return escaped(k, extra);
     }), _error_eof);
   }
   let c = _get(t);
@@ -430,13 +421,13 @@ function escaped(k, t) {
     if (c < 117) {
       switch (c) {
         case 92 :
-            return Curry._1(k, /* '\\' */92);
+            return k(/* '\\' */92);
         case 98 :
-            return Curry._1(k, /* '\b' */8);
+            return k(/* '\b' */8);
         case 110 :
-            return Curry._1(k, /* '\n' */10);
+            return k(/* '\n' */10);
         case 114 :
-            return Curry._1(k, /* '\r' */13);
+            return k(/* '\r' */13);
         case 93 :
         case 94 :
         case 95 :
@@ -459,61 +450,61 @@ function escaped(k, t) {
         case 115 :
             break;
         case 116 :
-            return Curry._1(k, /* '\t' */9);
+            return k(/* '\t' */9);
         
       }
     }
     
   } else if (c === 34) {
-    return Curry._1(k, /* '"' */34);
+    return k(/* '"' */34);
   }
   if (_is_digit(c)) {
     return read2int(c - /* '0' */48 | 0, (function (n) {
-      return Curry._1(k, Char.chr(n));
+      return k(Char.chr(n));
     }), t);
   } else {
-    return _error(t)("unexpected escaped char '" + (c + "'"));
+    return _error(t, "unexpected escaped char '" + (c + "'"));
   }
 }
 
 function read2int(i, k, t) {
   if (t.i === t.len) {
-    return _refill(t, (function (param) {
-      return read2int(i, k, param);
+    return _refill(t, (function (extra) {
+      return read2int(i, k, extra);
     }), _error_eof);
   }
   let c = _get(t);
   if (_is_digit(c)) {
     return read1int(Math.imul(10, i) + (c - /* '0' */48 | 0) | 0, k, t);
   } else {
-    return _error(t)("unexpected escaped char '" + (c + "' when reading byte"));
+    return _error(t, "unexpected escaped char '" + (c + "' when reading byte"));
   }
 }
 
 function read1int(i, k, t) {
   if (t.i === t.len) {
-    return _refill(t, (function (param) {
-      return read1int(i, k, param);
+    return _refill(t, (function (extra) {
+      return read1int(i, k, extra);
     }), _error_eof);
   }
   let c = _get(t);
   if (_is_digit(c)) {
-    return Curry._1(k, Math.imul(10, i) + (c - /* '0' */48 | 0) | 0);
+    return k(Math.imul(10, i) + (c - /* '0' */48 | 0) | 0);
   } else {
-    return _error(t)("unexpected escaped char '" + (c + "' when reading byte"));
+    return _error(t, "unexpected escaped char '" + (c + "' when reading byte"));
   }
 }
 
 function skip_comment(k, t) {
   while(true) {
     if (t.i === t.len) {
-      return _refill(t, (function (param) {
-        return skip_comment(k, param);
+      return _refill(t, (function (extra) {
+        return skip_comment(k, extra);
       }), _error_eof);
     }
     let match = _get(t);
     if (match === 10) {
-      return Curry._2(k, undefined, undefined);
+      return k(undefined, undefined);
     }
     continue;
   };
@@ -522,8 +513,8 @@ function skip_comment(k, t) {
 function expr_or_end(k, t) {
   while(true) {
     if (t.i === t.len) {
-      return _refill(t, (function (param) {
-        return expr_or_end(k, param);
+      return _refill(t, (function (extra) {
+        return expr_or_end(k, extra);
       }), (function (param) {
         return "End";
       }));

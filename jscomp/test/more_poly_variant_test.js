@@ -2,17 +2,19 @@
 'use strict';
 
 
-function map(f, x) {
-  if (typeof x !== "object") {
-    return "Nil";
-  }
-  let match = x.VAL;
-  return {
-    NAME: "Cons",
-    VAL: [
-      f(match[0]),
-      map(f, match[1])
-    ]
+function map(f) {
+  return function (x) {
+    if (typeof x !== "object") {
+      return "Nil";
+    }
+    let match = x.VAL;
+    return {
+      NAME: "Cons",
+      VAL: [
+        f(match[0]),
+        map(f)(match[1])
+      ]
+    };
   };
 }
 

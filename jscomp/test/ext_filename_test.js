@@ -2,13 +2,12 @@
 'use strict';
 
 let Sys = require("../../lib/js/sys.js");
+let Lazy = require("../../lib/js/lazy.js");
 let List = require("../../lib/js/list.js");
-let $$Array = require("../../lib/js/array.js");
-let Bytes = require("../../lib/js/bytes.js");
-let Curry = require("../../lib/js/curry.js");
+let $$String = require("../../lib/js/string.js");
 let Caml_sys = require("../../lib/js/caml_sys.js");
 let Filename = require("../../lib/js/filename.js");
-let Pervasives = require("../../lib/js/pervasives.js");
+let PervasivesU = require("../../lib/js/pervasivesU.js");
 let Test_literals = require("./test_literals.js");
 let Ext_string_test = require("./ext_string_test.js");
 let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
@@ -20,7 +19,7 @@ let node_parent = "..";
 
 let node_current = ".";
 
-let cwd = CamlinternalLazy.from_fun(function () {
+let cwd = Lazy.from_fun(function () {
   return Caml_sys.sys_getcwd();
 });
 
@@ -33,18 +32,18 @@ function path_as_directory(x) {
 }
 
 function absolute_path(s) {
-  let s$1 = Curry._1(Filename.is_relative, s) ? Filename.concat(CamlinternalLazy.force(cwd), s) : s;
+  let s$1 = Filename.is_relative(s) ? Filename.concat(CamlinternalLazy.force(cwd), s) : s;
   let aux = function (_s) {
     while(true) {
       let s = _s;
-      let base = Curry._1(Filename.basename, s);
-      let dir = Curry._1(Filename.dirname, s);
+      let base = Filename.basename(s);
+      let dir = Filename.dirname(s);
       if (dir === s) {
         return dir;
       }
       if (base !== Filename.current_dir_name) {
         if (base === Filename.parent_dir_name) {
-          return Curry._1(Filename.dirname, aux(dir));
+          return Filename.dirname(aux(dir));
         } else {
           return Filename.concat(aux(dir), base);
         }
@@ -64,11 +63,10 @@ function chop_extension(locOpt, name) {
   catch (raw_exn){
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Invalid_argument") {
-      let s = "Filename.chop_extension ( " + loc + " : " + name + " )";
       throw new Error("Invalid_argument", {
             cause: {
               RE_EXN_ID: "Invalid_argument",
-              _1: s
+              _1: "Filename.chop_extension ( " + loc + " : " + name + " )"
             }
           });
     }
@@ -96,8 +94,8 @@ function chop_extension_if_any(fname) {
 let os_path_separator_char = Filename.dir_sep.codePointAt(0);
 
 function relative_path(file_or_dir_1, file_or_dir_2) {
-  let relevant_dir1 = file_or_dir_1.NAME === "File" ? Curry._1(Filename.dirname, file_or_dir_1.VAL) : file_or_dir_1.VAL;
-  let relevant_dir2 = file_or_dir_2.NAME === "File" ? Curry._1(Filename.dirname, file_or_dir_2.VAL) : file_or_dir_2.VAL;
+  let relevant_dir1 = file_or_dir_1.NAME === "File" ? Filename.dirname(file_or_dir_1.VAL) : file_or_dir_1.VAL;
+  let relevant_dir2 = file_or_dir_2.NAME === "File" ? Filename.dirname(file_or_dir_2.VAL) : file_or_dir_2.VAL;
   let dir1 = Ext_string_test.split(undefined, relevant_dir1, os_path_separator_char);
   let dir2 = Ext_string_test.split(undefined, relevant_dir2, os_path_separator_char);
   let go = function (_dir1, _dir2) {
@@ -109,20 +107,20 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
         _dir1 = dir1.tl;
         continue;
       }
-      return Pervasives.$at(List.map((function (param) {
+      return PervasivesU.$at(List.map((function (param) {
         return node_parent;
       }), dir2), dir1);
     };
   };
   let ys = go(dir1, dir2);
   if (ys && ys.hd === node_parent) {
-    return $$Array.of_list(ys).join(node_sep);
+    return $$String.concat(node_sep, ys);
   }
-  let xs = {
+  let __x = {
     hd: node_current,
     tl: ys
   };
-  return $$Array.of_list(xs).join(node_sep);
+  return $$String.concat(node_sep, __x);
 }
 
 function node_relative_path(node_modules_shorten, file1, dep_file) {
@@ -142,17 +140,16 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
       }) : ({
         NAME: "Dir",
         VAL: absolute_path(file1.VAL)
-      })) + (node_sep + Curry._1(Filename.basename, file2));
+      })) + (node_sep + Filename.basename(file2));
   }
   let skip = function (_i) {
     while(true) {
       let i = _i;
       if (i >= len) {
-        let s = "invalid path: " + file2;
         throw new Error("Failure", {
               cause: {
                 RE_EXN_ID: "Failure",
-                _1: s
+                _1: "invalid path: " + file2
               }
             });
       }
@@ -173,16 +170,15 @@ function find_root_filename(_cwd, filename) {
     if (Caml_sys.sys_file_exists(Filename.concat(cwd, filename))) {
       return cwd;
     }
-    let cwd$p = Curry._1(Filename.dirname, cwd);
+    let cwd$p = Filename.dirname(cwd);
     if (cwd$p.length < cwd.length) {
       _cwd = cwd$p;
       continue;
     }
-    let s = filename + " not found from " + cwd;
     throw new Error("Failure", {
           cause: {
             RE_EXN_ID: "Failure",
-            _1: s
+            _1: filename + " not found from " + cwd
           }
         });
   };
@@ -192,19 +188,17 @@ function find_package_json_dir(cwd) {
   return find_root_filename(cwd, Test_literals.bsconfig_json);
 }
 
-let package_dir = CamlinternalLazy.from_fun(function () {
+let package_dir = Lazy.from_fun(function () {
   let cwd$1 = CamlinternalLazy.force(cwd);
   return find_root_filename(cwd$1, Test_literals.bsconfig_json);
 });
 
 function module_name_of_file(file) {
-  let s = Filename.chop_extension(Curry._1(Filename.basename, file));
-  return Bytes.unsafe_to_string(Bytes.capitalize_ascii(Bytes.unsafe_of_string(s)));
+  return $$String.capitalize_ascii(Filename.chop_extension(Filename.basename(file)));
 }
 
 function module_name_of_file_if_any(file) {
-  let s = chop_extension_if_any(Curry._1(Filename.basename, file));
-  return Bytes.unsafe_to_string(Bytes.capitalize_ascii(Bytes.unsafe_of_string(s)));
+  return $$String.capitalize_ascii(chop_extension_if_any(Filename.basename(file)));
 }
 
 function combine(p1, p2) {
@@ -212,7 +206,7 @@ function combine(p1, p2) {
     return p2;
   } else if (p2 === "" || p2 === Filename.current_dir_name) {
     return p1;
-  } else if (Curry._1(Filename.is_relative, p2)) {
+  } else if (Filename.is_relative(p2)) {
     return Filename.concat(p1, p2);
   } else {
     return p2;
@@ -225,14 +219,14 @@ function split_aux(p) {
   while(true) {
     let acc = _acc;
     let p$1 = _p;
-    let dir = Curry._1(Filename.dirname, p$1);
+    let dir = Filename.dirname(p$1);
     if (dir === p$1) {
       return [
         dir,
         acc
       ];
     }
-    let new_path = Curry._1(Filename.basename, p$1);
+    let new_path = Filename.basename(p$1);
     if (new_path === Filename.dir_sep) {
       _p = dir;
       continue;
@@ -260,7 +254,9 @@ function rel_normalized_absolute_path(from, to_) {
     let xss = _xss;
     if (!xss) {
       if (yss) {
-        return List.fold_left(Filename.concat, yss.hd, yss.tl);
+        return List.fold_left((function (acc, x) {
+          return Filename.concat(acc, x);
+        }), yss.hd, yss.tl);
       } else {
         return Ext_string_test.empty;
       }
@@ -279,7 +275,9 @@ function rel_normalized_absolute_path(from, to_) {
     let start = List.fold_left((function (acc, param) {
       return Filename.concat(acc, Ext_string_test.parent_dir_lit);
     }), Ext_string_test.parent_dir_lit, xs);
-    return List.fold_left(Filename.concat, start, yss);
+    return List.fold_left((function (acc, v) {
+      return Filename.concat(acc, v);
+    }), start, yss);
   };
 }
 
@@ -356,11 +354,10 @@ if (Sys.unix) {
 } else if (Sys.win32 || false) {
   simple_convert_node_path_to_os_path = Ext_string_test.replace_slash_backward;
 } else {
-  let s = "Unknown OS : " + Sys.os_type;
   throw new Error("Failure", {
         cause: {
           RE_EXN_ID: "Failure",
-          _1: s
+          _1: "Unknown OS : " + Sys.os_type
         }
       });
 }
@@ -390,4 +387,4 @@ exports.rel_normalized_absolute_path = rel_normalized_absolute_path;
 exports.normalize_absolute_path = normalize_absolute_path;
 exports.get_extension = get_extension;
 exports.simple_convert_node_path_to_os_path = simple_convert_node_path_to_os_path;
-/* simple_convert_node_path_to_os_path Not a pure module */
+/* cwd Not a pure module */
