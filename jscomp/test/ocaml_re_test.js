@@ -3541,6 +3541,75 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       continue;
     };
   };
+  let piece = function (param) {
+    let r = atom();
+    if (accept(/* '*' */42)) {
+      return greedy_mod(repn(r, 0, undefined));
+    }
+    if (accept(/* '+' */43)) {
+      return greedy_mod(repn(r, 1, undefined));
+    }
+    if (accept(/* '?' */63)) {
+      return greedy_mod(repn(r, 0, 1));
+    }
+    if (!accept(/* '{' */123)) {
+      return r;
+    }
+    let i$1 = integer();
+    if (i$1 !== undefined) {
+      let j = accept(/* ',' */44) ? integer() : i$1;
+      if (!accept(/* '}' */125)) {
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
+      }
+      if (j !== undefined && j < i$1) {
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
+      }
+      return greedy_mod(repn(r, i$1, j));
+    }
+    i.contents = i.contents - 1 | 0;
+    return r;
+  };
+  let integer = function (param) {
+    if (i.contents === l) {
+      return;
+    }
+    let d = get();
+    if (d > 57 || d < 48) {
+      i.contents = i.contents - 1 | 0;
+      return;
+    } else {
+      let _i = d - /* '0' */48 | 0;
+      while(true) {
+        let i$1 = _i;
+        if (i.contents === l) {
+          return i$1;
+        }
+        let d$1 = get();
+        if (d$1 > 57 || d$1 < 48) {
+          i.contents = i.contents - 1 | 0;
+          return i$1;
+        }
+        let i$p = Math.imul(10, i$1) + (d$1 - /* '0' */48 | 0) | 0;
+        if (i$p < i$1) {
+          throw new Error(Parse_error, {
+                cause: {
+                  RE_EXN_ID: Parse_error
+                }
+              });
+        }
+        _i = i$p;
+        continue;
+      };
+    }
+  };
   let atom = function (param) {
     if (accept(/* '.' */46)) {
       if (dotall) {
@@ -3811,75 +3880,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         _0: single(c$1)
       };
     }
-  };
-  let integer = function (param) {
-    if (i.contents === l) {
-      return;
-    }
-    let d = get();
-    if (d > 57 || d < 48) {
-      i.contents = i.contents - 1 | 0;
-      return;
-    } else {
-      let _i = d - /* '0' */48 | 0;
-      while(true) {
-        let i$1 = _i;
-        if (i.contents === l) {
-          return i$1;
-        }
-        let d$1 = get();
-        if (d$1 > 57 || d$1 < 48) {
-          i.contents = i.contents - 1 | 0;
-          return i$1;
-        }
-        let i$p = Math.imul(10, i$1) + (d$1 - /* '0' */48 | 0) | 0;
-        if (i$p < i$1) {
-          throw new Error(Parse_error, {
-                cause: {
-                  RE_EXN_ID: Parse_error
-                }
-              });
-        }
-        _i = i$p;
-        continue;
-      };
-    }
-  };
-  let piece = function (param) {
-    let r = atom();
-    if (accept(/* '*' */42)) {
-      return greedy_mod(repn(r, 0, undefined));
-    }
-    if (accept(/* '+' */43)) {
-      return greedy_mod(repn(r, 1, undefined));
-    }
-    if (accept(/* '?' */63)) {
-      return greedy_mod(repn(r, 0, 1));
-    }
-    if (!accept(/* '{' */123)) {
-      return r;
-    }
-    let i$1 = integer();
-    if (i$1 !== undefined) {
-      let j = accept(/* ',' */44) ? integer() : i$1;
-      if (!accept(/* '}' */125)) {
-        throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
-      }
-      if (j !== undefined && j < i$1) {
-        throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
-      }
-      return greedy_mod(repn(r, i$1, j));
-    }
-    i.contents = i.contents - 1 | 0;
-    return r;
   };
   let char = function (param) {
     if (i.contents === l) {
