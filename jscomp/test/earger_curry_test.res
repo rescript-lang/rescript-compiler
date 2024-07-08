@@ -114,7 +114,7 @@ let f = x =>
  u */
 
 let g = x => {
-  let u = add5(
+  let u = (a,b) => add5(
     x,
     {
       incr(v)
@@ -124,7 +124,8 @@ let g = x => {
       incr(v)
       2
     },
-    ...
+    a,
+    b
   )
   all_v := list{v.contents, ...all_v.contents}
   u
@@ -141,6 +142,6 @@ let () = {
   eq(__LOC__, b, 11)
   eq(__LOC__, c, 10)
   eq(__LOC__, d, 11)
-  eq(__LOC__, all_v.contents, list{8, 8, 6, 6, 4, 2})
+  eq(__LOC__, all_v.contents, list{8, 6, 6, 4, 4, 2})
 }
 let () = Mt.from_pair_suites(__MODULE__, suites.contents)

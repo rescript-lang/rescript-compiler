@@ -122,12 +122,8 @@ function f(x) {
 }
 
 function g(x) {
-  v.contents = v.contents + 1 | 0;
-  let partial_arg = 2;
-  v.contents = v.contents + 1 | 0;
-  let partial_arg$1 = 1;
-  let u = function (param, param$1) {
-    return add5(x, partial_arg$1, partial_arg, param, param$1);
+  let u = function (a, b) {
+    return add5(x, (v.contents = v.contents + 1 | 0, 1), (v.contents = v.contents + 1 | 0, 2), a, b);
   };
   all_v.contents = {
     hd: v.contents,
@@ -140,26 +136,26 @@ let a = f(0)(3, 4);
 
 let b = f(0)(3, 5);
 
-let c = Curry._2(g(0), 3, 4);
+let c = g(0)(3, 4);
 
-let d = Curry._2(g(0), 3, 5);
+let d = g(0)(3, 5);
 
-eq("File \"earger_curry_test.res\", line 140, characters 5-12", a, 10);
+eq("File \"earger_curry_test.res\", line 141, characters 5-12", a, 10);
 
-eq("File \"earger_curry_test.res\", line 141, characters 5-12", b, 11);
+eq("File \"earger_curry_test.res\", line 142, characters 5-12", b, 11);
 
-eq("File \"earger_curry_test.res\", line 142, characters 5-12", c, 10);
+eq("File \"earger_curry_test.res\", line 143, characters 5-12", c, 10);
 
-eq("File \"earger_curry_test.res\", line 143, characters 5-12", d, 11);
+eq("File \"earger_curry_test.res\", line 144, characters 5-12", d, 11);
 
-eq("File \"earger_curry_test.res\", line 144, characters 5-12", all_v.contents, {
+eq("File \"earger_curry_test.res\", line 145, characters 5-12", all_v.contents, {
   hd: 8,
   tl: {
-    hd: 8,
+    hd: 6,
     tl: {
       hd: 6,
       tl: {
-        hd: 6,
+        hd: 4,
         tl: {
           hd: 4,
           tl: {

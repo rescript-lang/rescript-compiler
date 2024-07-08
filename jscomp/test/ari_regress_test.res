@@ -15,7 +15,7 @@ let g1 = (x, y) => {
 }
 let x = gg(3, 5)(6)
 
-let v = g1(3, 4)(6, ...)
+let v = g1(3, 4)(6, _)
 
 let suites = {
   open Mt
@@ -32,7 +32,7 @@ let suites = {
       ),
     ),
     ("curry3", _ => Eq(x, 14)),
-    (__LOC__, _ => Eq(h.contents, 1)),
+    (__LOC__, _ => Eq(h.contents, 2)),
   }
 }
 
