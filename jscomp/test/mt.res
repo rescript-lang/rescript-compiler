@@ -53,7 +53,7 @@ function from_suites(name, suite) {
             return List.iter((function (param) {
                           var partial_arg = param[1];
                           it(param[0], (function () {
-                                  return Curry._1(partial_arg, undefined);
+                                  return partial_arg(undefined);
                                 }));
                         }), suite);
           }));
@@ -118,11 +118,6 @@ let handleCode = spec =>
   | FailWith(msg) => assert_fail(msg)
   }
 
-let force_curry = x => {
-  let _ = List.hd(list{3})
-  let _ = Array.copy([5])
-  x()
-}
 let from_pair_suites = %raw(`
 function from_pair_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
@@ -132,7 +127,7 @@ function from_pair_suites(name, suites) {
               return List.iter((function (param) {
                             var code = param[1];
                             it(param[0], (function () {
-                                    return handleCode(Curry._1(code, undefined));
+                                    return handleCode(code(undefined));
                                   }));
                           }), suites);
             }));
@@ -144,7 +139,7 @@ function from_pair_suites(name, suites) {
           ]);
       return List.iter((function (param) {
                     var name = param[0];
-                    var fn = Curry._1(param[1], undefined);
+                    var fn = param[1](undefined);
                     switch (fn.TAG) {
                       case "Eq" :
                           console.log([
