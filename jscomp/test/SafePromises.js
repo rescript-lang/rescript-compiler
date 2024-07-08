@@ -12,10 +12,9 @@ async function nestedPromise(xxx) {
     console.log("Promise2.catch_", x);
     return Promise.resolve(0);
   }));
-  let arg1 = function (x) {
+  xx.then(function (x) {
     return Promise.resolve((console.log("Promise.then_", x), undefined));
-  };
-  xx.then(arg1);
+  });
 }
 
 async function create(x) {
