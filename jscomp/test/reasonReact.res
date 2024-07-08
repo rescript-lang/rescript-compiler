@@ -296,7 +296,7 @@ module WrapProps = {
     noRetainedProps,
     _,
   > => {
-    let jsElementWrapped = Some(wrapProps(~reactClass, ~props, children))
+    let jsElementWrapped = Some(wrapProps(~reactClass, ~props, children, ...))
     {...dummyInteropComponent, jsElementWrapped: jsElementWrapped}
   }
 }

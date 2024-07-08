@@ -27,9 +27,9 @@ type u = {
   y1: (int, int) => int,
 }
 
-let uf = u => u->y0Get(1)
-let uf1 = u => u->y1Get(1)
-let uf2 = u => u->y1Get(1, 2)
+let uf = u => y0Get(u)(1)
+let uf1 = u => y1Get(u)(1, ...)
+let uf2 = u => y1Get(u)(1, 2)
 
 @deriving(abstract)
 type u1 = {

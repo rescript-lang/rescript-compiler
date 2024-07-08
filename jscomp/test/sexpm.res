@@ -139,7 +139,7 @@ module MakeDecode = (M: MONAD) => {
   /* read expression */
   let rec expr = (k, t) =>
     if t.i == t.len {
-      _refill(t, expr(k), _error_eof)
+      _refill(t, expr(k, ...), _error_eof)
     } else {
       switch _get(t) {
       | ' ' | '\t' | '\n' => expr(k, t)
@@ -163,7 +163,7 @@ module MakeDecode = (M: MONAD) => {
   /* parse list */
   and expr_list = (acc, k, t) =>
     if t.i == t.len {
-      _refill(t, expr_list(acc, k), _error_eof)
+      _refill(t, expr_list(acc, k, ...), _error_eof)
     } else {
       switch _get(t) {
       | ' ' | '\t' | '\n' => expr_list(acc, k, t)
@@ -192,7 +192,7 @@ module MakeDecode = (M: MONAD) => {
   /* parse atom */
   and atom = (k, t) =>
     if t.i == t.len {
-      _refill(t, atom(k), _return_atom(None, k))
+      _refill(t, atom(k, ...), _return_atom(None, k, ...))
     } else {
       switch _get(t) {
       | '\\' => _error(t, "unexpected '\\' in non-quoted string")
@@ -207,7 +207,7 @@ module MakeDecode = (M: MONAD) => {
   /* quoted string */
   and quoted = (k, t) =>
     if t.i == t.len {
-      _refill(t, quoted(k), _error_eof)
+      _refill(t, quoted(k, ...), _error_eof)
     } else {
       switch _get(t) {
       | '\\' =>
@@ -226,7 +226,7 @@ module MakeDecode = (M: MONAD) => {
   /* read escaped char */
   and escaped = (k, t) =>
     if t.i == t.len {
-      _refill(t, escaped(k), _error_eof)
+      _refill(t, escaped(k, ...), _error_eof)
     } else {
       switch _get(t) {
       | 'n' => k('\n')
@@ -242,7 +242,7 @@ module MakeDecode = (M: MONAD) => {
 
   and read2int = (i, k, t) =>
     if t.i == t.len {
-      _refill(t, read2int(i, k), _error_eof)
+      _refill(t, read2int(i, k, ...), _error_eof)
     } else {
       switch _get(t) {
       | c if _is_digit(c) => read1int(10 * i + _digit2i(c), k, t)
@@ -252,7 +252,7 @@ module MakeDecode = (M: MONAD) => {
 
   and read1int = (i, k, t) =>
     if t.i == t.len {
-      _refill(t, read1int(i, k), _error_eof)
+      _refill(t, read1int(i, k, ...), _error_eof)
     } else {
       switch _get(t) {
       | c if _is_digit(c) => k(10 * i + _digit2i(c))
@@ -263,7 +263,7 @@ module MakeDecode = (M: MONAD) => {
   /* skip until end of line, then call next() */
   and skip_comment = (k, t) =>
     if t.i == t.len {
-      _refill(t, skip_comment(k), _error_eof)
+      _refill(t, skip_comment(k, ...), _error_eof)
     } else {
       switch _get(t) {
       | '\n' => k(None, ())
@@ -274,7 +274,7 @@ module MakeDecode = (M: MONAD) => {
   /* top-level expression */
   let rec expr_or_end = (k, t) =>
     if t.i == t.len {
-      _refill(t, expr_or_end(k), _ => M.return(#End))
+      _refill(t, expr_or_end(k, ...), _ => M.return(#End))
     } else {
       switch _get(t) {
       | ' ' | '\t' | '\n' => expr_or_end(k, t)

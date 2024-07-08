@@ -34,7 +34,7 @@ let () = {
 }
 
 let () = {
-  let \"=~" = eq("FLATTEN")
+  let \"=~" = eq("FLATTEN", ...)
 
   \"=~"(
     {
@@ -48,7 +48,7 @@ let () = {
 }
 
 let () = {
-  let \"=~" = eq("CONCATMANY")
+  let \"=~" = eq("CONCATMANY", ...)
   \"=~"(
     {
       open N
@@ -74,13 +74,13 @@ let () = eq(
   },
 )
 let () = {
-  let \"=~" = eq("APPEND")
+  let \"=~" = eq("APPEND", ...)
   \"=~"(N.concat(list{1}, list{}), list{1})
   \"=~"(N.concat(list{}, list{1}), list{1})
 }
 
 let () = {
-  let \"=~" = eq("ZIP")
+  let \"=~" = eq("ZIP", ...)
 
   \"=~"(N.zip(list{1, 2, 3}, list{3, 4}), list{(1, 3), (2, 4)})
   \"=~"(N.zip(list{}, list{1}), list{})
@@ -93,7 +93,7 @@ let mod2 = x => mod(x, 2) == 0
 let evenIndex = (_x, i) => mod(i, 2) == 0
 
 let () = {
-  let \"=~" = eq("PARTITION")
+  let \"=~" = eq("PARTITION", ...)
 
   \"=~"(N.partition(list{1, 2, 3, 2, 3, 4}, mod2), (list{2, 2, 4}, list{1, 3, 3}))
   \"=~"(N.partition(list{2, 2, 2, 4}, mod2), (list{2, 2, 2, 4}, list{}))
@@ -102,14 +102,14 @@ let () = {
 }
 
 let () = {
-  let \"=~" = eq("UNZIP")
+  let \"=~" = eq("UNZIP", ...)
   \"=~"(N.unzip(list{}), (list{}, list{}))
   \"=~"(N.unzip(list{(1, 2)}), (list{1}, list{2}))
   \"=~"(N.unzip(list{(1, 2), (3, 4)}), (list{1, 3}, list{2, 4}))
 }
 
 let () = {
-  let \"=~" = eq("FILTER")
+  let \"=~" = eq("FILTER", ...)
   \"=~"(N.keep(list{1, 2, 3, 4}, mod2), list{2, 4})
   \"=~"(N.keep(list{1, 3, 41}, mod2), list{})
   \"=~"(N.keep(list{}, mod2), list{})
@@ -117,7 +117,7 @@ let () = {
 }
 
 let () = {
-  let \"=~" = eq("FILTER2")
+  let \"=~" = eq("FILTER2", ...)
   \"=~"(N.keepWithIndex(list{}, evenIndex), list{})
   \"=~"(N.keepWithIndex(list{1, 2, 3, 4}, evenIndex), list{1, 3})
   \"=~"(N.keepWithIndex(list{0, 1, 2, 3, 4, 5, 6, 7}, evenIndex), list{0, 2, 4, 6})
@@ -126,7 +126,7 @@ let () = {
 let id: int => int = x => x
 
 let () = {
-  let \"=~" = eq("MAP")
+  let \"=~" = eq("MAP", ...)
   \"=~"(N.map(N.makeBy(5, id), x => x * 2), list{0, 2, 4, 6, 8})
   \"=~"(N.map(list{}, id), list{})
   \"=~"(N.map(list{1}, x => -x), list{-1})
@@ -135,7 +135,7 @@ let add = (a, b) => a + b
 let length_10_id = N.makeBy(10, id)
 let length_8_id = N.makeBy(8, id)
 let () = {
-  let \"=~" = eq("MAP2")
+  let \"=~" = eq("MAP2", ...)
   let b = length_10_id
   let c = length_8_id
   let d = N.makeBy(10, x => 2 * x)
@@ -166,7 +166,7 @@ let () = {
 }
 
 let () = {
-  let \"=~" = eq("TAKE")
+  let \"=~" = eq("TAKE", ...)
   \"=~"(N.take(list{1, 2, 3}, 2), Some(list{1, 2}))
   \"=~"(N.take(list{}, 1), None)
   \"=~"(N.take(list{1, 2}, 3), None)
@@ -177,7 +177,7 @@ let () = {
 }
 
 let () = {
-  let \"=~" = eq("DROP")
+  let \"=~" = eq("DROP", ...)
   \"=~"(N.drop(length_10_id, 10), Some(list{}))
   \"=~"(N.drop(length_10_id, 8), Some(list{8, 9}))
   \"=~"(N.drop(length_10_id, 0), Some(length_10_id))
@@ -185,7 +185,7 @@ let () = {
 }
 
 let () = {
-  let \"=~" = eq("SPLIT")
+  let \"=~" = eq("SPLIT", ...)
   let a = N.makeBy(5, id)
   \"=~"(N.splitAt(list{}, 1), None)
   \"=~"(N.splitAt(a, 6), None)
@@ -200,7 +200,7 @@ let () = {
 let succx = x => x + 1
 
 let () = {
-  let \"=~" = eq("REMOVEASSOQ")
+  let \"=~" = eq("REMOVEASSOQ", ...)
   let eqx = (x, y) => (x: int) == y
   b(__LOC__, N.hasAssoc(list{(1, "1"), (2, "2"), (3, "3")}, 2, \"="))
   b(__LOC__, !N.hasAssoc(list{(1, "1"), (2, "2"), (3, "3")}, 4, \"="))
@@ -364,7 +364,7 @@ let () = {
 }
 
 let () = {
-  let \"=~" = eq("SORT")
+  let \"=~" = eq("SORT", ...)
   let cmp = (a, b) => a - b
   \"=~"(N.sort(list{5, 4, 3, 2}, cmp), list{2, 3, 4, 5})
   \"=~"(N.sort(list{3, 9, 37, 3, 1}, cmp), list{1, 3, 3, 9, 37})

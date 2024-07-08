@@ -6,10 +6,8 @@ let VV = require("VV");
 let List = require("../../lib/js/list.js");
 let Curry = require("../../lib/js/curry.js");
 
-function f(x) {
-  return function (param) {
-    return x + param | 0;
-  };
+function f(x, y) {
+  return x + y | 0;
 }
 
 function f1(x, y) {
@@ -23,8 +21,6 @@ function f3(g, x) {
 function f2(param) {
   return 3 + param | 0;
 }
-
-let g = 7;
 
 function ff(param) {
   return U.test_primit(3, param);
@@ -44,6 +40,8 @@ function length_aux(_len, _x) {
     continue;
   };
 }
+
+let g = 7;
 
 let length = List.length;
 

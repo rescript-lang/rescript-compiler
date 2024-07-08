@@ -1101,7 +1101,7 @@ module Object: {
   let update_player = (player, keys, context) => {
     let prev_jumping = player.jumping
     let prev_dir = player.dir and prev_vx = abs_float(player.vel.x)
-    List.iter(update_player_keys(player), keys)
+    List.iter(update_player_keys(player, ...), keys)
     let v = player.vel.x *. friction
     let vel_damped = if abs_float(v) < 0.1 {
       0.

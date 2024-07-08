@@ -335,7 +335,7 @@ eq("File \"bs_sort_test.res\", line 116, characters 5-12", Belt_SortArray.binary
 
 let aa = Array_data_util.range(0, 1000);
 
-b("File \"bs_sort_test.res\", line 118, characters 10-17", Belt_Range.every(0, 1000, (function (i) {
+b("File \"bs_sort_test.res\", line 118, characters 4-11", Belt_Range.every(0, 1000, (function (i) {
   return Belt_SortArray.binarySearchBy(aa, i, cmp) === i;
 })));
 
@@ -351,7 +351,7 @@ eq("File \"bs_sort_test.res\", line 123, characters 5-12", Belt_SortArray.binary
 
 eq("File \"bs_sort_test.res\", line 125, characters 5-12", Belt_SortArray.binarySearchBy(cc, 1, cmp) ^ -1, 1);
 
-b("File \"bs_sort_test.res\", line 127, characters 6-13", Belt_Range.every(0, 1999, (function (i) {
+b("File \"bs_sort_test.res\", line 126, characters 6-13", Belt_Range.every(0, 1999, (function (i) {
   return (Belt_SortArray.binarySearchBy(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0);
 })));
 
@@ -359,27 +359,27 @@ function lt(x, y) {
   return x < y;
 }
 
-eq("File \"bs_sort_test.res\", line 137, characters 5-12", Belt_SortArray.strictlySortedLength([], lt), 0);
+eq("File \"bs_sort_test.res\", line 135, characters 5-12", Belt_SortArray.strictlySortedLength([], lt), 0);
 
-eq("File \"bs_sort_test.res\", line 138, characters 5-12", Belt_SortArray.strictlySortedLength([1], lt), 1);
+eq("File \"bs_sort_test.res\", line 136, characters 5-12", Belt_SortArray.strictlySortedLength([1], lt), 1);
 
-eq("File \"bs_sort_test.res\", line 139, characters 5-12", Belt_SortArray.strictlySortedLength([
+eq("File \"bs_sort_test.res\", line 137, characters 5-12", Belt_SortArray.strictlySortedLength([
   1,
   1
 ], lt), 1);
 
-eq("File \"bs_sort_test.res\", line 140, characters 5-12", Belt_SortArray.strictlySortedLength([
+eq("File \"bs_sort_test.res\", line 138, characters 5-12", Belt_SortArray.strictlySortedLength([
   1,
   1,
   2
 ], lt), 1);
 
-eq("File \"bs_sort_test.res\", line 141, characters 5-12", Belt_SortArray.strictlySortedLength([
+eq("File \"bs_sort_test.res\", line 139, characters 5-12", Belt_SortArray.strictlySortedLength([
   1,
   2
 ], lt), 2);
 
-eq("File \"bs_sort_test.res\", line 142, characters 5-12", Belt_SortArray.strictlySortedLength([
+eq("File \"bs_sort_test.res\", line 140, characters 5-12", Belt_SortArray.strictlySortedLength([
   1,
   2,
   3,
@@ -387,7 +387,7 @@ eq("File \"bs_sort_test.res\", line 142, characters 5-12", Belt_SortArray.strict
   3
 ], lt), 4);
 
-eq("File \"bs_sort_test.res\", line 143, characters 5-12", Belt_SortArray.strictlySortedLength([
+eq("File \"bs_sort_test.res\", line 141, characters 5-12", Belt_SortArray.strictlySortedLength([
   4,
   4,
   3,
@@ -395,14 +395,14 @@ eq("File \"bs_sort_test.res\", line 143, characters 5-12", Belt_SortArray.strict
   1
 ], lt), 1);
 
-eq("File \"bs_sort_test.res\", line 144, characters 5-12", Belt_SortArray.strictlySortedLength([
+eq("File \"bs_sort_test.res\", line 142, characters 5-12", Belt_SortArray.strictlySortedLength([
   4,
   3,
   2,
   1
 ], lt), -4);
 
-eq("File \"bs_sort_test.res\", line 145, characters 5-12", Belt_SortArray.strictlySortedLength([
+eq("File \"bs_sort_test.res\", line 143, characters 5-12", Belt_SortArray.strictlySortedLength([
   4,
   3,
   2,

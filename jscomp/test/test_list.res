@@ -286,7 +286,7 @@ let find_all = p => {
         find(accu, l)
       }
     }
-  find(list{})
+  find(list{}, _)
 }
 
 let filter = find_all

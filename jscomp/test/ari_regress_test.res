@@ -1,5 +1,5 @@
-let f = x => \"+"(x)
-let g = f(3, 4)
+let f = x => \"+"(x, ...)
+let g = f(3)(4)
 
 let h = ref(0)
 
@@ -13,9 +13,9 @@ let g1 = (x, y) => {
   let () = incr(h)
   (xx, yy) => xx + yy + u
 }
-let x = gg(3, 5, 6)
+let x = gg(3, 5)(6)
 
-let v = g1(3, 4, 6)
+let v = g1(3, 4)(6, ...)
 
 let suites = {
   open Mt

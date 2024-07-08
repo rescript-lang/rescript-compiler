@@ -14,7 +14,7 @@ and x = private {
 let f: x
 type u
 let uf: u => int
-let uf1: (u, int) => int
+let uf1: u => int => int
 let uf2: u => int
 
 type u1

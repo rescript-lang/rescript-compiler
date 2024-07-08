@@ -71,7 +71,7 @@ let xsplit = (~delim, s) => {
 
 @val external string_of_char: char => string = "String.fromCharCode"
 
-let string_of_chars = x => \"@@"(String.concat(""), List.map(string_of_char, x))
+let string_of_chars = x => \"@@"(String.concat("", ...), List.map(string_of_char, x))
 
 Mt.from_pair_suites(
   __MODULE__,

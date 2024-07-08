@@ -5,7 +5,7 @@ let a = {
     ((x, y) => h(x, y))({
       action()
       3
-    })
+    }, ...)
   \"@@"(ignore, f(\"+"))
   \"@@"(ignore, f(\"+"))
   v.contents
@@ -18,7 +18,7 @@ let b = {
     ((x, y) => h(x, y))({
       action()
       3
-    })
+    }, ...)
   \"@@"(ignore, f(\"+"))
   \"@@"(ignore, f(\"+"))
   v.contents
@@ -48,7 +48,7 @@ let d = {
       let v = 3
       action()
       v * v
-    })
+    }, ...)
   \"@@"(ignore, f(\"+", 3))
   \"@@"(ignore, f(\"+", 3))
   v.contents
