@@ -16,7 +16,7 @@ let catch: (promise<'a>, error => promise<'a>) => promise<'a> = %raw(`
     `)
 
 @new
-external make: ((@uncurry ~resolve: (. 'a) => unit, ~reject: (. exn) => unit) => unit) => promise<
+external make: ((~resolve: (. 'a) => unit, ~reject: (. exn) => unit) => unit) => promise<
   'a,
 > = "Promise"
 
