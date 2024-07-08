@@ -37,6 +37,6 @@ export const sumU: (n:number, m:number) => void = UncurriedJS.sumU as any;
 
 export const sumU2: (n:number) => (_1:number) => void = UncurriedJS.sumU2 as any;
 
-export const sumCurried: (n:number, _2:number) => void = UncurriedJS.sumCurried as any;
+export const sumCurried: (n:number) => (_1:number) => void = UncurriedJS.sumCurried as any;
 
-export const sumLblCurried: (s:string, n:number, m:number) => void = UncurriedJS.sumLblCurried as any;
+export const sumLblCurried: (s:string, n:number) => (m:number) => void = UncurriedJS.sumLblCurried as any;

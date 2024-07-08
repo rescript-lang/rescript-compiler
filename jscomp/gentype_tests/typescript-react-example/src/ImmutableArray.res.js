@@ -50,17 +50,29 @@ let rangeBy = Belt_Array.rangeBy;
 
 let makeByU = Belt_Array.makeByU;
 
-let makeBy = Belt_Array.makeBy;
+function makeBy(c, f) {
+  return Belt_Array.makeBy(c, (function (x) {
+    return f(x);
+  }));
+}
 
 let makeByAndShuffleU = Belt_Array.makeByAndShuffleU;
 
-let makeByAndShuffle = Belt_Array.makeByAndShuffle;
+function makeByAndShuffle(c, f) {
+  return Belt_Array.makeByAndShuffle(c, (function (x) {
+    return f(x);
+  }));
+}
 
 let zip = Belt_Array.zip;
 
 let zipByU = Belt_Array.zipByU;
 
-let zipBy = Belt_Array.zipBy;
+function zipBy(a1, a2, f) {
+  return Belt_Array.zipBy(a1, a2, (function (x, y) {
+    return f(x, y);
+  }));
+}
 
 let unzip = Belt_Array.unzip;
 
@@ -78,67 +90,131 @@ function copy(a) {
 
 let forEachU = Belt_Array.forEachU;
 
-let forEach = Belt_Array.forEach;
+function forEach(a, f) {
+  Belt_Array.forEach(a, (function (x) {
+    f(x);
+  }));
+}
 
 let mapU = Belt_Array.mapU;
 
-let map = Belt_Array.map;
+function map(a, f) {
+  return Belt_Array.map(a, (function (x) {
+    return f(x);
+  }));
+}
 
 let keepWithIndexU = Belt_Array.keepWithIndexU;
 
-let keepWithIndex = Belt_Array.keepWithIndex;
+function keepWithIndex(a, f) {
+  return Belt_Array.keepWithIndex(a, (function (x, y) {
+    return f(x, y);
+  }));
+}
 
 let keepMapU = Belt_Array.keepMapU;
 
-let keepMap = Belt_Array.keepMap;
+function keepMap(a, f) {
+  return Belt_Array.keepMap(a, (function (x) {
+    return f(x);
+  }));
+}
 
 let forEachWithIndexU = Belt_Array.forEachWithIndexU;
 
-let forEachWithIndex = Belt_Array.forEachWithIndex;
+function forEachWithIndex(a, f) {
+  Belt_Array.forEachWithIndex(a, (function (x, y) {
+    f(x, y);
+  }));
+}
 
 let mapWithIndexU = Belt_Array.mapWithIndexU;
 
-let mapWithIndex = Belt_Array.mapWithIndex;
+function mapWithIndex(a, f) {
+  return Belt_Array.mapWithIndex(a, (function (x, y) {
+    return f(x, y);
+  }));
+}
 
 let partitionU = Belt_Array.partitionU;
 
-let partition = Belt_Array.partition;
+function partition(a, f) {
+  return Belt_Array.partition(a, (function (x) {
+    return f(x);
+  }));
+}
 
 let reduceU = Belt_Array.reduceU;
 
-let reduce = Belt_Array.reduce;
+function reduce(a, b, f) {
+  return Belt_Array.reduce(a, b, (function (x, y) {
+    return f(x, y);
+  }));
+}
 
 let reduceReverseU = Belt_Array.reduceReverseU;
 
-let reduceReverse = Belt_Array.reduceReverse;
+function reduceReverse(a, b, f) {
+  return Belt_Array.reduceReverse(a, b, (function (x, y) {
+    return f(x, y);
+  }));
+}
 
 let reduceReverse2U = Belt_Array.reduceReverse2U;
 
-let reduceReverse2 = Belt_Array.reduceReverse2;
+function reduceReverse2(a1, a2, c, f) {
+  return Belt_Array.reduceReverse2(a1, a2, c, (function (x, y, z) {
+    return f(x, y, z);
+  }));
+}
 
 let someU = Belt_Array.someU;
 
-let some = Belt_Array.some;
+function some(a, f) {
+  return Belt_Array.some(a, (function (x) {
+    return f(x);
+  }));
+}
 
 let everyU = Belt_Array.everyU;
 
-let every = Belt_Array.every;
+function every(a, f) {
+  return Belt_Array.every(a, (function (x) {
+    return f(x);
+  }));
+}
 
 let every2U = Belt_Array.every2U;
 
-let every2 = Belt_Array.every2;
+function every2(a1, a2, f) {
+  return Belt_Array.every2(a1, a2, (function (x, y) {
+    return f(x, y);
+  }));
+}
 
 let some2U = Belt_Array.some2U;
 
-let some2 = Belt_Array.some2;
+function some2(a1, a2, f) {
+  return Belt_Array.some2(a1, a2, (function (x, y) {
+    return f(x, y);
+  }));
+}
 
 let cmpU = Belt_Array.cmpU;
 
-let cmp = Belt_Array.cmp;
+function cmp(a1, a2, f) {
+  return Belt_Array.cmp(a1, a2, (function (x, y) {
+    return f(x, y);
+  }));
+}
 
 let eqU = Belt_Array.eqU;
 
-let eq = Belt_Array.eq;
+function eq(a1, a2, f) {
+  return Belt_Array.eq(a1, a2, (function (x, y) {
+    return f(x, y);
+  }));
+}
 
 let $$Array$1 = {
   get: get

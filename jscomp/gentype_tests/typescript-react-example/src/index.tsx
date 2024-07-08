@@ -59,8 +59,8 @@ consoleLog(
 );
 Uncurried.sumU(3, 4);
 Uncurried.sumU2(3)(4);
-Uncurried.sumCurried(3, 4);
-Uncurried.sumLblCurried("hello", 3, 4);
+Uncurried.sumCurried(3)(4);
+Uncurried.sumLblCurried("hello", 3)(4);
 
 ReactDOM.render(
   <div>

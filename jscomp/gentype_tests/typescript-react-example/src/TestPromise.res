@@ -8,6 +8,6 @@ type fromPayload = {
 
 @genType type toPayload = {result: string}
 
-@genType let convert = Js.Promise.then_(({s}) => Js.Promise.resolve({result: s}))
+@genType let convert = p => Js.Promise.then_(({s}) => Js.Promise.resolve({result: s}), p)
 
 @genType let barx = (~x=Js.Promise.resolve(Some("a")), ()) => x == x
