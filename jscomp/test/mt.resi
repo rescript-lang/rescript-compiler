@@ -25,5 +25,3 @@ let eq_suites: (~test_id: ref<int>, ~suites: ref<pair_suites>, string, 'b, 'b) =
 let bool_suites: (~test_id: ref<int>, ~suites: ref<pair_suites>, string, bool) => unit
 
 let throw_suites: (~test_id: ref<int>, ~suites: ref<pair_suites>, string, unit => unit) => unit
-
-let force_curry: (unit => unit) => unit
