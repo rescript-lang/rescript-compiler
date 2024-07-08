@@ -6,7 +6,7 @@ let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
 let Caml_float = require("../../lib/js/caml_float.js");
 let Caml_int64 = require("../../lib/js/caml_int64.js");
-let Pervasives = require("../../lib/js/pervasives.js");
+let PervasivesU = require("../../lib/js/pervasivesU.js");
 
 let one_float = [
   1072693248,
@@ -56,10 +56,10 @@ function from_pairs(pair) {
   }), int32_pairs)));
 }
 
-let suites = Pervasives.$at({
+let suites = PervasivesU.$at({
   hd: [
     "one",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: Caml_int64.bits_of_float(1.0),
@@ -70,7 +70,7 @@ let suites = Pervasives.$at({
   tl: {
     hd: [
       "two",
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: Caml_int64.float_of_bits(one_float),

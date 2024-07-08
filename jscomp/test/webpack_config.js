@@ -37,7 +37,7 @@ let A = {};
 
 let B = {};
 
-function f(param) {
+function f() {
   return [
     (function (prim) {
       List$3.ff();

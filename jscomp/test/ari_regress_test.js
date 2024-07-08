@@ -3,7 +3,9 @@
 
 let Mt = require("./mt.js");
 
-let g = 7;
+let g = (function (extra) {
+  return 3 + extra | 0;
+})(4);
 
 let h = {
   contents: 0
@@ -19,7 +21,9 @@ function g1(x, y) {
 
 let u = 8;
 
-let x = u + 6 | 0;
+let x = (function (z) {
+  return u + z | 0;
+})(6);
 
 function v(__x) {
   return g1(3, 4)(6, __x);
@@ -81,4 +85,4 @@ let suites = {
 
 Mt.from_pair_suites("Ari_regress_test", suites);
 
-/*  Not a pure module */
+/* g Not a pure module */

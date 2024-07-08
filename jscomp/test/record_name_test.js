@@ -35,7 +35,7 @@ function f4(param) {
   return (((param.EXACT_MAPPING_TO_JS_LABEL + param.EXACT_2 | 0) + param.z.hello | 0) << 1);
 }
 
-function u(param) {
+function u() {
   return {
     x: 22,
     h: 3

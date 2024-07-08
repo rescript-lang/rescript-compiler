@@ -2,7 +2,7 @@
 'use strict';
 
 
-function f(param) {
+function f() {
   throw new Error("Assert_failure", {
         cause: {
           RE_EXN_ID: "Assert_failure",
@@ -15,7 +15,7 @@ function f(param) {
       });
 }
 
-function h(param) {
+function h() {
   
 }
 

@@ -65,7 +65,7 @@ let m2 = {
   data: undefined
 };
 
-let data;
+let data = undefined;
 
 Belt_Map.getId(m2);
 
@@ -75,13 +75,11 @@ for(let i = 0; i <= 100000; ++i){
   data = Belt_MapDict.set(data, i, i, m_dict.cmp);
 }
 
-let data$1 = data;
-
 let newm_cmp = m_dict.cmp;
 
 let newm = {
   cmp: newm_cmp,
-  data: data$1
+  data: data
 };
 
 console.log(newm);
@@ -94,30 +92,32 @@ let m_dict$1 = Belt_Map.getId(m);
 
 let cmp = m_dict$1.cmp;
 
-let data$2;
+let data$1 = undefined;
 
 for(let i$1 = 0; i$1 <= 100000; ++i$1){
-  data$2 = Belt_SetDict.add(data$2, i$1, cmp);
+  data$1 = Belt_SetDict.add(data$1, i$1, cmp);
 }
 
-console.log(data$2);
+console.log(data$1);
 
-function f(param) {
-  return Belt_Map.fromArray(param, Icmp);
+function f(none) {
+  return Belt_Map.fromArray(none, Icmp);
 }
 
 function $eq$tilde(a, b) {
-  return function (param) {
-    return Belt_Map.eq(a, b, param);
+  return function (extra) {
+    return Belt_Map.eq(a, b, extra);
   };
 }
 
-let u0 = f(Belt_Array.map(Array_data_util.randomRange(0, 39), (function (x) {
+let none = Belt_Array.map(Array_data_util.randomRange(0, 39), (function (x) {
   return [
     x,
     x
   ];
-})));
+}));
+
+let u0 = Belt_Map.fromArray(none, Icmp);
 
 let u1 = Belt_Map.set(u0, 39, 120);
 
@@ -151,12 +151,14 @@ eq("File \"bs_map_set_dict_test.res\", line 84, characters 5-12", Belt_Map.get(u
 
 eq("File \"bs_map_set_dict_test.res\", line 85, characters 5-12", Belt_Map.get(u1, 39), 120);
 
-let u = f(Belt_Array.makeByAndShuffle(10000, (function (x) {
+let none$1 = Belt_Array.makeByAndShuffle(10000, (function (x) {
   return [
     x,
     x
   ];
-})));
+}));
+
+let u = Belt_Map.fromArray(none$1, Icmp);
 
 eq("File \"bs_map_set_dict_test.res\", line 90, characters 5-12", Belt_Array.makeBy(10000, (function (x) {
   return [

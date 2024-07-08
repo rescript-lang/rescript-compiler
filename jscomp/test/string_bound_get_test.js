@@ -8,13 +8,13 @@ let v = "ghos";
 
 let u_a = Caml_string.get(v, 0);
 
-function u_b(param) {
+function u_b() {
   return Caml_string.get(v, -1);
 }
 
 let u_c = Caml_string.get("ghos", 0);
 
-function u_d(param) {
+function u_d() {
   return Caml_string.get("ghos", -1);
 }
 
@@ -22,7 +22,7 @@ let u_e = Caml_bytes.create(32);
 
 let u_f = Caml_bytes.get(u_e, 0);
 
-function u_g(param) {
+function u_g() {
   return Caml_bytes.get(u_e, -1);
 }
 

@@ -2,7 +2,7 @@
 'use strict';
 
 
-function u(param) {
+function u() {
   return xx(3);
 }
 
@@ -10,13 +10,13 @@ let Textarea = {};
 
 let $$Int32Array = {};
 
-function v(param) {
+function v() {
   let u = new TextArea();
   u.minHeight = 3;
   return u.minHeight;
 }
 
-function f(param) {
+function f() {
   let v = new Int32Array(32);
   v[0] = 3;
   return v[0];

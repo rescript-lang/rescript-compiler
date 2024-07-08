@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-function f_01(param) {
+function f_01() {
   return hi(function (x) {
     if (x === undefined) {
       console.log("x");
@@ -38,7 +38,7 @@ function u(x) {
   }
 }
 
-function fx(param) {
+function fx() {
   
 }
 

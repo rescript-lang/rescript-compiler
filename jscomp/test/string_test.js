@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
-let $$Array = require("../../lib/js/array.js");
 let Bytes = require("../../lib/js/bytes.js");
 let $$String = require("../../lib/js/string.js");
 let Ext_string_test = require("./ext_string_test.js");
@@ -127,16 +126,16 @@ function xsplit(delim, s) {
 }
 
 function string_of_chars(x) {
-  let xs = List.map((function (prim) {
+  let extra = List.map((function (prim) {
     return String.fromCharCode(prim);
   }), x);
-  return $$Array.of_list(xs).join("");
+  return $$String.concat("", extra);
 }
 
 Mt.from_pair_suites("String_test", {
   hd: [
     "mutliple switch",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: 9,
@@ -147,7 +146,7 @@ Mt.from_pair_suites("String_test", {
   tl: {
     hd: [
       "int switch",
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: 9,
@@ -158,7 +157,7 @@ Mt.from_pair_suites("String_test", {
     tl: {
       hd: [
         "escape_normal",
-        (function (param) {
+        (function () {
           return {
             TAG: "Eq",
             _0: "haha",
@@ -169,7 +168,7 @@ Mt.from_pair_suites("String_test", {
       tl: {
         hd: [
           "escape_bytes",
-          (function (param) {
+          (function () {
             return {
               TAG: "Eq",
               _0: Bytes.of_string("haha"),
@@ -180,7 +179,7 @@ Mt.from_pair_suites("String_test", {
         tl: {
           hd: [
             "escape_quote",
-            (function (param) {
+            (function () {
               return {
                 TAG: "Eq",
                 _0: "\\\"\\\"",
@@ -191,7 +190,7 @@ Mt.from_pair_suites("String_test", {
           tl: {
             hd: [
               "rev_split_by_char",
-              (function (param) {
+              (function () {
                 return {
                   TAG: "Eq",
                   _0: {
@@ -211,7 +210,7 @@ Mt.from_pair_suites("String_test", {
             tl: {
               hd: [
                 "File \"string_test.res\", line 86, characters 5-12",
-                (function (param) {
+                (function () {
                   return {
                     TAG: "Eq",
                     _0: {
@@ -225,7 +224,7 @@ Mt.from_pair_suites("String_test", {
               tl: {
                 hd: [
                   "xsplit",
-                  (function (param) {
+                  (function () {
                     return {
                       TAG: "Eq",
                       _0: {
@@ -245,7 +244,7 @@ Mt.from_pair_suites("String_test", {
                 tl: {
                   hd: [
                     "split_empty",
-                    (function (param) {
+                    (function () {
                       return {
                         TAG: "Eq",
                         _0: /* [] */0,
@@ -256,7 +255,7 @@ Mt.from_pair_suites("String_test", {
                   tl: {
                     hd: [
                       "split_empty2",
-                      (function (param) {
+                      (function () {
                         return {
                           TAG: "Eq",
                           _0: {
@@ -270,7 +269,7 @@ Mt.from_pair_suites("String_test", {
                     tl: {
                       hd: [
                         "rfind",
-                        (function (param) {
+                        (function () {
                           return {
                             TAG: "Eq",
                             _0: 7,
@@ -281,7 +280,7 @@ Mt.from_pair_suites("String_test", {
                       tl: {
                         hd: [
                           "rfind_2",
-                          (function (param) {
+                          (function () {
                             return {
                               TAG: "Eq",
                               _0: 0,
@@ -292,7 +291,7 @@ Mt.from_pair_suites("String_test", {
                         tl: {
                           hd: [
                             "rfind_3",
-                            (function (param) {
+                            (function () {
                               return {
                                 TAG: "Eq",
                                 _0: -1,
@@ -303,7 +302,7 @@ Mt.from_pair_suites("String_test", {
                           tl: {
                             hd: [
                               "find",
-                              (function (param) {
+                              (function () {
                                 return {
                                   TAG: "Eq",
                                   _0: 0,
@@ -314,7 +313,7 @@ Mt.from_pair_suites("String_test", {
                             tl: {
                               hd: [
                                 "find_2",
-                                (function (param) {
+                                (function () {
                                   return {
                                     TAG: "Eq",
                                     _0: 6,
@@ -325,7 +324,7 @@ Mt.from_pair_suites("String_test", {
                               tl: {
                                 hd: [
                                   "find_3",
-                                  (function (param) {
+                                  (function () {
                                     return {
                                       TAG: "Eq",
                                       _0: -1,
@@ -336,7 +335,7 @@ Mt.from_pair_suites("String_test", {
                                 tl: {
                                   hd: [
                                     "of_char",
-                                    (function (param) {
+                                    (function () {
                                       return {
                                         TAG: "Eq",
                                         _0: String.fromCharCode(/* '0' */48),
@@ -347,7 +346,7 @@ Mt.from_pair_suites("String_test", {
                                   tl: {
                                     hd: [
                                       "of_chars",
-                                      (function (param) {
+                                      (function () {
                                         return {
                                           TAG: "Eq",
                                           _0: string_of_chars({

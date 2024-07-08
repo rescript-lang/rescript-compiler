@@ -10,7 +10,9 @@ function raise(e) {
       });
 }
 
-let map = Belt_List.mapU;
+function map(l, f) {
+  return Belt_List.mapU(l, f);
+}
 
 let List = {
   map: map
@@ -23,7 +25,7 @@ let Uncurried = {
 
 let E = /* @__PURE__ */Caml_exceptions.create("Uncurried_cast.E");
 
-function testRaise(param) {
+function testRaise() {
   throw new Error(E, {
         cause: {
           RE_EXN_ID: E
@@ -69,7 +71,7 @@ let StandardNotation = {
   withOpts: withOpts
 };
 
-function testRaise$1(param) {
+function testRaise$1() {
   throw new Error(E, {
         cause: {
           RE_EXN_ID: E

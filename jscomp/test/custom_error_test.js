@@ -4,7 +4,7 @@
 let Js_exn = require("../../lib/js/js_exn.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
-function test_js_error(param) {
+function test_js_error() {
   let e;
   try {
     e = JSON.parse(" {\"x\" : }");
@@ -22,7 +22,7 @@ function test_js_error(param) {
   return e;
 }
 
-function test_js_error2(param) {
+function test_js_error2() {
   try {
     return JSON.parse(" {\"x\" : }");
   }
@@ -40,7 +40,7 @@ function test_js_error2(param) {
   }
 }
 
-function example1(param) {
+function example1() {
   let v;
   try {
     v = JSON.parse(" {\"x\"  }");
@@ -58,7 +58,7 @@ function example1(param) {
   return v;
 }
 
-function example2(param) {
+function example2() {
   try {
     return JSON.parse(" {\"x\"}");
   }

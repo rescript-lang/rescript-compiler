@@ -18,7 +18,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -44,49 +44,49 @@ if (process.platform !== "win32") {
     "/a/tmp.txt",
     "/a/tmp.txt/subdir/file.txt"
   ]);
-  eq("File \"a_filename_test.res\", line 28, characters 5-12", Ext_filename_test.node_relative_path(true, {
+  eq("File \"a_filename_test.res\", line 28, characters 5-12", test({
     NAME: "File",
     VAL: "./a/b.c"
   }, {
     NAME: "File",
     VAL: "./a/u/g.c"
   }), "./u/g.c");
-  eq("File \"a_filename_test.res\", line 31, characters 4-11", Ext_filename_test.node_relative_path(true, {
+  eq("File \"a_filename_test.res\", line 31, characters 4-11", test({
     NAME: "File",
     VAL: "./a/b.c"
   }, {
     NAME: "File",
     VAL: "xxxghsoghos/ghsoghso/node_modules/buckle-stdlib/list.js"
   }), "buckle-stdlib/list.js");
-  eq("File \"a_filename_test.res\", line 37, characters 4-11", Ext_filename_test.node_relative_path(true, {
+  eq("File \"a_filename_test.res\", line 37, characters 4-11", test({
     NAME: "File",
     VAL: "./a/b.c"
   }, {
     NAME: "File",
     VAL: "xxxghsoghos/ghsoghso/node_modules//buckle-stdlib/list.js"
   }), "buckle-stdlib/list.js");
-  eq("File \"a_filename_test.res\", line 43, characters 4-11", Ext_filename_test.node_relative_path(true, {
+  eq("File \"a_filename_test.res\", line 43, characters 4-11", test({
     NAME: "File",
     VAL: "./a/b.c"
   }, {
     NAME: "File",
     VAL: "xxxghsoghos/ghsoghso/node_modules/./buckle-stdlib/list.js"
   }), "buckle-stdlib/list.js");
-  eq("File \"a_filename_test.res\", line 48, characters 5-12", Ext_filename_test.node_relative_path(true, {
+  eq("File \"a_filename_test.res\", line 48, characters 5-12", test({
     NAME: "File",
     VAL: "./a/c.js"
   }, {
     NAME: "File",
     VAL: "./a/b"
   }), "./b");
-  eq("File \"a_filename_test.res\", line 49, characters 5-12", Ext_filename_test.node_relative_path(true, {
+  eq("File \"a_filename_test.res\", line 49, characters 5-12", test({
     NAME: "File",
     VAL: "./a/c"
   }, {
     NAME: "File",
     VAL: "./a/b.js"
   }), "./b.js");
-  eq("File \"a_filename_test.res\", line 50, characters 5-12", Ext_filename_test.node_relative_path(true, {
+  eq("File \"a_filename_test.res\", line 50, characters 5-12", test({
     NAME: "Dir",
     VAL: "./a/"
   }, {

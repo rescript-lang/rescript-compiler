@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 let Js_exn = require("../../lib/js/js_exn.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -19,7 +18,7 @@ let D = /* @__PURE__ */Caml_exceptions.create("Exception_raise_test.D");
 function appf(g, x) {
   let A = /* @__PURE__ */Caml_exceptions.create("A");
   try {
-    return Curry._1(g, x);
+    return g(x);
   }
   catch (raw_exn){
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -135,7 +134,7 @@ let suites = {
   contents: {
     hd: [
       "File \"exception_raise_test.res\", line 120, characters 5-12",
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: [
@@ -156,7 +155,7 @@ let suites = {
     tl: {
       hd: [
         "File \"exception_raise_test.res\", line 123, characters 6-13",
-        (function (param) {
+        (function () {
           if (a1.RE_EXN_ID === Js_exn.$$Error) {
             return {
               TAG: "Eq",
@@ -212,12 +211,12 @@ catch (raw_e$3){
 function fff0(x, g) {
   let val;
   try {
-    val = Curry._1(x, undefined);
+    val = x();
   }
   catch (exn){
     return 1;
   }
-  return Curry._1(g, undefined);
+  return g();
 }
 
 function input_lines(ic, _acc) {
