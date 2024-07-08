@@ -69,15 +69,13 @@ export const WithRename_componentWithRenamedArgs: React.ComponentType<{
   readonly cb: cb
 }> = HooksJS.WithRename.componentWithRenamedArgs as any;
 
-export const WithRef_makeWithRef: (_1:{ readonly vehicle: vehicle }, _2:(null | undefined | any)) => JSX.Element = HooksJS.WithRef.makeWithRef as any;
+export const WithRef_makeWithRef: (_1:{ readonly vehicle: vehicle }) => (_1:(null | undefined | any)) => JSX.Element = HooksJS.WithRef.makeWithRef as any;
 
 export type testForwardRef_Props = { readonly vehicle: vehicle };
 
 export const testForwardRef: React.ComponentType<{ readonly vehicle: vehicle }> = HooksJS.testForwardRef as any;
 
-export type ForwardRef_input_Props = { readonly r: r };
-
-export const ForwardRef_input: React.ComponentType<{ readonly r: r }> = HooksJS.ForwardRef.input as any;
+export const ForwardRef_input: (_1:r) => JSX.Element = HooksJS.ForwardRef.input as any;
 
 export type Poly_polymorphicComponent_Props<T1> = { readonly p: [vehicle, T1] };
 
@@ -130,11 +128,11 @@ export const WithRename: { componentWithRenamedArgs: React.ComponentType<{
   readonly cb: cb
 }> } = HooksJS.WithRename as any;
 
-export const ForwardRef: { input: React.ComponentType<{ readonly r: r }> } = HooksJS.ForwardRef as any;
+export const ForwardRef: { input: (_1:r) => JSX.Element } = HooksJS.ForwardRef as any;
 
 export const Fun: { functionReturningReactElement: React.ComponentType<{ readonly name: string }> } = HooksJS.Fun as any;
 
-export const WithRef: { makeWithRef: (_1:{ readonly vehicle: vehicle }, _2:(null | undefined | any)) => JSX.Element } = HooksJS.WithRef as any;
+export const WithRef: { makeWithRef: (_1:{ readonly vehicle: vehicle }) => (_1:(null | undefined | any)) => JSX.Element } = HooksJS.WithRef as any;
 
 export const WithChildren: { aComponentWithChildren: React.ComponentType<{ readonly children: React.ReactNode; readonly vehicle: vehicle }> } = HooksJS.WithChildren as any;
 

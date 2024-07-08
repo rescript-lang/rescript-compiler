@@ -27,7 +27,7 @@ type authU = {loginU: (. unit) => string}
 
 @genType let sumU = (. n, m) => Js.log4("sumU 2nd arg", m, "result", n + m)
 
-@genType let sumU2 = (. n, . m) => Js.log4("sumU2 2nd arg", m, "result", n + m)
+@genType let sumU2 = (. n) => (. m) => Js.log4("sumU2 2nd arg", m, "result", n + m)
 
 @genType
 let sumCurried = n => {

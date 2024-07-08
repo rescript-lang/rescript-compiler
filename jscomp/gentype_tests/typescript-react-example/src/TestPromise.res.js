@@ -4,12 +4,12 @@ import * as Caml_obj from "rescript/lib/es6/caml_obj.js";
 import * as Js_promise from "rescript/lib/es6/js_promise.js";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
 
-function convert(param) {
+function convert(p) {
   return Js_promise.then_((function (param) {
     return Promise.resolve({
       result: param.s
     });
-  }), param);
+  }), p);
 }
 
 function barx(xOpt, param) {

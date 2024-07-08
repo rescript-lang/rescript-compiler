@@ -119,7 +119,7 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
     {param_translation with type_ = Array (param_translation.type_, Mutable)}
   | ["ImmutableArray"; "t"], [param_translation] ->
     {param_translation with type_ = Array (param_translation.type_, Immutable)}
-  | ["Pervasives"; "ref"], [param_translation] ->
+  | [("Pervasives" | "PervasivesU"); "ref"], [param_translation] ->
     {
       dependencies = param_translation.dependencies;
       type_ =

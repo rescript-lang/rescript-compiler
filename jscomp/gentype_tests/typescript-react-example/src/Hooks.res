@@ -88,13 +88,13 @@ module WithRef = {
   }
 }
 
-@genType let testForwardRef = React.forwardRef(WithRef.makeWithRef)
+@genType let testForwardRef = React.forwardRef( (x,y) => WithRef.makeWithRef(x)(y))
 
 type r = {x: string}
 
 module ForwardRef = {
-  @genType @react.component
-  let input = React.forwardRef((~r, (), ref) =>
+  @genType
+  let input = React.forwardRef((r, ref) =>
     <div ref={Obj.magic(ref)}> {React.string(r.x)} </div>
   )
 }
