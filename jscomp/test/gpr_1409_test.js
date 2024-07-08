@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let $$Array = require("../../lib/js/array.js");
-let Curry = require("../../lib/js/curry.js");
 let String_set = require("./string_set.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 
@@ -20,7 +19,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -40,7 +39,7 @@ let b = {
 
 function map(f, x) {
   if (x !== undefined) {
-    return Caml_option.some(Curry._1(f, Caml_option.valFromOption(x)));
+    return Caml_option.some(f(Caml_option.valFromOption(x)));
   }
   
 }
@@ -102,11 +101,11 @@ function test5(f, x) {
   let tmp = {
     hi: 2
   };
-  let tmp$1 = Curry._1(f, x);
+  let tmp$1 = f(x);
   if (tmp$1 !== undefined) {
     tmp._open = tmp$1;
   }
-  let tmp$2 = Curry._1(f, x);
+  let tmp$2 = f(x);
   if (tmp$2 !== undefined) {
     tmp.xx__hi = tmp$2;
   }

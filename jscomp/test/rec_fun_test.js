@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 
 let suites = {
@@ -18,7 +17,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -34,12 +33,12 @@ let called = {
   contents: 0
 };
 
-function g(param) {
+function g() {
   let v = {};
   let next = function (i, b) {
     called.contents = called.contents + 1 | 0;
     if (b) {
-      Curry._2(v.contents, i, false);
+      v.contents(i, false);
     }
     return i + 1 | 0;
   };

@@ -3,9 +3,9 @@
 
 let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
-let Bytes = require("../../lib/js/bytes.js");
-let Pervasives = require("../../lib/js/pervasives.js");
+let $$String = require("../../lib/js/string.js");
 let Caml_format = require("../../lib/js/caml_format.js");
+let PervasivesU = require("../../lib/js/pervasivesU.js");
 
 let suites = {
   contents: /* [] */0
@@ -20,7 +20,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -44,27 +44,27 @@ eq("File \"format_test.res\", line 23, characters 5-12", 7.875, 7.875);
 
 eq("File \"format_test.res\", line 25, characters 5-12", -7.875, -7.875);
 
-eq3("File \"format_test.res\", line 29, characters 6-13", Infinity, Number.POSITIVE_INFINITY, Pervasives.infinity);
+eq3("File \"format_test.res\", line 29, characters 6-13", Infinity, Number.POSITIVE_INFINITY, PervasivesU.infinity);
 
-eq3("File \"format_test.res\", line 30, characters 6-13", -Infinity, Number.NEGATIVE_INFINITY, Pervasives.neg_infinity);
+eq3("File \"format_test.res\", line 30, characters 6-13", -Infinity, Number.NEGATIVE_INFINITY, PervasivesU.neg_infinity);
 
-eq3("File \"format_test.res\", line 31, characters 6-13", Pervasives.max_float, 1.79769313486231571e+308, Number.MAX_VALUE);
+eq3("File \"format_test.res\", line 31, characters 6-13", PervasivesU.max_float, 1.79769313486231571e+308, Number.MAX_VALUE);
 
-eq("File \"format_test.res\", line 32, characters 5-12", Pervasives.classify_float(Infinity), "FP_infinite");
+eq("File \"format_test.res\", line 32, characters 5-12", PervasivesU.classify_float(Infinity), "FP_infinite");
 
-eq("File \"format_test.res\", line 33, characters 5-12", Pervasives.classify_float(Infinity), "FP_infinite");
+eq("File \"format_test.res\", line 33, characters 5-12", PervasivesU.classify_float(Infinity), "FP_infinite");
 
-eq("File \"format_test.res\", line 35, characters 5-12", Pervasives.min_float, 2.22507385850720138e-308);
+eq("File \"format_test.res\", line 35, characters 5-12", PervasivesU.min_float, 2.22507385850720138e-308);
 
-eq("File \"format_test.res\", line 36, characters 5-12", Pervasives.epsilon_float, 2.22044604925031308e-16);
+eq("File \"format_test.res\", line 36, characters 5-12", PervasivesU.epsilon_float, 2.22044604925031308e-16);
 
 eq("File \"format_test.res\", line 37, characters 5-12", 4.94065645841e-324, 5e-324);
 
-eq("File \"format_test.res\", line 38, characters 5-12", 1.00000000000000022 - 1, Pervasives.epsilon_float);
+eq("File \"format_test.res\", line 38, characters 5-12", 1.00000000000000022 - 1, PervasivesU.epsilon_float);
 
 eq("File \"format_test.res\", line 39, characters 5-12", 1.11253692925360069e-308 / 2.22507385850720138e-308, 0.5);
 
-eq("File \"format_test.res\", line 40, characters 5-12", Pervasives.classify_float(1.11253692925360069e-308), "FP_subnormal");
+eq("File \"format_test.res\", line 40, characters 5-12", PervasivesU.classify_float(1.11253692925360069e-308), "FP_subnormal");
 
 eq("File \"format_test.res\", line 41, characters 5-12", 1.11253692925360069e-308, 1.11253692925360069e-308);
 
@@ -124,7 +124,7 @@ let literals_1 = {
   ],
   tl: {
     hd: [
-      Pervasives.infinity,
+      PervasivesU.infinity,
       "infinity"
     ],
     tl: {
@@ -174,9 +174,7 @@ let literals = {
 
 aux_list("File \"format_test.res\", line 72, characters 18-25", literals);
 
-let s = Caml_format.hexstring_of_float(7.875, -1, /* '-' */45);
-
-eq("File \"format_test.res\", line 74, characters 12-19", Bytes.unsafe_to_string(Bytes.uppercase_ascii(Bytes.unsafe_of_string(s))), "0X1.F8P+2");
+eq("File \"format_test.res\", line 74, characters 12-19", $$String.uppercase_ascii(Caml_format.hexstring_of_float(7.875, -1, /* '-' */45)), "0X1.F8P+2");
 
 function scan_float(loc, s, expect) {
   eq(loc, Caml_format.float_of_string(s), expect);

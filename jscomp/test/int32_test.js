@@ -5,7 +5,7 @@ let Mt = require("./mt.js");
 let $$Array = require("../../lib/js/array.js");
 let Int32 = require("../../lib/js/int32.js");
 let Caml_float = require("../../lib/js/caml_float.js");
-let Pervasives = require("../../lib/js/pervasives.js");
+let PervasivesU = require("../../lib/js/pervasivesU.js");
 let Ext_array_test = require("./ext_array_test.js");
 
 function f(x) {
@@ -153,10 +153,10 @@ function $star$tilde(prim0, prim1) {
 }
 
 let suites = {
-  contents: Pervasives.$at({
+  contents: PervasivesU.$at({
     hd: [
       "File \"int32_test.res\", line 131, characters 9-16",
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: 1,
@@ -167,7 +167,7 @@ let suites = {
     tl: {
       hd: [
         "File \"int32_test.res\", line 132, characters 9-16",
-        (function (param) {
+        (function () {
           return {
             TAG: "Eq",
             _0: -2147483647,
@@ -177,10 +177,10 @@ let suites = {
       ],
       tl: /* [] */0
     }
-  }, Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+  }, PervasivesU.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
     return [
       "shift_right_logical_cases " + i,
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: a,
@@ -188,10 +188,10 @@ let suites = {
         };
       })
     ];
-  }), shift_right_logical_tests_0, shift_right_logical_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+  }), shift_right_logical_tests_0, shift_right_logical_tests_1)), PervasivesU.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
     return [
       "shift_right_cases " + i,
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: a,
@@ -202,7 +202,7 @@ let suites = {
   }), shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
     return [
       "shift_left_cases " + i,
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: a,

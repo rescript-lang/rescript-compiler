@@ -2,7 +2,6 @@
 'use strict';
 
 let $$Array = require("../../lib/js/array.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
@@ -245,7 +244,7 @@ function filter_from(i, p, s) {
   let u = empty;
   for(let i$1 = i ,i_finish = length(s); i$1 < i_finish; ++i$1){
     let ele = get(s, i$1);
-    if (Curry._1(p, ele)) {
+    if (p(ele)) {
       u = push_back(u, ele);
     }
     
@@ -316,16 +315,14 @@ let u = of_array([
   6
 ]);
 
-let x = sort(u);
-
-if (!Caml_obj.equal(x, of_array([
+if (!$eq$tilde(sort(u), [
     1,
     2,
     2,
     3,
     5,
     6
-  ]))) {
+  ])) {
   throw new Error("Assert_failure", {
         cause: {
           RE_EXN_ID: "Assert_failure",
@@ -342,13 +339,9 @@ let v = $$Array.init(500, (function (i) {
   return 500 - i | 0;
 }));
 
-let y = $$Array.init(500, (function (i) {
+$eq$tilde(sort(of_array(v)), $$Array.init(500, (function (i) {
   return i + 1 | 0;
-}));
-
-let x$1 = sort(of_array(v));
-
-Caml_obj.equal(x$1, of_array(y));
+})));
 
 exports.sub = sub;
 exports.update = update;

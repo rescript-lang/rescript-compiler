@@ -16,7 +16,7 @@ function bool_equal(x, y) {
   }
 }
 
-function assertions(param) {
+function assertions() {
   if (!bool_equal(true, true)) {
     throw new Error("Assert_failure", {
           cause: {

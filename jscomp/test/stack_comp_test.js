@@ -2,8 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 let Stack = require("../../lib/js/stack.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Mt_global = require("./mt_global.js");
@@ -32,12 +30,12 @@ function to_list(s) {
   let l = {
     contents: /* [] */0
   };
-  List.iter((function (x) {
+  Stack.iter((function (x) {
     l.contents = {
       hd: x,
       tl: l.contents
     };
-  }), s.c);
+  }), s);
   return l.contents;
 }
 
@@ -58,7 +56,7 @@ let S = {
 
 function does_raise(f, s) {
   try {
-    Curry._1(f, s);
+    f(s);
     return false;
   }
   catch (raw_exn){
@@ -360,10 +358,10 @@ let i$7 = {
   contents: 1
 };
 
-List.iter((function (j) {
+Stack.iter((function (j) {
   assert_("File \"stack_comp_test.res\", line 143, characters 12-19", i$7.contents === j);
   i$7.contents = i$7.contents + 1 | 0;
-}), s$5.c);
+}), s$5);
 
 let s1$1 = {
   c: /* [] */0,

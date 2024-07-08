@@ -11,7 +11,7 @@ function assert_fail(msg) {
   Assert.fail(undefined, undefined, msg, "");
 }
 
-function is_mocha(param) {
+function is_mocha() {
   let match = $$Array.to_list(Process.argv);
   if (!match) {
     return false;
@@ -224,7 +224,7 @@ function old_from_promise_suites_donotuse(name, suites) {
       describe(name, (function () {
         List.iter((function (param) {
           let code = param[1];
-          it(param[0], (function (param) {
+          it(param[0], (function () {
             return code.then(function (x) {
               handleCode(x);
               return val_unit;

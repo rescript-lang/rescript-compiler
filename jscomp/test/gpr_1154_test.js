@@ -18,7 +18,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -52,7 +52,7 @@ function g2(x) {
   return Caml_int64.or_(x, (v.contents = v.contents + 1 | 0, x));
 }
 
-let a = Caml_int64.or_(Int64.one, (v.contents = v.contents + 1 | 0, Int64.one));
+let a = g2(Int64.one);
 
 eq("File \"gpr_1154_test.res\", line 28, characters 12-19", v.contents, 1);
 

@@ -2,8 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
-let Gpr_1423_nav = require("./gpr_1423_nav.js");
 
 let suites = {
   contents: /* [] */0
@@ -18,7 +16,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -31,20 +29,20 @@ function eq(loc, x, y) {
 }
 
 function foo(f) {
-  console.log(Curry._2(f, "a1", undefined));
+  console.log(f("a1", undefined));
 }
 
-foo(function (param) {
-  return function (param$1) {
-    return Gpr_1423_nav.busted(param, "a2", param$1);
-  };
+foo(function (none, extra) {
+  return none + "a2";
 });
 
 function foo2(f) {
-  return Curry._2(f, "a1", undefined);
+  return f("a1", undefined);
 }
 
-eq("File \"gpr_1423_app_test.res\", line 15, characters 12-19", "a1a2", "a1a2");
+eq("File \"gpr_1423_app_test.res\", line 15, characters 12-19", (function (none, extra) {
+  return none + "a2";
+})("a1", undefined), "a1a2");
 
 Mt.from_pair_suites("Gpr_1423_app_test", suites.contents);
 

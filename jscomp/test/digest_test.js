@@ -5,7 +5,7 @@ let Mt = require("./mt.js");
 let $$Array = require("../../lib/js/array.js");
 let Digest = require("../../lib/js/digest.js");
 let Caml_array = require("../../lib/js/caml_array.js");
-let Pervasives = require("../../lib/js/pervasives.js");
+let PervasivesU = require("../../lib/js/pervasivesU.js");
 let Ext_array_test = require("./ext_array_test.js");
 
 function f(x) {
@@ -145,10 +145,10 @@ let ref = [
   "b325dc1c6f5e7a2b7cf465b9feab7948"
 ];
 
-Mt.from_pair_suites("Digest_test", Pervasives.$at({
+let extra = PervasivesU.$at({
   hd: [
     "File \"digest_test.res\", line 9, characters 9-16",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: Digest.to_hex(Digest.string("value")),
@@ -159,7 +159,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
   tl: {
     hd: [
       "File \"digest_test.res\", line 11, characters 10-17",
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog")),
@@ -170,7 +170,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
     tl: {
       hd: [
         "File \"digest_test.res\", line 18, characters 10-17",
-        (function (param) {
+        (function () {
           return {
             TAG: "Eq",
             _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.")),
@@ -181,7 +181,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
       tl: {
         hd: [
           "File \"digest_test.res\", line 24, characters 9-16",
-          (function (param) {
+          (function () {
             return {
               TAG: "Eq",
               _0: Digest.to_hex(Digest.string("")),
@@ -192,7 +192,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
         tl: {
           hd: [
             "File \"digest_test.res\", line 26, characters 10-17",
-            (function (param) {
+            (function () {
               return {
                 TAG: "Eq",
                 _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
@@ -203,7 +203,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
           tl: {
             hd: [
               "File \"digest_test.res\", line 45, characters 10-17",
-              (function (param) {
+              (function () {
                 return {
                   TAG: "Eq",
                   _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
@@ -220,7 +220,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
 }, $$Array.to_list($$Array.map((function (i) {
   return [
     String(i),
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: Digest.to_hex(Digest.string("a".repeat(i))),
@@ -228,7 +228,9 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
       };
     })
   ];
-}), Ext_array_test.range(0, 129)))));
+}), Ext_array_test.range(0, 129))));
+
+Mt.from_pair_suites("Digest_test", extra);
 
 exports.f = f;
-/*  Not a pure module */
+/* extra Not a pure module */

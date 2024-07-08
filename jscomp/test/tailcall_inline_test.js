@@ -5,7 +5,7 @@ let Mt = require("./mt.js");
 let $$Array = require("../../lib/js/array.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
-function f(param) {
+function f() {
   let f$1 = function (_acc, _n) {
     while(true) {
       let n = _n;

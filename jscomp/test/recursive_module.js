@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let Lazy = require("../../lib/js/lazy.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_module = require("../../lib/js/caml_module.js");
 let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -71,7 +70,7 @@ let Intb = Caml_module.init_mod([
     ]]
 });
 
-let a = CamlinternalLazy.from_fun(function () {
+let a = Lazy.from_fun(function () {
   return CamlinternalLazy.force(Intb.a);
 });
 
@@ -85,7 +84,7 @@ Caml_module.update_mod({
   a: a
 });
 
-let a$1 = CamlinternalLazy.from_fun(function () {
+let a$1 = Lazy.from_fun(function () {
   return CamlinternalLazy.force(Inta.a) + 1 | 0;
 });
 
@@ -141,7 +140,7 @@ let Intb$1 = Caml_module.init_mod([
     ]]
 });
 
-let a$2 = CamlinternalLazy.from_fun(function () {
+let a$2 = Lazy.from_fun(function () {
   return CamlinternalLazy.force(Intb$1.a) + 1 | 0;
 });
 
@@ -155,7 +154,7 @@ Caml_module.update_mod({
   a: a$2
 });
 
-let a$3 = CamlinternalLazy.from_fun(function () {
+let a$3 = Lazy.from_fun(function () {
   return 2;
 });
 
@@ -179,7 +178,7 @@ eq("File \"recursive_module.res\", line 59, characters 3-10", CamlinternalLazy.f
 let tmp$1;
 
 try {
-  Curry._1(Int3.u, 3);
+  Int3.u(3);
   tmp$1 = 3;
 }
 catch (raw_exn$1){

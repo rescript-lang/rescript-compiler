@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Pervasives = require("../../lib/js/pervasives.js");
+let PervasivesU = require("../../lib/js/pervasivesU.js");
 
 let suites_0 = [
   "_NaN <> _NaN",
@@ -44,7 +44,7 @@ let suites_1 = {
           return {
             TAG: "Eq",
             _0: false,
-            _1: Number.isFinite(Pervasives.infinity)
+            _1: Number.isFinite(PervasivesU.infinity)
           };
         })
       ],
@@ -55,7 +55,7 @@ let suites_1 = {
             return {
               TAG: "Eq",
               _0: false,
-              _1: Number.isFinite(Pervasives.neg_infinity)
+              _1: Number.isFinite(PervasivesU.neg_infinity)
             };
           })
         ],
@@ -142,7 +142,7 @@ let suites_1 = {
                           (function (param) {
                             return {
                               TAG: "ThrowAny",
-                              _0: (function (param) {
+                              _0: (function () {
                                 (0).toExponential(101);
                               })
                             };
@@ -154,7 +154,7 @@ let suites_1 = {
                             (function (param) {
                               return {
                                 TAG: "ThrowAny",
-                                _0: (function (param) {
+                                _0: (function () {
                                   (0).toExponential(-1);
                                 })
                               };
@@ -221,7 +221,7 @@ let suites_1 = {
                                         (function (param) {
                                           return {
                                             TAG: "ThrowAny",
-                                            _0: (function (param) {
+                                            _0: (function () {
                                               (0).toFixed(101);
                                             })
                                           };
@@ -233,7 +233,7 @@ let suites_1 = {
                                           (function (param) {
                                             return {
                                               TAG: "ThrowAny",
-                                              _0: (function (param) {
+                                              _0: (function () {
                                                 (0).toFixed(-1);
                                               })
                                             };
@@ -300,7 +300,7 @@ let suites_1 = {
                                                       (function (param) {
                                                         return {
                                                           TAG: "ThrowAny",
-                                                          _0: (function (param) {
+                                                          _0: (function () {
                                                             (0).toPrecision(101);
                                                           })
                                                         };
@@ -312,7 +312,7 @@ let suites_1 = {
                                                         (function (param) {
                                                           return {
                                                             TAG: "ThrowAny",
-                                                            _0: (function (param) {
+                                                            _0: (function () {
                                                               (0).toPrecision(-1);
                                                             })
                                                           };
@@ -379,7 +379,7 @@ let suites_1 = {
                                                                     (function (param) {
                                                                       return {
                                                                         TAG: "ThrowAny",
-                                                                        _0: (function (param) {
+                                                                        _0: (function () {
                                                                           (0).toString(37);
                                                                         })
                                                                       };
@@ -391,7 +391,7 @@ let suites_1 = {
                                                                       (function (param) {
                                                                         return {
                                                                           TAG: "ThrowAny",
-                                                                          _0: (function (param) {
+                                                                          _0: (function () {
                                                                             (0).toString(1);
                                                                           })
                                                                         };
@@ -403,7 +403,7 @@ let suites_1 = {
                                                                         (function (param) {
                                                                           return {
                                                                             TAG: "ThrowAny",
-                                                                            _0: (function (param) {
+                                                                            _0: (function () {
                                                                               (0).toString(-1);
                                                                             })
                                                                           };

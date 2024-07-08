@@ -4,7 +4,7 @@
 let Mt = require("./mt.js");
 let Js_dict = require("../../lib/js/js_dict.js");
 
-function obj(param) {
+function obj() {
   return {
     foo: 43,
     bar: 86
