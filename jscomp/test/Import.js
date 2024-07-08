@@ -10,13 +10,11 @@ async function eachIntAsync(list, f) {
 }
 
 function eachIntLazy(list, f) {
-  let obj = import("../../lib/js/belt_List.js").then(function (m) {
+  return import("../../lib/js/belt_List.js").then(function (m) {
     return m.forEach;
-  });
-  let arg1 = function (each) {
+  }).then(function (each) {
     return Promise.resolve(Curry._2(each, list, f));
-  };
-  return obj.then(arg1);
+  });
 }
 
 eachIntLazy({
