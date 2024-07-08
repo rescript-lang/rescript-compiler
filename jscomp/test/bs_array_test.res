@@ -37,7 +37,7 @@ let () = {
   b(
     __LOC__,
     {
-      let f = A.getExn([0, 1])
+      let f = A.getExn([0, 1], ...)
       (f(0), f(1)) == (0, 1)
     },
   )
@@ -357,8 +357,8 @@ let () = {
 
 let () = {
   module N = {
-    let every2 = (xs, ys) => A.every2(L.toArray(xs), L.toArray(ys))
-    let some2 = (xs, ys) => A.some2(L.toArray(xs), L.toArray(ys))
+    let every2 = (xs, ys, x) => A.every2(L.toArray(xs), L.toArray(ys), x)
+    let some2 = (xs, ys, x) => A.some2(L.toArray(xs), L.toArray(ys), x)
   }
   eq(__LOC__, N.every2(list{}, list{1}, (x, y) => x > y), true)
   eq(__LOC__, N.every2(list{2, 3}, list{1}, (x, y) => x > y), true)

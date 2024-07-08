@@ -1,6 +1,6 @@
 let (test_id, suites) = (ref(0), ref(list{}))
-let eq = loc => Mt_global.collect_eq(test_id, suites, loc)
-let approx = loc => Mt_global.collect_approx(test_id, suites, loc)
+let eq = (loc, x, y) => Mt_global.collect_eq(test_id, suites, loc, x, y)
+let approx = (loc, x, y) => Mt_global.collect_approx(test_id, suites, loc, x, y)
 
 let bigint_compare = (x: bigint, y) => Pervasives.compare(x, y)
 let generic_compare = Pervasives.compare

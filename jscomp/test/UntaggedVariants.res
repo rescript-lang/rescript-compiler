@@ -375,7 +375,7 @@ module Arr = {
 
   let classify = async (a: arr) =>
     switch a {
-    | Array(arr) => Js.log(arr->Belt.Array.joinWith("-"))
+    | Array(arr) => Js.log(arr->Belt.Array.joinWith("-", x => x))
     | String(s) => Js.log(s)
     | Promise(p) => Js.log(await p)
     | Object({userName}) => Js.log(userName)
@@ -408,7 +408,7 @@ module AllInstanceofTypes = {
     | Object({userName}) => Js.log(userName)
     | Date(date) => Js.log(date->Js.Date.toString)
     | RegExp(re) => Js.log(re->Js.Re.test_("test"))
-    | Array(arr) => Js.log(arr->Belt.Array.joinWith("-"))
+    | Array(arr) => Js.log(arr->Belt.Array.joinWith("-", x => x))
     | File(file) => Js.log(file->fileName)
     | Blob(blob) => Js.log(blob->blobSize)
     }

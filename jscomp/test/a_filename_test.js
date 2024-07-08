@@ -30,8 +30,8 @@ function eq(loc, x, y) {
   };
 }
 
-function test(param, param$1) {
-  return Ext_filename_test.node_relative_path(true, param, param$1);
+function test(x, y) {
+  return Ext_filename_test.node_relative_path(true, x, y);
 }
 
 if (process.platform !== "win32") {

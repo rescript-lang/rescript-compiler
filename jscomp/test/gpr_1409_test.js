@@ -45,22 +45,20 @@ function map(f, x) {
   
 }
 
-function make(foo) {
-  let partial_arg = map((function (prim) {
+function make(foo, param) {
+  let tmp = {};
+  let tmp$1 = map((function (prim) {
     return String(prim);
   }), foo);
-  return function (param) {
-    let tmp = {};
-    if (partial_arg !== undefined) {
-      tmp.foo = partial_arg;
-    }
-    return tmp;
-  };
+  if (tmp$1 !== undefined) {
+    tmp.foo = tmp$1;
+  }
+  return tmp;
 }
 
-let a_ = make(undefined)();
+let a_ = make(undefined, undefined);
 
-let b_ = make(42)();
+let b_ = make(42, undefined);
 
 eq("File \"gpr_1409_test.res\", line 26, characters 3-10", b_.foo, "42");
 

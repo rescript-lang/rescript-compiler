@@ -26,7 +26,7 @@ include (
     @val("console.log") external log: 'a => unit = ""
 
     \"@@"(
-      Mt.from_pair_suites(__MODULE__),
+      Mt.from_pair_suites(__MODULE__, ...),
       list{("int", _ => Eq(IntMap.find(10, m), 'a')), ("string", _ => Eq(SMap.find("10", s), 'a'))},
     )
   }: {}

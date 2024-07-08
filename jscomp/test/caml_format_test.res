@@ -78,7 +78,7 @@ let suites: Mt.pair_suites = \"@"(
   ),
 )
 
-let ff = format_int("%32d")
+let ff = format_int("%32d", ...)
 
 external format_float: (string, float) => string = "?format_float"
 
@@ -142,7 +142,7 @@ let of_string_data = [
 /* module Mt = Mock_mt */
 
 let () = \"@@"(
-  Mt.from_pair_suites(__MODULE__),
+  Mt.from_pair_suites(__MODULE__, ...),
   \"@"(
     suites,
     \"@"(

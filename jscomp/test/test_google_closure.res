@@ -1,6 +1,6 @@
 let f = (a, b, _) => a + b
 
-let f2 = a => f(a, 1)
+let f2 = a => f(a, 1, ...)
 
 let (a, b, c) = (
   string_of_int(f(1, 2, 3)),

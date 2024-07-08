@@ -11,7 +11,7 @@ let f = v =>
     v => v + v
   }
 
-let v = mapi([1, 2, 3], (. a, b) => f(a, b))
+let v = mapi([1, 2, 3], (. a, b) => f(a)(b))
 
 let vv = mapi([1, 2, 3], (. a, b) => a + b)
 

@@ -134,7 +134,7 @@ let relative_path = (file_or_dir_1, file_or_dir_2) => {
 
   switch go(dir1, dir2) {
   | list{x, ..._} as ys if x == node_parent => String.concat(node_sep, ys)
-  | ys => \"@@"(String.concat(node_sep), list{node_current, ...ys})
+  | ys => \"@@"(String.concat(node_sep, _), list{node_current, ...ys})
   }
 }
 

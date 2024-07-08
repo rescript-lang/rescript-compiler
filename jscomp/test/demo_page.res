@@ -27,7 +27,7 @@ let rec map = (f, x) =>
 
 /** Test curry and uncurry calling convention */
 let test_curry = (x, y) => x + y
-let f = test_curry(32)
+let f = test_curry(32, ...)
 
 /** Create a typed binding for react */
 type t

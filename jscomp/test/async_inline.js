@@ -75,7 +75,7 @@ async function nested2(param) {
 }
 
 function onSubmit(param) {
-  return React.useCallback(async function (_a, b) {
+  return React.useCallback(async function (b) {
     return await b;
   });
 }

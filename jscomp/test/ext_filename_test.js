@@ -115,21 +115,14 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
     };
   };
   let ys = go(dir1, dir2);
-  if (ys) {
-    if (ys.hd === node_parent) {
-      return $$Array.of_list(ys).join(node_sep);
-    }
-    let xs = {
-      hd: node_current,
-      tl: ys
-    };
-    return $$Array.of_list(xs).join(node_sep);
+  if (ys && ys.hd === node_parent) {
+    return $$Array.of_list(ys).join(node_sep);
   }
-  let xs$1 = {
+  let xs = {
     hd: node_current,
     tl: ys
   };
-  return $$Array.of_list(xs$1).join(node_sep);
+  return $$Array.of_list(xs).join(node_sep);
 }
 
 function node_relative_path(node_modules_shorten, file1, dep_file) {

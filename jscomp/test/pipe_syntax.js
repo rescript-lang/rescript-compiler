@@ -13,7 +13,7 @@ function t1(x, f) {
 }
 
 function t2(x, f, g) {
-  return Curry._2(f, Curry._3(g, Curry._1(f, x), x, x), x);
+  return Curry._1(f, Curry._3(g, Curry._1(f, x), x, x));
 }
 
 function t3(x, f) {

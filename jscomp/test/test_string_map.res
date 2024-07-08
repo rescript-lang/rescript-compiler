@@ -16,12 +16,12 @@ include (
     let assertion_test = () => {
       let m = ref(StringMap.empty)
       let count = 1000000
-      \"@@"(timing("building"), _ =>
+      \"@@"(timing("building", ...), _ =>
         for i in 0 to count {
           m := StringMap.add(string_of_int(i), string_of_int(i), m.contents)
         }
       )
-      \"@@"(timing("querying"), _ =>
+      \"@@"(timing("querying", ...), _ =>
         for i in 0 to count {
           ignore(StringMap.find(string_of_int(i), m.contents))
         }

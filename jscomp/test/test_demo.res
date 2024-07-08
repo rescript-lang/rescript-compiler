@@ -106,6 +106,6 @@ let g1 = (x, y) => {
   let u = x + y
   (xx, yy) => xx + yy + u
 }
-let x = g(3, 5, 6)
+let x = g(3, 5)(6)
 
-let v = g1(3, 4, 6)
+let v = g1(3, 4)(6, ...)

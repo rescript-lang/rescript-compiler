@@ -1,7 +1,7 @@
 let f = x => \"@@"(Digest.to_hex, Digest.string(x))
 
 \"@@"(
-  Mt.from_pair_suites(__MODULE__),
+  Mt.from_pair_suites(__MODULE__, ...),
   \"@"(
     {
       open Mt

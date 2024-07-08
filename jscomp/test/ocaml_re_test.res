@@ -653,7 +653,7 @@ module Re_automata: {
   let rec rename = (ids, x) =>
     switch x.def {
     | Cst(_) | Eps | Mark(_) | Pmark(_) | Erase(_) | Before(_) | After(_) => mk_expr(ids, x.def)
-    | Alt(l) => mk_expr(ids, Alt(List.map(rename(ids), l)))
+    | Alt(l) => mk_expr(ids, Alt(List.map(rename(ids, ...), l)))
     | Seq(k, y, z) => mk_expr(ids, Seq(k, rename(ids, y), rename(ids, z)))
     | Rep(g, k, y) => mk_expr(ids, Rep(g, k, rename(ids, y)))
     }
@@ -772,7 +772,7 @@ module Re_automata: {
   let rec mark_used_indices = tbl =>
     List.iter(x =>
       switch x {
-      | E.TSeq(l, _, _) => mark_used_indices(tbl, l)
+      | E.TSeq(l, _, _) => mark_used_indices(tbl)(l)
       | E.TExp(marks, _)
       | E.TMatch(marks) =>
         List.iter(((_, i)) =>
@@ -780,7 +780,7 @@ module Re_automata: {
             tbl[i] = true
           }
         , marks.Marks.marks)
-      }
+      }, ...
     )
 
   let rec find_free = (tbl, idx, len) =>
@@ -793,7 +793,7 @@ module Re_automata: {
   let free_index = (tbl_ref, l) => {
     let tbl = tbl_ref.contents
     reset_table(tbl)
-    mark_used_indices(tbl, l)
+    mark_used_indices(tbl)(l)
     let len = Array.length(tbl)
     let idx = find_free(tbl, 0, len)
     if idx == len {
@@ -808,7 +808,7 @@ module Re_automata: {
     switch x {
     | E.TMatch(_) => false
     | _ => true
-    }
+    }, ...
   )
 
   let rec split_at_match_rec = (l', x) =>
@@ -985,7 +985,7 @@ module Re_automata: {
 
   /* ** */
 
-  let prepend_deriv = List.fold_right(((s, x), l) => Cset.prepend(s, x, l))
+  let prepend_deriv = List.fold_right(((s, x), l) => Cset.prepend(s, x, l), ...)
 
   let rec restrict = (s, x) =>
     switch x {
@@ -1013,9 +1013,9 @@ module Re_automata: {
     | E.TMatch(m') => E.TMatch(Marks.merge(m, m'))
     }
 
-  and prepend_marks_expr_lst = (m, l) => List.map(prepend_marks_expr(m), l)
+  and prepend_marks_expr_lst = (m, l) => List.map(prepend_marks_expr(m, ...), l)
 
-  let prepend_marks = m => List.map(((s, x)) => (s, prepend_marks_expr_lst(m, x)))
+  let prepend_marks = m => List.map(((s, x)) => (s, prepend_marks_expr_lst(m, x)), ...)
 
   let rec deriv_1 = (all_chars, categories, marks, cat, x, rem) =>
     switch x.def {
@@ -1110,7 +1110,7 @@ module Re_automata: {
         , y) {
         | None => Cset.prepend(s, E.tseq(kind, y, z, list{}), rem)
         | Some(marks) =>
-          let z'' = prepend_marks(marks, z')
+          let z'' = prepend_marks(marks)(z')
           switch kind {
           | #Longest =>
             Cset.prepend(
@@ -2451,9 +2451,9 @@ let rec loop info s pos st =
           s
         },
       )
-    | Sequence(l) => Sequence(List.map(handle_case(ign_case), l))
+    | Sequence(l) => Sequence(List.map(handle_case(ign_case, ...), l))
     | Alternative(l) =>
-      let l' = List.map(handle_case(ign_case), l)
+      let l' = List.map(handle_case(ign_case, ...), l)
       if is_charset(Alternative(l')) {
         Set(List.fold_left((s, r) => Cset.union(s, as_set(r)), Cset.empty, l'))
       } else {

@@ -1,12 +1,12 @@
 let id = ref(0)
 let suites = ref(list{})
 
-let eq = f => Mt_global.collect_eq(id, suites, f)
-let neq = f => Mt_global.collect_neq(id, suites, f)
-let approx = f => Mt_global.collect_approx(id, suites, f)
+let eq = f => Mt_global.collect_eq(id, suites, f, ...)
+let neq = f => Mt_global.collect_neq(id, suites, f, ...)
+let approx = f => Mt_global.collect_approx(id, suites, f, ...)
 
 let () = neq(
-  __LOC__,
+  __LOC__)(
   {
     Random.self_init()
     Random.int(10000)
@@ -25,7 +25,7 @@ let v = Array.make(10, false)
 let () = for i in 0 to 9 {
   v[i] = Random.bool()
 }
-let () = eq(__LOC__, v, [true, true, true, true, true, false, true, true, true, false])
+let () = eq(__LOC__)(v, [true, true, true, true, true, false, true, true, true, false])
 
 let f = Random.int64(Int64.max_int)
 let h = Random.int64(3L)

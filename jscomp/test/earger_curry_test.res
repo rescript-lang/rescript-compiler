@@ -108,6 +108,7 @@ let f = x =>
       incr(v)
       2
     },
+    ...
   ) /* in */
 /* all_v := !v :: !all_v ;
  u */
@@ -123,16 +124,17 @@ let g = x => {
       incr(v)
       2
     },
+    ...
   )
   all_v := list{v.contents, ...all_v.contents}
   u
 }
-let a = f(0, 3, 4)
+let a = f(0)(3, 4)
 
-let b = f(0, 3, 5)
+let b = f(0)(3, 5)
 
-let c = g(0, 3, 4)
-let d = g(0, 3, 5)
+let c = g(0)(3, 4)
+let d = g(0)(3, 5)
 
 let () = {
   eq(__LOC__, a, 10)

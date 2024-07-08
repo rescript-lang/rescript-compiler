@@ -110,7 +110,7 @@ module Traverse = {
     | _ => None
     }
 
-  let to_pair_with = (f1, f2, e) =>
+  let to_pair_with = (f1, f2) => e =>
     \">>="(to_pair(e), ((x, y)) => \">>="(f1(x), x => \">>="(f2(y), y => return((x, y)))))
 
   let to_triple = e =>
@@ -119,7 +119,7 @@ module Traverse = {
     | _ => None
     }
 
-  let to_triple_with = (f1, f2, f3, e) =>
+  let to_triple_with = (f1, f2, f3) => e =>
     \">>="(to_triple(e), ((x, y, z)) =>
       \">>="(f1(x), x => \">>="(f2(y), y => \">>="(f3(z), z => return((x, y, z)))))
     )
@@ -130,7 +130,7 @@ module Traverse = {
     | #Atom(_) => None
     }
 
-  let to_list_with = (f, e: t) =>
+  let to_list_with = f => (e: t) =>
     switch e {
     | #List(l) => map_opt(f, l)
     | #Atom(_) => None
@@ -143,13 +143,13 @@ module Traverse = {
     | list{} => None
     }
 
-  let get_field = (name, e) =>
+  let get_field = name => e =>
     switch e {
     | #List(l) => _get_field(name, l)
     | #Atom(_) => None
     }
 
-  let field = (name, f, e) => \">>="(get_field(name, e), f)
+  let field = (name, f) => e => \">>="(get_field(name)(e), f)
 
   let rec _get_field_list = (name, l) =>
     switch l {
@@ -158,7 +158,7 @@ module Traverse = {
     | list{} => None
     }
 
-  let field_list = (name, f, e) =>
+  let field_list = (name, f) => e =>
     switch e {
     | #List(l) => \">>="(_get_field_list(name, l), f)
     | #Atom(_) => None
@@ -171,7 +171,7 @@ module Traverse = {
     | list{_, ...tl} => _get_variant(s, args, tl)
     }
 
-  let get_variant = (l, e) =>
+  let get_variant = l => e =>
     switch e {
     | #List(list{#Atom(s), ...args}) => _get_variant(s, args, l)
     | #List(_) => None

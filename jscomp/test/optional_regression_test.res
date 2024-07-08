@@ -9,7 +9,7 @@ type test = {
   @optional i: int,
 }
 
-let make = (~s=?, ~b=?, ~i=?) => test(~s?, ~b?, ~i?)
+let make = (~s=?, ~b=?, ~i=?, ()) => test(~s?, ~b?, ~i?, ())
 
 let hh = make(~s="", ~b=false, ~i=0, ())
 

@@ -4,7 +4,7 @@ let rec map = (f): (vlist<'a> => vlist<'b>) =>
   x =>
     switch x {
     | #Nil => #Nil
-    | #Cons(a, l) => #Cons(f(. a), map(f, l))
+    | #Cons(a, l) => #Cons(f(. a), map(f)(l))
     }
 
 let split_cases = x =>

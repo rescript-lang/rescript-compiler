@@ -1275,28 +1275,20 @@ id$1("File \"bs_array_test.res\", line 355, characters 5-12", [
   4
 ]);
 
-function every2(xs, ys) {
-  let partial_arg = Belt_List.toArray(ys);
-  let partial_arg$1 = Belt_List.toArray(xs);
-  return function (param) {
-    return Belt_Array.every2(partial_arg$1, partial_arg, param);
-  };
+function every2(xs, ys, x) {
+  return Belt_Array.every2(Belt_List.toArray(xs), Belt_List.toArray(ys), x);
 }
 
-function some2(xs, ys) {
-  let partial_arg = Belt_List.toArray(ys);
-  let partial_arg$1 = Belt_List.toArray(xs);
-  return function (param) {
-    return Belt_Array.some2(partial_arg$1, partial_arg, param);
-  };
+function some2(xs, ys, x) {
+  return Belt_Array.some2(Belt_List.toArray(xs), Belt_List.toArray(ys), x);
 }
 
 eq("File \"bs_array_test.res\", line 363, characters 5-12", every2(/* [] */0, {
   hd: 1,
   tl: /* [] */0
-})(function (x, y) {
+}, (function (x, y) {
   return x > y;
-}), true);
+})), true);
 
 eq("File \"bs_array_test.res\", line 364, characters 5-12", every2({
   hd: 2,
@@ -1307,9 +1299,9 @@ eq("File \"bs_array_test.res\", line 364, characters 5-12", every2({
 }, {
   hd: 1,
   tl: /* [] */0
-})(function (x, y) {
+}, (function (x, y) {
   return x > y;
-}), true);
+})), true);
 
 eq("File \"bs_array_test.res\", line 365, characters 5-12", every2({
   hd: 2,
@@ -1317,9 +1309,9 @@ eq("File \"bs_array_test.res\", line 365, characters 5-12", every2({
 }, {
   hd: 1,
   tl: /* [] */0
-})(function (x, y) {
+}, (function (x, y) {
   return x > y;
-}), true);
+})), true);
 
 eq("File \"bs_array_test.res\", line 366, characters 5-12", every2({
   hd: 2,
@@ -1333,9 +1325,9 @@ eq("File \"bs_array_test.res\", line 366, characters 5-12", every2({
     hd: 4,
     tl: /* [] */0
   }
-})(function (x, y) {
+}, (function (x, y) {
   return x > y;
-}), false);
+})), false);
 
 eq("File \"bs_array_test.res\", line 367, characters 5-12", every2({
   hd: 2,
@@ -1349,16 +1341,16 @@ eq("File \"bs_array_test.res\", line 367, characters 5-12", every2({
     hd: 0,
     tl: /* [] */0
   }
-})(function (x, y) {
+}, (function (x, y) {
   return x > y;
-}), true);
+})), true);
 
 eq("File \"bs_array_test.res\", line 368, characters 5-12", some2(/* [] */0, {
   hd: 1,
   tl: /* [] */0
-})(function (x, y) {
+}, (function (x, y) {
   return x > y;
-}), false);
+})), false);
 
 eq("File \"bs_array_test.res\", line 369, characters 5-12", some2({
   hd: 2,
@@ -1369,9 +1361,9 @@ eq("File \"bs_array_test.res\", line 369, characters 5-12", some2({
 }, {
   hd: 1,
   tl: /* [] */0
-})(function (x, y) {
+}, (function (x, y) {
   return x > y;
-}), true);
+})), true);
 
 eq("File \"bs_array_test.res\", line 370, characters 5-12", some2({
   hd: 2,
@@ -1385,9 +1377,9 @@ eq("File \"bs_array_test.res\", line 370, characters 5-12", some2({
     hd: 4,
     tl: /* [] */0
   }
-})(function (x, y) {
+}, (function (x, y) {
   return x > y;
-}), true);
+})), true);
 
 eq("File \"bs_array_test.res\", line 371, characters 5-12", some2({
   hd: 0,
@@ -1401,9 +1393,9 @@ eq("File \"bs_array_test.res\", line 371, characters 5-12", some2({
     hd: 4,
     tl: /* [] */0
   }
-})(function (x, y) {
+}, (function (x, y) {
   return x > y;
-}), false);
+})), false);
 
 eq("File \"bs_array_test.res\", line 372, characters 5-12", some2({
   hd: 0,
@@ -1417,9 +1409,9 @@ eq("File \"bs_array_test.res\", line 372, characters 5-12", some2({
     hd: 2,
     tl: /* [] */0
   }
-})(function (x, y) {
+}, (function (x, y) {
   return x > y;
-}), true);
+})), true);
 
 eq("File \"bs_array_test.res\", line 376, characters 5-12", Belt_Array.concat([], [
   1,

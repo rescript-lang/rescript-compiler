@@ -27,13 +27,20 @@ function f(cb) {
 }
 
 let xs = Array.prototype.map.call([
-  1,
-  1,
-  2
-], (function (x) {
-  return function (y) {
-    return (y + x | 0) + 1 | 0;
-  };
+  [
+    1,
+    2
+  ],
+  [
+    1,
+    2
+  ],
+  [
+    2,
+    1
+  ]
+], (function (param) {
+  return (param[1] + param[0] | 0) + 1 | 0;
 }));
 
 function f_0(param) {
@@ -61,10 +68,6 @@ function f_02(xs) {
 
 function f_03(xs, u) {
   return hi(Curry.__1(u));
-}
-
-function fishy(x, y, z) {
-  return map2(x, y, Curry.__2(z));
 }
 
 function h(x, y, z) {
@@ -124,13 +127,11 @@ function unit_magic(param) {
 
 let f_unit_magic = unit_magic();
 
-function hh(xs) {
-  return function (param) {
-    Caml_splice_call.spliceApply(f_0002, [
-      xs,
-      param
-    ]);
-  };
+function hh(xs, a) {
+  Caml_splice_call.spliceApply(f_0002, [
+    xs,
+    a
+  ]);
 }
 
 exports.Curry = Curry$1;
@@ -142,7 +143,6 @@ exports.f_0 = f_0;
 exports.f_01 = f_01;
 exports.f_02 = f_02;
 exports.f_03 = f_03;
-exports.fishy = fishy;
 exports.h = h;
 exports.h1 = h1;
 exports.add3 = add3;
