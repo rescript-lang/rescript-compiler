@@ -5,27 +5,27 @@ let Bytes = require("../../lib/js/bytes.js");
 let Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 
 function to_buffer(buff, ofs, len, v, flags) {
-  if (ofs < 0 || len < 0 || ofs > (buff.length - len | 0)) {
-    throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Marshal.to_buffer: substring out of bounds"
-          }
-        });
+  if (!(ofs < 0 || len < 0 || ofs > (buff.length - len | 0))) {
+    return Caml_external_polyfill.resolve("output_value_to_buffer")(buff, ofs, len, v, flags);
   }
-  return Caml_external_polyfill.resolve("output_value_to_buffer")(buff, ofs, len, v, flags);
+  throw new Error("Invalid_argument", {
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Marshal.to_buffer: substring out of bounds"
+        }
+      });
 }
 
 function data_size(buff, ofs) {
-  if (ofs < 0 || ofs > (buff.length - 20 | 0)) {
-    throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Marshal.data_size"
-          }
-        });
+  if (!(ofs < 0 || ofs > (buff.length - 20 | 0))) {
+    return Caml_external_polyfill.resolve("marshal_data_size")(buff, ofs);
   }
-  return Caml_external_polyfill.resolve("marshal_data_size")(buff, ofs);
+  throw new Error("Invalid_argument", {
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Marshal.data_size"
+        }
+      });
 }
 
 function total_size(buff, ofs) {
@@ -42,15 +42,15 @@ function from_bytes(buff, ofs) {
         });
   }
   let len = Caml_external_polyfill.resolve("marshal_data_size")(buff, ofs);
-  if (ofs > (buff.length - (20 + len | 0) | 0)) {
-    throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Marshal.from_bytes"
-          }
-        });
+  if (ofs <= (buff.length - (20 + len | 0) | 0)) {
+    return Caml_external_polyfill.resolve("input_value_from_string")(buff, ofs);
   }
-  return Caml_external_polyfill.resolve("input_value_from_string")(buff, ofs);
+  throw new Error("Invalid_argument", {
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Marshal.from_bytes"
+        }
+      });
 }
 
 function from_string(buff, ofs) {

@@ -6,7 +6,7 @@ let Mt = require("./mt.js");
 let suites_0 = [
   "setTimeout/clearTimeout sanity check",
   (function (param) {
-    let handle = setTimeout((function (param) {
+    let handle = setTimeout((function () {
       
     }), 0);
     clearTimeout(handle);
@@ -21,7 +21,7 @@ let suites_1 = {
   hd: [
     "setInerval/clearInterval sanity check",
     (function (param) {
-      let handle = setInterval((function (param) {
+      let handle = setInterval((function () {
         
       }), 0);
       clearInterval(handle);

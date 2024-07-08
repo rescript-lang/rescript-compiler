@@ -9,21 +9,28 @@ function f(a, b, param) {
 }
 
 function f2(a) {
-  return function (param) {
+  return function (extra) {
     return a + 1 | 0;
   };
 }
 
 let a = String(3);
 
-let b = 101;
+function f3(extra) {
+  return 101;
+}
+
+let b = f3(2);
 
 let arr = $$Array.init(2, (function (param) {
   return 0;
 }));
 
 for(let i = 0; i <= 1; ++i){
-  Caml_array.set(arr, i, i + 1 | 0);
+  let f3$1 = function (extra) {
+    return i + 1 | 0;
+  };
+  Caml_array.set(arr, i, f3$1(2));
 }
 
 console.log([

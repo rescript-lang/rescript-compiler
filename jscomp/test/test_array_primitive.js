@@ -12,27 +12,27 @@ function caml_array_sub(x, offset, len) {
 }
 
 function caml_array_set(xs, index, newval) {
-  if (index < 0 || index >= xs.length) {
-    throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "index out of bounds"
-          }
-        });
+  if (!(index < 0 || index >= xs.length)) {
+    return Caml_array.set(xs, index, newval);
   }
-  Caml_array.set(xs, index, newval);
+  throw new Error("Invalid_argument", {
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "index out of bounds"
+        }
+      });
 }
 
 function caml_array_get(xs, index) {
-  if (index < 0 || index >= xs.length) {
-    throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "index out of bounds"
-          }
-        });
+  if (!(index < 0 || index >= xs.length)) {
+    return Caml_array.get(xs, index);
   }
-  return Caml_array.get(xs, index);
+  throw new Error("Invalid_argument", {
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "index out of bounds"
+        }
+      });
 }
 
 function caml_make_vect(len, init) {

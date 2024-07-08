@@ -3,7 +3,7 @@
 
 let Mt = require("./mt.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
-let Pervasives = require("../../lib/js/pervasives.js");
+let PervasivesU = require("../../lib/js/pervasivesU.js");
 
 function isLessThan(title, small, big) {
   return {
@@ -423,7 +423,7 @@ function isEqual(title, num1, num2) {
 
 let five = BigInt("5");
 
-let suites = Pervasives.$at(isLessThan("123 and 555555", BigInt("123"), BigInt("555555")), Pervasives.$at(isEqual("98765 and 98765", BigInt("98765"), BigInt("98765")), isEqual("same instance", five, five)));
+let suites = PervasivesU.$at(isLessThan("123 and 555555", BigInt("123"), BigInt("555555")), PervasivesU.$at(isEqual("98765 and 98765", BigInt("98765"), BigInt("98765")), isEqual("same instance", five, five)));
 
 Mt.from_pair_suites("caml_compare_bigint_test.res", suites);
 

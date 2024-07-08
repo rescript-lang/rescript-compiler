@@ -769,21 +769,25 @@ let d = Belt_List.makeBy(10, (function (x) {
   return (x << 1);
 }));
 
-eq("MAP2", Belt_List.zipBy(length_10_id, length_10_id, add), d);
+function map2_add(x, y) {
+  return Belt_List.zipBy(x, y, add);
+}
 
-eq("MAP2", Belt_List.zipBy(/* [] */0, {
+eq("MAP2", map2_add(length_10_id, length_10_id), d);
+
+eq("MAP2", map2_add(/* [] */0, {
   hd: 1,
   tl: /* [] */0
-}, add), /* [] */0);
+}), /* [] */0);
 
-eq("MAP2", Belt_List.zipBy({
+eq("MAP2", map2_add({
   hd: 1,
   tl: /* [] */0
-}, /* [] */0, add), /* [] */0);
+}, /* [] */0), /* [] */0);
 
-eq("MAP2", Belt_List.zipBy(/* [] */0, /* [] */0, add), /* [] */0);
+eq("MAP2", map2_add(/* [] */0, /* [] */0), /* [] */0);
 
-eq("MAP2", Belt_List.zipBy(length_10_id, length_10_id, add), Belt_List.concat(Belt_List.map(length_8_id, (function (x) {
+eq("MAP2", map2_add(length_10_id, length_10_id), Belt_List.concat(Belt_List.map(length_8_id, (function (x) {
   return (x << 1);
 })), {
   hd: 16,
@@ -793,7 +797,7 @@ eq("MAP2", Belt_List.zipBy(length_10_id, length_10_id, add), Belt_List.concat(Be
   }
 }));
 
-eq("MAP2", Belt_List.zipBy(length_10_id, length_8_id, add), Belt_List.mapWithIndex(length_8_id, (function (i, x) {
+eq("MAP2", map2_add(length_10_id, length_8_id), Belt_List.mapWithIndex(length_8_id, (function (i, x) {
   return i + x | 0;
 })));
 
@@ -1551,15 +1555,15 @@ eq("File \"bs_list_test.res\", line 248, characters 4-11", [
 
 eq("File \"bs_list_test.res\", line 255, characters 5-12", Belt_List.head(/* [] */0), undefined);
 
-$$throw("File \"bs_list_test.res\", line 256, characters 8-15", (function (param) {
+$$throw("File \"bs_list_test.res\", line 256, characters 8-15", (function () {
   Belt_List.headExn(/* [] */0);
 }));
 
-$$throw("File \"bs_list_test.res\", line 257, characters 8-15", (function (param) {
+$$throw("File \"bs_list_test.res\", line 257, characters 8-15", (function () {
   Belt_List.tailExn(/* [] */0);
 }));
 
-$$throw("File \"bs_list_test.res\", line 258, characters 8-15", (function (param) {
+$$throw("File \"bs_list_test.res\", line 258, characters 8-15", (function () {
   Belt_List.getExn({
     hd: 0,
     tl: {
@@ -1569,7 +1573,7 @@ $$throw("File \"bs_list_test.res\", line 258, characters 8-15", (function (param
   }, -1);
 }));
 
-$$throw("File \"bs_list_test.res\", line 259, characters 8-15", (function (param) {
+$$throw("File \"bs_list_test.res\", line 259, characters 8-15", (function () {
   Belt_List.getExn({
     hd: 0,
     tl: {

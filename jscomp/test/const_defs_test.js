@@ -4,7 +4,7 @@
 
 let u = 3;
 
-function f(param) {
+function f() {
   throw new Error("Invalid_argument", {
         cause: {
           RE_EXN_ID: "Invalid_argument",

@@ -5,7 +5,7 @@ let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
 let Char = require("../../lib/js/char.js");
 let Bytes = require("../../lib/js/bytes.js");
-let Curry = require("../../lib/js/curry.js");
+let $$String = require("../../lib/js/string.js");
 let Caml_bytes = require("../../lib/js/caml_bytes.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -136,7 +136,7 @@ function starts_with(xs, prefix, p) {
   }
   try {
     for(let i = 0; i < len2; ++i){
-      if (!Curry._2(p, Caml_bytes.get(xs, i), Caml_bytes.get(prefix, i))) {
+      if (!p(Caml_bytes.get(xs, i), Caml_bytes.get(prefix, i))) {
         throw new Error(H, {
               cause: {
                 RE_EXN_ID: H
@@ -158,21 +158,25 @@ function starts_with(xs, prefix, p) {
   }
 }
 
-let a = Bytes.init(100, Char.chr);
+let a = Bytes.init(100, (function (i) {
+  return Char.chr(i);
+}));
 
 Bytes.blit(a, 5, a, 10, 10);
 
 eq("File \"ext_bytes_test.res\", line 116, characters 4-11", a, Bytes.of_string("\x00\x01\x02\x03\x04\x05\x06\x07\b\t\x05\x06\x07\b\t\n\x0b\x0c\r\x0e\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abc"));
 
-let a$1 = Bytes.init(100, Char.chr);
+let a$1 = Bytes.init(100, (function (i) {
+  return Char.chr(i);
+}));
 
 Bytes.blit(a$1, 10, a$1, 5, 10);
 
 eq("File \"ext_bytes_test.res\", line 128, characters 4-11", a$1, Bytes.of_string("\x00\x01\x02\x03\x04\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abc"));
 
-let f = Char.chr;
-
-let a$2 = Bytes.unsafe_to_string(Bytes.init(100, f));
+let a$2 = $$String.init(100, (function (i) {
+  return Char.chr(i);
+}));
 
 let b = Bytes.init(100, (function (i) {
   return /* '\000' */0;
@@ -192,7 +196,7 @@ let s2 = Bytes.of_string(s1);
 
 eq("File \"ext_bytes_test.res\", line 153, characters 5-12", s, s2);
 
-function f$1(a, b) {
+function f(a, b) {
   return [
     Caml_bytes.bytes_greaterthan(a, b),
     Caml_bytes.bytes_greaterequal(a, b),
@@ -219,6 +223,6 @@ exports.test_id = test_id;
 exports.eq = eq;
 exports.escaped = escaped;
 exports.starts_with = starts_with;
-exports.f = f$1;
+exports.f = f;
 exports.f_0 = f_0;
 /* a Not a pure module */

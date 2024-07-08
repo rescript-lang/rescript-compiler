@@ -4,8 +4,8 @@
 let Mt = require("./mt.js");
 let $$Array = require("../../lib/js/array.js");
 let Caml_int64 = require("../../lib/js/caml_int64.js");
-let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_format = require("../../lib/js/caml_format.js");
+let PervasivesU = require("../../lib/js/pervasivesU.js");
 
 let of_string = [
   [
@@ -80,7 +80,7 @@ let of_string = [
 
 function from_float_of_string(xs) {
   return $$Array.mapi((function (i, param) {
-    return Pervasives.string_of_float;
+    return PervasivesU.string_of_float;
   }), xs);
 }
 
@@ -141,38 +141,38 @@ let pairs$1 = [
   ]
 ];
 
-let suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
+let suites = PervasivesU.$at(from_of_string(of_string), PervasivesU.$at({
   hd: [
     "isnan_of_string",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: true,
-        _1: Pervasives.classify_float(Caml_format.float_of_string("nan")) === "FP_nan"
+        _1: PervasivesU.classify_float(Caml_format.float_of_string("nan")) === "FP_nan"
       };
     })
   ],
   tl: /* [] */0
-}, Pervasives.$at($$Array.to_list($$Array.mapi((function (i, param) {
+}, PervasivesU.$at($$Array.to_list($$Array.mapi((function (i, param) {
   let b = param[1];
   let a = param[0];
   return [
     "infinity_of_string " + String(i),
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: a,
-        _1: Pervasives.classify_float(Caml_format.float_of_string(b))
+        _1: PervasivesU.classify_float(Caml_format.float_of_string(b))
       };
     })
   ];
-}), pairs)), Pervasives.$at({
+}), pairs)), PervasivesU.$at({
   hd: [
     "throw",
-    (function (param) {
+    (function () {
       return {
         TAG: "ThrowAny",
-        _0: (function (param) {
+        _0: (function () {
           Caml_format.float_of_string("");
         })
       };
@@ -181,7 +181,7 @@ let suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
   tl: {
     hd: [
       "format_int",
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: "                              33",
@@ -196,7 +196,7 @@ let suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
   let a = param[0];
   return [
     "normal_float_of_string " + String(i),
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: a,
@@ -206,8 +206,8 @@ let suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
   ];
 }), pairs$1))))));
 
-function ff(param) {
-  return Caml_format.format_int("%32d", param);
+function ff(extra) {
+  return Caml_format.format_int("%32d", extra);
 }
 
 let float_data = [
@@ -223,12 +223,12 @@ let float_data = [
   ],
   [
     "%f",
-    Pervasives.infinity,
+    PervasivesU.infinity,
     "inf"
   ],
   [
     "%f",
-    Pervasives.neg_infinity,
+    PervasivesU.neg_infinity,
     "-inf"
   ],
   [
@@ -423,13 +423,13 @@ let of_string_data = [
   ]
 ];
 
-Mt.from_pair_suites("Caml_format_test", Pervasives.$at(suites, Pervasives.$at($$Array.to_list($$Array.mapi((function (i, param) {
+Mt.from_pair_suites("Caml_format_test", PervasivesU.$at(suites, PervasivesU.$at($$Array.to_list($$Array.mapi((function (i, param) {
   let str_result = param[2];
   let f = param[1];
   let fmt = param[0];
   return [
     "loat_format " + String(i),
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: Caml_format.format_float(fmt, f),
@@ -437,12 +437,12 @@ Mt.from_pair_suites("Caml_format_test", Pervasives.$at(suites, Pervasives.$at($$
       };
     })
   ];
-}), float_data)), Pervasives.$at(int64_suites, $$Array.to_list($$Array.mapi((function (i, param) {
+}), float_data)), PervasivesU.$at(int64_suites, $$Array.to_list($$Array.mapi((function (i, param) {
   let b = param[1];
   let a = param[0];
   return [
     "int64_of_string " + String(i) + " ",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: Caml_format.int64_of_string(b),

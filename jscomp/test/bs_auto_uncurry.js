@@ -43,13 +43,13 @@ let xs = Array.prototype.map.call([
   return (param[1] + param[0] | 0) + 1 | 0;
 }));
 
-function f_0(param) {
-  return hi(function (param) {
+function f_0() {
+  return hi(function () {
     
   });
 }
 
-function f_01(param) {
+function f_01() {
   return hi(function (x) {
     if (x === undefined) {
       console.log("x");
@@ -75,12 +75,14 @@ function h(x, y, z) {
 }
 
 function h1(x, y, u, z) {
-  let partial_arg = Curry._1(z, u);
+  let partial_arg = z(u);
   return map2(x, y, Curry.__2(partial_arg));
 }
 
-function add3(x, y, z) {
-  return (x + y | 0) + z | 0;
+function add3(x) {
+  return function (y, z) {
+    return (x + y | 0) + z | 0;
+  };
 }
 
 function h2(x) {
@@ -90,20 +92,20 @@ function h2(x) {
 }
 
 function h3(x) {
-  return ff(x, (function (param, param$1) {
-    return add3(1, param, param$1);
+  return ff(x, (function (y, z) {
+    return (1 + y | 0) + z | 0;
   }));
 }
 
 function h4(x) {
-  return ff1(x, 3, (function (param, param$1) {
-    return add3(1, param, param$1);
+  return ff1(x, 3, (function (y, z) {
+    return (1 + y | 0) + z | 0;
   }));
 }
 
 function h5(x) {
-  return ff2(x, "3", (function (param, param$1) {
-    return add3(2, param, param$1);
+  return ff2(x, "3", (function (y, z) {
+    return (2 + y | 0) + z | 0;
   }));
 }
 
@@ -119,7 +121,7 @@ function h6(x) {
   return ff2(x, "3", add);
 }
 
-function unit_magic(param) {
+function unit_magic() {
   console.log("noinline");
   console.log("noinline");
   return 3;

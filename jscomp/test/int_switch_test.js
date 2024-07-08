@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -21,7 +20,7 @@ function b(loc, x) {
 }
 
 function f(x) {
-  let match = Curry._1(x, undefined);
+  let match = x();
   switch (match) {
     case 1 :
         return /* 'a' */97;
@@ -35,7 +34,7 @@ function f(x) {
 }
 
 function f22(x) {
-  let match = Curry._1(x, undefined);
+  let match = x();
   switch (match) {
     case 1 :
         return /* 'a' */97;
@@ -49,7 +48,7 @@ function f22(x) {
 }
 
 function f33(x) {
-  let match = Curry._1(x, undefined);
+  let match = x();
   switch (match) {
     case "A" :
         return /* 'a' */97;
@@ -63,23 +62,23 @@ function f33(x) {
   }
 }
 
-eq("File \"int_switch_test.res\", line 32, characters 3-10", f(function (param) {
+eq("File \"int_switch_test.res\", line 32, characters 3-10", f(function () {
   return 1;
 }), /* 'a' */97);
 
-eq("File \"int_switch_test.res\", line 33, characters 3-10", f(function (param) {
+eq("File \"int_switch_test.res\", line 33, characters 3-10", f(function () {
   return 2;
 }), /* 'b' */98);
 
-eq("File \"int_switch_test.res\", line 34, characters 3-10", f(function (param) {
+eq("File \"int_switch_test.res\", line 34, characters 3-10", f(function () {
   return 3;
 }), /* 'c' */99);
 
-eq("File \"int_switch_test.res\", line 35, characters 3-10", f(function (param) {
+eq("File \"int_switch_test.res\", line 35, characters 3-10", f(function () {
   return 0;
 }), /* 'x' */120);
 
-eq("File \"int_switch_test.res\", line 36, characters 3-10", f(function (param) {
+eq("File \"int_switch_test.res\", line 36, characters 3-10", f(function () {
   return -1;
 }), /* 'x' */120);
 

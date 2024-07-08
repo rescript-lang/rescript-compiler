@@ -18,15 +18,17 @@ let f = {
 };
 
 function uf(u) {
-  return Curry._1(u.y0, 1);
+  return u.y0(1);
 }
 
 function uf1(u) {
-  return Curry._1(u.y1, 1);
+  return function (extra) {
+    return Curry._2(u.y1, 1, extra);
+  };
 }
 
 function uf2(u) {
-  return Curry._2(u.y1, 1, 2);
+  return u.y1(1, 2);
 }
 
 function uff(f) {
@@ -40,7 +42,7 @@ function uff2(f) {
 function uff3(f) {
   let x = f.yyyy2;
   if (x !== undefined) {
-    return Curry._1(x, 0);
+    return x(0);
   } else {
     return 0;
   }

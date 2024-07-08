@@ -21,7 +21,7 @@ function record(fmt) {
   };
 }
 
-function f_unit(param) {
+function f_unit() {
   record("unit()");
 }
 

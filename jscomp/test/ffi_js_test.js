@@ -27,7 +27,7 @@ function eq(loc, param) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -121,7 +121,7 @@ function vvvv(z) {
   return z.ff_pipe2();
 }
 
-function create_prim(param) {
+function create_prim() {
   return {
     "x'": 3,
     "x''": 3,

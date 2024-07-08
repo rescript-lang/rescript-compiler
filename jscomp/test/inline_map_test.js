@@ -175,7 +175,7 @@ let m = List.fold_left((function (acc, param) {
 Mt.from_pair_suites("Inline_map_test", {
   hd: [
     "find",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: find(10, m),

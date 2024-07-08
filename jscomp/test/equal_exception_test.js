@@ -11,7 +11,7 @@ let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let v = "gso";
 
-function is_equal(param) {
+function is_equal() {
   if (Caml_bytes.get(Bytes.make(3, /* 'a' */97), 0) !== /* 'a' */97) {
     throw new Error("Assert_failure", {
           cause: {
@@ -65,7 +65,7 @@ function is_equal(param) {
       });
 }
 
-function is_exception(param) {
+function is_exception() {
   try {
     throw new Error("Not_found", {
           cause: {
@@ -111,7 +111,7 @@ function is_normal_exception(_x) {
   }
 }
 
-function is_arbitrary_exception(param) {
+function is_arbitrary_exception() {
   let A = /* @__PURE__ */Caml_exceptions.create("A");
   try {
     throw new Error(A, {

@@ -10,12 +10,12 @@ function f2(v) {
   return v.x;
 }
 
+let res = 3;
+
 let v = {
   x: 3,
   y: 4
 };
-
-let res = 3;
 
 exports.f1 = f1;
 exports.f2 = f2;

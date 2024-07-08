@@ -22,7 +22,19 @@ console.log([
 
 console.log([
   "A",
-  "A"
+  (function (x) {
+    switch (x.TAG) {
+      case "A" :
+          return "A";
+      case "B" :
+          return "B";
+      default:
+        return "?";
+    }
+  })({
+    TAG: "A",
+    _0: 3
+  })
 ]);
 
 /*  Not a pure module */

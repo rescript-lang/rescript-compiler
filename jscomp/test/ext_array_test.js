@@ -3,7 +3,6 @@
 
 let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 
@@ -66,7 +65,7 @@ function filter(f, a) {
       return reverse_of_list(acc);
     }
     let v = a[i];
-    if (Curry._1(f, v)) {
+    if (f(v)) {
       _i = i + 1 | 0;
       _acc = {
         hd: v,
@@ -90,7 +89,7 @@ function filter_map(f, a) {
       return reverse_of_list(acc);
     }
     let v = a[i];
-    let v$1 = Curry._1(f, v);
+    let v$1 = f(v);
     if (v$1 !== undefined) {
       _i = i + 1 | 0;
       _acc = {
@@ -105,32 +104,32 @@ function filter_map(f, a) {
 }
 
 function range(from, to_) {
-  if (from > to_) {
-    throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Ext_array_test.range"
-          }
-        });
+  if (from <= to_) {
+    return $$Array.init((to_ - from | 0) + 1 | 0, (function (i) {
+      return i + from | 0;
+    }));
   }
-  return $$Array.init((to_ - from | 0) + 1 | 0, (function (i) {
-    return i + from | 0;
-  }));
+  throw new Error("Invalid_argument", {
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Ext_array_test.range"
+        }
+      });
 }
 
 function map2i(f, a, b) {
   let len = a.length;
-  if (len !== b.length) {
-    throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Ext_array_test.map2i"
-          }
-        });
+  if (len === b.length) {
+    return $$Array.mapi((function (i, a) {
+      return f(i, a, b[i]);
+    }), a);
   }
-  return $$Array.mapi((function (i, a) {
-    return Curry._3(f, i, a, b[i]);
-  }), a);
+  throw new Error("Invalid_argument", {
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Ext_array_test.map2i"
+        }
+      });
 }
 
 function tolist_aux(a, f, _i, _res) {
@@ -141,7 +140,7 @@ function tolist_aux(a, f, _i, _res) {
       return res;
     }
     let v = a[i];
-    let v$1 = Curry._1(f, v);
+    let v$1 = f(v);
     _res = v$1 !== undefined ? ({
         hd: Caml_option.valFromOption(v$1),
         tl: res
@@ -164,7 +163,7 @@ function of_list_map(f, a) {
     return [];
   }
   let tl = a.tl;
-  let hd = Curry._1(f, a.hd);
+  let hd = f(a.hd);
   let len = List.length(tl) + 1 | 0;
   let arr = Caml_array.make(len, hd);
   let _i = 1;
@@ -175,7 +174,7 @@ function of_list_map(f, a) {
     if (!x) {
       return arr;
     }
-    arr[i] = Curry._1(f, x.hd);
+    arr[i] = f(x.hd);
     _x = x.tl;
     _i = i + 1 | 0;
     continue;
@@ -190,7 +189,7 @@ function rfind_with_index(arr, cmp, v) {
     if (i < 0) {
       return i;
     }
-    if (Curry._2(cmp, arr[i], v)) {
+    if (cmp(arr[i], v)) {
       return i;
     }
     _i = i - 1 | 0;
@@ -221,7 +220,7 @@ function find_with_index(arr, cmp, v) {
     if (i >= len) {
       return -1;
     }
-    if (Curry._2(cmp, arr[i], v)) {
+    if (cmp(arr[i], v)) {
       return i;
     }
     _i = i + 1 | 0;
@@ -252,7 +251,7 @@ function exists(p, a) {
     if (i === n) {
       return false;
     }
-    if (Curry._1(p, a[i])) {
+    if (p(a[i])) {
       return true;
     }
     _i = i + 1 | 0;
@@ -270,7 +269,7 @@ function unsafe_loop(_index, len, p, xs, ys) {
     if (index >= len) {
       return true;
     }
-    if (!Curry._2(p, xs[index], ys[index])) {
+    if (!p(xs[index], ys[index])) {
       return false;
     }
     _index = index + 1 | 0;

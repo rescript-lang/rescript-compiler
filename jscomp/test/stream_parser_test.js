@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 let Queue = require("../../lib/js/queue.js");
 let Genlex = require("../../lib/js/genlex.js");
 let Stream = require("../../lib/js/stream.js");
@@ -17,12 +16,12 @@ function parse(token) {
     first: "Nil",
     last: "Nil"
   };
-  let token$1 = function (param) {
+  let token$1 = function () {
     if (look_ahead.length !== 0) {
       return Queue.pop(look_ahead);
     }
     try {
-      return Curry._1(token, undefined);
+      return token();
     }
     catch (exn){
       return {
@@ -31,12 +30,12 @@ function parse(token) {
       };
     }
   };
-  let parse_atom = function (param) {
+  let parse_atom = function () {
     let n = token$1();
     switch (n.TAG) {
       case "Kwd" :
           if (n._0 === "(") {
-            let v = parse_expr_aux(parse_term_aux(parse_atom()));
+            let v = parse_expr();
             let match = token$1();
             if (match.TAG === "Kwd") {
               if (match._0 === ")") {
@@ -75,14 +74,15 @@ function parse(token) {
             });
     }
   };
-  let parse_term_aux = function (e1) {
+  let parse_term = function () {
+    let e1 = parse_atom();
     let e = token$1();
     if (e.TAG === "Kwd") {
       switch (e._0) {
         case "*" :
-            return Math.imul(e1, parse_term_aux(parse_atom()));
+            return Math.imul(e1, parse_term());
         case "/" :
-            return Caml_int32.div(e1, parse_term_aux(parse_atom()));
+            return Caml_int32.div(e1, parse_term());
         default:
           Queue.push(e, look_ahead);
           return e1;
@@ -92,14 +92,15 @@ function parse(token) {
       return e1;
     }
   };
-  let parse_expr_aux = function (e1) {
+  let parse_expr = function () {
+    let e1 = parse_term();
     let e = token$1();
     if (e.TAG === "Kwd") {
       switch (e._0) {
         case "+" :
-            return e1 + parse_expr_aux(parse_term_aux(parse_atom())) | 0;
+            return e1 + parse_expr() | 0;
         case "-" :
-            return e1 - parse_expr_aux(parse_term_aux(parse_atom())) | 0;
+            return e1 - parse_expr() | 0;
         default:
           Queue.push(e, look_ahead);
           return e1;
@@ -109,7 +110,7 @@ function parse(token) {
       return e1;
     }
   };
-  let r = parse_expr_aux(parse_term_aux(parse_atom()));
+  let r = parse_expr();
   return [
     r,
     Queue.fold((function (acc, x) {
@@ -143,7 +144,7 @@ let lexer = Genlex.make_lexer({
 
 function token(chars) {
   let strm = lexer(chars);
-  return function (param) {
+  return function () {
     return Stream.next(strm);
   };
 }
@@ -154,12 +155,12 @@ function l_parse(token) {
     first: "Nil",
     last: "Nil"
   };
-  let token$1 = function (param) {
+  let token$1 = function () {
     if (look_ahead.length !== 0) {
       return Queue.pop(look_ahead);
     }
     try {
-      return Curry._1(token, undefined);
+      return token();
     }
     catch (exn){
       return {
@@ -168,12 +169,58 @@ function l_parse(token) {
       };
     }
   };
-  let parse_f = function (param) {
+  let parse_e = function () {
+    let _a = parse_t();
+    while(true) {
+      let a = _a;
+      let t = token$1();
+      if (t.TAG === "Kwd") {
+        switch (t._0) {
+          case "+" :
+              _a = a + parse_t() | 0;
+              continue;
+          case "-" :
+              _a = a - parse_t() | 0;
+              continue;
+          default:
+            Queue.push(t, look_ahead);
+            return a;
+        }
+      } else {
+        Queue.push(t, look_ahead);
+        return a;
+      }
+    };
+  };
+  let parse_t = function () {
+    let _a = parse_f();
+    while(true) {
+      let a = _a;
+      let t = token$1();
+      if (t.TAG === "Kwd") {
+        switch (t._0) {
+          case "*" :
+              _a = Math.imul(a, parse_f());
+              continue;
+          case "/" :
+              _a = Caml_int32.div(a, parse_f());
+              continue;
+          default:
+            Queue.push(t, look_ahead);
+            return a;
+        }
+      } else {
+        Queue.push(t, look_ahead);
+        return a;
+      }
+    };
+  };
+  let parse_f = function () {
     let i = token$1();
     switch (i.TAG) {
       case "Kwd" :
           if (i._0 === "(") {
-            let v = parse_t_aux(parse_f_aux(parse_f()));
+            let v = parse_e();
             let t = token$1();
             if (t.TAG === "Kwd") {
               if (t._0 === ")") {
@@ -210,51 +257,7 @@ function l_parse(token) {
             });
     }
   };
-  let parse_f_aux = function (_a) {
-    while(true) {
-      let a = _a;
-      let t = token$1();
-      if (t.TAG === "Kwd") {
-        switch (t._0) {
-          case "*" :
-              _a = Math.imul(a, parse_f());
-              continue;
-          case "/" :
-              _a = Caml_int32.div(a, parse_f());
-              continue;
-          default:
-            Queue.push(t, look_ahead);
-            return a;
-        }
-      } else {
-        Queue.push(t, look_ahead);
-        return a;
-      }
-    };
-  };
-  let parse_t_aux = function (_a) {
-    while(true) {
-      let a = _a;
-      let t = token$1();
-      if (t.TAG === "Kwd") {
-        switch (t._0) {
-          case "+" :
-              _a = a + parse_f_aux(parse_f()) | 0;
-              continue;
-          case "-" :
-              _a = a - parse_f_aux(parse_f()) | 0;
-              continue;
-          default:
-            Queue.push(t, look_ahead);
-            return a;
-        }
-      } else {
-        Queue.push(t, look_ahead);
-        return a;
-      }
-    };
-  };
-  let r = parse_t_aux(parse_f_aux(parse_f()));
+  let r = parse_e();
   return [
     r,
     Queue.fold((function (acc, x) {
@@ -279,7 +282,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
