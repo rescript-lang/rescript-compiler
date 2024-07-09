@@ -16,6 +16,7 @@
 
 - Fix tag function location on compiler error. https://github.com/rescript-lang/rescript-compiler/pull/6816
 - Fix Deno compatibility issues on Windows. https://github.com/rescript-lang/rescript-compiler/pull/6850 
+- Fix issue with infinite loops with type errors on recursive types. https://github.com/rescript-lang/rescript-compiler/pull/6867
 
 # 11.1.3-rc.1
 

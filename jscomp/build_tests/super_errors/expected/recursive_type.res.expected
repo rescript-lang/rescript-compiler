@@ -1,0 +1,13 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/recursive_type.res[0m:[2m35:11-14[0m
+
+  33 [2m│[0m /* parse atom */
+  34 [2m│[0m and atom = (k, t) => {
+  [1;31m35[0m [2m│[0m   let _ = [1;31matom[0m(k)
+  36 [2m│[0m   assert(false)
+  37 [2m│[0m }
+
+  This uncurried function has type
+    ((option<'a>, ([> #List(list<'b>)] as 'b)) => 'c, 'd) => 'c
+  It is applied with [1;31m1[0m arguments but it requires [1;33m2[0m.
