@@ -3757,7 +3757,13 @@ let spellcheck_idents ppf unbound valid_idents =
   spellcheck ppf (Ident.name unbound) (List.map Ident.name valid_idents)
 
 open Format
-open Printtyp
+let longident = Printtyp.longident
+let super_report_unification_error = Printtyp.super_report_unification_error
+let report_ambiguous_type_error = Printtyp.report_ambiguous_type_error
+let report_subtyping_error = Printtyp.report_subtyping_error
+let type_expr ppf typ = (* print a type and avoid infinite loops *)
+  Printtyp.reset_and_mark_loops typ;
+  Printtyp.type_expr ppf typ
 
 let report_error env ppf = function
   | Polymorphic_label lid ->
@@ -3826,7 +3832,6 @@ let report_error env ppf = function
     fprintf ppf "@]"
   | Apply_non_function typ ->
     (* modified *)
-    reset_and_mark_loops typ;
     begin match (repr typ).desc with
         Tarrow (_, _inputType, return_type, _) ->
         let rec count_number_of_args count {Types.desc} = match desc with
@@ -3850,7 +3855,6 @@ let report_error env ppf = function
         | l ->
             fprintf ppf "with label %s" (prefixed_label_name l)
       in
-      reset_and_mark_loops ty;
       fprintf ppf
         "@[<v>@[<2>The function applied to this argument has type@ %a@]@.\
           This argument cannot be applied %a@]"
@@ -3867,7 +3871,6 @@ let report_error env ppf = function
       fprintf ppf "The record field %a is not mutable" longident lid
   | Wrong_name (eorp, ty, kind, p, name, valid_names) ->
     (* modified *)
-    reset_and_mark_loops ty;
     if Path.is_constructor_typath p then begin
       fprintf ppf "@[The field %s is not part of the record \
                    argument for the %a constructor@]"
@@ -3899,7 +3902,6 @@ let report_error env ppf = function
            fprintf ppf "but a %s was expected belonging to the %s type"
              name kind)
   | Undefined_method (ty, me, valid_methods) ->
-      reset_and_mark_loops ty;
       fprintf ppf
         "@[<v>@[This expression has type@;<1 2>%a@]@,\
          It has no field %s@]" type_expr ty me;
@@ -3911,7 +3913,6 @@ let report_error env ppf = function
       report_subtyping_error ppf env tr1 "is not a subtype of" tr2
   | Too_many_arguments (in_function, ty) ->
     (* modified *)
-    reset_and_mark_loops ty;
     if in_function then begin
       fprintf ppf "@[This function expects too many arguments,@ ";
       fprintf ppf "it should have type@ %a@]"
@@ -3930,11 +3931,9 @@ let report_error env ppf = function
         | Nolabel -> "but its first argument is not labelled"
         | l -> sprintf "but its first argument is labelled %s"
                        (prefixed_label_name l) in
-      reset_and_mark_loops ty;
       fprintf ppf "@[<v>@[<2>This function should have type@ %a@]@,%s@]"
       type_expr ty (label_mark l)
   | Scoping_let_module(id, ty) ->
-      reset_and_mark_loops ty;
       fprintf ppf
        "This `let module' expression has type@ %a@ " type_expr ty;
       fprintf ppf
@@ -3976,7 +3975,7 @@ let report_error env ppf = function
         "Unexpected existential"
   | Unqualified_gadt_pattern (tpath, name) ->
       fprintf ppf "@[The GADT constructor %s of type %a@ %s.@]"
-        name path tpath
+        name Printtyp.path tpath
         "must be qualified in this pattern"
   | Invalid_interval ->
       fprintf ppf "@[Only character intervals are supported in patterns.@]"
@@ -4027,20 +4026,20 @@ let report_error env ppf = function
       fprintf ppf  "Empty record literal {} should be type annotated or used in a record context."
   | Uncurried_arity_mismatch (typ, arity, args) ->
     fprintf ppf "@[<v>@[<2>This uncurried function has type@ %a@]"
-    type_expr typ;
+      type_expr typ;
     fprintf ppf "@ @[It is applied with @{<error>%d@} argument%s but it requires @{<info>%d@}.@]@]"
       args (if args = 0 then "" else "s") arity
   | Field_not_optional (name, typ) ->
     fprintf ppf
-    "Field @{<info>%s@} is not optional in type %a. Use without ?" name
-    type_expr typ
+      "Field @{<info>%s@} is not optional in type %a. Use without ?" name
+      type_expr typ
 
 
 let super_report_error_no_wrap_printing_env = report_error
 
 
 let report_error env ppf err =
-  wrap_printing_env env (fun () -> report_error env ppf err)
+  Printtyp.wrap_printing_env env (fun () -> report_error env ppf err)
 
 let () =
   Location.register_error_of_exn
