@@ -194,7 +194,10 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
       | "int" -> assign `Int attr
       | "ignore" -> assign `Ignore attr
       | "unwrap" -> assign `Unwrap attr
-      | "uncurry" -> assign (`Uncurry (Ast_payload.is_single_int payload)) attr
+      | "uncurry" ->
+        if !Config.uncurried = Uncurried then
+          Used_attributes.mark_used_attribute attr
+        else assign (`Uncurry (Ast_payload.is_single_int payload)) attr
       | _ -> ());
   !st
 
