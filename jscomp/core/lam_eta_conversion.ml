@@ -163,9 +163,13 @@ let unsafe_adjust_to_arity loc ~(to_ : int) ?(from : int option) (fn : Lam.t) :
             let extra_args =
               Ext_list.init (to_ - from) (fun _ -> Ident.create Literals.param)
             in
+            let rec mk_apply body vars = match vars with
+              | [] -> body
+              | var :: vars ->
+                mk_apply (Lam.apply body [var] ap_info) vars in
             Lam.function_ ~attr:Lambda.default_function_attribute ~arity:to_
               ~params:(Ext_list.append params extra_args)
-              ~body:(Lam.apply body (Ext_list.map extra_args Lam.var) ap_info)
+              ~body:(mk_apply body (Ext_list.map extra_args Lam.var))
         | _ -> (
             let arity = to_ in
             let extra_args =

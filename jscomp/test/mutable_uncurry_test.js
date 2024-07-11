@@ -69,7 +69,7 @@ function t3(param) {
 function ut4(param, param$1, param$2, param$3) {
   let x0 = param.contents;
   let x1 = param$1.contents;
-  return Curry._2((function (param) {
+  return (function (param) {
     let x2 = param.contents;
     return function (param) {
       let x3 = param.contents;
@@ -80,7 +80,7 @@ function ut4(param, param$1, param$2, param$3) {
         x3
       ];
     };
-  }), param$2, param$3);
+  })(param$2)(param$3);
 }
 
 function t4(param) {
@@ -105,7 +105,7 @@ function t4(param) {
 function ut5(param, param$1, param$2, param$3, param$4) {
   let x0 = param.contents;
   let x1 = param$1.contents;
-  return Curry._3((function (param) {
+  return (function (param) {
     let x2 = param.contents;
     return function (param) {
       let x3 = param.contents;
@@ -120,7 +120,7 @@ function ut5(param, param$1, param$2, param$3, param$4) {
         ];
       };
     };
-  }), param$2, param$3, param$4);
+  })(param$2)(param$3)(param$4);
 }
 
 function t5(param) {
