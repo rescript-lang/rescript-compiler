@@ -1099,16 +1099,16 @@ and transl_apply ?(inlined = Default_inline) ?(uncurried_partial_application=Non
         let id_arg = Ident.create "none" in
         none_ids := id_arg :: !none_ids;
         Some (Lvar id_arg)) in
-    let extra_ids = ref [] in
-    extra_ids := Ident.create "extra" :: !extra_ids;
     let extra_ids = Array.init extra_arity (fun _ -> Ident.create "extra") |> Array.to_list in
     let extra_args = Ext_list.map extra_ids (fun id -> Lvar id) in
     let ap_args = args @ extra_args in
-    let l0 = Lapply { ap_func = lam; ap_args; ap_inlined = inlined; ap_loc = loc } in
+    let lam_opaque = Lprim (Popaque, [lam], loc) in
+    let l0 = Lapply { ap_func = lam_opaque; ap_args; ap_inlined = inlined; ap_loc = loc } in
+    let l1 = Lprim (Puncurried_apply, [l0], loc) in
     Lfunction
       {
         params = List.rev_append !none_ids extra_ids ;
-        body = l0;
+        body = l1;
         attr = default_function_attribute;
         loc;
       }

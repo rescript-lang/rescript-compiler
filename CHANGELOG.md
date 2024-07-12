@@ -42,6 +42,7 @@
 - Reactivate unused attribute check for `@int`. https://github.com/rescript-lang/rescript-compiler/pull/6802
 - Fix Deno compatibility issues on Windows. https://github.com/rescript-lang/rescript-compiler/pull/6850
 - Fix issue with infinite loops with type errors on recursive types. https://github.com/rescript-lang/rescript-compiler/pull/6867
+- Fix issue where using partial application `...` can generate code that uses `Curry` at runtime. https://github.com/rescript-lang/rescript-compiler/pull/6872
 
 #### :house: Internal
 
