@@ -63,8 +63,6 @@ function withOpt$1(xOpt, y, zOpt, w) {
 
 let testWithOpt$1 = withOpt$1(undefined, 3, undefined, 4);
 
-let partial$1 = withOpt$1(10, 3, 4, 11);
-
 let total$1 = withOpt$1(10, 3, 4, 11);
 
 function foo1$1(xOpt, y) {
@@ -103,7 +101,6 @@ let M = {
 exports.StandardNotation = StandardNotation;
 exports.withOpt = withOpt$1;
 exports.testWithOpt = testWithOpt$1;
-exports.partial = partial$1;
 exports.total = total$1;
 exports.foo1 = foo1$1;
 exports.r1 = r1$1;
