@@ -58,8 +58,6 @@ type callback1 = (. ReactEvent.Mouse.t) => unit as 'callback
 type callback2 = (. ReactEvent.Mouse.t) => (unit as 'u)
 type callback3 = ((. ReactEvent.Mouse.t) => unit) as 'callback
 
-@@uncurried.swap
-
 let cApp = foo(. 3)
 let uApp = foo(3)
 

@@ -55,51 +55,45 @@ let StandardNotation = {
   r3: r3
 };
 
-function withOpt$1(xOpt, y) {
+function withOpt$1(xOpt, y, zOpt, w) {
   let x = xOpt !== undefined ? xOpt : 1;
-  return function (zOpt, w) {
-    let z = zOpt !== undefined ? zOpt : 1;
-    return ((x + y | 0) + z | 0) + w | 0;
-  };
+  let z = zOpt !== undefined ? zOpt : 1;
+  return ((x + y | 0) + z | 0) + w | 0;
 }
 
-let testWithOpt$1 = withOpt$1(undefined, 3)(undefined, 4);
+let testWithOpt$1 = withOpt$1(undefined, 3, undefined, 4);
 
-let partial_arg = 10;
+let partial$1 = withOpt$1(10, 3, 4, 11);
 
-let partial$1 = Curry._1((function (param) {
-  return withOpt$1(partial_arg, param);
-})(3), 4)(11);
-
-let total$1 = withOpt$1(10, 3)(4, 11);
+let total$1 = withOpt$1(10, 3, 4, 11);
 
 function foo1$1(xOpt, y) {
   let x = xOpt !== undefined ? xOpt : 3;
   return x + y | 0;
 }
 
-let x$1 = 3;
+function r1$1(param) {
+  return foo1$1(param, 11);
+}
 
-let r1$1 = x$1 + 11 | 0;
-
-function foo2$1(y, xOpt, zOpt) {
+function foo2$1(y, xOpt, zOpt, param) {
   let x = xOpt !== undefined ? xOpt : 3;
   let z = zOpt !== undefined ? zOpt : 4;
   return (x + y | 0) + z | 0;
 }
 
-let r2$1 = foo2$1(11, undefined, undefined);
+function r2$1(param, param$1, param$2) {
+  return foo2$1(11, param, param$1, param$2);
+}
 
-function foo3$1(xOpt, yOpt) {
+function foo3$1(xOpt, yOpt, param) {
   let x = xOpt !== undefined ? xOpt : 3;
   let y = yOpt !== undefined ? yOpt : 4;
   return x + y | 0;
 }
 
-let r3$1 = foo3$1(undefined, undefined);
-
 function foo(func) {
-  return func() + 1 | 0;
+  return Curry._1(func, undefined) + 1 | 0;
 }
 
 let M = {
@@ -116,6 +110,5 @@ exports.r1 = r1$1;
 exports.foo2 = foo2$1;
 exports.r2 = r2$1;
 exports.foo3 = foo3$1;
-exports.r3 = r3$1;
 exports.M = M;
 /* testWithOpt Not a pure module */

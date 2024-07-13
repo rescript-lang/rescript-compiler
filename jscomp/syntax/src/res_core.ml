@@ -6670,9 +6670,6 @@ and parse_standalone_attribute p =
   let attr_id = parse_attribute_id ~start_pos p in
   let attr_id =
     match attr_id.txt with
-    | "uncurried.swap" ->
-      p.uncurried_config <- Config.Swap;
-      attr_id
     | "uncurried" ->
       p.uncurried_config <- Config.Uncurried;
       attr_id

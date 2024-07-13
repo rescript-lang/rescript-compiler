@@ -62,6 +62,7 @@
 - Make gentype tests uncurried. https://github.com/rescript-lang/rescript-compiler/pull/6866
 - Ignore `@uncurry` attribute in uncurried mode, to avoid generating calls to `Curry` at runtime. https://github.com/rescript-lang/rescript-compiler/pull/6869
 - Avoid generating calls to Curry when adjusting arity of uncurried functions. https://github.com/rescript-lang/rescript-compiler/pull/6870
+- Remove `@@uncurried.swap`, which was used for internal tests. https://github.com/rescript-lang/rescript-compiler/pull/6875
 
 #### :nail_care: Polish
 

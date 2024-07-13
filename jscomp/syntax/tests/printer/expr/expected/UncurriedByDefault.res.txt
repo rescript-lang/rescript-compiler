@@ -79,18 +79,16 @@ let fnC = (_x): (unit => unit) => fooC
 let a = ((. ()) => "foo")->Ok
 let aC = (() => "foo")->Ok
 
-@@uncurried.swap
-
 let cApp = foo(. 3)
 let uApp = foo(3)
 
 let cFun = (. x) => 3
 let uFun = x => 3
-let mixFun = (. a) => (b, c) => {(. d, e, f, g) => h => 4}
-let bracesFun = x => {(. y) => x + y}
+let mixFun = (. a) => {(b, c) => (. d, e, f) => (. g) => {h => 4}}
+let bracesFun = x => (. y) => x + y
 let cFun2 = (. x, y) => 3
 let uFun2 = (x, y) => 3
-let cFun2Dots = (. x, y) => 3 // redundant dot on y
+let cFun2Dots = (. x) => (. y) => 3 // redundant dot on y
 
 type cTyp = (. string) => int
 type uTyp = string => int
@@ -100,18 +98,18 @@ type cTyp2 = (. string, string) => int
 type uTyp2 = (string, string) => int
 type cu = (. unit) => int
 type cp = (. unit) => int
-type cuu = (. unit, unit) => int
-type cpu = (. unit, unit) => int
-type cup = (. unit, unit) => int
-type cpp = (. unit, unit) => int
+type cuu = (. unit) => (. unit) => int
+type cpu = (. unit) => (. unit) => int
+type cup = (. unit) => (. unit) => int
+type cpp = (. unit) => (. unit) => int
 type cu2 = (. unit, unit) => unit
 type cp2 = (. unit, unit) => unit
 type uu = unit => int
 type up = unit => int
-type uuu = unit => unit => int
-type upu = unit => unit => int
-type uup = unit => unit => int
-type upp = unit => unit => int
+type uuu = (unit, unit) => int
+type upu = (unit, unit) => int
+type uup = (unit, unit) => int
+type upp = (unit, unit) => int
 type uu2 = (unit, unit) => unit
 type up2 = (unit, unit) => unit
 
