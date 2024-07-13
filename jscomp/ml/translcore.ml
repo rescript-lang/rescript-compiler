@@ -851,9 +851,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
       )
       | _ -> "#fn_mk" in
       let prim =
-        Primitive.make ~name ~alloc:true ~native_name:arity_s
-          ~native_repr_args:[ Same_as_ocaml_repr ]
-          ~native_repr_res:Same_as_ocaml_repr
+        Primitive.make ~name ~alloc:true ~native_name:arity_s ~arity:1
       in
       Lprim
         ( Pccall prim
@@ -1188,8 +1186,7 @@ and transl_record loc env fields repres opt_init_expr =
         let arity_s = String.sub lbl_name 1 (String.length lbl_name - 1) in
         let prim =
           Primitive.make ~name:"#fn_mk" ~alloc:true ~native_name:arity_s
-            ~native_repr_args:[ Same_as_ocaml_repr ]
-            ~native_repr_res:Same_as_ocaml_repr
+            ~arity:1
         in
         Lprim
           ( Pccall prim

@@ -1707,28 +1707,19 @@ let transl_exception env sext =
 
 
 
-let rec parse_native_repr_attributes env core_type ty =
+let rec arity_from_arrow_type env core_type ty =
   match core_type.ptyp_desc, (Ctype.repr ty).desc
   with
   | Ptyp_arrow (_, _, ct2), Tarrow (_, _, t2, _) ->
-    let repr_arg = Same_as_ocaml_repr  in
-    let repr_args, repr_res =
-      parse_native_repr_attributes env ct2 t2 
-    in
-    (repr_arg :: repr_args, repr_res)
+    1 + (arity_from_arrow_type env ct2 t2)
   | Ptyp_arrow _, _ | _, Tarrow _ -> assert false
-  | _ -> ([], Same_as_ocaml_repr)
+  | _ -> 0
 
 
-let parse_native_repr_attributes env core_type ty =
-  match core_type.ptyp_desc, (Ctype.repr ty).desc
-  with
-  | Ptyp_constr ({txt = Lident "function$"}, [{ptyp_desc = Ptyp_arrow (_, _, ct2)}; _]),
-    Tconstr (Pident {name = "function$"},[{desc = Tarrow (_, _, t2, _)}; _],_) ->
-    let repr_args, repr_res = parse_native_repr_attributes env ct2 t2 in
-    let native_repr_args = Same_as_ocaml_repr :: repr_args in
-    (native_repr_args, repr_res)
-  | _ -> parse_native_repr_attributes env core_type ty
+let parse_arity env core_type ty =
+  match Ast_uncurried.uncurried_type_get_arity_opt ~env ty with
+  | Some arity -> arity
+  | None -> arity_from_arrow_type env core_type ty
 
 (* Translate a value declaration *)
 let transl_value_decl env loc valdecl =
@@ -1742,30 +1733,23 @@ let transl_value_decl env loc valdecl =
   | [] ->
       raise (Error(valdecl.pval_loc, Val_in_structure))
   | _ ->
-      let native_repr_args, native_repr_res =
-          let rec scann (attrs : Parsetree.attributes)  = 
+      let arity =
+          let rec scan_attributes (attrs : Parsetree.attributes)  = 
             match attrs with 
-            | ({txt = "internal.arity";_},
+            | ({txt = "internal.arity";_}, (* This is likely not needed in uncurried mode *)
               PStr [ {pstr_desc = Pstr_eval
                         (
                           ({pexp_desc = Pexp_constant (Pconst_integer (i,_))} :
                              Parsetree.expression) ,_)}]) :: _ ->
                Some (int_of_string i)              
-            | _ :: rest  -> scann rest 
+            | _ :: rest  -> scan_attributes rest 
             | [] -> None 
-          and make n = 
-            if n = 0 then []
-            else Primitive.Same_as_ocaml_repr :: make (n - 1)
           in 
-            match scann valdecl.pval_attributes with 
-            | None ->  parse_native_repr_attributes env valdecl.pval_type ty 
-            | Some x -> make x , Primitive.Same_as_ocaml_repr
+          match scan_attributes valdecl.pval_attributes with 
+          | None ->  parse_arity env valdecl.pval_type ty 
+          | Some x -> x
       in
-      let prim =
-        Primitive.parse_declaration valdecl
-          ~native_repr_args
-          ~native_repr_res
-      in
+      let prim = Primitive.parse_declaration valdecl ~arity in
       let prim_native_name = prim.prim_native_name in 
       if prim.prim_arity = 0 &&
          not ( String.length prim_native_name >= 20 &&
