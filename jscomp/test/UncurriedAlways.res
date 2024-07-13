@@ -90,3 +90,9 @@ module PartialApplication = {
 
   let fxyz = f3(~x=1, ~y=1, ~z=1, ...)
 }
+
+let hello1 = (y, f) => f(y)
+
+let hello2 = (y, f) => y |> f
+
+

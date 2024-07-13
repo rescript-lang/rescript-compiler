@@ -202,6 +202,14 @@ let PartialApplication = {
   fxyz: fxyz
 };
 
+function hello1(y, f) {
+  return f(y);
+}
+
+function hello2(y, f) {
+  return f(y);
+}
+
 exports.foo = foo;
 exports.z = z;
 exports.bar = bar;
@@ -222,4 +230,6 @@ exports.fn = fn;
 exports.fn1 = fn1;
 exports.a = a$1;
 exports.PartialApplication = PartialApplication;
+exports.hello1 = hello1;
+exports.hello2 = hello2;
 /*  Not a pure module */
