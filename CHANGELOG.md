@@ -19,6 +19,7 @@
 - Throws an instance of JavaScript's `new Error()` and adds the extension payload for `cause` option. https://github.com/rescript-lang/rescript-compiler/pull/6611
 - Allow free vars in types for type coercion `e :> t`. https://github.com/rescript-lang/rescript-compiler/pull/6828
 - Allow `private` in with constraints. https://github.com/rescript-lang/rescript-compiler/pull/6843
+- Add regex literals as syntax sugar for `@bs.re`. https://github.com/rescript-lang/rescript-compiler/pull/6776
 
 #### :boom: Breaking Change
 

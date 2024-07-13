@@ -183,7 +183,7 @@ module UpdateQuestionError = {
 let handleResponseCB = (id, title) => {
   let window = Webapi.Dom.window
   let parameterizedTitle =
-    title |> Js.String.toLowerCase |> Js.String.replaceByRe(%re("/[^0-9a-zA-Z]+/gi"), "-")
+    title |> Js.String.toLowerCase |> Js.String.replaceByRe(/[^0-9a-zA-Z]+/gi, "-")
   let redirectPath = "/questions/" ++ (id ++ ("/" ++ parameterizedTitle))
   redirectPath |> Webapi.Dom.Window.setLocation(window)
 }

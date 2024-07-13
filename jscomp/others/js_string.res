@@ -440,11 +440,11 @@ on MDN.
 ## Examples
 
 ```rescript
-Js.String.match_(%re("/b[aeiou]t/"), "The better bats") == Some(["bet"])
-Js.String.match_(%re("/b[aeiou]t/g"), "The better bats") == Some(["bet", "bat"])
-Js.String.match_(%re("/(\d+)-(\d+)-(\d+)/"), "Today is 2018-04-05.") ==
+Js.String.match_(/b[aeiou]t/, "The better bats") == Some(["bet"])
+Js.String.match_(/b[aeiou]t/g, "The better bats") == Some(["bet", "bat"])
+Js.String.match_(/(\d+)-(\d+)-(\d+)/, "Today is 2018-04-05.") ==
   Some(["2018-04-05", "2018", "04", "05"])
-Js.String.match_(%re("/b[aeiou]g/"), "The large container.") == None
+Js.String.match_(/b[aeiou]g/, "The large container.") == None
 ```
 */
 @send
@@ -531,8 +531,8 @@ on MDN.
 ## Examples
 
 ```rescript
-Js.String.replaceByRe(%re("/[aeiou]/g"), "x", "vowels be gone") == "vxwxls bx gxnx"
-Js.String.replaceByRe(%re("/(\w+) (\w+)/"), "$2, $1", "Juan Fulano") == "Fulano, Juan"
+Js.String.replaceByRe(/[aeiou]/g, "x", "vowels be gone") == "vxwxls bx gxnx"
+Js.String.replaceByRe(/(\w+) (\w+)/, "$2, $1", "Juan Fulano") == "Fulano, Juan"
 ```
 */
 @send
@@ -552,7 +552,7 @@ on MDN.
 
 ```rescript
 let str = "beautiful vowels"
-let re = %re("/[aeiou]/g")
+let re = /[aeiou]/g
 let matchFn = (matchPart, _offset, _wholeString) => Js.String.toUpperCase(matchPart)
 
 Js.String.unsafeReplaceBy0(re, matchFn, str) == "bEAUtIfUl vOwEls"
@@ -576,7 +576,7 @@ on MDN.
 
 ```rescript
 let str = "Jony is 40"
-let re = %re("/(Jony is )\d+/g")
+let re = /(Jony is )\d+/g
 let matchFn = (_match, part1, _offset, _wholeString) => {
   part1 ++ "41"
 }
@@ -602,7 +602,7 @@ on MDN.
 
 ```rescript
 let str = "7 times 6"
-let re = %re("/(\d+) times (\d+)/")
+let re = /(\d+) times (\d+)/
 let matchFn = (_match, p1, p2, _offset, _wholeString) => {
   switch (Belt.Int.fromString(p1), Belt.Int.fromString(p2)) {
   | (Some(x), Some(y)) => Belt.Int.toString(x * y)
@@ -641,8 +641,8 @@ on MDN.
 ## Examples
 
 ```rescript
-Js.String.search(%re("/\d+/"), "testing 1 2 3") == 8
-Js.String.search(%re("/\d+/"), "no numbers") == -1
+Js.String.search(/\d+/, "testing 1 2 3") == 8
+Js.String.search(/\d+/, "no numbers") == -1
 ```
 */
 @send

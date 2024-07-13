@@ -1891,6 +1891,22 @@ and parse_constrained_expr_region p =
     | _ -> Some expr)
   | _ -> None
 
+and parse_regex p pattern flags =
+  let start_pos = p.Parser.start_pos in
+  Parser.next p;
+  let loc = mk_loc start_pos p.prev_end_pos in
+  let payload =
+    Parsetree.PStr
+      [
+        Ast_helper.Str.eval ~loc
+          (Ast_helper.Exp.constant ~loc
+             (Pconst_string
+                ( "/" ^ pattern ^ "/" ^ flags,
+                  if p.mode = ParseForTypeChecker then Some "js" else None )));
+      ]
+  in
+  Ast_helper.Exp.extension (Location.mknoloc "re", payload)
+
 (* Atomic expressions represent unambiguous expressions.
  * This means that regardless of the context, these expressions
  * are always interpreted correctly. *)
@@ -1960,6 +1976,18 @@ and parse_atomic_expr p =
       Parser.err ~start_pos:p.prev_end_pos p
         (Diagnostics.unexpected p.Parser.token p.breadcrumbs);
       Recover.default_expr ()
+    | Forwardslash -> (
+      Parser.next_regex_token p;
+      match p.token with
+      | Regex (pattern, flags) -> parse_regex p pattern flags
+      | _ -> Ast_helper.Exp.extension (Location.mknoloc "re", Parsetree.PStr [])
+      )
+    | ForwardslashDot -> (
+      Parser.next_regex_token p;
+      match p.token with
+      | Regex (pattern, flags) -> parse_regex p ("." ^ pattern) flags
+      | _ -> Ast_helper.Exp.extension (Location.mknoloc "re", Parsetree.PStr [])
+      )
     | token -> (
       let err_pos = p.prev_end_pos in
       Parser.err ~start_pos:err_pos p

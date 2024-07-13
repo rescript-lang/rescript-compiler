@@ -3075,6 +3075,16 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
                Doc.soft_line;
                Doc.rbrace;
              ])
+      | ( {txt = "re"},
+          PStr
+            [
+              {
+                pstr_desc =
+                  Pstr_eval
+                    ({pexp_desc = Pexp_constant (Pconst_string (expr, _))}, []);
+              };
+            ] ) ->
+        Doc.text expr
       | extension ->
         print_extension ~state ~at_module_lvl:false extension cmt_tbl)
     | Pexp_apply (e, [(Nolabel, {pexp_desc = Pexp_array sub_lists})])

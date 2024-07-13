@@ -34,3 +34,5 @@ val reconsider_less_than : t -> Res_token.t
 
 val scan_template_literal_token :
   t -> Lexing.position * Lexing.position * Res_token.t
+
+val scan_regex : t -> Lexing.position * Lexing.position * Res_token.t

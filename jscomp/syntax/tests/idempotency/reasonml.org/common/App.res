@@ -79,7 +79,7 @@ module Url = {
   }
 
   let isVersion = str =>
-    Js.String2.match_(str, %re("/latest|v\\d+(\\.\\d+)?(\\.\\d+)?/"))->Belt.Option.isSome
+    Js.String2.match_(str, /latest|v\d+(\.\d+)?(\.\d+)?/)->Belt.Option.isSome
 
   let parse = (route: string): t => {
     let fullpath = {
