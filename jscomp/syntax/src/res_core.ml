@@ -2261,7 +2261,7 @@ and parse_binary_expr ?(context = OrdinaryExpr) ?a p prec =
           when p.uncurried_config = Uncurried ->
           {b with pexp_desc = Pexp_apply (fun_expr, args @ [(Nolabel, a)])}
         | BarGreater, _ when p.uncurried_config = Uncurried ->
-          Ast_helper.Exp.apply ~loc b [(Nolabel, a)]
+          Ast_helper.Exp.apply ~loc ~attrs:[uncurried_app_attr] b [(Nolabel, a)]
         | _ ->
           Ast_helper.Exp.apply ~loc
             (make_infix_operator p token start_pos end_pos)
