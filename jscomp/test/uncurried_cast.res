@@ -21,15 +21,14 @@ module StandardNotation = {
   type unc2 = (. ~z: int=?, int) => int
 }
 
-@@uncurried.swap
 
 open Uncurried
 
 let testRaise = () => raise(E)
 
-let l = List.map(list{1, 2}, x => x + 1)
-let partial = List.map(. list{1, 2})
-let ll = partial(.x => x + 1)
+let l = List.map(list{1, 2}, (. x) => x + 1)
+let partial = List.map(. list{1, 2}, ...)
+let ll = partial(. ((. x) => x + 1))
 
 let withOpts = (~x=3, y, ~z=4, w) => x + y + z + w
 type unc2 = (~z: int=?, int) => int

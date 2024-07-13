@@ -42,5 +42,5 @@ val cmt_magic_number : string
 
 val print_config : out_channel -> unit
 
-type uncurried = Legacy | Uncurried | Swap
+type uncurried = Legacy | Uncurried
 val uncurried : uncurried ref

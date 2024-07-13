@@ -69,7 +69,7 @@ let StandardNotation = {
   withOpts: withOpts
 };
 
-function testRaise$1() {
+function testRaise$1(param) {
   throw new Error(E, {
         cause: {
           RE_EXN_ID: E
@@ -87,16 +87,14 @@ let l$1 = Belt_List.mapU({
   return x + 1 | 0;
 }));
 
-let partial_arg = {
-  hd: 1,
-  tl: {
-    hd: 2,
-    tl: /* [] */0
-  }
-};
-
-function partial$1(param) {
-  return map(partial_arg, param);
+function partial$1(extra) {
+  return Belt_List.mapU({
+    hd: 1,
+    tl: {
+      hd: 2,
+      tl: /* [] */0
+    }
+  }, extra);
 }
 
 let ll$1 = partial$1(function (x) {

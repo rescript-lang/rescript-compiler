@@ -5559,9 +5559,6 @@ and print_attribute ?(standalone = false) ~state
   | _ ->
     let id =
       match id.txt with
-      | "uncurried.swap" ->
-        state.uncurried_config <- Config.Swap;
-        id
       | "uncurried" ->
         state.uncurried_config <- Config.Uncurried;
         id

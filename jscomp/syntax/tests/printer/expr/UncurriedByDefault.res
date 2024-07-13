@@ -79,7 +79,6 @@ let fnC = (_x): ((unit) => unit) => fooC
 let a = ((. ()) => "foo")->Ok
 let aC = (() => "foo")->Ok
 
-@@uncurried.swap
 
 let cApp = foo(. 3)
 let uApp = foo(3)
