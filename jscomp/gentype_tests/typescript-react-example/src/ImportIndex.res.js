@@ -2,9 +2,11 @@
 
 import ImportIndexGen from "./ImportIndex.gen";
 
-let make = ImportIndexGen;
+function make(prim) {
+  return ImportIndexGen;
+}
 
 export {
   make,
 }
-/* make Not a pure module */
+/* ./ImportIndex.gen Not a pure module */

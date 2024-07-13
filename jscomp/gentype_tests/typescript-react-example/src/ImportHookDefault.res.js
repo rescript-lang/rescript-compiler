@@ -3,9 +3,13 @@
 import ImportHookDefaultGen from "./ImportHookDefault.gen";
 import * as ImportHookDefaultGen$1 from "./ImportHookDefault.gen";
 
-let make = ImportHookDefaultGen$1.make;
+function make(prim) {
+  return ImportHookDefaultGen$1.make;
+}
 
-let make2 = ImportHookDefaultGen;
+function make2(prim) {
+  return ImportHookDefaultGen;
+}
 
 let MM = {
   make2: make2
@@ -15,4 +19,4 @@ export {
   make,
   MM,
 }
-/* make Not a pure module */
+/* ./ImportHookDefault.gen Not a pure module */

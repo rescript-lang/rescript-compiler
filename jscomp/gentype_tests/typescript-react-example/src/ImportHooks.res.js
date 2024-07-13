@@ -2,7 +2,9 @@
 
 import * as ImportHooksGen from "./ImportHooks.gen";
 
-let make = ImportHooksGen.makeRenamed;
+function make(prim) {
+  return ImportHooksGen.makeRenamed;
+}
 
 function foo(prim) {
   return ImportHooksGen.foo(prim);
@@ -12,4 +14,4 @@ export {
   make,
   foo,
 }
-/* make Not a pure module */
+/* ./ImportHooks.gen Not a pure module */
