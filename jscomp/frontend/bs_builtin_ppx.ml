@@ -154,7 +154,7 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
           Ast_uncurry_gen.to_method_callback e.pexp_loc self label pat body;
         pexp_attributes;
       })
-  | Pexp_apply (fn, args) -> Ast_exp_apply.app_exp_mapper e self fn args
+  | Pexp_apply _ -> Ast_exp_apply.app_exp_mapper e self
   | Pexp_match
       ( b,
         [

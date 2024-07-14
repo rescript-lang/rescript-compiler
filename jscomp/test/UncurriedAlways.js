@@ -210,6 +210,43 @@ function hello2(y, f) {
   return f(y);
 }
 
+let ReverseApplication = {
+  hello1: hello1,
+  hello2: hello2
+};
+
+function f(a, b, c) {
+  return [
+    b(a),
+    c(a)
+  ];
+}
+
+function f2(a, b, c, d, e) {
+  let __tuple_internal_obj = a(b);
+  let param = [
+    c(__tuple_internal_obj, d),
+    d(__tuple_internal_obj, 1, 2),
+    e(__tuple_internal_obj)
+  ];
+  return (param[0] + param[1] | 0) + param[2] | 0;
+}
+
+function f3$1(foo, x) {
+  return foo(x);
+}
+
+function f4(x, f) {
+  return f(x, 3);
+}
+
+let Pipe = {
+  f: f,
+  f2: f2,
+  f3: f3$1,
+  f4: f4
+};
+
 exports.foo = foo;
 exports.z = z;
 exports.bar = bar;
@@ -230,6 +267,6 @@ exports.fn = fn;
 exports.fn1 = fn1;
 exports.a = a$1;
 exports.PartialApplication = PartialApplication;
-exports.hello1 = hello1;
-exports.hello2 = hello2;
+exports.ReverseApplication = ReverseApplication;
+exports.Pipe = Pipe;
 /*  Not a pure module */
