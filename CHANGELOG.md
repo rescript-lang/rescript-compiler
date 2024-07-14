@@ -46,6 +46,7 @@
 - Fix issue with infinite loops with type errors on recursive types. https://github.com/rescript-lang/rescript-compiler/pull/6867
 - Fix issue where using partial application `...` can generate code that uses `Curry` at runtime. https://github.com/rescript-lang/rescript-compiler/pull/6872
 - Avoid generation of `Curry` with reverse application `|>`. https://github.com/rescript-lang/rescript-compiler/pull/6876
+- Fix issue where the internal ppx for pipe `->` would not use uncurried application in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6878
 
 #### :house: Internal
 

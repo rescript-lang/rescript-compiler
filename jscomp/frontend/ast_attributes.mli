@@ -60,15 +60,6 @@ val iter_process_bs_string_or_int_as : t -> as_const_payload option
 
 val process_derive_type : t -> derive_attr * t
 
-(* val iter_process_derive_type :
-   t -> derive_attr
-
-
-   val bs : attr *)
-val is_bs : attr -> bool
-(* val is_optional : attr -> bool
-   val is_bs_as : attr -> bool *)
-
 (* Attribute for uncurried application coming from the ReScript parser *)
 val res_uapp : attr
 

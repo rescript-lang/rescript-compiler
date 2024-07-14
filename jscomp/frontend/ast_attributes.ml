@@ -293,11 +293,6 @@ let locg = Location.none
 (* let bs : attr
    =  {txt = "bs" ; loc = locg}, Ast_payload.empty *)
 
-let is_bs (attr : attr) =
-  match attr with
-  | {Location.txt = "bs"; _}, _ -> true
-  | _ -> false
-
 let res_uapp : attr = ({txt = "res.uapp"; loc = locg}, Ast_payload.empty)
 
 let get : attr = ({txt = "get"; loc = locg}, Ast_payload.empty)

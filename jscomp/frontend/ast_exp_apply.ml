@@ -32,15 +32,15 @@ let rec no_need_bound (exp : exp) =
   | Pexp_constraint (e, _) -> no_need_bound e
   | _ -> false
 
-let ocaml_obj_id = "__ocaml_internal_obj"
+let tuple_obj_id = "__tuple_internal_obj"
 
 let bound (e : exp) (cb : exp -> _) =
   if no_need_bound e then cb e
   else
     let loc = e.pexp_loc in
     Exp.let_ ~loc Nonrecursive
-      [Vb.mk ~loc (Pat.var ~loc {txt = ocaml_obj_id; loc}) e]
-      (cb (Exp.ident ~loc {txt = Lident ocaml_obj_id; loc}))
+      [Vb.mk ~loc (Pat.var ~loc {txt = tuple_obj_id; loc}) e]
+      (cb (Exp.ident ~loc {txt = Lident tuple_obj_id; loc}))
 
 let default_expr_mapper = Bs_ast_mapper.default_mapper.expr
 
@@ -71,8 +71,7 @@ let view_as_app (fn : exp) (s : string list) : app_pattern option =
 
 let infix_ops = ["|."; "|.u"; "#="; "##"]
 
-let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
-    (args : Ast_compatible.args) : exp =
+let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) : exp =
   match view_as_app e infix_ops with
   | Some {op = ("|." | "|.u") as op; args = [a_; f_]; loc} -> (
     (*
@@ -82,6 +81,11 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
         a |. `Variant
         a |. (b |. f c [@bs])
       *)
+    let add_uncurried_attr attrs =
+      if op = "|.u" && not (List.mem Ast_attributes.res_uapp attrs) then
+        Ast_attributes.res_uapp :: attrs
+      else attrs
+    in
     let a = self.expr self a_ in
     let f = self.expr self f_ in
     match f.pexp_desc with
@@ -94,7 +98,8 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
       {
         pexp_desc = Pexp_apply (fn1, (Nolabel, a) :: args);
         pexp_loc = e.pexp_loc;
-        pexp_attributes = e.pexp_attributes @ f.pexp_attributes;
+        pexp_attributes =
+          add_uncurried_attr (e.pexp_attributes @ f.pexp_attributes);
       }
     | Pexp_tuple xs ->
       bound a (fun bounded_obj_arg ->
@@ -114,22 +119,18 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                        {
                          Parsetree.pexp_desc =
                            Pexp_apply (fn, (Nolabel, bounded_obj_arg) :: args);
-                         pexp_attributes = [];
+                         pexp_attributes = add_uncurried_attr [];
                          pexp_loc = fn.pexp_loc;
                        }
                      | _ ->
-                       Ast_compatible.app1 ~loc:fn.pexp_loc fn bounded_obj_arg));
+                       Ast_compatible.app1 ~loc:fn.pexp_loc
+                         ~attrs:(add_uncurried_attr []) fn bounded_obj_arg));
             pexp_attributes = f.pexp_attributes;
             pexp_loc = f.pexp_loc;
           })
     | _ ->
-      if op = "|.u" then
-        (* a |.u f
-           Uncurried unary application *)
-        Ast_compatible.app1 ~loc
-          ~attrs:(Ast_attributes.res_uapp :: e.pexp_attributes)
-          f a
-      else Ast_compatible.app1 ~loc ~attrs:e.pexp_attributes f a)
+      Ast_compatible.app1 ~loc ~attrs:(add_uncurried_attr e.pexp_attributes) f a
+    )
   | Some {op = "##"; loc; args = [obj; rest]} -> (
     (* - obj##property
        - obj#(method a b )
@@ -202,21 +203,4 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
     Location.raise_errorf ~loc
       "Js object ## expect syntax like obj##(paint (a,b)) "
   | Some {op} -> Location.raise_errorf "invalid %s syntax" op
-  | None -> (
-    match Ext_list.exclude_with_val e.pexp_attributes Ast_attributes.is_bs with
-    | Some pexp_attributes -> (
-      (* syntax: {[f arg0 arg1 [@bs]]} only for legacy .ml files *)
-      let fn = self.expr self fn in
-      let args = Ext_list.map args (fun (lbl, e) -> (lbl, self.expr self e)) in
-      let js_internal = Ast_literal.Lid.js_internal in
-      let loc = e.pexp_loc in
-      match args with
-      | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})] ->
-        Exp.apply ~loc ~attrs:pexp_attributes
-          (Exp.ident {txt = Ldot (js_internal, "run"); loc})
-          [(Nolabel, fn)]
-      | _ ->
-        Exp.apply ~loc
-          ~attrs:(Ast_attributes.res_uapp :: pexp_attributes)
-          fn args)
-    | None -> default_expr_mapper self e)
+  | None -> default_expr_mapper self e

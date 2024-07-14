@@ -91,8 +91,17 @@ module PartialApplication = {
   let fxyz = f3(~x=1, ~y=1, ~z=1, ...)
 }
 
-let hello1 = (y, f) => f(y)
+module ReverseApplication = {
+  let hello1 = (y, f) => f(y)
+  let hello2 = (y, f) => y |> f
+}
 
-let hello2 = (y, f) => y |> f
+module Pipe = {
+  let f = (a, b, c) => a->(b, c)
 
+  let f2 = (a, b, c, d, e) => a(b)->(c(d), d(1, 2), e)->(((u, v, h)) => u + v + h)
 
+  let f3 = (foo, x) => foo(x)
+
+  let f4 = (x, f) => x->f(3)
+}

@@ -28,25 +28,25 @@ function f(a, b, c) {
 }
 
 function f1(a, b, c, d) {
-  let __ocaml_internal_obj = Curry._1(a, b);
+  let __tuple_internal_obj = Curry._1(a, b);
   return [
-    Curry._1(c, __ocaml_internal_obj),
-    Curry._1(d, __ocaml_internal_obj)
+    Curry._1(c, __tuple_internal_obj),
+    Curry._1(d, __tuple_internal_obj)
   ];
 }
 
 function f2(a, b, c, d) {
-  let __ocaml_internal_obj = Curry._1(a, b);
-  let u = Curry._1(c, __ocaml_internal_obj);
-  let v = Curry._1(d, __ocaml_internal_obj);
+  let __tuple_internal_obj = Curry._1(a, b);
+  let u = Curry._1(c, __tuple_internal_obj);
+  let v = Curry._1(d, __tuple_internal_obj);
   return u + v | 0;
 }
 
 function f3(a, b, c, d, e) {
-  let __ocaml_internal_obj = Curry._1(a, b);
-  let u = Curry._2(c, __ocaml_internal_obj, d);
-  let v = Curry._3(d, __ocaml_internal_obj, 1, 2);
-  let h = Curry._1(e, __ocaml_internal_obj);
+  let __tuple_internal_obj = Curry._1(a, b);
+  let u = Curry._2(c, __tuple_internal_obj, d);
+  let v = Curry._3(d, __tuple_internal_obj, 1, 2);
+  let h = Curry._1(e, __tuple_internal_obj);
   return (u + v | 0) + h | 0;
 }
 
