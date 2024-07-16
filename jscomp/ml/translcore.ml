@@ -459,6 +459,7 @@ let specialize_primitive p env ty (* ~has_constant_constructor *) =
 (* Eta-expand a primitive *)
 
 let transl_primitive loc p env ty =
+  (* Printf.eprintf "----transl_primitive %s----\n" p.prim_name; *)
   let prim =
     try specialize_primitive p env ty (* ~has_constant_constructor:false *)
     with Not_found -> Pccall p
