@@ -1719,7 +1719,9 @@ let rec arity_from_arrow_type env core_type ty =
 let parse_arity env core_type ty =
   match Ast_uncurried.uncurried_type_get_arity_opt ~env ty with
   | Some arity ->
-    let from_constructor = Ast_uncurried.uncurried_type_get_arity_opt ~env:Env.empty ty = None in
+    let from_constructor = match ty.desc with
+    | Tconstr (_, _, _) -> not (Ast_uncurried_utils.type_is_uncurried_fun ty)
+    | _ -> false in
     (arity, from_constructor)
   | None -> (arity_from_arrow_type env core_type ty, false)
 

@@ -2,11 +2,9 @@
 
 import MyInputGen from "./MyInput.gen";
 
-function make(prim) {
-  return MyInputGen(prim);
-}
+let make = MyInputGen;
 
 export {
   make,
 }
-/* ./MyInput.gen Not a pure module */
+/* make Not a pure module */

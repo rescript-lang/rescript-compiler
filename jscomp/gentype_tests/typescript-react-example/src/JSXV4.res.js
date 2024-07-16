@@ -18,13 +18,11 @@ let CompV3 = {
   make: JSXV4$CompV3
 };
 
-function make(prim) {
-  return JSXV4Gen.make(prim);
-}
+let make = JSXV4Gen.make;
 
 export {
   CompV4,
   CompV3,
   make,
 }
-/* ./JSXV4.gen Not a pure module */
+/* make Not a pure module */
