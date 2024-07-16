@@ -3,7 +3,7 @@
 import ImportIndexGen from "./ImportIndex.gen";
 
 function make(prim) {
-  return ImportIndexGen;
+  return ImportIndexGen(prim);
 }
 
 export {

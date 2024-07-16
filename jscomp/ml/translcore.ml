@@ -496,7 +496,7 @@ let transl_primitive loc p env ty =
           :: make_params (n - 1) total
       in
       let prim_arity = p.prim_arity in
-      if prim_arity = 0 then Lprim (prim, [], loc)
+      if p.prim_from_constructor || prim_arity = 0 then Lprim (prim, [], loc)
       else
         let params =
           if prim_arity = 1 then [ Ident.create "prim" ]

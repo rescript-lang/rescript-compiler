@@ -19,7 +19,7 @@ let CompV3 = {
 };
 
 function make(prim) {
-  return JSXV4Gen.make;
+  return JSXV4Gen.make(prim);
 }
 
 export {
