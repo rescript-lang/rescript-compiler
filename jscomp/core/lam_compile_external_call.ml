@@ -365,7 +365,9 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
          2. support [@@scope "window"]
          we need know whether we should call [add_js_module] or not
       *)
-      translate_scoped_module_val external_module_name name scopes ~dynamic_import
+      let e = translate_scoped_module_val external_module_name name scopes ~dynamic_import in
+      if args = [] then e
+      else E.call ~info:{ arity = Full; call_info = Call_na } e args
   | Js_module_as_class module_name ->
       let fn = external_var module_name ~dynamic_import in
       let args, eff = assemble_args_no_splice arg_types args in

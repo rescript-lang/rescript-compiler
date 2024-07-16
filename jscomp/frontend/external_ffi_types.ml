@@ -240,7 +240,13 @@ let from_string s : t =
 
 let () =
   Primitive.coerce :=
-    fun ({prim_name; prim_arity; prim_native_name; prim_alloc = _} :
+    fun ({
+           prim_name;
+           prim_arity;
+           prim_native_name;
+           prim_alloc = _;
+           prim_from_constructor = _;
+         } :
           Primitive.description) (p2 : Primitive.description) ->
       let p2_native = p2.prim_native_name in
       prim_name = p2.prim_name && prim_arity = p2.prim_arity

@@ -3,7 +3,7 @@
 import MyInputGen from "./MyInput.gen";
 
 function make(prim) {
-  return MyInputGen;
+  return MyInputGen(prim);
 }
 
 export {

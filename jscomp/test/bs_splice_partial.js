@@ -33,7 +33,7 @@ function test_cb(x) {
 }
 
 function f(x) {
-  
+  v(x);
 }
 
 function testUndefined(param) {

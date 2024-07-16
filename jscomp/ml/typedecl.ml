@@ -1718,8 +1718,10 @@ let rec arity_from_arrow_type env core_type ty =
 
 let parse_arity env core_type ty =
   match Ast_uncurried.uncurried_type_get_arity_opt ~env ty with
-  | Some arity -> arity
-  | None -> arity_from_arrow_type env core_type ty
+  | Some arity ->
+    let from_constructor = Ast_uncurried.uncurried_type_get_arity_opt ~env:Env.empty ty = None in
+    (arity, from_constructor)
+  | None -> (arity_from_arrow_type env core_type ty, false)
 
 (* Translate a value declaration *)
 let transl_value_decl env loc valdecl =
@@ -1733,7 +1735,7 @@ let transl_value_decl env loc valdecl =
   | [] ->
       raise (Error(valdecl.pval_loc, Val_in_structure))
   | _ ->
-      let arity =
+      let arity, from_constructor =
           let rec scan_attributes (attrs : Parsetree.attributes)  = 
             match attrs with 
             | ({txt = "internal.arity";_}, (* This is likely not needed in uncurried mode *)
@@ -1747,9 +1749,9 @@ let transl_value_decl env loc valdecl =
           in 
           match scan_attributes valdecl.pval_attributes with 
           | None ->  parse_arity env valdecl.pval_type ty 
-          | Some x -> x
+          | Some x -> x, false
       in
-      let prim = Primitive.parse_declaration valdecl ~arity in
+      let prim = Primitive.parse_declaration valdecl ~arity ~from_constructor in
       let prim_native_name = prim.prim_native_name in 
       if prim.prim_arity = 0 &&
          not ( String.length prim_native_name >= 20 &&

@@ -3,7 +3,7 @@
 import * as ImportHooksGen from "./ImportHooks.gen";
 
 function make(prim) {
-  return ImportHooksGen.makeRenamed;
+  return ImportHooksGen.makeRenamed(prim);
 }
 
 function foo(prim) {

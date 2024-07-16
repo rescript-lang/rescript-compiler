@@ -4,11 +4,11 @@ import ImportHookDefaultGen from "./ImportHookDefault.gen";
 import * as ImportHookDefaultGen$1 from "./ImportHookDefault.gen";
 
 function make(prim) {
-  return ImportHookDefaultGen$1.make;
+  return ImportHookDefaultGen$1.make(prim);
 }
 
 function make2(prim) {
-  return ImportHookDefaultGen;
+  return ImportHookDefaultGen(prim);
 }
 
 let MM = {
