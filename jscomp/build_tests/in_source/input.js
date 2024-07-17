@@ -6,7 +6,7 @@ var { rescript_exe } = require("#cli/bin_path");
 
 assert.throws(
   () => {
-    var output = child_process.execSync(`${rescript_exe} build -regen`, {
+    var output = child_process.execSync(`${rescript_exe} build`, {
       cwd: __dirname,
       encoding: "utf8",
     });

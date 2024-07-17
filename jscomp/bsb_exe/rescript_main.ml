@@ -32,8 +32,6 @@ let do_install = ref false
 
 let warning_as_error = ref None
 
-let force_regenerate = ref false
-
 type spec = Bsb_arg.spec
 
 let call_spec f : spec = Unit (Unit_call f)
@@ -130,11 +128,6 @@ let build_subcommand ~start argv argv_len =
       (* This should be put in a subcommand
          previously it works with the implication `bsb && bsb -install`
       *)
-      ( "-regen",
-        unit_set_spec force_regenerate,
-        "*internal* \n\
-         Always regenerate build.ninja no matter bsconfig.json is changed or \
-         not" );
       ("-no-deps", unit_set_spec no_deps_mode, "*internal* Needed for watcher to build without dependencies on file change");
       ("-warn-error", string_call (fun s -> warning_as_error := Some s), "Warning numbers and whether to turn them into errors, e.g., \"+8+32-102\"")
     |]
@@ -155,7 +148,7 @@ let build_subcommand ~start argv argv_len =
         Bsb_ninja_regen.regenerate_ninja
           ~package_kind:Toplevel
           ~per_proj_dir:Bsb_global_paths.cwd
-          ~forced:!force_regenerate
+          ~forced:true
           ~warn_legacy_config:true
           ~warn_as_error
         in
