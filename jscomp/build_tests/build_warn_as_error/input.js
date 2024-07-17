@@ -1,6 +1,6 @@
 var p = require("child_process");
 var assert = require("assert");
-var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
+var { rescript_exe } = require("#cli/bin_path");
 
 var o1 = p.spawnSync(rescript_exe, ["build"], {
   encoding: "utf8",
