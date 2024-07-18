@@ -21,7 +21,6 @@ type t = {
   mutable diagnostics: Diagnostics.t list;
   mutable comments: Comment.t list;
   mutable regions: region_status ref list;
-  mutable uncurried_config: Config.uncurried;
 }
 
 val make : ?mode:mode -> string -> string -> t
