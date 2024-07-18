@@ -56,8 +56,8 @@ module ArrayBuffer = {
 
   @get external byteLength: t => int = "byteLength"
 
-  @bs.send.pipe(: t) external slice: (~start: int, ~end_: int) => array_buffer = "slice" /* FIXME */
-  @bs.send.pipe(: t) external sliceFrom: int => array_buffer = "slice"
+  // @bs.send.pipe(: t) external slice: (~start: int, ~end_: int) => array_buffer = "slice" /* FIXME */
+  // @bs.send.pipe(: t) external sliceFrom: int => array_buffer = "slice"
 }
 module type S = {
   /*** Implements functionality common to all the typed arrays */
@@ -73,8 +73,8 @@ module type S = {
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
-  @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
-  @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
+  // @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
+  // @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
   /* There's also an overload for typed arrays, but don't know how to model that without subtyping */
 
   /* Array interface(-ish)
@@ -84,90 +84,90 @@ module type S = {
 
   /* Mutator functions
    */
-  @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
-  @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
-  @bs.send.pipe(: t)
+  // @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
+  // @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
+  // @bs.send.pipe(: t)
   external copyWithinFromRange: (~to_: int, ~start: int, ~end_: int) => t = "copyWithin"
 
-  @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
-  @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
-  @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
+  // @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
 
-  @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
+  // @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
 
-  @bs.send.pipe(: t) external sortInPlace: t = "sort"
-  @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
+  // @bs.send.pipe(: t) external sortInPlace: t = "sort"
+  // @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
 
   /* Accessor functions
    */
-  @bs.send.pipe(: t) /** ES2016 */
+  // @bs.send.pipe(: t) /** ES2016 */
   external includes: elt => bool = "includes"
 
-  @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
-  @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
 
-  @bs.send.pipe(: t) external join: string = "join"
-  @bs.send.pipe(: t) external joinWith: string => string = "join"
+  // @bs.send.pipe(: t) external join: string = "join"
+  // @bs.send.pipe(: t) external joinWith: string => string = "join"
 
-  @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
-  @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
 
-  @bs.send.pipe(: t) external slice: (~start: int, ~end_: int) => t = "slice"
-  @bs.send.pipe(: t) external copy: t = "slice"
-  @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
+  // @bs.send.pipe(: t) external slice: (~start: int, ~end_: int) => t = "slice"
+  // @bs.send.pipe(: t) external copy: t = "slice"
+  // @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
 
-  @bs.send.pipe(: t) external subarray: (~start: int, ~end_: int) => t = "subarray"
-  @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
+  // @bs.send.pipe(: t) external subarray: (~start: int, ~end_: int) => t = "subarray"
+  // @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
 
-  @bs.send.pipe(: t) external toString: string = "toString"
-  @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
+  // @bs.send.pipe(: t) external toString: string = "toString"
+  // @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
 
   /* Iteration functions
    */
   /* commented out until bs has a plan for iterators
-  external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
+  external entries : (int * elt) array_iter = "" [@// @bs.send.pipe: t]
  */
 
-  @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
-  @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
 
   /** should we use `bool` or `boolean` seems they are intechangeable here */
-  @bs.send.pipe(: t)
+  // @bs.send.pipe(: t)
   external filter: ((. elt) => bool) => t = "filter"
-  @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
-  @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
 
-  @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
-  @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : int array_iter = "" [@@bs.send.pipe: t]
+  external keys : int array_iter = "" [@// @bs.send.pipe: t]
  */
 
-  @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
-  @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
 
-  @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
-  @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
 
   /* commented out until bs has a plan for iterators
-  external values : elt array_iter = "" [@@bs.send.pipe: t]
+  external values : elt array_iter = "" [@// @bs.send.pipe: t]
  */
 }
 
 /* commented out until bs has a plan for iterators
-  external values : elt array_iter = "" [@@bs.send.pipe: t]
+  external values : elt array_iter = "" [@// @bs.send.pipe: t]
  */
 
 module Int8Array = {
@@ -183,88 +183,88 @@ module Int8Array = {
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
-  @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
-  @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
+  // @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
+  // @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
   /* There's also an overload for typed arrays, but don't know how to model that without subtyping */
 
   /* Array interface(-ish) */
   @get external length: t => int = "length"
 
   /* Mutator functions */
-  @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
-  @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
-  @bs.send.pipe(: t)
+  // @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
+  // @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
+  // @bs.send.pipe(: t)
   external copyWithinFromRange: (~to_: int, ~start: int, ~end_: int) => t = "copyWithin"
 
-  @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
-  @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
-  @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
+  // @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
 
-  @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
+  // @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
 
-  @bs.send.pipe(: t) external sortInPlace: t = "sort"
-  @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
+  // @bs.send.pipe(: t) external sortInPlace: t = "sort"
+  // @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
-  @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
+  // @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
 
-  @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
-  @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
 
-  @bs.send.pipe(: t) external join: string = "join"
-  @bs.send.pipe(: t) external joinWith: string => string = "join"
+  // @bs.send.pipe(: t) external join: string = "join"
+  // @bs.send.pipe(: t) external joinWith: string => string = "join"
 
-  @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
-  @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external slice: (~start: int, ~end_: int) => t = "slice"
 
-  @bs.send.pipe(: t) external copy: t = "slice"
-  @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
+  // @bs.send.pipe(: t) external copy: t = "slice"
+  // @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external subarray: (~start: int, ~end_: int) => t = "subarray"
 
-  @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
+  // @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
 
-  @bs.send.pipe(: t) external toString: string = "toString"
-  @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
+  // @bs.send.pipe(: t) external toString: string = "toString"
+  // @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
+  external entries : (int * elt) array_iter = "" [@// @bs.send.pipe: t]
  */
-  @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
-  @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
 
-  @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
-  @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
-  @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
 
-  @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
-  @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : int array_iter = "" [@@bs.send.pipe: t]
+  external keys : int array_iter = "" [@// @bs.send.pipe: t]
  */
 
-  @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
-  @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
 
-  @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
-  @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Int8Array.BYTES_PER_ELEMENT"
 
@@ -306,88 +306,88 @@ module Uint8Array = {
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
-  @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
-  @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
+  // @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
+  // @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
   /* There's also an overload for typed arrays, but don't know how to model that without subtyping */
 
   /* Array interface(-ish) */
   @get external length: t => int = "length"
 
   /* Mutator functions */
-  @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
-  @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
-  @bs.send.pipe(: t)
+  // @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
+  // @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
+  // @bs.send.pipe(: t)
   external copyWithinFromRange: (~to_: int, ~start: int, ~end_: int) => t = "copyWithin"
 
-  @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
-  @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
-  @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
+  // @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
 
-  @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
+  // @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
 
-  @bs.send.pipe(: t) external sortInPlace: t = "sort"
-  @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
+  // @bs.send.pipe(: t) external sortInPlace: t = "sort"
+  // @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
-  @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
+  // @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
 
-  @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
-  @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
 
-  @bs.send.pipe(: t) external join: string = "join"
-  @bs.send.pipe(: t) external joinWith: string => string = "join"
+  // @bs.send.pipe(: t) external join: string = "join"
+  // @bs.send.pipe(: t) external joinWith: string => string = "join"
 
-  @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
-  @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external slice: (~start: int, ~end_: int) => t = "slice"
 
-  @bs.send.pipe(: t) external copy: t = "slice"
-  @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
+  // @bs.send.pipe(: t) external copy: t = "slice"
+  // @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external subarray: (~start: int, ~end_: int) => t = "subarray"
 
-  @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
+  // @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
 
-  @bs.send.pipe(: t) external toString: string = "toString"
-  @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
+  // @bs.send.pipe(: t) external toString: string = "toString"
+  // @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
+  external entries : (int * elt) array_iter = "" [@// @bs.send.pipe: t]
  */
-  @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
-  @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
 
-  @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
-  @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
-  @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
 
-  @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
-  @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : int array_iter = "" [@@bs.send.pipe: t]
+  external keys : int array_iter = "" [@// @bs.send.pipe: t]
  */
 
-  @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
-  @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
 
-  @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
-  @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Uint8Array.BYTES_PER_ELEMENT"
 
@@ -429,88 +429,88 @@ module Uint8ClampedArray = {
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
-  @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
-  @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
+  // @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
+  // @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
   /* There's also an overload for typed arrays, but don't know how to model that without subtyping */
 
   /* Array interface(-ish) */
   @get external length: t => int = "length"
 
   /* Mutator functions */
-  @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
-  @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
-  @bs.send.pipe(: t)
+  // @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
+  // @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
+  // @bs.send.pipe(: t)
   external copyWithinFromRange: (~to_: int, ~start: int, ~end_: int) => t = "copyWithin"
 
-  @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
-  @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
-  @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
+  // @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
 
-  @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
+  // @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
 
-  @bs.send.pipe(: t) external sortInPlace: t = "sort"
-  @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
+  // @bs.send.pipe(: t) external sortInPlace: t = "sort"
+  // @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
-  @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
+  // @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
 
-  @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
-  @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
 
-  @bs.send.pipe(: t) external join: string = "join"
-  @bs.send.pipe(: t) external joinWith: string => string = "join"
+  // @bs.send.pipe(: t) external join: string = "join"
+  // @bs.send.pipe(: t) external joinWith: string => string = "join"
 
-  @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
-  @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external slice: (~start: int, ~end_: int) => t = "slice"
 
-  @bs.send.pipe(: t) external copy: t = "slice"
-  @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
+  // @bs.send.pipe(: t) external copy: t = "slice"
+  // @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external subarray: (~start: int, ~end_: int) => t = "subarray"
 
-  @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
+  // @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
 
-  @bs.send.pipe(: t) external toString: string = "toString"
-  @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
+  // @bs.send.pipe(: t) external toString: string = "toString"
+  // @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
+  external entries : (int * elt) array_iter = "" [@// @bs.send.pipe: t]
  */
-  @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
-  @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
 
-  @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
-  @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
-  @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
 
-  @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
-  @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : int array_iter = "" [@@bs.send.pipe: t]
+  external keys : int array_iter = "" [@// @bs.send.pipe: t]
  */
 
-  @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
-  @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
 
-  @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
-  @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Uint8ClampedArray.BYTES_PER_ELEMENT"
 
@@ -552,88 +552,88 @@ module Int16Array = {
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
-  @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
-  @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
+  // @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
+  // @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
   /* There's also an overload for typed arrays, but don't know how to model that without subtyping */
 
   /* Array interface(-ish) */
   @get external length: t => int = "length"
 
   /* Mutator functions */
-  @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
-  @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
-  @bs.send.pipe(: t)
+  // @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
+  // @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
+  // @bs.send.pipe(: t)
   external copyWithinFromRange: (~to_: int, ~start: int, ~end_: int) => t = "copyWithin"
 
-  @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
-  @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
-  @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
+  // @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
 
-  @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
+  // @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
 
-  @bs.send.pipe(: t) external sortInPlace: t = "sort"
-  @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
+  // @bs.send.pipe(: t) external sortInPlace: t = "sort"
+  // @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
-  @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
+  // @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
 
-  @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
-  @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
 
-  @bs.send.pipe(: t) external join: string = "join"
-  @bs.send.pipe(: t) external joinWith: string => string = "join"
+  // @bs.send.pipe(: t) external join: string = "join"
+  // @bs.send.pipe(: t) external joinWith: string => string = "join"
 
-  @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
-  @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external slice: (~start: int, ~end_: int) => t = "slice"
 
-  @bs.send.pipe(: t) external copy: t = "slice"
-  @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
+  // @bs.send.pipe(: t) external copy: t = "slice"
+  // @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external subarray: (~start: int, ~end_: int) => t = "subarray"
 
-  @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
+  // @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
 
-  @bs.send.pipe(: t) external toString: string = "toString"
-  @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
+  // @bs.send.pipe(: t) external toString: string = "toString"
+  // @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
+  external entries : (int * elt) array_iter = "" [@// @bs.send.pipe: t]
  */
-  @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
-  @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
 
-  @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
-  @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
-  @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
 
-  @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
-  @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : int array_iter = "" [@@bs.send.pipe: t]
+  external keys : int array_iter = "" [@// @bs.send.pipe: t]
  */
 
-  @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
-  @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
 
-  @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
-  @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Int16Array.BYTES_PER_ELEMENT"
 
@@ -675,88 +675,88 @@ module Uint16Array = {
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
-  @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
-  @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
+  // @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
+  // @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
   /* There's also an overload for typed arrays, but don't know how to model that without subtyping */
 
   /* Array interface(-ish) */
   @get external length: t => int = "length"
 
   /* Mutator functions */
-  @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
-  @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
-  @bs.send.pipe(: t)
+  // @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
+  // @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
+  // @bs.send.pipe(: t)
   external copyWithinFromRange: (~to_: int, ~start: int, ~end_: int) => t = "copyWithin"
 
-  @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
-  @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
-  @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
+  // @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
 
-  @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
+  // @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
 
-  @bs.send.pipe(: t) external sortInPlace: t = "sort"
-  @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
+  // @bs.send.pipe(: t) external sortInPlace: t = "sort"
+  // @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
-  @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
+  // @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
 
-  @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
-  @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
 
-  @bs.send.pipe(: t) external join: string = "join"
-  @bs.send.pipe(: t) external joinWith: string => string = "join"
+  // @bs.send.pipe(: t) external join: string = "join"
+  // @bs.send.pipe(: t) external joinWith: string => string = "join"
 
-  @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
-  @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external slice: (~start: int, ~end_: int) => t = "slice"
 
-  @bs.send.pipe(: t) external copy: t = "slice"
-  @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
+  // @bs.send.pipe(: t) external copy: t = "slice"
+  // @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external subarray: (~start: int, ~end_: int) => t = "subarray"
 
-  @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
+  // @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
 
-  @bs.send.pipe(: t) external toString: string = "toString"
-  @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
+  // @bs.send.pipe(: t) external toString: string = "toString"
+  // @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
+  external entries : (int * elt) array_iter = "" [@// @bs.send.pipe: t]
  */
-  @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
-  @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
 
-  @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
-  @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
-  @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
 
-  @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
-  @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : int array_iter = "" [@@bs.send.pipe: t]
+  external keys : int array_iter = "" [@// @bs.send.pipe: t]
  */
 
-  @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
-  @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
 
-  @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
-  @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Uint16Array.BYTES_PER_ELEMENT"
 
@@ -798,88 +798,88 @@ module Int32Array = {
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
-  @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
-  @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
+  // @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
+  // @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
   /* There's also an overload for typed arrays, but don't know how to model that without subtyping */
 
   /* Array interface(-ish) */
   @get external length: t => int = "length"
 
   /* Mutator functions */
-  @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
-  @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
-  @bs.send.pipe(: t)
+  // @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
+  // @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
+  // @bs.send.pipe(: t)
   external copyWithinFromRange: (~to_: int, ~start: int, ~end_: int) => t = "copyWithin"
 
-  @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
-  @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
-  @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
+  // @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
 
-  @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
+  // @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
 
-  @bs.send.pipe(: t) external sortInPlace: t = "sort"
-  @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
+  // @bs.send.pipe(: t) external sortInPlace: t = "sort"
+  // @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
-  @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
+  // @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
 
-  @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
-  @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
 
-  @bs.send.pipe(: t) external join: string = "join"
-  @bs.send.pipe(: t) external joinWith: string => string = "join"
+  // @bs.send.pipe(: t) external join: string = "join"
+  // @bs.send.pipe(: t) external joinWith: string => string = "join"
 
-  @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
-  @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external slice: (~start: int, ~end_: int) => t = "slice"
 
-  @bs.send.pipe(: t) external copy: t = "slice"
-  @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
+  // @bs.send.pipe(: t) external copy: t = "slice"
+  // @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external subarray: (~start: int, ~end_: int) => t = "subarray"
 
-  @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
+  // @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
 
-  @bs.send.pipe(: t) external toString: string = "toString"
-  @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
+  // @bs.send.pipe(: t) external toString: string = "toString"
+  // @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
+  external entries : (int * elt) array_iter = "" [@// @bs.send.pipe: t]
  */
-  @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
-  @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
 
-  @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
-  @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
-  @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
 
-  @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
-  @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : int array_iter = "" [@@bs.send.pipe: t]
+  external keys : int array_iter = "" [@// @bs.send.pipe: t]
  */
 
-  @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
-  @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
 
-  @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
-  @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Int32Array.BYTES_PER_ELEMENT"
 
@@ -924,88 +924,88 @@ module Uint32Array = {
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
-  @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
-  @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
+  // @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
+  // @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
   /* There's also an overload for typed arrays, but don't know how to model that without subtyping */
 
   /* Array interface(-ish) */
   @get external length: t => int = "length"
 
   /* Mutator functions */
-  @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
-  @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
-  @bs.send.pipe(: t)
+  // @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
+  // @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
+  // @bs.send.pipe(: t)
   external copyWithinFromRange: (~to_: int, ~start: int, ~end_: int) => t = "copyWithin"
 
-  @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
-  @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
-  @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
+  // @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
 
-  @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
+  // @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
 
-  @bs.send.pipe(: t) external sortInPlace: t = "sort"
-  @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
+  // @bs.send.pipe(: t) external sortInPlace: t = "sort"
+  // @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
-  @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
+  // @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
 
-  @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
-  @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
 
-  @bs.send.pipe(: t) external join: string = "join"
-  @bs.send.pipe(: t) external joinWith: string => string = "join"
+  // @bs.send.pipe(: t) external join: string = "join"
+  // @bs.send.pipe(: t) external joinWith: string => string = "join"
 
-  @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
-  @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external slice: (~start: int, ~end_: int) => t = "slice"
 
-  @bs.send.pipe(: t) external copy: t = "slice"
-  @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
+  // @bs.send.pipe(: t) external copy: t = "slice"
+  // @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external subarray: (~start: int, ~end_: int) => t = "subarray"
 
-  @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
+  // @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
 
-  @bs.send.pipe(: t) external toString: string = "toString"
-  @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
+  // @bs.send.pipe(: t) external toString: string = "toString"
+  // @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
+  external entries : (int * elt) array_iter = "" [@// @bs.send.pipe: t]
  */
-  @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
-  @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
 
-  @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
-  @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
-  @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
 
-  @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
-  @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : int array_iter = "" [@@bs.send.pipe: t]
+  external keys : int array_iter = "" [@// @bs.send.pipe: t]
  */
 
-  @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
-  @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
 
-  @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
-  @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Uint32Array.BYTES_PER_ELEMENT"
 
@@ -1050,88 +1050,88 @@ module Float32Array = {
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
-  @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
-  @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
+  // @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
+  // @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
   /* There's also an overload for typed arrays, but don't know how to model that without subtyping */
 
   /* Array interface(-ish) */
   @get external length: t => int = "length"
 
   /* Mutator functions */
-  @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
-  @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
-  @bs.send.pipe(: t)
+  // @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
+  // @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
+  // @bs.send.pipe(: t)
   external copyWithinFromRange: (~to_: int, ~start: int, ~end_: int) => t = "copyWithin"
 
-  @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
-  @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
-  @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
+  // @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
 
-  @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
+  // @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
 
-  @bs.send.pipe(: t) external sortInPlace: t = "sort"
-  @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
+  // @bs.send.pipe(: t) external sortInPlace: t = "sort"
+  // @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
-  @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
+  // @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
 
-  @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
-  @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
 
-  @bs.send.pipe(: t) external join: string = "join"
-  @bs.send.pipe(: t) external joinWith: string => string = "join"
+  // @bs.send.pipe(: t) external join: string = "join"
+  // @bs.send.pipe(: t) external joinWith: string => string = "join"
 
-  @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
-  @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external slice: (~start: int, ~end_: int) => t = "slice"
 
-  @bs.send.pipe(: t) external copy: t = "slice"
-  @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
+  // @bs.send.pipe(: t) external copy: t = "slice"
+  // @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external subarray: (~start: int, ~end_: int) => t = "subarray"
 
-  @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
+  // @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
 
-  @bs.send.pipe(: t) external toString: string = "toString"
-  @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
+  // @bs.send.pipe(: t) external toString: string = "toString"
+  // @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
+  external entries : (int * elt) array_iter = "" [@// @bs.send.pipe: t]
  */
-  @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
-  @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
 
-  @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
-  @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
-  @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
 
-  @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
-  @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : int array_iter = "" [@@bs.send.pipe: t]
+  external keys : int array_iter = "" [@// @bs.send.pipe: t]
  */
 
-  @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
-  @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
 
-  @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
-  @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Float32Array.BYTES_PER_ELEMENT"
 
@@ -1177,88 +1177,88 @@ module Float64Array = {
   @get external byteLength: t => int = "byteLength"
   @get external byteOffset: t => int = "byteOffset"
 
-  @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
-  @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
+  // @bs.send.pipe(: t) external setArray: array<elt> => unit = "set"
+  // @bs.send.pipe(: t) external setArrayOffset: (array<elt>, int) => unit = "set"
   /* There's also an overload for typed arrays, but don't know how to model that without subtyping */
 
   /* Array interface(-ish) */
   @get external length: t => int = "length"
 
   /* Mutator functions */
-  @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
-  @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
-  @bs.send.pipe(: t)
+  // @bs.send.pipe(: t) external copyWithin: (~to_: int) => t = "copyWithin"
+  // @bs.send.pipe(: t) external copyWithinFrom: (~to_: int, ~from: int) => t = "copyWithin"
+  // @bs.send.pipe(: t)
   external copyWithinFromRange: (~to_: int, ~start: int, ~end_: int) => t = "copyWithin"
 
-  @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
-  @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
-  @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillInPlace: elt => t = "fill"
+  // @bs.send.pipe(: t) external fillFromInPlace: (elt, ~from: int) => t = "fill"
+  // @bs.send.pipe(: t) external fillRangeInPlace: (elt, ~start: int, ~end_: int) => t = "fill"
 
-  @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
+  // @bs.send.pipe(: t) external reverseInPlace: t = "reverse"
 
-  @bs.send.pipe(: t) external sortInPlace: t = "sort"
-  @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
+  // @bs.send.pipe(: t) external sortInPlace: t = "sort"
+  // @bs.send.pipe(: t) external sortInPlaceWith: ((. elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
-  @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
+  // @bs.send.pipe(: t) external includes: elt => bool = "includes" /* ES2016 */
 
-  @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
-  @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOf: elt => int = "indexOf"
+  // @bs.send.pipe(: t) external indexOfFrom: (elt, ~from: int) => int = "indexOf"
 
-  @bs.send.pipe(: t) external join: string = "join"
-  @bs.send.pipe(: t) external joinWith: string => string = "join"
+  // @bs.send.pipe(: t) external join: string = "join"
+  // @bs.send.pipe(: t) external joinWith: string => string = "join"
 
-  @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
-  @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOf: elt => int = "lastIndexOf"
+  // @bs.send.pipe(: t) external lastIndexOfFrom: (elt, ~from: int) => int = "lastIndexOf"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external slice: (~start: int, ~end_: int) => t = "slice"
 
-  @bs.send.pipe(: t) external copy: t = "slice"
-  @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
+  // @bs.send.pipe(: t) external copy: t = "slice"
+  // @bs.send.pipe(: t) external sliceFrom: int => t = "slice"
 
-  @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
+  // @bs.send.pipe(: t) /** `start` is inclusive, `end_` exclusive */
   external subarray: (~start: int, ~end_: int) => t = "subarray"
 
-  @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
+  // @bs.send.pipe(: t) external subarrayFrom: int => t = "subarray"
 
-  @bs.send.pipe(: t) external toString: string = "toString"
-  @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
+  // @bs.send.pipe(: t) external toString: string = "toString"
+  // @bs.send.pipe(: t) external toLocaleString: string = "toLocaleString"
 
   /* Iteration functions */
   /* commented out until bs has a plan for iterators
-  external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
+  external entries : (int * elt) array_iter = "" [@// @bs.send.pipe: t]
  */
-  @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
-  @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external every: ((. elt) => bool) => bool = "every"
+  // @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
 
-  @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
-  @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filter: ((. elt) => bool) => t = "filter"
+  // @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
-  @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
-  @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
+  // @bs.send.pipe(: t) external findi: ((. elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
-  @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndex: ((. elt) => bool) => int = "findIndex"
+  // @bs.send.pipe(: t) external findIndexi: ((. elt, int) => bool) => int = "findIndex"
 
-  @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
-  @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEach: ((. elt) => unit) => unit = "forEach"
+  // @bs.send.pipe(: t) external forEachi: ((. elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
-  external keys : int array_iter = "" [@@bs.send.pipe: t]
+  external keys : int array_iter = "" [@// @bs.send.pipe: t]
  */
 
-  @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
-  @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external map: ((. elt) => 'b) => typed_array<'b> = "map"
+  // @bs.send.pipe(: t) external mapi: ((. elt, int) => 'b) => typed_array<'b> = "map"
 
-  @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reduce: ((. 'b, elt) => 'b, 'b) => 'b = "reduce"
+  // @bs.send.pipe(: t) external reducei: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRight: ((. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
+  // @bs.send.pipe(: t) external reduceRighti: ((. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
-  @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external some: ((. elt) => bool) => bool = "some"
+  // @bs.send.pipe(: t) external somei: ((. elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Float64Array.BYTES_PER_ELEMENT"
 
