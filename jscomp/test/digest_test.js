@@ -5,7 +5,7 @@ let Mt = require("./mt.js");
 let $$Array = require("../../lib/js/array.js");
 let Digest = require("../../lib/js/digest.js");
 let Caml_array = require("../../lib/js/caml_array.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Ext_array_test = require("./ext_array_test.js");
 
 function f(x) {
@@ -145,7 +145,7 @@ let ref = [
   "b325dc1c6f5e7a2b7cf465b9feab7948"
 ];
 
-let extra = PervasivesU.$at({
+let extra = Pervasives.$at({
   hd: [
     "File \"digest_test.res\", line 9, characters 9-16",
     (function () {

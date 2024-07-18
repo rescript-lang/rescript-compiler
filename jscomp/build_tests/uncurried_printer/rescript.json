@@ -1,6 +1,0 @@
-{
-  "name": "uncurried_printer",
-  "version": "0.1.0",
-  "sources": ["src"],
-  "uncurried": false
-}

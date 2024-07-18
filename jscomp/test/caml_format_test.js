@@ -4,8 +4,8 @@
 let Mt = require("./mt.js");
 let $$Array = require("../../lib/js/array.js");
 let Caml_int64 = require("../../lib/js/caml_int64.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_format = require("../../lib/js/caml_format.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
 
 let of_string = [
   [
@@ -80,7 +80,7 @@ let of_string = [
 
 function from_float_of_string(xs) {
   return $$Array.mapi((function (i, param) {
-    return PervasivesU.string_of_float;
+    return Pervasives.string_of_float;
   }), xs);
 }
 
@@ -141,19 +141,19 @@ let pairs$1 = [
   ]
 ];
 
-let suites = PervasivesU.$at(from_of_string(of_string), PervasivesU.$at({
+let suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
   hd: [
     "isnan_of_string",
     (function () {
       return {
         TAG: "Eq",
         _0: true,
-        _1: PervasivesU.classify_float(Caml_format.float_of_string("nan")) === "FP_nan"
+        _1: Pervasives.classify_float(Caml_format.float_of_string("nan")) === "FP_nan"
       };
     })
   ],
   tl: /* [] */0
-}, PervasivesU.$at($$Array.to_list($$Array.mapi((function (i, param) {
+}, Pervasives.$at($$Array.to_list($$Array.mapi((function (i, param) {
   let b = param[1];
   let a = param[0];
   return [
@@ -162,11 +162,11 @@ let suites = PervasivesU.$at(from_of_string(of_string), PervasivesU.$at({
       return {
         TAG: "Eq",
         _0: a,
-        _1: PervasivesU.classify_float(Caml_format.float_of_string(b))
+        _1: Pervasives.classify_float(Caml_format.float_of_string(b))
       };
     })
   ];
-}), pairs)), PervasivesU.$at({
+}), pairs)), Pervasives.$at({
   hd: [
     "throw",
     (function () {
@@ -223,12 +223,12 @@ let float_data = [
   ],
   [
     "%f",
-    PervasivesU.infinity,
+    Pervasives.infinity,
     "inf"
   ],
   [
     "%f",
-    PervasivesU.neg_infinity,
+    Pervasives.neg_infinity,
     "-inf"
   ],
   [
@@ -423,7 +423,7 @@ let of_string_data = [
   ]
 ];
 
-let extra = PervasivesU.$at(suites, PervasivesU.$at($$Array.to_list($$Array.mapi((function (i, param) {
+let extra = Pervasives.$at(suites, Pervasives.$at($$Array.to_list($$Array.mapi((function (i, param) {
   let str_result = param[2];
   let f = param[1];
   let fmt = param[0];
@@ -437,7 +437,7 @@ let extra = PervasivesU.$at(suites, PervasivesU.$at($$Array.to_list($$Array.mapi
       };
     })
   ];
-}), float_data)), PervasivesU.$at(int64_suites, $$Array.to_list($$Array.mapi((function (i, param) {
+}), float_data)), Pervasives.$at(int64_suites, $$Array.to_list($$Array.mapi((function (i, param) {
   let b = param[1];
   let a = param[0];
   return [

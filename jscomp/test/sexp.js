@@ -4,9 +4,9 @@
 let List = require("../../lib/js/list.js");
 let Hashtbl = require("../../lib/js/hashtbl.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_format = require("../../lib/js/caml_format.js");
 let Caml_option = require("../../lib/js/caml_option.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
 
 let equal = Caml_obj.equal;
 
@@ -26,7 +26,7 @@ function of_int(x) {
 function of_float(x) {
   return {
     NAME: "Atom",
-    VAL: PervasivesU.string_of_float(x)
+    VAL: Pervasives.string_of_float(x)
   };
 }
 
@@ -248,7 +248,7 @@ function to_int(e) {
 }
 
 function to_bool(e) {
-  return _try_atom(e, PervasivesU.bool_of_string);
+  return _try_atom(e, Pervasives.bool_of_string);
 }
 
 function to_float(e) {

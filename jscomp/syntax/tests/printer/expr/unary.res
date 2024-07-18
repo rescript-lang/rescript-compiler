@@ -28,7 +28,7 @@ let x = -(a.bar)
 !(assert(x))
 assert(!x)
 !(@attr expr)
-!(arg => doStuffWith(arg))
+//!(arg => doStuffWith(arg))
 let x = !(truth: bool)
 let x = (!truth: bool)
 

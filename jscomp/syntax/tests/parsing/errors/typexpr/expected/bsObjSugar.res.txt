@@ -141,7 +141,10 @@ type nonrec state =
   < url: string  ;protocols: [%rescript.typehole ]  ;websocket: Websocket.t  
     > 
 type nonrec state = < url: string  ;protocols: [%rescript.typehole ]   > 
-type nonrec state = < send: string -> [%rescript.typehole ] [@meth ]  > 
+type nonrec state =
+  <
+    send: (string -> [%rescript.typehole ], [ `Has_arity1 ]) function$
+      [@meth ]  > 
 type nonrec state = < age: [%rescript.typehole ]  ;name: string   > 
 type nonrec state = < age: [%rescript.typehole ] [@set ] ;name: string   > 
 type nonrec state = < age: [%rescript.typehole ]   ;.. > 

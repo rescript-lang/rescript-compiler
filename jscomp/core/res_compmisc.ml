@@ -53,7 +53,7 @@ let initial_env ?(modulename) () =
   let initial = Env.initial_safe_string in
   let env =
     if !Clflags.nopervasives then initial
-    else open_implicit_module (if !Config.uncurried = Uncurried then "PervasivesU" else "Pervasives") initial
+    else open_implicit_module "Pervasives" initial
   in
   List.fold_left
     (fun env m -> open_implicit_module m env)

@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 
 let suites_0 = [
   "_NaN <> _NaN",
@@ -44,7 +44,7 @@ let suites_1 = {
           return {
             TAG: "Eq",
             _0: false,
-            _1: Number.isFinite(PervasivesU.infinity)
+            _1: Number.isFinite(Pervasives.infinity)
           };
         })
       ],
@@ -55,7 +55,7 @@ let suites_1 = {
             return {
               TAG: "Eq",
               _0: false,
-              _1: Number.isFinite(PervasivesU.neg_infinity)
+              _1: Number.isFinite(Pervasives.neg_infinity)
             };
           })
         ],

@@ -1,2 +1,2 @@
-let foo (x : int) = (x :> int)
-let foo x = ((x : t) :> int)
+let foo = ((Function$ (fun (x : int) -> (x :> int)))[@res.arity 1])
+let foo = ((Function$ (fun x -> ((x : t) :> int)))[@res.arity 1])

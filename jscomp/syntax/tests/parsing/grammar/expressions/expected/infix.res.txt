@@ -1,4 +1,4 @@
-;;a |. (f b)
+;;a |.u ((f b)[@res.uapp ])
 ;;{js|string1|js} ^ {js|string2|js}
 ;;a <> b
 ;;a != b

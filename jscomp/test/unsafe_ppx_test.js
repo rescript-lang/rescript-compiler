@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Ffi_js_test = require("./ffi_js_test.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
 
 let x = "\\x01\\x02\\x03";
 
@@ -23,7 +23,7 @@ function g(a) {
    return ""
 });
   let regression2 = Math.max;
-  regression(a, PervasivesU.failwith);
+  regression(a, Pervasives.failwith);
   regression2(3, 2);
   regression3(3, 2);
   regression4(3, (function (x) {

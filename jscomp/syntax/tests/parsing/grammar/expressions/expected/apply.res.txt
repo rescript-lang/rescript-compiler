@@ -1,8 +1,12 @@
-;;foo (fun _ -> bla) blaz
-;;foo (fun _ -> bla) blaz
-;;foo ((Function$ (fun _ -> bla))[@res.arity 1]) blaz
-;;foo (fun _ -> bla) (fun _ -> blaz)
-;;List.map (fun x -> x + 1) myList
-;;List.reduce (fun acc -> fun curr -> acc + curr) 0 myList
+;;((foo ((Function$ (fun _ -> bla))[@res.arity 1]) blaz)[@res.uapp ])
+;;((foo ((Function$ (fun _ -> bla))[@res.arity 1]) blaz)[@res.uapp ])
+;;((foo ((Function$ (fun _ -> bla))[@res.arity 1]) blaz)[@res.uapp ])
+;;((foo ((Function$ (fun _ -> bla))[@res.arity 1])
+      ((Function$ (fun _ -> blaz))[@res.arity 1]))[@res.uapp ])
+;;((List.map ((Function$ (fun x -> x + 1))[@res.arity 1]) myList)
+  [@res.uapp ])
+;;((List.reduce ((Function$ (fun acc -> fun curr -> acc + curr))
+      [@res.arity 2]) 0 myList)[@res.uapp ])
 let unitUncurried = ((apply ())[@res.uapp ])
-;;call ~a:(((((a)[@res.namedArgLoc ]) : int))[@res.namedArgLoc ])
+;;((call ~a:(((((a)[@res.namedArgLoc ]) : int))[@res.namedArgLoc ]))
+  [@res.uapp ])

@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 
 let v = (Number.EPSILON?Number.EPSILON:2.220446049250313e-16);
 
@@ -11,7 +11,7 @@ let suites_0 = [
   (function (param) {
     return {
       TAG: "Eq",
-      _0: PervasivesU.epsilon_float,
+      _0: Pervasives.epsilon_float,
       _1: v
     };
   })

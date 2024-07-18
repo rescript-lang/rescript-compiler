@@ -3,5 +3,5 @@ let x = list + list
 let f = Foo.list
 let x = list.list
 let y = Ok.Bar.list
-;;list a b
+;;((list a b)[@res.uapp ])
 ;;list.list <- list

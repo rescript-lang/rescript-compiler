@@ -98,10 +98,12 @@
   Did you forget a `=` here?
 
 let rightResource =
-  (ur.resources).find
-    (fun r -> r.account_id == ((connection.left).account).id)
-let x = ((let field = p |. parseFieldDeclaration in field)[@res.braces ])
-let t = ((let (_, _, token) = scanner |. scan in token)[@res.braces ])
+  (((ur.resources).find
+      ((Function$ (fun r -> r.account_id == ((connection.left).account).id))
+      [@res.arity 1]))
+  [@res.uapp ])
+let x = ((let field = p |.u parseFieldDeclaration in field)[@res.braces ])
+let t = ((let (_, _, token) = scanner |.u scan in token)[@res.braces ])
 let (keyTable : int Belt.Map.String.t) = [%rescript.exprhole ]
 let foo = [%rescript.exprhole ]
 let (x : int) = string = y

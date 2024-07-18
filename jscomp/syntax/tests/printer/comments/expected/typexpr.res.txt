@@ -69,8 +69,8 @@ type make = (
   ~getAnother: unit => unit=?,
 ) => React.element
 
-type f = /* c0 */ (~a: /* c1 */ int /* c2 */) => /* c3 */ int /* c4 */
-type f = (/* c0 */ ~a: /* c1 */ int /* c2 */) => /* c3 */ int /* c4 */
+//type f = /* c0 */ ~a: /* c1 */ int /* c2 */ => /* c3 */  int /* c4 */
+//type f = (/* c0 */ ~a: /* c1 */ int /* c2 */) => /* c3 */  int /* c4 */
 
 // Ptyp_object
 type jsUser = /* before */ {

@@ -547,7 +547,7 @@ module State = struct
 
   type t = {custom_layout: int; mutable uncurried_config: Config.uncurried}
 
-  let init () = {custom_layout = 0; uncurried_config = !Config.uncurried}
+  let init () = {custom_layout = 0; uncurried_config = Uncurried}
 
   let next_custom_layout t = {t with custom_layout = t.custom_layout + 1}
 

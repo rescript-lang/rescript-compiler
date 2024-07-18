@@ -8,4 +8,6 @@
 
   Did you forget a `]` here?
 
-let xs = x.map (fun key -> [|key;(predicates.(key))|])
+let xs =
+  ((x.map ((Function$ (fun key -> [|key;(predicates.(key))|]))[@res.arity 1]))
+  [@res.uapp ])

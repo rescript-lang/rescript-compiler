@@ -22,10 +22,8 @@ let init () =
           (fun (tdcls : tdcls) _explict_nonrec ->
             let handle_uncurried_accessor_tranform ~loc ~arity accessor =
               (* Accessors with no params (arity of 0) are simply values and not functions *)
-              match Config.uncurried.contents with
-              | Uncurried when arity > 0 ->
-                Ast_uncurried.uncurried_fun ~loc ~arity accessor
-              | _ -> accessor
+              if arity > 0 then Ast_uncurried.uncurried_fun ~loc ~arity accessor
+              else accessor
             in
             let handle_tdcl tdcl =
               let core_type =
@@ -121,11 +119,8 @@ let init () =
         signature_gen =
           (fun (tdcls : Parsetree.type_declaration list) _explict_nonrec ->
             let handle_uncurried_type_tranform ~loc ~arity t =
-              match Config.uncurried.contents with
-              (* Accessors with no params (arity of 0) are simply values and not functions *)
-              | Uncurried when arity > 0 ->
-                Ast_uncurried.uncurried_type ~loc ~arity t
-              | _ -> t
+              if arity > 0 then Ast_uncurried.uncurried_type ~loc ~arity t
+              else t
             in
             let handle_tdcl tdcl =
               let core_type =

@@ -50,8 +50,6 @@ let process_directives str =
            match Ast_payload.is_single_string payload with
            | Some (d, _) -> Js_config.directives := !Js_config.directives @ [d]
            | None -> Bs_syntaxerr.err item.pstr_loc Expect_string_literal)
-         | Pstr_attribute ({txt = "uncurried"}, _) ->
-           Config.uncurried := Uncurried
          | _ -> ())
 
 let rec iter_on_bs_config_str (x : Parsetree.structure) =

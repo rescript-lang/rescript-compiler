@@ -3,7 +3,7 @@
 
 let Mt = require("./mt.js");
 let Caml_array = require("../../lib/js/caml_array.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 
 function map(f, a) {
   let f$1 = function (x) {
@@ -63,7 +63,7 @@ function f2() {
   let v = fold_left((function (prim0, prim1) {
     return prim0 + prim1;
   }), 0, b);
-  console.log(PervasivesU.string_of_float(v));
+  console.log(Pervasives.string_of_float(v));
 }
 
 f2();

@@ -188,16 +188,13 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
       st := v)
     else Bs_syntaxerr.err loc Conflict_attributes
   in
-  Ext_list.iter attrs (fun (({txt; loc = _}, (payload : _)) as attr) ->
+  Ext_list.iter attrs (fun (({txt; loc = _}, _) as attr) ->
       match txt with
       | "string" -> assign `String attr
       | "int" -> assign `Int attr
       | "ignore" -> assign `Ignore attr
       | "unwrap" -> assign `Unwrap attr
-      | "uncurry" ->
-        if !Config.uncurried = Uncurried then
-          Used_attributes.mark_used_attribute attr
-        else assign (`Uncurry (Ast_payload.is_single_int payload)) attr
+      | "uncurry" -> Used_attributes.mark_used_attribute attr
       | _ -> ());
   !st
 

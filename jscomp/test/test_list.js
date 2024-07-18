@@ -3,7 +3,7 @@
 
 let List = require("../../lib/js/list.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 
 function length_aux(_len, _x) {
   while(true) {
@@ -99,7 +99,7 @@ function rev(l) {
 
 function flatten(x) {
   if (x) {
-    return PervasivesU.$at(x.hd, flatten(x.tl));
+    return Pervasives.$at(x.hd, flatten(x.tl));
   } else {
     return /* [] */0;
   }
@@ -1513,7 +1513,7 @@ function sort_uniq(cmp, l) {
 
 let u = List.length;
 
-let append = PervasivesU.$at;
+let append = Pervasives.$at;
 
 let concat = flatten;
 

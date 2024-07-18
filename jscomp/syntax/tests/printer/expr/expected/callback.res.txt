@@ -61,8 +61,8 @@ let _ = {
 }
 
 let trees =
-  possibilities->Belt.Array.mapU((. combination) =>
-    combination->Belt.Array.reduceU(Nil, (. tree, curr) => tree->insert(curr))
+  possibilities->Belt.Array.mapU(combination =>
+    combination->Belt.Array.reduceU(Nil, (tree, curr) => tree->insert(curr))
   )
 
 let set = mapThatHasAVeryLongName->Belt.Map.String.getExn(website)->Belt.Set.Int.add(user)
@@ -83,8 +83,8 @@ let add2 = (y: coll, e: key) =>
 
 let add2 = (y: coll, e: key) =>
   if (
-    possibilities->Belt.Array.mapU((. combination) =>
-      combination->Belt.Array.reduceU(Nil, (. tree, curr) => tree->insert(curr))
+    possibilities->Belt.Array.mapU(combination =>
+      combination->Belt.Array.reduceU(Nil, (tree, curr) => tree->insert(curr))
     )
   ) {
     y
@@ -92,15 +92,17 @@ let add2 = (y: coll, e: key) =>
     list{e, ...y}
   }
 
-let test =
-  moduleTypeDeclaration
-  |> TranslateSignature.translateModuleTypeDeclaration(
+let test = doStuff(
+  ~x,
+  ~y,
+  TranslateSignature.translateModuleTypeDeclaration(
     ~config,
     ~outputFileRelative,
     ~resolver,
     ~typeEnv,
-  )
-  |> doStuff(~x, ~y)
+    moduleTypeDeclaration,
+  ),
+)
 
 // labelled arguments
 // callback in last position
@@ -216,18 +218,18 @@ let f = () => {
 }
 
 myPromise
-->Js.Promise.then_(value => {
+->(Js.Promise.then_(value => {
   Js.log(value)
   Js.Promise.resolve(value + 2)
-}, _)
-->Js.Promise.then_(value => {
+}, _))
+->(Js.Promise.then_(value => {
   Js.log(value)
   Js.Promise.resolve(value + 3)
-}, _)
-->Js.Promise.catch(err => {
-  Js.log2("Failure!!", err)
-  Js.Promise.resolve(-2)
-}, _)
+}, _))
+->(Js.Promise.catch(err => {
+    Js.log2("Failure!!", err)
+    Js.Promise.resolve(-2)
+  }, _))
 
 let decoratorTags =
   items

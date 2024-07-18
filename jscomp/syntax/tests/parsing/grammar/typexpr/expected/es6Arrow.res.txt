@@ -1,46 +1,77 @@
-type nonrec t = x -> unit
-type nonrec t = x -> unit
-type nonrec t = int -> string -> unit
+type nonrec t = (x -> unit, [ `Has_arity1 ]) function$
+type nonrec t = (x -> unit, [ `Has_arity1 ]) function$
+type nonrec t = (int -> string -> unit, [ `Has_arity2 ]) function$
 type nonrec t =
-  a:((int)[@res.namedArgLoc ]) -> b:((int)[@res.namedArgLoc ]) -> int
+  (a:((int)[@res.namedArgLoc ]) -> b:((int)[@res.namedArgLoc ]) -> int,
+    [ `Has_arity2 ]) function$
 type nonrec t =
-  ?a:((int)[@res.namedArgLoc ]) -> ?b:((int)[@res.namedArgLoc ]) -> int
-type nonrec t = int -> int -> int -> int
+  (?a:((int)[@res.namedArgLoc ]) -> ?b:((int)[@res.namedArgLoc ]) -> int,
+    [ `Has_arity2 ]) function$
 type nonrec t =
-  a:((int)[@res.namedArgLoc ]) ->
-    b:((int)[@res.namedArgLoc ]) -> c:((int)[@res.namedArgLoc ]) -> int
-let (f : x -> unit) = xf
-let (f : x -> unit) = xf
-let (f : int -> string -> unit) = xf
-let (t : a:((int)[@res.namedArgLoc ]) -> b:((int)[@res.namedArgLoc ]) -> int)
+  (int ->
+     (int -> (int -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
+       function$,
+    [ `Has_arity1 ]) function$
+type nonrec t =
+  (a:((int)[@res.namedArgLoc ]) ->
+     (b:((int)[@res.namedArgLoc ]) ->
+        (c:((int)[@res.namedArgLoc ]) -> int, [ `Has_arity1 ]) function$,
+       [ `Has_arity1 ]) function$,
+    [ `Has_arity1 ]) function$
+let (f : (x -> unit, [ `Has_arity1 ]) function$) = xf
+let (f : (x -> unit, [ `Has_arity1 ]) function$) = xf
+let (f : (int -> string -> unit, [ `Has_arity2 ]) function$) = xf
+let (t :
+  (a:((int)[@res.namedArgLoc ]) -> b:((int)[@res.namedArgLoc ]) -> int,
+    [ `Has_arity2 ]) function$)
   = xf
 let (t :
-  ?a:((int)[@res.namedArgLoc ]) -> ?b:((int)[@res.namedArgLoc ]) -> int) = xf
-let (t : int -> int -> int -> int) = xf
+  (?a:((int)[@res.namedArgLoc ]) -> ?b:((int)[@res.namedArgLoc ]) -> int,
+    [ `Has_arity2 ]) function$)
+  = xf
 let (t :
-  a:((int)[@res.namedArgLoc ]) ->
-    b:((int)[@res.namedArgLoc ]) -> c:((int)[@res.namedArgLoc ]) -> int)
+  (int ->
+     (int -> (int -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
+       function$,
+    [ `Has_arity1 ]) function$)
+  = xf
+let (t :
+  (a:((int)[@res.namedArgLoc ]) ->
+     (b:((int)[@res.namedArgLoc ]) ->
+        (c:((int)[@res.namedArgLoc ]) -> int, [ `Has_arity1 ]) function$,
+       [ `Has_arity1 ]) function$,
+    [ `Has_arity1 ]) function$)
   = xf
 type nonrec t = f:((int)[@res.namedArgLoc ]) -> string
 type nonrec t = ?f:((int)[@res.namedArgLoc ]) -> string
 let (f : f:((int)[@res.namedArgLoc ]) -> string) = fx
 let (f : ?f:((int)[@res.namedArgLoc ]) -> string) = fx
-type nonrec t = f:((int)[@res.namedArgLoc ]) -> string
-type nonrec t = f:((int)[@res.namedArgLoc ]) -> string
-type nonrec t = f:((int -> string)[@res.namedArgLoc ]) -> float
-type nonrec t = f:((int -> string)[@res.namedArgLoc ]) -> float
-type nonrec t = f:((int)[@res.namedArgLoc ]) -> string -> float
 type nonrec t =
-  ((a:((int)[@res.namedArgLoc ]) ->
-      ((b:((int)[@res.namedArgLoc ]) -> ((float)[@attr ]) -> unit)[@attrBeforeLblB
-                                                                    ]))
-  [@attrBeforeLblA ])
+  (f:((int)[@res.namedArgLoc ]) -> string, [ `Has_arity1 ]) function$
+type nonrec t = f:((int)[@res.namedArgLoc ]) -> string
 type nonrec t =
-  ((a:((int)[@res.namedArgLoc ]) ->
-      ((b:((int)[@res.namedArgLoc ]) -> ((float)[@attr ]) -> unit)[@attrBeforeLblB
+  (f:(((int -> string, [ `Has_arity1 ]) function$)[@res.namedArgLoc ]) ->
+     float,
+    [ `Has_arity1 ]) function$
+type nonrec t =
+  f:(((int -> string, [ `Has_arity1 ]) function$)[@res.namedArgLoc ]) ->
+    float
+type nonrec t =
+  f:((int)[@res.namedArgLoc ]) ->
+    (string -> float, [ `Has_arity1 ]) function$
+type nonrec t =
+  (((a:((int)[@res.namedArgLoc ]) ->
+       ((b:((int)[@res.namedArgLoc ]) -> ((float)[@attr ]) -> unit)[@attrBeforeLblB
                                                                     ]))
-  [@attrBeforeLblA ])
+    [@attrBeforeLblA ]), [ `Has_arity3 ]) function$
+type nonrec t =
+  (((a:((int)[@res.namedArgLoc ]) ->
+       (((b:((int)[@res.namedArgLoc ]) ->
+            (((float)[@attr ]) -> unit, [ `Has_arity1 ]) function$,
+           [ `Has_arity1 ]) function$)[@attrBeforeLblB ]),
+      [ `Has_arity1 ]) function$)[@attrBeforeLblA ])
 type nonrec t = ((a:((int)[@res.namedArgLoc ]) -> unit)[@attr ])
 type nonrec 'a getInitialPropsFn =
-  < query: string Js.Dict.t  ;req: 'a Js.t Js.Nullable.t   >  ->
-    'a Js.t Js.Promise.t
+  (< query: string Js.Dict.t  ;req: 'a Js.t Js.Nullable.t   >  ->
+     'a Js.t Js.Promise.t,
+    [ `Has_arity1 ]) function$

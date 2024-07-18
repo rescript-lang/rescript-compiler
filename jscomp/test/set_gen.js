@@ -2,7 +2,7 @@
 'use strict';
 
 let List = require("../../lib/js/list.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 function cons_enum(_s, _e) {
@@ -214,7 +214,7 @@ function check_height_and_diff(x) {
           }
         });
   }
-  let diff = PervasivesU.abs(hl - hr | 0);
+  let diff = Pervasives.abs(hl - hr | 0);
   if (diff > 2) {
     throw new Error(Height_diff_borken, {
           cause: {

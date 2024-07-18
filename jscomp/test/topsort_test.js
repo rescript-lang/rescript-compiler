@@ -5,8 +5,8 @@ let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
 let $$String = require("../../lib/js/string.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_option = require("../../lib/js/caml_option.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -91,7 +91,7 @@ function dfs1(_nodes, graph, _visited) {
       hd: x,
       tl: visited
     };
-    _nodes = PervasivesU.$at(nexts(x, graph), xs);
+    _nodes = Pervasives.$at(nexts(x, graph), xs);
     continue;
   };
 }

@@ -5,9 +5,9 @@ let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
 let $$String = require("../../lib/js/string.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_format = require("../../lib/js/caml_format.js");
 let Caml_option = require("../../lib/js/caml_option.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function split(delim, s) {
@@ -57,7 +57,7 @@ function split(delim, s) {
 
 function string_of_float_option(x) {
   if (x !== undefined) {
-    return PervasivesU.string_of_float(x);
+    return Pervasives.string_of_float(x);
   } else {
     return "nan";
   }
@@ -1139,7 +1139,7 @@ function compute_update_sequences(all_tickers) {
         let ticker_name = ticker.ticker_name;
         if (typeof type_ !== "object") {
           let l = find(ticker_name, map);
-          return add(ticker_name, PervasivesU.$at(up, l), map);
+          return add(ticker_name, Pervasives.$at(up, l), map);
         }
         let match = type_._0;
         let map$1 = loop({

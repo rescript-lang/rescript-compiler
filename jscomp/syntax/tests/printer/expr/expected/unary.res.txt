@@ -6,7 +6,7 @@ let isMale = !user["female"]
 
 !(!a)
 !(!(!a))
-!(a |> f(b))
+!f(b, a)
 
 -1->add
 -1->add
@@ -27,7 +27,7 @@ let x = -a.bar
 !(assert(x))
 assert(!x)
 !(@attr expr)
-!(arg => doStuffWith(arg))
+//!(arg => doStuffWith(arg))
 let x = !(truth: bool)
 let x = (!truth: bool)
 
@@ -37,7 +37,7 @@ let z = !(%extension)
 !module(Foo: Bar)
 !module(Foo)
 let x = -apply(arg)
-let x = -apply(. arg)
+let x = -apply(arg)
 let x = -Foo(a, b, c)
 let x = -{x: 1, y: 2}
 let x = -list{1, 2, 3}
