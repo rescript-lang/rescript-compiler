@@ -138,10 +138,6 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
       async_context := (old_in_function_def && !async_context) || async;
       in_function_def := true;
       Ast_async.make_function_async ~async (default_expr_mapper self e)
-    | Uncurry _, pexp_attributes ->
-      async_context := async;
-      Ast_uncurry_gen.to_uncurry_fn {e with pexp_attributes} self label pat body
-        async
     | Method _, _ ->
       Location.raise_errorf ~loc:e.pexp_loc
         "%@meth is not supported in function expression"

@@ -29,11 +29,7 @@ type ('a, 'b) st = {get: 'a option; set: 'b option}
 
 val process_method_attributes_rev : t -> (bool * bool, [`Get | `No_get]) st * t
 
-type attr_kind =
-  | Nothing
-  | Meth_callback of attr
-  | Uncurry of attr
-  | Method of attr
+type attr_kind = Nothing | Meth_callback of attr | Method of attr
 
 val process_attributes_rev : t -> attr_kind * t
 
@@ -47,7 +43,7 @@ val has_async_payload : t -> attr option
 type derive_attr = {bs_deriving: Ast_payload.action list option} [@@unboxed]
 
 val iter_process_bs_string_int_unwrap_uncurry :
-  t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option]
+  t -> [`Nothing | `String | `Int | `Ignore | `Unwrap]
 
 val iter_process_bs_string_as : t -> string option
 
