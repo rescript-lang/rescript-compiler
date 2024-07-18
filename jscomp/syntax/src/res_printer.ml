@@ -1547,12 +1547,6 @@ and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
     let attrs_before, args, return_type =
       ParsetreeViewer.arrow_type ~arity typ_expr
     in
-    let dotted, attrs_before =
-      let dotted = false in
-      (* Converting .ml code to .res requires processing uncurried attributes *)
-      let has_bs, attrs = ParsetreeViewer.process_bs_attribute attrs_before in
-      (dotted || has_bs, attrs)
-    in
     let return_type_needs_parens =
       match return_type.ptyp_desc with
       | Ptyp_alias _ -> true
@@ -1565,7 +1559,7 @@ and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
     in
     match args with
     | [] -> Doc.nil
-    | [([], Nolabel, n)] when not dotted ->
+    | [([], Nolabel, n)] ->
       let has_attrs_before = not (attrs_before = []) in
       let attrs =
         if has_attrs_before then
@@ -1607,7 +1601,6 @@ and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
               (Doc.concat
                  [
                    Doc.soft_line;
-                   (if dotted then Doc.concat [Doc.dot; Doc.space] else Doc.nil);
                    Doc.join
                      ~sep:(Doc.concat [Doc.comma; Doc.line])
                      (List.map
@@ -1901,8 +1894,6 @@ and print_object_field ~state (field : Parsetree.object_field) cmt_tbl =
  * i.e. ~foo: string, ~bar: float *)
 and print_type_parameter ~state (attrs, lbl, typ) cmt_tbl =
   (* Converting .ml code to .res requires processing uncurried attributes *)
-  let has_bs, attrs = ParsetreeViewer.process_bs_attribute attrs in
-  let dotted = if has_bs then Doc.concat [Doc.dot; Doc.space] else Doc.nil in
   let attrs = print_attributes ~state attrs cmt_tbl in
   let label =
     match lbl with
@@ -1927,13 +1918,7 @@ and print_type_parameter ~state (attrs, lbl, typ) cmt_tbl =
   let doc =
     Doc.group
       (Doc.concat
-         [
-           dotted;
-           attrs;
-           label;
-           print_typ_expr ~state typ cmt_tbl;
-           optional_indicator;
-         ])
+         [attrs; label; print_typ_expr ~state typ cmt_tbl; optional_indicator])
   in
   print_comments doc cmt_tbl loc
 
@@ -5100,8 +5085,6 @@ and print_exp_fun_parameter ~state parameter cmt_tbl =
                 lbls);
          ])
   | Parameter {attrs; lbl; default_expr; pat = pattern} ->
-    let has_bs, attrs = ParsetreeViewer.process_bs_attribute attrs in
-    let dotted = if has_bs then Doc.concat [Doc.dot; Doc.space] else Doc.nil in
     let attrs = print_attributes ~state attrs cmt_tbl in
     (* =defaultValue *)
     let default_expr_doc =
@@ -5160,7 +5143,6 @@ and print_exp_fun_parameter ~state parameter cmt_tbl =
       Doc.group
         (Doc.concat
            [
-             dotted;
              attrs;
              label_with_pattern;
              default_expr_doc;
