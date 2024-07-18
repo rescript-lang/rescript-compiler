@@ -994,41 +994,19 @@ ${ninjaQuickBuildList([
     [],
     externalDeps,
   ],
-  [
-    "pervasivesU.cmj",
-    "pervasivesU.res",
-    "cc_cmi",
-    ninjaCwd,
-    bsc_builtin_overrides,
-    "pervasivesU.cmi",
-    externalDeps,
-  ],
-  [
-    "pervasivesU.cmi",
-    "pervasivesU.resi",
-    "cc",
-    ninjaCwd,
-    bsc_builtin_overrides,
-    [],
-    externalDeps,
-  ],
 ])}
 `;
   var stdlibDirFiles = fs.readdirSync(stdlibDir, "ascii");
   var sources = stdlibDirFiles.filter(x => {
     return (
       !x.startsWith("pervasives.") &&
-      !x.startsWith("pervasivesU.") &&
       (x.endsWith(".res") || x.endsWith(".resi"))
     );
   });
   let depsMap = new Map();
   await ocamlDepForBscAsync(sources, stdlibDir, depsMap);
   var targets = collectTarget(sources);
-  var allTargets = scanFileTargets(targets, [
-    "pervasivesU.cmi",
-    "pervasivesU.cmj",
-  ]);
+  var allTargets = scanFileTargets(targets, []);
   targets.forEach((ext, mod) => {
     switch (ext) {
       case "HAS_RESI":
