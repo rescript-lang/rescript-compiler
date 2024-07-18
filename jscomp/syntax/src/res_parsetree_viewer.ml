@@ -48,15 +48,6 @@ let functor_type modtype =
   in
   process [] modtype
 
-let process_bs_attribute attrs =
-  let rec process bs_spotted acc attrs =
-    match attrs with
-    | [] -> (bs_spotted, List.rev acc)
-    | ({Location.txt = "bs"}, _) :: rest -> process true acc rest
-    | attr :: rest -> process bs_spotted (attr :: acc) rest
-  in
-  process false [] attrs
-
 let process_uncurried_app_attribute attrs =
   let rec process uncurried_app acc attrs =
     match attrs with

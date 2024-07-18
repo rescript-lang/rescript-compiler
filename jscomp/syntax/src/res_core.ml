@@ -182,11 +182,7 @@ let tagged_template_literal_attr =
 
 let spread_attr = (Location.mknoloc "res.spread", Parsetree.PStr [])
 
-type argument = {
-  dotted: bool;
-  label: Asttypes.arg_label;
-  expr: Parsetree.expression;
-}
+type argument = {label: Asttypes.arg_label; expr: Parsetree.expression}
 
 type type_parameter = {
   attrs: Ast_helper.attrs;
@@ -3574,7 +3570,6 @@ and parse_argument p : argument option =
   then
     match p.Parser.token with
     | Dot -> (
-      let dotted = true in
       Parser.next p;
       match p.token with
       (* apply(.) *)
@@ -3584,12 +3579,12 @@ and parse_argument p : argument option =
             (Location.mknoloc (Longident.Lident "()"))
             None
         in
-        Some {dotted; label = Asttypes.Nolabel; expr = unit_expr}
-      | _ -> parse_argument2 p ~dotted)
-    | _ -> parse_argument2 p ~dotted:false
+        Some {label = Asttypes.Nolabel; expr = unit_expr}
+      | _ -> parse_argument2 p)
+    | _ -> parse_argument2 p
   else None
 
-and parse_argument2 p ~dotted : argument option =
+and parse_argument2 p : argument option =
   match p.Parser.token with
   (* foo(_), do not confuse with foo(_ => x), TODO: performance *)
   | Underscore when not (is_es6_arrow_expression ~in_ternary:false p) ->
@@ -3598,7 +3593,7 @@ and parse_argument2 p ~dotted : argument option =
     let expr =
       Ast_helper.Exp.ident ~loc (Location.mkloc (Longident.Lident "_") loc)
     in
-    Some {dotted; label = Nolabel; expr}
+    Some {label = Nolabel; expr}
   | Tilde -> (
     Parser.next p;
     (* TODO: nesting of pattern matches not intuitive for error recovery *)
@@ -3618,7 +3613,7 @@ and parse_argument2 p ~dotted : argument option =
       match p.Parser.token with
       | Question ->
         Parser.next p;
-        Some {dotted; label = Optional ident; expr = ident_expr}
+        Some {label = Optional ident; expr = ident_expr}
       | Equal ->
         Parser.next p;
         let label =
@@ -3639,7 +3634,7 @@ and parse_argument2 p ~dotted : argument option =
             let expr = parse_constrained_or_coerced_expr p in
             {expr with pexp_attributes = prop_loc_attr :: expr.pexp_attributes}
         in
-        Some {dotted; label; expr}
+        Some {label; expr}
       | Colon ->
         Parser.next p;
         let typ = parse_typ_expr p in
@@ -3647,13 +3642,12 @@ and parse_argument2 p ~dotted : argument option =
         let expr =
           Ast_helper.Exp.constraint_ ~attrs:[prop_loc_attr] ~loc ident_expr typ
         in
-        Some {dotted; label = Labelled ident; expr}
-      | _ -> Some {dotted; label = Labelled ident; expr = ident_expr})
+        Some {label = Labelled ident; expr}
+      | _ -> Some {label = Labelled ident; expr = ident_expr})
     | t ->
       Parser.err p (Diagnostics.lident t);
-      Some {dotted; label = Nolabel; expr = Recover.default_expr ()})
-  | _ ->
-    Some {dotted; label = Nolabel; expr = parse_constrained_or_coerced_expr p}
+      Some {label = Nolabel; expr = Recover.default_expr ()})
+  | _ -> Some {label = Nolabel; expr = parse_constrained_or_coerced_expr p}
 
 and parse_call_expr p fun_expr =
   Parser.expect Lparen p;
@@ -3682,7 +3676,6 @@ and parse_call_expr p fun_expr =
       (* No args -> unit sugar: `foo()` *)
       [
         {
-          dotted = false;
           label = Nolabel;
           expr =
             Ast_helper.Exp.construct ~loc
@@ -3692,7 +3685,6 @@ and parse_call_expr p fun_expr =
       ]
     | [
      {
-       dotted = true;
        label = Nolabel;
        expr =
          {
@@ -3718,7 +3710,6 @@ and parse_call_expr p fun_expr =
        *)
       [
         {
-          dotted = true;
           label = Nolabel;
           expr =
             Ast_helper.Exp.let_ Asttypes.Nonrecursive
@@ -3736,19 +3727,14 @@ and parse_call_expr p fun_expr =
   let loc = {fun_expr.pexp_loc with loc_end = p.prev_end_pos} in
   let args =
     match args with
-    | {dotted = d; label = lbl; expr} :: args ->
-      let group (grp, acc) {dotted; label = lbl; expr} =
-        let _d, grp = grp in
-        if dotted == true then ((true, [(lbl, expr)]), (_d, List.rev grp) :: acc)
-        else ((_d, (lbl, expr) :: grp), acc)
-      in
-      let (_d, grp), acc = List.fold_left group ((d, [(lbl, expr)]), []) args in
-      List.rev ((_d, List.rev grp) :: acc)
+    | {label = lbl; expr} :: args ->
+      let group (grp, acc) {label = lbl; expr} = ((lbl, expr) :: grp, acc) in
+      let grp, acc = List.fold_left group ([(lbl, expr)], []) args in
+      List.rev (List.rev grp :: acc)
     | [] -> []
   in
   let apply =
-    Ext_list.fold_left args fun_expr (fun call_body group ->
-        let _, args = group in
+    Ext_list.fold_left args fun_expr (fun call_body args ->
         let args, wrap = process_underscore_application args in
         let exp =
           let attrs = [uncurried_app_attr] in
