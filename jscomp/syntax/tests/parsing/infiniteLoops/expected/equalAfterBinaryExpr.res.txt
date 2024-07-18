@@ -21,60 +21,46 @@ let rec _addLoop =
                then ()
                else
                  if
-                   (((let uncle = ((uncleOf currentNode)[@res.uapp ]) in
+                   (((let uncle = uncleOf currentNode in
                       (uncle != None) &&
                         ((uncle |.u castNotOption).color == Red)))
                    [@res.braces ])
                  then
                    ((currentNode.parent |.u castNotOption).color <- Black;
-                    (((uncleOf currentNode)[@res.uapp ]) |.u castNotOption).color
-                      <- Black;
-                    (((grandParentOf currentNode)[@res.uapp ]) |.u
-                       castNotOption).color
-                      <- Red;
-                    ((_addLoop rbt
-                        (((grandParentOf currentNode)[@res.uapp ]) |.u
-                           castNotOption))
-                    [@res.uapp ]))
+                    ((uncleOf currentNode) |.u castNotOption).color <- Black;
+                    ((grandParentOf currentNode) |.u castNotOption).color <-
+                      Red;
+                    _addLoop rbt
+                      ((grandParentOf currentNode) |.u castNotOption))
                  else
                    (let currentNode =
                       if
-                        (not ((isLeft currentNode)[@res.uapp ])) &&
-                          ((isLeft (currentNode.parent |.u castNotOption))
-                          [@res.uapp ])
+                        (not (isLeft currentNode)) &&
+                          (isLeft (currentNode.parent |.u castNotOption))
                       then
-                        (((rotateLeft rbt
-                             (currentNode.parent |.u castNotOption))
-                         [@res.uapp ]);
+                        (rotateLeft rbt
+                           (currentNode.parent |.u castNotOption);
                          currentNode.left |.u castNotOption)
                       else
                         if
-                          ((isLeft currentNode)[@res.uapp ]) &&
+                          (isLeft currentNode) &&
                             (not
-                               ((isLeft
-                                   (currentNode.parent |.u castNotOption))
-                               [@res.uapp ]))
+                               (isLeft (currentNode.parent |.u castNotOption)))
                         then
-                          (((rotateRight rbt
-                               (currentNode.parent |.u castNotOption))
-                           [@res.uapp ]);
+                          (rotateRight rbt
+                             (currentNode.parent |.u castNotOption);
                            currentNode.right |.u castNotOption)
                         else currentNode in
                     (currentNode.parent |.u castNotOption).color <- Black;
-                    (((grandParentOf currentNode)[@res.uapp ]) |.u
-                       castNotOption).color
-                      <- Red;
-                    if ((isLeft currentNode)[@res.uapp ])
+                    ((grandParentOf currentNode) |.u castNotOption).color <-
+                      Red;
+                    if isLeft currentNode
                     then
-                      ((rotateRight rbt
-                          (((grandParentOf currentNode)[@res.uapp ]) |.u
-                             castNotOption))
-                      [@res.uapp ])
+                      rotateRight rbt
+                        ((grandParentOf currentNode) |.u castNotOption)
                     else
-                      ((rotateLeft rbt
-                          (((grandParentOf currentNode)[@res.uapp ]) |.u
-                             castNotOption))
-                      [@res.uapp ])))
+                      rotateLeft rbt
+                        ((grandParentOf currentNode) |.u castNotOption)))
            [@res.braces ])))
   [@res.arity 2])
 let removeNode =
@@ -87,30 +73,28 @@ let removeNode =
                 then
                   (successor.color <- Black;
                    if successor.parent == None
-                   then rbt |.u ((rootSet (Some successor))[@res.uapp ]))
+                   then rbt |.u (rootSet (Some successor)))
                 else
-                  (let break = ((ref false)[@res.uapp ]) in
-                   let successorRef = ((ref successor)[@res.uapp ]) in
+                  (let break = ref false in
+                   let successorRef = ref successor in
                    while not break.contents do
                      let successor = successorRef.contents in
                      match successor.parent with
                      | None ->
-                         (rbt |.u ((rootSet (Some successor))[@res.uapp ]);
+                         (rbt |.u (rootSet (Some successor));
                           break.contents <- true)
                      | Some successorParent ->
-                         let sibling = ((siblingOf successor)[@res.uapp ]) in
+                         let sibling = siblingOf successor in
                          (if
                             (sibling != None) &&
                               ((sibling |.u castNotOption).color == Red)
                           then
                             (successorParent.color <- Red;
                              (sibling |.u castNotOption).color <- Black;
-                             if ((isLeft successor)[@res.uapp ])
-                             then ((rotateLeft rbt successorParent)
-                               [@res.uapp ])
-                             else ((rotateRight rbt successorParent)
-                               [@res.uapp ]));
-                          (let sibling = ((siblingOf successor)[@res.uapp ]) in
+                             if isLeft successor
+                             then rotateLeft rbt successorParent
+                             else rotateRight rbt successorParent);
+                          (let sibling = siblingOf successor in
                            let siblingNN = sibling |.u castNotOption in
                            if
                              (successorParent.color == Black) &&
@@ -151,7 +135,7 @@ let removeNode =
                                then
                                  (let sibling = sibling |.u castNotOption in
                                   if
-                                    ((((isLeft successor)[@res.uapp ]) &&
+                                    (((isLeft successor) &&
                                         ((sibling.right == None) ||
                                            ((sibling.right |.u castNotOption).color
                                               == Black)))
@@ -163,12 +147,10 @@ let removeNode =
                                     (sibling.color <- Red;
                                      (sibling.left |.u castNotOption).color
                                        <- Black;
-                                     ((rotateRight rbt sibling)
-                                     [@res.uapp ]))
+                                     rotateRight rbt sibling)
                                   else
                                     if
-                                      (((not ((isLeft successor)[@res.uapp ]))
-                                          &&
+                                      (((not (isLeft successor)) &&
                                           ((sibling.left == None) ||
                                              ((sibling.left |.u castNotOption).color
                                                 == Black)))
@@ -180,27 +162,23 @@ let removeNode =
                                       (sibling.color <- Red;
                                        (sibling.right |.u castNotOption).color
                                          <- Black;
-                                       ((rotateLeft rbt sibling)
-                                       [@res.uapp ]));
+                                       rotateLeft rbt sibling);
                                   break.contents <- true)
                                else
-                                 (let sibling = ((siblingOf successor)
-                                    [@res.uapp ]) in
+                                 (let sibling = siblingOf successor in
                                   let sibling = sibling |.u castNotOption in
                                   sibling.color <- (successorParent.color);
-                                  if ((isLeft successor)[@res.uapp ])
+                                  if isLeft successor
                                   then
                                     ((sibling.right |.u castNotOption).color
                                        <- Black;
-                                     ((rotateRight rbt successorParent)
-                                     [@res.uapp ]))
+                                     rotateRight rbt successorParent)
                                   else
                                     ((sibling.left |.u castNotOption).color
                                        <- Black;
-                                     ((rotateLeft rbt successorParent)
-                                     [@res.uapp ])))))
+                                     rotateLeft rbt successorParent))))
                      done));
-             if ((isLeaf successor)[@res.uapp ])
+             if isLeaf successor
              then
                (if (rbt |.u root) == (Some successor)
                 then (rbt |.u root) = None))

@@ -29,20 +29,19 @@ Solution: if it's to validate the first few elements, use a `when` clause + Arra
 let flags =
   ((if reasonFormat
     then
-      ((let parts = ((Utils.split_on_char ' ' flags)[@res.uapp ]) in
+      ((let parts = Utils.split_on_char ' ' flags in
         let rec loop =
           ((Function$
               (fun items ->
                  ((match items with
-                   | [|{js|-pp|js};_ppFlag;rest|] -> ((loop rest)
-                       [@res.uapp ])
+                   | [|{js|-pp|js};_ppFlag;rest|] -> loop rest
                    | [|x;rest|] ->
                        ((Belt.Array.concatMany)[@res.spread ])
-                         [|[|x|];((loop rest)[@res.uapp ])|]
+                         [|[|x|];(loop rest)|]
                    | [||] -> [||])
                  [@res.braces ])))
           [@res.arity 1]) in
-        ((String.concat {js| |js} ((loop parts)[@res.uapp ]))[@res.uapp ]))
+        String.concat {js| |js} (loop parts))
       [@res.braces ])
     else flags)
   [@res.ternary ])

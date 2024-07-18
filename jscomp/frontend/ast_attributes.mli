@@ -33,8 +33,6 @@ type attr_kind = Nothing | Meth_callback of attr | Method of attr
 
 val process_attributes_rev : t -> attr_kind * t
 
-val process_bs : t -> bool * t
-
 val has_inline_payload : t -> attr option
 
 val has_await_payload : t -> attr option
@@ -55,9 +53,6 @@ type as_const_payload = Int of int | Str of string * External_arg_spec.delim
 val iter_process_bs_string_or_int_as : t -> as_const_payload option
 
 val process_derive_type : t -> derive_attr * t
-
-(* Attribute for uncurried application coming from the ReScript parser *)
-val res_uapp : attr
 
 val get : attr
 

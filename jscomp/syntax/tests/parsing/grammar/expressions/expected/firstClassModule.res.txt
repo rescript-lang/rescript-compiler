@@ -18,58 +18,50 @@ let plus =
   ((Function$
       (fun m1 ->
          fun m2 -> ((((module
-           struct
-             let x = ((to_int m1)[@res.uapp ]) + ((to_int m2)[@res.uapp ])
-           end) : (module X_int)))[@res.braces ])))
+           struct let x = (to_int m1) + (to_int m2) end) : (module X_int)))
+           [@res.braces ])))
   [@res.arity 2])
 let plus =
   ((Function$
       (fun m1 ->
          fun m2 -> ((module
-           struct
-             let x = ((to_int m1)[@res.uapp ]) + ((to_int m2)[@res.uapp ])
-           end) : (module X_int))))
+           struct let x = (to_int m1) + (to_int m2) end) : (module X_int))))
   [@res.arity 2])
 let unique_instance = ((module
-  struct
-    module Query_handler = Unique
-    let this = ((Unique.create 0)[@res.uapp ])
-  end) : (module Query_handler_instance))
+  struct module Query_handler = Unique
+         let this = Unique.create 0 end) : (module Query_handler_instance))
 let build_instance (type a) =
   ((Function$
       (fun ((module Q)  : (module Query_handler with type config = a)) ->
          fun config -> ((module
-           struct
-             module Query_handler = Q
-             let this = ((Q.create config)[@res.uapp ])
-           end) : (module Query_handler_instance))))
+           struct module Query_handler = Q
+                  let this = Q.create config end) : (module
+                                                      Query_handler_instance))))
   [@res.arity 2])
 let build_instance (type a) =
   ((Function$
       (fun ((module Q)  : (module Query_handler with type config = a)) ->
          fun config -> ((((module
-           struct
-             module Query_handler = Q
-             let this = ((Q.create config)[@res.uapp ])
-           end) : (module Query_handler_instance)))[@res.braces ])))
+           struct module Query_handler = Q
+                  let this = Q.create config end) : (module
+                                                      Query_handler_instance)))
+           [@res.braces ])))
   [@res.arity 2])
-let unique_instance = ((build_instance (module Unique) 0)[@res.uapp ])
+let unique_instance = build_instance (module Unique) 0
 let build_dispatch_table =
   ((Function$
       (fun handlers ->
-         ((let table = ((Hashtbl.create (module String))[@res.uapp ]) in
-           ((List.iter handlers
-               ~f:((Function$
-                      (fun
-                         (((module I)  : (module Query_handler_instance)) as
-                            instance)
-                         ->
-                         ((Hashtbl.set table ~key:((I.Query_handler.name)
-                             [@res.namedArgLoc ]) ~data:((instance)
-                             [@res.namedArgLoc ]))
-                         [@res.uapp ])))[@res.namedArgLoc ][@res.arity 1])
-               table)
-             [@res.uapp ]))
+         ((let table = Hashtbl.create (module String) in
+           List.iter handlers
+             ~f:((Function$
+                    (fun
+                       (((module I)  : (module Query_handler_instance)) as
+                          instance)
+                       ->
+                       Hashtbl.set table ~key:((I.Query_handler.name)
+                         [@res.namedArgLoc ]) ~data:((instance)
+                         [@res.namedArgLoc ])))
+             [@res.namedArgLoc ][@res.arity 1]) table)
          [@res.braces ])))
   [@res.arity 1])
 ;;(module Three)
@@ -78,23 +70,22 @@ let build_dispatch_table =
 ;;((module Teenager) |.u age) |.u Js.log
 ;;((module Teenager).(0)) |.u Js.log
 ;;((if ((module Teenager) |.u age) |.u isAdult
-    then ((Js.log {js|has responsibilities|js})[@res.uapp ])
-    else ((Js.log {js|can play in the playground|js})[@res.uapp ]))
-  [@res.ternary ])
+    then Js.log {js|has responsibilities|js}
+    else Js.log {js|can play in the playground|js})[@res.ternary ])
 ;;((if ((module Streets).(0)) |.u isExpensive
-    then ((Js.log {js|big money|js})[@res.uapp ])
-    else ((Js.log {js|affordable|js})[@res.uapp ]))[@res.ternary ])
+    then Js.log {js|big money|js}
+    else Js.log {js|affordable|js})[@res.ternary ])
 let () = ((((module Teenager) |.u age) |.u Js.log)[@res.braces ])
 let () = (((module Teenager).(0))[@res.braces ])
 let () =
   ((if ((module Teenager) |.u age) |.u isAdult
-    then ((Js.log {js|has responsibilities|js})[@res.uapp ])
-    else ((Js.log {js|can play in the playground|js})[@res.uapp ]))
+    then Js.log {js|has responsibilities|js}
+    else Js.log {js|can play in the playground|js})
   [@res.braces ][@res.ternary ])
 let () =
   ((if ((module Streets).(0)) |.u isExpensive
-    then ((Js.log {js|big money|js})[@res.uapp ])
-    else ((Js.log {js|affordable|js})[@res.uapp ]))
+    then Js.log {js|big money|js}
+    else Js.log {js|affordable|js})
   [@res.braces ][@res.ternary ])
 let () =
   ((let a = 1 in
@@ -106,7 +97,7 @@ let () =
     let b = 2 in
     ((module Teenager) |.u age) |.u Js.log;
     ((if (((module Teenager).(0)) |.u age) |.u isAdult
-      then ((Js.log {js|has responsibilities|js})[@res.uapp ])
-      else ((Js.log {js|can play in the playground|js})[@res.uapp ]))
+      then Js.log {js|has responsibilities|js}
+      else Js.log {js|can play in the playground|js})
     [@res.ternary ]))
   [@res.braces ])

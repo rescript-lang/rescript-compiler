@@ -7,4 +7,4 @@
 
   This let-binding misses an expression
 
-let x = ((doStuff y)[@res.uapp ])
+let x = doStuff y

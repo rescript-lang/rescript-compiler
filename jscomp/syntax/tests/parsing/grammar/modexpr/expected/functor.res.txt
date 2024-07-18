@@ -33,10 +33,7 @@ module Make(Cmp:sig
       ((Function$
           (fun (y : coll) ->
              fun (e : key) ->
-               if
-                 ((List.exists ((Function$ (fun x -> ((eq x e)[@res.uapp ])))
-                     [@res.arity 1]) y)
-                 [@res.uapp ])
+               if List.exists ((Function$ (fun x -> eq x e))[@res.arity 1]) y
                then y
                else e :: y))
       [@res.arity 2])

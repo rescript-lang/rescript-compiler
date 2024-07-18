@@ -10,4 +10,4 @@ external svg : (unit -> React.element, [ `Has_arity1 ]) function$ = "svg"
 external svg : (unit -> React.element, [ `Has_arity1 ]) function$ = "svg"
 external createDate :
   (unit -> unit -> date, [ `Has_arity2 ]) function$ = "Date"[@@new ]
-let foobar = ((((createDate ())[@res.uapp ]) ())[@res.uapp ])
+let foobar = (createDate ()) ()

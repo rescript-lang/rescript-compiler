@@ -73,4 +73,4 @@ let f = ((Function$ (fun (`Instance (comp : Component.t) : React.t) -> ()))
   | `1 -> ()
   | `42 -> ()
   | `42444 -> ()
-  | `3 (x, y, z) -> ((Js.log3 x y z)[@res.uapp ])
+  | `3 (x, y, z) -> Js.log3 x y z

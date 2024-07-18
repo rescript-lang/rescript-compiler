@@ -10,8 +10,8 @@ let r = { a = (expr : int); b = (x : string) }
 let r = { expr with pexp_attributes = [||] }
 let r = { expr with pexp_attributes = [||]; pexp_loc = loc }
 let r = { expr with pexp_attributes = [||] }
-let r = { (((make ())[@res.uapp ]) : myRecord) with foo = bar }
-let r = { (((make ())[@res.uapp ]) : myRecord) with foo = bar }
+let r = { (make () : myRecord) with foo = bar }
+let r = { (make () : myRecord) with foo = bar }
 let r =
   {
     x = ((None)[@res.optional ]);

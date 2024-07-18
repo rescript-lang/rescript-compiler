@@ -1,25 +1,20 @@
-;;((wait 2)[@res.await ][@res.uapp ])
+;;((wait 2)[@res.await ])
 let maybeSomeValue =
-  match ((fetchData url)[@res.await ][@res.uapp ]) with
+  match ((fetchData url)[@res.await ]) with
   | data -> Some data
   | exception JsError _ -> None
 let x = ((1)[@res.await ]) + 2
-let x =
-  ((wait 1)[@res.await ][@res.uapp ]) + ((wait 2)[@res.await ][@res.uapp ])
+let x = ((wait 1)[@res.await ]) + ((wait 2)[@res.await ])
 let () =
-  ((let response = ((fetch {js|/users.json|js})[@res.await ][@res.uapp ]) in
-    let users = ((response.json ())[@res.await ][@res.uapp ]) in
+  ((let response = ((fetch {js|/users.json|js})[@res.await ]) in
+    let users = ((response.json ())[@res.await ]) in
     let comments =
-      ((((fetch {js|comment.json|js})[@res.await ][@res.uapp ]).json ())
-      [@res.await ][@res.uapp ]).(0) in
-    ((Js.log2 users comments)[@res.uapp ]))
+      ((((fetch {js|comment.json|js})[@res.await ]).json ())
+      [@res.await ]).(0) in
+    Js.log2 users comments)
   [@res.braces ])
-let () = ((delay 10)[@res.braces ][@res.await ][@res.uapp ])
-let () =
-  ((((delay 10)
-    [@res.await ][@res.uapp ]);
-    ((delay 20)
-    [@res.await ][@res.uapp ]))
+let () = ((delay 10)[@res.braces ][@res.await ])
+let () = ((((delay 10)[@res.await ]); ((delay 20)[@res.await ]))
   [@res.braces ])
 let forEach = ((Js.Import Belt.List.forEach)[@res.await ][@a ][@b ])
 module M = ((Belt.List)[@res.await ][@a ][@b ])
