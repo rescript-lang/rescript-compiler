@@ -1,6 +1,5 @@
 ;;[%expr ]
 ;;[%expr.extension ]
 ;;[%expr.extension.with.args {js|argument|js}]
-;;[%expr.extension.with.args
-    ((Function$ (fun x -> ((f x)[@res.uapp ])))[@res.arity 1])]
+;;[%expr.extension.with.args ((Function$ (fun x -> f x))[@res.arity 1])]
 let x = ([%raw {js|1|js}]) + ([%raw {js|2|js}])

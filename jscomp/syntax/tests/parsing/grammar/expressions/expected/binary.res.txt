@@ -1,27 +1,16 @@
-;;node :=
-    (if newBalance == 2
-     then avl |.u ((rotateRight node)[@res.uapp ])
-     else node)
-;;node :=
-    ((if newBalance == 2
-      then avl |.u ((rotateRight node)[@res.uapp ])
-      else node)
+;;node := (if newBalance == 2 then avl |.u (rotateRight node) else node)
+;;node := ((if newBalance == 2 then avl |.u (rotateRight node) else node)
     [@attr ])
-let x = (((match z with | _ -> false) z)[@res.uapp ])
-let x = ((((match z with | _ -> false)[@attr ]) z)[@res.uapp ])
-let x = (((assert z) z)[@res.uapp ])
-let x = ((((assert z)[@attr ]) z)[@res.uapp ])
-let x =
-  (((try ((sideEffect ())[@res.uapp ]) with | _ -> ((f ())[@res.uapp ])) z)
-  [@res.uapp ])
-let x =
-  ((((try ((sideEffect ())[@res.uapp ]) with | _ -> ((f ())[@res.uapp ]))
-      [@attr ]) z)
-  [@res.uapp ])
-let x = ((for i = 0 to 10 do () done z)[@res.uapp ])
-let x = ((((for i = 0 to 10 do () done)[@attr ]) z)[@res.uapp ])
-let x = ((while condition do () done z)[@res.uapp ])
-let x = ((((while condition do () done)[@attr ]) z)[@res.uapp ])
+let x = (match z with | _ -> false) z
+let x = ((match z with | _ -> false)[@attr ]) z
+let x = (assert z) z
+let x = ((assert z)[@attr ]) z
+let x = (try sideEffect () with | _ -> f ()) z
+let x = ((try sideEffect () with | _ -> f ())[@attr ]) z
+let x = for i = 0 to 10 do () done z
+let x = ((for i = 0 to 10 do () done)[@attr ]) z
+let x = while condition do () done z
+let x = ((while condition do () done)[@attr ]) z
 let x = (a + (-1)) + (-2)
 let x = (a + (((-1))[@attr ])) + (((-2))[@attr ])
 let x = a - b
@@ -29,9 +18,7 @@ let x = a -. b
 ;;Constructor (a, b)
 ;;`Constructor (a, b)
 let _ = ((Constructor (a, b); `Constructor (a, b))[@res.braces ])
-;;((library.getBalance account)[@res.uapp ]) |.u
-    ((Promise.Js.catch
-        ((Function$
-            (fun _ -> ((Promise.resolved None)[@res.braces ][@res.uapp ])))
-        [@res.arity 1]))
-    [@res.uapp ])
+;;(library.getBalance account) |.u
+    (Promise.Js.catch
+       ((Function$ (fun _ -> ((Promise.resolved None)[@res.braces ])))
+       [@res.arity 1]))

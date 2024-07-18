@@ -73,7 +73,7 @@ let infix_ops = ["|."; "|.u"; "#="; "##"]
 
 let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) : exp =
   match view_as_app e infix_ops with
-  | Some {op = ("|." | "|.u") as op; args = [a_; f_]; loc} -> (
+  | Some {op = "|." | "|.u"; args = [a_; f_]; loc} -> (
     (*
         a |. f
         a |. f b c [@bs]  --> f a b c [@bs]
@@ -81,11 +81,6 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) : exp =
         a |. `Variant
         a |. (b |. f c [@bs])
       *)
-    let add_uncurried_attr attrs =
-      if op = "|.u" && not (List.mem Ast_attributes.res_uapp attrs) then
-        Ast_attributes.res_uapp :: attrs
-      else attrs
-    in
     let a = self.expr self a_ in
     let f = self.expr self f_ in
     match f.pexp_desc with
@@ -98,8 +93,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) : exp =
       {
         pexp_desc = Pexp_apply (fn1, (Nolabel, a) :: args);
         pexp_loc = e.pexp_loc;
-        pexp_attributes =
-          add_uncurried_attr (e.pexp_attributes @ f.pexp_attributes);
+        pexp_attributes = e.pexp_attributes @ f.pexp_attributes;
       }
     | Pexp_tuple xs ->
       bound a (fun bounded_obj_arg ->
@@ -119,18 +113,15 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) : exp =
                        {
                          Parsetree.pexp_desc =
                            Pexp_apply (fn, (Nolabel, bounded_obj_arg) :: args);
-                         pexp_attributes = add_uncurried_attr [];
+                         pexp_attributes = [];
                          pexp_loc = fn.pexp_loc;
                        }
                      | _ ->
-                       Ast_compatible.app1 ~loc:fn.pexp_loc
-                         ~attrs:(add_uncurried_attr []) fn bounded_obj_arg));
+                       Ast_compatible.app1 ~loc:fn.pexp_loc fn bounded_obj_arg));
             pexp_attributes = f.pexp_attributes;
             pexp_loc = f.pexp_loc;
           })
-    | _ ->
-      Ast_compatible.app1 ~loc ~attrs:(add_uncurried_attr e.pexp_attributes) f a
-    )
+    | _ -> Ast_compatible.app1 ~loc ~attrs:e.pexp_attributes f a)
   | Some {op = "##"; loc; args = [obj; rest]} -> (
     (* - obj##property
        - obj#(method a b )
@@ -173,7 +164,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) : exp =
       let arg = self.expr self arg in
       let fn = Exp.send ~loc obj {txt = name ^ Literals.setter_suffix; loc} in
       Exp.constraint_ ~loc
-        (Exp.apply ~loc ~attrs:[Ast_attributes.res_uapp] fn [(Nolabel, arg)])
+        (Exp.apply ~loc fn [(Nolabel, arg)])
         (Ast_literal.type_unit ~loc ())
     in
     match obj.pexp_desc with

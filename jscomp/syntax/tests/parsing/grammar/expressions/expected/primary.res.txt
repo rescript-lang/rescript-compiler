@@ -10,24 +10,23 @@ let x = arr.((x : int))
 let x = (arr.(0)).(1)
 let x = (arr.((x : int))).((y : int))
 ;;arr.(0) <- (a + b)
-;;((f ())[@res.uapp ])
-;;((((f ())[@res.uapp ]) ())[@res.uapp ])
-;;((f a)[@res.uapp ])
-;;((((f a)[@res.uapp ]) a)[@res.uapp ])
-;;((f a)[@res.uapp ])
-;;((f (x : int))[@res.uapp ])
-;;((f a b c)[@res.uapp ])
-;;((f a b c)[@res.uapp ])
+;;f ()
+;;(f ()) ()
+;;f a
+;;(f a) a
+;;f a
+;;f (x : int)
+;;f a b c
+;;f a b c
+;;f ~a:((a)[@res.namedArgLoc ]) ~b:((bArg)[@res.namedArgLoc ]) ?c:((c)
+    [@res.namedArgLoc ]) ?d:((expr)[@res.namedArgLoc ])
 ;;((f ~a:((a)[@res.namedArgLoc ]) ~b:((bArg)[@res.namedArgLoc ]) ?c:((c)
-      [@res.namedArgLoc ]) ?d:((expr)[@res.namedArgLoc ]))[@res.uapp ])
-;;((((((f ~a:((a)[@res.namedArgLoc ]) ~b:((bArg)[@res.namedArgLoc ]) ?c:((c)
-          [@res.namedArgLoc ]) ?d:((expr)[@res.namedArgLoc ]))[@res.uapp ])
-        ~a:((a)[@res.namedArgLoc ]) ~b:((bArg)[@res.namedArgLoc ]) ?c:((c)
-        [@res.namedArgLoc ]) ?d:((expr)[@res.namedArgLoc ]))[@res.uapp ])
-      ~a:((a)[@res.namedArgLoc ]) ~b:((bArg)[@res.namedArgLoc ]) ?c:((c)
-      [@res.namedArgLoc ]) ?d:((expr)[@res.namedArgLoc ]))[@res.uapp ])
-;;((f ~a:(((x : int))[@res.namedArgLoc ]) ?b:(((y : int))[@res.namedArgLoc ]))
-  [@res.uapp ])
+      [@res.namedArgLoc ]) ?d:((expr)[@res.namedArgLoc ])) ~a:((a)
+     [@res.namedArgLoc ]) ~b:((bArg)[@res.namedArgLoc ]) ?c:((c)
+     [@res.namedArgLoc ]) ?d:((expr)[@res.namedArgLoc ])) ~a:((a)
+    [@res.namedArgLoc ]) ~b:((bArg)[@res.namedArgLoc ]) ?c:((c)
+    [@res.namedArgLoc ]) ?d:((expr)[@res.namedArgLoc ])
+;;f ~a:(((x : int))[@res.namedArgLoc ]) ?b:(((y : int))[@res.namedArgLoc ])
 ;;connection#platformId
 ;;((connection#left)#account)#accountName
 ;;john#age #= 99

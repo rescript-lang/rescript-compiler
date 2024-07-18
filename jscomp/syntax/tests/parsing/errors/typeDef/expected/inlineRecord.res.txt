@@ -50,5 +50,5 @@ let make =
            <
              handleClick: (Click.t -> unit, [ `Has_arity1 ]) function$  ;
              value: string   > )
-         -> ((render props)[@res.uapp ])))
+         -> render props))
   [@res.arity 1])

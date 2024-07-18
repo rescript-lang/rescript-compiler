@@ -82,16 +82,13 @@ let findThreadByIdLinearScan =
                                   FBID.ofStringUnsafe in
                           thisId == id)
                         [@res.braces ])))[@res.arity 2]))
-           [@res.braces ][@res.uapp ])))
+           [@res.braces ])))
   [@res.arity 2])
-let x = ((loop 0 (Nil |.u ((push doc)[@res.uapp ])))
-  [@res.braces ][@res.uapp ])
+let x = ((loop 0 (Nil |.u (push doc)))[@res.braces ])
 ;;match stack with
   | Empty -> [%rescript.exprhole ]
   | Cons (doc, rest) -> ()
   | Join (doc1, doc2) ->
-      (buffer |.u ((Buffer.add_string indentation)[@res.uapp ]);
-       ((loop ())
-       [@res.uapp ]))
+      (buffer |.u (Buffer.add_string indentation); loop ())
 let pipeline =
   match scheduler with | Some -> [%rescript.exprhole ] | None -> ()

@@ -13,4 +13,4 @@
 
 ;;if match
   then let a = 1 in (m.left).compatibleTypeArgs <- ([%rescript.exprhole ])
-  else ((sideEffect ())[@res.uapp ])
+  else sideEffect ()

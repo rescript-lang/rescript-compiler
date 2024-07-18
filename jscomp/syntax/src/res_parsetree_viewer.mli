@@ -14,9 +14,6 @@ val functor_type :
   list
   * Parsetree.module_type
 
-val process_uncurried_app_attribute :
-  Parsetree.attributes -> bool * Parsetree.attributes
-
 val process_partial_app_attribute :
   Parsetree.attributes -> bool * Parsetree.attributes
 

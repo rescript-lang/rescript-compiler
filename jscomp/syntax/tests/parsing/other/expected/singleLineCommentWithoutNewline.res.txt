@@ -1,1 +1,1 @@
-;;((RootView.init ())[@res.uapp ])
+;;RootView.init ()

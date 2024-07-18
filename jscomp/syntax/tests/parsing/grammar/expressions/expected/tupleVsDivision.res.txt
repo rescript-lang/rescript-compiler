@@ -1,12 +1,8 @@
-;;((foo ())[@res.uapp ]) / 1
-;;((foo ())[@res.uapp ])
+;;(foo ()) / 1
+;;foo ()
 ;;(1, 2) |.u printTuple
 let f =
   ((Function$
-      (fun () ->
-         ((((foo ())[@res.uapp ]) / 1;
-           ((foo ())
-           [@res.uapp ]);
-           (1, 2) |.u printTuple)
+      (fun () -> (((foo ()) / 1; foo (); (1, 2) |.u printTuple)
          [@res.braces ])))
   [@res.arity 1])

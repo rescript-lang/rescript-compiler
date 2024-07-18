@@ -1,12 +1,10 @@
-;;((foo ((Function$ (fun _ -> bla))[@res.arity 1]) blaz)[@res.uapp ])
-;;((foo ((Function$ (fun _ -> bla))[@res.arity 1]) blaz)[@res.uapp ])
-;;((foo ((Function$ (fun _ -> bla))[@res.arity 1]) blaz)[@res.uapp ])
-;;((foo ((Function$ (fun _ -> bla))[@res.arity 1])
-      ((Function$ (fun _ -> blaz))[@res.arity 1]))[@res.uapp ])
-;;((List.map ((Function$ (fun x -> x + 1))[@res.arity 1]) myList)
-  [@res.uapp ])
-;;((List.reduce ((Function$ (fun acc -> fun curr -> acc + curr))
-      [@res.arity 2]) 0 myList)[@res.uapp ])
-let unitUncurried = ((apply ())[@res.uapp ])
-;;((call ~a:(((((a)[@res.namedArgLoc ]) : int))[@res.namedArgLoc ]))
-  [@res.uapp ])
+;;foo ((Function$ (fun _ -> bla))[@res.arity 1]) blaz
+;;foo ((Function$ (fun _ -> bla))[@res.arity 1]) blaz
+;;foo ((Function$ (fun _ -> bla))[@res.arity 1]) blaz
+;;foo ((Function$ (fun _ -> bla))[@res.arity 1]) ((Function$ (fun _ -> blaz))
+    [@res.arity 1])
+;;List.map ((Function$ (fun x -> x + 1))[@res.arity 1]) myList
+;;List.reduce ((Function$ (fun acc -> fun curr -> acc + curr))[@res.arity 2])
+    0 myList
+let unitUncurried = apply ()
+;;call ~a:(((((a)[@res.namedArgLoc ]) : int))[@res.namedArgLoc ])

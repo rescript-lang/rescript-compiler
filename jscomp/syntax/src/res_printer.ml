@@ -4142,9 +4142,7 @@ and print_pexp_apply ~state expr cmt_tbl =
         (fun (lbl, arg) -> (lbl, ParsetreeViewer.rewrite_underscore_apply arg))
         args
     in
-    let _, attrs =
-      ParsetreeViewer.process_uncurried_app_attribute expr.pexp_attributes
-    in
+    let attrs = expr.pexp_attributes in
     let partial, attrs = ParsetreeViewer.process_partial_app_attribute attrs in
     let args =
       if partial then

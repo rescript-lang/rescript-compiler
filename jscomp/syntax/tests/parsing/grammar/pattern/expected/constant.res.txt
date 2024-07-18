@@ -45,26 +45,22 @@ let f = ((Function$ (fun (1 : int) -> ()))[@res.arity 1])
 ;;for i as x = 0 to 10 do () done
 ;;match listPatterns with
   | (true, pattern)::patterns ->
-      let patterns =
-        ((List.rev ((List.map filterSpread patterns)[@res.uapp ]))
-        [@res.uapp ]) in
-      ((makeListPattern loc patterns (Some pattern))[@res.uapp ])
+      let patterns = List.rev (List.map filterSpread patterns) in
+      makeListPattern loc patterns (Some pattern)
   | patterns ->
-      let patterns =
-        ((List.rev ((List.map filterSpread patterns)[@res.uapp ]))
-        [@res.uapp ]) in
-      ((makeListPattern loc patterns None)[@res.uapp ])
+      let patterns = List.rev (List.map filterSpread patterns) in
+      makeListPattern loc patterns None
 let _0 = 0x9A
 let print =
   ((Function$
       (fun ppf ->
          fun i ->
            match i.stamp with
-           | 0 -> ((fprintf ppf {js|%s!|js} i.name)[@res.uapp ])
-           | (-1) -> ((fprintf ppf {js|%s#|js} i.name)[@res.uapp ])
-           | 1 -> ((fprintf ppf {js|%s#|js} i.name)[@res.uapp ])
-           | (-1.) -> ((fprintf ppf {js|%s#|js} i.name)[@res.uapp ])
-           | 1. -> ((fprintf ppf {js|%s#|js} i.name)[@res.uapp ])))
+           | 0 -> fprintf ppf {js|%s!|js} i.name
+           | (-1) -> fprintf ppf {js|%s#|js} i.name
+           | 1 -> fprintf ppf {js|%s#|js} i.name
+           | (-1.) -> fprintf ppf {js|%s#|js} i.name
+           | 1. -> fprintf ppf {js|%s#|js} i.name))
   [@res.arity 2])
 let (-1)..(-1.) = x
 ;;match science with

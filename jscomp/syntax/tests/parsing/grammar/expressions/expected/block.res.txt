@@ -1,29 +1,19 @@
 let b =
   ((let module Array = Belt.Array in
-      ([|1;2|] |.u ((Array.map ((Function$ (fun x -> x + 1))[@res.arity 1]))
-         [@res.uapp ]))
+      ([|1;2|] |.u (Array.map ((Function$ (fun x -> x + 1))[@res.arity 1])))
         |.u Js.log)
   [@res.braces ])
 let b =
   ((let open Belt.Array in
-      ([|1;2|] |.u ((map ((Function$ (fun x -> x + 1))[@res.arity 1]))
-         [@res.uapp ]))
-        |.u Js.log)
+      ([|1;2|] |.u (map ((Function$ (fun x -> x + 1))[@res.arity 1]))) |.u
+        Js.log)
   [@res.braces ])
-let b = ((let exception QuitEarly  in ((raise QuitEarly)[@res.uapp ]))
-  [@res.braces ])
+let b = ((let exception QuitEarly  in raise QuitEarly)[@res.braces ])
 let b = ((let a = 1 in let b = 2 in a + b)[@res.braces ])
-let b = ((let _ = ((sideEffect ())[@res.uapp ]) in ())[@res.braces ])
-let b = ((let _ = ((sideEffect ())[@res.uapp ]) in ())[@res.braces ])
-let b = ((((a ())[@res.uapp ]); ((b ())[@res.uapp ]); ((c ())[@res.uapp ]))
-  [@res.braces ])
-let b =
-  ((((a ())
-    [@res.uapp ]);
-    ((b ())
-    [@res.uapp ]);
-    (let a = 1 in ((f a)[@res.uapp ])))
-  [@res.braces ])
+let b = ((let _ = sideEffect () in ())[@res.braces ])
+let b = ((let _ = sideEffect () in ())[@res.braces ])
+let b = ((a (); b (); c ())[@res.braces ])
+let b = ((a (); b (); (let a = 1 in f a))[@res.braces ])
 let b = ((let a = 1 in let b = 2 in ())[@res.braces ])
 let b =
   ((let module Array = Belt.Array in
@@ -31,56 +21,33 @@ let b =
         let exception Terminate of int  in
           let a = 1 in
           let b = 2 in
-          ((sideEffect ())
-          [@res.uapp ]);
+          sideEffect ();
           (let x = (1 + 2) |.u ((Function$ (fun x -> x + 1))[@res.arity 1]) in
-           ((raise (Terminate x))[@res.uapp ])))
+           raise (Terminate x)))
   [@res.braces ])
-let b =
-  ((((f ())
-    [@res.uapp ]);
-    ((g ())
-    [@res.uapp ]);
-    ((h ())
-    [@res.uapp ]);
-    (let arr = [|1;2;3|] in ()))
-  [@res.braces ])
+let b = ((f (); g (); h (); (let arr = [|1;2;3|] in ()))[@res.braces ])
 let res =
   ((let a = {js|a starts out as|js} in
-    (((((print_string a)
-       [@res.uapp ]);
-       (let a = 20 in ((print_int a)[@res.uapp ]))))
+    (((print_string a; (let a = 20 in print_int a)))
     [@res.braces ]);
-    ((print_string a)
-    [@res.uapp ]))
+    print_string a)
   [@res.braces ])
 let res =
   ((let a = {js|first its a string|js} in
-    let a = 20 in
-    ((print_int a)
-    [@res.uapp ]);
-    ((print_int a)
-    [@res.uapp ]);
-    ((print_int a)
-    [@res.uapp ]))
+    let a = 20 in print_int a; print_int a; print_int a)
   [@res.braces ])
 let res =
   ((let a = {js|a is always a string|js} in
-    ((print_string a)
-    [@res.uapp ]);
-    (let b = 30 in ((print_int b)[@res.uapp ])))
+    print_string a; (let b = 30 in print_int b))
   [@res.braces ])
 let nestedLet = ((let _ = 1 in ())[@res.braces ])
 let nestedLet = ((let _ = 1 in 2)[@res.braces ])
 let init =
-  ((Function$
-      (fun () -> ((((foo (1 == 1))[@res.uapp ]); [%assert 1 == 2])
-         [@res.braces ])))
+  ((Function$ (fun () -> ((foo (1 == 1); [%assert 1 == 2])[@res.braces ])))
   [@res.arity 1])
 let init =
   ((Function$
-      (fun () ->
-         (([%assert 1 == 2]; ((foo (1 == 1))[@res.uapp ]); [%assert 1 == 2])
+      (fun () -> (([%assert 1 == 2]; foo (1 == 1); [%assert 1 == 2])
          [@res.braces ])))
   [@res.arity 1])
 let f =
@@ -104,21 +71,19 @@ let reifyStyle (type a) =
                        [@res.template ])] : ('a -> constructor -> bool,
                                               [ `Has_arity2 ]) function$)
               end in
-              ((if ((Js.typeof x)[@res.uapp ]) = {js|string|js}
-                then ((Obj.magic String)[@res.uapp ])
+              ((if (Js.typeof x) = {js|string|js}
+                then Obj.magic String
                 else
-                  if ((Internal.instanceOf x Internal.canvasGradient)
-                    [@res.uapp ])
-                  then ((Obj.magic Gradient)[@res.uapp ])
+                  if Internal.instanceOf x Internal.canvasGradient
+                  then Obj.magic Gradient
                   else
-                    if ((Internal.instanceOf x Internal.canvasPattern)
-                      [@res.uapp ])
-                    then ((Obj.magic Pattern)[@res.uapp ])
+                    if Internal.instanceOf x Internal.canvasPattern
+                    then Obj.magic Pattern
                     else
-                      ((raise
-                          (Invalid_argument
-                             {js|Unknown canvas style kind. Known values are: String, CanvasGradient, CanvasPattern|js}))
-                      [@res.uapp ])), ((Obj.magic x)[@res.uapp ])))
+                      raise
+                        (Invalid_argument
+                           {js|Unknown canvas style kind. Known values are: String, CanvasGradient, CanvasPattern|js})),
+                (Obj.magic x)))
          [@res.braces ]) : (a style * a))))
   [@res.arity 1])
 let calc_fps =

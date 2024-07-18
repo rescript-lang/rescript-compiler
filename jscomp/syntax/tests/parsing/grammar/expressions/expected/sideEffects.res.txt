@@ -1,27 +1,13 @@
-;;((foo ())[@res.uapp ])
-;;((bar ())[@res.uapp ])
-let () = ((((foo ())[@res.uapp ]); ((bar ())[@res.uapp ]))[@res.braces ])
+;;foo ()
+;;bar ()
+let () = ((foo (); bar ())[@res.braces ])
 let () =
   ((let x = 1 in
-    ((sideEffect ())
-    [@res.uapp ]);
-    (let y = 2 in
-     ((sideEffect2 ())
-     [@res.uapp ]);
-     (let z = 3 in ((sideEffect3 ())[@res.uapp ]))))
+    sideEffect ();
+    (let y = 2 in sideEffect2 (); (let z = 3 in sideEffect3 ())))
   [@res.braces ])
 ;;while true do
-    ((sideEffect1 ())
-    [@res.uapp ]);
-    (let x = 1 in
-     ((sideEffect2 ())
-     [@res.uapp ]);
-     (let y = 2 in ((sideEffect3 ())[@res.uapp ])))
-    done
+    sideEffect1 ();
+    (let x = 1 in sideEffect2 (); (let y = 2 in sideEffect3 ())) done
 ;;match color with
-  | Blue ->
-      (((getResult ())
-       [@res.uapp ]);
-       ((sideEffect ())
-       [@res.uapp ]);
-       (let x = 1 in ((sideEffect2 ())[@res.uapp ])))
+  | Blue -> (getResult (); sideEffect (); (let x = 1 in sideEffect2 ()))

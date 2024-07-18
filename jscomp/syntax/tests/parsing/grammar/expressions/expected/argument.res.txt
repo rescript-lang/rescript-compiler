@@ -1,18 +1,15 @@
 let foo =
   ((Function$
       (fun ~a:((a)[@res.namedArgLoc ]) ->
-         ((a (let __res_unit = () in __res_unit))[@res.uapp ]) +. 1.))
+         (a (let __res_unit = () in __res_unit)) +. 1.))
   [@res.arity 1])
 let a = ((Function$ (fun () -> 2))[@res.arity 1])
-let bar = ((foo ~a:((a)[@res.namedArgLoc ]))[@res.uapp ])
+let bar = foo ~a:((a)[@res.namedArgLoc ])
 let comparisonResult =
-  ((compare currentNode.value ~targetValue:((targetValue)[@res.namedArgLoc ]))
-  [@res.uapp ])
-;;((callback firstNode ~y:((y)[@res.namedArgLoc ]))[@res.uapp ])
-;;((document.createElementWithOptions {js|div|js}
-      ((elementProps
-          ~onClick:((Function$
-                       (fun _ -> ((Js.log {js|hello world|js})[@res.uapp ])))
-          [@res.namedArgLoc ][@res.arity 1]))[@res.uapp ]))[@res.uapp ])
-;;((resolve ())[@res.uapp ])
-;;((resolve (let __res_unit = () in __res_unit))[@res.uapp ])
+  compare currentNode.value ~targetValue:((targetValue)[@res.namedArgLoc ])
+;;callback firstNode ~y:((y)[@res.namedArgLoc ])
+;;document.createElementWithOptions {js|div|js}
+    (elementProps ~onClick:((Function$ (fun _ -> Js.log {js|hello world|js}))
+       [@res.namedArgLoc ][@res.arity 1]))
+;;resolve ()
+;;resolve (let __res_unit = () in __res_unit)

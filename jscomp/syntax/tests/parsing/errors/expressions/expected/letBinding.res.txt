@@ -82,7 +82,7 @@
 let foo = 2.
 let foo = true
 let foo = 2
-let foo = ((f ())[@res.uapp ])
+let foo = f ()
 let foo = ((2)[@res.braces ])
 let foo = (({js|foo|js})[@res.braces ])
 let foo as x = ()

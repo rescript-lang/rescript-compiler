@@ -48,21 +48,6 @@ let functor_type modtype =
   in
   process [] modtype
 
-let process_uncurried_app_attribute attrs =
-  let rec process uncurried_app acc attrs =
-    match attrs with
-    | [] -> (uncurried_app, List.rev acc)
-    | ( {
-          Location.txt =
-            "bs" (* still support @bs to convert .ml files *) | "res.uapp";
-        },
-        _ )
-      :: rest ->
-      process true acc rest
-    | attr :: rest -> process uncurried_app (attr :: acc) rest
-  in
-  process false [] attrs
-
 let process_partial_app_attribute attrs =
   let rec process partial_app acc attrs =
     match attrs with
@@ -210,10 +195,9 @@ let filter_parsing_attrs attrs =
       match attr with
       | ( {
             Location.txt =
-              ( "bs" | "res.uapp" | "res.arity" | "res.braces" | "ns.braces"
-              | "res.iflet" | "res.namedArgLoc" | "res.optional" | "res.ternary"
-              | "res.async" | "res.await" | "res.template"
-              | "res.taggedTemplate" );
+              ( "res.arity" | "res.braces" | "ns.braces" | "res.iflet"
+              | "res.namedArgLoc" | "res.optional" | "res.ternary" | "res.async"
+              | "res.await" | "res.template" | "res.taggedTemplate" );
           },
           _ ) ->
         false
@@ -367,9 +351,8 @@ let has_attributes attrs =
       match attr with
       | ( {
             Location.txt =
-              ( "bs" | "res.uapp" | "res.arity" | "res.braces" | "ns.braces"
-              | "res.iflet" | "res.ternary" | "res.async" | "res.await"
-              | "res.template" );
+              ( "res.arity" | "res.braces" | "ns.braces" | "res.iflet"
+              | "res.ternary" | "res.async" | "res.await" | "res.template" );
           },
           _ ) ->
         false
@@ -552,9 +535,8 @@ let is_printable_attribute attr =
   match attr with
   | ( {
         Location.txt =
-          ( "bs" | "res.uapp" | "res.arity" | "res.iflet" | "res.braces"
-          | "ns.braces" | "JSX" | "res.async" | "res.await" | "res.template"
-          | "res.ternary" );
+          ( "res.arity" | "res.iflet" | "res.braces" | "ns.braces" | "JSX"
+          | "res.async" | "res.await" | "res.template" | "res.ternary" );
       },
       _ ) ->
     false
