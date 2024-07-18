@@ -1,10 +1,6 @@
-;;try
-    ((let x = 1 in let y = 2 in ((dangerousCall (x + y))[@res.uapp ]))
-    [@res.braces ])
-  with | Foo -> ((Js.log {js|catched Foo|js})[@res.uapp ])
-  | Exit -> ((Js.log {js|catched exit|js})[@res.uapp ])
-;;try ((myDangerousFn ())[@res.uapp ])
-  with | Foo -> ((Js.log {js|catched Foo|js})[@res.uapp ])[@@attr ]
-let x =
-  ((let y = 1 in try ((apply y)[@res.braces ][@res.uapp ]) with | _ -> 2)
+;;try ((let x = 1 in let y = 2 in dangerousCall (x + y))[@res.braces ])
+  with | Foo -> Js.log {js|catched Foo|js}
+  | Exit -> Js.log {js|catched exit|js}
+;;try myDangerousFn () with | Foo -> Js.log {js|catched Foo|js}[@@attr ]
+let x = ((let y = 1 in try ((apply y)[@res.braces ]) with | _ -> 2)
   [@res.braces ])

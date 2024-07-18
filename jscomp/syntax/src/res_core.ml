@@ -153,7 +153,6 @@ module InExternal = struct
 end
 
 let jsx_attr = (Location.mknoloc "JSX", Parsetree.PStr [])
-let uncurried_app_attr = (Location.mknoloc "res.uapp", Parsetree.PStr [])
 let ternary_attr = (Location.mknoloc "res.ternary", Parsetree.PStr [])
 let if_let_attr = (Location.mknoloc "res.iflet", Parsetree.PStr [])
 let optional_attr = (Location.mknoloc "res.optional", Parsetree.PStr [])
@@ -2199,8 +2198,7 @@ and parse_binary_expr ?(context = OrdinaryExpr) ?a p prec =
         match (token, b.pexp_desc) with
         | BarGreater, Pexp_apply (fun_expr, args) ->
           {b with pexp_desc = Pexp_apply (fun_expr, args @ [(Nolabel, a)])}
-        | BarGreater, _ ->
-          Ast_helper.Exp.apply ~loc ~attrs:[uncurried_app_attr] b [(Nolabel, a)]
+        | BarGreater, _ -> Ast_helper.Exp.apply ~loc b [(Nolabel, a)]
         | _ ->
           Ast_helper.Exp.apply ~loc
             (make_infix_operator p token start_pos end_pos)
@@ -3719,8 +3717,7 @@ and parse_call_expr p fun_expr =
     Ext_list.fold_left args fun_expr (fun call_body args ->
         let args, wrap = process_underscore_application args in
         let exp =
-          let attrs = [uncurried_app_attr] in
-          let attrs = if is_partial then res_partial_attr :: attrs else attrs in
+          let attrs = if is_partial then [res_partial_attr] else [] in
           Ast_helper.Exp.apply ~loc ~attrs call_body args
         in
         wrap exp)

@@ -1,5 +1,5 @@
-let cApp = ((foo 3)[@res.uapp ])
-let uApp = ((foo 3)[@res.uapp ])
+let cApp = foo 3
+let uApp = foo 3
 let cFun = ((Function$ (fun x -> 3))[@res.arity 1])
 let uFun = ((Function$ (fun x -> 3))[@res.arity 1])
 let mixFun =
@@ -77,12 +77,10 @@ let (uannpoly : ('a -> string, [ `Has_arity1 ]) function$) = xx
 let (uannint : (int -> string, [ `Has_arity1 ]) function$) = xx
 let _ = ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1])
 let _ = ((Function$ ((fun x -> 34)[@res.async ][@att ]))[@res.arity 1])
-let _ = ((preserveAttr ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1]))
-  [@res.uapp ])
+let _ = preserveAttr ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1])
 let _ =
-  ((preserveAttr ((Function$ ((fun x -> 34)[@res.async ][@att ]))
-      [@res.arity 1]))
-  [@res.uapp ])
+  preserveAttr ((Function$ ((fun x -> 34)[@res.async ][@att ]))
+    [@res.arity 1])
 let t0 (type a) (type b) =
   ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
 let t1 (type a) (type b) =
@@ -107,8 +105,8 @@ type nonrec callback2 =
   (ReactEvent.Mouse.t -> unit as 'u, [ `Has_arity1 ]) function$
 type nonrec callback3 =
   (ReactEvent.Mouse.t -> unit, [ `Has_arity1 ]) function$ as 'callback
-let cApp = ((foo 3)[@res.uapp ])
-let uApp = ((foo 3)[@res.uapp ])
+let cApp = foo 3
+let uApp = foo 3
 let cFun = ((Function$ (fun x -> 3))[@res.arity 1])
 let uFun = ((Function$ (fun x -> 3))[@res.arity 1])
 let mixFun =
@@ -194,12 +192,10 @@ let (uannpoly : ('a -> string, [ `Has_arity1 ]) function$) = xx
 let (uannint : (int -> string, [ `Has_arity1 ]) function$) = xx
 let _ = ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1])
 let _ = ((Function$ ((fun x -> 34)[@res.async ][@att ]))[@res.arity 1])
-let _ = ((preserveAttr ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1]))
-  [@res.uapp ])
+let _ = preserveAttr ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1])
 let _ =
-  ((preserveAttr ((Function$ ((fun x -> 34)[@res.async ][@att ]))
-      [@res.arity 1]))
-  [@res.uapp ])
+  preserveAttr ((Function$ ((fun x -> 34)[@res.async ][@att ]))
+    [@res.arity 1])
 let t0 (type a) (type b) =
   ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
 let t1 (type a) (type b) =

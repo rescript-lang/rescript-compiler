@@ -6,5 +6,4 @@ type nonrec toValueLikeInstance =
     function$
 type nonrec 'a t = (module Test with type a = 'a)
 type nonrec t = (module Console) ref
-let (devices : (string, (module DEVICE)) Hastbl.t) = ((Hashtbl.creat 17)
-  [@res.uapp ])
+let (devices : (string, (module DEVICE)) Hastbl.t) = Hashtbl.creat 17

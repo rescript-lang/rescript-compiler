@@ -48,8 +48,7 @@
 
   Missing expression
 
-let newWrapper = { updateF; value = ((f xWrapper.currentValue)[@res.uapp ]) }
-let newWrapper =
-  { updateF; updateF2; value = ((f xWrapper.currentValue)[@res.uapp ]) }
+let newWrapper = { updateF; value = (f xWrapper.currentValue) }
+let newWrapper = { updateF; updateF2; value = (f xWrapper.currentValue) }
 let record = { field = ([%rescript.exprhole ]) }
 let record = { field = 2 }

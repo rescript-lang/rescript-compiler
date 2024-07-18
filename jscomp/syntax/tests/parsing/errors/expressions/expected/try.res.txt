@@ -9,5 +9,4 @@
 
   Did you forget a `catch` here?
 
-let parsedPayload =
-  try ((Js.Json.parseExn response)[@res.uapp ]) with | _ -> Js.Json.null
+let parsedPayload = try Js.Json.parseExn response with | _ -> Js.Json.null

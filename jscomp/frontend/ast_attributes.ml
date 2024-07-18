@@ -85,13 +85,6 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
       | "this", _ -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _, _ -> (st, attr :: acc))
 
-let process_bs (attrs : t) =
-  Ext_list.fold_left attrs (false, [])
-    (fun (st, acc) (({txt; loc = _}, _) as attr) ->
-      match (txt, st) with
-      | "bs", _ -> (true, acc)
-      | _, _ -> (st, attr :: acc))
-
 let external_attrs =
   [|
     "get";
@@ -281,10 +274,6 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   !st
 
 let locg = Location.none
-(* let bs : attr
-   =  {txt = "bs" ; loc = locg}, Ast_payload.empty *)
-
-let res_uapp : attr = ({txt = "res.uapp"; loc = locg}, Ast_payload.empty)
 
 let get : attr = ({txt = "get"; loc = locg}, Ast_payload.empty)
 

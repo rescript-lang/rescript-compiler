@@ -10,15 +10,12 @@ let sort (type s) =
          ((module Set)  : (module Set.S with type elt = s and type elt2 = t))
          -> fun l -> ()))
   [@res.arity 2])
-let foo =
-  ((Function$ (fun (module Foo)  -> fun baz -> ((Foo.bar baz)[@res.uapp ])))
+let foo = ((Function$ (fun (module Foo)  -> fun baz -> Foo.bar baz))
   [@res.arity 2])
 let bump_list (type a) =
   ((Function$
       (fun ((module B)  : (module Bumpable with type t = a)) ->
-         fun (l : a list) ->
-           ((List.map ~f:((B.bump l)[@res.namedArgLoc ][@res.uapp ]))
-           [@res.uapp ])))
+         fun (l : a list) -> List.map ~f:((B.bump l)[@res.namedArgLoc ])))
   [@res.arity 2])
 ;;match x with
   | (module Set)  -> ()

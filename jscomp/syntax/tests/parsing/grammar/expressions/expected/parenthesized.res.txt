@@ -19,9 +19,8 @@ let assertSmthing = assert true
 let jsx =
   ((div ~className:(({js|cx|js})[@res.namedArgLoc ]) ~children:[foo] ())
   [@JSX ])
-let ifExpr =
-  if true then ((Js.log true)[@res.uapp ]) else ((Js.log false)[@res.uapp ])
+let ifExpr = if true then Js.log true else Js.log false
 let forExpr = for p = 0 to 10 do () done
-let whileExpr = while true do ((doSomeImperativeThing ())[@res.uapp ]) done
+let whileExpr = while true do doSomeImperativeThing () done
 let switchExpr = match myVar with | Blue -> {js|blue|js} | Red -> {js|red|js}
 let constrainedExpr = (x : int)

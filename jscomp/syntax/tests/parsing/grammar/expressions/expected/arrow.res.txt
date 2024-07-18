@@ -1,11 +1,7 @@
 let f = ((Function$ (fun x -> x + 1))[@res.arity 1])
-let f = ((Function$ (fun _ -> ((Js.log {js|test|js})[@res.uapp ])))
-  [@res.arity 1])
-let f = ((Function$ (fun () -> ((Js.log {js|unit|js})[@res.uapp ])))
-  [@res.arity 1])
-let f =
-  ((Function$
-      (fun (Reducer (inst, comp)) -> ((inst.render comp)[@res.uapp ])))
+let f = ((Function$ (fun _ -> Js.log {js|test|js}))[@res.arity 1])
+let f = ((Function$ (fun () -> Js.log {js|unit|js}))[@res.arity 1])
+let f = ((Function$ (fun (Reducer (inst, comp)) -> inst.render comp))
   [@res.arity 1])
 let f = ((Function$ (fun (Instance) -> ()))[@res.arity 1])
 let f = ((Function$ (fun a -> fun b -> a + b))[@res.arity 2])
@@ -101,43 +97,38 @@ let f =
            fun ~c:((c)[@res.namedArgLoc ][@attr ]) ->
              fun ((d)[@attrOnD ]) -> ()))
   [@res.arity 4])
-let f = ((Function$ (fun list -> ((list ())[@res.uapp ])))[@res.arity 1])
+let f = ((Function$ (fun list -> list ()))[@res.arity 1])
 ;;match colour with
   | Red when
       (l = l') ||
         (Clflags.classic.contents &&
-           ((l = Nolabel) && (not ((is_optional l')[@res.uapp ]))))
+           ((l = Nolabel) && (not (is_optional l'))))
       -> (t1, t2)
   | _ -> ()
 let arr =
-  [|((Function$ ((fun _ -> ((doThings ())[@res.uapp ]))))
-    [@res.arity 1]);((Function$ ((fun _ -> ((doThings ())[@res.uapp ]))))
-    [@res.arity 1]);((Function$ ((fun _ -> ((doThings ())[@res.uapp ]))))
-    [@res.arity 1])|]
+  [|((Function$ ((fun _ -> doThings ())))
+    [@res.arity 1]);((Function$ ((fun _ -> doThings ())))
+    [@res.arity 1]);((Function$ ((fun _ -> doThings ())))[@res.arity 1])|]
 let list =
-  [((Function$ ((fun _ -> ((doThings ())[@res.uapp ]))))
+  [((Function$ ((fun _ -> doThings ())))
   [@res.arity 1]);
-  ((Function$ ((fun _ -> ((doThings ())[@res.uapp ]))))
+  ((Function$ ((fun _ -> doThings ())))
   [@res.arity 1]);
-  ((Function$ ((fun _ -> ((doThings ())[@res.uapp ]))))
+  ((Function$ ((fun _ -> doThings ())))
   [@res.arity 1])]
 let tuple =
-  (((Function$ (fun _ -> ((doThings ())[@res.uapp ])))[@res.arity 1]),
-    ((Function$ (fun _ -> ((doThings ())[@res.uapp ])))[@res.arity 1]),
-    ((Function$ (fun _ -> ((doThings ())[@res.uapp ])))[@res.arity 1]))
-;;((Function$ (fun _ -> ((doThings ())[@res.uapp ])))[@res.arity 1])
+  (((Function$ (fun _ -> doThings ()))[@res.arity 1]),
+    ((Function$ (fun _ -> doThings ()))[@res.arity 1]),
+    ((Function$ (fun _ -> doThings ()))[@res.arity 1]))
+;;((Function$ (fun _ -> doThings ()))[@res.arity 1])
 let x =
   Constructore
-    (((Function$ (fun _ -> ((copyChecklistItemCB ())[@res.uapp ])))
-      [@res.arity 1]),
-      ((Function$ (fun _ -> ((copyChecklistItemCB ())[@res.uapp ])))
-      [@res.arity 1]))
+    (((Function$ (fun _ -> copyChecklistItemCB ()))[@res.arity 1]),
+      ((Function$ (fun _ -> copyChecklistItemCB ()))[@res.arity 1]))
 let y =
   `Constructore
-    (((Function$ (fun _ -> ((copyChecklistItemCB ())[@res.uapp ])))
-      [@res.arity 1]),
-      ((Function$ (fun _ -> ((copyChecklistItemCB ())[@res.uapp ])))
-      [@res.arity 1]))
+    (((Function$ (fun _ -> copyChecklistItemCB ()))[@res.arity 1]),
+      ((Function$ (fun _ -> copyChecklistItemCB ()))[@res.arity 1]))
 let f = ((Function$ (fun list -> list + 1))[@res.arity 1])
 let foo = (() : unit)
 type nonrec u = unit
@@ -146,4 +137,4 @@ type nonrec ('a, 'b) d = ('a * 'b)
 let c = ((Function$ (fun () -> ((1, 2) : ('a, 'b) d)))[@res.arity 1])
 let fn = ((Function$ (fun f -> f))[@res.arity 1])
 type nonrec f = (int -> unit, [ `Has_arity1 ]) function$
-let a = ((fn (((Function$ (fun _ -> ()))[@res.arity 1]) : f))[@res.uapp ])
+let a = fn (((Function$ (fun _ -> ()))[@res.arity 1]) : f)

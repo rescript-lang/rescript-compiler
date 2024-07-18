@@ -2,5 +2,4 @@ module A = [%modExprExtension ]
 module B = [%mod.expr.extension ]
 module C = [%mod.expr.extension.with.args {js|argument|js}]
 module D =
-  [%mod.expr.extension.with.args
-    ((Function$ (fun x -> ((f x)[@res.uapp ])))[@res.arity 1])]
+  [%mod.expr.extension.with.args ((Function$ (fun x -> f x))[@res.arity 1])]
