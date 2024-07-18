@@ -4152,7 +4152,6 @@ and print_pexp_apply ~state expr cmt_tbl =
         args @ [(Asttypes.Labelled "...", dummy)]
       else args
     in
-    let dotted = false in
     let call_expr_doc =
       let doc = print_expression_with_comments ~state call_expr cmt_tbl in
       match Parens.call_expr call_expr with
@@ -4162,16 +4161,14 @@ and print_pexp_apply ~state expr cmt_tbl =
     in
     if ParsetreeViewer.requires_special_callback_printing_first_arg args then
       let args_doc =
-        print_arguments_with_callback_in_first_position ~dotted ~state args
-          cmt_tbl
+        print_arguments_with_callback_in_first_position ~state args cmt_tbl
       in
       Doc.concat
         [print_attributes ~state attrs cmt_tbl; call_expr_doc; args_doc]
     else if ParsetreeViewer.requires_special_callback_printing_last_arg args
     then
       let args_doc =
-        print_arguments_with_callback_in_last_position ~state ~dotted args
-          cmt_tbl
+        print_arguments_with_callback_in_last_position ~state args cmt_tbl
       in
       (*
        * Fixes the following layout (the `[` and `]` should break):
@@ -4198,7 +4195,7 @@ and print_pexp_apply ~state expr cmt_tbl =
           args_doc;
         ]
     else
-      let args_doc = print_arguments ~state ~dotted ~partial args cmt_tbl in
+      let args_doc = print_arguments ~state ~partial args cmt_tbl in
       Doc.concat
         [print_attributes ~state attrs cmt_tbl; call_expr_doc; args_doc]
   | _ -> assert false
@@ -4534,8 +4531,7 @@ and print_jsx_name {txt = lident} =
     let segments = flatten [] lident in
     Doc.join ~sep:Doc.dot segments
 
-and print_arguments_with_callback_in_first_position ~dotted ~state args cmt_tbl
-    =
+and print_arguments_with_callback_in_first_position ~state args cmt_tbl =
   (* Because the same subtree gets printed twice, we need to copy the cmtTbl.
    * consumed comments need to be marked not-consumed and reprinted…
    * Cheng's different comment algorithm will solve this. *)
@@ -4579,7 +4575,7 @@ and print_arguments_with_callback_in_first_position ~dotted ~state args cmt_tbl
     lazy
       (Doc.concat
          [
-           (if dotted then Doc.text "(. " else Doc.lparen);
+           Doc.lparen;
            Lazy.force callback;
            Doc.comma;
            Doc.line;
@@ -4595,9 +4591,7 @@ and print_arguments_with_callback_in_first_position ~dotted ~state args cmt_tbl
    *   arg3,
    * )
    *)
-  let break_all_args =
-    lazy (print_arguments ~state ~dotted args cmt_tbl_copy)
-  in
+  let break_all_args = lazy (print_arguments ~state args cmt_tbl_copy) in
 
   (* Sometimes one of the non-callback arguments will break.
    * There might be a single line comment in there, or a multiline string etc.
@@ -4620,7 +4614,7 @@ and print_arguments_with_callback_in_first_position ~dotted ~state args cmt_tbl
   else
     Doc.custom_layout [Lazy.force fits_on_one_line; Lazy.force break_all_args]
 
-and print_arguments_with_callback_in_last_position ~state ~dotted args cmt_tbl =
+and print_arguments_with_callback_in_last_position ~state args cmt_tbl =
   (* Because the same subtree gets printed twice, we need to copy the cmtTbl.
    * consumed comments need to be marked not-consumed and reprinted…
    * Cheng's different comment algorithm will solve this. *)
@@ -4669,12 +4663,7 @@ and print_arguments_with_callback_in_last_position ~state ~dotted args cmt_tbl =
   let fits_on_one_line =
     lazy
       (Doc.concat
-         [
-           (if dotted then Doc.text "(." else Doc.lparen);
-           Lazy.force printed_args;
-           Lazy.force callback;
-           Doc.rparen;
-         ])
+         [Doc.lparen; Lazy.force printed_args; Lazy.force callback; Doc.rparen])
   in
 
   (* Thing.map(longArgumet, veryLooooongArgument, (arg1, arg2) =>
@@ -4685,7 +4674,7 @@ and print_arguments_with_callback_in_last_position ~state ~dotted args cmt_tbl =
     lazy
       (Doc.concat
          [
-           (if dotted then Doc.text "(." else Doc.lparen);
+           Doc.lparen;
            Lazy.force printed_args;
            Doc.breakable_group ~force_break:true (Lazy.force callback2);
            Doc.rparen;
@@ -4699,9 +4688,7 @@ and print_arguments_with_callback_in_last_position ~state ~dotted args cmt_tbl =
    *   (param1, parm2) => doStuff(param1, parm2)
    * )
    *)
-  let break_all_args =
-    lazy (print_arguments ~state ~dotted args cmt_tbl_copy2)
-  in
+  let break_all_args = lazy (print_arguments ~state args cmt_tbl_copy2) in
 
   (* Sometimes one of the non-callback arguments will break.
    * There might be a single line comment in there, or a multiline string etc.
@@ -4729,23 +4716,12 @@ and print_arguments_with_callback_in_last_position ~state ~dotted args cmt_tbl =
         Lazy.force break_all_args;
       ]
 
-and print_arguments ~state ~dotted ?(partial = false)
+and print_arguments ~state ?(partial = false)
     (args : (Asttypes.arg_label * Parsetree.expression) list) cmt_tbl =
   match args with
-  | [
-   ( Nolabel,
-     {
-       pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, _);
-       pexp_loc = loc;
-     } );
-  ] -> (
-    (* See "parseCallExpr", ghost unit expression is used the implement
-     * arity zero vs arity one syntax.
-     * Related: https://github.com/rescript-lang/syntax/issues/138 *)
-    match (dotted, loc.loc_ghost) with
-    | true, true -> Doc.text "(.)" (* arity zero *)
-    | true, false -> Doc.text "(. ())" (* arity one *)
-    | _ -> Doc.text "()")
+  | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, _)})]
+    ->
+    Doc.text "()"
   | [(Nolabel, arg)] when ParsetreeViewer.is_huggable_expression arg ->
     let arg_doc =
       let doc = print_expression_with_comments ~state arg cmt_tbl in
@@ -4754,17 +4730,16 @@ and print_arguments ~state ~dotted ?(partial = false)
       | Braced braces -> print_braces doc arg braces
       | Nothing -> doc
     in
-    Doc.concat
-      [(if dotted then Doc.text "(. " else Doc.lparen); arg_doc; Doc.rparen]
+    Doc.concat [Doc.lparen; arg_doc; Doc.rparen]
   | args ->
     Doc.group
       (Doc.concat
          [
-           (if dotted then Doc.text "(." else Doc.lparen);
+           Doc.lparen;
            Doc.indent
              (Doc.concat
                 [
-                  (if dotted then Doc.line else Doc.soft_line);
+                  Doc.soft_line;
                   Doc.join
                     ~sep:(Doc.concat [Doc.comma; Doc.line])
                     (List.map
@@ -4967,7 +4942,6 @@ and print_case ~state (case : Parsetree.case) cmt_tbl =
 
 and print_expr_fun_parameters ~state ~in_callback ~async ~has_constraint
     parameters cmt_tbl =
-  let dotted = false in
   match parameters with
   (* let f = _ => () *)
   | [
@@ -4978,8 +4952,7 @@ and print_expr_fun_parameters ~state ~in_callback ~async ~has_constraint
        default_expr = None;
        pat = {Parsetree.ppat_desc = Ppat_any; ppat_loc};
      };
-  ]
-    when not dotted ->
+  ] ->
     let any =
       let doc = if has_constraint then Doc.text "(_)" else Doc.text "_" in
       print_comments doc cmt_tbl ppat_loc
@@ -4998,8 +4971,7 @@ and print_expr_fun_parameters ~state ~in_callback ~async ~has_constraint
            Parsetree.ppat_attributes = attrs;
          };
      };
-  ]
-    when not dotted ->
+  ] ->
     let txt_doc =
       let var = print_ident_like string_loc.txt in
       let var =
@@ -5022,8 +4994,7 @@ and print_expr_fun_parameters ~state ~in_callback ~async ~has_constraint
        pat =
          {ppat_desc = Ppat_construct ({txt = Longident.Lident "()"; loc}, None)};
      };
-  ]
-    when not dotted ->
+  ] ->
     let doc =
       let lparen_rparen = Doc.text "()" in
       if async then add_async lparen_rparen else lparen_rparen
@@ -5037,7 +5008,7 @@ and print_expr_fun_parameters ~state ~in_callback ~async ~has_constraint
       | _ -> false
     in
     let maybe_async_lparen =
-      let lparen = if dotted then Doc.text "(. " else Doc.lparen in
+      let lparen = Doc.lparen in
       if async then add_async lparen else lparen
     in
     let should_hug = ParsetreeViewer.parameters_should_hug parameters in
@@ -5142,12 +5113,7 @@ and print_exp_fun_parameter ~state parameter cmt_tbl =
     let doc =
       Doc.group
         (Doc.concat
-           [
-             attrs;
-             label_with_pattern;
-             default_expr_doc;
-             optional_label_suffix;
-           ])
+           [attrs; label_with_pattern; default_expr_doc; optional_label_suffix])
     in
     let cmt_loc =
       match default_expr with
