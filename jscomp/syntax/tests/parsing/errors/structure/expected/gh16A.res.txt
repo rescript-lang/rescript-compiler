@@ -10,5 +10,8 @@
 
   I'm not sure what to parse here when looking at ")".
 
-module C = struct module T = (Fun)(struct ;;foo (a + c) (b + d) end) end
-;;Js.log {js|test|js}
+module C =
+  struct
+    module T = (Fun)(struct ;;((foo (a + c) (b + d))[@res.uapp ]) end)
+  end
+;;((Js.log {js|test|js})[@res.uapp ])

@@ -2,10 +2,10 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 
 function ff(v) {
-  return PervasivesU.string_of_float(v);
+  return Pervasives.string_of_float(v);
 }
 
 function f(v) {
@@ -18,7 +18,7 @@ Mt.from_pair_suites("To_string_test", {
     (function () {
       return {
         TAG: "Eq",
-        _0: PervasivesU.string_of_float(PervasivesU.infinity),
+        _0: Pervasives.string_of_float(Pervasives.infinity),
         _1: "inf"
       };
     })
@@ -29,7 +29,7 @@ Mt.from_pair_suites("To_string_test", {
       (function () {
         return {
           TAG: "Eq",
-          _0: PervasivesU.string_of_float(PervasivesU.neg_infinity),
+          _0: Pervasives.string_of_float(Pervasives.neg_infinity),
           _1: "-inf"
         };
       })

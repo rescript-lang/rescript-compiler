@@ -7,7 +7,7 @@ let List = require("../../lib/js/list.js");
 let $$String = require("../../lib/js/string.js");
 let Caml_sys = require("../../lib/js/caml_sys.js");
 let Filename = require("../../lib/js/filename.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Test_literals = require("./test_literals.js");
 let Ext_string_test = require("./ext_string_test.js");
 let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
@@ -107,7 +107,7 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
         _dir1 = dir1.tl;
         continue;
       }
-      return PervasivesU.$at(List.map((function (param) {
+      return Pervasives.$at(List.map((function (param) {
         return node_parent;
       }), dir2), dir1);
     };

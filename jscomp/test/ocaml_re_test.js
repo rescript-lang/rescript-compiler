@@ -12,9 +12,9 @@ let Hashtbl = require("../../lib/js/hashtbl.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 let Caml_bytes = require("../../lib/js/caml_bytes.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 let Caml_string = require("../../lib/js/caml_string.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -2305,7 +2305,7 @@ function merge_sequences(_x) {
             }
             break;
         case "Alternative" :
-            _x = PervasivesU.$at(l$p._0, x.tl);
+            _x = Pervasives.$at(l$p._0, x.tl);
             continue;
         default:
           
@@ -3239,18 +3239,18 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       for(let j = 0; j < len; ++j){
         try {
           if (Caml_string.get(s$p, j) !== Caml_string.get(s, i.contents + j | 0)) {
-            throw new Error(PervasivesU.Exit, {
+            throw new Error(Pervasives.Exit, {
                   cause: {
-                    RE_EXN_ID: PervasivesU.Exit
+                    RE_EXN_ID: Pervasives.Exit
                   }
                 });
           }
           
         }
         catch (exn){
-          throw new Error(PervasivesU.Exit, {
+          throw new Error(Pervasives.Exit, {
                 cause: {
-                  RE_EXN_ID: PervasivesU.Exit
+                  RE_EXN_ID: Pervasives.Exit
                 }
               });
         }
@@ -3260,7 +3260,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
     catch (raw_exn){
       let exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
-      if (exn$1.RE_EXN_ID === PervasivesU.Exit) {
+      if (exn$1.RE_EXN_ID === Pervasives.Exit) {
         return false;
       }
       throw new Error(exn$1.RE_EXN_ID, {

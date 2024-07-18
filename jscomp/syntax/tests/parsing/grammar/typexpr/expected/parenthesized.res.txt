@@ -1,1 +1,3 @@
-type nonrec t = ((a:((int)[@res.namedArgLoc ]) -> unit)[@attr ])
+type nonrec t =
+  (((a:((int)[@res.namedArgLoc ]) -> unit, [ `Has_arity1 ]) function$)
+  [@attr ])

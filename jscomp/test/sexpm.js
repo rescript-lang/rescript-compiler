@@ -9,7 +9,7 @@ let Bytes = require("../../lib/js/bytes.js");
 let Buffer = require("../../lib/js/buffer.js");
 let $$String = require("../../lib/js/string.js");
 let Caml_bytes = require("../../lib/js/caml_bytes.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function _must_escape(s) {
@@ -22,16 +22,16 @@ function _must_escape(s) {
           if (c !== 92) {
             exit = 1;
           } else {
-            throw new Error(PervasivesU.Exit, {
+            throw new Error(Pervasives.Exit, {
                   cause: {
-                    RE_EXN_ID: PervasivesU.Exit
+                    RE_EXN_ID: Pervasives.Exit
                   }
                 });
           }
         } else {
-          throw new Error(PervasivesU.Exit, {
+          throw new Error(Pervasives.Exit, {
                 cause: {
-                  RE_EXN_ID: PervasivesU.Exit
+                  RE_EXN_ID: Pervasives.Exit
                 }
               });
         }
@@ -50,9 +50,9 @@ function _must_escape(s) {
             case 34 :
             case 40 :
             case 41 :
-                throw new Error(PervasivesU.Exit, {
+                throw new Error(Pervasives.Exit, {
                       cause: {
-                        RE_EXN_ID: PervasivesU.Exit
+                        RE_EXN_ID: Pervasives.Exit
                       }
                     });
             
@@ -62,18 +62,18 @@ function _must_escape(s) {
         }
       } else {
         if (c >= 9) {
-          throw new Error(PervasivesU.Exit, {
+          throw new Error(Pervasives.Exit, {
                 cause: {
-                  RE_EXN_ID: PervasivesU.Exit
+                  RE_EXN_ID: Pervasives.Exit
                 }
               });
         }
         exit = 1;
       }
       if (exit === 1 && c > 127) {
-        throw new Error(PervasivesU.Exit, {
+        throw new Error(Pervasives.Exit, {
               cause: {
-                RE_EXN_ID: PervasivesU.Exit
+                RE_EXN_ID: Pervasives.Exit
               }
             });
       }
@@ -83,7 +83,7 @@ function _must_escape(s) {
   }
   catch (raw_exn){
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.RE_EXN_ID === PervasivesU.Exit) {
+    if (exn.RE_EXN_ID === Pervasives.Exit) {
       return true;
     }
     throw new Error(exn.RE_EXN_ID, {

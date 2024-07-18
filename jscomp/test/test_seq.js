@@ -2,7 +2,7 @@
 'use strict';
 
 let Caml_obj = require("../../lib/js/caml_obj.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -103,7 +103,7 @@ function add_help(speclist) {
           });
     }
   }
-  return PervasivesU.$at(speclist, PervasivesU.$at(add1, add2));
+  return Pervasives.$at(speclist, Pervasives.$at(add1, add2));
 }
 
 exports.Bad = Bad;

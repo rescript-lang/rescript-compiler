@@ -6,8 +6,8 @@ let List = require("../../lib/js/list.js");
 let Random = require("../../lib/js/random.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_int32 = require("../../lib/js/caml_int32.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_option = require("../../lib/js/caml_option.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
 
 let Actors = {};
 
@@ -789,7 +789,7 @@ let Particle = {
 };
 
 let id_counter = {
-  contents: PervasivesU.min_int
+  contents: Pervasives.min_int
 };
 
 function setup_obj(has_gravityOpt, speedOpt, param) {
@@ -1346,7 +1346,7 @@ function kill(collid, ctx) {
             hd: make$1(undefined, undefined, "GoombaSquish", pos, ctx),
             tl: /* [] */0
           }) : /* [] */0;
-        return PervasivesU.$at(score, remains);
+        return Pervasives.$at(score, remains);
     case "Item" :
         let o$1 = collid._2;
         if (collid._0 === "Mushroom") {
@@ -2261,7 +2261,7 @@ function run_update_collid(state, collid, all_collids) {
       player = collid;
     }
     let evolved = update_collidable(state, player, all_collids);
-    collid_objs.contents = PervasivesU.$at(collid_objs.contents, evolved);
+    collid_objs.contents = Pervasives.$at(collid_objs.contents, evolved);
     return player;
   }
   let obj = collid._2;
@@ -2269,11 +2269,11 @@ function run_update_collid(state, collid, all_collids) {
   if (!obj.kill) {
     collid_objs.contents = {
       hd: collid,
-      tl: PervasivesU.$at(collid_objs.contents, evolved$1)
+      tl: Pervasives.$at(collid_objs.contents, evolved$1)
     };
   }
   let new_parts = obj.kill ? kill(collid, state.ctx) : /* [] */0;
-  particles.contents = PervasivesU.$at(particles.contents, new_parts);
+  particles.contents = Pervasives.$at(particles.contents, new_parts);
   return collid;
 }
 
@@ -2473,7 +2473,7 @@ function convert_list(lst) {
     return /* [] */0;
   }
   let h = lst.hd;
-  return PervasivesU.$at({
+  return Pervasives.$at({
     hd: [
       h[0],
       [
@@ -2537,7 +2537,7 @@ function avoid_overlap(_lst, currentLst) {
     let t = lst.tl;
     let h = lst.hd;
     if (!mem_loc(h[1], currentLst)) {
-      return PervasivesU.$at({
+      return Pervasives.$at({
         hd: h,
         tl: /* [] */0
       }, avoid_overlap(t, currentLst));
@@ -2560,7 +2560,7 @@ function trim_edges(_lst, blockw, blockh) {
     let pixx = blockw * 16;
     let pixy = blockh * 16;
     if (!(cx < 128 || pixx - cx < 528 || cy === 0 || pixy - cy < 48)) {
-      return PervasivesU.$at({
+      return Pervasives.$at({
         hd: h,
         tl: /* [] */0
       }, trim_edges(t, blockw, blockh));
@@ -2574,7 +2574,7 @@ function generate_clouds(cbx, cby, typ, num) {
   if (num === 0) {
     return /* [] */0;
   } else {
-    return PervasivesU.$at({
+    return Pervasives.$at({
       hd: [
         typ,
         [
@@ -2599,7 +2599,7 @@ function generate_coins(_block_coord) {
     if (place_coin === 0) {
       let xc = h[1][0];
       let yc = h[1][1];
-      return PervasivesU.$at({
+      return Pervasives.$at({
         hd: [
           0,
           [
@@ -2796,7 +2796,7 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             hd: one_0,
             tl: /* [] */0
           };
-          return PervasivesU.$at(four, PervasivesU.$at(three, PervasivesU.$at(two, one)));
+          return Pervasives.$at(four, Pervasives.$at(three, Pervasives.$at(two, one)));
         } else {
           return /* [] */0;
         }
@@ -2874,7 +2874,7 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             hd: one_0$1,
             tl: one_1
           };
-          return PervasivesU.$at(three$1, PervasivesU.$at(two$1, one$1));
+          return Pervasives.$at(three$1, Pervasives.$at(two$1, one$1));
         } else if (blockh - cby > 2) {
           let one_0$2 = [
             stair_typ,
@@ -2948,7 +2948,7 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
             hd: three_0$2,
             tl: three_1$2
           };
-          return PervasivesU.$at(one$2, PervasivesU.$at(two$2, three$2));
+          return Pervasives.$at(one$2, Pervasives.$at(two$2, three$2));
         } else {
           return {
             hd: [
@@ -3076,7 +3076,7 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
         hd: enemy_0,
         tl: /* [] */0
       };
-      return PervasivesU.$at(enemy, generate_enemies(blockw, blockh, cbx, cby + 1, acc));
+      return Pervasives.$at(enemy, generate_enemies(blockw, blockh, cbx, cby + 1, acc));
     }
     _cby = cby + 1;
     continue;
@@ -3096,7 +3096,7 @@ function generate_block_enemies(_block_coord) {
     if (place_enemy === 0) {
       let xc = h[1][0];
       let yc = h[1][1];
-      return PervasivesU.$at({
+      return Pervasives.$at({
         hd: [
           enemy_typ,
           [
@@ -3136,7 +3136,7 @@ function generate_block_locs(blockw, blockh, _cbx, _cby, _acc) {
     if (prob < 5) {
       let newacc = choose_block_pattern(blockw, blockh, cbx, cby, prob);
       let undup_lst = avoid_overlap(newacc, acc);
-      let called_acc = PervasivesU.$at(acc, undup_lst);
+      let called_acc = Pervasives.$at(acc, undup_lst);
       _acc = called_acc;
       _cby = cby + 1;
       continue;
@@ -3165,7 +3165,7 @@ function generate_ground(blockw, blockh, _inc, _acc) {
     }
     if (inc > 10) {
       let skip = Random.int(10);
-      let newacc = PervasivesU.$at(acc, {
+      let newacc = Pervasives.$at(acc, {
         hd: [
           4,
           [
@@ -3183,7 +3183,7 @@ function generate_ground(blockw, blockh, _inc, _acc) {
       _inc = inc + 1;
       continue;
     }
-    let newacc$1 = PervasivesU.$at(acc, {
+    let newacc$1 = Pervasives.$at(acc, {
       hd: [
         4,
         [
@@ -3209,7 +3209,7 @@ function convert_to_block_obj(lst, context) {
     TAG: "SBlock",
     _0: sblock_typ
   }, context, h[1]);
-  return PervasivesU.$at({
+  return Pervasives.$at({
     hd: ob,
     tl: /* [] */0
   }, convert_to_block_obj(lst.tl, context));
@@ -3225,7 +3225,7 @@ function convert_to_enemy_obj(lst, context) {
     TAG: "SEnemy",
     _0: senemy_typ
   }, context, h[1]);
-  return PervasivesU.$at({
+  return Pervasives.$at({
     hd: ob,
     tl: /* [] */0
   }, convert_to_enemy_obj(lst.tl, context));
@@ -3239,7 +3239,7 @@ function convert_to_coin_obj(lst, context) {
     TAG: "SItem",
     _0: "Coin"
   }, context, lst.hd[1]);
-  return PervasivesU.$at({
+  return Pervasives.$at({
     hd: ob,
     tl: /* [] */0
   }, convert_to_coin_obj(lst.tl, context));
@@ -3251,19 +3251,19 @@ function generate_helper(blockw, blockh, cx, cy, context) {
   let obj_converted_block_locs = convert_to_block_obj(converted_block_locs, context);
   let ground_blocks = generate_ground(blockw, blockh, 0, /* [] */0);
   let obj_converted_ground_blocks = convert_to_block_obj(ground_blocks, context);
-  let block_locations = PervasivesU.$at(block_locs, ground_blocks);
-  let all_blocks = PervasivesU.$at(obj_converted_block_locs, obj_converted_ground_blocks);
+  let block_locations = Pervasives.$at(block_locs, ground_blocks);
+  let all_blocks = Pervasives.$at(obj_converted_block_locs, obj_converted_ground_blocks);
   let enemy_locs = generate_enemies(blockw, blockh, 0, 0, block_locations);
   let obj_converted_enemies = convert_to_enemy_obj(enemy_locs, context);
   let coin_locs = generate_coins(converted_block_locs);
   let undup_coin_locs = trim_edges(avoid_overlap(coin_locs, converted_block_locs), blockw, blockh);
-  let converted_block_coin_locs = PervasivesU.$at(converted_block_locs, coin_locs);
+  let converted_block_coin_locs = Pervasives.$at(converted_block_locs, coin_locs);
   let enemy_block_locs = generate_block_enemies(converted_block_locs);
   let undup_enemy_block_locs = avoid_overlap(enemy_block_locs, converted_block_coin_locs);
   let obj_enemy_blocks = convert_to_enemy_obj(undup_enemy_block_locs, context);
   let coin_objects = convert_to_coin_obj(undup_coin_locs, context);
   let obj_panel = generate_panel(context, blockw, blockh);
-  return PervasivesU.$at(all_blocks, PervasivesU.$at(obj_converted_enemies, PervasivesU.$at(coin_objects, PervasivesU.$at(obj_enemy_blocks, {
+  return Pervasives.$at(all_blocks, Pervasives.$at(obj_converted_enemies, Pervasives.$at(coin_objects, Pervasives.$at(obj_enemy_blocks, {
     hd: obj_panel,
     tl: /* [] */0
   }))));

@@ -12,29 +12,41 @@
   I'm not sure what to parse here when looking at ")".
 
 open Ws
-let wss = Server.make { port = 82 }
-let address = wss |. Server.address
-let log msg =
-  Js.log
-    (((((({js|> Server: |js})[@res.template ]) ^ msg)[@res.template ]) ^
-        (({js||js})[@res.template ]))[@res.template ])
-;;log
-    (((((((((((((({js|Running on: |js})[@res.template ]) ^ address.address)
-                [@res.template ]) ^ (({js|:|js})[@res.template ]))
-              [@res.template ]) ^ (address.port |. string_of_int))
-            [@res.template ]) ^ (({js| (|js})[@res.template ]))
-          [@res.template ]) ^ address.family)
-        [@res.template ]) ^ (({js|)|js})[@res.template ]))[@res.template ])
+let wss = ((Server.make { port = 82 })[@res.uapp ])
+let address = wss |.u Server.address
+let log =
+  ((Function$
+      (fun msg ->
+         ((Js.log
+             (((((({js|> Server: |js})[@res.template ]) ^ msg)
+                 [@res.template ]) ^ (({js||js})[@res.template ]))
+             [@res.template ]))
+         [@res.uapp ])))
+  [@res.arity 1])
+;;((log
+      (((((((((((((({js|Running on: |js})[@res.template ]) ^ address.address)
+                  [@res.template ]) ^ (({js|:|js})[@res.template ]))
+                [@res.template ]) ^ (address.port |.u string_of_int))
+              [@res.template ]) ^ (({js| (|js})[@res.template ]))
+            [@res.template ]) ^ address.family)
+          [@res.template ]) ^ (({js|)|js})[@res.template ]))[@res.template ]))
+  [@res.uapp ])
 module ClientSet =
   struct
     module T =
       (Belt.Id.MakeComparable)(struct
                                  type nonrec t = Client.t
-                                 let cmp a b =
-                                   ((compare (a |. Client.getUniqueId)
-                                       (b |. Client.getUniqueId))
-                                   [@res.braces ])
+                                 let cmp =
+                                   ((Function$
+                                       (fun a ->
+                                          fun b ->
+                                            ((compare
+                                                (a |.u Client.getUniqueId)
+                                                (b |.u Client.getUniqueId))
+                                            [@res.braces ][@res.uapp ])))
+                                   [@res.arity 2])
                                end)
-    let empty = Belt.Set.make ~id:(((module T))[@res.namedArgLoc ])
+    let empty = ((Belt.Set.make ~id:(((module T))[@res.namedArgLoc ]))
+      [@res.uapp ])
   end
-;;Js.log {js|test|js}
+;;((Js.log {js|test|js})[@res.uapp ])

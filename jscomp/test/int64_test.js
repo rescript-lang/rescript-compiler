@@ -7,7 +7,7 @@ let Int32 = require("../../lib/js/int32.js");
 let Int64 = require("../../lib/js/int64.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_int64 = require("../../lib/js/caml_int64.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Ext_array_test = require("./ext_array_test.js");
 
 let v = Caml_int64.add(Caml_int64.of_int32(Int32.max_int), Int64.one);
@@ -849,7 +849,7 @@ function fac(_n, _acc) {
   };
 }
 
-let suites = PervasivesU.$at({
+let suites = Pervasives.$at({
   hd: [
     "add_one",
     (function () {
@@ -2098,7 +2098,7 @@ let suites = PervasivesU.$at({
       }
     }
   }
-}, PervasivesU.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+}, Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
   return [
     "shift_left_cases " + i,
     (function () {
@@ -2109,7 +2109,7 @@ let suites = PervasivesU.$at({
       };
     })
   ];
-}), shift_left_tests_0, shift_left_tests_1)), PervasivesU.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+}), shift_left_tests_0, shift_left_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
   return [
     "shift_right_cases " + i,
     (function () {
@@ -2147,7 +2147,7 @@ function eq(loc, x, y) {
 
 function id(loc, x) {
   let float_value = Caml_int64.float_of_bits(x);
-  let match = PervasivesU.classify_float(float_value);
+  let match = Pervasives.classify_float(float_value);
   if (match === "FP_nan") {
     return;
   } else {

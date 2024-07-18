@@ -63,25 +63,35 @@
 
   Looks like there might be an expression missing here
 
-let findThreadByIdLinearScan ~threads:((threads)[@res.namedArgLoc ]) 
-  ~id:((id)[@res.namedArgLoc ])  =
-  ((Js.Array2.findi ThreadsModel.threads
-      (fun thread ->
-         fun i ->
-           ((let thisId =
-               match thread with
-               | ServerData.OneToOne { otherPersonIDWhichIsAlsoThreadID } ->
-                   otherPersonIDWhichIsAlsoThreadID
-               | Group { id } -> id
-               | Unknown { id } ->
-                   (unknown.id |. Js.String.make) |. FBID.ofStringUnsafe in
-             thisId == id)
-           [@res.braces ])))
-  [@res.braces ])
-let x = ((loop 0 (Nil |. (push doc)))[@res.braces ])
+let findThreadByIdLinearScan =
+  ((Function$
+      (fun ~threads:((threads)[@res.namedArgLoc ]) ->
+         fun ~id:((id)[@res.namedArgLoc ]) ->
+           ((Js.Array2.findi ThreadsModel.threads
+               ((Function$
+                   (fun thread ->
+                      fun i ->
+                        ((let thisId =
+                            match thread with
+                            | ServerData.OneToOne
+                                { otherPersonIDWhichIsAlsoThreadID } ->
+                                otherPersonIDWhichIsAlsoThreadID
+                            | Group { id } -> id
+                            | Unknown { id } ->
+                                (unknown.id |.u Js.String.make) |.u
+                                  FBID.ofStringUnsafe in
+                          thisId == id)
+                        [@res.braces ])))[@res.arity 2]))
+           [@res.braces ][@res.uapp ])))
+  [@res.arity 2])
+let x = ((loop 0 (Nil |.u ((push doc)[@res.uapp ])))
+  [@res.braces ][@res.uapp ])
 ;;match stack with
   | Empty -> [%rescript.exprhole ]
   | Cons (doc, rest) -> ()
-  | Join (doc1, doc2) -> (buffer |. (Buffer.add_string indentation); loop ())
+  | Join (doc1, doc2) ->
+      (buffer |.u ((Buffer.add_string indentation)[@res.uapp ]);
+       ((loop ())
+       [@res.uapp ]))
 let pipeline =
   match scheduler with | Some -> [%rescript.exprhole ] | None -> ()

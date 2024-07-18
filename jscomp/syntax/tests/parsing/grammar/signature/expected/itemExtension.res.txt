@@ -2,6 +2,7 @@ module type Ext  =
   sig
     [%%item.extension ]
     [%%item.extension.with.args {js|argument|js}]
-    [%%item.extension.with.args fun x -> f x]
+    [%%item.extension.with.args
+      ((Function$ (fun x -> ((f x)[@res.uapp ])))[@res.arity 1])]
     [%%item.extension ][@@withAttr ]
   end

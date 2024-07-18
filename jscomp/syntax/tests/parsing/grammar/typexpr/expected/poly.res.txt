@@ -1,6 +1,10 @@
 external getLogger :
-  unit ->
-    <
-      log: 'a -> unit  ;log2: 'a . int -> int  ;log3: 'a 'b . 'a -> 'b -> int
-                                                    >  =
-    "./src/logger.mock.js"
+  (unit ->
+     <
+       log: ('a -> unit, [ `Has_arity1 ]) function$  ;log2: 'a .
+                                                              (int -> int,
+                                                                [
+                                                                  `Has_arity1 ])
+                                                                function$  ;
+       log3: 'a 'b . ('a -> 'b -> int, [ `Has_arity2 ]) function$   > ,
+    [ `Has_arity1 ]) function$ = "./src/logger.mock.js"

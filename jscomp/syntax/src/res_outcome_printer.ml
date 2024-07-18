@@ -267,7 +267,7 @@ let rec print_out_type_doc (out_type : Outcometree.out_type) =
       ]
 
 and print_out_arrow_type ~uncurried typ =
-  let uncurried = Res_uncurried.get_dotted ~uncurried !Config.uncurried in
+  let uncurried = Res_uncurried.get_dotted ~uncurried Uncurried in
   let typ_args, typ = collect_arrow_args typ [] in
   let args =
     Doc.join

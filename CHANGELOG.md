@@ -66,6 +66,7 @@
 - Avoid generating calls to Curry when adjusting arity of uncurried functions. https://github.com/rescript-lang/rescript-compiler/pull/6870
 - Remove `@@uncurried.swap`, which was used for internal tests. https://github.com/rescript-lang/rescript-compiler/pull/6875
 - Build the compiler libraries/tests in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6864
+- Ignore `-uncurried` command-line flag. https://github.com/rescript-lang/rescript-compiler/pull/6885
 
 #### :nail_care: Polish
 

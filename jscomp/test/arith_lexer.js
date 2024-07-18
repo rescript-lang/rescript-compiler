@@ -2,8 +2,8 @@
 'use strict';
 
 let Lexing = require("../../lib/js/lexing.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_format = require("../../lib/js/caml_format.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
 
 let __ocaml_lex_tables = {
   lex_base: "\x00\x00\xf6\xff\xf7\xff\xf8\xff\xf9\xff\xfa\xff\xfb\xff\xfc\xff\
@@ -165,7 +165,7 @@ function lexeme(lexbuf) {
 function str(e) {
   switch (e.TAG) {
     case "Numeral" :
-        return PervasivesU.string_of_float(e._0);
+        return Pervasives.string_of_float(e._0);
     case "Plus" :
         return str(e._0) + ("+" + str(e._1));
     case "Minus" :

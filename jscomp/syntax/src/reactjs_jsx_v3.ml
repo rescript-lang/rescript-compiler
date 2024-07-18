@@ -979,11 +979,9 @@ let jsx_mapper ~config =
               inner_expression_with_ref
           in
           let full_expression =
-            if !Config.uncurried = Uncurried then
-              full_expression
-              |> Ast_uncurried.uncurried_fun ~loc:full_expression.pexp_loc
-                   ~arity:1
-            else full_expression
+            full_expression
+            |> Ast_uncurried.uncurried_fun ~loc:full_expression.pexp_loc
+                 ~arity:1
           in
           let full_expression =
             match full_module_name with

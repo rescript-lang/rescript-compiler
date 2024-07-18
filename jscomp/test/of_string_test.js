@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let PervasivesU = require("../../lib/js/pervasivesU.js");
+let Pervasives = require("../../lib/js/pervasives.js");
 
 let suites_0 = [
   "string_of_float_1",
@@ -10,7 +10,7 @@ let suites_0 = [
     return {
       TAG: "Eq",
       _0: "10.",
-      _1: PervasivesU.string_of_float(10)
+      _1: Pervasives.string_of_float(10)
     };
   })
 ];
@@ -33,7 +33,7 @@ let suites_1 = {
         return {
           TAG: "Eq",
           _0: "10.",
-          _1: PervasivesU.valid_float_lexem("10")
+          _1: Pervasives.valid_float_lexem("10")
         };
       })
     ],

@@ -782,7 +782,7 @@ async function runtimeNinja(devmode = true) {
   var externalDeps = devmode ? [compilerTarget] : [];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var templateRuntimeRules = `
-bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime  -nopervasives  -unsafe -w +50 -warn-error A -uncurried
+bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime  -nopervasives  -unsafe -w +50 -warn-error A
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuildList([
@@ -791,7 +791,7 @@ ${ninjaQuickBuildList([
     "bs_stdlib_mini.resi",
     "cc",
     ninjaCwd,
-    [["bsc_flags", "-nostdlib -nopervasives -uncurried"]],
+    [["bsc_flags", "-nostdlib -nopervasives"]],
     [],
     externalDeps,
   ],
@@ -863,7 +863,7 @@ async function othersNinja(devmode = true) {
   var ninjaCwd = "others";
 
   var templateOthersRules = `
-bsc_primitive_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50 -warn-error A -uncurried
+bsc_primitive_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50 -warn-error A
 bsc_flags = $bsc_primitive_flags -open Belt_internals
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuildList([
@@ -965,14 +965,12 @@ async function stdlibNinja(devmode = true) {
   /**
    * @type [string,string][]
    */
-  var bsc_builtin_overrides = [
-    [bsc_flags, `$${bsc_flags} -nopervasives -uncurried`],
-  ];
+  var bsc_builtin_overrides = [[bsc_flags, `$${bsc_flags} -nopervasives`]];
   // It is interesting `-w -a` would generate not great code sometimes
   // deprecations diabled due to string_of_float
   var warnings = "-w -9-3-106 -warn-error A";
   var templateStdlibRules = `
-${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -make-runtime ${warnings} -I others -uncurried
+${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -make-runtime ${warnings} -I others
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuildList([
   // we make it still depends on external
@@ -1104,7 +1102,7 @@ async function testNinja() {
   var ninjaOutput = "build.ninja";
   var ninjaCwd = `test`;
   var templateTestRules = `
-bsc_flags = -bs-cross-module-opt -make-runtime-test -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104 -warn-error A  -I runtime -I $stdlib -I others -uncurried
+bsc_flags = -bs-cross-module-opt -make-runtime-test -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104 -warn-error A  -I runtime -I $stdlib -I others
 ${ruleCC(ninjaCwd)}
 `;
   var testDirFiles = fs.readdirSync(testDir, "ascii");

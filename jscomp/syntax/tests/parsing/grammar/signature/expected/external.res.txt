@@ -2,9 +2,11 @@ module type Signature  =
   sig
     type nonrec t
     external linkProgram :
-      t -> program:((webGlProgram)[@res.namedArgLoc ]) -> unit =
-        "linkProgram"[@@send ]
-    external add_nat : nat -> int -> int -> int = "add_nat_bytecode"
-    external svg : unit -> React.element = "svg"
-    external svg : unit -> React.element = "svg"
+      (t -> program:((webGlProgram)[@res.namedArgLoc ]) -> unit,
+        [ `Has_arity2 ]) function$ = "linkProgram"[@@send ]
+    external add_nat :
+      (nat -> int -> int -> int, [ `Has_arity3 ]) function$ =
+        "add_nat_bytecode"
+    external svg : (unit -> React.element, [ `Has_arity1 ]) function$ = "svg"
+    external svg : (unit -> React.element, [ `Has_arity1 ]) function$ = "svg"
   end

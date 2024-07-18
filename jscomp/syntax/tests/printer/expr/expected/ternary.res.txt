@@ -110,14 +110,14 @@ let x = truth
       thisIsASuperLongIdentifieeeeeeeer2,
       thisIsASuperLongIdentifieeeeeeeer3,
     )
-let x = truth ? create(. a, b) : create(. b, c)
+let x = truth ? create(a, b) : create(b, c)
 let x = truth
-  ? create(.
+  ? create(
       thisIsASuperLongIdentifieeeeeeeer,
       thisIsASuperLongIdentifieeeeeeeer2,
       thisIsASuperLongIdentifieeeeeeeer3,
     )
-  : create(.
+  : create(
       thisIsASuperLongIdentifieeeeeeeer,
       thisIsASuperLongIdentifieeeeeeeer2,
       thisIsASuperLongIdentifieeeeeeeer3,
