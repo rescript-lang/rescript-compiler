@@ -189,7 +189,6 @@ type argument = {
 }
 
 type type_parameter = {
-  dotted: bool;
   attrs: Ast_helper.attrs;
   label: Asttypes.arg_label;
   typ: Parsetree.core_type;
@@ -386,8 +385,7 @@ let build_longident words =
 
 let make_infix_operator (p : Parser.t) token start_pos end_pos =
   let stringified_token =
-    if token = Token.MinusGreater then
-      if p.uncurried_config = Legacy then "|." else "|.u"
+    if token = Token.MinusGreater then "|.u"
     else if token = Token.PlusPlus then "^"
     else if token = Token.BangEqual then "<>"
     else if token = Token.BangEqualEqual then "!="
@@ -519,7 +517,7 @@ let wrap_type_annotation ~loc newtypes core_type body =
   * return a wrapping function that wraps ((__x) => ...) around an expression
   * e.g. foo(_, 3) becomes (__x) => foo(__x, 3)
   *)
-let process_underscore_application (p : Parser.t) args =
+let process_underscore_application args =
   let exp_question = ref None in
   let hidden_var = "__x" in
   let check_arg ((lab, exp) as arg) =
@@ -541,8 +539,7 @@ let process_underscore_application (p : Parser.t) args =
           ~loc:Location.none
       in
       let fun_expr = Ast_helper.Exp.fun_ ~loc Nolabel None pattern exp_apply in
-      if p.uncurried_config = Legacy then fun_expr
-      else Ast_uncurried.uncurried_fun ~loc ~arity:1 fun_expr
+      Ast_uncurried.uncurried_fun ~loc ~arity:1 fun_expr
     | None -> exp_apply
   in
   (args, wrap)
@@ -1571,53 +1568,17 @@ and parse_es6_arrow_expression ?(arrow_attrs = []) ?(arrow_start_pos = None)
          | TermParameter _ -> true
          | TypeParameter _ -> false)
   in
-  let body_needs_braces =
-    let is_fun =
-      match body.pexp_desc with
-      | Pexp_fun _ -> true
-      | _ -> false
-    in
-    match term_parameters with
-    | TermParameter {dotted} :: _
-      when p.uncurried_config |> Res_uncurried.from_dotted ~dotted && is_fun ->
-      true
-    | TermParameter _ :: rest when p.uncurried_config = Legacy && is_fun ->
-      rest
-      |> List.exists (function
-           | TermParameter {dotted} -> dotted
-           | _ -> false)
-    | _ -> false
-  in
-  let body =
-    if body_needs_braces then
-      {
-        body with
-        pexp_attributes = make_braces_attr body.pexp_loc :: body.pexp_attributes;
-      }
-    else body
-  in
   let _paramNum, arrow_expr, _arity =
     List.fold_right
       (fun parameter (term_param_num, expr, arity) ->
         match parameter with
         | TermParameter
-            {
-              dotted;
-              attrs;
-              label = lbl;
-              expr = default_expr;
-              pat;
-              pos = start_pos;
-            } ->
+            {attrs; label = lbl; expr = default_expr; pat; pos = start_pos} ->
           let loc = mk_loc start_pos end_pos in
           let fun_expr =
             Ast_helper.Exp.fun_ ~loc ~attrs lbl default_expr pat expr
           in
-          let uncurried =
-            p.uncurried_config |> Res_uncurried.from_dotted ~dotted
-          in
-          if uncurried && (term_param_num = 1 || p.uncurried_config = Legacy)
-          then
+          if term_param_num = 1 then
             ( term_param_num - 1,
               Ast_uncurried.uncurried_fun ~loc ~arity fun_expr,
               1 )
@@ -2257,10 +2218,9 @@ and parse_binary_expr ?(context = OrdinaryExpr) ?a p prec =
       let loc = mk_loc a.Parsetree.pexp_loc.loc_start b.pexp_loc.loc_end in
       let expr =
         match (token, b.pexp_desc) with
-        | BarGreater, Pexp_apply (fun_expr, args)
-          when p.uncurried_config = Uncurried ->
+        | BarGreater, Pexp_apply (fun_expr, args) ->
           {b with pexp_desc = Pexp_apply (fun_expr, args @ [(Nolabel, a)])}
-        | BarGreater, _ when p.uncurried_config = Uncurried ->
+        | BarGreater, _ ->
           Ast_helper.Exp.apply ~loc ~attrs:[uncurried_app_attr] b [(Nolabel, a)]
         | _ ->
           Ast_helper.Exp.apply ~loc
@@ -3788,13 +3748,10 @@ and parse_call_expr p fun_expr =
   in
   let apply =
     Ext_list.fold_left args fun_expr (fun call_body group ->
-        let dotted, args = group in
-        let args, wrap = process_underscore_application p args in
+        let _, args = group in
+        let args, wrap = process_underscore_application args in
         let exp =
-          let uncurried =
-            p.uncurried_config |> Res_uncurried.from_dotted ~dotted
-          in
-          let attrs = if uncurried then [uncurried_app_attr] else [] in
+          let attrs = [uncurried_app_attr] in
           let attrs = if is_partial then res_partial_attr :: attrs else attrs in
           Ast_helper.Exp.apply ~loc ~attrs call_body args
         in
@@ -4064,8 +4021,7 @@ and parse_poly_type_expr p =
         let t_fun =
           Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ return_type
         in
-        if p.uncurried_config = Legacy then t_fun
-        else Ast_uncurried.uncurried_type ~loc ~arity:1 t_fun
+        Ast_uncurried.uncurried_type ~loc ~arity:1 t_fun
       | _ -> Ast_helper.Typ.var ~loc:var.loc var.txt)
     | _ -> assert false)
   | _ -> parse_typ_expr p
@@ -4285,7 +4241,7 @@ and parse_type_parameter p =
     || Grammar.is_typ_expr_start p.token
   then
     let start_pos = p.Parser.start_pos in
-    let dotted = Parser.optional p Dot in
+    let _ = Parser.optional p Dot (* dot is ignored *) in
     let attrs = doc_attr @ parse_attributes p in
     match p.Parser.token with
     | Tilde -> (
@@ -4303,8 +4259,8 @@ and parse_type_parameter p =
       | Equal ->
         Parser.next p;
         Parser.expect Question p;
-        Some {dotted; attrs; label = Optional name; typ; start_pos}
-      | _ -> Some {dotted; attrs; label = Labelled name; typ; start_pos})
+        Some {attrs; label = Optional name; typ; start_pos}
+      | _ -> Some {attrs; label = Labelled name; typ; start_pos})
     | Lident _ -> (
       let name, loc = parse_lident p in
       match p.token with
@@ -4322,8 +4278,8 @@ and parse_type_parameter p =
         | Equal ->
           Parser.next p;
           Parser.expect Question p;
-          Some {dotted; attrs; label = Optional name; typ; start_pos}
-        | _ -> Some {dotted; attrs; label = Labelled name; typ; start_pos})
+          Some {attrs; label = Optional name; typ; start_pos}
+        | _ -> Some {attrs; label = Labelled name; typ; start_pos})
       | _ ->
         let constr = Location.mkloc (Longident.Lident name) loc in
         let args = parse_type_constructor_args ~constr_name:constr p in
@@ -4335,20 +4291,13 @@ and parse_type_parameter p =
 
         let typ = parse_arrow_type_rest ~es6_arrow:true ~start_pos typ p in
         let typ = parse_type_alias p typ in
-        Some {dotted; attrs = []; label = Nolabel; typ; start_pos})
+        Some {attrs = []; label = Nolabel; typ; start_pos})
     | _ ->
       let typ = parse_typ_expr p in
       let typ_with_attributes =
         {typ with ptyp_attributes = List.concat [attrs; typ.ptyp_attributes]}
       in
-      Some
-        {
-          dotted;
-          attrs = [];
-          label = Nolabel;
-          typ = typ_with_attributes;
-          start_pos;
-        }
+      Some {attrs = []; label = Nolabel; typ = typ_with_attributes; start_pos}
   else None
 
 (* (int, ~x:string, float) *)
@@ -4361,7 +4310,7 @@ and parse_type_parameters p =
     let loc = mk_loc start_pos p.prev_end_pos in
     let unit_constr = Location.mkloc (Longident.Lident "unit") loc in
     let typ = Ast_helper.Typ.constr unit_constr [] in
-    [{dotted = false; attrs = []; label = Nolabel; typ; start_pos}]
+    [{attrs = []; label = Nolabel; typ; start_pos}]
   | _ ->
     let params =
       parse_comma_delimited_region ~grammar:Grammar.TypeParameters
@@ -4402,23 +4351,10 @@ and parse_es6_arrow_type ~attrs p =
     Parser.expect EqualGreater p;
     let return_type = parse_typ_expr ~alias:false p in
     let end_pos = p.prev_end_pos in
-    let return_type_arity =
-      match parameters with
-      | _ when p.uncurried_config <> Legacy -> 0
-      | _ ->
-        if parameters |> List.exists (function {dotted; typ = _} -> dotted)
-        then 0
-        else
-          let _, args, _ = Res_parsetree_viewer.arrow_type return_type in
-          List.length args
-    in
+    let return_type_arity = 0 in
     let _paramNum, typ, _arity =
       List.fold_right
-        (fun {dotted; attrs; label = arg_lbl; typ; start_pos}
-             (param_num, t, arity) ->
-          let uncurried =
-            p.uncurried_config |> Res_uncurried.from_dotted ~dotted
-          in
+        (fun {attrs; label = arg_lbl; typ; start_pos} (param_num, t, arity) ->
           let loc = mk_loc start_pos end_pos in
           let arity =
             (* Workaround for ~lbl: @as(json`false`) _, which changes the arity *)
@@ -4437,7 +4373,7 @@ and parse_es6_arrow_type ~attrs p =
             | _ -> arity
           in
           let t_arg = Ast_helper.Typ.arrow ~loc ~attrs arg_lbl typ t in
-          if uncurried && (param_num = 1 || p.uncurried_config = Legacy) then
+          if param_num = 1 then
             (param_num - 1, Ast_uncurried.uncurried_type ~loc ~arity t_arg, 1)
           else (param_num - 1, t_arg, arity + 1))
         parameters
@@ -4498,8 +4434,7 @@ and parse_arrow_type_rest ~es6_arrow ~start_pos typ p =
     let arrow_typ =
       Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ return_type
     in
-    if p.uncurried_config = Legacy then arrow_typ
-    else Ast_uncurried.uncurried_type ~loc ~arity:1 arrow_typ
+    Ast_uncurried.uncurried_type ~loc ~arity:1 arrow_typ
   | _ -> typ
 
 and parse_typ_expr_region p =
@@ -5112,12 +5047,10 @@ and parse_type_equation_or_constr_decl p =
         let arrow_type =
           Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ return_type
         in
-        let uncurried = p.uncurried_config <> Legacy in
         let arrow_type =
-          if uncurried then
-            Ast_uncurried.uncurried_type ~loc ~arity:1 arrow_type
-          else arrow_type
+          Ast_uncurried.uncurried_type ~loc ~arity:1 arrow_type
         in
+
         let typ = parse_type_alias p arrow_type in
         (Some typ, Asttypes.Public, Parsetree.Ptype_abstract)
       | _ -> (Some typ, Asttypes.Public, Parsetree.Ptype_abstract))
@@ -6668,13 +6601,6 @@ and parse_standalone_attribute p =
   let start_pos = p.start_pos in
   Parser.expect AtAt p;
   let attr_id = parse_attribute_id ~start_pos p in
-  let attr_id =
-    match attr_id.txt with
-    | "uncurried" ->
-      p.uncurried_config <- Config.Uncurried;
-      attr_id
-    | _ -> attr_id
-  in
   let payload = parse_payload p in
   (attr_id, payload)
 

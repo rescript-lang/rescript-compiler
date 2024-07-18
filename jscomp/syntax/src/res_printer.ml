@@ -545,11 +545,11 @@ let print_optional_label attrs =
 module State = struct
   let custom_layout_threshold = 2
 
-  type t = {custom_layout: int; mutable uncurried_config: Config.uncurried}
+  type t = {custom_layout: int}
 
-  let init () = {custom_layout = 0; uncurried_config = Uncurried}
+  let init () = {custom_layout = 0}
 
-  let next_custom_layout t = {t with custom_layout = t.custom_layout + 1}
+  let next_custom_layout t = {custom_layout = t.custom_layout + 1}
 
   let should_break_callback t = t.custom_layout > custom_layout_threshold
 end
@@ -1543,14 +1543,12 @@ and print_label_declaration ~state (ld : Parsetree.label_declaration) cmt_tbl =
        ])
 
 and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
-  let print_arrow ~uncurried ?(arity = max_int) typ_expr =
+  let print_arrow ?(arity = max_int) typ_expr =
     let attrs_before, args, return_type =
       ParsetreeViewer.arrow_type ~arity typ_expr
     in
     let dotted, attrs_before =
-      let dotted =
-        state.uncurried_config |> Res_uncurried.get_dotted ~uncurried
-      in
+      let dotted = false in
       (* Converting .ml code to .res requires processing uncurried attributes *)
       let has_bs, attrs = ParsetreeViewer.process_bs_attribute attrs_before in
       (dotted || has_bs, attrs)
@@ -1652,12 +1650,12 @@ and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
     (* object printings *)
     | Ptyp_object (fields, open_flag) ->
       print_object ~state ~inline:false fields open_flag cmt_tbl
-    | Ptyp_arrow _ -> print_arrow ~uncurried:false typ_expr
+    | Ptyp_arrow _ -> print_arrow typ_expr
     | Ptyp_constr _ when Ast_uncurried.core_type_is_uncurried_fun typ_expr ->
       let arity, t_arg =
         Ast_uncurried.core_type_extract_uncurried_fun typ_expr
       in
-      print_arrow ~uncurried:true ~arity t_arg
+      print_arrow ~arity t_arg
     | Ptyp_constr
         (longident_loc, [{ptyp_desc = Ptyp_object (fields, open_flag)}]) ->
       (* for foo<{"a": b}>, when the object is long and needs a line break, we
@@ -2618,13 +2616,12 @@ and print_if_chain ~state pexp_attributes ifs else_expr cmt_tbl =
 
 and print_expression ~state (e : Parsetree.expression) cmt_tbl =
   let print_arrow e =
-    let uncurried, attrs_on_arrow, parameters, return_expr =
+    let _, attrs_on_arrow, parameters, return_expr =
       ParsetreeViewer.fun_expr e
     in
-    let ParsetreeViewer.{async; bs; attributes = attrs} =
+    let ParsetreeViewer.{async; attributes = attrs} =
       ParsetreeViewer.process_function_attributes attrs_on_arrow
     in
-    let uncurried = uncurried || bs in
     let return_expr, typ_constraint =
       match return_expr.pexp_desc with
       | Pexp_constraint (expr, typ) ->
@@ -2642,7 +2639,7 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
       | None -> false
     in
     let parameters_doc =
-      print_expr_fun_parameters ~state ~in_callback:NoCallback ~uncurried ~async
+      print_expr_fun_parameters ~state ~in_callback:NoCallback ~async
         ~has_constraint parameters cmt_tbl
     in
     let return_expr_doc =
@@ -3376,13 +3373,10 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
   | _ -> expr_with_await
 
 and print_pexp_fun ~state ~in_callback e cmt_tbl =
-  let uncurried, attrs_on_arrow, parameters, return_expr =
-    ParsetreeViewer.fun_expr e
-  in
-  let ParsetreeViewer.{async; bs; attributes = attrs} =
+  let _, attrs_on_arrow, parameters, return_expr = ParsetreeViewer.fun_expr e in
+  let ParsetreeViewer.{async; attributes = attrs} =
     ParsetreeViewer.process_function_attributes attrs_on_arrow
   in
-  let uncurried = bs || uncurried in
   let return_expr, typ_constraint =
     match return_expr.pexp_desc with
     | Pexp_constraint (expr, typ) ->
@@ -3395,7 +3389,7 @@ and print_pexp_fun ~state ~in_callback e cmt_tbl =
     | _ -> (return_expr, None)
   in
   let parameters_doc =
-    print_expr_fun_parameters ~state ~in_callback ~async ~uncurried
+    print_expr_fun_parameters ~state ~in_callback ~async
       ~has_constraint:
         (match typ_constraint with
         | Some _ -> true
@@ -4163,7 +4157,7 @@ and print_pexp_apply ~state expr cmt_tbl =
         (fun (lbl, arg) -> (lbl, ParsetreeViewer.rewrite_underscore_apply arg))
         args
     in
-    let uncurried, attrs =
+    let _, attrs =
       ParsetreeViewer.process_uncurried_app_attribute expr.pexp_attributes
     in
     let partial, attrs = ParsetreeViewer.process_partial_app_attribute attrs in
@@ -4173,9 +4167,7 @@ and print_pexp_apply ~state expr cmt_tbl =
         args @ [(Asttypes.Labelled "...", dummy)]
       else args
     in
-    let dotted =
-      state.uncurried_config |> Res_uncurried.get_dotted ~uncurried
-    in
+    let dotted = false in
     let call_expr_doc =
       let doc = print_expression_with_comments ~state call_expr cmt_tbl in
       match Parens.call_expr call_expr with
@@ -4988,9 +4980,9 @@ and print_case ~state (case : Parsetree.case) cmt_tbl =
   in
   Doc.group (Doc.concat [Doc.text "| "; content])
 
-and print_expr_fun_parameters ~state ~in_callback ~async ~uncurried
-    ~has_constraint parameters cmt_tbl =
-  let dotted = state.uncurried_config |> Res_uncurried.get_dotted ~uncurried in
+and print_expr_fun_parameters ~state ~in_callback ~async ~has_constraint
+    parameters cmt_tbl =
+  let dotted = false in
   match parameters with
   (* let f = _ => () *)
   | [
@@ -5557,13 +5549,6 @@ and print_attribute ?(standalone = false) ~state
         ],
       Doc.hard_line )
   | _ ->
-    let id =
-      match id.txt with
-      | "uncurried" ->
-        state.uncurried_config <- Config.Uncurried;
-        id
-      | _ -> id
-    in
     ( Doc.group
         (Doc.concat
            [

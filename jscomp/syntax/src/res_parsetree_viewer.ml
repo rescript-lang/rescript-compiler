@@ -81,17 +81,12 @@ let process_partial_app_attribute attrs =
   in
   process false [] attrs
 
-type function_attributes_info = {
-  async: bool;
-  bs: bool;
-  attributes: Parsetree.attributes;
-}
+type function_attributes_info = {async: bool; attributes: Parsetree.attributes}
 
 let process_function_attributes attrs =
   let rec process async bs acc attrs =
     match attrs with
-    | [] -> {async; bs; attributes = List.rev acc}
-    | ({Location.txt = "bs"}, _) :: rest -> process async true acc rest
+    | [] -> {async; attributes = List.rev acc}
     | ({Location.txt = "res.async"}, _) :: rest -> process true bs acc rest
     | attr :: rest -> process async bs (attr :: acc) rest
   in
