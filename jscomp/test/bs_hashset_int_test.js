@@ -7,6 +7,7 @@ let Belt_SetInt = require("../../lib/js/belt_SetInt.js");
 let Array_data_util = require("./array_data_util.js");
 let Belt_HashSetInt = require("../../lib/js/belt_HashSetInt.js");
 let Belt_SortArrayInt = require("../../lib/js/belt_SortArrayInt.js");
+let Belt_internalBucketsType = require("../../lib/js/belt_internalBucketsType.js");
 
 let suites = {
   contents: /* [] */0
@@ -54,7 +55,7 @@ eq("File \"bs_hashset_int_test.res\", line 25, characters 5-12", sum2(v), 6825);
 
 let u$1 = Belt_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 
-let v$1 = Belt_HashSetInt.make(40);
+let v$1 = Belt_internalBucketsType.make(undefined, undefined, 40);
 
 Belt_HashSetInt.mergeMany(v$1, u$1);
 

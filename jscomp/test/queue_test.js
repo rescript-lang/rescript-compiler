@@ -3,23 +3,24 @@
 
 let Mt = require("./mt.js");
 let $$Array = require("../../lib/js/array.js");
+let Curry = require("../../lib/js/curry.js");
 let Queue = require("../../lib/js/queue.js");
 let Queue_402 = require("./queue_402.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function Test(Queue) {
   let to_array = function (q) {
-    let v = Caml_array.make(Queue.length(q), 0);
-    Queue.fold((function (i, e) {
+    let v = Caml_array.make(Curry._1(Queue.length, q), 0);
+    Curry._3(Queue.fold, (function (i, e) {
       Caml_array.set(v, i, e);
       return i + 1 | 0;
     }), 0, q);
     return v;
   };
   let queue_1 = function (x) {
-    let q = Queue.create();
+    let q = Curry._1(Queue.create, undefined);
     $$Array.iter((function (x) {
-      Queue.add(x, q);
+      Curry._2(Queue.add, x, q);
     }), x);
     return to_array(q);
   };

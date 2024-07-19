@@ -65,7 +65,7 @@ let m2 = {
   data: undefined
 };
 
-let data = undefined;
+let data;
 
 Belt_Map.getId(m2);
 
@@ -75,11 +75,13 @@ for(let i = 0; i <= 100000; ++i){
   data = Belt_MapDict.set(data, i, i, m_dict.cmp);
 }
 
+let data$1 = data;
+
 let newm_cmp = m_dict.cmp;
 
 let newm = {
   cmp: newm_cmp,
-  data: data
+  data: data$1
 };
 
 console.log(newm);
@@ -92,13 +94,13 @@ let m_dict$1 = Belt_Map.getId(m);
 
 let cmp = m_dict$1.cmp;
 
-let data$1 = undefined;
+let data$2;
 
 for(let i$1 = 0; i$1 <= 100000; ++i$1){
-  data$1 = Belt_SetDict.add(data$1, i$1, cmp);
+  data$2 = Belt_SetDict.add(data$2, i$1, cmp);
 }
 
-console.log(data$1);
+console.log(data$2);
 
 function f(none) {
   return Belt_Map.fromArray(none, Icmp);

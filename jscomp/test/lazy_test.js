@@ -9,7 +9,7 @@ let u = {
   contents: 3
 };
 
-let v = Lazy.from_fun(function () {
+let v = CamlinternalLazy.from_fun(function () {
   u.contents = 32;
 });
 
@@ -27,7 +27,7 @@ let u_v = {
   contents: 0
 };
 
-let u$1 = Lazy.from_fun(function () {
+let u$1 = CamlinternalLazy.from_fun(function () {
   u_v.contents = 2;
 });
 
@@ -35,27 +35,31 @@ CamlinternalLazy.force(u$1);
 
 let exotic = CamlinternalLazy.force;
 
-let l_from_fun = Lazy.from_fun(function () {
+let l_from_fun = CamlinternalLazy.from_fun(function () {
   return 3;
 });
 
-let forward_test = Lazy.from_fun(function () {
+function f() {
   let u = 3;
   u = u + 1 | 0;
   return u;
+}
+
+let forward_test = CamlinternalLazy.from_fun(function () {
+  return f();
 });
 
-let f005 = Lazy.from_fun(function () {
+let f005 = CamlinternalLazy.from_fun(function () {
   return 6;
 });
 
-let f006 = Lazy.from_fun(function () {
+let f006 = CamlinternalLazy.from_fun(function () {
   return function () {
     return 3;
   };
 });
 
-let f007 = Lazy.from_fun(function () {
+let f007 = CamlinternalLazy.from_fun(function () {
   throw new Error("Not_found", {
         cause: {
           RE_EXN_ID: "Not_found"
@@ -63,18 +67,20 @@ let f007 = Lazy.from_fun(function () {
       });
 });
 
-let f008 = Lazy.from_fun(function () {
+function f$1() {
   console.log("hi");
   throw new Error("Not_found", {
         cause: {
           RE_EXN_ID: "Not_found"
         }
       });
+}
+
+let f008 = CamlinternalLazy.from_fun(function () {
+  return f$1();
 });
 
-function a2(x) {
-  return CamlinternalLazy.from_val(x);
-}
+let a2 = CamlinternalLazy.from_val;
 
 let a3 = CamlinternalLazy.from_val(3);
 
@@ -139,12 +145,11 @@ Mt.from_pair_suites("Lazy_test", {
           hd: [
             "lazy_from_val2",
             (function () {
-              let v = Lazy.from_fun(function () {
-                return 3;
-              });
               return {
                 TAG: "Eq",
-                _0: CamlinternalLazy.force(CamlinternalLazy.force(CamlinternalLazy.from_val(v))),
+                _0: CamlinternalLazy.force(CamlinternalLazy.force(CamlinternalLazy.from_val(CamlinternalLazy.from_fun(function () {
+                  return 3;
+                })))),
                 _1: 3
               };
             })
@@ -210,7 +215,7 @@ Mt.from_pair_suites("Lazy_test", {
                         (function () {
                           return {
                             TAG: "Ok",
-                            _0: !Lazy.is_val(Lazy.from_fun(function () {
+                            _0: !Lazy.is_val(CamlinternalLazy.from_fun(function () {
                               throw new Error("Not_found", {
                                     cause: {
                                       RE_EXN_ID: "Not_found"
@@ -251,4 +256,4 @@ exports.a5 = a5;
 exports.a6 = a6;
 exports.a7 = a7;
 exports.a8 = a8;
-/* v Not a pure module */
+/*  Not a pure module */

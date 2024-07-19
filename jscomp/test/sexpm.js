@@ -6,6 +6,7 @@ let Caml = require("../../lib/js/caml.js");
 let Char = require("../../lib/js/char.js");
 let List = require("../../lib/js/list.js");
 let Bytes = require("../../lib/js/bytes.js");
+let Curry = require("../../lib/js/curry.js");
 let Buffer = require("../../lib/js/buffer.js");
 let $$String = require("../../lib/js/string.js");
 let Caml_bytes = require("../../lib/js/caml_bytes.js");
@@ -151,13 +152,13 @@ function _is_digit(c) {
 }
 
 function _refill(t, k_succ, k_fail) {
-  let n = t.refill(t.buf, 0, t.buf.length);
+  let n = Curry._3(t.refill, t.buf, 0, t.buf.length);
   t.i = 0;
   t.len = n;
   if (n === 0) {
-    return k_fail(t);
+    return Curry._1(k_fail, t);
   } else {
-    return k_succ(t);
+    return Curry._1(k_succ, t);
   }
 }
 
@@ -291,7 +292,7 @@ function expr_list(acc, k, t) {
     let c = _get(t);
     if (c > 32 || c < 9) {
       if (c === 41) {
-        return k(undefined, {
+        return Curry._2(k, undefined, {
           NAME: "List",
           VAL: List.rev(acc)
         });
@@ -302,7 +303,22 @@ function expr_list(acc, k, t) {
     }
     return expr_starting_with(c, (function (last, e) {
       if (last !== undefined) {
-        if (last === 40) {
+        if (last !== 40) {
+          if (last !== 41) {
+            return expr_list({
+              hd: e,
+              tl: acc
+            }, k, t);
+          } else {
+            return Curry._2(k, undefined, {
+              NAME: "List",
+              VAL: List.rev({
+                hd: e,
+                tl: acc
+              })
+            });
+          }
+        } else {
           return expr_list(/* [] */0, (function (param, l) {
             return expr_list({
               hd: l,
@@ -310,21 +326,12 @@ function expr_list(acc, k, t) {
             }, k, t);
           }), t);
         }
-        if (last === 41) {
-          return k(undefined, {
-            NAME: "List",
-            VAL: List.rev({
-              hd: e,
-              tl: acc
-            })
-          });
-        }
-        
+      } else {
+        return expr_list({
+          hd: e,
+          tl: acc
+        }, k, t);
       }
-      return expr_list({
-        hd: e,
-        tl: acc
-      }, k, t);
     }), t);
   };
 }
@@ -332,7 +339,7 @@ function expr_list(acc, k, t) {
 function _return_atom(last, k, t) {
   let s = Buffer.contents(t.atom);
   t.atom.position = 0;
-  return k(last, {
+  return Curry._2(k, last, {
     NAME: "Atom",
     VAL: s
   });
@@ -421,13 +428,13 @@ function escaped(k, t) {
     if (c < 117) {
       switch (c) {
         case 92 :
-            return k(/* '\\' */92);
+            return Curry._1(k, /* '\\' */92);
         case 98 :
-            return k(/* '\b' */8);
+            return Curry._1(k, /* '\b' */8);
         case 110 :
-            return k(/* '\n' */10);
+            return Curry._1(k, /* '\n' */10);
         case 114 :
-            return k(/* '\r' */13);
+            return Curry._1(k, /* '\r' */13);
         case 93 :
         case 94 :
         case 95 :
@@ -450,17 +457,17 @@ function escaped(k, t) {
         case 115 :
             break;
         case 116 :
-            return k(/* '\t' */9);
+            return Curry._1(k, /* '\t' */9);
         
       }
     }
     
   } else if (c === 34) {
-    return k(/* '"' */34);
+    return Curry._1(k, /* '"' */34);
   }
   if (_is_digit(c)) {
     return read2int(c - /* '0' */48 | 0, (function (n) {
-      return k(Char.chr(n));
+      return Curry._1(k, Char.chr(n));
     }), t);
   } else {
     return _error(t, "unexpected escaped char '" + (c + "'"));
@@ -489,7 +496,7 @@ function read1int(i, k, t) {
   }
   let c = _get(t);
   if (_is_digit(c)) {
-    return k(Math.imul(10, i) + (c - /* '0' */48 | 0) | 0);
+    return Curry._1(k, Math.imul(10, i) + (c - /* '0' */48 | 0) | 0);
   } else {
     return _error(t, "unexpected escaped char '" + (c + "' when reading byte"));
   }
@@ -504,7 +511,7 @@ function skip_comment(k, t) {
     }
     let match = _get(t);
     if (match === 10) {
-      return k(undefined, undefined);
+      return Curry._2(k, undefined, undefined);
     }
     continue;
   };

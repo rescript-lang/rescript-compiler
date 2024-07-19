@@ -56,4 +56,4 @@ exports.nullary = nullary;
 exports.unary = unary;
 exports.xx = xx;
 exports.h = h;
-/* u Not a pure module */
+/*  Not a pure module */

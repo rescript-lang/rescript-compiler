@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Curry = require("../../lib/js/curry.js");
 let Caml_format = require("../../lib/js/caml_format.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -63,7 +64,7 @@ let C = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.C");
 
 function u(f) {
   try {
-    return f();
+    return Curry._1(f, undefined);
   }
   catch (raw_x){
     let x = Caml_js_exceptions.internalToOCamlException(raw_x);

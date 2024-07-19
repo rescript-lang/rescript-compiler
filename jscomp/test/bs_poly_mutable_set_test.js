@@ -65,7 +65,7 @@ for(let i = 0 ,i_finish = r.length; i < i_finish; ++i){
   Belt_MutableSet.remove(u, r[i]);
 }
 
-b("File \"bs_poly_mutable_set_test.res\", line 28, characters 4-11", u.data === undefined);
+b("File \"bs_poly_mutable_set_test.res\", line 28, characters 4-11", Belt_MutableSet.isEmpty(u));
 
 Belt_MutableSet.add(u, 0);
 
@@ -77,13 +77,13 @@ Belt_MutableSet.add(u, 0);
 
 eq("File \"bs_poly_mutable_set_test.res\", line 33, characters 5-12", Belt_internalAVLset.size(u.data), 3);
 
-b("File \"bs_poly_mutable_set_test.res\", line 34, characters 4-11", u.data !== undefined);
+b("File \"bs_poly_mutable_set_test.res\", line 34, characters 4-11", !Belt_MutableSet.isEmpty(u));
 
 for(let i$1 = 0; i$1 <= 3; ++i$1){
   Belt_MutableSet.remove(u, i$1);
 }
 
-b("File \"bs_poly_mutable_set_test.res\", line 38, characters 4-11", u.data === undefined);
+b("File \"bs_poly_mutable_set_test.res\", line 38, characters 4-11", Belt_MutableSet.isEmpty(u));
 
 Belt_MutableSet.mergeMany(u, Array_data_util.randomRange(0, 20000));
 
@@ -115,7 +115,7 @@ b("File \"bs_poly_mutable_set_test.res\", line 52, characters 4-11", Belt_Mutabl
 
 Belt_MutableSet.removeMany(u, Array_data_util.randomRange(10000, 30000));
 
-b("File \"bs_poly_mutable_set_test.res\", line 54, characters 4-11", u.data === undefined);
+b("File \"bs_poly_mutable_set_test.res\", line 54, characters 4-11", Belt_MutableSet.isEmpty(u));
 
 let none$1 = Array_data_util.randomRange(1000, 2000);
 
@@ -153,12 +153,10 @@ eq("File \"bs_poly_mutable_set_test.res\", line 77, characters 5-12", indeedAded
 
 eq("File \"bs_poly_mutable_set_test.res\", line 78, characters 5-12", Belt_internalAVLset.size(v.data), 1501);
 
-let d = {
+b("File \"bs_poly_mutable_set_test.res\", line 79, characters 4-11", Belt_MutableSet.isEmpty({
   cmp: IntCmp.cmp,
   data: undefined
-};
-
-b("File \"bs_poly_mutable_set_test.res\", line 79, characters 4-11", d.data === undefined);
+}));
 
 eq("File \"bs_poly_mutable_set_test.res\", line 80, characters 5-12", Belt_internalAVLset.minimum(v.data), 500);
 
@@ -208,9 +206,7 @@ b("File \"bs_poly_mutable_set_test.res\", line 94, characters 4-11", Belt_Mutabl
 
 b("File \"bs_poly_mutable_set_test.res\", line 95, characters 4-11", Belt_MutableSet.subset(bb, v));
 
-let d$1 = Belt_MutableSet.intersect(aa, bb);
-
-b("File \"bs_poly_mutable_set_test.res\", line 96, characters 4-11", d$1.data === undefined);
+b("File \"bs_poly_mutable_set_test.res\", line 96, characters 4-11", Belt_MutableSet.isEmpty(Belt_MutableSet.intersect(aa, bb)));
 
 let c = Belt_MutableSet.removeCheck(v, 1000);
 
@@ -238,9 +234,7 @@ b("File \"bs_poly_mutable_set_test.res\", line 103, characters 4-11", Belt_Mutab
 
 b("File \"bs_poly_mutable_set_test.res\", line 104, characters 4-11", Belt_MutableSet.subset(bb$1, v));
 
-let d$2 = Belt_MutableSet.intersect(aa$1, bb$1);
-
-b("File \"bs_poly_mutable_set_test.res\", line 105, characters 4-11", d$2.data === undefined);
+b("File \"bs_poly_mutable_set_test.res\", line 105, characters 4-11", Belt_MutableSet.isEmpty(Belt_MutableSet.intersect(aa$1, bb$1)));
 
 let none$2 = Array_data_util.randomRange(0, 100);
 

@@ -82,34 +82,21 @@ add_test("File \"js_json_test.res\", line 22, characters 11-18", (function () {
     };
   }
   let ty2 = Js_json.classify(v$1);
-  if (typeof ty2 !== "object" || ty2.TAG !== "JSONArray") {
+  if (typeof ty2 !== "object") {
     return {
       TAG: "Ok",
       _0: false
     };
-  } else {
-    return (function () {
-      return {
-        TAG: "Ok",
-        _0: true
-      };
-    })((ty2._0.forEach(function (x) {
-      let ty3 = Js_json.classify(x);
-      if (typeof ty3 !== "object") {
-        throw new Error("Assert_failure", {
-              cause: {
-                RE_EXN_ID: "Assert_failure",
-                _1: [
-                  "js_json_test.res",
-                  37,
-                  19
-                ]
-              }
-            });
-      }
-      if (ty3.TAG === "JSONNumber") {
-        return;
-      }
+  }
+  if (ty2.TAG !== "JSONArray") {
+    return {
+      TAG: "Ok",
+      _0: false
+    };
+  }
+  ty2._0.forEach(function (x) {
+    let ty3 = Js_json.classify(x);
+    if (typeof ty3 !== "object") {
       throw new Error("Assert_failure", {
             cause: {
               RE_EXN_ID: "Assert_failure",
@@ -120,8 +107,25 @@ add_test("File \"js_json_test.res\", line 22, characters 11-18", (function () {
               ]
             }
           });
-    }), undefined));
-  }
+    }
+    if (ty3.TAG === "JSONNumber") {
+      return;
+    }
+    throw new Error("Assert_failure", {
+          cause: {
+            RE_EXN_ID: "Assert_failure",
+            _1: [
+              "js_json_test.res",
+              37,
+              19
+            ]
+          }
+        });
+  });
+  return {
+    TAG: "Ok",
+    _0: true
+  };
 }));
 
 eq("File \"js_json_test.res\", line 48, characters 5-12", Js_json.test(v, "Object"), true);
@@ -740,7 +744,7 @@ function id(obj) {
 }
 
 function idtest(obj) {
-  eq("File \"js_json_test.res\", line 355, characters 23-30", obj, id(obj));
+  eq("File \"js_json_test.res\", line 355, characters 23-30", obj, Js_json.deserializeUnsafe(Js_json.serializeExn(obj)));
 }
 
 idtest(undefined);

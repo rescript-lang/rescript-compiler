@@ -2,40 +2,40 @@
 'use strict';
 
 let List = require("../../lib/js/list.js");
+let Curry = require("../../lib/js/curry.js");
 
 function h0(x) {
-  return x();
+  return Curry._1(x, undefined);
 }
 
 function h00(x) {
-  return x();
+  return Curry._1(x, undefined);
 }
 
 function h1(x, y) {
-  return x(y);
+  return Curry._1(x, y);
 }
 
 function h10(x) {
-  return x(3);
+  return Curry._1(x, 3);
 }
 
 function h30(x) {
   return function (a) {
-    return x(3, 3, a);
+    return Curry._3(x, 3, 3, a);
   };
 }
 
 function h33(x) {
-  return x(1, 2, 3);
+  return Curry._3(x, 1, 2, 3);
 }
 
 function h34(x) {
-  return x(1, 2, 3)(4);
+  return Curry._4(x, 1, 2, 3, 4);
 }
 
 function ocaml_run(b, c) {
-  let x = 1;
-  return (x + b | 0) + c | 0;
+  return (1 + b | 0) + c | 0;
 }
 
 function a0() {

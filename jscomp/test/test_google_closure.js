@@ -2,6 +2,7 @@
 'use strict';
 
 let $$Array = require("../../lib/js/array.js");
+let Curry = require("../../lib/js/curry.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function f(a, b, param) {
@@ -20,7 +21,7 @@ function f3(extra) {
   return 101;
 }
 
-let b = f3(2);
+let b = Curry._1(f3, 2);
 
 let arr = $$Array.init(2, (function (param) {
   return 0;
@@ -28,7 +29,7 @@ let arr = $$Array.init(2, (function (param) {
 
 for(let i = 0; i <= 1; ++i){
   let f3$1 = f2(i);
-  Caml_array.set(arr, i, f3$1(2));
+  Caml_array.set(arr, i, Curry._1(f3$1, 2));
 }
 
 console.log([

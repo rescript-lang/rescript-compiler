@@ -2,14 +2,26 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Curry = require("../../lib/js/curry.js");
 
-let g = (function (extra) {
-  return 3 + extra | 0;
-})(4);
+function f(x) {
+  return function (extra) {
+    return x + extra | 0;
+  };
+}
+
+let g = Curry._1(f(3), 4);
 
 let h = {
   contents: 0
 };
+
+function gg(x, y) {
+  let u = x + y | 0;
+  return function (z) {
+    return u + z | 0;
+  };
+}
 
 function g1(x, y) {
   let u = x + y | 0;
@@ -19,14 +31,10 @@ function g1(x, y) {
   };
 }
 
-let u = 8;
-
-let x = (function (z) {
-  return u + z | 0;
-})(6);
+let x = Curry._1(gg(3, 5), 6);
 
 function v(__x) {
-  return g1(3, 4)(6, __x);
+  return Curry._2(g1(3, 4), 6, __x);
 }
 
 let suites_0 = [

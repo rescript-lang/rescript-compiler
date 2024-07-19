@@ -45,9 +45,7 @@ function randomRange(i, j) {
   }));
 }
 
-let x = randomRange(0, 10);
-
-let a0 = Belt_MutableMap.fromArray(x, Icmp);
+let a0 = Belt_MutableMap.fromArray(randomRange(0, 10), Icmp);
 
 Belt_MutableMap.set(a0, 3, 33);
 
@@ -74,11 +72,9 @@ eq("File \"bs_poly_mutable_map_test.res\", line 29, characters 5-12", Belt_inter
 
 Belt_MutableMap.removeMany(a0, Array_data_util.randomRange(0, 100));
 
-b("File \"bs_poly_mutable_map_test.res\", line 31, characters 4-11", a0.data === undefined);
+b("File \"bs_poly_mutable_map_test.res\", line 31, characters 4-11", Belt_MutableMap.isEmpty(a0));
 
-let x$1 = randomRange(0, 10000);
-
-let a0$1 = Belt_MutableMap.fromArray(x$1, Icmp);
+let a0$1 = Belt_MutableMap.fromArray(randomRange(0, 10000), Icmp);
 
 Belt_MutableMap.set(a0$1, 2000, 33);
 

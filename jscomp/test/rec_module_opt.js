@@ -3,6 +3,7 @@
 
 let $$Set = require("../../lib/js/set.js");
 let Caml = require("../../lib/js/caml.js");
+let Curry = require("../../lib/js/curry.js");
 let Caml_module = require("../../lib/js/caml_module.js");
 
 let A = Caml_module.init_mod([
@@ -29,7 +30,7 @@ function compare(t1, t2) {
   } else if (t2.TAG === "Leaf") {
     return -1;
   } else {
-    return ASet.compare(t1._0, t2._0);
+    return Curry._2(ASet.compare, t1._0, t2._0);
   }
 }
 

@@ -3,6 +3,7 @@
 
 let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
+let Curry = require("../../lib/js/curry.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 let Ext_string_test = require("./ext_string_test.js");
 
@@ -13,7 +14,7 @@ function filter_map(f, _xs) {
       return /* [] */0;
     }
     let ys = xs.tl;
-    let z = f(xs.hd);
+    let z = Curry._1(f, xs.hd);
     if (z !== undefined) {
       return {
         hd: Caml_option.valFromOption(z),
@@ -38,7 +39,7 @@ function excludes(p, l) {
       }
       let l = x.tl;
       let x$1 = x.hd;
-      if (p(x$1)) {
+      if (Curry._1(p, x$1)) {
         excluded.contents = true;
         _x = l;
         continue;
@@ -78,7 +79,7 @@ function exclude_with_fact(p, l) {
       }
       let l = x.tl;
       let x$1 = x.hd;
-      if (p(x$1)) {
+      if (Curry._1(p, x$1)) {
         excluded.contents = Caml_option.some(x$1);
         _x = l;
         continue;
@@ -114,12 +115,12 @@ function exclude_with_fact2(p1, p2, l) {
       }
       let l = x.tl;
       let x$1 = x.hd;
-      if (p1(x$1)) {
+      if (Curry._1(p1, x$1)) {
         excluded1.contents = Caml_option.some(x$1);
         _x = l;
         continue;
       }
-      if (p2(x$1)) {
+      if (Curry._1(p2, x$1)) {
         excluded2.contents = Caml_option.some(x$1);
         _x = l;
         continue;
@@ -169,7 +170,7 @@ function filter_mapi(f, xs) {
         return /* [] */0;
       }
       let ys = xs.tl;
-      let z = f(i, xs.hd);
+      let z = Curry._2(f, i, xs.hd);
       if (z !== undefined) {
         return {
           hd: Caml_option.valFromOption(z),
@@ -192,7 +193,7 @@ function filter_map2(f, _xs, _ys) {
       if (ys) {
         let vs = ys.tl;
         let us = xs.tl;
-        let z = f(xs.hd, ys.hd);
+        let z = Curry._2(f, xs.hd, ys.hd);
         if (z !== undefined) {
           return {
             hd: Caml_option.valFromOption(z),
@@ -232,7 +233,7 @@ function filter_map2i(f, xs, ys) {
         if (ys) {
           let vs = ys.tl;
           let us = xs.tl;
-          let z = f(i, xs.hd, ys.hd);
+          let z = Curry._3(f, i, xs.hd, ys.hd);
           if (z !== undefined) {
             return {
               hd: Caml_option.valFromOption(z),
@@ -273,7 +274,7 @@ function rev_map_append(f, _l1, _l2) {
       return l2;
     }
     _l2 = {
-      hd: f(l1.hd),
+      hd: Curry._1(f, l1.hd),
       tl: l2
     };
     _l1 = l1.tl;
@@ -293,7 +294,7 @@ function flat_map2(f, lx, ly) {
       if (ly$1) {
         _ly = ly$1.tl;
         _lx = lx$1.tl;
-        _acc = List.rev_append(f(lx$1.hd, ly$1.hd), acc);
+        _acc = List.rev_append(Curry._2(f, lx$1.hd, ly$1.hd), acc);
         continue;
       }
       throw new Error("Invalid_argument", {
@@ -303,15 +304,15 @@ function flat_map2(f, lx, ly) {
             }
           });
     }
-    if (!ly$1) {
-      return List.rev(acc);
+    if (ly$1) {
+      throw new Error("Invalid_argument", {
+            cause: {
+              RE_EXN_ID: "Invalid_argument",
+              _1: "Ext_list_test.flat_map2"
+            }
+          });
     }
-    throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Ext_list_test.flat_map2"
-          }
-        });
+    return List.rev(acc);
   };
 }
 
@@ -323,7 +324,7 @@ function flat_map_aux(f, _acc, append, _lx) {
       return List.rev_append(acc, append);
     }
     _lx = lx.tl;
-    _acc = List.rev_append(f(lx.hd), acc);
+    _acc = List.rev_append(Curry._1(f, lx.hd), acc);
     continue;
   };
 }
@@ -344,7 +345,7 @@ function map2_last(f, l1, l2) {
       if (l2) {
         if (!l2.tl) {
           return {
-            hd: f(true, u, l2.hd),
+            hd: Curry._3(f, true, u, l2.hd),
             tl: /* [] */0
           };
         }
@@ -359,7 +360,7 @@ function map2_last(f, l1, l2) {
       }
     }
     if (l2) {
-      let r = f(false, u, l2.hd);
+      let r = Curry._3(f, false, u, l2.hd);
       return {
         hd: r,
         tl: map2_last(f, l1$1, l2.tl)
@@ -391,11 +392,11 @@ function map_last(f, l1) {
   let u = l1.hd;
   if (!l1$1) {
     return {
-      hd: f(true, u),
+      hd: Curry._2(f, true, u),
       tl: /* [] */0
     };
   }
-  let r = f(false, u);
+  let r = Curry._2(f, false, u);
   return {
     hd: r,
     tl: map_last(f, l1$1)
@@ -409,7 +410,7 @@ function fold_right2_last(f, l1, l2, accu) {
     if (!l1$1) {
       if (l2) {
         if (!l2.tl) {
-          return f(true, last1, l2.hd, accu);
+          return Curry._4(f, true, last1, l2.hd, accu);
         }
         
       } else {
@@ -422,7 +423,7 @@ function fold_right2_last(f, l1, l2, accu) {
       }
     }
     if (l2) {
-      return f(false, last1, l2.hd, fold_right2_last(f, l1$1, l2.tl, accu));
+      return Curry._4(f, false, last1, l2.hd, fold_right2_last(f, l1$1, l2.tl, accu));
     }
     throw new Error("Invalid_argument", {
           cause: {
@@ -431,15 +432,15 @@ function fold_right2_last(f, l1, l2, accu) {
           }
         });
   }
-  if (!l2) {
-    return accu;
+  if (l2) {
+    throw new Error("Invalid_argument", {
+          cause: {
+            RE_EXN_ID: "Invalid_argument",
+            _1: "List.fold_right2"
+          }
+        });
   }
-  throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.fold_right2"
-        }
-      });
+  return accu;
 }
 
 function init(n, f) {
@@ -449,18 +450,18 @@ function init(n, f) {
 function take(n, l) {
   let arr = $$Array.of_list(l);
   let arr_length = arr.length;
-  if (arr_length >= n) {
-    return [
-      $$Array.to_list($$Array.sub(arr, 0, n)),
-      $$Array.to_list($$Array.sub(arr, n, arr_length - n | 0))
-    ];
+  if (arr_length < n) {
+    throw new Error("Invalid_argument", {
+          cause: {
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Ext_list_test.take"
+          }
+        });
   }
-  throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Ext_list_test.take"
-        }
-      });
+  return [
+    $$Array.to_list($$Array.sub(arr, 0, n)),
+    $$Array.to_list($$Array.sub(arr, n, arr_length - n | 0))
+  ];
 }
 
 function try_take(n, l) {
@@ -568,7 +569,7 @@ function aux(cmp, x, xss) {
   }
   let ys = xss.tl;
   let y = xss.hd;
-  if (cmp(x, List.hd(y))) {
+  if (Curry._2(cmp, x, List.hd(y))) {
     return {
       hd: {
         hd: x,
@@ -624,7 +625,7 @@ function find_first_not(p, _x) {
       return;
     }
     let a = x.hd;
-    if (!p(a)) {
+    if (!Curry._1(p, a)) {
       return Caml_option.some(a);
     }
     _x = x.tl;
@@ -638,7 +639,7 @@ function for_all_opt(p, _x) {
     if (!x) {
       return;
     }
-    let v = p(x.hd);
+    let v = Curry._1(p, x.hd);
     if (v !== undefined) {
       return v;
     }
@@ -649,7 +650,7 @@ function for_all_opt(p, _x) {
 
 function fold(f, l, init) {
   return List.fold_left((function (acc, i) {
-    return f(i, init);
+    return Curry._2(f, i, init);
   }), init, l);
 }
 
@@ -664,7 +665,7 @@ function rev_map_acc(acc, f, l) {
     }
     _x = x.tl;
     _accu = {
-      hd: f(x.hd),
+      hd: Curry._1(f, x.hd),
       tl: accu
     };
     continue;
@@ -674,7 +675,7 @@ function rev_map_acc(acc, f, l) {
 function map_acc(acc, f, l) {
   if (l) {
     return {
-      hd: f(l.hd),
+      hd: Curry._1(f, l.hd),
       tl: map_acc(acc, f, l.tl)
     };
   } else {
@@ -685,7 +686,7 @@ function map_acc(acc, f, l) {
 function rev_iter(f, xs) {
   if (xs) {
     rev_iter(f, xs.tl);
-    return f(xs.hd);
+    return Curry._1(f, xs.hd);
   }
   
 }
@@ -704,7 +705,7 @@ function for_all2_no_exn(p, _l1, _l2) {
     if (!l2) {
       return false;
     }
-    if (!p(l1.hd, l2.hd)) {
+    if (!Curry._2(p, l1.hd, l2.hd)) {
       return false;
     }
     _l2 = l2.tl;
@@ -720,7 +721,7 @@ function find_no_exn(p, _x) {
       return;
     }
     let x$1 = x.hd;
-    if (p(x$1)) {
+    if (Curry._1(p, x$1)) {
       return Caml_option.some(x$1);
     }
     _x = x.tl;
@@ -734,7 +735,7 @@ function find_opt(p, _x) {
     if (!x) {
       return;
     }
-    let v = p(x.hd);
+    let v = Curry._1(p, x.hd);
     if (v !== undefined) {
       return v;
     }
@@ -757,7 +758,7 @@ function split_map(f, xs) {
         List.rev(cs)
       ];
     }
-    let match = f(xs$1.hd);
+    let match = Curry._1(f, xs$1.hd);
     _xs = xs$1.tl;
     _cs = {
       hd: match[1],
@@ -775,7 +776,7 @@ function reduce_from_right(fn, lst) {
   let match = List.rev(lst);
   if (match) {
     return List.fold_left((function (x, y) {
-      return fn(y, x);
+      return Curry._2(fn, y, x);
     }), match.hd, match.tl);
   }
   throw new Error("Invalid_argument", {

@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Curry = require("../../lib/js/curry.js");
 
 function f(v) {
   if (v % 2 === 0) {
@@ -20,7 +21,7 @@ let v = [
   2,
   3
 ].map(function (a, b) {
-  return f(a)(b);
+  return Curry._1(f(a), b);
 });
 
 let vv = [
@@ -63,9 +64,7 @@ function abc(x, y, z) {
   return (x + y | 0) + z | 0;
 }
 
-function abc_u(x, y, z) {
-  return abc(x, y, z);
-}
+let abc_u = abc;
 
 fff();
 
@@ -120,10 +119,10 @@ Mt.from_pair_suites("Ffi_arity_test", {
 });
 
 function bar(fn) {
-  return fn();
+  return Curry._1(fn, undefined);
 }
 
-((function(){console.log("forgiving arity")})());
+(Curry._1((function(){console.log("forgiving arity")}), undefined));
 
 exports.f = f;
 exports.v = v;

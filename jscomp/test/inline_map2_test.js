@@ -4,6 +4,7 @@
 let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
+let Curry = require("../../lib/js/curry.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 
 function Make(Ord) {
@@ -124,7 +125,7 @@ function Make(Ord) {
     let d = x_._2;
     let v = x_._1;
     let l = x_._0;
-    let c = Ord.compare(x, v);
+    let c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
       return {
         TAG: "Node",
@@ -150,7 +151,7 @@ function Make(Ord) {
               }
             });
       }
-      let c = Ord.compare(x, x_._1);
+      let c = Curry._2(Ord.compare, x, x_._1);
       if (c === 0) {
         return x_._2;
       }
@@ -164,7 +165,7 @@ function Make(Ord) {
       if (typeof x_ !== "object") {
         return false;
       }
-      let c = Ord.compare(x, x_._1);
+      let c = Curry._2(Ord.compare, x, x_._1);
       if (c === 0) {
         return true;
       }
@@ -238,7 +239,7 @@ function Make(Ord) {
     let d = x_._2;
     let v = x_._1;
     let l = x_._0;
-    let c = Ord.compare(x, v);
+    let c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
       if (typeof l !== "object") {
         return r;
@@ -261,7 +262,7 @@ function Make(Ord) {
         return;
       }
       iter(f, x._0);
-      f(x._1, x._2);
+      Curry._2(f, x._1, x._2);
       _x = x._3;
       continue;
     };
@@ -271,7 +272,7 @@ function Make(Ord) {
       return "Empty";
     }
     let l$p = map(f, x._0);
-    let d$p = f(x._2);
+    let d$p = Curry._1(f, x._2);
     let r$p = map(f, x._3);
     return {
       TAG: "Node",
@@ -288,7 +289,7 @@ function Make(Ord) {
     }
     let v = x._1;
     let l$p = mapi(f, x._0);
-    let d$p = f(v, x._2);
+    let d$p = Curry._2(f, v, x._2);
     let r$p = mapi(f, x._3);
     return {
       TAG: "Node",
@@ -306,7 +307,7 @@ function Make(Ord) {
       if (typeof m !== "object") {
         return accu;
       }
-      _accu = f(m._1, m._2, fold(f, m._0, accu));
+      _accu = Curry._3(f, m._1, m._2, fold(f, m._0, accu));
       _m = m._3;
       continue;
     };
@@ -317,7 +318,7 @@ function Make(Ord) {
       if (typeof x !== "object") {
         return true;
       }
-      if (!p(x._1, x._2)) {
+      if (!Curry._2(p, x._1, x._2)) {
         return false;
       }
       if (!for_all(p, x._0)) {
@@ -333,7 +334,7 @@ function Make(Ord) {
       if (typeof x !== "object") {
         return false;
       }
-      if (p(x._1, x._2)) {
+      if (Curry._2(p, x._1, x._2)) {
         return true;
       }
       if (exists(p, x._0)) {
@@ -403,7 +404,7 @@ function Make(Ord) {
     let d = x_._2;
     let v = x_._1;
     let l = x_._0;
-    let c = Ord.compare(x, v);
+    let c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
       return [
         l,
@@ -436,7 +437,7 @@ function Make(Ord) {
       let v1 = s1._1;
       if (s1._4 >= height(s2)) {
         let match = split(v1, s2);
-        return concat_or_join(merge(f, s1._0, match[0]), v1, f(v1, Caml_option.some(s1._2), match[1]), merge(f, s1._3, match[2]));
+        return concat_or_join(merge(f, s1._0, match[0]), v1, Curry._3(f, v1, Caml_option.some(s1._2), match[1]), merge(f, s1._3, match[2]));
       }
       
     }
@@ -454,7 +455,7 @@ function Make(Ord) {
     }
     let v2 = s2._1;
     let match$1 = split(v2, s1);
-    return concat_or_join(merge(f, match$1[0], s2._0), v2, f(v2, match$1[1], Caml_option.some(s2._2)), merge(f, match$1[2], s2._3));
+    return concat_or_join(merge(f, match$1[0], s2._0), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2._2)), merge(f, match$1[2], s2._3));
   };
   let filter = function (p, x) {
     if (typeof x !== "object") {
@@ -463,7 +464,7 @@ function Make(Ord) {
     let d = x._2;
     let v = x._1;
     let l$p = filter(p, x._0);
-    let pvd = p(v, d);
+    let pvd = Curry._2(p, v, d);
     let r$p = filter(p, x._3);
     if (pvd) {
       return join(l$p, v, d, r$p);
@@ -483,7 +484,7 @@ function Make(Ord) {
     let match = partition(p, x._0);
     let lf = match[1];
     let lt = match[0];
-    let pvd = p(v, d);
+    let pvd = Curry._2(p, v, d);
     let match$1 = partition(p, x._3);
     let rf = match$1[1];
     let rt = match$1[0];
@@ -533,11 +534,11 @@ function Make(Ord) {
       if (typeof e2 !== "object") {
         return 1;
       }
-      let c = Ord.compare(e1._0, e2._0);
+      let c = Curry._2(Ord.compare, e1._0, e2._0);
       if (c !== 0) {
         return c;
       }
-      let c$1 = cmp(e1._1, e2._1);
+      let c$1 = Curry._2(cmp, e1._1, e2._1);
       if (c$1 !== 0) {
         return c$1;
       }
@@ -562,10 +563,10 @@ function Make(Ord) {
       if (typeof e2 !== "object") {
         return false;
       }
-      if (Ord.compare(e1._0, e2._0) !== 0) {
+      if (Curry._2(Ord.compare, e1._0, e2._0) !== 0) {
         return false;
       }
-      if (!cmp(e1._1, e2._1)) {
+      if (!Curry._2(cmp, e1._1, e2._1)) {
         return false;
       }
       _e2 = cons_enum(e2._2, e2._3);
@@ -906,7 +907,7 @@ function iter(f, _x) {
       return;
     }
     iter(f, x._0);
-    f(x._1, x._2);
+    Curry._2(f, x._1, x._2);
     _x = x._3;
     continue;
   };
@@ -917,7 +918,7 @@ function map(f, x) {
     return "Empty";
   }
   let l$p = map(f, x._0);
-  let d$p = f(x._2);
+  let d$p = Curry._1(f, x._2);
   let r$p = map(f, x._3);
   return {
     TAG: "Node",
@@ -935,7 +936,7 @@ function mapi(f, x) {
   }
   let v = x._1;
   let l$p = mapi(f, x._0);
-  let d$p = f(v, x._2);
+  let d$p = Curry._2(f, v, x._2);
   let r$p = mapi(f, x._3);
   return {
     TAG: "Node",
@@ -954,7 +955,7 @@ function fold(f, _m, _accu) {
     if (typeof m !== "object") {
       return accu;
     }
-    _accu = f(m._1, m._2, fold(f, m._0, accu));
+    _accu = Curry._3(f, m._1, m._2, fold(f, m._0, accu));
     _m = m._3;
     continue;
   };
@@ -966,7 +967,7 @@ function for_all(p, _x) {
     if (typeof x !== "object") {
       return true;
     }
-    if (!p(x._1, x._2)) {
+    if (!Curry._2(p, x._1, x._2)) {
       return false;
     }
     if (!for_all(p, x._0)) {
@@ -983,7 +984,7 @@ function exists(p, _x) {
     if (typeof x !== "object") {
       return false;
     }
-    if (p(x._1, x._2)) {
+    if (Curry._2(p, x._1, x._2)) {
       return true;
     }
     if (exists(p, x._0)) {
@@ -1093,7 +1094,7 @@ function merge(f, s1, s2) {
     let v1 = s1._1;
     if (s1._4 >= height(s2)) {
       let match = split(v1, s2);
-      return concat_or_join(merge(f, s1._0, match[0]), v1, f(v1, Caml_option.some(s1._2), match[1]), merge(f, s1._3, match[2]));
+      return concat_or_join(merge(f, s1._0, match[0]), v1, Curry._3(f, v1, Caml_option.some(s1._2), match[1]), merge(f, s1._3, match[2]));
     }
     
   }
@@ -1111,7 +1112,7 @@ function merge(f, s1, s2) {
   }
   let v2 = s2._1;
   let match$1 = split(v2, s1);
-  return concat_or_join(merge(f, match$1[0], s2._0), v2, f(v2, match$1[1], Caml_option.some(s2._2)), merge(f, match$1[2], s2._3));
+  return concat_or_join(merge(f, match$1[0], s2._0), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2._2)), merge(f, match$1[2], s2._3));
 }
 
 function filter(p, x) {
@@ -1121,7 +1122,7 @@ function filter(p, x) {
   let d = x._2;
   let v = x._1;
   let l$p = filter(p, x._0);
-  let pvd = p(v, d);
+  let pvd = Curry._2(p, v, d);
   let r$p = filter(p, x._3);
   if (pvd) {
     return join(l$p, v, d, r$p);
@@ -1142,7 +1143,7 @@ function partition(p, x) {
   let match = partition(p, x._0);
   let lf = match[1];
   let lt = match[0];
-  let pvd = p(v, d);
+  let pvd = Curry._2(p, v, d);
   let match$1 = partition(p, x._3);
   let rf = match$1[1];
   let rt = match$1[0];
@@ -1198,7 +1199,7 @@ function compare(cmp, m1, m2) {
     if (c !== 0) {
       return c;
     }
-    let c$1 = cmp(e1._1, e2._1);
+    let c$1 = Curry._2(cmp, e1._1, e2._1);
     if (c$1 !== 0) {
       return c$1;
     }
@@ -1227,7 +1228,7 @@ function equal(cmp, m1, m2) {
     if (e1._0 !== e2._0) {
       return false;
     }
-    if (!cmp(e1._1, e2._1)) {
+    if (!Curry._2(cmp, e1._1, e2._1)) {
       return false;
     }
     _e2 = cons_enum(e2._2, e2._3);
@@ -1599,7 +1600,7 @@ function iter$1(f, _x) {
       return;
     }
     iter$1(f, x._0);
-    f(x._1, x._2);
+    Curry._2(f, x._1, x._2);
     _x = x._3;
     continue;
   };
@@ -1610,7 +1611,7 @@ function map$1(f, x) {
     return "Empty";
   }
   let l$p = map$1(f, x._0);
-  let d$p = f(x._2);
+  let d$p = Curry._1(f, x._2);
   let r$p = map$1(f, x._3);
   return {
     TAG: "Node",
@@ -1628,7 +1629,7 @@ function mapi$1(f, x) {
   }
   let v = x._1;
   let l$p = mapi$1(f, x._0);
-  let d$p = f(v, x._2);
+  let d$p = Curry._2(f, v, x._2);
   let r$p = mapi$1(f, x._3);
   return {
     TAG: "Node",
@@ -1647,7 +1648,7 @@ function fold$1(f, _m, _accu) {
     if (typeof m !== "object") {
       return accu;
     }
-    _accu = f(m._1, m._2, fold$1(f, m._0, accu));
+    _accu = Curry._3(f, m._1, m._2, fold$1(f, m._0, accu));
     _m = m._3;
     continue;
   };
@@ -1659,7 +1660,7 @@ function for_all$1(p, _x) {
     if (typeof x !== "object") {
       return true;
     }
-    if (!p(x._1, x._2)) {
+    if (!Curry._2(p, x._1, x._2)) {
       return false;
     }
     if (!for_all$1(p, x._0)) {
@@ -1676,7 +1677,7 @@ function exists$1(p, _x) {
     if (typeof x !== "object") {
       return false;
     }
-    if (p(x._1, x._2)) {
+    if (Curry._2(p, x._1, x._2)) {
       return true;
     }
     if (exists$1(p, x._0)) {
@@ -1786,7 +1787,7 @@ function merge$1(f, s1, s2) {
     let v1 = s1._1;
     if (s1._4 >= height$1(s2)) {
       let match = split$1(v1, s2);
-      return concat_or_join$1(merge$1(f, s1._0, match[0]), v1, f(v1, Caml_option.some(s1._2), match[1]), merge$1(f, s1._3, match[2]));
+      return concat_or_join$1(merge$1(f, s1._0, match[0]), v1, Curry._3(f, v1, Caml_option.some(s1._2), match[1]), merge$1(f, s1._3, match[2]));
     }
     
   }
@@ -1804,7 +1805,7 @@ function merge$1(f, s1, s2) {
   }
   let v2 = s2._1;
   let match$1 = split$1(v2, s1);
-  return concat_or_join$1(merge$1(f, match$1[0], s2._0), v2, f(v2, match$1[1], Caml_option.some(s2._2)), merge$1(f, match$1[2], s2._3));
+  return concat_or_join$1(merge$1(f, match$1[0], s2._0), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2._2)), merge$1(f, match$1[2], s2._3));
 }
 
 function filter$1(p, x) {
@@ -1814,7 +1815,7 @@ function filter$1(p, x) {
   let d = x._2;
   let v = x._1;
   let l$p = filter$1(p, x._0);
-  let pvd = p(v, d);
+  let pvd = Curry._2(p, v, d);
   let r$p = filter$1(p, x._3);
   if (pvd) {
     return join$1(l$p, v, d, r$p);
@@ -1835,7 +1836,7 @@ function partition$1(p, x) {
   let match = partition$1(p, x._0);
   let lf = match[1];
   let lt = match[0];
-  let pvd = p(v, d);
+  let pvd = Curry._2(p, v, d);
   let match$1 = partition$1(p, x._3);
   let rf = match$1[1];
   let rt = match$1[0];
@@ -1891,7 +1892,7 @@ function compare$1(cmp, m1, m2) {
     if (c !== 0) {
       return c;
     }
-    let c$1 = cmp(e1._1, e2._1);
+    let c$1 = Curry._2(cmp, e1._1, e2._1);
     if (c$1 !== 0) {
       return c$1;
     }
@@ -1920,7 +1921,7 @@ function equal$1(cmp, m1, m2) {
     if (Caml.string_compare(e1._0, e2._0) !== 0) {
       return false;
     }
-    if (!cmp(e1._1, e2._1)) {
+    if (!Curry._2(cmp, e1._1, e2._1)) {
       return false;
     }
     _e2 = cons_enum$1(e2._2, e2._3);

@@ -1538,7 +1538,7 @@ and compile_prim (prim_info : Lam.prim_info)
       (*
        either a getter {[ x #. height ]} or {[ x ## method_call ]}
     *)
-      assert (not setter);
+      (* assert (not setter); *)
 
       match
         compile_lambda { lambda_cxt with continuation = NeedValue Not_tail } obj
