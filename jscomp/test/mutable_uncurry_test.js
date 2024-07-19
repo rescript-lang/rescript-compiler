@@ -75,7 +75,7 @@ function ut4(param, param$1, param$2, param$3) {
         x3
       ];
     };
-  })(param$2)(param$3);
+  })(param$2, param$3);
 }
 
 function t4(param, param$1, param$2, param$3) {
@@ -92,7 +92,7 @@ function t4(param, param$1, param$2, param$3) {
         x3
       ];
     };
-  })(param$2)(param$3);
+  })(param$2, param$3);
 }
 
 function ut5(param, param$1, param$2, param$3, param$4) {
@@ -113,7 +113,7 @@ function ut5(param, param$1, param$2, param$3, param$4) {
         ];
       };
     };
-  })(param$2)(param$3)(param$4);
+  })(param$2, param$3, param$4);
 }
 
 function t5(param, param$1, param$2, param$3, param$4) {
@@ -134,7 +134,7 @@ function t5(param, param$1, param$2, param$3, param$4) {
         ];
       };
     };
-  })(param$2)(param$3)(param$4);
+  })(param$2, param$3, param$4);
 }
 
 function nested0(param, param$1, param$2) {

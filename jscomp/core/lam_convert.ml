@@ -549,7 +549,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         (* we need do this eargly in case [aux fn] add some wrapper *)
         Lam.apply (convert_aux fn)
           (Ext_list.map args convert_aux)
-          { ap_loc = loc; ap_inlined; ap_status = App_na }
+          { ap_loc = loc; ap_inlined; ap_status = App_uncurry }
     | Lfunction { params; body; attr } ->
         let new_map, body =
           rename_optional_parameters Map_ident.empty params body
@@ -695,14 +695,14 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           {
             ap_loc = outer_loc;
             ap_inlined = ap_info.ap_inlined;
-            ap_status = App_na;
+            ap_status = App_uncurry;
           }
     | _ ->
         Lam.apply f [ x ]
           {
             ap_loc = outer_loc;
             ap_inlined = Default_inline;
-            ap_status = App_na;
+            ap_status = App_uncurry;
           }
   and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) =
     let e = convert_aux e in

@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_module = require("../../lib/js/caml_module.js");
 
 let suites = {
@@ -73,7 +72,7 @@ function fact(n) {
   if (n <= 1) {
     return 1;
   } else {
-    return Math.imul(n, Curry._1(M.fact, n - 1 | 0));
+    return Math.imul(n, M.fact(n - 1 | 0));
   }
 }
 
@@ -94,7 +93,7 @@ let Fact = {
   fact: fact$1
 };
 
-eq("File \"recursive_module_test.res\", line 29, characters 12-19", 120, Curry._1(fact$1, 5));
+eq("File \"recursive_module_test.res\", line 29, characters 12-19", 120, fact$1(5));
 
 add([
   "File \"recursive_module_test.res\", line 31, characters 14-21",
@@ -102,7 +101,7 @@ add([
     return {
       TAG: "ThrowAny",
       _0: (function () {
-        Curry._1(Int3.u, 3);
+        Int3.u(3);
       })
     };
   })

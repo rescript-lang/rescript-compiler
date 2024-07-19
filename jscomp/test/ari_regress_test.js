@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 
 function f(x) {
   return function (extra) {
@@ -10,7 +9,7 @@ function f(x) {
   };
 }
 
-let g = Curry._1(f(3), 4);
+let g = f(3, 4);
 
 let h = {
   contents: 0
@@ -31,10 +30,10 @@ function g1(x, y) {
   };
 }
 
-let x = Curry._1(gg(3, 5), 6);
+let x = gg(3, 5, 6);
 
 function v(__x) {
-  return Curry._2(g1(3, 4), 6, __x);
+  return g1(3, 4, 6, __x);
 }
 
 let suites_0 = [

@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -18,14 +17,14 @@ function eq(loc, x, y) {
 
 function fib(n, k) {
   if (n === 0 || n === 1) {
-    return Curry._1(k, 1);
+    return k(1);
   } else {
     return {
       TAG: "Suspend",
       _0: (function () {
         return fib(n - 1 | 0, (function (v0) {
           return fib(n - 2 | 0, (function (v1) {
-            return Curry._1(k, v0 + v1 | 0);
+            return k(v0 + v1 | 0);
           }));
         }));
       })
@@ -46,7 +45,7 @@ function iter(_bounce) {
     if (bounce.TAG === "Continue") {
       return bounce._0;
     }
-    _bounce = Curry._1(bounce._0, undefined);
+    _bounce = bounce._0();
     continue;
   };
 }

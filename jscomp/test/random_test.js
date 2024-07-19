@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 let Int64 = require("../../lib/js/int64.js");
 let Random = require("../../lib/js/random.js");
 let Mt_global = require("./mt_global.js");
@@ -34,7 +33,7 @@ function approx(f) {
   };
 }
 
-Curry._2(neq("File \"random_test.res\", line 9, characters 2-9"), (Random.self_init(), Random.int(10000)), (Random.self_init(), Random.int(1000)));
+neq("File \"random_test.res\", line 9, characters 2-9", (Random.self_init(), Random.int(10000)), (Random.self_init(), Random.int(1000)));
 
 Random.init(0);
 
@@ -44,7 +43,7 @@ for(let i = 0; i <= 9; ++i){
   Caml_array.set(v, i, Random.bool());
 }
 
-Curry._2(eq("File \"random_test.res\", line 28, characters 12-19"), v, [
+eq("File \"random_test.res\", line 28, characters 12-19", v, [
   true,
   true,
   true,

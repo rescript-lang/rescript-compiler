@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 
 let suites = {
@@ -47,7 +46,7 @@ function f2(x) {
 }
 
 function f5(h, x) {
-  let u = Curry._1(h, 32);
+  let u = h(32);
   if (u !== null) {
     return u + 1 | 0;
   } else {
@@ -56,7 +55,7 @@ function f5(h, x) {
 }
 
 function f4(h, x) {
-  let u = Curry._1(h, 32);
+  let u = h(32);
   let v = 32 + x | 0;
   if (u !== null) {
     return u + 1 | 0;
@@ -132,7 +131,7 @@ function f2$1(x) {
 }
 
 function f5$1(h, x) {
-  let u = Curry._1(h, 32);
+  let u = h(32);
   if (u !== undefined) {
     return u + 1 | 0;
   } else {
@@ -141,7 +140,7 @@ function f5$1(h, x) {
 }
 
 function f4$1(h, x) {
-  let u = Curry._1(h, 32);
+  let u = h(32);
   let v = 32 + x | 0;
   if (u !== undefined) {
     return u + 1 | 0;
@@ -217,7 +216,7 @@ function f2$2(x) {
 }
 
 function f5$2(h, x) {
-  let u = Curry._1(h, 32);
+  let u = h(32);
   if (u == null) {
     return 3;
   } else {
@@ -226,7 +225,7 @@ function f5$2(h, x) {
 }
 
 function f4$2(h, x) {
-  let u = Curry._1(h, 32);
+  let u = h(32);
   let v = 32 + x | 0;
   if (u == null) {
     return 1 + v | 0;

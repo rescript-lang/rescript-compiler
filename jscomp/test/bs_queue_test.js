@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
 let Belt_MutableQueue = require("../../lib/js/belt_MutableQueue.js");
@@ -25,7 +24,7 @@ function b(loc, x) {
 
 function does_raise(f, q) {
   try {
-    Curry._1(f, q);
+    f(q);
     return false;
   }
   catch (exn){

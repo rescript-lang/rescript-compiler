@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 let Stack = require("../../lib/js/stack.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Mt_global = require("./mt_global.js");
@@ -58,7 +57,7 @@ let S = {
 
 function does_raise(f, s) {
   try {
-    Curry._1(f, s);
+    f(s);
     return false;
   }
   catch (raw_exn){

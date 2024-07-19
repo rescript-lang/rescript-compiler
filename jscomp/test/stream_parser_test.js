@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 let Queue = require("../../lib/js/queue.js");
 let Genlex = require("../../lib/js/genlex.js");
 let Stream = require("../../lib/js/stream.js");
@@ -22,7 +21,7 @@ function parse(token) {
       return Queue.pop(look_ahead);
     }
     try {
-      return Curry._1(token, undefined);
+      return token();
     }
     catch (exn){
       return {
@@ -162,7 +161,7 @@ function l_parse(token) {
       return Queue.pop(look_ahead);
     }
     try {
-      return Curry._1(token, undefined);
+      return token();
     }
     catch (exn){
       return {

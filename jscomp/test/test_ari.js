@@ -4,7 +4,6 @@
 let U = require("U");
 let VV = require("VV");
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 
 function f(x, y) {
   return x + y | 0;
@@ -15,7 +14,7 @@ function f1(x, y) {
 }
 
 function f3(g, x) {
-  return Curry._1(g, x);
+  return g(x);
 }
 
 function f2(extra) {

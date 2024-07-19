@@ -3,7 +3,6 @@
 
 let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function for_3(x) {
@@ -22,7 +21,7 @@ function for_3(x) {
     }));
   }
   $$Array.iter((function (x) {
-    Curry._1(x, undefined);
+    x();
   }), arr);
   return v.contents;
 }
@@ -44,7 +43,7 @@ function for_4(x) {
     }));
   }
   $$Array.iter((function (x) {
-    Curry._1(x, undefined);
+    x();
   }), arr);
   return v.contents;
 }
@@ -65,7 +64,7 @@ function for_5(x, u) {
     }));
   }
   $$Array.iter((function (x) {
-    Curry._1(x, undefined);
+    x();
   }), arr);
   return v.contents;
 }
@@ -103,7 +102,7 @@ function for_6(x, u) {
     inspect_3 = v2.contents;
   }
   $$Array.iter((function (x) {
-    Curry._1(x, undefined);
+    x();
   }), arr);
   return [
     v.contents,
@@ -128,7 +127,7 @@ function for_7() {
     }
   }
   $$Array.iter((function (f) {
-    Curry._1(f, undefined);
+    f();
   }), arr);
   return v.contents;
 }
@@ -150,7 +149,7 @@ function for_8() {
     }
   }
   $$Array.iter((function (f) {
-    Curry._1(f, undefined);
+    f();
   }), arr);
   return v.contents;
 }
@@ -194,10 +193,10 @@ function for_9() {
     }));
   }
   $$Array.iter((function (f) {
-    Curry._1(f, undefined);
+    f();
   }), arr);
   $$Array.iter((function (f) {
-    Curry._1(f, undefined);
+    f();
   }), arr2);
   return [[
       vv.contents,
