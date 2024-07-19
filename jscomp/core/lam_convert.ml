@@ -357,7 +357,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
       match a with
       | Pbigint | Pint32 -> prim ~primitive:(Pintcomp b) ~args loc
       | Pint64 -> prim ~primitive:(Pint64comp b) ~args loc)
-  | Popaque -> Ext_list.singleton_exn args
 
 (* Does not exist since we compile array in js backend unlike native backend *)
 
@@ -569,7 +568,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           Lam.global_module ~dynamic_import id)
     | Lprim
         ( Puncurried_apply,
-          [ Lapply { ap_func = Lprim (Popaque, [ ap_func ], _); ap_args } ],
+          [ Lapply { ap_func; ap_args } ],
           loc ) ->
         let ap_func = convert_aux ap_func in
         let ap_args = Ext_list.map ap_args convert_aux in

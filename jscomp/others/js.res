@@ -82,7 +82,6 @@ module Internal = {
 
   /* Use opaque instead of [._n] to prevent some optimizations happening */
   external run: ((. unit) => 'a) => 'a = "#run"
-  external opaque: 'a => 'a = "%opaque"
 }
 
 /**
