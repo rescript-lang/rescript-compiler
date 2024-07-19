@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -30,79 +31,79 @@ function eq(loc, x, y) {
 
 function f0(x) {
   let old = x._open;
-  x._open = old + 1 | 0;
+  Curry._1(x._open, old + 1 | 0);
   return x._open;
 }
 
 function f1(x) {
   let old = x._in;
-  x._in = old + 1 | 0;
+  Curry._1(x._in, old + 1 | 0);
   return x._in;
 }
 
 function f2(x) {
   let old = x._MAX_LENGTH;
-  x._MAX_LENGTH = old + 1 | 0;
+  Curry._1(x._MAX_LENGTH, old + 1 | 0);
   return x._MAX_LENGTH;
 }
 
 function f3(x) {
   let old = x._Capital;
-  x._Capital = old + 1 | 0;
+  Curry._1(x._Capital, old + 1 | 0);
   return x._Capital;
 }
 
 function f4(x) {
   let old = x._open__;
-  x._open__ = old + 1 | 0;
+  Curry._1(x._open__, old + 1 | 0);
   return x._open__;
 }
 
 function f5(x) {
   let old = x.open__;
-  x.open__ = old + 1 | 0;
+  Curry._1(x.open__, old + 1 | 0);
   return x.open__;
 }
 
 function f6(x) {
   let old = x["_'x"];
-  x["_'x"] = old + 1 | 0;
+  Curry._1(x["_'x"], old + 1 | 0);
   return x["_'x"];
 }
 
 function f7(x) {
   let old = x._Capital__;
-  x._Capital__ = old + 1 | 0;
+  Curry._1(x._Capital__, old + 1 | 0);
   return x._Capital__;
 }
 
 function f8(x) {
   let old = x._MAX__;
-  x._MAX__ = old + 1 | 0;
+  Curry._1(x._MAX__, old + 1 | 0);
   return x._MAX__;
 }
 
 function f9(x) {
   let old = x.__;
-  x.__ = old + 1 | 0;
+  Curry._1(x.__, old + 1 | 0);
   return x.__;
 }
 
 function f10(x) {
   let old = x.__x;
-  x.__x = old + 1 | 0;
+  Curry._1(x.__x, old + 1 | 0);
   return x.__x;
 }
 
 function f11(x) {
   let old = x.___;
-  x.___ = old + 1 | 0;
+  Curry._1(x.___, old + 1 | 0);
   return x.___;
 }
 
 function f12(x) {
   let old = x.____;
-  x.____ = old + 1 | 0;
+  Curry._1(x.____, old + 1 | 0);
   return x.____;
 }
 

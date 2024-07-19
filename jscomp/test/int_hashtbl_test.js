@@ -5,13 +5,14 @@ let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
+let Curry = require("../../lib/js/curry.js");
 let Hashtbl = require("../../lib/js/hashtbl.js");
 
 function f(H) {
-  let tbl = H.create(17);
-  H.add(tbl, 1, /* '1' */49);
-  H.add(tbl, 2, /* '2' */50);
-  let extra = H.fold((function (k, v, acc) {
+  let tbl = Curry._1(H.create, 17);
+  Curry._3(H.add, tbl, 1, /* '1' */49);
+  Curry._3(H.add, tbl, 2, /* '2' */50);
+  let extra = Curry._3(H.fold, (function (k, v, acc) {
     return {
       hd: [
         k,
@@ -26,14 +27,14 @@ function f(H) {
 }
 
 function g(H, count) {
-  let tbl = H.create(17);
+  let tbl = Curry._1(H.create, 17);
   for(let i = 0; i <= count; ++i){
-    H.replace(tbl, (i << 1), String(i));
+    Curry._3(H.replace, tbl, (i << 1), String(i));
   }
   for(let i$1 = 0; i$1 <= count; ++i$1){
-    H.replace(tbl, (i$1 << 1), String(i$1));
+    Curry._3(H.replace, tbl, (i$1 << 1), String(i$1));
   }
-  let v = H.fold((function (k, v, acc) {
+  let v = Curry._3(H.fold, (function (k, v, acc) {
     return {
       hd: [
         k,
@@ -42,15 +43,12 @@ function g(H, count) {
       tl: acc
     };
   }), tbl, /* [] */0);
-  let v$1 = List.sort((function (param, param$1) {
+  return $$Array.of_list(List.sort((function (param, param$1) {
     return Caml.int_compare(param[0], param$1[0]);
-  }), v);
-  return $$Array.of_list(v$1);
+  }), v));
 }
 
-function hash(x) {
-  return Hashtbl.hash(x);
-}
+let hash = Hashtbl.hash;
 
 function equal(x, y) {
   return x === y;

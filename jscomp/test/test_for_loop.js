@@ -2,6 +2,7 @@
 'use strict';
 
 let $$Array = require("../../lib/js/array.js");
+let Curry = require("../../lib/js/curry.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function for_(x) {
@@ -32,7 +33,7 @@ function for_3(x) {
     }));
   }
   $$Array.iter((function (x) {
-    x();
+    Curry._1(x, undefined);
   }), arr);
   return v.contents;
 }
@@ -54,7 +55,7 @@ function for_4(x) {
     }));
   }
   $$Array.iter((function (x) {
-    x();
+    Curry._1(x, undefined);
   }), arr);
   return v.contents;
 }
@@ -75,7 +76,7 @@ function for_5(x, u) {
     }));
   }
   $$Array.iter((function (x) {
-    x();
+    Curry._1(x, undefined);
   }), arr);
   return v.contents;
 }
@@ -111,7 +112,7 @@ function for_6(x, u) {
     }
   }
   $$Array.iter((function (x) {
-    x();
+    Curry._1(x, undefined);
   }), arr);
   return v.contents;
 }

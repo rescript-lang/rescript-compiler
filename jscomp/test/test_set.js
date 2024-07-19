@@ -2,6 +2,7 @@
 'use strict';
 
 let List = require("../../lib/js/list.js");
+let Curry = require("../../lib/js/curry.js");
 
 function Make(Ord) {
   let height = function (x) {
@@ -100,7 +101,7 @@ function Make(Ord) {
     let r = x_._2;
     let v = x_._1;
     let l = x_._0;
-    let c = Ord.compare(x, v);
+    let c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
       return x_;
     } else if (c < 0) {
@@ -230,7 +231,7 @@ function Make(Ord) {
     let r = x_._2;
     let v = x_._1;
     let l = x_._0;
-    let c = Ord.compare(x, v);
+    let c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
       return [
         l,
@@ -266,7 +267,7 @@ function Make(Ord) {
       if (typeof x_ !== "object") {
         return false;
       }
-      let c = Ord.compare(x, x_._1);
+      let c = Curry._2(Ord.compare, x, x_._1);
       if (c === 0) {
         return true;
       }
@@ -281,7 +282,7 @@ function Make(Ord) {
     let r = x_._2;
     let v = x_._1;
     let l = x_._0;
-    let c = Ord.compare(x, v);
+    let c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
       return merge(l, r);
     } else if (c < 0) {
@@ -381,7 +382,7 @@ function Make(Ord) {
       if (typeof e2 !== "object") {
         return 1;
       }
-      let c = Ord.compare(e1._0, e2._0);
+      let c = Curry._2(Ord.compare, e1._0, e2._0);
       if (c !== 0) {
         return c;
       }
@@ -411,7 +412,7 @@ function Make(Ord) {
       }
       let r2 = s2._2;
       let l2 = s2._0;
-      let c = Ord.compare(v1, s2._1);
+      let c = Curry._2(Ord.compare, v1, s2._1);
       if (c === 0) {
         if (!subset(l1, l2)) {
           return false;
@@ -453,7 +454,7 @@ function Make(Ord) {
         return;
       }
       iter(f, x_._0);
-      f(x_._1);
+      Curry._1(f, x_._1);
       _x_ = x_._2;
       continue;
     };
@@ -465,7 +466,7 @@ function Make(Ord) {
       if (typeof s !== "object") {
         return accu;
       }
-      _accu = f(s._1, fold(f, s._0, accu));
+      _accu = Curry._2(f, s._1, fold(f, s._0, accu));
       _s = s._2;
       continue;
     };
@@ -476,7 +477,7 @@ function Make(Ord) {
       if (typeof x !== "object") {
         return true;
       }
-      if (!p(x._1)) {
+      if (!Curry._1(p, x._1)) {
         return false;
       }
       if (!for_all(p, x._0)) {
@@ -492,7 +493,7 @@ function Make(Ord) {
       if (typeof x !== "object") {
         return false;
       }
-      if (p(x._1)) {
+      if (Curry._1(p, x._1)) {
         return true;
       }
       if (exists(p, x._0)) {
@@ -508,7 +509,7 @@ function Make(Ord) {
     }
     let v = x._1;
     let l$p = filter(p, x._0);
-    let pv = p(v);
+    let pv = Curry._1(p, v);
     let r$p = filter(p, x._2);
     if (pv) {
       return join(l$p, v, r$p);
@@ -527,7 +528,7 @@ function Make(Ord) {
     let match = partition(p, x._0);
     let lf = match[1];
     let lt = match[0];
-    let pv = p(v);
+    let pv = Curry._1(p, v);
     let match$1 = partition(p, x._2);
     let rf = match$1[1];
     let rt = match$1[0];
@@ -579,7 +580,7 @@ function Make(Ord) {
             });
       }
       let v = x_._1;
-      let c = Ord.compare(x, v);
+      let c = Curry._2(Ord.compare, x, v);
       if (c === 0) {
         return v;
       }

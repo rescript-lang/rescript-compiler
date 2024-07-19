@@ -2,6 +2,7 @@
 'use strict';
 
 let $$Array = require("../../lib/js/array.js");
+let Curry = require("../../lib/js/curry.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
@@ -244,7 +245,7 @@ function filter_from(i, p, s) {
   let u = empty;
   for(let i$1 = i ,i_finish = length(s); i$1 < i_finish; ++i$1){
     let ele = get(s, i$1);
-    if (p(ele)) {
+    if (Curry._1(p, ele)) {
       u = push_back(u, ele);
     }
     

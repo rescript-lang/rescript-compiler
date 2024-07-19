@@ -3,13 +3,9 @@
 
 let ReasonReact = require("./reasonReact.js");
 
-function wrapReactForReasonReact(component, props, children) {
-  return ReasonReact.wrapJsForReason(component, props, children);
-}
+let wrapReactForReasonReact = ReasonReact.wrapJsForReason;
 
-function wrapReasonReactForReact(component, propsConverter) {
-  return ReasonReact.wrapReasonForJs(component, propsConverter);
-}
+let wrapReasonReactForReact = ReasonReact.wrapReasonForJs;
 
 exports.wrapReactForReasonReact = wrapReactForReasonReact;
 exports.wrapReasonReactForReact = wrapReasonReactForReact;

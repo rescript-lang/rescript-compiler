@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Curry = require("../../lib/js/curry.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -67,7 +68,7 @@ function test_js_error4() {
 
 function f(g) {
   try {
-    return g();
+    return Curry._1(g, undefined);
   }
   catch (raw_exn){
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);

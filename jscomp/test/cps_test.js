@@ -3,6 +3,7 @@
 
 let Mt = require("./mt.js");
 let $$Array = require("../../lib/js/array.js");
+let Curry = require("../../lib/js/curry.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function test() {
@@ -14,11 +15,11 @@ function test() {
       let acc = _acc;
       let n = _n;
       if (n === 0) {
-        return acc();
+        return Curry._1(acc, undefined);
       }
       _acc = (function () {
         v.contents = v.contents + n | 0;
-        return acc();
+        return Curry._1(acc, undefined);
       });
       _n = n - 1 | 0;
       continue;
@@ -43,7 +44,7 @@ function test_closure() {
     }));
   }
   $$Array.iter((function (i) {
-    v.contents = v.contents + i(0) | 0;
+    v.contents = v.contents + Curry._1(i, 0) | 0;
   }), arr);
   return v.contents;
 }
@@ -62,7 +63,7 @@ function test_closure2() {
     }));
   }
   $$Array.iter((function (i) {
-    v.contents = v.contents + i(0) | 0;
+    v.contents = v.contents + Curry._1(i, 0) | 0;
   }), arr);
   return v.contents;
 }

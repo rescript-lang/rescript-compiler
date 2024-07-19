@@ -2,12 +2,11 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Curry = require("../../lib/js/curry.js");
 
 function f(h, param) {
   console.log(3);
-  return function (x, y) {
-    return h(x, y);
-  };
+  return Curry.__2(h);
 }
 
 Mt.from_pair_suites("Print_alpha_test", {
@@ -16,9 +15,9 @@ Mt.from_pair_suites("Print_alpha_test", {
     (function () {
       return {
         TAG: "Eq",
-        _0: f((function (prim0, prim1) {
+        _0: Curry._2(f((function (prim0, prim1) {
           return prim0 + prim1 | 0;
-        }), undefined)(1, 2),
+        }), undefined), 1, 2),
         _1: 3
       };
     })

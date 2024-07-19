@@ -3,6 +3,7 @@
 
 let Char = require("../../lib/js/char.js");
 let List = require("../../lib/js/list.js");
+let Curry = require("../../lib/js/curry.js");
 
 function l(prim) {
   console.log(prim);
@@ -24,9 +25,7 @@ let prim$2 = Char.chr(66);
 
 console.log(prim$2);
 
-function f(x) {
-  return List.length(x);
-}
+let f = List.length;
 
 function g(x) {
   return List.length(List.map((function (prim) {
@@ -154,7 +153,7 @@ let M9 = {
   C$p: C$p$1
 };
 
-let prim$4 = Char.chr(66);
+let prim$4 = Curry._1(Char.chr, 66);
 
 console.log(prim$4);
 
@@ -162,7 +161,7 @@ let M10 = {
   C$p: Char
 };
 
-let prim$5 = M10.C$p.chr(66);
+let prim$5 = Curry._1(M10.C$p.chr, 66);
 
 console.log(prim$5);
 

@@ -3,6 +3,7 @@
 
 let Mt = require("./mt.js");
 let Belt_MutableMapInt = require("../../lib/js/belt_MutableMapInt.js");
+let Belt_internalMapInt = require("../../lib/js/belt_internalMapInt.js");
 
 let suites = {
   contents: /* [] */0
@@ -37,7 +38,7 @@ add(486);
 
 Belt_MutableMapInt.remove(mockMap, 1726);
 
-let n1 = Belt_MutableMapInt.getExn(mockMap, 6667);
+let n1 = Belt_internalMapInt.getExn(mockMap.data, 6667);
 
 eq("File \"gpr_4265_test.res\", line 18, characters 3-10", n, n1);
 
@@ -51,4 +52,4 @@ exports.add = add;
 exports.remove = remove;
 exports.n = n;
 exports.n1 = n1;
-/* mockMap Not a pure module */
+/*  Not a pure module */

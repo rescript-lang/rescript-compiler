@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Curry = require("../../lib/js/curry.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 
 let suites = {
@@ -38,7 +39,7 @@ function g() {
   let next = function (i, b) {
     called.contents = called.contents + 1 | 0;
     if (b) {
-      v.contents(i, false);
+      Curry._2(v.contents, i, false);
     }
     return i + 1 | 0;
   };

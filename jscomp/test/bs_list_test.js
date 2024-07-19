@@ -809,25 +809,21 @@ let d = Belt_List.makeBy(10, (function (x) {
   return (x << 1);
 }));
 
-function map2_add(x, y) {
-  return Belt_List.zipBy(x, y, add);
-}
+$eq$tilde$9(Belt_List.zipBy(length_10_id, length_10_id, add), d);
 
-$eq$tilde$9(map2_add(length_10_id, length_10_id), d);
-
-$eq$tilde$9(map2_add(/* [] */0, {
+$eq$tilde$9(Belt_List.zipBy(/* [] */0, {
   hd: 1,
   tl: /* [] */0
-}), /* [] */0);
+}, add), /* [] */0);
 
-$eq$tilde$9(map2_add({
+$eq$tilde$9(Belt_List.zipBy({
   hd: 1,
   tl: /* [] */0
-}, /* [] */0), /* [] */0);
+}, /* [] */0, add), /* [] */0);
 
-$eq$tilde$9(map2_add(/* [] */0, /* [] */0), /* [] */0);
+$eq$tilde$9(Belt_List.zipBy(/* [] */0, /* [] */0, add), /* [] */0);
 
-$eq$tilde$9(map2_add(length_10_id, length_10_id), Belt_List.concat(Belt_List.map(length_8_id, (function (x) {
+$eq$tilde$9(Belt_List.zipBy(length_10_id, length_10_id, add), Belt_List.concat(Belt_List.map(length_8_id, (function (x) {
   return (x << 1);
 })), {
   hd: 16,
@@ -837,7 +833,7 @@ $eq$tilde$9(map2_add(length_10_id, length_10_id), Belt_List.concat(Belt_List.map
   }
 }));
 
-$eq$tilde$9(map2_add(length_10_id, length_8_id), Belt_List.mapWithIndex(length_8_id, (function (i, x) {
+$eq$tilde$9(Belt_List.zipBy(length_10_id, length_8_id, add), Belt_List.mapWithIndex(length_8_id, (function (i, x) {
   return i + x | 0;
 })));
 

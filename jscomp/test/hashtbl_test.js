@@ -39,10 +39,9 @@ function g(count) {
     Hashtbl.replace(tbl, (i$1 << 1), String(i$1));
   }
   let v = to_list(tbl);
-  let v$1 = List.sort((function (param, param$1) {
+  return $$Array.of_list(List.sort((function (param, param$1) {
     return Caml.int_compare(param[0], param$1[0]);
-  }), v);
-  return $$Array.of_list(v$1);
+  }), v));
 }
 
 let suites_0 = [

@@ -4,9 +4,7 @@
 let Mt = require("./mt.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 
-function ff(v) {
-  return Pervasives.string_of_float(v);
-}
+let ff = Pervasives.string_of_float;
 
 function f(v) {
   return String(v);

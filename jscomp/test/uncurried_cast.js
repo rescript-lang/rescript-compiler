@@ -10,9 +10,7 @@ function raise(e) {
       });
 }
 
-function map(l, f) {
-  return Belt_List.mapU(l, f);
-}
+let map = Belt_List.mapU;
 
 let List = {
   map: map

@@ -2,6 +2,7 @@
 'use strict';
 
 let Caml = require("../../lib/js/caml.js");
+let Curry = require("../../lib/js/curry.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 
 function height(param) {
@@ -187,7 +188,7 @@ function find_first(f, _param) {
           });
     }
     let v = param.v;
-    if (f(v)) {
+    if (Curry._1(f, v)) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.l;
@@ -202,7 +203,7 @@ function find_first(f, _param) {
           ];
         }
         let v$1 = param$1.v;
-        if (f(v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1.l;
           _d0 = param$1.d;
           _v0 = v$1;
@@ -224,7 +225,7 @@ function find_first_opt(f, _param) {
       return;
     }
     let v = param.v;
-    if (f(v)) {
+    if (Curry._1(f, v)) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.l;
@@ -239,7 +240,7 @@ function find_first_opt(f, _param) {
           ];
         }
         let v$1 = param$1.v;
-        if (f(v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1.l;
           _d0 = param$1.d;
           _v0 = v$1;
@@ -265,7 +266,7 @@ function find_last(f, _param) {
           });
     }
     let v = param.v;
-    if (f(v)) {
+    if (Curry._1(f, v)) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.r;
@@ -280,7 +281,7 @@ function find_last(f, _param) {
           ];
         }
         let v$1 = param$1.v;
-        if (f(v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1.r;
           _d0 = param$1.d;
           _v0 = v$1;
@@ -302,7 +303,7 @@ function find_last_opt(f, _param) {
       return;
     }
     let v = param.v;
-    if (f(v)) {
+    if (Curry._1(f, v)) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.r;
@@ -317,7 +318,7 @@ function find_last_opt(f, _param) {
           ];
         }
         let v$1 = param$1.v;
-        if (f(v$1)) {
+        if (Curry._1(f, v$1)) {
           _param$1 = param$1.r;
           _d0 = param$1.d;
           _v0 = v$1;
@@ -500,7 +501,7 @@ function remove(x, param) {
 
 function update(x, f, param) {
   if (typeof param !== "object") {
-    let data = f(undefined);
+    let data = Curry._1(f, undefined);
     if (data !== undefined) {
       return {
         TAG: "Node",
@@ -520,7 +521,7 @@ function update(x, f, param) {
   let l = param.l;
   let c = Caml.int_compare(x, v);
   if (c === 0) {
-    let data$1 = f(Caml_option.some(d));
+    let data$1 = Curry._1(f, Caml_option.some(d));
     if (data$1 === undefined) {
       return merge(l, r);
     }
@@ -561,7 +562,7 @@ function iter(f, _param) {
       return;
     }
     iter(f, param.l);
-    f(param.v, param.d);
+    Curry._2(f, param.v, param.d);
     _param = param.r;
     continue;
   };
@@ -572,7 +573,7 @@ function map(f, param) {
     return "Empty";
   }
   let l$p = map(f, param.l);
-  let d$p = f(param.d);
+  let d$p = Curry._1(f, param.d);
   let r$p = map(f, param.r);
   return {
     TAG: "Node",
@@ -590,7 +591,7 @@ function mapi(f, param) {
   }
   let v = param.v;
   let l$p = mapi(f, param.l);
-  let d$p = f(v, param.d);
+  let d$p = Curry._2(f, v, param.d);
   let r$p = mapi(f, param.r);
   return {
     TAG: "Node",
@@ -609,7 +610,7 @@ function fold(f, _m, _accu) {
     if (typeof m !== "object") {
       return accu;
     }
-    _accu = f(m.v, m.d, fold(f, m.l, accu));
+    _accu = Curry._3(f, m.v, m.d, fold(f, m.l, accu));
     _m = m.r;
     continue;
   };
@@ -621,7 +622,7 @@ function for_all(p, _param) {
     if (typeof param !== "object") {
       return true;
     }
-    if (!p(param.v, param.d)) {
+    if (!Curry._2(p, param.v, param.d)) {
       return false;
     }
     if (!for_all(p, param.l)) {
@@ -638,7 +639,7 @@ function exists(p, _param) {
     if (typeof param !== "object") {
       return false;
     }
-    if (p(param.v, param.d)) {
+    if (Curry._2(p, param.v, param.d)) {
       return true;
     }
     if (exists(p, param.l)) {
@@ -748,7 +749,7 @@ function merge$1(f, s1, s2) {
     let v1 = s1.v;
     if (s1.h >= height(s2)) {
       let match = split(v1, s2);
-      return concat_or_join(merge$1(f, s1.l, match[0]), v1, f(v1, Caml_option.some(s1.d), match[1]), merge$1(f, s1.r, match[2]));
+      return concat_or_join(merge$1(f, s1.l, match[0]), v1, Curry._3(f, v1, Caml_option.some(s1.d), match[1]), merge$1(f, s1.r, match[2]));
     }
     
   }
@@ -766,7 +767,7 @@ function merge$1(f, s1, s2) {
   }
   let v2 = s2.v;
   let match$1 = split(v2, s1);
-  return concat_or_join(merge$1(f, match$1[0], s2.l), v2, f(v2, match$1[1], Caml_option.some(s2.d)), merge$1(f, match$1[2], s2.r));
+  return concat_or_join(merge$1(f, match$1[0], s2.l), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2.d)), merge$1(f, match$1[2], s2.r));
 }
 
 function union(f, s1, s2) {
@@ -786,7 +787,7 @@ function union(f, s1, s2) {
     let l = union(f, s1.l, match[0]);
     let r = union(f, s1.r, match[2]);
     if (d2$1 !== undefined) {
-      return concat_or_join(l, v1, f(v1, d1, Caml_option.valFromOption(d2$1)), r);
+      return concat_or_join(l, v1, Curry._3(f, v1, d1, Caml_option.valFromOption(d2$1)), r);
     } else {
       return join(l, v1, d1, r);
     }
@@ -796,7 +797,7 @@ function union(f, s1, s2) {
   let l$1 = union(f, match$1[0], s2.l);
   let r$1 = union(f, match$1[2], s2.r);
   if (d1$1 !== undefined) {
-    return concat_or_join(l$1, v2, f(v2, Caml_option.valFromOption(d1$1), d2), r$1);
+    return concat_or_join(l$1, v2, Curry._3(f, v2, Caml_option.valFromOption(d1$1), d2), r$1);
   } else {
     return join(l$1, v2, d2, r$1);
   }
@@ -811,7 +812,7 @@ function filter(p, param) {
   let v = param.v;
   let l = param.l;
   let l$p = filter(p, l);
-  let pvd = p(v, d);
+  let pvd = Curry._2(p, v, d);
   let r$p = filter(p, r);
   if (pvd) {
     if (l === l$p && r === r$p) {
@@ -836,7 +837,7 @@ function partition(p, param) {
   let match = partition(p, param.l);
   let lf = match[1];
   let lt = match[0];
-  let pvd = p(v, d);
+  let pvd = Curry._2(p, v, d);
   let match$1 = partition(p, param.r);
   let rf = match$1[1];
   let rt = match$1[0];
@@ -892,7 +893,7 @@ function compare(cmp, m1, m2) {
     if (c !== 0) {
       return c;
     }
-    let c$1 = cmp(e1._1, e2._1);
+    let c$1 = Curry._2(cmp, e1._1, e2._1);
     if (c$1 !== 0) {
       return c$1;
     }
@@ -921,7 +922,7 @@ function equal(cmp, m1, m2) {
     if (e1._0 !== e2._0) {
       return false;
     }
-    if (!cmp(e1._1, e2._1)) {
+    if (!Curry._2(cmp, e1._1, e2._1)) {
       return false;
     }
     _e2 = cons_enum(e2._2, e2._3);

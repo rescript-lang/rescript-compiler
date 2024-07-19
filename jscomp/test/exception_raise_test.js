@@ -3,6 +3,7 @@
 
 let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
+let Curry = require("../../lib/js/curry.js");
 let Js_exn = require("../../lib/js/js_exn.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -18,7 +19,7 @@ let D = /* @__PURE__ */Caml_exceptions.create("Exception_raise_test.D");
 function appf(g, x) {
   let A = /* @__PURE__ */Caml_exceptions.create("A");
   try {
-    return g(x);
+    return Curry._1(g, x);
   }
   catch (raw_exn){
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -189,7 +190,7 @@ function eq(loc, x, y) {
 }
 
 try {
-  ((()=>{throw 2})());
+  (Curry._1((()=>{throw 2}), undefined));
 }
 catch (raw_e$2){
   let e = Caml_js_exceptions.internalToOCamlException(raw_e$2);
@@ -211,12 +212,12 @@ catch (raw_e$3){
 function fff0(x, g) {
   let val;
   try {
-    val = x();
+    val = Curry._1(x, undefined);
   }
   catch (exn){
     return 1;
   }
-  return g();
+  return Curry._1(g, undefined);
 }
 
 function input_lines(ic, _acc) {
