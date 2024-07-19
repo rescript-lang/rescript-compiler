@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let Lazy = require("../../lib/js/lazy.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_module = require("../../lib/js/caml_module.js");
 let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -179,7 +178,7 @@ eq("File \"recursive_module.res\", line 59, characters 3-10", CamlinternalLazy.f
 let tmp$1;
 
 try {
-  Curry._1(Int3.u, 3);
+  Int3.u(3);
   tmp$1 = 3;
 }
 catch (raw_exn$1){

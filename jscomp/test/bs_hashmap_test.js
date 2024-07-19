@@ -31,7 +31,9 @@ function eq(x, y) {
   return x === y;
 }
 
-let hash = Hashtbl.hash;
+function hash(x) {
+  return Hashtbl.hash(x);
+}
 
 let cmp = Caml.int_compare;
 

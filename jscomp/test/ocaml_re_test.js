@@ -7,7 +7,6 @@ let Char = require("../../lib/js/char.js");
 let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
 let Bytes = require("../../lib/js/bytes.js");
-let Curry = require("../../lib/js/curry.js");
 let $$String = require("../../lib/js/string.js");
 let Hashtbl = require("../../lib/js/hashtbl.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
@@ -668,7 +667,7 @@ function first(f, _x) {
     if (!x) {
       return;
     }
-    let res = Curry._1(f, x.hd);
+    let res = f(x.hd);
     if (res !== undefined) {
       return res;
     }
@@ -1012,7 +1011,7 @@ function mark_used_indices(tbl) {
     return List.iter((function (x) {
       switch (x.TAG) {
         case "TSeq" :
-            return Curry._1(mark_used_indices(tbl), x._0);
+            return mark_used_indices(tbl, x._0);
         case "TExp" :
         case "TMatch" :
             break;
@@ -1043,7 +1042,7 @@ function find_free(tbl, _idx, len) {
 function free_index(tbl_ref, l) {
   let tbl = tbl_ref.contents;
   reset_table(tbl);
-  Curry._1(mark_used_indices(tbl), l);
+  mark_used_indices(tbl, l);
   let len = tbl.length;
   let idx = find_free(tbl, 0, len);
   if (idx === len) {
@@ -1490,7 +1489,7 @@ function iter(_n, f, _v) {
     if (n === 0) {
       return v;
     }
-    _v = Curry._1(f, v);
+    _v = f(v);
     _n = n - 1 | 0;
     continue;
   };
@@ -1500,9 +1499,9 @@ function category(re, c) {
   if (c === -1) {
     return Re_automata_Category.inexistant;
   } else if (c === re.lnl) {
-    return Curry._2(Re_automata_Category.$plus$plus, Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.lastnewline, Re_automata_Category.newline), Re_automata_Category.not_letter);
+    return Re_automata_Category.$plus$plus(Re_automata_Category.$plus$plus(Re_automata_Category.lastnewline, Re_automata_Category.newline), Re_automata_Category.not_letter);
   } else {
-    return Curry._1(Re_automata_Category.from_char, Caml_bytes.get(re.col_repr, c));
+    return Re_automata_Category.from_char(Caml_bytes.get(re.col_repr, c));
   }
 }
 
@@ -1531,13 +1530,13 @@ function mk_state(ncol, desc) {
 
 function find_state(re, desc) {
   try {
-    return Curry._2(Re_automata_State.Table.find, re.states, desc);
+    return Re_automata_State.Table.find(re.states, desc);
   }
   catch (raw_exn){
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       let st = mk_state(re.ncol, desc);
-      Curry._3(Re_automata_State.Table.add, re.states, desc, st);
+      Re_automata_State.Table.add(re.states, desc, st);
       return st;
     }
     throw new Error(exn.RE_EXN_ID, {
@@ -1636,7 +1635,7 @@ function find_initial_state(re, cat) {
   catch (raw_exn){
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
-      let st = find_state(re, Curry._2(Re_automata_State.create, cat, re.initial));
+      let st = find_state(re, Re_automata_State.create(cat, re.initial));
       re.initial_states = {
         hd: [
           cat,
@@ -1826,7 +1825,7 @@ function split(s, cm) {
       return;
     }
     let match = t.hd;
-    Curry._2(f, match[0], match[1]);
+    f(match[0], match[1]);
     _t = t.tl;
     continue;
   };
@@ -2304,7 +2303,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
     if (typeof x !== "object") {
       switch (x) {
         case "Beg_of_line" :
-            let c$1 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.newline);
+            let c$1 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.newline);
             return [
               mk_expr(ids, {
                 TAG: "After",
@@ -2313,7 +2312,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
               kind
             ];
         case "End_of_line" :
-            let c$2 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.newline);
+            let c$2 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.newline);
             return [
               mk_expr(ids, {
                 TAG: "Before",
@@ -2322,8 +2321,8 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
               kind
             ];
         case "Beg_of_word" :
-            let c$3 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.not_letter);
-            let c$4 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.letter);
+            let c$3 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.not_letter);
+            let c$4 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.letter);
             return [
               seq$1(ids, "First", mk_expr(ids, {
                 TAG: "After",
@@ -2335,8 +2334,8 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
               kind
             ];
         case "End_of_word" :
-            let c$5 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.letter);
-            let c$6 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.not_letter);
+            let c$5 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.letter);
+            let c$6 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.not_letter);
             return [
               seq$1(ids, "First", mk_expr(ids, {
                 TAG: "After",
@@ -2387,7 +2386,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
               kind
             ];
         case "Last_end_of_line" :
-            let c$7 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.lastnewline);
+            let c$7 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.lastnewline);
             return [
               mk_expr(ids, {
                 TAG: "Before",
@@ -3204,7 +3203,7 @@ function compile(r) {
     tbl: {
       contents: [false]
     },
-    states: Curry._1(Re_automata_State.Table.create, 97),
+    states: Re_automata_State.Table.create(97),
     group_count: group_count
   };
 }
@@ -3248,14 +3247,14 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
     pos: pos,
     last: last
   };
-  let initial_cat = pos === 0 ? Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, category(re, get_color(re, s, pos - 1 | 0)));
+  let initial_cat = pos === 0 ? Re_automata_Category.$plus$plus(Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Re_automata_Category.$plus$plus(Re_automata_Category.search_boundary, category(re, get_color(re, s, pos - 1 | 0)));
   let initial_state = find_initial_state(re, initial_cat);
   let st = scan_str(info, s, initial_state, groups);
   let res;
   if (st.idx === -3 || partial) {
     res = status(st.desc);
   } else {
-    let final_cat = last === slen ? Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, category(re, get_color(re, s, last)));
+    let final_cat = last === slen ? Re_automata_Category.$plus$plus(Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Re_automata_Category.$plus$plus(Re_automata_Category.search_boundary, category(re, get_color(re, s, last)));
     let match = final(info, st, final_cat);
     if (groups) {
       Caml_array.set(info.positions, match[0], last + 1 | 0);

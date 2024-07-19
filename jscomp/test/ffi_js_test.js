@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 
 let keys = (function (x){return Object.keys(x)});
 
@@ -52,7 +51,7 @@ let string_config = {
 
 eq("File \"ffi_js_test.res\", line 30, characters 12-19", [
   6,
-  Curry._2($$higher_order(1), 2, 3)
+  $$higher_order(1)(2, 3)
 ]);
 
 let same_type_0 = {

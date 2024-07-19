@@ -5,7 +5,6 @@ let Sys = require("../../lib/js/sys.js");
 let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
 let Bytes = require("../../lib/js/bytes.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_sys = require("../../lib/js/caml_sys.js");
 let Filename = require("../../lib/js/filename.js");
 let Pervasives = require("../../lib/js/pervasives.js");
@@ -33,18 +32,18 @@ function path_as_directory(x) {
 }
 
 function absolute_path(s) {
-  let s$1 = Curry._1(Filename.is_relative, s) ? Filename.concat(CamlinternalLazy.force(cwd), s) : s;
+  let s$1 = Filename.is_relative(s) ? Filename.concat(CamlinternalLazy.force(cwd), s) : s;
   let aux = function (_s) {
     while(true) {
       let s = _s;
-      let base = Curry._1(Filename.basename, s);
-      let dir = Curry._1(Filename.dirname, s);
+      let base = Filename.basename(s);
+      let dir = Filename.dirname(s);
       if (dir === s) {
         return dir;
       }
       if (base !== Filename.current_dir_name) {
         if (base === Filename.parent_dir_name) {
-          return Curry._1(Filename.dirname, aux(dir));
+          return Filename.dirname(aux(dir));
         } else {
           return Filename.concat(aux(dir), base);
         }
@@ -96,8 +95,8 @@ function chop_extension_if_any(fname) {
 let os_path_separator_char = Filename.dir_sep.codePointAt(0);
 
 function relative_path(file_or_dir_1, file_or_dir_2) {
-  let relevant_dir1 = file_or_dir_1.NAME === "File" ? Curry._1(Filename.dirname, file_or_dir_1.VAL) : file_or_dir_1.VAL;
-  let relevant_dir2 = file_or_dir_2.NAME === "File" ? Curry._1(Filename.dirname, file_or_dir_2.VAL) : file_or_dir_2.VAL;
+  let relevant_dir1 = file_or_dir_1.NAME === "File" ? Filename.dirname(file_or_dir_1.VAL) : file_or_dir_1.VAL;
+  let relevant_dir2 = file_or_dir_2.NAME === "File" ? Filename.dirname(file_or_dir_2.VAL) : file_or_dir_2.VAL;
   let dir1 = Ext_string_test.split(undefined, relevant_dir1, os_path_separator_char);
   let dir2 = Ext_string_test.split(undefined, relevant_dir2, os_path_separator_char);
   let go = function (_dir1, _dir2) {
@@ -142,7 +141,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
       }) : ({
         NAME: "Dir",
         VAL: absolute_path(file1.VAL)
-      })) + (node_sep + Curry._1(Filename.basename, file2));
+      })) + (node_sep + Filename.basename(file2));
   }
   let skip = function (_i) {
     while(true) {
@@ -173,7 +172,7 @@ function find_root_filename(_cwd, filename) {
     if (Caml_sys.sys_file_exists(Filename.concat(cwd, filename))) {
       return cwd;
     }
-    let cwd$p = Curry._1(Filename.dirname, cwd);
+    let cwd$p = Filename.dirname(cwd);
     if (cwd$p.length < cwd.length) {
       _cwd = cwd$p;
       continue;
@@ -198,12 +197,12 @@ let package_dir = CamlinternalLazy.from_fun(function () {
 });
 
 function module_name_of_file(file) {
-  let s = Filename.chop_extension(Curry._1(Filename.basename, file));
+  let s = Filename.chop_extension(Filename.basename(file));
   return Bytes.unsafe_to_string(Bytes.capitalize_ascii(Bytes.unsafe_of_string(s)));
 }
 
 function module_name_of_file_if_any(file) {
-  let s = chop_extension_if_any(Curry._1(Filename.basename, file));
+  let s = chop_extension_if_any(Filename.basename(file));
   return Bytes.unsafe_to_string(Bytes.capitalize_ascii(Bytes.unsafe_of_string(s)));
 }
 
@@ -212,7 +211,7 @@ function combine(p1, p2) {
     return p2;
   } else if (p2 === "" || p2 === Filename.current_dir_name) {
     return p1;
-  } else if (Curry._1(Filename.is_relative, p2)) {
+  } else if (Filename.is_relative(p2)) {
     return Filename.concat(p1, p2);
   } else {
     return p2;
@@ -225,14 +224,14 @@ function split_aux(p) {
   while(true) {
     let acc = _acc;
     let p$1 = _p;
-    let dir = Curry._1(Filename.dirname, p$1);
+    let dir = Filename.dirname(p$1);
     if (dir === p$1) {
       return [
         dir,
         acc
       ];
     }
-    let new_path = Curry._1(Filename.basename, p$1);
+    let new_path = Filename.basename(p$1);
     if (new_path === Filename.dir_sep) {
       _p = dir;
       continue;
@@ -260,7 +259,9 @@ function rel_normalized_absolute_path(from, to_) {
     let xss = _xss;
     if (!xss) {
       if (yss) {
-        return List.fold_left(Filename.concat, yss.hd, yss.tl);
+        return List.fold_left((function (acc, x) {
+          return Filename.concat(acc, x);
+        }), yss.hd, yss.tl);
       } else {
         return Ext_string_test.empty;
       }
@@ -279,7 +280,9 @@ function rel_normalized_absolute_path(from, to_) {
     let start = List.fold_left((function (acc, param) {
       return Filename.concat(acc, Ext_string_test.parent_dir_lit);
     }), Ext_string_test.parent_dir_lit, xs);
-    return List.fold_left(Filename.concat, start, yss);
+    return List.fold_left((function (acc, v) {
+      return Filename.concat(acc, v);
+    }), start, yss);
   };
 }
 

@@ -33,7 +33,9 @@ let u$1 = CamlinternalLazy.from_fun(function () {
 
 CamlinternalLazy.force(u$1);
 
-let exotic = CamlinternalLazy.force;
+function exotic(x) {
+  return CamlinternalLazy.force(x);
+}
 
 let l_from_fun = CamlinternalLazy.from_fun(function () {
   return 3;
@@ -80,7 +82,9 @@ let f008 = CamlinternalLazy.from_fun(function () {
   return f$1();
 });
 
-let a2 = CamlinternalLazy.from_val;
+function a2(x) {
+  return CamlinternalLazy.from_val(x);
+}
 
 let a3 = CamlinternalLazy.from_val(3);
 

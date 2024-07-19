@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -30,7 +29,7 @@ function eq(loc, x, y) {
 }
 
 function foo(f) {
-  console.log(Curry._2(f, "a1", undefined));
+  console.log(f("a1", undefined));
 }
 
 foo(function (none, extra) {
@@ -38,7 +37,7 @@ foo(function (none, extra) {
 });
 
 function foo2(f) {
-  return Curry._2(f, "a1", undefined);
+  return f("a1", undefined);
 }
 
 eq("File \"gpr_1423_app_test.res\", line 15, characters 12-19", "a1a2", "a1a2");

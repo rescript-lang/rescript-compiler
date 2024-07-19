@@ -30,18 +30,18 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
     | x :: _ ->
         if x = len then
           Lam.apply (simpl fn) (Ext_list.map args simpl)
-            { ap_info with ap_status = App_infer_full }
+            { ap_info with ap_status = App_uncurry }
         else if x > len then
           let fn = simpl fn in
           let args = Ext_list.map args simpl in
           Lam_eta_conversion.transform_under_supply (x - len)
-            { ap_info with ap_status = App_infer_full }
+            { ap_info with ap_status = App_uncurry }
             fn args
         else
           let first, rest = Ext_list.split_at args x in
           Lam.apply
             (Lam.apply (simpl fn) (Ext_list.map first simpl)
-               { ap_info with ap_status = App_infer_full })
+               { ap_info with ap_status = App_uncurry })
             (Ext_list.map rest simpl) ap_info
   (* TODO refien *)
   and simpl (lam : Lam.t) =

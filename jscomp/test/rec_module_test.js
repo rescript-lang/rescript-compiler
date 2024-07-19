@@ -4,7 +4,6 @@
 let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_module = require("../../lib/js/caml_module.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 
@@ -38,7 +37,7 @@ function even(n) {
   } else if (n === 1) {
     return false;
   } else {
-    return Curry._1(B.odd, n - 1 | 0);
+    return B.odd(n - 1 | 0);
   }
 }
 
@@ -58,7 +57,7 @@ function odd(n) {
   } else if (n === 0) {
     return false;
   } else {
-    return Curry._1(A.even, n - 1 | 0);
+    return A.even(n - 1 | 0);
   }
 }
 
@@ -114,12 +113,12 @@ function even$1(n) {
   } else if (n === 1) {
     return false;
   } else {
-    return Curry._1(BB.odd, n - 1 | 0);
+    return BB.odd(n - 1 | 0);
   }
 }
 
 function x() {
-  return Curry._1(BB.y, undefined) + 3 | 0;
+  return BB.y() + 3 | 0;
 }
 
 Caml_module.update_mod({
@@ -145,7 +144,7 @@ function odd$1(n) {
   } else if (n === 0) {
     return false;
   } else {
-    return Curry._1(AA.even, n - 1 | 0);
+    return AA.even(n - 1 | 0);
   }
 }
 
@@ -285,7 +284,7 @@ function add(x, param) {
   let r = param.r;
   let v = param.v;
   let l = param.l;
-  let c = Curry._2(AAA.compare, x, v);
+  let c = AAA.compare(x, v);
   if (c === 0) {
     return param;
   }
@@ -455,7 +454,7 @@ function split(x, param) {
   let r = param.r;
   let v = param.v;
   let l = param.l;
-  let c = Curry._2(AAA.compare, x, v);
+  let c = AAA.compare(x, v);
   if (c === 0) {
     return [
       l,
@@ -493,7 +492,7 @@ function mem(x, _param) {
     if (typeof param !== "object") {
       return false;
     }
-    let c = Curry._2(AAA.compare, x, param.v);
+    let c = AAA.compare(x, param.v);
     if (c === 0) {
       return true;
     }
@@ -509,7 +508,7 @@ function remove(x, param) {
   let r = param.r;
   let v = param.v;
   let l = param.l;
-  let c = Curry._2(AAA.compare, x, v);
+  let c = AAA.compare(x, v);
   if (c === 0) {
     if (typeof l !== "object") {
       return r;
@@ -632,7 +631,7 @@ function compare(s1, s2) {
     if (typeof e2 !== "object") {
       return 1;
     }
-    let c = Curry._2(AAA.compare, e1._0, e2._0);
+    let c = AAA.compare(e1._0, e2._0);
     if (c !== 0) {
       return c;
     }
@@ -661,7 +660,7 @@ function subset(_s1, _s2) {
     }
     let r2 = s2.r;
     let l2 = s2.l;
-    let c = Curry._2(AAA.compare, v1, s2.v);
+    let c = AAA.compare(v1, s2.v);
     if (c === 0) {
       if (!subset(l1, l2)) {
         return false;
@@ -704,7 +703,7 @@ function iter(f, _param) {
       return;
     }
     iter(f, param.l);
-    Curry._1(f, param.v);
+    f(param.v);
     _param = param.r;
     continue;
   };
@@ -717,7 +716,7 @@ function fold(f, _s, _accu) {
     if (typeof s !== "object") {
       return accu;
     }
-    _accu = Curry._2(f, s.v, fold(f, s.l, accu));
+    _accu = f(s.v, fold(f, s.l, accu));
     _s = s.r;
     continue;
   };
@@ -729,7 +728,7 @@ function for_all(p, _param) {
     if (typeof param !== "object") {
       return true;
     }
-    if (!Curry._1(p, param.v)) {
+    if (!p(param.v)) {
       return false;
     }
     if (!for_all(p, param.l)) {
@@ -746,7 +745,7 @@ function exists(p, _param) {
     if (typeof param !== "object") {
       return false;
     }
-    if (Curry._1(p, param.v)) {
+    if (p(param.v)) {
       return true;
     }
     if (exists(p, param.l)) {
@@ -765,7 +764,7 @@ function filter(p, param) {
   let v = param.v;
   let l = param.l;
   let l$p = filter(p, l);
-  let pv = Curry._1(p, v);
+  let pv = p(v);
   let r$p = filter(p, r);
   if (pv) {
     if (l === l$p && r === r$p) {
@@ -789,7 +788,7 @@ function partition(p, param) {
   let match = partition(p, param.l);
   let lf = match[1];
   let lt = match[0];
-  let pv = Curry._1(p, v);
+  let pv = p(v);
   let match$1 = partition(p, param.r);
   let rf = match$1[1];
   let rt = match$1[0];
@@ -845,7 +844,7 @@ function find(x, _param) {
           });
     }
     let v = param.v;
-    let c = Curry._2(AAA.compare, x, v);
+    let c = AAA.compare(x, v);
     if (c === 0) {
       return v;
     }
@@ -865,7 +864,7 @@ function find_first(f, _param) {
           });
     }
     let v = param.v;
-    if (Curry._1(f, v)) {
+    if (f(v)) {
       let _v0 = v;
       let _param$1 = param.l;
       while(true) {
@@ -875,7 +874,7 @@ function find_first(f, _param) {
           return v0;
         }
         let v$1 = param$1.v;
-        if (Curry._1(f, v$1)) {
+        if (f(v$1)) {
           _param$1 = param$1.l;
           _v0 = v$1;
           continue;
@@ -896,7 +895,7 @@ function find_first_opt(f, _param) {
       return;
     }
     let v = param.v;
-    if (Curry._1(f, v)) {
+    if (f(v)) {
       let _v0 = v;
       let _param$1 = param.l;
       while(true) {
@@ -906,7 +905,7 @@ function find_first_opt(f, _param) {
           return Caml_option.some(v0);
         }
         let v$1 = param$1.v;
-        if (Curry._1(f, v$1)) {
+        if (f(v$1)) {
           _param$1 = param$1.l;
           _v0 = v$1;
           continue;
@@ -931,7 +930,7 @@ function find_last(f, _param) {
           });
     }
     let v = param.v;
-    if (Curry._1(f, v)) {
+    if (f(v)) {
       let _v0 = v;
       let _param$1 = param.r;
       while(true) {
@@ -941,7 +940,7 @@ function find_last(f, _param) {
           return v0;
         }
         let v$1 = param$1.v;
-        if (Curry._1(f, v$1)) {
+        if (f(v$1)) {
           _param$1 = param$1.r;
           _v0 = v$1;
           continue;
@@ -962,7 +961,7 @@ function find_last_opt(f, _param) {
       return;
     }
     let v = param.v;
-    if (Curry._1(f, v)) {
+    if (f(v)) {
       let _v0 = v;
       let _param$1 = param.r;
       while(true) {
@@ -972,7 +971,7 @@ function find_last_opt(f, _param) {
           return Caml_option.some(v0);
         }
         let v$1 = param$1.v;
-        if (Curry._1(f, v$1)) {
+        if (f(v$1)) {
           _param$1 = param$1.r;
           _v0 = v$1;
           continue;
@@ -993,7 +992,7 @@ function find_opt(x, _param) {
       return;
     }
     let v = param.v;
-    let c = Curry._2(AAA.compare, x, v);
+    let c = AAA.compare(x, v);
     if (c === 0) {
       return Caml_option.some(v);
     }
@@ -1010,11 +1009,11 @@ function map(f, param) {
   let v = param.v;
   let l = param.l;
   let l$p = map(f, l);
-  let v$p = Curry._1(f, v);
+  let v$p = f(v);
   let r$p = map(f, r);
   if (l === l$p && v === v$p && r === r$p) {
     return param;
-  } else if ((l$p === "Empty" || Curry._2(AAA.compare, max_elt(l$p), v$p) < 0) && (r$p === "Empty" || Curry._2(AAA.compare, v$p, min_elt(r$p)) < 0)) {
+  } else if ((l$p === "Empty" || AAA.compare(max_elt(l$p), v$p) < 0) && (r$p === "Empty" || AAA.compare(v$p, min_elt(r$p)) < 0)) {
     return join(l$p, v$p, r$p);
   } else {
     return union(l$p, add(v$p, r$p));
@@ -1231,10 +1230,10 @@ let suites_0 = [
         false
       ],
       _1: [
-        Curry._1(A.even, 2),
-        Curry._1(AA.even, 4),
-        Curry._1(B.odd, 2),
-        Curry._1(BB.odd, 4)
+        A.even(2),
+        AA.even(4),
+        B.odd(2),
+        BB.odd(4)
       ]
     };
   })
@@ -1246,7 +1245,7 @@ let suites_1 = {
     (function (param) {
       return {
         TAG: "Eq",
-        _0: Curry._1(BB.y, undefined),
+        _0: BB.y(),
         _1: 32
       };
     })
@@ -1257,7 +1256,7 @@ let suites_1 = {
       (function (param) {
         return {
           TAG: "Eq",
-          _0: Curry._1(AA.x, undefined),
+          _0: AA.x(),
           _1: 35
         };
       })
@@ -1269,7 +1268,7 @@ let suites_1 = {
           return {
             TAG: "Eq",
             _0: true,
-            _1: Curry._1(A.even, 2)
+            _1: A.even(2)
           };
         })
       ],
@@ -1280,7 +1279,7 @@ let suites_1 = {
             return {
               TAG: "Eq",
               _0: true,
-              _1: Curry._1(AA.even, 4)
+              _1: AA.even(4)
             };
           })
         ],
@@ -1291,7 +1290,7 @@ let suites_1 = {
               return {
                 TAG: "Eq",
                 _0: false,
-                _1: Curry._1(B.odd, 2)
+                _1: B.odd(2)
               };
             })
           ],

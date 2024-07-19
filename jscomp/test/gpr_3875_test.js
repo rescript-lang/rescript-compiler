@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 
 let result = {
   contents: ""
@@ -40,7 +39,7 @@ function compilerBug(a, b, c, f) {
     }
     
   }
-  if (Curry._1(f, undefined)) {
+  if (f()) {
     result.contents = "Some x, f returns true";
   } else {
     result.contents = "Some x, f returns false";
