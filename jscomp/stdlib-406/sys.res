@@ -125,7 +125,3 @@ let runtime_warnings_enabled: unit => bool = _ => false
 /* The version string is found in file ../VERSION */
 
 let ocaml_version = "4.06.2+BS"
-
-/* Optimization */
-
-external opaque_identity: 'a => 'a = "%opaque"

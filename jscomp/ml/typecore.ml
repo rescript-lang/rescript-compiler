@@ -2178,7 +2178,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
         | _ -> false in
 
       if fully_applied && not is_primitive then
-        rue (apply_internal "opaqueFullApply" (mk_apply (apply_internal "opaque" funct) args))
+        rue (apply_internal "opaqueFullApply" (mk_apply funct args))
       else
         rue (mk_apply funct args)
   | Pexp_match(sarg, caselist) ->

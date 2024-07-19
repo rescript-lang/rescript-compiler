@@ -251,7 +251,6 @@ let primitive ppf = function
   | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi
   | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
   | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
-  | Popaque -> fprintf ppf "opaque"
   | Pcreate_extension s -> fprintf ppf "extension[%s]" s   
 let name_of_primitive = function
   | Puncurried_apply -> "Puncurried_apply"
@@ -342,7 +341,6 @@ let name_of_primitive = function
   | Plsrbint _ -> "Plsrbint"
   | Pasrbint _ -> "Pasrbint"
   | Pbintcomp _ -> "Pbintcomp"
-  | Popaque -> "Popaque"
   | Pcreate_extension _ -> "Pcreate_extension"
 
 let function_attribute ppf { inline; is_a_functor; return_unit } =
