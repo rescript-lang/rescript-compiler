@@ -3307,130 +3307,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       continue;
     };
   };
-  let comment = function () {
-    while(true) {
-      if (accept(/* ')' */41)) {
-        return epsilon;
-      }
-      i.contents = i.contents + 1 | 0;
-      _param = undefined;
-      continue;
-    };
-  };
-  let bracket = function (_s) {
-    while(true) {
-      let s = _s;
-      if (s !== /* [] */0 && accept(/* ']' */93)) {
-        return s;
-      }
-      let match = char();
-      if (match.NAME === "Char") {
-        let c = match.VAL;
-        if (accept(/* '-' */45)) {
-          if (accept(/* ']' */93)) {
-            return {
-              hd: {
-                TAG: "Set",
-                _0: single(c)
-              },
-              tl: {
-                hd: {
-                  TAG: "Set",
-                  _0: {
-                    hd: [
-                      /* '-' */45,
-                      /* '-' */45
-                    ],
-                    tl: /* [] */0
-                  }
-                },
-                tl: s
-              }
-            };
-          }
-          let match$1 = char();
-          if (match$1.NAME !== "Char") {
-            return {
-              hd: {
-                TAG: "Set",
-                _0: single(c)
-              },
-              tl: {
-                hd: {
-                  TAG: "Set",
-                  _0: {
-                    hd: [
-                      /* '-' */45,
-                      /* '-' */45
-                    ],
-                    tl: /* [] */0
-                  }
-                },
-                tl: {
-                  hd: match$1.VAL,
-                  tl: s
-                }
-              }
-            };
-          }
-          _s = {
-            hd: rg(c, match$1.VAL),
-            tl: s
-          };
-          continue;
-        }
-        _s = {
-          hd: {
-            TAG: "Set",
-            _0: single(c)
-          },
-          tl: s
-        };
-        continue;
-      }
-      _s = {
-        hd: match.VAL,
-        tl: s
-      };
-      continue;
-    };
-  };
-  let piece = function () {
-    let r = atom();
-    if (accept(/* '*' */42)) {
-      return greedy_mod(rep$1(r));
-    }
-    if (accept(/* '+' */43)) {
-      return greedy_mod(rep1(r));
-    }
-    if (accept(/* '?' */63)) {
-      return greedy_mod(opt(r));
-    }
-    if (!accept(/* '{' */123)) {
-      return r;
-    }
-    let i$1 = integer();
-    if (i$1 !== undefined) {
-      let j = accept(/* ',' */44) ? integer() : i$1;
-      if (!accept(/* '}' */125)) {
-        throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
-      }
-      if (j !== undefined && j < i$1) {
-        throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
-      }
-      return greedy_mod(repn(r, i$1, j));
-    }
-    i.contents = i.contents - 1 | 0;
-    return r;
-  };
   let branch$p = function (_left) {
     while(true) {
       let left = _left;
@@ -3443,39 +3319,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       };
       continue;
     };
-  };
-  let integer = function () {
-    if (i.contents === l) {
-      return;
-    }
-    let d = get();
-    if (d > 57 || d < 48) {
-      i.contents = i.contents - 1 | 0;
-      return;
-    } else {
-      let _i = d - /* '0' */48 | 0;
-      while(true) {
-        let i$1 = _i;
-        if (i.contents === l) {
-          return i$1;
-        }
-        let d$1 = get();
-        if (d$1 > 57 || d$1 < 48) {
-          i.contents = i.contents - 1 | 0;
-          return i$1;
-        }
-        let i$p = Math.imul(10, i$1) + (d$1 - /* '0' */48 | 0) | 0;
-        if (i$p < i$1) {
-          throw new Error(Parse_error, {
-                cause: {
-                  RE_EXN_ID: Parse_error
-                }
-              });
-        }
-        _i = i$p;
-        continue;
-      };
-    }
   };
   let atom = function () {
     if (accept(/* '.' */46)) {
@@ -3739,6 +3582,75 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         _0: single(c$1)
       };
     }
+  };
+  let integer = function () {
+    if (i.contents === l) {
+      return;
+    }
+    let d = get();
+    if (d > 57 || d < 48) {
+      i.contents = i.contents - 1 | 0;
+      return;
+    } else {
+      let _i = d - /* '0' */48 | 0;
+      while(true) {
+        let i$1 = _i;
+        if (i.contents === l) {
+          return i$1;
+        }
+        let d$1 = get();
+        if (d$1 > 57 || d$1 < 48) {
+          i.contents = i.contents - 1 | 0;
+          return i$1;
+        }
+        let i$p = Math.imul(10, i$1) + (d$1 - /* '0' */48 | 0) | 0;
+        if (i$p < i$1) {
+          throw new Error(Parse_error, {
+                cause: {
+                  RE_EXN_ID: Parse_error
+                }
+              });
+        }
+        _i = i$p;
+        continue;
+      };
+    }
+  };
+  let piece = function () {
+    let r = atom();
+    if (accept(/* '*' */42)) {
+      return greedy_mod(rep$1(r));
+    }
+    if (accept(/* '+' */43)) {
+      return greedy_mod(rep1(r));
+    }
+    if (accept(/* '?' */63)) {
+      return greedy_mod(opt(r));
+    }
+    if (!accept(/* '{' */123)) {
+      return r;
+    }
+    let i$1 = integer();
+    if (i$1 !== undefined) {
+      let j = accept(/* ',' */44) ? integer() : i$1;
+      if (!accept(/* '}' */125)) {
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
+      }
+      if (j !== undefined && j < i$1) {
+        throw new Error(Parse_error, {
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
+      }
+      return greedy_mod(repn(r, i$1, j));
+    }
+    i.contents = i.contents - 1 | 0;
+    return r;
   };
   let char = function () {
     if (i.contents === l) {
@@ -4045,6 +3957,94 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         VAL: c$2
       };
     }
+  };
+  let bracket = function (_s) {
+    while(true) {
+      let s = _s;
+      if (s !== /* [] */0 && accept(/* ']' */93)) {
+        return s;
+      }
+      let match = char();
+      if (match.NAME === "Char") {
+        let c = match.VAL;
+        if (accept(/* '-' */45)) {
+          if (accept(/* ']' */93)) {
+            return {
+              hd: {
+                TAG: "Set",
+                _0: single(c)
+              },
+              tl: {
+                hd: {
+                  TAG: "Set",
+                  _0: {
+                    hd: [
+                      /* '-' */45,
+                      /* '-' */45
+                    ],
+                    tl: /* [] */0
+                  }
+                },
+                tl: s
+              }
+            };
+          }
+          let match$1 = char();
+          if (match$1.NAME !== "Char") {
+            return {
+              hd: {
+                TAG: "Set",
+                _0: single(c)
+              },
+              tl: {
+                hd: {
+                  TAG: "Set",
+                  _0: {
+                    hd: [
+                      /* '-' */45,
+                      /* '-' */45
+                    ],
+                    tl: /* [] */0
+                  }
+                },
+                tl: {
+                  hd: match$1.VAL,
+                  tl: s
+                }
+              }
+            };
+          }
+          _s = {
+            hd: rg(c, match$1.VAL),
+            tl: s
+          };
+          continue;
+        }
+        _s = {
+          hd: {
+            TAG: "Set",
+            _0: single(c)
+          },
+          tl: s
+        };
+        continue;
+      }
+      _s = {
+        hd: match.VAL,
+        tl: s
+      };
+      continue;
+    };
+  };
+  let comment = function () {
+    while(true) {
+      if (accept(/* ')' */41)) {
+        return epsilon;
+      }
+      i.contents = i.contents + 1 | 0;
+      _param = undefined;
+      continue;
+    };
   };
   let res = regexp();
   if (i.contents !== l) {

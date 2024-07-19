@@ -22,33 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-module Jsx = JsxU
+type element
+type ref
 
-%%private(
-  @val
-  external propsWithKey: ({"key": string}, 'props) => 'props = "Object.assign"
+@val external null: element = "null"
 
-  @inline
-  let addKeyProp = (~key: option<string>=?, p: 'props): 'props =>
-    switch key {
-    | Some(key) => propsWithKey({"key": key}, p)
-    | None => p
-    }
-)
+external float: float => element = "%identity"
+external int: int => element = "%identity"
+external string: string => element = "%identity"
 
-@@uncurried // Can't move this up as @inline not working with uncurried
+external array: array<element> => element = "%identity"
 
-@module("react")
-external createElement: (Jsx.component<'props>, 'props) => Jsx.element = "createElement"
+type componentLike<'props, 'return> = 'props => 'return
+type component<'props> = componentLike<'props, element>
 
-@variadic @module("react")
-external createElementVariadic: (Jsx.component<'props>, 'props, array<Jsx.element>) => Jsx.element =
-  "createElement"
-
-let createElementWithKey = (~key=?, component, props) =>
-  createElement(component, addKeyProp(~key?, props))
-
-let createElementVariadicWithKey = (~key=?, component, props, elements) =>
-  createElementVariadic(component, addKeyProp(~key?, props), elements)
-
-external asyncComponent: promise<Jsx.element> => Jsx.element = "%identity"
+/* this function exists to prepare for making `component` abstract */
+external component: componentLike<'props, element> => component<'props> = "%identity"
