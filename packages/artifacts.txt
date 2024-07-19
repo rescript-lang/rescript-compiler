@@ -148,6 +148,7 @@ lib/es6/js_result.js
 lib/es6/js_set.js
 lib/es6/js_string.js
 lib/es6/js_string2.js
+lib/es6/js_typed_array.js
 lib/es6/js_typed_array2.js
 lib/es6/js_types.js
 lib/es6/js_undefined.js
@@ -313,6 +314,7 @@ lib/js/js_result.js
 lib/js/js_set.js
 lib/js/js_string.js
 lib/js/js_string2.js
+lib/js/js_typed_array.js
 lib/js/js_typed_array2.js
 lib/js/js_types.js
 lib/js/js_undefined.js
@@ -851,6 +853,10 @@ lib/ocaml/js_string2.cmi
 lib/ocaml/js_string2.cmj
 lib/ocaml/js_string2.cmt
 lib/ocaml/js_string2.res
+lib/ocaml/js_typed_array.cmi
+lib/ocaml/js_typed_array.cmj
+lib/ocaml/js_typed_array.cmt
+lib/ocaml/js_typed_array.res
 lib/ocaml/js_typed_array2.cmi
 lib/ocaml/js_typed_array2.cmj
 lib/ocaml/js_typed_array2.cmt
