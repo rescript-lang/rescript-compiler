@@ -34,7 +34,7 @@
 - Remove ml parsing tests and conversion from `.ml` to `.res` via format. https://github.com/rescript-lang/rescript-compiler/pull/6848
 - Remove support for compiling `.ml` files, and general cleanup. https://github.com/rescript-lang/rescript-compiler/pull/6852
 - Remove `rescript convert` subcommand. https://github.com/rescript-lang/rescript-compiler/pull/6860
-- Remove support for `@bs.send.pipe`. https://github.com/rescript-lang/rescript-compiler/pull/6858
+- Remove support for `@bs.send.pipe`. This also removes all functions in `Js_typed_array` that rely on `@bs.send.pipe`. https://github.com/rescript-lang/rescript-compiler/pull/6858 https://github.com/rescript-lang/rescript-compiler/pull/6891
 
 #### :bug: Bug Fix
 
