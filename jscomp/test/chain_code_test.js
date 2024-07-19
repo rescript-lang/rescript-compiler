@@ -42,14 +42,14 @@ function f3(h, x, y) {
 }
 
 function f4(h, x, y) {
-  h.paint = [
+  Curry._1(h.paint, [
     x,
     y
-  ];
-  h.paint.draw = [
+  ]);
+  Curry._1(h.paint.draw, [
     x,
     y
-  ];
+  ]);
 }
 
 eq("File \"chain_code_test.res\", line 24, characters 12-19", 32, ({
