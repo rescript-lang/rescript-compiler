@@ -4,7 +4,6 @@
 let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
 let Bytes = require("../../lib/js/bytes.js");
-let $$String = require("../../lib/js/string.js");
 let Test_char = require("./test_char.js");
 let Caml_bytes = require("../../lib/js/caml_bytes.js");
 
@@ -28,9 +27,9 @@ let suites_1 = {
         Bytes.fill(b, 0, x, /* 'c' */99);
         return [
           Bytes.to_string(b),
-          $$String.init(x, (function (param) {
+          Bytes.unsafe_to_string(Bytes.init(x, (function (param) {
             return /* 'c' */99;
-          }))
+          })))
         ];
       }), {
         hd: 1000,

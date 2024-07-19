@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Curry = require("../../lib/js/curry.js");
 
 let v = {
   syntax: undefined,
@@ -24,7 +25,7 @@ let u_v = {
 };
 
 function f(g, h) {
-  let init = g(h);
+  let init = Curry._1(g, h);
   return {
     syntax: init.syntax,
     imports: 0,

@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -37,18 +38,18 @@ function f2(h) {
 }
 
 function f3(h, x, y) {
-  return h.paint(x, y).draw(x, y);
+  return Curry._2(Curry._2(h.paint, x, y).draw, x, y);
 }
 
 function f4(h, x, y) {
-  h.paint = [
+  Curry._1(h.paint, [
     x,
     y
-  ];
-  h.paint.draw = [
+  ]);
+  Curry._1(h.paint.draw, [
     x,
     y
-  ];
+  ]);
 }
 
 eq("File \"chain_code_test.res\", line 24, characters 12-19", 32, ({

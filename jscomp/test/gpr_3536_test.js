@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -18,7 +19,7 @@ function eq(loc, x, y) {
 let X = {};
 
 function xx(obj, a0, a1, a2, a3, a4, a5) {
-  return (a4(a2(a0(obj, a1), a3), a5) - 1 | 0) - 3 | 0;
+  return (Curry._2(a4, Curry._2(a2, Curry._2(a0, obj, a1), a3), a5) - 1 | 0) - 3 | 0;
 }
 
 eq("File \"gpr_3536_test.res\", line 18, characters 12-19", 5, 5);

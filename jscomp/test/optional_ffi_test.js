@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Curry = require("../../lib/js/curry.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 
 let suites = {
@@ -62,11 +63,11 @@ function side_effect(x) {
 }
 
 function bug_to_fix(f, x) {
-  return hey(f(x), 3);
+  return hey(Curry._1(f, x), 3);
 }
 
 function bug_to_fix2(f, x) {
-  return hey(Caml_option.option_get(f(x)), 3);
+  return hey(Caml_option.option_get(Curry._1(f, x)), 3);
 }
 
 let counter2 = {

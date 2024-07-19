@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Curry = require("../../lib/js/curry.js");
 let Functor_def = require("./functor_def.js");
 let Functor_inst = require("./functor_inst.js");
 
@@ -34,9 +35,9 @@ let Y0 = Functor_def.Make(Functor_inst);
 
 let Y1 = Functor_def.Make(Functor_inst);
 
-eq("File \"functor_app_test.res\", line 15, characters 3-10", Y0.h(1, 2), 4);
+eq("File \"functor_app_test.res\", line 15, characters 3-10", Curry._2(Y0.h, 1, 2), 4);
 
-eq("File \"functor_app_test.res\", line 16, characters 3-10", Y1.h(2, 3), 6);
+eq("File \"functor_app_test.res\", line 16, characters 3-10", Curry._2(Y1.h, 2, 3), 6);
 
 let v = Functor_def.$$return();
 

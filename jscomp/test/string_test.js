@@ -3,6 +3,7 @@
 
 let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
+let $$Array = require("../../lib/js/array.js");
 let Bytes = require("../../lib/js/bytes.js");
 let $$String = require("../../lib/js/string.js");
 let Ext_string_test = require("./ext_string_test.js");
@@ -129,7 +130,7 @@ function string_of_chars(x) {
   let extra = List.map((function (prim) {
     return String.fromCharCode(prim);
   }), x);
-  return $$String.concat("", extra);
+  return $$Array.of_list(extra).join("");
 }
 
 Mt.from_pair_suites("String_test", {

@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Lazy = require("../../lib/js/lazy.js");
 let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 let suites = {
@@ -34,7 +33,7 @@ function f(x) {
   return CamlinternalLazy.force(x) + "abc";
 }
 
-let x = Lazy.from_fun(function () {
+let x = CamlinternalLazy.from_fun(function () {
   return "def";
 });
 
@@ -51,4 +50,4 @@ exports.test_id = test_id;
 exports.eq = eq;
 exports.f = f;
 exports.u = u;
-/* x Not a pure module */
+/*  Not a pure module */

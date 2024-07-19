@@ -5,6 +5,7 @@ let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
+let Curry = require("../../lib/js/curry.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
@@ -19,7 +20,7 @@ function starts_with(xs, prefix, p) {
   }
   try {
     for(let i = 0; i < len2; ++i){
-      if (!p(Caml_array.get(xs, i), Caml_array.get(prefix, i))) {
+      if (!Curry._2(p, Caml_array.get(xs, i), Caml_array.get(prefix, i))) {
         throw new Error(H, {
               cause: {
                 RE_EXN_ID: H

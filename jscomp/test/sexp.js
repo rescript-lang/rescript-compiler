@@ -2,6 +2,7 @@
 'use strict';
 
 let List = require("../../lib/js/list.js");
+let Curry = require("../../lib/js/curry.js");
 let Hashtbl = require("../../lib/js/hashtbl.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Pervasives = require("../../lib/js/pervasives.js");
@@ -12,9 +13,7 @@ let equal = Caml_obj.equal;
 
 let compare = Caml_obj.compare;
 
-function hash(a) {
-  return Hashtbl.hash(a);
-}
+let hash = Hashtbl.hash;
 
 function of_int(x) {
   return {
@@ -150,14 +149,14 @@ function $$return(x) {
 
 function $great$pipe$eq(e, f) {
   if (e !== undefined) {
-    return Caml_option.some(f(Caml_option.valFromOption(e)));
+    return Caml_option.some(Curry._1(f, Caml_option.valFromOption(e)));
   }
   
 }
 
 function $great$great$eq(e, f) {
   if (e !== undefined) {
-    return f(Caml_option.valFromOption(e));
+    return Curry._1(f, Caml_option.valFromOption(e));
   }
   
 }
@@ -171,7 +170,7 @@ function map_opt(f, l) {
     if (!l$1) {
       return List.rev(acc);
     }
-    let y = f(l$1.hd);
+    let y = Curry._1(f, l$1.hd);
     if (y === undefined) {
       return;
     }
@@ -192,7 +191,7 @@ function list_any(f, e) {
       if (!l) {
         return;
       }
-      let res = f(l.hd);
+      let res = Curry._1(f, l.hd);
       if (res !== undefined) {
         return res;
       }
@@ -214,7 +213,7 @@ function list_all(f, e) {
         return List.rev(acc);
       }
       let tl = l.tl;
-      let y = f(l.hd);
+      let y = Curry._1(f, l.hd);
       if (y !== undefined) {
         _l = tl;
         _acc = {
@@ -236,7 +235,7 @@ function _try_atom(e, f) {
     return;
   }
   try {
-    return Caml_option.some(f(e.VAL));
+    return Caml_option.some(Curry._1(f, e.VAL));
   }
   catch (exn){
     return;
@@ -286,8 +285,8 @@ function to_pair_with(f1, f2) {
   return function (e) {
     return $great$great$eq(to_pair(e), (function (param) {
       let y = param[1];
-      return $great$great$eq(f1(param[0]), (function (x) {
-        return $great$great$eq(f2(y), (function (y) {
+      return $great$great$eq(Curry._1(f1, param[0]), (function (x) {
+        return $great$great$eq(Curry._1(f2, y), (function (y) {
           return [
             x,
             y
@@ -329,9 +328,9 @@ function to_triple_with(f1, f2, f3) {
     return $great$great$eq(to_triple(e), (function (param) {
       let z = param[2];
       let y = param[1];
-      return $great$great$eq(f1(param[0]), (function (x) {
-        return $great$great$eq(f2(y), (function (y) {
-          return $great$great$eq(f3(z), (function (z) {
+      return $great$great$eq(Curry._1(f1, param[0]), (function (x) {
+        return $great$great$eq(Curry._1(f2, y), (function (y) {
+          return $great$great$eq(Curry._1(f3, z), (function (z) {
             return [
               x,
               y,
@@ -370,20 +369,39 @@ function get_field(name) {
           return;
         }
         let match = l.hd;
-        if (typeof match === "object" && match.NAME === "List") {
-          let match$1 = match.VAL;
-          if (match$1) {
-            let match$2 = match$1.hd;
-            if (typeof match$2 === "object" && match$2.NAME === "Atom") {
-              let match$3 = match$1.tl;
-              if (match$3 && !match$3.tl && Caml_obj.equal(name, match$2.VAL)) {
-                return match$3.hd;
+        if (typeof match === "object") {
+          if (match.NAME === "List") {
+            let match$1 = match.VAL;
+            if (match$1) {
+              let match$2 = match$1.hd;
+              if (typeof match$2 === "object") {
+                if (match$2.NAME === "Atom") {
+                  let match$3 = match$1.tl;
+                  if (match$3) {
+                    if (match$3.tl) {
+                      _l = l.tl;
+                      continue;
+                    }
+                    if (Caml_obj.equal(name, match$2.VAL)) {
+                      return match$3.hd;
+                    }
+                    _l = l.tl;
+                    continue;
+                  }
+                  _l = l.tl;
+                  continue;
+                }
+                _l = l.tl;
+                continue;
               }
-              
+              _l = l.tl;
+              continue;
             }
-            
+            _l = l.tl;
+            continue;
           }
-          
+          _l = l.tl;
+          continue;
         }
         _l = l.tl;
         continue;
@@ -395,7 +413,7 @@ function get_field(name) {
 
 function field(name, f) {
   return function (e) {
-    return $great$great$eq(get_field(name)(e), f);
+    return $great$great$eq(Curry._1(get_field(name), e), f);
   };
 }
 
@@ -406,16 +424,30 @@ function _get_field_list(name, _l) {
       return;
     }
     let match = l.hd;
-    if (typeof match === "object" && match.NAME === "List") {
-      let match$1 = match.VAL;
-      if (match$1) {
-        let match$2 = match$1.hd;
-        if (typeof match$2 === "object" && match$2.NAME === "Atom" && Caml_obj.equal(name, match$2.VAL)) {
-          return match$1.tl;
+    if (typeof match === "object") {
+      if (match.NAME === "List") {
+        let match$1 = match.VAL;
+        if (match$1) {
+          let match$2 = match$1.hd;
+          if (typeof match$2 === "object") {
+            if (match$2.NAME === "Atom") {
+              if (Caml_obj.equal(name, match$2.VAL)) {
+                return match$1.tl;
+              }
+              _l = l.tl;
+              continue;
+            }
+            _l = l.tl;
+            continue;
+          }
+          _l = l.tl;
+          continue;
         }
-        
+        _l = l.tl;
+        continue;
       }
-      
+      _l = l.tl;
+      continue;
     }
     _l = l.tl;
     continue;
@@ -439,7 +471,7 @@ function _get_variant(s, args, _l) {
     }
     let match = l.hd;
     if (Caml_obj.equal(s, match[0])) {
-      return match[1](args);
+      return Curry._1(match[1], args);
     }
     _l = l.tl;
     continue;
@@ -521,4 +553,4 @@ exports.of_variant = of_variant;
 exports.of_field = of_field;
 exports.of_record = of_record;
 exports.Traverse = Traverse;
-/* Hashtbl Not a pure module */
+/* No side effect */

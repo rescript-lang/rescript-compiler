@@ -338,16 +338,16 @@ function xor(n1, n2) {
 function hwb(n) {
   let h = function (i, j) {
     if (i === j) {
-      return mkVar(i);
+      return mkNode("Zero", i, "One");
     } else {
-      return xor(and2(not(mkVar(j)), h(i, j - 1 | 0)), and2(mkVar(j), g(i, j - 1 | 0)));
+      return xor(and2(not(mkNode("Zero", j, "One")), h(i, j - 1 | 0)), and2(mkNode("Zero", j, "One"), g(i, j - 1 | 0)));
     }
   };
   let g = function (i, j) {
     if (i === j) {
-      return mkVar(i);
+      return mkNode("Zero", i, "One");
     } else {
-      return xor(and2(not(mkVar(i)), h(i + 1 | 0, j)), and2(mkVar(i), g(i + 1 | 0, j)));
+      return xor(and2(not(mkNode("Zero", i, "One")), h(i + 1 | 0, j)), and2(mkNode("Zero", i, "One"), g(i + 1 | 0, j)));
     }
   };
   return h(0, n - 1 | 0);

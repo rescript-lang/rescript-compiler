@@ -3,6 +3,7 @@
 
 let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
+let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -37,7 +38,7 @@ function f(x) {
 
 let h = f(/* [] */0);
 
-let a = h.length({
+let a = Curry._1(h.length, {
   hd: 1,
   tl: {
     hd: 2,

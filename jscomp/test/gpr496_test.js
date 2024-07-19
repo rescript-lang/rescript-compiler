@@ -3,6 +3,7 @@
 
 let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
+let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -67,7 +68,7 @@ eq("File \"gpr496_test.res\", line 32, characters 12-19", expected, u);
 eq("File \"gpr496_test.res\", line 34, characters 12-19", expected, expected2);
 
 function ff(x, y) {
-  return Caml.bool_min(x, y());
+  return Caml.bool_min(x, Curry._1(y, undefined));
 }
 
 eq("File \"gpr496_test.res\", line 37, characters 12-19", true < false ? true : false, false);

@@ -2159,7 +2159,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
           exp_type;
           exp_attributes = [];
           exp_env = env } in
-      let apply_internal name e =
+      let _apply_internal name e =
         let lid:Longident.t = Ldot (Ldot (Lident "Js", "Internal"), name) in
         let (path, desc) = Env.lookup_value lid env in
         let id = mk_exp (Texp_ident(path, {txt=lid; loc=Location.none}, desc)) desc.val_type in
@@ -2178,7 +2178,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
         | _ -> false in
 
       if fully_applied && not is_primitive then
-        rue (apply_internal "opaqueFullApply" (mk_apply funct args))
+        rue (mk_apply funct args)
       else
         rue (mk_apply funct args)
   | Pexp_match(sarg, caselist) ->

@@ -7,6 +7,7 @@ let Char = require("../../lib/js/char.js");
 let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
 let Bytes = require("../../lib/js/bytes.js");
+let Curry = require("../../lib/js/curry.js");
 let $$String = require("../../lib/js/string.js");
 let Hashtbl = require("../../lib/js/hashtbl.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
@@ -211,10 +212,6 @@ function single(c) {
   };
 }
 
-function add(c, l) {
-  return union(single(c), l);
-}
-
 function seq(c, c$p) {
   if (Caml_obj.lessequal(c, c$p)) {
     return {
@@ -384,7 +381,7 @@ function bal(l, x, d, r) {
       });
 }
 
-function add$1(x, data, param) {
+function add(x, data, param) {
   if (typeof param !== "object") {
     return {
       TAG: "Node",
@@ -415,23 +412,19 @@ function add$1(x, data, param) {
     }
   }
   if (c < 0) {
-    let ll = add$1(x, data, l);
+    let ll = add(x, data, l);
     if (l === ll) {
       return param;
     } else {
       return bal(ll, v, d, r);
     }
   }
-  let rr = add$1(x, data, r);
+  let rr = add(x, data, r);
   if (r === rr) {
     return param;
   } else {
     return bal(l, v, d, rr);
   }
-}
-
-function fold_right(t, init, f) {
-  return List.fold_right(f, t, init);
 }
 
 let cany = {
@@ -586,7 +579,7 @@ function bal$1(l, v, r) {
       });
 }
 
-function add$2(x, param) {
+function add$1(x, param) {
   if (typeof param !== "object") {
     return {
       TAG: "Node",
@@ -604,14 +597,14 @@ function add$2(x, param) {
     return param;
   }
   if (c < 0) {
-    let ll = add$2(x, l);
+    let ll = add$1(x, l);
     if (l === ll) {
       return param;
     } else {
       return bal$1(ll, v, r);
     }
   }
-  let rr = add$2(x, r);
+  let rr = add$1(x, r);
   if (r === rr) {
     return param;
   } else {
@@ -675,7 +668,7 @@ function first(f, _x) {
     if (!x) {
       return;
     }
-    let res = f(x.hd);
+    let res = Curry._1(f, x.hd);
     if (res !== undefined) {
       return res;
     }
@@ -781,39 +774,11 @@ function rep(ids, kind, sem, x) {
   });
 }
 
-function mark(ids, m) {
-  return mk_expr(ids, {
-    TAG: "Mark",
-    _0: m
-  });
-}
-
-function pmark(ids, i) {
-  return mk_expr(ids, {
-    TAG: "Pmark",
-    _0: i
-  });
-}
-
 function erase(ids, m, m$p) {
   return mk_expr(ids, {
     TAG: "Erase",
     _0: m,
     _1: m$p
-  });
-}
-
-function before(ids, c) {
-  return mk_expr(ids, {
-    TAG: "Before",
-    _0: c
-  });
-}
-
-function after(ids, c) {
-  return mk_expr(ids, {
-    TAG: "After",
-    _0: c
   });
 }
 
@@ -1047,7 +1012,7 @@ function mark_used_indices(tbl) {
     return List.iter((function (x) {
       switch (x.TAG) {
         case "TSeq" :
-            return mark_used_indices(tbl)(x._0);
+            return Curry._1(mark_used_indices(tbl), x._0);
         case "TExp" :
         case "TMatch" :
             break;
@@ -1078,7 +1043,7 @@ function find_free(tbl, _idx, len) {
 function free_index(tbl_ref, l) {
   let tbl = tbl_ref.contents;
   reset_table(tbl);
-  mark_used_indices(tbl)(l);
+  Curry._1(mark_used_indices(tbl), l);
   let len = tbl.length;
   let idx = find_free(tbl, 0, len);
   if (idx === len) {
@@ -1109,7 +1074,12 @@ function split_at_match_rec(_l$p, _x) {
       switch (x$1.TAG) {
         case "TSeq" :
         case "TExp" :
-            break;
+            _x = x.tl;
+            _l$p = {
+              hd: x$1,
+              tl: l$p
+            };
+            continue;
         case "TMatch" :
             return [
               List.rev(l$p),
@@ -1117,23 +1087,18 @@ function split_at_match_rec(_l$p, _x) {
             ];
         
       }
-      _x = x.tl;
-      _l$p = {
-        hd: x$1,
-        tl: l$p
-      };
-      continue;
+    } else {
+      throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "ocaml_re_test.res",
+                816,
+                16
+              ]
+            }
+          });
     }
-    throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "ocaml_re_test.res",
-              816,
-              16
-            ]
-          }
-        });
   };
 }
 
@@ -1380,7 +1345,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
         }
     case "Pmark" :
         let marks_marks$1 = marks.marks;
-        let marks_pmarks$1 = add$2(s._0, marks.pmarks);
+        let marks_pmarks$1 = add$1(s._0, marks.pmarks);
         let marks$2 = {
           marks: marks_marks$1,
           pmarks: marks_pmarks$1
@@ -1525,7 +1490,7 @@ function iter(_n, f, _v) {
     if (n === 0) {
       return v;
     }
-    _v = f(v);
+    _v = Curry._1(f, v);
     _n = n - 1 | 0;
     continue;
   };
@@ -1535,9 +1500,9 @@ function category(re, c) {
   if (c === -1) {
     return Re_automata_Category.inexistant;
   } else if (c === re.lnl) {
-    return Re_automata_Category.$plus$plus(Re_automata_Category.$plus$plus(Re_automata_Category.lastnewline, Re_automata_Category.newline), Re_automata_Category.not_letter);
+    return Curry._2(Re_automata_Category.$plus$plus, Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.lastnewline, Re_automata_Category.newline), Re_automata_Category.not_letter);
   } else {
-    return Re_automata_Category.from_char(Caml_bytes.get(re.col_repr, c));
+    return Curry._1(Re_automata_Category.from_char, Caml_bytes.get(re.col_repr, c));
   }
 }
 
@@ -1566,13 +1531,13 @@ function mk_state(ncol, desc) {
 
 function find_state(re, desc) {
   try {
-    return Re_automata_State.Table.find(re.states, desc);
+    return Curry._2(Re_automata_State.Table.find, re.states, desc);
   }
   catch (raw_exn){
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       let st = mk_state(re.ncol, desc);
-      Re_automata_State.Table.add(re.states, desc, st);
+      Curry._3(Re_automata_State.Table.add, re.states, desc, st);
       return st;
     }
     throw new Error(exn.RE_EXN_ID, {
@@ -1671,7 +1636,7 @@ function find_initial_state(re, cat) {
   catch (raw_exn){
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
-      let st = find_state(re, Re_automata_State.create(cat, re.initial));
+      let st = find_state(re, Curry._2(Re_automata_State.create, cat, re.initial));
       re.initial_states = {
         hd: [
           cat,
@@ -1768,7 +1733,7 @@ function scan_str(info, s, initial_state, groups) {
 }
 
 function cadd(c, s) {
-  return add(c, s);
+  return union(single(c), s);
 }
 
 function trans_set(cache, cm, s) {
@@ -1803,10 +1768,10 @@ function trans_set(cache, cm, s) {
   catch (raw_exn){
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
-      let l = fold_right(s, /* [] */0, (function (param, l) {
+      let l = List.fold_right((function (param, l) {
         return union(seq(Caml_bytes.get(cm, param[0]), Caml_bytes.get(cm, param[1])), l);
-      }));
-      cache.contents = add$1(v, l, cache.contents);
+      }), s, /* [] */0);
+      cache.contents = add(v, l, cache.contents);
       return l;
     }
     throw new Error(exn.RE_EXN_ID, {
@@ -1836,7 +1801,7 @@ function is_charset(_x) {
       case "Alternative" :
       case "Intersection" :
       case "Complement" :
-          break;
+          return List.for_all(is_charset, x._0);
       case "Difference" :
           if (!is_charset(x._0)) {
             return false;
@@ -1846,7 +1811,6 @@ function is_charset(_x) {
       default:
         return false;
     }
-    return List.for_all(is_charset, x._0);
   };
 }
 
@@ -1862,7 +1826,7 @@ function split(s, cm) {
       return;
     }
     let match = t.hd;
-    f(match[0], match[1]);
+    Curry._2(f, match[0], match[1]);
     _t = t.tl;
     continue;
   };
@@ -1893,7 +1857,13 @@ let cdigit = seq(/* '0' */48, /* '9' */57);
 
 let calnum = union(calpha, cdigit);
 
-let cword = add(/* '_' */95, calnum);
+let cword = union({
+  hd: [
+    /* '_' */95,
+    /* '_' */95
+  ],
+  tl: /* [] */0
+}, calnum);
 
 function colorize(c, regexp) {
   let lnl = {
@@ -2334,31 +2304,67 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
     if (typeof x !== "object") {
       switch (x) {
         case "Beg_of_line" :
+            let c$1 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.newline);
             return [
-              after(ids, Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.newline)),
+              mk_expr(ids, {
+                TAG: "After",
+                _0: c$1
+              }),
               kind
             ];
         case "End_of_line" :
+            let c$2 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.newline);
             return [
-              before(ids, Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.newline)),
+              mk_expr(ids, {
+                TAG: "Before",
+                _0: c$2
+              }),
               kind
             ];
         case "Beg_of_word" :
+            let c$3 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.not_letter);
+            let c$4 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.letter);
             return [
-              seq$1(ids, "First", after(ids, Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.not_letter)), before(ids, Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.letter))),
+              seq$1(ids, "First", mk_expr(ids, {
+                TAG: "After",
+                _0: c$3
+              }), mk_expr(ids, {
+                TAG: "Before",
+                _0: c$4
+              })),
               kind
             ];
         case "End_of_word" :
+            let c$5 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.letter);
+            let c$6 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.not_letter);
             return [
-              seq$1(ids, "First", after(ids, Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.letter)), before(ids, Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.not_letter))),
+              seq$1(ids, "First", mk_expr(ids, {
+                TAG: "After",
+                _0: c$5
+              }), mk_expr(ids, {
+                TAG: "Before",
+                _0: c$6
+              })),
               kind
             ];
         case "Not_bound" :
             return [
               alt(ids, {
-                hd: seq$1(ids, "First", after(ids, Re_automata_Category.letter), before(ids, Re_automata_Category.letter)),
+                hd: seq$1(ids, "First", mk_expr(ids, {
+                  TAG: "After",
+                  _0: Re_automata_Category.letter
+                }), mk_expr(ids, {
+                  TAG: "Before",
+                  _0: Re_automata_Category.letter
+                })),
                 tl: {
-                  hd: seq$1(ids, "First", after(ids, Re_automata_Category.letter), before(ids, Re_automata_Category.letter)),
+                  hd: seq$1(ids, "First", mk_expr(ids, {
+                    TAG: "After",
+                    _0: Re_automata_Category.letter
+                  }), mk_expr(ids, {
+                    TAG: "Before",
+                    _0: Re_automata_Category.letter
+                  })),
                   tl: /* [] */0
                 }
               }),
@@ -2366,27 +2372,43 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             ];
         case "Beg_of_str" :
             return [
-              after(ids, Re_automata_Category.inexistant),
+              mk_expr(ids, {
+                TAG: "After",
+                _0: Re_automata_Category.inexistant
+              }),
               kind
             ];
         case "End_of_str" :
             return [
-              before(ids, Re_automata_Category.inexistant),
+              mk_expr(ids, {
+                TAG: "Before",
+                _0: Re_automata_Category.inexistant
+              }),
               kind
             ];
         case "Last_end_of_line" :
+            let c$7 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.lastnewline);
             return [
-              before(ids, Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.lastnewline)),
+              mk_expr(ids, {
+                TAG: "Before",
+                _0: c$7
+              }),
               kind
             ];
         case "Start" :
             return [
-              after(ids, Re_automata_Category.search_boundary),
+              mk_expr(ids, {
+                TAG: "After",
+                _0: Re_automata_Category.search_boundary
+              }),
               kind
             ];
         case "Stop" :
             return [
-              before(ids, Re_automata_Category.search_boundary),
+              mk_expr(ids, {
+                TAG: "Before",
+                _0: Re_automata_Category.search_boundary
+              }),
               kind
             ];
         
@@ -2475,7 +2497,13 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             pos.contents = pos.contents + 2 | 0;
             let match$3 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$p);
             return [
-              seq$1(ids, "First", mark(ids, p), seq$1(ids, "First", match$3[0], mark(ids, p + 1 | 0))),
+              seq$1(ids, "First", mk_expr(ids, {
+                TAG: "Mark",
+                _0: p
+              }), seq$1(ids, "First", match$3[0], mk_expr(ids, {
+                TAG: "Mark",
+                _0: p + 1 | 0
+              }))),
               match$3[1]
             ];
         case "No_group" :
@@ -2502,7 +2530,10 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
         case "Pmark" :
             let match$5 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, x._1);
             return [
-              seq$1(ids, "First", pmark(ids, x._0), match$5[0]),
+              seq$1(ids, "First", mk_expr(ids, {
+                TAG: "Pmark",
+                _0: x._0
+              }), match$5[0]),
               match$5[1]
             ];
         default:
@@ -2808,18 +2839,6 @@ function repn(r, i, j) {
   };
 }
 
-function rep$1(r) {
-  return repn(r, 0, undefined);
-}
-
-function rep1(r) {
-  return repn(r, 1, undefined);
-}
-
-function opt(r) {
-  return repn(r, 0, 1);
-}
-
 function set(str) {
   let s = /* [] */0;
   for(let i = 0 ,i_finish = str.length; i < i_finish; ++i){
@@ -2828,13 +2847,6 @@ function set(str) {
   return {
     TAG: "Set",
     _0: s
-  };
-}
-
-function rg(c, c$p) {
-  return {
-    TAG: "Set",
-    _0: seq(c, c$p)
   };
 }
 
@@ -2871,7 +2883,10 @@ let notnl = {
 };
 
 let lower = alt$1({
-  hd: rg(/* 'a' */97, /* 'z' */122),
+  hd: {
+    TAG: "Set",
+    _0: seq(/* 'a' */97, /* 'z' */122)
+  },
   tl: {
     hd: {
       TAG: "Set",
@@ -2884,9 +2899,15 @@ let lower = alt$1({
       }
     },
     tl: {
-      hd: rg(/* '\223' */223, /* '\246' */246),
+      hd: {
+        TAG: "Set",
+        _0: seq(/* '\223' */223, /* '\246' */246)
+      },
       tl: {
-        hd: rg(/* '\248' */248, /* '\255' */255),
+        hd: {
+          TAG: "Set",
+          _0: seq(/* '\248' */248, /* '\255' */255)
+        },
         tl: /* [] */0
       }
     }
@@ -2894,11 +2915,20 @@ let lower = alt$1({
 });
 
 let upper = alt$1({
-  hd: rg(/* 'A' */65, /* 'Z' */90),
+  hd: {
+    TAG: "Set",
+    _0: seq(/* 'A' */65, /* 'Z' */90)
+  },
   tl: {
-    hd: rg(/* '\192' */192, /* '\214' */214),
+    hd: {
+      TAG: "Set",
+      _0: seq(/* '\192' */192, /* '\214' */214)
+    },
     tl: {
-      hd: rg(/* '\216' */216, /* '\222' */222),
+      hd: {
+        TAG: "Set",
+        _0: seq(/* '\216' */216, /* '\222' */222)
+      },
       tl: /* [] */0
     }
   }
@@ -2936,7 +2966,10 @@ let alpha = alt$1({
   }
 });
 
-let digit = rg(/* '0' */48, /* '9' */57);
+let digit = {
+  TAG: "Set",
+  _0: seq(/* '0' */48, /* '9' */57)
+};
 
 let alnum = alt$1({
   hd: alpha,
@@ -2963,50 +2996,95 @@ let wordc = alt$1({
   }
 });
 
-let ascii = rg(/* '\000' */0, /* '\127' */127);
+let ascii = {
+  TAG: "Set",
+  _0: seq(/* '\000' */0, /* '\127' */127)
+};
 
 let blank = set("\t ");
 
 let cntrl = alt$1({
-  hd: rg(/* '\000' */0, /* '\031' */31),
+  hd: {
+    TAG: "Set",
+    _0: seq(/* '\000' */0, /* '\031' */31)
+  },
   tl: {
-    hd: rg(/* '\127' */127, /* '\159' */159),
+    hd: {
+      TAG: "Set",
+      _0: seq(/* '\127' */127, /* '\159' */159)
+    },
     tl: /* [] */0
   }
 });
 
 let graph = alt$1({
-  hd: rg(/* '!' */33, /* '~' */126),
+  hd: {
+    TAG: "Set",
+    _0: seq(/* '!' */33, /* '~' */126)
+  },
   tl: {
-    hd: rg(/* '\160' */160, /* '\255' */255),
+    hd: {
+      TAG: "Set",
+      _0: seq(/* '\160' */160, /* '\255' */255)
+    },
     tl: /* [] */0
   }
 });
 
 let print = alt$1({
-  hd: rg(/* ' ' */32, /* '~' */126),
+  hd: {
+    TAG: "Set",
+    _0: seq(/* ' ' */32, /* '~' */126)
+  },
   tl: {
-    hd: rg(/* '\160' */160, /* '\255' */255),
+    hd: {
+      TAG: "Set",
+      _0: seq(/* '\160' */160, /* '\255' */255)
+    },
     tl: /* [] */0
   }
 });
 
 let punct = alt$1({
-  hd: rg(/* '!' */33, /* '/' */47),
+  hd: {
+    TAG: "Set",
+    _0: seq(/* '!' */33, /* '/' */47)
+  },
   tl: {
-    hd: rg(/* ':' */58, /* '@' */64),
+    hd: {
+      TAG: "Set",
+      _0: seq(/* ':' */58, /* '@' */64)
+    },
     tl: {
-      hd: rg(/* '[' */91, /* '`' */96),
+      hd: {
+        TAG: "Set",
+        _0: seq(/* '[' */91, /* '`' */96)
+      },
       tl: {
-        hd: rg(/* '{' */123, /* '~' */126),
+        hd: {
+          TAG: "Set",
+          _0: seq(/* '{' */123, /* '~' */126)
+        },
         tl: {
-          hd: rg(/* '\160' */160, /* '\169' */169),
+          hd: {
+            TAG: "Set",
+            _0: seq(/* '\160' */160, /* '\169' */169)
+          },
           tl: {
-            hd: rg(/* '\171' */171, /* '\180' */180),
+            hd: {
+              TAG: "Set",
+              _0: seq(/* '\171' */171, /* '\180' */180)
+            },
             tl: {
-              hd: rg(/* '\182' */182, /* '\185' */185),
+              hd: {
+                TAG: "Set",
+                _0: seq(/* '\182' */182, /* '\185' */185)
+              },
               tl: {
-                hd: rg(/* '\187' */187, /* '\191' */191),
+                hd: {
+                  TAG: "Set",
+                  _0: seq(/* '\187' */187, /* '\191' */191)
+                },
                 tl: {
                   hd: {
                     TAG: "Set",
@@ -3053,7 +3131,10 @@ let space = alt$1({
     }
   },
   tl: {
-    hd: rg(/* '\t' */9, /* '\r' */13),
+    hd: {
+      TAG: "Set",
+      _0: seq(/* '\t' */9, /* '\r' */13)
+    },
     tl: /* [] */0
   }
 });
@@ -3061,13 +3142,72 @@ let space = alt$1({
 let xdigit = alt$1({
   hd: digit,
   tl: {
-    hd: rg(/* 'a' */97, /* 'f' */102),
+    hd: {
+      TAG: "Set",
+      _0: seq(/* 'a' */97, /* 'f' */102)
+    },
     tl: {
-      hd: rg(/* 'A' */65, /* 'F' */70),
+      hd: {
+        TAG: "Set",
+        _0: seq(/* 'A' */65, /* 'F' */70)
+      },
       tl: /* [] */0
     }
   }
 });
+
+function compile(r) {
+  let regexp = anchored(r) ? ({
+      TAG: "Group",
+      _0: r
+    }) : seq$2({
+      hd: {
+        TAG: "Sem",
+        _0: "Shortest",
+        _1: repn(any, 0, undefined)
+      },
+      tl: {
+        hd: {
+          TAG: "Group",
+          _0: r
+        },
+        tl: /* [] */0
+      }
+    });
+  let regexp$1 = handle_case(false, regexp);
+  let c = Bytes.make(257, /* '\000' */0);
+  let need_lnl = colorize(c, regexp$1);
+  let match = flatten_cmap(c);
+  let ncol = match[2];
+  let col = match[0];
+  let lnl = need_lnl ? ncol : -1;
+  let ncol$1 = need_lnl ? ncol + 1 | 0 : ncol;
+  let ids = {
+    contents: 0
+  };
+  let pos = {
+    contents: 0
+  };
+  let match$1 = translate(ids, "First", false, false, "Greedy", pos, {
+    contents: "Empty"
+  }, col, regexp$1);
+  let r$1 = enforce_kind(ids, "First", match$1[1], match$1[0]);
+  let col_repr = match[1];
+  let group_count = pos.contents / 2 | 0;
+  return {
+    initial: r$1,
+    initial_states: /* [] */0,
+    cols: col,
+    col_repr: col_repr,
+    ncol: ncol$1,
+    lnl: lnl,
+    tbl: {
+      contents: [false]
+    },
+    states: Curry._1(Re_automata_State.Table.create, 97),
+    group_count: group_count
+  };
+}
 
 function exec_internal(name, posOpt, lenOpt, groups, re, s) {
   let pos = posOpt !== undefined ? posOpt : 0;
@@ -3108,14 +3248,14 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
     pos: pos,
     last: last
   };
-  let initial_cat = pos === 0 ? Re_automata_Category.$plus$plus(Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Re_automata_Category.$plus$plus(Re_automata_Category.search_boundary, category(re, get_color(re, s, pos - 1 | 0)));
+  let initial_cat = pos === 0 ? Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, category(re, get_color(re, s, pos - 1 | 0)));
   let initial_state = find_initial_state(re, initial_cat);
   let st = scan_str(info, s, initial_state, groups);
   let res;
   if (st.idx === -3 || partial) {
     res = status(st.desc);
   } else {
-    let final_cat = last === slen ? Re_automata_Category.$plus$plus(Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Re_automata_Category.$plus$plus(Re_automata_Category.search_boundary, category(re, get_color(re, s, last)));
+    let final_cat = last === slen ? Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, category(re, get_color(re, s, last)));
     let match = final(info, st, final_cat);
     if (groups) {
       Caml_array.set(info.positions, match[0], last + 1 | 0);
@@ -3205,10 +3345,11 @@ function posix_class_of_string(x) {
     case "xdigit" :
         return xdigit;
     default:
+      let s = "Invalid pcre class: " + x;
       throw new Error("Invalid_argument", {
             cause: {
               RE_EXN_ID: "Invalid_argument",
-              _1: "Invalid pcre class: " + x
+              _1: s
             }
           });
   }
@@ -3290,8 +3431,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       };
     }
   };
-  let regexp = function () {
-    let _left = branch$p(/* [] */0);
+  let regexp$p = function (_left) {
     while(true) {
       let left = _left;
       if (!accept(/* '|' */124)) {
@@ -3331,7 +3471,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (accept(/* '(' */40)) {
       if (accept(/* '?' */63)) {
         if (accept(/* ':' */58)) {
-          let r = regexp();
+          let r = regexp$p(branch());
           if (!accept(/* ')' */41)) {
             throw new Error(Parse_error, {
                   cause: {
@@ -3350,7 +3490,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               }
             });
       }
-      let r$1 = regexp();
+      let r$1 = regexp$p(branch());
       if (!accept(/* ')' */41)) {
         throw new Error(Parse_error, {
               cause: {
@@ -3619,13 +3759,13 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   let piece = function () {
     let r = atom();
     if (accept(/* '*' */42)) {
-      return greedy_mod(rep$1(r));
+      return greedy_mod(repn(r, 0, undefined));
     }
     if (accept(/* '+' */43)) {
-      return greedy_mod(rep1(r));
+      return greedy_mod(repn(r, 1, undefined));
     }
     if (accept(/* '?' */63)) {
-      return greedy_mod(opt(r));
+      return greedy_mod(repn(r, 0, 1));
     }
     if (!accept(/* '{' */123)) {
       return r;
@@ -4015,7 +4155,10 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             };
           }
           _s = {
-            hd: rg(c, match$1.VAL),
+            hd: {
+              TAG: "Set",
+              _0: seq(c, match$1.VAL)
+            },
             tl: s
           };
           continue;
@@ -4036,6 +4179,9 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       continue;
     };
   };
+  let branch = function () {
+    return branch$p(/* [] */0);
+  };
   let comment = function () {
     while(true) {
       if (accept(/* ')' */41)) {
@@ -4046,7 +4192,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       continue;
     };
   };
-  let res = regexp();
+  let res = regexp$p(branch());
   if (i.contents !== l) {
     throw new Error(Parse_error, {
           cause: {
@@ -4088,60 +4234,6 @@ function re(flagsOpt, pat) {
   }
 }
 
-function regexp(flags, pat) {
-  let r = re(flags, pat);
-  let regexp$1 = anchored(r) ? ({
-      TAG: "Group",
-      _0: r
-    }) : seq$2({
-      hd: {
-        TAG: "Sem",
-        _0: "Shortest",
-        _1: rep$1(any)
-      },
-      tl: {
-        hd: {
-          TAG: "Group",
-          _0: r
-        },
-        tl: /* [] */0
-      }
-    });
-  let regexp$2 = handle_case(false, regexp$1);
-  let c = Bytes.make(257, /* '\000' */0);
-  let need_lnl = colorize(c, regexp$2);
-  let match = flatten_cmap(c);
-  let ncol = match[2];
-  let col = match[0];
-  let lnl = need_lnl ? ncol : -1;
-  let ncol$1 = need_lnl ? ncol + 1 | 0 : ncol;
-  let ids = {
-    contents: 0
-  };
-  let pos = {
-    contents: 0
-  };
-  let match$1 = translate(ids, "First", false, false, "Greedy", pos, {
-    contents: "Empty"
-  }, col, regexp$2);
-  let r$1 = enforce_kind(ids, "First", match$1[1], match$1[0]);
-  let col_repr = match[1];
-  let group_count = pos.contents / 2 | 0;
-  return {
-    initial: r$1,
-    initial_states: /* [] */0,
-    cols: col,
-    col_repr: col_repr,
-    ncol: ncol$1,
-    lnl: lnl,
-    tbl: {
-      contents: [false]
-    },
-    states: Re_automata_State.Table.create(97),
-    group_count: group_count
-  };
-}
-
 function exec(rex, pos, s) {
   let len;
   let substr = exec_internal("Re.exec", pos, len, true, rex, s);
@@ -4164,7 +4256,7 @@ function exec(rex, pos, s) {
 
 let s = "a".repeat(1048575) + "b";
 
-eq("File \"ocaml_re_test.res\", line 3843, characters 7-14", get(exec(regexp(undefined, "aa?b"), undefined, s), 0), "aab");
+eq("File \"ocaml_re_test.res\", line 3843, characters 7-14", get(exec(compile(re(undefined, "aa?b")), undefined, s), 0), "aab");
 
 Mt.from_pair_suites("Ocaml_re_test", suites.contents);
 

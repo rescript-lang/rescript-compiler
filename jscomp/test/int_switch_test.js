@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -20,7 +21,7 @@ function b(loc, x) {
 }
 
 function f(x) {
-  let match = x();
+  let match = Curry._1(x, undefined);
   switch (match) {
     case 1 :
         return /* 'a' */97;
@@ -34,7 +35,7 @@ function f(x) {
 }
 
 function f22(x) {
-  let match = x();
+  let match = Curry._1(x, undefined);
   switch (match) {
     case 1 :
         return /* 'a' */97;
@@ -48,7 +49,7 @@ function f22(x) {
 }
 
 function f33(x) {
-  let match = x();
+  let match = Curry._1(x, undefined);
   switch (match) {
     case "A" :
         return /* 'a' */97;
