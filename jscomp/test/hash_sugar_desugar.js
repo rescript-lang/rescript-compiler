@@ -13,11 +13,11 @@ function h3(u) {
 }
 
 function g5(u) {
-  u.hi = 3;
+  Curry._1(u.hi, 3);
 }
 
 function h5(u) {
-  u.hi = 3;
+  Curry._1(u.hi, 3);
 }
 
 function h6(u) {
