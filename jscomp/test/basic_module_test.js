@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 let Offset = require("./offset.js");
 let Pr6726 = require("./pr6726.js");
 let Mt_global = require("./mt_global.js");
@@ -15,7 +14,7 @@ function test(set) {
   count.contents = Offset.$$Set.cardinal(set) + count.contents | 0;
 }
 
-test(Curry._1(Offset.M.$$Set.singleton, "42"));
+test(Offset.M.$$Set.singleton("42"));
 
 let suites = {
   contents: /* [] */0

@@ -1407,8 +1407,8 @@ and compile_apply (appinfo : Lam.apply) (lambda_cxt : Lam_compile_context.t) =
   match appinfo with
   | {
    ap_func =
-     Lapply { ap_func; ap_args; ap_info = { ap_status = App_na; ap_inlined } };
-   ap_info = { ap_status = App_na } as outer_ap_info;
+     Lapply { ap_func; ap_args; ap_info = { ap_status = App_uncurry; ap_inlined } };
+   ap_info = { ap_status = App_uncurry } as outer_ap_info;
   } ->
       (* After inlining, we can generate such code, see {!Ari_regress_test}*)
       let ap_info =

@@ -2,7 +2,6 @@
 'use strict';
 
 let $$Array = require("../../lib/js/array.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
 let v = {
@@ -27,7 +26,7 @@ function f() {
 f();
 
 $$Array.iter((function (x) {
-  Curry._1(x, undefined);
+  x();
 }), arr);
 
 console.log(String(v.contents));

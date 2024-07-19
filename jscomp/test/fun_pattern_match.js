@@ -2,7 +2,6 @@
 'use strict';
 
 let Caml = require("../../lib/js/caml.js");
-let Curry = require("../../lib/js/curry.js");
 
 function f(param, v) {
   return ((((param.x0 + param.x1 | 0) + param.x2 | 0) + param.x3 | 0) + param.x4 | 0) + v | 0;
@@ -69,7 +68,7 @@ function r() {
 
 let match = r();
 
-let v = Curry._1(match.VAL, undefined);
+let v = match.VAL();
 
 console.log(v);
 

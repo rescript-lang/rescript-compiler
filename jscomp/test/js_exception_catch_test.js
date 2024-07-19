@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 let Js_exn = require("../../lib/js/js_exn.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -96,7 +95,7 @@ let C = /* @__PURE__ */Caml_exceptions.create("Js_exception_catch_test.C");
 
 function test(f) {
   try {
-    Curry._1(f, undefined);
+    f();
     return "No_error";
   }
   catch (raw_e){

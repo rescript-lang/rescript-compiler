@@ -2,7 +2,6 @@
 'use strict';
 
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 
 function fib(x) {
   if (x === 2 || x === 1) {
@@ -26,7 +25,7 @@ function map(f, x) {
   } else {
     return {
       TAG: "Cons",
-      _0: Curry._1(f, x._0),
+      _0: f(x._0),
       _1: map(f, x._1)
     };
   }
@@ -58,7 +57,7 @@ function g1(x, y) {
   };
 }
 
-let x = Curry._1(g(3, 5), 6);
+let x = g(3, 5, 6);
 
 function v(extra) {
   let u = 7;

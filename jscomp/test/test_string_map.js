@@ -2,7 +2,6 @@
 'use strict';
 
 let Caml = require("../../lib/js/caml.js");
-let Curry = require("../../lib/js/curry.js");
 
 function height(param) {
   if (typeof param !== "object") {
@@ -159,7 +158,7 @@ function find(x, _param) {
 
 function timing(label, f) {
   console.time(label);
-  Curry._1(f, undefined);
+  f();
   console.timeEnd(label);
 }
 

@@ -2,7 +2,6 @@
 'use strict';
 
 let Caml = require("../../lib/js/caml.js");
-let Curry = require("../../lib/js/curry.js");
 
 function getcompare(x) {
   return x;
@@ -120,7 +119,7 @@ function add(x, data, compare, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Curry._2(compare, x, v);
+  let c = compare(x, v);
   if (c === 0) {
     return {
       TAG: "Node",

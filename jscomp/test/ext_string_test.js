@@ -3,7 +3,6 @@
 
 let List = require("../../lib/js/list.js");
 let Bytes = require("../../lib/js/bytes.js");
-let Curry = require("../../lib/js/curry.js");
 let $$String = require("../../lib/js/string.js");
 let Caml_bytes = require("../../lib/js/caml_bytes.js");
 let Caml_string = require("../../lib/js/caml_string.js");
@@ -31,7 +30,7 @@ function split_by(keep_emptyOpt, is_delim, str) {
         };
       }
     }
-    if (Curry._1(is_delim, Caml_string.get(str, pos))) {
+    if (is_delim(Caml_string.get(str, pos))) {
       let new_len = (last_pos - pos | 0) - 1 | 0;
       if (new_len !== 0 || keep_empty) {
         let v = $$String.sub(str, pos + 1 | 0, new_len);
@@ -207,7 +206,7 @@ function unsafe_for_all_range(s, _start, finish, p) {
     if (start > finish) {
       return true;
     }
-    if (!Curry._1(p, s.codePointAt(start))) {
+    if (!p(s.codePointAt(start))) {
       return false;
     }
     _start = start + 1 | 0;
