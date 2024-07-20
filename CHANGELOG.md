@@ -69,6 +69,7 @@
 - Ignore `-uncurried` command-line flag. https://github.com/rescript-lang/rescript-compiler/pull/6885
 - Cleanup: remove tracking of uncurried state in parser/printer. https://github.com/rescript-lang/rescript-compiler/pull/6888
 - Remove `%opaque` primitive. https://github.com/rescript-lang/rescript-compiler/pull/6892
+- Reunify JsxC/JsxU -> Jsx etc. https://github.com/rescript-lang/rescript-compiler/pull/6895
 
 #### :nail_care: Polish
 
