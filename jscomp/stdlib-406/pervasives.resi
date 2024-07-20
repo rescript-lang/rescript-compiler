@@ -24,19 +24,6 @@
    name, without prefixing them by [Pervasives].
 */
 
-module Jsx = JsxC
-module JsxEvent = JsxEventC
-module JsxDOM = JsxDOMC
-module JsxPPXReactSupport = JsxPPXReactSupportC
-
-/* For autocomplete */
-module JsxModules: {
-  module Jsx = JsxC
-  module JsxEvent = JsxEventC
-  module JsxDOM = JsxDOMC
-  // skip JsxPPXReactSupport as it's not user-facing
-}
-
 /* Internal */
 external __unsafe_cast: 'a => 'b = "%identity"
 /* 1 Exceptions} */
