@@ -43,6 +43,7 @@ type check_result =
   | Bsb_bsc_version_mismatch
   | Bsb_forced
   | Bsb_package_kind_inconsistent
+  | Bsb_regenerate_required
   | Other of string
 
 let pp_check_result fmt (check_resoult : check_result) =
@@ -55,6 +56,7 @@ let pp_check_result fmt (check_resoult : check_result) =
     | Bsb_bsc_version_mismatch -> "Bsc or bsb version mismatch"
     | Bsb_forced -> "Bsb forced rebuild"
     | Bsb_package_kind_inconsistent -> "The package was built in different mode"
+    | Bsb_regenerate_required -> "Bsb need regenerate build.ninja"
     | Other s -> s)
 
 let rec check_aux cwd (xs : string list) =
@@ -91,13 +93,14 @@ let record_global_atime buf name =
   Ext_buffer.add_string_char buf (hex_of_float stamp) '\n'
 
 let record ~(package_kind : Bsb_package_kind.t) ~per_proj_dir ~file
-    ~(config : Bsb_config_types.t) (file_or_dirs : string list) : unit =
+    ~(config : Bsb_config_types.t) ~(warn_as_error: string option) (file_or_dirs : string list) : unit =
   let buf = Ext_buffer.create 1_000 in
   Ext_buffer.add_string_char buf Bs_version.version '\n';
   Ext_buffer.add_string_char buf per_proj_dir '\n';
   Ext_buffer.add_string_char buf
     (Bsb_package_kind.encode_no_nl package_kind)
     '\n';
+  Ext_buffer.add_string_char buf (match warn_as_error with | Some s -> s | None -> "0") '\n';
   Ext_list.iter file_or_dirs (fun f ->
       Ext_buffer.add_string_char buf f '\t';
       Ext_buffer.add_string_char buf
@@ -119,21 +122,25 @@ let record ~(package_kind : Bsb_package_kind.t) ~per_proj_dir ~file
     Even forced, we still need walk through a little
     bit in case we found a different version of compiler
 *)
-let check ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string) ~forced
-    ~file : check_result =
+let check ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string) ~forced ~(warn_as_error: string option) ~file : check_result =
   match open_in_bin file with
   (* Windows binary mode*)
   | exception _ -> Bsb_file_not_exist
   | ic -> (
       match List.rev (Ext_io.rev_lines_of_chann ic) with
       | exception _ -> Bsb_file_corrupted
-      | version :: source_directory :: package_kind_str :: dir_or_files -> (
+      | version :: source_directory :: package_kind_str :: previous_warn_as_error :: dir_or_files -> (
+          let warn_as_error_changed = match warn_as_error with
+            | None -> false
+            | Some current -> current <> previous_warn_as_error in
+
           if version <> Bs_version.version then Bsb_bsc_version_mismatch
           else if per_proj_dir <> source_directory then
             Bsb_source_directory_changed
           else if forced then Bsb_forced (* No need walk through *)
           else if Bsb_package_kind.encode_no_nl package_kind <> package_kind_str
           then Bsb_package_kind_inconsistent
+          else if warn_as_error_changed then Bsb_regenerate_required
           else
             try check_aux per_proj_dir dir_or_files
             with e ->
