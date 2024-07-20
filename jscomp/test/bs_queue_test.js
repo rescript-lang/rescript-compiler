@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
 let Belt_MutableQueue = require("../../lib/js/belt_MutableQueue.js");
@@ -25,7 +24,7 @@ function b(loc, x) {
 
 function does_raise(f, q) {
   try {
-    Curry._1(f, q);
+    f(q);
     return false;
   }
   catch (exn){
@@ -57,7 +56,7 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), []) && q.length === 0)) {
       });
 }
 
-if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 1), q)), [1]) && q.length === 1)) {
+if (!(Caml_obj.equal(Belt_MutableQueue.toArray($plus$plus(q, 1)), [1]) && q.length === 1)) {
   throw new Error("Assert_failure", {
         cause: {
           RE_EXN_ID: "Assert_failure",
@@ -70,7 +69,7 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 1), q))
       });
 }
 
-if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2), q)), [
+if (!(Caml_obj.equal(Belt_MutableQueue.toArray($plus$plus(q, 2)), [
     1,
     2
   ]) && q.length === 2)) {
@@ -86,7 +85,7 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2), q))
       });
 }
 
-if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3), q)), [
+if (!(Caml_obj.equal(Belt_MutableQueue.toArray($plus$plus(q, 3)), [
     1,
     2,
     3
@@ -103,7 +102,7 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3), q))
       });
 }
 
-if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 4), q)), [
+if (!(Caml_obj.equal(Belt_MutableQueue.toArray($plus$plus(q, 4)), [
     1,
     2,
     3,
@@ -251,7 +250,7 @@ let q$1 = {
   last: undefined
 };
 
-if (Belt_MutableQueue.popExn((Belt_MutableQueue.add(q$1, 1), q$1)) !== 1) {
+if (Belt_MutableQueue.popExn($plus$plus(q$1, 1)) !== 1) {
   throw new Error("Assert_failure", {
         cause: {
           RE_EXN_ID: "Assert_failure",
@@ -277,7 +276,7 @@ if (!does_raise(Belt_MutableQueue.popExn, q$1)) {
       });
 }
 
-if (Belt_MutableQueue.popExn((Belt_MutableQueue.add(q$1, 2), q$1)) !== 2) {
+if (Belt_MutableQueue.popExn($plus$plus(q$1, 2)) !== 2) {
   throw new Error("Assert_failure", {
         cause: {
           RE_EXN_ID: "Assert_failure",
@@ -322,7 +321,7 @@ let q$2 = {
   last: undefined
 };
 
-if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 1), q$2)) !== 1) {
+if (Belt_MutableQueue.peekExn($plus$plus(q$2, 1)) !== 1) {
   throw new Error("Assert_failure", {
         cause: {
           RE_EXN_ID: "Assert_failure",
@@ -335,7 +334,7 @@ if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 1), q$2)) !== 1) {
       });
 }
 
-if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 2), q$2)) !== 1) {
+if (Belt_MutableQueue.peekExn($plus$plus(q$2, 2)) !== 1) {
   throw new Error("Assert_failure", {
         cause: {
           RE_EXN_ID: "Assert_failure",
@@ -348,7 +347,7 @@ if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 2), q$2)) !== 1) {
       });
 }
 
-if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 3), q$2)) !== 1) {
+if (Belt_MutableQueue.peekExn($plus$plus(q$2, 3)) !== 1) {
   throw new Error("Assert_failure", {
         cause: {
           RE_EXN_ID: "Assert_failure",
@@ -1372,4 +1371,4 @@ exports.b = b;
 exports.Q = Q;
 exports.does_raise = does_raise;
 exports.$plus$plus = $plus$plus;
-/*  Not a pure module */
+/* q Not a pure module */

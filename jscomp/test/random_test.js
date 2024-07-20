@@ -16,24 +16,26 @@ let suites = {
 };
 
 function eq(f) {
-  return function (param, param$1) {
-    return Mt_global.collect_eq(id, suites, f, param, param$1);
+  return function (extra, extra$1) {
+    return Mt_global.collect_eq(id, suites, f, extra, extra$1);
   };
 }
 
 function neq(f) {
-  return function (param, param$1) {
-    return Mt_global.collect_neq(id, suites, f, param, param$1);
+  return function (extra, extra$1) {
+    return Mt_global.collect_neq(id, suites, f, extra, extra$1);
   };
 }
 
 function approx(f) {
-  return function (param, param$1) {
-    return Mt_global.collect_approx(id, suites, f, param, param$1);
+  return function (extra, extra$1) {
+    return Mt_global.collect_approx(id, suites, f, extra, extra$1);
   };
 }
 
-Mt_global.collect_neq(id, suites, "File \"random_test.res\", line 9, characters 2-9", (Random.self_init(), Random.int(10000)), (Random.self_init(), Random.int(1000)));
+((function (extra, extra$1) {
+    return Mt_global.collect_neq(id, suites, "File \"random_test.res\", line 9, characters 2-9", extra, extra$1);
+  })((Random.self_init(), Random.int(10000)), (Random.self_init(), Random.int(1000))));
 
 Random.init(0);
 
@@ -43,18 +45,20 @@ for(let i = 0; i <= 9; ++i){
   Caml_array.set(v, i, Random.bool());
 }
 
-Mt_global.collect_eq(id, suites, "File \"random_test.res\", line 28, characters 12-19", v, [
-  true,
-  true,
-  true,
-  true,
-  true,
-  false,
-  true,
-  true,
-  true,
-  false
-]);
+((function (extra, extra$1) {
+    return Mt_global.collect_eq(id, suites, "File \"random_test.res\", line 28, characters 12-19", extra, extra$1);
+  })(v, [
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    false
+  ]));
 
 let f = Random.int64(Int64.max_int);
 

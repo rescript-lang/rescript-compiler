@@ -74,28 +74,15 @@ let process_method_attributes_rev (attrs : t) =
         ({st with set = Some result}, acc)
       | _ -> (st, attr :: acc))
 
-type attr_kind =
-  | Nothing
-  | Meth_callback of attr
-  | Uncurry of attr
-  | Method of attr
+type attr_kind = Nothing | Meth_callback of attr | Method of attr
 
 let process_attributes_rev (attrs : t) : attr_kind * t =
   Ext_list.fold_left attrs (Nothing, [])
     (fun (st, acc) (({txt; loc}, _) as attr) ->
       match (txt, st) with
-      | "bs", (Nothing | Uncurry _) ->
-        (Uncurry attr, acc) (* TODO: warn unused/duplicated attribute *)
       | "this", (Nothing | Meth_callback _) -> (Meth_callback attr, acc)
       | "meth", (Nothing | Method _) -> (Method attr, acc)
-      | ("bs" | "this"), _ -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
-      | _, _ -> (st, attr :: acc))
-
-let process_bs (attrs : t) =
-  Ext_list.fold_left attrs (false, [])
-    (fun (st, acc) (({txt; loc = _}, _) as attr) ->
-      match (txt, st) with
-      | "bs", _ -> (true, acc)
+      | "this", _ -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _, _ -> (st, attr :: acc))
 
 let external_attrs =
@@ -188,16 +175,13 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
       st := v)
     else Bs_syntaxerr.err loc Conflict_attributes
   in
-  Ext_list.iter attrs (fun (({txt; loc = _}, (payload : _)) as attr) ->
+  Ext_list.iter attrs (fun (({txt; loc = _}, _) as attr) ->
       match txt with
       | "string" -> assign `String attr
       | "int" -> assign `Int attr
       | "ignore" -> assign `Ignore attr
       | "unwrap" -> assign `Unwrap attr
-      | "uncurry" ->
-        if !Config.uncurried = Uncurried then
-          Used_attributes.mark_used_attribute attr
-        else assign (`Uncurry (Ast_payload.is_single_int payload)) attr
+      | "uncurry" -> Used_attributes.mark_used_attribute attr
       | _ -> ());
   !st
 
@@ -290,10 +274,6 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   !st
 
 let locg = Location.none
-(* let bs : attr
-   =  {txt = "bs" ; loc = locg}, Ast_payload.empty *)
-
-let res_uapp : attr = ({txt = "res.uapp"; loc = locg}, Ast_payload.empty)
 
 let get : attr = ({txt = "get"; loc = locg}, Ast_payload.empty)
 

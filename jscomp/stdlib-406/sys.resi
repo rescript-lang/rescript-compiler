@@ -302,22 +302,3 @@ let enable_runtime_warnings: bool => unit
 
     @since 4.03.0 */
 let runtime_warnings_enabled: unit => bool
-
-/* {1 Optimization} */
-
-/** For the purposes of optimization, [opaque_identity] behaves like an
-    unknown (and thus possibly side-effecting) function.
-
-    At runtime, [opaque_identity] disappears altogether.
-
-    A typical use of this function is to prevent pure computations from being
-    optimized away in benchmarking loops.  For example:
-    {[
-      for _round = 1 to 100_000 do
-        ignore (Sys.opaque_identity (my_pure_computation ()))
-      done
-    ]}
-
-    @since 4.03.0
-*/
-external opaque_identity: 'a => 'a = "%opaque"

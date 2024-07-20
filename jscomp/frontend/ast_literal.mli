@@ -41,10 +41,6 @@ module Lid : sig
 
   val type_bigint : t
 
-  val js_internal_full_apply : t
-
-  val opaque : t
-
   val js_oo : t
 
   val js_meth_callback : t

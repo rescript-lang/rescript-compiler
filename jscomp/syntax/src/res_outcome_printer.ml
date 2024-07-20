@@ -155,11 +155,11 @@ let rec print_out_type_doc (out_type : Outcometree.out_type) =
       ( Oide_dot (Oide_dot (Oide_ident "Js", "Fn"), _),
         [(Otyp_arrow _ as arrow_type)] ) ->
     (* Compatibility with compiler up to v10.x *)
-    print_out_arrow_type ~uncurried:true arrow_type
+    print_out_arrow_type arrow_type
   | Otyp_constr (Oide_ident "function$", [(Otyp_arrow _ as arrow_type); _arity])
     ->
     (* function$<(int, int) => int, [#2]> -> (. int, int) => int *)
-    print_out_arrow_type ~uncurried:true arrow_type
+    print_out_arrow_type arrow_type
   | Otyp_constr (Oide_ident "function$", [Otyp_var _; _arity]) ->
     (* function$<'a, arity> -> _ => _ *)
     print_out_type_doc (Otyp_stuff "_ => _")
@@ -234,7 +234,7 @@ let rec print_out_type_doc (out_type : Outcometree.out_type) =
            Doc.space;
            print_out_type_doc out_type;
          ])
-  | Otyp_arrow _ as typ -> print_out_arrow_type ~uncurried:false typ
+  | Otyp_arrow _ as typ -> print_out_arrow_type typ
   | Otyp_module (mod_name, string_list, out_types) ->
     let package_type_doc =
       match (string_list, out_types) with
@@ -266,8 +266,7 @@ let rec print_out_type_doc (out_type : Outcometree.out_type) =
         Doc.rparen;
       ]
 
-and print_out_arrow_type ~uncurried typ =
-  let uncurried = Res_uncurried.get_dotted ~uncurried !Config.uncurried in
+and print_out_arrow_type typ =
   let typ_args, typ = collect_arrow_args typ [] in
   let args =
     Doc.join
@@ -297,7 +296,6 @@ and print_out_arrow_type ~uncurried typ =
   let args_doc =
     let needs_parens =
       match typ_args with
-      | _ when uncurried -> true
       | [
        ( _,
          ( Otyp_tuple _ | Otyp_arrow _
@@ -312,7 +310,7 @@ and print_out_arrow_type ~uncurried typ =
       Doc.group
         (Doc.concat
            [
-             (if uncurried then Doc.text "(. " else Doc.lparen);
+             Doc.lparen;
              Doc.indent (Doc.concat [Doc.soft_line; args]);
              Doc.trailing_comma;
              Doc.soft_line;

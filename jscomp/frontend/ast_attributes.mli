@@ -29,15 +29,9 @@ type ('a, 'b) st = {get: 'a option; set: 'b option}
 
 val process_method_attributes_rev : t -> (bool * bool, [`Get | `No_get]) st * t
 
-type attr_kind =
-  | Nothing
-  | Meth_callback of attr
-  | Uncurry of attr
-  | Method of attr
+type attr_kind = Nothing | Meth_callback of attr | Method of attr
 
 val process_attributes_rev : t -> attr_kind * t
-
-val process_bs : t -> bool * t
 
 val has_inline_payload : t -> attr option
 
@@ -47,7 +41,7 @@ val has_async_payload : t -> attr option
 type derive_attr = {bs_deriving: Ast_payload.action list option} [@@unboxed]
 
 val iter_process_bs_string_int_unwrap_uncurry :
-  t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option]
+  t -> [`Nothing | `String | `Int | `Ignore | `Unwrap]
 
 val iter_process_bs_string_as : t -> string option
 
@@ -59,9 +53,6 @@ type as_const_payload = Int of int | Str of string * External_arg_spec.delim
 val iter_process_bs_string_or_int_as : t -> as_const_payload option
 
 val process_derive_type : t -> derive_attr * t
-
-(* Attribute for uncurried application coming from the ReScript parser *)
-val res_uapp : attr
 
 val get : attr
 

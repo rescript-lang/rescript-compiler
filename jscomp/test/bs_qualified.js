@@ -11,7 +11,7 @@ function f(a, b, c) {
   return process.env;
 }
 
-function f2(param) {
+function f2() {
   return [
     Z.a0.a1.a2.hi,
     a0.a1.a2.ho,

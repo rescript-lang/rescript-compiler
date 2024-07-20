@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 
 let result = {
   contents: ""
@@ -18,32 +17,31 @@ let Xx = {
 
 function compilerBug(a, b, c, f) {
   let exit = 0;
-  if (a !== "x") {
+  let exit$1 = 0;
+  if (a === "x") {
     exit = 2;
-  }
-  if (exit === 2) {
-    if (b === undefined) {
-      if (c) {
-        result.contents = "No x, c is true";
-      } else {
-        result.contents = "No x, c is false";
-      }
-      return;
-    }
-    if (b !== "x") {
-      if (c) {
-        result.contents = "No x, c is true";
-      } else {
-        result.contents = "No x, c is false";
-      }
-      return;
-    }
-    
-  }
-  if (Curry._1(f, undefined)) {
-    result.contents = "Some x, f returns true";
   } else {
-    result.contents = "Some x, f returns false";
+    exit$1 = 3;
+  }
+  if (exit$1 === 3) {
+    exit = b === "x" ? 2 : 1;
+  }
+  switch (exit) {
+    case 1 :
+        if (c) {
+          result.contents = "No x, c is true";
+        } else {
+          result.contents = "No x, c is false";
+        }
+        return;
+    case 2 :
+        if (f()) {
+          result.contents = "Some x, f returns true";
+        } else {
+          result.contents = "Some x, f returns false";
+        }
+        return;
+    
   }
 }
 
@@ -59,7 +57,7 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-compilerBug("x", undefined, true, (function (param) {
+compilerBug("x", undefined, true, (function () {
   return true;
 }));
 

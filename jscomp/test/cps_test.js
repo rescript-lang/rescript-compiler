@@ -3,10 +3,9 @@
 
 let Mt = require("./mt.js");
 let $$Array = require("../../lib/js/array.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
-function test(param) {
+function test() {
   let v = {
     contents: 0
   };
@@ -15,23 +14,23 @@ function test(param) {
       let acc = _acc;
       let n = _n;
       if (n === 0) {
-        return Curry._1(acc, undefined);
+        return acc();
       }
-      _acc = (function (param) {
+      _acc = (function () {
         v.contents = v.contents + n | 0;
-        return Curry._1(acc, undefined);
+        return acc();
       });
       _n = n - 1 | 0;
       continue;
     };
   };
-  f(10, (function (param) {
+  f(10, (function () {
     
   }));
   return v.contents;
 }
 
-function test_closure(param) {
+function test_closure() {
   let v = {
     contents: 0
   };
@@ -44,12 +43,12 @@ function test_closure(param) {
     }));
   }
   $$Array.iter((function (i) {
-    v.contents = v.contents + Curry._1(i, 0) | 0;
+    v.contents = v.contents + i(0) | 0;
   }), arr);
   return v.contents;
 }
 
-function test_closure2(param) {
+function test_closure2() {
   let v = {
     contents: 0
   };
@@ -63,7 +62,7 @@ function test_closure2(param) {
     }));
   }
   $$Array.iter((function (i) {
-    v.contents = v.contents + Curry._1(i, 0) | 0;
+    v.contents = v.contents + i(0) | 0;
   }), arr);
   return v.contents;
 }
@@ -71,7 +70,7 @@ function test_closure2(param) {
 Mt.from_pair_suites("Cps_test", {
   hd: [
     "cps_test_sum",
-    (function (param) {
+    (function () {
       return {
         TAG: "Eq",
         _0: 55,
@@ -82,7 +81,7 @@ Mt.from_pair_suites("Cps_test", {
   tl: {
     hd: [
       "cps_test_closure",
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: 15,
@@ -93,7 +92,7 @@ Mt.from_pair_suites("Cps_test", {
     tl: {
       hd: [
         "cps_test_closure2",
-        (function (param) {
+        (function () {
           return {
             TAG: "Eq",
             _0: 30,

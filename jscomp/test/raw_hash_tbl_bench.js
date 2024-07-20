@@ -3,7 +3,7 @@
 
 let Hashtbl = require("../../lib/js/hashtbl.js");
 
-function bench(param) {
+function bench() {
   let table = Hashtbl.create(undefined, 1000000);
   for(let i = 0; i <= 1000000; ++i){
     Hashtbl.add(table, i, i);

@@ -27,11 +27,11 @@ function b(loc, x) {
   Mt.bool_suites(test_id, suites, loc, x);
 }
 
-function f(param) {
+function f() {
   
 }
 
-function shouldBeNull(param) {
+function shouldBeNull() {
   return null;
 }
 

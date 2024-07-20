@@ -13,7 +13,7 @@ let b = v.l;
 
 let c = v.open;
 
-function ff(param) {
+function ff() {
   v["Content-Type"] = 3;
   v.l = 2;
 }

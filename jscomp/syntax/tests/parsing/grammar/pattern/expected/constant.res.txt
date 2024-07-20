@@ -15,12 +15,15 @@ let ({js|stringPattern|js} : string) as s = ()
 ;;for {js|stringPattern|js} = 0 to 10 do () done
 ;;for {js|stringPattern|js} as s = 0 to 10 do () done
 ;;for {js|stringPattern|js} as s = 0 to 10 do () done
-let f {js|stringPattern|js} = ()
-let f ({js|stringPattern|js} as s) = ()
-let f ({js|stringPattern|js} as s) = ()
-let f ({js|stringPattern|js} : string) = ()
-let f (({js|stringPattern|js} : string) as s) = ()
-let f ({js|stringPattern|js} : string) = ()
+let f = ((Function$ (fun {js|stringPattern|js} -> ()))[@res.arity 1])
+let f = ((Function$ (fun ({js|stringPattern|js} as s) -> ()))[@res.arity 1])
+let f = ((Function$ (fun ({js|stringPattern|js} as s) -> ()))[@res.arity 1])
+let f = ((Function$ (fun ({js|stringPattern|js} : string) -> ()))
+  [@res.arity 1])
+let f = ((Function$ (fun (({js|stringPattern|js} : string) as s) -> ()))
+  [@res.arity 1])
+let f = ((Function$ (fun ({js|stringPattern|js} : string) -> ()))
+  [@res.arity 1])
 let 1 = ()
 let 1 as x = ()
 let (1 : int) = ()
@@ -30,11 +33,11 @@ let (1 : int) as x = ()
   | 1 as x -> ()
   | (1 : int) -> ()
   | (1 : int) as x -> ()
-let f 1 = ()
-let f (1 as x) = ()
-let f (1 : int) = ()
-let f ((1 : int) as x) = ()
-let f (1 : int) = ()
+let f = ((Function$ (fun 1 -> ()))[@res.arity 1])
+let f = ((Function$ (fun (1 as x) -> ()))[@res.arity 1])
+let f = ((Function$ (fun (1 : int) -> ()))[@res.arity 1])
+let f = ((Function$ (fun ((1 : int) as x) -> ()))[@res.arity 1])
+let f = ((Function$ (fun (1 : int) -> ()))[@res.arity 1])
 ;;for i = 0 to 10 do () done
 ;;for i as x = 0 to 10 do () done
 ;;for i = 0 to 10 do () done
@@ -42,19 +45,23 @@ let f (1 : int) = ()
 ;;for i as x = 0 to 10 do () done
 ;;match listPatterns with
   | (true, pattern)::patterns ->
-      let patterns = (patterns |> (List.map filterSpread)) |> List.rev in
+      let patterns = List.rev (List.map filterSpread patterns) in
       makeListPattern loc patterns (Some pattern)
   | patterns ->
-      let patterns = (patterns |> (List.map filterSpread)) |> List.rev in
+      let patterns = List.rev (List.map filterSpread patterns) in
       makeListPattern loc patterns None
 let _0 = 0x9A
-let print ppf i =
-  match i.stamp with
-  | 0 -> fprintf ppf {js|%s!|js} i.name
-  | (-1) -> fprintf ppf {js|%s#|js} i.name
-  | 1 -> fprintf ppf {js|%s#|js} i.name
-  | (-1.) -> fprintf ppf {js|%s#|js} i.name
-  | 1. -> fprintf ppf {js|%s#|js} i.name
+let print =
+  ((Function$
+      (fun ppf ->
+         fun i ->
+           match i.stamp with
+           | 0 -> fprintf ppf {js|%s!|js} i.name
+           | (-1) -> fprintf ppf {js|%s#|js} i.name
+           | 1 -> fprintf ppf {js|%s#|js} i.name
+           | (-1.) -> fprintf ppf {js|%s#|js} i.name
+           | 1. -> fprintf ppf {js|%s#|js} i.name))
+  [@res.arity 2])
 let (-1)..(-1.) = x
 ;;match science with
   | (1.12, (-3.13)) -> true

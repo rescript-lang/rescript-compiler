@@ -119,7 +119,7 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
     {param_translation with type_ = Array (param_translation.type_, Mutable)}
   | ["ImmutableArray"; "t"], [param_translation] ->
     {param_translation with type_ = Array (param_translation.type_, Immutable)}
-  | [("Pervasives" | "PervasivesU"); "ref"], [param_translation] ->
+  | ["Pervasives"; "ref"], [param_translation] ->
     {
       dependencies = param_translation.dependencies;
       type_ =
@@ -217,7 +217,7 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
   | ( ( ["React"; "element"]
       | ["ReactV3"; "React"; "element"]
       | ["ReasonReact"; "reactElement"]
-      | [("Pervasives" | "PervasivesU"); "Jsx"; "element"] ),
+      | ["Pervasives"; "Jsx"; "element"] ),
       [] ) ->
     {dependencies = []; type_ = EmitType.type_react_element}
   | (["FB"; "option"] | ["option"]), [param_translation] ->

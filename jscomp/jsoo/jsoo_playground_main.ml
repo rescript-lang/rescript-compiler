@@ -76,11 +76,6 @@ module BundleConfig = struct
     mutable filename: string option;
     mutable warn_flags: string;
     mutable open_modules: string list;
-
-    (* This one can't be mutated since we only provide
-       third-party packages that were compiled for uncurried
-       mode *)
-    uncurried: bool;
   }
 
   let make () = {
@@ -88,7 +83,6 @@ module BundleConfig = struct
     filename=None;
     warn_flags=Bsc_warnings.defaults_w;
     open_modules=[];
-    uncurried=(!Config.uncurried = Uncurried);
   }
 
 
@@ -201,8 +195,6 @@ end
 (* One time setup for all relevant modules *)
 let () =
   Bs_conditional_initial.setup_env ();
-  (* From now on the default setting will be uncurried mode *)
-  Config.uncurried := Uncurried;
   Clflags.binary_annotations := false;
   Clflags.color := Some Always;
   Lazy.force Res_outcome_printer.setup
@@ -646,7 +638,6 @@ module Export = struct
                              );
                              "warn_flags",
                              inject @@ (Js.string config.warn_flags);
-                             "uncurried", inject @@ (Js.bool config.uncurried);
                              "open_modules", inject @@ (config.open_modules |> Array.of_list |> Js.array);
                            |]))
           );

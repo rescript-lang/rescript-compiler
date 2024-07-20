@@ -5,11 +5,6 @@ let List = require("../../lib/js/list.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 
 let Pervasives$1 = {
-  Jsx: Pervasives.Jsx,
-  JsxEvent: Pervasives.JsxEvent,
-  JsxDOM: Pervasives.JsxDOM,
-  JsxPPXReactSupport: Pervasives.JsxPPXReactSupport,
-  JsxModules: Pervasives.JsxModules,
   invalid_arg: Pervasives.invalid_arg,
   failwith: Pervasives.failwith,
   Exit: Pervasives.Exit,

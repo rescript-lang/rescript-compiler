@@ -3,7 +3,7 @@
 
 let React = require("react");
 
-function dd(param) {
+function dd() {
   throw new Error("Not_found", {
         cause: {
           RE_EXN_ID: "Not_found"
@@ -49,7 +49,7 @@ function tsiU(c) {
   });
 }
 
-let match = React.useState(function (param) {
+let match = React.useState(function () {
   return 3;
 });
 
@@ -73,11 +73,11 @@ let StandardNotation = {
   set: StandardNotation_set
 };
 
-function methodWithAsync(param) {
+function methodWithAsync() {
   let $$this = this ;
-  return (async function (arg) {
+  return async function (arg) {
     return $$this + arg | 0;
-  })(param);
+  };
 }
 
 exports.StandardNotation = StandardNotation;

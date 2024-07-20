@@ -1006,10 +1006,7 @@ ${ninjaQuickBuildList([
   let depsMap = new Map();
   await ocamlDepForBscAsync(sources, stdlibDir, depsMap);
   var targets = collectTarget(sources);
-  var allTargets = scanFileTargets(targets, [
-    "pervasives.cmi",
-    "pervasives.cmj",
-  ]);
+  var allTargets = scanFileTargets(targets, []);
   targets.forEach((ext, mod) => {
     switch (ext) {
       case "HAS_RESI":
@@ -1087,6 +1084,7 @@ bsc_flags = -bs-cross-module-opt -make-runtime-test -bs-package-output commonjs:
 ${ruleCC(ninjaCwd)}
 `;
   var testDirFiles = fs.readdirSync(testDir, "ascii");
+  //testDirFiles = [];
   var sources = testDirFiles.filter(x => {
     return x.endsWith(".resi") || x.endsWith(".res");
   });

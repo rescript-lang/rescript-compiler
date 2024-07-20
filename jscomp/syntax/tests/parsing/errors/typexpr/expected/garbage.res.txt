@@ -8,5 +8,6 @@
 
   I'm not sure what to parse here when looking at "?".
 
-external printName : name:((unit)[@res.namedArgLoc ]) -> unit = "printName"
-[@@module {js|moduleName|js}]
+external printName :
+  (name:((unit)[@res.namedArgLoc ]) -> unit, [ `Has_arity1 ]) function$ =
+    "printName"[@@module {js|moduleName|js}]

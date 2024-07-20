@@ -40,7 +40,6 @@ let process_file sourcefile ?(kind ) ppf =
      The {!Location.input_name} relies on that we write the binary ast 
      properly
   *)
-  let uncurried = !Config.uncurried in
   setup_outcome_printer ();
   let kind =
     match kind with 
@@ -78,11 +77,9 @@ let process_file sourcefile ?(kind ) ppf =
   | Unknown -> 
     Bsc_args.bad_arg ("don't know what to do with " ^ sourcefile)
   in
-  Config.uncurried := uncurried;
   res
 
 let reprint_source_file sourcefile = 
-  let uncurried = !Config.uncurried in
   let kind = Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile) in
   let sourcefile = set_abs_input_name sourcefile in
   let res = match kind with 
@@ -119,7 +116,6 @@ let reprint_source_file sourcefile =
     print_endline ("Invalid input for reprinting ReScript source. Must be a ReScript file: " ^ sourcefile);
     exit 2
   in
-  Config.uncurried := uncurried;
   res
 
 let usage = "Usage: bsc <options> <files>\nOptions are:"
@@ -406,8 +402,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-nopervasives", set Clflags.nopervasives, 
     "*internal*";
-    "-uncurried", unit_call (fun () -> Config.uncurried := Uncurried),
-    "*internal* Set jsx module";
+    "-uncurried", unit_call (fun () -> ()),
+    "*internal* deprecated";
     "-v", unit_call print_version_string,
     "Print compiler version and location of standard library and exit";  
 

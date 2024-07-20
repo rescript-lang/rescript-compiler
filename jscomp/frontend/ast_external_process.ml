@@ -66,21 +66,6 @@ let spec_of_ptyp (nolabel : bool) (ptyp : Parsetree.core_type) :
       Unwrap
     (* Unwrap attribute can only be attached to things like `[a of a0 | b of b0]` *)
     | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type)
-  | `Uncurry opt_arity -> (
-    let real_arity =
-      if Ast_uncurried.core_type_is_uncurried_fun ptyp then
-        let arity, _ = Ast_uncurried.core_type_extract_uncurried_fun ptyp in
-        Some arity
-      else Ast_core_type.get_uncurry_arity ptyp
-    in
-    match (opt_arity, real_arity) with
-    | Some arity, None -> Fn_uncurry_arity arity
-    | None, None -> Bs_syntaxerr.err ptyp.ptyp_loc Canot_infer_arity_by_syntax
-    | None, Some arity -> Fn_uncurry_arity arity
-    | Some arity, Some n ->
-      if n <> arity then
-        Bs_syntaxerr.err ptyp.ptyp_loc (Inconsistent_arity (arity, n))
-      else Fn_uncurry_arity arity)
   | `Nothing -> (
     match ptyp_desc with
     | Ptyp_constr ({txt = Lident "unit"; _}, []) ->

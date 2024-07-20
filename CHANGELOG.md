@@ -34,8 +34,7 @@
 - Remove ml parsing tests and conversion from `.ml` to `.res` via format. https://github.com/rescript-lang/rescript-compiler/pull/6848
 - Remove support for compiling `.ml` files, and general cleanup. https://github.com/rescript-lang/rescript-compiler/pull/6852
 - Remove `rescript convert` subcommand. https://github.com/rescript-lang/rescript-compiler/pull/6860
-- Remove support for `@bs.send.pipe`. https://github.com/rescript-lang/rescript-compiler/pull/6858
-- Remove `regen` argument. Now ReScript regenerate `build.ninja` for each build. https://github.com/rescript-lang/rescript-compiler/pull/6877
+- Remove support for `@bs.send.pipe`. This also removes all functions in `Js_typed_array` that rely on `@bs.send.pipe`. https://github.com/rescript-lang/rescript-compiler/pull/6858 https://github.com/rescript-lang/rescript-compiler/pull/6891
 
 #### :bug: Bug Fix
 
@@ -67,6 +66,11 @@
 - Ignore `@uncurry` attribute in uncurried mode, to avoid generating calls to `Curry` at runtime. https://github.com/rescript-lang/rescript-compiler/pull/6869
 - Avoid generating calls to Curry when adjusting arity of uncurried functions. https://github.com/rescript-lang/rescript-compiler/pull/6870
 - Remove `@@uncurried.swap`, which was used for internal tests. https://github.com/rescript-lang/rescript-compiler/pull/6875
+- Build the compiler libraries/tests in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6864
+- Ignore `-uncurried` command-line flag. https://github.com/rescript-lang/rescript-compiler/pull/6885
+- Cleanup: remove tracking of uncurried state in parser/printer. https://github.com/rescript-lang/rescript-compiler/pull/6888
+- Remove `%opaque` primitive. https://github.com/rescript-lang/rescript-compiler/pull/6892
+- Reunify JsxC/JsxU -> Jsx etc. https://github.com/rescript-lang/rescript-compiler/pull/6895
 
 #### :nail_care: Polish
 

@@ -2,12 +2,13 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 
 function map(f, a) {
-  let f$1 = Curry.__1(f);
+  let f$1 = function (x) {
+    return f(x);
+  };
   let l = a.length;
   if (l === 0) {
     return [];
@@ -20,7 +21,9 @@ function map(f, a) {
 }
 
 function init(l, f) {
-  let f$1 = Curry.__1(f);
+  let f$1 = function (x) {
+    return f(x);
+  };
   if (l === 0) {
     return [];
   }
@@ -40,7 +43,9 @@ function init(l, f) {
 }
 
 function fold_left(f, x, a) {
-  let f$1 = Curry.__2(f);
+  let f$1 = function (x, y) {
+    return f(x, y);
+  };
   let r = x;
   for(let i = 0 ,i_finish = a.length; i < i_finish; ++i){
     r = f$1(r, a[i]);
@@ -48,7 +53,7 @@ function fold_left(f, x, a) {
   return r;
 }
 
-function f2(param) {
+function f2() {
   let arr = init(30000000, (function (i) {
     return i;
   }));
@@ -76,7 +81,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -112,12 +117,8 @@ function add5(a0, a1, a2, a3, a4) {
 }
 
 function f(x) {
-  v.contents = v.contents + 1 | 0;
-  let partial_arg = 2;
-  v.contents = v.contents + 1 | 0;
-  let partial_arg$1 = 1;
-  return function (param, param$1) {
-    return add5(x, partial_arg$1, partial_arg, param, param$1);
+  return function (extra, extra$1) {
+    return add5(x, (v.contents = v.contents + 1 | 0, 1), (v.contents = v.contents + 1 | 0, 2), extra, extra$1);
   };
 }
 

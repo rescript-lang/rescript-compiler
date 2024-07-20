@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -18,7 +17,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
+      (function () {
         return {
           TAG: "Eq",
           _0: x,
@@ -38,7 +37,7 @@ function f(x) {
 
 let h = f(/* [] */0);
 
-let a = Curry._1(h.length, {
+let a = h.length({
   hd: 1,
   tl: {
     hd: 2,

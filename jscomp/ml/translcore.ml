@@ -422,7 +422,6 @@ let primitives_table =
       ("%int64_to_int32", Pcvtbint (Pint64, Pint32));
       ("%int64_of_bigint", Pcvtbint (Pbigint, Pint64));
       ("%int64_to_bigint", Pcvtbint (Pint64, Pbigint));
-      ("%opaque", Popaque);
       ("%uncurried_apply", Puncurried_apply);
     ]
 
@@ -459,6 +458,7 @@ let specialize_primitive p env ty (* ~has_constant_constructor *) =
 (* Eta-expand a primitive *)
 
 let transl_primitive loc p env ty =
+  (* Printf.eprintf "----transl_primitive %s----\n" p.prim_name; *)
   let prim =
     try specialize_primitive p env ty (* ~has_constant_constructor:false *)
     with Not_found -> Pccall p
@@ -1100,8 +1100,7 @@ and transl_apply ?(inlined = Default_inline) ?(uncurried_partial_application=Non
     let extra_ids = Array.init extra_arity (fun _ -> Ident.create "extra") |> Array.to_list in
     let extra_args = Ext_list.map extra_ids (fun id -> Lvar id) in
     let ap_args = args @ extra_args in
-    let lam_opaque = Lprim (Popaque, [lam], loc) in
-    let l0 = Lapply { ap_func = lam_opaque; ap_args; ap_inlined = inlined; ap_loc = loc } in
+    let l0 = Lapply { ap_func = lam; ap_args; ap_inlined = inlined; ap_loc = loc } in
     let l1 = Lprim (Puncurried_apply, [l0], loc) in
     Lfunction
       {

@@ -18,10 +18,14 @@ let r =
     y = ((None)[@res.optional ]);
     z = (((None : tt))[@res.optional ])
   }
-let z name = { name = ((name)[@res.optional ]); x = 3 }
-let z name = { name = ((name)[@res.optional ]); x = 3 }
-let z name = { name; x = ((x)[@res.optional ]) }
-let zz name = { name; x = ((x)[@res.optional ]) }
+let z = ((Function$ (fun name -> { name = ((name)[@res.optional ]); x = 3 }))
+  [@res.arity 1])
+let z = ((Function$ (fun name -> { name = ((name)[@res.optional ]); x = 3 }))
+  [@res.arity 1])
+let z = ((Function$ (fun name -> { name; x = ((x)[@res.optional ]) }))
+  [@res.arity 1])
+let zz = ((Function$ (fun name -> { name; x = ((x)[@res.optional ]) }))
+  [@res.arity 1])
 let _ =
   match z with
   | { x = ((None)[@res.optional ]); y = ((None)[@res.optional ]);

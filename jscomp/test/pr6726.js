@@ -22,7 +22,7 @@ function test_endian_string(x) {
   return 33;
 }
 
-let v = 33;
+let v = test_endian_string(1);
 
 let Test = {
   test_endian_string: test_endian_string,
@@ -32,4 +32,4 @@ let Test = {
 exports.ExtUnixAll = ExtUnixAll;
 exports.ExtUnix = ExtUnix;
 exports.Test = Test;
-/* No side effect */
+/* v Not a pure module */

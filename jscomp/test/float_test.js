@@ -322,10 +322,10 @@ let b = match$4[1];
 
 let a = match$4[0];
 
-Mt.from_pair_suites("Float_test", Pervasives.$at({
+let extra = Pervasives.$at({
   hd: [
     "mod_float",
-    (function (param) {
+    (function () {
       return {
         TAG: "Approx",
         _0: 3.2 % 0.5,
@@ -336,7 +336,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
   tl: {
     hd: [
       "modf_float1",
-      (function (param) {
+      (function () {
         return {
           TAG: "Approx",
           _0: a,
@@ -347,7 +347,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
     tl: {
       hd: [
         "modf_float2",
-        (function (param) {
+        (function () {
           return {
             TAG: "Approx",
             _0: b,
@@ -358,7 +358,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
       tl: {
         hd: [
           "int_of_float",
-          (function (param) {
+          (function () {
             return {
               TAG: "Eq",
               _0: 3,
@@ -370,7 +370,9 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
       }
     }
   }
-}, Pervasives.$at(from_pairs(results), suites.contents)));
+}, Pervasives.$at(from_pairs(results), suites.contents));
+
+Mt.from_pair_suites("Float_test", extra);
 
 exports.test_id = test_id;
 exports.suites = suites;

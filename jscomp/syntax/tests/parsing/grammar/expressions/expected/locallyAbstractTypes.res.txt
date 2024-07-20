@@ -1,18 +1,29 @@
-let f (type t) (xs : t list) = ()
-let f (type t) (xs : t list) (type s) (ys : s list) = ()
-let f (type t) (type u) (type v) (xs : (t * u * v) list) = ()
-let f (type t) (type u) (type v) (xs : (t * u * v) list) (type s) (type w)
-  (type z) (ys : (s * w * z) list) = ()
+let f (type t) = ((Function$ (fun (xs : t list) -> ()))[@res.arity 1])
+let f (type t) =
+  ((Function$ (fun (xs : t list) -> fun (type s) -> fun (ys : s list) -> ()))
+  [@res.arity 2])
+let f (type t) (type u) (type v) =
+  ((Function$ (fun (xs : (t * u * v) list) -> ()))[@res.arity 1])
+let f (type t) (type u) (type v) =
+  ((Function$
+      (fun (xs : (t * u * v) list) -> fun (type s) -> fun (type w) -> fun
+         (type z) -> fun (ys : (s * w * z) list) -> ()))
+  [@res.arity 2])
 let f = ((fun (type t) -> fun (type u) -> fun (type v) ->
-  fun (xs : (t * u * v) list) -> ((fun (type s) -> fun (type w) -> fun (type
-    z) -> fun (ys : (s * w * z) list) -> ())[@attr2 ]))
-  [@attr ])
+  ((Function$
+      (fun (xs : (t * u * v) list) -> ((fun (type s) -> fun (type w) -> fun
+         (type z) -> fun (ys : (s * w * z) list) -> ())[@attr2 ])))
+  [@res.arity 2]))[@attr ])
 let f = ((fun (type t) -> ((fun (type s) ->
-  fun (xs : (t * s) list) -> ((fun (type u) -> ((fun (type v) -> fun (type w)
-    -> fun (ys : (u * v * w) list) -> ())[@attr ]))[@attr ]))
-  [@attr ]))[@attr ])
+  ((Function$
+      (fun (xs : (t * s) list) -> ((fun (type u) -> ((fun (type v) -> fun
+         (type w) -> fun (ys : (u * v * w) list) -> ())[@attr ]))[@attr ])))
+  [@res.arity 2]))[@attr ]))[@attr ])
 let cancel_and_collect_callbacks :
   'a 'u 'c .
-    packed_callbacks list -> ('a, 'u, 'c) promise -> packed_callbacks list
+    (packed_callbacks list -> ('a, 'u, 'c) promise -> packed_callbacks list,
+      [ `Has_arity2 ]) function$
   = fun (type x) ->
-  fun callbacks_accumulator -> fun (p : (_, _, c) promise) -> ()
+  ((Function$
+      (fun callbacks_accumulator -> fun (p : (_, _, c) promise) -> ()))
+  [@res.arity 2])

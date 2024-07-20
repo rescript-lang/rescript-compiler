@@ -545,11 +545,11 @@ let print_optional_label attrs =
 module State = struct
   let custom_layout_threshold = 2
 
-  type t = {custom_layout: int; mutable uncurried_config: Config.uncurried}
+  type t = {custom_layout: int}
 
-  let init () = {custom_layout = 0; uncurried_config = !Config.uncurried}
+  let init () = {custom_layout = 0}
 
-  let next_custom_layout t = {t with custom_layout = t.custom_layout + 1}
+  let next_custom_layout t = {custom_layout = t.custom_layout + 1}
 
   let should_break_callback t = t.custom_layout > custom_layout_threshold
 end
@@ -1543,17 +1543,9 @@ and print_label_declaration ~state (ld : Parsetree.label_declaration) cmt_tbl =
        ])
 
 and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
-  let print_arrow ~uncurried ?(arity = max_int) typ_expr =
+  let print_arrow ?(arity = max_int) typ_expr =
     let attrs_before, args, return_type =
       ParsetreeViewer.arrow_type ~arity typ_expr
-    in
-    let dotted, attrs_before =
-      let dotted =
-        state.uncurried_config |> Res_uncurried.get_dotted ~uncurried
-      in
-      (* Converting .ml code to .res requires processing uncurried attributes *)
-      let has_bs, attrs = ParsetreeViewer.process_bs_attribute attrs_before in
-      (dotted || has_bs, attrs)
     in
     let return_type_needs_parens =
       match return_type.ptyp_desc with
@@ -1567,7 +1559,7 @@ and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
     in
     match args with
     | [] -> Doc.nil
-    | [([], Nolabel, n)] when not dotted ->
+    | [([], Nolabel, n)] ->
       let has_attrs_before = not (attrs_before = []) in
       let attrs =
         if has_attrs_before then
@@ -1609,7 +1601,6 @@ and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
               (Doc.concat
                  [
                    Doc.soft_line;
-                   (if dotted then Doc.concat [Doc.dot; Doc.space] else Doc.nil);
                    Doc.join
                      ~sep:(Doc.concat [Doc.comma; Doc.line])
                      (List.map
@@ -1652,12 +1643,12 @@ and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
     (* object printings *)
     | Ptyp_object (fields, open_flag) ->
       print_object ~state ~inline:false fields open_flag cmt_tbl
-    | Ptyp_arrow _ -> print_arrow ~uncurried:false typ_expr
+    | Ptyp_arrow _ -> print_arrow typ_expr
     | Ptyp_constr _ when Ast_uncurried.core_type_is_uncurried_fun typ_expr ->
       let arity, t_arg =
         Ast_uncurried.core_type_extract_uncurried_fun typ_expr
       in
-      print_arrow ~uncurried:true ~arity t_arg
+      print_arrow ~arity t_arg
     | Ptyp_constr
         (longident_loc, [{ptyp_desc = Ptyp_object (fields, open_flag)}]) ->
       (* for foo<{"a": b}>, when the object is long and needs a line break, we
@@ -1903,8 +1894,6 @@ and print_object_field ~state (field : Parsetree.object_field) cmt_tbl =
  * i.e. ~foo: string, ~bar: float *)
 and print_type_parameter ~state (attrs, lbl, typ) cmt_tbl =
   (* Converting .ml code to .res requires processing uncurried attributes *)
-  let has_bs, attrs = ParsetreeViewer.process_bs_attribute attrs in
-  let dotted = if has_bs then Doc.concat [Doc.dot; Doc.space] else Doc.nil in
   let attrs = print_attributes ~state attrs cmt_tbl in
   let label =
     match lbl with
@@ -1929,13 +1918,7 @@ and print_type_parameter ~state (attrs, lbl, typ) cmt_tbl =
   let doc =
     Doc.group
       (Doc.concat
-         [
-           dotted;
-           attrs;
-           label;
-           print_typ_expr ~state typ cmt_tbl;
-           optional_indicator;
-         ])
+         [attrs; label; print_typ_expr ~state typ cmt_tbl; optional_indicator])
   in
   print_comments doc cmt_tbl loc
 
@@ -2618,13 +2601,12 @@ and print_if_chain ~state pexp_attributes ifs else_expr cmt_tbl =
 
 and print_expression ~state (e : Parsetree.expression) cmt_tbl =
   let print_arrow e =
-    let uncurried, attrs_on_arrow, parameters, return_expr =
+    let _, attrs_on_arrow, parameters, return_expr =
       ParsetreeViewer.fun_expr e
     in
-    let ParsetreeViewer.{async; bs; attributes = attrs} =
+    let ParsetreeViewer.{async; attributes = attrs} =
       ParsetreeViewer.process_function_attributes attrs_on_arrow
     in
-    let uncurried = uncurried || bs in
     let return_expr, typ_constraint =
       match return_expr.pexp_desc with
       | Pexp_constraint (expr, typ) ->
@@ -2642,7 +2624,7 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
       | None -> false
     in
     let parameters_doc =
-      print_expr_fun_parameters ~state ~in_callback:NoCallback ~uncurried ~async
+      print_expr_fun_parameters ~state ~in_callback:NoCallback ~async
         ~has_constraint parameters cmt_tbl
     in
     let return_expr_doc =
@@ -3376,13 +3358,10 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
   | _ -> expr_with_await
 
 and print_pexp_fun ~state ~in_callback e cmt_tbl =
-  let uncurried, attrs_on_arrow, parameters, return_expr =
-    ParsetreeViewer.fun_expr e
-  in
-  let ParsetreeViewer.{async; bs; attributes = attrs} =
+  let _, attrs_on_arrow, parameters, return_expr = ParsetreeViewer.fun_expr e in
+  let ParsetreeViewer.{async; attributes = attrs} =
     ParsetreeViewer.process_function_attributes attrs_on_arrow
   in
-  let uncurried = bs || uncurried in
   let return_expr, typ_constraint =
     match return_expr.pexp_desc with
     | Pexp_constraint (expr, typ) ->
@@ -3395,7 +3374,7 @@ and print_pexp_fun ~state ~in_callback e cmt_tbl =
     | _ -> (return_expr, None)
   in
   let parameters_doc =
-    print_expr_fun_parameters ~state ~in_callback ~async ~uncurried
+    print_expr_fun_parameters ~state ~in_callback ~async
       ~has_constraint:
         (match typ_constraint with
         | Some _ -> true
@@ -4163,18 +4142,13 @@ and print_pexp_apply ~state expr cmt_tbl =
         (fun (lbl, arg) -> (lbl, ParsetreeViewer.rewrite_underscore_apply arg))
         args
     in
-    let uncurried, attrs =
-      ParsetreeViewer.process_uncurried_app_attribute expr.pexp_attributes
-    in
+    let attrs = expr.pexp_attributes in
     let partial, attrs = ParsetreeViewer.process_partial_app_attribute attrs in
     let args =
       if partial then
         let dummy = Ast_helper.Exp.constant (Ast_helper.Const.int 0) in
         args @ [(Asttypes.Labelled "...", dummy)]
       else args
-    in
-    let dotted =
-      state.uncurried_config |> Res_uncurried.get_dotted ~uncurried
     in
     let call_expr_doc =
       let doc = print_expression_with_comments ~state call_expr cmt_tbl in
@@ -4185,16 +4159,14 @@ and print_pexp_apply ~state expr cmt_tbl =
     in
     if ParsetreeViewer.requires_special_callback_printing_first_arg args then
       let args_doc =
-        print_arguments_with_callback_in_first_position ~dotted ~state args
-          cmt_tbl
+        print_arguments_with_callback_in_first_position ~state args cmt_tbl
       in
       Doc.concat
         [print_attributes ~state attrs cmt_tbl; call_expr_doc; args_doc]
     else if ParsetreeViewer.requires_special_callback_printing_last_arg args
     then
       let args_doc =
-        print_arguments_with_callback_in_last_position ~state ~dotted args
-          cmt_tbl
+        print_arguments_with_callback_in_last_position ~state args cmt_tbl
       in
       (*
        * Fixes the following layout (the `[` and `]` should break):
@@ -4221,7 +4193,7 @@ and print_pexp_apply ~state expr cmt_tbl =
           args_doc;
         ]
     else
-      let args_doc = print_arguments ~state ~dotted ~partial args cmt_tbl in
+      let args_doc = print_arguments ~state ~partial args cmt_tbl in
       Doc.concat
         [print_attributes ~state attrs cmt_tbl; call_expr_doc; args_doc]
   | _ -> assert false
@@ -4557,8 +4529,7 @@ and print_jsx_name {txt = lident} =
     let segments = flatten [] lident in
     Doc.join ~sep:Doc.dot segments
 
-and print_arguments_with_callback_in_first_position ~dotted ~state args cmt_tbl
-    =
+and print_arguments_with_callback_in_first_position ~state args cmt_tbl =
   (* Because the same subtree gets printed twice, we need to copy the cmtTbl.
    * consumed comments need to be marked not-consumed and reprinted…
    * Cheng's different comment algorithm will solve this. *)
@@ -4602,7 +4573,7 @@ and print_arguments_with_callback_in_first_position ~dotted ~state args cmt_tbl
     lazy
       (Doc.concat
          [
-           (if dotted then Doc.text "(. " else Doc.lparen);
+           Doc.lparen;
            Lazy.force callback;
            Doc.comma;
            Doc.line;
@@ -4618,9 +4589,7 @@ and print_arguments_with_callback_in_first_position ~dotted ~state args cmt_tbl
    *   arg3,
    * )
    *)
-  let break_all_args =
-    lazy (print_arguments ~state ~dotted args cmt_tbl_copy)
-  in
+  let break_all_args = lazy (print_arguments ~state args cmt_tbl_copy) in
 
   (* Sometimes one of the non-callback arguments will break.
    * There might be a single line comment in there, or a multiline string etc.
@@ -4643,7 +4612,7 @@ and print_arguments_with_callback_in_first_position ~dotted ~state args cmt_tbl
   else
     Doc.custom_layout [Lazy.force fits_on_one_line; Lazy.force break_all_args]
 
-and print_arguments_with_callback_in_last_position ~state ~dotted args cmt_tbl =
+and print_arguments_with_callback_in_last_position ~state args cmt_tbl =
   (* Because the same subtree gets printed twice, we need to copy the cmtTbl.
    * consumed comments need to be marked not-consumed and reprinted…
    * Cheng's different comment algorithm will solve this. *)
@@ -4692,12 +4661,7 @@ and print_arguments_with_callback_in_last_position ~state ~dotted args cmt_tbl =
   let fits_on_one_line =
     lazy
       (Doc.concat
-         [
-           (if dotted then Doc.text "(." else Doc.lparen);
-           Lazy.force printed_args;
-           Lazy.force callback;
-           Doc.rparen;
-         ])
+         [Doc.lparen; Lazy.force printed_args; Lazy.force callback; Doc.rparen])
   in
 
   (* Thing.map(longArgumet, veryLooooongArgument, (arg1, arg2) =>
@@ -4708,7 +4672,7 @@ and print_arguments_with_callback_in_last_position ~state ~dotted args cmt_tbl =
     lazy
       (Doc.concat
          [
-           (if dotted then Doc.text "(." else Doc.lparen);
+           Doc.lparen;
            Lazy.force printed_args;
            Doc.breakable_group ~force_break:true (Lazy.force callback2);
            Doc.rparen;
@@ -4722,9 +4686,7 @@ and print_arguments_with_callback_in_last_position ~state ~dotted args cmt_tbl =
    *   (param1, parm2) => doStuff(param1, parm2)
    * )
    *)
-  let break_all_args =
-    lazy (print_arguments ~state ~dotted args cmt_tbl_copy2)
-  in
+  let break_all_args = lazy (print_arguments ~state args cmt_tbl_copy2) in
 
   (* Sometimes one of the non-callback arguments will break.
    * There might be a single line comment in there, or a multiline string etc.
@@ -4752,23 +4714,12 @@ and print_arguments_with_callback_in_last_position ~state ~dotted args cmt_tbl =
         Lazy.force break_all_args;
       ]
 
-and print_arguments ~state ~dotted ?(partial = false)
+and print_arguments ~state ?(partial = false)
     (args : (Asttypes.arg_label * Parsetree.expression) list) cmt_tbl =
   match args with
-  | [
-   ( Nolabel,
-     {
-       pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, _);
-       pexp_loc = loc;
-     } );
-  ] -> (
-    (* See "parseCallExpr", ghost unit expression is used the implement
-     * arity zero vs arity one syntax.
-     * Related: https://github.com/rescript-lang/syntax/issues/138 *)
-    match (dotted, loc.loc_ghost) with
-    | true, true -> Doc.text "(.)" (* arity zero *)
-    | true, false -> Doc.text "(. ())" (* arity one *)
-    | _ -> Doc.text "()")
+  | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, _)})]
+    ->
+    Doc.text "()"
   | [(Nolabel, arg)] when ParsetreeViewer.is_huggable_expression arg ->
     let arg_doc =
       let doc = print_expression_with_comments ~state arg cmt_tbl in
@@ -4777,17 +4728,16 @@ and print_arguments ~state ~dotted ?(partial = false)
       | Braced braces -> print_braces doc arg braces
       | Nothing -> doc
     in
-    Doc.concat
-      [(if dotted then Doc.text "(. " else Doc.lparen); arg_doc; Doc.rparen]
+    Doc.concat [Doc.lparen; arg_doc; Doc.rparen]
   | args ->
     Doc.group
       (Doc.concat
          [
-           (if dotted then Doc.text "(." else Doc.lparen);
+           Doc.lparen;
            Doc.indent
              (Doc.concat
                 [
-                  (if dotted then Doc.line else Doc.soft_line);
+                  Doc.soft_line;
                   Doc.join
                     ~sep:(Doc.concat [Doc.comma; Doc.line])
                     (List.map
@@ -4988,9 +4938,8 @@ and print_case ~state (case : Parsetree.case) cmt_tbl =
   in
   Doc.group (Doc.concat [Doc.text "| "; content])
 
-and print_expr_fun_parameters ~state ~in_callback ~async ~uncurried
-    ~has_constraint parameters cmt_tbl =
-  let dotted = state.uncurried_config |> Res_uncurried.get_dotted ~uncurried in
+and print_expr_fun_parameters ~state ~in_callback ~async ~has_constraint
+    parameters cmt_tbl =
   match parameters with
   (* let f = _ => () *)
   | [
@@ -5001,8 +4950,7 @@ and print_expr_fun_parameters ~state ~in_callback ~async ~uncurried
        default_expr = None;
        pat = {Parsetree.ppat_desc = Ppat_any; ppat_loc};
      };
-  ]
-    when not dotted ->
+  ] ->
     let any =
       let doc = if has_constraint then Doc.text "(_)" else Doc.text "_" in
       print_comments doc cmt_tbl ppat_loc
@@ -5021,8 +4969,7 @@ and print_expr_fun_parameters ~state ~in_callback ~async ~uncurried
            Parsetree.ppat_attributes = attrs;
          };
      };
-  ]
-    when not dotted ->
+  ] ->
     let txt_doc =
       let var = print_ident_like string_loc.txt in
       let var =
@@ -5045,8 +4992,7 @@ and print_expr_fun_parameters ~state ~in_callback ~async ~uncurried
        pat =
          {ppat_desc = Ppat_construct ({txt = Longident.Lident "()"; loc}, None)};
      };
-  ]
-    when not dotted ->
+  ] ->
     let doc =
       let lparen_rparen = Doc.text "()" in
       if async then add_async lparen_rparen else lparen_rparen
@@ -5060,7 +5006,7 @@ and print_expr_fun_parameters ~state ~in_callback ~async ~uncurried
       | _ -> false
     in
     let maybe_async_lparen =
-      let lparen = if dotted then Doc.text "(. " else Doc.lparen in
+      let lparen = Doc.lparen in
       if async then add_async lparen else lparen
     in
     let should_hug = ParsetreeViewer.parameters_should_hug parameters in
@@ -5108,8 +5054,6 @@ and print_exp_fun_parameter ~state parameter cmt_tbl =
                 lbls);
          ])
   | Parameter {attrs; lbl; default_expr; pat = pattern} ->
-    let has_bs, attrs = ParsetreeViewer.process_bs_attribute attrs in
-    let dotted = if has_bs then Doc.concat [Doc.dot; Doc.space] else Doc.nil in
     let attrs = print_attributes ~state attrs cmt_tbl in
     (* =defaultValue *)
     let default_expr_doc =
@@ -5167,13 +5111,7 @@ and print_exp_fun_parameter ~state parameter cmt_tbl =
     let doc =
       Doc.group
         (Doc.concat
-           [
-             dotted;
-             attrs;
-             label_with_pattern;
-             default_expr_doc;
-             optional_label_suffix;
-           ])
+           [attrs; label_with_pattern; default_expr_doc; optional_label_suffix])
     in
     let cmt_loc =
       match default_expr with
@@ -5557,13 +5495,6 @@ and print_attribute ?(standalone = false) ~state
         ],
       Doc.hard_line )
   | _ ->
-    let id =
-      match id.txt with
-      | "uncurried" ->
-        state.uncurried_config <- Config.Uncurried;
-        id
-      | _ -> id
-    in
     ( Doc.group
         (Doc.concat
            [

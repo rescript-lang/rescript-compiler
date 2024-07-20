@@ -16,7 +16,7 @@ function to_list(v) {
   return List.rev(acc);
 }
 
-function v(param) {
+function v() {
   let v$1 = {
     c: /* [] */0,
     len: 0

@@ -2146,8 +2146,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
       wrap_trace_gadt_instances env (lower_args env []) ty;
       begin_def ();
       let uncurried =
-        Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.uapp")
-        && not @@ Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.partial")
+        not @@ Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.partial")
         && not @@ is_automatic_curried_application env funct in
       let type_clash_context = type_clash_context_from_function sexp sfunct in
       let (args, ty_res, fully_applied) = type_application ?type_clash_context uncurried env funct sargs in
@@ -2179,7 +2178,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
         | _ -> false in
 
       if fully_applied && not is_primitive then
-        rue (apply_internal "opaqueFullApply" (mk_apply (apply_internal "opaque" funct) args))
+        rue (apply_internal "opaqueFullApply" (mk_apply funct args))
       else
         rue (mk_apply funct args)
   | Pexp_match(sarg, caselist) ->
@@ -3076,7 +3075,6 @@ and type_argument ?type_clash_context ?recarg env sarg ty_expected' ty_expected 
       texp
 and is_automatic_curried_application env funct =
   (* When a curried function is used with uncurried application, treat it as a curried application *)
-  !Config.uncurried = Uncurried &&
   match (expand_head env funct.exp_type).desc with
   | Tarrow _ -> true
   | _ -> false

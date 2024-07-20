@@ -1,19 +1,45 @@
 let l =
-  ([1; 2; 3] |. (fun __x -> List.map (fun i -> i + 1) __x)) |.
-    (fun __x -> List.filter (fun i -> i > 0) __x)
-let l = (fun i -> i + 1) |. (fun __x -> List.map __x [1; 2; 3])
-let x __x = List.length __x
-let nested x __x = List.length __x
-let incr ~v:((v)[@res.namedArgLoc ])  = v + 1
-let l1 = ([1; 2; 3] |> (List.map (fun __x -> incr ~v:__x))) |> List.length
-let l2 = ([1; 2; 3] |> (List.map (fun __x -> incr ~v:__x))) |> List.length
-let optParam ?v:((v)[@res.namedArgLoc ])  () = ((if v = None then 0 else 1)
-  [@res.ternary ])
+  ([1; 2; 3] |.u
+     ((Function$
+         (fun __x ->
+            List.map ((Function$ (fun i -> i + 1))[@res.arity 1]) __x))
+     [@res.arity 1]))
+    |.u
+    ((Function$
+        (fun __x ->
+           List.filter ((Function$ (fun i -> i > 0))[@res.arity 1]) __x))
+    [@res.arity 1])
+let l =
+  ((Function$ (fun i -> i + 1))[@res.arity 1]) |.u
+    ((Function$ (fun __x -> List.map __x [1; 2; 3]))[@res.arity 1])
+let x = ((Function$ (fun __x -> List.length __x))[@res.arity 1])
+let nested =
+  ((Function$
+      (fun x -> ((Function$ (fun __x -> List.length __x))[@res.arity 1])))
+  [@res.arity 1])
+let incr = ((Function$ (fun ~v:((v)[@res.namedArgLoc ]) -> v + 1))
+  [@res.arity 1])
 let l1 =
-  ([Some 1; None; Some 2] |> (List.map (fun __x -> optParam ?v:__x ()))) |>
-    List.length
+  List.length
+    (List.map ((Function$ (fun __x -> incr ~v:__x))[@res.arity 1]) [1; 2; 3])
 let l2 =
-  ([Some 1; None; Some 2] |> (List.map (fun __x -> optParam ?v:__x ()))) |>
-    List.length
-;;fun __x ->
-    underscoreWithComments (fun x -> ((something ())[@res.braces ])) __x
+  List.length
+    (List.map ((Function$ (fun __x -> incr ~v:__x))[@res.arity 1]) [1; 2; 3])
+let optParam =
+  ((Function$
+      (fun ?v:((v)[@res.namedArgLoc ]) ->
+         fun () -> ((if v = None then 0 else 1)[@res.ternary ])))
+  [@res.arity 2])
+let l1 =
+  List.length
+    (List.map ((Function$ (fun __x -> optParam ?v:__x ()))[@res.arity 1])
+       [Some 1; None; Some 2])
+let l2 =
+  List.length
+    (List.map ((Function$ (fun __x -> optParam ?v:__x ()))[@res.arity 1])
+       [Some 1; None; Some 2])
+;;((Function$
+      (fun __x ->
+         underscoreWithComments
+           ((Function$ (fun x -> ((something ())[@res.braces ])))
+           [@res.arity 1]) __x))[@res.arity 1])

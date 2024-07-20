@@ -11,10 +11,7 @@ let bs_only = ref true
 
 let unsafe_empty_array = ref false
 
-type uncurried = Legacy | Uncurried
-let uncurried = ref Legacy
-
-and cmi_magic_number = "Caml1999I022"
+let cmi_magic_number = "Caml1999I022"
 
 and ast_impl_magic_number = "Caml1999M022"
 

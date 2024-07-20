@@ -22,13 +22,16 @@
       ((sibling == None) || (parent == None))
     do () done
 ;;((div
-      ~onClick:((fun event ->
-                   ((match videoContainerRect with
-                     | Some videoContainerRect ->
-                         let newChapter =
-                           ({ startTime = (percent *. duration) } : Video.chapter) in
-                         { a; b } |. onChange
-                     | _ -> ())
-                   [@res.braces ]))[@res.namedArgLoc ][@res.braces ])
-      ~children:[] ())[@JSX ])
+      ~onClick:((Function$
+                   (fun event ->
+                      ((match videoContainerRect with
+                        | Some videoContainerRect ->
+                            let newChapter =
+                              ({ startTime = (percent *. duration) } : 
+                              Video.chapter) in
+                            { a; b } |.u onChange
+                        | _ -> ())
+                      [@res.braces ])))
+      [@res.namedArgLoc ][@res.braces ][@res.arity 1]) ~children:[] ())
+  [@JSX ])
 ;;if inclusions.(index) <- (uid, url) then onChange inclusions
