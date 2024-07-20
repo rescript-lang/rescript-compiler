@@ -131,7 +131,7 @@ let check ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string) ~forced 
       | exception _ -> Bsb_file_corrupted
       | version :: source_directory :: package_kind_str :: previous_warn_as_error :: dir_or_files -> (
           let warn_as_error_changed = match warn_as_error with
-            | None -> false
+            | None -> previous_warn_as_error <> "0"
             | Some current -> current <> previous_warn_as_error in
 
           if version <> Bs_version.version then Bsb_bsc_version_mismatch
