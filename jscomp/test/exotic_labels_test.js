@@ -6,5 +6,11 @@ function fn1(v) {
   return v.field;
 }
 
+let dict = {
+  key: 1,
+  KEY: 1
+};
+
 exports.fn1 = fn1;
+exports.dict = dict;
 /* No side effect */

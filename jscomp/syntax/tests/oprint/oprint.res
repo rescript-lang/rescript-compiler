@@ -215,7 +215,8 @@ type t23 = [
 
 type exoticUser = {
   \"let": string,
-  \"type": float
+  \"type": float,
+  \"Upper": int
 }
 
 type arity1a = (. ()) => int
@@ -230,9 +231,11 @@ type obj5<'a> = {..} as 'a
 type obj6 = {"a": int}
 type obj7 = {. "a": int}
 type obj8<'a> = {.. "a": int} as 'a
+type obj9 = {"A": int}
 
 type objUser = {"name": string, "age": int}
 type objUserWithLongFields = {"name": string, "x": int, "age": int, "looooooongFiiiiiiiieeeeeeeldName": string, "anoooooooooooooooootherLongFiiiiiieeeeeeeldName": int}
+type objUserWithUppsercaseKeys = {"NAME": string, "AGE": int}
 
 type objectCoordinate =  {"x": float, "y": float}
 type threeDimensionalCoordinate = {...objectCoordinate, "z": float}

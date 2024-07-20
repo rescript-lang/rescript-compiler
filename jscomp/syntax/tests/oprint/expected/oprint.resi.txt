@@ -170,7 +170,7 @@ type t22 = [#"Variant ⛰"]
 type \"let" = int
 type \"type" = [#"Point🗿"(\"let", float)]
 type t23 = [#1 | #"10space" | #123]
-type exoticUser = {\"let": string, \"type": float}
+type exoticUser = {\"let": string, \"type": float, \"Upper": int}
 type arity1a = unit => int
 type arity1b = int => int
 type arity2 = (int, int) => int
@@ -184,6 +184,7 @@ type obj6 = {"a": int}
 type obj7 = {"a": int}
 type obj8<'a> = 'a
   constraint 'a = {.."a": int}
+type obj9 = {"A": int}
 type objUser = {"age": int, "name": string}
 type objUserWithLongFields = {
   "age": int,
@@ -192,6 +193,7 @@ type objUserWithLongFields = {
   "name": string,
   "x": int,
 }
+type objUserWithUppsercaseKeys = {"AGE": int, "NAME": string}
 type objectCoordinate = {"x": float, "y": float}
 type threeDimensionalCoordinate = {"x": float, "y": float, "z": float}
 type differentSpreadedCoordinate = {

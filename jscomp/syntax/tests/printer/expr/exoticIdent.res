@@ -52,3 +52,13 @@ assert(\"let")
 let x = 1
 
 let x = <div \"aria-foo"=\"type"> \"module" \"let" </div>;
+
+type dict = {
+  \"key": int,
+  \"KEY": int,
+}
+
+let dict = {
+  \"key": 42,
+  \"KEY": 42,
+}

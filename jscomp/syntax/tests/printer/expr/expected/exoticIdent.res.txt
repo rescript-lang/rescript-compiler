@@ -64,3 +64,13 @@ let x =
     \"module"
     \"let"
   </div>
+
+type dict = {
+  key: int,
+  \"KEY": int,
+}
+
+let dict = {
+  key: 42,
+  \"KEY": 42,
+}
