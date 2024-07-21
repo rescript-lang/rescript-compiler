@@ -39,7 +39,7 @@
 #### :bug: Bug Fix
 
 - Fix tag function location on compiler error. https://github.com/rescript-lang/rescript-compiler/pull/6816
-- Fix unhandled cases for exotic idents (allow to use exotic PascalCased identifiers for types). https://github.com/rescript-lang/rescript-compiler/pull/6777
+- Fix unhandled cases for exotic idents (allow to use exotic PascalCased identifiers for types). https://github.com/rescript-lang/rescript-compiler/pull/6777 https://github.com/rescript-lang/rescript-compiler/pull/6779 https://github.com/rescript-lang/rescript-compiler/pull/6897
 - Fix unused attribute check for `@as`. https://github.com/rescript-lang/rescript-compiler/pull/6795
 - Reactivate unused attribute check for `@int`. https://github.com/rescript-lang/rescript-compiler/pull/6802
 - Fix Deno compatibility issues on Windows. https://github.com/rescript-lang/rescript-compiler/pull/6850
@@ -53,7 +53,6 @@
 
 - Build with OCaml 5.2.0. https://github.com/rescript-lang/rescript-compiler/pull/6797
 - Convert OCaml codebase to snake case style. https://github.com/rescript-lang/rescript-compiler/pull/6702
-- Refactor uppercase exotic ident handling. https://github.com/rescript-lang/rescript-compiler/pull/6779
 - Fix `-nostdlib` internal compiler option. https://github.com/rescript-lang/rescript-compiler/pull/6824
 - Remove a number of ast nodes never populated by the .res parser, and resulting dead code. https://github.com/rescript-lang/rescript-compiler/pull/6830
 - Remove coercion with 2 types from internal representation. Coercion `e : t1 :> t2` was only supported in `.ml` syntax and never by the `.res` parser. https://github.com/rescript-lang/rescript-compiler/pull/6829 
