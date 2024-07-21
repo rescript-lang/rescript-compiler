@@ -84,6 +84,7 @@ let property_access f s =
 let property_key (s : J.property_name) : string =
   match s with
   | Lit s ->
+      let s = Ext_ident.unwrap_uppercase_exotic s in
       if obj_property_no_need_quot s then s
       else Js_dump_string.escape_to_string s
   | Symbol_name -> {|[Symbol.for("name")]|}
