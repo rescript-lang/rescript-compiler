@@ -47,13 +47,9 @@ function b(loc, v) {
   };
 }
 
-function mapOfArray(x) {
-  return Belt_MapInt.fromArray(x);
-}
+let mapOfArray = Belt_MapInt.fromArray;
 
-function setOfArray(x) {
-  return Belt_SetInt.fromArray(x);
-}
+let setOfArray = Belt_SetInt.fromArray;
 
 function emptyMap() {
   

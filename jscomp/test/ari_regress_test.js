@@ -9,7 +9,7 @@ function f(x) {
   };
 }
 
-let g = f(3, 4);
+let g = f(3)(4);
 
 let h = {
   contents: 0
@@ -30,10 +30,10 @@ function g1(x, y) {
   };
 }
 
-let x = gg(3, 5, 6);
+let x = gg(3, 5)(6);
 
 function v(__x) {
-  return g1(3, 4, 6, __x);
+  return g1(3, 4)(6, __x);
 }
 
 let suites_0 = [

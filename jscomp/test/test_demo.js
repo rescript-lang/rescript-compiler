@@ -57,7 +57,7 @@ function g1(x, y) {
   };
 }
 
-let x = g(3, 5, 6);
+let x = g(3, 5)(6);
 
 function v(extra) {
   let u = 7;

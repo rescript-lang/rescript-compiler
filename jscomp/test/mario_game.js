@@ -3,7 +3,6 @@
 
 let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
-let Curry = require("../../lib/js/curry.js");
 let Random = require("../../lib/js/random.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_int32 = require("../../lib/js/caml_int32.js");
@@ -1449,7 +1448,7 @@ function render_bbox(sprite, param) {
   let match = sprite.params.bbox_offset;
   let match$1 = sprite.params.bbox_size;
   context.strokeStyle = "#FF0000";
-  return Curry._4(context.strokeRect, param[0] + match[0], param[1] + match[1], match$1[0], match$1[1]);
+  return context.strokeRect(param[0] + match[0], param[1] + match[1], match$1[0], match$1[1]);
 }
 
 function render(sprite, param) {
@@ -1459,17 +1458,7 @@ function render(sprite, param) {
   let sw = match$1[0];
   let match$2 = sprite.params.frame_size;
   let sx = match[0] + sprite.frame.contents * sw;
-  return Curry.app(context.drawImage, [
-    sprite.img,
-    sx,
-    match[1],
-    sw,
-    match$1[1],
-    param[0],
-    param[1],
-    match$2[0],
-    match$2[1]
-  ]);
+  return context.drawImage(sprite.img, sx, match[1], sw, match$1[1], param[0], param[1], match$2[0], match$2[1]);
 }
 
 function draw_bgd(bgd, off_x) {
@@ -1484,34 +1473,34 @@ function draw_bgd(bgd, off_x) {
 }
 
 function clear_canvas(canvas) {
-  let context = Curry._1(canvas.getContext, "2d");
+  let context = canvas.getContext("2d");
   let cwidth = canvas.width;
   let cheight = canvas.height;
-  Curry._4(context.clearRect, 0, 0, cwidth, cheight);
+  context.clearRect(0, 0, cwidth, cheight);
 }
 
 function hud(canvas, score, coins) {
   let score_string = String(score);
   let coin_string = String(coins);
-  let context = Curry._1(canvas.getContext, "2d");
+  let context = canvas.getContext("2d");
   context.font = "10px 'Press Start 2P'";
-  Curry._3(context.fillText, "Score: " + score_string, canvas.width - 140, 18);
-  Curry._3(context.fillText, "Coins: " + coin_string, 120, 18);
+  context.fillText("Score: " + score_string, canvas.width - 140, 18);
+  context.fillText("Coins: " + coin_string, 120, 18);
 }
 
 function fps(canvas, fps_val) {
   let fps_str = String(fps_val | 0);
-  let context = Curry._1(canvas.getContext, "2d");
-  Curry._3(context.fillText, fps_str, 10, 18);
+  let context = canvas.getContext("2d");
+  context.fillText(fps_str, 10, 18);
 }
 
 function game_win(ctx) {
-  Curry._4(ctx.rect, 0, 0, 512, 512);
+  ctx.rect(0, 0, 512, 512);
   ctx.fillStyle = "black";
-  Curry._1(ctx.fill, undefined);
+  ctx.fill();
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
-  Curry._3(ctx.fillText, "You win!", 180, 128);
+  ctx.fillText("You win!", 180, 128);
   throw new Error("Failure", {
         cause: {
           RE_EXN_ID: "Failure",
@@ -1521,12 +1510,12 @@ function game_win(ctx) {
 }
 
 function game_loss(ctx) {
-  Curry._4(ctx.rect, 0, 0, 512, 512);
+  ctx.rect(0, 0, 512, 512);
   ctx.fillStyle = "black";
-  Curry._1(ctx.fill, undefined);
+  ctx.fill();
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
-  Curry._3(ctx.fillText, "GAME OVER. You lose!", 60, 128);
+  ctx.fillText("GAME OVER. You lose!", 60, 128);
   throw new Error("Failure", {
         cause: {
           RE_EXN_ID: "Failure",
@@ -2294,7 +2283,7 @@ function run_update_collid(state, collid, all_collids) {
 
 function update_loop(canvas, param, map_dim) {
   let player = param[0];
-  let ctx = Curry._1(canvas.getContext, "2d");
+  let ctx = canvas.getContext("2d");
   let cwidth = canvas.width / 1;
   let cheight = canvas.height / 1;
   let viewport = make$3([
@@ -2311,7 +2300,7 @@ function update_loop(canvas, param, map_dim) {
     multiplier: 1,
     game_over: false
   };
-  Curry._2(state.ctx.scale, 1, 1);
+  state.ctx.scale(1, 1);
   let update_helper = function (time, state, player, objs, parts) {
     if (state.game_over === true) {
       return game_win(state.ctx);
@@ -3331,7 +3320,7 @@ function load(param) {
           }
         });
   }
-  let context = Curry._1(canvas.getContext, "2d");
+  let context = canvas.getContext("2d");
   document.addEventListener("keydown", keydown, true);
   document.addEventListener("keyup", keyup, true);
   Random.self_init();

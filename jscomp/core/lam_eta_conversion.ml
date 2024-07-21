@@ -111,7 +111,7 @@ let transform_under_supply n ap_info fn args =
 let unsafe_adjust_to_arity loc ~(to_ : int) ?(from : int option) (fn : Lam.t) :
     Lam.t =
   let ap_info : Lam.ap_info =
-    { ap_loc = loc; ap_inlined = Default_inline; ap_status = App_uncurry }
+    { ap_loc = loc; ap_inlined = Default_inline; ap_status = App_na }
   in
   let is_async_fn = match fn with
     | Lfunction { attr = {async}} -> async 
@@ -199,7 +199,7 @@ let unsafe_adjust_to_arity loc ~(to_ : int) ?(from : int option) (fn : Lam.t) :
                    Lam.apply
                      (Lam.apply new_fn
                         (Ext_list.map first_args Lam.var)
-                        { ap_info with ap_status = App_uncurry })
+                        { ap_info with ap_status = App_infer_full })
                      (Ext_list.map rest_args Lam.var)
                      ap_info)
             in
@@ -260,7 +260,7 @@ let unsafe_adjust_to_arity loc ~(to_ : int) ?(from : int option) (fn : Lam.t) :
                           (Ext_list.map_append extra_outer_args
                              (Ext_list.map extra_inner_args Lam.var)
                              Lam.var)
-                          { ap_info with ap_status = App_uncurry }))
+                          { ap_info with ap_status = App_infer_full }))
             in
             match wrapper with
             | None -> cont

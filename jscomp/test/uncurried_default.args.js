@@ -10,11 +10,11 @@ function withOpt(xOpt, y) {
   };
 }
 
-let testWithOpt = withOpt(undefined, 3, undefined, 4);
+let testWithOpt = withOpt(undefined, 3)(undefined, 4);
 
-let partial = withOpt(10, 3, 4, 11);
+let partial = withOpt(10, 3)(4, 11);
 
-let total = withOpt(10, 3, 4, 11);
+let total = withOpt(10, 3)(4, 11);
 
 function foo1(xOpt, y) {
   let x = xOpt !== undefined ? xOpt : 3;
@@ -62,9 +62,9 @@ function withOpt$1(xOpt, y) {
   };
 }
 
-let testWithOpt$1 = withOpt$1(undefined, 3, undefined, 4);
+let testWithOpt$1 = withOpt$1(undefined, 3)(undefined, 4);
 
-let total$1 = withOpt$1(10, 3, 4, 11);
+let total$1 = withOpt$1(10, 3)(4, 11);
 
 function foo1$1(xOpt, y) {
   let x = xOpt !== undefined ? xOpt : 3;

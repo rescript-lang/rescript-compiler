@@ -12,9 +12,7 @@ let equal = Caml_obj.equal;
 
 let compare = Caml_obj.compare;
 
-function hash(a) {
-  return Hashtbl.hash(a);
-}
+let hash = Hashtbl.hash;
 
 function of_int(x) {
   return {
@@ -414,7 +412,7 @@ function get_field(name) {
 
 function field(name, f) {
   return function (e) {
-    return $great$great$eq(get_field(name, e), f);
+    return $great$great$eq(get_field(name)(e), f);
   };
 }
 

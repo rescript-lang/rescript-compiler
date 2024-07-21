@@ -47,9 +47,7 @@ function g(H, count) {
   }), v));
 }
 
-function hash(x) {
-  return Hashtbl.hash(x);
-}
+let hash = Hashtbl.hash;
 
 function equal(x, y) {
   return x === y;

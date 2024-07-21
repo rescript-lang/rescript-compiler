@@ -13,9 +13,7 @@ function odd(_z) {
   };
 }
 
-function even(y) {
-  return odd(y);
-}
+let even = odd;
 
 exports.odd = odd;
 exports.even = even;
