@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Curry = require("../../lib/js/curry.js");
 
 let suites = {
   contents: /* [] */0
@@ -30,18 +29,18 @@ function eq(loc, x, y) {
 }
 
 function f(x, i, file, v) {
-  Curry._1(x.case, i);
-  Curry._2(x.case__set, i, v);
-  Curry._1(x._open, file);
-  Curry._1(x.open__, file);
+  x.case(i);
+  x.case__set(i, v);
+  x._open(file);
+  x.open__(file);
   return x._MAX_LENGTH;
 }
 
 function ff(x, i, v) {
   x.make__config = v;
   x.make_config = v;
-  Curry._1(x.case__unsafe, i);
-  return Curry._1(x._open__, 3);
+  x.case__unsafe(i);
+  return x._open__(3);
 }
 
 let u = {

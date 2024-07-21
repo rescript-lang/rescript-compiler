@@ -12,7 +12,7 @@ function map(f) {
       NAME: "Cons",
       VAL: [
         f(match[0]),
-        map(f, match[1])
+        map(f)(match[1])
       ]
     };
   };

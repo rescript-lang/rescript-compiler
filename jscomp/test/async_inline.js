@@ -27,9 +27,7 @@ async function doSomethingAsync(someAsyncFunction) {
   return await someAsyncFunction();
 }
 
-function broken(someAsyncFunction) {
-  return doSomethingAsync(someAsyncFunction);
-}
+let broken = doSomethingAsync;
 
 let M = {
   broken: broken
@@ -39,9 +37,7 @@ async function broken$1(someAsyncFunction) {
   return await someAsyncFunction();
 }
 
-function broken$2(someAsyncFunction) {
-  return broken$1(someAsyncFunction);
-}
+let broken$2 = broken$1;
 
 function curriedId(x) {
   return x;

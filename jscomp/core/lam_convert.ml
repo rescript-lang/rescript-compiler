@@ -695,14 +695,14 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           {
             ap_loc = outer_loc;
             ap_inlined = ap_info.ap_inlined;
-            ap_status = App_uncurry;
+            ap_status = App_na;
           }
     | _ ->
         Lam.apply f [ x ]
           {
             ap_loc = outer_loc;
             ap_inlined = Default_inline;
-            ap_status = App_uncurry;
+            ap_status = App_na;
           }
   and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) =
     let e = convert_aux e in

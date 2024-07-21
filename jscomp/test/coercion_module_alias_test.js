@@ -24,9 +24,7 @@ let prim$2 = Char.chr(66);
 
 console.log(prim$2);
 
-function f(x) {
-  return List.length(x);
-}
+let f = List.length;
 
 function g(x) {
   return List.length(List.map((function (prim) {

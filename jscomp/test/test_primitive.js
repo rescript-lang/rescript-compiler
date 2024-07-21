@@ -72,9 +72,7 @@ function f(x) {
   return x.length;
 }
 
-function is_lazy_force(x) {
-  return CamlinternalLazy.force(x);
-}
+let is_lazy_force = CamlinternalLazy.force;
 
 function fib(n) {
   if (n === 0 || n === 1) {
