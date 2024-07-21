@@ -47,8 +47,6 @@ let out_ident ppf s =
     | "Js_int" -> "Js.Int"
     | "Js_option" -> "Js.Option"
     | "Js_result" -> "Js.Result"
-    | "Js_list" -> "Js.List"
-    | "Js_vector" -> "Js.Vector"
     (* Belt_libs  *)
     | "Belt_Id" -> "Belt.Id"
     | "Belt_Array" -> "Belt.Array"

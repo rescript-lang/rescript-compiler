@@ -260,12 +260,6 @@ module Option = Js_option
 /** Define the interface for result */
 module Result = Js_result
 
-/** Provide utilities for list */
-module List = Js_list
-
-/** Provides bindings for JS Vector */
-module Vector = Js_vector
-
 /** Provides bindings for console */
 module Console = Js_console
 
