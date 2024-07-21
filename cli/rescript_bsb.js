@@ -1,9 +1,9 @@
-//@ts-check
+// @ts-check
 
-const fs = require("fs");
-const path = require("path");
-var os = require("os");
-const child_process = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const os = require("node:os");
+const child_process = require("node:child_process");
 const { rescript_exe } = require("./bin_path");
 
 const cwd = process.cwd();
@@ -45,24 +45,28 @@ function releaseBuild() {
 function acquireBuild(args, options) {
   if (ownerProcess) {
     return null;
-  } else {
-    try {
-      ownerProcess = child_process.spawn(rescript_exe, args, {
-        stdio: "inherit",
-        ...options,
-      });
-      fs.writeFileSync(lockFileName, ownerProcess.pid.toString(), {
-        encoding: "utf8",
-        flag: "wx",
-        mode: 0o664,
-      });
-    } catch (err) {
-      if (err.code === "EEXIST") {
-        console.warn(lockFileName, "already exists, try later");
-      } else console.log(err);
-    }
-    return ownerProcess;
   }
+  try {
+    ownerProcess = child_process.spawn(rescript_exe, args, {
+      stdio: "inherit",
+      ...options,
+    });
+    if (!ownerProcess?.pid) {
+      throw new Error("Failed to spawn new process");
+    }
+    fs.writeFileSync(lockFileName, ownerProcess.pid.toString(), {
+      encoding: "utf8",
+      flag: "wx",
+      mode: 0o664,
+    });
+  } catch (err) {
+    if (err.code === "EEXIST") {
+      console.warn("%s already exists, try later", lockFileName);
+    } else {
+      console.log(err);
+    }
+  }
+  return ownerProcess;
 }
 
 /**
@@ -70,8 +74,8 @@ function acquireBuild(args, options) {
  * @param {(code: number) => void} [maybeOnClose]
  */
 function delegate(args, maybeOnClose) {
-  let p;
-  if ((p = acquireBuild(args))) {
+  const p = acquireBuild(args);
+  if (p) {
     p.once("error", e => {
       console.error(String(e));
       releaseBuild();
@@ -129,12 +133,12 @@ function updateFinishTime() {
  * @param {number} [code]
  */
 function logFinishCompiling(code) {
-  let log = `>>>> Finish compiling`;
+  let log = ">>>> Finish compiling";
   if (code) {
-    log = log + " (exit: " + code + ")";
+    log = `${log} (exit: ${code})`;
   }
   if (isTtyStd) {
-    log = "\x1b[36m" + log + "\x1b[0m";
+    log = `\x1b[36m${log}\x1b[0m`;
   }
   if (code) {
     console.log(log);
@@ -145,9 +149,9 @@ function logFinishCompiling(code) {
 
 function logStartCompiling() {
   updateStartTime();
-  let log = `>>>> Start compiling`;
+  let log = ">>>> Start compiling";
   if (isTtyStd) {
-    log = "\x1b[36m" + log + "\x1b[0m";
+    log = `\x1b[36m${log}\x1b[0m`;
   }
   console.log(log);
 }
@@ -164,9 +168,8 @@ function exitProcess() {
 function getProjectFiles(file) {
   if (fs.existsSync(file)) {
     return JSON.parse(fs.readFileSync(file, "utf8"));
-  } else {
-    return { dirs: [], generated: [] };
   }
+  return { dirs: [], generated: [] };
 }
 
 /**
@@ -189,7 +192,7 @@ function watch(args) {
 
   const sourcedirs = path.join("lib", "bs", ".sourcedirs.json");
 
-  var LAST_SUCCESS_BUILD_STAMP = 0;
+  let LAST_SUCCESS_BUILD_STAMP = 0;
 
   let LAST_BUILD_START = 0;
   let LAST_FIRED_EVENT = 0;
@@ -211,20 +214,20 @@ function watch(args) {
   const verbose = args.includes("-verbose");
   const dlog = verbose ? console.log : () => {};
 
-  var wsParamIndex = args.indexOf("-ws");
+  const wsParamIndex = args.indexOf("-ws");
   if (wsParamIndex > -1) {
-    var hostAndPortNumber = (args[wsParamIndex + 1] || "").split(":");
+    const hostAndPortNumber = (args[wsParamIndex + 1] || "").split(":");
     /**
      * @type {number}
      */
-    var portNumber;
+    let portNumber;
     if (hostAndPortNumber.length === 1) {
-      portNumber = parseInt(hostAndPortNumber[0]);
+      portNumber = Number.parseInt(hostAndPortNumber[0]);
     } else {
       webSocketHost = hostAndPortNumber[0];
-      portNumber = parseInt(hostAndPortNumber[1]);
+      portNumber = Number.parseInt(hostAndPortNumber[1]);
     }
-    if (!isNaN(portNumber)) {
+    if (!Number.isNaN(portNumber)) {
       webSocketPort = portNumber;
     }
     withWebSocket = true;
@@ -237,35 +240,35 @@ function watch(args) {
 
   function notifyClients() {
     wsClients = wsClients.filter(x => !x.closed && !x.socket.destroyed);
-    var wsClientsLen = wsClients.length;
+    const wsClientsLen = wsClients.length;
     dlog(`Alive sockets number: ${wsClientsLen}`);
-    var data = '{"LAST_SUCCESS_BUILD_STAMP":' + LAST_SUCCESS_BUILD_STAMP + "}";
-    for (var i = 0; i < wsClientsLen; ++i) {
+    const data = { LAST_SUCCESS_BUILD_STAMP };
+    for (let i = 0; i < wsClientsLen; ++i) {
       // in reverse order, the last pushed get notified earlier
-      var client = wsClients[wsClientsLen - i - 1];
+      const client = wsClients[wsClientsLen - i - 1];
       if (!client.closed) {
-        client.sendText(data);
+        client.sendText(JSON.stringify(data));
       }
     }
   }
 
   function setUpWebSocket() {
-    var WebSocket = require("../lib/minisocket.js").MiniWebSocket;
-    var id = setInterval(notifyClients, 3000);
-    require("http")
+    const WebSocket = require("../lib/minisocket.js").MiniWebSocket;
+    const id = setInterval(notifyClients, 3000);
+    require("node:http")
       .createServer()
-      .on("upgrade", function (req, socket, upgradeHead) {
+      .on("upgrade", (req, socket, upgradeHead) => {
         dlog("connection opened");
-        var ws = new WebSocket(req, socket, upgradeHead);
-        socket.on("error", function (err) {
+        const ws = new WebSocket(req, socket, upgradeHead);
+        socket.on("error", err => {
           dlog(`Socket Error ${err}`);
         });
         wsClients.push(ws);
       })
-      .on("error", function (err) {
+      .on("error", err => {
         // @ts-ignore
         if (err !== undefined && err.code === "EADDRINUSE") {
-          var error = isTtyStd ? `\x1b[1;31mERROR:\x1b[0m` : `ERROR:`;
+          const error = isTtyStd ? "\x1b[1;31mERROR:\x1b[0m" : "ERROR:";
           console.error(`${error} The websocket port number ${webSocketPort} is in use.
 Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
         } else {
@@ -280,35 +283,30 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
    * @param {ProjectFiles} projectFiles
    */
   function watchBuild(projectFiles) {
-    var watchFiles = projectFiles.dirs;
+    const watchFiles = projectFiles.dirs;
     watchGenerated = projectFiles.generated;
     // close and remove all unused watchers
-    watchers = watchers.filter(function (watcher) {
+    watchers = watchers.filter(watcher => {
       if (watcher.dir === resConfig) {
         return true;
-      } else if (watchFiles.indexOf(watcher.dir) < 0) {
+      }
+      if (watchFiles.indexOf(watcher.dir) < 0) {
         dlog(`${watcher.dir} is no longer watched`);
         watcher.watcher.close();
         return false;
-      } else {
-        return true;
       }
+      return true;
     });
 
     // adding new watchers
-    for (var i = 0; i < watchFiles.length; ++i) {
-      var dir = watchFiles[i];
-      if (
-        !watchers.find(function (watcher) {
-          return watcher.dir === dir;
-        })
-      ) {
-        dlog(`watching dir ${dir} now`);
-        var watcher = fs.watch(dir, onChange);
-        watchers.push({ dir: dir, watcher: watcher });
-      } else {
-        // console.log(dir, 'already watched')
+    for (const dir of watchFiles) {
+      if (watchers.find(watcher => watcher.dir === dir)) {
+        // already watched
+        continue;
       }
+      dlog(`watching dir ${dir} now`);
+      const watcher = fs.watch(dir, onChange);
+      watchers.push({ dir: dir, watcher: watcher });
     }
   }
 
@@ -360,7 +358,7 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
   function outputError(error, highlight) {
     if (isTtyError && highlight) {
       process.stderr.write(
-        error.replace(highlight, "\x1b[1;31m" + highlight + "\x1b[0m"),
+        error.replace(highlight, `\x1b[1;31m${highlight}\x1b[0m`),
       );
     } else {
       process.stderr.write(error);
@@ -379,21 +377,18 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
     if (reasonsToRebuild.length === 0) {
       dlog("No need to rebuild");
       return;
-    } else {
-      dlog(`Rebuilding since ${reasonsToRebuild}`);
     }
-    let p;
-    if (
-      (p = acquireBuild(rescriptWatchBuildArgs, {
-        stdio: ["inherit", "inherit", "pipe"],
-      }))
-    ) {
+    dlog(`Rebuilding since ${reasonsToRebuild}`);
+    const p = acquireBuild(rescriptWatchBuildArgs, {
+      stdio: ["inherit", "inherit", "pipe"],
+    });
+    if (p) {
       logStartCompiling();
-      p.on("data", function (s) {
+      p.on("data", s => {
         outputError(s, "ninja: error");
       })
         .once("exit", buildFinishedCallback)
-        .stderr.setEncoding("utf8");
+        .stderr?.setEncoding("utf8");
       // This is important to clean up all
       // previous queued events
       reasonsToRebuild = [];
@@ -407,7 +402,7 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
       dlog(
         `Acquire lock failed, do the build later ${depth} : ${reasonsToRebuild}`,
       );
-      const waitTime = Math.pow(2, depth) * 40;
+      const waitTime = 2 ** depth * 40;
       setTimeout(() => {
         build(Math.min(depth + 1, 5));
       }, waitTime);
@@ -420,9 +415,9 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
    * @param {string | null} reason
    */
   function onChange(event, reason) {
-    var eventTime = Date.now();
-    var timeDiff = eventTime - LAST_BUILD_START;
-    var eventDiff = eventTime - LAST_FIRED_EVENT;
+    const eventTime = Date.now();
+    const timeDiff = eventTime - LAST_BUILD_START;
+    const eventDiff = eventTime - LAST_FIRED_EVENT;
     dlog(`Since last build: ${timeDiff} -- ${eventDiff}`);
     if (timeDiff < 5 || eventDiff < 5) {
       // for 5ms, we could think that the ninja not get

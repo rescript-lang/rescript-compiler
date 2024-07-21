@@ -1,10 +1,12 @@
-//@ts-check
-const cp = require("child_process");
-const path = require("path");
-const fs = require("fs");
+#!/usr/bin/env node
 
-const duneBinDir = require("./dune").duneBinDir;
+// @ts-check
 
+const cp = require("node:child_process");
+const path = require("node:path");
+const fs = require("node:fs");
+
+const { duneBinDir } = require("#internal/paths");
 const { exec } = require("../jscomp/build_tests/utils.js");
 
 let ounitTest = false;
@@ -56,7 +58,7 @@ async function runTests() {
 
   // running generated js tests
   if (mochaTest) {
-    cp.execSync(`npx mocha -t 10000 jscomp/test/**/*test.js`, {
+    cp.execSync("npx mocha -t 10000 jscomp/test/**/*test.js", {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2],
     });
@@ -80,7 +82,7 @@ async function runTests() {
         console.log(`testing ${file}`);
 
         // note existsSync test already ensure that it is a directory
-        const out = await exec(`node`, ["input.js"], { cwd: testDir });
+        const out = await exec("node", ["input.js"], { cwd: testDir });
         console.log(out.stdout);
 
         if (out.status === 0) {
