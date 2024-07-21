@@ -36,7 +36,7 @@ let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir 
   let lib_bs_dir = per_proj_dir // lib_artifacts_dir in
   let output_deps = lib_bs_dir // bsdeps in
   let check_result =
-    Bsb_ninja_check.check ~package_kind ~per_proj_dir ~forced ~file:output_deps
+    Bsb_ninja_check.check ~package_kind ~per_proj_dir ~forced ~warn_as_error ~file:output_deps
   in
   let config_filename, config_json =
     Bsb_config_load.load_json ~per_proj_dir ~warn_legacy_config
@@ -45,6 +45,7 @@ let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir 
   | Good -> None (* Fast path, no need regenerate ninja *)
   | Bsb_forced | Bsb_bsc_version_mismatch | Bsb_package_kind_inconsistent
   | Bsb_file_corrupted | Bsb_file_not_exist | Bsb_source_directory_changed
+  | Bsb_regenerate_required
   | Other _ ->
       Bsb_log.info "@{<info>BSB check@} build spec : %a @."
         Bsb_ninja_check.pp_check_result check_result;
@@ -94,7 +95,7 @@ let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir 
         config;
       (* PR2184: we still need record empty dir
           since it may add files in the future *)
-      Bsb_ninja_check.record ~package_kind ~per_proj_dir ~config
+      Bsb_ninja_check.record ~package_kind ~per_proj_dir ~config ~warn_as_error
         ~file:output_deps
         (config.filename :: config.file_groups.globbed_dirs);
       Some config

@@ -19,6 +19,7 @@
 - Fix issue with infinite loops with type errors on recursive types. https://github.com/rescript-lang/rescript-compiler/pull/6867
 - Ignore `@uncurry` attribute in uncurried mode, to avoid generating calls to `Curry` at runtime. https://github.com/rescript-lang/rescript-compiler/pull/6869
 - Avoid generating calls to Curry when adjusting arity of uncurried functions. https://github.com/rescript-lang/rescript-compiler/pull/6870
+- Fix build after calling without `-warn-error`, see https://github.com/rescript-lang/rescript-compiler/issues/6868 for more details. https://github.com/rescript-lang/rescript-compiler/pull/6877
 
 # 11.1.3-rc.1
 
