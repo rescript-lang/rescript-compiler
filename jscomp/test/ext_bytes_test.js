@@ -157,25 +157,19 @@ function starts_with(xs, prefix, p) {
   }
 }
 
-let a = Bytes.init(100, (function (i) {
-  return Char.chr(i);
-}));
+let a = Bytes.init(100, Char.chr);
 
 Bytes.blit(a, 5, a, 10, 10);
 
 eq("File \"ext_bytes_test.res\", line 116, characters 4-11", a, Bytes.of_string("\x00\x01\x02\x03\x04\x05\x06\x07\b\t\x05\x06\x07\b\t\n\x0b\x0c\r\x0e\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abc"));
 
-let a$1 = Bytes.init(100, (function (i) {
-  return Char.chr(i);
-}));
+let a$1 = Bytes.init(100, Char.chr);
 
 Bytes.blit(a$1, 10, a$1, 5, 10);
 
 eq("File \"ext_bytes_test.res\", line 128, characters 4-11", a$1, Bytes.of_string("\x00\x01\x02\x03\x04\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abc"));
 
-function f(i) {
-  return Char.chr(i);
-}
+let f = Char.chr;
 
 let a$2 = Bytes.unsafe_to_string(Bytes.init(100, f));
 

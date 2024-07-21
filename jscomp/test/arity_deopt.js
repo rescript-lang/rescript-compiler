@@ -52,11 +52,11 @@ function f3(x) {
 
 eq("File \"arity_deopt.res\", line 47, characters 11-18", 6, 6);
 
-eq("File \"arity_deopt.res\", line 48, characters 11-18", 6, f1(1, 2, 3));
+eq("File \"arity_deopt.res\", line 48, characters 11-18", 6, f1(1)(2, 3));
 
-eq("File \"arity_deopt.res\", line 49, characters 11-18", 6, f2(1, 2, 3));
+eq("File \"arity_deopt.res\", line 49, characters 11-18", 6, f2(1, 2)(3));
 
-eq("File \"arity_deopt.res\", line 50, characters 11-18", 6, f3(1, 2, 3));
+eq("File \"arity_deopt.res\", line 50, characters 11-18", 6, f3(1)(2, 3));
 
 Mt.from_pair_suites("Arity_deopt", suites.contents);
 

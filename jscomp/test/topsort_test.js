@@ -414,9 +414,7 @@ function unsafe_topsort(graph) {
       return;
     }
     let nodes = nexts(node, graph);
-    List.iter((function (node) {
-      sort_node(node);
-    }), nodes);
+    List.iter(sort_node, nodes);
     visited.contents = {
       hd: node,
       tl: visited.contents

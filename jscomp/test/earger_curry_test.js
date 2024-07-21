@@ -133,13 +133,13 @@ function g(x) {
   return u;
 }
 
-let a = f(0, 3, 4);
+let a = f(0)(3, 4);
 
-let b = f(0, 3, 5);
+let b = f(0)(3, 5);
 
-let c = g(0, 3, 4);
+let c = g(0)(3, 4);
 
-let d = g(0, 3, 5);
+let d = g(0)(3, 5);
 
 eq("File \"earger_curry_test.res\", line 141, characters 5-12", a, 10);
 

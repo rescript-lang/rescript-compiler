@@ -259,9 +259,7 @@ function rel_normalized_absolute_path(from, to_) {
     let xss = _xss;
     if (!xss) {
       if (yss) {
-        return List.fold_left((function (acc, x) {
-          return Filename.concat(acc, x);
-        }), yss.hd, yss.tl);
+        return List.fold_left(Filename.concat, yss.hd, yss.tl);
       } else {
         return Ext_string_test.empty;
       }
@@ -280,9 +278,7 @@ function rel_normalized_absolute_path(from, to_) {
     let start = List.fold_left((function (acc, param) {
       return Filename.concat(acc, Ext_string_test.parent_dir_lit);
     }), Ext_string_test.parent_dir_lit, xs);
-    return List.fold_left((function (acc, v) {
-      return Filename.concat(acc, v);
-    }), start, yss);
+    return List.fold_left(Filename.concat, start, yss);
   };
 }
 

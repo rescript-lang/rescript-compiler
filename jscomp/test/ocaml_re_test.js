@@ -1011,7 +1011,7 @@ function mark_used_indices(tbl) {
     return List.iter((function (x) {
       switch (x.TAG) {
         case "TSeq" :
-            return mark_used_indices(tbl, x._0);
+            return mark_used_indices(tbl)(x._0);
         case "TExp" :
         case "TMatch" :
             break;
@@ -1042,7 +1042,7 @@ function find_free(tbl, _idx, len) {
 function free_index(tbl_ref, l) {
   let tbl = tbl_ref.contents;
   reset_table(tbl);
-  mark_used_indices(tbl, l);
+  mark_used_indices(tbl)(l);
   let len = tbl.length;
   let idx = find_free(tbl, 0, len);
   if (idx === len) {

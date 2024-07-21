@@ -20,7 +20,7 @@ let v = [
   2,
   3
 ].map(function (a, b) {
-  return f(a, b);
+  return f(a)(b);
 });
 
 let vv = [
@@ -63,9 +63,7 @@ function abc(x, y, z) {
   return (x + y | 0) + z | 0;
 }
 
-function abc_u(x, y, z) {
-  return abc(x, y, z);
-}
+let abc_u = abc;
 
 fff();
 
