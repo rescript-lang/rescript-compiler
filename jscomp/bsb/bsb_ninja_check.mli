@@ -38,6 +38,7 @@ type check_result =
   | Bsb_bsc_version_mismatch
   | Bsb_forced
   | Bsb_package_kind_inconsistent
+  | Bsb_regenerate_required
   | Other of string
 
 val pp_check_result : Format.formatter -> check_result -> unit
@@ -47,6 +48,7 @@ val record :
   per_proj_dir:string ->
   file:string ->
   config:Bsb_config_types.t ->
+  warn_as_error:string option ->
   string list ->
   unit
 (** [record cwd file relevant_file_or_dirs]
@@ -64,6 +66,7 @@ val check :
   package_kind:Bsb_package_kind.t ->
   per_proj_dir:string ->
   forced:bool ->
+  warn_as_error: string option ->
   file:string ->
   check_result
 (** check if [build.ninja] should be regenerated *)
