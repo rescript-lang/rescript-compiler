@@ -49,7 +49,7 @@ let testMarshalFields = {
 };
 
 function setMatch(x) {
-  x._match = 34;
+  Curry._1(x._match, 34);
 }
 
 function testInstantiateTypeParameter(x) {
