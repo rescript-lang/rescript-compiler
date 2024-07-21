@@ -19,12 +19,10 @@ function coord2d(x, y) {
   };
 }
 
-function getOpt(opt, $$default, foo) {
-  return Belt_Option.mapWithDefault(opt, $$default, foo);
-}
+let getOpt = Belt_Option.mapWithDefault;
 
 function findAddress(business) {
-  return getOpt(business.address, /* [] */0, (function (a) {
+  return Belt_Option.mapWithDefault(business.address, /* [] */0, (function (a) {
     return {
       hd: a,
       tl: /* [] */0
@@ -34,13 +32,13 @@ function findAddress(business) {
 
 function findAllAddresses(businesses) {
   return Belt_List.toArray(Belt_List.flatten(Belt_List.fromArray(Belt_Array.map(businesses, (function (business) {
-    return Belt_List.concat(getOpt(business.address, /* [] */0, (function (a) {
+    return Belt_List.concat(Belt_Option.mapWithDefault(business.address, /* [] */0, (function (a) {
       return {
         hd: a,
         tl: /* [] */0
       };
-    })), getOpt(business.owner, /* [] */0, (function (p) {
-      return getOpt(p.address, /* [] */0, (function (a) {
+    })), Belt_Option.mapWithDefault(business.owner, /* [] */0, (function (p) {
+      return Belt_Option.mapWithDefault(p.address, /* [] */0, (function (a) {
         return {
           hd: a,
           tl: /* [] */0
@@ -77,7 +75,7 @@ function getPayloadRecordPlusOne(param) {
 }
 
 function findAddress2(business) {
-  return getOpt(Caml_option.nullable_to_opt(business.address2), /* [] */0, (function (a) {
+  return Belt_Option.mapWithDefault(Caml_option.nullable_to_opt(business.address2), /* [] */0, (function (a) {
     return {
       hd: a,
       tl: /* [] */0
