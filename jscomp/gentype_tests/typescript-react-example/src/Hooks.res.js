@@ -113,8 +113,7 @@ let WithRename = {
   componentWithRenamedArgs: Hooks$WithRename$componentWithRenamedArgs
 };
 
-function Hooks$WithRef$makeWithRef(Props) {
-  let vehicle = Props.vehicle;
+function makeWithRef(vehicle) {
   return function (ref) {
     if (ref == null) {
       return null;
@@ -126,12 +125,16 @@ function Hooks$WithRef$makeWithRef(Props) {
   };
 }
 
+function Hooks$WithRef$makeWithRef(Props) {
+  return makeWithRef(Props.vehicle);
+}
+
 let WithRef = {
   makeWithRef: Hooks$WithRef$makeWithRef
 };
 
 let testForwardRef = React.forwardRef(function (x, y) {
-  return Hooks$WithRef$makeWithRef(x)(y);
+  return makeWithRef(x.vehicle)(y);
 });
 
 let input = React.forwardRef(function (r, ref) {
