@@ -3,24 +3,11 @@
 
 let Mt = require("./mt.js");
 
-function f(x) {
-  return function (extra) {
-    return x + extra | 0;
-  };
-}
-
-let g = f(3)(4);
+let g = 7;
 
 let h = {
   contents: 0
 };
-
-function gg(x, y) {
-  let u = x + y | 0;
-  return function (z) {
-    return u + z | 0;
-  };
-}
 
 function g1(x, y) {
   let u = x + y | 0;
@@ -30,7 +17,9 @@ function g1(x, y) {
   };
 }
 
-let x = gg(3, 5)(6);
+let u = 8;
+
+let x = u + 6 | 0;
 
 function v(__x) {
   return g1(3, 4)(6, __x);
@@ -92,4 +81,4 @@ let suites = {
 
 Mt.from_pair_suites("Ari_regress_test", suites);
 
-/* g Not a pure module */
+/*  Not a pure module */

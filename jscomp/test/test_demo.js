@@ -57,7 +57,9 @@ function g1(x, y) {
   };
 }
 
-let x = g(3, 5)(6);
+let u = 8;
+
+let x = u + 6 | 0;
 
 function v(extra) {
   let u = 7;
@@ -79,4 +81,4 @@ exports.g = g;
 exports.g1 = g1;
 exports.x = x;
 exports.v = v;
-/* x Not a pure module */
+/* No side effect */
