@@ -30,7 +30,7 @@ function h33(x) {
 }
 
 function h34(x) {
-  return x(1, 2, 3, 4);
+  return x(1, 2, 3)(4);
 }
 
 function ocaml_run(b, c) {
