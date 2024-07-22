@@ -17,7 +17,7 @@ Happy hacking!
 - [NodeJS v18](https://nodejs.org/)
 - C compiler toolchain (usually installed with `xcode` on Mac)
 - Rust toolchain (required to build rewatch; follow the instructions at https://www.rust-lang.org/tools/install)
-- `opam` (OCaml Package Manager)
+- `opam` (OCaml Package Manager) v2.2.0
 - VSCode (+ [OCaml Platform Extension](https://marketplace.visualstudio.com/items?itemName=ocamllabs.ocaml-platform))
 
 ## Cloning the Git Repo
@@ -49,10 +49,7 @@ opam init
 opam switch create 5.2.0 # can also create local switch with opam switch create
 
 # Install dev dependencies from OPAM
-opam install . --deps-only
-
-# For IDE support, install the OCaml language server
-opam install ocaml-lsp-server
+opam install . --deps-only --with-dev-setup -y
 ```
 
 #### npm install

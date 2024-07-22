@@ -1,0 +1,17 @@
+jscom/js_parser/**
+jscomp/ml/cmt_format.ml
+jscomp/ml/pprintast.ml
+jscomp/core/js_name_of_module_id.ml
+jscomp/core/js_pass_debug.ml
+jscomp/core/lam_util.ml
+jscomp/core/lam_compile_main.ml
+jscomp/ext/bs_hash_stubs.ml
+jscomp/ext/ext_string.ml
+jscomp/ext/ext_string.mli
+jscomp/ext/ext_sys.ml
+jscomp/ext/hash.cppo.ml
+jscomp/ext/hash_set.cppo.ml
+jscomp/ext/map.cppo.ml
+jscomp/ext/ordered_hash_map.cppo.ml
+jscomp/ext/set.cppo.ml
+jscomp/ext/vec.cppo.ml
