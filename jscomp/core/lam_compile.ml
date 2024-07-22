@@ -1531,15 +1531,10 @@ and compile_prim (prim_info : Lam.prim_info)
          check the arity of fn before wrapping it
          we need mark something that such eta-conversion can not be simplified in some cases
       *)
-  | {
-   primitive = Pjs_unsafe_downgrade { name = property; setter };
-   args = [ obj ];
-  } -> (
-      (*
-       either a getter {[ x #. height ]} or {[ x ## method_call ]}
-    *)
-      (* assert (not setter); *)
-
+  | { primitive = Pjs_unsafe_downgrade { name = property; setter=false };
+      args = [ obj ];
+    } -> (
+      (* getter {[ x #. height ]} *)
       match
         compile_lambda { lambda_cxt with continuation = NeedValue Not_tail } obj
       with
@@ -1555,18 +1550,10 @@ and compile_prim (prim_info : Lam.prim_info)
           in
           Js_output.output_of_block_and_expression lambda_cxt.continuation
             blocks ret)
-  | {
-   primitive = Pfull_apply;
-   args =
-     [
-       Lprim
-         {
-           primitive = Pjs_unsafe_downgrade { name = property; setter = true };
-           args = [ obj ];
-         };
-       setter_val;
-     ];
-  } -> (
+  | { primitive = Pjs_unsafe_downgrade { name = property; setter = true };
+      args = [ obj; setter_val ];
+    }  -> (
+      (* setter {[ x ## method_call ]} *)
       let need_value_no_return_cxt =
         { lambda_cxt with continuation = NeedValue Not_tail }
       in
@@ -1589,10 +1576,7 @@ and compile_prim (prim_info : Lam.prim_info)
           | Some (obj_code, obj) ->
               cont obj_block arg_block (Some obj_code)
                 (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)))
-  | {
-   primitive = Pfull_apply;
-   args = Lprim { primitive = Pjs_unsafe_downgrade { setter = true } } :: _;
-  } ->
+  | { primitive = Pjs_unsafe_downgrade _; args } ->
       assert false
   | { primitive = Pfull_apply | Pvoid_run; args; loc } -> (
       (* 1. uncurried call should not do eta-conversion
