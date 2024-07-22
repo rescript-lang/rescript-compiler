@@ -77,13 +77,6 @@ Prefer `Js.Array2` over `Js.Array`, `Js.String2` over `Js.String`, etc. The latt
 /** JS object type */
 type t<'a> = {..} as 'a
 
-module Internal = {
-  external opaqueFullApply: 'a => 'a = "%uncurried_apply"
-
-  /* Use opaque instead of [._n] to prevent some optimizations happening */
-  external run: ((. unit) => 'a) => 'a = "#run"
-}
-
 /**
   Nullable value of this type can be either null or 'a. This type is equivalent to Js.Null.t.
 */

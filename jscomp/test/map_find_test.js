@@ -367,36 +367,30 @@ let s = List.fold_left((function (acc, param) {
   }
 });
 
-let extra_0 = [
-  "int",
-  (function () {
-    return {
-      TAG: "Eq",
-      _0: find(10, m),
-      _1: /* 'a' */97
-    };
-  })
-];
-
-let extra_1 = {
+Mt.from_pair_suites("Map_find_test", {
   hd: [
-    "string",
+    "int",
     (function () {
       return {
         TAG: "Eq",
-        _0: find$1("10", s),
+        _0: find(10, m),
         _1: /* 'a' */97
       };
     })
   ],
-  tl: /* [] */0
-};
-
-let extra = {
-  hd: extra_0,
-  tl: extra_1
-};
-
-Mt.from_pair_suites("Map_find_test", extra);
+  tl: {
+    hd: [
+      "string",
+      (function () {
+        return {
+          TAG: "Eq",
+          _0: find$1("10", s),
+          _1: /* 'a' */97
+        };
+      })
+    ],
+    tl: /* [] */0
+  }
+});
 
 /* m Not a pure module */

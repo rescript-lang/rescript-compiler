@@ -194,11 +194,7 @@ let u = Belt_Array.shuffle(v$5);
 
 neq("File \"bs_array_test.res\", line 85, characters 6-13", u, v$5);
 
-function sum(x) {
-  return Belt_Array.reduce(x, 0, add);
-}
-
-eq("File \"bs_array_test.res\", line 87, characters 5-12", sum(u), sum(v$5));
+eq("File \"bs_array_test.res\", line 87, characters 5-12", Belt_Array.reduce(u, 0, add), Belt_Array.reduce(v$5, 0, add));
 
 b("File \"bs_array_test.res\", line 92, characters 4-11", Caml_obj.equal(Belt_Array.range(0, 3), [
   0,

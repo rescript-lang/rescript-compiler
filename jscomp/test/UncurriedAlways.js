@@ -73,7 +73,11 @@ function ptl$1(none, extra) {
   ];
 }
 
-let a1 = ptl$1("x", "z");
+let a1 = [
+  "x",
+  "y",
+  "z"
+];
 
 console.log("a1:", a1);
 

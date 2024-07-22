@@ -127,10 +127,10 @@ function xsplit(delim, s) {
 }
 
 function string_of_chars(x) {
-  let extra = List.map((function (prim) {
+  let xs = List.map((function (prim) {
     return String.fromCharCode(prim);
   }), x);
-  return $$Array.of_list(extra).join("");
+  return $$Array.of_list(xs).join("");
 }
 
 Mt.from_pair_suites("String_test", {

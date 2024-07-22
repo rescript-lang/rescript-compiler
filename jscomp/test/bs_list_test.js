@@ -110,11 +110,7 @@ eq("File \"bs_list_test.res\", line 33, characters 5-12", Belt_List.getBy({
   return x % 5 === 0;
 })), undefined);
 
-function $eq$tilde(extra, extra$1) {
-  return eq("FLATTEN", extra, extra$1);
-}
-
-$eq$tilde(Belt_List.flatten({
+eq("FLATTEN", Belt_List.flatten({
   hd: {
     hd: 1,
     tl: /* [] */0
@@ -163,9 +159,9 @@ $eq$tilde(Belt_List.flatten({
   }
 });
 
-$eq$tilde(Belt_List.flatten(/* [] */0), /* [] */0);
+eq("FLATTEN", Belt_List.flatten(/* [] */0), /* [] */0);
 
-$eq$tilde(Belt_List.flatten({
+eq("FLATTEN", Belt_List.flatten({
   hd: /* [] */0,
   tl: {
     hd: /* [] */0,
@@ -203,11 +199,7 @@ $eq$tilde(Belt_List.flatten({
   }
 });
 
-function $eq$tilde$1(extra, extra$1) {
-  return eq("CONCATMANY", extra, extra$1);
-}
-
-$eq$tilde$1(Belt_List.concatMany([
+eq("CONCATMANY", Belt_List.concatMany([
   {
     hd: 1,
     tl: /* [] */0
@@ -247,9 +239,9 @@ $eq$tilde$1(Belt_List.concatMany([
   }
 });
 
-$eq$tilde$1(Belt_List.concatMany([]), /* [] */0);
+eq("CONCATMANY", Belt_List.concatMany([]), /* [] */0);
 
-$eq$tilde$1(Belt_List.concatMany([
+eq("CONCATMANY", Belt_List.concatMany([
   /* [] */0,
   /* [] */0,
   {
@@ -276,7 +268,7 @@ $eq$tilde$1(Belt_List.concatMany([
   }
 });
 
-$eq$tilde$1(Belt_List.concatMany([
+eq("CONCATMANY", Belt_List.concatMany([
   /* [] */0,
   /* [] */0,
   {
@@ -309,7 +301,7 @@ $eq$tilde$1(Belt_List.concatMany([
   }
 });
 
-$eq$tilde$1(Belt_List.concatMany([{
+eq("CONCATMANY", Belt_List.concatMany([{
     hd: 1,
     tl: {
       hd: 2,
@@ -339,11 +331,7 @@ eq("File \"bs_list_test.res\", line 66, characters 2-9", Belt_List.toArray(Belt_
   return i;
 }))));
 
-function $eq$tilde$2(extra, extra$1) {
-  return eq("APPEND", extra, extra$1);
-}
-
-$eq$tilde$2(Belt_List.concat({
+eq("APPEND", Belt_List.concat({
   hd: 1,
   tl: /* [] */0
 }, /* [] */0), {
@@ -351,7 +339,7 @@ $eq$tilde$2(Belt_List.concat({
   tl: /* [] */0
 });
 
-$eq$tilde$2(Belt_List.concat(/* [] */0, {
+eq("APPEND", Belt_List.concat(/* [] */0, {
   hd: 1,
   tl: /* [] */0
 }), {
@@ -359,11 +347,7 @@ $eq$tilde$2(Belt_List.concat(/* [] */0, {
   tl: /* [] */0
 });
 
-function $eq$tilde$3(extra, extra$1) {
-  return eq("ZIP", extra, extra$1);
-}
-
-$eq$tilde$3(Belt_List.zip({
+eq("ZIP", Belt_List.zip({
   hd: 1,
   tl: {
     hd: 2,
@@ -392,14 +376,14 @@ $eq$tilde$3(Belt_List.zip({
   }
 });
 
-$eq$tilde$3(Belt_List.zip(/* [] */0, {
+eq("ZIP", Belt_List.zip(/* [] */0, {
   hd: 1,
   tl: /* [] */0
 }), /* [] */0);
 
-$eq$tilde$3(Belt_List.zip(/* [] */0, /* [] */0), /* [] */0);
+eq("ZIP", Belt_List.zip(/* [] */0, /* [] */0), /* [] */0);
 
-$eq$tilde$3(Belt_List.zip({
+eq("ZIP", Belt_List.zip({
   hd: 1,
   tl: {
     hd: 2,
@@ -410,7 +394,7 @@ $eq$tilde$3(Belt_List.zip({
   }
 }, /* [] */0), /* [] */0);
 
-$eq$tilde$3(Belt_List.zip({
+eq("ZIP", Belt_List.zip({
   hd: 1,
   tl: {
     hd: 2,
@@ -456,11 +440,7 @@ function evenIndex(_x, i) {
   return i % 2 === 0;
 }
 
-function $eq$tilde$4(extra, extra$1) {
-  return eq("PARTITION", extra, extra$1);
-}
-
-$eq$tilde$4(Belt_List.partition({
+eq("PARTITION", Belt_List.partition({
   hd: 1,
   tl: {
     hd: 2,
@@ -501,7 +481,7 @@ $eq$tilde$4(Belt_List.partition({
   }
 ]);
 
-$eq$tilde$4(Belt_List.partition({
+eq("PARTITION", Belt_List.partition({
   hd: 2,
   tl: {
     hd: 2,
@@ -530,7 +510,7 @@ $eq$tilde$4(Belt_List.partition({
   /* [] */0
 ]);
 
-$eq$tilde$4(Belt_List.partition({
+eq("PARTITION", Belt_List.partition({
   hd: 2,
   tl: {
     hd: 2,
@@ -561,21 +541,17 @@ $eq$tilde$4(Belt_List.partition({
   }
 ]);
 
-$eq$tilde$4(Belt_List.partition(/* [] */0, mod2), [
+eq("PARTITION", Belt_List.partition(/* [] */0, mod2), [
   /* [] */0,
   /* [] */0
 ]);
 
-function $eq$tilde$5(extra, extra$1) {
-  return eq("UNZIP", extra, extra$1);
-}
-
-$eq$tilde$5(Belt_List.unzip(/* [] */0), [
+eq("UNZIP", Belt_List.unzip(/* [] */0), [
   /* [] */0,
   /* [] */0
 ]);
 
-$eq$tilde$5(Belt_List.unzip({
+eq("UNZIP", Belt_List.unzip({
   hd: [
     1,
     2
@@ -592,7 +568,7 @@ $eq$tilde$5(Belt_List.unzip({
   }
 ]);
 
-$eq$tilde$5(Belt_List.unzip({
+eq("UNZIP", Belt_List.unzip({
   hd: [
     1,
     2
@@ -621,11 +597,7 @@ $eq$tilde$5(Belt_List.unzip({
   }
 ]);
 
-function $eq$tilde$6(extra, extra$1) {
-  return eq("FILTER", extra, extra$1);
-}
-
-$eq$tilde$6(Belt_List.keep({
+eq("FILTER", Belt_List.keep({
   hd: 1,
   tl: {
     hd: 2,
@@ -645,7 +617,7 @@ $eq$tilde$6(Belt_List.keep({
   }
 });
 
-$eq$tilde$6(Belt_List.keep({
+eq("FILTER", Belt_List.keep({
   hd: 1,
   tl: {
     hd: 3,
@@ -656,9 +628,9 @@ $eq$tilde$6(Belt_List.keep({
   }
 }, mod2), /* [] */0);
 
-$eq$tilde$6(Belt_List.keep(/* [] */0, mod2), /* [] */0);
+eq("FILTER", Belt_List.keep(/* [] */0, mod2), /* [] */0);
 
-$eq$tilde$6(Belt_List.keep({
+eq("FILTER", Belt_List.keep({
   hd: 2,
   tl: {
     hd: 2,
@@ -690,13 +662,9 @@ $eq$tilde$6(Belt_List.keep({
   }
 });
 
-function $eq$tilde$7(extra, extra$1) {
-  return eq("FILTER2", extra, extra$1);
-}
+eq("FILTER2", Belt_List.keepWithIndex(/* [] */0, evenIndex), /* [] */0);
 
-$eq$tilde$7(Belt_List.keepWithIndex(/* [] */0, evenIndex), /* [] */0);
-
-$eq$tilde$7(Belt_List.keepWithIndex({
+eq("FILTER2", Belt_List.keepWithIndex({
   hd: 1,
   tl: {
     hd: 2,
@@ -716,7 +684,7 @@ $eq$tilde$7(Belt_List.keepWithIndex({
   }
 });
 
-$eq$tilde$7(Belt_List.keepWithIndex({
+eq("FILTER2", Belt_List.keepWithIndex({
   hd: 0,
   tl: {
     hd: 1,
@@ -758,11 +726,7 @@ function id(x) {
   return x;
 }
 
-function $eq$tilde$8(extra, extra$1) {
-  return eq("MAP", extra, extra$1);
-}
-
-$eq$tilde$8(Belt_List.map(Belt_List.makeBy(5, id), (function (x) {
+eq("MAP", Belt_List.map(Belt_List.makeBy(5, id), (function (x) {
   return (x << 1);
 })), {
   hd: 0,
@@ -781,9 +745,9 @@ $eq$tilde$8(Belt_List.map(Belt_List.makeBy(5, id), (function (x) {
   }
 });
 
-$eq$tilde$8(Belt_List.map(/* [] */0, id), /* [] */0);
+eq("MAP", Belt_List.map(/* [] */0, id), /* [] */0);
 
-$eq$tilde$8(Belt_List.map({
+eq("MAP", Belt_List.map({
   hd: 1,
   tl: /* [] */0
 }, (function (x) {
@@ -801,29 +765,25 @@ let length_10_id = Belt_List.makeBy(10, id);
 
 let length_8_id = Belt_List.makeBy(8, id);
 
-function $eq$tilde$9(extra, extra$1) {
-  return eq("MAP2", extra, extra$1);
-}
-
 let d = Belt_List.makeBy(10, (function (x) {
   return (x << 1);
 }));
 
-$eq$tilde$9(Belt_List.zipBy(length_10_id, length_10_id, add), d);
+eq("MAP2", Belt_List.zipBy(length_10_id, length_10_id, add), d);
 
-$eq$tilde$9(Belt_List.zipBy(/* [] */0, {
+eq("MAP2", Belt_List.zipBy(/* [] */0, {
   hd: 1,
   tl: /* [] */0
 }, add), /* [] */0);
 
-$eq$tilde$9(Belt_List.zipBy({
+eq("MAP2", Belt_List.zipBy({
   hd: 1,
   tl: /* [] */0
 }, /* [] */0, add), /* [] */0);
 
-$eq$tilde$9(Belt_List.zipBy(/* [] */0, /* [] */0, add), /* [] */0);
+eq("MAP2", Belt_List.zipBy(/* [] */0, /* [] */0, add), /* [] */0);
 
-$eq$tilde$9(Belt_List.zipBy(length_10_id, length_10_id, add), Belt_List.concat(Belt_List.map(length_8_id, (function (x) {
+eq("MAP2", Belt_List.zipBy(length_10_id, length_10_id, add), Belt_List.concat(Belt_List.map(length_8_id, (function (x) {
   return (x << 1);
 })), {
   hd: 16,
@@ -833,11 +793,11 @@ $eq$tilde$9(Belt_List.zipBy(length_10_id, length_10_id, add), Belt_List.concat(B
   }
 }));
 
-$eq$tilde$9(Belt_List.zipBy(length_10_id, length_8_id, add), Belt_List.mapWithIndex(length_8_id, (function (i, x) {
+eq("MAP2", Belt_List.zipBy(length_10_id, length_8_id, add), Belt_List.mapWithIndex(length_8_id, (function (i, x) {
   return i + x | 0;
 })));
 
-$eq$tilde$9(Belt_List.reverse(Belt_List.mapReverse2(length_10_id, length_10_id, add)), Belt_List.map(length_10_id, (function (x) {
+eq("MAP2", Belt_List.reverse(Belt_List.mapReverse2(length_10_id, length_10_id, add)), Belt_List.map(length_10_id, (function (x) {
   return (x << 1);
 })));
 
@@ -845,9 +805,9 @@ let xs = Belt_List.reverse(Belt_List.mapReverse2(length_8_id, length_10_id, add)
 
 eq("File \"bs_list_test.res\", line 163, characters 5-12", Belt_List.length(xs), 8);
 
-$eq$tilde$9(xs, Belt_List.zipBy(length_10_id, length_8_id, add));
+eq("MAP2", xs, Belt_List.zipBy(length_10_id, length_8_id, add));
 
-$eq$tilde$9(Belt_List.mapReverse2({
+eq("MAP2", Belt_List.mapReverse2({
   hd: 1,
   tl: {
     hd: 2,
@@ -872,11 +832,7 @@ $eq$tilde$9(Belt_List.mapReverse2({
   }
 });
 
-function $eq$tilde$10(extra, extra$1) {
-  return eq("TAKE", extra, extra$1);
-}
-
-$eq$tilde$10(Belt_List.take({
+eq("TAKE", Belt_List.take({
   hd: 1,
   tl: {
     hd: 2,
@@ -893,9 +849,9 @@ $eq$tilde$10(Belt_List.take({
   }
 });
 
-$eq$tilde$10(Belt_List.take(/* [] */0, 1), undefined);
+eq("TAKE", Belt_List.take(/* [] */0, 1), undefined);
 
-$eq$tilde$10(Belt_List.take({
+eq("TAKE", Belt_List.take({
   hd: 1,
   tl: {
     hd: 2,
@@ -903,7 +859,7 @@ $eq$tilde$10(Belt_List.take({
   }
 }, 3), undefined);
 
-$eq$tilde$10(Belt_List.take({
+eq("TAKE", Belt_List.take({
   hd: 1,
   tl: {
     hd: 2,
@@ -917,19 +873,15 @@ $eq$tilde$10(Belt_List.take({
   }
 });
 
-$eq$tilde$10(Belt_List.take(length_10_id, 8), length_8_id);
+eq("TAKE", Belt_List.take(length_10_id, 8), length_8_id);
 
-$eq$tilde$10(Belt_List.take(length_10_id, 0), /* [] */0);
+eq("TAKE", Belt_List.take(length_10_id, 0), /* [] */0);
 
-$eq$tilde$10(Belt_List.take(length_8_id, -2), undefined);
+eq("TAKE", Belt_List.take(length_8_id, -2), undefined);
 
-function $eq$tilde$11(extra, extra$1) {
-  return eq("DROP", extra, extra$1);
-}
+eq("DROP", Belt_List.drop(length_10_id, 10), /* [] */0);
 
-$eq$tilde$11(Belt_List.drop(length_10_id, 10), /* [] */0);
-
-$eq$tilde$11(Belt_List.drop(length_10_id, 8), {
+eq("DROP", Belt_List.drop(length_10_id, 8), {
   hd: 8,
   tl: {
     hd: 9,
@@ -937,26 +889,22 @@ $eq$tilde$11(Belt_List.drop(length_10_id, 8), {
   }
 });
 
-$eq$tilde$11(Belt_List.drop(length_10_id, 0), length_10_id);
+eq("DROP", Belt_List.drop(length_10_id, 0), length_10_id);
 
-$eq$tilde$11(Belt_List.drop(length_8_id, -1), undefined);
-
-function $eq$tilde$12(extra, extra$1) {
-  return eq("SPLIT", extra, extra$1);
-}
+eq("DROP", Belt_List.drop(length_8_id, -1), undefined);
 
 let a = Belt_List.makeBy(5, id);
 
-$eq$tilde$12(Belt_List.splitAt(/* [] */0, 1), undefined);
+eq("SPLIT", Belt_List.splitAt(/* [] */0, 1), undefined);
 
-$eq$tilde$12(Belt_List.splitAt(a, 6), undefined);
+eq("SPLIT", Belt_List.splitAt(a, 6), undefined);
 
-$eq$tilde$12(Belt_List.splitAt(a, 5), [
+eq("SPLIT", Belt_List.splitAt(a, 5), [
   a,
   /* [] */0
 ]);
 
-$eq$tilde$12(Belt_List.splitAt(a, 4), [
+eq("SPLIT", Belt_List.splitAt(a, 4), [
   {
     hd: 0,
     tl: {
@@ -976,7 +924,7 @@ $eq$tilde$12(Belt_List.splitAt(a, 4), [
   }
 ]);
 
-$eq$tilde$12(Belt_List.splitAt(a, 3), [
+eq("SPLIT", Belt_List.splitAt(a, 3), [
   {
     hd: 0,
     tl: {
@@ -996,7 +944,7 @@ $eq$tilde$12(Belt_List.splitAt(a, 3), [
   }
 ]);
 
-$eq$tilde$12(Belt_List.splitAt(a, 2), [
+eq("SPLIT", Belt_List.splitAt(a, 2), [
   {
     hd: 0,
     tl: {
@@ -1016,7 +964,7 @@ $eq$tilde$12(Belt_List.splitAt(a, 2), [
   }
 ]);
 
-$eq$tilde$12(Belt_List.splitAt(a, 1), [
+eq("SPLIT", Belt_List.splitAt(a, 1), [
   {
     hd: 0,
     tl: /* [] */0
@@ -1036,19 +984,15 @@ $eq$tilde$12(Belt_List.splitAt(a, 1), [
   }
 ]);
 
-$eq$tilde$12(Belt_List.splitAt(a, 0), [
+eq("SPLIT", Belt_List.splitAt(a, 0), [
   /* [] */0,
   a
 ]);
 
-$eq$tilde$12(Belt_List.splitAt(a, -1), undefined);
+eq("SPLIT", Belt_List.splitAt(a, -1), undefined);
 
 function succx(x) {
   return x + 1 | 0;
-}
-
-function $eq$tilde$13(extra, extra$1) {
-  return eq("REMOVEASSOQ", extra, extra$1);
 }
 
 function eqx(x, y) {
@@ -1121,7 +1065,7 @@ b("File \"bs_list_test.res\", line 207, characters 4-11", Belt_List.hasAssoc({
   return (x + 1 | 0) === y;
 })));
 
-$eq$tilde$13(Belt_List.removeAssoc({
+eq("REMOVEASSOQ", Belt_List.removeAssoc({
   hd: [
     1,
     "1"
@@ -1155,7 +1099,7 @@ $eq$tilde$13(Belt_List.removeAssoc({
   }
 });
 
-$eq$tilde$13(Belt_List.removeAssoc({
+eq("REMOVEASSOQ", Belt_List.removeAssoc({
   hd: [
     1,
     "1"
@@ -1189,7 +1133,7 @@ $eq$tilde$13(Belt_List.removeAssoc({
   }
 });
 
-$eq$tilde$13(Belt_List.removeAssoc({
+eq("REMOVEASSOQ", Belt_List.removeAssoc({
   hd: [
     1,
     "1"
@@ -1223,7 +1167,7 @@ $eq$tilde$13(Belt_List.removeAssoc({
   }
 });
 
-$eq$tilde$13(Belt_List.removeAssoc({
+eq("REMOVEASSOQ", Belt_List.removeAssoc({
   hd: [
     1,
     "1"
@@ -1263,7 +1207,7 @@ $eq$tilde$13(Belt_List.removeAssoc({
   }
 });
 
-$eq$tilde$13(Belt_List.removeAssoc({
+eq("REMOVEASSOQ", Belt_List.removeAssoc({
   hd: [
     1,
     "1"
@@ -1295,7 +1239,7 @@ $eq$tilde$13(Belt_List.removeAssoc({
   }
 });
 
-$eq$tilde$13(Belt_List.removeAssoc({
+eq("REMOVEASSOQ", Belt_List.removeAssoc({
   hd: [
     1,
     "1"
@@ -1327,7 +1271,7 @@ $eq$tilde$13(Belt_List.removeAssoc({
   }
 });
 
-$eq$tilde$13(Belt_List.removeAssoc({
+eq("REMOVEASSOQ", Belt_List.removeAssoc({
   hd: [
     1,
     "1"
@@ -1359,7 +1303,7 @@ $eq$tilde$13(Belt_List.removeAssoc({
   }
 });
 
-$eq$tilde$13(Belt_List.removeAssoc(/* [] */0, 2, eqx), /* [] */0);
+eq("REMOVEASSOQ", Belt_List.removeAssoc(/* [] */0, 2, eqx), /* [] */0);
 
 let ll = {
   hd: [
@@ -2350,15 +2294,11 @@ makeTest(2);
 
 makeTest(3);
 
-function $eq$tilde$14(extra, extra$1) {
-  return eq("SORT", extra, extra$1);
-}
-
 function cmp(a, b) {
   return a - b | 0;
 }
 
-$eq$tilde$14(Belt_List.sort({
+eq("SORT", Belt_List.sort({
   hd: 5,
   tl: {
     hd: 4,
@@ -2384,7 +2324,7 @@ $eq$tilde$14(Belt_List.sort({
   }
 });
 
-$eq$tilde$14(Belt_List.sort({
+eq("SORT", Belt_List.sort({
   hd: 3,
   tl: {
     hd: 9,
