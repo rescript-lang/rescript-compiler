@@ -233,7 +233,6 @@ type primitive =
   | Pasrbint of boxed_integer
   | Pbintcomp of boxed_integer * comparison
   | Pctconst of compile_time_constant
-  | Puncurried_apply
   | Pcreate_extension of string
 and comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge

@@ -49,10 +49,6 @@ module Lid = struct
 
   let type_bool : t = Lident "bool" (* use *predef* *)
 
-  (* TODO should be renamed in to {!Js.fn} *)
-  (* TODO should be moved into {!Js.t} Later *)
-  let js_internal : t = Ldot (Lident "Js", "Internal")
-
   let js_oo : t = Lident "Js_OO"
 
   let js_meth_callback : t = Ldot (js_oo, "Callback")

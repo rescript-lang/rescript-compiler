@@ -1600,7 +1600,7 @@ function from_to_string(xs) {
   }), $$Array.to_list(xs));
 }
 
-let extra = Pervasives.$at(from_pairs("random", pairs), Pervasives.$at(from_pairs("small", small_pairs), Pervasives.$at(List.mapi((function (i, param) {
+Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pairs), Pervasives.$at(from_pairs("small", small_pairs), Pervasives.$at(List.mapi((function (i, param) {
   let f = param[1];
   let i64 = param[0];
   return [
@@ -1676,9 +1676,7 @@ let extra = Pervasives.$at(from_pairs("random", pairs), Pervasives.$at(from_pair
       tl: /* [] */0
     }
   }
-})))))));
-
-Mt.from_pair_suites("Int64_mul_div_test", extra);
+}))))))));
 
 exports.commutative_mul = commutative_mul;
 exports.pairs = pairs;
@@ -1693,4 +1691,4 @@ exports.to_string = to_string;
 exports.int64_compare_tests = int64_compare_tests;
 exports.from_compare = from_compare;
 exports.from_to_string = from_to_string;
-/* extra Not a pure module */
+/*  Not a pure module */

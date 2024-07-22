@@ -62,8 +62,7 @@ let x = Curry._1(g(3, 5), 6);
 
 function v(extra) {
   let u = 7;
-  let xx = 6;
-  return (xx + extra | 0) + u | 0;
+  return (6 + extra | 0) + u | 0;
 }
 
 let nil = "Nil";

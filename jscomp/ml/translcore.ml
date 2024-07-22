@@ -422,7 +422,6 @@ let primitives_table =
       ("%int64_to_int32", Pcvtbint (Pint64, Pint32));
       ("%int64_of_bigint", Pcvtbint (Pbigint, Pint64));
       ("%int64_to_bigint", Pcvtbint (Pint64, Pbigint));
-      ("%uncurried_apply", Puncurried_apply);
     ]
 
 let find_primitive prim_name = Hashtbl.find primitives_table prim_name
@@ -1101,11 +1100,10 @@ and transl_apply ?(inlined = Default_inline) ?(uncurried_partial_application=Non
     let extra_args = Ext_list.map extra_ids (fun id -> Lvar id) in
     let ap_args = args @ extra_args in
     let l0 = Lapply { ap_func = lam; ap_args; ap_inlined = inlined; ap_loc = loc } in
-    let l1 = Lprim (Puncurried_apply, [l0], loc) in
     Lfunction
       {
         params = List.rev_append !none_ids extra_ids ;
-        body = l1;
+        body = l0;
         attr = default_function_attribute;
         loc;
       }
