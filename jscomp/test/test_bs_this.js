@@ -36,10 +36,10 @@ let js_obj = {
 };
 
 function f(x) {
-  Curry._1(x.onload, (function () {
+  x.onload = (function () {
     let o = this ;
     console.log(o);
-  }));
+  });
   return Curry._2(x.addEventListener, "onload", (function () {
     let o = this ;
     console.log(o.response);

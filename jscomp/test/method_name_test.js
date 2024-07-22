@@ -38,8 +38,8 @@ function f(x, i, file, v) {
 }
 
 function ff(x, i, v) {
-  Curry._1(x.make__config, v);
-  Curry._1(x.make_config, v);
+  x.make__config = v;
+  x.make_config = v;
   Curry._1(x.case__unsafe, i);
   return Curry._1(x._open__, 3);
 }

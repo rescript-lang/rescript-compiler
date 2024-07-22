@@ -527,6 +527,24 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
     match lam with
     | Lvar x -> Lam.var (Hash_ident.find_default alias_tbl x x)
     | Lconst x -> Lam.const (Lam_constant_convert.convert_constant x)
+    | Lapply { ap_func = ((Lsend (name, obj, loc))); ap_args } when Ext_string.ends_with name Literals.setter_suffix ->
+      let obj = convert_aux obj in
+      let args = obj :: (Ext_list.map ap_args convert_aux) in
+      let property =
+          (String.sub name 0
+              (String.length name - Literals.setter_suffix_len))
+      in
+      prim
+        ~primitive:(Pjs_unsafe_downgrade { name = property; setter=true })
+        ~args loc
+    | Lsend (name, obj, loc) ->
+        let obj = convert_aux obj in
+        let args = [ obj ] in
+        let setter = Ext_string.ends_with name Literals.setter_suffix in
+        let _ = assert (not setter) in
+        prim
+          ~primitive:(Pjs_unsafe_downgrade { name; setter })
+          ~args loc
     | Lapply { ap_func = fn; ap_args = args; ap_loc = loc; ap_inlined } ->
         (* we need do this eargly in case [aux fn] add some wrapper *)
         Lam.apply (convert_aux fn)
@@ -611,19 +629,6 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
     | Lfor (id, from_, to_, dir, loop) ->
         Lam.for_ id (convert_aux from_) (convert_aux to_) dir (convert_aux loop)
     | Lassign (id, body) -> Lam.assign id (convert_aux body)
-    | Lsend (name, obj, loc) ->
-        let obj = convert_aux obj in
-        let args = [ obj ] in
-        let setter = Ext_string.ends_with name Literals.setter_suffix in
-        let property =
-          if setter then
-            (String.sub name 0
-                (String.length name - Literals.setter_suffix_len))
-          else name
-        in
-        prim
-          ~primitive:(Pjs_unsafe_downgrade { name = property; setter })
-          ~args loc
   and convert_let (kind : Lam_compat.let_kind) id (e : Lambda.lambda) body :
       Lam.t =
     match (kind, e) with
