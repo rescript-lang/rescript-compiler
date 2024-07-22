@@ -621,7 +621,7 @@ function make_type(typ, dir) {
 
 function make_from_params(params, context) {
   let img = document.createElement("img");
-  Curry._1(img.src, params.img_src);
+  img.src = params.img_src;
   return {
     params: params,
     context: context,
@@ -662,7 +662,7 @@ function transform_enemy(enemy_typ, spr, dir) {
     dir
   ]);
   let img = document.createElement("img");
-  Curry._1(img.src, params.img_src);
+  img.src = params.img_src;
   spr.params = params;
   spr.img = img;
 }
@@ -1448,7 +1448,7 @@ function render_bbox(sprite, param) {
   let context = sprite.context;
   let match = sprite.params.bbox_offset;
   let match$1 = sprite.params.bbox_size;
-  Curry._1(context.strokeStyle, "#FF0000");
+  context.strokeStyle = "#FF0000";
   return Curry._4(context.strokeRect, param[0] + match[0], param[1] + match[1], match$1[0], match$1[1]);
 }
 
@@ -1494,7 +1494,7 @@ function hud(canvas, score, coins) {
   let score_string = String(score);
   let coin_string = String(coins);
   let context = Curry._1(canvas.getContext, "2d");
-  Curry._1(context.font, "10px 'Press Start 2P'");
+  context.font = "10px 'Press Start 2P'";
   Curry._3(context.fillText, "Score: " + score_string, canvas.width - 140, 18);
   Curry._3(context.fillText, "Coins: " + coin_string, 120, 18);
 }
@@ -1507,10 +1507,10 @@ function fps(canvas, fps_val) {
 
 function game_win(ctx) {
   Curry._4(ctx.rect, 0, 0, 512, 512);
-  Curry._1(ctx.fillStyle, "black");
+  ctx.fillStyle = "black";
   Curry._1(ctx.fill, undefined);
-  Curry._1(ctx.fillStyle, "white");
-  Curry._1(ctx.font, "20px 'Press Start 2P'");
+  ctx.fillStyle = "white";
+  ctx.font = "20px 'Press Start 2P'";
   Curry._3(ctx.fillText, "You win!", 180, 128);
   throw new Error("Failure", {
         cause: {
@@ -1522,10 +1522,10 @@ function game_win(ctx) {
 
 function game_loss(ctx) {
   Curry._4(ctx.rect, 0, 0, 512, 512);
-  Curry._1(ctx.fillStyle, "black");
+  ctx.fillStyle = "black";
   Curry._1(ctx.fill, undefined);
-  Curry._1(ctx.fillStyle, "white");
-  Curry._1(ctx.font, "20px 'Press Start 2P'");
+  ctx.fillStyle = "white";
+  ctx.font = "20px 'Press Start 2P'";
   Curry._3(ctx.fillText, "GAME OVER. You lose!", 60, 128);
   throw new Error("Failure", {
         cause: {
@@ -3354,7 +3354,7 @@ function preload(param) {
   return List.map((function (img_src) {
     let img_src$1 = "sprites/" + img_src;
     let img = document.createElement("img");
-    Curry._1(img.src, img_src$1);
+    img.src = img_src$1;
     img.addEventListener("load", (function (ev) {
       inc_counter();
       return true;
@@ -3374,10 +3374,10 @@ function preload(param) {
   });
 }
 
-Curry._1(window.onload, (function (param) {
+window.onload = (function (param) {
   preload();
   return true;
-}));
+});
 
 let Main = {
   Html: undefined,
