@@ -4,7 +4,7 @@
 let Curry = require("../../lib/js/curry.js");
 
 function f(x) {
-  Curry._1(x.case, 3);
+  x.case = 3;
 }
 
 function g(x) {
