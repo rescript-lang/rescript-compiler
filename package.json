@@ -1,11 +1,37 @@
 {
   "name": "rescript",
   "version": "12.0.0-alpha.1",
-  "devDependencies": {
-    "@biomejs/biome": "1.8.3",
-    "mocha": "10.1.0",
-    "nyc": "15.0.0"
+  "description": "ReScript toolchain",
+  "keywords": [
+    "ReScript",
+    "Compiler",
+    "Types",
+    "JavaScript",
+    "Language"
+  ],
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "http://rescript-lang.org",
+  "bugs": "https://github.com/rescript-lang/rescript-compiler/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rescript-lang/rescript-compiler.git"
   },
+  "author": {
+    "name": "Hongbo Zhang",
+    "email": "bobzhang1988@gmail.com"
+  },
+  "maintainers": [
+    "Christoph Knittel (https://github.com/cknitt)",
+    "Cristiano Calcagno (https://github.com/cristianoc)",
+    "Florian Hammerschmidt (https://github.com/fhammerschmidt)",
+    "Gabriel Nordeborn (https://github.com/zth)",
+    "Hyeseong Kim (https://github.com/cometkim)",
+    "Jaap Frolich (https://github.com/jfrolich)",
+    "Matthias Le Brun (https://github.com/bloodyowl)",
+    "Patrick Ecker (https://github.com/ryyppy)",
+    "Paul Tsnobiladzé (https://github.com/tsnobip)",
+    "Woonki Moon (https://github.com/mununki)"
+  ],
   "engines": {
     "node": ">=18"
   },
@@ -26,7 +52,6 @@
     "checkFormat:all": "biome format .",
     "coverage": "nyc --timeout=3000 --reporter=html mocha jscomp/test/*test.js && open ./coverage/index.html"
   },
-  "description": "ReScript toolchain",
   "files": [
     "CHANGELOG.md",
     "CREDITS.md",
@@ -50,30 +75,10 @@
   "imports": {
     "#cli/bin_path": "./cli/bin_path.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rescript-lang/rescript-compiler.git"
+  "devDependencies": {
+    "@biomejs/biome": "1.8.3",
+    "mocha": "10.1.0",
+    "nyc": "15.0.0"
   },
-  "keywords": [
-    "ReScript",
-    "Compiler",
-    "Types",
-    "JavaScript",
-    "Language"
-  ],
-  "author": {
-    "name": "Hongbo Zhang"
-  },
-  "maintainers": [
-    {
-      "name": "hongbo_zhang",
-      "email": "bobzhang1988@gmail.com"
-    }
-  ],
-  "license": "SEE LICENSE IN LICENSE",
-  "bugs": {
-    "url": "https://github.com/rescript-lang/rescript-compiler/issues"
-  },
-  "homepage": "http://rescript-lang.org",
   "packageManager": "npm@10.8.1+sha512.0e9d42e92bd2318408ed81eaff2da5f78baf23ee7d12a6eed44a6e2901d0f29d7ab715d1b918ade601f72e769a824d9a5c322383f22bbbda5dd396e79de2a077"
 }

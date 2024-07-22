@@ -6,21 +6,26 @@
     "stdlib",
     "functional programming"
   ],
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "http://rescript-lang.org",
+  "bugs": "https://github.com/rescript-compiler/issues",
   "author": {
-    "name": "Hongbo Zhang"
+    "name": "Hongbo Zhang",
+    "email": "bobzhang1988@gmail.com"
   },
   "maintainers": [
-    {
-      "name": "hongbo_zhang",
-      "email": "bobzhang1988@gmail.com"
-    }
+    "Christoph Knittel (https://github.com/cknitt)",
+    "Cristiano Calcagno (https://github.com/cristianoc)",
+    "Florian Hammerschmidt (https://github.com/fhammerschmidt)",
+    "Gabriel Nordeborn (https://github.com/zth)",
+    "Hyeseong Kim (https://github.com/cometkim)",
+    "Jaap Frolich (https://github.com/jfrolich)",
+    "Matthias Le Brun (https://github.com/bloodyowl)",
+    "Patrick Ecker (https://github.com/ryyppy)",
+    "Paul Tsnobiladzé (https://github.com/tsnobip)",
+    "Woonki Moon (https://github.com/mununki)"
   ],
   "files": [
     "lib"
-  ],
-  "license": "SEE LICENSE IN LICENSE",
-  "bugs": {
-    "url": "https://github.com/rescript-compiler/issues"
-  },
-  "homepage": "http://rescript-lang.org"
+  ]
 }
