@@ -1036,14 +1036,8 @@ and transl_cases_try cases =
   List.map transl_case_try cases
 
 and transl_apply ?(inlined = Default_inline) ?(uncurried_partial_application=None) lam sargs loc =
-  let lapply funct args =
-    match funct with
-    (* Attention: This may not be what we need to change the application arity*)
-    | Lapply ap -> Lapply { ap with ap_args = ap.ap_args @ args; ap_loc = loc }
-    | lexp ->
-        Lapply
-          { ap_loc = loc; ap_func = lexp; ap_args = args; ap_inlined = inlined }
-  in
+  let lapply ap_func ap_args =
+    Lapply { ap_loc = loc; ap_func; ap_args; ap_inlined = inlined } in
   let rec build_apply lam args = function
     | (None, optional) :: l ->
         let defs = ref [] in
