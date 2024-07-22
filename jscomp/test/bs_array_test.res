@@ -78,43 +78,6 @@ let () = {
   )
 }
 
-let id = x => eq(__LOC__, \"@@"(Js.Vector.toList, Js.List.toVector(x)), x)
-
-let () = {
-  eq(__LOC__, Js.List.toVector(list{1, 2, 3}), [1, 2, 3])
-  eq(__LOC__, Js.Vector.map((. x) => x + 1, [1, 2, 3]), [2, 3, 4])
-  eq(__LOC__, Js.Vector.make(5, 3), [3, 3, 3, 3, 3])
-  eq(
-    __LOC__,
-    {
-      let a = Js.Vector.init(5, (. i) => i + 1)
-      Js.Vector.filterInPlace((. j) => mod(j, 2) == 0, a)
-      a
-    },
-    [2, 4],
-  )
-
-  eq(
-    __LOC__,
-    {
-      let a = Js.Vector.init(5, (. i) => i + 1)
-      Js.Vector.filterInPlace((. j) => mod(j, 2) != 0, a)
-      a
-    },
-    [1, 3, 5],
-  )
-
-  eq(__LOC__, Js.List.toVector(list{1, 2, 3}), [1, 2, 3])
-  eq(__LOC__, Js.List.toVector(list{1}), [1])
-  id(list{})
-  id(list{1})
-  id(list{1, 2, 3, 4, 5})
-  id({
-    open Js.Vector
-    \"@@"(toList, init(100, (. i) => i))
-  })
-}
-
 let add = (x, y) => x + y
 let () = {
   let v = A.makeBy(3000, i => i)

@@ -1,28 +1,6 @@
 let suites = {
   open Mt
   list{
-    (
-      __LOC__,
-      _ => Eq(
-        [2, 4],
-        {
-          let x = [1, 2, 3, 4, 5]
-          Js.Vector.filterInPlace((. x) => mod(x, 2) == 0, x)
-          x
-        },
-      ),
-    ),
-    (
-      __LOC__,
-      _ => Eq(
-        true,
-        {
-          let x = [1, 2, 3, 4, 5]
-          Js.Vector.filterInPlace((. x) => x > 10, x)
-          Array.length(x) == 0
-        },
-      ),
-    ),
     /* es2015, unable to test because nothing currently implements array_like
     "from", (fun _ ->
       Eq(

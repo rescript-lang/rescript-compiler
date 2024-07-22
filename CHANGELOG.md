@@ -35,6 +35,7 @@
 - Remove support for compiling `.ml` files, and general cleanup. https://github.com/rescript-lang/rescript-compiler/pull/6852
 - Remove `rescript convert` subcommand. https://github.com/rescript-lang/rescript-compiler/pull/6860
 - Remove support for `@bs.send.pipe`. This also removes all functions in `Js_typed_array` that rely on `@bs.send.pipe`. https://github.com/rescript-lang/rescript-compiler/pull/6858 https://github.com/rescript-lang/rescript-compiler/pull/6891
+- Remove deprecated `Js.Vector` and `Js.List`. https://github.com/rescript-lang/rescript-compiler/pull/6900
 
 #### :bug: Bug Fix
 
