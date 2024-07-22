@@ -112,14 +112,12 @@ function $eq$tilde(a, b) {
   };
 }
 
-let none = Belt_Array.map(Array_data_util.randomRange(0, 39), (function (x) {
+let u0 = Belt_Map.fromArray(Belt_Array.map(Array_data_util.randomRange(0, 39), (function (x) {
   return [
     x,
     x
   ];
-}));
-
-let u0 = Belt_Map.fromArray(none, Icmp);
+})), Icmp);
 
 let u1 = Belt_Map.set(u0, 39, 120);
 
@@ -153,14 +151,12 @@ eq("File \"bs_map_set_dict_test.res\", line 84, characters 5-12", Belt_Map.get(u
 
 eq("File \"bs_map_set_dict_test.res\", line 85, characters 5-12", Belt_Map.get(u1, 39), 120);
 
-let none$1 = Belt_Array.makeByAndShuffle(10000, (function (x) {
+let u = Belt_Map.fromArray(Belt_Array.makeByAndShuffle(10000, (function (x) {
   return [
     x,
     x
   ];
-}));
-
-let u = Belt_Map.fromArray(none$1, Icmp);
+})), Icmp);
 
 eq("File \"bs_map_set_dict_test.res\", line 90, characters 5-12", Belt_Array.makeBy(10000, (function (x) {
   return [

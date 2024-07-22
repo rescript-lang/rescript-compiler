@@ -23,7 +23,7 @@ function uf(u) {
 
 function uf1(u) {
   return function (extra) {
-    return u.y1(1, extra);
+    return Curry._2(u.y1, 1, extra);
   };
 }
 

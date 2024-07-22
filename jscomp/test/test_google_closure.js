@@ -28,7 +28,9 @@ let arr = $$Array.init(2, (function (param) {
 }));
 
 for(let i = 0; i <= 1; ++i){
-  let f3$1 = f2(i);
+  let f3$1 = function (extra) {
+    return i + 1 | 0;
+  };
   Caml_array.set(arr, i, Curry._1(f3$1, 2));
 }
 

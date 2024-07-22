@@ -121,7 +121,6 @@ let print_taginfo ppf = function
     -> fprintf ppf "[%s]" (String.concat ";" (Array.to_list ss) )
 
 let primitive ppf = function
-  | Puncurried_apply -> fprintf ppf "@app"
   | Pidentity -> fprintf ppf "id"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pignore -> fprintf ppf "ignore"
@@ -253,7 +252,6 @@ let primitive ppf = function
   | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
   | Pcreate_extension s -> fprintf ppf "extension[%s]" s   
 let name_of_primitive = function
-  | Puncurried_apply -> "Puncurried_apply"
   | Pidentity -> "Pidentity"
   | Pbytes_to_string -> "Pbytes_to_string"
   | Pignore -> "Pignore"

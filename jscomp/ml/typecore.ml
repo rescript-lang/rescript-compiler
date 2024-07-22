@@ -2153,18 +2153,6 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
       end_def ();
       unify_var env (newvar()) funct.exp_type;
 
-      let mk_exp ?(loc=Location.none) exp_desc exp_type =
-        { exp_desc;
-          exp_loc = loc; exp_extra = [];
-          exp_type;
-          exp_attributes = [];
-          exp_env = env } in
-      let _apply_internal name e =
-        let lid:Longident.t = Ldot (Ldot (Lident "Js", "Internal"), name) in
-        let (path, desc) = Env.lookup_value lid env in
-        let id = mk_exp (Texp_ident(path, {txt=lid; loc=Location.none}, desc)) desc.val_type in
-        mk_exp ~loc:e.exp_loc (Texp_apply(id, [(Nolabel, Some e)])) e.exp_type in
-        
       let mk_apply funct args =
         rue {
           exp_desc = Texp_apply(funct, args);

@@ -322,7 +322,7 @@ let b = match$4[1];
 
 let a = match$4[0];
 
-let extra = Pervasives.$at({
+Mt.from_pair_suites("Float_test", Pervasives.$at({
   hd: [
     "mod_float",
     (function () {
@@ -370,9 +370,7 @@ let extra = Pervasives.$at({
       }
     }
   }
-}, Pervasives.$at(from_pairs(results), suites.contents));
-
-Mt.from_pair_suites("Float_test", extra);
+}, Pervasives.$at(from_pairs(results), suites.contents)));
 
 exports.test_id = test_id;
 exports.suites = suites;

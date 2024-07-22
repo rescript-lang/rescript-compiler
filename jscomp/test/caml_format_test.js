@@ -423,7 +423,7 @@ let of_string_data = [
   ]
 ];
 
-let extra = Pervasives.$at(suites, Pervasives.$at($$Array.to_list($$Array.mapi((function (i, param) {
+Mt.from_pair_suites("Caml_format_test", Pervasives.$at(suites, Pervasives.$at($$Array.to_list($$Array.mapi((function (i, param) {
   let str_result = param[2];
   let f = param[1];
   let fmt = param[0];
@@ -450,9 +450,7 @@ let extra = Pervasives.$at(suites, Pervasives.$at($$Array.to_list($$Array.mapi((
       };
     })
   ];
-}), of_string_data)))));
-
-Mt.from_pair_suites("Caml_format_test", extra);
+}), of_string_data))))));
 
 let float_suites = {
   hd: "float_nan",

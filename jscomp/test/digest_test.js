@@ -145,7 +145,7 @@ let ref = [
   "b325dc1c6f5e7a2b7cf465b9feab7948"
 ];
 
-let extra = Pervasives.$at({
+Mt.from_pair_suites("Digest_test", Pervasives.$at({
   hd: [
     "File \"digest_test.res\", line 9, characters 9-16",
     (function () {
@@ -228,9 +228,7 @@ let extra = Pervasives.$at({
       };
     })
   ];
-}), Ext_array_test.range(0, 129))));
-
-Mt.from_pair_suites("Digest_test", extra);
+}), Ext_array_test.range(0, 129)))));
 
 exports.f = f;
-/* extra Not a pure module */
+/*  Not a pure module */

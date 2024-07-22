@@ -161,7 +161,7 @@ let unit = Lam.unit
 let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   match p with
   | Pidentity -> Ext_list.singleton_exn args
-  | Puncurried_apply | Pccall _ -> assert false
+  | Pccall _ -> assert false
   | Prevapply -> assert false
   | Pdirapply -> assert false
   | Ploc _ -> assert false (* already compiled away here*)
@@ -584,16 +584,6 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           may_depend may_depends (Lam_module_ident.of_ml ~dynamic_import id);
           assert (args = []);
           Lam.global_module ~dynamic_import id)
-    | Lprim
-        ( Puncurried_apply,
-          [ Lapply { ap_func; ap_args } ],
-          loc ) ->
-        let ap_func = convert_aux ap_func in
-        let ap_args = Ext_list.map ap_args convert_aux in
-        prim ~primitive:Pfull_apply ~args:(ap_func :: ap_args) loc
-        (* There may be some optimization opportunities here
-           for cases like `(fun [@bs] a b -> a + b ) 1 2 [@bs]` *)
-    | Lprim (Puncurried_apply, _, _) -> assert false
     | Lprim (primitive, args, loc) ->
         let args = Ext_list.map args (convert_aux ~dynamic_import) in
         lam_prim ~primitive ~args loc
