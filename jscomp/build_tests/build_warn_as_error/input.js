@@ -46,3 +46,8 @@ var third_message = o3.stdout
 if (!third_message) {
   assert.fail(o3.stdout);
 }
+
+var o2 = p.spawnSync(rescript_exe, ["build", "-warn-error", "+110"], {
+  encoding: "utf8",
+  cwd: __dirname,
+});
