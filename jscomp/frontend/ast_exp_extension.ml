@@ -61,14 +61,19 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
     Exp.constraint_ ~loc
       (Ast_exp_handle_external.handle_raw ~kind:Raw_re loc payload)
       (Ast_comb.to_js_re_type loc)
-  | "external" -> (
+  | "global" | "external" -> (
+    if txt = "external" then
+      Location.deprecated loc
+        "%external is deprecated, use %global or %define instead.";
+    match Ast_payload.as_ident payload with
+    | Some {txt = Lident x} -> Ast_exp_handle_external.handle_global loc x
+    | None | Some _ ->
+      Location.raise_errorf ~loc "external expects a single identifier")
+  | "define" -> (
     match Ast_payload.as_ident payload with
     | Some {txt = Lident x} ->
-      Ast_exp_handle_external.handle_external loc x
-      (* do we need support [%external gg.xx ]
-
-         {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
-      *)
+      Ast_exp_handle_external.handle_define loc x
+      (* TODO: we need to support %define(gg.xx) *)
     | None | Some _ ->
       Location.raise_errorf ~loc "external expects a single identifier")
   | "time" -> (

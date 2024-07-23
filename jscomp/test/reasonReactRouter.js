@@ -13,7 +13,7 @@ function safeMakeEvent(eventName) {
 }
 
 function path() {
-  let window = typeof window === "undefined" ? undefined : window;
+  let window = globalThis.window;
   if (window === undefined) {
     return /* [] */0;
   }
@@ -46,7 +46,7 @@ function path() {
 }
 
 function hash() {
-  let window = typeof window === "undefined" ? undefined : window;
+  let window = globalThis.window;
   if (window === undefined) {
     return "";
   }
@@ -61,7 +61,7 @@ function hash() {
 }
 
 function search() {
-  let window = typeof window === "undefined" ? undefined : window;
+  let window = globalThis.window;
   if (window === undefined) {
     return "";
   }
@@ -76,8 +76,8 @@ function search() {
 }
 
 function push(path) {
-  let match = typeof history === "undefined" ? undefined : history;
-  let match$1 = typeof window === "undefined" ? undefined : window;
+  let match = globalThis.history;
+  let match$1 = globalThis.window;
   if (match !== undefined && match$1 !== undefined) {
     match.pushState(null, "", path);
     match$1.dispatchEvent(safeMakeEvent("popstate"));
@@ -87,8 +87,8 @@ function push(path) {
 }
 
 function replace(path) {
-  let match = typeof history === "undefined" ? undefined : history;
-  let match$1 = typeof window === "undefined" ? undefined : window;
+  let match = globalThis.history;
+  let match$1 = globalThis.window;
   if (match !== undefined && match$1 !== undefined) {
     match.replaceState(null, "", path);
     match$1.dispatchEvent(safeMakeEvent("popstate"));
@@ -135,7 +135,7 @@ function url() {
 }
 
 function watchUrl(callback) {
-  let window = typeof window === "undefined" ? undefined : window;
+  let window = globalThis.window;
   if (window === undefined) {
     return function () {
       
@@ -149,7 +149,7 @@ function watchUrl(callback) {
 }
 
 function unwatchUrl(watcherID) {
-  let window = typeof window === "undefined" ? undefined : window;
+  let window = globalThis.window;
   if (window !== undefined) {
     window.removeEventListener("popstate", watcherID);
     return;

@@ -12,25 +12,25 @@ let ok = (loc, x) => {
     list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Mt.Ok(x)), ...suites.contents}
 }
 
-let a = switch %external(___undefined_value) {
+let a = switch %define(___undefined_value) {
 | None => 1
 | Some(_) => 2
 }
 
 let test = () =>
-  switch %external(__DEV__) {
+  switch %define(__DEV__) {
   | Some(_) => Js.log("dev mode")
   | None => Js.log("producton mode")
   }
 
 let test2 = () =>
-  switch %external(__filename) {
+  switch %define(__filename) {
   | Some(f) => Js.log(f)
   | None => Js.log("non node environment")
   }
 
 let test3 = () =>
-  if %external(__DEV__) == None {
+  if %define(__DEV__) == None {
     Js.log("production mode")
   }
 

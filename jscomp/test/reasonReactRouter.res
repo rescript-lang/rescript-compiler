@@ -60,7 +60,7 @@ let arrayToList = a => {
 /* actually you know what, not gonna provide search for now. It's a mess.
  We'll let users roll their own solution/data structure for now */
 let path = () =>
-  switch %external(window) {
+  switch %global(window) {
   | None => list{}
   | Some(window: Dom.window) =>
     switch window |> location |> pathname {
@@ -78,7 +78,7 @@ let path = () =>
     }
   }
 let hash = () =>
-  switch %external(window) {
+  switch %global(window) {
   | None => ""
   | Some(window: Dom.window) =>
     switch window |> location |> hash {
@@ -91,7 +91,7 @@ let hash = () =>
     }
   }
 let search = () =>
-  switch %external(window) {
+  switch %global(window) {
   | None => ""
   | Some(window: Dom.window) =>
     switch window |> location |> search {
@@ -103,7 +103,7 @@ let search = () =>
     }
   }
 let push = path =>
-  switch (%external(history), %external(window)) {
+  switch (%global(history), %global(window)) {
   | (None, _)
   | (_, None) => ()
   | (Some(history: Dom.history), Some(window: Dom.window)) =>
@@ -111,7 +111,7 @@ let push = path =>
     dispatchEvent(window, safeMakeEvent("popstate"))
   }
 let replace = path =>
-  switch (%external(history), %external(window)) {
+  switch (%global(history), %global(window)) {
   | (None, _)
   | (_, None) => ()
   | (Some(history: Dom.history), Some(window: Dom.window)) =>
@@ -143,7 +143,7 @@ let url = () => {path: path(), hash: hash(), search: search()}
 /* alias exposed publicly */
 let dangerouslyGetInitialUrl = url
 let watchUrl = callback =>
-  switch %external(window) {
+  switch %global(window) {
   | None => () => ()
   | Some(window: Dom.window) =>
     let watcherID = () => callback(url())
@@ -151,7 +151,7 @@ let watchUrl = callback =>
     watcherID
   }
 let unwatchUrl = watcherID =>
-  switch %external(window) {
+  switch %global(window) {
   | None => ()
   | Some(window: Dom.window) => removeEventListener(window, "popstate", watcherID)
   }
