@@ -47,7 +47,7 @@ if (!third_message) {
   assert.fail(o3.stdout);
 }
 
-var o2 = p.spawnSync(rescript_exe, ["build", "-warn-error", "+110"], {
+var cleanup = p.spawnSync(rescript_exe, ["clean"], {
   encoding: "utf8",
   cwd: __dirname,
 });
