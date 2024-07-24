@@ -328,6 +328,7 @@ and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
          ]}
           [Alias] may not be exact
       *)
+      let params = if oneUnitArg then [] else params in
       let ret : Lam_compile_context.return_label =
         {
           id;
