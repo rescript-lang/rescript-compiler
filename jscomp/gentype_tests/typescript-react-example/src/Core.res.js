@@ -54,10 +54,6 @@ function bigint0(x) {
   return x;
 }
 
-function bigint1(x) {
-  return x;
-}
-
 function regexp0(x) {
   return x;
 }
@@ -116,7 +112,6 @@ export {
   date0,
   date1,
   bigint0,
-  bigint1,
   regexp0,
   regexp1,
   $$Map,
