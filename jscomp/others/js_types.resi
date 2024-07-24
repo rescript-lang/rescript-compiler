@@ -27,9 +27,6 @@
 /** Js symbol type (only available in ES6) */
 type symbol
 
-/** Js bigint type only available in ES2020 */
-type bigint_val
-
 type obj_val
 
 /** This type has only one value `undefined` */
@@ -49,7 +46,7 @@ type rec t<_> =
   | Function: t<function_val>
   | Object: t<obj_val>
   | Symbol: t<symbol>
-  | BigInt: t<bigint_val>
+  | BigInt: t<bigint>
 
 /**
 `test(value, t)` returns `true` if `value` is `typeof t`, otherwise `false`.
@@ -75,6 +72,6 @@ type tagged_t =
   | JSFunction(function_val)
   | JSObject(obj_val)
   | JSSymbol(symbol)
-  | JSBigInt(bigint_val)
+  | JSBigInt(bigint)
 
 let classify: 'a => tagged_t

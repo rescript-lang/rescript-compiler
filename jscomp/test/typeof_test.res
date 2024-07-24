@@ -15,7 +15,9 @@ let string_or_number = (type t, x) => {
     false
   | JSObject(_) => false
   | JSSymbol(_) => false
-  | JSBigInt(_) => false
+  | JSBigInt(v) =>
+    v->Js.BigInt.toString->Js.log
+    true
   }
 }
 
