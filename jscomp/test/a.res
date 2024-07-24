@@ -28,6 +28,3 @@ include (
     /* let () = v.[0] <- 'a' */
   }: {}
 )
-
-/* [%%bs.cast.x: 'a -> 'b  ] */
-/* external f : int -> (int -> int) = "%identity" */

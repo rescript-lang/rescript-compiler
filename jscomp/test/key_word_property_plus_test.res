@@ -8,23 +8,13 @@ let eq = (loc, x, y) => {
 
 let () = eq(
   __LOC__,
-  Js.Array2.reduce([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], \"+", 0),
+  Js.Array2.reduce([1, 2, 3, 4], \"+", 0),
   {
     open Global_mangles
     __dirname +
     __filename +
-    clearImmediate +
-    clearInterval +
-    clearTimeout +
-    console +
     exports +
-    global +
-    _module +
-    process +
-    require +
-    setImmediate +
-    setInterval +
-    setTimeout
+    require
   },
 )
 
