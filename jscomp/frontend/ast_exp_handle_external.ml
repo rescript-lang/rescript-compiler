@@ -25,33 +25,16 @@
 open Ast_helper
 
 (**
-   {[ Js.undefinedToOption (Js.globalThis["x"]) ]}
-*)
-let handle_global loc (x : string) : Parsetree.expression =
-  let global_reference : Parsetree.expression =
-    {
-      pexp_loc = loc;
-      pexp_attributes = [];
-      pexp_desc =
-        Ast_util.js_property loc
-          (Exp.ident {loc; txt = Ldot (Lident "Js", "globalThis")})
-          x;
-    }
-  in
-  let undefined_typeof =
-    Exp.ident {loc; txt = Ldot (Lident "Js", "undefinedToOption")}
-  in
-  Ast_compatible.app1 ~loc undefined_typeof global_reference
-
-(*
    {[
      Js.undefinedToOption 
        (if Js.typeof x = "undefined" then undefined 
         else x  )
 
    ]}
+
+   @deprecated
 *)
-let handle_define loc (x : string) : Parsetree.expression =
+let handle_external loc (x : string) : Parsetree.expression =
   let raw_exp : Ast_exp.t =
     let str_exp =
       Ast_compatible.const_exp_string ~loc x ~delimiter:Ext_string.empty
