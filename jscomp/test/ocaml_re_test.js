@@ -4187,7 +4187,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         return epsilon;
       }
       i.contents = i.contents + 1 | 0;
-      _param = undefined;
       continue;
     };
   };

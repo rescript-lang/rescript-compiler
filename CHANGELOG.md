@@ -49,6 +49,7 @@
 - Avoid generation of `Curry` with reverse application `|>`. https://github.com/rescript-lang/rescript-compiler/pull/6876
 - Fix issue where the internal ppx for pipe `->` would not use uncurried application in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6878
 - Fix build after calling without `-warn-error`, see https://github.com/rescript-lang/rescript-compiler/issues/6868 for more details. https://github.com/rescript-lang/rescript-compiler/pull/6877
+- Fix issue with uninitialized `_param` in recursive functions with unit argument. https://github.com/rescript-lang/rescript-compiler/pull/6907
 
 #### :house: Internal
 
