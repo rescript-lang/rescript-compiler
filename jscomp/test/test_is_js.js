@@ -11,6 +11,10 @@ let test_id = {
   contents: 0
 };
 
+function eq(loc, x, y) {
+  Mt.eq_suites(test_id, suites, loc, x, y);
+}
+
 function b(loc, x) {
   Mt.bool_suites(test_id, suites, loc, x);
 }
@@ -23,4 +27,11 @@ b("File \"test_is_js.res\", line 12, characters 2-9", true);
 
 Mt.from_pair_suites("Test_is_js", suites.contents);
 
+let v = true;
+
+exports.v = v;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.b = b;
 /*  Not a pure module */

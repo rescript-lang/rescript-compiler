@@ -1,7 +1,3 @@
-
-
-
-
 let f = x => x["length"] +. x["width"]
 let i = () => ()
 

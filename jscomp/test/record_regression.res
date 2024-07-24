@@ -1,5 +1,3 @@
-// @@config({flags: ["-bs-diagnose"] })
-
 type t0 = {x: int, y?: int, yy?: option<int>, z: int}
 
 let f1 = {x: 3, z: 2}
