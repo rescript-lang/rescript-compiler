@@ -24,13 +24,15 @@
 
 open Ast_helper
 
-(*
+(**
    {[
      Js.undefinedToOption 
        (if Js.typeof x = "undefined" then undefined 
         else x  )
 
    ]}
+
+   @deprecated
 *)
 let handle_external loc (x : string) : Parsetree.expression =
   let raw_exp : Ast_exp.t =

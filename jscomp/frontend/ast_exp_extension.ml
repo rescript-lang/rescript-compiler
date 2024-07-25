@@ -62,13 +62,10 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
       (Ast_exp_handle_external.handle_raw ~kind:Raw_re loc payload)
       (Ast_comb.to_js_re_type loc)
   | "external" -> (
+    Location.deprecated loc
+      "%external is deprecated, use %raw or regular FFI syntax instead.";
     match Ast_payload.as_ident payload with
-    | Some {txt = Lident x} ->
-      Ast_exp_handle_external.handle_external loc x
-      (* do we need support [%external gg.xx ]
-
-         {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
-      *)
+    | Some {txt = Lident x} -> Ast_exp_handle_external.handle_external loc x
     | None | Some _ ->
       Location.raise_errorf ~loc "external expects a single identifier")
   | "time" -> (

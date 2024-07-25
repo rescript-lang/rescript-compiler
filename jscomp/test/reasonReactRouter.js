@@ -2,6 +2,7 @@
 'use strict';
 
 let React = require("react");
+let Caml_option = require("../../lib/js/caml_option.js");
 
 function safeMakeEvent(eventName) {
   if (typeof Event === "function") {
@@ -13,11 +14,11 @@ function safeMakeEvent(eventName) {
 }
 
 function path() {
-  let window = typeof window === "undefined" ? undefined : window;
+  let window = globalThis.window;
   if (window === undefined) {
     return /* [] */0;
   }
-  let raw = window.location.pathname;
+  let raw = Caml_option.valFromOption(window).location.pathname;
   switch (raw) {
     case "" :
     case "/" :
@@ -46,11 +47,11 @@ function path() {
 }
 
 function hash() {
-  let window = typeof window === "undefined" ? undefined : window;
+  let window = globalThis.window;
   if (window === undefined) {
     return "";
   }
-  let raw = window.location.hash;
+  let raw = Caml_option.valFromOption(window).location.hash;
   switch (raw) {
     case "" :
     case "#" :
@@ -61,11 +62,11 @@ function hash() {
 }
 
 function search() {
-  let window = typeof window === "undefined" ? undefined : window;
+  let window = globalThis.window;
   if (window === undefined) {
     return "";
   }
-  let raw = window.location.search;
+  let raw = Caml_option.valFromOption(window).location.search;
   switch (raw) {
     case "" :
     case "?" :
@@ -76,22 +77,22 @@ function search() {
 }
 
 function push(path) {
-  let match = typeof history === "undefined" ? undefined : history;
-  let match$1 = typeof window === "undefined" ? undefined : window;
+  let match = globalThis.history;
+  let match$1 = globalThis.window;
   if (match !== undefined && match$1 !== undefined) {
-    match.pushState(null, "", path);
-    match$1.dispatchEvent(safeMakeEvent("popstate"));
+    Caml_option.valFromOption(match).pushState(null, "", path);
+    Caml_option.valFromOption(match$1).dispatchEvent(safeMakeEvent("popstate"));
     return;
   }
   
 }
 
 function replace(path) {
-  let match = typeof history === "undefined" ? undefined : history;
-  let match$1 = typeof window === "undefined" ? undefined : window;
+  let match = globalThis.history;
+  let match$1 = globalThis.window;
   if (match !== undefined && match$1 !== undefined) {
-    match.replaceState(null, "", path);
-    match$1.dispatchEvent(safeMakeEvent("popstate"));
+    Caml_option.valFromOption(match).replaceState(null, "", path);
+    Caml_option.valFromOption(match$1).dispatchEvent(safeMakeEvent("popstate"));
     return;
   }
   
@@ -135,7 +136,7 @@ function url() {
 }
 
 function watchUrl(callback) {
-  let window = typeof window === "undefined" ? undefined : window;
+  let window = globalThis.window;
   if (window === undefined) {
     return function () {
       
@@ -144,14 +145,14 @@ function watchUrl(callback) {
   let watcherID = function () {
     callback(url());
   };
-  window.addEventListener("popstate", watcherID);
+  Caml_option.valFromOption(window).addEventListener("popstate", watcherID);
   return watcherID;
 }
 
 function unwatchUrl(watcherID) {
-  let window = typeof window === "undefined" ? undefined : window;
+  let window = globalThis.window;
   if (window !== undefined) {
-    window.removeEventListener("popstate", watcherID);
+    Caml_option.valFromOption(window).removeEventListener("popstate", watcherID);
     return;
   }
   

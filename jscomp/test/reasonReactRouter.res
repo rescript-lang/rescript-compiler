@@ -33,6 +33,12 @@ external createEventNonIEBrowsers: string => Dom.event = "createEvent"
 @send
 external initEventNonIEBrowsers: (Dom.event, string, bool, bool) => unit = "initEvent"
 
+@val @scope("globalThis")
+external window: option<Dom.window> = "window"
+
+@val @scope("globalThis")
+external history: option<Dom.history> = "history"
+
 let safeMakeEvent = eventName =>
   if Js.typeof(event) == "function" {
     makeEventIE11Compatible(eventName)
@@ -60,9 +66,9 @@ let arrayToList = a => {
 /* actually you know what, not gonna provide search for now. It's a mess.
  We'll let users roll their own solution/data structure for now */
 let path = () =>
-  switch %external(window) {
+  switch window {
   | None => list{}
-  | Some(window: Dom.window) =>
+  | Some(window) =>
     switch window |> location |> pathname {
     | ""
     | "/" => list{}
@@ -78,9 +84,9 @@ let path = () =>
     }
   }
 let hash = () =>
-  switch %external(window) {
+  switch window {
   | None => ""
-  | Some(window: Dom.window) =>
+  | Some(window) =>
     switch window |> location |> hash {
     | ""
     | "#" => ""
@@ -91,9 +97,9 @@ let hash = () =>
     }
   }
 let search = () =>
-  switch %external(window) {
+  switch window {
   | None => ""
-  | Some(window: Dom.window) =>
+  | Some(window) =>
     switch window |> location |> search {
     | ""
     | "?" => ""
@@ -103,18 +109,18 @@ let search = () =>
     }
   }
 let push = path =>
-  switch (%external(history), %external(window)) {
+  switch (history, window) {
   | (None, _)
   | (_, None) => ()
-  | (Some(history: Dom.history), Some(window: Dom.window)) =>
+  | (Some(history), Some(window)) =>
     pushState(history, ~href=path)
     dispatchEvent(window, safeMakeEvent("popstate"))
   }
 let replace = path =>
-  switch (%external(history), %external(window)) {
+  switch (history, window) {
   | (None, _)
   | (_, None) => ()
-  | (Some(history: Dom.history), Some(window: Dom.window)) =>
+  | (Some(history), Some(window)) =>
     replaceState(history, ~href=path)
     dispatchEvent(window, safeMakeEvent("popstate"))
   }
@@ -143,17 +149,17 @@ let url = () => {path: path(), hash: hash(), search: search()}
 /* alias exposed publicly */
 let dangerouslyGetInitialUrl = url
 let watchUrl = callback =>
-  switch %external(window) {
+  switch window {
   | None => () => ()
-  | Some(window: Dom.window) =>
+  | Some(window) =>
     let watcherID = () => callback(url())
     addEventListener(window, "popstate", watcherID)
     watcherID
   }
 let unwatchUrl = watcherID =>
-  switch %external(window) {
+  switch window {
   | None => ()
-  | Some(window: Dom.window) => removeEventListener(window, "popstate", watcherID)
+  | Some(window) => removeEventListener(window, "popstate", watcherID)
   }
 
 let useUrl = (~serverUrl=?, ()) => {
