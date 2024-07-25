@@ -51,9 +51,7 @@ export const date0: (x:Date) => Date = CoreJS.date0 as any;
 
 export const date1: (x:Date) => Date = CoreJS.date1 as any;
 
-export const bigint0: (x:BigInt) => BigInt = CoreJS.bigint0 as any;
-
-export const bigint1: (x:BigInt) => BigInt = CoreJS.bigint1 as any;
+export const bigint0: (x:bigint) => bigint = CoreJS.bigint0 as any;
 
 export const regexp0: (x:RegExp) => RegExp = CoreJS.regexp0 as any;
 

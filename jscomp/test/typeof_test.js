@@ -22,6 +22,9 @@ function string_or_number(x) {
       case "JSFunction" :
           console.log("Function");
           return false;
+      case "JSBigInt" :
+          console.log(ty._0.toString());
+          return true;
       default:
         return false;
     }
