@@ -39,17 +39,12 @@
 
 #### :bug: Bug Fix
 
-- Fix tag function location on compiler error. https://github.com/rescript-lang/rescript-compiler/pull/6816
 - Fix unhandled cases for exotic idents (allow to use exotic PascalCased identifiers for types). https://github.com/rescript-lang/rescript-compiler/pull/6777 https://github.com/rescript-lang/rescript-compiler/pull/6779 https://github.com/rescript-lang/rescript-compiler/pull/6897
 - Fix unused attribute check for `@as`. https://github.com/rescript-lang/rescript-compiler/pull/6795
 - Reactivate unused attribute check for `@int`. https://github.com/rescript-lang/rescript-compiler/pull/6802
-- Fix Deno compatibility issues on Windows. https://github.com/rescript-lang/rescript-compiler/pull/6850
-- Fix issue with infinite loops with type errors on recursive types. https://github.com/rescript-lang/rescript-compiler/pull/6867
 - Fix issue where using partial application `...` can generate code that uses `Curry` at runtime. https://github.com/rescript-lang/rescript-compiler/pull/6872
 - Avoid generation of `Curry` with reverse application `|>`. https://github.com/rescript-lang/rescript-compiler/pull/6876
 - Fix issue where the internal ppx for pipe `->` would not use uncurried application in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6878
-- Fix build after calling without `-warn-error`, see https://github.com/rescript-lang/rescript-compiler/issues/6868 for more details. https://github.com/rescript-lang/rescript-compiler/pull/6877
-- Fix issue with uninitialized `_param` in recursive functions with unit argument. https://github.com/rescript-lang/rescript-compiler/pull/6907
 
 #### :house: Internal
 
@@ -64,8 +59,6 @@
 - Make compiler libs ready for uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6861
 - Make tests ready for uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6862
 - Make gentype tests uncurried. https://github.com/rescript-lang/rescript-compiler/pull/6866
-- Ignore `@uncurry` attribute in uncurried mode, to avoid generating calls to `Curry` at runtime. https://github.com/rescript-lang/rescript-compiler/pull/6869
-- Avoid generating calls to Curry when adjusting arity of uncurried functions. https://github.com/rescript-lang/rescript-compiler/pull/6870
 - Remove `@@uncurried.swap`, which was used for internal tests. https://github.com/rescript-lang/rescript-compiler/pull/6875
 - Build the compiler libraries/tests in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6864
 - Ignore `-uncurried` command-line flag. https://github.com/rescript-lang/rescript-compiler/pull/6885
@@ -89,6 +82,24 @@
 - Remove internal option `use-stdlib` from build schema. https://github.com/rescript-lang/rescript-compiler/pull/6778
 - Fix `Js.Types.JSBigInt` payload to use native `bigint` type. https://github.com/rescript-lang/rescript-compiler/pull/6911
 - Deprecate `%external` extension, which has never been officially introduced. https://github.com/rescript-lang/rescript-compiler/pull/6906
+
+# 11.1.3
+
+#### :bug: Bug Fix
+
+- Fix tag function location on compiler error. https://github.com/rescript-lang/rescript-compiler/pull/6816
+- Fix Deno compatibility issues on Windows. https://github.com/rescript-lang/rescript-compiler/pull/6850 
+- Fix issue with infinite loops with type errors on recursive types. https://github.com/rescript-lang/rescript-compiler/pull/6867
+- Ignore `@uncurry` attribute in uncurried mode, to avoid generating calls to `Curry` at runtime. https://github.com/rescript-lang/rescript-compiler/pull/6869
+- Avoid generating calls to Curry when adjusting arity of uncurried functions. https://github.com/rescript-lang/rescript-compiler/pull/6870
+- Fix build after calling without `-warn-error`, see https://github.com/rescript-lang/rescript-compiler/issues/6868 for more details. https://github.com/rescript-lang/rescript-compiler/pull/6877
+- Fix issue with uninitialized `_param` in recursive functions with unit argument. https://github.com/rescript-lang/rescript-compiler/pull/6907
+
+# 11.1.3-rc.1
+
+#### :bug: Bug Fix
+
+- Omit standard library dir from load path if -nostdlib is set. https://github.com/rescript-lang/rescript-compiler/pull/6833
 
 # 11.1.2
 
