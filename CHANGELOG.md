@@ -10,7 +10,7 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 12.0.0-alpha.1 (Unreleased)
+# 12.0.0-alpha.1
 
 #### :rocket: New Feature
 
