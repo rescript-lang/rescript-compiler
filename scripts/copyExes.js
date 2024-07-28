@@ -31,8 +31,13 @@ function copyExe(dir, exe) {
   }
 }
 
-copyExe(duneBinDir, "rescript");
-copyExe(duneBinDir, "bsc");
-copyExe(duneBinDir, "bsb_helper");
-copyExe(ninjaDir, "ninja");
-copyExe(rewatchDir, "rewatch");
+if (process.argv.includes("-all") || process.argv.includes("-compiler")) {
+  copyExe(duneBinDir, "rescript");
+  copyExe(duneBinDir, "bsc");
+  copyExe(duneBinDir, "bsb_helper");
+  copyExe(ninjaDir, "ninja");
+}
+
+if (process.argv.includes("-all") || process.argv.includes("-rewatch")) {
+  copyExe(rewatchDir, "rewatch");
+}
