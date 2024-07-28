@@ -103,15 +103,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build compiler binaries
-        uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.20-ocaml-5.2.0-01
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
         with:
-          args: opam exec -- dune build --display quiet --profile static
+          context: ./docker
+          tags: rescript-ci-build:latest
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          
+      - name: Build compiler binaries
+        run: docker run --rm -v ${{ github.workspace }}:/data -w /data rescript-ci-build:latest opam exec -- dune build --display quiet --profile static
 
       - name: Build ninja binary
-        uses: docker://ghcr.io/rescript-lang/rescript-ci-build:alpine-3.20-ocaml-5.2.0-01
-        with:
-          args: sh -c "cd ninja && LDFLAGS=-static python configure.py --bootstrap"
+        run: docker run --rm -v ${{ github.workspace }}:/data -w /data/ninja -e LDFLAGS="-static" rescript-ci-build:latest python configure.py --bootstrap
 
       - name: Use Node.js
         uses: actions/setup-node@v4
