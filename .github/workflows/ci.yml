@@ -96,7 +96,7 @@ jobs:
   # (see https://github.com/rescript-lang/docker-rescript-ci-build/blob/main/Dockerfile).
   # Note: Static ARM64 binaries cannot be built directly on Ubuntu runner because of
   # https://github.com/ocaml/opam-repository/issues/26216
-  static-binaries-linux-arm:
+  build-compiler-linux-arm:
     runs-on: buildjet-2vcpu-ubuntu-2204-arm
 
     steps:
@@ -132,7 +132,7 @@ jobs:
           name: binaries-${{ env.artifact_dir_name }}
           path: ${{ env.artifact_dir_name }}
 
-  build:
+  build-compiler:
     strategy:
       fail-fast: false
       matrix:
@@ -403,9 +403,9 @@ jobs:
 
   package:
     needs:
-      - build
+      - build-compiler
+      - build-compiler-linux-arm
       - build-rewatch
-      - static-binaries-linux-arm
   
     runs-on: ubuntu-latest
 
