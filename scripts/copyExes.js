@@ -35,6 +35,9 @@ if (process.argv.includes("-all") || process.argv.includes("-compiler")) {
   copyExe(duneBinDir, "rescript");
   copyExe(duneBinDir, "bsc");
   copyExe(duneBinDir, "bsb_helper");
+}
+
+if (process.argv.includes("-all") || process.argv.includes("-ninja")) {
   copyExe(ninjaDir, "ninja");
 }
 

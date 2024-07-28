@@ -22,6 +22,7 @@ rewatch:
 
 ninja/ninja:
 	./scripts/buildNinjaBinary.js
+	./scripts/copyExes.js -ninja
 
 ninja: ninja/ninja
 
