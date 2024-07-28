@@ -75,7 +75,7 @@ jobs:
         if: steps.build-cache.outputs.cache-hit != 'true'
         run: cargo build --manifest-path rewatch/Cargo.toml --target ${{matrix.rust-target}} --release
 
-      - name: Copy exe to platform bin dirs
+      - name: Copy rewatch exe to platform bin dir
         run: |
           cp rewatch/target/${{matrix.rust-target}}/release/rewatch${{ runner.os == 'Windows' && '.exe' || '' }} rewatch
           node ./scripts/copyExes.js -rewatch
@@ -121,8 +121,10 @@ jobs:
       - name: Get artifact dir name
         run: node .github/workflows/get_artifact_dir_name.js
 
-      - name: Copy exes to platform bin dirs
-        run: node ./scripts/copyExes.js -compiler
+      - name: Copy exes to platform bin dir
+        run: |
+          node ./scripts/copyExes.js -compiler
+          node ./scripts/copyExes.js -ninja
 
       - name: "Upload artifacts: binaries"
         uses: actions/upload-artifact@v4
@@ -164,6 +166,11 @@ jobs:
         with:
           fetch-depth: 2 # to be able to check for changes in subfolder jscomp/syntax later
 
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
       - name: Get artifact dir name
         run: node .github/workflows/get_artifact_dir_name.js
 
@@ -174,11 +181,6 @@ jobs:
           # See https://github.com/ocaml/setup-ocaml/blob/b2105f9/packages/setup-ocaml/src/unix.ts#L9
           packages: bubblewrap darcs g++-multilib gcc-multilib mercurial musl-tools rsync
           version: v1
-
-      - name: Setup Python for ninja build
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
 
       # matrix.ocaml_compiler may contain commas
       - name: Get OPAM cache key
@@ -284,32 +286,44 @@ jobs:
         if: runner.os == 'Linux'
         run: opam exec -- dune build --display quiet --profile static
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
       - name: Install npm packages
         run: npm ci --ignore-scripts
 
+      - name: Copy compiler exes to platform bin dir
+        run: node ./scripts/copyExes.js -compiler
+
+      - name: Restore ninja build cache
+        id: ninja-build-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.artifact_dir_name }}/ninja.exe
+          key: ninja-build-v1-${{ matrix.os }}-${{ hashFiles('ninja/src/**') }}
+
+      - name: Setup Python for ninja build
+        if: steps.ninja-build-cache.outputs.cache-hit != 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
       - name: Setup MSVC for ninja build (Windows)
-        if: runner.os == 'Windows'
+        if: steps.ninja-build-cache.outputs.cache-hit != 'true' && runner.os == 'Windows'
         uses: TheMrMilchmann/setup-msvc-dev@v3
         with:
           arch: x64
 
       - name: Build ninja
-        if: runner.os != 'Linux'
+        if: steps.ninja-build-cache.outputs.cache-hit != 'true' && runner.os != 'Linux'
         run: node scripts/buildNinjaBinary.js
 
       - name: Build ninja (Linux static)
-        if: runner.os == 'Linux'
+        if: steps.ninja-build-cache.outputs.cache-hit != 'true' && runner.os == 'Linux'
         env:
           LDFLAGS: -static
         run: node scripts/buildNinjaBinary.js
 
-      - name: Copy exes to platform bin dirs
-        run: node ./scripts/copyExes.js -compiler
+      - name: Copy ninja exe to platform bin dir
+        if: steps.ninja-build-cache.outputs.cache-hit != 'true'
+        run: node ./scripts/copyExes.js -ninja
 
       - name: "Check if syntax subfolder has changed"
         id: syntax-diff
