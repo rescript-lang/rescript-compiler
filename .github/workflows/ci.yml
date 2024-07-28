@@ -75,6 +75,11 @@ jobs:
         if: steps.build-cache.outputs.cache-hit != 'true'
         run: cargo build --manifest-path rewatch/Cargo.toml --target ${{matrix.rust-target}} --release
 
+      - name: Copy exe to platform bin dirs
+        run: |
+          cp rewatch/target/${{matrix.rust-target}}/release/rewatch${{ runner.os == 'Windows' && '.exe' || '' }} rewatch
+          node ./scripts/copyExes.js -rewatch
+
       - name: Get artifact dir name
         run: node .github/workflows/get_artifact_dir_name.js
 
@@ -82,7 +87,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rewatch-${{env.artifact_dir_name}}
-          path: rewatch/target/${{matrix.rust-target}}/release/rewatch${{ runner.os == 'Windows' && '.exe' || '' }}
+          path: ${{ env.artifact_dir_name }}
 
   # Build statically linked Linux binaries in an Alpine-based Docker container
   # See https://ocamlpro.com/blog/2021_09_02_generating_static_and_portable_executables_with_ocaml
@@ -108,32 +113,6 @@ jobs:
         with:
           args: sh -c "cd ninja && LDFLAGS=-static python configure.py --bootstrap"
 
-      - name: "Upload artifacts"
-        uses: actions/upload-artifact@v4
-        with:
-          name: static-binaries-linux-${{runner.arch}}
-          path: |
-            _build/install/default/bin
-            ninja/ninja
-
-  # The full build including tests does not work on Linux ARM because setup-ocaml fails.
-  # Therefore, only upload the binaries from the static build
-  upload-linux-arm64-binaries:
-    needs:
-      - build-rewatch
-      - static-binaries-linux-arm
-
-    runs-on: buildjet-2vcpu-ubuntu-2204-arm
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download static linux binaries
-        uses: actions/download-artifact@v4
-        with:
-          name: static-binaries-linux-${{ runner.arch }}
-
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -142,14 +121,8 @@ jobs:
       - name: Get artifact dir name
         run: node .github/workflows/get_artifact_dir_name.js
 
-      - name: Download rewatch binary
-        uses: actions/download-artifact@v4
-        with:
-          name: rewatch-${{ env.artifact_dir_name }}
-          path: rewatch
-
       - name: Copy exes to platform bin dirs
-        run: node ./scripts/copyExes.js
+        run: node ./scripts/copyExes.js -compiler
 
       - name: "Upload artifacts: binaries"
         uses: actions/upload-artifact@v4
@@ -158,9 +131,6 @@ jobs:
           path: ${{ env.artifact_dir_name }}
 
   build:
-    needs:
-      - build-rewatch
-
     strategy:
       fail-fast: false
       matrix:
@@ -196,12 +166,6 @@ jobs:
 
       - name: Get artifact dir name
         run: node .github/workflows/get_artifact_dir_name.js
-
-      - name: Download rewatch binary
-        uses: actions/download-artifact@v4
-        with:
-          name: rewatch-${{ env.artifact_dir_name }}
-          path: rewatch
 
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
@@ -345,7 +309,7 @@ jobs:
         run: node scripts/buildNinjaBinary.js
 
       - name: Copy exes to platform bin dirs
-        run: node ./scripts/copyExes.js
+        run: node ./scripts/copyExes.js -compiler
 
       - name: "Check if syntax subfolder has changed"
         id: syntax-diff
@@ -424,7 +388,11 @@ jobs:
           path: lib/ocaml
 
   package:
-    needs: build
+    needs:
+      - build
+      - build-rewatch
+      - static-binaries-linux-arm
+  
     runs-on: ubuntu-latest
 
     steps:
@@ -442,7 +410,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: "@(binaries-*|lib-ocaml)"
+          pattern: "@(binaries-*|rewatch-*|lib-ocaml)"
 
       - name: Move artifacts
         run: ./scripts/moveArtifacts.sh

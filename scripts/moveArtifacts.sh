@@ -24,13 +24,15 @@ check_statically_linked() {
     fi
 }
 
-chmod +x binaries-*/*.exe
+chmod +x binaries-*/*.exe rewatch-*/*.exe
 
-mv binaries-darwin darwin
-mv binaries-darwinarm64 darwinarm64
-mv binaries-linux linux
-mv binaries-linuxarm64 linuxarm64
-mv binaries-win32 win32
+mkdir darwin darwinarm64 linux linuxarm64 win32
+
+mv binaries-darwin/* rewatch-darwin/* darwin
+mv binaries-darwinarm64/* rewatch-darwinarm64/* darwinarm64
+mv binaries-linux/* rewatch-linux/* linux
+mv binaries-linuxarm64/* rewatch-linuxarm64/* linuxarm64
+mv binaries-win32/* rewatch-win32/* win32
 
 mv lib-ocaml lib/ocaml
 mv ninja/COPYING ninja.COPYING
