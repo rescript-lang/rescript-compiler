@@ -24,21 +24,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [
-            macos-13, # x64
-            macos-14, # ARM
-            ubuntu-latest, # x64
-            buildjet-2vcpu-ubuntu-2204-arm, # ARM
-            windows-latest,
-          ]
         include:
-          - os: macos-13
+          - os: macos-13 # x64
             rust-target: x86_64-apple-darwin
-          - os: macos-14
+          - os: macos-14 # ARM
             rust-target: aarch64-apple-darwin
-          - os: ubuntu-latest
+          - os: ubuntu-latest # x64
             rust-target: x86_64-unknown-linux-musl
-          - os: buildjet-2vcpu-ubuntu-2204-arm
+          - os: buildjet-2vcpu-ubuntu-2204-arm # ARM
             rust-target: aarch64-unknown-linux-musl
           - os: windows-latest
             rust-target: x86_64-pc-windows-gnu
@@ -96,13 +89,10 @@ jobs:
   # for more info.
   # The container already comes with all required tools pre-installed
   # (see https://github.com/rescript-lang/docker-rescript-ci-build/blob/main/Dockerfile).
-  static-binaries-linux:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, buildjet-2vcpu-ubuntu-2204-arm]
-
-    runs-on: ${{matrix.os}}
+  # Note: Static ARM64 binaries cannot be built directly on Ubuntu runner because of
+  # https://github.com/ocaml/opam-repository/issues/26216
+  static-binaries-linux-arm:
+    runs-on: buildjet-2vcpu-ubuntu-2204-arm
 
     steps:
       - name: Checkout
@@ -131,7 +121,7 @@ jobs:
   upload-linux-arm64-binaries:
     needs:
       - build-rewatch
-      - static-binaries-linux
+      - static-binaries-linux-arm
 
     runs-on: buildjet-2vcpu-ubuntu-2204-arm
 
@@ -140,7 +130,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download static linux binaries
-        if: runner.os == 'Linux'
         uses: actions/download-artifact@v4
         with:
           name: static-binaries-linux-${{ runner.arch }}
@@ -171,18 +160,19 @@ jobs:
   build:
     needs:
       - build-rewatch
-      - static-binaries-linux
 
     strategy:
       fail-fast: false
       matrix:
-        os: [
-            macos-13, # x64
-            macos-14, # ARM
-            ubuntu-latest,
-            windows-latest,
-          ]
-        ocaml_compiler: [5.2.0]
+        include:
+          - os: macos-13 # x64
+            ocaml_compiler: 5.2.0
+          - os: macos-14 # ARM
+            ocaml_compiler: 5.2.0
+          - os: ubuntu-latest # x64
+            ocaml_compiler: ocaml-variants.5.2.0+options,ocaml-option-static
+          - os: windows-latest
+            ocaml_compiler: 5.2.0
 
     runs-on: ${{matrix.os}}
 
@@ -204,12 +194,6 @@ jobs:
         with:
           fetch-depth: 2 # to be able to check for changes in subfolder jscomp/syntax later
 
-      - name: Download static linux binaries
-        if: runner.os == 'Linux'
-        uses: actions/download-artifact@v4
-        with:
-          name: static-binaries-linux-${{ runner.arch }}
-
       - name: Get artifact dir name
         run: node .github/workflows/get_artifact_dir_name.js
 
@@ -218,13 +202,6 @@ jobs:
         with:
           name: rewatch-${{ env.artifact_dir_name }}
           path: rewatch
-
-      - name: Make static linux binaries executable
-        if: runner.os == 'Linux'
-        run: |
-          chmod +x ninja/ninja
-          chmod +x rewatch/rewatch
-          chmod +x _build/install/default/bin/*
 
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
@@ -239,6 +216,11 @@ jobs:
         with:
           python-version: '3.10'
 
+      # matrix.ocaml_compiler may contain commas
+      - name: Get OPAM cache key
+        shell: bash
+        run: echo "opam_cache_key=opam-env-v1-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}" | sed 's/,/-/g' >> $GITHUB_ENV
+
       - name: Restore OPAM environment
         id: cache-opam-env
         uses: actions/cache/restore@v4
@@ -250,7 +232,7 @@ jobs:
             .opam-path
             D:\cygwin
             D:\.opam
-          key: opam-env-v1-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}
+          key: ${{ env.opam_cache_key }}
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
         uses: ocaml/setup-ocaml@v3.0.0
@@ -286,7 +268,7 @@ jobs:
             .opam-path
             D:\cygwin
             D:\.opam
-          key: opam-env-v1-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}
+          key: ${{ env.opam_cache_key }}
 
       - name: Use cached OPAM environment
         if: steps.cache-opam-env.outputs.cache-hit == 'true'
@@ -334,6 +316,10 @@ jobs:
         if: runner.os != 'Linux'
         run: opam exec -- dune build --display quiet --profile release
 
+      - name: Build compiler (Linux static)
+        if: runner.os == 'Linux'
+        run: opam exec -- dune build --display quiet --profile static
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -350,6 +336,12 @@ jobs:
 
       - name: Build ninja
         if: runner.os != 'Linux'
+        run: node scripts/buildNinjaBinary.js
+
+      - name: Build ninja (Linux static)
+        if: runner.os == 'Linux'
+        env:
+          LDFLAGS: -static
         run: node scripts/buildNinjaBinary.js
 
       - name: Copy exes to platform bin dirs
