@@ -161,6 +161,11 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.eol lf
 
+      # see https://github.com/ocaml/setup-ocaml/issues/815
+      - name: "Windows: set SHELLOPTS=igncr"
+        if: runner.os == 'Windows'
+        run: echo "SHELLOPTS=igncr" >>"$GITHUB_ENV"
+            
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -328,8 +333,6 @@ jobs:
       - name: "Check if syntax subfolder has changed"
         id: syntax-diff
         shell: bash
-        env:
-          SHELLOPTS: igncr # see https://github.com/ocaml/setup-ocaml/issues/815
         run: |
           if git diff --name-only --exit-code HEAD^ HEAD -- jscomp/syntax; then
             echo "syntax_status=unchanged" >> $GITHUB_ENV
