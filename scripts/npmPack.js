@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-check
 
 // This script creates the list of the files that go into the rescript npm package.
 //
@@ -13,28 +14,33 @@ const { spawnSync, execSync } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 
-const isCheckMode = process.argv.includes("-check");
+const mode = process.argv.includes("-updateArtifactList")
+  ? "updateArtifactList"
+  : "package";
 
 const rootPath = path.join(__dirname, "..");
 const fileListPath = path.join(rootPath, "packages", "artifacts.txt");
 
-const output = spawnSync(`npm pack --dry-run --json`, {
-  cwd: rootPath,
-  encoding: "utf8",
-  shell: true,
-}).stdout;
+const output = spawnSync(
+  "npm pack --json" + (mode === "updateArtifactList" ? " --dry-run" : ""),
+  {
+    cwd: rootPath,
+    encoding: "utf8",
+    shell: true,
+  },
+).stdout;
 
 const [{ files }] = JSON.parse(output);
-let filePaths = files.map(file => file.path);
+let filePaths = files.map((/** @type {{ path: string; }} */ file) => file.path);
 
-if (!isCheckMode) {
+if (mode === "updateArtifactList") {
   filePaths = Array.from(new Set(filePaths.concat(getFilesAddedByCI())));
 }
 
 filePaths.sort();
 fs.writeFileSync(fileListPath, filePaths.join("\n"));
 
-if (isCheckMode) {
+if (mode === "package") {
   execSync(`git diff --exit-code ${fileListPath}`, { stdio: "inherit" });
 }
 
