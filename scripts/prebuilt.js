@@ -1,37 +1,25 @@
 #!/usr/bin/env node
-//@ts-check
 
-const path = require("path");
-const fs = require("fs");
-const assert = require("assert");
+// @ts-check
 
-const package_config = require(path.join(__dirname, "..", "package.json"));
-const bsVersion = fs.readFileSync(
-  path.join(__dirname, "..", "jscomp", "common", "bs_version.ml"),
-  "utf-8",
-);
+const path = require("node:path");
+const fs = require("node:fs");
+const assert = require("node:assert");
+const semver = require("semver");
+const { compilerVersionFile } = require("#internal/paths");
+const { packageJson } = require("#internal/meta");
 
 /**
- * @param {string} bsVersion
- * @param {string} version
+ * @param {semver.SemVer} bsVersion
+ * @param {semver.SemVer} version
  */
 function verifyVersion(bsVersion, version) {
-  try {
-    let [major, minor] = bsVersion
-      .split("\n")
-      .find(x => x.startsWith("let version = "))
-      .split("=")[1]
-      .trim()
-      .slice(1, -1)
-      .split(".");
-    let [specifiedMajor, specifiedMinor] = version.split(".");
-    console.log(
-      `Version check: package.json: ${specifiedMajor}.${specifiedMinor} vs ABI: ${major}.${minor}`,
-    );
-    return major === specifiedMajor && minor === specifiedMinor;
-  } catch (e) {
-    return false;
-  }
+  const { major, minor } = bsVersion;
+  const { major: specifiedMajor, minor: specifiedMinor } = version;
+  console.log(
+    `Version check: package.json: ${specifiedMajor}.${specifiedMinor} vs ABI: ${major}.${minor}`,
+  );
+  return major === specifiedMajor && minor === specifiedMinor;
 }
 
 /**
@@ -41,16 +29,15 @@ function verifyVersion(bsVersion, version) {
  * @param {string} dest
  */
 function installDirBy(src, dest, filter) {
-  fs.readdir(src, function (err, files) {
+  fs.readdir(src, (err, files) => {
     if (err === null) {
-      files.forEach(function (file) {
+      for (const file of files) {
         if (filter(file)) {
-          var x = path.join(src, file);
-          var y = path.join(dest, file);
-          // console.log(x, '----->', y )
+          const x = path.join(src, file);
+          const y = path.join(dest, file);
           fs.copyFile(x, y, err => assert.equal(err, null));
         }
-      });
+      }
     } else {
       throw err;
     }
@@ -70,13 +57,13 @@ function populateLibDir() {
     fs.mkdirSync(ocaml_dir);
   }
 
-  installDirBy(runtime_dir, ocaml_dir, function (file) {
-    var y = path.parse(file);
+  installDirBy(runtime_dir, ocaml_dir, file => {
+    const y = path.parse(file);
     return y.name === "js";
   });
 
   // for merlin or other IDE
-  var installed_suffixes = [
+  const installed_suffixes = [
     ".ml",
     ".mli",
     ".res",
@@ -87,18 +74,32 @@ function populateLibDir() {
     ".cmti",
   ];
   installDirBy(others_dir, ocaml_dir, file => {
-    var y = path.parse(file);
+    const y = path.parse(file);
     if (y.ext === ".cmi") {
       return !y.base.match(/Belt_internal/i);
     }
     return installed_suffixes.includes(y.ext) && !y.name.endsWith(".cppo");
   });
   installDirBy(stdlib_dir, ocaml_dir, file => {
-    var y = path.parse(file);
+    const y = path.parse(file);
     return installed_suffixes.includes(y.ext);
   });
 }
 
-assert(verifyVersion(bsVersion, package_config.version));
+const bsVersionPattern = /let version = "(?<version>.*)"/m;
+const bsVersionFileContent = fs.readFileSync(compilerVersionFile, "utf-8");
+const bsVersionMatch = bsVersionFileContent.match(bsVersionPattern)?.groups;
+assert.ok(bsVersionMatch, "Failed to parse the compiler version file");
+
+const bsVersion = semver.parse(bsVersionMatch.version);
+assert.ok(bsVersion, "Failed to parse the compiler version file");
+
+const version = semver.parse(packageJson.version);
+assert.ok(version, "Failed to parse the version of the package.json");
+
+assert.ok(
+  verifyVersion(bsVersion, version),
+  "Please bump versions to be matched",
+);
 
 populateLibDir();

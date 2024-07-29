@@ -96,3 +96,5 @@ playground/compiler.js
 
 rewatch/target/
 rewatch/rewatch
+
+*.tsbuildinfo

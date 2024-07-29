@@ -7,10 +7,39 @@
     "useIgnoreFile": true
   },
   "linter": {
-    "enabled": false
+    "enabled": true,
+    "rules": {
+      "recommended": true
+    },
+    "ignore": [
+      "jscomp/build_tests/**/lib/**",
+      "jscomp/build_tests/**/src/**",
+      "jscomp/test/**",
+      "lib/es6/**",
+      "lib/js/**",
+      "ninja/**",
+      "playground/packages/**",
+      "**/*.bs.js",
+      "**/*.res.js",
+      "**/*.gen.ts*",
+      "package.json"
+    ]
   },
   "organizeImports": {
-    "enabled": false
+    "enabled": true,
+    "ignore": [
+      "jscomp/build_tests/**/lib/**",
+      "jscomp/build_tests/**/src/**",
+      "jscomp/test/**",
+      "lib/es6/**",
+      "lib/js/**",
+      "ninja/**",
+      "playground/packages/**",
+      "**/*.bs.js",
+      "**/*.res.js",
+      "**/*.gen.ts*",
+      "package.json"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -24,9 +53,10 @@
       "jscomp/build_tests/**/lib/**",
       "jscomp/build_tests/**/src/**",
       "jscomp/test/**",
-      "lib/**",
+      "lib/es6/**",
+      "lib/js/**",
       "ninja/**",
-      "playground/**",
+      "playground/packages/**",
       "**/*.bs.js",
       "**/*.res.js",
       "**/*.gen.ts*",
