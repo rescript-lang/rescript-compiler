@@ -39,6 +39,7 @@
 - Remove `rescript convert` subcommand. https://github.com/rescript-lang/rescript-compiler/pull/6860
 - Remove support for `@bs.send.pipe`. This also removes all functions in `Js_typed_array` that rely on `@bs.send.pipe`. https://github.com/rescript-lang/rescript-compiler/pull/6858 https://github.com/rescript-lang/rescript-compiler/pull/6891
 - Remove deprecated `Js.Vector` and `Js.List`. https://github.com/rescript-lang/rescript-compiler/pull/6900
+- Remove support for `%time` extension. https://github.com/rescript-lang/rescript-compiler/pull/6924
 
 #### :bug: Bug Fix
 
@@ -55,7 +56,7 @@
 - Convert OCaml codebase to snake case style. https://github.com/rescript-lang/rescript-compiler/pull/6702
 - Fix `-nostdlib` internal compiler option. https://github.com/rescript-lang/rescript-compiler/pull/6824
 - Remove a number of ast nodes never populated by the .res parser, and resulting dead code. https://github.com/rescript-lang/rescript-compiler/pull/6830
-- Remove coercion with 2 types from internal representation. Coercion `e : t1 :> t2` was only supported in `.ml` syntax and never by the `.res` parser. https://github.com/rescript-lang/rescript-compiler/pull/6829 
+- Remove coercion with 2 types from internal representation. Coercion `e : t1 :> t2` was only supported in `.ml` syntax and never by the `.res` parser. https://github.com/rescript-lang/rescript-compiler/pull/6829
 - Convert `caml_format` and `js_math` to `.res`. https://github.com/rescript-lang/rescript-compiler/pull/6834
 - Convert `js.ml` files to `.res`. https://github.com/rescript-lang/rescript-compiler/pull/6835
 - Remove old `.ml` tests. https://github.com/rescript-lang/rescript-compiler/pull/6847
@@ -91,7 +92,7 @@
 #### :bug: Bug Fix
 
 - Fix tag function location on compiler error. https://github.com/rescript-lang/rescript-compiler/pull/6816
-- Fix Deno compatibility issues on Windows. https://github.com/rescript-lang/rescript-compiler/pull/6850 
+- Fix Deno compatibility issues on Windows. https://github.com/rescript-lang/rescript-compiler/pull/6850
 - Fix issue with infinite loops with type errors on recursive types. https://github.com/rescript-lang/rescript-compiler/pull/6867
 - Ignore `@uncurry` attribute in uncurried mode, to avoid generating calls to `Curry` at runtime. https://github.com/rescript-lang/rescript-compiler/pull/6869
 - Avoid generating calls to Curry when adjusting arity of uncurried functions. https://github.com/rescript-lang/rescript-compiler/pull/6870
@@ -130,7 +131,7 @@
 #### :bug: Bug Fix
 
 - Fix issue of incorrect switch cases with identical bodies when mixing object and array. https://github.com/rescript-lang/rescript-compiler/pull/6792
-- Fix formatter eats comments on the first argument of a uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6763 
+- Fix formatter eats comments on the first argument of a uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6763
 - Fix formatter removes parens in pipe operator with anonymous uncurried function. https://github.com/rescript-lang/rescript-compiler/pull/6766
 
 # 11.1.0
@@ -162,7 +163,7 @@
 
 #### :bug: Bug Fix
 
-- Fix variance setting for builtin `dict` type. Fixes issues around inference. https://github.com/rescript-lang/rescript-compiler/pull/6707 
+- Fix variance setting for builtin `dict` type. Fixes issues around inference. https://github.com/rescript-lang/rescript-compiler/pull/6707
 
 # 11.1.0-rc.6
 
