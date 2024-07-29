@@ -77,6 +77,9 @@ Prefer `Js.Array2` over `Js.Array`, `Js.String2` over `Js.String`, etc. The latt
 /** JS object type */
 type t<'a> = {..} as 'a
 
+/** JS global object reference */
+@val external globalThis: t<'a> = "globalThis"
+
 /**
   Nullable value of this type can be either null or 'a. This type is equivalent to Js.Null.t.
 */

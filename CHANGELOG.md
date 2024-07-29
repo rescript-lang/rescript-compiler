@@ -23,6 +23,7 @@
 - Allow `private` in with constraints. https://github.com/rescript-lang/rescript-compiler/pull/6843
 - Add regex literals as syntax sugar for `@bs.re`. https://github.com/rescript-lang/rescript-compiler/pull/6776
 - Improved mechanism to determine arity of externals, which is consistent however the type is written. https://github.com/rescript-lang/rescript-compiler/pull/6874 https://github.com/rescript-lang/rescript-compiler/pull/6881 https://github.com/rescript-lang/rescript-compiler/pull/6883
+- Add `Js.globalThis` object binding. https://github.com/rescript-lang/rescript-compiler/pull/6909
 
 #### :boom: Breaking Change
 
