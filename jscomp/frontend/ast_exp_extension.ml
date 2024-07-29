@@ -1,5 +1,5 @@
 (* Copyright (C) 2018 Hongbo Zhang, Authors of ReScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -68,39 +68,6 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
     | Some {txt = Lident x} -> Ast_exp_handle_external.handle_external loc x
     | None | Some _ ->
       Location.raise_errorf ~loc "external expects a single identifier")
-  | "time" -> (
-    match payload with
-    | PStr [{pstr_desc = Pstr_eval (e, _)}] ->
-      let loc_string =
-        if loc.loc_ghost then "GHOST LOC"
-        else
-          let loc_start = loc.loc_start in
-          let file, lnum, __ = Location.get_pos_info loc_start in
-          Printf.sprintf "%s %d" (Filename.basename file) lnum
-      in
-      let e = self.expr self e in
-      Exp.sequence ~loc
-        (Ast_compatible.app1 ~loc
-           (Exp.ident ~loc
-              {
-                loc;
-                txt = Ldot (Lident Js_runtime_modules.astExtensions, "timeStart");
-              })
-           (Ast_compatible.const_exp_string ~loc loc_string))
-        (Exp.let_ ~loc Nonrecursive
-           [Vb.mk ~loc (Pat.var ~loc {loc; txt = "timed"}) e]
-           (Exp.sequence ~loc
-              (Ast_compatible.app1 ~loc
-                 (Exp.ident ~loc
-                    {
-                      loc;
-                      txt =
-                        Ldot (Lident Js_runtime_modules.astExtensions, "timeEnd");
-                    })
-                 (Ast_compatible.const_exp_string ~loc loc_string))
-              (Exp.ident ~loc {loc; txt = Lident "timed"})))
-    | _ ->
-      Location.raise_errorf ~loc "expect a boolean expression in the payload")
   | "debugger" ->
     {e with pexp_desc = Ast_exp_handle_external.handle_debugger loc payload}
   | "obj" -> (

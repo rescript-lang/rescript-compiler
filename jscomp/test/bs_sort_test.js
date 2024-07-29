@@ -124,27 +124,15 @@ let u1 = u.slice(0);
 
 let u2 = u.slice(0);
 
-console.time("bs_sort_test.res 85");
-
 Belt_SortArray.stableSortInPlaceBy(u, cmp);
-
-console.timeEnd("bs_sort_test.res 85");
 
 b("File \"bs_sort_test.res\", line 86, characters 4-11", Belt_SortArray.isSorted(u, cmp));
 
-console.time("bs_sort_test.res 87");
-
 Belt_SortArrayInt.stableSortInPlace(u2);
-
-console.timeEnd("bs_sort_test.res 87");
 
 b("File \"bs_sort_test.res\", line 88, characters 4-11", Belt_SortArray.isSorted(u2, cmp));
 
-console.time("bs_sort_test.res 89");
-
 Belt_SortArray.stableSortInPlaceBy(u1, cmp);
-
-console.timeEnd("bs_sort_test.res 89");
 
 b("File \"bs_sort_test.res\", line 90, characters 4-11", Belt_SortArray.isSorted(u1, cmp));
 
