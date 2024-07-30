@@ -10,6 +10,22 @@
 // In CI, it is invoked with -check. It then recreates the list and verifies
 // that it has no changes compared to the committed state.
 
+/**
+ * @typedef {{
+ *   path: string,
+ *   size: number,
+ *   mode: number,
+ * }} PackOutputFile
+ *
+ * @typedef {{
+ *   files: PackOutputFile[],
+ *   entryCount: number,
+ *   bundled: unknown[],
+ * }} PackOutputEntry
+ *
+ * @typedef {[PackOutputEntry]} PackOutput
+ */
+
 const { spawnSync, execSync } = require("child_process");
 const path = require("path");
 const fs = require("fs");
@@ -30,8 +46,9 @@ const output = spawnSync(
   },
 ).stdout;
 
-const [{ files }] = JSON.parse(output);
-let filePaths = files.map((/** @type {{ path: string; }} */ file) => file.path);
+/** @type {PackOutput} */
+const parsedOutput = JSON.parse(output);
+let filePaths = parsedOutput[0].files.map(file => file.path);
 
 if (mode === "updateArtifactList") {
   filePaths = Array.from(new Set(filePaths.concat(getFilesAddedByCI())));
