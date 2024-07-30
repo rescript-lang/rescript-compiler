@@ -23,7 +23,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 module STbl = struct
-  include Hashtbl.Make (String)
+  #if OCAML_VERSION >= (5, 0, 0)
+    include Hashtbl.Make (String)
+  #else
+    module StringHash : Hashtbl.HashedType with type t = string = struct
+      type t = string
+      let equal = String.equal
+      let hash = Hashtbl.hash (* polymorphic hash function *)
+    end
+    include Hashtbl.Make (StringHash)
+  #endif
 
   let of_array arr =
     let tbl = create (Array.length arr) in
