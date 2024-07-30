@@ -3,7 +3,8 @@
  (wrapped false)
  (preprocess
   (action
-   (run %{bin:cppo} %{env:CPPO_FLAGS=} %{input-file})))
+   (run %{bin:cppo} -V OCAML:%{ocaml_version} %{env:CPPO_FLAGS=}
+     %{input-file})))
  (flags
   (:standard -w +a-4-42-40-9-48-70))
  (foreign_stubs
