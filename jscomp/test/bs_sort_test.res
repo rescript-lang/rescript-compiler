@@ -82,11 +82,11 @@ let () = {
   let u1 = A.copy(u)
   let u2 = A.copy(u)
   /* let u3 = A.map u (fun[@bs] x -> float x) in */
-  %time(S.stableSortInPlaceBy(u, cmp))
+  S.stableSortInPlaceBy(u, cmp)
   b(__LOC__, S.isSorted(u, cmp))
-  %time(SI.stableSortInPlace(u2))
+  SI.stableSortInPlace(u2)
   b(__LOC__, S.isSorted(u2, cmp))
-  %time(S.stableSortInPlaceBy(u1, cmp))
+  S.stableSortInPlaceBy(u1, cmp)
   b(__LOC__, S.isSorted(u1, cmp))
 }
 

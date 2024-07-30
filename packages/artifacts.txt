@@ -171,7 +171,6 @@ lib/es6/parsing.js
 lib/es6/pervasives.js
 lib/es6/queue.js
 lib/es6/random.js
-lib/es6/runtime_ast_extensions.js
 lib/es6/runtime_deriving.js
 lib/es6/runtime_promise.js
 lib/es6/set.js
@@ -330,7 +329,6 @@ lib/js/parsing.js
 lib/js/pervasives.js
 lib/js/queue.js
 lib/js/random.js
-lib/js/runtime_ast_extensions.js
 lib/js/runtime_deriving.js
 lib/js/runtime_promise.js
 lib/js/set.js
@@ -953,10 +951,6 @@ lib/ocaml/random.cmt
 lib/ocaml/random.cmti
 lib/ocaml/random.res
 lib/ocaml/random.resi
-lib/ocaml/runtime_ast_extensions.cmi
-lib/ocaml/runtime_ast_extensions.cmj
-lib/ocaml/runtime_ast_extensions.cmt
-lib/ocaml/runtime_ast_extensions.res
 lib/ocaml/runtime_deriving.cmi
 lib/ocaml/runtime_deriving.cmj
 lib/ocaml/runtime_deriving.cmt
