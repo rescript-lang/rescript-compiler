@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 // @ts-check
 
-// This script creates the list of the files that go into the rescript npm package.
+// This performs `npm pack` and retrieves the list of artifact files from the output.
 //
-// In local dev, invoke it without any args after adding or removing files.
-// It will then recreate the list and make sure that the exes for all platforms
-// are in the list, even if not present locally.
+// In local dev, invoke it with `-updateArtifactList` to perform a dry run of `npm pack`
+// and recreate `packages/artifacts.txt`.
+// The exes for all platforms will then be included in the list, even if not present locally.
 //
-// In CI, it is invoked with -check. It then recreates the list and verifies
-// that it has no changes compared to the committed state.
+// In CI, the scripts is invoked without options. It then performs `npm pack` for real,
+// recreates the artifact list and verifies that it has no changes compared to the committed state.
 
 /**
  * @typedef {{
