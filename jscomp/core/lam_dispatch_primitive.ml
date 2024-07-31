@@ -263,13 +263,7 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   | "?await" -> (
       match args with
       | [e] -> {e with expression_desc = Await e}
-      | _ -> assert false
-  )
-  | _ ->
-      Bs_warnings.warn_missing_primitive loc prim_name;
-      E.resolve_and_apply prim_name args
-(*we dont use [throw] here, since [throw] is an statement
-  so we wrap in IIFE
-  TODO: we might provoide a hook for user to provide polyfill.
-  For example `Bs_global.xxx`
-*)
+      | _ -> assert false)
+  | missing_impl ->
+    let msg = Warnings.message (Bs_unimplemented_primitive missing_impl) in
+    Location.raise_errorf ~loc "%s" msg

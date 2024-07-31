@@ -400,7 +400,4 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
      Lfunction(Curried, [parm],
                Matching.inline_lazy_force (Lvar parm) Location.none)
      It is inlined, this should not appear here *) ->
-      (*we dont use [throw] here, since [throw] is an statement  *)
-      let s = Lam_print.primitive_to_string prim in
-      Bs_warnings.warn_missing_primitive loc s;
-      E.resolve_and_apply s args
+    assert false

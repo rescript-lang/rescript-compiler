@@ -485,7 +485,7 @@ let message = function
       ^ " : using an empty string as a shorthand to infer the external's name \
          from the value's name is dangerous when refactoring, and therefore \
          deprecated"
-  | Bs_unimplemented_primitive s -> "Unimplemented primitive used:" ^ s
+  | Bs_unimplemented_primitive s -> "Unimplemented primitive used: " ^ s
   | Bs_integer_literal_overflow ->
       "Integer literal exceeds the range of representable integers of type int"
   | Bs_uninterpreted_delimiters s -> "Uninterpreted delimiters " ^ s

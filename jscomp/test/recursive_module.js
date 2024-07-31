@@ -6,7 +6,6 @@ let Lazy = require("../../lib/js/lazy.js");
 let Caml_module = require("../../lib/js/caml_module.js");
 let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-let Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 
 let suites = {
   contents: /* [] */0
@@ -22,7 +21,7 @@ function eq(loc, x, y) {
 
 let Xx = {
   f: (function (prim0, prim1) {
-    return Caml_external_polyfill.resolve("hfiehi")(prim0, prim1);
+    return hfiehi(prim0, prim1);
   })
 };
 

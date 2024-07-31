@@ -65,8 +65,6 @@ let option = "Caml_option"
 
 let module_ = "Caml_module"
 
-let external_polyfill = "Caml_external_polyfill"
-
 let caml_js_exceptions = "Caml_js_exceptions"
 
 let caml_splice_call = "Caml_splice_call"

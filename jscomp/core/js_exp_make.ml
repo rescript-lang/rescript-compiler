@@ -1344,14 +1344,5 @@ let neq_null_undefined_boolean ?comment (a : t) (b : t) =
   | Null, Undefined _ | Undefined _, Null -> true_
   | _ -> { expression_desc = Bin (NotEqEq, a, b); comment }
 
-(** TODO: in the future add a flag
-    to set globalThis
-*)
-let resolve_and_apply (s : string) (args : t list) : t =
-  call ~info:Js_call_info.builtin_runtime_call
-    (runtime_call Js_runtime_modules.external_polyfill "resolve"
-       [ str (if s.[0] = '?' then String.sub s 1 (String.length s - 1) else s) ])
-    args
-
 let make_exception (s : string) =
   pure_runtime_call Js_runtime_modules.exceptions Literals.create [ str s ]
