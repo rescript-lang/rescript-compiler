@@ -137,14 +137,29 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-13 # x64
-            ocaml_compiler: 5.2.0
-          - os: macos-14 # ARM
-            ocaml_compiler: 5.2.0
           - os: ubuntu-latest # x64
             ocaml_compiler: ocaml-variants.5.2.0+options,ocaml-option-static
+            upload_binaries: true
+            upload_libs: true
+            # Build the playground compiler on the fastest runner
+            build_playground: true
+          - os: macos-13 # x64
+            ocaml_compiler: 5.2.0
+            upload_binaries: true
+          - os: macos-14 # ARM
+            ocaml_compiler: 5.2.0
+            upload_binaries: true
           - os: windows-latest
             ocaml_compiler: 5.2.0
+            upload_binaries: true
+
+          # Verify that the compiler still builds with older OCaml versions
+          - os: ubuntu-latest
+            ocaml_compiler: ocaml-variants.5.0.0+options,ocaml-option-static
+          - os: ubuntu-latest
+            ocaml_compiler: ocaml-variants.4.14.2+options,ocaml-option-static
+          - os: ubuntu-latest
+            ocaml_compiler: ocaml-variants.4.13.0+options,ocaml-option-static
 
     runs-on: ${{matrix.os}}
 
@@ -372,33 +387,33 @@ jobs:
         if: runner.os == 'Windows'
         run: node scripts/ciTest.js -mocha -theme -format
 
-      # Build the playground compiler on the fastest runner (ubuntu-latest)
       - name: Build playground compiler
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.build_playground
         run: |
           opam exec -- node packages/playground-bundling/scripts/generate_cmijs.js
           opam exec -- dune build --profile browser
           cp ./_build/default/jscomp/jsoo/jsoo_playground_main.bc.js playground/compiler.js
 
       - name: Test playground compiler
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.build_playground
         run: node playground/playground_test.js
 
       - name: Upload playground compiler to CDN
-        if: ${{ matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ matrix.build_playground && startsWith(github.ref, 'refs/tags/v') }}
         env:
           KEYCDN_USER: ${{ secrets.KEYCDN_USER }}
           KEYCDN_PASSWORD: ${{ secrets.KEYCDN_PASSWORD }}
         run: bash playground/upload_bundle.sh
 
       - name: "Upload artifacts: binaries"
+        if: matrix.upload_binaries
         uses: actions/upload-artifact@v4
         with:
           name: binaries-${{ env.artifact_dir_name }}
           path: ${{ env.artifact_dir_name }}
 
       - name: "Upload artifacts: lib/ocaml"
-        if: runner.os == 'Linux'
+        if: matrix.upload_libs
         uses: actions/upload-artifact@v4
         with:
           name: lib-ocaml
