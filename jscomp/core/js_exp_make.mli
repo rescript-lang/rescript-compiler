@@ -363,6 +363,4 @@ val for_sure_js_null_undefined : J.expression -> bool
 
 val is_null_undefined : ?comment:string -> t -> t
 
-val resolve_and_apply : string -> t list -> t
-
 val make_exception : string -> t

@@ -15,7 +15,7 @@ module rec Int32: {
 module Xx: {
   let f: (int, int) => int
 } = {
-  external f: (int, int) => int = "?hfiehi"
+  external f: (int, int) => int = "hfiehi"
 }
 
 let uuu = Xx.f

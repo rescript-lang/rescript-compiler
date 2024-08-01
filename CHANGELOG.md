@@ -40,6 +40,7 @@
 - Remove support for `@bs.send.pipe`. This also removes all functions in `Js_typed_array` that rely on `@bs.send.pipe`. https://github.com/rescript-lang/rescript-compiler/pull/6858 https://github.com/rescript-lang/rescript-compiler/pull/6891
 - Remove deprecated `Js.Vector` and `Js.List`. https://github.com/rescript-lang/rescript-compiler/pull/6900
 - Remove support for `%time` extension. https://github.com/rescript-lang/rescript-compiler/pull/6924
+- Remove `caml_external_polyfill` module and the related behavior. https://github.com/rescript-lang/rescript-compiler/pull/6925
 
 #### :bug: Bug Fix
 
