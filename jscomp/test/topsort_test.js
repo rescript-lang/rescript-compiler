@@ -1569,8 +1569,7 @@ try {
           ]
         }
       });
-}
-catch (raw_exn){
+} catch (raw_exn) {
   let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
   let exit = 0;
   if (exn.RE_EXN_ID === Cycle) {

@@ -38,8 +38,7 @@ function does_raise(f, q) {
   try {
     f(q);
     return false;
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === Queue.Empty) {
       return true;

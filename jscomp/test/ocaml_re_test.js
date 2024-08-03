@@ -1531,8 +1531,7 @@ function mk_state(ncol, desc) {
 function find_state(re, desc) {
   try {
     return Re_automata_State.Table.find(re.states, desc);
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       let st = mk_state(re.ncol, desc);
@@ -1602,8 +1601,7 @@ function loop(info, s, pos, st) {
 function final(info, st, cat) {
   try {
     return List.assq(cat, st.final);
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       let st$p = delta$1(info, cat, -1, st);
@@ -1631,8 +1629,7 @@ function final(info, st, cat) {
 function find_initial_state(re, cat) {
   try {
     return List.assq(cat, re.initial_states);
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       let st = find_state(re, Re_automata_State.create(cat, re.initial));
@@ -1763,8 +1760,7 @@ function trans_set(cache, cm, s) {
       _param = c < 0 ? param.l : param.r;
       continue;
     };
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       let l = List.fold_right((function (param, l) {
@@ -3386,8 +3382,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                 });
           }
           
-        }
-        catch (exn){
+        } catch (exn) {
           throw new Error(Pervasives.Exit, {
                 cause: {
                   RE_EXN_ID: Pervasives.Exit
@@ -3397,8 +3392,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
       i.contents = i.contents + len | 0;
       return true;
-    }
-    catch (raw_exn){
+    } catch (raw_exn) {
       let exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn$1.RE_EXN_ID === Pervasives.Exit) {
         return false;
@@ -3852,8 +3846,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               }
             }
           });
-        }
-        catch (raw_exn){
+        } catch (raw_exn) {
           let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
           if (exn.RE_EXN_ID === "Not_found") {
             throw new Error(Parse_error, {

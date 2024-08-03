@@ -9,8 +9,7 @@ function $$finally(v, action, f) {
   let e;
   try {
     e = f(v);
-  }
-  catch (e$1){
+  } catch (e$1) {
     action(v);
     throw new Error(e$1.RE_EXN_ID, {
           cause: e$1
@@ -45,8 +44,7 @@ function is_pos_pow(n) {
             }
           });
     };
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === E) {
       return -1;
@@ -82,8 +80,7 @@ function is_pos_pow_2(n) {
             }
           });
     };
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === E) {
       return -1;

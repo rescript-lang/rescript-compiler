@@ -14,8 +14,7 @@ function Make(funarg) {
   let find_default = function (htbl, x) {
     try {
       return H.find(htbl, x);
-    }
-    catch (raw_exn){
+    } catch (raw_exn) {
       let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn.RE_EXN_ID === "Not_found") {
         return false;

@@ -51,8 +51,7 @@ let u = {
 function test_not_found(f, param) {
   try {
     return f();
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       return 2;
@@ -66,8 +65,7 @@ function test_not_found(f, param) {
 function test_js_error2() {
   try {
     return JSON.parse(" {\"x\" : }");
-  }
-  catch (raw_e){
+  } catch (raw_e) {
     let e = Caml_js_exceptions.internalToOCamlException(raw_e);
     if (e.RE_EXN_ID === Js_exn.$$Error) {
       console.log(e._1.stack);
@@ -85,8 +83,7 @@ function test_js_error3() {
   try {
     JSON.parse(" {\"x\"}");
     return 1;
-  }
-  catch (e){
+  } catch (e) {
     return 0;
   }
 }

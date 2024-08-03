@@ -145,8 +145,7 @@ function starts_with(xs, prefix, p) {
       
     }
     return true;
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === H) {
       return false;

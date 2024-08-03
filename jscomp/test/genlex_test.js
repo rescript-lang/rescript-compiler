@@ -40,8 +40,7 @@ function to_list(s) {
     let v;
     try {
       v = Stream.next(s);
-    }
-    catch (raw_exn){
+    } catch (raw_exn) {
       let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn.RE_EXN_ID === Stream.Failure) {
         return List.rev(acc);

@@ -235,8 +235,7 @@ function _try_atom(e, f) {
   }
   try {
     return Caml_option.some(f(e.VAL));
-  }
-  catch (exn){
+  } catch (exn) {
     return;
   }
 }

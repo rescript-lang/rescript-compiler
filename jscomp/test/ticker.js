@@ -24,8 +24,7 @@ function split(delim, s) {
       let i$p;
       try {
         i$p = $$String.rindex_from(s, x - 1 | 0, delim);
-      }
-      catch (raw_exn){
+      } catch (raw_exn) {
         let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn.RE_EXN_ID === "Not_found") {
           return {

@@ -639,8 +639,7 @@ try {
       _0: false
     };
   }));
-}
-catch (exn){
+} catch (exn) {
   add_test("File \"js_json_test.res\", line 281, characters 17-24", (function () {
     return {
       TAG: "Ok",

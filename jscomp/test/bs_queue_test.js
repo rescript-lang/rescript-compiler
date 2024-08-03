@@ -26,8 +26,7 @@ function does_raise(f, q) {
   try {
     f(q);
     return false;
-  }
-  catch (exn){
+  } catch (exn) {
     return true;
   }
 }

@@ -57,8 +57,7 @@ function add_help(speclist) {
   try {
     assoc3("-help", speclist);
     add1 = /* [] */0;
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       add1 = {
@@ -82,8 +81,7 @@ function add_help(speclist) {
   try {
     assoc3("--help", speclist);
     add2 = /* [] */0;
-  }
-  catch (raw_exn$1){
+  } catch (raw_exn$1) {
     let exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
     if (exn$1.RE_EXN_ID === "Not_found") {
       add2 = {

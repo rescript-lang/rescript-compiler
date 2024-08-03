@@ -38,8 +38,7 @@ try {
           _1: "boo"
         }
       });
-}
-catch (raw_msg){
+} catch (raw_msg) {
   let msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
   if (msg.RE_EXN_ID === "Failure") {
     y = msg._1;
@@ -61,8 +60,7 @@ try {
           _1: "boo"
         }
       });
-}
-catch (raw_msg$1){
+} catch (raw_msg$1) {
   let msg$1 = Caml_js_exceptions.internalToOCamlException(raw_msg$1);
   if (msg$1.RE_EXN_ID === "Failure") {
     x = msg$1._1;

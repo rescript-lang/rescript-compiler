@@ -282,8 +282,7 @@ function find(startOpt, sub, s) {
       i = i + 1 | 0;
     };
     return -1;
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === Local_exit) {
       return i;
@@ -338,8 +337,7 @@ function rfind(sub, s) {
       i = i - 1 | 0;
     };
     return -1;
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === Local_exit) {
       return i;

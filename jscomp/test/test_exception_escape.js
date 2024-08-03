@@ -14,8 +14,7 @@ try {
           _1: 3
         }
       });
-}
-catch (exn){
+} catch (exn) {
   f = 3;
 }
 

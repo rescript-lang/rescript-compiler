@@ -22,8 +22,7 @@ function parse(token) {
     }
     try {
       return token();
-    }
-    catch (exn){
+    } catch (exn) {
       return {
         TAG: "Kwd",
         _0: "=="
@@ -162,8 +161,7 @@ function l_parse(token) {
     }
     try {
       return token();
-    }
-    catch (exn){
+    } catch (exn) {
       return {
         TAG: "Kwd",
         _0: "=="

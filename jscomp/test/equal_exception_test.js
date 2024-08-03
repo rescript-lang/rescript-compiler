@@ -72,8 +72,7 @@ function is_exception() {
             RE_EXN_ID: "Not_found"
           }
         });
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       return;
@@ -94,8 +93,7 @@ function is_normal_exception(_x) {
     throw new Error(v.RE_EXN_ID, {
           cause: v
         });
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === A) {
       if (exn._1 === 3) {
@@ -119,8 +117,7 @@ function is_arbitrary_exception() {
             RE_EXN_ID: A
           }
         });
-  }
-  catch (exn){
+  } catch (exn) {
     return;
   }
 }

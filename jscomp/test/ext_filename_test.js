@@ -59,8 +59,7 @@ function chop_extension(locOpt, name) {
   let loc = locOpt !== undefined ? locOpt : "";
   try {
     return Filename.chop_extension(name);
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Invalid_argument") {
       let s = "Filename.chop_extension ( " + loc + " : " + name + " )";
@@ -80,8 +79,7 @@ function chop_extension(locOpt, name) {
 function chop_extension_if_any(fname) {
   try {
     return Filename.chop_extension(fname);
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Invalid_argument") {
       return fname;

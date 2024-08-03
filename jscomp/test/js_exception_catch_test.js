@@ -61,8 +61,7 @@ let e;
 try {
   e = JSON.parse(" {\"x\"}");
   exit = 1;
-}
-catch (raw_x){
+} catch (raw_x) {
   let x = Caml_js_exceptions.internalToOCamlException(raw_x);
   if (x.RE_EXN_ID === Js_exn.$$Error) {
     add_test("File \"js_exception_catch_test.res\", line 18, characters 37-44", (function () {
@@ -97,8 +96,7 @@ function test(f) {
   try {
     f();
     return "No_error";
-  }
-  catch (raw_e){
+  } catch (raw_e) {
     let e = Caml_js_exceptions.internalToOCamlException(raw_e);
     if (e.RE_EXN_ID === "Not_found") {
       return "Not_found";

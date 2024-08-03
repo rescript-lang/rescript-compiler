@@ -19,8 +19,7 @@ function appf(g, x) {
   let A = /* @__PURE__ */Caml_exceptions.create("A");
   try {
     return g(x);
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === Local) {
       return 3;
@@ -63,8 +62,7 @@ let f;
 
 try {
   f = (function () {throw (new Error ("x"))} ());
-}
-catch (raw_x){
+} catch (raw_x) {
   let x = Caml_js_exceptions.internalToOCamlException(raw_x);
   f = x.RE_EXN_ID === A ? x._1 : 2;
 }
@@ -73,8 +71,7 @@ let ff;
 
 try {
   ff = (function () {throw 3} ());
-}
-catch (raw_x$1){
+} catch (raw_x$1) {
   let x$1 = Caml_js_exceptions.internalToOCamlException(raw_x$1);
   ff = x$1.RE_EXN_ID === A ? x$1._1 : 2;
 }
@@ -83,8 +80,7 @@ let fff;
 
 try {
   fff = (function () {throw 2} ());
-}
-catch (raw_x$2){
+} catch (raw_x$2) {
   let x$2 = Caml_js_exceptions.internalToOCamlException(raw_x$2);
   fff = x$2.RE_EXN_ID === A ? x$2._1 : 2;
 }
@@ -93,8 +89,7 @@ let a0;
 
 try {
   a0 = (function (){throw 2} ());
-}
-catch (raw_x$3){
+} catch (raw_x$3) {
   let x$3 = Caml_js_exceptions.internalToOCamlException(raw_x$3);
   if (x$3.RE_EXN_ID === A || x$3.RE_EXN_ID === Js_exn.$$Error) {
     a0 = x$3._1;
@@ -116,8 +111,7 @@ let a1;
 
 try {
   a1 = (function (){throw 2} ());
-}
-catch (raw_e){
+} catch (raw_e) {
   a1 = Caml_js_exceptions.internalToOCamlException(raw_e);
 }
 
@@ -125,8 +119,7 @@ let a2;
 
 try {
   a2 = (function (){throw (new Error("x"))} ());
-}
-catch (raw_e$1){
+} catch (raw_e$1) {
   a2 = Caml_js_exceptions.internalToOCamlException(raw_e$1);
 }
 
@@ -190,8 +183,7 @@ function eq(loc, x, y) {
 
 try {
   ((()=>{throw 2})());
-}
-catch (raw_e$2){
+} catch (raw_e$2) {
   let e = Caml_js_exceptions.internalToOCamlException(raw_e$2);
   eq("File \"exception_raise_test.res\", line 137, characters 10-17", Caml_js_exceptions.as_js_exn(e) !== undefined, true);
 }
@@ -202,8 +194,7 @@ try {
           RE_EXN_ID: "Not_found"
         }
       });
-}
-catch (raw_e$3){
+} catch (raw_e$3) {
   let e$1 = Caml_js_exceptions.internalToOCamlException(raw_e$3);
   eq("File \"exception_raise_test.res\", line 141, characters 10-17", Caml_js_exceptions.as_js_exn(e$1) !== undefined, false);
 }
@@ -212,8 +203,7 @@ function fff0(x, g) {
   let val;
   try {
     val = x();
-  }
-  catch (exn){
+  } catch (exn) {
     return 1;
   }
   return g();
@@ -225,8 +215,7 @@ function input_lines(ic, _acc) {
     let line;
     try {
       line = input_line(ic);
-    }
-    catch (exn){
+    } catch (exn) {
       return List.rev(acc);
     }
     _acc = {

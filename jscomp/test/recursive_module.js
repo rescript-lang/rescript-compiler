@@ -101,8 +101,7 @@ let tmp;
 
 try {
   tmp = CamlinternalLazy.force(Intb.a);
-}
-catch (raw_exn){
+} catch (raw_exn) {
   let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
   if (exn.RE_EXN_ID === Lazy.Undefined) {
     tmp = -1;
@@ -179,8 +178,7 @@ let tmp$1;
 try {
   Int3.u(3);
   tmp$1 = 3;
-}
-catch (raw_exn$1){
+} catch (raw_exn$1) {
   let exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
   if (exn$1.RE_EXN_ID === "Undefined_recursive_module") {
     tmp$1 = 4;

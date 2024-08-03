@@ -35,8 +35,7 @@ let a0;
 try {
   Caml_int32.div(0, 0);
   a0 = 0;
-}
-catch (exn){
+} catch (exn) {
   a0 = 1;
 }
 
@@ -45,8 +44,7 @@ let a1;
 try {
   Caml_int32.mod_(0, 0);
   a1 = 0;
-}
-catch (exn$1){
+} catch (exn$1) {
   a1 = 1;
 }
 
@@ -55,8 +53,7 @@ let a4;
 try {
   Caml_int32.div(0, 0);
   a4 = 0;
-}
-catch (exn$2){
+} catch (exn$2) {
   a4 = 1;
 }
 
@@ -65,8 +62,7 @@ let a5;
 try {
   Caml_int32.mod_(0, 0);
   a5 = 0;
-}
-catch (exn$3){
+} catch (exn$3) {
   a5 = 1;
 }
 
@@ -75,8 +71,7 @@ let a6;
 try {
   Caml_int64.div(Caml_int64.zero, Caml_int64.zero);
   a6 = 0;
-}
-catch (exn$4){
+} catch (exn$4) {
   a6 = 1;
 }
 
@@ -85,8 +80,7 @@ let a7;
 try {
   Caml_int64.mod_(Caml_int64.zero, Caml_int64.zero);
   a7 = 0;
-}
-catch (exn$5){
+} catch (exn$5) {
   a7 = 1;
 }
 
