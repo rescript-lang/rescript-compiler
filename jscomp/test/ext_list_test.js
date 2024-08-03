@@ -7,7 +7,7 @@ let Caml_option = require("../../lib/js/caml_option.js");
 let Ext_string_test = require("./ext_string_test.js");
 
 function filter_map(f, _xs) {
-  while(true) {
+  while (true) {
     let xs = _xs;
     if (!xs) {
       return /* [] */0;
@@ -30,7 +30,7 @@ function excludes(p, l) {
     contents: false
   };
   let aux = function (_accu, _x) {
-    while(true) {
+    while (true) {
       let x = _x;
       let accu = _accu;
       if (!x) {
@@ -70,7 +70,7 @@ function exclude_with_fact(p, l) {
     contents: undefined
   };
   let aux = function (_accu, _x) {
-    while(true) {
+    while (true) {
       let x = _x;
       let accu = _accu;
       if (!x) {
@@ -106,7 +106,7 @@ function exclude_with_fact2(p1, p2, l) {
     contents: undefined
   };
   let aux = function (_accu, _x) {
-    while(true) {
+    while (true) {
       let x = _x;
       let accu = _accu;
       if (!x) {
@@ -141,7 +141,7 @@ function exclude_with_fact2(p1, p2, l) {
 }
 
 function same_length(_xs, _ys) {
-  while(true) {
+  while (true) {
     let ys = _ys;
     let xs = _xs;
     if (!xs) {
@@ -162,7 +162,7 @@ function same_length(_xs, _ys) {
 
 function filter_mapi(f, xs) {
   let aux = function (_i, _xs) {
-    while(true) {
+    while (true) {
       let xs = _xs;
       let i = _i;
       if (!xs) {
@@ -185,7 +185,7 @@ function filter_mapi(f, xs) {
 }
 
 function filter_map2(f, _xs, _ys) {
-  while(true) {
+  while (true) {
     let ys = _ys;
     let xs = _xs;
     if (xs) {
@@ -224,7 +224,7 @@ function filter_map2(f, _xs, _ys) {
 
 function filter_map2i(f, xs, ys) {
   let aux = function (_i, _xs, _ys) {
-    while(true) {
+    while (true) {
       let ys = _ys;
       let xs = _xs;
       let i = _i;
@@ -266,7 +266,7 @@ function filter_map2i(f, xs, ys) {
 }
 
 function rev_map_append(f, _l1, _l2) {
-  while(true) {
+  while (true) {
     let l2 = _l2;
     let l1 = _l1;
     if (!l1) {
@@ -285,7 +285,7 @@ function flat_map2(f, lx, ly) {
   let _acc = /* [] */0;
   let _lx = lx;
   let _ly = ly;
-  while(true) {
+  while (true) {
     let ly$1 = _ly;
     let lx$1 = _lx;
     let acc = _acc;
@@ -316,7 +316,7 @@ function flat_map2(f, lx, ly) {
 }
 
 function flat_map_aux(f, _acc, append, _lx) {
-  while(true) {
+  while (true) {
     let lx = _lx;
     let acc = _acc;
     if (!lx) {
@@ -482,7 +482,7 @@ function try_take(n, l) {
 }
 
 function length_compare(_l, _n) {
-  while(true) {
+  while (true) {
     let n = _n;
     let l = _l;
     if (n < 0) {
@@ -502,7 +502,7 @@ function length_compare(_l, _n) {
 }
 
 function length_larger_than_n(n, _xs, _ys) {
-  while(true) {
+  while (true) {
     let ys = _ys;
     let xs = _xs;
     if (!ys) {
@@ -520,7 +520,7 @@ function length_larger_than_n(n, _xs, _ys) {
 function exclude_tail(x) {
   let _acc = /* [] */0;
   let _x = x;
-  while(true) {
+  while (true) {
     let x$1 = _x;
     let acc = _acc;
     if (x$1) {
@@ -589,7 +589,7 @@ function stable_group(cmp, lst) {
 }
 
 function drop(_n, _h) {
-  while(true) {
+  while (true) {
     let h = _h;
     let n = _n;
     if (n < 0) {
@@ -618,7 +618,7 @@ function drop(_n, _h) {
 }
 
 function find_first_not(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (!x) {
       return;
@@ -633,7 +633,7 @@ function find_first_not(p, _x) {
 }
 
 function for_all_opt(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (!x) {
       return;
@@ -656,7 +656,7 @@ function fold(f, l, init) {
 function rev_map_acc(acc, f, l) {
   let _accu = acc;
   let _x = l;
-  while(true) {
+  while (true) {
     let x = _x;
     let accu = _accu;
     if (!x) {
@@ -691,7 +691,7 @@ function rev_iter(f, xs) {
 }
 
 function for_all2_no_exn(p, _l1, _l2) {
-  while(true) {
+  while (true) {
     let l2 = _l2;
     let l1 = _l1;
     if (!l1) {
@@ -714,7 +714,7 @@ function for_all2_no_exn(p, _l1, _l2) {
 }
 
 function find_no_exn(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (!x) {
       return;
@@ -729,7 +729,7 @@ function find_no_exn(p, _x) {
 }
 
 function find_opt(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (!x) {
       return;
@@ -747,7 +747,7 @@ function split_map(f, xs) {
   let _bs = /* [] */0;
   let _cs = /* [] */0;
   let _xs = xs;
-  while(true) {
+  while (true) {
     let xs$1 = _xs;
     let cs = _cs;
     let bs = _bs;
@@ -850,7 +850,7 @@ function ref_pop(refs) {
 function rev_except_last(xs) {
   let _acc = /* [] */0;
   let _xs = xs;
-  while(true) {
+  while (true) {
     let xs$1 = _xs;
     let acc = _acc;
     if (xs$1) {
@@ -885,7 +885,7 @@ function sort_via_array(cmp, lst) {
 }
 
 function last(_xs) {
-  while(true) {
+  while (true) {
     let xs = _xs;
     if (xs) {
       let tl = xs.tl;
@@ -905,7 +905,7 @@ function last(_xs) {
 }
 
 function assoc_by_string(def, k, _lst) {
-  while(true) {
+  while (true) {
     let lst = _lst;
     if (lst) {
       let match = lst.hd;
@@ -932,7 +932,7 @@ function assoc_by_string(def, k, _lst) {
 }
 
 function assoc_by_int(def, k, _lst) {
-  while(true) {
+  while (true) {
     let lst = _lst;
     if (lst) {
       let match = lst.hd;

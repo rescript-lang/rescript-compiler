@@ -11,7 +11,7 @@ function f() {
     contents: 0
   };
   let n = 10;
-  while(true) {
+  while (true) {
     if (v.contents > n) {
       return acc.contents;
     }

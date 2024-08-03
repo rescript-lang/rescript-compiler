@@ -158,7 +158,7 @@ function add(x, data, param) {
 }
 
 function find(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
@@ -177,7 +177,7 @@ function find(x, _param) {
 }
 
 function find_first(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
@@ -191,7 +191,7 @@ function find_first(f, _param) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.l;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -218,7 +218,7 @@ function find_first(f, _param) {
 }
 
 function find_first_opt(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -228,7 +228,7 @@ function find_first_opt(f, _param) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.l;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -255,7 +255,7 @@ function find_first_opt(f, _param) {
 }
 
 function find_last(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
@@ -269,7 +269,7 @@ function find_last(f, _param) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.r;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -296,7 +296,7 @@ function find_last(f, _param) {
 }
 
 function find_last_opt(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -306,7 +306,7 @@ function find_last_opt(f, _param) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.r;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -333,7 +333,7 @@ function find_last_opt(f, _param) {
 }
 
 function find_opt(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -348,7 +348,7 @@ function find_opt(x, _param) {
 }
 
 function mem(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return false;
@@ -363,7 +363,7 @@ function mem(x, _param) {
 }
 
 function min_binding(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
@@ -385,7 +385,7 @@ function min_binding(_param) {
 }
 
 function min_binding_opt(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -403,7 +403,7 @@ function min_binding_opt(_param) {
 }
 
 function max_binding(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
@@ -425,7 +425,7 @@ function max_binding(_param) {
 }
 
 function max_binding_opt(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -555,7 +555,7 @@ function update(x, f, param) {
 }
 
 function iter(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -603,7 +603,7 @@ function mapi(f, param) {
 }
 
 function fold(f, _m, _accu) {
-  while(true) {
+  while (true) {
     let accu = _accu;
     let m = _m;
     if (typeof m !== "object") {
@@ -616,7 +616,7 @@ function fold(f, _m, _accu) {
 }
 
 function for_all(p, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return true;
@@ -633,7 +633,7 @@ function for_all(p, _param) {
 }
 
 function exists(p, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return false;
@@ -854,7 +854,7 @@ function partition(p, param) {
 }
 
 function cons_enum(_m, _e) {
-  while(true) {
+  while (true) {
     let e = _e;
     let m = _m;
     if (typeof m !== "object") {
@@ -875,7 +875,7 @@ function cons_enum(_m, _e) {
 function compare(cmp, m1, m2) {
   let _e1 = cons_enum(m1, "End");
   let _e2 = cons_enum(m2, "End");
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
@@ -905,7 +905,7 @@ function compare(cmp, m1, m2) {
 function equal(cmp, m1, m2) {
   let _e1 = cons_enum(m1, "End");
   let _e2 = cons_enum(m2, "End");
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
@@ -939,7 +939,7 @@ function cardinal(param) {
 }
 
 function bindings_aux(_accu, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     let accu = _accu;
     if (typeof param !== "object") {

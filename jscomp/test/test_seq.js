@@ -13,7 +13,7 @@ let Help = /* @__PURE__ */Caml_exceptions.create("Test_seq.Help");
 let Stop = /* @__PURE__ */Caml_exceptions.create("Test_seq.Stop");
 
 function assoc3(x, _l) {
-  while(true) {
+  while (true) {
     let l = _l;
     if (l) {
       let match = l.hd;

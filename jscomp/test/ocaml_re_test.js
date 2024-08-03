@@ -44,7 +44,7 @@ function eq(loc, x, y) {
 }
 
 function union(_l, _l$p) {
-  while(true) {
+  while (true) {
     let l$p = _l$p;
     let l = _l;
     if (!l$p) {
@@ -103,7 +103,7 @@ function union(_l, _l$p) {
 }
 
 function inter(_l, _l$p) {
-  while(true) {
+  while (true) {
     let l$p = _l$p;
     let l = _l;
     if (!l$p) {
@@ -149,7 +149,7 @@ function inter(_l, _l$p) {
 }
 
 function diff(_l, _l$p) {
-  while(true) {
+  while (true) {
     let l$p = _l$p;
     let l = _l;
     if (!l$p) {
@@ -246,7 +246,7 @@ function offset(o, l) {
 }
 
 function mem(c, _s) {
-  while(true) {
+  while (true) {
     let s = _s;
     if (!s) {
       return false;
@@ -623,7 +623,7 @@ let empty = {
 function hash(m, accu) {
   let _l = m.marks;
   let _accu = hash_combine(Hashtbl.hash(m.pmarks), accu);
-  while(true) {
+  while (true) {
     let accu$1 = _accu;
     let l = _l;
     if (!l) {
@@ -662,7 +662,7 @@ function marks_set_idx$1(marks, idx) {
 }
 
 function first(f, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (!x) {
       return;
@@ -814,7 +814,7 @@ function rename(ids, x) {
 }
 
 function equal(_l1, _l2) {
-  while(true) {
+  while (true) {
     let l2 = _l2;
     let l1 = _l1;
     if (!l1) {
@@ -892,7 +892,7 @@ function equal(_l1, _l2) {
 }
 
 function hash$1(_l, _accu) {
-  while(true) {
+  while (true) {
     let accu = _accu;
     let l = _l;
     if (!l) {
@@ -1029,7 +1029,7 @@ function mark_used_indices(tbl) {
 }
 
 function find_free(tbl, _idx, len) {
-  while(true) {
+  while (true) {
     let idx = _idx;
     if (idx === len || !Caml_array.get(tbl, idx)) {
       return idx;
@@ -1065,7 +1065,7 @@ function remove_matches(extra) {
 }
 
 function split_at_match_rec(_l$p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let l$p = _l$p;
     if (x) {
@@ -1102,7 +1102,7 @@ function split_at_match_rec(_l$p, _x) {
 }
 
 function remove_duplicates(prev, _l, y) {
-  while(true) {
+  while (true) {
     let l = _l;
     if (!l) {
       return [
@@ -1483,7 +1483,7 @@ let Re_automata_State = {
 };
 
 function iter(_n, f, _v) {
-  while(true) {
+  while (true) {
     let v = _v;
     let n = _n;
     if (n === 0) {
@@ -1571,7 +1571,7 @@ function loop(info, s, pos, st) {
   let _pos = pos;
   let _st = st;
   let _st$p = st$p;
-  while(true) {
+  while (true) {
     let st$p$1 = _st$p;
     let st$1 = _st;
     let pos$1 = _pos;
@@ -1671,7 +1671,7 @@ function scan_str(info, s, initial_state, groups) {
     } else {
       let _pos = pos;
       let _st = initial_state;
-      while(true) {
+      while (true) {
         let st = _st;
         let pos$1 = _pos;
         if (pos$1 >= last) {
@@ -1703,7 +1703,7 @@ function scan_str(info, s, initial_state, groups) {
     return st$1;
   } else {
     let pos$2 = last - 1 | 0;
-    while(true) {
+    while (true) {
       let st$p$1 = Caml_array.get(st$1.next, info$1.re.lnl);
       if (st$p$1.idx >= 0) {
         if (groups) {
@@ -1744,7 +1744,7 @@ function trans_set(cache, cm, s) {
   ];
   try {
     let _param = cache.contents;
-    while(true) {
+    while (true) {
       let param = _param;
       if (typeof param !== "object") {
         throw new Error("Not_found", {
@@ -1776,7 +1776,7 @@ function trans_set(cache, cm, s) {
 }
 
 function is_charset(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return false;
@@ -1815,7 +1815,7 @@ function split(s, cm) {
     Caml_bytes.set(cm, i, /* '\001' */1);
     Caml_bytes.set(cm, j + 1 | 0, /* '\001' */1);
   };
-  while(true) {
+  while (true) {
     let t = _t;
     if (!t) {
       return;
@@ -1865,7 +1865,7 @@ function colorize(c, regexp) {
     contents: false
   };
   let colorize$1 = function (_regexp) {
-    while(true) {
+    while (true) {
       let regexp = _regexp;
       if (typeof regexp !== "object") {
         switch (regexp) {
@@ -1950,7 +1950,7 @@ function flatten_cmap(cm) {
 }
 
 function equal$2(_x1, _x2) {
-  while(true) {
+  while (true) {
     let x2 = _x2;
     let x1 = _x1;
     if (typeof x1 !== "object") {
@@ -2166,7 +2166,7 @@ function equal$2(_x1, _x2) {
 }
 
 function eq_list(_l1, _l2) {
-  while(true) {
+  while (true) {
     let l2 = _l2;
     let l1 = _l1;
     if (!l1) {
@@ -2200,7 +2200,7 @@ function sequence(x) {
 }
 
 function merge_sequences(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (!x) {
       return /* [] */0;
@@ -2292,7 +2292,7 @@ function enforce_kind(ids, kind, kind$p, cr) {
 }
 
 function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let greedy = _greedy;
     let ign_group = _ign_group;
@@ -2602,7 +2602,7 @@ function as_set(x) {
 }
 
 function handle_case(_ign_case, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let ign_case = _ign_case;
     if (typeof x !== "object") {
@@ -2741,7 +2741,7 @@ function handle_case(_ign_case, _x) {
 }
 
 function anchored(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       switch (x) {
@@ -3425,7 +3425,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
   };
   let regexp$p = function (_left) {
-    while(true) {
+    while (true) {
       let left = _left;
       if (!accept(/* '|' */124)) {
         return left;
@@ -3441,7 +3441,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     };
   };
   let branch$p = function (_left) {
-    while(true) {
+    while (true) {
       let left = _left;
       if (i.contents === l || test(/* '|' */124) || test(/* ')' */41)) {
         return seq$2(List.rev(left));
@@ -3726,7 +3726,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       return;
     } else {
       let _i = d - /* '0' */48 | 0;
-      while(true) {
+      while (true) {
         let i$1 = _i;
         if (i.contents === l) {
           return i$1;
@@ -4091,7 +4091,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
   };
   let bracket = function (_s) {
-    while(true) {
+    while (true) {
       let s = _s;
       if (s !== /* [] */0 && accept(/* ']' */93)) {
         return s;
@@ -4175,7 +4175,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     return branch$p(/* [] */0);
   };
   let comment = function () {
-    while(true) {
+    while (true) {
       if (accept(/* ')' */41)) {
         return epsilon;
       }

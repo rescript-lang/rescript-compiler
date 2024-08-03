@@ -170,7 +170,7 @@ let m = List.fold_left((function (acc, param) {
 });
 
 function find(px, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {

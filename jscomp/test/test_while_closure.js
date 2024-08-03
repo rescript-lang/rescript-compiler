@@ -14,7 +14,7 @@ let arr = Caml_array.make(10, (function () {
 
 function f() {
   let n = 0;
-  while(n < 10) {
+  while (n < 10) {
     let j = n;
     Caml_array.set(arr, j, (function () {
       v.contents = v.contents + j | 0;

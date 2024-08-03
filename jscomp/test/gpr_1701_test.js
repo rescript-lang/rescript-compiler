@@ -32,7 +32,7 @@ test(100);
 
 function read_lines(inc) {
   let _acc = /* [] */0;
-  while(true) {
+  while (true) {
     let acc = _acc;
     let l;
     try {
@@ -60,7 +60,7 @@ function read_lines(inc) {
 
 function read_lines2(inc) {
   let _acc = /* [] */0;
-  while(true) {
+  while (true) {
     let acc = _acc;
     let l;
     try {

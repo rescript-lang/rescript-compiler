@@ -68,7 +68,7 @@ function Make(funarg) {
       let _successors = funarg.succ(gr, top);
       let _top = top;
       let _rest_of_stack = rest_of_stack;
-      while(true) {
+      while (true) {
         let rest_of_stack$1 = _rest_of_stack;
         let top$1 = _top;
         let successors = _successors;

@@ -6,7 +6,7 @@ let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 function cons_enum(_s, _e) {
-  while(true) {
+  while (true) {
     let e = _e;
     let s = _s;
     if (typeof s !== "object") {
@@ -32,7 +32,7 @@ function height(x) {
 }
 
 function min_elt(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {
@@ -51,7 +51,7 @@ function min_elt(_x) {
 }
 
 function max_elt(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {
@@ -78,7 +78,7 @@ function is_empty(x) {
 }
 
 function cardinal_aux(_acc, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let acc = _acc;
     if (typeof x !== "object") {
@@ -95,7 +95,7 @@ function cardinal(s) {
 }
 
 function elements_aux(_accu, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let accu = _accu;
     if (typeof x !== "object") {
@@ -115,7 +115,7 @@ function elements(s) {
 }
 
 function iter(f, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return;
@@ -128,7 +128,7 @@ function iter(f, _x) {
 }
 
 function fold(f, _s, _accu) {
-  while(true) {
+  while (true) {
     let accu = _accu;
     let s = _s;
     if (typeof s !== "object") {
@@ -141,7 +141,7 @@ function fold(f, _s, _accu) {
 }
 
 function for_all(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return true;
@@ -158,7 +158,7 @@ function for_all(p, _x) {
 }
 
 function exists(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return false;
@@ -698,7 +698,7 @@ function invariant(cmp, t) {
 }
 
 function compare_aux(cmp, _e1, _e2) {
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {

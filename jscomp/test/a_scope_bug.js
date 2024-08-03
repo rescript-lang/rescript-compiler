@@ -3,7 +3,7 @@
 
 
 function odd(_z) {
-  while(true) {
+  while (true) {
     let z = _z;
     let even = Math.imul(z, z);
     let a = (even + 4 | 0) + even | 0;

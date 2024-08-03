@@ -126,7 +126,7 @@ function add(x, data, x_) {
 }
 
 function find(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
       throw new Error("Not_found", {

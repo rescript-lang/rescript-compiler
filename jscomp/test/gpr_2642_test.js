@@ -3,7 +3,7 @@
 
 
 function isfree(id, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     switch (x.TAG) {
       case "Pident" :

@@ -202,7 +202,7 @@ function _error_eof(t) {
 }
 
 function expr(k, t) {
-  while(true) {
+  while (true) {
     if (t.i === t.len) {
       return _refill(t, (function (extra) {
         return expr(k, extra);
@@ -281,7 +281,7 @@ function expr_starting_with(c, k, t) {
 }
 
 function expr_list(acc, k, t) {
-  while(true) {
+  while (true) {
     if (t.i === t.len) {
       return _refill(t, (function (extra) {
         return expr_list(acc, k, extra);
@@ -344,7 +344,7 @@ function _return_atom(last, k, t) {
 }
 
 function atom(k, t) {
-  while(true) {
+  while (true) {
     if (t.i === t.len) {
       return _refill(t, (function (extra) {
         return atom(k, extra);
@@ -394,7 +394,7 @@ function atom(k, t) {
 }
 
 function quoted(k, t) {
-  while(true) {
+  while (true) {
     if (t.i === t.len) {
       return _refill(t, (function (extra) {
         return quoted(k, extra);
@@ -501,7 +501,7 @@ function read1int(i, k, t) {
 }
 
 function skip_comment(k, t) {
-  while(true) {
+  while (true) {
     if (t.i === t.len) {
       return _refill(t, (function (extra) {
         return skip_comment(k, extra);
@@ -516,7 +516,7 @@ function skip_comment(k, t) {
 }
 
 function expr_or_end(k, t) {
-  while(true) {
+  while (true) {
     if (t.i === t.len) {
       return _refill(t, (function (extra) {
         return expr_or_end(k, extra);

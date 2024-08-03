@@ -4,7 +4,7 @@
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function f(_n, _acc) {
-  while(true) {
+  while (true) {
     let acc = _acc;
     let n = _n;
     if (n === 0) {

@@ -65,7 +65,7 @@ function map(f, x) {
 function f(x) {
   let v = x;
   let sum = 0;
-  while(v > 0) {
+  while (v > 0) {
     sum = sum + v | 0;
     v = v - 1 | 0;
   };
@@ -76,7 +76,7 @@ function fib3(n) {
   let _a = 0;
   let _b = 1;
   let _n = n;
-  while(true) {
+  while (true) {
     let n$1 = _n;
     let b = _b;
     let a = _a;

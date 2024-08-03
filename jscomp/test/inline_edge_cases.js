@@ -3,7 +3,7 @@
 
 
 function test3(_n) {
-  while(true) {
+  while (true) {
     let n = _n;
     if (n === 0) {
       return (n + 5 | 0) + 4 | 0;
@@ -14,7 +14,7 @@ function test3(_n) {
 }
 
 function test2(_n) {
-  while(true) {
+  while (true) {
     let n = _n;
     if (n === 0) {
       return test3(n) + 3 | 0;
@@ -25,11 +25,11 @@ function test2(_n) {
 }
 
 function test0(_n) {
-  while(true) {
+  while (true) {
     let n = _n;
     if (n === 0) {
       let _n$1 = n;
-      while(true) {
+      while (true) {
         let n$1 = _n$1;
         if (n$1 === 0) {
           return test2(n$1) + 2 | 0;

@@ -31,7 +31,7 @@ function is_empty(x) {
 }
 
 function mem(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
       return false;

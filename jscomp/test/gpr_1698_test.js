@@ -3,7 +3,7 @@
 
 
 function is_number(_expr) {
-  while(true) {
+  while (true) {
     let expr = _expr;
     switch (expr.TAG) {
       case "Val" :
@@ -26,7 +26,7 @@ function is_number(_expr) {
 }
 
 function compare(context, state, _a, _b) {
-  while(true) {
+  while (true) {
     let b = _b;
     let a = _a;
     let exit = 0;

@@ -3,7 +3,7 @@
 
 
 function $plus$colon(_f, _g) {
-  while(true) {
+  while (true) {
     let g = _g;
     let f = _f;
     if (f.TAG === "Int") {
@@ -47,7 +47,7 @@ function $plus$colon(_f, _g) {
 }
 
 function $star$colon(_f, _g) {
-  while(true) {
+  while (true) {
     let g = _g;
     let f = _f;
     let exit = 0;

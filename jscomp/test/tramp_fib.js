@@ -40,7 +40,7 @@ let u = fib(10, (function (x) {
 }));
 
 function iter(_bounce) {
-  while(true) {
+  while (true) {
     let bounce = _bounce;
     if (bounce.TAG === "Continue") {
       return bounce._0;

@@ -35,7 +35,7 @@ let lexer = Genlex.make_lexer({
 
 function to_list(s) {
   let _acc = /* [] */0;
-  while(true) {
+  while (true) {
     let acc = _acc;
     let v;
     try {

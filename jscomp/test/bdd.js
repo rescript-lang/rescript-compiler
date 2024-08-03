@@ -4,7 +4,7 @@
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function $$eval(_bdd, vars) {
-  while(true) {
+  while (true) {
     let bdd = _bdd;
     if (typeof bdd !== "object") {
       if (bdd === "One") {
@@ -59,7 +59,7 @@ function resize(newSize) {
   let newSz_1 = newSize - 1 | 0;
   let newArr = Caml_array.make(newSize, /* [] */0);
   let copyBucket = function (_bucket) {
-    while(true) {
+    while (true) {
       let bucket = _bucket;
       if (!bucket) {
         return;
@@ -139,7 +139,7 @@ function mkNode(low, v, high) {
   let ind = hashVal(idl, idh, v) & sz_1.contents;
   let bucket = Caml_array.get(htab.contents, ind);
   let _b = bucket;
-  while(true) {
+  while (true) {
     let b = _b;
     if (b) {
       let n = b.hd;

@@ -6,7 +6,7 @@ let Caml_obj = require("../../lib/js/caml_obj.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 
 function length_aux(_len, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let len = _len;
     if (!x) {
@@ -57,7 +57,7 @@ function nth(l, n) {
   }
   let _l = l;
   let _n = n;
-  while(true) {
+  while (true) {
     let n$1 = _n;
     let l$1 = _l;
     if (l$1) {
@@ -78,7 +78,7 @@ function nth(l, n) {
 }
 
 function rev_append(_l1, _l2) {
-  while(true) {
+  while (true) {
     let l2 = _l2;
     let l1 = _l1;
     if (!l1) {
@@ -134,7 +134,7 @@ function mapi$1(f, l) {
 function rev_map(f, l) {
   let _accu = /* [] */0;
   let _x = l;
-  while(true) {
+  while (true) {
     let x = _x;
     let accu = _accu;
     if (!x) {
@@ -150,7 +150,7 @@ function rev_map(f, l) {
 }
 
 function iter(f, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (!x) {
       return;
@@ -164,7 +164,7 @@ function iter(f, _x) {
 function iteri(f, l) {
   let _i = 0;
   let _x = l;
-  while(true) {
+  while (true) {
     let x = _x;
     let i = _i;
     if (!x) {
@@ -178,7 +178,7 @@ function iteri(f, l) {
 }
 
 function fold_left(f, _accu, _l) {
-  while(true) {
+  while (true) {
     let l = _l;
     let accu = _accu;
     if (!l) {
@@ -229,7 +229,7 @@ function rev_map2(f, l1, l2) {
   let _accu = /* [] */0;
   let _l1 = l1;
   let _l2 = l2;
-  while(true) {
+  while (true) {
     let l2$1 = _l2;
     let l1$1 = _l1;
     let accu = _accu;
@@ -263,7 +263,7 @@ function rev_map2(f, l1, l2) {
 }
 
 function iter2(f, _l1, _l2) {
-  while(true) {
+  while (true) {
     let l2 = _l2;
     let l1 = _l1;
     if (l1) {
@@ -293,7 +293,7 @@ function iter2(f, _l1, _l2) {
 }
 
 function fold_left2(f, _accu, _l1, _l2) {
-  while(true) {
+  while (true) {
     let l2 = _l2;
     let l1 = _l1;
     let accu = _accu;
@@ -347,7 +347,7 @@ function fold_right2(f, l1, l2, accu) {
 }
 
 function for_all(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (!x) {
       return true;
@@ -361,7 +361,7 @@ function for_all(p, _x) {
 }
 
 function exists(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (!x) {
       return false;
@@ -375,7 +375,7 @@ function exists(p, _x) {
 }
 
 function for_all2(p, _l1, _l2) {
-  while(true) {
+  while (true) {
     let l2 = _l2;
     let l1 = _l1;
     if (l1) {
@@ -407,7 +407,7 @@ function for_all2(p, _l1, _l2) {
 }
 
 function exists2(p, _l1, _l2) {
-  while(true) {
+  while (true) {
     let l2 = _l2;
     let l1 = _l1;
     if (l1) {
@@ -439,7 +439,7 @@ function exists2(p, _l1, _l2) {
 }
 
 function mem(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (!x_) {
       return false;
@@ -453,7 +453,7 @@ function mem(x, _x_) {
 }
 
 function memq(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (!x_) {
       return false;
@@ -467,7 +467,7 @@ function memq(x, _x_) {
 }
 
 function assoc(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (x_) {
       let match = x_.hd;
@@ -486,7 +486,7 @@ function assoc(x, _x_) {
 }
 
 function assq(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (x_) {
       let match = x_.hd;
@@ -505,7 +505,7 @@ function assq(x, _x_) {
 }
 
 function mem_assoc(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (!x_) {
       return false;
@@ -519,7 +519,7 @@ function mem_assoc(x, _x_) {
 }
 
 function mem_assq(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (!x_) {
       return false;
@@ -565,7 +565,7 @@ function remove_assq(x, x_) {
 }
 
 function find(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (x) {
       let x$1 = x.hd;
@@ -587,7 +587,7 @@ function find_all(p) {
   return function (__x) {
     let _accu = /* [] */0;
     let _x = __x;
-    while(true) {
+    while (true) {
       let x = _x;
       let accu = _accu;
       if (!x) {
@@ -613,7 +613,7 @@ function partition(p, l) {
   let _yes = /* [] */0;
   let _no = /* [] */0;
   let _x = l;
-  while(true) {
+  while (true) {
     let x = _x;
     let no = _no;
     let yes = _yes;
@@ -715,7 +715,7 @@ function merge(cmp, l1, l2) {
 }
 
 function chop(_k, _l) {
-  while(true) {
+  while (true) {
     let l = _l;
     let k = _k;
     if (k === 0) {
@@ -858,7 +858,7 @@ function stable_sort(cmp, l) {
     let _l1 = s1;
     let _l2 = s2;
     let _accu = /* [] */0;
-    while(true) {
+    while (true) {
       let accu = _accu;
       let l2$1 = _l2;
       let l1 = _l1;
@@ -1004,7 +1004,7 @@ function stable_sort(cmp, l) {
     let _l1 = s1;
     let _l2 = s2;
     let _accu = /* [] */0;
-    while(true) {
+    while (true) {
       let accu = _accu;
       let l2$1 = _l2;
       let l1 = _l1;
@@ -1232,7 +1232,7 @@ function sort_uniq(cmp, l) {
     let _l1 = s1;
     let _l2 = s2;
     let _accu = /* [] */0;
-    while(true) {
+    while (true) {
       let accu = _accu;
       let l2$1 = _l2;
       let l1 = _l1;
@@ -1463,7 +1463,7 @@ function sort_uniq(cmp, l) {
     let _l1 = s1;
     let _l2 = s2;
     let _accu = /* [] */0;
-    while(true) {
+    while (true) {
       let accu = _accu;
       let l2$1 = _l2;
       let l1 = _l1;

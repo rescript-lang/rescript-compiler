@@ -10,7 +10,7 @@ function test() {
     contents: 0
   };
   let f = function (_n, _acc) {
-    while(true) {
+    while (true) {
       let acc = _acc;
       let n = _n;
       if (n === 0) {

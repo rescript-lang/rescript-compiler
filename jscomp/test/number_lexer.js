@@ -121,7 +121,7 @@ let __ocaml_lex_tables = {
 };
 
 function __ocaml_lex_token_rec(l, lexbuf, ___ocaml_lex_state) {
-  while(true) {
+  while (true) {
     let __ocaml_lex_state = ___ocaml_lex_state;
     let __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {

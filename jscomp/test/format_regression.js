@@ -55,7 +55,7 @@ function format_pp_token(param, param$1, param$2) {
 }
 
 function advance_loop(state) {
-  while(true) {
+  while (true) {
     let match = peek_queue(state.pp_queue);
     let size = match.elem_size;
     let size$1 = int_of_size(size);

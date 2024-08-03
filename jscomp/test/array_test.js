@@ -43,7 +43,7 @@ function starts_with(xs, prefix, p) {
 function is_sorted(x) {
   let len = x.length;
   let _i = 0;
-  while(true) {
+  while (true) {
     let i = _i;
     if (i >= (len - 1 | 0)) {
       return true;

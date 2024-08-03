@@ -98,7 +98,7 @@ function add(x, x_) {
 }
 
 function min_elt(_def, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let def = _def;
     if (typeof x !== "object") {
@@ -151,7 +151,7 @@ function remove(x, tree) {
 }
 
 function mem(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
       return false;

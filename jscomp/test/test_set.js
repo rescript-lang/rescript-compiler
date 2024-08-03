@@ -150,7 +150,7 @@ function Make(Ord) {
     }
   };
   let min_elt = function (_x) {
-    while(true) {
+    while (true) {
       let x = _x;
       if (typeof x !== "object") {
         throw new Error("Not_found", {
@@ -168,7 +168,7 @@ function Make(Ord) {
     };
   };
   let max_elt = function (_x) {
-    while(true) {
+    while (true) {
       let x = _x;
       if (typeof x !== "object") {
         throw new Error("Not_found", {
@@ -261,7 +261,7 @@ function Make(Ord) {
     }
   };
   let mem = function (x, _x_) {
-    while(true) {
+    while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
         return false;
@@ -351,7 +351,7 @@ function Make(Ord) {
     }
   };
   let cons_enum = function (_s, _e) {
-    while(true) {
+    while (true) {
       let e = _e;
       let s = _s;
       if (typeof s !== "object") {
@@ -368,7 +368,7 @@ function Make(Ord) {
     };
   };
   let compare_aux = function (_e1, _e2) {
-    while(true) {
+    while (true) {
       let e2 = _e2;
       let e1 = _e1;
       if (typeof e1 !== "object") {
@@ -397,7 +397,7 @@ function Make(Ord) {
     return compare(s1, s2) === 0;
   };
   let subset = function (_s1, _s2) {
-    while(true) {
+    while (true) {
       let s2 = _s2;
       let s1 = _s1;
       if (typeof s1 !== "object") {
@@ -447,7 +447,7 @@ function Make(Ord) {
     };
   };
   let iter = function (f, _x_) {
-    while(true) {
+    while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
         return;
@@ -459,7 +459,7 @@ function Make(Ord) {
     };
   };
   let fold = function (f, _s, _accu) {
-    while(true) {
+    while (true) {
       let accu = _accu;
       let s = _s;
       if (typeof s !== "object") {
@@ -471,7 +471,7 @@ function Make(Ord) {
     };
   };
   let for_all = function (p, _x) {
-    while(true) {
+    while (true) {
       let x = _x;
       if (typeof x !== "object") {
         return true;
@@ -487,7 +487,7 @@ function Make(Ord) {
     };
   };
   let exists = function (p, _x) {
-    while(true) {
+    while (true) {
       let x = _x;
       if (typeof x !== "object") {
         return false;
@@ -551,7 +551,7 @@ function Make(Ord) {
     }
   };
   let elements_aux = function (_accu, _x) {
-    while(true) {
+    while (true) {
       let x = _x;
       let accu = _accu;
       if (typeof x !== "object") {
@@ -569,7 +569,7 @@ function Make(Ord) {
     return elements_aux(/* [] */0, s);
   };
   let find = function (x, _x_) {
-    while(true) {
+    while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
         throw new Error("Not_found", {

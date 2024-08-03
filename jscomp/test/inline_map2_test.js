@@ -141,7 +141,7 @@ function Make(Ord) {
     }
   };
   let find = function (x, _x_) {
-    while(true) {
+    while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
         throw new Error("Not_found", {
@@ -159,7 +159,7 @@ function Make(Ord) {
     };
   };
   let mem = function (x, _x_) {
-    while(true) {
+    while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
         return false;
@@ -173,7 +173,7 @@ function Make(Ord) {
     };
   };
   let min_binding = function (_x) {
-    while(true) {
+    while (true) {
       let x = _x;
       if (typeof x !== "object") {
         throw new Error("Not_found", {
@@ -194,7 +194,7 @@ function Make(Ord) {
     };
   };
   let max_binding = function (_x) {
-    while(true) {
+    while (true) {
       let x = _x;
       if (typeof x !== "object") {
         throw new Error("Not_found", {
@@ -255,7 +255,7 @@ function Make(Ord) {
     }
   };
   let iter = function (f, _x) {
-    while(true) {
+    while (true) {
       let x = _x;
       if (typeof x !== "object") {
         return;
@@ -300,7 +300,7 @@ function Make(Ord) {
     };
   };
   let fold = function (f, _m, _accu) {
-    while(true) {
+    while (true) {
       let accu = _accu;
       let m = _m;
       if (typeof m !== "object") {
@@ -312,7 +312,7 @@ function Make(Ord) {
     };
   };
   let for_all = function (p, _x) {
-    while(true) {
+    while (true) {
       let x = _x;
       if (typeof x !== "object") {
         return true;
@@ -328,7 +328,7 @@ function Make(Ord) {
     };
   };
   let exists = function (p, _x) {
-    while(true) {
+    while (true) {
       let x = _x;
       if (typeof x !== "object") {
         return false;
@@ -500,7 +500,7 @@ function Make(Ord) {
     }
   };
   let cons_enum = function (_m, _e) {
-    while(true) {
+    while (true) {
       let e = _e;
       let m = _m;
       if (typeof m !== "object") {
@@ -520,7 +520,7 @@ function Make(Ord) {
   let compare = function (cmp, m1, m2) {
     let _e1 = cons_enum(m1, "End");
     let _e2 = cons_enum(m2, "End");
-    while(true) {
+    while (true) {
       let e2 = _e2;
       let e1 = _e1;
       if (typeof e1 !== "object") {
@@ -549,7 +549,7 @@ function Make(Ord) {
   let equal = function (cmp, m1, m2) {
     let _e1 = cons_enum(m1, "End");
     let _e2 = cons_enum(m2, "End");
-    while(true) {
+    while (true) {
       let e2 = _e2;
       let e1 = _e1;
       if (typeof e1 !== "object") {
@@ -581,7 +581,7 @@ function Make(Ord) {
     }
   };
   let bindings_aux = function (_accu, _x) {
-    while(true) {
+    while (true) {
       let x = _x;
       let accu = _accu;
       if (typeof x !== "object") {
@@ -780,7 +780,7 @@ function add(x, data, x_) {
 }
 
 function find(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
       throw new Error("Not_found", {
@@ -799,7 +799,7 @@ function find(x, _x_) {
 }
 
 function mem(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
       return false;
@@ -814,7 +814,7 @@ function mem(x, _x_) {
 }
 
 function min_binding(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {
@@ -836,7 +836,7 @@ function min_binding(_x) {
 }
 
 function max_binding(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {
@@ -900,7 +900,7 @@ function remove(x, x_) {
 }
 
 function iter(f, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return;
@@ -948,7 +948,7 @@ function mapi(f, x) {
 }
 
 function fold(f, _m, _accu) {
-  while(true) {
+  while (true) {
     let accu = _accu;
     let m = _m;
     if (typeof m !== "object") {
@@ -961,7 +961,7 @@ function fold(f, _m, _accu) {
 }
 
 function for_all(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return true;
@@ -978,7 +978,7 @@ function for_all(p, _x) {
 }
 
 function exists(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return false;
@@ -1160,7 +1160,7 @@ function partition(p, x) {
 }
 
 function cons_enum(_m, _e) {
-  while(true) {
+  while (true) {
     let e = _e;
     let m = _m;
     if (typeof m !== "object") {
@@ -1181,7 +1181,7 @@ function cons_enum(_m, _e) {
 function compare(cmp, m1, m2) {
   let _e1 = cons_enum(m1, "End");
   let _e2 = cons_enum(m2, "End");
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
@@ -1211,7 +1211,7 @@ function compare(cmp, m1, m2) {
 function equal(cmp, m1, m2) {
   let _e1 = cons_enum(m1, "End");
   let _e2 = cons_enum(m2, "End");
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
@@ -1245,7 +1245,7 @@ function cardinal(x) {
 }
 
 function bindings_aux(_accu, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let accu = _accu;
     if (typeof x !== "object") {
@@ -1473,7 +1473,7 @@ function add$1(x, data, x_) {
 }
 
 function find$1(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
       throw new Error("Not_found", {
@@ -1492,7 +1492,7 @@ function find$1(x, _x_) {
 }
 
 function mem$1(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
       return false;
@@ -1507,7 +1507,7 @@ function mem$1(x, _x_) {
 }
 
 function min_binding$1(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {
@@ -1529,7 +1529,7 @@ function min_binding$1(_x) {
 }
 
 function max_binding$1(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {
@@ -1593,7 +1593,7 @@ function remove$1(x, x_) {
 }
 
 function iter$1(f, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return;
@@ -1641,7 +1641,7 @@ function mapi$1(f, x) {
 }
 
 function fold$1(f, _m, _accu) {
-  while(true) {
+  while (true) {
     let accu = _accu;
     let m = _m;
     if (typeof m !== "object") {
@@ -1654,7 +1654,7 @@ function fold$1(f, _m, _accu) {
 }
 
 function for_all$1(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return true;
@@ -1671,7 +1671,7 @@ function for_all$1(p, _x) {
 }
 
 function exists$1(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return false;
@@ -1853,7 +1853,7 @@ function partition$1(p, x) {
 }
 
 function cons_enum$1(_m, _e) {
-  while(true) {
+  while (true) {
     let e = _e;
     let m = _m;
     if (typeof m !== "object") {
@@ -1874,7 +1874,7 @@ function cons_enum$1(_m, _e) {
 function compare$1(cmp, m1, m2) {
   let _e1 = cons_enum$1(m1, "End");
   let _e2 = cons_enum$1(m2, "End");
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
@@ -1904,7 +1904,7 @@ function compare$1(cmp, m1, m2) {
 function equal$1(cmp, m1, m2) {
   let _e1 = cons_enum$1(m1, "End");
   let _e2 = cons_enum$1(m2, "End");
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
@@ -1938,7 +1938,7 @@ function cardinal$1(x) {
 }
 
 function bindings_aux$1(_accu, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let accu = _accu;
     if (typeof x !== "object") {

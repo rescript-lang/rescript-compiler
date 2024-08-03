@@ -3,7 +3,7 @@
 
 
 function tailcall(x) {
-  while(true) {
+  while (true) {
     continue;
   };
 }
@@ -17,7 +17,7 @@ function non_length(x) {
 }
 
 function length(_acc, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let acc = _acc;
     if (!x) {

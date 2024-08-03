@@ -211,7 +211,7 @@ function l_parse(token) {
     }
   };
   let parse_f_aux = function (_a) {
-    while(true) {
+    while (true) {
       let a = _a;
       let t = token$1();
       if (t.TAG === "Kwd") {
@@ -233,7 +233,7 @@ function l_parse(token) {
     };
   };
   let parse_t_aux = function (_a) {
-    while(true) {
+    while (true) {
       let a = _a;
       let t = token$1();
       if (t.TAG === "Kwd") {

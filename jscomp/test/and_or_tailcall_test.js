@@ -4,7 +4,7 @@
 let Mt = require("./mt.js");
 
 function f(b, x, _n) {
-  while(true) {
+  while (true) {
     let n = _n;
     if (n > 100000) {
       return false;
@@ -18,7 +18,7 @@ function f(b, x, _n) {
 }
 
 function or_f(b, x, _n) {
-  while(true) {
+  while (true) {
     let n = _n;
     if (n > 100000) {
       return false;

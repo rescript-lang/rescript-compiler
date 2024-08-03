@@ -16,7 +16,7 @@ function split_by(keep_emptyOpt, is_delim, str) {
   let _acc = /* [] */0;
   let _last_pos = len;
   let _pos = len - 1 | 0;
-  while(true) {
+  while (true) {
     let pos = _pos;
     let last_pos = _last_pos;
     let acc = _acc;
@@ -54,7 +54,7 @@ function split_by(keep_emptyOpt, is_delim, str) {
 function trim(s) {
   let i = 0;
   let j = s.length;
-  while((function () {
+  while ((function () {
       let tmp = false;
       if (i < j) {
         let u = s.codePointAt(i);
@@ -65,7 +65,7 @@ function trim(s) {
     i = i + 1 | 0;
   };
   let k = j - 1 | 0;
-  while((function () {
+  while ((function () {
       let tmp = false;
       if (k >= i) {
         let u = s.codePointAt(k);
@@ -105,7 +105,7 @@ function starts_with(s, beg) {
     return false;
   }
   let i = 0;
-  while(i < beg_len && s.codePointAt(i) === beg.codePointAt(i)) {
+  while (i < beg_len && s.codePointAt(i) === beg.codePointAt(i)) {
     i = i + 1 | 0;
   };
   return i === beg_len;
@@ -119,7 +119,7 @@ function ends_with_index(s, end_) {
   }
   let _j = s_finish;
   let _k = s_beg;
-  while(true) {
+  while (true) {
     let k = _k;
     let j = _j;
     if (k < 0) {
@@ -154,7 +154,7 @@ function check_any_suffix_case(s, suffixes) {
 
 function check_any_suffix_case_then_chop(s, suffixes) {
   let _suffixes = suffixes;
-  while(true) {
+  while (true) {
     let suffixes$1 = _suffixes;
     if (!suffixes$1) {
       return;
@@ -170,7 +170,7 @@ function check_any_suffix_case_then_chop(s, suffixes) {
 
 function escaped(s) {
   let needs_escape = function (_i) {
-    while(true) {
+    while (true) {
       let i = _i;
       if (i >= s.length) {
         return false;
@@ -201,7 +201,7 @@ function escaped(s) {
 }
 
 function unsafe_for_all_range(s, _start, finish, p) {
-  while(true) {
+  while (true) {
     let start = _start;
     if (start > finish) {
       return true;
@@ -247,7 +247,7 @@ function repeat(n, s) {
 function unsafe_is_sub(sub, i, s, j, len) {
   if ((j + len | 0) <= s.length) {
     let _k = 0;
-    while(true) {
+    while (true) {
       let k = _k;
       if (k === len) {
         return true;
@@ -271,7 +271,7 @@ function find(startOpt, sub, s) {
   let s_len = s.length;
   let i = start;
   try {
-    while((i + n | 0) <= s_len) {
+    while ((i + n | 0) <= s_len) {
       if (unsafe_is_sub(sub, 0, s, i, n)) {
         throw new Error(Local_exit, {
               cause: {
@@ -309,7 +309,7 @@ function non_overlap_count(sub, s) {
   }
   let _acc = 0;
   let _off = 0;
-  while(true) {
+  while (true) {
     let off = _off;
     let acc = _acc;
     let i = find(off, sub, s);
@@ -326,7 +326,7 @@ function rfind(sub, s) {
   let n = sub.length;
   let i = s.length - n | 0;
   try {
-    while(i >= 0) {
+    while (i >= 0) {
       if (unsafe_is_sub(sub, 0, s, i, n)) {
         throw new Error(Local_exit, {
               cause: {
@@ -365,7 +365,7 @@ function tail_from(s, x) {
 function digits_of_str(s, offset, x) {
   let _i = 0;
   let _acc = 0;
-  while(true) {
+  while (true) {
     let acc = _acc;
     let i = _i;
     if (i >= x) {
@@ -385,7 +385,7 @@ function starts_with_and_number(s, offset, beg) {
     return -1;
   }
   let i = offset;
-  while(i < finish_delim && s.codePointAt(i) === beg.codePointAt(i - offset | 0)) {
+  while (i < finish_delim && s.codePointAt(i) === beg.codePointAt(i - offset | 0)) {
     i = i + 1 | 0;
   };
   if (i === finish_delim) {
@@ -400,7 +400,7 @@ function equal(x, y) {
 }
 
 function rindex_rec(s, _i, c) {
-  while(true) {
+  while (true) {
     let i = _i;
     if (i < 0) {
       return i;
@@ -414,7 +414,7 @@ function rindex_rec(s, _i, c) {
 }
 
 function rindex_rec_opt(s, _i, c) {
-  while(true) {
+  while (true) {
     let i = _i;
     if (i < 0) {
       return;
@@ -522,7 +522,7 @@ function is_valid_source_name(name) {
 }
 
 function unsafe_no_char(x, ch, _i, last_idx) {
-  while(true) {
+  while (true) {
     let i = _i;
     if (i > last_idx) {
       return true;
@@ -536,7 +536,7 @@ function unsafe_no_char(x, ch, _i, last_idx) {
 }
 
 function unsafe_no_char_idx(x, ch, _i, last_idx) {
-  while(true) {
+  while (true) {
     let i = _i;
     if (i > last_idx) {
       return -1;

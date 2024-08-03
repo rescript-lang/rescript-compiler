@@ -6,7 +6,7 @@ let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function sub(_tr, _k) {
-  while(true) {
+  while (true) {
     let k = _k;
     let tr = _tr;
     if (typeof tr !== "object") {

@@ -82,7 +82,7 @@ function copy(q) {
     next: tail$p
   });
   let copy$1 = function (_prev, _cell) {
-    while(true) {
+    while (true) {
       let cell = _cell;
       let prev = _prev;
       if (cell === tail) {
@@ -119,7 +119,7 @@ function iter(f, q) {
   }
   let tail = q.tail;
   let _cell = tail.next;
-  while(true) {
+  while (true) {
     let cell = _cell;
     f(cell.content);
     if (cell === tail) {
@@ -137,7 +137,7 @@ function fold(f, accu, q) {
   let tail = q.tail;
   let _accu = accu;
   let _cell = tail.next;
-  while(true) {
+  while (true) {
     let cell = _cell;
     let accu$1 = _accu;
     let accu$2 = f(accu$1, cell.content);

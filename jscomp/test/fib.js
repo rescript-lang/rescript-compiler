@@ -14,7 +14,7 @@ function fib2(n) {
   let _a = 1;
   let _b = 1;
   let _i = 0;
-  while(true) {
+  while (true) {
     let i = _i;
     let b = _b;
     let a = _a;
