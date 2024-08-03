@@ -71,7 +71,7 @@ Belt_Map.getId(m2);
 
 let m_dict = Belt_Map.getId(m);
 
-for(let i = 0; i <= 100000; ++i){
+for (let i = 0; i <= 100000; ++i) {
   data = Belt_MapDict.set(data, i, i, m_dict.cmp);
 }
 
@@ -96,7 +96,7 @@ let cmp = m_dict$1.cmp;
 
 let data$2;
 
-for(let i$1 = 0; i$1 <= 100000; ++i$1){
+for (let i$1 = 0; i$1 <= 100000; ++i$1) {
   data$2 = Belt_SetDict.add(data$2, i$1, cmp);
 }
 

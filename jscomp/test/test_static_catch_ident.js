@@ -14,7 +14,7 @@ function scanf_bad_input(ib, x) {
           cause: x
         });
   }
-  for(let i = 0; i <= 100; ++i){
+  for (let i = 0; i <= 100; ++i) {
     console.log(s);
     console.log("don't inlinie");
   }

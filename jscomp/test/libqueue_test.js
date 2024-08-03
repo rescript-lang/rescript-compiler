@@ -529,7 +529,7 @@ let q$3 = {
   last: "Nil"
 };
 
-for(let i = 1; i <= 10; ++i){
+for (let i = 1; i <= 10; ++i) {
   Queue.add(i, q$3);
 }
 
@@ -599,7 +599,7 @@ let q1 = {
   last: "Nil"
 };
 
-for(let i$1 = 1; i$1 <= 10; ++i$1){
+for (let i$1 = 1; i$1 <= 10; ++i$1) {
   Queue.add(i$1, q1);
 }
 
@@ -717,7 +717,7 @@ if (q2.length !== 10) {
       });
 }
 
-for(let i$2 = 1; i$2 <= 10; ++i$2){
+for (let i$2 = 1; i$2 <= 10; ++i$2) {
   if (Queue.take(q1) !== i$2) {
     throw new Error("Assert_failure", {
           cause: {
@@ -733,7 +733,7 @@ for(let i$2 = 1; i$2 <= 10; ++i$2){
   
 }
 
-for(let i$3 = 1; i$3 <= 10; ++i$3){
+for (let i$3 = 1; i$3 <= 10; ++i$3) {
   if (Queue.take(q2) !== i$3) {
     throw new Error("Assert_failure", {
           cause: {
@@ -768,7 +768,7 @@ if (q$4.length !== 0) {
       });
 }
 
-for(let i$4 = 1; i$4 <= 10; ++i$4){
+for (let i$4 = 1; i$4 <= 10; ++i$4) {
   Queue.add(i$4, q$4);
   if (q$4.length !== i$4) {
     throw new Error("Assert_failure", {
@@ -797,7 +797,7 @@ for(let i$4 = 1; i$4 <= 10; ++i$4){
   
 }
 
-for(let i$5 = 10; i$5 >= 1; --i$5){
+for (let i$5 = 10; i$5 >= 1; --i$5) {
   if (q$4.length !== i$5) {
     throw new Error("Assert_failure", {
           cause: {
@@ -857,7 +857,7 @@ let q$5 = {
   last: "Nil"
 };
 
-for(let i$6 = 1; i$6 <= 10; ++i$6){
+for (let i$6 = 1; i$6 <= 10; ++i$6) {
   Queue.add(i$6, q$5);
 }
 
@@ -1011,7 +1011,7 @@ let q2$2 = {
   last: "Nil"
 };
 
-for(let i$8 = 1; i$8 <= 4; ++i$8){
+for (let i$8 = 1; i$8 <= 4; ++i$8) {
   Queue.add(i$8, q1$2);
 }
 
@@ -1157,7 +1157,7 @@ let q2$3 = {
   last: "Nil"
 };
 
-for(let i$9 = 5; i$9 <= 8; ++i$9){
+for (let i$9 = 5; i$9 <= 8; ++i$9) {
   Queue.add(i$9, q2$3);
 }
 
@@ -1303,11 +1303,11 @@ let q2$4 = {
   last: "Nil"
 };
 
-for(let i$10 = 1; i$10 <= 4; ++i$10){
+for (let i$10 = 1; i$10 <= 4; ++i$10) {
   Queue.add(i$10, q1$4);
 }
 
-for(let i$11 = 5; i$11 <= 8; ++i$11){
+for (let i$11 = 5; i$11 <= 8; ++i$11) {
   Queue.add(i$11, q2$4);
 }
 

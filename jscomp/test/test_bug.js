@@ -7,7 +7,7 @@ let Caml_bytes = require("../../lib/js/caml_bytes.js");
 
 function escaped(s) {
   let n = 0;
-  for(let i = 0, i_finish = s.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = s.length; i < i_finish; ++i) {
     let c = s[i];
     let tmp;
     let exit = 0;
@@ -38,7 +38,7 @@ function escaped(s) {
   }
   let s$p = Caml_bytes.create(n);
   n = 0;
-  for(let i$1 = 0, i_finish$1 = s.length; i$1 < i_finish$1; ++i$1){
+  for (let i$1 = 0, i_finish$1 = s.length; i$1 < i_finish$1; ++i$1) {
     let c$1 = s[i$1];
     let exit$1 = 0;
     if (c$1 > 92 || c$1 < 34) {

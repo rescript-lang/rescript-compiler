@@ -93,7 +93,7 @@ function is_pos_pow_2(n) {
 
 function hash_variant(s) {
   let accu = 0;
-  for(let i = 0, i_finish = s.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = s.length; i < i_finish; ++i) {
     accu = Math.imul(223, accu) + Caml_string.get(s, i) | 0;
   }
   accu = accu & 2147483647;

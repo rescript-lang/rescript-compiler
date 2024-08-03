@@ -242,7 +242,7 @@ function pop_back(param) {
 
 function filter_from(i, p, s) {
   let u = empty;
-  for(let i$1 = i, i_finish = length(s); i$1 < i_finish; ++i$1){
+  for (let i$1 = i, i_finish = length(s); i$1 < i_finish; ++i$1) {
     let ele = get(s, i$1);
     if (p(ele)) {
       u = push_back(u, ele);
@@ -254,10 +254,10 @@ function filter_from(i, p, s) {
 
 function append(a, b) {
   let empty$1 = empty;
-  for(let i = 0, i_finish = length(a); i < i_finish; ++i){
+  for (let i = 0, i_finish = length(a); i < i_finish; ++i) {
     empty$1 = push_back(empty$1, get(a, i));
   }
-  for(let i$1 = 0, i_finish$1 = length(b); i$1 < i_finish$1; ++i$1){
+  for (let i$1 = 0, i_finish$1 = length(b); i$1 < i_finish$1; ++i$1) {
     empty$1 = push_back(empty$1, get(b, i$1));
   }
   return empty$1;
@@ -280,7 +280,7 @@ function sort(s) {
 
 function of_array(arr) {
   let v = empty;
-  for(let i = 0, i_finish = arr.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = arr.length; i < i_finish; ++i) {
     v = push_back(v, Caml_array.get(arr, i));
   }
   return v;

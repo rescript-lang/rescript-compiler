@@ -41,7 +41,7 @@ function aaaa(x) {
 }
 
 function f(x) {
-  for(let i = 0; i <= 10; ++i){
+  for (let i = 0; i <= 10; ++i) {
     Caml_array.set(x, i, i);
   }
 }

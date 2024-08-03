@@ -11,7 +11,7 @@ let u = Caml_int64.sub(Int64.max_int, [
   200000
 ]);
 
-for(let i = 0; i <= 100000; ++i){
+for (let i = 0; i <= 100000; ++i) {
   Caml_int64.to_string(u);
 }
 
@@ -26,7 +26,7 @@ let u$1 = [
   30000000
 ];
 
-for(let i$1 = 0; i$1 <= 100000; ++i$1){
+for (let i$1 = 0; i$1 <= 100000; ++i$1) {
   Caml_int64.to_string(u$1);
 }
 
@@ -41,7 +41,7 @@ let u$2 = Caml_int64.add(Int64.min_int, [
   100
 ]);
 
-for(let i$2 = 0; i$2 <= 100000; ++i$2){
+for (let i$2 = 0; i$2 <= 100000; ++i$2) {
   Caml_int64.to_string(u$2);
 }
 

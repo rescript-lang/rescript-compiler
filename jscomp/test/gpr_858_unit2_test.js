@@ -8,7 +8,7 @@ let delayed = {
   })
 };
 
-for(let i = 1; i <= 2; ++i){
+for (let i = 1; i <= 2; ++i) {
   let f = function (n, x) {
     if (x !== 0) {
       let prev = delayed.contents;

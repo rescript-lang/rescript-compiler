@@ -1935,7 +1935,7 @@ function flatten_cmap(cm) {
   let v = 0;
   Caml_bytes.set(c, 0, /* '\000' */0);
   Caml_bytes.set(col_repr, 0, /* '\000' */0);
-  for(let i = 1; i <= 255; ++i){
+  for (let i = 1; i <= 255; ++i) {
     if (Caml_bytes.get(cm, i) !== /* '\000' */0) {
       v = v + 1 | 0;
     }
@@ -2836,7 +2836,7 @@ function repn(r, i, j) {
 
 function set(str) {
   let s = /* [] */0;
-  for(let i = 0, i_finish = str.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = str.length; i < i_finish; ++i) {
     s = union(single(Caml_string.get(str, i)), s);
   }
   return {
@@ -3372,7 +3372,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   let accept_s = function (s$p) {
     let len = s$p.length;
     try {
-      for(let j = 0; j < len; ++j){
+      for (let j = 0; j < len; ++j) {
         try {
           if (Caml_string.get(s$p, j) !== Caml_string.get(s, i.contents + j | 0)) {
             throw new Error(Pervasives.Exit, {

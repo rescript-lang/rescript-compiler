@@ -3,7 +3,7 @@
 
 
 async function topLevelAsyncFunction() {
-  for(let innerScopeVal = 0; innerScopeVal <= 3; ++innerScopeVal){
+  for (let innerScopeVal = 0; innerScopeVal <= 3; ++innerScopeVal) {
     let asyncClosureAccessingScopedVal = async function () {
       console.log("Accessing scoped var inside loop", innerScopeVal);
       return await Promise.resolve();

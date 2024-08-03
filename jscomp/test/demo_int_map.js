@@ -157,10 +157,10 @@ function find(x, _param) {
 
 function test() {
   let m = "Empty";
-  for(let i = 0; i <= 1000000; ++i){
+  for (let i = 0; i <= 1000000; ++i) {
     m = add(i, i, m);
   }
-  for(let i$1 = 0; i$1 <= 1000000; ++i$1){
+  for (let i$1 = 0; i$1 <= 1000000; ++i$1) {
     find(i$1, m);
   }
 }

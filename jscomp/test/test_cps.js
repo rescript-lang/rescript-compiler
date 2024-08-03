@@ -23,7 +23,7 @@ function test_closure() {
   let arr = Caml_array.make(6, (function (x) {
     return x;
   }));
-  for(let i = 0; i <= 6; ++i){
+  for (let i = 0; i <= 6; ++i) {
     Caml_array.set(arr, i, (function (param) {
       return i;
     }));

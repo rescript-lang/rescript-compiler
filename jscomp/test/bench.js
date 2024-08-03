@@ -13,7 +13,7 @@ function map(f, a) {
     return [];
   }
   let r = Caml_array.make(l, f$1(a[0]));
-  for(let i = 1; i < l; ++i){
+  for (let i = 1; i < l; ++i) {
     r[i] = f$1(a[i]);
   }
   return r;
@@ -35,7 +35,7 @@ function init(l, f) {
         });
   }
   let res = Caml_array.make(l, f$1(0));
-  for(let i = 1; i < l; ++i){
+  for (let i = 1; i < l; ++i) {
     res[i] = f$1(i);
   }
   return res;
@@ -46,7 +46,7 @@ function fold_left(f, x, a) {
     return f(x, y);
   };
   let r = x;
-  for(let i = 0, i_finish = a.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = a.length; i < i_finish; ++i) {
     r = f$1(r, a[i]);
   }
   return r;

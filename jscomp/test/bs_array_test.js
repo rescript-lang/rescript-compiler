@@ -290,9 +290,9 @@ function makeMatrixExn(sx, sy, init) {
         });
   }
   let res = new Array(sx);
-  for(let x = 0; x < sx; ++x){
+  for (let x = 0; x < sx; ++x) {
     let initY = new Array(sy);
-    for(let y = 0; y < sy; ++y){
+    for (let y = 0; y < sy; ++y) {
       initY[y] = init;
     }
     res[x] = initY;

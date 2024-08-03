@@ -55,15 +55,15 @@ f([
   2764472320
 ], "1000000000000000");
 
-for(let i = 0; i <= 8; ++i){
+for (let i = 0; i <= 8; ++i) {
   eq("File \"int64_string_test.res\", line 22, characters 4-11", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(i))), "-922337203685477580" + String(8 - i | 0));
 }
 
-for(let i$1 = 0; i$1 <= 8; ++i$1){
+for (let i$1 = 0; i$1 <= 8; ++i$1) {
   eq("File \"int64_string_test.res\", line 32, characters 4-11", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(100 + i$1 | 0))), "-922337203685477570" + String(8 - i$1 | 0));
 }
 
-for(let i$2 = 0; i$2 <= 8; ++i$2){
+for (let i$2 = 0; i$2 <= 8; ++i$2) {
   eq("File \"int64_string_test.res\", line 42, characters 4-11", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(1000000 + i$2 | 0))), "-922337203685377580" + String(8 - i$2 | 0));
 }
 
@@ -72,7 +72,7 @@ let u = [
   4294957295
 ];
 
-for(let i$3 = 0; i$3 <= 6; ++i$3){
+for (let i$3 = 0; i$3 <= 6; ++i$3) {
   eq("File \"int64_string_test.res\", line 56, characters 4-11", Caml_int64.to_string(Caml_int64.add(u, Caml_int64.of_int32(Math.imul(i$3, 10000)))), "90071992547" + (String(3 + i$3 | 0) + "0991"));
 }
 
@@ -81,7 +81,7 @@ let v$1 = [
   4294917297
 ];
 
-for(let i$4 = 0; i$4 <= 9; ++i$4){
+for (let i$4 = 0; i$4 <= 9; ++i$4) {
   eq("File \"int64_string_test.res\", line 67, characters 4-11", Caml_int64.to_string(Caml_int64.add(v$1, Caml_int64.of_int32(Math.imul(i$4, 10000)))), "-90071992547" + (String(9 - i$4 | 0) + "0991"));
 }
 

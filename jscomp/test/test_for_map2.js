@@ -5,10 +5,10 @@ let Int_map = require("./int_map.js");
 
 function assertion_test() {
   let m = "Empty";
-  for(let i = 0; i <= 1000000; ++i){
+  for (let i = 0; i <= 1000000; ++i) {
     m = Int_map.add(i, i, m);
   }
-  for(let i$1 = 0; i$1 <= 1000000; ++i$1){
+  for (let i$1 = 0; i$1 <= 1000000; ++i$1) {
     Int_map.find(i$1, m);
   }
 }

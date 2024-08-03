@@ -20,7 +20,7 @@ function fib2(x) {
 
 let v = 0;
 
-for(let i = 0; i <= 10; ++i){
+for (let i = 0; i <= 10; ++i) {
   v = v + i | 0;
 }
 
@@ -28,7 +28,7 @@ let sum = v;
 
 let v$1 = 0;
 
-for(let i$1 = 10; i$1 >= 0; --i$1){
+for (let i$1 = 10; i$1 >= 0; --i$1) {
   v$1 = v$1 + i$1 | 0;
 }
 

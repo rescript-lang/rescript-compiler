@@ -32,7 +32,7 @@ eq("File \"406_primitive_test.res\", line 23, characters 3-10", backend_type, {
 function f() {
   let A = /* @__PURE__ */Caml_exceptions.create("A");
   try {
-    for(let i = 0; i <= 200; ++i){
+    for (let i = 0; i <= 200; ++i) {
       if (i === 10) {
         throw new Error(A, {
               cause: {

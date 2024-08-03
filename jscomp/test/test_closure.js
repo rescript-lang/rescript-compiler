@@ -12,7 +12,7 @@ function f() {
   let arr = Caml_array.make(10, (function (param) {
     
   }));
-  for(let i = 0; i <= 9; ++i){
+  for (let i = 0; i <= 9; ++i) {
     Caml_array.set(arr, i, (function (param) {
       v.contents = v.contents + i | 0;
     }));

@@ -167,12 +167,12 @@ function assertion_test() {
     contents: "Empty"
   };
   timing("building", (function () {
-    for(let i = 0; i <= 1000000; ++i){
+    for (let i = 0; i <= 1000000; ++i) {
       m.contents = add(String(i), String(i), m.contents);
     }
   }));
   timing("querying", (function () {
-    for(let i = 0; i <= 1000000; ++i){
+    for (let i = 0; i <= 1000000; ++i) {
       find(String(i), m.contents);
     }
   }));

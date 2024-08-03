@@ -18,7 +18,7 @@ function starts_with(xs, prefix, p) {
     return false;
   }
   try {
-    for(let i = 0; i < len2; ++i){
+    for (let i = 0; i < len2; ++i) {
       if (!p(Caml_array.get(xs, i), Caml_array.get(prefix, i))) {
         throw new Error(H, {
               cause: {

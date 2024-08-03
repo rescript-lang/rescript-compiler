@@ -26,7 +26,7 @@ let arr = $$Array.init(2, (function (param) {
   return 0;
 }));
 
-for(let i = 0; i <= 1; ++i){
+for (let i = 0; i <= 1; ++i) {
   let f3$1 = function (extra) {
     return i + 1 | 0;
   };

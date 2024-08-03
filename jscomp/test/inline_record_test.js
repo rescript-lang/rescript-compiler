@@ -101,7 +101,7 @@ let v5 = {
   z: 0
 };
 
-for(let i = 0; i <= 10; ++i){
+for (let i = 0; i <= 10; ++i) {
   ff(v4);
   ff(v5);
 }
@@ -162,7 +162,7 @@ function ff0(x) {
   
 }
 
-for(let i$1 = 0; i$1 <= 10; ++i$1){
+for (let i$1 = 0; i$1 <= 10; ++i$1) {
   ff0(v6);
 }
 

@@ -5,10 +5,10 @@ let Hashtbl = require("../../lib/js/hashtbl.js");
 
 function bench() {
   let table = Hashtbl.create(undefined, 1000000);
-  for(let i = 0; i <= 1000000; ++i){
+  for (let i = 0; i <= 1000000; ++i) {
     Hashtbl.add(table, i, i);
   }
-  for(let i$1 = 0; i$1 <= 1000000; ++i$1){
+  for (let i$1 = 0; i$1 <= 1000000; ++i$1) {
     if (!Hashtbl.mem(table, i$1)) {
       throw new Error("Assert_failure", {
             cause: {
@@ -23,7 +23,7 @@ function bench() {
     }
     
   }
-  for(let i$2 = 0; i$2 <= 1000000; ++i$2){
+  for (let i$2 = 0; i$2 <= 1000000; ++i$2) {
     Hashtbl.remove(table, i$2);
   }
 }

@@ -15,7 +15,7 @@ function fib(x) {
 
 function escaped(s) {
   let n = 0;
-  for(let i = 0, i_finish = s.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = s.length; i < i_finish; ++i) {
     let match = s[i];
     n = n + (
       match >= 32 ? (
@@ -38,7 +38,7 @@ function escaped(s) {
   }
   let s$p = Caml_bytes.create(n);
   n = 0;
-  for(let i$1 = 0, i_finish$1 = s.length; i$1 < i_finish$1; ++i$1){
+  for (let i$1 = 0, i_finish$1 = s.length; i$1 < i_finish$1; ++i$1) {
     let c = s[i$1];
     let exit = 0;
     if (c >= 35) {

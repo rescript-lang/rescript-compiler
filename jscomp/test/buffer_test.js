@@ -50,7 +50,7 @@ let suites_1 = {
       "buffer",
       (function (param) {
         let v = Buffer.create(30);
-        for(let i = 0; i <= 10; ++i){
+        for (let i = 0; i <= 10; ++i) {
           Buffer.add_string(v, String(i));
         }
         return {

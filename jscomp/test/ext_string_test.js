@@ -238,7 +238,7 @@ function is_empty(s) {
 function repeat(n, s) {
   let len = s.length;
   let res = Caml_bytes.create(Math.imul(n, len));
-  for(let i = 0; i < n; ++i){
+  for (let i = 0; i < n; ++i) {
     $$String.blit(s, 0, res, Math.imul(i, len), len);
   }
   return Bytes.to_string(res);

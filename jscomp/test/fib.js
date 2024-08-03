@@ -31,7 +31,7 @@ function fib2(n) {
 function fib3(n) {
   let a = 1;
   let b = 1;
-  for(let i = 1; i <= n; ++i){
+  for (let i = 1; i <= n; ++i) {
     let tmp = a;
     a = b;
     b = b + tmp | 0;
