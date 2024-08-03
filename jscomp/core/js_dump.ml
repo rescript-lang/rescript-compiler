@@ -1224,10 +1224,9 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
             match ctch with
             | None -> cxt
             | Some (i, b) ->
-                P.newline f;
-                P.string f "catch (";
+                P.string f " catch (";
                 let cxt = Ext_pp_scope.ident cxt f i in
-                P.string f ")";
+                P.string f ") ";
                 brace_block cxt f b
           in
           match fin with
