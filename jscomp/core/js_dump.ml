@@ -1045,6 +1045,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
         match e.expression_desc with
         | Number (Int { i = 1l }) ->
             P.string f L.while_;
+            P.space f;
             P.string f L.lparen;
             P.string f L.true_;
             P.string f L.rparen;
@@ -1052,6 +1053,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
             cxt
         | _ ->
             P.string f L.while_;
+            P.space f;
             let cxt =
               P.paren_group f 1 (fun _ -> expression ~level:0 cxt f e)
             in
