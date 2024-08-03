@@ -1068,7 +1068,8 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
               P.group f 0 (fun _ ->
                   (* The only place that [semi] may have semantics here *)
                   P.string f L.for_;
-                  P.paren_group f 1 (fun _ ->
+                  P.space f;
+                  let ctx  = P.paren_group f 1 (fun _ ->
                       let cxt, new_id =
                         match
                           (for_ident_expression, finish.expression_desc)
@@ -1128,7 +1129,9 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
                       semi f;
                       P.space f;
                       pp_direction f direction;
-                      Ext_pp_scope.ident cxt f id))
+                      Ext_pp_scope.ident cxt f id) in
+                      P.space f;
+                      ctx)
             in
             brace_block cxt f s)
       in
