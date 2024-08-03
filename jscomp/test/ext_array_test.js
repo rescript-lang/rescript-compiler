@@ -10,7 +10,7 @@ function reverse_range(a, i, len) {
   if (len === 0) {
     return;
   }
-  for(let k = 0 ,k_finish = (len - 1 | 0) / 2 | 0; k <= k_finish; ++k){
+  for(let k = 0, k_finish = (len - 1 | 0) / 2 | 0; k <= k_finish; ++k){
     let t = a[i + k | 0];
     a[i + k | 0] = a[((i + len | 0) - 1 | 0) - k | 0];
     a[((i + len | 0) - 1 | 0) - k | 0] = t;

@@ -46,7 +46,7 @@ function fold_left(f, x, a) {
     return f(x, y);
   };
   let r = x;
-  for(let i = 0 ,i_finish = a.length; i < i_finish; ++i){
+  for(let i = 0, i_finish = a.length; i < i_finish; ++i){
     r = f$1(r, a[i]);
   }
   return r;

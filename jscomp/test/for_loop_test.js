@@ -14,7 +14,7 @@ function for_3(x) {
       
     };
   }), x);
-  for(let i = 0 ,i_finish = x.length; i < i_finish; ++i){
+  for(let i = 0, i_finish = x.length; i < i_finish; ++i){
     let j = (i << 1);
     Caml_array.set(arr, i, (function () {
       v.contents = v.contents + j | 0;
@@ -35,7 +35,7 @@ function for_4(x) {
       
     };
   }), x);
-  for(let i = 0 ,i_finish = x.length; i < i_finish; ++i){
+  for(let i = 0, i_finish = x.length; i < i_finish; ++i){
     let j = (i << 1);
     let k = (j << 1);
     Caml_array.set(arr, i, (function () {
@@ -57,7 +57,7 @@ function for_5(x, u) {
       
     };
   }), x);
-  for(let i = 0 ,i_finish = x.length; i < i_finish; ++i){
+  for(let i = 0, i_finish = x.length; i < i_finish; ++i){
     let k = Math.imul((u << 1), u);
     Caml_array.set(arr, i, (function () {
       v.contents = v.contents + k | 0;
@@ -91,7 +91,7 @@ function for_6(x, u) {
     let v2 = {
       contents: 0
     };
-    for(let i = 0 ,i_finish = x.length; i < i_finish; ++i){
+    for(let i = 0, i_finish = x.length; i < i_finish; ++i){
       let k = Math.imul((u << 1), u);
       let h = (v5.contents << 1);
       v2.contents = v2.contents + 1 | 0;

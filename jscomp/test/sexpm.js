@@ -14,7 +14,7 @@ let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function _must_escape(s) {
   try {
-    for(let i = 0 ,i_finish = s.length; i < i_finish; ++i){
+    for(let i = 0, i_finish = s.length; i < i_finish; ++i){
       let c = s.codePointAt(i);
       let exit = 0;
       if (c >= 42) {

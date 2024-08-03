@@ -59,7 +59,7 @@ b("File \"bs_poly_mutable_set_test.res\", line 23, characters 4-11", 1 === Belt_
 
 Belt_MutableSet.add(u, 3);
 
-for(let i = 0 ,i_finish = r.length; i < i_finish; ++i){
+for(let i = 0, i_finish = r.length; i < i_finish; ++i){
   Belt_MutableSet.remove(u, r[i]);
 }
 

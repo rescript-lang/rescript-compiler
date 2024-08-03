@@ -99,7 +99,7 @@ function resize(newSize) {
       }
     };
   };
-  for(let n = 0 ,n_finish = sz_1.contents; n <= n_finish; ++n){
+  for(let n = 0, n_finish = sz_1.contents; n <= n_finish; ++n){
     copyBucket(Caml_array.get(arr, n));
   }
   htab.contents = newArr;
@@ -386,7 +386,7 @@ function bool_equal(a, b) {
 
 function test_hwb(bdd, vars) {
   let ntrue = 0;
-  for(let i = 0 ,i_finish = vars.length; i < i_finish; ++i){
+  for(let i = 0, i_finish = vars.length; i < i_finish; ++i){
     if (Caml_array.get(vars, i)) {
       ntrue = ntrue + 1 | 0;
     }

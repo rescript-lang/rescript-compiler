@@ -2836,7 +2836,7 @@ function repn(r, i, j) {
 
 function set(str) {
   let s = /* [] */0;
-  for(let i = 0 ,i_finish = str.length; i < i_finish; ++i){
+  for(let i = 0, i_finish = str.length; i < i_finish; ++i){
     s = union(single(Caml_string.get(str, i)), s);
   }
   return {
