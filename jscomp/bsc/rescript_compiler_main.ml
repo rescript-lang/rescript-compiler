@@ -223,6 +223,9 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-I", string_list_add  Clflags.include_dirs ,
     "*internal* <dir>  Add <dir> to the list of include directories" ;
 
+    "-embed", string_list_add  Js_config.embeds ,
+    "TODO: Explain." ;
+
     "-w", string_call (Warnings.parse_options false),
     "<list>  Enable or disable warnings according to <list>:\n\
      +<spec>   enable warnings in <spec>\n\
