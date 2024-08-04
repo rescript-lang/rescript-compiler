@@ -198,11 +198,7 @@ let rec compare = (a: Obj.t, b: Obj.t): int =>
       } else {
         let tag_a = Obj.tag(a)
         let tag_b = Obj.tag(b)
-        if tag_a == 248 /* object/exception */ {
-          Pervasives.compare((Obj.magic(Obj.field(a, 1)): int), Obj.magic(Obj.field(b, 1)))
-        } else if tag_a == 251 /* abstract_tag */ {
-          raise(Invalid_argument("equal: abstract value"))
-        } else if tag_a != tag_b {
+        if tag_a != tag_b {
           if tag_a < tag_b {
             -1
           } else {
@@ -303,53 +299,46 @@ type eq = (Obj.t, Obj.t) => bool
     basic type is not the same, it will not equal 
 */
 let rec equal = (a: Obj.t, b: Obj.t): bool =>
-  /* front and formoest, we do not compare function values */
   if a === b {
     true
   } else {
     let a_type = Js.typeof(a)
-    if (
-      a_type == "string" ||
-        (a_type == "number" ||
-        (a_type == "bigint" ||
-          (a_type == "boolean" ||
-          (a_type == "undefined" || a === %raw(`null`)))))
-    ) {
+    if a_type !== "object" || a === %raw(`null`) {
       false
     } else {
       let b_type = Js.typeof(b)
-      if a_type == "function" || b_type == "function" {
-        raise(Invalid_argument("equal: functional value"))
-      } /* first, check using reference equality */
-      else if (
-        /* a_type = "object" || "symbol" */
-        b_type == "number" || (b_type == "bigint" || (b_type == "undefined" || b === %raw(`null`)))
-      ) {
+      if b_type !== "object" || b === %raw(`null`) {
         false
       } else {
         /* [a] [b] could not be null, so it can not raise */
         let tag_a = Obj.tag(a)
         let tag_b = Obj.tag(b)
-        if tag_a == 248 /* object/exception */ {
-          Obj.magic(Obj.field(a, 1)) === Obj.magic(Obj.field(b, 1))
-        } else if tag_a == 251 /* abstract_tag */ {
-          raise(Invalid_argument("equal: abstract value"))
-        } else if tag_a != tag_b {
+        if tag_a !== tag_b {
           false
-        } else {
+        } else if O.isArray(a) {
           let len_a = Obj.size(a)
           let len_b = Obj.size(b)
-          if len_a == len_b {
-            if O.isArray(a) {
-              aux_equal_length((Obj.magic(a): array<Obj.t>), (Obj.magic(b): array<Obj.t>), 0, len_a)
-            } else if %raw(`a instanceof Date && b instanceof Date`) {
-              !(Js.unsafe_gt(a, b) || Js.unsafe_lt(a, b))
-            } else {
-              aux_obj_equal(a, b)
-            }
+          if len_a !== len_b {
+            false
+          } else {
+            aux_equal_length((Obj.magic(a): array<Obj.t>), (Obj.magic(b): array<Obj.t>), 0, len_a)
+          }
+        } else if %raw(`a instanceof Error`) {
+          let a: {..} = Obj.magic(a)
+          let b: {..} = Obj.magic(b)
+          if %raw(`b instanceof Error`) && a["message"] === b["message"] {
+            equal(a["clause"], b["clause"])
           } else {
             false
           }
+        } else if %raw(`a instanceof Date`) {
+          if %raw(`b instanceof Date`) {
+            !(Js.unsafe_gt(a, b) || Js.unsafe_lt(a, b))
+          } else {
+            false
+          }
+        } else {
+          aux_obj_equal(a, b)
         }
       }
     }
