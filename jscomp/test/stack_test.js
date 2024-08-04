@@ -7,7 +7,7 @@ let Stack = require("../../lib/js/stack.js");
 
 function to_list(v) {
   let acc = /* [] */0;
-  while(v.c !== /* [] */0) {
+  while (v.c !== /* [] */0) {
     acc = {
       hd: Stack.pop(v),
       tl: acc

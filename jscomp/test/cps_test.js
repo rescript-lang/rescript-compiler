@@ -10,7 +10,7 @@ function test() {
     contents: 0
   };
   let f = function (_n, _acc) {
-    while(true) {
+    while (true) {
       let acc = _acc;
       let n = _n;
       if (n === 0) {
@@ -37,7 +37,7 @@ function test_closure() {
   let arr = Caml_array.make(6, (function (x) {
     return x;
   }));
-  for(let i = 0; i <= 5; ++i){
+  for (let i = 0; i <= 5; ++i) {
     Caml_array.set(arr, i, (function (param) {
       return i;
     }));
@@ -55,7 +55,7 @@ function test_closure2() {
   let arr = Caml_array.make(6, (function (x) {
     return x;
   }));
-  for(let i = 0; i <= 5; ++i){
+  for (let i = 0; i <= 5; ++i) {
     let j = i + i | 0;
     Caml_array.set(arr, i, (function (param) {
       return j;

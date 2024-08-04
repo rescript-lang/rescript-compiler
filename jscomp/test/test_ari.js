@@ -30,7 +30,7 @@ function ff(extra) {
 let fff = VV.test_primit2(3);
 
 function length_aux(_len, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let len = _len;
     if (!x) {

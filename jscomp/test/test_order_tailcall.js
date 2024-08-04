@@ -3,7 +3,7 @@
 
 
 function f(_x, _y) {
-  while(true) {
+  while (true) {
     let y = _y;
     let x = _x;
     _y = x;
@@ -13,7 +13,7 @@ function f(_x, _y) {
 }
 
 function f1(_x, _y, _z) {
-  while(true) {
+  while (true) {
     let z = _z;
     let y = _y;
     let x = _x;
@@ -26,7 +26,7 @@ function f1(_x, _y, _z) {
 }
 
 function f2(x, _y) {
-  while(true) {
+  while (true) {
     let y = _y;
     _y = y + 10 | 0;
     continue;
@@ -34,7 +34,7 @@ function f2(x, _y) {
 }
 
 function f3(_x, _y) {
-  while(true) {
+  while (true) {
     let y = _y;
     let x = _x;
     _y = x + 10 | 0;
@@ -44,7 +44,7 @@ function f3(_x, _y) {
 }
 
 function f4(_x, _y) {
-  while(true) {
+  while (true) {
     let y = _y;
     let x = _x;
     _y = y + x | 0;
@@ -54,7 +54,7 @@ function f4(_x, _y) {
 }
 
 function f5(_x, _y, z) {
-  while(true) {
+  while (true) {
     let y = _y;
     _y = z + 20 | 0;
     _x = y + 10 | 0;
@@ -63,7 +63,7 @@ function f5(_x, _y, z) {
 }
 
 function f6(b) {
-  while(true) {
+  while (true) {
     if (!b) {
       return false;
     }
@@ -72,7 +72,7 @@ function f6(b) {
 }
 
 function f7(b) {
-  while(true) {
+  while (true) {
     if (b) {
       return true;
     }
@@ -81,7 +81,7 @@ function f7(b) {
 }
 
 function f8(_x, _y) {
-  while(true) {
+  while (true) {
     let y = _y;
     let x = _x;
     if (x > 10) {

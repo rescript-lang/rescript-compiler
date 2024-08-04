@@ -14,7 +14,7 @@ function for_3(x) {
       
     };
   }), x);
-  for(let i = 0 ,i_finish = x.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = x.length; i < i_finish; ++i) {
     let j = (i << 1);
     Caml_array.set(arr, i, (function () {
       v.contents = v.contents + j | 0;
@@ -35,7 +35,7 @@ function for_4(x) {
       
     };
   }), x);
-  for(let i = 0 ,i_finish = x.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = x.length; i < i_finish; ++i) {
     let j = (i << 1);
     let k = (j << 1);
     Caml_array.set(arr, i, (function () {
@@ -57,7 +57,7 @@ function for_5(x, u) {
       
     };
   }), x);
-  for(let i = 0 ,i_finish = x.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = x.length; i < i_finish; ++i) {
     let k = Math.imul((u << 1), u);
     Caml_array.set(arr, i, (function () {
       v.contents = v.contents + k | 0;
@@ -86,12 +86,12 @@ function for_6(x, u) {
   };
   let inspect_3 = -1;
   v4.contents = v4.contents + 1 | 0;
-  for(let j = 0; j <= 1; ++j){
+  for (let j = 0; j <= 1; ++j) {
     v5.contents = v5.contents + 1 | 0;
     let v2 = {
       contents: 0
     };
-    for(let i = 0 ,i_finish = x.length; i < i_finish; ++i){
+    for (let i = 0, i_finish = x.length; i < i_finish; ++i) {
       let k = Math.imul((u << 1), u);
       let h = (v5.contents << 1);
       v2.contents = v2.contents + 1 | 0;
@@ -119,8 +119,8 @@ function for_7() {
   let arr = Caml_array.make(21, (function () {
     
   }));
-  for(let i = 0; i <= 6; ++i){
-    for(let j = 0; j <= 2; ++j){
+  for (let i = 0; i <= 6; ++i) {
+    for (let j = 0; j <= 2; ++j) {
       Caml_array.set(arr, Math.imul(i, 3) + j | 0, (function () {
         v.contents = (v.contents + i | 0) + j | 0;
       }));
@@ -139,9 +139,9 @@ function for_8() {
   let arr = Caml_array.make(21, (function () {
     
   }));
-  for(let i = 0; i <= 6; ++i){
+  for (let i = 0; i <= 6; ++i) {
     let k = (i << 1);
-    for(let j = 0; j <= 2; ++j){
+    for (let j = 0; j <= 2; ++j) {
       let h = i + j | 0;
       Caml_array.set(arr, Math.imul(i, 3) + j | 0, (function () {
         v.contents = (((v.contents + i | 0) + j | 0) + h | 0) + k | 0;
@@ -176,12 +176,12 @@ function for_9() {
   let arr2 = Caml_array.make(2, (function () {
     
   }));
-  for(let i = 0; i <= 1; ++i){
+  for (let i = 0; i <= 1; ++i) {
     let v$1 = {
       contents: 0
     };
     v$1.contents = v$1.contents + i | 0;
-    for(let j = 0; j <= 1; ++j){
+    for (let j = 0; j <= 1; ++j) {
       v$1.contents = v$1.contents + 1 | 0;
       collect(v$1.contents);
       Caml_array.set(arr, (i << 1) + j | 0, (function () {

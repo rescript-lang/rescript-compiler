@@ -18,33 +18,32 @@ function starts_with(xs, prefix, p) {
     return false;
   }
   try {
-    for(let i = 0; i < len2; ++i){
+    for (let i = 0; i < len2; ++i) {
       if (!p(Caml_array.get(xs, i), Caml_array.get(prefix, i))) {
         throw new Error(H, {
-              cause: {
-                RE_EXN_ID: H
-              }
-            });
+          cause: {
+            RE_EXN_ID: H
+          }
+        });
       }
       
     }
     return true;
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === H) {
       return false;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
 function is_sorted(x) {
   let len = x.length;
   let _i = 0;
-  while(true) {
+  while (true) {
     let i = _i;
     if (i >= (len - 1 | 0)) {
       return true;

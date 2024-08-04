@@ -12,6 +12,17 @@
 
 # 12.0.0-alpha.2 (Unreleased)
 
+#### :nail_care: Polish
+
+- Improve formatting in the generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6932
+  - `}\ncatch{` -> `} catch {`
+  - `for(let i = 0 ,i_finish = r.length; i < i_finish; ++i){` -> `for (let i = 0, i_finish = r.length; i < i_finish; ++i) {`
+  - `while(true) {` -> `while (true) {`
+  - Fixed tabulation for `switch case` bodies
+  - Fixed tabulation for `throw new Error` bodies
+  - Removed empty line at the end of `switch` statement
+  - Removed empty `default` case from `switch` statement in the generated code
+
 # 12.0.0-alpha.1
 
 #### :rocket: New Feature

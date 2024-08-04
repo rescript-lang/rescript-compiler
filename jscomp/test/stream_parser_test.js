@@ -22,8 +22,7 @@ function parse(token) {
     }
     try {
       return token();
-    }
-    catch (exn){
+    } catch (exn) {
       return {
         TAG: "Kwd",
         _0: "=="
@@ -34,44 +33,44 @@ function parse(token) {
     let n = token$1();
     switch (n.TAG) {
       case "Kwd" :
-          if (n._0 === "(") {
-            let v = parse_expr_aux(parse_term());
-            let match = token$1();
-            if (match.TAG === "Kwd") {
-              if (match._0 === ")") {
-                return v;
-              }
-              throw new Error(Parse_error, {
-                    cause: {
-                      RE_EXN_ID: Parse_error,
-                      _1: "Unbalanced parens"
-                    }
-                  });
+        if (n._0 === "(") {
+          let v = parse_expr_aux(parse_term());
+          let match = token$1();
+          if (match.TAG === "Kwd") {
+            if (match._0 === ")") {
+              return v;
             }
             throw new Error(Parse_error, {
-                  cause: {
-                    RE_EXN_ID: Parse_error,
-                    _1: "Unbalanced parens"
-                  }
-                });
+              cause: {
+                RE_EXN_ID: Parse_error,
+                _1: "Unbalanced parens"
+              }
+            });
           }
-          Queue.push(n, look_ahead);
           throw new Error(Parse_error, {
-                cause: {
-                  RE_EXN_ID: Parse_error,
-                  _1: "unexpected token"
-                }
-              });
+            cause: {
+              RE_EXN_ID: Parse_error,
+              _1: "Unbalanced parens"
+            }
+          });
+        }
+        Queue.push(n, look_ahead);
+        throw new Error(Parse_error, {
+          cause: {
+            RE_EXN_ID: Parse_error,
+            _1: "unexpected token"
+          }
+        });
       case "Int" :
-          return n._0;
+        return n._0;
       default:
         Queue.push(n, look_ahead);
         throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error,
-                _1: "unexpected token"
-              }
-            });
+          cause: {
+            RE_EXN_ID: Parse_error,
+            _1: "unexpected token"
+          }
+        });
     }
   };
   let parse_term = function () {
@@ -82,9 +81,9 @@ function parse(token) {
     if (e.TAG === "Kwd") {
       switch (e._0) {
         case "+" :
-            return e1 + parse_expr_aux(parse_term()) | 0;
+          return e1 + parse_expr_aux(parse_term()) | 0;
         case "-" :
-            return e1 - parse_expr_aux(parse_term()) | 0;
+          return e1 - parse_expr_aux(parse_term()) | 0;
         default:
           Queue.push(e, look_ahead);
           return e1;
@@ -99,9 +98,9 @@ function parse(token) {
     if (e.TAG === "Kwd") {
       switch (e._0) {
         case "*" :
-            return Math.imul(e1, parse_term_aux(parse_atom()));
+          return Math.imul(e1, parse_term_aux(parse_atom()));
         case "/" :
-            return Caml_int32.div(e1, parse_term_aux(parse_atom()));
+          return Caml_int32.div(e1, parse_term_aux(parse_atom()));
         default:
           Queue.push(e, look_ahead);
           return e1;
@@ -162,8 +161,7 @@ function l_parse(token) {
     }
     try {
       return token();
-    }
-    catch (exn){
+    } catch (exn) {
       return {
         TAG: "Kwd",
         _0: "=="
@@ -174,56 +172,56 @@ function l_parse(token) {
     let i = token$1();
     switch (i.TAG) {
       case "Kwd" :
-          if (i._0 === "(") {
-            let v = parse_t_aux(parse_t());
-            let t = token$1();
-            if (t.TAG === "Kwd") {
-              if (t._0 === ")") {
-                return v;
-              }
-              throw new Error(Parse_error, {
-                    cause: {
-                      RE_EXN_ID: Parse_error,
-                      _1: "Unbalanced )"
-                    }
-                  });
+        if (i._0 === "(") {
+          let v = parse_t_aux(parse_t());
+          let t = token$1();
+          if (t.TAG === "Kwd") {
+            if (t._0 === ")") {
+              return v;
             }
             throw new Error(Parse_error, {
-                  cause: {
-                    RE_EXN_ID: Parse_error,
-                    _1: "Unbalanced )"
-                  }
-                });
-          }
-          throw new Error(Parse_error, {
-                cause: {
-                  RE_EXN_ID: Parse_error,
-                  _1: "Unexpected token"
-                }
-              });
-      case "Int" :
-          return i._0;
-      default:
-        throw new Error(Parse_error, {
               cause: {
                 RE_EXN_ID: Parse_error,
-                _1: "Unexpected token"
+                _1: "Unbalanced )"
               }
             });
+          }
+          throw new Error(Parse_error, {
+            cause: {
+              RE_EXN_ID: Parse_error,
+              _1: "Unbalanced )"
+            }
+          });
+        }
+        throw new Error(Parse_error, {
+          cause: {
+            RE_EXN_ID: Parse_error,
+            _1: "Unexpected token"
+          }
+        });
+      case "Int" :
+        return i._0;
+      default:
+        throw new Error(Parse_error, {
+          cause: {
+            RE_EXN_ID: Parse_error,
+            _1: "Unexpected token"
+          }
+        });
     }
   };
   let parse_f_aux = function (_a) {
-    while(true) {
+    while (true) {
       let a = _a;
       let t = token$1();
       if (t.TAG === "Kwd") {
         switch (t._0) {
           case "*" :
-              _a = Math.imul(a, parse_f());
-              continue;
+            _a = Math.imul(a, parse_f());
+            continue;
           case "/" :
-              _a = Caml_int32.div(a, parse_f());
-              continue;
+            _a = Caml_int32.div(a, parse_f());
+            continue;
           default:
             Queue.push(t, look_ahead);
             return a;
@@ -235,17 +233,17 @@ function l_parse(token) {
     };
   };
   let parse_t_aux = function (_a) {
-    while(true) {
+    while (true) {
       let a = _a;
       let t = token$1();
       if (t.TAG === "Kwd") {
         switch (t._0) {
           case "+" :
-              _a = a + parse_f_aux(parse_f()) | 0;
-              continue;
+            _a = a + parse_f_aux(parse_f()) | 0;
+            continue;
           case "-" :
-              _a = a - parse_f_aux(parse_f()) | 0;
-              continue;
+            _a = a - parse_f_aux(parse_f()) | 0;
+            continue;
           default:
             Queue.push(t, look_ahead);
             return a;

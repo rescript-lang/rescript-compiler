@@ -3,7 +3,7 @@
 
 
 function f(a) {
-  while(true) {
+  while (true) {
     continue;
   };
 }

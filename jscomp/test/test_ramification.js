@@ -8,17 +8,17 @@ function ff(x) {
     case "0" :
     case "1" :
     case "2" :
-        a = 3;
-        break;
+      a = 3;
+      break;
     case "3" :
-        a = 4;
-        break;
+      a = 4;
+      break;
     case "4" :
-        a = 6;
-        break;
+      a = 6;
+      break;
     case "7" :
-        a = 7;
-        break;
+      a = 7;
+      break;
     default:
       a = 8;
   }

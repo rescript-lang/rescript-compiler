@@ -4,15 +4,15 @@
 
 function f() {
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "noassert.res",
-            1,
-            14
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "noassert.res",
+        1,
+        14
+      ]
+    }
+  });
 }
 
 function h() {

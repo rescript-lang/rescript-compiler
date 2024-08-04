@@ -215,11 +215,11 @@ function bal(l, v, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Set.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.bal"
+        }
+      });
     }
     let lr = l.r;
     let lv = l.v;
@@ -231,11 +231,11 @@ function bal(l, v, r) {
       return create(create(ll, lv, lr.l), lr.v, create(lr.r, v, r));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal"
+      }
+    });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -248,11 +248,11 @@ function bal(l, v, r) {
   }
   if (typeof r !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal"
+      }
+    });
   }
   let rr = r.r;
   let rv = r.v;
@@ -264,11 +264,11 @@ function bal(l, v, r) {
     return create(create(l, v, rl.l), rl.v, create(rl.r, rv, rr));
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.bal"
+    }
+  });
 }
 
 function add(x, param) {
@@ -349,14 +349,14 @@ function join(l, v, r) {
 }
 
 function min_elt(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let l = param.l;
     if (typeof l !== "object") {
@@ -368,7 +368,7 @@ function min_elt(_param) {
 }
 
 function min_elt_opt(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -383,14 +383,14 @@ function min_elt_opt(_param) {
 }
 
 function max_elt(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let r = param.r;
     if (typeof r !== "object") {
@@ -402,7 +402,7 @@ function max_elt(_param) {
 }
 
 function max_elt_opt(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -419,11 +419,11 @@ function max_elt_opt(_param) {
 function remove_min_elt(param) {
   if (typeof param !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.remove_min_elt"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.remove_min_elt"
+      }
+    });
   }
   let l = param.l;
   if (typeof l !== "object") {
@@ -487,7 +487,7 @@ function is_empty(param) {
 }
 
 function mem(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return false;
@@ -598,7 +598,7 @@ function diff(s1, s2) {
 }
 
 function cons_enum(_s, _e) {
-  while(true) {
+  while (true) {
     let e = _e;
     let s = _s;
     if (typeof s !== "object") {
@@ -618,7 +618,7 @@ function cons_enum(_s, _e) {
 function compare(s1, s2) {
   let _e1 = cons_enum(s1, "End");
   let _e2 = cons_enum(s2, "End");
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
@@ -646,7 +646,7 @@ function equal(s1, s2) {
 }
 
 function subset(_s1, _s2) {
-  while(true) {
+  while (true) {
     let s2 = _s2;
     let s1 = _s1;
     if (typeof s1 !== "object") {
@@ -697,7 +697,7 @@ function subset(_s1, _s2) {
 }
 
 function iter(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -710,7 +710,7 @@ function iter(f, _param) {
 }
 
 function fold(f, _s, _accu) {
-  while(true) {
+  while (true) {
     let accu = _accu;
     let s = _s;
     if (typeof s !== "object") {
@@ -723,7 +723,7 @@ function fold(f, _s, _accu) {
 }
 
 function for_all(p, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return true;
@@ -740,7 +740,7 @@ function for_all(p, _param) {
 }
 
 function exists(p, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return false;
@@ -814,7 +814,7 @@ function cardinal(param) {
 }
 
 function elements_aux(_accu, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     let accu = _accu;
     if (typeof param !== "object") {
@@ -834,14 +834,14 @@ function elements(s) {
 }
 
 function find(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let v = param.v;
     let c = AAA.compare(x, v);
@@ -854,20 +854,20 @@ function find(x, _param) {
 }
 
 function find_first(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let v = param.v;
     if (f(v)) {
       let _v0 = v;
       let _param$1 = param.l;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let v0 = _v0;
         if (typeof param$1 !== "object") {
@@ -889,7 +889,7 @@ function find_first(f, _param) {
 }
 
 function find_first_opt(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -898,7 +898,7 @@ function find_first_opt(f, _param) {
     if (f(v)) {
       let _v0 = v;
       let _param$1 = param.l;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let v0 = _v0;
         if (typeof param$1 !== "object") {
@@ -920,20 +920,20 @@ function find_first_opt(f, _param) {
 }
 
 function find_last(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let v = param.v;
     if (f(v)) {
       let _v0 = v;
       let _param$1 = param.r;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let v0 = _v0;
         if (typeof param$1 !== "object") {
@@ -955,7 +955,7 @@ function find_last(f, _param) {
 }
 
 function find_last_opt(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -964,7 +964,7 @@ function find_last_opt(f, _param) {
     if (f(v)) {
       let _v0 = v;
       let _param$1 = param.r;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let v0 = _v0;
         if (typeof param$1 !== "object") {
@@ -986,7 +986,7 @@ function find_last_opt(f, _param) {
 }
 
 function find_opt(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -1047,28 +1047,54 @@ function of_list(l) {
       let sub = function (n, l) {
         switch (n) {
           case 0 :
-              return [
-                "Empty",
-                l
-              ];
+            return [
+              "Empty",
+              l
+            ];
           case 1 :
-              if (l) {
+            if (l) {
+              return [
+                {
+                  TAG: "Node",
+                  l: "Empty",
+                  v: l.hd,
+                  r: "Empty",
+                  h: 1
+                },
+                l.tl
+              ];
+            }
+            break;
+          case 2 :
+            if (l) {
+              let match = l.tl;
+              if (match) {
                 return [
                   {
                     TAG: "Node",
-                    l: "Empty",
-                    v: l.hd,
+                    l: {
+                      TAG: "Node",
+                      l: "Empty",
+                      v: l.hd,
+                      r: "Empty",
+                      h: 1
+                    },
+                    v: match.hd,
                     r: "Empty",
-                    h: 1
+                    h: 2
                   },
-                  l.tl
+                  match.tl
                 ];
               }
-              break;
-          case 2 :
-              if (l) {
-                let match = l.tl;
-                if (match) {
+              
+            }
+            break;
+          case 3 :
+            if (l) {
+              let match$1 = l.tl;
+              if (match$1) {
+                let match$2 = match$1.tl;
+                if (match$2) {
                   return [
                     {
                       TAG: "Node",
@@ -1079,52 +1105,24 @@ function of_list(l) {
                         r: "Empty",
                         h: 1
                       },
-                      v: match.hd,
-                      r: "Empty",
+                      v: match$1.hd,
+                      r: {
+                        TAG: "Node",
+                        l: "Empty",
+                        v: match$2.hd,
+                        r: "Empty",
+                        h: 1
+                      },
                       h: 2
                     },
-                    match.tl
+                    match$2.tl
                   ];
                 }
                 
               }
-              break;
-          case 3 :
-              if (l) {
-                let match$1 = l.tl;
-                if (match$1) {
-                  let match$2 = match$1.tl;
-                  if (match$2) {
-                    return [
-                      {
-                        TAG: "Node",
-                        l: {
-                          TAG: "Node",
-                          l: "Empty",
-                          v: l.hd,
-                          r: "Empty",
-                          h: 1
-                        },
-                        v: match$1.hd,
-                        r: {
-                          TAG: "Node",
-                          l: "Empty",
-                          v: match$2.hd,
-                          r: "Empty",
-                          h: 1
-                        },
-                        h: 2
-                      },
-                      match$2.tl
-                    ];
-                  }
-                  
-                }
-                
-              }
-              break;
-          default:
-            
+              
+            }
+            break;
         }
         let nl = n / 2 | 0;
         let match$3 = sub(nl, l);
@@ -1137,15 +1135,15 @@ function of_list(l) {
           ];
         }
         throw new Error("Assert_failure", {
-              cause: {
-                RE_EXN_ID: "Assert_failure",
-                _1: [
-                  "set.res",
-                  691,
-                  20
-                ]
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Assert_failure",
+            _1: [
+              "set.res",
+              691,
+              20
+            ]
+          }
+        });
       };
       return sub(List.length(l$1), l$1)[0];
     } else {

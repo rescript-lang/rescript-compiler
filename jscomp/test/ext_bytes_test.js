@@ -23,7 +23,7 @@ function eq(loc, x, y) {
 
 function escaped(s) {
   let n = 0;
-  for(let i = 0 ,i_finish = s.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = s.length; i < i_finish; ++i) {
     let match = s[i];
     n = n + (
       match >= 32 ? (
@@ -46,7 +46,7 @@ function escaped(s) {
   }
   let s$p = Caml_bytes.create(n);
   n = 0;
-  for(let i$1 = 0 ,i_finish$1 = s.length; i$1 < i_finish$1; ++i$1){
+  for (let i$1 = 0, i_finish$1 = s.length; i$1 < i_finish$1; ++i$1) {
     let c = s[i$1];
     let exit = 0;
     if (c >= 35) {
@@ -70,20 +70,20 @@ function escaped(s) {
     } else {
       switch (c) {
         case 8 :
-            s$p[n] = /* '\\' */92;
-            n = n + 1 | 0;
-            s$p[n] = /* 'b' */98;
-            break;
+          s$p[n] = /* '\\' */92;
+          n = n + 1 | 0;
+          s$p[n] = /* 'b' */98;
+          break;
         case 9 :
-            s$p[n] = /* '\\' */92;
-            n = n + 1 | 0;
-            s$p[n] = /* 't' */116;
-            break;
+          s$p[n] = /* '\\' */92;
+          n = n + 1 | 0;
+          s$p[n] = /* 't' */116;
+          break;
         case 10 :
-            s$p[n] = /* '\\' */92;
-            n = n + 1 | 0;
-            s$p[n] = /* 'n' */110;
-            break;
+          s$p[n] = /* '\\' */92;
+          n = n + 1 | 0;
+          s$p[n] = /* 'n' */110;
+          break;
         case 0 :
         case 1 :
         case 2 :
@@ -94,32 +94,30 @@ function escaped(s) {
         case 7 :
         case 11 :
         case 12 :
-            exit = 1;
-            break;
+          exit = 1;
+          break;
         case 13 :
-            s$p[n] = /* '\\' */92;
-            n = n + 1 | 0;
-            s$p[n] = /* 'r' */114;
-            break;
-        
+          s$p[n] = /* '\\' */92;
+          n = n + 1 | 0;
+          s$p[n] = /* 'r' */114;
+          break;
       }
     }
     switch (exit) {
       case 1 :
-          s$p[n] = /* '\\' */92;
-          n = n + 1 | 0;
-          s$p[n] = 48 + (c / 100 | 0) | 0;
-          n = n + 1 | 0;
-          s$p[n] = 48 + (c / 10 | 0) % 10 | 0;
-          n = n + 1 | 0;
-          s$p[n] = 48 + c % 10 | 0;
-          break;
+        s$p[n] = /* '\\' */92;
+        n = n + 1 | 0;
+        s$p[n] = 48 + (c / 100 | 0) | 0;
+        n = n + 1 | 0;
+        s$p[n] = 48 + (c / 10 | 0) % 10 | 0;
+        n = n + 1 | 0;
+        s$p[n] = 48 + c % 10 | 0;
+        break;
       case 2 :
-          s$p[n] = /* '\\' */92;
-          n = n + 1 | 0;
-          s$p[n] = c;
-          break;
-      
+        s$p[n] = /* '\\' */92;
+        n = n + 1 | 0;
+        s$p[n] = c;
+        break;
     }
     n = n + 1 | 0;
   }
@@ -134,26 +132,25 @@ function starts_with(xs, prefix, p) {
     return false;
   }
   try {
-    for(let i = 0; i < len2; ++i){
+    for (let i = 0; i < len2; ++i) {
       if (!p(Caml_bytes.get(xs, i), Caml_bytes.get(prefix, i))) {
         throw new Error(H, {
-              cause: {
-                RE_EXN_ID: H
-              }
-            });
+          cause: {
+            RE_EXN_ID: H
+          }
+        });
       }
       
     }
     return true;
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === H) {
       return false;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 

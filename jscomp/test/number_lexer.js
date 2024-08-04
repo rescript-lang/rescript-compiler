@@ -121,50 +121,50 @@ let __ocaml_lex_tables = {
 };
 
 function __ocaml_lex_token_rec(l, lexbuf, ___ocaml_lex_state) {
-  while(true) {
+  while (true) {
     let __ocaml_lex_state = ___ocaml_lex_state;
     let __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          l("new line");
-          ___ocaml_lex_state = 0;
-          continue;
+        l("new line");
+        ___ocaml_lex_state = 0;
+        continue;
       case 1 :
-          l("number");
-          l(Lexing.lexeme(lexbuf));
-          ___ocaml_lex_state = 0;
-          continue;
+        l("number");
+        l(Lexing.lexeme(lexbuf));
+        ___ocaml_lex_state = 0;
+        continue;
       case 2 :
-          l("ident");
-          l(Lexing.lexeme(lexbuf));
-          ___ocaml_lex_state = 0;
-          continue;
+        l("ident");
+        l(Lexing.lexeme(lexbuf));
+        ___ocaml_lex_state = 0;
+        continue;
       case 3 :
-          l("+");
-          ___ocaml_lex_state = 0;
-          continue;
+        l("+");
+        ___ocaml_lex_state = 0;
+        continue;
       case 4 :
-          l("-");
-          ___ocaml_lex_state = 0;
-          continue;
+        l("-");
+        ___ocaml_lex_state = 0;
+        continue;
       case 5 :
-          l("*");
-          ___ocaml_lex_state = 0;
-          continue;
+        l("*");
+        ___ocaml_lex_state = 0;
+        continue;
       case 6 :
-          l("/");
-          ___ocaml_lex_state = 0;
-          continue;
+        l("/");
+        ___ocaml_lex_state = 0;
+        continue;
       case 7 :
-          l("(");
-          ___ocaml_lex_state = 0;
-          continue;
+        l("(");
+        ___ocaml_lex_state = 0;
+        continue;
       case 8 :
-          l(")");
-          ___ocaml_lex_state = 0;
-          continue;
+        l(")");
+        ___ocaml_lex_state = 0;
+        continue;
       case 9 :
-          return l("eof");
+        return l("eof");
       default:
         lexbuf.refill_buff(lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;

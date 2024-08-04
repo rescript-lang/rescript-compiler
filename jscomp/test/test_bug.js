@@ -7,7 +7,7 @@ let Caml_bytes = require("../../lib/js/caml_bytes.js");
 
 function escaped(s) {
   let n = 0;
-  for(let i = 0 ,i_finish = s.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = s.length; i < i_finish; ++i) {
     let c = s[i];
     let tmp;
     let exit = 0;
@@ -38,7 +38,7 @@ function escaped(s) {
   }
   let s$p = Caml_bytes.create(n);
   n = 0;
-  for(let i$1 = 0 ,i_finish$1 = s.length; i$1 < i_finish$1; ++i$1){
+  for (let i$1 = 0, i_finish$1 = s.length; i$1 < i_finish$1; ++i$1) {
     let c$1 = s[i$1];
     let exit$1 = 0;
     if (c$1 > 92 || c$1 < 34) {
@@ -47,20 +47,20 @@ function escaped(s) {
       } else {
         switch (c$1) {
           case 8 :
-              s$p[n] = /* '\\' */92;
-              n = n + 1 | 0;
-              s$p[n] = /* 'b' */98;
-              break;
+            s$p[n] = /* '\\' */92;
+            n = n + 1 | 0;
+            s$p[n] = /* 'b' */98;
+            break;
           case 9 :
-              s$p[n] = /* '\\' */92;
-              n = n + 1 | 0;
-              s$p[n] = /* 't' */116;
-              break;
+            s$p[n] = /* '\\' */92;
+            n = n + 1 | 0;
+            s$p[n] = /* 't' */116;
+            break;
           case 10 :
-              s$p[n] = /* '\\' */92;
-              n = n + 1 | 0;
-              s$p[n] = /* 'n' */110;
-              break;
+            s$p[n] = /* '\\' */92;
+            n = n + 1 | 0;
+            s$p[n] = /* 'n' */110;
+            break;
           case 0 :
           case 1 :
           case 2 :
@@ -71,14 +71,13 @@ function escaped(s) {
           case 7 :
           case 11 :
           case 12 :
-              exit$1 = 1;
-              break;
+            exit$1 = 1;
+            break;
           case 13 :
-              s$p[n] = /* '\\' */92;
-              n = n + 1 | 0;
-              s$p[n] = /* 'r' */114;
-              break;
-          
+            s$p[n] = /* '\\' */92;
+            n = n + 1 | 0;
+            s$p[n] = /* 'r' */114;
+            break;
         }
       }
     } else if (c$1 > 91 || c$1 < 35) {

@@ -35,20 +35,19 @@ let lexer = Genlex.make_lexer({
 
 function to_list(s) {
   let _acc = /* [] */0;
-  while(true) {
+  while (true) {
     let acc = _acc;
     let v;
     try {
       v = Stream.next(s);
-    }
-    catch (raw_exn){
+    } catch (raw_exn) {
       let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn.RE_EXN_ID === Stream.Failure) {
         return List.rev(acc);
       }
       throw new Error(exn.RE_EXN_ID, {
-            cause: exn
-          });
+        cause: exn
+      });
     }
     _acc = {
       hd: v,

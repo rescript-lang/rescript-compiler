@@ -4,7 +4,7 @@
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function $$eval(_bdd, vars) {
-  while(true) {
+  while (true) {
     let bdd = _bdd;
     if (typeof bdd !== "object") {
       if (bdd === "One") {
@@ -59,7 +59,7 @@ function resize(newSize) {
   let newSz_1 = newSize - 1 | 0;
   let newArr = Caml_array.make(newSize, /* [] */0);
   let copyBucket = function (_bucket) {
-    while(true) {
+    while (true) {
       let bucket = _bucket;
       if (!bucket) {
         return;
@@ -68,26 +68,26 @@ function resize(newSize) {
       if (typeof n !== "object") {
         if (n === "One") {
           throw new Error("Assert_failure", {
-                cause: {
-                  RE_EXN_ID: "Assert_failure",
-                  _1: [
-                    "bdd.res",
-                    60,
-                    13
-                  ]
-                }
-              });
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bdd.res",
+                60,
+                13
+              ]
+            }
+          });
         }
         throw new Error("Assert_failure", {
-              cause: {
-                RE_EXN_ID: "Assert_failure",
-                _1: [
-                  "bdd.res",
-                  60,
-                  13
-                ]
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Assert_failure",
+            _1: [
+              "bdd.res",
+              60,
+              13
+            ]
+          }
+        });
       } else {
         let ind = hashVal(getId(n._0), getId(n._3), n._1) & newSz_1;
         Caml_array.set(newArr, ind, {
@@ -99,7 +99,7 @@ function resize(newSize) {
       }
     };
   };
-  for(let n = 0 ,n_finish = sz_1.contents; n <= n_finish; ++n){
+  for (let n = 0, n_finish = sz_1.contents; n <= n_finish; ++n) {
     copyBucket(Caml_array.get(arr, n));
   }
   htab.contents = newArr;
@@ -139,33 +139,33 @@ function mkNode(low, v, high) {
   let ind = hashVal(idl, idh, v) & sz_1.contents;
   let bucket = Caml_array.get(htab.contents, ind);
   let _b = bucket;
-  while(true) {
+  while (true) {
     let b = _b;
     if (b) {
       let n = b.hd;
       if (typeof n !== "object") {
         if (n === "One") {
           throw new Error("Assert_failure", {
-                cause: {
-                  RE_EXN_ID: "Assert_failure",
-                  _1: [
-                    "bdd.res",
-                    121,
-                    15
-                  ]
-                }
-              });
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bdd.res",
+                121,
+                15
+              ]
+            }
+          });
         }
         throw new Error("Assert_failure", {
-              cause: {
-                RE_EXN_ID: "Assert_failure",
-                _1: [
-                  "bdd.res",
-                  121,
-                  15
-                ]
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Assert_failure",
+            _1: [
+              "bdd.res",
+              121,
+              15
+            ]
+          }
+        });
       } else {
         if (v === n._1 && idl === getId(n._0) && idh === getId(n._3)) {
           return n;
@@ -272,15 +272,14 @@ function and2(n1, n2) {
   let f;
   switch (match) {
     case "LESS" :
-        f = mkNode(and2(l1, n2), v1, and2(r1, n2));
-        break;
+      f = mkNode(and2(l1, n2), v1, and2(r1, n2));
+      break;
     case "EQUAL" :
-        f = mkNode(and2(l1, l2), v1, and2(r1, r2));
-        break;
+      f = mkNode(and2(l1, l2), v1, and2(r1, r2));
+      break;
     case "GREATER" :
-        f = mkNode(and2(n1, l2), v2, and2(n1, r2));
-        break;
-    
+      f = mkNode(and2(n1, l2), v2, and2(n1, r2));
+      break;
   }
   Caml_array.set(andslot1, h, i1);
   Caml_array.set(andslot2, h, i2);
@@ -319,15 +318,14 @@ function xor(n1, n2) {
   let f;
   switch (match) {
     case "LESS" :
-        f = mkNode(xor(l1, n2), v1, xor(r1, n2));
-        break;
+      f = mkNode(xor(l1, n2), v1, xor(r1, n2));
+      break;
     case "EQUAL" :
-        f = mkNode(xor(l1, l2), v1, xor(r1, r2));
-        break;
+      f = mkNode(xor(l1, l2), v1, xor(r1, r2));
+      break;
     case "GREATER" :
-        f = mkNode(xor(n1, l2), v2, xor(n1, r2));
-        break;
-    
+      f = mkNode(xor(n1, l2), v2, xor(n1, r2));
+      break;
   }
   Caml_array.set(andslot1, h, i1);
   Caml_array.set(andslot2, h, i2);
@@ -364,7 +362,7 @@ function random() {
 
 function random_vars(n) {
   let vars = Caml_array.make(n, false);
-  for(let i = 0; i < n; ++i){
+  for (let i = 0; i < n; ++i) {
     Caml_array.set(vars, i, random());
   }
   return vars;
@@ -386,7 +384,7 @@ function bool_equal(a, b) {
 
 function test_hwb(bdd, vars) {
   let ntrue = 0;
-  for(let i = 0 ,i_finish = vars.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = vars.length; i < i_finish; ++i) {
     if (Caml_array.get(vars, i)) {
       ntrue = ntrue + 1 | 0;
     }
@@ -398,22 +396,22 @@ function test_hwb(bdd, vars) {
 function main() {
   let bdd = hwb(22);
   let succeeded = true;
-  for(let i = 1; i <= 100; ++i){
+  for (let i = 1; i <= 100; ++i) {
     succeeded = succeeded && test_hwb(bdd, random_vars(22));
   }
   if (succeeded) {
     return;
   }
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "bdd.res",
-            301,
-            2
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "bdd.res",
+        301,
+        2
+      ]
+    }
+  });
 }
 
 main();

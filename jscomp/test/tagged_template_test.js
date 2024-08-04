@@ -30,7 +30,7 @@ let length = Tagged_template_libJs.length`hello ${10} what's the total length? I
 function foo(strings, values) {
   let res = "";
   let valueCount = values.length;
-  for(let i = 0; i < valueCount; ++i){
+  for (let i = 0; i < valueCount; ++i) {
     res = res + Caml_array.get(strings, i) + String(Math.imul(Caml_array.get(values, i), 10));
   }
   return res + Caml_array.get(strings, valueCount);

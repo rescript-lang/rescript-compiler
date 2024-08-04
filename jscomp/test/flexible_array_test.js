@@ -6,15 +6,15 @@ let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function sub(_tr, _k) {
-  while(true) {
+  while (true) {
     let k = _k;
     let tr = _tr;
     if (typeof tr !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     if (k === 1) {
       return tr._0;
@@ -41,10 +41,10 @@ function update(tr, k, w) {
       };
     }
     throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Not_found"
+      }
+    });
   }
   let r = tr._2;
   let l = tr._1;
@@ -77,10 +77,10 @@ function update(tr, k, w) {
 function $$delete(tr, n) {
   if (typeof tr !== "object") {
     throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Not_found"
+      }
+    });
   }
   if (n === 1) {
     return "Lf";
@@ -126,10 +126,10 @@ function loext(tr, w) {
 function lorem(tr) {
   if (typeof tr !== "object") {
     throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Not_found"
+      }
+    });
   }
   let l = tr._1;
   if (typeof l === "object") {
@@ -145,15 +145,15 @@ function lorem(tr) {
     return "Lf";
   }
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "flexible_array_test.res",
-            80,
-            9
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "flexible_array_test.res",
+        80,
+        9
+      ]
+    }
+  });
 }
 
 let empty = [
@@ -170,11 +170,11 @@ function get(param, i) {
     return sub(param[0], i + 1 | 0);
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Array.get"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Array.get"
+    }
+  });
 }
 
 function set(param, i, v) {
@@ -186,11 +186,11 @@ function set(param, i, v) {
     ];
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Array.set"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Array.set"
+    }
+  });
 }
 
 function push_front(param, v) {
@@ -209,11 +209,11 @@ function pop_front(param) {
     ];
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Array.pop_front"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Array.pop_front"
+    }
+  });
 }
 
 function push_back(param, v) {
@@ -233,16 +233,16 @@ function pop_back(param) {
     ];
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Array.pop_back"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Array.pop_back"
+    }
+  });
 }
 
 function filter_from(i, p, s) {
   let u = empty;
-  for(let i$1 = i ,i_finish = length(s); i$1 < i_finish; ++i$1){
+  for (let i$1 = i, i_finish = length(s); i$1 < i_finish; ++i$1) {
     let ele = get(s, i$1);
     if (p(ele)) {
       u = push_back(u, ele);
@@ -254,10 +254,10 @@ function filter_from(i, p, s) {
 
 function append(a, b) {
   let empty$1 = empty;
-  for(let i = 0 ,i_finish = length(a); i < i_finish; ++i){
+  for (let i = 0, i_finish = length(a); i < i_finish; ++i) {
     empty$1 = push_back(empty$1, get(a, i));
   }
-  for(let i$1 = 0 ,i_finish$1 = length(b); i$1 < i_finish$1; ++i$1){
+  for (let i$1 = 0, i_finish$1 = length(b); i$1 < i_finish$1; ++i$1) {
     empty$1 = push_back(empty$1, get(b, i$1));
   }
   return empty$1;
@@ -280,7 +280,7 @@ function sort(s) {
 
 function of_array(arr) {
   let v = empty;
-  for(let i = 0 ,i_finish = arr.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = arr.length; i < i_finish; ++i) {
     v = push_back(v, Caml_array.get(arr, i));
   }
   return v;
@@ -324,15 +324,15 @@ if (!$eq$tilde(sort(u), [
     6
   ])) {
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "flexible_array_test.res",
-            184,
-            2
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "flexible_array_test.res",
+        184,
+        2
+      ]
+    }
+  });
 }
 
 let v = $$Array.init(500, (function (i) {

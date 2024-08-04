@@ -14,17 +14,17 @@ function string_or_number(x) {
   } else {
     switch (ty.TAG) {
       case "JSNumber" :
-          console.log(ty._0 + 3);
-          return true;
+        console.log(ty._0 + 3);
+        return true;
       case "JSString" :
-          console.log(ty._0 + "hei");
-          return true;
+        console.log(ty._0 + "hei");
+        return true;
       case "JSFunction" :
-          console.log("Function");
-          return false;
+        console.log("Function");
+        return false;
       case "JSBigInt" :
-          console.log(ty._0.toString());
-          return true;
+        console.log(ty._0.toString());
+        return true;
       default:
         return false;
     }

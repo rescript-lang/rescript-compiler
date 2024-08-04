@@ -3,21 +3,20 @@
 
 
 function isfree(id, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     switch (x.TAG) {
       case "Pident" :
-          return id === x._0;
+        return id === x._0;
       case "Pdot" :
-          _x = x._0;
-          continue;
+        _x = x._0;
+        continue;
       case "Papply" :
-          if (isfree(id, x._0)) {
-            return true;
-          }
-          _x = x._1;
-          continue;
-      
+        if (isfree(id, x._0)) {
+          return true;
+        }
+        _x = x._1;
+        continue;
     }
   };
 }

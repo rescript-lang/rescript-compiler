@@ -129,7 +129,7 @@ function diff(s1, s2) {
 }
 
 function mem(x, _tree) {
-  while(true) {
+  while (true) {
     let tree = _tree;
     if (typeof tree !== "object") {
       return false;
@@ -169,7 +169,7 @@ function equal(s1, s2) {
 }
 
 function subset(_s1, _s2) {
-  while(true) {
+  while (true) {
     let s2 = _s2;
     let s1 = _s1;
     if (typeof s1 !== "object") {
@@ -220,14 +220,14 @@ function subset(_s1, _s2) {
 }
 
 function find(x, _tree) {
-  while(true) {
+  while (true) {
     let tree = _tree;
     if (typeof tree !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let v = tree._1;
     let c = Caml.string_compare(x, v);

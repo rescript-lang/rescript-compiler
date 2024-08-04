@@ -8,13 +8,13 @@ function x(url) {
   }
   switch (url.hd) {
     case "login" :
-        if (url.tl) {
-          return "start";
-        } else {
-          return "login";
-        }
-    case "start" :
+      if (url.tl) {
         return "start";
+      } else {
+        return "login";
+      }
+    case "start" :
+      return "start";
     default:
       return "start";
   }

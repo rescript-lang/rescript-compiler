@@ -8,7 +8,7 @@ function f9(x) {
       case "T60" :
       case "T61" :
       case "T62" :
-          return 1;
+        return 1;
       default:
         return 3;
     }
@@ -16,7 +16,7 @@ function f9(x) {
     switch (x.TAG) {
       case "T64" :
       case "T65" :
-          return 2;
+        return 2;
       default:
         return 3;
     }

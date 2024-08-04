@@ -5,7 +5,7 @@ let Caml_array = require("../../lib/js/caml_array.js");
 
 function caml_array_sub(x, offset, len) {
   let result = new Array(len);
-  for(let j = 0; j < len; ++j){
+  for (let j = 0; j < len; ++j) {
     Caml_array.set(result, j, Caml_array.get(x, offset + j | 0));
   }
   return result;
@@ -14,11 +14,11 @@ function caml_array_sub(x, offset, len) {
 function caml_array_set(xs, index, newval) {
   if (index < 0 || index >= xs.length) {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "index out of bounds"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "index out of bounds"
+      }
+    });
   }
   Caml_array.set(xs, index, newval);
 }
@@ -26,18 +26,18 @@ function caml_array_set(xs, index, newval) {
 function caml_array_get(xs, index) {
   if (index < 0 || index >= xs.length) {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "index out of bounds"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "index out of bounds"
+      }
+    });
   }
   return Caml_array.get(xs, index);
 }
 
 function caml_make_vect(len, init) {
   let b = new Array(len);
-  for(let i = 0; i < len; ++i){
+  for (let i = 0; i < len; ++i) {
     Caml_array.set(b, i, init);
   }
   return b;

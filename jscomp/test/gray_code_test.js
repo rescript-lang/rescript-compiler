@@ -11,7 +11,7 @@ function gray_encode(b) {
 function gray_decode(n) {
   let _p = n;
   let _n = (n >>> 1);
-  while(true) {
+  while (true) {
     let n$1 = _n;
     let p = _p;
     if (n$1 === 0) {
@@ -27,7 +27,7 @@ function bool_string(len, n) {
   let s = Bytes.make(len, /* '0' */48);
   let _i = len - 1 | 0;
   let _n = n;
-  while(true) {
+  while (true) {
     let n$1 = _n;
     let i = _i;
     if ((n$1 & 1) === 1) {

@@ -13,9 +13,9 @@ function foo(x) {
 function bar(x) {
   switch (x) {
     case "\\" :
-        return "\\";
+      return "\\";
     case "😀" :
-        return "😀";
+      return "😀";
     default:
       return "";
   }

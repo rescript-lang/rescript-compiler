@@ -20,7 +20,7 @@ function fib2(x) {
 
 let v = 0;
 
-for(let i = 0; i <= 10; ++i){
+for (let i = 0; i <= 10; ++i) {
   v = v + i | 0;
 }
 
@@ -28,7 +28,7 @@ let sum = v;
 
 let v$1 = 0;
 
-for(let i$1 = 10; i$1 >= 0; --i$1){
+for (let i$1 = 10; i$1 >= 0; --i$1) {
   v$1 = v$1 + i$1 | 0;
 }
 
@@ -65,7 +65,7 @@ function map(f, x) {
 function f(x) {
   let v = x;
   let sum = 0;
-  while(v > 0) {
+  while (v > 0) {
     sum = sum + v | 0;
     v = v - 1 | 0;
   };
@@ -76,7 +76,7 @@ function fib3(n) {
   let _a = 0;
   let _b = 1;
   let _n = n;
-  while(true) {
+  while (true) {
     let n$1 = _n;
     let b = _b;
     let a = _a;

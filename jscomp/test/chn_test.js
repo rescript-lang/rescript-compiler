@@ -41,15 +41,15 @@ function convert(s) {
       return x$1;
     }
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "chn_test.res",
-              17,
-              14
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "chn_test.res",
+          17,
+          14
+        ]
+      }
+    });
   })));
 }
 

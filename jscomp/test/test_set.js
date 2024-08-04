@@ -32,11 +32,11 @@ function Make(Ord) {
     if (hl > (hr + 2 | 0)) {
       if (typeof l !== "object") {
         throw new Error("Invalid_argument", {
-              cause: {
-                RE_EXN_ID: "Invalid_argument",
-                _1: "Set.bal"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Set.bal"
+          }
+        });
       }
       let lr = l._2;
       let lv = l._1;
@@ -48,11 +48,11 @@ function Make(Ord) {
         return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
       }
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Set.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.bal"
+        }
+      });
     }
     if (hr <= (hl + 2 | 0)) {
       return {
@@ -65,11 +65,11 @@ function Make(Ord) {
     }
     if (typeof r !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Set.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.bal"
+        }
+      });
     }
     let rr = r._2;
     let rv = r._1;
@@ -81,11 +81,11 @@ function Make(Ord) {
       return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal"
+      }
+    });
   };
   let add = function (x, x_) {
     if (typeof x_ !== "object") {
@@ -150,14 +150,14 @@ function Make(Ord) {
     }
   };
   let min_elt = function (_x) {
-    while(true) {
+    while (true) {
       let x = _x;
       if (typeof x !== "object") {
         throw new Error("Not_found", {
-              cause: {
-                RE_EXN_ID: "Not_found"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
       }
       let l = x._0;
       if (typeof l !== "object") {
@@ -168,14 +168,14 @@ function Make(Ord) {
     };
   };
   let max_elt = function (_x) {
-    while(true) {
+    while (true) {
       let x = _x;
       if (typeof x !== "object") {
         throw new Error("Not_found", {
-              cause: {
-                RE_EXN_ID: "Not_found"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
       }
       let r = x._2;
       if (typeof r !== "object") {
@@ -188,11 +188,11 @@ function Make(Ord) {
   let remove_min_elt = function (x) {
     if (typeof x !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Set.remove_min_elt"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.remove_min_elt"
+        }
+      });
     }
     let l = x._0;
     if (typeof l !== "object") {
@@ -261,7 +261,7 @@ function Make(Ord) {
     }
   };
   let mem = function (x, _x_) {
-    while(true) {
+    while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
         return false;
@@ -351,7 +351,7 @@ function Make(Ord) {
     }
   };
   let cons_enum = function (_s, _e) {
-    while(true) {
+    while (true) {
       let e = _e;
       let s = _s;
       if (typeof s !== "object") {
@@ -368,7 +368,7 @@ function Make(Ord) {
     };
   };
   let compare_aux = function (_e1, _e2) {
-    while(true) {
+    while (true) {
       let e2 = _e2;
       let e1 = _e1;
       if (typeof e1 !== "object") {
@@ -397,7 +397,7 @@ function Make(Ord) {
     return compare(s1, s2) === 0;
   };
   let subset = function (_s1, _s2) {
-    while(true) {
+    while (true) {
       let s2 = _s2;
       let s1 = _s1;
       if (typeof s1 !== "object") {
@@ -447,7 +447,7 @@ function Make(Ord) {
     };
   };
   let iter = function (f, _x_) {
-    while(true) {
+    while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
         return;
@@ -459,7 +459,7 @@ function Make(Ord) {
     };
   };
   let fold = function (f, _s, _accu) {
-    while(true) {
+    while (true) {
       let accu = _accu;
       let s = _s;
       if (typeof s !== "object") {
@@ -471,7 +471,7 @@ function Make(Ord) {
     };
   };
   let for_all = function (p, _x) {
-    while(true) {
+    while (true) {
       let x = _x;
       if (typeof x !== "object") {
         return true;
@@ -487,7 +487,7 @@ function Make(Ord) {
     };
   };
   let exists = function (p, _x) {
-    while(true) {
+    while (true) {
       let x = _x;
       if (typeof x !== "object") {
         return false;
@@ -551,7 +551,7 @@ function Make(Ord) {
     }
   };
   let elements_aux = function (_accu, _x) {
-    while(true) {
+    while (true) {
       let x = _x;
       let accu = _accu;
       if (typeof x !== "object") {
@@ -569,14 +569,14 @@ function Make(Ord) {
     return elements_aux(/* [] */0, s);
   };
   let find = function (x, _x_) {
-    while(true) {
+    while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
         throw new Error("Not_found", {
-              cause: {
-                RE_EXN_ID: "Not_found"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
       }
       let v = x_._1;
       let c = Ord.compare(x, v);
@@ -591,28 +591,54 @@ function Make(Ord) {
     let sub = function (n, l) {
       switch (n) {
         case 0 :
-            return [
-              "Empty",
-              l
-            ];
+          return [
+            "Empty",
+            l
+          ];
         case 1 :
-            if (l) {
+          if (l) {
+            return [
+              {
+                TAG: "Node",
+                _0: "Empty",
+                _1: l.hd,
+                _2: "Empty",
+                _3: 1
+              },
+              l.tl
+            ];
+          }
+          break;
+        case 2 :
+          if (l) {
+            let match = l.tl;
+            if (match) {
               return [
                 {
                   TAG: "Node",
-                  _0: "Empty",
-                  _1: l.hd,
+                  _0: {
+                    TAG: "Node",
+                    _0: "Empty",
+                    _1: l.hd,
+                    _2: "Empty",
+                    _3: 1
+                  },
+                  _1: match.hd,
                   _2: "Empty",
-                  _3: 1
+                  _3: 2
                 },
-                l.tl
+                match.tl
               ];
             }
-            break;
-        case 2 :
-            if (l) {
-              let match = l.tl;
-              if (match) {
+            
+          }
+          break;
+        case 3 :
+          if (l) {
+            let match$1 = l.tl;
+            if (match$1) {
+              let match$2 = match$1.tl;
+              if (match$2) {
                 return [
                   {
                     TAG: "Node",
@@ -623,52 +649,24 @@ function Make(Ord) {
                       _2: "Empty",
                       _3: 1
                     },
-                    _1: match.hd,
-                    _2: "Empty",
+                    _1: match$1.hd,
+                    _2: {
+                      TAG: "Node",
+                      _0: "Empty",
+                      _1: match$2.hd,
+                      _2: "Empty",
+                      _3: 1
+                    },
                     _3: 2
                   },
-                  match.tl
+                  match$2.tl
                 ];
               }
               
             }
-            break;
-        case 3 :
-            if (l) {
-              let match$1 = l.tl;
-              if (match$1) {
-                let match$2 = match$1.tl;
-                if (match$2) {
-                  return [
-                    {
-                      TAG: "Node",
-                      _0: {
-                        TAG: "Node",
-                        _0: "Empty",
-                        _1: l.hd,
-                        _2: "Empty",
-                        _3: 1
-                      },
-                      _1: match$1.hd,
-                      _2: {
-                        TAG: "Node",
-                        _0: "Empty",
-                        _1: match$2.hd,
-                        _2: "Empty",
-                        _3: 1
-                      },
-                      _3: 2
-                    },
-                    match$2.tl
-                  ];
-                }
-                
-              }
-              
-            }
-            break;
-        default:
-          
+            
+          }
+          break;
       }
       let nl = n / 2 | 0;
       let match$3 = sub(nl, l);
@@ -681,15 +679,15 @@ function Make(Ord) {
         ];
       }
       throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "test_set.res",
-                497,
-                20
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "test_set.res",
+            497,
+            20
+          ]
+        }
+      });
     };
     return sub(List.length(l), l)[0];
   };

@@ -6,15 +6,14 @@ let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 function f(g, x) {
   try {
     return g(x);
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       return 3;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 

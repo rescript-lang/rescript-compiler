@@ -31,7 +31,7 @@ function eq(loc, x, y) {
 
 let s = String_set.empty;
 
-for(let i = 0; i <= 99999; ++i){
+for (let i = 0; i <= 99999; ++i) {
   s = String_set.add(String(i), s);
 }
 

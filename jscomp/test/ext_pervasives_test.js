@@ -9,12 +9,11 @@ function $$finally(v, action, f) {
   let e;
   try {
     e = f(v);
-  }
-  catch (e$1){
+  } catch (e$1) {
     action(v);
     throw new Error(e$1.RE_EXN_ID, {
-          cause: e$1
-        });
+      cause: e$1
+    });
   }
   action(v);
   return e;
@@ -25,7 +24,7 @@ function is_pos_pow(n) {
   try {
     let _c = 0;
     let _n = n;
-    while(true) {
+    while (true) {
       let n$1 = _n;
       let c = _c;
       if (n$1 <= 0) {
@@ -40,20 +39,19 @@ function is_pos_pow(n) {
         continue;
       }
       throw new Error(E, {
-            cause: {
-              RE_EXN_ID: E
-            }
-          });
+        cause: {
+          RE_EXN_ID: E
+        }
+      });
     };
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === E) {
       return -1;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -62,7 +60,7 @@ function is_pos_pow_2(n) {
   try {
     let _c = 0;
     let _n = n;
-    while(true) {
+    while (true) {
       let n$1 = _n;
       let c = _c;
       if (n$1 <= 0) {
@@ -77,26 +75,25 @@ function is_pos_pow_2(n) {
         continue;
       }
       throw new Error(E, {
-            cause: {
-              RE_EXN_ID: E
-            }
-          });
+        cause: {
+          RE_EXN_ID: E
+        }
+      });
     };
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === E) {
       return -1;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
 function hash_variant(s) {
   let accu = 0;
-  for(let i = 0 ,i_finish = s.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = s.length; i < i_finish; ++i) {
     accu = Math.imul(223, accu) + Caml_string.get(s, i) | 0;
   }
   accu = accu & 2147483647;

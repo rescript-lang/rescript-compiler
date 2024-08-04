@@ -7,20 +7,20 @@ let Caml_string = require("../../lib/js/caml_string.js");
 function f(x) {
   switch (x) {
     case "aaaabb" :
-        return 0;
+      return 0;
     case "bbbb" :
-        return 1;
+      return 1;
     default:
       throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "test_string.res",
-                5,
-                17
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "test_string.res",
+            5,
+            17
+          ]
+        }
+      });
   }
 }
 

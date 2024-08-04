@@ -30,14 +30,14 @@ function eq(loc, x, y) {
 }
 
 function f(x) {
-  for(let i = 0; i <= 100; ++i){
+  for (let i = 0; i <= 100; ++i) {
     console.log(".");
   }
   return -x | 0;
 }
 
 function int32_f(x) {
-  for(let i = 0; i <= 100; ++i){
+  for (let i = 0; i <= 100; ++i) {
     console.log(".");
   }
   return -x | 0;

@@ -20,14 +20,14 @@ let u = {
 };
 
 function div(children, param) {
-  for(let i = 0; i <= 1; ++i){
+  for (let i = 0; i <= 1; ++i) {
     u.contents = 300;
     console.log("nonline");
   }
 }
 
 function string(s) {
-  for(let i = 0; i <= 1; ++i){
+  for (let i = 0; i <= 1; ++i) {
     u.contents = 200;
     console.log("no");
   }

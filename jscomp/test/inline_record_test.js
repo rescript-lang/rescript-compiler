@@ -68,15 +68,15 @@ if (A0 === A0) {
   tmp = 3;
 } else {
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "inline_record_test.res",
-            47,
-            9
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "inline_record_test.res",
+        47,
+        9
+      ]
+    }
+  });
 }
 
 eq("File \"inline_record_test.res\", line 44, characters 2-9", tmp, 3);
@@ -101,7 +101,7 @@ let v5 = {
   z: 0
 };
 
-for(let i = 0; i <= 10; ++i){
+for (let i = 0; i <= 10; ++i) {
   ff(v4);
   ff(v5);
 }
@@ -112,15 +112,15 @@ if (v4.TAG === "A0") {
   tmp$1 = v4.x;
 } else {
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "inline_record_test.res",
-            74,
-            9
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "inline_record_test.res",
+        74,
+        9
+      ]
+    }
+  });
 }
 
 eq("File \"inline_record_test.res\", line 71, characters 2-9", tmp$1, 11);
@@ -129,15 +129,15 @@ let tmp$2;
 
 if (v5.TAG === "A0") {
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "inline_record_test.res",
-            83,
-            9
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "inline_record_test.res",
+        83,
+        9
+      ]
+    }
+  });
 }
 
 tmp$2 = v5.z;
@@ -162,7 +162,7 @@ function ff0(x) {
   
 }
 
-for(let i$1 = 0; i$1 <= 10; ++i$1){
+for (let i$1 = 0; i$1 <= 10; ++i$1) {
   ff0(v6);
 }
 
@@ -172,15 +172,15 @@ if (v6.RE_EXN_ID === A4) {
   tmp$3 = v6.x;
 } else {
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "inline_record_test.res",
-            108,
-            9
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "inline_record_test.res",
+        108,
+        9
+      ]
+    }
+  });
 }
 
 eq("File \"inline_record_test.res\", line 105, characters 2-9", tmp$3, 11);

@@ -29,17 +29,17 @@ function inOrder(v) {
     first: undefined,
     last: undefined
   };
-  while(current !== undefined) {
+  while (current !== undefined) {
     let v$1 = current;
     Belt_MutableStack.push(s, v$1);
     current = v$1.left;
   };
-  while(s.root !== undefined) {
+  while (s.root !== undefined) {
     current = Belt_MutableStack.popUndefined(s);
     let v$2 = current;
     Belt_MutableQueue.add(q, v$2.value);
     current = v$2.right;
-    while(current !== undefined) {
+    while (current !== undefined) {
       let v$3 = current;
       Belt_MutableStack.push(s, v$3);
       current = v$3.left;
@@ -58,7 +58,7 @@ function inOrder3(v) {
     first: undefined,
     last: undefined
   };
-  while(current !== undefined) {
+  while (current !== undefined) {
     let v$1 = current;
     Belt_MutableStack.push(s, v$1);
     current = v$1.left;
@@ -66,7 +66,7 @@ function inOrder3(v) {
   Belt_MutableStack.dynamicPopIter(s, (function (popped) {
     Belt_MutableQueue.add(q, popped.value);
     let current = popped.right;
-    while(current !== undefined) {
+    while (current !== undefined) {
       let v = current;
       Belt_MutableStack.push(s, v);
       current = v.left;
@@ -86,7 +86,7 @@ function inOrder2(v) {
     first: undefined,
     last: undefined
   };
-  while(todo) {
+  while (todo) {
     if (cursor !== undefined) {
       let v$1 = cursor;
       Belt_MutableStack.push(s, v$1);
@@ -114,7 +114,7 @@ let test1 = n(Caml_option.some(n(Caml_option.some(n(undefined, undefined, 4)), C
 
 function pushAllLeft(st1, s1) {
   let current = st1;
-  while(current !== undefined) {
+  while (current !== undefined) {
     let v = current;
     Belt_MutableStack.push(s1, v);
     current = v.left;

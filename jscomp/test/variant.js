@@ -15,13 +15,12 @@ function foo(x) {
   }
   switch (x.TAG) {
     case "B" :
-        return x._0;
+      return x._0;
     case "C" :
-        return x._0 + x._1 | 0;
+      return x._0 + x._1 | 0;
     case "D" :
-        let match = x._0;
-        return match[0] + match[1] | 0;
-    
+      let match = x._0;
+      return match[0] + match[1] | 0;
   }
 }
 
@@ -44,11 +43,11 @@ function fooC(x) {
 function switchNum(x) {
   switch (x) {
     case 0 :
-        return "0";
+      return "0";
     case 1 :
-        return "1";
+      return "1";
     case 2 :
-        return "2";
+      return "2";
     default:
       return "_";
   }
@@ -83,22 +82,20 @@ let M = {
 function rollback_path(subst, p) {
   try {
     return "try";
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       switch (p.TAG) {
         case "Pdot" :
-            return "Pdot";
+          return "Pdot";
         case "Pident" :
         case "Papply" :
-            return "Pident | Papply";
-        
+          return "Pident | Papply";
       }
     } else {
       throw new Error(exn.RE_EXN_ID, {
-            cause: exn
-          });
+        cause: exn
+      });
     }
   }
 }
@@ -116,8 +113,7 @@ let ED = /* @__PURE__ */Caml_exceptions.create("Variant.ED");
 function fooExn(f) {
   try {
     return f();
-  }
-  catch (raw_n){
+  } catch (raw_n) {
     let n = Caml_js_exceptions.internalToOCamlException(raw_n);
     if (n.RE_EXN_ID === EA1) {
       return 1;
@@ -136,8 +132,8 @@ function fooExn(f) {
       return match[0] + match[1] | 0;
     }
     throw new Error(n.RE_EXN_ID, {
-          cause: n
-        });
+      cause: n
+    });
   }
 }
 

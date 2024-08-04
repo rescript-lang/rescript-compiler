@@ -32,27 +32,26 @@ eq("File \"406_primitive_test.res\", line 23, characters 3-10", backend_type, {
 function f() {
   let A = /* @__PURE__ */Caml_exceptions.create("A");
   try {
-    for(let i = 0; i <= 200; ++i){
+    for (let i = 0; i <= 200; ++i) {
       if (i === 10) {
         throw new Error(A, {
-              cause: {
-                RE_EXN_ID: A,
-                _1: 0
-              }
-            });
+          cause: {
+            RE_EXN_ID: A,
+            _1: 0
+          }
+        });
       }
       
     }
     return;
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === A) {
       return;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 

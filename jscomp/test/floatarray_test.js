@@ -18,7 +18,7 @@ function eq(loc, x, y) {
 
 let v = Caml_array.make_float(5);
 
-for(let i = 0; i <= 4; ++i){
+for (let i = 0; i <= 4; ++i) {
   v[i] = 0;
 }
 

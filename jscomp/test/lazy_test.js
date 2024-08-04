@@ -61,19 +61,19 @@ let f006 = CamlinternalLazy.from_fun(function () {
 
 let f007 = CamlinternalLazy.from_fun(function () {
   throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Not_found"
+    }
+  });
 });
 
 function f$1() {
   console.log("hi");
   throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Not_found"
+    }
+  });
 }
 
 let f008 = CamlinternalLazy.from_fun(function () {
@@ -217,10 +217,10 @@ Mt.from_pair_suites("Lazy_test", {
                             TAG: "Ok",
                             _0: !Lazy.is_val(CamlinternalLazy.from_fun(function () {
                               throw new Error("Not_found", {
-                                    cause: {
-                                      RE_EXN_ID: "Not_found"
-                                    }
-                                  });
+                                cause: {
+                                  RE_EXN_ID: "Not_found"
+                                }
+                              });
                             }))
                           };
                         })
