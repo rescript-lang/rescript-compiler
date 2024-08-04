@@ -436,29 +436,6 @@ function ninjaQuickBuildList(xs) {
 }
 
 /**
- * @typedef { [string,string,string?]} CppoInput
- * @param {CppoInput[]} xs
- * @param {string} cwd
- * @returns {string}
- */
-function cppoList(cwd, xs) {
-  return xs
-    .map(x => {
-      /**
-       * @type {KV[]}
-       */
-      var variables;
-      if (x[2]) {
-        variables = [["type", `-D ${x[2]}`]];
-      } else {
-        variables = [];
-      }
-      return ninjaQuickBuild(x[0], x[1], cppoRuleName, cwd, variables, [], []);
-    })
-    .join("\n");
-}
-
-/**
  *
  * @param {string} name
  * @returns {Target}
@@ -844,14 +821,6 @@ ${ninjaQuickBuildList([
   }
 }
 
-var cppoRuleName = `cppo`;
-
-var cppoRule = (flags = "") => `
-rule ${cppoRuleName}
-    command = cppo -V OCAML:${getVersionString()} ${flags} $type $in -o $out
-    generator = true
-`;
-
 async function othersNinja(devmode = true) {
   var compilerTarget = pseudoTarget("$bsc");
   var externalDeps = [
@@ -901,7 +870,6 @@ ${ninjaQuickBuildList([
     x =>
       x.startsWith("js") &&
       (x.endsWith(".res") || x.endsWith(".resi")) &&
-      !x.includes(".cppo") &&
       !x.includes(".pp") &&
       !x.includes("#") &&
       x !== "js.res",
@@ -912,8 +880,7 @@ ${ninjaQuickBuildList([
       x !== "belt.res" &&
       x !== "belt_internals.resi" &&
       (x.endsWith(".res") || x.endsWith(".resi")) &&
-      !x.includes("#") &&
-      !x.includes(".cppo"),
+      !x.includes("#"),
   );
   var jsTargets = collectTarget(jsPrefixSourceFiles);
   var allJsTargets = scanFileTargets(jsTargets, []);
@@ -1219,7 +1186,6 @@ include body.ninja
 `,
   );
 
-  preprocessorNinjaSync(); // This is needed so that ocamldep makes sense
   runtimeNinja();
   stdlibNinja(true);
   if (fs.existsSync(bsc_exe)) {
@@ -1229,60 +1195,6 @@ include body.ninja
 }
 exports.updateDev = updateDev;
 exports.updateRelease = updateRelease;
-
-function preprocessorNinjaSync() {
-  var dTypeString = "TYPE_STRING";
-  var dTypeInt = "TYPE_INT";
-
-  var cppoNative = `
-${cppoRule("-n")}
-${cppoList("others", [
-  ["belt_HashSetString.res", "hashset.cppo.res", dTypeString],
-  ["belt_HashSetString.resi", "hashset.cppo.resi", dTypeString],
-  ["belt_HashSetInt.res", "hashset.cppo.res", dTypeInt],
-  ["belt_HashSetInt.resi", "hashset.cppo.resi", dTypeInt],
-  ["belt_HashMapString.res", "hashmap.cppo.res", dTypeString],
-  ["belt_HashMapString.resi", "hashmap.cppo.resi", dTypeString],
-  ["belt_HashMapInt.res", "hashmap.cppo.res", dTypeInt],
-  ["belt_HashMapInt.resi", "hashmap.cppo.resi", dTypeInt],
-  ["belt_MapString.res", "map.cppo.res", dTypeString],
-  ["belt_MapString.resi", "map.cppo.resi", dTypeString],
-  ["belt_MapInt.res", "map.cppo.res", dTypeInt],
-  ["belt_MapInt.resi", "map.cppo.resi", dTypeInt],
-  ["belt_SetString.res", "belt_Set.cppo.res", dTypeString],
-  ["belt_SetString.resi", "belt_Set.cppo.resi", dTypeString],
-  ["belt_SetInt.res", "belt_Set.cppo.res", dTypeInt],
-  ["belt_SetInt.resi", "belt_Set.cppo.resi", dTypeInt],
-  ["belt_MutableMapString.res", "mapm.cppo.res", dTypeString],
-  ["belt_MutableMapString.resi", "mapm.cppo.resi", dTypeString],
-  ["belt_MutableMapInt.res", "mapm.cppo.res", dTypeInt],
-  ["belt_MutableMapInt.resi", "mapm.cppo.resi", dTypeInt],
-  ["belt_MutableSetString.res", "setm.cppo.res", dTypeString],
-  ["belt_MutableSetString.resi", "setm.cppo.resi", dTypeString],
-  ["belt_MutableSetInt.res", "setm.cppo.res", dTypeInt],
-  ["belt_MutableSetInt.resi", "setm.cppo.resi", dTypeInt],
-  ["belt_SortArrayString.res", "sort.cppo.res", dTypeString],
-  ["belt_SortArrayString.resi", "sort.cppo.resi", dTypeString],
-  ["belt_SortArrayInt.res", "sort.cppo.res", dTypeInt],
-  ["belt_SortArrayInt.resi", "sort.cppo.resi", dTypeInt],
-  ["belt_internalMapString.res", "internal_map.cppo.res", dTypeString],
-  ["belt_internalMapInt.res", "internal_map.cppo.res", dTypeInt],
-  ["belt_internalSetString.res", "internal_set.cppo.res", dTypeString],
-  ["belt_internalSetInt.res", "internal_set.cppo.res", dTypeInt],
-])}
-
-rule copy
-  command = cp $in $out
-  description = $in -> $out
-`;
-  var cppoNinjaFile = "cppoVendor.ninja";
-  writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
-  cp.execFileSync(vendorNinjaPath, ["-f", cppoNinjaFile, "--verbose", "-v"], {
-    cwd: jscompDir,
-    stdio: [0, 1, 2],
-    encoding: "utf8",
-  });
-}
 
 function main() {
   if (require.main === module) {
