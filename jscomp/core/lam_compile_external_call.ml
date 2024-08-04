@@ -106,7 +106,6 @@ let ocaml_to_js_eff ~(arg_label : External_arg_spec.label_noname)
   in
   match arg_type with
   | Arg_cst _ -> assert false
-  | Fn_uncurry_arity _ -> assert false
   (* has to be preprocessed by {!Lam} module first *)
   | Extern_unit ->
       ( (if arg_label = Arg_empty then Splice0 else Splice1 E.unit),

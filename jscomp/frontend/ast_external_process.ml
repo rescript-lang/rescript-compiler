@@ -527,9 +527,6 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                       [],
                       Ast_literal.type_string ~loc () )
                   :: result_types )
-              | Fn_uncurry_arity _ ->
-                Location.raise_errorf ~loc
-                  "The combination of %@obj, %@uncurry is not supported yet"
               | Extern_unit -> assert false
               | Poly_var _ ->
                 Location.raise_errorf ~loc
@@ -596,9 +593,6 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
               | Arg_cst _ ->
                 Location.raise_errorf ~loc
                   "%@as is not supported with optional yet"
-              | Fn_uncurry_arity _ ->
-                Location.raise_errorf ~loc
-                  "The combination of %@obj, %@uncurry is not supported yet"
               | Extern_unit -> assert false
               | Poly_var _ ->
                 Location.raise_errorf ~loc

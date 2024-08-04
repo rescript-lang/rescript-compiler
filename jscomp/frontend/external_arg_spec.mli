@@ -31,7 +31,6 @@ type attr =
   | Poly_var of {descr: (string * string) list option}
   | Int of (string * int) list (* ([`a | `b ] [@int])*)
   | Arg_cst of cst
-  | Fn_uncurry_arity of int (* annotated with [@uncurry ] or [@uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
   | Extern_unit
   | Nothing
