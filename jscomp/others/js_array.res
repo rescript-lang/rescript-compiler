@@ -99,7 +99,7 @@ let code = s => Js.String.charCodeAt(0, s)
 Js.Array.fromMap(strArr, code) == [97.0, 98.0, 99.0, 100.0]
 ```
 */
-external fromMap: (array_like<'a>, @uncurry ('a => 'b)) => array<'b> = "Array.from"
+external fromMap: (array_like<'a>, @uncurry 'a => 'b) => array<'b> = "Array.from"
 
 /* ES2015 */
 
@@ -174,7 +174,8 @@ arr == [100, 102, 103, 104, 104, 105]
 */
 @send
 external copyWithinFromRange: (t<'a>, ~to_: int, ~start: int, ~end_: int) => 'this = "copyWithin"
-let copyWithinFromRange = (~to_, ~start, ~end_, obj) => copyWithinFromRange(obj, ~to_, ~start, ~end_)
+let copyWithinFromRange = (~to_, ~start, ~end_, obj) =>
+  copyWithinFromRange(obj, ~to_, ~start, ~end_)
 
 /* ES2015 */
 
@@ -710,7 +711,7 @@ Js.Array.every(isEven, [6, 22, 7, 4]) == false
 ```
 */
 @send
-external every: (t<'a>, @uncurry ('a => bool)) => bool = "every"
+external every: (t<'a>, @uncurry 'a => bool) => bool = "every"
 let every = (arg1, obj) => every(obj, arg1)
 
 /**
@@ -741,7 +742,7 @@ Js.Array.filter(nonEmpty, ["abc", "", "", "def", "ghi"]) == ["abc", "def", "ghi"
 ```
 */
 @send
-external filter: (t<'a>, @uncurry ('a => bool)) => 'this = "filter"
+external filter: (t<'a>, @uncurry 'a => bool) => 'this = "filter"
 let filter = (arg1, obj) => filter(obj, arg1)
 
 /**
@@ -781,7 +782,7 @@ Js.Array.find(x => x < 0, [33, 22, 55, 77, 44]) == None
 */
 @send
 @return(undefined_to_opt)
-external find: (t<'a>, @uncurry ('a => bool)) => option<'a> = "find"
+external find: (t<'a>, @uncurry 'a => bool) => option<'a> = "find"
 let find = (arg1, obj) => find(obj, arg1)
 
 /**
@@ -813,7 +814,7 @@ Js.Array.findIndex(x => x < 0, [33, 22, 55, 77, 44]) == -1
 ```
 */
 @send
-external findIndex: (t<'a>, @uncurry ('a => bool)) => int = "findIndex"
+external findIndex: (t<'a>, @uncurry 'a => bool) => int = "findIndex"
 let findIndex = (arg1, obj) => findIndex(obj, arg1)
 
 /**
@@ -844,7 +845,7 @@ Js.Array.forEach(x => Js.log(x), ["a", "b", "c"]) == ()
 ```
 */
 @send
-external forEach: (t<'a>, @uncurry ('a => unit)) => unit = "forEach"
+external forEach: (t<'a>, @uncurry 'a => unit) => unit = "forEach"
 let forEach = (arg1, obj) => forEach(obj, arg1)
 
 /**
@@ -876,7 +877,7 @@ Js.Array.map(Js.String.length, ["animal", "vegetable", "mineral"]) == [6, 9, 7]
 ```
 */
 @send
-external map: (t<'a>, @uncurry ('a => 'b)) => t<'b> = "map"
+external map: (t<'a>, @uncurry 'a => 'b) => t<'b> = "map"
 let map = (arg1, obj) => map(obj, arg1)
 
 /**
@@ -1053,7 +1054,7 @@ Js.Array.some(isEven, [3, 7, 5, 1, 9]) == false
 ```
 */
 @send
-external some: (t<'a>, @uncurry ('a => bool)) => bool = "some"
+external some: (t<'a>, @uncurry 'a => bool) => bool = "some"
 let some = (arg1, obj) => some(obj, arg1)
 
 /**

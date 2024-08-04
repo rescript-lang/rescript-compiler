@@ -42,7 +42,7 @@ async function runTests() {
       stdio: [0, 1, 2],
     });
 
-    cp.execSync("bash scripts/check_format.sh", {
+    cp.execSync("bash scripts/format_check.sh", {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2],
     });

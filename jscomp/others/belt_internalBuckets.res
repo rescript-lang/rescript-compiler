@@ -80,7 +80,7 @@ let rec do_bucket_iter = (~f, buckets) =>
   switch C.toOpt(buckets) {
   | None => ()
   | Some(cell) =>
-    f(. cell.key, cell.value)->ignore
+    f(cell.key, cell.value)->ignore
     do_bucket_iter(~f, cell.next)
   }
 
@@ -91,12 +91,12 @@ let forEachU = (h, f) => {
   }
 }
 
-let forEach = (h, f) => forEachU(h, (. a, b) => f(a, b))
+let forEach = (h, f) => forEachU(h, (a, b) => f(a, b))
 
 let rec do_bucket_fold = (~f, b, accu) =>
   switch C.toOpt(b) {
   | None => accu
-  | Some(cell) => do_bucket_fold(~f, cell.next, f(. accu, cell.key, cell.value))
+  | Some(cell) => do_bucket_fold(~f, cell.next, f(accu, cell.key, cell.value))
   }
 
 let reduceU = (h, init, f) => {
@@ -108,18 +108,18 @@ let reduceU = (h, init, f) => {
   accu.contents
 }
 
-let reduce = (h, init, f) => reduceU(h, init, (. a, b, c) => f(a, b, c))
+let reduce = (h, init, f) => reduceU(h, init, (a, b, c) => f(a, b, c))
 
 let getMaxBucketLength = h =>
-  A.reduceU(h.C.buckets, 0, (. m, b) => {
+  A.reduceU(h.C.buckets, 0, (m, b) => {
     let len = bucketLength(0, b)
     Pervasives.max(m, len)
   })
 
 let getBucketHistogram = h => {
   let mbl = getMaxBucketLength(h)
-  let histo = A.makeByU(mbl + 1, (. _) => 0)
-  A.forEachU(h.C.buckets, (. b) => {
+  let histo = A.makeByU(mbl + 1, _ => 0)
+  A.forEachU(h.C.buckets, b => {
     let l = bucketLength(0, b)
     A.setUnsafe(histo, l, A.getUnsafe(histo, l) + 1)
   })
@@ -138,7 +138,7 @@ let logStats = h => {
 /** iterate the Buckets, in place remove the elements */
 let rec filterMapInplaceBucket = (f, h, i, prec, cell) => {
   let n = cell.next
-  switch f(. cell.key, cell.value) {
+  switch f(cell.key, cell.value) {
   | None =>
     h.C.size = h.C.size - 1 /* delete */
     switch C.toOpt(n) {
@@ -175,7 +175,7 @@ let keepMapInPlaceU = (h, f) => {
   }
 }
 
-let keepMapInPlace = (h, f) => keepMapInPlaceU(h, (. a, b) => f(a, b))
+let keepMapInPlace = (h, f) => keepMapInPlaceU(h, (a, b) => f(a, b))
 
 let rec fillArray = (i, arr, cell) => {
   A.setUnsafe(arr, i, (cell.key, cell.value))
@@ -199,7 +199,7 @@ let rec fillArray = (i, arr, cell) => {
   arr */
 
 let rec fillArrayMap = (i, arr, cell, f) => {
-  A.setUnsafe(arr, i, f(. cell))
+  A.setUnsafe(arr, i, f(cell))
   switch C.toOpt(cell.next) {
   | None => i + 1
   | Some(v) => fillArrayMap(i + 1, arr, v, f)
@@ -220,6 +220,6 @@ let linear = (h, f) => {
   arr
 }
 
-let keysToArray = h => linear(h, (. x) => x.key)
-let valuesToArray = h => linear(h, (. x) => x.value)
-let toArray = h => linear(h, (. x) => (x.key, x.value))
+let keysToArray = h => linear(h, x => x.key)
+let valuesToArray = h => linear(h, x => x.value)
+let toArray = h => linear(h, x => (x.key, x.value))

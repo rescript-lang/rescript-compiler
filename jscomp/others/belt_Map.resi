@@ -27,7 +27,6 @@ type t<'key, 'value, 'identity>
 type id<'key, 'id> = Belt_Id.comparable<'key, 'id>
 ```
 */
-
 module Int = Belt_MapInt
 
 module String = Belt_MapString
@@ -97,7 +96,7 @@ Belt.Map.has(Belt.Map.fromArray([(1, "1")], ~id=module(IntCmp)), 1) == true
 */
 let has: (t<'k, 'v, 'id>, 'k) => bool
 
-let cmpU: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, (. 'v, 'v) => int) => int
+let cmpU: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, ('v, 'v) => int) => int
 /** 
 `cmp(m0, m1, vcmp);`
 
@@ -107,7 +106,7 @@ It will compare size first and each element following the order one by one.
 */
 let cmp: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, ('v, 'v) => int) => int
 
-let eqU: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, (. 'v, 'v) => bool) => bool
+let eqU: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, ('v, 'v) => bool) => bool
 /**
 eq(m1, m2, veq)` tests whether the maps `m1` and `m2` are equal, that is,
 contain equal keys and associate them with equal data. `veq` is the
@@ -115,7 +114,7 @@ equality predicate used to compare the data associated with the keys.
 */
 let eq: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, ('v, 'v) => bool) => bool
 
-let findFirstByU: (t<'k, 'v, 'id>, (. 'k, 'v) => bool) => option<('k, 'v)>
+let findFirstByU: (t<'k, 'v, 'id>, ('k, 'v) => bool) => option<('k, 'v)>
 /** `
 findFirstBy(m, p)` uses function `f` to find the first key value pair to match predicate `p`.
 
@@ -134,7 +133,7 @@ Belt.Map.findFirstBy(s0, (k, v) => k == 4) /* (4, "4") */
 */
 let findFirstBy: (t<'k, 'v, 'id>, ('k, 'v) => bool) => option<('k, 'v)>
 
-let forEachU: (t<'k, 'v, 'id>, (. 'k, 'v) => unit) => unit
+let forEachU: (t<'k, 'v, 'id>, ('k, 'v) => unit) => unit
 /** 
  `forEach(m, f)` applies `f` to all bindings in map `m`. `f` receives the
 `'k` as first argument, and the associated value as second argument. The
@@ -160,7 +159,7 @@ acc.contents == list{(4, "4"), (3, "3"), (2, "2"), (1, "1")}
 */
 let forEach: (t<'k, 'v, 'id>, ('k, 'v) => unit) => unit
 
-let reduceU: (t<'k, 'v, 'id>, 'acc, (. 'acc, 'k, 'v) => 'acc) => 'acc
+let reduceU: (t<'k, 'v, 'id>, 'acc, ('acc, 'k, 'v) => 'acc) => 'acc
 /** 
  `reduce(m, a, f)` computes `(f(kN, dN) ... (f(k1, d1, a))...)`, where `k1
 ... kN` are the keys of all bindings in m (in increasing order), and `d1
@@ -184,14 +183,14 @@ Belt.Map.reduce(s0, list{}, (acc, k, v) => list{
 */
 let reduce: (t<'k, 'v, 'id>, 'acc, ('acc, 'k, 'v) => 'acc) => 'acc
 
-let everyU: (t<'k, 'v, 'id>, (. 'k, 'v) => bool) => bool
+let everyU: (t<'k, 'v, 'id>, ('k, 'v) => bool) => bool
 /**
 `every(m, p)` checks if all the bindings of the map satisfy the predicate
 `p`. Order unspecified
 */
 let every: (t<'k, 'v, 'id>, ('k, 'v) => bool) => bool
 
-let someU: (t<'k, 'v, 'id>, (. 'k, 'v) => bool) => bool
+let someU: (t<'k, 'v, 'id>, ('k, 'v) => bool) => bool
 /**
 `some(m, p)` checks if at least one binding of the map satisfy the predicate 
 `p`. Order unspecified */
@@ -414,7 +413,7 @@ Belt.Map.valuesToArray(s1) == ["1", "3", "3"]
 */
 let set: (t<'k, 'v, 'id>, 'k, 'v) => t<'k, 'v, 'id>
 
-let updateU: (t<'k, 'v, 'id>, 'k, (. option<'v>) => option<'v>) => t<'k, 'v, 'id>
+let updateU: (t<'k, 'v, 'id>, 'k, option<'v> => option<'v>) => t<'k, 'v, 'id>
 /** 
 `update(m, x, f)` returns a map containing the same bindings as `m`, except
 for the binding of `x`. Depending on the value of `y` where `y` is
@@ -435,7 +434,7 @@ let mergeMany: (t<'k, 'v, 'id>, array<('k, 'v)>) => t<'k, 'v, 'id>
 let mergeU: (
   t<'k, 'v, 'id>,
   t<'k, 'v2, 'id>,
-  (. 'k, option<'v>, option<'v2>) => option<'v3>,
+  ('k, option<'v>, option<'v2>) => option<'v3>,
 ) => t<'k, 'v3, 'id>
 /** 
 `merge(m1, m2, f)` computes a map whose keys is a subset of keys of `m1`
@@ -448,14 +447,14 @@ let merge: (
   ('k, option<'v>, option<'v2>) => option<'v3>,
 ) => t<'k, 'v3, 'id>
 
-let keepU: (t<'k, 'v, 'id>, (. 'k, 'v) => bool) => t<'k, 'v, 'id>
+let keepU: (t<'k, 'v, 'id>, ('k, 'v) => bool) => t<'k, 'v, 'id>
 /**
 `keep(m, p)` returns the map with all the bindings in m that satisfy
 predicate `p`.
 */
 let keep: (t<'k, 'v, 'id>, ('k, 'v) => bool) => t<'k, 'v, 'id>
 
-let partitionU: (t<'k, 'v, 'id>, (. 'k, 'v) => bool) => (t<'k, 'v, 'id>, t<'k, 'v, 'id>)
+let partitionU: (t<'k, 'v, 'id>, ('k, 'v) => bool) => (t<'k, 'v, 'id>, t<'k, 'v, 'id>)
 /**
 `partition(m, p)` returns a pair of maps `(m1, m2)`, where `m1` contains
 all the bindings of `s` that satisfy the predicate `p`, and `m2` is the map
@@ -472,7 +471,7 @@ all the bindings of m whose 'k is strictly greater than `x`; `data` is
 */
 let split: (t<'k, 'v, 'id>, 'k) => ((t<'k, 'v, 'id>, t<'k, 'v, 'id>), option<'v>)
 
-let mapU: (t<'k, 'v, 'id>, (. 'v) => 'v2) => t<'k, 'v2, 'id>
+let mapU: (t<'k, 'v, 'id>, 'v => 'v2) => t<'k, 'v2, 'id>
 /** 
 `map(m, f) returns a map with same domain as`m`, where the associated
 value`a`of all bindings of`m`has been replaced by the result of the
@@ -481,7 +480,7 @@ with respect to the ordering over the type of the keys.
 */
 let map: (t<'k, 'v, 'id>, 'v => 'v2) => t<'k, 'v2, 'id>
 
-let mapWithKeyU: (t<'k, 'v, 'id>, (. 'k, 'v) => 'v2) => t<'k, 'v2, 'id>
+let mapWithKeyU: (t<'k, 'v, 'id>, ('k, 'v) => 'v2) => t<'k, 'v2, 'id>
 /** 
 `mapWithKey(m, f)`
 

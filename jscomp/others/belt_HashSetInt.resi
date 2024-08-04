@@ -49,10 +49,10 @@ let has: (t, key) => bool
 
 let remove: (t, key) => unit
 
-let forEachU: (t, (. key) => unit) => unit
+let forEachU: (t, key => unit) => unit
 let forEach: (t, key => unit) => unit
 
-let reduceU: (t, 'c, (. 'c, key) => 'c) => 'c
+let reduceU: (t, 'c, ('c, key) => 'c) => 'c
 let reduce: (t, 'c, ('c, key) => 'c) => 'c
 
 let size: t => int

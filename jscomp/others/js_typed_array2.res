@@ -91,7 +91,7 @@ module Int8Array = {
   @send external reverseInPlace: t => t = "reverse"
 
   @send external sortInPlace: t => t = "sort"
-  @send external sortInPlaceWith: (t, (. elt, elt) => int) => t = "sort"
+  @send external sortInPlaceWith: (t, (elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
   @send external includes: (t, elt) => bool = "includes" /* ES2016 */
@@ -123,36 +123,36 @@ module Int8Array = {
   /* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@send]
  */
-  @send external every: (t, (. elt) => bool) => bool = "every"
-  @send external everyi: (t, (. elt, int) => bool) => bool = "every"
+  @send external every: (t, elt => bool) => bool = "every"
+  @send external everyi: (t, (elt, int) => bool) => bool = "every"
 
-  @send external filter: (t, (. elt) => bool) => t = "filter"
-  @send external filteri: (t, (. elt, int) => bool) => t = "filter"
+  @send external filter: (t, elt => bool) => t = "filter"
+  @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
-  @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
+  @send external findIndex: (t, elt => bool) => int = "findIndex"
+  @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
 
-  @send external forEach: (t, (. elt) => unit) => unit = "forEach"
-  @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
+  @send external forEach: (t, elt => unit) => unit = "forEach"
+  @send external forEachi: (t, (elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@send]
  */
 
-  @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
-  @send external mapi: (t, (. elt, int) => 'b) => typed_array<'b> = "map"
+  @send external map: (t, elt => 'b) => typed_array<'b> = "map"
+  @send external mapi: (t, (elt, int) => 'b) => typed_array<'b> = "map"
 
-  @send external reduce: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @send external reducei: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  @send external reduce: (t, ('b, elt) => 'b, 'b) => 'b = "reduce"
+  @send external reducei: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @send external reduceRight: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @send external reduceRighti: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRight: (t, ('b, elt) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRighti: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @send external some: (t, (. elt) => bool) => bool = "some"
-  @send external somei: (t, (. elt, int) => bool) => bool = "some"
+  @send external some: (t, elt => bool) => bool = "some"
+  @send external somei: (t, (elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Int8Array.BYTES_PER_ELEMENT"
 
@@ -160,8 +160,7 @@ module Int8Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int8Array"
 
-  @new
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -213,7 +212,7 @@ module Uint8Array = {
   @send external reverseInPlace: t => t = "reverse"
 
   @send external sortInPlace: t => t = "sort"
-  @send external sortInPlaceWith: (t, (. elt, elt) => int) => t = "sort"
+  @send external sortInPlaceWith: (t, (elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
   @send external includes: (t, elt) => bool = "includes" /* ES2016 */
@@ -245,36 +244,36 @@ module Uint8Array = {
   /* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@send]
  */
-  @send external every: (t, (. elt) => bool) => bool = "every"
-  @send external everyi: (t, (. elt, int) => bool) => bool = "every"
+  @send external every: (t, elt => bool) => bool = "every"
+  @send external everyi: (t, (elt, int) => bool) => bool = "every"
 
-  @send external filter: (t, (. elt) => bool) => t = "filter"
-  @send external filteri: (t, (. elt, int) => bool) => t = "filter"
+  @send external filter: (t, elt => bool) => t = "filter"
+  @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
-  @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
+  @send external findIndex: (t, elt => bool) => int = "findIndex"
+  @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
 
-  @send external forEach: (t, (. elt) => unit) => unit = "forEach"
-  @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
+  @send external forEach: (t, elt => unit) => unit = "forEach"
+  @send external forEachi: (t, (elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@send]
  */
 
-  @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
-  @send external mapi: (t, (. elt, int) => 'b) => typed_array<'b> = "map"
+  @send external map: (t, elt => 'b) => typed_array<'b> = "map"
+  @send external mapi: (t, (elt, int) => 'b) => typed_array<'b> = "map"
 
-  @send external reduce: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @send external reducei: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  @send external reduce: (t, ('b, elt) => 'b, 'b) => 'b = "reduce"
+  @send external reducei: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @send external reduceRight: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @send external reduceRighti: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRight: (t, ('b, elt) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRighti: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @send external some: (t, (. elt) => bool) => bool = "some"
-  @send external somei: (t, (. elt, int) => bool) => bool = "some"
+  @send external some: (t, elt => bool) => bool = "some"
+  @send external somei: (t, (elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Uint8Array.BYTES_PER_ELEMENT"
 
@@ -282,8 +281,7 @@ module Uint8Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint8Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -335,7 +333,7 @@ module Uint8ClampedArray = {
   @send external reverseInPlace: t => t = "reverse"
 
   @send external sortInPlace: t => t = "sort"
-  @send external sortInPlaceWith: (t, (. elt, elt) => int) => t = "sort"
+  @send external sortInPlaceWith: (t, (elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
   @send external includes: (t, elt) => bool = "includes" /* ES2016 */
@@ -367,36 +365,36 @@ module Uint8ClampedArray = {
   /* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@send]
  */
-  @send external every: (t, (. elt) => bool) => bool = "every"
-  @send external everyi: (t, (. elt, int) => bool) => bool = "every"
+  @send external every: (t, elt => bool) => bool = "every"
+  @send external everyi: (t, (elt, int) => bool) => bool = "every"
 
-  @send external filter: (t, (. elt) => bool) => t = "filter"
-  @send external filteri: (t, (. elt, int) => bool) => t = "filter"
+  @send external filter: (t, elt => bool) => t = "filter"
+  @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
-  @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
+  @send external findIndex: (t, elt => bool) => int = "findIndex"
+  @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
 
-  @send external forEach: (t, (. elt) => unit) => unit = "forEach"
-  @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
+  @send external forEach: (t, elt => unit) => unit = "forEach"
+  @send external forEachi: (t, (elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@send]
  */
 
-  @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
-  @send external mapi: (t, (. elt, int) => 'b) => typed_array<'b> = "map"
+  @send external map: (t, elt => 'b) => typed_array<'b> = "map"
+  @send external mapi: (t, (elt, int) => 'b) => typed_array<'b> = "map"
 
-  @send external reduce: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @send external reducei: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  @send external reduce: (t, ('b, elt) => 'b, 'b) => 'b = "reduce"
+  @send external reducei: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @send external reduceRight: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @send external reduceRighti: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRight: (t, ('b, elt) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRighti: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @send external some: (t, (. elt) => bool) => bool = "some"
-  @send external somei: (t, (. elt, int) => bool) => bool = "some"
+  @send external some: (t, elt => bool) => bool = "some"
+  @send external somei: (t, (elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Uint8ClampedArray.BYTES_PER_ELEMENT"
 
@@ -404,8 +402,7 @@ module Uint8ClampedArray = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint8ClampedArray"
 
-  @new
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -457,7 +454,7 @@ module Int16Array = {
   @send external reverseInPlace: t => t = "reverse"
 
   @send external sortInPlace: t => t = "sort"
-  @send external sortInPlaceWith: (t, (. elt, elt) => int) => t = "sort"
+  @send external sortInPlaceWith: (t, (elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
   @send external includes: (t, elt) => bool = "includes" /* ES2016 */
@@ -489,36 +486,36 @@ module Int16Array = {
   /* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@send]
  */
-  @send external every: (t, (. elt) => bool) => bool = "every"
-  @send external everyi: (t, (. elt, int) => bool) => bool = "every"
+  @send external every: (t, elt => bool) => bool = "every"
+  @send external everyi: (t, (elt, int) => bool) => bool = "every"
 
-  @send external filter: (t, (. elt) => bool) => t = "filter"
-  @send external filteri: (t, (. elt, int) => bool) => t = "filter"
+  @send external filter: (t, elt => bool) => t = "filter"
+  @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
-  @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
+  @send external findIndex: (t, elt => bool) => int = "findIndex"
+  @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
 
-  @send external forEach: (t, (. elt) => unit) => unit = "forEach"
-  @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
+  @send external forEach: (t, elt => unit) => unit = "forEach"
+  @send external forEachi: (t, (elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@send]
  */
 
-  @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
-  @send external mapi: (t, (. elt, int) => 'b) => typed_array<'b> = "map"
+  @send external map: (t, elt => 'b) => typed_array<'b> = "map"
+  @send external mapi: (t, (elt, int) => 'b) => typed_array<'b> = "map"
 
-  @send external reduce: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @send external reducei: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  @send external reduce: (t, ('b, elt) => 'b, 'b) => 'b = "reduce"
+  @send external reducei: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @send external reduceRight: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @send external reduceRighti: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRight: (t, ('b, elt) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRighti: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @send external some: (t, (. elt) => bool) => bool = "some"
-  @send external somei: (t, (. elt, int) => bool) => bool = "some"
+  @send external some: (t, elt => bool) => bool = "some"
+  @send external somei: (t, (elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Int16Array.BYTES_PER_ELEMENT"
 
@@ -526,8 +523,7 @@ module Int16Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int16Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -579,7 +575,7 @@ module Uint16Array = {
   @send external reverseInPlace: t => t = "reverse"
 
   @send external sortInPlace: t => t = "sort"
-  @send external sortInPlaceWith: (t, (. elt, elt) => int) => t = "sort"
+  @send external sortInPlaceWith: (t, (elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
   @send external includes: (t, elt) => bool = "includes" /* ES2016 */
@@ -611,36 +607,36 @@ module Uint16Array = {
   /* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@send]
  */
-  @send external every: (t, (. elt) => bool) => bool = "every"
-  @send external everyi: (t, (. elt, int) => bool) => bool = "every"
+  @send external every: (t, elt => bool) => bool = "every"
+  @send external everyi: (t, (elt, int) => bool) => bool = "every"
 
-  @send external filter: (t, (. elt) => bool) => t = "filter"
-  @send external filteri: (t, (. elt, int) => bool) => t = "filter"
+  @send external filter: (t, elt => bool) => t = "filter"
+  @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
-  @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
+  @send external findIndex: (t, elt => bool) => int = "findIndex"
+  @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
 
-  @send external forEach: (t, (. elt) => unit) => unit = "forEach"
-  @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
+  @send external forEach: (t, elt => unit) => unit = "forEach"
+  @send external forEachi: (t, (elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@send]
  */
 
-  @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
-  @send external mapi: (t, (. elt, int) => 'b) => typed_array<'b> = "map"
+  @send external map: (t, elt => 'b) => typed_array<'b> = "map"
+  @send external mapi: (t, (elt, int) => 'b) => typed_array<'b> = "map"
 
-  @send external reduce: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @send external reducei: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  @send external reduce: (t, ('b, elt) => 'b, 'b) => 'b = "reduce"
+  @send external reducei: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @send external reduceRight: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @send external reduceRighti: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRight: (t, ('b, elt) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRighti: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @send external some: (t, (. elt) => bool) => bool = "some"
-  @send external somei: (t, (. elt, int) => bool) => bool = "some"
+  @send external some: (t, elt => bool) => bool = "some"
+  @send external somei: (t, (elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Uint16Array.BYTES_PER_ELEMENT"
 
@@ -648,8 +644,7 @@ module Uint16Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint16Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -701,7 +696,7 @@ module Int32Array = {
   @send external reverseInPlace: t => t = "reverse"
 
   @send external sortInPlace: t => t = "sort"
-  @send external sortInPlaceWith: (t, (. elt, elt) => int) => t = "sort"
+  @send external sortInPlaceWith: (t, (elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
   @send external includes: (t, elt) => bool = "includes" /* ES2016 */
@@ -733,36 +728,36 @@ module Int32Array = {
   /* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@send]
  */
-  @send external every: (t, (. elt) => bool) => bool = "every"
-  @send external everyi: (t, (. elt, int) => bool) => bool = "every"
+  @send external every: (t, elt => bool) => bool = "every"
+  @send external everyi: (t, (elt, int) => bool) => bool = "every"
 
-  @send external filter: (t, (. elt) => bool) => t = "filter"
-  @send external filteri: (t, (. elt, int) => bool) => t = "filter"
+  @send external filter: (t, elt => bool) => t = "filter"
+  @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
-  @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
+  @send external findIndex: (t, elt => bool) => int = "findIndex"
+  @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
 
-  @send external forEach: (t, (. elt) => unit) => unit = "forEach"
-  @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
+  @send external forEach: (t, elt => unit) => unit = "forEach"
+  @send external forEachi: (t, (elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@send]
  */
 
-  @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
-  @send external mapi: (t, (. elt, int) => 'b) => typed_array<'b> = "map"
+  @send external map: (t, elt => 'b) => typed_array<'b> = "map"
+  @send external mapi: (t, (elt, int) => 'b) => typed_array<'b> = "map"
 
-  @send external reduce: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @send external reducei: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  @send external reduce: (t, ('b, elt) => 'b, 'b) => 'b = "reduce"
+  @send external reducei: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @send external reduceRight: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @send external reduceRighti: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRight: (t, ('b, elt) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRighti: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @send external some: (t, (. elt) => bool) => bool = "some"
-  @send external somei: (t, (. elt, int) => bool) => bool = "some"
+  @send external some: (t, elt => bool) => bool = "some"
+  @send external somei: (t, (elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Int32Array.BYTES_PER_ELEMENT"
 
@@ -770,8 +765,7 @@ module Int32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int32Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -823,7 +817,7 @@ module Uint32Array = {
   @send external reverseInPlace: t => t = "reverse"
 
   @send external sortInPlace: t => t = "sort"
-  @send external sortInPlaceWith: (t, (. elt, elt) => int) => t = "sort"
+  @send external sortInPlaceWith: (t, (elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
   @send external includes: (t, elt) => bool = "includes" /* ES2016 */
@@ -855,36 +849,36 @@ module Uint32Array = {
   /* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@send]
  */
-  @send external every: (t, (. elt) => bool) => bool = "every"
-  @send external everyi: (t, (. elt, int) => bool) => bool = "every"
+  @send external every: (t, elt => bool) => bool = "every"
+  @send external everyi: (t, (elt, int) => bool) => bool = "every"
 
-  @send external filter: (t, (. elt) => bool) => t = "filter"
-  @send external filteri: (t, (. elt, int) => bool) => t = "filter"
+  @send external filter: (t, elt => bool) => t = "filter"
+  @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
-  @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
+  @send external findIndex: (t, elt => bool) => int = "findIndex"
+  @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
 
-  @send external forEach: (t, (. elt) => unit) => unit = "forEach"
-  @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
+  @send external forEach: (t, elt => unit) => unit = "forEach"
+  @send external forEachi: (t, (elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@send]
  */
 
-  @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
-  @send external mapi: (t, (. elt, int) => 'b) => typed_array<'b> = "map"
+  @send external map: (t, elt => 'b) => typed_array<'b> = "map"
+  @send external mapi: (t, (elt, int) => 'b) => typed_array<'b> = "map"
 
-  @send external reduce: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @send external reducei: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  @send external reduce: (t, ('b, elt) => 'b, 'b) => 'b = "reduce"
+  @send external reducei: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @send external reduceRight: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @send external reduceRighti: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRight: (t, ('b, elt) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRighti: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @send external some: (t, (. elt) => bool) => bool = "some"
-  @send external somei: (t, (. elt, int) => bool) => bool = "some"
+  @send external some: (t, elt => bool) => bool = "some"
+  @send external somei: (t, (elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Uint32Array.BYTES_PER_ELEMENT"
 
@@ -892,8 +886,7 @@ module Uint32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint32Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -948,7 +941,7 @@ module Float32Array = {
   @send external reverseInPlace: t => t = "reverse"
 
   @send external sortInPlace: t => t = "sort"
-  @send external sortInPlaceWith: (t, (. elt, elt) => int) => t = "sort"
+  @send external sortInPlaceWith: (t, (elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
   @send external includes: (t, elt) => bool = "includes" /* ES2016 */
@@ -980,36 +973,36 @@ module Float32Array = {
   /* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@send]
  */
-  @send external every: (t, (. elt) => bool) => bool = "every"
-  @send external everyi: (t, (. elt, int) => bool) => bool = "every"
+  @send external every: (t, elt => bool) => bool = "every"
+  @send external everyi: (t, (elt, int) => bool) => bool = "every"
 
-  @send external filter: (t, (. elt) => bool) => t = "filter"
-  @send external filteri: (t, (. elt, int) => bool) => t = "filter"
+  @send external filter: (t, elt => bool) => t = "filter"
+  @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
-  @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
+  @send external findIndex: (t, elt => bool) => int = "findIndex"
+  @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
 
-  @send external forEach: (t, (. elt) => unit) => unit = "forEach"
-  @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
+  @send external forEach: (t, elt => unit) => unit = "forEach"
+  @send external forEachi: (t, (elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@send]
  */
 
-  @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
-  @send external mapi: (t, (. elt, int) => 'b) => typed_array<'b> = "map"
+  @send external map: (t, elt => 'b) => typed_array<'b> = "map"
+  @send external mapi: (t, (elt, int) => 'b) => typed_array<'b> = "map"
 
-  @send external reduce: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @send external reducei: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  @send external reduce: (t, ('b, elt) => 'b, 'b) => 'b = "reduce"
+  @send external reducei: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @send external reduceRight: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @send external reduceRighti: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRight: (t, ('b, elt) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRighti: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @send external some: (t, (. elt) => bool) => bool = "some"
-  @send external somei: (t, (. elt, int) => bool) => bool = "some"
+  @send external some: (t, elt => bool) => bool = "some"
+  @send external somei: (t, (elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Float32Array.BYTES_PER_ELEMENT"
 
@@ -1017,8 +1010,7 @@ module Float32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Float32Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -1070,7 +1062,7 @@ module Float64Array = {
   @send external reverseInPlace: t => t = "reverse"
 
   @send external sortInPlace: t => t = "sort"
-  @send external sortInPlaceWith: (t, (. elt, elt) => int) => t = "sort"
+  @send external sortInPlaceWith: (t, (elt, elt) => int) => t = "sort"
 
   /* Accessor functions */
   @send external includes: (t, elt) => bool = "includes" /* ES2016 */
@@ -1102,36 +1094,36 @@ module Float64Array = {
   /* commented out until bs has a plan for iterators
   external entries : t -> (int * elt) array_iter = "" [@@send]
  */
-  @send external every: (t, (. elt) => bool) => bool = "every"
-  @send external everyi: (t, (. elt, int) => bool) => bool = "every"
+  @send external every: (t, elt => bool) => bool = "every"
+  @send external everyi: (t, (elt, int) => bool) => bool = "every"
 
-  @send external filter: (t, (. elt) => bool) => t = "filter"
-  @send external filteri: (t, (. elt, int) => bool) => t = "filter"
+  @send external filter: (t, elt => bool) => t = "filter"
+  @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, (. elt) => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (. elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
 
-  @send external findIndex: (t, (. elt) => bool) => int = "findIndex"
-  @send external findIndexi: (t, (. elt, int) => bool) => int = "findIndex"
+  @send external findIndex: (t, elt => bool) => int = "findIndex"
+  @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
 
-  @send external forEach: (t, (. elt) => unit) => unit = "forEach"
-  @send external forEachi: (t, (. elt, int) => unit) => unit = "forEach"
+  @send external forEach: (t, elt => unit) => unit = "forEach"
+  @send external forEachi: (t, (elt, int) => unit) => unit = "forEach"
 
   /* commented out until bs has a plan for iterators
   external keys : t -> int array_iter = "" [@@send]
  */
 
-  @send external map: (t, (. elt) => 'b) => typed_array<'b> = "map"
-  @send external mapi: (t, (. elt, int) => 'b) => typed_array<'b> = "map"
+  @send external map: (t, elt => 'b) => typed_array<'b> = "map"
+  @send external mapi: (t, (elt, int) => 'b) => typed_array<'b> = "map"
 
-  @send external reduce: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduce"
-  @send external reducei: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduce"
+  @send external reduce: (t, ('b, elt) => 'b, 'b) => 'b = "reduce"
+  @send external reducei: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduce"
 
-  @send external reduceRight: (t, (. 'b, elt) => 'b, 'b) => 'b = "reduceRight"
-  @send external reduceRighti: (t, (. 'b, elt, int) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRight: (t, ('b, elt) => 'b, 'b) => 'b = "reduceRight"
+  @send external reduceRighti: (t, ('b, elt, int) => 'b, 'b) => 'b = "reduceRight"
 
-  @send external some: (t, (. elt) => bool) => bool = "some"
-  @send external somei: (t, (. elt, int) => bool) => bool = "some"
+  @send external some: (t, elt => bool) => bool = "some"
+  @send external somei: (t, (elt, int) => bool) => bool = "some"
 
   @val external _BYTES_PER_ELEMENT: int = "Float64Array.BYTES_PER_ELEMENT"
 
@@ -1139,8 +1131,7 @@ module Float64Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Float64Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes

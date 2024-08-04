@@ -97,7 +97,7 @@ let code = s => Js.String.charCodeAt(0, s)
 Js.Array2.fromMap(strArr, code) == [97.0, 98.0, 99.0, 100.0]
 ```
 */
-external fromMap: (array_like<'a>, @uncurry ('a => 'b)) => array<'b> = "Array.from"
+external fromMap: (array_like<'a>, @uncurry 'a => 'b) => array<'b> = "Array.from"
 
 /* ES2015 */
 
@@ -740,7 +740,7 @@ Js.Array2.every([6, 22, 8, 4], isEven) == true
 Js.Array2.every([6, 22, 7, 4], isEven) == false
 ```
 */
-external every: (t<'a>, @uncurry ('a => bool)) => bool = "every"
+external every: (t<'a>, @uncurry 'a => bool) => bool = "every"
 
 @send
 /**
@@ -779,7 +779,7 @@ let nonEmpty = s => s != ""
 Js.Array2.filter(["abc", "", "", "def", "ghi"], nonEmpty) == ["abc", "def", "ghi"]
 ```
 */
-external filter: (t<'a>, @uncurry ('a => bool)) => t<'a> = "filter"
+external filter: (t<'a>, @uncurry 'a => bool) => t<'a> = "filter"
 
 @send
 /**
@@ -818,7 +818,7 @@ Js.Array2.find([33, 22, -55, 77, -44], x => x < 0) == Some(-55)
 Js.Array2.find([33, 22, 55, 77, 44], x => x < 0) == None
 ```
 */
-external find: (t<'a>, @uncurry ('a => bool)) => option<'a> = "find"
+external find: (t<'a>, @uncurry 'a => bool) => option<'a> = "find"
 
 /* ES2015 */
 
@@ -859,7 +859,7 @@ Js.Array2.findIndex([33, 22, -55, 77, -44], x => x < 0) == 2
 Js.Array2.findIndex([33, 22, 55, 77, 44], x => x < 0) == -1
 ```
 */
-external findIndex: (t<'a>, @uncurry ('a => bool)) => int = "findIndex"
+external findIndex: (t<'a>, @uncurry 'a => bool) => int = "findIndex"
 
 /* ES2015 */
 
@@ -902,7 +902,7 @@ on MDN.
 Js.Array2.forEach(["a", "b", "c"], x => Js.log(x)) == ()
 ```
 */
-external forEach: (t<'a>, @uncurry ('a => unit)) => unit = "forEach"
+external forEach: (t<'a>, @uncurry 'a => unit) => unit = "forEach"
 
 @send
 /**
@@ -943,7 +943,7 @@ Js.Array2.map([12, 4, 8], x => x * x) == [144, 16, 64]
 Js.Array2.map(["animal", "vegetable", "mineral"], Js.String.length) == [6, 9, 7]
 ```
 */
-external map: (t<'a>, @uncurry ('a => 'b)) => t<'b> = "map"
+external map: (t<'a>, @uncurry 'a => 'b) => t<'b> = "map"
 
 @send
 /**
@@ -1116,7 +1116,7 @@ Js.Array2.some([3, 7, 5, 2, 9], isEven) == true
 Js.Array2.some([3, 7, 5, 1, 9], isEven) == false
 ```
 */
-external some: (t<'a>, @uncurry ('a => bool)) => bool = "some"
+external some: (t<'a>, @uncurry 'a => bool) => bool = "some"
 
 @send
 /**

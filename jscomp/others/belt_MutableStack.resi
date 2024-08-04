@@ -51,9 +51,9 @@ let topUndefined: t<'a> => Js.undefined<'a>
 let top: t<'a> => option<'a>
 let isEmpty: t<'a> => bool
 let size: t<'a> => int
-let forEachU: (t<'a>, (. 'a) => unit) => unit
+let forEachU: (t<'a>, 'a => unit) => unit
 let forEach: (t<'a>, 'a => unit) => unit
-let dynamicPopIterU: (t<'a>, (. 'a) => unit) => unit
+let dynamicPopIterU: (t<'a>, 'a => unit) => unit
 
 /**
 `dynamicPopIter(s, f)` apply `f` to each element of `s`. The item is poped

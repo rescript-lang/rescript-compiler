@@ -148,7 +148,7 @@ let rec partitionAux = (p, cell, precX, precY) =>
   | list{} => ()
   | list{h, ...t} =>
     let next = mutableCell(h, list{})
-    if p(. h) {
+    if p(h) {
       unsafeMutateTail(precX, next)
       partitionAux(p, t, next, precY)
     } else {
@@ -184,7 +184,7 @@ let rec copyAuxWitFilter = (f, cellX, prec) =>
   switch cellX {
   | list{} => ()
   | list{h, ...t} =>
-    if f(. h) {
+    if f(h) {
       let next = mutableCell(h, list{})
       unsafeMutateTail(prec, next)
       copyAuxWitFilter(f, t, next)
@@ -197,7 +197,7 @@ let rec copyAuxWithFilterIndex = (f, cellX, prec, i) =>
   switch cellX {
   | list{} => ()
   | list{h, ...t} =>
-    if f(. h, i) {
+    if f(h, i) {
       let next = mutableCell(h, list{})
       unsafeMutateTail(prec, next)
       copyAuxWithFilterIndex(f, t, next, i + 1)
@@ -210,7 +210,7 @@ let rec copyAuxWitFilterMap = (f, cellX, prec) =>
   switch cellX {
   | list{} => ()
   | list{h, ...t} =>
-    switch f(. h) {
+    switch f(h) {
     | Some(h) =>
       let next = mutableCell(h, list{})
       unsafeMutateTail(prec, next)
@@ -223,7 +223,7 @@ let rec removeAssocAuxWithMap = (cellX, x, prec, f) =>
   switch cellX {
   | list{} => false
   | list{(a, _) as h, ...t} =>
-    if f(. a, x) {
+    if f(a, x) {
       unsafeMutateTail(prec, t)
       true
     } else {
@@ -237,7 +237,7 @@ let rec setAssocAuxWithMap = (cellX, x, k, prec, eq) =>
   switch cellX {
   | list{} => false
   | list{(a, _) as h, ...t} =>
-    if eq(. a, x) {
+    if eq(a, x) {
       unsafeMutateTail(prec, list{(x, k), ...t})
       true
     } else {
@@ -251,7 +251,7 @@ let rec copyAuxWithMap = (cellX, prec, f) =>
   switch cellX {
   | list{} => ()
   | list{h, ...t} =>
-    let next = mutableCell(f(. h), list{})
+    let next = mutableCell(f(h), list{})
     unsafeMutateTail(prec, next)
     copyAuxWithMap(t, next, f)
   }
@@ -268,7 +268,7 @@ let rec zipAux = (cellX, cellY, prec) =>
 let rec copyAuxWithMap2 = (f, cellX, cellY, prec) =>
   switch (cellX, cellY) {
   | (list{h1, ...t1}, list{h2, ...t2}) =>
-    let next = mutableCell(f(. h1, h2), list{})
+    let next = mutableCell(f(h1, h2), list{})
     unsafeMutateTail(prec, next)
     copyAuxWithMap2(f, t1, t2, next)
   | (list{}, _) | (_, list{}) => ()
@@ -277,7 +277,7 @@ let rec copyAuxWithMap2 = (f, cellX, cellY, prec) =>
 let rec copyAuxWithMapI = (f, i, cellX, prec) =>
   switch cellX {
   | list{h, ...t} =>
-    let next = mutableCell(f(. i, h), list{})
+    let next = mutableCell(f(i, h), list{})
     unsafeMutateTail(prec, next)
     copyAuxWithMapI(f, i + 1, t, next)
   | list{} => ()
@@ -377,44 +377,44 @@ let mapU = (xs, f) =>
   switch xs {
   | list{} => list{}
   | list{h, ...t} =>
-    let cell = mutableCell(f(. h), list{})
+    let cell = mutableCell(f(h), list{})
     copyAuxWithMap(t, cell, f)
     cell
   }
 
-let map = (xs, f) => mapU(xs, (. x) => f(x))
+let map = (xs, f) => mapU(xs, x => f(x))
 
 let zipByU = (l1, l2, f) =>
   switch (l1, l2) {
   | (list{a1, ...l1}, list{a2, ...l2}) =>
-    let cell = mutableCell(f(. a1, a2), list{})
+    let cell = mutableCell(f(a1, a2), list{})
     copyAuxWithMap2(f, l1, l2, cell)
     cell
   | (list{}, _) | (_, list{}) => list{}
   }
 
-let zipBy = (l1, l2, f) => zipByU(l1, l2, (. x, y) => f(x, y))
+let zipBy = (l1, l2, f) => zipByU(l1, l2, (x, y) => f(x, y))
 
 let mapWithIndexU = (xs, f) =>
   switch xs {
   | list{} => list{}
   | list{h, ...t} =>
-    let cell = mutableCell(f(. 0, h), list{})
+    let cell = mutableCell(f(0, h), list{})
     copyAuxWithMapI(f, 1, t, cell)
     cell
   }
 
-let mapWithIndex = (xs, f) => mapWithIndexU(xs, (. i, x) => f(i, x))
+let mapWithIndex = (xs, f) => mapWithIndexU(xs, (i, x) => f(i, x))
 
 let makeByU = (n, f) =>
   if n <= 0 {
     list{}
   } else {
-    let headX = mutableCell(f(. 0), list{})
+    let headX = mutableCell(f(0), list{})
     let cur = ref(headX)
     let i = ref(1)
     while i.contents < n {
-      let v = mutableCell(f(. i.contents), list{})
+      let v = mutableCell(f(i.contents), list{})
       unsafeMutateTail(cur.contents, v)
       cur.contents = v
       i.contents = i.contents + 1
@@ -423,7 +423,7 @@ let makeByU = (n, f) =>
     headX
   }
 
-let makeBy = (n, f) => makeByU(n, (. x) => f(x))
+let makeBy = (n, f) => makeByU(n, x => f(x))
 
 let make = (type a, n, v: a): list<a> =>
   if n <= 0 {
@@ -541,46 +541,46 @@ let concatMany = xs =>
 let rec mapRevAux = (f, accu, xs) =>
   switch xs {
   | list{} => accu
-  | list{a, ...l} => mapRevAux(f, list{f(. a), ...accu}, l)
+  | list{a, ...l} => mapRevAux(f, list{f(a), ...accu}, l)
   }
 
 let mapReverseU = (l, f) => mapRevAux(f, list{}, l)
 
-let mapReverse = (l, f) => mapReverseU(l, (. x) => f(x))
+let mapReverse = (l, f) => mapReverseU(l, x => f(x))
 
 let rec forEachU = (xs, f) =>
   switch xs {
   | list{} => ()
   | list{a, ...l} =>
-    f(. a)->ignore
+    f(a)->ignore
     forEachU(l, f)
   }
 
-let forEach = (xs, f) => forEachU(xs, (. x) => f(x))
+let forEach = (xs, f) => forEachU(xs, x => f(x))
 
 let rec iteri = (xs, i, f) =>
   switch xs {
   | list{} => ()
   | list{a, ...l} =>
-    f(. i, a)->ignore
+    f(i, a)->ignore
     iteri(l, i + 1, f)
   }
 
 let forEachWithIndexU = (l, f) => iteri(l, 0, f)
-let forEachWithIndex = (l, f) => forEachWithIndexU(l, (. i, x) => f(i, x))
+let forEachWithIndex = (l, f) => forEachWithIndexU(l, (i, x) => f(i, x))
 
 let rec reduceU = (l, accu, f) =>
   switch l {
   | list{} => accu
-  | list{a, ...l} => reduceU(l, f(. accu, a), f)
+  | list{a, ...l} => reduceU(l, f(accu, a), f)
   }
 
-let reduce = (l, accu, f) => reduceU(l, accu, (. acc, x) => f(acc, x))
+let reduce = (l, accu, f) => reduceU(l, accu, (acc, x) => f(acc, x))
 
 let rec reduceReverseUnsafeU = (l, accu, f) =>
   switch l {
   | list{} => accu
-  | list{a, ...l} => f(. reduceReverseUnsafeU(l, accu, f), a)
+  | list{a, ...l} => f(reduceReverseUnsafeU(l, accu, f), a)
   }
 
 let reduceReverseU = (type a b, l: list<a>, acc: b, f) => {
@@ -592,50 +592,50 @@ let reduceReverseU = (type a b, l: list<a>, acc: b, f) => {
   }
 }
 
-let reduceReverse = (l, accu, f) => reduceReverseU(l, accu, (. a, b) => f(a, b))
+let reduceReverse = (l, accu, f) => reduceReverseU(l, accu, (a, b) => f(a, b))
 
 let rec reduceWithIndexAuxU = (l, acc, f, i) =>
   switch l {
   | list{} => acc
-  | list{x, ...xs} => reduceWithIndexAuxU(xs, f(. acc, x, i), f, i + 1)
+  | list{x, ...xs} => reduceWithIndexAuxU(xs, f(acc, x, i), f, i + 1)
   }
 
 let reduceWithIndexU = (l, acc, f) => reduceWithIndexAuxU(l, acc, f, 0)
 
-let reduceWithIndex = (l, acc, f) => reduceWithIndexU(l, acc, (. acc, x, i) => f(acc, x, i))
+let reduceWithIndex = (l, acc, f) => reduceWithIndexU(l, acc, (acc, x, i) => f(acc, x, i))
 
 let rec mapRevAux2 = (l1, l2, accu, f) =>
   switch (l1, l2) {
-  | (list{a1, ...l1}, list{a2, ...l2}) => mapRevAux2(l1, l2, list{f(. a1, a2), ...accu}, f)
+  | (list{a1, ...l1}, list{a2, ...l2}) => mapRevAux2(l1, l2, list{f(a1, a2), ...accu}, f)
   | (_, list{}) | (list{}, _) => accu
   }
 
 let mapReverse2U = (l1, l2, f) => mapRevAux2(l1, l2, list{}, f)
 
-let mapReverse2 = (l1, l2, f) => mapReverse2U(l1, l2, (. a, b) => f(a, b))
+let mapReverse2 = (l1, l2, f) => mapReverse2U(l1, l2, (a, b) => f(a, b))
 
 let rec forEach2U = (l1, l2, f) =>
   switch (l1, l2) {
   | (list{a1, ...l1}, list{a2, ...l2}) =>
-    f(. a1, a2)->ignore
+    f(a1, a2)->ignore
     forEach2U(l1, l2, f)
   | (list{}, _) | (_, list{}) => ()
   }
 
-let forEach2 = (l1, l2, f) => forEach2U(l1, l2, (. a, b) => f(a, b))
+let forEach2 = (l1, l2, f) => forEach2U(l1, l2, (a, b) => f(a, b))
 
 let rec reduce2U = (l1, l2, accu, f) =>
   switch (l1, l2) {
-  | (list{a1, ...l1}, list{a2, ...l2}) => reduce2U(l1, l2, f(. accu, a1, a2), f)
+  | (list{a1, ...l1}, list{a2, ...l2}) => reduce2U(l1, l2, f(accu, a1, a2), f)
   | (list{}, _) | (_, list{}) => accu
   }
 
-let reduce2 = (l1, l2, acc, f) => reduce2U(l1, l2, acc, (. a, b, c) => f(a, b, c))
+let reduce2 = (l1, l2, acc, f) => reduce2U(l1, l2, acc, (a, b, c) => f(a, b, c))
 
 let rec reduceReverse2UnsafeU = (l1, l2, accu, f) =>
   switch (l1, l2) {
   | (list{}, list{}) => accu
-  | (list{a1, ...l1}, list{a2, ...l2}) => f(. reduceReverse2UnsafeU(l1, l2, accu, f), a1, a2)
+  | (list{a1, ...l1}, list{a2, ...l2}) => f(reduceReverse2UnsafeU(l1, l2, accu, f), a1, a2)
   | (_, list{}) | (list{}, _) => accu
   }
 
@@ -648,31 +648,31 @@ let reduceReverse2U = (type a b c, l1: list<a>, l2: list<b>, acc: c, f) => {
   }
 }
 
-let reduceReverse2 = (l1, l2, acc, f) => reduceReverse2U(l1, l2, acc, (. a, b, c) => f(a, b, c))
+let reduceReverse2 = (l1, l2, acc, f) => reduceReverse2U(l1, l2, acc, (a, b, c) => f(a, b, c))
 
 let rec everyU = (xs, p) =>
   switch xs {
   | list{} => true
-  | list{a, ...l} => p(. a) && everyU(l, p)
+  | list{a, ...l} => p(a) && everyU(l, p)
   }
 
-let every = (xs, p) => everyU(xs, (. x) => p(x))
+let every = (xs, p) => everyU(xs, x => p(x))
 
 let rec someU = (xs, p) =>
   switch xs {
   | list{} => false
-  | list{a, ...l} => p(. a) || someU(l, p)
+  | list{a, ...l} => p(a) || someU(l, p)
   }
 
-let some = (xs, p) => someU(xs, (. x) => p(x))
+let some = (xs, p) => someU(xs, x => p(x))
 
 let rec every2U = (l1, l2, p) =>
   switch (l1, l2) {
   | (_, list{}) | (list{}, _) => true
-  | (list{a1, ...l1}, list{a2, ...l2}) => p(. a1, a2) && every2U(l1, l2, p)
+  | (list{a1, ...l1}, list{a2, ...l2}) => p(a1, a2) && every2U(l1, l2, p)
   }
 
-let every2 = (l1, l2, p) => every2U(l1, l2, (. a, b) => p(a, b))
+let every2 = (l1, l2, p) => every2U(l1, l2, (a, b) => p(a, b))
 
 let rec cmpByLength = (l1, l2) =>
   switch (l1, l2) {
@@ -688,7 +688,7 @@ let rec cmpU = (l1, l2, p) =>
   | (_, list{}) => 1
   | (list{}, _) => -1
   | (list{a1, ...l1}, list{a2, ...l2}) =>
-    let c = p(. a1, a2)
+    let c = p(a1, a2)
     if c == 0 {
       cmpU(l1, l2, p)
     } else {
@@ -696,7 +696,7 @@ let rec cmpU = (l1, l2, p) =>
     }
   }
 
-let cmp = (l1, l2, f) => cmpU(l1, l2, (. x, y) => f(x, y))
+let cmp = (l1, l2, f) => cmpU(l1, l2, (x, y) => f(x, y))
 
 let rec eqU = (l1, l2, p) =>
   switch (l1, l2) {
@@ -704,56 +704,56 @@ let rec eqU = (l1, l2, p) =>
   | (_, list{})
   | (list{}, _) => false
   | (list{a1, ...l1}, list{a2, ...l2}) =>
-    if p(. a1, a2) {
+    if p(a1, a2) {
       eqU(l1, l2, p)
     } else {
       false
     }
   }
-let eq = (l1, l2, f) => eqU(l1, l2, (. x, y) => f(x, y))
+let eq = (l1, l2, f) => eqU(l1, l2, (x, y) => f(x, y))
 
 let rec some2U = (l1, l2, p) =>
   switch (l1, l2) {
   | (list{}, _) | (_, list{}) => false
-  | (list{a1, ...l1}, list{a2, ...l2}) => p(. a1, a2) || some2U(l1, l2, p)
+  | (list{a1, ...l1}, list{a2, ...l2}) => p(a1, a2) || some2U(l1, l2, p)
   }
 
-let some2 = (l1, l2, p) => some2U(l1, l2, (. a, b) => p(a, b))
+let some2 = (l1, l2, p) => some2U(l1, l2, (a, b) => p(a, b))
 
 let rec hasU = (xs, x, eq) =>
   switch xs {
   | list{} => false
-  | list{a, ...l} => eq(. a, x) || hasU(l, x, eq)
+  | list{a, ...l} => eq(a, x) || hasU(l, x, eq)
   }
 
-let has = (xs, x, eq) => hasU(xs, x, (. a, b) => eq(a, b))
+let has = (xs, x, eq) => hasU(xs, x, (a, b) => eq(a, b))
 
 let rec getAssocU = (xs, x, eq) =>
   switch xs {
   | list{} => None
   | list{(a, b), ...l} =>
-    if eq(. a, x) {
+    if eq(a, x) {
       Some(b)
     } else {
       getAssocU(l, x, eq)
     }
   }
 
-let getAssoc = (xs, x, eq) => getAssocU(xs, x, (. a, b) => eq(a, b))
+let getAssoc = (xs, x, eq) => getAssocU(xs, x, (a, b) => eq(a, b))
 
 let rec hasAssocU = (xs, x, eq) =>
   switch xs {
   | list{} => false
-  | list{(a, _), ...l} => eq(. a, x) || hasAssocU(l, x, eq)
+  | list{(a, _), ...l} => eq(a, x) || hasAssocU(l, x, eq)
   }
 
-let hasAssoc = (xs, x, eq) => hasAssocU(xs, x, (. a, b) => eq(a, b))
+let hasAssoc = (xs, x, eq) => hasAssocU(xs, x, (a, b) => eq(a, b))
 
 let removeAssocU = (xs, x, eq) =>
   switch xs {
   | list{} => list{}
   | list{(a, _) as pair, ...l} =>
-    if eq(. a, x) {
+    if eq(a, x) {
       l
     } else {
       let cell = mutableCell(pair, list{})
@@ -766,13 +766,13 @@ let removeAssocU = (xs, x, eq) =>
     }
   }
 
-let removeAssoc = (xs, x, eq) => removeAssocU(xs, x, (. a, b) => eq(a, b))
+let removeAssoc = (xs, x, eq) => removeAssocU(xs, x, (a, b) => eq(a, b))
 
 let setAssocU = (xs, x, k, eq) =>
   switch xs {
   | list{} => list{(x, k)}
   | list{(a, _) as pair, ...l} =>
-    if eq(. a, x) {
+    if eq(a, x) {
       list{(x, k), ...l}
     } else {
       let cell = mutableCell(pair, list{})
@@ -785,7 +785,7 @@ let setAssocU = (xs, x, k, eq) =>
     }
   }
 
-let setAssoc = (xs, x, k, eq) => setAssocU(xs, x, k, (. a, b) => eq(a, b))
+let setAssoc = (xs, x, k, eq) => setAssocU(xs, x, k, (a, b) => eq(a, b))
 
 let sortU = (xs, cmp) => {
   let arr = toArray(xs)
@@ -793,26 +793,26 @@ let sortU = (xs, cmp) => {
   fromArray(arr)
 }
 
-let sort = (xs, cmp) => sortU(xs, (. x, y) => cmp(x, y))
+let sort = (xs, cmp) => sortU(xs, (x, y) => cmp(x, y))
 
 let rec getByU = (xs, p) =>
   switch xs {
   | list{} => None
   | list{x, ...l} =>
-    if p(. x) {
+    if p(x) {
       Some(x)
     } else {
       getByU(l, p)
     }
   }
 
-let getBy = (xs, p) => getByU(xs, (. a) => p(a))
+let getBy = (xs, p) => getByU(xs, a => p(a))
 
 let rec keepU = (xs, p) =>
   switch xs {
   | list{} => list{}
   | list{h, ...t} =>
-    if p(. h) {
+    if p(h) {
       let cell = mutableCell(h, list{})
       copyAuxWitFilter(p, t, cell)
       cell
@@ -821,7 +821,7 @@ let rec keepU = (xs, p) =>
     }
   }
 
-let keep = (xs, p) => keepU(xs, (. x) => p(x))
+let keep = (xs, p) => keepU(xs, x => p(x))
 
 let filter = keep
 
@@ -830,7 +830,7 @@ let keepWithIndexU = (xs, p) => {
     switch xs {
     | list{} => list{}
     | list{h, ...t} =>
-      if p(. h, i) {
+      if p(h, i) {
         let cell = mutableCell(h, list{})
         copyAuxWithFilterIndex(p, t, cell, i + 1)
         cell
@@ -841,7 +841,7 @@ let keepWithIndexU = (xs, p) => {
   auxKeepWithIndex(xs, p, 0)
 }
 
-let keepWithIndex = (xs, p) => keepWithIndexU(xs, (. x, i) => p(x, i))
+let keepWithIndex = (xs, p) => keepWithIndexU(xs, (x, i) => p(x, i))
 
 let filterWithIndex = keepWithIndex
 
@@ -849,7 +849,7 @@ let rec keepMapU = (xs, p) =>
   switch xs {
   | list{} => list{}
   | list{h, ...t} =>
-    switch p(. h) {
+    switch p(h) {
     | Some(h) =>
       let cell = mutableCell(h, list{})
       copyAuxWitFilterMap(p, t, cell)
@@ -858,7 +858,7 @@ let rec keepMapU = (xs, p) =>
     }
   }
 
-let keepMap = (xs, p) => keepMapU(xs, (. x) => p(x))
+let keepMap = (xs, p) => keepMapU(xs, x => p(x))
 
 let partitionU = (l, p) =>
   switch l {
@@ -866,7 +866,7 @@ let partitionU = (l, p) =>
   | list{h, ...t} =>
     let nextX = mutableCell(h, list{})
     let nextY = mutableCell(h, list{})
-    let b = p(. h)
+    let b = p(h)
     partitionAux(p, t, nextX, nextY)
     if b {
       (
@@ -887,7 +887,7 @@ let partitionU = (l, p) =>
     }
   }
 
-let partition = (l, p) => partitionU(l, (. x) => p(x))
+let partition = (l, p) => partitionU(l, x => p(x))
 
 let unzip = xs =>
   switch xs {

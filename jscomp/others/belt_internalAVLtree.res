@@ -232,7 +232,7 @@ let rec findFirstByU = (n, p) =>
       left
     } else {
       let {key: v, value: d} = n
-      let pvd = p(. v, d)
+      let pvd = p(v, d)
       if pvd {
         Some(v, d)
       } else {
@@ -246,30 +246,30 @@ let rec findFirstByU = (n, p) =>
     }
   }
 
-let findFirstBy = (n, p) => findFirstByU(n, (. a, b) => p(a, b))
+let findFirstBy = (n, p) => findFirstByU(n, (a, b) => p(a, b))
 
 let rec forEachU = (n, f) =>
   switch n {
   | None => ()
   | Some(n) =>
     forEachU(n.left, f)
-    f(. n.key, n.value)
+    f(n.key, n.value)
     forEachU(n.right, f)
   }
 
-let forEach = (n, f) => forEachU(n, (. a, b) => f(a, b))
+let forEach = (n, f) => forEachU(n, (a, b) => f(a, b))
 
 let rec mapU = (n, f) =>
   switch n {
   | None => None
   | Some(n) =>
     let newLeft = mapU(n.left, f)
-    let newD = f(. n.value)
+    let newD = f(n.value)
     let newRight = mapU(n.right, f)
     Some({left: newLeft, key: n.key, value: newD, right: newRight, height: n.height})
   }
 
-let map = (n, f) => mapU(n, (. a) => f(a))
+let map = (n, f) => mapU(n, a => f(a))
 
 let rec mapWithKeyU = (n, f) =>
   switch n {
@@ -277,36 +277,36 @@ let rec mapWithKeyU = (n, f) =>
   | Some(n) =>
     let key = n.key
     let newLeft = mapWithKeyU(n.left, f)
-    let newD = f(. key, n.value)
+    let newD = f(key, n.value)
     let newRight = mapWithKeyU(n.right, f)
     Some({left: newLeft, key, value: newD, right: newRight, height: n.height})
   }
 
-let mapWithKey = (n, f) => mapWithKeyU(n, (. a, b) => f(a, b))
+let mapWithKey = (n, f) => mapWithKeyU(n, (a, b) => f(a, b))
 
 let rec reduceU = (m, accu, f) =>
   switch m {
   | None => accu
   | Some(n) =>
     let {left: l, key: v, value: d, right: r} = n
-    reduceU(r, f(. reduceU(l, accu, f), v, d), f)
+    reduceU(r, f(reduceU(l, accu, f), v, d), f)
   }
 
-let reduce = (m, accu, f) => reduceU(m, accu, (. a, b, c) => f(a, b, c))
+let reduce = (m, accu, f) => reduceU(m, accu, (a, b, c) => f(a, b, c))
 
 let rec everyU = (n, p) =>
   switch n {
   | None => true
-  | Some(n) => p(. n.key, n.value) && (everyU(n.left, p) && everyU(n.right, p))
+  | Some(n) => p(n.key, n.value) && (everyU(n.left, p) && everyU(n.right, p))
   }
-let every = (n, p) => everyU(n, (. a, b) => p(a, b))
+let every = (n, p) => everyU(n, (a, b) => p(a, b))
 
 let rec someU = (n, p) =>
   switch n {
   | None => false
-  | Some(n) => p(. n.key, n.value) || (someU(n.left, p) || someU(n.right, p))
+  | Some(n) => p(n.key, n.value) || (someU(n.left, p) || someU(n.right, p))
   }
-let some = (n, p) => someU(n, (. a, b) => p(a, b))
+let some = (n, p) => someU(n, (a, b) => p(a, b))
 /* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
    does not test for equality with the current min (or max) key.
@@ -373,7 +373,7 @@ let rec keepSharedU = (n, p) =>
     /* call `p` in the expected left-to-right order */
     let {key: v, value: d} = n
     let newLeft = keepSharedU(n.left, p)
-    let pvd = p(. v, d)
+    let pvd = p(v, d)
     let newRight = keepSharedU(n.right, p)
     if pvd {
       join(newLeft, v, d, newRight)
@@ -382,7 +382,7 @@ let rec keepSharedU = (n, p) =>
     }
   }
 
-let keepShared = (n, p) => keepSharedU(n, (. a, b) => p(a, b))
+let keepShared = (n, p) => keepSharedU(n, (a, b) => p(a, b))
 
 let rec keepMapU = (n, p) =>
   switch n {
@@ -391,7 +391,7 @@ let rec keepMapU = (n, p) =>
     /* call `p` in the expected left-to-right order */
     let {key: v, value: d} = n
     let newLeft = keepMapU(n.left, p)
-    let pvd = p(. v, d)
+    let pvd = p(v, d)
     let newRight = keepMapU(n.right, p)
     switch pvd {
     | None => concat(newLeft, newRight)
@@ -399,7 +399,7 @@ let rec keepMapU = (n, p) =>
     }
   }
 
-let keepMap = (n, p) => keepMapU(n, (. a, b) => p(a, b))
+let keepMap = (n, p) => keepMapU(n, (a, b) => p(a, b))
 
 let rec partitionSharedU = (n, p) =>
   switch n {
@@ -408,7 +408,7 @@ let rec partitionSharedU = (n, p) =>
     let {key, value} = n
     /* call `p` in the expected left-to-right order */
     let (lt, lf) = partitionSharedU(n.left, p)
-    let pvd = p(. key, value)
+    let pvd = p(key, value)
     let (rt, rf) = partitionSharedU(n.right, p)
     if pvd {
       (join(lt, key, value, rt), concat(lf, rf))
@@ -417,7 +417,7 @@ let rec partitionSharedU = (n, p) =>
     }
   }
 
-let partitionShared = (n, p) => partitionSharedU(n, (. a, b) => p(a, b))
+let partitionShared = (n, p) => partitionSharedU(n, (a, b) => p(a, b))
 
 let rec lengthNode = n => {
   let {left: l, right: r} = n
@@ -642,9 +642,9 @@ let fromSortedArrayUnsafe = arr => fromSortedArrayAux(arr, 0, A.length(arr))
 let rec compareAux = (e1, e2, ~kcmp, ~vcmp) =>
   switch (e1, e2) {
   | (list{h1, ...t1}, list{h2, ...t2}) =>
-    let c = Belt_Id.getCmpInternal(kcmp)(. h1.key, h2.key)
+    let c = Belt_Id.getCmpInternal(kcmp)(h1.key, h2.key)
     if c == 0 {
-      let cx = vcmp(. h1.value, h2.value)
+      let cx = vcmp(h1.value, h2.value)
       if cx == 0 {
         compareAux(~kcmp, ~vcmp, stackAllLeft(h1.right, t1), stackAllLeft(h2.right, t2))
       } else {
@@ -659,7 +659,7 @@ let rec compareAux = (e1, e2, ~kcmp, ~vcmp) =>
 let rec eqAux = (e1, e2, ~kcmp, ~veq) =>
   switch (e1, e2) {
   | (list{h1, ...t1}, list{h2, ...t2}) =>
-    if Belt_Id.getCmpInternal(kcmp)(. h1.key, h2.key) == 0 && veq(. h1.value, h2.value) {
+    if Belt_Id.getCmpInternal(kcmp)(h1.key, h2.key) == 0 && veq(h1.value, h2.value) {
       eqAux(~kcmp, ~veq, stackAllLeft(h1.right, t1), stackAllLeft(h2.right, t2))
     } else {
       false
@@ -678,7 +678,7 @@ let cmpU = (s1, s2, ~kcmp, ~vcmp) => {
   }
 }
 
-let cmp = (s1, s2, ~kcmp, ~vcmp) => cmpU(s1, s2, ~kcmp, ~vcmp=(. a, b) => vcmp(a, b))
+let cmp = (s1, s2, ~kcmp, ~vcmp) => cmpU(s1, s2, ~kcmp, ~vcmp=(a, b) => vcmp(a, b))
 
 let eqU = (s1, s2, ~kcmp, ~veq) => {
   let (len1, len2) = (size(s1), size(s2))
@@ -689,14 +689,14 @@ let eqU = (s1, s2, ~kcmp, ~veq) => {
   }
 }
 
-let eq = (s1, s2, ~kcmp, ~veq) => eqU(s1, s2, ~kcmp, ~veq=(. a, b) => veq(a, b))
+let eq = (s1, s2, ~kcmp, ~veq) => eqU(s1, s2, ~kcmp, ~veq=(a, b) => veq(a, b))
 
 let rec get = (n, x, ~cmp) =>
   switch n {
   | None => None
   | Some(n) /* Node(l, v, d, r, _) */ =>
     let v = n.key
-    let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+    let c = Belt_Id.getCmpInternal(cmp)(x, v)
     if c == 0 {
       Some(n.value)
     } else {
@@ -717,7 +717,7 @@ let rec getUndefined = (n, x, ~cmp) =>
   | None => Js.undefined
   | Some(n) =>
     let v = n.key
-    let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+    let c = Belt_Id.getCmpInternal(cmp)(x, v)
     if c == 0 {
       Js.Undefined.return(n.value)
     } else {
@@ -738,7 +738,7 @@ let rec getExn = (n, x, ~cmp) =>
   | None => raise(Not_found)
   | Some(n) /* Node(l, v, d, r, _) */ =>
     let v = n.key
-    let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+    let c = Belt_Id.getCmpInternal(cmp)(x, v)
     if c == 0 {
       n.value
     } else {
@@ -759,7 +759,7 @@ let rec getWithDefault = (n, x, def, ~cmp) =>
   | None => def
   | Some(n) /* Node(l, v, d, r, _) */ =>
     let v = n.key
-    let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+    let c = Belt_Id.getCmpInternal(cmp)(x, v)
     if c == 0 {
       n.value
     } else {
@@ -781,7 +781,7 @@ let rec has = (n, x, ~cmp) =>
   | None => false
   | Some(n) /* Node(l, v, d, r, _) */ =>
     let v = n.key
-    let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+    let c = Belt_Id.getCmpInternal(cmp)(x, v)
     c == 0 ||
       has(
         ~cmp,
@@ -888,7 +888,7 @@ let rec updateMutate = (t: t<_>, x, data, ~cmp) =>
   | None => singleton(x, data)
   | Some(nt) =>
     let k = nt.key
-    let c = Belt_Id.getCmpInternal(cmp)(. x, k)
+    let c = Belt_Id.getCmpInternal(cmp)(x, k)
     if c == 0 {
       nt.value = data
       Some(nt)
@@ -910,9 +910,7 @@ let fromArray = (xs: array<_>, ~cmp) => {
     None
   } else {
     let next = ref(
-      S.strictlySortedLengthU(xs, (. (x0, _), (y0, _)) =>
-        Belt_Id.getCmpInternal(cmp)(. x0, y0) < 0
-      ),
+      S.strictlySortedLengthU(xs, ((x0, _), (y0, _)) => Belt_Id.getCmpInternal(cmp)(x0, y0) < 0),
     )
 
     let result = ref(

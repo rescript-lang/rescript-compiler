@@ -38,7 +38,7 @@ type t<'k, 'v, 'id> = {
 
 let rec removeMutateAux = (nt, x, ~cmp) => {
   let k = nt.N.key
-  let c = Belt_Id.getCmpInternal(cmp)(. x, k)
+  let c = Belt_Id.getCmpInternal(cmp)(x, k)
   if c == 0 {
     let {N.left: l, right: r} = nt
     switch (l, r) {
@@ -105,15 +105,15 @@ let removeMany = (d, xs) => {
 let rec updateDone = (t, x, f, ~cmp) =>
   switch t {
   | None =>
-    switch f(. None) {
+    switch f(None) {
     | Some(data) => N.singleton(x, data)
     | None => t
     }
   | Some(nt) =>
     let k = nt.N.key
-    let c = Belt_Id.getCmpInternal(cmp)(. x, k)
+    let c = Belt_Id.getCmpInternal(cmp)(x, k)
     if c == 0 {
-      switch f(. Some(nt.value)) {
+      switch f(Some(nt.value)) {
       | None =>
         let {N.left: l, right: r} = nt
         switch (l, r) {
@@ -143,7 +143,7 @@ let updateU = (t, x, f) => {
     t.data = newRoot
   }
 }
-let update = (t, x, f) => updateU(t, x, (. a) => f(a))
+let update = (t, x, f) => updateU(t, x, a => f(a))
 
 let make = (type key identity, ~id: id<key, identity>) => {
   module M = unpack(id)
@@ -164,13 +164,13 @@ let maximum = m => N.maximum(m.data)
 let maxUndefined = m => N.maxUndefined(m.data)
 
 let forEachU = (d, f) => N.forEachU(d.data, f)
-let forEach = (d, f) => forEachU(d, (. a, b) => f(a, b))
+let forEach = (d, f) => forEachU(d, (a, b) => f(a, b))
 let reduceU = (d, acc, cb) => N.reduceU(d.data, acc, cb)
-let reduce = (d, acc, cb) => reduceU(d, acc, (. a, b, c) => cb(a, b, c))
+let reduce = (d, acc, cb) => reduceU(d, acc, (a, b, c) => cb(a, b, c))
 let everyU = (d, p) => N.everyU(d.data, p)
-let every = (d, p) => everyU(d, (. a, b) => p(a, b))
+let every = (d, p) => everyU(d, (a, b) => p(a, b))
 let someU = (d, p) => N.someU(d.data, p)
-let some = (d, p) => someU(d, (. a, b) => p(a, b))
+let some = (d, p) => someU(d, (a, b) => p(a, b))
 let size = d => N.size(d.data)
 let toList = d => N.toList(d.data)
 let toArray = d => N.toArray(d.data)
@@ -184,15 +184,15 @@ let valuesToArray = d => N.valuesToArray(d.data)
 let checkInvariantInternal = d => N.checkInvariantInternal(d.data)
 
 let cmpU = (m1, m2, cmp) => N.cmpU(~kcmp=m1.cmp, ~vcmp=cmp, m1.data, m2.data)
-let cmp = (m1, m2, cmp) => cmpU(m1, m2, (. a, b) => cmp(a, b))
+let cmp = (m1, m2, cmp) => cmpU(m1, m2, (a, b) => cmp(a, b))
 
 let eqU = (m1, m2, cmp) => N.eqU(~kcmp=m1.cmp, ~veq=cmp, m1.data, m2.data)
-let eq = (m1, m2, cmp) => eqU(m1, m2, (. a, b) => cmp(a, b))
+let eq = (m1, m2, cmp) => eqU(m1, m2, (a, b) => cmp(a, b))
 
 let mapU = (m, f) => {cmp: m.cmp, data: N.mapU(m.data, f)}
-let map = (m, f) => mapU(m, (. a) => f(a))
+let map = (m, f) => mapU(m, a => f(a))
 let mapWithKeyU = (m, f) => {cmp: m.cmp, data: N.mapWithKeyU(m.data, f)}
-let mapWithKey = (m, f) => mapWithKeyU(m, (. a, b) => f(a, b))
+let mapWithKey = (m, f) => mapWithKeyU(m, (a, b) => f(a, b))
 let get = (m, x) => N.get(~cmp=m.cmp, m.data, x)
 
 let getUndefined = (m, x) => N.getUndefined(~cmp=m.cmp, m.data, x)

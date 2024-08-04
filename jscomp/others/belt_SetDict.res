@@ -38,7 +38,7 @@ let rec add = (t: t<_>, x, ~cmp): t<_> =>
   | None => N.singleton(x)
   | Some(nt) =>
     let k = nt.value
-    let c = Belt_Id.getCmpInternal(cmp)(. x, k)
+    let c = Belt_Id.getCmpInternal(cmp)(x, k)
     if c == 0 {
       t
     } else {
@@ -66,7 +66,7 @@ let rec remove = (t: t<_>, x, ~cmp): t<_> =>
   | None => t
   | Some(n) =>
     let {N.left: l, value: v, right: r} = n
-    let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+    let c = Belt_Id.getCmpInternal(cmp)(x, v)
     if c == 0 {
       switch (l, r) {
       | (None, _) => r
@@ -115,7 +115,7 @@ let removeMany = (h, arr, ~cmp) => {
 
 let rec splitAuxNoPivot = (~cmp, n: N.node<_>, x): (_, _) => {
   let {N.left: l, value: v, right: r} = n
-  let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+  let c = Belt_Id.getCmpInternal(cmp)(x, v)
   if c == 0 {
     (l, r)
   } else if c < 0 {
@@ -137,7 +137,7 @@ let rec splitAuxNoPivot = (~cmp, n: N.node<_>, x): (_, _) => {
 
 let rec splitAuxPivot = (~cmp, n: N.node<_>, x, pres): (_, _) => {
   let {N.left: l, value: v, right: r} = n
-  let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+  let c = Belt_Id.getCmpInternal(cmp)(x, v)
   if c == 0 {
     pres.contents = true
     (l, r)

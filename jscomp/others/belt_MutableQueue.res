@@ -148,7 +148,7 @@ let rec copyMapAux = (qRes, prev, cell, f) =>
     qRes.last = prev
     qRes
   | Some(x) =>
-    let content = f(. x.content)
+    let content = f(x.content)
     let res = Some({content, next: None})
     switch prev {
     /* TODO: optimize to remove such check */
@@ -160,7 +160,7 @@ let rec copyMapAux = (qRes, prev, cell, f) =>
 
 let mapU = (q, f) => copyMapAux({length: q.length, first: None, last: None}, None, q.first, f)
 
-let map = (q, f) => mapU(q, (. a) => f(a))
+let map = (q, f) => mapU(q, a => f(a))
 
 let isEmpty = q => q.length == 0
 
@@ -170,25 +170,25 @@ let rec iterAux = (cell, f) =>
   switch cell {
   | None => ()
   | Some(x) =>
-    f(. x.content)
+    f(x.content)
     iterAux(x.next, f)
   }
 
 let forEachU = (q, f) => iterAux(q.first, f)
 
-let forEach = (q, f) => forEachU(q, (. a) => f(a))
+let forEach = (q, f) => forEachU(q, a => f(a))
 
 let rec foldAux = (f, accu, cell) =>
   switch cell {
   | None => accu
   | Some(x) =>
-    let accu = f(. accu, x.content)
+    let accu = f(accu, x.content)
     foldAux(f, accu, x.next)
   }
 
 let reduceU = (q, accu, f) => foldAux(f, accu, q.first)
 
-let reduce = (q, accu, f) => reduceU(q, accu, (. a, b) => f(a, b))
+let reduce = (q, accu, f) => reduceU(q, accu, (a, b) => f(a, b))
 
 let transfer = (q1, q2) =>
   if q1.length > 0 {

@@ -45,13 +45,13 @@ let getExn = f =>
 let bind = (x, f) =>
   switch toOption(x) {
   | None => empty
-  | Some(x) => return(f(. x))
+  | Some(x) => return(f(x))
   }
 
 let iter = (x, f) =>
   switch toOption(x) {
   | None => ()
-  | Some(x) => f(. x)
+  | Some(x) => f(x)
   }
 
 let fromOption = x =>

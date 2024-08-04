@@ -89,9 +89,9 @@ Returns the number of elements in a queue.
 */
 let size: t<'a> => int
 
-let mapU: (t<'a>, (. 'a) => 'b) => t<'b>
+let mapU: (t<'a>, 'a => 'b) => t<'b>
 let map: (t<'a>, 'a => 'b) => t<'b>
-let forEachU: (t<'a>, (. 'a) => unit) => unit
+let forEachU: (t<'a>, 'a => unit) => unit
 
 /**
 `forEach(q, f) applies`f`in turn to all elements of`q`, from the least
@@ -99,7 +99,7 @@ recently entered to the most recently entered. The queue itself is unchanged.
 */
 let forEach: (t<'a>, 'a => unit) => unit
 
-let reduceU: (t<'a>, 'b, (. 'b, 'a) => 'b) => 'b
+let reduceU: (t<'a>, 'b, ('b, 'a) => 'b) => 'b
 
 /**
 `reduce(q, accu, f)` is equivalent to `List.reduce(l, accu, f)`, where `l` is the

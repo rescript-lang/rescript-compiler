@@ -40,7 +40,7 @@ let rec copyBucket = (~hash, ~h_buckets, ~ndata_tail, old_bucket) =>
   switch C.toOpt(old_bucket) {
   | None => ()
   | Some(cell) =>
-    let nidx = land(Belt_Id.getHashInternal(hash)(. cell.N.key), A.length(h_buckets) - 1)
+    let nidx = land(Belt_Id.getHashInternal(hash)(cell.N.key), A.length(h_buckets) - 1)
     let v = C.return(cell)
     switch C.toOpt(A.getUnsafe(ndata_tail, nidx)) {
     | None => A.setUnsafe(h_buckets, nidx, v)
@@ -73,7 +73,7 @@ let tryDoubleResize = (~hash, h) => {
 
 let rec removeBucket = (~eq, h, h_buckets, i, key, prec, cell) => {
   let cell_next = cell.N.next
-  if Belt_Id.getEqInternal(eq)(. cell.N.key, key) {
+  if Belt_Id.getEqInternal(eq)(cell.N.key, key) {
     prec.N.next = cell_next
     h.C.size = h.C.size - 1
   } else {
@@ -87,13 +87,13 @@ let rec removeBucket = (~eq, h, h_buckets, i, key, prec, cell) => {
 let remove = (h, key) => {
   let eq = h.C.eq
   let h_buckets = h.C.buckets
-  let i = land(Belt_Id.getHashInternal(h.C.hash)(. key), A.length(h_buckets) - 1)
+  let i = land(Belt_Id.getHashInternal(h.C.hash)(key), A.length(h_buckets) - 1)
   let l = A.getUnsafe(h_buckets, i)
   switch C.toOpt(l) {
   | None => ()
   | Some(cell) =>
     let next_cell = cell.N.next
-    if Belt_Id.getEqInternal(eq)(. cell.N.key, key) {
+    if Belt_Id.getEqInternal(eq)(cell.N.key, key) {
       h.C.size = h.C.size - 1
       A.setUnsafe(h_buckets, i, next_cell)
     } else {
@@ -106,7 +106,7 @@ let remove = (h, key) => {
 }
 
 let rec addBucket = (h, key, cell, ~eq) =>
-  if !Belt_Id.getEqInternal(eq)(. cell.N.key, key) {
+  if !Belt_Id.getEqInternal(eq)(cell.N.key, key) {
     let n = cell.N.next
     switch C.toOpt(n) {
     | None =>
@@ -119,7 +119,7 @@ let rec addBucket = (h, key, cell, ~eq) =>
 let add0 = (h, key, ~hash, ~eq) => {
   let h_buckets = h.C.buckets
   let buckets_len = A.length(h_buckets)
-  let i = land(Belt_Id.getHashInternal(hash)(. key), buckets_len - 1)
+  let i = land(Belt_Id.getHashInternal(hash)(key), buckets_len - 1)
   let l = A.getUnsafe(h_buckets, i)
   switch C.toOpt(l) {
   | None =>
@@ -135,7 +135,7 @@ let add0 = (h, key, ~hash, ~eq) => {
 let add = (h, key) => add0(~hash=h.C.hash, ~eq=h.C.eq, h, key)
 
 let rec memInBucket = (~eq, key, cell) =>
-  Belt_Id.getEqInternal(eq)(. cell.N.key, key) ||
+  Belt_Id.getEqInternal(eq)(cell.N.key, key) ||
   switch C.toOpt(cell.N.next) {
   | None => false
   | Some(nextCell) => memInBucket(~eq, key, nextCell)
@@ -143,7 +143,7 @@ let rec memInBucket = (~eq, key, cell) =>
 
 let has = (h, key) => {
   let (eq, h_buckets) = (h.C.eq, h.C.buckets)
-  let nid = land(Belt_Id.getHashInternal(h.C.hash)(. key), A.length(h_buckets) - 1)
+  let nid = land(Belt_Id.getHashInternal(h.C.hash)(key), A.length(h_buckets) - 1)
   let bucket = A.getUnsafe(h_buckets, nid)
   switch C.toOpt(bucket) {
   | None => false

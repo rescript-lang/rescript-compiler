@@ -29,17 +29,17 @@ let set = (m: t<_>, k, v) => {
 }
 
 let forEachU = (d, f) => N.forEachU(d.data, f)
-let forEach = (d, f) => forEachU(d, (. a, b) => f(a, b))
+let forEach = (d, f) => forEachU(d, (a, b) => f(a, b))
 let mapU = (d, f) => {data: N.mapU(d.data, f)}
-let map = (d, f) => mapU(d, (. a) => f(a))
+let map = (d, f) => mapU(d, a => f(a))
 let mapWithKeyU = (d, f) => {data: N.mapWithKeyU(d.data, f)}
-let mapWithKey = (d, f) => mapWithKeyU(d, (. a, b) => f(a, b))
+let mapWithKey = (d, f) => mapWithKeyU(d, (a, b) => f(a, b))
 let reduceU = (d, acc, f) => N.reduceU(d.data, acc, f)
-let reduce = (d, acc, f) => reduceU(d, acc, (. a, b, c) => f(a, b, c))
+let reduce = (d, acc, f) => reduceU(d, acc, (a, b, c) => f(a, b, c))
 let everyU = (d, f) => N.everyU(d.data, f)
-let every = (d, f) => everyU(d, (. a, b) => f(a, b))
+let every = (d, f) => everyU(d, (a, b) => f(a, b))
 let someU = (d, f) => N.someU(d.data, f)
-let some = (d, f) => someU(d, (. a, b) => f(a, b))
+let some = (d, f) => someU(d, (a, b) => f(a, b))
 let size = d => N.size(d.data)
 let toList = d => N.toList(d.data)
 let toArray = d => N.toArray(d.data)
@@ -91,7 +91,7 @@ let remove = (d, v) => {
 let rec updateDone = (t, x: key, f) =>
   switch t {
   | None =>
-    switch f(. None) {
+    switch f(None) {
     | Some(data) => N.singleton(x, data)
     | None => t
     }
@@ -100,7 +100,7 @@ let rec updateDone = (t, x: key, f) =>
 
     /* let  c = (Belt_Cmp.getCmpInternal cmp) x k [@bs] in */
     if k == x {
-      switch f(. Some(nt.value)) {
+      switch f(Some(nt.value)) {
       | None =>
         let {N.left: l, right: r} = nt
         switch (l, r) {
@@ -133,7 +133,7 @@ let updateU = (t, x, f) => {
     t.data = newRoot
   }
 }
-let update = (t, x, f) => updateU(t, x, (. a) => f(a))
+let update = (t, x, f) => updateU(t, x, a => f(a))
 let rec removeArrayMutateAux = (t, xs, i, len) =>
   if i < len {
     let ele = A.getUnsafe(xs, i)
@@ -165,10 +165,10 @@ let removeMany = (d: t<_>, xs) => {
 let fromArray = xs => {data: I.fromArray(xs)}
 
 let cmpU = (d0, d1, f) => I.cmpU(d0.data, d1.data, f)
-let cmp = (d0, d1, f) => cmpU(d0, d1, (. a, b) => f(a, b))
+let cmp = (d0, d1, f) => cmpU(d0, d1, (a, b) => f(a, b))
 
 let eqU = (d0, d1, f) => I.eqU(d0.data, d1.data, f)
-let eq = (d0, d1, f) => eqU(d0, d1, (. a, b) => f(a, b))
+let eq = (d0, d1, f) => eqU(d0, d1, (a, b) => f(a, b))
 
 let get = (d, x) => I.get(d.data, x)
 let getUndefined = (d, x) => I.getUndefined(d.data, x)

@@ -36,7 +36,7 @@ Specalized when key type is `string`, more efficient than the generic type
 */
 module String = Belt_SortArrayString
 
-let strictlySortedLengthU: (array<'a>, (. 'a, 'a) => bool) => int
+let strictlySortedLengthU: (array<'a>, ('a, 'a) => bool) => int
 
 /**
 `strictlySortedLenght(xs, cmp);` return `+n` means increasing order `-n` means negative order
@@ -55,16 +55,16 @@ Belt.SortArray.strictlySortedLength([4, 3, 2, 1], (x, y) => x < y) == -4
 */
 let strictlySortedLength: (array<'a>, ('a, 'a) => bool) => int
 
-let isSortedU: (array<'a>, (. 'a, 'a) => int) => bool
+let isSortedU: (array<'a>, ('a, 'a) => int) => bool
 /**
 `isSorted(arr, cmp)`: Returns true if array is increasingly sorted (equal is okay)
 */
 let isSorted: (array<'a>, ('a, 'a) => int) => bool
 
-let stableSortInPlaceByU: (array<'a>, (. 'a, 'a) => int) => unit
+let stableSortInPlaceByU: (array<'a>, ('a, 'a) => int) => unit
 let stableSortInPlaceBy: (array<'a>, ('a, 'a) => int) => unit
 
-let stableSortByU: (array<'a>, (. 'a, 'a) => int) => array<'a>
+let stableSortByU: (array<'a>, ('a, 'a) => int) => array<'a>
 /**
 `stableSortBy(xs, cmp)`: Returns a fresh array Sort `xs` in place using
 comparator `cmp`, the stable means if the elements are equal, their order will
@@ -72,7 +72,7 @@ be preserved
 */
 let stableSortBy: (array<'a>, ('a, 'a) => int) => array<'a>
 
-let binarySearchByU: (array<'a>, 'a, (. 'a, 'a) => int) => int
+let binarySearchByU: (array<'a>, 'a, ('a, 'a) => int) => int
 
 /**
 If value is not found and value is less than one or more elements in array, the
@@ -95,7 +95,7 @@ lnot(Belt.SortArray.binarySearchBy([1, 3, 5, 7], 4, Pervasives.compare)) == 2
 */
 let binarySearchBy: (array<'a>, 'a, ('a, 'a) => int) => int
 
-let unionU: (array<'a>, int, int, array<'a>, int, int, array<'a>, int, (. 'a, 'a) => int) => int
+let unionU: (array<'a>, int, int, array<'a>, int, int, array<'a>, int, ('a, 'a) => int) => int
 /**
 `union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp` assume `src` and
 `src2` is strictly sorted. for equivalent elements, it is picked from `src`
@@ -103,7 +103,7 @@ also assume that `dst` is large enough to store all elements
 */
 let union: (array<'a>, int, int, array<'a>, int, int, array<'a>, int, ('a, 'a) => int) => int
 
-let intersectU: (array<'a>, int, int, array<'a>, int, int, array<'a>, int, (. 'a, 'a) => int) => int
+let intersectU: (array<'a>, int, int, array<'a>, int, int, array<'a>, int, ('a, 'a) => int) => int
 /**
 `union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp`
 
@@ -111,5 +111,5 @@ let intersectU: (array<'a>, int, int, array<'a>, int, int, array<'a>, int, (. 'a
 */
 let intersect: (array<'a>, int, int, array<'a>, int, int, array<'a>, int, ('a, 'a) => int) => int
 
-let diffU: (array<'a>, int, int, array<'a>, int, int, array<'a>, int, (. 'a, 'a) => int) => int
+let diffU: (array<'a>, int, int, array<'a>, int, int, array<'a>, int, ('a, 'a) => int) => int
 let diff: (array<'a>, int, int, array<'a>, int, int, array<'a>, int, ('a, 'a) => int) => int

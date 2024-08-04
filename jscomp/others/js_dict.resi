@@ -107,7 +107,7 @@ external keys: t<'a> => array<string> = "Object.keys"
 external empty: unit => t<'a> = ""
 
 /** Experimental internal function */
-let unsafeDeleteKey: (. t<string>, string) => unit
+let unsafeDeleteKey: (t<string>, string) => unit
 
 /**
 Returns an array of key/value pairs in the given dictionary (ES2017).
@@ -170,4 +170,4 @@ let salePrices = Js.Dict.map(discount, prices)
 salePrices == Js.Dict.fromList(list{("pen", 0.90), ("book", 4.50), ("stapler", 6.30)})
 ```
 */
-let map: ((. 'a) => 'b, t<'a>) => t<'b>
+let map: ('a => 'b, t<'a>) => t<'b>

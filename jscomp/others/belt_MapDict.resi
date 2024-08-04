@@ -49,10 +49,10 @@ let isEmpty: t<'k, 'v, 'id> => bool
 
 let has: (t<'k, 'a, 'id>, 'k, ~cmp: cmp<'k, 'id>) => bool
 
-let cmpU: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, ~kcmp: cmp<'k, 'id>, ~vcmp: (. 'v, 'v) => int) => int
+let cmpU: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, ~kcmp: cmp<'k, 'id>, ~vcmp: ('v, 'v) => int) => int
 let cmp: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, ~kcmp: cmp<'k, 'id>, ~vcmp: ('v, 'v) => int) => int
 
-let eqU: (t<'k, 'a, 'id>, t<'k, 'a, 'id>, ~kcmp: cmp<'k, 'id>, ~veq: (. 'a, 'a) => bool) => bool
+let eqU: (t<'k, 'a, 'id>, t<'k, 'a, 'id>, ~kcmp: cmp<'k, 'id>, ~veq: ('a, 'a) => bool) => bool
 /**
 `eq(m1, m2, cmp)` tests whether the maps `m1` and `m2` are equal, that is,
 contain equal keys and associate them with equal data. `cmp` is the
@@ -60,7 +60,7 @@ equality predicate used to compare the data associated with the keys.
 */
 let eq: (t<'k, 'a, 'id>, t<'k, 'a, 'id>, ~kcmp: cmp<'k, 'id>, ~veq: ('a, 'a) => bool) => bool
 
-let findFirstByU: (t<'k, 'v, 'id>, (. 'k, 'v) => bool) => option<('k, 'v)>
+let findFirstByU: (t<'k, 'v, 'id>, ('k, 'v) => bool) => option<('k, 'v)>
 /** 
 `findFirstBy(m, p)` uses function `f` to find the first key value pair to
 match predicate `p`.
@@ -80,7 +80,7 @@ Belt.Map.Dict.findFirstBy(s0, (k, _) => k == 4) == Some((4, "4"))
 */
 let findFirstBy: (t<'k, 'v, 'id>, ('k, 'v) => bool) => option<('k, 'v)>
 
-let forEachU: (t<'k, 'a, 'id>, (. 'k, 'a) => unit) => unit
+let forEachU: (t<'k, 'a, 'id>, ('k, 'a) => unit) => unit
 /**
 `forEach(m, f)` applies `f` to all bindings in map `m`. `f` receives the
 key as first argument, and the associated value as second argument. The
@@ -89,7 +89,7 @@ over the type of the keys.
 */
 let forEach: (t<'k, 'a, 'id>, ('k, 'a) => unit) => unit
 
-let reduceU: (t<'k, 'a, 'id>, 'b, (. 'b, 'k, 'a) => 'b) => 'b
+let reduceU: (t<'k, 'a, 'id>, 'b, ('b, 'k, 'a) => 'b) => 'b
 /**
 `reduce(m, a, f)` computes `f(kN, dN ... f(k1, d1, a)...)`, where `k1 ... kN` 
 are the keys of all bindings in `m` (in increasing order), and `d1 ... dN` 
@@ -97,14 +97,14 @@ are the associated data.
 */
 let reduce: (t<'k, 'a, 'id>, 'b, ('b, 'k, 'a) => 'b) => 'b
 
-let everyU: (t<'k, 'a, 'id>, (. 'k, 'a) => bool) => bool
+let everyU: (t<'k, 'a, 'id>, ('k, 'a) => bool) => bool
 /** 
 `every(m, p)` checks if all the bindings of the map satisfy the predicate
 `p`. Order unspecified
 */
 let every: (t<'k, 'a, 'id>, ('k, 'a) => bool) => bool
 
-let someU: (t<'k, 'a, 'id>, (. 'k, 'a) => bool) => bool
+let someU: (t<'k, 'a, 'id>, ('k, 'a) => bool) => bool
 /**
 `some(m, p)` checks if at least one binding of the map satisfy the
 predicate `p`. Order unspecified
@@ -165,18 +165,13 @@ binding disappears.
 */
 let set: (t<'a, 'b, 'id>, 'a, 'b, ~cmp: cmp<'a, 'id>) => t<'a, 'b, 'id>
 
-let updateU: (
-  t<'a, 'b, 'id>,
-  'a,
-  (. option<'b>) => option<'b>,
-  ~cmp: cmp<'a, 'id>,
-) => t<'a, 'b, 'id>
+let updateU: (t<'a, 'b, 'id>, 'a, option<'b> => option<'b>, ~cmp: cmp<'a, 'id>) => t<'a, 'b, 'id>
 let update: (t<'a, 'b, 'id>, 'a, option<'b> => option<'b>, ~cmp: cmp<'a, 'id>) => t<'a, 'b, 'id>
 
 let mergeU: (
   t<'a, 'b, 'id>,
   t<'a, 'c, 'id>,
-  (. 'a, option<'b>, option<'c>) => option<'d>,
+  ('a, option<'b>, option<'c>) => option<'d>,
   ~cmp: cmp<'a, 'id>,
 ) => t<'a, 'd, 'id>
 /** 
@@ -193,14 +188,14 @@ let merge: (
 
 let mergeMany: (t<'a, 'b, 'id>, array<('a, 'b)>, ~cmp: cmp<'a, 'id>) => t<'a, 'b, 'id>
 
-let keepU: (t<'k, 'a, 'id>, (. 'k, 'a) => bool) => t<'k, 'a, 'id>
+let keepU: (t<'k, 'a, 'id>, ('k, 'a) => bool) => t<'k, 'a, 'id>
 /**
 `keep(m, p)` returns the map with all the bindings in `m` that satisfy
 predicate `p`.
 */
 let keep: (t<'k, 'a, 'id>, ('k, 'a) => bool) => t<'k, 'a, 'id>
 
-let partitionU: (t<'k, 'a, 'id>, (. 'k, 'a) => bool) => (t<'k, 'a, 'id>, t<'k, 'a, 'id>)
+let partitionU: (t<'k, 'a, 'id>, ('k, 'a) => bool) => (t<'k, 'a, 'id>, t<'k, 'a, 'id>)
 /** 
 `partition(m, p)` returns a pair of maps `(m1, m2)`, where `m1` contains
 all the bindings of `s` that satisfy the predicate `p`, and `m2` is the map
@@ -221,7 +216,7 @@ let split: (
   ~cmp: cmp<'a, 'id>,
 ) => ((t<'a, 'b, 'id>, t<'a, 'b, 'id>), option<'b>)
 
-let mapU: (t<'k, 'a, 'id>, (. 'a) => 'b) => t<'k, 'b, 'id>
+let mapU: (t<'k, 'a, 'id>, 'a => 'b) => t<'k, 'b, 'id>
 /** 
 `map(m, f)` returns a map with same domain as `m`, where the associated
 value `a` of all bindings of `m` has been replaced by the result of the
@@ -230,5 +225,5 @@ order with respect to the ordering over the type of the keys.
 */
 let map: (t<'k, 'a, 'id>, 'a => 'b) => t<'k, 'b, 'id>
 
-let mapWithKeyU: (t<'k, 'a, 'id>, (. 'k, 'a) => 'b) => t<'k, 'b, 'id>
+let mapWithKeyU: (t<'k, 'a, 'id>, ('k, 'a) => 'b) => t<'k, 'b, 'id>
 let mapWithKey: (t<'k, 'a, 'id>, ('k, 'a) => 'b) => t<'k, 'b, 'id>

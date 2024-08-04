@@ -205,7 +205,7 @@ Belt.Array.rangeBy(3, 3, ~step=1) == [3]
 */
 let rangeBy: (int, int, ~step: int) => array<int>
 
-let makeByU: (int, (. int) => 'a) => t<'a>
+let makeByU: (int, int => 'a) => t<'a>
 /**
 `makeBy(n, f)` return an empty array when n is negative return an array of size
 n populated by `f(i)` start from `0` to `n - 1`.
@@ -220,7 +220,7 @@ Belt.Array.makeBy(5, (i) => i * i) == [0, 1, 4, 9, 16]
 */
 let makeBy: (int, int => 'a) => t<'a>
 
-let makeByAndShuffleU: (int, (. int) => 'a) => t<'a>
+let makeByAndShuffleU: (int, int => 'a) => t<'a>
 /**
 Equivalent to `shuffle(makeBy(n, f))`
 */
@@ -238,7 +238,7 @@ Belt.Array.zip([1, 2], [3, 4, 5]) == [(1, 3), (2, 4)]
 */
 let zip: (t<'a>, array<'b>) => array<('a, 'b)>
 
-let zipByU: (t<'a>, array<'b>, (. 'a, 'b) => 'c) => array<'c>
+let zipByU: (t<'a>, array<'b>, ('a, 'b) => 'c) => array<'c>
 /**
 `zipBy(xs, ys, f)` create an array by applying `f` to corresponding elements of
 `xs` and `ys`. Stops with shorter array.
@@ -392,7 +392,7 @@ Unsafe blit without bounds checking.
 */
 let blitUnsafe: (~src: t<'a>, ~srcOffset: int, ~dst: t<'a>, ~dstOffset: int, ~len: int) => unit
 
-let forEachU: (t<'a>, (. 'a) => unit) => unit
+let forEachU: (t<'a>, 'a => unit) => unit
 /**
 `forEach(xs, f)`
 
@@ -420,7 +420,7 @@ total.contents == 1 + 2 + 3 + 4
 */
 let forEach: (t<'a>, 'a => unit) => unit
 
-let mapU: (t<'a>, (. 'a) => 'b) => array<'b>
+let mapU: (t<'a>, 'a => 'b) => array<'b>
 /**
 `map(xs, f)` returns a new array by calling `f` for each element of `xs` from
 the beginning to end.
@@ -433,7 +433,7 @@ Belt.Array.map([1, 2], (x) => x + 1) == [3, 4]
 */
 let map: (t<'a>, 'a => 'b) => array<'b>
 
-let flatMapU: (t<'a>, (. 'a) => array<'b>) => array<'b>
+let flatMapU: (t<'a>, 'a => array<'b>) => array<'b>
 /**
 `flatMap(xs, f)` returns a new array by calling `f` for each element of `xs` from
 the beginning to end, concatenating the results.
@@ -446,7 +446,7 @@ Belt.Array.flatMap([1, 2], x => [x + 10, x + 20]) == [11, 21, 12, 22]
 */
 let flatMap: (t<'a>, 'a => array<'b>) => array<'b>
 
-let getByU: (t<'a>, (. 'a) => bool) => option<'a>
+let getByU: (t<'a>, 'a => bool) => option<'a>
 /**
 `getBy(xs, p)` returns `Some(value)` for the first value in `xs` that satisifies
 the predicate function `p`; returns `None` if no element satisifies the function.
@@ -460,7 +460,7 @@ Belt.Array.getBy([15, 13, 11], (x) => mod(x, 2) == 0) == None
 */
 let getBy: (t<'a>, 'a => bool) => option<'a>
 
-let getIndexByU: (t<'a>, (. 'a) => bool) => option<int>
+let getIndexByU: (t<'a>, 'a => bool) => option<int>
 /**
 `getIndexBy(xs, p)` returns `Some(index)` for the first value in `xs` that
 satisifies the predicate function `p`; returns `None` if no element satisifies
@@ -475,13 +475,13 @@ Belt.Array.getIndexBy([15, 13, 11], (x) => mod(x, 2) == 0) == None
 */
 let getIndexBy: (t<'a>, 'a => bool) => option<int>
 
-let keepU: (t<'a>, (. 'a) => bool) => t<'a>
+let keepU: (t<'a>, 'a => bool) => t<'a>
 /**
 `keep(xs, p)` returns a new array that keep all elements satisfy `p`.
 */
 let keep: (t<'a>, 'a => bool) => t<'a>
 
-let keepWithIndexU: (t<'a>, (. 'a, int) => bool) => t<'a>
+let keepWithIndexU: (t<'a>, ('a, int) => bool) => t<'a>
 /**
 `keepWithIndex(xs, p)` returns a new array that keep all elements satisfy `p`.
 
@@ -493,7 +493,7 @@ Belt.Array.keepWithIndex([1, 2, 3], (_x, i) => i == 1) == [2]
 */
 let keepWithIndex: (t<'a>, ('a, int) => bool) => t<'a>
 
-let keepMapU: (t<'a>, (. 'a) => option<'b>) => array<'b>
+let keepMapU: (t<'a>, 'a => option<'b>) => array<'b>
 /**
 `keepMap(xs, p)` returns a new array that keep all elements that return a non
 None applied `p`.
@@ -513,7 +513,7 @@ Belt.Array.keepMap([1, 2, 3], x =>
 */
 let keepMap: (t<'a>, 'a => option<'b>) => array<'b>
 
-let forEachWithIndexU: (t<'a>, (. int, 'a) => unit) => unit
+let forEachWithIndexU: (t<'a>, (int, 'a) => unit) => unit
 /**
 `forEachWithIndex(xs, f)` same as `Belt.Array.forEach`, except that `f` is
 supplied two arguments: the index starting from 0 and the element from `xs`.
@@ -538,7 +538,7 @@ total.contents == 0 + 10 + 1 + 11 + 2 + 12 + 3 + 13
 */
 let forEachWithIndex: (t<'a>, (int, 'a) => unit) => unit
 
-let mapWithIndexU: (t<'a>, (. int, 'a) => 'b) => array<'b>
+let mapWithIndexU: (t<'a>, (int, 'a) => 'b) => array<'b>
 /**
 `mapWithIndex(xs, f)` applies `f` to each element of `xs`. Function `f` takes
 two arguments: the index starting from 0 and the element from `xs`.
@@ -551,7 +551,7 @@ Belt.Array.mapWithIndex([1, 2, 3], (i, x) => i + x) == [0 + 1, 1 + 2, 2 + 3]
 */
 let mapWithIndex: (t<'a>, (int, 'a) => 'b) => array<'b>
 
-let partitionU: (t<'a>, (. 'a) => bool) => (t<'a>, t<'a>)
+let partitionU: (t<'a>, 'a => bool) => (t<'a>, t<'a>)
 /**
 `partition(f, a)` split array into tuple of two arrays based on predicate `f`;
 first of tuple where predicate cause true, second where predicate cause false
@@ -566,7 +566,7 @@ Belt.Array.partition([1, 2, 3, 4, 5], (x) => mod(x, 2) != 0) == ([1, 3, 5], [2, 
 */
 let partition: (t<'a>, 'a => bool) => (t<'a>, t<'a>)
 
-let reduceU: (array<'b>, 'a, (. 'a, 'b) => 'a) => 'a
+let reduceU: (array<'b>, 'a, ('a, 'b) => 'a) => 'a
 /**
 `reduce(xs, init, f)` applies `f` to each element of `xs` from beginning to end.
 Function `f` has two parameters: the item from the list and an “accumulator”;
@@ -583,7 +583,7 @@ Belt.Array.reduce(["a", "b", "c", "d"], "", (a, b) => a ++ b) == "abcd"
 */
 let reduce: (array<'b>, 'a, ('a, 'b) => 'a) => 'a
 
-let reduceReverseU: (array<'b>, 'a, (. 'a, 'b) => 'a) => 'a
+let reduceReverseU: (array<'b>, 'a, ('a, 'b) => 'a) => 'a
 /**
 `reduceReverse(xs, init, f)` works like `Belt.Array.reduce` except that
 function `f` is applied to each item of `xs` from the last back to the first.
@@ -596,7 +596,7 @@ Belt.Array.reduceReverse(["a", "b", "c", "d"], "", (a, b) => a ++ b) == "dcba"
 */
 let reduceReverse: (array<'b>, 'a, ('a, 'b) => 'a) => 'a
 
-let reduceReverse2U: (t<'a>, array<'b>, 'c, (. 'c, 'a, 'b) => 'c) => 'c
+let reduceReverse2U: (t<'a>, array<'b>, 'c, ('c, 'a, 'b) => 'c) => 'c
 /**
 `reduceReverse2(xs, ys, init, f)` reduces two arrays xs and ys;taking items
 starting at `min(length(xs), length(ys))` down to and including zero.
@@ -609,7 +609,7 @@ Belt.Array.reduceReverse2([1, 2, 3], [1, 2], 0, (acc, x, y) => acc + x + y) == 6
 */
 let reduceReverse2: (t<'a>, array<'b>, 'c, ('c, 'a, 'b) => 'c) => 'c
 
-let reduceWithIndexU: (t<'a>, 'b, (. 'b, 'a, int) => 'b) => 'b
+let reduceWithIndexU: (t<'a>, 'b, ('b, 'a, int) => 'b) => 'b
 /**
 Applies `f` to each element of `xs` from beginning to end. Function `f` has
 three parameters: the item from the array and an “accumulator”, which starts 
@@ -624,7 +624,7 @@ Belt.Array.reduceWithIndex([1, 2, 3, 4], 0, (acc, x, i) => acc + x + i) == 16
 */
 let reduceWithIndex: (t<'a>, 'b, ('b, 'a, int) => 'b) => 'b
 
-let joinWithU: (t<'a>, string, (. 'a) => string) => string
+let joinWithU: (t<'a>, string, 'a => string) => string
 /**
 `joinWith(xs, sep, toString)`
 
@@ -643,7 +643,7 @@ Belt.Array.joinWith([1], " ", Js.Int.toString) == "1"
 */
 let joinWith: (t<'a>, string, 'a => string) => string
 
-let someU: (t<'a>, (. 'a) => bool) => bool
+let someU: (t<'a>, 'a => bool) => bool
 /**
 `some(xs, p)` returns true if at least one of the elements in `xs` satifies `p`;
 where `p` is a predicate: a function taking an element and returning a `bool`.
@@ -658,7 +658,7 @@ Belt.Array.some([(-1), (-3), (-5)], (x) => x > 0) == false
 */
 let some: (t<'a>, 'a => bool) => bool
 
-let everyU: (t<'a>, (. 'a) => bool) => bool
+let everyU: (t<'a>, 'a => bool) => bool
 /**
 `every(xs, p)` returns `true` if all elements satisfy `p`; where `p` is a
 predicate: a function taking an element and returning a `bool`.
@@ -673,7 +673,7 @@ Belt.Array.every([1, (-3), 5], (x) => x > 0) == false
 */
 let every: (t<'a>, 'a => bool) => bool
 
-let every2U: (t<'a>, array<'b>, (. 'a, 'b) => bool) => bool
+let every2U: (t<'a>, array<'b>, ('a, 'b) => bool) => bool
 /**
 `every2(xs, ys, p)` returns true if `p(xi, yi)` is true for all pairs of
 elements up to the shorter length (i.e. `min(length(xs), length(ys))`)
@@ -692,7 +692,7 @@ Belt.Array.every2([0, 1], [5, 0], (x, y) => x > y) == false
 */
 let every2: (t<'a>, array<'b>, ('a, 'b) => bool) => bool
 
-let some2U: (t<'a>, array<'b>, (. 'a, 'b) => bool) => bool
+let some2U: (t<'a>, array<'b>, ('a, 'b) => bool) => bool
 /**
 `some2(xs, ys, p)` returns true if `p(xi, yi)` is true for any pair of elements
 up to the shorter length (i.e. `min(length(xs), length(ys))`)
@@ -709,7 +709,7 @@ Belt.Array.some2([2, 3], [1, 4], (x, y) => x > y) == true
 */
 let some2: (t<'a>, array<'b>, ('a, 'b) => bool) => bool
 
-let cmpU: (t<'a>, t<'a>, (. 'a, 'a) => int) => int
+let cmpU: (t<'a>, t<'a>, ('a, 'a) => int) => int
 /**
 `cmp(xs, ys, f)` compared by length if `length(xs) != length(ys)`; returning `-1`
 if `length(xs) < length(ys)` or 1 if `length(xs) > length(ys)`. Otherwise
@@ -730,7 +730,7 @@ Belt.Array.cmp([1, 3, 5], [1, 3, 5], (a, b) => compare(a, b)) == 0
 */
 let cmp: (t<'a>, t<'a>, ('a, 'a) => int) => int
 
-let eqU: (t<'a>, t<'a>, (. 'a, 'a) => bool) => bool
+let eqU: (t<'a>, t<'a>, ('a, 'a) => bool) => bool
 /**
 `eq(xs, ys)` return `false` if length is not the same otherwise compare items
 one by one using `f(xi, yi)`; and return true if all results are true false otherwise
@@ -761,7 +761,7 @@ arr == ["ant", "bee", "cat"]
 */
 external truncateToLengthUnsafe: (t<'a>, int) => unit = "length"
 
-let initU: (int, (. int) => 'a) => t<'a>
+let initU: (int, int => 'a) => t<'a>
 let init: (int, int => 'a) => t<'a>
 
 /**

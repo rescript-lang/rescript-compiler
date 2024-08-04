@@ -28,23 +28,23 @@ let some: 'a => option<'a>
 
 let isSome: option<'a> => bool
 
-let isSomeValue: ((. 'a, 'a) => bool, 'a, option<'a>) => bool
+let isSomeValue: (('a, 'a) => bool, 'a, option<'a>) => bool
 
 let isNone: option<'a> => bool
 
 let getExn: option<'a> => 'a
 
-let equal: ((. 'a, 'b) => bool, option<'a>, option<'b>) => bool
+let equal: (('a, 'b) => bool, option<'a>, option<'b>) => bool
 
-let andThen: ((. 'a) => option<'b>, option<'a>) => option<'b>
+let andThen: ('a => option<'b>, option<'a>) => option<'b>
 
-let map: ((. 'a) => 'b, option<'a>) => option<'b>
+let map: ('a => 'b, option<'a>) => option<'b>
 
 let getWithDefault: ('a, option<'a>) => 'a
 
 @deprecated("Use `getWithDefault` instead since default has special meaning in ES module")
 let default: ('a, option<'a>) => 'a
 
-let filter: ((. 'a) => bool, option<'a>) => option<'a>
+let filter: ('a => bool, option<'a>) => option<'a>
 
 let firstSome: (option<'a>, option<'a>) => option<'a>

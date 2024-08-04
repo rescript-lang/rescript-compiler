@@ -43,13 +43,13 @@ let getExn = f =>
 let bind = (x, f) =>
   switch to_opt(x) {
   | None => empty
-  | Some(x) => return(f(. x))
+  | Some(x) => return(f(x))
   }
 
 let iter = (x, f) =>
   switch to_opt(x) {
   | None => ()
-  | Some(x) => f(. x)
+  | Some(x) => f(x)
   }
 
 let fromOption = x =>

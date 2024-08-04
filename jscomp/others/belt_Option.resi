@@ -41,7 +41,7 @@ let someString: option<string> = Some("hello")
 */
 
 /** Uncurried version of `keep` */
-let keepU: (option<'a>, (. 'a) => bool) => option<'a>
+let keepU: (option<'a>, 'a => bool) => option<'a>
 
 /**
 If `optionValue` is `Some(value)` and `p(value) = true`, it returns `Some(value)`; otherwise returns `None`
@@ -57,7 +57,7 @@ Belt.Option.keep(None, x => x > 5) /* returns `None` */
 let keep: (option<'a>, 'a => bool) => option<'a>
 
 /** Uncurried version of `forEach` */
-let forEachU: (option<'a>, (. 'a) => unit) => unit
+let forEachU: (option<'a>, 'a => unit) => unit
 
 /**
 If `optionValue` is `Some(value`), it calls `f(value)`; otherwise returns `()`
@@ -93,7 +93,7 @@ nor `Some(None(...)))`
 external getUnsafe: option<'a> => 'a = "%identity"
 
 /** Uncurried version of `mapWithDefault` */
-let mapWithDefaultU: (option<'a>, 'b, (. 'a) => 'b) => 'b
+let mapWithDefaultU: (option<'a>, 'b, 'a => 'b) => 'b
 
 /**
 If `optionValue` is of `Some(value)`,
@@ -114,7 +114,7 @@ noneValue->Belt.Option.mapWithDefault(0, x => x + 5) /* 0 */
 let mapWithDefault: (option<'a>, 'b, 'a => 'b) => 'b
 
 /** Uncurried version of `map` */
-let mapU: (option<'a>, (. 'a) => 'b) => option<'b>
+let mapU: (option<'a>, 'a => 'b) => option<'b>
 
 /**
 If `optionValue` is `Some(value)` this returns `f(value)`, otherwise it returns `None`.
@@ -130,7 +130,7 @@ Belt.Option.map(None, x => x * x) /* None */
 let map: (option<'a>, 'a => 'b) => option<'b>
 
 /** Uncurried version of `flatMap` */
-let flatMapU: (option<'a>, (. 'a) => option<'b>) => option<'b>
+let flatMapU: (option<'a>, 'a => option<'b>) => option<'b>
 
 /**
 If `optionValue` is `Some(value)`, returns `f(value)`, otherwise returns
@@ -221,7 +221,7 @@ let isNone: option<'a> => bool
 /**
 Uncurried version of `eq`
 */
-let eqU: (option<'a>, option<'b>, (. 'a, 'b) => bool) => bool
+let eqU: (option<'a>, option<'b>, ('a, 'b) => bool) => bool
 
 /**
 Evaluates two optional values for equality with respect to a predicate
@@ -253,7 +253,7 @@ let eq: (option<'a>, option<'b>, ('a, 'b) => bool) => bool
 /**
 Uncurried version of `cmp`
 */
-let cmpU: (option<'a>, option<'b>, (. 'a, 'b) => int) => int
+let cmpU: (option<'a>, option<'b>, ('a, 'b) => int) => int
 
 /**
 `cmp(optValue1, optValue2, comparisonFunction)` compares two optional values

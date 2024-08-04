@@ -61,14 +61,14 @@ let rec set = (t, newK: key, newD: _) =>
 let rec updateU = (t, x: key, f) =>
   switch t {
   | None =>
-    switch f(. None) {
+    switch f(None) {
     | None => t
     | Some(data) => N.singleton(x, data)
     }
   | Some(n) =>
     let k = n.N.key
     if x == k {
-      switch f(. Some(n.N.value)) {
+      switch f(Some(n.N.value)) {
       | None =>
         let {N.left: l, right: r} = n
         switch (l, r) {
@@ -101,7 +101,7 @@ let rec updateU = (t, x: key, f) =>
     }
   }
 
-let update = (t, x, f) => updateU(t, x, (. a) => f(a))
+let update = (t, x, f) => updateU(t, x, a => f(a))
 
 let rec removeAux = (n, x: key) => {
   let {N.left: l, key: v, right: r} = n

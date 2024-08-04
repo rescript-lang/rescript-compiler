@@ -74,10 +74,10 @@ playground-release: playground playground-cmijs
 	sh playground/upload_bundle.sh
 
 format:
-	dune build @fmt --auto-promote
+	bash scripts/format.sh
 
 checkformat:
-	node scripts/check_format.sh
+	bash scripts/format_check.sh
 
 clean-gentype:
 	make -C jscomp/gentype_tests/typescript-react-example clean

@@ -78,7 +78,7 @@ type comparable<'key, 'id> = module(Comparable with type t = 'key and type ident
 module MakeComparableU: (
   M: {
     type t
-    let cmp: (. t, t) => int
+    let cmp: (t, t) => int
   },
 ) => (Comparable with type t = M.t)
 
@@ -89,7 +89,7 @@ module MakeComparable: (
   },
 ) => (Comparable with type t = M.t)
 
-let comparableU: (~cmp: (. 'a, 'a) => int) => module(Comparable with type t = 'a)
+let comparableU: (~cmp: ('a, 'a) => int) => module(Comparable with type t = 'a)
 
 /**
 ## Examples
@@ -127,8 +127,8 @@ type hashable<'key, 'id> = module(Hashable with type t = 'key and type identity 
 module MakeHashableU: (
   M: {
     type t
-    let hash: (. t) => int
-    let eq: (. t, t) => bool
+    let hash: t => int
+    let eq: (t, t) => bool
   },
 ) => (Hashable with type t = M.t)
 
@@ -140,10 +140,10 @@ module MakeHashable: (
   },
 ) => (Hashable with type t = M.t)
 
-let hashableU: (~hash: (. 'a) => int, ~eq: (. 'a, 'a) => bool) => module(Hashable with type t = 'a)
+let hashableU: (~hash: 'a => int, ~eq: ('a, 'a) => bool) => module(Hashable with type t = 'a)
 
 let hashable: (~hash: 'a => int, ~eq: ('a, 'a) => bool) => module(Hashable with type t = 'a)
 
-external getHashInternal: hash<'a, 'id> => (. 'a) => int = "%identity"
-external getEqInternal: eq<'a, 'id> => (. 'a, 'a) => bool = "%identity"
-external getCmpInternal: cmp<'a, 'id> => (. 'a, 'a) => int = "%identity"
+external getHashInternal: hash<'a, 'id> => 'a => int = "%identity"
+external getEqInternal: eq<'a, 'id> => ('a, 'a) => bool = "%identity"
+external getCmpInternal: cmp<'a, 'id> => ('a, 'a) => int = "%identity"
