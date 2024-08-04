@@ -77,9 +77,7 @@ function is_exception() {
     if (exn.RE_EXN_ID === "Not_found") {
       return;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -90,22 +88,16 @@ function is_normal_exception(_x) {
     _1: 3
   };
   try {
-    throw new Error(v.RE_EXN_ID, {
-      cause: v
-    });
+    throw v;
   } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === A) {
       if (exn._1 === 3) {
         return;
       }
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 

@@ -126,15 +126,6 @@ let exn_block_as_obj ~(stack : bool) (el : J.expression list) (ext : J.tag_info)
         }
     else cause
 
-let exn_ref_as_obj e : J.expression =
-  let cause = { J.expression_desc = e; comment = None; } in
-  new_error
-    (E.record_access cause Js_dump_lit.exception_id 0l)
-    {
-      J.expression_desc = Object [ (Lit Js_dump_lit.cause, cause) ];
-      comment = None;
-    }
-
 let rec iter_lst cxt (f : P.t) ls element inter =
   match ls with
   | [] -> cxt
@@ -1211,7 +1202,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
         match e.expression_desc with
         | Caml_block (el, _, _, ((Blk_extension | Blk_record_ext _) as ext)) ->
             { e with expression_desc = (exn_block_as_obj ~stack:true el ext).expression_desc }
-        | exp -> { e with expression_desc = (exn_ref_as_obj exp).expression_desc }
+        | _ -> e
       in
       P.string f L.throw;
       P.space f;
