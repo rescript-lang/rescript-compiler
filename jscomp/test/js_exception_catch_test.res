@@ -36,7 +36,7 @@ let test = f =>
   | B => #B
   | C(1, 2) => #C
   | C(_) => #C_any
-  | Failure(_) => #Failure
+  | Js.Exn.Error(_) => #Js_error
   | e => #Any
   }
 
@@ -50,8 +50,8 @@ let () = {
   eq(__LOC__, test(_ => raise(B)), #B)
   eq(__LOC__, test(_ => raise(C(1, 2))), #C)
   eq(__LOC__, test(_ => raise(C(0, 2))), #C_any)
-  eq(__LOC__, test(_ => Js.Exn.raiseError("x")), #Failure)
-  eq(__LOC__, test(_ => failwith("x")), #Failure)
+  eq(__LOC__, test(_ => Js.Exn.raiseError("x")), #Js_error)
+  eq(__LOC__, test(_ => failwith("x")), #Any)
 }
 
 let () = Mt.from_pair_suites(__MODULE__, suites.contents)
