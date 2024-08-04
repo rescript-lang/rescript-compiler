@@ -123,25 +123,24 @@ function testUnboxedBinary(param) {
 function testInline(x) {
   switch (x.TAG) {
     case "I" :
-        return {
-          TAG: "I",
-          i: x.i,
-          j: x.j
-        };
+      return {
+        TAG: "I",
+        i: x.i,
+        j: x.j
+      };
     case "J" :
-        return x;
+      return x;
     case "K" :
-        return {
-          TAG: "K",
-          _0: x._1,
-          _1: x._0
-        };
+      return {
+        TAG: "K",
+        _0: x._1,
+        _1: x._0
+      };
     case "L" :
-        return {
-          TAG: "L",
-          _0: x._0
-        };
-    
+      return {
+        TAG: "L",
+        _0: x._0
+      };
   }
 }
 
