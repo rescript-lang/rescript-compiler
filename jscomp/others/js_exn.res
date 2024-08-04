@@ -38,4 +38,43 @@ external isCamlExceptionOrOpenVariant: 'a => bool = "?is_extension"
 
 external anyToExnInternal: 'a => exn = "#wrap_exn"
 
+%%raw("
+function raiseThrow(exn) {
+  throw exn
+}
+")
+
+external raiseThrow: exn => 'a = "raiseThrow"
+
+type eval_error
+@new external makeEvalError: string => eval_error = "EvalError"
+
+let raiseEvalError = str => raiseThrow((Obj.magic((makeEvalError(str): eval_error)): exn))
+
+type range_error
+@new external makeRangeError: string => range_error = "RangeError"
+
+let raiseRangeError = str => raiseThrow((Obj.magic((makeRangeError(str): range_error)): exn))
+
+type reference_error
+
+@new external makeReferenceError: string => reference_error = "ReferenceError"
+
+let raiseReferenceError = str => raiseThrow(Obj.magic(makeReferenceError(str)))
+
+type syntax_error
+@new external makeSyntaxError: string => syntax_error = "SyntaxError"
+
+let raiseSyntaxError = str => raiseThrow(Obj.magic(makeSyntaxError(str)))
+
+type type_error
+@new external makeTypeError: string => type_error = "TypeError"
+
+let raiseTypeError = str => raiseThrow(Obj.magic(makeTypeError(str)))
+
+type uri_error
+@new external makeURIError: string => uri_error = "URIError"
+
+let raiseUriError = str => raiseThrow(Obj.magic(makeURIError(str)))
+
 let raiseError = str => raise(Failure(str))

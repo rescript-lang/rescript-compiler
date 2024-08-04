@@ -77,4 +77,4 @@ exports.test_js_error = test_js_error;
 exports.test_js_error2 = test_js_error2;
 exports.example1 = example1;
 exports.example2 = example2;
-/* No side effect */
+/* Js_exn Not a pure module */

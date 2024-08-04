@@ -68,3 +68,9 @@ external anyToExnInternal: 'a => exn = "#wrap_exn"
 
 /** Raise Js exception Error object with stacktrace */
 let raiseError: string => 'a
+let raiseEvalError: string => 'a
+let raiseRangeError: string => 'a
+let raiseReferenceError: string => 'a
+let raiseSyntaxError: string => 'a
+let raiseTypeError: string => 'a
+let raiseUriError: string => 'a
