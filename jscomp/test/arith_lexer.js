@@ -178,7 +178,6 @@ function str(e) {
       return "-" + str(e._0);
     case "Variable" :
       return e._0;
-    
   }
 }
 

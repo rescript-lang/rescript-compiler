@@ -121,7 +121,6 @@ function balance_left(l, x, r) {
           _3: d
         }
       };
-    
   }
 }
 
@@ -197,7 +196,6 @@ function balance_right(l, x, r) {
           _3: d
         }
       };
-    
   }
 }
 

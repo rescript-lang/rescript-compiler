@@ -10,7 +10,6 @@ function compare(x, y) {
       return y === "B";
     case "C" :
       return y === "C";
-    
   }
 }
 
@@ -23,7 +22,6 @@ function compare2(x, y) {
         case "B" :
         case "C" :
           return false;
-        
       }
     case "B" :
       switch (y) {
@@ -32,7 +30,6 @@ function compare2(x, y) {
         case "A" :
         case "C" :
           return false;
-        
       }
     case "C" :
       switch (y) {
@@ -41,9 +38,7 @@ function compare2(x, y) {
           return false;
         case "C" :
           return true;
-        
       }
-    
   }
 }
 

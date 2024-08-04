@@ -944,8 +944,6 @@ function of_list(l) {
               
             }
             break;
-          default:
-            
         }
         let nl = n / 2 | 0;
         let match$3 = sub(nl, l);

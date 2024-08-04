@@ -12,7 +12,6 @@ function f(x) {
       return "X3";
     case "X4" :
       return "X4";
-    
   }
 }
 
@@ -26,7 +25,6 @@ function f2(x) {
       return "X3";
     case "X4" :
       return "X4";
-    
   }
 }
 

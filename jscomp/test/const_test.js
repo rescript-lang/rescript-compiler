@@ -22,7 +22,6 @@ function fff(x) {
       return 1;
     case "C" :
       return 2;
-    
   }
 }
 

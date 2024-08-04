@@ -604,7 +604,6 @@ function to_enum(x) {
       return 298;
     case "A299" :
       return 299;
-    
   }
 }
 
@@ -1210,7 +1209,6 @@ function to_string(x) {
       return "A298";
     case "A299" :
       return "A299";
-    
   }
 }
 

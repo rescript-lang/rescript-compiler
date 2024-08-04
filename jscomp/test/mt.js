@@ -91,7 +91,6 @@ function handleCode(spec) {
       return assert_fail("failed");
     case "FailWith" :
       return assert_fail(spec._0);
-    
   }
 }
 

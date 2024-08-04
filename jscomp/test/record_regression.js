@@ -196,8 +196,6 @@ function inlinedRecord(ir) {
           ];
         }
         break;
-      default:
-        
     }
     let x2$2 = ir.x2;
     if (x2$2 !== undefined) {

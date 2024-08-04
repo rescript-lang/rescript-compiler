@@ -123,7 +123,6 @@ function classify$3(x) {
         return "c";
       case "D" :
         return "d";
-      
     }
   } else {
     switch (typeof x) {
@@ -133,7 +132,6 @@ function classify$3(x) {
         return "int";
       case "object" :
         return "Object" + x.name;
-      
     }
   }
 }
@@ -150,7 +148,6 @@ function classify$4(x) {
       return "int";
     case "object" :
       return "Object" + x.name;
-    
   }
 }
 
@@ -169,7 +166,6 @@ function classify$5(x) {
       return "int";
     case "object" :
       return "Object" + x.name;
-    
   }
 }
 
@@ -186,7 +182,6 @@ function classify$6(x) {
         return "JSONTrue";
       case null :
         return "JSONNull";
-      
     }
   } else {
     if (Array.isArray(x)) {
@@ -211,7 +206,6 @@ function classify$6(x) {
           TAG: "JSONObject",
           _0: x
         };
-      
     }
   }
 }
@@ -251,7 +245,6 @@ function checkEnum(e) {
       return "Two";
     case "Three" :
       return "Threeeee";
-    
   }
 }
 
@@ -270,7 +263,6 @@ function checkEnum$1(e) {
       return "Two";
     case "Three" :
       return "Threeeee";
-    
   }
 }
 
@@ -289,7 +281,6 @@ function checkEnum$2(e) {
       return "Two";
     case "Three" :
       return "Threeeee";
-    
   }
 }
 
@@ -373,7 +364,6 @@ function classify$9(v) {
       return v.x;
     case "function" :
       return v(3);
-    
   }
 }
 
@@ -469,7 +459,6 @@ async function getUserName(u) {
       return u.name;
     case "string" :
       return u;
-    
   }
 }
 
@@ -481,7 +470,6 @@ async function awaitUser(u) {
     case "object" :
     case "string" :
       return "dummy";
-    
   }
 }
 
@@ -516,7 +504,6 @@ async function classify$10(a) {
       case "object" :
         console.log(a.userName);
         return;
-      
     }
   }
 }
@@ -559,7 +546,6 @@ async function classifyAll(t) {
     case "object" :
       console.log(t.userName);
       return;
-    
   }
 }
 
@@ -575,7 +561,6 @@ function test(t) {
       return t;
     case "function" :
       return t();
-    
   }
 }
 
@@ -599,7 +584,6 @@ function should_not_merge(x) {
       return "boolean";
     case "object" :
       return "do not merge";
-    
   }
 }
 
@@ -614,7 +598,6 @@ function can_merge(x) {
     case "boolean" :
     case "object" :
       return "merge";
-    
   }
 }
 

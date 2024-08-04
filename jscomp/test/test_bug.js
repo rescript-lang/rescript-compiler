@@ -78,7 +78,6 @@ function escaped(s) {
             n = n + 1 | 0;
             s$p[n] = /* 'r' */114;
             break;
-          
         }
       }
     } else if (c$1 > 91 || c$1 < 35) {

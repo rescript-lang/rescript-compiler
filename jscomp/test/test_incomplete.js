@@ -34,7 +34,6 @@ function f3(x) {
     case "B" :
     case "D" :
       return x._0 + 2 | 0;
-    
   }
 }
 

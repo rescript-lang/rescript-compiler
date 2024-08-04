@@ -10,7 +10,6 @@ function f(x) {
       return 2;
     case "C" :
       return 3;
-    
   }
 }
 
@@ -22,7 +21,6 @@ function f_0(x) {
       return 0;
     case "C" :
       return 1;
-    
   }
 }
 
@@ -37,7 +35,6 @@ function f2(x) {
       return "T001";
     case 2 :
       return "T002";
-    
   }
 }
 
@@ -53,7 +50,6 @@ function f3(x) {
       return "Y3";
     case "X4" :
       return "Y4";
-    
   }
 }
 
@@ -70,7 +66,6 @@ function f5(x) {
         return 3;
       case "F" :
         return 4;
-      
     }
   } else {
     switch (x.TAG) {
@@ -79,7 +74,6 @@ function f5(x) {
         return 1;
       case "E" :
         return 2;
-      
     }
   }
 }
@@ -94,7 +88,6 @@ function f6(x) {
       return 0;
     case "F" :
       return 2;
-    
   }
 }
 
@@ -107,7 +100,6 @@ function f7(x) {
         return 2;
       case "F" :
         return -1;
-      
     }
   } else {
     switch (x.TAG) {
@@ -117,7 +109,6 @@ function f7(x) {
         return 4;
       case "E" :
         return -1;
-      
     }
   }
 }
@@ -157,7 +148,6 @@ function f9(x) {
     case "T66" :
     case "T68" :
       return 3;
-    
   }
 }
 
@@ -172,7 +162,6 @@ function f10(x) {
         return 4;
       case "T63" :
         return 1;
-      
     }
   } else {
     switch (x.TAG) {
@@ -182,7 +171,6 @@ function f10(x) {
       case "T66" :
       case "T68" :
         return 3;
-      
     }
   }
 }

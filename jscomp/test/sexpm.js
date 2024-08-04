@@ -55,7 +55,6 @@ function _must_escape(s) {
                       RE_EXN_ID: Pervasives.Exit
                     }
                   });
-            
           }
         } else {
           exit = 1;
@@ -260,7 +259,6 @@ function expr_starting_with(c, k, t) {
           return expr_list(/* [] */0, k, t);
         case 41 :
           return _error(t, "unexpected ')'");
-        
       }
     }
     
@@ -374,7 +372,6 @@ function atom(k, t) {
             break;
           case 34 :
             return _error(t, "unexpected '\"' in the middle of an atom");
-          
         }
       } else {
         exit = 1;
@@ -388,7 +385,6 @@ function atom(k, t) {
         continue;
       case 2 :
         return _return_atom(c, k, t);
-      
     }
   };
 }
@@ -456,7 +452,6 @@ function escaped(k, t) {
           break;
         case 116 :
           return k(/* '\t' */9);
-        
       }
     }
     

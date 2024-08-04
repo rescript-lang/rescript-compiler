@@ -21,7 +21,6 @@ function foo(x) {
     case "D" :
       let match = x._0;
       return match[0] + match[1] | 0;
-    
   }
 }
 
@@ -92,7 +91,6 @@ function rollback_path(subst, p) {
         case "Pident" :
         case "Papply" :
           return "Pident | Papply";
-        
       }
     } else {
       throw new Error(exn.RE_EXN_ID, {

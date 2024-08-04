@@ -26,8 +26,6 @@ function fake_c2(a_type, b_type) {
       return 1;
     case "undefined" :
       return -1;
-    default:
-      
   }
   if (b_type === "undefined") {
     return 1;

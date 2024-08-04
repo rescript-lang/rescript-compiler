@@ -20,7 +20,6 @@ function is_number(_expr) {
       case "Frac" :
       case "Gcd" :
         return false;
-      
     }
   };
 }
@@ -63,7 +62,6 @@ function compare(context, state, _a, _b) {
           case "Gcd" :
             exit = 1;
             break;
-          
         }
         break;
       case "Neg" :
@@ -103,7 +101,6 @@ function compare(context, state, _a, _b) {
           case "Gcd" :
             exit = 1;
             break;
-          
         }
         break;
       case "Gcd" :
@@ -125,7 +122,6 @@ function compare(context, state, _a, _b) {
             exit$1 = 3;
         }
         break;
-      
     }
     if (exit$3 === 5) {
       if (b.TAG === "Neg") {
@@ -162,7 +158,6 @@ function compare(context, state, _a, _b) {
         case "Frac" :
         case "Gcd" :
           return 1;
-        
       }
     }
     switch (exit) {
@@ -181,7 +176,6 @@ function compare(context, state, _a, _b) {
         _b = nb;
         _a = na;
         continue;
-      
     }
   };
 }

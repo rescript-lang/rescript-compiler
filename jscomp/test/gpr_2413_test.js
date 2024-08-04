@@ -15,7 +15,6 @@ function f(x) {
     case "B" :
     case "C" :
       break;
-    
   }
   let a$3 = x._0._0;
   return Math.imul(a$3, a$3);

@@ -14,7 +14,6 @@ function toEnum(x) {
       return 3;
     case 3.14 :
       return 5;
-    
   }
 }
 
@@ -30,7 +29,6 @@ function toString(x) {
       return "D";
     case 3.14 :
       return "Pi";
-    
   }
 }
 
@@ -144,7 +142,6 @@ function foo(x) {
         return 2;
       case false :
         return 3;
-      
     }
   } else {
     switch (x.TAG) {
@@ -154,7 +151,6 @@ function foo(x) {
         return 5;
       case "F" :
         return 6;
-      
     }
   }
 }
@@ -286,7 +282,6 @@ function plus$3(x, y) {
         return y;
       case "WhyNotAnotherOne" :
         break;
-      
     }
   } else if (!(y === undefined || y === null || y === "WhyNotAnotherOne")) {
     return {
@@ -303,7 +298,6 @@ function plus$3(x, y) {
       return x;
     case "WhyNotAnotherOne" :
       return "WhyNotAnotherOne";
-    
   }
 }
 
@@ -318,7 +312,6 @@ function kind$1(x) {
       return "undefined";
     case "WhyNotAnotherOne" :
       return "whynot";
-    
   }
 }
 
@@ -354,7 +347,6 @@ function area(shape) {
       return Math.pow(shape.sideLength, 2);
     case "rectangle" :
       return shape.width * shape.height;
-    
   }
 }
 
@@ -403,7 +395,6 @@ function classify(x) {
       }
     case "object" :
       return "Object" + x.name;
-    
   }
 }
 

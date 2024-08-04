@@ -19,7 +19,6 @@ function f(x) {
       return 2;
     case "F" :
       return 3;
-    
   }
 }
 

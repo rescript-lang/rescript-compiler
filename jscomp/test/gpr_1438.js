@@ -15,8 +15,6 @@ function actionKey(key, a, b, c, d, e) {
     case 99 :
     case 118 :
       return a;
-    default:
-      
   }
   return function (param) {
     

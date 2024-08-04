@@ -845,7 +845,6 @@ function equal(_l1, _l2) {
           case "TExp" :
           case "TMatch" :
             return false;
-          
         }
       case "TExp" :
         if (!l2) {
@@ -866,7 +865,6 @@ function equal(_l1, _l2) {
           case "TSeq" :
           case "TMatch" :
             return false;
-          
         }
       case "TMatch" :
         if (!l2) {
@@ -884,9 +882,7 @@ function equal(_l1, _l2) {
             _l2 = l2.tl;
             _l1 = l1.tl;
             continue;
-          
         }
-      
     }
   };
 }
@@ -912,7 +908,6 @@ function hash$1(_l, _accu) {
         _accu = hash_combine(471882453, hash(marks._0, accu));
         _l = l.tl;
         continue;
-      
     }
   };
 }
@@ -939,7 +934,6 @@ function tseq(kind, x, y, rem) {
     case "TSeq" :
     case "TMatch" :
       break;
-    
   }
   return {
     hd: {
@@ -1015,7 +1009,6 @@ function mark_used_indices(tbl) {
         case "TExp" :
         case "TMatch" :
           break;
-        
       }
       List.iter((function (param) {
         let i = param[1];
@@ -1059,7 +1052,6 @@ function remove_matches(extra) {
         return true;
       case "TMatch" :
         return false;
-      
     }
   }), extra);
 }
@@ -1084,7 +1076,6 @@ function split_at_match_rec(_l$p, _x) {
             List.rev(l$p),
             remove_matches(x.tl)
           ];
-        
       }
     } else {
       throw new Error("Assert_failure", {
@@ -1165,7 +1156,6 @@ function remove_duplicates(prev, _l, y) {
           },
           prev
         ];
-      
     }
   };
 }
@@ -1203,7 +1193,6 @@ function set_idx(idx, x) {
         },
         tl: set_idx(idx, x.tl)
       };
-    
   }
 }
 
@@ -1261,7 +1250,6 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
             return;
           case "TMatch" :
             return x._0;
-          
         }
       }), y$p$1);
       let match = marks$p !== undefined ? [
@@ -1356,7 +1344,6 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
         },
         tl: rem
       };
-    
   }
 }
 
@@ -1376,7 +1363,6 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
         return;
       case "TMatch" :
         return x._0;
-      
     }
   }), y);
   if (marks === undefined) {
@@ -1407,7 +1393,6 @@ function delta_4(c, next_cat, prev_cat, l, rem) {
           hd: x,
           tl: rem$1
         };
-      
     }
   } else {
     return rem;
@@ -1456,7 +1441,6 @@ function status(s) {
           _1: m$1.pmarks
         };
         break;
-      
     }
   } else {
     st$1 = "Failed";
@@ -1890,7 +1874,6 @@ function colorize(c, regexp) {
           case "Start" :
           case "Stop" :
             return;
-          
         }
       } else {
         switch (regexp.TAG) {
@@ -2015,7 +1998,6 @@ function equal$2(_x1, _x2) {
           } else {
             return false;
           }
-        
       }
     } else {
       switch (x1.TAG) {
@@ -2159,7 +2141,6 @@ function equal$2(_x1, _x2) {
           _x2 = x2._1;
           _x1 = x1._1;
           continue;
-        
       }
     }
   };
@@ -2272,8 +2253,6 @@ function merge_sequences(_x) {
         case "Alternative" :
           _x = Pervasives.$at(l$p._0, x.tl);
           continue;
-        default:
-          
       }
     }
     return {
@@ -2406,7 +2385,6 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             }),
             kind
           ];
-        
       }
     } else {
       switch (x.TAG) {
@@ -2735,7 +2713,6 @@ function handle_case(_ign_case, _x) {
           _0: x._0,
           _1: handle_case(ign_case, x._1)
         };
-      
     }
   };
 }
@@ -4074,7 +4051,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                   RE_EXN_ID: Parse_error
                 }
               });
-        
       }
     } else {
       if (c$2 >= 48) {

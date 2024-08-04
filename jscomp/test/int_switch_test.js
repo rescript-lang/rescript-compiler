@@ -58,7 +58,6 @@ function f33(x) {
       return /* 'c' */99;
     case "D" :
       return /* 'x' */120;
-    
   }
 }
 

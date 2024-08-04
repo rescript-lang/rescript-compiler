@@ -17,7 +17,6 @@ function isfree(id, _x) {
         }
         _x = x._1;
         continue;
-      
     }
   };
 }
