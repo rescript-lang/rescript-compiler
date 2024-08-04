@@ -56,11 +56,13 @@ console.log(f(v1));
 
 let A0 = /* @__PURE__ */Caml_exceptions.create("Inline_record_test.A0");
 
-let v3 = {
-  RE_EXN_ID: A0,
-  lbl: 3,
-  more: /* [] */0
-};
+let v3 = new Error(A0, {
+  cause: {
+    RE_EXN_ID: A0,
+    lbl: 3,
+    more: /* [] */0
+  }
+});
 
 let tmp;
 
@@ -146,12 +148,14 @@ eq("File \"inline_record_test.res\", line 80, characters 2-9", tmp$2, 22);
 
 let A4 = /* @__PURE__ */Caml_exceptions.create("Inline_record_test.A4");
 
-let v6 = {
-  RE_EXN_ID: A4,
-  x: 0,
-  y: 0,
-  z: 0
-};
+let v6 = new Error(A4, {
+  cause: {
+    RE_EXN_ID: A4,
+    x: 0,
+    y: 0,
+    z: 0
+  }
+});
 
 function ff0(x) {
   if (x.RE_EXN_ID === A4) {

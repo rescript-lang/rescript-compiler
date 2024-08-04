@@ -43,10 +43,12 @@ let B = /* @__PURE__ */Caml_exceptions.create("Exception_value_test.B");
 
 let C = /* @__PURE__ */Caml_exceptions.create("Exception_value_test.C");
 
-let u = {
-  RE_EXN_ID: A,
-  _1: 3
-};
+let u = new Error(A, {
+  cause: {
+    RE_EXN_ID: A,
+    _1: 3
+  }
+});
 
 function test_not_found(f, param) {
   try {

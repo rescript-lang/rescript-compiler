@@ -83,10 +83,12 @@ function is_exception() {
 
 function is_normal_exception(_x) {
   let A = /* @__PURE__ */Caml_exceptions.create("A");
-  let v = {
-    RE_EXN_ID: A,
-    _1: 3
-  };
+  let v = new Error(A, {
+    cause: {
+      RE_EXN_ID: A,
+      _1: 3
+    }
+  });
   try {
     throw v;
   } catch (raw_exn) {
@@ -144,9 +146,11 @@ let suites = {
   tl: suites_1
 };
 
-let e = {
-  RE_EXN_ID: "Not_found"
-};
+let e = new Error("Not_found", {
+  cause: {
+    RE_EXN_ID: "Not_found"
+  }
+});
 
 function eq(x) {
   return x.RE_EXN_ID === "Not_found";
@@ -154,9 +158,11 @@ function eq(x) {
 
 let Not_found = /* @__PURE__ */Caml_exceptions.create("Equal_exception_test.Not_found");
 
-if (Caml_obj.equal(e, {
-    RE_EXN_ID: Not_found
-  }) !== false) {
+if (Caml_obj.equal(e, new Error(Not_found, {
+    cause: {
+      RE_EXN_ID: Not_found
+    }
+  })) !== false) {
   throw new Error("Assert_failure", {
     cause: {
       RE_EXN_ID: "Assert_failure",

@@ -100,7 +100,7 @@ let comma f = P.string f L.comma
 let new_error name cause =
   E.new_ (E.js_global Js_dump_lit.error) [ name; cause ]
 
-let exn_block_as_obj ~(stack : bool) (el : J.expression list) (ext : J.tag_info)
+let exn_block_as_obj (el : J.expression list) (ext : J.tag_info)
     : J.expression =
   let field_name =
     match ext with
@@ -118,13 +118,11 @@ let exn_block_as_obj ~(stack : bool) (el : J.expression list) (ext : J.tag_info)
       comment = None;
     }
   in
-   if stack then
-      new_error (List.hd el)
-        {
-          J.expression_desc = Object [ (Lit Js_dump_lit.cause, cause) ];
-          comment = None;
-        }
-    else cause
+    new_error (List.hd el)
+    {
+      J.expression_desc = Object [ (Lit Js_dump_lit.cause, cause) ];
+      comment = None;
+    }
 
 let rec iter_lst cxt (f : P.t) ls element inter =
   match ls with
@@ -740,7 +738,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
                ])
       | _ -> assert false)
   | Caml_block (el, _, _, ((Blk_extension | Blk_record_ext _) as ext)) ->
-      expression cxt ~level f (exn_block_as_obj ~stack:false el ext)
+      expression cxt ~level f (exn_block_as_obj el ext)
   | Caml_block (el, _, tag, Blk_record_inlined p) ->
       let untagged = Ast_untagged_variants.process_untagged p.attrs in
       let objs =
@@ -1198,12 +1196,6 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
                   P.newline f;
                   statements false cxt f def))
   | Throw e ->
-      let e =
-        match e.expression_desc with
-        | Caml_block (el, _, _, ((Blk_extension | Blk_record_ext _) as ext)) ->
-            { e with expression_desc = (exn_block_as_obj ~stack:true el ext).expression_desc }
-        | _ -> e
-      in
       P.string f L.throw;
       P.space f;
       P.group f 0 (fun _ ->

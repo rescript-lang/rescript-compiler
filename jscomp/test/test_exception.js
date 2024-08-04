@@ -51,9 +51,11 @@ function xx() {
 
 let Nullary = /* @__PURE__ */Caml_exceptions.create("Test_exception.Nullary");
 
-let a = {
-  RE_EXN_ID: Nullary
-};
+let a = new Error(Nullary, {
+  cause: {
+    RE_EXN_ID: Nullary
+  }
+});
 
 exports.Local = Local;
 exports.f = f;
