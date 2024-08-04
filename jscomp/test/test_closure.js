@@ -12,7 +12,7 @@ function f() {
   let arr = Caml_array.make(10, (function (param) {
     
   }));
-  for(let i = 0; i <= 9; ++i){
+  for (let i = 0; i <= 9; ++i) {
     Caml_array.set(arr, i, (function (param) {
       v.contents = v.contents + i | 0;
     }));
@@ -28,15 +28,15 @@ $$Array.iter((function (x) {
 
 if (v.contents !== 45) {
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "test_closure.res",
-            52,
-            2
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "test_closure.res",
+        52,
+        2
+      ]
+    }
+  });
 }
 
 exports.v = v;

@@ -39,7 +39,7 @@ Random.init(0);
 
 let v = Caml_array.make(10, false);
 
-for(let i = 0; i <= 9; ++i){
+for (let i = 0; i <= 9; ++i) {
   Caml_array.set(v, i, Random.bool());
 }
 

@@ -27,10 +27,10 @@ function f(H) {
 
 function g(H, count) {
   let tbl = H.create(17);
-  for(let i = 0; i <= count; ++i){
+  for (let i = 0; i <= count; ++i) {
     H.replace(tbl, (i << 1), String(i));
   }
-  for(let i$1 = 0; i$1 <= count; ++i$1){
+  for (let i$1 = 0; i$1 <= count; ++i$1) {
     H.replace(tbl, (i$1 << 1), String(i$1));
   }
   let v = H.fold((function (k, v, acc) {

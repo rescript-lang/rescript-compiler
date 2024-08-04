@@ -10,16 +10,15 @@ let hh;
 
 try {
   hh = Caml_string.get("ghsogh", -3);
-}
-catch (raw_e){
+} catch (raw_e) {
   let e = Caml_js_exceptions.internalToOCamlException(raw_e);
   if (e.RE_EXN_ID === "Invalid_argument") {
     console.log(e._1);
     hh = /* 'a' */97;
   } else {
     throw new Error(e.RE_EXN_ID, {
-          cause: e
-        });
+      cause: e
+    });
   }
 }
 

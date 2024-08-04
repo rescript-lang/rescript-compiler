@@ -248,7 +248,6 @@ let debugger_nl f =
 
 let break_nl f =
   P.string f L.break;
-  P.space f;
   semi f;
   P.newline f
 
@@ -430,9 +429,10 @@ and pp_one_case_clause :
       'a. _ -> P.t -> (P.t -> 'a -> unit) -> 'a * J.case_clause -> _ =
  fun cxt f pp_cond
      (switch_case, ({ switch_body; should_break; comment } : J.case_clause)) ->
+  P.newline f;
   let cxt =
     P.group f 1 (fun _ ->
-        P.group f 1 (fun _ ->
+        P.group f 0 (fun _ ->
             P.string f L.case;
             P.space f;
             pp_comment_option f comment;
@@ -440,7 +440,7 @@ and pp_one_case_clause :
             (* could be integer or string *)
             P.space f;
             P.string f L.colon);
-        P.group f 1 (fun _ ->
+        P.group f 0 (fun _ ->
             let cxt =
               match switch_body with
               | [] -> cxt
@@ -454,7 +454,6 @@ and pp_one_case_clause :
               semi f);
             cxt))
   in
-  P.newline f;
   cxt
 
 and loop_case_clauses :
@@ -858,11 +857,11 @@ and expression_desc cxt ~(level : int) f x : cxt =
           cxt)
   | New (e, el) ->
       P.cond_paren_group f (level > 15) (fun _ ->
-          P.group f 1 (fun _ ->
+          P.group f 0 (fun _ ->
               P.string f L.new_;
               P.space f;
               let cxt = expression ~level:16 cxt f e in
-              P.paren_group f 1 (fun _ ->
+              P.paren_group f 0 (fun _ ->
                   match el with Some el -> arguments cxt f el | None -> cxt)))
   | Cond (e, e1, e2) ->
       let action () =
@@ -1045,6 +1044,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
         match e.expression_desc with
         | Number (Int { i = 1l }) ->
             P.string f L.while_;
+            P.space f;
             P.string f L.lparen;
             P.string f L.true_;
             P.string f L.rparen;
@@ -1052,6 +1052,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
             cxt
         | _ ->
             P.string f L.while_;
+            P.space f;
             let cxt =
               P.paren_group f 1 (fun _ -> expression ~level:0 cxt f e)
             in
@@ -1068,7 +1069,8 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
               P.group f 0 (fun _ ->
                   (* The only place that [semi] may have semantics here *)
                   P.string f L.for_;
-                  P.paren_group f 1 (fun _ ->
+                  P.space f;
+                  let ctx  = P.paren_group f 1 (fun _ ->
                       let cxt, new_id =
                         match
                           (for_ident_expression, finish.expression_desc)
@@ -1081,8 +1083,8 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
                             let cxt =
                               expression ~level:1 cxt f ident_expression
                             in
-                            P.space f;
                             comma f;
+                            P.space f;
                             let id =
                               Ext_ident.create (Ident.name id ^ "_finish")
                             in
@@ -1128,7 +1130,9 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
                       semi f;
                       P.space f;
                       pp_direction f direction;
-                      Ext_pp_scope.ident cxt f id))
+                      Ext_pp_scope.ident cxt f id) in
+                      P.space f;
+                      ctx)
             in
             brace_block cxt f s)
       in
@@ -1177,6 +1181,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
           match def with
           | None -> cxt
           | Some def ->
+              P.newline f;
               P.group f 1 (fun _ ->
                   P.string f L.default;
                   P.string f L.colon;
@@ -1195,6 +1200,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
           match def with
           | None -> cxt
           | Some def ->
+              P.newline f;
               P.group f 1 (fun _ ->
                   P.string f L.default;
                   P.string f L.colon;
@@ -1224,10 +1230,9 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
             match ctch with
             | None -> cxt
             | Some (i, b) ->
-                P.newline f;
-                P.string f "catch (";
+                P.string f " catch (";
                 let cxt = Ext_pp_scope.ident cxt f i in
-                P.string f ")";
+                P.string f ") ";
                 brace_block cxt f b
           in
           match fin with

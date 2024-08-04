@@ -13,8 +13,7 @@ try {
   }), (function (x) {
     return x + 2 | 0;
   }));
-}
-catch (raw_exn){
+} catch (raw_exn) {
   let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
   function_equal_test = exn.RE_EXN_ID === "Invalid_argument" && exn._1 === "equal: functional value" ? true : false;
 }

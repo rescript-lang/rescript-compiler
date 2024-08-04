@@ -7,7 +7,7 @@ let Caml_array = require("../../lib/js/caml_array.js");
 
 function f() {
   let f$1 = function (_acc, _n) {
-    while(true) {
+    while (true) {
       let n = _n;
       let acc = _acc;
       if (n <= 0) {
@@ -19,7 +19,7 @@ function f() {
     };
   };
   let v = Caml_array.make(10, 0);
-  for(let i = 0; i <= 9; ++i){
+  for (let i = 0; i <= 9; ++i) {
     Caml_array.set(v, i, f$1(0, i));
   }
   return v;

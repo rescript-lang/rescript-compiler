@@ -22,7 +22,7 @@ function path() {
   switch (raw) {
     case "" :
     case "/" :
-        return /* [] */0;
+      return /* [] */0;
     default:
       let raw$1 = raw.slice(1);
       let match = raw$1[raw$1.length - 1 | 0];
@@ -30,7 +30,7 @@ function path() {
       let a = raw$2.split("/");
       let _i = a.length - 1 | 0;
       let _res = /* [] */0;
-      while(true) {
+      while (true) {
         let res = _res;
         let i = _i;
         if (i < 0) {
@@ -55,7 +55,7 @@ function hash() {
   switch (raw) {
     case "" :
     case "#" :
-        return "";
+      return "";
     default:
       return raw.slice(1);
   }
@@ -70,7 +70,7 @@ function search() {
   switch (raw) {
     case "" :
     case "?" :
-        return "";
+      return "";
     default:
       return raw.slice(1);
   }
@@ -104,7 +104,7 @@ function urlNotEqual(a, b) {
   } else {
     let _aList = a.path;
     let _bList = b.path;
-    while(true) {
+    while (true) {
       let bList = _bList;
       let aList = _aList;
       if (!aList) {

@@ -30,7 +30,7 @@ let h = {
 };
 
 function f(id) {
-  while(false) {
+  while (false) {
     
   };
   return id;

@@ -822,7 +822,7 @@ let shift_right_logical_suites = [
 ];
 
 function fib(_n, _a, _b) {
-  while(true) {
+  while (true) {
     let b = _b;
     let a = _a;
     let n = _n;
@@ -837,7 +837,7 @@ function fib(_n, _a, _b) {
 }
 
 function fac(_n, _acc) {
-  while(true) {
+  while (true) {
     let acc = _acc;
     let n = _n;
     if (n === 0) {

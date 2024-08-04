@@ -40,8 +40,7 @@ function test_js_error4() {
   try {
     JSON.parse(" {\"x\"}");
     return 1;
-  }
-  catch (raw_e){
+  } catch (raw_e) {
     let e = Caml_js_exceptions.internalToOCamlException(raw_e);
     if (e.RE_EXN_ID === "Not_found") {
       return 2;
@@ -68,15 +67,14 @@ function test_js_error4() {
 function f(g) {
   try {
     return g();
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       return 1;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 

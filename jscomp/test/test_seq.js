@@ -13,7 +13,7 @@ let Help = /* @__PURE__ */Caml_exceptions.create("Test_seq.Help");
 let Stop = /* @__PURE__ */Caml_exceptions.create("Test_seq.Stop");
 
 function assoc3(x, _l) {
-  while(true) {
+  while (true) {
     let l = _l;
     if (l) {
       let match = l.hd;
@@ -24,23 +24,23 @@ function assoc3(x, _l) {
       continue;
     }
     throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Not_found"
+      }
+    });
   };
 }
 
 function help_action() {
   throw new Error(Stop, {
-        cause: {
-          RE_EXN_ID: Stop,
-          _1: {
-            TAG: "Unknown",
-            _0: "-help"
-          }
-        }
-      });
+    cause: {
+      RE_EXN_ID: Stop,
+      _1: {
+        TAG: "Unknown",
+        _0: "-help"
+      }
+    }
+  });
 }
 
 function v(speclist) {
@@ -57,8 +57,7 @@ function add_help(speclist) {
   try {
     assoc3("-help", speclist);
     add1 = /* [] */0;
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       add1 = {
@@ -74,16 +73,15 @@ function add_help(speclist) {
       };
     } else {
       throw new Error(exn.RE_EXN_ID, {
-            cause: exn
-          });
+        cause: exn
+      });
     }
   }
   let add2;
   try {
     assoc3("--help", speclist);
     add2 = /* [] */0;
-  }
-  catch (raw_exn$1){
+  } catch (raw_exn$1) {
     let exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
     if (exn$1.RE_EXN_ID === "Not_found") {
       add2 = {
@@ -99,8 +97,8 @@ function add_help(speclist) {
       };
     } else {
       throw new Error(exn$1.RE_EXN_ID, {
-            cause: exn$1
-          });
+        cause: exn$1
+      });
     }
   }
   return Pervasives.$at(speclist, Pervasives.$at(add1, add2));

@@ -34,7 +34,7 @@ function path_as_directory(x) {
 function absolute_path(s) {
   let s$1 = Filename.is_relative(s) ? Filename.concat(CamlinternalLazy.force(cwd), s) : s;
   let aux = function (_s) {
-    while(true) {
+    while (true) {
       let s = _s;
       let base = Filename.basename(s);
       let dir = Filename.dirname(s);
@@ -59,36 +59,34 @@ function chop_extension(locOpt, name) {
   let loc = locOpt !== undefined ? locOpt : "";
   try {
     return Filename.chop_extension(name);
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Invalid_argument") {
       let s = "Filename.chop_extension ( " + loc + " : " + name + " )";
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: s
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: s
+        }
+      });
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
 function chop_extension_if_any(fname) {
   try {
     return Filename.chop_extension(fname);
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Invalid_argument") {
       return fname;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -100,7 +98,7 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
   let dir1 = Ext_string_test.split(undefined, relevant_dir1, os_path_separator_char);
   let dir2 = Ext_string_test.split(undefined, relevant_dir2, os_path_separator_char);
   let go = function (_dir1, _dir2) {
-    while(true) {
+    while (true) {
       let dir2 = _dir2;
       let dir1 = _dir1;
       if (dir1 && dir2 && dir1.hd === dir2.hd) {
@@ -144,16 +142,16 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
       })) + (node_sep + Filename.basename(file2));
   }
   let skip = function (_i) {
-    while(true) {
+    while (true) {
       let i = _i;
       if (i >= len) {
         let s = "invalid path: " + file2;
         throw new Error("Failure", {
-              cause: {
-                RE_EXN_ID: "Failure",
-                _1: s
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Failure",
+            _1: s
+          }
+        });
       }
       let curr_char = file2.codePointAt(i);
       if (!(curr_char === os_path_separator_char || curr_char === /* '.' */46)) {
@@ -167,7 +165,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
 }
 
 function find_root_filename(_cwd, filename) {
-  while(true) {
+  while (true) {
     let cwd = _cwd;
     if (Caml_sys.sys_file_exists(Filename.concat(cwd, filename))) {
       return cwd;
@@ -179,11 +177,11 @@ function find_root_filename(_cwd, filename) {
     }
     let s = filename + " not found from " + cwd;
     throw new Error("Failure", {
-          cause: {
-            RE_EXN_ID: "Failure",
-            _1: s
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Failure",
+        _1: s
+      }
+    });
   };
 }
 
@@ -221,7 +219,7 @@ function combine(p1, p2) {
 function split_aux(p) {
   let _p = p;
   let _acc = /* [] */0;
-  while(true) {
+  while (true) {
     let acc = _acc;
     let p$1 = _p;
     let dir = Filename.dirname(p$1);
@@ -254,7 +252,7 @@ function rel_normalized_absolute_path(from, to_) {
   }
   let _xss = match[1];
   let _yss = match$1[1];
-  while(true) {
+  while (true) {
     let yss = _yss;
     let xss = _xss;
     if (!xss) {
@@ -291,7 +289,7 @@ function normalize_absolute_path(x) {
     }
   };
   let normalize_list = function (_acc, _paths) {
-    while(true) {
+    while (true) {
       let paths = _paths;
       let acc = _acc;
       if (!paths) {
@@ -322,7 +320,7 @@ function normalize_absolute_path(x) {
   if (rev_paths) {
     let _acc = rev_paths.hd;
     let _rev_paths = rev_paths.tl;
-    while(true) {
+    while (true) {
       let rev_paths$1 = _rev_paths;
       let acc = _acc;
       if (!rev_paths$1) {
@@ -357,11 +355,11 @@ if (Sys.unix) {
 } else {
   let s = "Unknown OS : " + Sys.os_type;
   throw new Error("Failure", {
-        cause: {
-          RE_EXN_ID: "Failure",
-          _1: s
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Failure",
+      _1: s
+    }
+  });
 }
 
 let $slash$slash = Filename.concat;

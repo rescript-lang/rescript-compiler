@@ -13,7 +13,7 @@ function fix() {
 }
 
 function unfixLeak(_f) {
-  while(true) {
+  while (true) {
     let f = _f;
     _f = CamlinternalLazy.force(f._0);
     continue;
@@ -21,7 +21,7 @@ function unfixLeak(_f) {
 }
 
 function unfix(p) {
-  while(true) {
+  while (true) {
     let h = p.contents;
     p.contents = CamlinternalLazy.force(h._0);
   };

@@ -59,15 +59,14 @@ function does_raise(f, s) {
   try {
     f(s);
     return false;
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === Stack.Empty) {
       return true;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -217,7 +216,7 @@ let s$3 = {
   len: 0
 };
 
-for(let i = 1; i <= 10; ++i){
+for (let i = 1; i <= 10; ++i) {
   Stack.push(i, s$3);
 }
 
@@ -241,7 +240,7 @@ let s1 = {
   len: 0
 };
 
-for(let i$1 = 1; i$1 <= 10; ++i$1){
+for (let i$1 = 1; i$1 <= 10; ++i$1) {
   Stack.push(i$1, s1);
 }
 
@@ -315,11 +314,11 @@ assert_("File \"stack_comp_test.res\", line 109, characters 10-17", s1.len === 1
 
 assert_("File \"stack_comp_test.res\", line 110, characters 10-17", s2.len === 10);
 
-for(let i$2 = 10; i$2 >= 1; --i$2){
+for (let i$2 = 10; i$2 >= 1; --i$2) {
   assert_("File \"stack_comp_test.res\", line 112, characters 12-19", Stack.pop(s1) === i$2);
 }
 
-for(let i$3 = 10; i$3 >= 1; --i$3){
+for (let i$3 = 10; i$3 >= 1; --i$3) {
   assert_("File \"stack_comp_test.res\", line 115, characters 12-19", Stack.pop(s2) === i$3);
 }
 
@@ -330,13 +329,13 @@ let s$4 = {
 
 assert_("File \"stack_comp_test.res\", line 121, characters 10-17", s$4.c === /* [] */0);
 
-for(let i$4 = 1; i$4 <= 10; ++i$4){
+for (let i$4 = 1; i$4 <= 10; ++i$4) {
   Stack.push(i$4, s$4);
   assert_("File \"stack_comp_test.res\", line 124, characters 12-19", s$4.len === i$4);
   assert_("File \"stack_comp_test.res\", line 125, characters 12-19", s$4.c !== /* [] */0);
 }
 
-for(let i$5 = 10; i$5 >= 1; --i$5){
+for (let i$5 = 10; i$5 >= 1; --i$5) {
   assert_("File \"stack_comp_test.res\", line 128, characters 12-19", s$4.len === i$5);
   assert_("File \"stack_comp_test.res\", line 129, characters 12-19", s$4.c !== /* [] */0);
   Stack.pop(s$4);
@@ -351,7 +350,7 @@ let s$5 = {
   len: 0
 };
 
-for(let i$6 = 10; i$6 >= 1; --i$6){
+for (let i$6 = 10; i$6 >= 1; --i$6) {
   Stack.push(i$6, s$5);
 }
 
@@ -388,7 +387,7 @@ let s1$2 = {
   len: 0
 };
 
-for(let i$8 = 1; i$8 <= 4; ++i$8){
+for (let i$8 = 1; i$8 <= 4; ++i$8) {
   Stack.push(i$8, s1$2);
 }
 

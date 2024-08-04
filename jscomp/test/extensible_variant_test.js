@@ -25,15 +25,15 @@ function to_int(x) {
     return x._2;
   }
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "extensible_variant_test.res",
-            16,
-            9
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "extensible_variant_test.res",
+        16,
+        9
+      ]
+    }
+  });
 }
 
 let suites_0 = [

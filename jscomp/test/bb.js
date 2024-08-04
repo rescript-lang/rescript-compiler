@@ -15,22 +15,22 @@ function f(x) {
 function ff(x) {
   switch (x) {
     case "a" :
-        return "a";
+      return "a";
     case "b" :
-        return "b";
+      return "b";
     case "c" :
-        return "c";
+      return "c";
     default:
       throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "bb.res",
-                13,
-                9
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "bb.res",
+            13,
+            9
+          ]
+        }
+      });
   }
 }
 
@@ -38,25 +38,25 @@ function test(x) {
   let match;
   switch (x) {
     case "a" :
-        match = "a";
-        break;
+      match = "a";
+      break;
     case "b" :
-        match = "b";
-        break;
+      match = "b";
+      break;
     case "c" :
-        match = "c";
-        break;
+      match = "c";
+      break;
     default:
       throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "bb.res",
-                21,
-                9
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "bb.res",
+            21,
+            9
+          ]
+        }
+      });
   }
   if (match === "b") {
     return "b";

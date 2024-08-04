@@ -98,29 +98,29 @@ add_test("File \"js_json_test.res\", line 22, characters 11-18", (function () {
     let ty3 = Js_json.classify(x);
     if (typeof ty3 !== "object") {
       throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "js_json_test.res",
-                37,
-                19
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "js_json_test.res",
+            37,
+            19
+          ]
+        }
+      });
     }
     if (ty3.TAG === "JSONNumber") {
       return;
     }
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "js_json_test.res",
-              37,
-              19
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "js_json_test.res",
+          37,
+          19
+        ]
+      }
+    });
   });
   return {
     TAG: "Ok",
@@ -238,9 +238,9 @@ function test(v) {
   }
   switch (ty) {
     case "JSONFalse" :
-        return eq("File \"js_json_test.res\", line 99, characters 24-31", false, v);
+      return eq("File \"js_json_test.res\", line 99, characters 24-31", false, v);
     case "JSONTrue" :
-        return eq("File \"js_json_test.res\", line 98, characters 23-30", true, v);
+      return eq("File \"js_json_test.res\", line 98, characters 23-30", true, v);
     default:
       return add_test("File \"js_json_test.res\", line 100, characters 18-25", (function () {
         return {
@@ -260,15 +260,15 @@ function option_get(x) {
     return Caml_option.valFromOption(x);
   }
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "js_json_test.res",
-            111,
-            12
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "js_json_test.res",
+        111,
+        12
+      ]
+    }
+  });
 }
 
 let dict = {};
@@ -371,116 +371,108 @@ function eq_at_i(loc, json, i, kind, expected) {
   let ty$1 = Js_json.classify(Caml_array.get(ty._0, i));
   switch (kind) {
     case "String" :
-        if (typeof ty$1 !== "object") {
-          return add_test(loc, (function () {
-            return {
-              TAG: "Ok",
-              _0: false
-            };
-          }));
-        } else if (ty$1.TAG === "JSONString") {
-          return eq(loc, ty$1._0, expected);
-        } else {
-          return add_test(loc, (function () {
-            return {
-              TAG: "Ok",
-              _0: false
-            };
-          }));
-        }
+      if (typeof ty$1 !== "object") {
+        return add_test(loc, (function () {
+          return {
+            TAG: "Ok",
+            _0: false
+          };
+        }));
+      } else if (ty$1.TAG === "JSONString") {
+        return eq(loc, ty$1._0, expected);
+      } else {
+        return add_test(loc, (function () {
+          return {
+            TAG: "Ok",
+            _0: false
+          };
+        }));
+      }
     case "Number" :
-        if (typeof ty$1 !== "object") {
-          return add_test(loc, (function () {
-            return {
-              TAG: "Ok",
-              _0: false
-            };
-          }));
-        } else if (ty$1.TAG === "JSONNumber") {
-          return eq(loc, ty$1._0, expected);
-        } else {
-          return add_test(loc, (function () {
-            return {
-              TAG: "Ok",
-              _0: false
-            };
-          }));
-        }
+      if (typeof ty$1 !== "object") {
+        return add_test(loc, (function () {
+          return {
+            TAG: "Ok",
+            _0: false
+          };
+        }));
+      } else if (ty$1.TAG === "JSONNumber") {
+        return eq(loc, ty$1._0, expected);
+      } else {
+        return add_test(loc, (function () {
+          return {
+            TAG: "Ok",
+            _0: false
+          };
+        }));
+      }
     case "Object" :
-        if (typeof ty$1 !== "object") {
-          return add_test(loc, (function () {
-            return {
-              TAG: "Ok",
-              _0: false
-            };
-          }));
-        } else if (ty$1.TAG === "JSONObject") {
-          return eq(loc, ty$1._0, expected);
-        } else {
-          return add_test(loc, (function () {
-            return {
-              TAG: "Ok",
-              _0: false
-            };
-          }));
-        }
+      if (typeof ty$1 !== "object") {
+        return add_test(loc, (function () {
+          return {
+            TAG: "Ok",
+            _0: false
+          };
+        }));
+      } else if (ty$1.TAG === "JSONObject") {
+        return eq(loc, ty$1._0, expected);
+      } else {
+        return add_test(loc, (function () {
+          return {
+            TAG: "Ok",
+            _0: false
+          };
+        }));
+      }
     case "Array" :
-        if (typeof ty$1 !== "object") {
-          return add_test(loc, (function () {
-            return {
-              TAG: "Ok",
-              _0: false
-            };
-          }));
-        } else if (ty$1.TAG === "JSONArray") {
-          return eq(loc, ty$1._0, expected);
-        } else {
-          return add_test(loc, (function () {
-            return {
-              TAG: "Ok",
-              _0: false
-            };
-          }));
-        }
+      if (typeof ty$1 !== "object") {
+        return add_test(loc, (function () {
+          return {
+            TAG: "Ok",
+            _0: false
+          };
+        }));
+      } else if (ty$1.TAG === "JSONArray") {
+        return eq(loc, ty$1._0, expected);
+      } else {
+        return add_test(loc, (function () {
+          return {
+            TAG: "Ok",
+            _0: false
+          };
+        }));
+      }
     case "Boolean" :
-        if (typeof ty$1 === "object") {
+      if (typeof ty$1 === "object") {
+        return add_test(loc, (function () {
+          return {
+            TAG: "Ok",
+            _0: false
+          };
+        }));
+      }
+      switch (ty$1) {
+        case "JSONFalse" :
+          return eq(loc, false, expected);
+        case "JSONTrue" :
+          return eq(loc, true, expected);
+        default:
           return add_test(loc, (function () {
             return {
               TAG: "Ok",
               _0: false
             };
           }));
-        }
-        switch (ty$1) {
-          case "JSONFalse" :
-              return eq(loc, false, expected);
-          case "JSONTrue" :
-              return eq(loc, true, expected);
-          default:
-            return add_test(loc, (function () {
-              return {
-                TAG: "Ok",
-                _0: false
-              };
-            }));
-        }
+      }
     case "Null" :
-        if (typeof ty$1 !== "object") {
-          if (ty$1 === "JSONNull") {
-            return add_test(loc, (function () {
-              return {
-                TAG: "Ok",
-                _0: true
-              };
-            }));
-          } else {
-            return add_test(loc, (function () {
-              return {
-                TAG: "Ok",
-                _0: false
-              };
-            }));
-          }
+      if (typeof ty$1 !== "object") {
+        if (ty$1 === "JSONNull") {
+          return add_test(loc, (function () {
+            return {
+              TAG: "Ok",
+              _0: true
+            };
+          }));
         } else {
           return add_test(loc, (function () {
             return {
@@ -489,7 +481,14 @@ function eq_at_i(loc, json, i, kind, expected) {
             };
           }));
         }
-    
+      } else {
+        return add_test(loc, (function () {
+          return {
+            TAG: "Ok",
+            _0: false
+          };
+        }));
+      }
   }
 }
 
@@ -639,8 +638,7 @@ try {
       _0: false
     };
   }));
-}
-catch (exn){
+} catch (exn) {
   add_test("File \"js_json_test.res\", line 281, characters 17-24", (function () {
     return {
       TAG: "Ok",

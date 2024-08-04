@@ -4,7 +4,7 @@
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function f(_n, _acc) {
-  while(true) {
+  while (true) {
     let acc = _acc;
     let n = _n;
     if (n === 0) {
@@ -23,7 +23,7 @@ function test_closure() {
   let arr = Caml_array.make(6, (function (x) {
     return x;
   }));
-  for(let i = 0; i <= 6; ++i){
+  for (let i = 0; i <= 6; ++i) {
     Caml_array.set(arr, i, (function (param) {
       return i;
     }));

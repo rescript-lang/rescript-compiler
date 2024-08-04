@@ -12,14 +12,13 @@ function f(x) {
   }
   switch (x.TAG) {
     case "A" :
-        return 0;
+      return 0;
     case "B" :
-        return 1;
+      return 1;
     case "C" :
-        return 2;
+      return 2;
     case "F" :
-        return 3;
-    
+      return 3;
   }
 }
 

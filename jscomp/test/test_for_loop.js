@@ -5,13 +5,13 @@ let $$Array = require("../../lib/js/array.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function for_(x) {
-  for(let i = 0 ,i_finish = (console.log("hi"), x.length); i <= i_finish; ++i){
+  for (let i = 0, i_finish = (console.log("hi"), x.length); i <= i_finish; ++i) {
     console.log(Caml_array.get(x, i));
   }
 }
 
 function for_2(x) {
-  for(let i = 0 ,i_finish = x.length; i <= i_finish; ++i){
+  for (let i = 0, i_finish = x.length; i <= i_finish; ++i) {
     console.log(Caml_array.get(x, i));
   }
 }
@@ -25,7 +25,7 @@ function for_3(x) {
       
     };
   }), x);
-  for(let i = 0 ,i_finish = x.length; i <= i_finish; ++i){
+  for (let i = 0, i_finish = x.length; i <= i_finish; ++i) {
     let j = (i << 1);
     Caml_array.set(arr, i, (function () {
       v.contents = v.contents + j | 0;
@@ -46,7 +46,7 @@ function for_4(x) {
       
     };
   }), x);
-  for(let i = 0 ,i_finish = x.length; i <= i_finish; ++i){
+  for (let i = 0, i_finish = x.length; i <= i_finish; ++i) {
     let j = (i << 1);
     let k = (j << 1);
     Caml_array.set(arr, i, (function () {
@@ -68,7 +68,7 @@ function for_5(x, u) {
       
     };
   }), x);
-  for(let i = 0 ,i_finish = x.length; i <= i_finish; ++i){
+  for (let i = 0, i_finish = x.length; i <= i_finish; ++i) {
     let k = Math.imul((u << 1), u);
     Caml_array.set(arr, i, (function () {
       v.contents = v.contents + k | 0;
@@ -96,12 +96,12 @@ function for_6(x, u) {
     contents: 0
   };
   v4.contents = v4.contents + 1 | 0;
-  for(let j = 0; j <= 1; ++j){
+  for (let j = 0; j <= 1; ++j) {
     v5.contents = v5.contents + 1 | 0;
     let v2 = {
       contents: 0
     };
-    for(let i = 0 ,i_finish = x.length; i <= i_finish; ++i){
+    for (let i = 0, i_finish = x.length; i <= i_finish; ++i) {
       let k = Math.imul((u << 1), u);
       let h = (v5.contents << 1);
       v2.contents = v2.contents + 1 | 0;

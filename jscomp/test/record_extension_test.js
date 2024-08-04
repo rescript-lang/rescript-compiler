@@ -64,8 +64,7 @@ let C = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.C");
 function u(f) {
   try {
     return f();
-  }
-  catch (raw_x){
+  } catch (raw_x) {
     let x = Caml_js_exceptions.internalToOCamlException(raw_x);
     if (x.RE_EXN_ID === A) {
       return x.name + x.x | 0;

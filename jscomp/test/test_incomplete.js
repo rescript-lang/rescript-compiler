@@ -7,15 +7,15 @@ function f(x) {
     return /* 'a' */97;
   }
   throw new Error("Match_failure", {
-        cause: {
-          RE_EXN_ID: "Match_failure",
-          _1: [
-            "test_incomplete.res",
-            3,
-            2
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Match_failure",
+      _1: [
+        "test_incomplete.res",
+        3,
+        2
+      ]
+    }
+  });
 }
 
 function f2(x) {
@@ -30,11 +30,10 @@ function f3(x) {
   switch (x.TAG) {
     case "A" :
     case "C" :
-        return x._0 + 1 | 0;
+      return x._0 + 1 | 0;
     case "B" :
     case "D" :
-        return x._0 + 2 | 0;
-    
+      return x._0 + 2 | 0;
   }
 }
 

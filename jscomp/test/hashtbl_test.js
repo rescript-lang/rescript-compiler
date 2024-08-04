@@ -32,10 +32,10 @@ function f() {
 
 function g(count) {
   let tbl = Hashtbl.create(undefined, 17);
-  for(let i = 0; i <= count; ++i){
+  for (let i = 0; i <= count; ++i) {
     Hashtbl.replace(tbl, (i << 1), String(i));
   }
-  for(let i$1 = 0; i$1 <= count; ++i$1){
+  for (let i$1 = 0; i$1 <= count; ++i$1) {
     Hashtbl.replace(tbl, (i$1 << 1), String(i$1));
   }
   let v = to_list(tbl);

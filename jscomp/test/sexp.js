@@ -163,7 +163,7 @@ function $great$great$eq(e, f) {
 function map_opt(f, l) {
   let _acc = /* [] */0;
   let _l = l;
-  while(true) {
+  while (true) {
     let l$1 = _l;
     let acc = _acc;
     if (!l$1) {
@@ -185,7 +185,7 @@ function map_opt(f, l) {
 function list_any(f, e) {
   if (e.NAME === "List") {
     let _l = e.VAL;
-    while(true) {
+    while (true) {
       let l = _l;
       if (!l) {
         return;
@@ -205,7 +205,7 @@ function list_all(f, e) {
   if (e.NAME === "List") {
     let _acc = /* [] */0;
     let _l = e.VAL;
-    while(true) {
+    while (true) {
       let l = _l;
       let acc = _acc;
       if (!l) {
@@ -235,8 +235,7 @@ function _try_atom(e, f) {
   }
   try {
     return Caml_option.some(f(e.VAL));
-  }
-  catch (exn){
+  } catch (exn) {
     return;
   }
 }
@@ -362,7 +361,7 @@ function get_field(name) {
   return function (e) {
     if (e.NAME === "List") {
       let _l = e.VAL;
-      while(true) {
+      while (true) {
         let l = _l;
         if (!l) {
           return;
@@ -417,7 +416,7 @@ function field(name, f) {
 }
 
 function _get_field_list(name, _l) {
-  while(true) {
+  while (true) {
     let l = _l;
     if (!l) {
       return;
@@ -463,7 +462,7 @@ function field_list(name, f) {
 }
 
 function _get_variant(s, args, _l) {
-  while(true) {
+  while (true) {
     let l = _l;
     if (!l) {
       return;
@@ -499,11 +498,11 @@ function get_exn(e) {
     return Caml_option.valFromOption(e);
   }
   throw new Error("Failure", {
-        cause: {
-          RE_EXN_ID: "Failure",
-          _1: "CCSexp.Traverse.get_exn"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Failure",
+      _1: "CCSexp.Traverse.get_exn"
+    }
+  });
 }
 
 let of_unit = {

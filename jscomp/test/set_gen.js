@@ -6,7 +6,7 @@ let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 function cons_enum(_s, _e) {
-  while(true) {
+  while (true) {
     let e = _e;
     let s = _s;
     if (typeof s !== "object") {
@@ -32,14 +32,14 @@ function height(x) {
 }
 
 function min_elt(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let l = x._0;
     if (typeof l !== "object") {
@@ -51,14 +51,14 @@ function min_elt(_x) {
 }
 
 function max_elt(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let r = x._2;
     if (typeof r !== "object") {
@@ -78,7 +78,7 @@ function is_empty(x) {
 }
 
 function cardinal_aux(_acc, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let acc = _acc;
     if (typeof x !== "object") {
@@ -95,7 +95,7 @@ function cardinal(s) {
 }
 
 function elements_aux(_accu, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let accu = _accu;
     if (typeof x !== "object") {
@@ -115,7 +115,7 @@ function elements(s) {
 }
 
 function iter(f, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return;
@@ -128,7 +128,7 @@ function iter(f, _x) {
 }
 
 function fold(f, _s, _accu) {
-  while(true) {
+  while (true) {
     let accu = _accu;
     let s = _s;
     if (typeof s !== "object") {
@@ -141,7 +141,7 @@ function fold(f, _s, _accu) {
 }
 
 function for_all(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return true;
@@ -158,7 +158,7 @@ function for_all(p, _x) {
 }
 
 function exists(p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return false;
@@ -209,18 +209,18 @@ function check_height_and_diff(x) {
   let hr = check_height_and_diff(x._2);
   if (h !== (max_int_2(hl, hr) + 1 | 0)) {
     throw new Error(Height_invariant_broken, {
-          cause: {
-            RE_EXN_ID: Height_invariant_broken
-          }
-        });
+      cause: {
+        RE_EXN_ID: Height_invariant_broken
+      }
+    });
   }
   let diff = Pervasives.abs(hl - hr | 0);
   if (diff > 2) {
     throw new Error(Height_diff_borken, {
-          cause: {
-            RE_EXN_ID: Height_diff_borken
-          }
-        });
+      cause: {
+        RE_EXN_ID: Height_diff_borken
+      }
+    });
   }
   return h;
 }
@@ -251,15 +251,15 @@ function internal_bal(l, v, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "set_gen.res",
-                278,
-                15
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "set_gen.res",
+            278,
+            15
+          ]
+        }
+      });
     }
     let lr = l._2;
     let lv = l._1;
@@ -271,15 +271,15 @@ function internal_bal(l, v, r) {
       return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
     }
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "set_gen.res",
-              288,
-              19
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "set_gen.res",
+          288,
+          19
+        ]
+      }
+    });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -292,15 +292,15 @@ function internal_bal(l, v, r) {
   }
   if (typeof r !== "object") {
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "set_gen.res",
-              300,
-              15
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "set_gen.res",
+          300,
+          15
+        ]
+      }
+    });
   }
   let rr = r._2;
   let rv = r._1;
@@ -312,25 +312,25 @@ function internal_bal(l, v, r) {
     return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
   }
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "set_gen.res",
-            306,
-            19
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "set_gen.res",
+        306,
+        19
+      ]
+    }
+  });
 }
 
 function remove_min_elt(x) {
   if (typeof x !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.remove_min_elt"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.remove_min_elt"
+      }
+    });
   }
   let l = x._0;
   if (typeof l !== "object") {
@@ -451,28 +451,54 @@ function of_sorted_list(l) {
   let sub = function (n, l) {
     switch (n) {
       case 0 :
-          return [
-            "Empty",
-            l
-          ];
+        return [
+          "Empty",
+          l
+        ];
       case 1 :
-          if (l) {
+        if (l) {
+          return [
+            {
+              TAG: "Node",
+              _0: "Empty",
+              _1: l.hd,
+              _2: "Empty",
+              _3: 1
+            },
+            l.tl
+          ];
+        }
+        break;
+      case 2 :
+        if (l) {
+          let match = l.tl;
+          if (match) {
             return [
               {
                 TAG: "Node",
-                _0: "Empty",
-                _1: l.hd,
+                _0: {
+                  TAG: "Node",
+                  _0: "Empty",
+                  _1: l.hd,
+                  _2: "Empty",
+                  _3: 1
+                },
+                _1: match.hd,
                 _2: "Empty",
-                _3: 1
+                _3: 2
               },
-              l.tl
+              match.tl
             ];
           }
-          break;
-      case 2 :
-          if (l) {
-            let match = l.tl;
-            if (match) {
+          
+        }
+        break;
+      case 3 :
+        if (l) {
+          let match$1 = l.tl;
+          if (match$1) {
+            let match$2 = match$1.tl;
+            if (match$2) {
               return [
                 {
                   TAG: "Node",
@@ -483,52 +509,24 @@ function of_sorted_list(l) {
                     _2: "Empty",
                     _3: 1
                   },
-                  _1: match.hd,
-                  _2: "Empty",
+                  _1: match$1.hd,
+                  _2: {
+                    TAG: "Node",
+                    _0: "Empty",
+                    _1: match$2.hd,
+                    _2: "Empty",
+                    _3: 1
+                  },
                   _3: 2
                 },
-                match.tl
+                match$2.tl
               ];
             }
             
           }
-          break;
-      case 3 :
-          if (l) {
-            let match$1 = l.tl;
-            if (match$1) {
-              let match$2 = match$1.tl;
-              if (match$2) {
-                return [
-                  {
-                    TAG: "Node",
-                    _0: {
-                      TAG: "Node",
-                      _0: "Empty",
-                      _1: l.hd,
-                      _2: "Empty",
-                      _3: 1
-                    },
-                    _1: match$1.hd,
-                    _2: {
-                      TAG: "Node",
-                      _0: "Empty",
-                      _1: match$2.hd,
-                      _2: "Empty",
-                      _3: 1
-                    },
-                    _3: 2
-                  },
-                  match$2.tl
-                ];
-              }
-              
-            }
-            
-          }
-          break;
-      default:
-        
+          
+        }
+        break;
     }
     let nl = n / 2 | 0;
     let match$3 = sub(nl, l);
@@ -541,15 +539,15 @@ function of_sorted_list(l) {
       ];
     }
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "set_gen.res",
-              447,
-              18
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "set_gen.res",
+          447,
+          18
+        ]
+      }
+    });
   };
   return sub(List.length(l), l)[0];
 }
@@ -698,7 +696,7 @@ function invariant(cmp, t) {
 }
 
 function compare_aux(cmp, _e1, _e2) {
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {

@@ -52,11 +52,11 @@ function bal(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Map.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
+        }
+      });
     }
     let lr = l.r;
     let ld = l.d;
@@ -69,11 +69,11 @@ function bal(l, x, d, r) {
       return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -87,11 +87,11 @@ function bal(l, x, d, r) {
   }
   if (typeof r !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   let rr = r.r;
   let rd = r.d;
@@ -104,11 +104,11 @@ function bal(l, x, d, r) {
     return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
+    }
+  });
 }
 
 function is_empty(param) {
@@ -166,14 +166,14 @@ function add(x, data, param) {
 }
 
 function find(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let c = Caml.int_compare(x, param.v);
     if (c === 0) {
@@ -185,21 +185,21 @@ function find(x, _param) {
 }
 
 function find_first(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let v = param.v;
     if (f(v)) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.l;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -226,7 +226,7 @@ function find_first(f, _param) {
 }
 
 function find_first_opt(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -236,7 +236,7 @@ function find_first_opt(f, _param) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.l;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -263,21 +263,21 @@ function find_first_opt(f, _param) {
 }
 
 function find_last(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let v = param.v;
     if (f(v)) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.r;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -304,7 +304,7 @@ function find_last(f, _param) {
 }
 
 function find_last_opt(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -314,7 +314,7 @@ function find_last_opt(f, _param) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.r;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -341,7 +341,7 @@ function find_last_opt(f, _param) {
 }
 
 function find_opt(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -356,7 +356,7 @@ function find_opt(x, _param) {
 }
 
 function mem(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return false;
@@ -371,14 +371,14 @@ function mem(x, _param) {
 }
 
 function min_binding(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let l = param.l;
     if (typeof l !== "object") {
@@ -393,7 +393,7 @@ function min_binding(_param) {
 }
 
 function min_binding_opt(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -411,14 +411,14 @@ function min_binding_opt(_param) {
 }
 
 function max_binding(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let r = param.r;
     if (typeof r !== "object") {
@@ -433,7 +433,7 @@ function max_binding(_param) {
 }
 
 function max_binding_opt(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -453,11 +453,11 @@ function max_binding_opt(_param) {
 function remove_min_binding(param) {
   if (typeof param !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.remove_min_elt"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.remove_min_elt"
+      }
+    });
   }
   let l = param.l;
   if (typeof l !== "object") {
@@ -563,7 +563,7 @@ function update(x, f, param) {
 }
 
 function iter(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -611,7 +611,7 @@ function mapi(f, param) {
 }
 
 function fold(f, _m, _accu) {
-  while(true) {
+  while (true) {
     let accu = _accu;
     let m = _m;
     if (typeof m !== "object") {
@@ -624,7 +624,7 @@ function fold(f, _m, _accu) {
 }
 
 function for_all(p, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return true;
@@ -641,7 +641,7 @@ function for_all(p, _param) {
 }
 
 function exists(p, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return false;
@@ -762,15 +762,15 @@ function merge$1(f, s1, s2) {
   }
   if (typeof s2 !== "object") {
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "map.res",
-              552,
-              11
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "map.res",
+          552,
+          11
+        ]
+      }
+    });
   }
   let v2 = s2.v;
   let match$1 = split(v2, s1);
@@ -862,7 +862,7 @@ function partition(p, param) {
 }
 
 function cons_enum(_m, _e) {
-  while(true) {
+  while (true) {
     let e = _e;
     let m = _m;
     if (typeof m !== "object") {
@@ -883,7 +883,7 @@ function cons_enum(_m, _e) {
 function compare$1(cmp, m1, m2) {
   let _e1 = cons_enum(m1, "End");
   let _e2 = cons_enum(m2, "End");
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
@@ -913,7 +913,7 @@ function compare$1(cmp, m1, m2) {
 function equal(cmp, m1, m2) {
   let _e1 = cons_enum(m1, "End");
   let _e2 = cons_enum(m2, "End");
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
@@ -947,7 +947,7 @@ function cardinal(param) {
 }
 
 function bindings_aux(_accu, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     let accu = _accu;
     if (typeof param !== "object") {
@@ -1046,11 +1046,11 @@ function bal$1(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Map.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
+        }
+      });
     }
     let lr = l.r;
     let ld = l.d;
@@ -1063,11 +1063,11 @@ function bal$1(l, x, d, r) {
       return create$1(create$1(ll, lv, ld, lr.l), lr.v, lr.d, create$1(lr.r, x, d, r));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -1081,11 +1081,11 @@ function bal$1(l, x, d, r) {
   }
   if (typeof r !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   let rr = r.r;
   let rd = r.d;
@@ -1098,11 +1098,11 @@ function bal$1(l, x, d, r) {
     return create$1(create$1(l, x, d, rl.l), rl.v, rl.d, create$1(rl.r, rv, rd, rr));
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
+    }
+  });
 }
 
 function is_empty$1(param) {
@@ -1160,14 +1160,14 @@ function add$1(x, data, param) {
 }
 
 function find$1(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let c = Caml.string_compare(x, param.v);
     if (c === 0) {
@@ -1179,21 +1179,21 @@ function find$1(x, _param) {
 }
 
 function find_first$1(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let v = param.v;
     if (f(v)) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.l;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -1220,7 +1220,7 @@ function find_first$1(f, _param) {
 }
 
 function find_first_opt$1(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -1230,7 +1230,7 @@ function find_first_opt$1(f, _param) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.l;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -1257,21 +1257,21 @@ function find_first_opt$1(f, _param) {
 }
 
 function find_last$1(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let v = param.v;
     if (f(v)) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.r;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -1298,7 +1298,7 @@ function find_last$1(f, _param) {
 }
 
 function find_last_opt$1(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -1308,7 +1308,7 @@ function find_last_opt$1(f, _param) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.r;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -1335,7 +1335,7 @@ function find_last_opt$1(f, _param) {
 }
 
 function find_opt$1(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -1350,7 +1350,7 @@ function find_opt$1(x, _param) {
 }
 
 function mem$1(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return false;
@@ -1365,14 +1365,14 @@ function mem$1(x, _param) {
 }
 
 function min_binding$1(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let l = param.l;
     if (typeof l !== "object") {
@@ -1387,7 +1387,7 @@ function min_binding$1(_param) {
 }
 
 function min_binding_opt$1(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -1405,14 +1405,14 @@ function min_binding_opt$1(_param) {
 }
 
 function max_binding$1(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let r = param.r;
     if (typeof r !== "object") {
@@ -1427,7 +1427,7 @@ function max_binding$1(_param) {
 }
 
 function max_binding_opt$1(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -1447,11 +1447,11 @@ function max_binding_opt$1(_param) {
 function remove_min_binding$1(param) {
   if (typeof param !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.remove_min_elt"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.remove_min_elt"
+      }
+    });
   }
   let l = param.l;
   if (typeof l !== "object") {
@@ -1557,7 +1557,7 @@ function update$1(x, f, param) {
 }
 
 function iter$1(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -1605,7 +1605,7 @@ function mapi$1(f, param) {
 }
 
 function fold$1(f, _m, _accu) {
-  while(true) {
+  while (true) {
     let accu = _accu;
     let m = _m;
     if (typeof m !== "object") {
@@ -1618,7 +1618,7 @@ function fold$1(f, _m, _accu) {
 }
 
 function for_all$1(p, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return true;
@@ -1635,7 +1635,7 @@ function for_all$1(p, _param) {
 }
 
 function exists$1(p, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return false;
@@ -1756,15 +1756,15 @@ function merge$3(f, s1, s2) {
   }
   if (typeof s2 !== "object") {
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "map.res",
-              552,
-              11
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "map.res",
+          552,
+          11
+        ]
+      }
+    });
   }
   let v2 = s2.v;
   let match$1 = split$1(v2, s1);
@@ -1856,7 +1856,7 @@ function partition$1(p, param) {
 }
 
 function cons_enum$1(_m, _e) {
-  while(true) {
+  while (true) {
     let e = _e;
     let m = _m;
     if (typeof m !== "object") {
@@ -1877,7 +1877,7 @@ function cons_enum$1(_m, _e) {
 function compare$2(cmp, m1, m2) {
   let _e1 = cons_enum$1(m1, "End");
   let _e2 = cons_enum$1(m2, "End");
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
@@ -1907,7 +1907,7 @@ function compare$2(cmp, m1, m2) {
 function equal$1(cmp, m1, m2) {
   let _e1 = cons_enum$1(m1, "End");
   let _e2 = cons_enum$1(m2, "End");
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
@@ -1941,7 +1941,7 @@ function cardinal$1(param) {
 }
 
 function bindings_aux$1(_accu, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     let accu = _accu;
     if (typeof param !== "object") {
@@ -2141,11 +2141,11 @@ let int_map_suites_1 = {
         "iteration",
         (function (param) {
           let m = "Empty";
-          for(let i = 0; i <= 10000; ++i){
+          for (let i = 0; i <= 10000; ++i) {
             m = add$1(String(i), String(i), m);
           }
           let v = -1;
-          for(let i$1 = 0; i$1 <= 10000; ++i$1){
+          for (let i$1 = 0; i$1 <= 10000; ++i$1) {
             if (find$1(String(i$1), m) !== String(i$1)) {
               v = i$1;
             }

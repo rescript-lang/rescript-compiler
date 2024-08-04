@@ -13,13 +13,13 @@ function should(b) {
 
 function test() {
   let m;
-  for(let i = 0; i <= 999999; ++i){
+  for (let i = 0; i <= 999999; ++i) {
     m = Belt_MapInt.set(m, i, i);
   }
-  for(let i$1 = 0; i$1 <= 999999; ++i$1){
+  for (let i$1 = 0; i$1 <= 999999; ++i$1) {
     should(Belt_MapInt.get(m, i$1) !== undefined);
   }
-  for(let i$2 = 0; i$2 <= 999999; ++i$2){
+  for (let i$2 = 0; i$2 <= 999999; ++i$2) {
     m = Belt_MapInt.remove(m, i$2);
   }
   should(Belt_MapInt.isEmpty(m));

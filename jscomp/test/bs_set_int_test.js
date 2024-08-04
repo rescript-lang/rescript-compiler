@@ -80,7 +80,7 @@ let l;
 
 let r;
 
-for(let i$1 = 100; i$1 <= 1500; ++i$1){
+for (let i$1 = 100; i$1 <= 1500; ++i$1) {
   if (i$1 % 3 === 0) {
     l = Belt_SetInt.add(l, i$1);
   } else {

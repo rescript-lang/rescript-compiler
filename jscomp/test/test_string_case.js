@@ -5,20 +5,20 @@
 function f(x) {
   switch (x) {
     case "abcd" :
-        return 0;
+      return 0;
     case "bcde" :
-        return 1;
+      return 1;
     default:
       throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "test_string_case.res",
-                5,
-                9
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "test_string_case.res",
+            5,
+            9
+          ]
+        }
+      });
   }
 }
 

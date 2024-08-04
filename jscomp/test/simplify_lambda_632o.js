@@ -5,28 +5,26 @@
 function f(x) {
   switch (x) {
     case "X1" :
-        return "X1";
+      return "X1";
     case "X2" :
-        return "X2";
+      return "X2";
     case "X3" :
-        return "X3";
+      return "X3";
     case "X4" :
-        return "X4";
-    
+      return "X4";
   }
 }
 
 function f2(x) {
   switch (x) {
     case "X1" :
-        return "X1";
+      return "X1";
     case "X2" :
-        return "X2";
+      return "X2";
     case "X3" :
-        return "X3";
+      return "X3";
     case "X4" :
-        return "X4";
-    
+      return "X4";
   }
 }
 

@@ -14,11 +14,11 @@ function fxx(v) {
   let match = v();
   switch (match) {
     case 1 :
-        return /* 'a' */97;
+      return /* 'a' */97;
     case 2 :
-        return /* 'b' */98;
+      return /* 'b' */98;
     case 3 :
-        return /* 'c' */99;
+      return /* 'c' */99;
     default:
       return /* 'd' */100;
   }

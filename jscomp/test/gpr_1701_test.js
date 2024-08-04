@@ -10,22 +10,21 @@ let Foo = /* @__PURE__ */Caml_exceptions.create("Gpr_1701_test.Foo");
 function test(n) {
   if (n === 0) {
     throw new Error(Foo, {
-          cause: {
-            RE_EXN_ID: Foo
-          }
-        });
+      cause: {
+        RE_EXN_ID: Foo
+      }
+    });
   }
   try {
     return test(n - 1 | 0);
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === Foo) {
       return;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -33,20 +32,19 @@ test(100);
 
 function read_lines(inc) {
   let _acc = /* [] */0;
-  while(true) {
+  while (true) {
     let acc = _acc;
     let l;
     try {
       l = input_line(inc);
-    }
-    catch (raw_exn){
+    } catch (raw_exn) {
       let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn.RE_EXN_ID === "End_of_file") {
         l = undefined;
       } else {
         throw new Error(exn.RE_EXN_ID, {
-              cause: exn
-            });
+          cause: exn
+        });
       }
     }
     if (l === undefined) {
@@ -62,20 +60,19 @@ function read_lines(inc) {
 
 function read_lines2(inc) {
   let _acc = /* [] */0;
-  while(true) {
+  while (true) {
     let acc = _acc;
     let l;
     try {
       l = input_line(inc);
-    }
-    catch (raw_exn){
+    } catch (raw_exn) {
       let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn.RE_EXN_ID === "End_of_file") {
         return List.rev(acc);
       }
       throw new Error(exn.RE_EXN_ID, {
-            cause: exn
-          });
+        cause: exn
+      });
     }
     _acc = {
       hd: l,
@@ -93,15 +90,14 @@ function read_lines3(inc) {
         hd: l,
         tl: acc
       });
-    }
-    catch (raw_exn){
+    } catch (raw_exn) {
       let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn.RE_EXN_ID === "End_of_file") {
         return List.rev(acc);
       }
       throw new Error(exn.RE_EXN_ID, {
-            cause: exn
-          });
+        cause: exn
+      });
     }
   };
   return loop(/* [] */0);
@@ -110,8 +106,7 @@ function read_lines3(inc) {
 function fff(f, x) {
   try {
     return fff(f, x);
-  }
-  catch (exn){
+  } catch (exn) {
     return x + 1 | 0;
   }
 }

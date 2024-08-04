@@ -5,18 +5,16 @@
 function actionKey(key, a, b, c, d, e) {
   switch (key) {
     case 98 :
-        return c;
+      return c;
     case 106 :
-        return d;
+      return d;
     case 107 :
-        return e;
+      return e;
     case 116 :
-        return b;
+      return b;
     case 99 :
     case 118 :
-        return a;
-    default:
-      
+      return a;
   }
   return function (param) {
     

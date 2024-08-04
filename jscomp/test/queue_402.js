@@ -41,10 +41,10 @@ function add(x, q) {
 function peek(q) {
   if (q.length === 0) {
     throw new Error(Empty, {
-          cause: {
-            RE_EXN_ID: Empty
-          }
-        });
+      cause: {
+        RE_EXN_ID: Empty
+      }
+    });
   }
   return q.tail.next.content;
 }
@@ -52,10 +52,10 @@ function peek(q) {
 function take(q) {
   if (q.length === 0) {
     throw new Error(Empty, {
-          cause: {
-            RE_EXN_ID: Empty
-          }
-        });
+      cause: {
+        RE_EXN_ID: Empty
+      }
+    });
   }
   q.length = q.length - 1 | 0;
   let tail = q.tail;
@@ -82,7 +82,7 @@ function copy(q) {
     next: tail$p
   });
   let copy$1 = function (_prev, _cell) {
-    while(true) {
+    while (true) {
       let cell = _cell;
       let prev = _prev;
       if (cell === tail) {
@@ -119,7 +119,7 @@ function iter(f, q) {
   }
   let tail = q.tail;
   let _cell = tail.next;
-  while(true) {
+  while (true) {
     let cell = _cell;
     f(cell.content);
     if (cell === tail) {
@@ -137,7 +137,7 @@ function fold(f, accu, q) {
   let tail = q.tail;
   let _accu = accu;
   let _cell = tail.next;
-  while(true) {
+  while (true) {
     let cell = _cell;
     let accu$1 = _accu;
     let accu$2 = f(accu$1, cell.content);

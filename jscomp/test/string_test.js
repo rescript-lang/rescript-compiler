@@ -15,17 +15,17 @@ function ff(x) {
     case "0" :
     case "1" :
     case "2" :
-        a = 3;
-        break;
+      a = 3;
+      break;
     case "3" :
-        a = 4;
-        break;
+      a = 4;
+      break;
     case "4" :
-        a = 6;
-        break;
+      a = 6;
+      break;
     case "7" :
-        a = 7;
-        break;
+      a = 7;
+      break;
     default:
       a = 8;
   }
@@ -38,17 +38,17 @@ function gg(x) {
     case 0 :
     case 1 :
     case 2 :
-        a = 3;
-        break;
+      a = 3;
+      break;
     case 3 :
-        a = 4;
-        break;
+      a = 4;
+      break;
     case 4 :
-        a = 6;
-        break;
+      a = 6;
+      break;
     case 8 :
-        a = 7;
-        break;
+      a = 7;
+      break;
     default:
       a = 8;
   }
@@ -64,8 +64,7 @@ function rev_split_by_char(c, s) {
           hd: s$p,
           tl: l
         }));
-    }
-    catch (raw_exn){
+    } catch (raw_exn) {
       let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn.RE_EXN_ID === "Not_found") {
         return {
@@ -74,8 +73,8 @@ function rev_split_by_char(c, s) {
         };
       }
       throw new Error(exn.RE_EXN_ID, {
-            cause: exn
-          });
+        cause: exn
+      });
     }
   };
   return loop(0, /* [] */0);
@@ -86,7 +85,7 @@ function xsplit(delim, s) {
   if (len !== 0) {
     let _l = /* [] */0;
     let _x = len;
-    while(true) {
+    while (true) {
       let x = _x;
       let l = _l;
       if (x === 0) {
@@ -95,8 +94,7 @@ function xsplit(delim, s) {
       let i$p;
       try {
         i$p = $$String.rindex_from(s, x - 1 | 0, delim);
-      }
-      catch (raw_exn){
+      } catch (raw_exn) {
         let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn.RE_EXN_ID === "Not_found") {
           return {
@@ -105,8 +103,8 @@ function xsplit(delim, s) {
           };
         }
         throw new Error(exn.RE_EXN_ID, {
-              cause: exn
-            });
+          cause: exn
+        });
       }
       let l_0 = $$String.sub(s, i$p + 1 | 0, (x - i$p | 0) - 1 | 0);
       let l$1 = {

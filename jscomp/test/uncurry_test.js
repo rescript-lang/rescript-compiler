@@ -27,7 +27,7 @@ console.log([
 ]);
 
 function xx() {
-  while(true) {
+  while (true) {
     continue;
   };
 }

@@ -55,7 +55,7 @@ function f(i) {
   eq("File \"bs_list_test.res\", line 27, characters 18-25", Belt_List.getExn(u, i), Math.imul(i, i));
 }
 
-for(let i = 0; i <= 4; ++i){
+for (let i = 0; i <= 4; ++i) {
   f(i);
 }
 

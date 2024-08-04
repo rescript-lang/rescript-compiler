@@ -14,7 +14,7 @@ let arr = Caml_array.make(10, (function () {
 
 function f() {
   let n = 0;
-  while(n < 10) {
+  while (n < 10) {
     let j = n;
     Caml_array.set(arr, j, (function () {
       v.contents = v.contents + j | 0;
@@ -33,15 +33,15 @@ console.log(String(v.contents));
 
 if (v.contents !== 45) {
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "test_while_closure.res",
-            55,
-            2
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "test_while_closure.res",
+        55,
+        2
+      ]
+    }
+  });
 }
 
 let count = 10;

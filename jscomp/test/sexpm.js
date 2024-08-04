@@ -14,7 +14,7 @@ let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function _must_escape(s) {
   try {
-    for(let i = 0 ,i_finish = s.length; i < i_finish; ++i){
+    for (let i = 0, i_finish = s.length; i < i_finish; ++i) {
       let c = s.codePointAt(i);
       let exit = 0;
       if (c >= 42) {
@@ -23,17 +23,17 @@ function _must_escape(s) {
             exit = 1;
           } else {
             throw new Error(Pervasives.Exit, {
-                  cause: {
-                    RE_EXN_ID: Pervasives.Exit
-                  }
-                });
+              cause: {
+                RE_EXN_ID: Pervasives.Exit
+              }
+            });
           }
         } else {
           throw new Error(Pervasives.Exit, {
-                cause: {
-                  RE_EXN_ID: Pervasives.Exit
-                }
-              });
+            cause: {
+              RE_EXN_ID: Pervasives.Exit
+            }
+          });
         }
       } else if (c >= 11) {
         if (c >= 32) {
@@ -44,18 +44,17 @@ function _must_escape(s) {
             case 37 :
             case 38 :
             case 39 :
-                exit = 1;
-                break;
+              exit = 1;
+              break;
             case 32 :
             case 34 :
             case 40 :
             case 41 :
-                throw new Error(Pervasives.Exit, {
-                      cause: {
-                        RE_EXN_ID: Pervasives.Exit
-                      }
-                    });
-            
+              throw new Error(Pervasives.Exit, {
+                cause: {
+                  RE_EXN_ID: Pervasives.Exit
+                }
+              });
           }
         } else {
           exit = 1;
@@ -63,32 +62,31 @@ function _must_escape(s) {
       } else {
         if (c >= 9) {
           throw new Error(Pervasives.Exit, {
-                cause: {
-                  RE_EXN_ID: Pervasives.Exit
-                }
-              });
+            cause: {
+              RE_EXN_ID: Pervasives.Exit
+            }
+          });
         }
         exit = 1;
       }
       if (exit === 1 && c > 127) {
         throw new Error(Pervasives.Exit, {
-              cause: {
-                RE_EXN_ID: Pervasives.Exit
-              }
-            });
+          cause: {
+            RE_EXN_ID: Pervasives.Exit
+          }
+        });
       }
       
     }
     return false;
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === Pervasives.Exit) {
       return true;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -164,15 +162,15 @@ function _refill(t, k_succ, k_fail) {
 function _get(t) {
   if (t.i >= t.len) {
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "sexpm.res",
-              111,
-              4
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "sexpm.res",
+          111,
+          4
+        ]
+      }
+    });
   }
   let c = Caml_bytes.get(t.buf, t.i);
   t.i = t.i + 1 | 0;
@@ -203,7 +201,7 @@ function _error_eof(t) {
 }
 
 function expr(k, t) {
-  while(true) {
+  while (true) {
     if (t.i === t.len) {
       return _refill(t, (function (extra) {
         return expr(k, extra);
@@ -238,51 +236,50 @@ function expr_starting_with(c, k, t) {
     if (c >= 32) {
       switch (c) {
         case 32 :
-            throw new Error("Assert_failure", {
-                  cause: {
-                    RE_EXN_ID: "Assert_failure",
-                    _1: [
-                      "sexpm.res",
-                      152,
-                      27
-                    ]
-                  }
-                });
+          throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "sexpm.res",
+                152,
+                27
+              ]
+            }
+          });
         case 34 :
-            return quoted(k, t);
+          return quoted(k, t);
         case 33 :
         case 35 :
         case 36 :
         case 37 :
         case 38 :
         case 39 :
-            break;
+          break;
         case 40 :
-            return expr_list(/* [] */0, k, t);
+          return expr_list(/* [] */0, k, t);
         case 41 :
-            return _error(t, "unexpected ')'");
-        
+          return _error(t, "unexpected ')'");
       }
     }
     
   } else if (c >= 9) {
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "sexpm.res",
-              152,
-              27
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "sexpm.res",
+          152,
+          27
+        ]
+      }
+    });
   }
   Buffer.add_char(t.atom, c);
   return atom(k, t);
 }
 
 function expr_list(acc, k, t) {
-  while(true) {
+  while (true) {
     if (t.i === t.len) {
       return _refill(t, (function (extra) {
         return expr_list(acc, k, extra);
@@ -345,7 +342,7 @@ function _return_atom(last, k, t) {
 }
 
 function atom(k, t) {
-  while(true) {
+  while (true) {
     if (t.i === t.len) {
       return _refill(t, (function (extra) {
         return atom(k, extra);
@@ -368,14 +365,13 @@ function atom(k, t) {
       if (c >= 32) {
         switch (c) {
           case 32 :
-              exit = 2;
-              break;
+            exit = 2;
+            break;
           case 33 :
-              exit = 1;
-              break;
+            exit = 1;
+            break;
           case 34 :
-              return _error(t, "unexpected '\"' in the middle of an atom");
-          
+            return _error(t, "unexpected '\"' in the middle of an atom");
         }
       } else {
         exit = 1;
@@ -385,17 +381,16 @@ function atom(k, t) {
     }
     switch (exit) {
       case 1 :
-          Buffer.add_char(t.atom, c);
-          continue;
+        Buffer.add_char(t.atom, c);
+        continue;
       case 2 :
-          return _return_atom(c, k, t);
-      
+        return _return_atom(c, k, t);
     }
   };
 }
 
 function quoted(k, t) {
-  while(true) {
+  while (true) {
     if (t.i === t.len) {
       return _refill(t, (function (extra) {
         return quoted(k, extra);
@@ -427,13 +422,13 @@ function escaped(k, t) {
     if (c < 117) {
       switch (c) {
         case 92 :
-            return k(/* '\\' */92);
+          return k(/* '\\' */92);
         case 98 :
-            return k(/* '\b' */8);
+          return k(/* '\b' */8);
         case 110 :
-            return k(/* '\n' */10);
+          return k(/* '\n' */10);
         case 114 :
-            return k(/* '\r' */13);
+          return k(/* '\r' */13);
         case 93 :
         case 94 :
         case 95 :
@@ -454,10 +449,9 @@ function escaped(k, t) {
         case 112 :
         case 113 :
         case 115 :
-            break;
+          break;
         case 116 :
-            return k(/* '\t' */9);
-        
+          return k(/* '\t' */9);
       }
     }
     
@@ -502,7 +496,7 @@ function read1int(i, k, t) {
 }
 
 function skip_comment(k, t) {
-  while(true) {
+  while (true) {
     if (t.i === t.len) {
       return _refill(t, (function (extra) {
         return skip_comment(k, extra);
@@ -517,7 +511,7 @@ function skip_comment(k, t) {
 }
 
 function expr_or_end(k, t) {
-  while(true) {
+  while (true) {
     if (t.i === t.len) {
       return _refill(t, (function (extra) {
         return expr_or_end(k, extra);

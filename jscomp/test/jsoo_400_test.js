@@ -8,8 +8,7 @@ function u() {
   let n;
   try {
     n = "123".length;
-  }
-  catch (exn){
+  } catch (exn) {
     return 42;
   }
   return Caml_int32.div(3, 0);

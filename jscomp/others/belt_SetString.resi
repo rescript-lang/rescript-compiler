@@ -23,11 +23,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /***
-  This module is [`Belt.Set`]() specialized with value type to be a primitive type.
-  It is more efficient in general, the  API is the same with [`Belt_Set`]() except its value type is fixed,
-  and identity is not needed(using the built-in one)
+This module is [`Belt.Set`]() specialized with value type to be a primitive type.
+It is more efficient in general, the  API is the same with [`Belt_Set`]() except its value type is fixed,
+and identity is not needed(using the built-in one)
 
-  **See** [`Belt.Set`]()
+**See** [`Belt.Set`]()
 */
 
 /** The type of the set elements. */
@@ -77,7 +77,7 @@ of sets.
 */
 let cmp: (t, t) => int
 
-/** 
+/**
 `eq(s1, s2)` tests whether the sets `s1` and `s2` are equal, that is, contain
 equal elements.
 */
@@ -105,7 +105,7 @@ let every: (t, value => bool) => bool
 
 let someU: (t, (. value) => bool) => bool
 
-/** 
+/**
 `some(p, s)` checks if at least one element of the set satisfies the predicate
 `p`. Oder unspecified.
 */

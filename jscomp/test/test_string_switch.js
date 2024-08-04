@@ -7,11 +7,11 @@ let os_version;
 
 switch (Sys.os_type) {
   case "Cygwin" :
-      os_version = 2;
-      break;
+    os_version = 2;
+    break;
   case "Unix" :
-      os_version = 1;
-      break;
+    os_version = 1;
+    break;
   default:
     os_version = 3;
 }

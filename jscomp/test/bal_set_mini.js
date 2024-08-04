@@ -98,7 +98,7 @@ function add(x, x_) {
 }
 
 function min_elt(_def, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let def = _def;
     if (typeof x !== "object") {
@@ -151,7 +151,7 @@ function remove(x, tree) {
 }
 
 function mem(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
       return false;
@@ -167,18 +167,18 @@ function mem(x, _x_) {
 
 let v = "Empty";
 
-for(let i = 0; i <= 100000; ++i){
+for (let i = 0; i <= 100000; ++i) {
   v = add(i, v);
 }
 
-for(let i$1 = 0; i$1 <= 100000; ++i$1){
+for (let i$1 = 0; i$1 <= 100000; ++i$1) {
   if (!mem(i$1, v)) {
     console.log("impossible");
   }
   
 }
 
-for(let i$2 = 0; i$2 <= 100000; ++i$2){
+for (let i$2 = 0; i$2 <= 100000; ++i$2) {
   v = remove(i$2, v);
 }
 

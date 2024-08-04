@@ -119,37 +119,37 @@ let __ocaml_lex_tables = {
 };
 
 function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
-  while(true) {
+  while (true) {
     let __ocaml_lex_state = ___ocaml_lex_state;
     let __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          ___ocaml_lex_state = 0;
-          continue;
+        ___ocaml_lex_state = 0;
+        continue;
       case 1 :
-          return {
-            TAG: "NUMERAL",
-            _0: Caml_format.int_of_string(Lexing.lexeme(lexbuf))
-          };
+        return {
+          TAG: "NUMERAL",
+          _0: Caml_format.int_of_string(Lexing.lexeme(lexbuf))
+        };
       case 2 :
-          return {
-            TAG: "IDENT",
-            _0: Lexing.lexeme(lexbuf)
-          };
+        return {
+          TAG: "IDENT",
+          _0: Lexing.lexeme(lexbuf)
+        };
       case 3 :
-          return "PLUS";
+        return "PLUS";
       case 4 :
-          return "MINUS";
+        return "MINUS";
       case 5 :
-          return "TIMES";
+        return "TIMES";
       case 6 :
-          return "DIVIDE";
+        return "DIVIDE";
       case 7 :
-          return "LPAREN";
+        return "LPAREN";
       case 8 :
-          return "RPAREN";
+        return "RPAREN";
       case 9 :
-          return "EOF";
+        return "EOF";
       default:
         lexbuf.refill_buff(lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
@@ -165,20 +165,19 @@ function lexeme(lexbuf) {
 function str(e) {
   switch (e.TAG) {
     case "Numeral" :
-        return Pervasives.string_of_float(e._0);
+      return Pervasives.string_of_float(e._0);
     case "Plus" :
-        return str(e._0) + ("+" + str(e._1));
+      return str(e._0) + ("+" + str(e._1));
     case "Minus" :
-        return str(e._0) + ("-" + str(e._1));
+      return str(e._0) + ("-" + str(e._1));
     case "Times" :
-        return str(e._0) + ("*" + str(e._1));
+      return str(e._0) + ("*" + str(e._1));
     case "Divide" :
-        return str(e._0) + ("/" + str(e._1));
+      return str(e._0) + ("/" + str(e._1));
     case "Negate" :
-        return "-" + str(e._0);
+      return "-" + str(e._0);
     case "Variable" :
-        return e._0;
-    
+      return e._0;
   }
 }
 

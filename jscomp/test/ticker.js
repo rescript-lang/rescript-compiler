@@ -15,7 +15,7 @@ function split(delim, s) {
   if (len !== 0) {
     let _l = /* [] */0;
     let _x = len;
-    while(true) {
+    while (true) {
       let x = _x;
       let l = _l;
       if (x === 0) {
@@ -24,8 +24,7 @@ function split(delim, s) {
       let i$p;
       try {
         i$p = $$String.rindex_from(s, x - 1 | 0, delim);
-      }
-      catch (raw_exn){
+      } catch (raw_exn) {
         let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn.RE_EXN_ID === "Not_found") {
           return {
@@ -34,8 +33,8 @@ function split(delim, s) {
           };
         }
         throw new Error(exn.RE_EXN_ID, {
-              cause: exn
-            });
+          cause: exn
+        });
       }
       let l_0 = $$String.sub(s, i$p + 1 | 0, (x - i$p | 0) - 1 | 0);
       let l$1 = {
@@ -136,11 +135,11 @@ function bal(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Map.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
+        }
+      });
     }
     let lr = l.r;
     let ld = l.d;
@@ -153,11 +152,11 @@ function bal(l, x, d, r) {
       return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -171,11 +170,11 @@ function bal(l, x, d, r) {
   }
   if (typeof r !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   let rr = r.r;
   let rd = r.d;
@@ -188,11 +187,11 @@ function bal(l, x, d, r) {
     return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
+    }
+  });
 }
 
 function is_empty(param) {
@@ -250,14 +249,14 @@ function add(x, data, param) {
 }
 
 function find(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let c = Caml_obj.compare(x, param.v);
     if (c === 0) {
@@ -269,21 +268,21 @@ function find(x, _param) {
 }
 
 function find_first(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let v = param.v;
     if (f(v)) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.l;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -310,7 +309,7 @@ function find_first(f, _param) {
 }
 
 function find_first_opt(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -320,7 +319,7 @@ function find_first_opt(f, _param) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.l;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -347,21 +346,21 @@ function find_first_opt(f, _param) {
 }
 
 function find_last(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let v = param.v;
     if (f(v)) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.r;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -388,7 +387,7 @@ function find_last(f, _param) {
 }
 
 function find_last_opt(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -398,7 +397,7 @@ function find_last_opt(f, _param) {
       let _v0 = v;
       let _d0 = param.d;
       let _param$1 = param.r;
-      while(true) {
+      while (true) {
         let param$1 = _param$1;
         let d0 = _d0;
         let v0 = _v0;
@@ -425,7 +424,7 @@ function find_last_opt(f, _param) {
 }
 
 function find_opt(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -440,7 +439,7 @@ function find_opt(x, _param) {
 }
 
 function mem(x, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return false;
@@ -455,14 +454,14 @@ function mem(x, _param) {
 }
 
 function min_binding(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let l = param.l;
     if (typeof l !== "object") {
@@ -477,7 +476,7 @@ function min_binding(_param) {
 }
 
 function min_binding_opt(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -495,14 +494,14 @@ function min_binding_opt(_param) {
 }
 
 function max_binding(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let r = param.r;
     if (typeof r !== "object") {
@@ -517,7 +516,7 @@ function max_binding(_param) {
 }
 
 function max_binding_opt(_param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -537,11 +536,11 @@ function max_binding_opt(_param) {
 function remove_min_binding(param) {
   if (typeof param !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.remove_min_elt"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.remove_min_elt"
+      }
+    });
   }
   let l = param.l;
   if (typeof l !== "object") {
@@ -647,7 +646,7 @@ function update(x, f, param) {
 }
 
 function iter(f, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return;
@@ -695,7 +694,7 @@ function mapi(f, param) {
 }
 
 function fold(f, _m, _accu) {
-  while(true) {
+  while (true) {
     let accu = _accu;
     let m = _m;
     if (typeof m !== "object") {
@@ -708,7 +707,7 @@ function fold(f, _m, _accu) {
 }
 
 function for_all(p, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return true;
@@ -725,7 +724,7 @@ function for_all(p, _param) {
 }
 
 function exists(p, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     if (typeof param !== "object") {
       return false;
@@ -846,15 +845,15 @@ function merge$1(f, s1, s2) {
   }
   if (typeof s2 !== "object") {
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "map.res",
-              552,
-              11
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "map.res",
+          552,
+          11
+        ]
+      }
+    });
   }
   let v2 = s2.v;
   let match$1 = split$1(v2, s1);
@@ -946,7 +945,7 @@ function partition(p, param) {
 }
 
 function cons_enum(_m, _e) {
-  while(true) {
+  while (true) {
     let e = _e;
     let m = _m;
     if (typeof m !== "object") {
@@ -967,7 +966,7 @@ function cons_enum(_m, _e) {
 function compare(cmp, m1, m2) {
   let _e1 = cons_enum(m1, "End");
   let _e2 = cons_enum(m2, "End");
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
@@ -997,7 +996,7 @@ function compare(cmp, m1, m2) {
 function equal(cmp, m1, m2) {
   let _e1 = cons_enum(m1, "End");
   let _e2 = cons_enum(m2, "End");
-  while(true) {
+  while (true) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
@@ -1031,7 +1030,7 @@ function cardinal(param) {
 }
 
 function bindings_aux(_accu, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     let accu = _accu;
     if (typeof param !== "object") {
@@ -1131,7 +1130,7 @@ function compute_update_sequences(all_tickers) {
       }, map);
     }
     let loop = function (_up, _map, _ticker) {
-      while(true) {
+      while (true) {
         let ticker = _ticker;
         let map = _map;
         let up = _up;
@@ -1163,18 +1162,18 @@ function compute_update_sequences(all_tickers) {
       if (typeof x !== "object") {
         if (x === "Uninitialized") {
           throw new Error("Failure", {
-                cause: {
-                  RE_EXN_ID: "Failure",
-                  _1: "All nodes should be ranked"
-                }
-              });
+            cause: {
+              RE_EXN_ID: "Failure",
+              _1: "All nodes should be ranked"
+            }
+          });
         }
         throw new Error("Failure", {
-              cause: {
-                RE_EXN_ID: "Failure",
-                _1: "All nodes should be ranked"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Failure",
+            _1: "All nodes should be ranked"
+          }
+        });
       } else {
         let y = rhs.rank;
         if (typeof y === "object") {
@@ -1182,18 +1181,18 @@ function compute_update_sequences(all_tickers) {
         }
         if (y === "Uninitialized") {
           throw new Error("Failure", {
-                cause: {
-                  RE_EXN_ID: "Failure",
-                  _1: "All nodes should be ranked"
-                }
-              });
+            cause: {
+              RE_EXN_ID: "Failure",
+              _1: "All nodes should be ranked"
+            }
+          });
         }
         throw new Error("Failure", {
-              cause: {
-                RE_EXN_ID: "Failure",
-                _1: "All nodes should be ranked"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Failure",
+            _1: "All nodes should be ranked"
+          }
+        });
       }
     }), l);
     return add(k, l$1, map);
@@ -1210,11 +1209,11 @@ function process_quote(ticker_map, new_ticker, new_value) {
         return;
       }
       throw new Error("Failure", {
-            cause: {
-              RE_EXN_ID: "Failure",
-              _1: "Only single Market ticker should be udpated upon a new quote"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Failure",
+          _1: "Only single Market ticker should be udpated upon a new quote"
+        }
+      });
     }
     let match$1 = match._0;
     let match$2 = match$1.lhs.value;
@@ -1248,179 +1247,179 @@ function process_input_line(ticker_map, all_tickers, line) {
   if (tokens) {
     switch (tokens.hd) {
       case "Q" :
-          let match = tokens.tl;
-          if (match) {
-            let match$1 = match.tl;
-            if (match$1) {
-              if (match$1.tl) {
-                throw new Error("Failure", {
-                      cause: {
-                        RE_EXN_ID: "Failure",
-                        _1: "Invalid input line"
-                      }
-                    });
-              }
-              let ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
-              let value = Caml_format.float_of_string(match$1.hd);
-              process_quote(ticker_map$1, match.hd, value);
-              return [
-                all_tickers,
-                Caml_option.some(ticker_map$1)
-              ];
-            }
-            throw new Error("Failure", {
-                  cause: {
-                    RE_EXN_ID: "Failure",
-                    _1: "Invalid input line"
-                  }
-                });
-          }
-          throw new Error("Failure", {
+        let match = tokens.tl;
+        if (match) {
+          let match$1 = match.tl;
+          if (match$1) {
+            if (match$1.tl) {
+              throw new Error("Failure", {
                 cause: {
                   RE_EXN_ID: "Failure",
                   _1: "Invalid input line"
                 }
               });
-      case "R" :
-          let match$2 = tokens.tl;
-          if (match$2) {
-            let match$3 = match$2.tl;
-            if (match$3) {
-              let ticker_name = match$2.hd;
-              switch (match$3.hd) {
-                case "+" :
-                    let match$4 = match$3.tl;
-                    if (match$4) {
-                      let match$5 = match$4.tl;
-                      if (match$5) {
-                        if (match$5.tl) {
-                          throw new Error("Failure", {
-                                cause: {
-                                  RE_EXN_ID: "Failure",
-                                  _1: "Invalid input line"
-                                }
-                              });
-                        }
-                        return [
-                          {
-                            hd: make_binary_op(ticker_name, match$4.hd, match$5.hd, "PLUS"),
-                            tl: all_tickers
-                          },
-                          ticker_map
-                        ];
-                      }
-                      throw new Error("Failure", {
-                            cause: {
-                              RE_EXN_ID: "Failure",
-                              _1: "Invalid input line"
-                            }
-                          });
-                    }
-                    throw new Error("Failure", {
-                          cause: {
-                            RE_EXN_ID: "Failure",
-                            _1: "Invalid input line"
-                          }
-                        });
-                case "-" :
-                    let match$6 = match$3.tl;
-                    if (match$6) {
-                      let match$7 = match$6.tl;
-                      if (match$7) {
-                        if (match$7.tl) {
-                          throw new Error("Failure", {
-                                cause: {
-                                  RE_EXN_ID: "Failure",
-                                  _1: "Invalid input line"
-                                }
-                              });
-                        }
-                        return [
-                          {
-                            hd: make_binary_op(ticker_name, match$6.hd, match$7.hd, "MINUS"),
-                            tl: all_tickers
-                          },
-                          ticker_map
-                        ];
-                      }
-                      throw new Error("Failure", {
-                            cause: {
-                              RE_EXN_ID: "Failure",
-                              _1: "Invalid input line"
-                            }
-                          });
-                    }
-                    throw new Error("Failure", {
-                          cause: {
-                            RE_EXN_ID: "Failure",
-                            _1: "Invalid input line"
-                          }
-                        });
-                case "S" :
-                    if (match$3.tl) {
-                      throw new Error("Failure", {
-                            cause: {
-                              RE_EXN_ID: "Failure",
-                              _1: "Invalid input line"
-                            }
-                          });
-                    }
-                    return [
-                      {
-                        hd: {
-                          value: undefined,
-                          rank: "Uninitialized",
-                          ticker_name: ticker_name,
-                          type_: "Market"
-                        },
-                        tl: all_tickers
-                      },
-                      ticker_map
-                    ];
-                default:
-                  throw new Error("Failure", {
-                        cause: {
-                          RE_EXN_ID: "Failure",
-                          _1: "Invalid input line"
-                        }
-                      });
-              }
-            } else {
-              throw new Error("Failure", {
-                    cause: {
-                      RE_EXN_ID: "Failure",
-                      _1: "Invalid input line"
-                    }
-                  });
             }
-          } else {
-            throw new Error("Failure", {
-                  cause: {
-                    RE_EXN_ID: "Failure",
-                    _1: "Invalid input line"
-                  }
-                });
+            let ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
+            let value = Caml_format.float_of_string(match$1.hd);
+            process_quote(ticker_map$1, match.hd, value);
+            return [
+              all_tickers,
+              Caml_option.some(ticker_map$1)
+            ];
           }
-      default:
+          throw new Error("Failure", {
+            cause: {
+              RE_EXN_ID: "Failure",
+              _1: "Invalid input line"
+            }
+          });
+        }
         throw new Error("Failure", {
-              cause: {
-                RE_EXN_ID: "Failure",
-                _1: "Invalid input line"
-              }
-            });
-    }
-  } else {
-    throw new Error("Failure", {
           cause: {
             RE_EXN_ID: "Failure",
             _1: "Invalid input line"
           }
         });
+      case "R" :
+        let match$2 = tokens.tl;
+        if (match$2) {
+          let match$3 = match$2.tl;
+          if (match$3) {
+            let ticker_name = match$2.hd;
+            switch (match$3.hd) {
+              case "+" :
+                let match$4 = match$3.tl;
+                if (match$4) {
+                  let match$5 = match$4.tl;
+                  if (match$5) {
+                    if (match$5.tl) {
+                      throw new Error("Failure", {
+                        cause: {
+                          RE_EXN_ID: "Failure",
+                          _1: "Invalid input line"
+                        }
+                      });
+                    }
+                    return [
+                      {
+                        hd: make_binary_op(ticker_name, match$4.hd, match$5.hd, "PLUS"),
+                        tl: all_tickers
+                      },
+                      ticker_map
+                    ];
+                  }
+                  throw new Error("Failure", {
+                    cause: {
+                      RE_EXN_ID: "Failure",
+                      _1: "Invalid input line"
+                    }
+                  });
+                }
+                throw new Error("Failure", {
+                  cause: {
+                    RE_EXN_ID: "Failure",
+                    _1: "Invalid input line"
+                  }
+                });
+              case "-" :
+                let match$6 = match$3.tl;
+                if (match$6) {
+                  let match$7 = match$6.tl;
+                  if (match$7) {
+                    if (match$7.tl) {
+                      throw new Error("Failure", {
+                        cause: {
+                          RE_EXN_ID: "Failure",
+                          _1: "Invalid input line"
+                        }
+                      });
+                    }
+                    return [
+                      {
+                        hd: make_binary_op(ticker_name, match$6.hd, match$7.hd, "MINUS"),
+                        tl: all_tickers
+                      },
+                      ticker_map
+                    ];
+                  }
+                  throw new Error("Failure", {
+                    cause: {
+                      RE_EXN_ID: "Failure",
+                      _1: "Invalid input line"
+                    }
+                  });
+                }
+                throw new Error("Failure", {
+                  cause: {
+                    RE_EXN_ID: "Failure",
+                    _1: "Invalid input line"
+                  }
+                });
+              case "S" :
+                if (match$3.tl) {
+                  throw new Error("Failure", {
+                    cause: {
+                      RE_EXN_ID: "Failure",
+                      _1: "Invalid input line"
+                    }
+                  });
+                }
+                return [
+                  {
+                    hd: {
+                      value: undefined,
+                      rank: "Uninitialized",
+                      ticker_name: ticker_name,
+                      type_: "Market"
+                    },
+                    tl: all_tickers
+                  },
+                  ticker_map
+                ];
+              default:
+                throw new Error("Failure", {
+                  cause: {
+                    RE_EXN_ID: "Failure",
+                    _1: "Invalid input line"
+                  }
+                });
+            }
+          } else {
+            throw new Error("Failure", {
+              cause: {
+                RE_EXN_ID: "Failure",
+                _1: "Invalid input line"
+              }
+            });
+          }
+        } else {
+          throw new Error("Failure", {
+            cause: {
+              RE_EXN_ID: "Failure",
+              _1: "Invalid input line"
+            }
+          });
+        }
+      default:
+        throw new Error("Failure", {
+          cause: {
+            RE_EXN_ID: "Failure",
+            _1: "Invalid input line"
+          }
+        });
+    }
+  } else {
+    throw new Error("Failure", {
+      cause: {
+        RE_EXN_ID: "Failure",
+        _1: "Invalid input line"
+      }
+    });
   }
 }
 
 function loop(_lines, _param) {
-  while(true) {
+  while (true) {
     let param = _param;
     let lines = _lines;
     let all_tickers = param[0];

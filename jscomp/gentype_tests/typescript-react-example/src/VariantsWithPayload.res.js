@@ -58,19 +58,18 @@ function printVariantWithPayloads(x) {
   }
   switch (x.TAG) {
     case "B" :
-        console.log("printVariantWithPayloads", "B(" + (String(x._0) + ")"));
-        return;
+      console.log("printVariantWithPayloads", "B(" + (String(x._0) + ")"));
+      return;
     case "C" :
-        console.log("printVariantWithPayloads", "C(" + (String(x._0) + (", " + (String(x._1) + ")"))));
-        return;
+      console.log("printVariantWithPayloads", "C(" + (String(x._0) + (", " + (String(x._1) + ")"))));
+      return;
     case "D" :
-        let match = x._0;
-        console.log("printVariantWithPayloads", "D((" + (String(match[0]) + (", " + (String(match[1]) + "))"))));
-        return;
+      let match = x._0;
+      console.log("printVariantWithPayloads", "D((" + (String(match[0]) + (", " + (String(match[1]) + "))"))));
+      return;
     case "E" :
-        console.log("printVariantWithPayloads", "E(" + (String(x._0) + (", " + (x._1 + (", " + (String(x._2) + ")"))))));
-        return;
-    
+      console.log("printVariantWithPayloads", "E(" + (String(x._0) + (", " + (x._1 + (", " + (String(x._2) + ")"))))));
+      return;
   }
 }
 

@@ -44,7 +44,7 @@ function eq(loc, x, y) {
 }
 
 function union(_l, _l$p) {
-  while(true) {
+  while (true) {
     let l$p = _l$p;
     let l = _l;
     if (!l$p) {
@@ -103,7 +103,7 @@ function union(_l, _l$p) {
 }
 
 function inter(_l, _l$p) {
-  while(true) {
+  while (true) {
     let l$p = _l$p;
     let l = _l;
     if (!l$p) {
@@ -149,7 +149,7 @@ function inter(_l, _l$p) {
 }
 
 function diff(_l, _l$p) {
-  while(true) {
+  while (true) {
     let l$p = _l$p;
     let l = _l;
     if (!l$p) {
@@ -246,7 +246,7 @@ function offset(o, l) {
 }
 
 function mem(c, _s) {
-  while(true) {
+  while (true) {
     let s = _s;
     if (!s) {
       return false;
@@ -321,11 +321,11 @@ function bal(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Map.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
+        }
+      });
     }
     let lr = l.r;
     let ld = l.d;
@@ -338,11 +338,11 @@ function bal(l, x, d, r) {
       return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -356,11 +356,11 @@ function bal(l, x, d, r) {
   }
   if (typeof r !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   let rr = r.r;
   let rd = r.d;
@@ -373,11 +373,11 @@ function bal(l, x, d, r) {
     return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
+    }
+  });
 }
 
 function add(x, data, param) {
@@ -522,11 +522,11 @@ function bal$1(l, v, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Set.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.bal"
+        }
+      });
     }
     let lr = l.r;
     let lv = l.v;
@@ -538,11 +538,11 @@ function bal$1(l, v, r) {
       return create$1(create$1(ll, lv, lr.l), lr.v, create$1(lr.r, v, r));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal"
+      }
+    });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -555,11 +555,11 @@ function bal$1(l, v, r) {
   }
   if (typeof r !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal"
+      }
+    });
   }
   let rr = r.r;
   let rv = r.v;
@@ -571,11 +571,11 @@ function bal$1(l, v, r) {
     return create$1(create$1(l, v, rl.l), rl.v, create$1(rl.r, rv, rr));
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.bal"
+    }
+  });
 }
 
 function add$1(x, param) {
@@ -623,7 +623,7 @@ let empty = {
 function hash(m, accu) {
   let _l = m.marks;
   let _accu = hash_combine(Hashtbl.hash(m.pmarks), accu);
-  while(true) {
+  while (true) {
     let accu$1 = _accu;
     let l = _l;
     if (!l) {
@@ -662,7 +662,7 @@ function marks_set_idx$1(marks, idx) {
 }
 
 function first(f, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (!x) {
       return;
@@ -788,33 +788,33 @@ function rename(ids, x) {
   }
   switch (l.TAG) {
     case "Alt" :
-        return mk_expr(ids, {
-          TAG: "Alt",
-          _0: List.map((function (extra) {
-            return rename(ids, extra);
-          }), l._0)
-        });
+      return mk_expr(ids, {
+        TAG: "Alt",
+        _0: List.map((function (extra) {
+          return rename(ids, extra);
+        }), l._0)
+      });
     case "Seq" :
-        return mk_expr(ids, {
-          TAG: "Seq",
-          _0: l._0,
-          _1: rename(ids, l._1),
-          _2: rename(ids, l._2)
-        });
+      return mk_expr(ids, {
+        TAG: "Seq",
+        _0: l._0,
+        _1: rename(ids, l._1),
+        _2: rename(ids, l._2)
+      });
     case "Rep" :
-        return mk_expr(ids, {
-          TAG: "Rep",
-          _0: l._0,
-          _1: l._1,
-          _2: rename(ids, l._2)
-        });
+      return mk_expr(ids, {
+        TAG: "Rep",
+        _0: l._0,
+        _1: l._1,
+        _2: rename(ids, l._2)
+      });
     default:
       return mk_expr(ids, x.def);
   }
 }
 
 function equal(_l1, _l2) {
-  while(true) {
+  while (true) {
     let l2 = _l2;
     let l1 = _l1;
     if (!l1) {
@@ -827,72 +827,68 @@ function equal(_l1, _l2) {
     let marks1 = l1.hd;
     switch (marks1.TAG) {
       case "TSeq" :
-          if (!l2) {
+        if (!l2) {
+          return false;
+        }
+        let match = l2.hd;
+        switch (match.TAG) {
+          case "TSeq" :
+            if (marks1._1.id !== match._1.id) {
+              return false;
+            }
+            if (!equal(marks1._0, match._0)) {
+              return false;
+            }
+            _l2 = l2.tl;
+            _l1 = l1.tl;
+            continue;
+          case "TExp" :
+          case "TMatch" :
             return false;
-          }
-          let match = l2.hd;
-          switch (match.TAG) {
-            case "TSeq" :
-                if (marks1._1.id !== match._1.id) {
-                  return false;
-                }
-                if (!equal(marks1._0, match._0)) {
-                  return false;
-                }
-                _l2 = l2.tl;
-                _l1 = l1.tl;
-                continue;
-            case "TExp" :
-            case "TMatch" :
-                return false;
-            
-          }
+        }
       case "TExp" :
-          if (!l2) {
+        if (!l2) {
+          return false;
+        }
+        let match$1 = l2.hd;
+        switch (match$1.TAG) {
+          case "TExp" :
+            if (marks1._1.id !== match$1._1.id) {
+              return false;
+            }
+            if (!Caml_obj.equal(marks1._0, match$1._0)) {
+              return false;
+            }
+            _l2 = l2.tl;
+            _l1 = l1.tl;
+            continue;
+          case "TSeq" :
+          case "TMatch" :
             return false;
-          }
-          let match$1 = l2.hd;
-          switch (match$1.TAG) {
-            case "TExp" :
-                if (marks1._1.id !== match$1._1.id) {
-                  return false;
-                }
-                if (!Caml_obj.equal(marks1._0, match$1._0)) {
-                  return false;
-                }
-                _l2 = l2.tl;
-                _l1 = l1.tl;
-                continue;
-            case "TSeq" :
-            case "TMatch" :
-                return false;
-            
-          }
+        }
       case "TMatch" :
-          if (!l2) {
+        if (!l2) {
+          return false;
+        }
+        let marks2 = l2.hd;
+        switch (marks2.TAG) {
+          case "TSeq" :
+          case "TExp" :
             return false;
-          }
-          let marks2 = l2.hd;
-          switch (marks2.TAG) {
-            case "TSeq" :
-            case "TExp" :
-                return false;
-            case "TMatch" :
-                if (!Caml_obj.equal(marks1._0, marks2._0)) {
-                  return false;
-                }
-                _l2 = l2.tl;
-                _l1 = l1.tl;
-                continue;
-            
-          }
-      
+          case "TMatch" :
+            if (!Caml_obj.equal(marks1._0, marks2._0)) {
+              return false;
+            }
+            _l2 = l2.tl;
+            _l1 = l1.tl;
+            continue;
+        }
     }
   };
 }
 
 function hash$1(_l, _accu) {
-  while(true) {
+  while (true) {
     let accu = _accu;
     let l = _l;
     if (!l) {
@@ -901,18 +897,17 @@ function hash$1(_l, _accu) {
     let marks = l.hd;
     switch (marks.TAG) {
       case "TSeq" :
-          _accu = hash_combine(388635598, hash_combine(marks._1.id, hash$1(marks._0, accu)));
-          _l = l.tl;
-          continue;
+        _accu = hash_combine(388635598, hash_combine(marks._1.id, hash$1(marks._0, accu)));
+        _l = l.tl;
+        continue;
       case "TExp" :
-          _accu = hash_combine(726404471, hash_combine(marks._1.id, hash(marks._0, accu)));
-          _l = l.tl;
-          continue;
+        _accu = hash_combine(726404471, hash_combine(marks._1.id, hash(marks._0, accu)));
+        _l = l.tl;
+        continue;
       case "TMatch" :
-          _accu = hash_combine(471882453, hash(marks._0, accu));
-          _l = l.tl;
-          continue;
-      
+        _accu = hash_combine(471882453, hash(marks._0, accu));
+        _l = l.tl;
+        continue;
     }
   };
 }
@@ -924,22 +919,21 @@ function tseq(kind, x, y, rem) {
   let match = x.hd;
   switch (match.TAG) {
     case "TExp" :
-        let tmp = match._1.def;
-        if (typeof tmp !== "object" && !x.tl) {
-          return {
-            hd: {
-              TAG: "TExp",
-              _0: match._0,
-              _1: y
-            },
-            tl: rem
-          };
-        }
-        break;
+      let tmp = match._1.def;
+      if (typeof tmp !== "object" && !x.tl) {
+        return {
+          hd: {
+            TAG: "TExp",
+            _0: match._0,
+            _1: y
+          },
+          tl: rem
+        };
+      }
+      break;
     case "TSeq" :
     case "TMatch" :
-        break;
-    
+      break;
   }
   return {
     hd: {
@@ -1011,11 +1005,10 @@ function mark_used_indices(tbl) {
     return List.iter((function (x) {
       switch (x.TAG) {
         case "TSeq" :
-            return mark_used_indices(tbl)(x._0);
+          return mark_used_indices(tbl)(x._0);
         case "TExp" :
         case "TMatch" :
-            break;
-        
+          break;
       }
       List.iter((function (param) {
         let i = param[1];
@@ -1029,7 +1022,7 @@ function mark_used_indices(tbl) {
 }
 
 function find_free(tbl, _idx, len) {
-  while(true) {
+  while (true) {
     let idx = _idx;
     if (idx === len || !Caml_array.get(tbl, idx)) {
       return idx;
@@ -1056,16 +1049,15 @@ function remove_matches(extra) {
     switch (x.TAG) {
       case "TSeq" :
       case "TExp" :
-          return true;
+        return true;
       case "TMatch" :
-          return false;
-      
+        return false;
     }
   }), extra);
 }
 
 function split_at_match_rec(_l$p, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let l$p = _l$p;
     if (x) {
@@ -1073,36 +1065,35 @@ function split_at_match_rec(_l$p, _x) {
       switch (x$1.TAG) {
         case "TSeq" :
         case "TExp" :
-            _x = x.tl;
-            _l$p = {
-              hd: x$1,
-              tl: l$p
-            };
-            continue;
+          _x = x.tl;
+          _l$p = {
+            hd: x$1,
+            tl: l$p
+          };
+          continue;
         case "TMatch" :
-            return [
-              List.rev(l$p),
-              remove_matches(x.tl)
-            ];
-        
+          return [
+            List.rev(l$p),
+            remove_matches(x.tl)
+          ];
       }
     } else {
       throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "ocaml_re_test.res",
-                816,
-                16
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "ocaml_re_test.res",
+            816,
+            16
+          ]
+        }
+      });
     }
   };
 }
 
 function remove_duplicates(prev, _l, y) {
-  while(true) {
+  while (true) {
     let l = _l;
     if (!l) {
       return [
@@ -1113,59 +1104,58 @@ function remove_duplicates(prev, _l, y) {
     let x = l.hd;
     switch (x.TAG) {
       case "TSeq" :
-          let x$1 = x._1;
-          let match = remove_duplicates(prev, x._0, x$1);
-          let match$1 = remove_duplicates(match[1], l.tl, y);
-          return [
-            tseq(x._2, match[0], x$1, match$1[0]),
-            match$1[1]
-          ];
+        let x$1 = x._1;
+        let match = remove_duplicates(prev, x._0, x$1);
+        let match$1 = remove_duplicates(match[1], l.tl, y);
+        return [
+          tseq(x._2, match[0], x$1, match$1[0]),
+          match$1[1]
+        ];
       case "TExp" :
-          let x$2 = x._1;
-          let tmp = x$2.def;
-          if (typeof tmp !== "object") {
-            let r = l.tl;
-            if (List.memq(y.id, prev)) {
-              _l = r;
-              continue;
-            }
-            let match$2 = remove_duplicates({
-              hd: y.id,
-              tl: prev
-            }, r, y);
-            return [
-              {
-                hd: x,
-                tl: match$2[0]
-              },
-              match$2[1]
-            ];
-          }
-          let r$1 = l.tl;
-          if (List.memq(x$2.id, prev)) {
-            _l = r$1;
+        let x$2 = x._1;
+        let tmp = x$2.def;
+        if (typeof tmp !== "object") {
+          let r = l.tl;
+          if (List.memq(y.id, prev)) {
+            _l = r;
             continue;
           }
-          let match$3 = remove_duplicates({
-            hd: x$2.id,
+          let match$2 = remove_duplicates({
+            hd: y.id,
             tl: prev
-          }, r$1, y);
+          }, r, y);
           return [
             {
               hd: x,
-              tl: match$3[0]
+              tl: match$2[0]
             },
-            match$3[1]
+            match$2[1]
           ];
+        }
+        let r$1 = l.tl;
+        if (List.memq(x$2.id, prev)) {
+          _l = r$1;
+          continue;
+        }
+        let match$3 = remove_duplicates({
+          hd: x$2.id,
+          tl: prev
+        }, r$1, y);
+        return [
+          {
+            hd: x,
+            tl: match$3[0]
+          },
+          match$3[1]
+        ];
       case "TMatch" :
-          return [
-            {
-              hd: x,
-              tl: /* [] */0
-            },
-            prev
-          ];
-      
+        return [
+          {
+            hd: x,
+            tl: /* [] */0
+          },
+          prev
+        ];
     }
   };
 }
@@ -1177,33 +1167,32 @@ function set_idx(idx, x) {
   let marks = x.hd;
   switch (marks.TAG) {
     case "TSeq" :
-        return {
-          hd: {
-            TAG: "TSeq",
-            _0: set_idx(idx, marks._0),
-            _1: marks._1,
-            _2: marks._2
-          },
-          tl: set_idx(idx, x.tl)
-        };
+      return {
+        hd: {
+          TAG: "TSeq",
+          _0: set_idx(idx, marks._0),
+          _1: marks._1,
+          _2: marks._2
+        },
+        tl: set_idx(idx, x.tl)
+      };
     case "TExp" :
-        return {
-          hd: {
-            TAG: "TExp",
-            _0: marks_set_idx$1(marks._0, idx),
-            _1: marks._1
-          },
-          tl: set_idx(idx, x.tl)
-        };
+      return {
+        hd: {
+          TAG: "TExp",
+          _0: marks_set_idx$1(marks._0, idx),
+          _1: marks._1
+        },
+        tl: set_idx(idx, x.tl)
+      };
     case "TMatch" :
-        return {
-          hd: {
-            TAG: "TMatch",
-            _0: marks_set_idx$1(marks._0, idx)
-          },
-          tl: set_idx(idx, x.tl)
-        };
-    
+      return {
+        hd: {
+          TAG: "TMatch",
+          _0: marks_set_idx$1(marks._0, idx)
+        },
+        tl: set_idx(idx, x.tl)
+      };
   }
 }
 
@@ -1234,129 +1223,127 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
   }
   switch (s.TAG) {
     case "Cst" :
-        if (mem(c, s._0)) {
-          return {
-            hd: {
-              TAG: "TExp",
-              _0: marks,
-              _1: eps_expr
-            },
-            tl: rem
-          };
-        } else {
-          return rem;
-        }
+      if (mem(c, s._0)) {
+        return {
+          hd: {
+            TAG: "TExp",
+            _0: marks,
+            _1: eps_expr
+          },
+          tl: rem
+        };
+      } else {
+        return rem;
+      }
     case "Alt" :
-        return delta_2(marks, c, next_cat, prev_cat, s._0, rem);
+      return delta_2(marks, c, next_cat, prev_cat, s._0, rem);
     case "Seq" :
-        let y$p = delta_1(marks, c, next_cat, prev_cat, s._1, /* [] */0);
-        return delta_seq(c, next_cat, prev_cat, s._0, y$p, s._2, rem);
+      let y$p = delta_1(marks, c, next_cat, prev_cat, s._1, /* [] */0);
+      return delta_seq(c, next_cat, prev_cat, s._0, y$p, s._2, rem);
     case "Rep" :
-        let kind = s._1;
-        let y$p$1 = delta_1(marks, c, next_cat, prev_cat, s._2, /* [] */0);
-        let marks$p = first((function (x) {
-          switch (x.TAG) {
-            case "TSeq" :
-            case "TExp" :
-                return;
-            case "TMatch" :
-                return x._0;
-            
-          }
-        }), y$p$1);
-        let match = marks$p !== undefined ? [
-            remove_matches(y$p$1),
-            marks$p
-          ] : [
-            y$p$1,
-            marks
-          ];
-        let y$p$p = match[0];
-        if (s._0 === "Non_greedy") {
-          return {
-            hd: {
-              TAG: "TMatch",
-              _0: marks
-            },
-            tl: tseq(kind, y$p$p, x, rem)
-          };
-        } else {
-          return tseq(kind, y$p$p, x, {
-            hd: {
-              TAG: "TMatch",
-              _0: match[1]
-            },
-            tl: rem
-          });
+      let kind = s._1;
+      let y$p$1 = delta_1(marks, c, next_cat, prev_cat, s._2, /* [] */0);
+      let marks$p = first((function (x) {
+        switch (x.TAG) {
+          case "TSeq" :
+          case "TExp" :
+            return;
+          case "TMatch" :
+            return x._0;
         }
+      }), y$p$1);
+      let match = marks$p !== undefined ? [
+          remove_matches(y$p$1),
+          marks$p
+        ] : [
+          y$p$1,
+          marks
+        ];
+      let y$p$p = match[0];
+      if (s._0 === "Non_greedy") {
+        return {
+          hd: {
+            TAG: "TMatch",
+            _0: marks
+          },
+          tl: tseq(kind, y$p$p, x, rem)
+        };
+      } else {
+        return tseq(kind, y$p$p, x, {
+          hd: {
+            TAG: "TMatch",
+            _0: match[1]
+          },
+          tl: rem
+        });
+      }
     case "Mark" :
-        let i = s._0;
-        let marks_marks = {
-          hd: [
-            i,
-            -1
-          ],
-          tl: List.remove_assq(i, marks.marks)
-        };
-        let marks_pmarks = marks.pmarks;
-        let marks$1 = {
-          marks: marks_marks,
-          pmarks: marks_pmarks
-        };
-        return {
-          hd: {
-            TAG: "TMatch",
-            _0: marks$1
-          },
-          tl: rem
-        };
+      let i = s._0;
+      let marks_marks = {
+        hd: [
+          i,
+          -1
+        ],
+        tl: List.remove_assq(i, marks.marks)
+      };
+      let marks_pmarks = marks.pmarks;
+      let marks$1 = {
+        marks: marks_marks,
+        pmarks: marks_pmarks
+      };
+      return {
+        hd: {
+          TAG: "TMatch",
+          _0: marks$1
+        },
+        tl: rem
+      };
     case "Erase" :
-        return {
-          hd: {
-            TAG: "TMatch",
-            _0: filter_marks(s._0, s._1, marks)
-          },
-          tl: rem
-        };
+      return {
+        hd: {
+          TAG: "TMatch",
+          _0: filter_marks(s._0, s._1, marks)
+        },
+        tl: rem
+      };
     case "Before" :
-        if (intersect(next_cat, s._0)) {
-          return {
-            hd: {
-              TAG: "TMatch",
-              _0: marks
-            },
-            tl: rem
-          };
-        } else {
-          return rem;
-        }
-    case "After" :
-        if (intersect(prev_cat, s._0)) {
-          return {
-            hd: {
-              TAG: "TMatch",
-              _0: marks
-            },
-            tl: rem
-          };
-        } else {
-          return rem;
-        }
-    case "Pmark" :
-        let marks_marks$1 = marks.marks;
-        let marks_pmarks$1 = add$1(s._0, marks.pmarks);
-        let marks$2 = {
-          marks: marks_marks$1,
-          pmarks: marks_pmarks$1
-        };
+      if (intersect(next_cat, s._0)) {
         return {
           hd: {
             TAG: "TMatch",
-            _0: marks$2
+            _0: marks
           },
           tl: rem
         };
-    
+      } else {
+        return rem;
+      }
+    case "After" :
+      if (intersect(prev_cat, s._0)) {
+        return {
+          hd: {
+            TAG: "TMatch",
+            _0: marks
+          },
+          tl: rem
+        };
+      } else {
+        return rem;
+      }
+    case "Pmark" :
+      let marks_marks$1 = marks.marks;
+      let marks_pmarks$1 = add$1(s._0, marks.pmarks);
+      let marks$2 = {
+        marks: marks_marks$1,
+        pmarks: marks_pmarks$1
+      };
+      return {
+        hd: {
+          TAG: "TMatch",
+          _0: marks$2
+        },
+        tl: rem
+      };
   }
 }
 
@@ -1373,10 +1360,9 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
     switch (x.TAG) {
       case "TSeq" :
       case "TExp" :
-          return;
+        return;
       case "TMatch" :
-          return x._0;
-      
+        return x._0;
     }
   }), y);
   if (marks === undefined) {
@@ -1398,16 +1384,15 @@ function delta_4(c, next_cat, prev_cat, l, rem) {
     let rem$1 = delta_4(c, next_cat, prev_cat, l.tl, rem);
     switch (x.TAG) {
       case "TSeq" :
-          let y$p = delta_4(c, next_cat, prev_cat, x._0, /* [] */0);
-          return delta_seq(c, next_cat, prev_cat, x._2, y$p, x._1, rem$1);
+        let y$p = delta_4(c, next_cat, prev_cat, x._0, /* [] */0);
+        return delta_seq(c, next_cat, prev_cat, x._2, y$p, x._1, rem$1);
       case "TExp" :
-          return delta_1(x._0, c, next_cat, prev_cat, x._1, rem$1);
+        return delta_1(x._0, c, next_cat, prev_cat, x._1, rem$1);
       case "TMatch" :
-          return {
-            hd: x,
-            tl: rem$1
-          };
-      
+        return {
+          hd: x,
+          tl: rem$1
+        };
     }
   } else {
     return rem;
@@ -1446,17 +1431,16 @@ function status(s) {
     switch (m.TAG) {
       case "TSeq" :
       case "TExp" :
-          st$1 = "Running";
-          break;
+        st$1 = "Running";
+        break;
       case "TMatch" :
-          let m$1 = m._0;
-          st$1 = {
-            TAG: "Match",
-            _0: flatten_match(m$1.marks),
-            _1: m$1.pmarks
-          };
-          break;
-      
+        let m$1 = m._0;
+        st$1 = {
+          TAG: "Match",
+          _0: flatten_match(m$1.marks),
+          _1: m$1.pmarks
+        };
+        break;
     }
   } else {
     st$1 = "Failed";
@@ -1483,7 +1467,7 @@ let Re_automata_State = {
 };
 
 function iter(_n, f, _v) {
-  while(true) {
+  while (true) {
     let v = _v;
     let n = _n;
     if (n === 0) {
@@ -1531,8 +1515,7 @@ function mk_state(ncol, desc) {
 function find_state(re, desc) {
   try {
     return Re_automata_State.Table.find(re.states, desc);
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       let st = mk_state(re.ncol, desc);
@@ -1540,8 +1523,8 @@ function find_state(re, desc) {
       return st;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -1572,7 +1555,7 @@ function loop(info, s, pos, st) {
   let _pos = pos;
   let _st = st;
   let _st$p = st$p;
-  while(true) {
+  while (true) {
     let st$p$1 = _st$p;
     let st$1 = _st;
     let pos$1 = _pos;
@@ -1602,8 +1585,7 @@ function loop(info, s, pos, st) {
 function final(info, st, cat) {
   try {
     return List.assq(cat, st.final);
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       let st$p = delta$1(info, cat, -1, st);
@@ -1623,16 +1605,15 @@ function final(info, st, cat) {
       return res;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
 function find_initial_state(re, cat) {
   try {
     return List.assq(cat, re.initial_states);
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       let st = find_state(re, Re_automata_State.create(cat, re.initial));
@@ -1646,8 +1627,8 @@ function find_initial_state(re, cat) {
       return st;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -1674,7 +1655,7 @@ function scan_str(info, s, initial_state, groups) {
     } else {
       let _pos = pos;
       let _st = initial_state;
-      while(true) {
+      while (true) {
         let st = _st;
         let pos$1 = _pos;
         if (pos$1 >= last) {
@@ -1706,7 +1687,7 @@ function scan_str(info, s, initial_state, groups) {
     return st$1;
   } else {
     let pos$2 = last - 1 | 0;
-    while(true) {
+    while (true) {
       let st$p$1 = Caml_array.get(st$1.next, info$1.re.lnl);
       if (st$p$1.idx >= 0) {
         if (groups) {
@@ -1747,14 +1728,14 @@ function trans_set(cache, cm, s) {
   ];
   try {
     let _param = cache.contents;
-    while(true) {
+    while (true) {
       let param = _param;
       if (typeof param !== "object") {
         throw new Error("Not_found", {
-              cause: {
-                RE_EXN_ID: "Not_found"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
       }
       let c = compare(v, param.v);
       if (c === 0) {
@@ -1763,8 +1744,7 @@ function trans_set(cache, cm, s) {
       _param = c < 0 ? param.l : param.r;
       continue;
     };
-  }
-  catch (raw_exn){
+  } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       let l = List.fold_right((function (param, l) {
@@ -1774,39 +1754,39 @@ function trans_set(cache, cm, s) {
       return l;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
 function is_charset(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       return false;
     }
     switch (x.TAG) {
       case "Set" :
-          return true;
+        return true;
       case "Sem" :
       case "Sem_greedy" :
-          _x = x._1;
-          continue;
+        _x = x._1;
+        continue;
       case "No_group" :
       case "Case" :
       case "No_case" :
-          _x = x._0;
-          continue;
+        _x = x._0;
+        continue;
       case "Alternative" :
       case "Intersection" :
       case "Complement" :
-          return List.for_all(is_charset, x._0);
+        return List.for_all(is_charset, x._0);
       case "Difference" :
-          if (!is_charset(x._0)) {
-            return false;
-          }
-          _x = x._1;
-          continue;
+        if (!is_charset(x._0)) {
+          return false;
+        }
+        _x = x._1;
+        continue;
       default:
         return false;
     }
@@ -1819,7 +1799,7 @@ function split(s, cm) {
     Caml_bytes.set(cm, i, /* '\001' */1);
     Caml_bytes.set(cm, j + 1 | 0, /* '\001' */1);
   };
-  while(true) {
+  while (true) {
     let t = _t;
     if (!t) {
       return;
@@ -1869,62 +1849,61 @@ function colorize(c, regexp) {
     contents: false
   };
   let colorize$1 = function (_regexp) {
-    while(true) {
+    while (true) {
       let regexp = _regexp;
       if (typeof regexp !== "object") {
         switch (regexp) {
           case "Beg_of_line" :
           case "End_of_line" :
-              return split({
-                hd: [
-                  /* '\n' */10,
-                  /* '\n' */10
-                ],
-                tl: /* [] */0
-              }, c);
+            return split({
+              hd: [
+                /* '\n' */10,
+                /* '\n' */10
+              ],
+              tl: /* [] */0
+            }, c);
           case "Beg_of_word" :
           case "End_of_word" :
           case "Not_bound" :
-              return split(cword, c);
+            return split(cword, c);
           case "Last_end_of_line" :
-              lnl.contents = true;
-              return;
+            lnl.contents = true;
+            return;
           case "Beg_of_str" :
           case "End_of_str" :
           case "Start" :
           case "Stop" :
-              return;
-          
+            return;
         }
       } else {
         switch (regexp.TAG) {
           case "Set" :
-              return split(regexp._0, c);
+            return split(regexp._0, c);
           case "Sequence" :
           case "Alternative" :
-              return List.iter(colorize$1, regexp._0);
+            return List.iter(colorize$1, regexp._0);
           case "Repeat" :
           case "Group" :
           case "No_group" :
           case "Nest" :
-              _regexp = regexp._0;
-              continue;
+            _regexp = regexp._0;
+            continue;
           case "Sem" :
           case "Sem_greedy" :
           case "Pmark" :
-              _regexp = regexp._1;
-              continue;
+            _regexp = regexp._1;
+            continue;
           default:
             throw new Error("Assert_failure", {
-                  cause: {
-                    RE_EXN_ID: "Assert_failure",
-                    _1: [
-                      "ocaml_re_test.res",
-                      2169,
-                      8
-                    ]
-                  }
-                });
+              cause: {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "ocaml_re_test.res",
+                  2169,
+                  8
+                ]
+              }
+            });
         }
       }
     };
@@ -1939,7 +1918,7 @@ function flatten_cmap(cm) {
   let v = 0;
   Caml_bytes.set(c, 0, /* '\000' */0);
   Caml_bytes.set(col_repr, 0, /* '\000' */0);
-  for(let i = 1; i <= 255; ++i){
+  for (let i = 1; i <= 255; ++i) {
     if (Caml_bytes.get(cm, i) !== /* '\000' */0) {
       v = v + 1 | 0;
     }
@@ -1954,223 +1933,221 @@ function flatten_cmap(cm) {
 }
 
 function equal$2(_x1, _x2) {
-  while(true) {
+  while (true) {
     let x2 = _x2;
     let x1 = _x1;
     if (typeof x1 !== "object") {
       switch (x1) {
         case "Beg_of_line" :
-            if (typeof x2 !== "object" && x2 === "Beg_of_line") {
-              return true;
-            } else {
-              return false;
-            }
+          if (typeof x2 !== "object" && x2 === "Beg_of_line") {
+            return true;
+          } else {
+            return false;
+          }
         case "End_of_line" :
-            if (typeof x2 !== "object" && x2 === "End_of_line") {
-              return true;
-            } else {
-              return false;
-            }
+          if (typeof x2 !== "object" && x2 === "End_of_line") {
+            return true;
+          } else {
+            return false;
+          }
         case "Beg_of_word" :
-            if (typeof x2 !== "object" && x2 === "Beg_of_word") {
-              return true;
-            } else {
-              return false;
-            }
+          if (typeof x2 !== "object" && x2 === "Beg_of_word") {
+            return true;
+          } else {
+            return false;
+          }
         case "End_of_word" :
-            if (typeof x2 !== "object" && x2 === "End_of_word") {
-              return true;
-            } else {
-              return false;
-            }
+          if (typeof x2 !== "object" && x2 === "End_of_word") {
+            return true;
+          } else {
+            return false;
+          }
         case "Not_bound" :
-            if (typeof x2 !== "object" && x2 === "Not_bound") {
-              return true;
-            } else {
-              return false;
-            }
+          if (typeof x2 !== "object" && x2 === "Not_bound") {
+            return true;
+          } else {
+            return false;
+          }
         case "Beg_of_str" :
-            if (typeof x2 !== "object" && x2 === "Beg_of_str") {
-              return true;
-            } else {
-              return false;
-            }
+          if (typeof x2 !== "object" && x2 === "Beg_of_str") {
+            return true;
+          } else {
+            return false;
+          }
         case "End_of_str" :
-            if (typeof x2 !== "object" && x2 === "End_of_str") {
-              return true;
-            } else {
-              return false;
-            }
+          if (typeof x2 !== "object" && x2 === "End_of_str") {
+            return true;
+          } else {
+            return false;
+          }
         case "Last_end_of_line" :
-            if (typeof x2 !== "object" && x2 === "Last_end_of_line") {
-              return true;
-            } else {
-              return false;
-            }
+          if (typeof x2 !== "object" && x2 === "Last_end_of_line") {
+            return true;
+          } else {
+            return false;
+          }
         case "Start" :
-            if (typeof x2 !== "object" && x2 === "Start") {
-              return true;
-            } else {
-              return false;
-            }
+          if (typeof x2 !== "object" && x2 === "Start") {
+            return true;
+          } else {
+            return false;
+          }
         case "Stop" :
-            if (typeof x2 !== "object" && x2 === "Stop") {
-              return true;
-            } else {
-              return false;
-            }
-        
+          if (typeof x2 !== "object" && x2 === "Stop") {
+            return true;
+          } else {
+            return false;
+          }
       }
     } else {
       switch (x1.TAG) {
         case "Set" :
-            if (typeof x2 !== "object" || x2.TAG !== "Set") {
-              return false;
-            } else {
-              return Caml_obj.equal(x1._0, x2._0);
-            }
-        case "Sequence" :
-            if (typeof x2 !== "object" || x2.TAG !== "Sequence") {
-              return false;
-            } else {
-              return eq_list(x1._0, x2._0);
-            }
-        case "Alternative" :
-            if (typeof x2 !== "object" || x2.TAG !== "Alternative") {
-              return false;
-            } else {
-              return eq_list(x1._0, x2._0);
-            }
-        case "Repeat" :
-            if (typeof x2 !== "object") {
-              return false;
-            }
-            if (x2.TAG !== "Repeat") {
-              return false;
-            }
-            if (x1._1 !== x2._1) {
-              return false;
-            }
-            if (!Caml_obj.equal(x1._2, x2._2)) {
-              return false;
-            }
-            _x2 = x2._0;
-            _x1 = x1._0;
-            continue;
-        case "Sem" :
-            if (typeof x2 !== "object") {
-              return false;
-            }
-            if (x2.TAG !== "Sem") {
-              return false;
-            }
-            if (x1._0 !== x2._0) {
-              return false;
-            }
-            _x2 = x2._1;
-            _x1 = x1._1;
-            continue;
-        case "Sem_greedy" :
-            if (typeof x2 !== "object") {
-              return false;
-            }
-            if (x2.TAG !== "Sem_greedy") {
-              return false;
-            }
-            if (x1._0 !== x2._0) {
-              return false;
-            }
-            _x2 = x2._1;
-            _x1 = x1._1;
-            continue;
-        case "Group" :
+          if (typeof x2 !== "object" || x2.TAG !== "Set") {
             return false;
+          } else {
+            return Caml_obj.equal(x1._0, x2._0);
+          }
+        case "Sequence" :
+          if (typeof x2 !== "object" || x2.TAG !== "Sequence") {
+            return false;
+          } else {
+            return eq_list(x1._0, x2._0);
+          }
+        case "Alternative" :
+          if (typeof x2 !== "object" || x2.TAG !== "Alternative") {
+            return false;
+          } else {
+            return eq_list(x1._0, x2._0);
+          }
+        case "Repeat" :
+          if (typeof x2 !== "object") {
+            return false;
+          }
+          if (x2.TAG !== "Repeat") {
+            return false;
+          }
+          if (x1._1 !== x2._1) {
+            return false;
+          }
+          if (!Caml_obj.equal(x1._2, x2._2)) {
+            return false;
+          }
+          _x2 = x2._0;
+          _x1 = x1._0;
+          continue;
+        case "Sem" :
+          if (typeof x2 !== "object") {
+            return false;
+          }
+          if (x2.TAG !== "Sem") {
+            return false;
+          }
+          if (x1._0 !== x2._0) {
+            return false;
+          }
+          _x2 = x2._1;
+          _x1 = x1._1;
+          continue;
+        case "Sem_greedy" :
+          if (typeof x2 !== "object") {
+            return false;
+          }
+          if (x2.TAG !== "Sem_greedy") {
+            return false;
+          }
+          if (x1._0 !== x2._0) {
+            return false;
+          }
+          _x2 = x2._1;
+          _x1 = x1._1;
+          continue;
+        case "Group" :
+          return false;
         case "No_group" :
-            if (typeof x2 !== "object") {
-              return false;
-            }
-            if (x2.TAG !== "No_group") {
-              return false;
-            }
-            _x2 = x2._0;
-            _x1 = x1._0;
-            continue;
+          if (typeof x2 !== "object") {
+            return false;
+          }
+          if (x2.TAG !== "No_group") {
+            return false;
+          }
+          _x2 = x2._0;
+          _x1 = x1._0;
+          continue;
         case "Nest" :
-            if (typeof x2 !== "object") {
-              return false;
-            }
-            if (x2.TAG !== "Nest") {
-              return false;
-            }
-            _x2 = x2._0;
-            _x1 = x1._0;
-            continue;
+          if (typeof x2 !== "object") {
+            return false;
+          }
+          if (x2.TAG !== "Nest") {
+            return false;
+          }
+          _x2 = x2._0;
+          _x1 = x1._0;
+          continue;
         case "Case" :
-            if (typeof x2 !== "object") {
-              return false;
-            }
-            if (x2.TAG !== "Case") {
-              return false;
-            }
-            _x2 = x2._0;
-            _x1 = x1._0;
-            continue;
+          if (typeof x2 !== "object") {
+            return false;
+          }
+          if (x2.TAG !== "Case") {
+            return false;
+          }
+          _x2 = x2._0;
+          _x1 = x1._0;
+          continue;
         case "No_case" :
-            if (typeof x2 !== "object") {
-              return false;
-            }
-            if (x2.TAG !== "No_case") {
-              return false;
-            }
-            _x2 = x2._0;
-            _x1 = x1._0;
-            continue;
+          if (typeof x2 !== "object") {
+            return false;
+          }
+          if (x2.TAG !== "No_case") {
+            return false;
+          }
+          _x2 = x2._0;
+          _x1 = x1._0;
+          continue;
         case "Intersection" :
-            if (typeof x2 !== "object" || x2.TAG !== "Intersection") {
-              return false;
-            } else {
-              return eq_list(x1._0, x2._0);
-            }
+          if (typeof x2 !== "object" || x2.TAG !== "Intersection") {
+            return false;
+          } else {
+            return eq_list(x1._0, x2._0);
+          }
         case "Complement" :
-            if (typeof x2 !== "object" || x2.TAG !== "Complement") {
-              return false;
-            } else {
-              return eq_list(x1._0, x2._0);
-            }
+          if (typeof x2 !== "object" || x2.TAG !== "Complement") {
+            return false;
+          } else {
+            return eq_list(x1._0, x2._0);
+          }
         case "Difference" :
-            if (typeof x2 !== "object") {
-              return false;
-            }
-            if (x2.TAG !== "Difference") {
-              return false;
-            }
-            if (!equal$2(x1._0, x2._0)) {
-              return false;
-            }
-            _x2 = x2._1;
-            _x1 = x1._1;
-            continue;
+          if (typeof x2 !== "object") {
+            return false;
+          }
+          if (x2.TAG !== "Difference") {
+            return false;
+          }
+          if (!equal$2(x1._0, x2._0)) {
+            return false;
+          }
+          _x2 = x2._1;
+          _x1 = x1._1;
+          continue;
         case "Pmark" :
-            if (typeof x2 !== "object") {
-              return false;
-            }
-            if (x2.TAG !== "Pmark") {
-              return false;
-            }
-            if (x1._0 !== x2._0) {
-              return false;
-            }
-            _x2 = x2._1;
-            _x1 = x1._1;
-            continue;
-        
+          if (typeof x2 !== "object") {
+            return false;
+          }
+          if (x2.TAG !== "Pmark") {
+            return false;
+          }
+          if (x1._0 !== x2._0) {
+            return false;
+          }
+          _x2 = x2._1;
+          _x1 = x1._1;
+          continue;
       }
     }
   };
 }
 
 function eq_list(_l1, _l2) {
-  while(true) {
+  while (true) {
     let l2 = _l2;
     let l1 = _l1;
     if (!l1) {
@@ -2204,7 +2181,7 @@ function sequence(x) {
 }
 
 function merge_sequences(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (!x) {
       return /* [] */0;
@@ -2213,71 +2190,69 @@ function merge_sequences(_x) {
     if (typeof l$p === "object") {
       switch (l$p.TAG) {
         case "Sequence" :
-            let match = l$p._0;
-            if (match) {
-              let y = match.tl;
-              let x$1 = match.hd;
-              let r$p = merge_sequences(x.tl);
-              let exit = 0;
-              if (r$p) {
-                let match$1 = r$p.hd;
-                if (typeof match$1 !== "object" || match$1.TAG !== "Sequence") {
+          let match = l$p._0;
+          if (match) {
+            let y = match.tl;
+            let x$1 = match.hd;
+            let r$p = merge_sequences(x.tl);
+            let exit = 0;
+            if (r$p) {
+              let match$1 = r$p.hd;
+              if (typeof match$1 !== "object" || match$1.TAG !== "Sequence") {
+                exit = 2;
+              } else {
+                let match$2 = match$1._0;
+                if (match$2) {
+                  if (equal$2(x$1, match$2.hd)) {
+                    return {
+                      hd: {
+                        TAG: "Sequence",
+                        _0: {
+                          hd: x$1,
+                          tl: {
+                            hd: {
+                              TAG: "Alternative",
+                              _0: {
+                                hd: sequence(y),
+                                tl: {
+                                  hd: sequence(match$2.tl),
+                                  tl: /* [] */0
+                                }
+                              }
+                            },
+                            tl: /* [] */0
+                          }
+                        }
+                      },
+                      tl: r$p.tl
+                    };
+                  }
                   exit = 2;
                 } else {
-                  let match$2 = match$1._0;
-                  if (match$2) {
-                    if (equal$2(x$1, match$2.hd)) {
-                      return {
-                        hd: {
-                          TAG: "Sequence",
-                          _0: {
-                            hd: x$1,
-                            tl: {
-                              hd: {
-                                TAG: "Alternative",
-                                _0: {
-                                  hd: sequence(y),
-                                  tl: {
-                                    hd: sequence(match$2.tl),
-                                    tl: /* [] */0
-                                  }
-                                }
-                              },
-                              tl: /* [] */0
-                            }
-                          }
-                        },
-                        tl: r$p.tl
-                      };
-                    }
-                    exit = 2;
-                  } else {
-                    exit = 2;
-                  }
+                  exit = 2;
                 }
-              } else {
-                exit = 2;
               }
-              if (exit === 2) {
-                return {
-                  hd: {
-                    TAG: "Sequence",
-                    _0: {
-                      hd: x$1,
-                      tl: y
-                    }
-                  },
-                  tl: r$p
-                };
-              }
-              
+            } else {
+              exit = 2;
             }
-            break;
+            if (exit === 2) {
+              return {
+                hd: {
+                  TAG: "Sequence",
+                  _0: {
+                    hd: x$1,
+                    tl: y
+                  }
+                },
+                tl: r$p
+              };
+            }
+            
+          }
+          break;
         case "Alternative" :
-            _x = Pervasives.$at(l$p._0, x.tl);
-            continue;
-        default:
-          
+          _x = Pervasives.$at(l$p._0, x.tl);
+          continue;
       }
     }
     return {
@@ -2296,59 +2271,67 @@ function enforce_kind(ids, kind, kind$p, cr) {
 }
 
 function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let greedy = _greedy;
     let ign_group = _ign_group;
     if (typeof x !== "object") {
       switch (x) {
         case "Beg_of_line" :
-            let c$1 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.newline);
-            return [
-              mk_expr(ids, {
-                TAG: "After",
-                _0: c$1
-              }),
-              kind
-            ];
+          let c$1 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.newline);
+          return [
+            mk_expr(ids, {
+              TAG: "After",
+              _0: c$1
+            }),
+            kind
+          ];
         case "End_of_line" :
-            let c$2 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.newline);
-            return [
-              mk_expr(ids, {
-                TAG: "Before",
-                _0: c$2
-              }),
-              kind
-            ];
+          let c$2 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.newline);
+          return [
+            mk_expr(ids, {
+              TAG: "Before",
+              _0: c$2
+            }),
+            kind
+          ];
         case "Beg_of_word" :
-            let c$3 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.not_letter);
-            let c$4 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.letter);
-            return [
-              seq$1(ids, "First", mk_expr(ids, {
-                TAG: "After",
-                _0: c$3
-              }), mk_expr(ids, {
-                TAG: "Before",
-                _0: c$4
-              })),
-              kind
-            ];
+          let c$3 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.not_letter);
+          let c$4 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.letter);
+          return [
+            seq$1(ids, "First", mk_expr(ids, {
+              TAG: "After",
+              _0: c$3
+            }), mk_expr(ids, {
+              TAG: "Before",
+              _0: c$4
+            })),
+            kind
+          ];
         case "End_of_word" :
-            let c$5 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.letter);
-            let c$6 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.not_letter);
-            return [
-              seq$1(ids, "First", mk_expr(ids, {
+          let c$5 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.letter);
+          let c$6 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.not_letter);
+          return [
+            seq$1(ids, "First", mk_expr(ids, {
+              TAG: "After",
+              _0: c$5
+            }), mk_expr(ids, {
+              TAG: "Before",
+              _0: c$6
+            })),
+            kind
+          ];
+        case "Not_bound" :
+          return [
+            alt(ids, {
+              hd: seq$1(ids, "First", mk_expr(ids, {
                 TAG: "After",
-                _0: c$5
+                _0: Re_automata_Category.letter
               }), mk_expr(ids, {
                 TAG: "Before",
-                _0: c$6
+                _0: Re_automata_Category.letter
               })),
-              kind
-            ];
-        case "Not_bound" :
-            return [
-              alt(ids, {
+              tl: {
                 hd: seq$1(ids, "First", mk_expr(ids, {
                   TAG: "After",
                   _0: Re_automata_Category.letter
@@ -2356,196 +2339,187 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
                   TAG: "Before",
                   _0: Re_automata_Category.letter
                 })),
-                tl: {
-                  hd: seq$1(ids, "First", mk_expr(ids, {
-                    TAG: "After",
-                    _0: Re_automata_Category.letter
-                  }), mk_expr(ids, {
-                    TAG: "Before",
-                    _0: Re_automata_Category.letter
-                  })),
-                  tl: /* [] */0
-                }
-              }),
-              kind
-            ];
+                tl: /* [] */0
+              }
+            }),
+            kind
+          ];
         case "Beg_of_str" :
-            return [
-              mk_expr(ids, {
-                TAG: "After",
-                _0: Re_automata_Category.inexistant
-              }),
-              kind
-            ];
+          return [
+            mk_expr(ids, {
+              TAG: "After",
+              _0: Re_automata_Category.inexistant
+            }),
+            kind
+          ];
         case "End_of_str" :
-            return [
-              mk_expr(ids, {
-                TAG: "Before",
-                _0: Re_automata_Category.inexistant
-              }),
-              kind
-            ];
+          return [
+            mk_expr(ids, {
+              TAG: "Before",
+              _0: Re_automata_Category.inexistant
+            }),
+            kind
+          ];
         case "Last_end_of_line" :
-            let c$7 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.lastnewline);
-            return [
-              mk_expr(ids, {
-                TAG: "Before",
-                _0: c$7
-              }),
-              kind
-            ];
+          let c$7 = Re_automata_Category.$plus$plus(Re_automata_Category.inexistant, Re_automata_Category.lastnewline);
+          return [
+            mk_expr(ids, {
+              TAG: "Before",
+              _0: c$7
+            }),
+            kind
+          ];
         case "Start" :
-            return [
-              mk_expr(ids, {
-                TAG: "After",
-                _0: Re_automata_Category.search_boundary
-              }),
-              kind
-            ];
+          return [
+            mk_expr(ids, {
+              TAG: "After",
+              _0: Re_automata_Category.search_boundary
+            }),
+            kind
+          ];
         case "Stop" :
-            return [
-              mk_expr(ids, {
-                TAG: "Before",
-                _0: Re_automata_Category.search_boundary
-              }),
-              kind
-            ];
-        
+          return [
+            mk_expr(ids, {
+              TAG: "Before",
+              _0: Re_automata_Category.search_boundary
+            }),
+            kind
+          ];
       }
     } else {
       switch (x.TAG) {
         case "Set" :
-            return [
-              cst(ids, trans_set(cache, c, x._0)),
-              kind
-            ];
+          return [
+            cst(ids, trans_set(cache, c, x._0)),
+            kind
+          ];
         case "Sequence" :
-            return [
-              trans_seq(ids, kind, ign_group, ign_case, greedy, pos, cache, c, x._0),
-              kind
-            ];
+          return [
+            trans_seq(ids, kind, ign_group, ign_case, greedy, pos, cache, c, x._0),
+            kind
+          ];
         case "Alternative" :
-            let merged_sequences = merge_sequences(x._0);
-            if (merged_sequences && !merged_sequences.tl) {
-              let match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, merged_sequences.hd);
-              return [
-                enforce_kind(ids, kind, match[1], match[0]),
-                kind
-              ];
-            }
+          let merged_sequences = merge_sequences(x._0);
+          if (merged_sequences && !merged_sequences.tl) {
+            let match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, merged_sequences.hd);
             return [
-              alt(ids, List.map((function (r$p) {
-                let match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$p);
-                return enforce_kind(ids, kind, match[1], match[0]);
-              }), merged_sequences)),
+              enforce_kind(ids, kind, match[1], match[0]),
               kind
             ];
+          }
+          return [
+            alt(ids, List.map((function (r$p) {
+              let match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$p);
+              return enforce_kind(ids, kind, match[1], match[0]);
+            }), merged_sequences)),
+            kind
+          ];
         case "Repeat" :
-            let j = x._2;
-            let i = x._1;
-            let match$1 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, x._0);
-            let kind$p = match$1[1];
-            let cr = match$1[0];
-            let rem;
-            if (j !== undefined) {
-              let f = greedy === "Non_greedy" ? (function (rem) {
-                  return alt(ids, {
-                    hd: mk_expr(ids, "Eps"),
-                    tl: {
-                      hd: seq$1(ids, kind$p, rename(ids, cr), rem),
-                      tl: /* [] */0
-                    }
-                  });
-                }) : (function (rem) {
-                  return alt(ids, {
+          let j = x._2;
+          let i = x._1;
+          let match$1 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, x._0);
+          let kind$p = match$1[1];
+          let cr = match$1[0];
+          let rem;
+          if (j !== undefined) {
+            let f = greedy === "Non_greedy" ? (function (rem) {
+                return alt(ids, {
+                  hd: mk_expr(ids, "Eps"),
+                  tl: {
                     hd: seq$1(ids, kind$p, rename(ids, cr), rem),
-                    tl: {
-                      hd: mk_expr(ids, "Eps"),
-                      tl: /* [] */0
-                    }
-                  });
+                    tl: /* [] */0
+                  }
                 });
-              rem = iter(j - i | 0, f, mk_expr(ids, "Eps"));
-            } else {
-              rem = rep(ids, greedy, kind$p, cr);
-            }
-            return [
-              iter(i, (function (rem) {
-                return seq$1(ids, kind$p, rename(ids, cr), rem);
-              }), rem),
-              kind
-            ];
+              }) : (function (rem) {
+                return alt(ids, {
+                  hd: seq$1(ids, kind$p, rename(ids, cr), rem),
+                  tl: {
+                    hd: mk_expr(ids, "Eps"),
+                    tl: /* [] */0
+                  }
+                });
+              });
+            rem = iter(j - i | 0, f, mk_expr(ids, "Eps"));
+          } else {
+            rem = rep(ids, greedy, kind$p, cr);
+          }
+          return [
+            iter(i, (function (rem) {
+              return seq$1(ids, kind$p, rename(ids, cr), rem);
+            }), rem),
+            kind
+          ];
         case "Sem" :
-            let kind$p$1 = x._0;
-            let match$2 = translate(ids, kind$p$1, ign_group, ign_case, greedy, pos, cache, c, x._1);
-            return [
-              enforce_kind(ids, kind$p$1, match$2[1], match$2[0]),
-              kind$p$1
-            ];
+          let kind$p$1 = x._0;
+          let match$2 = translate(ids, kind$p$1, ign_group, ign_case, greedy, pos, cache, c, x._1);
+          return [
+            enforce_kind(ids, kind$p$1, match$2[1], match$2[0]),
+            kind$p$1
+          ];
         case "Sem_greedy" :
-            _x = x._1;
-            _greedy = x._0;
-            continue;
+          _x = x._1;
+          _greedy = x._0;
+          continue;
         case "Group" :
-            let r$p = x._0;
-            if (ign_group) {
-              _x = r$p;
-              continue;
-            }
-            let p = pos.contents;
-            pos.contents = pos.contents + 2 | 0;
-            let match$3 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$p);
-            return [
-              seq$1(ids, "First", mk_expr(ids, {
-                TAG: "Mark",
-                _0: p
-              }), seq$1(ids, "First", match$3[0], mk_expr(ids, {
-                TAG: "Mark",
-                _0: p + 1 | 0
-              }))),
-              match$3[1]
-            ];
-        case "No_group" :
-            _x = x._0;
-            _ign_group = true;
+          let r$p = x._0;
+          if (ign_group) {
+            _x = r$p;
             continue;
+          }
+          let p = pos.contents;
+          pos.contents = pos.contents + 2 | 0;
+          let match$3 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$p);
+          return [
+            seq$1(ids, "First", mk_expr(ids, {
+              TAG: "Mark",
+              _0: p
+            }), seq$1(ids, "First", match$3[0], mk_expr(ids, {
+              TAG: "Mark",
+              _0: p + 1 | 0
+            }))),
+            match$3[1]
+          ];
+        case "No_group" :
+          _x = x._0;
+          _ign_group = true;
+          continue;
         case "Nest" :
-            let b = pos.contents;
-            let match$4 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, x._0);
-            let kind$p$2 = match$4[1];
-            let cr$1 = match$4[0];
-            let e = pos.contents - 1 | 0;
-            if (e < b) {
-              return [
-                cr$1,
-                kind$p$2
-              ];
-            } else {
-              return [
-                seq$1(ids, "First", erase(ids, b, e), cr$1),
-                kind$p$2
-              ];
-            }
-        case "Pmark" :
-            let match$5 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, x._1);
+          let b = pos.contents;
+          let match$4 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, x._0);
+          let kind$p$2 = match$4[1];
+          let cr$1 = match$4[0];
+          let e = pos.contents - 1 | 0;
+          if (e < b) {
             return [
-              seq$1(ids, "First", mk_expr(ids, {
-                TAG: "Pmark",
-                _0: x._0
-              }), match$5[0]),
-              match$5[1]
+              cr$1,
+              kind$p$2
             ];
+          } else {
+            return [
+              seq$1(ids, "First", erase(ids, b, e), cr$1),
+              kind$p$2
+            ];
+          }
+        case "Pmark" :
+          let match$5 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, x._1);
+          return [
+            seq$1(ids, "First", mk_expr(ids, {
+              TAG: "Pmark",
+              _0: x._0
+            }), match$5[0]),
+            match$5[1]
+          ];
         default:
           throw new Error("Assert_failure", {
-                cause: {
-                  RE_EXN_ID: "Assert_failure",
-                  _1: [
-                    "ocaml_re_test.res",
-                    2403,
-                    80
-                  ]
-                }
-              });
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "ocaml_re_test.res",
+                2403,
+                80
+              ]
+            }
+          });
       }
     }
   };
@@ -2580,33 +2554,33 @@ function case_insens(s) {
 function as_set(x) {
   if (typeof x !== "object") {
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "ocaml_re_test.res",
-              2438,
-              11
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "ocaml_re_test.res",
+          2438,
+          11
+        ]
+      }
+    });
   }
   if (x.TAG === "Set") {
     return x._0;
   }
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "ocaml_re_test.res",
-            2438,
-            11
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "ocaml_re_test.res",
+        2438,
+        11
+      ]
+    }
+  });
 }
 
 function handle_case(_ign_case, _x) {
-  while(true) {
+  while (true) {
     let x = _x;
     let ign_case = _ign_case;
     if (typeof x !== "object") {
@@ -2614,171 +2588,170 @@ function handle_case(_ign_case, _x) {
     }
     switch (x.TAG) {
       case "Set" :
-          let s = x._0;
-          return {
-            TAG: "Set",
-            _0: ign_case ? case_insens(s) : s
-          };
+        let s = x._0;
+        return {
+          TAG: "Set",
+          _0: ign_case ? case_insens(s) : s
+        };
       case "Sequence" :
-          return {
-            TAG: "Sequence",
-            _0: List.map((function (extra) {
-              return handle_case(ign_case, extra);
-            }), x._0)
-          };
-      case "Alternative" :
-          let l$p = List.map((function (extra) {
+        return {
+          TAG: "Sequence",
+          _0: List.map((function (extra) {
             return handle_case(ign_case, extra);
-          }), x._0);
-          if (is_charset({
-              TAG: "Alternative",
-              _0: l$p
-            })) {
-            return {
-              TAG: "Set",
-              _0: List.fold_left((function (s, r) {
-                return union(s, as_set(r));
-              }), /* [] */0, l$p)
-            };
-          } else {
-            return {
-              TAG: "Alternative",
-              _0: l$p
-            };
-          }
-      case "Repeat" :
-          return {
-            TAG: "Repeat",
-            _0: handle_case(ign_case, x._0),
-            _1: x._1,
-            _2: x._2
-          };
-      case "Sem" :
-          let r$p = handle_case(ign_case, x._1);
-          if (is_charset(r$p)) {
-            return r$p;
-          } else {
-            return {
-              TAG: "Sem",
-              _0: x._0,
-              _1: r$p
-            };
-          }
-      case "Sem_greedy" :
-          let r$p$1 = handle_case(ign_case, x._1);
-          if (is_charset(r$p$1)) {
-            return r$p$1;
-          } else {
-            return {
-              TAG: "Sem_greedy",
-              _0: x._0,
-              _1: r$p$1
-            };
-          }
-      case "Group" :
-          return {
-            TAG: "Group",
-            _0: handle_case(ign_case, x._0)
-          };
-      case "No_group" :
-          let r$p$2 = handle_case(ign_case, x._0);
-          if (is_charset(r$p$2)) {
-            return r$p$2;
-          } else {
-            return {
-              TAG: "No_group",
-              _0: r$p$2
-            };
-          }
-      case "Nest" :
-          let r$p$3 = handle_case(ign_case, x._0);
-          if (is_charset(r$p$3)) {
-            return r$p$3;
-          } else {
-            return {
-              TAG: "Nest",
-              _0: r$p$3
-            };
-          }
-      case "Case" :
-          _x = x._0;
-          _ign_case = false;
-          continue;
-      case "No_case" :
-          _x = x._0;
-          _ign_case = true;
-          continue;
-      case "Intersection" :
-          let l$p$1 = List.map((function (r) {
-            return handle_case(ign_case, r);
-          }), x._0);
+          }), x._0)
+        };
+      case "Alternative" :
+        let l$p = List.map((function (extra) {
+          return handle_case(ign_case, extra);
+        }), x._0);
+        if (is_charset({
+            TAG: "Alternative",
+            _0: l$p
+          })) {
           return {
             TAG: "Set",
             _0: List.fold_left((function (s, r) {
-              return inter(s, as_set(r));
-            }), cany, l$p$1)
-          };
-      case "Complement" :
-          let l$p$2 = List.map((function (r) {
-            return handle_case(ign_case, r);
-          }), x._0);
-          return {
-            TAG: "Set",
-            _0: diff(cany, List.fold_left((function (s, r) {
               return union(s, as_set(r));
-            }), /* [] */0, l$p$2))
+            }), /* [] */0, l$p)
           };
-      case "Difference" :
+        } else {
           return {
-            TAG: "Set",
-            _0: inter(as_set(handle_case(ign_case, x._0)), diff(cany, as_set(handle_case(ign_case, x._1))))
+            TAG: "Alternative",
+            _0: l$p
           };
-      case "Pmark" :
+        }
+      case "Repeat" :
+        return {
+          TAG: "Repeat",
+          _0: handle_case(ign_case, x._0),
+          _1: x._1,
+          _2: x._2
+        };
+      case "Sem" :
+        let r$p = handle_case(ign_case, x._1);
+        if (is_charset(r$p)) {
+          return r$p;
+        } else {
           return {
-            TAG: "Pmark",
+            TAG: "Sem",
             _0: x._0,
-            _1: handle_case(ign_case, x._1)
+            _1: r$p
           };
-      
+        }
+      case "Sem_greedy" :
+        let r$p$1 = handle_case(ign_case, x._1);
+        if (is_charset(r$p$1)) {
+          return r$p$1;
+        } else {
+          return {
+            TAG: "Sem_greedy",
+            _0: x._0,
+            _1: r$p$1
+          };
+        }
+      case "Group" :
+        return {
+          TAG: "Group",
+          _0: handle_case(ign_case, x._0)
+        };
+      case "No_group" :
+        let r$p$2 = handle_case(ign_case, x._0);
+        if (is_charset(r$p$2)) {
+          return r$p$2;
+        } else {
+          return {
+            TAG: "No_group",
+            _0: r$p$2
+          };
+        }
+      case "Nest" :
+        let r$p$3 = handle_case(ign_case, x._0);
+        if (is_charset(r$p$3)) {
+          return r$p$3;
+        } else {
+          return {
+            TAG: "Nest",
+            _0: r$p$3
+          };
+        }
+      case "Case" :
+        _x = x._0;
+        _ign_case = false;
+        continue;
+      case "No_case" :
+        _x = x._0;
+        _ign_case = true;
+        continue;
+      case "Intersection" :
+        let l$p$1 = List.map((function (r) {
+          return handle_case(ign_case, r);
+        }), x._0);
+        return {
+          TAG: "Set",
+          _0: List.fold_left((function (s, r) {
+            return inter(s, as_set(r));
+          }), cany, l$p$1)
+        };
+      case "Complement" :
+        let l$p$2 = List.map((function (r) {
+          return handle_case(ign_case, r);
+        }), x._0);
+        return {
+          TAG: "Set",
+          _0: diff(cany, List.fold_left((function (s, r) {
+            return union(s, as_set(r));
+          }), /* [] */0, l$p$2))
+        };
+      case "Difference" :
+        return {
+          TAG: "Set",
+          _0: inter(as_set(handle_case(ign_case, x._0)), diff(cany, as_set(handle_case(ign_case, x._1))))
+        };
+      case "Pmark" :
+        return {
+          TAG: "Pmark",
+          _0: x._0,
+          _1: handle_case(ign_case, x._1)
+        };
     }
   };
 }
 
 function anchored(_x) {
-  while(true) {
+  while (true) {
     let x = _x;
     if (typeof x !== "object") {
       switch (x) {
         case "Beg_of_str" :
         case "Start" :
-            return true;
+          return true;
         default:
           return false;
       }
     } else {
       switch (x.TAG) {
         case "Sequence" :
-            return List.exists(anchored, x._0);
+          return List.exists(anchored, x._0);
         case "Alternative" :
-            return List.for_all(anchored, x._0);
+          return List.for_all(anchored, x._0);
         case "Repeat" :
-            if (x._1 <= 0) {
-              return false;
-            }
-            _x = x._0;
-            continue;
+          if (x._1 <= 0) {
+            return false;
+          }
+          _x = x._0;
+          continue;
         case "Group" :
         case "No_group" :
         case "Nest" :
         case "Case" :
         case "No_case" :
-            _x = x._0;
-            continue;
+          _x = x._0;
+          continue;
         case "Sem" :
         case "Sem_greedy" :
         case "Pmark" :
-            _x = x._1;
-            continue;
+          _x = x._1;
+          continue;
         default:
           return false;
       }
@@ -2816,19 +2789,19 @@ let epsilon = {
 function repn(r, i, j) {
   if (i < 0) {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Re.repn"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Re.repn"
+      }
+    });
   }
   if (j !== undefined && j < i) {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Re.repn"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Re.repn"
+      }
+    });
   }
   return {
     TAG: "Repeat",
@@ -2840,7 +2813,7 @@ function repn(r, i, j) {
 
 function set(str) {
   let s = /* [] */0;
-  for(let i = 0 ,i_finish = str.length; i < i_finish; ++i){
+  for (let i = 0, i_finish = str.length; i < i_finish; ++i) {
     s = union(single(Caml_string.get(str, i)), s);
   }
   return {
@@ -2858,11 +2831,11 @@ function compl(l) {
     return r;
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Re.compl"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Re.compl"
+    }
+  });
 }
 
 let any = {
@@ -3213,11 +3186,11 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
   let len = lenOpt !== undefined ? lenOpt : -1;
   if (pos < 0 || len < -1 || (pos + len | 0) > s.length) {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: name
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: name
+      }
+    });
   }
   let partial = false;
   let slen = s.length;
@@ -3284,18 +3257,18 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
 function offset$1(t, i) {
   if (((i << 1) + 1 | 0) >= t.marks.length) {
     throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Not_found"
+      }
+    });
   }
   let m1 = Caml_array.get(t.marks, (i << 1));
   if (m1 === -1) {
     throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Not_found"
+      }
+    });
   }
   let p1 = Caml_array.get(t.gpos, m1) - 1 | 0;
   let p2 = Caml_array.get(t.gpos, Caml_array.get(t.marks, (i << 1) + 1 | 0)) - 1 | 0;
@@ -3318,39 +3291,39 @@ let Not_supported = /* @__PURE__ */Caml_exceptions.create("Not_supported");
 function posix_class_of_string(x) {
   switch (x) {
     case "alnum" :
-        return alnum;
+      return alnum;
     case "ascii" :
-        return ascii;
+      return ascii;
     case "blank" :
-        return blank;
+      return blank;
     case "cntrl" :
-        return cntrl;
+      return cntrl;
     case "digit" :
-        return digit;
+      return digit;
     case "graph" :
-        return graph;
+      return graph;
     case "lower" :
-        return lower;
+      return lower;
     case "print" :
-        return print;
+      return print;
     case "punct" :
-        return punct;
+      return punct;
     case "space" :
-        return space;
+      return space;
     case "upper" :
-        return upper;
+      return upper;
     case "word" :
-        return wordc;
+      return wordc;
     case "xdigit" :
-        return xdigit;
+      return xdigit;
     default:
       let s = "Invalid pcre class: " + x;
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: s
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: s
+        }
+      });
   }
 }
 
@@ -3376,36 +3349,34 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   let accept_s = function (s$p) {
     let len = s$p.length;
     try {
-      for(let j = 0; j < len; ++j){
+      for (let j = 0; j < len; ++j) {
         try {
           if (Caml_string.get(s$p, j) !== Caml_string.get(s, i.contents + j | 0)) {
             throw new Error(Pervasives.Exit, {
-                  cause: {
-                    RE_EXN_ID: Pervasives.Exit
-                  }
-                });
+              cause: {
+                RE_EXN_ID: Pervasives.Exit
+              }
+            });
           }
           
-        }
-        catch (exn){
+        } catch (exn) {
           throw new Error(Pervasives.Exit, {
-                cause: {
-                  RE_EXN_ID: Pervasives.Exit
-                }
-              });
+            cause: {
+              RE_EXN_ID: Pervasives.Exit
+            }
+          });
         }
       }
       i.contents = i.contents + len | 0;
       return true;
-    }
-    catch (raw_exn){
+    } catch (raw_exn) {
       let exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn$1.RE_EXN_ID === Pervasives.Exit) {
         return false;
       }
       throw new Error(exn$1.RE_EXN_ID, {
-            cause: exn$1
-          });
+        cause: exn$1
+      });
     }
   };
   let get = function () {
@@ -3431,7 +3402,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
   };
   let regexp$p = function (_left) {
-    while(true) {
+    while (true) {
       let left = _left;
       if (!accept(/* '|' */124)) {
         return left;
@@ -3447,7 +3418,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     };
   };
   let branch$p = function (_left) {
-    while(true) {
+    while (true) {
       let left = _left;
       if (i.contents === l || test(/* '|' */124) || test(/* ')' */41)) {
         return seq$2(List.rev(left));
@@ -3473,10 +3444,10 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
           let r = regexp$p(branch());
           if (!accept(/* ')' */41)) {
             throw new Error(Parse_error, {
-                  cause: {
-                    RE_EXN_ID: Parse_error
-                  }
-                });
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
           }
           return r;
         }
@@ -3484,18 +3455,18 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
           return comment();
         }
         throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
+          cause: {
+            RE_EXN_ID: Parse_error
+          }
+        });
       }
       let r$1 = regexp$p(branch());
       if (!accept(/* ')' */41)) {
         throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
+          cause: {
+            RE_EXN_ID: Parse_error
+          }
+        });
       }
       return {
         TAG: "Group",
@@ -3528,10 +3499,10 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (accept(/* '\\' */92)) {
       if (i.contents === l) {
         throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
+          cause: {
+            RE_EXN_ID: Parse_error
+          }
+        });
       }
       let c = get();
       switch (c) {
@@ -3545,75 +3516,75 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 55 :
         case 56 :
         case 57 :
-            throw new Error(Not_supported, {
-                  cause: {
-                    RE_EXN_ID: Not_supported
-                  }
-                });
+          throw new Error(Not_supported, {
+            cause: {
+              RE_EXN_ID: Not_supported
+            }
+          });
         case 65 :
-            return "Beg_of_str";
+          return "Beg_of_str";
         case 66 :
-            return "Not_bound";
+          return "Not_bound";
         case 68 :
-            return compl({
-              hd: digit,
-              tl: /* [] */0
-            });
+          return compl({
+            hd: digit,
+            tl: /* [] */0
+          });
         case 71 :
-            return "Start";
+          return "Start";
         case 83 :
-            return compl({
-              hd: space,
-              tl: /* [] */0
-            });
+          return compl({
+            hd: space,
+            tl: /* [] */0
+          });
         case 87 :
-            return compl({
-              hd: alnum,
-              tl: {
-                hd: {
-                  TAG: "Set",
-                  _0: {
-                    hd: [
-                      /* '_' */95,
-                      /* '_' */95
-                    ],
-                    tl: /* [] */0
-                  }
-                },
-                tl: /* [] */0
-              }
-            });
+          return compl({
+            hd: alnum,
+            tl: {
+              hd: {
+                TAG: "Set",
+                _0: {
+                  hd: [
+                    /* '_' */95,
+                    /* '_' */95
+                  ],
+                  tl: /* [] */0
+                }
+              },
+              tl: /* [] */0
+            }
+          });
         case 90 :
-            return "Last_end_of_line";
+          return "Last_end_of_line";
         case 98 :
-            return alt$1({
-              hd: "Beg_of_word",
-              tl: {
-                hd: "End_of_word",
-                tl: /* [] */0
-              }
-            });
+          return alt$1({
+            hd: "Beg_of_word",
+            tl: {
+              hd: "End_of_word",
+              tl: /* [] */0
+            }
+          });
         case 100 :
-            return digit;
+          return digit;
         case 115 :
-            return space;
+          return space;
         case 119 :
-            return alt$1({
-              hd: alnum,
-              tl: {
-                hd: {
-                  TAG: "Set",
-                  _0: {
-                    hd: [
-                      /* '_' */95,
-                      /* '_' */95
-                    ],
-                    tl: /* [] */0
-                  }
-                },
-                tl: /* [] */0
-              }
-            });
+          return alt$1({
+            hd: alnum,
+            tl: {
+              hd: {
+                TAG: "Set",
+                _0: {
+                  hd: [
+                    /* '_' */95,
+                    /* '_' */95
+                  ],
+                  tl: /* [] */0
+                }
+              },
+              tl: /* [] */0
+            }
+          });
         case 67 :
         case 69 :
         case 70 :
@@ -3654,13 +3625,13 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 118 :
         case 120 :
         case 121 :
-            throw new Error(Parse_error, {
-                  cause: {
-                    RE_EXN_ID: Parse_error
-                  }
-                });
+          throw new Error(Parse_error, {
+            cause: {
+              RE_EXN_ID: Parse_error
+            }
+          });
         case 122 :
-            return "End_of_str";
+          return "End_of_str";
         default:
           return {
             TAG: "Set",
@@ -3670,10 +3641,10 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     } else {
       if (i.contents === l) {
         throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
+          cause: {
+            RE_EXN_ID: Parse_error
+          }
+        });
       }
       let c$1 = get();
       if (c$1 >= 64) {
@@ -3685,24 +3656,24 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             };
           }
           throw new Error(Parse_error, {
-                cause: {
-                  RE_EXN_ID: Parse_error
-                }
-              });
+            cause: {
+              RE_EXN_ID: Parse_error
+            }
+          });
         }
         throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
+          cause: {
+            RE_EXN_ID: Parse_error
+          }
+        });
       }
       if (c$1 >= 44) {
         if (c$1 >= 63) {
           throw new Error(Parse_error, {
-                cause: {
-                  RE_EXN_ID: Parse_error
-                }
-              });
+            cause: {
+              RE_EXN_ID: Parse_error
+            }
+          });
         }
         return {
           TAG: "Set",
@@ -3711,10 +3682,10 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
       if (c$1 >= 42) {
         throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
+          cause: {
+            RE_EXN_ID: Parse_error
+          }
+        });
       }
       return {
         TAG: "Set",
@@ -3732,7 +3703,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       return;
     } else {
       let _i = d - /* '0' */48 | 0;
-      while(true) {
+      while (true) {
         let i$1 = _i;
         if (i.contents === l) {
           return i$1;
@@ -3745,10 +3716,10 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         let i$p = Math.imul(10, i$1) + (d$1 - /* '0' */48 | 0) | 0;
         if (i$p < i$1) {
           throw new Error(Parse_error, {
-                cause: {
-                  RE_EXN_ID: Parse_error
-                }
-              });
+            cause: {
+              RE_EXN_ID: Parse_error
+            }
+          });
         }
         _i = i$p;
         continue;
@@ -3774,17 +3745,17 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       let j = accept(/* ',' */44) ? integer() : i$1;
       if (!accept(/* '}' */125)) {
         throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
+          cause: {
+            RE_EXN_ID: Parse_error
+          }
+        });
       }
       if (j !== undefined && j < i$1) {
         throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
+          cause: {
+            RE_EXN_ID: Parse_error
+          }
+        });
       }
       return greedy_mod(repn(r, i$1, j));
     }
@@ -3794,19 +3765,19 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   let char = function () {
     if (i.contents === l) {
       throw new Error(Parse_error, {
-            cause: {
-              RE_EXN_ID: Parse_error
-            }
-          });
+        cause: {
+          RE_EXN_ID: Parse_error
+        }
+      });
     }
     let c = get();
     if (c === /* '[' */91) {
       if (accept(/* '=' */61)) {
         throw new Error(Not_supported, {
-              cause: {
-                RE_EXN_ID: Not_supported
-              }
-            });
+          cause: {
+            RE_EXN_ID: Not_supported
+          }
+        });
       }
       if (accept(/* ':' */58)) {
         let compl$1 = accept(/* '^' */94);
@@ -3852,26 +3823,25 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               }
             }
           });
-        }
-        catch (raw_exn){
+        } catch (raw_exn) {
           let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
           if (exn.RE_EXN_ID === "Not_found") {
             throw new Error(Parse_error, {
-                  cause: {
-                    RE_EXN_ID: Parse_error
-                  }
-                });
+              cause: {
+                RE_EXN_ID: Parse_error
+              }
+            });
           }
           throw new Error(exn.RE_EXN_ID, {
-                cause: exn
-              });
+            cause: exn
+          });
         }
         if (!accept_s(":]")) {
           throw new Error(Parse_error, {
-                cause: {
-                  RE_EXN_ID: Parse_error
-                }
-              });
+            cause: {
+              RE_EXN_ID: Parse_error
+            }
+          });
         }
         let posix_class = posix_class_of_string(cls);
         let re = compl$1 ? compl({
@@ -3891,25 +3861,25 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
       if (i.contents === l) {
         throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
+          cause: {
+            RE_EXN_ID: Parse_error
+          }
+        });
       }
       let c$1 = get();
       if (!accept(/* '.' */46)) {
         throw new Error(Not_supported, {
-              cause: {
-                RE_EXN_ID: Not_supported
-              }
-            });
+          cause: {
+            RE_EXN_ID: Not_supported
+          }
+        });
       }
       if (!accept(/* ']' */93)) {
         throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error
-              }
-            });
+          cause: {
+            RE_EXN_ID: Parse_error
+          }
+        });
       }
       return {
         NAME: "Char",
@@ -3932,41 +3902,41 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
       switch (c$2) {
         case 68 :
-            return {
-              NAME: "Set",
-              VAL: compl({
-                hd: digit,
-                tl: /* [] */0
-              })
-            };
+          return {
+            NAME: "Set",
+            VAL: compl({
+              hd: digit,
+              tl: /* [] */0
+            })
+          };
         case 83 :
-            return {
-              NAME: "Set",
-              VAL: compl({
-                hd: space,
-                tl: /* [] */0
-              })
-            };
+          return {
+            NAME: "Set",
+            VAL: compl({
+              hd: space,
+              tl: /* [] */0
+            })
+          };
         case 87 :
-            return {
-              NAME: "Set",
-              VAL: compl({
-                hd: alnum,
-                tl: {
-                  hd: {
-                    TAG: "Set",
-                    _0: {
-                      hd: [
-                        /* '_' */95,
-                        /* '_' */95
-                      ],
-                      tl: /* [] */0
-                    }
-                  },
-                  tl: /* [] */0
-                }
-              })
-            };
+          return {
+            NAME: "Set",
+            VAL: compl({
+              hd: alnum,
+              tl: {
+                hd: {
+                  TAG: "Set",
+                  _0: {
+                    hd: [
+                      /* '_' */95,
+                      /* '_' */95
+                    ],
+                    tl: /* [] */0
+                  }
+                },
+                tl: /* [] */0
+              }
+            })
+          };
         case 58 :
         case 59 :
         case 60 :
@@ -3980,60 +3950,60 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 94 :
         case 95 :
         case 96 :
-            return {
-              NAME: "Char",
-              VAL: c$2
-            };
+          return {
+            NAME: "Char",
+            VAL: c$2
+          };
         case 98 :
-            return {
-              NAME: "Char",
-              VAL: /* '\b' */8
-            };
+          return {
+            NAME: "Char",
+            VAL: /* '\b' */8
+          };
         case 100 :
-            return {
-              NAME: "Set",
-              VAL: digit
-            };
+          return {
+            NAME: "Set",
+            VAL: digit
+          };
         case 110 :
-            return {
-              NAME: "Char",
-              VAL: /* '\n' */10
-            };
+          return {
+            NAME: "Char",
+            VAL: /* '\n' */10
+          };
         case 114 :
-            return {
-              NAME: "Char",
-              VAL: /* '\r' */13
-            };
+          return {
+            NAME: "Char",
+            VAL: /* '\r' */13
+          };
         case 115 :
-            return {
-              NAME: "Set",
-              VAL: space
-            };
+          return {
+            NAME: "Set",
+            VAL: space
+          };
         case 116 :
-            return {
-              NAME: "Char",
-              VAL: /* '\t' */9
-            };
+          return {
+            NAME: "Char",
+            VAL: /* '\t' */9
+          };
         case 119 :
-            return {
-              NAME: "Set",
-              VAL: alt$1({
-                hd: alnum,
-                tl: {
-                  hd: {
-                    TAG: "Set",
-                    _0: {
-                      hd: [
-                        /* '_' */95,
-                        /* '_' */95
-                      ],
-                      tl: /* [] */0
-                    }
-                  },
-                  tl: /* [] */0
-                }
-              })
-            };
+          return {
+            NAME: "Set",
+            VAL: alt$1({
+              hd: alnum,
+              tl: {
+                hd: {
+                  TAG: "Set",
+                  _0: {
+                    hd: [
+                      /* '_' */95,
+                      /* '_' */95
+                    ],
+                    tl: /* [] */0
+                  }
+                },
+                tl: /* [] */0
+              }
+            })
+          };
         case 65 :
         case 66 :
         case 67 :
@@ -4076,20 +4046,19 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 120 :
         case 121 :
         case 122 :
-            throw new Error(Parse_error, {
-                  cause: {
-                    RE_EXN_ID: Parse_error
-                  }
-                });
-        
+          throw new Error(Parse_error, {
+            cause: {
+              RE_EXN_ID: Parse_error
+            }
+          });
       }
     } else {
       if (c$2 >= 48) {
         throw new Error(Not_supported, {
-              cause: {
-                RE_EXN_ID: Not_supported
-              }
-            });
+          cause: {
+            RE_EXN_ID: Not_supported
+          }
+        });
       }
       return {
         NAME: "Char",
@@ -4098,7 +4067,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
   };
   let bracket = function (_s) {
-    while(true) {
+    while (true) {
       let s = _s;
       if (s !== /* [] */0 && accept(/* ']' */93)) {
         return s;
@@ -4182,7 +4151,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     return branch$p(/* [] */0);
   };
   let comment = function () {
-    while(true) {
+    while (true) {
       if (accept(/* ')' */41)) {
         return epsilon;
       }
@@ -4193,10 +4162,10 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   let res = regexp$p(branch());
   if (i.contents !== l) {
     throw new Error(Parse_error, {
-          cause: {
-            RE_EXN_ID: Parse_error
-          }
-        });
+      cause: {
+        RE_EXN_ID: Parse_error
+      }
+    });
   }
   return res;
 }
@@ -4240,16 +4209,16 @@ function exec(rex, pos, s) {
   }
   if (substr === "Failed") {
     throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Not_found"
+      }
+    });
   }
   throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Not_found"
+    }
+  });
 }
 
 let s = "a".repeat(1048575) + "b";

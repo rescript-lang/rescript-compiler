@@ -31,7 +31,7 @@ function is_empty(x) {
 }
 
 function mem(x, _x_) {
-  while(true) {
+  while (true) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
       return false;
@@ -94,34 +94,33 @@ function balance_left(l, x, r) {
   }
   switch (exit) {
     case 1 :
-        return {
+      return {
+        TAG: "Node",
+        _0: "Black",
+        _1: l,
+        _2: x,
+        _3: r
+      };
+    case 2 :
+      return {
+        TAG: "Node",
+        _0: "Red",
+        _1: {
           TAG: "Node",
           _0: "Black",
-          _1: l,
-          _2: x,
-          _3: r
-        };
-    case 2 :
-        return {
+          _1: a,
+          _2: x$1,
+          _3: b
+        },
+        _2: y,
+        _3: {
           TAG: "Node",
-          _0: "Red",
-          _1: {
-            TAG: "Node",
-            _0: "Black",
-            _1: a,
-            _2: x$1,
-            _3: b
-          },
-          _2: y,
-          _3: {
-            TAG: "Node",
-            _0: "Black",
-            _1: c,
-            _2: z,
-            _3: d
-          }
-        };
-    
+          _0: "Black",
+          _1: c,
+          _2: z,
+          _3: d
+        }
+      };
   }
 }
 
@@ -170,34 +169,33 @@ function balance_right(l, x, r) {
   }
   switch (exit) {
     case 1 :
-        return {
+      return {
+        TAG: "Node",
+        _0: "Black",
+        _1: l,
+        _2: x,
+        _3: r
+      };
+    case 2 :
+      return {
+        TAG: "Node",
+        _0: "Red",
+        _1: {
           TAG: "Node",
           _0: "Black",
-          _1: l,
-          _2: x,
-          _3: r
-        };
-    case 2 :
-        return {
+          _1: a,
+          _2: x$1,
+          _3: b
+        },
+        _2: y,
+        _3: {
           TAG: "Node",
-          _0: "Red",
-          _1: {
-            TAG: "Node",
-            _0: "Black",
-            _1: a,
-            _2: x$1,
-            _3: b
-          },
-          _2: y,
-          _3: {
-            TAG: "Node",
-            _0: "Black",
-            _1: c,
-            _2: z,
-            _3: d
-          }
-        };
-    
+          _0: "Black",
+          _1: c,
+          _2: z,
+          _3: d
+        }
+      };
   }
 }
 
@@ -268,15 +266,15 @@ function unbalanced_left(x) {
     }
   }
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "rbset.res",
-            64,
-            9
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "rbset.res",
+        64,
+        9
+      ]
+    }
+  });
 }
 
 function unbalanced_right(x) {
@@ -338,15 +336,15 @@ function unbalanced_right(x) {
     }
   }
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "rbset.res",
-            75,
-            9
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "rbset.res",
+        75,
+        9
+      ]
+    }
+  });
 }
 
 function lbalance(x1, x2, x3) {
@@ -563,15 +561,15 @@ function add(x, s) {
 function remove_min(x) {
   if (typeof x !== "object") {
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "rbset.res",
-              138,
-              4
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "rbset.res",
+          138,
+          4
+        ]
+      }
+    });
   }
   let c = x._0;
   if (c === "Black") {
@@ -600,15 +598,15 @@ function remove_min(x) {
         ];
       }
       throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "rbset.res",
-                138,
-                4
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "rbset.res",
+            138,
+            4
+          ]
+        }
+      });
     }
     
   } else {

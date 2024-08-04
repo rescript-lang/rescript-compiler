@@ -584,7 +584,10 @@ and compile_general_cases :
             | Complete -> None
             | NonComplete -> None
             | Default lam ->
-                Some (Js_output.output_as_block (compile_lambda cxt lam))
+                let statements = Js_output.output_as_block (compile_lambda cxt lam) in
+                match statements with
+                | [] -> None
+                | _ -> Some statements
           in
           let body =
             group_apply ~merge_cases cases (fun last (switch_case, lam) ->
