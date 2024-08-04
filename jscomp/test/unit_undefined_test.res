@@ -10,7 +10,7 @@ let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 let eq = (loc, x, y) => Mt.eq_suites(~test_id, ~suites, loc, x, y)
 
-@val external hi: (@uncurry(1) (unit => unit)) => int = "hi"
+@val external hi: (unit => unit) => int = "hi"
 
 let f_01 = () =>
   hi((() as x) =>

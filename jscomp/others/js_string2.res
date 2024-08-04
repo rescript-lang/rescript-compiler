@@ -542,7 +542,7 @@ let matchFn = (matchPart, _offset, _wholeString) => Js.String2.toUpperCase(match
 Js.String2.unsafeReplaceBy0(str, re, matchFn) == "bEAUtIfUl vOwEls"
 ```
 */
-external unsafeReplaceBy0: (t, Js_re.t, @uncurry (t, int, t) => t) => t = "replace"
+external unsafeReplaceBy0: (t, Js_re.t, (t, int, t) => t) => t = "replace"
 
 @send
 /**
@@ -567,7 +567,7 @@ let matchFn = (_match, part1, _offset, _wholeString) => {
 Js.String2.unsafeReplaceBy1(str, re, matchFn) == "Jony is 41"
 ```
 */
-external unsafeReplaceBy1: (t, Js_re.t, @uncurry (t, t, int, t) => t) => t = "replace"
+external unsafeReplaceBy1: (t, Js_re.t, (t, t, int, t) => t) => t = "replace"
 
 @send
 /**
@@ -595,7 +595,7 @@ let matchFn = (_match, p1, p2, _offset, _wholeString) => {
 Js.String2.unsafeReplaceBy2(str, re, matchFn) == "42"
 ```
 */
-external unsafeReplaceBy2: (t, Js_re.t, @uncurry (t, t, t, int, t) => t) => t = "replace"
+external unsafeReplaceBy2: (t, Js_re.t, (t, t, t, int, t) => t) => t = "replace"
 
 @send
 /**
@@ -608,7 +608,7 @@ matched.
 See [`String.replace`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
 on MDN.
 */
-external unsafeReplaceBy3: (t, Js_re.t, @uncurry (t, t, t, t, int, t) => t) => t = "replace"
+external unsafeReplaceBy3: (t, Js_re.t, (t, t, t, t, int, t) => t) => t = "replace"
 
 @send
 /**

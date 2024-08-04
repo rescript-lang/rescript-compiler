@@ -97,7 +97,7 @@ let code = s => Js.String.charCodeAt(0, s)
 Js.Array2.fromMap(strArr, code) == [97.0, 98.0, 99.0, 100.0]
 ```
 */
-external fromMap: (array_like<'a>, @uncurry 'a => 'b) => array<'b> = "Array.from"
+external fromMap: (array_like<'a>, 'a => 'b) => array<'b> = "Array.from"
 
 /* ES2015 */
 
@@ -399,7 +399,7 @@ let reverseNumeric = (n1, n2) => n2 - n1
 Js.Array2.sortInPlaceWith(numbers, reverseNumeric) == [30, 20, 10, 3, 2, 1]
 ```
 */
-external sortInPlaceWith: (t<'a>, @uncurry ('a, 'a) => int) => t<'a> = "sort"
+external sortInPlaceWith: (t<'a>, ('a, 'a) => int) => t<'a> = "sort"
 
 @send
 @variadic
@@ -740,7 +740,7 @@ Js.Array2.every([6, 22, 8, 4], isEven) == true
 Js.Array2.every([6, 22, 7, 4], isEven) == false
 ```
 */
-external every: (t<'a>, @uncurry 'a => bool) => bool = "every"
+external every: (t<'a>, 'a => bool) => bool = "every"
 
 @send
 /**
@@ -762,7 +762,7 @@ Js.Array2.everyi([6, -3, 5, 8], evenIndexPositive) == true
 Js.Array2.everyi([6, 3, -5, 8], evenIndexPositive) == false
 ```
 */
-external everyi: (t<'a>, @uncurry ('a, int) => bool) => bool = "every"
+external everyi: (t<'a>, ('a, int) => bool) => bool = "every"
 
 @send
 /**
@@ -779,7 +779,7 @@ let nonEmpty = s => s != ""
 Js.Array2.filter(["abc", "", "", "def", "ghi"], nonEmpty) == ["abc", "def", "ghi"]
 ```
 */
-external filter: (t<'a>, @uncurry 'a => bool) => t<'a> = "filter"
+external filter: (t<'a>, 'a => bool) => t<'a> = "filter"
 
 @send
 /**
@@ -800,7 +800,7 @@ let positiveOddElement = (item, index) => mod(index, 2) == 1 && item > 0
 Js.Array2.filteri([6, 3, 5, 8, 7, -4, 1], positiveOddElement) == [3, 8]
 ```
 */
-external filteri: (t<'a>, @uncurry ('a, int) => bool) => t<'a> = "filter"
+external filteri: (t<'a>, ('a, int) => bool) => t<'a> = "filter"
 
 @send
 @return({undefined_to_opt: undefined_to_opt})
@@ -818,7 +818,7 @@ Js.Array2.find([33, 22, -55, 77, -44], x => x < 0) == Some(-55)
 Js.Array2.find([33, 22, 55, 77, 44], x => x < 0) == None
 ```
 */
-external find: (t<'a>, @uncurry 'a => bool) => option<'a> = "find"
+external find: (t<'a>, 'a => bool) => option<'a> = "find"
 
 /* ES2015 */
 
@@ -841,7 +841,7 @@ Js.Array2.findi([66, -33, 55, 88, 22], positiveOddElement) == Some(88)
 Js.Array2.findi([66, -33, 55, -88, 22], positiveOddElement) == None
 ```
 */
-external findi: (t<'a>, @uncurry ('a, int) => bool) => option<'a> = "find"
+external findi: (t<'a>, ('a, int) => bool) => option<'a> = "find"
 
 /* ES2015 */
 
@@ -859,7 +859,7 @@ Js.Array2.findIndex([33, 22, -55, 77, -44], x => x < 0) == 2
 Js.Array2.findIndex([33, 22, 55, 77, 44], x => x < 0) == -1
 ```
 */
-external findIndex: (t<'a>, @uncurry 'a => bool) => int = "findIndex"
+external findIndex: (t<'a>, 'a => bool) => int = "findIndex"
 
 /* ES2015 */
 
@@ -881,7 +881,7 @@ Js.Array2.findIndexi([66, -33, 55, 88, 22], positiveOddElement) == 3
 Js.Array2.findIndexi([66, -33, 55, -88, 22], positiveOddElement) == -1
 ```
 */
-external findIndexi: (t<'a>, @uncurry ('a, int) => bool) => int = "findIndex"
+external findIndexi: (t<'a>, ('a, int) => bool) => int = "findIndex"
 
 /* ES2015 */
 
@@ -902,7 +902,7 @@ on MDN.
 Js.Array2.forEach(["a", "b", "c"], x => Js.log(x)) == ()
 ```
 */
-external forEach: (t<'a>, @uncurry 'a => unit) => unit = "forEach"
+external forEach: (t<'a>, 'a => unit) => unit = "forEach"
 
 @send
 /**
@@ -922,7 +922,7 @@ on MDN.
 Js.Array2.forEachi(["a", "b", "c"], (item, index) => Js.log2(index + 1, item)) == ()
 ```
 */
-external forEachi: (t<'a>, @uncurry ('a, int) => unit) => unit = "forEach"
+external forEachi: (t<'a>, ('a, int) => unit) => unit = "forEach"
 
 /* commented out until bs has a plan for iterators
    external keys : 'a t -> int array_iter = "" [@@send] (* ES2015 *)
@@ -943,7 +943,7 @@ Js.Array2.map([12, 4, 8], x => x * x) == [144, 16, 64]
 Js.Array2.map(["animal", "vegetable", "mineral"], Js.String.length) == [6, 9, 7]
 ```
 */
-external map: (t<'a>, @uncurry 'a => 'b) => t<'b> = "map"
+external map: (t<'a>, 'a => 'b) => t<'b> = "map"
 
 @send
 /**
@@ -962,7 +962,7 @@ let product = (item, index) => item * index
 Js.Array2.mapi([10, 11, 12], product) == [0, 11, 24]
 ```
 */
-external mapi: (t<'a>, @uncurry ('a, int) => 'b) => t<'b> = "map"
+external mapi: (t<'a>, ('a, int) => 'b) => t<'b> = "map"
 
 @send
 /**
@@ -996,7 +996,7 @@ Js.Array2.reduce(
 Js.Array2.reduce([2.0, 4.0], (acc, item) => item /. acc, 1.0) == 2.0 // 4.0 / (2.0 / 1.0)
 ```
 */
-external reduce: (t<'a>, @uncurry ('b, 'a) => 'b, 'b) => 'b = "reduce"
+external reduce: (t<'a>, ('b, 'a) => 'b, 'b) => 'b = "reduce"
 
 @send
 /**
@@ -1031,7 +1031,7 @@ let sumOfEvens = (accumulator, item, index) =>
 Js.Array2.reducei([2, 5, 1, 4, 3], sumOfEvens, 0) == 6
 ```
 */
-external reducei: (t<'a>, @uncurry ('b, 'a, int) => 'b, 'b) => 'b = "reduce"
+external reducei: (t<'a>, ('b, 'a, int) => 'b, 'b) => 'b = "reduce"
 
 @send
 /**
@@ -1063,7 +1063,7 @@ Js.Array2.reduceRight([10, 2, 4], sumOfSquares, 0) == 120
 Js.Array2.reduceRight([2.0, 4.0], (acc, item) => item /. acc, 1.0) == 0.5 // 2.0 / (4.0 / 1.0)
 ```
 */
-external reduceRight: (t<'a>, @uncurry ('b, 'a) => 'b, 'b) => 'b = "reduceRight"
+external reduceRight: (t<'a>, ('b, 'a) => 'b, 'b) => 'b = "reduceRight"
 
 @send
 /**
@@ -1100,7 +1100,7 @@ let sumOfEvens = (accumulator, item, index) =>
 Js.Array2.reduceRighti([2, 5, 1, 4, 3], sumOfEvens, 0) == 6
 ```
 */
-external reduceRighti: (t<'a>, @uncurry ('b, 'a, int) => 'b, 'b) => 'b = "reduceRight"
+external reduceRighti: (t<'a>, ('b, 'a, int) => 'b, 'b) => 'b = "reduceRight"
 
 @send
 /**
@@ -1116,7 +1116,7 @@ Js.Array2.some([3, 7, 5, 2, 9], isEven) == true
 Js.Array2.some([3, 7, 5, 1, 9], isEven) == false
 ```
 */
-external some: (t<'a>, @uncurry 'a => bool) => bool = "some"
+external some: (t<'a>, 'a => bool) => bool = "some"
 
 @send
 /**
@@ -1139,7 +1139,7 @@ Js.Array2.somei(["ab", "cd", "ef", "gh"], sameLength) == true
 Js.Array2.somei(["a", "bc", "def", "gh"], sameLength) == false
 ```
 */
-external somei: (t<'a>, @uncurry ('a, int) => bool) => bool = "some"
+external somei: (t<'a>, ('a, int) => bool) => bool = "some"
 
 /* commented out until bs has a plan for iterators
    external values : 'a t -> 'a array_iter = "" [@@send] (* ES2015 *)

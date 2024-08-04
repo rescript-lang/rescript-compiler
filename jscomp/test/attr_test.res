@@ -16,6 +16,6 @@ let max2: (. float, float) => float = (. x, y) => x +. y
 
 let hh = max2(. 1., 2.)
 
-@val external des: (string, @uncurry (unit => unit)) => unit = "des"
+@val external des: (string, (unit => unit)) => unit = "des"
 
 let f = x => des(x, () => Js.log("hei"))

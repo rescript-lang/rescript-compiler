@@ -54,7 +54,7 @@ let nested2 = async () => async (y) => await y
 type callback<'input, 'output> = 'input => 'output
 
 @module("react")
-external useCallback: (@uncurry ('input => 'output)) => callback<'input, 'output> = "useCallback"
+external useCallback: (('input => 'output)) => callback<'input, 'output> = "useCallback"
 
 let onSubmit = () =>
   useCallback(async b => {
