@@ -30,10 +30,10 @@ function f3(x) {
   switch (x.TAG) {
     case "A" :
     case "C" :
-        return x._0 + 1 | 0;
+      return x._0 + 1 | 0;
     case "B" :
     case "D" :
-        return x._0 + 2 | 0;
+      return x._0 + 2 | 0;
     
   }
 }

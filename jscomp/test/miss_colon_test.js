@@ -21,26 +21,26 @@ function $plus$colon(_f, _g) {
     }
     switch (g.TAG) {
       case "Int" :
-          if (g._0 !== 0) {
-            return {
-              TAG: "Add",
-              _0: f,
-              _1: g
-            };
-          } else {
-            return f;
-          }
-      case "Add" :
-          _g = g._1;
-          _f = $plus$colon(f, g._0);
-          continue;
-      case "Var" :
-      case "Mul" :
+        if (g._0 !== 0) {
           return {
             TAG: "Add",
             _0: f,
             _1: g
           };
+        } else {
+          return f;
+        }
+      case "Add" :
+        _g = g._1;
+        _f = $plus$colon(f, g._0);
+        continue;
+      case "Var" :
+      case "Mul" :
+        return {
+          TAG: "Add",
+          _0: f,
+          _1: g
+        };
       
     }
   };
@@ -88,26 +88,26 @@ function $star$colon(_f, _g) {
     }
     switch (g.TAG) {
       case "Int" :
-          if (g._0 !== 1) {
-            return {
-              TAG: "Mul",
-              _0: f,
-              _1: g
-            };
-          } else {
-            return f;
-          }
-      case "Var" :
-      case "Add" :
+        if (g._0 !== 1) {
           return {
             TAG: "Mul",
             _0: f,
             _1: g
           };
+        } else {
+          return f;
+        }
+      case "Var" :
+      case "Add" :
+        return {
+          TAG: "Mul",
+          _0: f,
+          _1: g
+        };
       case "Mul" :
-          _g = g._1;
-          _f = $star$colon(f, g._0);
-          continue;
+        _g = g._1;
+        _f = $star$colon(f, g._0);
+        continue;
       
     }
   };
@@ -117,11 +117,11 @@ function simplify(x) {
   switch (x.TAG) {
     case "Int" :
     case "Var" :
-        return x;
+      return x;
     case "Add" :
-        return $plus$colon(simplify(x._0), simplify(x._1));
+      return $plus$colon(simplify(x._0), simplify(x._1));
     case "Mul" :
-        return $star$colon(simplify(x._0), simplify(x._1));
+      return $star$colon(simplify(x._0), simplify(x._1));
     
   }
 }

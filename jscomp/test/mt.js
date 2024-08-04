@@ -52,45 +52,45 @@ function close_enough(thresholdOpt, a, b) {
 function handleCode(spec) {
   switch (spec.TAG) {
     case "Eq" :
-        Assert.deepEqual(spec._0, spec._1);
-        return;
+      Assert.deepEqual(spec._0, spec._1);
+      return;
     case "Neq" :
-        Assert.notDeepEqual(spec._0, spec._1);
-        return;
+      Assert.notDeepEqual(spec._0, spec._1);
+      return;
     case "StrictEq" :
-        Assert.strictEqual(spec._0, spec._1);
-        return;
+      Assert.strictEqual(spec._0, spec._1);
+      return;
     case "StrictNeq" :
-        Assert.notStrictEqual(spec._0, spec._1);
-        return;
+      Assert.notStrictEqual(spec._0, spec._1);
+      return;
     case "Ok" :
-        Assert.ok(spec._0);
-        return;
+      Assert.ok(spec._0);
+      return;
     case "Approx" :
-        let b = spec._1;
-        let a = spec._0;
-        if (!close_enough(undefined, a, b)) {
-          Assert.deepEqual(a, b);
-          return;
-        } else {
-          return;
-        }
-    case "ApproxThreshold" :
-        let b$1 = spec._2;
-        let a$1 = spec._1;
-        if (!close_enough(spec._0, a$1, b$1)) {
-          Assert.deepEqual(a$1, b$1);
-          return;
-        } else {
-          return;
-        }
-    case "ThrowAny" :
-        Assert.throws(spec._0);
+      let b = spec._1;
+      let a = spec._0;
+      if (!close_enough(undefined, a, b)) {
+        Assert.deepEqual(a, b);
         return;
+      } else {
+        return;
+      }
+    case "ApproxThreshold" :
+      let b$1 = spec._2;
+      let a$1 = spec._1;
+      if (!close_enough(spec._0, a$1, b$1)) {
+        Assert.deepEqual(a$1, b$1);
+        return;
+      } else {
+        return;
+      }
+    case "ThrowAny" :
+      Assert.throws(spec._0);
+      return;
     case "Fail" :
-        return assert_fail("failed");
+      return assert_fail("failed");
     case "FailWith" :
-        return assert_fail(spec._0);
+      return assert_fail(spec._0);
     
   }
 }

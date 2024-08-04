@@ -5,16 +5,16 @@
 function f(x) {
   switch (x.TAG) {
     case "A" :
-        let a = x._0;
-        if (a.TAG === "P") {
-          let a$1 = a._0;
-          return a$1 + a$1 | 0;
-        }
-        let a$2 = a._0;
-        return a$2 - a$2 | 0;
+      let a = x._0;
+      if (a.TAG === "P") {
+        let a$1 = a._0;
+        return a$1 + a$1 | 0;
+      }
+      let a$2 = a._0;
+      return a$2 - a$2 | 0;
     case "B" :
     case "C" :
-        break;
+      break;
     
   }
   let a$3 = x._0._0;

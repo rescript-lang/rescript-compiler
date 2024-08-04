@@ -8,11 +8,11 @@ let match;
 switch (Sys.os_type) {
   case "Cygwin" :
   case "Unix" :
-      match = [
-        1,
-        2
-      ];
-      break;
+    match = [
+      1,
+      2
+    ];
+    break;
   default:
     match = [
       3,

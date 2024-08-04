@@ -5,9 +5,9 @@
 function f(x) {
   switch (x) {
     case "abcd" :
-        return 0;
+      return 0;
     case "bcde" :
-        return 1;
+      return 1;
     default:
       throw new Error("Assert_failure", {
             cause: {

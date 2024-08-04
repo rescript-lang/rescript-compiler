@@ -868,28 +868,54 @@ function of_list(l) {
       let sub = function (n, l) {
         switch (n) {
           case 0 :
-              return [
-                "Empty",
-                l
-              ];
+            return [
+              "Empty",
+              l
+            ];
           case 1 :
-              if (l) {
+            if (l) {
+              return [
+                {
+                  TAG: "Node",
+                  l: "Empty",
+                  v: l.hd,
+                  r: "Empty",
+                  h: 1
+                },
+                l.tl
+              ];
+            }
+            break;
+          case 2 :
+            if (l) {
+              let match = l.tl;
+              if (match) {
                 return [
                   {
                     TAG: "Node",
-                    l: "Empty",
-                    v: l.hd,
+                    l: {
+                      TAG: "Node",
+                      l: "Empty",
+                      v: l.hd,
+                      r: "Empty",
+                      h: 1
+                    },
+                    v: match.hd,
                     r: "Empty",
-                    h: 1
+                    h: 2
                   },
-                  l.tl
+                  match.tl
                 ];
               }
-              break;
-          case 2 :
-              if (l) {
-                let match = l.tl;
-                if (match) {
+              
+            }
+            break;
+          case 3 :
+            if (l) {
+              let match$1 = l.tl;
+              if (match$1) {
+                let match$2 = match$1.tl;
+                if (match$2) {
                   return [
                     {
                       TAG: "Node",
@@ -900,50 +926,24 @@ function of_list(l) {
                         r: "Empty",
                         h: 1
                       },
-                      v: match.hd,
-                      r: "Empty",
+                      v: match$1.hd,
+                      r: {
+                        TAG: "Node",
+                        l: "Empty",
+                        v: match$2.hd,
+                        r: "Empty",
+                        h: 1
+                      },
                       h: 2
                     },
-                    match.tl
+                    match$2.tl
                   ];
                 }
                 
               }
-              break;
-          case 3 :
-              if (l) {
-                let match$1 = l.tl;
-                if (match$1) {
-                  let match$2 = match$1.tl;
-                  if (match$2) {
-                    return [
-                      {
-                        TAG: "Node",
-                        l: {
-                          TAG: "Node",
-                          l: "Empty",
-                          v: l.hd,
-                          r: "Empty",
-                          h: 1
-                        },
-                        v: match$1.hd,
-                        r: {
-                          TAG: "Node",
-                          l: "Empty",
-                          v: match$2.hd,
-                          r: "Empty",
-                          h: 1
-                        },
-                        h: 2
-                      },
-                      match$2.tl
-                    ];
-                  }
-                  
-                }
-                
-              }
-              break;
+              
+            }
+            break;
           default:
             
         }

@@ -591,28 +591,54 @@ function Make(Ord) {
     let sub = function (n, l) {
       switch (n) {
         case 0 :
-            return [
-              "Empty",
-              l
-            ];
+          return [
+            "Empty",
+            l
+          ];
         case 1 :
-            if (l) {
+          if (l) {
+            return [
+              {
+                TAG: "Node",
+                _0: "Empty",
+                _1: l.hd,
+                _2: "Empty",
+                _3: 1
+              },
+              l.tl
+            ];
+          }
+          break;
+        case 2 :
+          if (l) {
+            let match = l.tl;
+            if (match) {
               return [
                 {
                   TAG: "Node",
-                  _0: "Empty",
-                  _1: l.hd,
+                  _0: {
+                    TAG: "Node",
+                    _0: "Empty",
+                    _1: l.hd,
+                    _2: "Empty",
+                    _3: 1
+                  },
+                  _1: match.hd,
                   _2: "Empty",
-                  _3: 1
+                  _3: 2
                 },
-                l.tl
+                match.tl
               ];
             }
-            break;
-        case 2 :
-            if (l) {
-              let match = l.tl;
-              if (match) {
+            
+          }
+          break;
+        case 3 :
+          if (l) {
+            let match$1 = l.tl;
+            if (match$1) {
+              let match$2 = match$1.tl;
+              if (match$2) {
                 return [
                   {
                     TAG: "Node",
@@ -623,50 +649,24 @@ function Make(Ord) {
                       _2: "Empty",
                       _3: 1
                     },
-                    _1: match.hd,
-                    _2: "Empty",
+                    _1: match$1.hd,
+                    _2: {
+                      TAG: "Node",
+                      _0: "Empty",
+                      _1: match$2.hd,
+                      _2: "Empty",
+                      _3: 1
+                    },
                     _3: 2
                   },
-                  match.tl
+                  match$2.tl
                 ];
               }
               
             }
-            break;
-        case 3 :
-            if (l) {
-              let match$1 = l.tl;
-              if (match$1) {
-                let match$2 = match$1.tl;
-                if (match$2) {
-                  return [
-                    {
-                      TAG: "Node",
-                      _0: {
-                        TAG: "Node",
-                        _0: "Empty",
-                        _1: l.hd,
-                        _2: "Empty",
-                        _3: 1
-                      },
-                      _1: match$1.hd,
-                      _2: {
-                        TAG: "Node",
-                        _0: "Empty",
-                        _1: match$2.hd,
-                        _2: "Empty",
-                        _3: 1
-                      },
-                      _3: 2
-                    },
-                    match$2.tl
-                  ];
-                }
-                
-              }
-              
-            }
-            break;
+            
+          }
+          break;
         default:
           
       }

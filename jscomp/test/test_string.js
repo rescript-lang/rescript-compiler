@@ -7,9 +7,9 @@ let Caml_string = require("../../lib/js/caml_string.js");
 function f(x) {
   switch (x) {
     case "aaaabb" :
-        return 0;
+      return 0;
     case "bbbb" :
-        return 1;
+      return 1;
     default:
       throw new Error("Assert_failure", {
             cause: {

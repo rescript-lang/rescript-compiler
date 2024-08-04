@@ -94,33 +94,33 @@ function balance_left(l, x, r) {
   }
   switch (exit) {
     case 1 :
-        return {
+      return {
+        TAG: "Node",
+        _0: "Black",
+        _1: l,
+        _2: x,
+        _3: r
+      };
+    case 2 :
+      return {
+        TAG: "Node",
+        _0: "Red",
+        _1: {
           TAG: "Node",
           _0: "Black",
-          _1: l,
-          _2: x,
-          _3: r
-        };
-    case 2 :
-        return {
+          _1: a,
+          _2: x$1,
+          _3: b
+        },
+        _2: y,
+        _3: {
           TAG: "Node",
-          _0: "Red",
-          _1: {
-            TAG: "Node",
-            _0: "Black",
-            _1: a,
-            _2: x$1,
-            _3: b
-          },
-          _2: y,
-          _3: {
-            TAG: "Node",
-            _0: "Black",
-            _1: c,
-            _2: z,
-            _3: d
-          }
-        };
+          _0: "Black",
+          _1: c,
+          _2: z,
+          _3: d
+        }
+      };
     
   }
 }
@@ -170,33 +170,33 @@ function balance_right(l, x, r) {
   }
   switch (exit) {
     case 1 :
-        return {
+      return {
+        TAG: "Node",
+        _0: "Black",
+        _1: l,
+        _2: x,
+        _3: r
+      };
+    case 2 :
+      return {
+        TAG: "Node",
+        _0: "Red",
+        _1: {
           TAG: "Node",
           _0: "Black",
-          _1: l,
-          _2: x,
-          _3: r
-        };
-    case 2 :
-        return {
+          _1: a,
+          _2: x$1,
+          _3: b
+        },
+        _2: y,
+        _3: {
           TAG: "Node",
-          _0: "Red",
-          _1: {
-            TAG: "Node",
-            _0: "Black",
-            _1: a,
-            _2: x$1,
-            _3: b
-          },
-          _2: y,
-          _3: {
-            TAG: "Node",
-            _0: "Black",
-            _1: c,
-            _2: z,
-            _3: d
-          }
-        };
+          _0: "Black",
+          _1: c,
+          _2: z,
+          _3: d
+        }
+      };
     
   }
 }

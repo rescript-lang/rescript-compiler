@@ -5,15 +5,15 @@
 function toEnum(x) {
   switch (x) {
     case "thisIsA" :
-        return 0;
+      return 0;
     case 42 :
-        return 1;
+      return 1;
     case null :
-        return 2;
+      return 2;
     case "D" :
-        return 3;
+      return 3;
     case 3.14 :
-        return 5;
+      return 5;
     
   }
 }
@@ -21,15 +21,15 @@ function toEnum(x) {
 function toString(x) {
   switch (x) {
     case "thisIsA" :
-        return "A";
+      return "A";
     case 42 :
-        return "B";
+      return "B";
     case null :
-        return "C";
+      return "C";
     case "D" :
-        return "D";
+      return "D";
     case 3.14 :
-        return "Pi";
+      return "Pi";
     
   }
 }
@@ -38,7 +38,7 @@ function bar(x) {
   switch (x) {
     case "thisIsA" :
     case 3.14 :
-        return 10;
+      return 10;
     default:
       return 0;
   }
@@ -139,21 +139,21 @@ function foo(x) {
   if (typeof x !== "object") {
     switch (x) {
       case "dd" :
-          return 1;
+        return 1;
       case 12 :
-          return 2;
+        return 2;
       case false :
-          return 3;
+        return 3;
       
     }
   } else {
     switch (x.TAG) {
       case "qq" :
-          return 4;
+        return 4;
       case 42 :
-          return 5;
+        return 5;
       case "F" :
-          return 6;
+        return 6;
       
     }
   }
@@ -283,9 +283,9 @@ function plus$3(x, y) {
     switch (x) {
       case null :
       case undefined :
-          return y;
+        return y;
       case "WhyNotAnotherOne" :
-          break;
+        break;
       
     }
   } else if (!(y === undefined || y === null || y === "WhyNotAnotherOne")) {
@@ -300,9 +300,9 @@ function plus$3(x, y) {
   switch (y) {
     case null :
     case undefined :
-        return x;
+      return x;
     case "WhyNotAnotherOne" :
-        return "WhyNotAnotherOne";
+      return "WhyNotAnotherOne";
     
   }
 }
@@ -313,11 +313,11 @@ function kind$1(x) {
   }
   switch (x) {
     case null :
-        return "null";
+      return "null";
     case undefined :
-        return "undefined";
+      return "undefined";
     case "WhyNotAnotherOne" :
-        return "whynot";
+      return "whynot";
     
   }
 }
@@ -349,11 +349,11 @@ let MyNullableExtended = {
 function area(shape) {
   switch (shape.kind) {
     case 1 :
-        return Math.PI * Math.pow(shape.radius, 2);
+      return Math.PI * Math.pow(shape.radius, 2);
     case "square" :
-        return Math.pow(shape.sideLength, 2);
+      return Math.pow(shape.sideLength, 2);
     case "rectangle" :
-        return shape.width * shape.height;
+      return shape.width * shape.height;
     
   }
 }
@@ -392,17 +392,17 @@ let CustomTagNotInline = {
 function classify(x) {
   switch (typeof x) {
     case "string" :
-        return "string";
+      return "string";
     case "number" :
-        return "int";
+      return "int";
     case "boolean" :
-        if (x) {
-          return "true";
-        } else {
-          return "boolean";
-        }
+      if (x) {
+        return "true";
+      } else {
+        return "boolean";
+      }
     case "object" :
-        return "Object" + x.name;
+      return "Object" + x.name;
     
   }
 }

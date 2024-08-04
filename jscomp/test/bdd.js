@@ -272,14 +272,14 @@ function and2(n1, n2) {
   let f;
   switch (match) {
     case "LESS" :
-        f = mkNode(and2(l1, n2), v1, and2(r1, n2));
-        break;
+      f = mkNode(and2(l1, n2), v1, and2(r1, n2));
+      break;
     case "EQUAL" :
-        f = mkNode(and2(l1, l2), v1, and2(r1, r2));
-        break;
+      f = mkNode(and2(l1, l2), v1, and2(r1, r2));
+      break;
     case "GREATER" :
-        f = mkNode(and2(n1, l2), v2, and2(n1, r2));
-        break;
+      f = mkNode(and2(n1, l2), v2, and2(n1, r2));
+      break;
     
   }
   Caml_array.set(andslot1, h, i1);
@@ -319,14 +319,14 @@ function xor(n1, n2) {
   let f;
   switch (match) {
     case "LESS" :
-        f = mkNode(xor(l1, n2), v1, xor(r1, n2));
-        break;
+      f = mkNode(xor(l1, n2), v1, xor(r1, n2));
+      break;
     case "EQUAL" :
-        f = mkNode(xor(l1, l2), v1, xor(r1, r2));
-        break;
+      f = mkNode(xor(l1, l2), v1, xor(r1, r2));
+      break;
     case "GREATER" :
-        f = mkNode(xor(n1, l2), v2, xor(n1, r2));
-        break;
+      f = mkNode(xor(n1, l2), v2, xor(n1, r2));
+      break;
     
   }
   Caml_array.set(andslot1, h, i1);

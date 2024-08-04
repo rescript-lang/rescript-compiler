@@ -1247,32 +1247,25 @@ function process_input_line(ticker_map, all_tickers, line) {
   if (tokens) {
     switch (tokens.hd) {
       case "Q" :
-          let match = tokens.tl;
-          if (match) {
-            let match$1 = match.tl;
-            if (match$1) {
-              if (match$1.tl) {
-                throw new Error("Failure", {
-                      cause: {
-                        RE_EXN_ID: "Failure",
-                        _1: "Invalid input line"
-                      }
-                    });
-              }
-              let ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
-              let value = Caml_format.float_of_string(match$1.hd);
-              process_quote(ticker_map$1, match.hd, value);
-              return [
-                all_tickers,
-                Caml_option.some(ticker_map$1)
-              ];
+        let match = tokens.tl;
+        if (match) {
+          let match$1 = match.tl;
+          if (match$1) {
+            if (match$1.tl) {
+              throw new Error("Failure", {
+                    cause: {
+                      RE_EXN_ID: "Failure",
+                      _1: "Invalid input line"
+                    }
+                  });
             }
-            throw new Error("Failure", {
-                  cause: {
-                    RE_EXN_ID: "Failure",
-                    _1: "Invalid input line"
-                  }
-                });
+            let ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
+            let value = Caml_format.float_of_string(match$1.hd);
+            process_quote(ticker_map$1, match.hd, value);
+            return [
+              all_tickers,
+              Caml_option.some(ticker_map$1)
+            ];
           }
           throw new Error("Failure", {
                 cause: {
@@ -1280,83 +1273,26 @@ function process_input_line(ticker_map, all_tickers, line) {
                   _1: "Invalid input line"
                 }
               });
+        }
+        throw new Error("Failure", {
+              cause: {
+                RE_EXN_ID: "Failure",
+                _1: "Invalid input line"
+              }
+            });
       case "R" :
-          let match$2 = tokens.tl;
-          if (match$2) {
-            let match$3 = match$2.tl;
-            if (match$3) {
-              let ticker_name = match$2.hd;
-              switch (match$3.hd) {
-                case "+" :
-                    let match$4 = match$3.tl;
-                    if (match$4) {
-                      let match$5 = match$4.tl;
-                      if (match$5) {
-                        if (match$5.tl) {
-                          throw new Error("Failure", {
-                                cause: {
-                                  RE_EXN_ID: "Failure",
-                                  _1: "Invalid input line"
-                                }
-                              });
-                        }
-                        return [
-                          {
-                            hd: make_binary_op(ticker_name, match$4.hd, match$5.hd, "PLUS"),
-                            tl: all_tickers
-                          },
-                          ticker_map
-                        ];
-                      }
-                      throw new Error("Failure", {
-                            cause: {
-                              RE_EXN_ID: "Failure",
-                              _1: "Invalid input line"
-                            }
-                          });
-                    }
-                    throw new Error("Failure", {
-                          cause: {
-                            RE_EXN_ID: "Failure",
-                            _1: "Invalid input line"
-                          }
-                        });
-                case "-" :
-                    let match$6 = match$3.tl;
-                    if (match$6) {
-                      let match$7 = match$6.tl;
-                      if (match$7) {
-                        if (match$7.tl) {
-                          throw new Error("Failure", {
-                                cause: {
-                                  RE_EXN_ID: "Failure",
-                                  _1: "Invalid input line"
-                                }
-                              });
-                        }
-                        return [
-                          {
-                            hd: make_binary_op(ticker_name, match$6.hd, match$7.hd, "MINUS"),
-                            tl: all_tickers
-                          },
-                          ticker_map
-                        ];
-                      }
-                      throw new Error("Failure", {
-                            cause: {
-                              RE_EXN_ID: "Failure",
-                              _1: "Invalid input line"
-                            }
-                          });
-                    }
-                    throw new Error("Failure", {
-                          cause: {
-                            RE_EXN_ID: "Failure",
-                            _1: "Invalid input line"
-                          }
-                        });
-                case "S" :
-                    if (match$3.tl) {
+        let match$2 = tokens.tl;
+        if (match$2) {
+          let match$3 = match$2.tl;
+          if (match$3) {
+            let ticker_name = match$2.hd;
+            switch (match$3.hd) {
+              case "+" :
+                let match$4 = match$3.tl;
+                if (match$4) {
+                  let match$5 = match$4.tl;
+                  if (match$5) {
+                    if (match$5.tl) {
                       throw new Error("Failure", {
                             cause: {
                               RE_EXN_ID: "Failure",
@@ -1366,31 +1302,87 @@ function process_input_line(ticker_map, all_tickers, line) {
                     }
                     return [
                       {
-                        hd: {
-                          value: undefined,
-                          rank: "Uninitialized",
-                          ticker_name: ticker_name,
-                          type_: "Market"
-                        },
+                        hd: make_binary_op(ticker_name, match$4.hd, match$5.hd, "PLUS"),
                         tl: all_tickers
                       },
                       ticker_map
                     ];
-                default:
+                  }
                   throw new Error("Failure", {
                         cause: {
                           RE_EXN_ID: "Failure",
                           _1: "Invalid input line"
                         }
                       });
-              }
-            } else {
-              throw new Error("Failure", {
-                    cause: {
-                      RE_EXN_ID: "Failure",
-                      _1: "Invalid input line"
+                }
+                throw new Error("Failure", {
+                      cause: {
+                        RE_EXN_ID: "Failure",
+                        _1: "Invalid input line"
+                      }
+                    });
+              case "-" :
+                let match$6 = match$3.tl;
+                if (match$6) {
+                  let match$7 = match$6.tl;
+                  if (match$7) {
+                    if (match$7.tl) {
+                      throw new Error("Failure", {
+                            cause: {
+                              RE_EXN_ID: "Failure",
+                              _1: "Invalid input line"
+                            }
+                          });
                     }
-                  });
+                    return [
+                      {
+                        hd: make_binary_op(ticker_name, match$6.hd, match$7.hd, "MINUS"),
+                        tl: all_tickers
+                      },
+                      ticker_map
+                    ];
+                  }
+                  throw new Error("Failure", {
+                        cause: {
+                          RE_EXN_ID: "Failure",
+                          _1: "Invalid input line"
+                        }
+                      });
+                }
+                throw new Error("Failure", {
+                      cause: {
+                        RE_EXN_ID: "Failure",
+                        _1: "Invalid input line"
+                      }
+                    });
+              case "S" :
+                if (match$3.tl) {
+                  throw new Error("Failure", {
+                        cause: {
+                          RE_EXN_ID: "Failure",
+                          _1: "Invalid input line"
+                        }
+                      });
+                }
+                return [
+                  {
+                    hd: {
+                      value: undefined,
+                      rank: "Uninitialized",
+                      ticker_name: ticker_name,
+                      type_: "Market"
+                    },
+                    tl: all_tickers
+                  },
+                  ticker_map
+                ];
+              default:
+                throw new Error("Failure", {
+                      cause: {
+                        RE_EXN_ID: "Failure",
+                        _1: "Invalid input line"
+                      }
+                    });
             }
           } else {
             throw new Error("Failure", {
@@ -1400,6 +1392,14 @@ function process_input_line(ticker_map, all_tickers, line) {
                   }
                 });
           }
+        } else {
+          throw new Error("Failure", {
+                cause: {
+                  RE_EXN_ID: "Failure",
+                  _1: "Invalid input line"
+                }
+              });
+        }
       default:
         throw new Error("Failure", {
               cause: {

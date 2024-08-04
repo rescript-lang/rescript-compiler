@@ -116,23 +116,23 @@ function classify$3(x) {
   if (typeof x !== "object" && typeof x !== "number" && (x === "C" || x === "B" || x === "A" || x === "D")) {
     switch (x) {
       case "A" :
-          return "a";
+        return "a";
       case "B" :
-          return "b";
+        return "b";
       case "C" :
-          return "c";
+        return "c";
       case "D" :
-          return "d";
+        return "d";
       
     }
   } else {
     switch (typeof x) {
       case "string" :
-          return "string";
+        return "string";
       case "number" :
-          return "int";
+        return "int";
       case "object" :
-          return "Object" + x.name;
+        return "Object" + x.name;
       
     }
   }
@@ -145,11 +145,11 @@ let MultipleBlocks = {
 function classify$4(x) {
   switch (typeof x) {
     case "string" :
-        return "string";
+      return "string";
     case "number" :
-        return "int";
+      return "int";
     case "object" :
-        return "Object" + x.name;
+      return "Object" + x.name;
     
   }
 }
@@ -164,11 +164,11 @@ function classify$5(x) {
   }
   switch (typeof x) {
     case "string" :
-        return "string";
+      return "string";
     case "number" :
-        return "int";
+      return "int";
     case "object" :
-        return "Object" + x.name;
+      return "Object" + x.name;
     
   }
 }
@@ -181,11 +181,11 @@ function classify$6(x) {
   if (!Array.isArray(x) && (x === null || typeof x !== "object") && typeof x !== "number" && typeof x !== "string") {
     switch (x) {
       case false :
-          return "JSONFalse";
+        return "JSONFalse";
       case true :
-          return "JSONTrue";
+        return "JSONTrue";
       case null :
-          return "JSONNull";
+        return "JSONNull";
       
     }
   } else {
@@ -197,20 +197,20 @@ function classify$6(x) {
     }
     switch (typeof x) {
       case "string" :
-          return {
-            TAG: "JSONString",
-            _0: x
-          };
+        return {
+          TAG: "JSONString",
+          _0: x
+        };
       case "number" :
-          return {
-            TAG: "JSONNumber",
-            _0: x
-          };
+        return {
+          TAG: "JSONNumber",
+          _0: x
+        };
       case "object" :
-          return {
-            TAG: "JSONObject",
-            _0: x
-          };
+        return {
+          TAG: "JSONObject",
+          _0: x
+        };
       
     }
   }
@@ -246,11 +246,11 @@ function checkEnum(e) {
   }
   switch (e) {
     case "One" :
-        return "One!";
+      return "One!";
     case "Two" :
-        return "Two";
+      return "Two";
     case "Three" :
-        return "Threeeee";
+      return "Threeeee";
     
   }
 }
@@ -265,11 +265,11 @@ function checkEnum$1(e) {
   }
   switch (e) {
     case 1.0 :
-        return "One!";
+      return "One!";
     case "Two" :
-        return "Two";
+      return "Two";
     case "Three" :
-        return "Threeeee";
+      return "Threeeee";
     
   }
 }
@@ -284,11 +284,11 @@ function checkEnum$2(e) {
   }
   switch (e) {
     case null :
-        return "One!";
+      return "One!";
     case "Two" :
-        return "Two";
+      return "Two";
     case "Three" :
-        return "Threeeee";
+      return "Threeeee";
     
   }
 }
@@ -370,9 +370,9 @@ function classify$9(v) {
   }
   switch (typeof v) {
     case "object" :
-        return v.x;
+      return v.x;
     case "function" :
-        return v(3);
+      return v(3);
     
   }
 }
@@ -466,9 +466,9 @@ async function getUserName(u) {
   }
   switch (typeof u) {
     case "object" :
-        return u.name;
+      return u.name;
     case "string" :
-        return u;
+      return u;
     
   }
 }
@@ -480,7 +480,7 @@ async function awaitUser(u) {
   switch (typeof u) {
     case "object" :
     case "string" :
-        return "dummy";
+      return "dummy";
     
   }
 }
@@ -511,11 +511,11 @@ async function classify$10(a) {
     }
     switch (typeof a) {
       case "string" :
-          console.log(a);
-          return;
+        console.log(a);
+        return;
       case "object" :
-          console.log(a.userName);
-          return;
+        console.log(a.userName);
+        return;
       
     }
   }
@@ -554,11 +554,11 @@ async function classifyAll(t) {
   }
   switch (typeof t) {
     case "string" :
-        console.log(t);
-        return;
+      console.log(t);
+      return;
     case "object" :
-        console.log(t.userName);
-        return;
+      console.log(t.userName);
+      return;
     
   }
 }
@@ -570,11 +570,11 @@ let AllInstanceofTypes = {
 function test(t) {
   switch (typeof t) {
     case "object" :
-        return Js_dict.get(t, "Hello");
+      return Js_dict.get(t, "Hello");
     case "string" :
-        return t;
+      return t;
     case "function" :
-        return t();
+      return t();
     
   }
 }
@@ -596,9 +596,9 @@ function should_not_merge(x) {
   }
   switch (typeof x) {
     case "boolean" :
-        return "boolean";
+      return "boolean";
     case "object" :
-        return "do not merge";
+      return "do not merge";
     
   }
 }
@@ -613,7 +613,7 @@ function can_merge(x) {
   switch (typeof x) {
     case "boolean" :
     case "object" :
-        return "merge";
+      return "merge";
     
   }
 }

@@ -5,11 +5,11 @@
 function f(x) {
   switch (x) {
     case "A" :
-        return 1;
+      return 1;
     case "B" :
-        return 2;
+      return 2;
     case "C" :
-        return 3;
+      return 3;
     
   }
 }
@@ -17,11 +17,11 @@ function f(x) {
 function f_0(x) {
   switch (x) {
     case "A" :
-        return -1;
+      return -1;
     case "B" :
-        return 0;
+      return 0;
     case "C" :
-        return 1;
+      return 1;
     
   }
 }
@@ -32,11 +32,11 @@ function f2(x) {
   }
   switch (x) {
     case 0 :
-        return "T000";
+      return "T000";
     case 1 :
-        return "T001";
+      return "T001";
     case 2 :
-        return "T002";
+      return "T002";
     
   }
 }
@@ -44,15 +44,15 @@ function f2(x) {
 function f3(x) {
   switch (x) {
     case "X0" :
-        return "Y0";
+      return "Y0";
     case "X1" :
-        return "Y1";
+      return "Y1";
     case "X2" :
-        return "Y2";
+      return "Y2";
     case "X3" :
-        return "Y3";
+      return "Y3";
     case "X4" :
-        return "Y4";
+      return "Y4";
     
   }
 }
@@ -65,20 +65,20 @@ function f5(x) {
   if (typeof x !== "object") {
     switch (x) {
       case "A" :
-          return 1;
+        return 1;
       case "B" :
-          return 3;
+        return 3;
       case "F" :
-          return 4;
+        return 4;
       
     }
   } else {
     switch (x.TAG) {
       case "C" :
       case "D" :
-          return 1;
+        return 1;
       case "E" :
-          return 2;
+        return 2;
       
     }
   }
@@ -91,9 +91,9 @@ function f6(x) {
   switch (x) {
     case "A" :
     case "B" :
-        return 0;
+      return 0;
     case "F" :
-        return 2;
+      return 2;
     
   }
 }
@@ -102,21 +102,21 @@ function f7(x) {
   if (typeof x !== "object") {
     switch (x) {
       case "A" :
-          return 1;
+        return 1;
       case "B" :
-          return 2;
+        return 2;
       case "F" :
-          return -1;
+        return -1;
       
     }
   } else {
     switch (x.TAG) {
       case "C" :
-          return 3;
+        return 3;
       case "D" :
-          return 4;
+        return 4;
       case "E" :
-          return -1;
+        return -1;
       
     }
   }
@@ -127,7 +127,7 @@ function f8(x) {
     switch (x) {
       case "T60" :
       case "T61" :
-          return 1;
+        return 1;
       default:
         return 3;
     }
@@ -135,7 +135,7 @@ function f8(x) {
     switch (x.TAG) {
       case "T64" :
       case "T65" :
-          return 2;
+        return 2;
       default:
         return 3;
     }
@@ -153,10 +153,10 @@ function f9(x) {
   switch (x.TAG) {
     case "T64" :
     case "T65" :
-        return 2;
+      return 2;
     case "T66" :
     case "T68" :
-        return 3;
+      return 3;
     
   }
 }
@@ -165,23 +165,23 @@ function f10(x) {
   if (typeof x !== "object") {
     switch (x) {
       case "T60" :
-          return 0;
+        return 0;
       case "T61" :
-          return 2;
+        return 2;
       case "T62" :
-          return 4;
+        return 4;
       case "T63" :
-          return 1;
+        return 1;
       
     }
   } else {
     switch (x.TAG) {
       case "T64" :
       case "T65" :
-          return 2;
+        return 2;
       case "T66" :
       case "T68" :
-          return 3;
+        return 3;
       
     }
   }

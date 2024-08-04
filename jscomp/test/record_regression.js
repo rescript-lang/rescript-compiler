@@ -175,27 +175,27 @@ function inlinedRecord(ir) {
   if (x1 !== undefined) {
     switch (x1) {
       case "x1" :
-          let x2 = ir.x2;
-          if (x2 !== undefined) {
-            return [
-              x0,
-              "x1",
-              x2,
-              ir.x3
-            ];
-          }
-          break;
+        let x2 = ir.x2;
+        if (x2 !== undefined) {
+          return [
+            x0,
+            "x1",
+            x2,
+            ir.x3
+          ];
+        }
+        break;
       case "xx1" :
-          let x2$1 = ir.x2;
-          if (x2$1 !== undefined) {
-            return [
-              x0,
-              "xx1",
-              x2$1,
-              ir.x3
-            ];
-          }
-          break;
+        let x2$1 = ir.x2;
+        if (x2$1 !== undefined) {
+          return [
+            x0,
+            "xx1",
+            x2$1,
+            ir.x3
+          ];
+        }
+        break;
       default:
         
     }

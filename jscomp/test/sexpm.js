@@ -44,17 +44,17 @@ function _must_escape(s) {
             case 37 :
             case 38 :
             case 39 :
-                exit = 1;
-                break;
+              exit = 1;
+              break;
             case 32 :
             case 34 :
             case 40 :
             case 41 :
-                throw new Error(Pervasives.Exit, {
-                      cause: {
-                        RE_EXN_ID: Pervasives.Exit
-                      }
-                    });
+              throw new Error(Pervasives.Exit, {
+                    cause: {
+                      RE_EXN_ID: Pervasives.Exit
+                    }
+                  });
             
           }
         } else {
@@ -237,29 +237,29 @@ function expr_starting_with(c, k, t) {
     if (c >= 32) {
       switch (c) {
         case 32 :
-            throw new Error("Assert_failure", {
-                  cause: {
-                    RE_EXN_ID: "Assert_failure",
-                    _1: [
-                      "sexpm.res",
-                      152,
-                      27
-                    ]
-                  }
-                });
+          throw new Error("Assert_failure", {
+                cause: {
+                  RE_EXN_ID: "Assert_failure",
+                  _1: [
+                    "sexpm.res",
+                    152,
+                    27
+                  ]
+                }
+              });
         case 34 :
-            return quoted(k, t);
+          return quoted(k, t);
         case 33 :
         case 35 :
         case 36 :
         case 37 :
         case 38 :
         case 39 :
-            break;
+          break;
         case 40 :
-            return expr_list(/* [] */0, k, t);
+          return expr_list(/* [] */0, k, t);
         case 41 :
-            return _error(t, "unexpected ')'");
+          return _error(t, "unexpected ')'");
         
       }
     }
@@ -367,13 +367,13 @@ function atom(k, t) {
       if (c >= 32) {
         switch (c) {
           case 32 :
-              exit = 2;
-              break;
+            exit = 2;
+            break;
           case 33 :
-              exit = 1;
-              break;
+            exit = 1;
+            break;
           case 34 :
-              return _error(t, "unexpected '\"' in the middle of an atom");
+            return _error(t, "unexpected '\"' in the middle of an atom");
           
         }
       } else {
@@ -384,10 +384,10 @@ function atom(k, t) {
     }
     switch (exit) {
       case 1 :
-          Buffer.add_char(t.atom, c);
-          continue;
+        Buffer.add_char(t.atom, c);
+        continue;
       case 2 :
-          return _return_atom(c, k, t);
+        return _return_atom(c, k, t);
       
     }
   };
@@ -426,13 +426,13 @@ function escaped(k, t) {
     if (c < 117) {
       switch (c) {
         case 92 :
-            return k(/* '\\' */92);
+          return k(/* '\\' */92);
         case 98 :
-            return k(/* '\b' */8);
+          return k(/* '\b' */8);
         case 110 :
-            return k(/* '\n' */10);
+          return k(/* '\n' */10);
         case 114 :
-            return k(/* '\r' */13);
+          return k(/* '\r' */13);
         case 93 :
         case 94 :
         case 95 :
@@ -453,9 +453,9 @@ function escaped(k, t) {
         case 112 :
         case 113 :
         case 115 :
-            break;
+          break;
         case 116 :
-            return k(/* '\t' */9);
+          return k(/* '\t' */9);
         
       }
     }

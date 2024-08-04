@@ -23,11 +23,11 @@ function f(x) {
   let match = x();
   switch (match) {
     case 1 :
-        return /* 'a' */97;
+      return /* 'a' */97;
     case 2 :
-        return /* 'b' */98;
+      return /* 'b' */98;
     case 3 :
-        return /* 'c' */99;
+      return /* 'c' */99;
     default:
       return /* 'x' */120;
   }
@@ -37,11 +37,11 @@ function f22(x) {
   let match = x();
   switch (match) {
     case 1 :
-        return /* 'a' */97;
+      return /* 'a' */97;
     case 2 :
-        return /* 'b' */98;
+      return /* 'b' */98;
     case 3 :
-        return /* 'c' */99;
+      return /* 'c' */99;
     default:
       return /* 'x' */120;
   }
@@ -51,13 +51,13 @@ function f33(x) {
   let match = x();
   switch (match) {
     case "A" :
-        return /* 'a' */97;
+      return /* 'a' */97;
     case "B" :
-        return /* 'b' */98;
+      return /* 'b' */98;
     case "C" :
-        return /* 'c' */99;
+      return /* 'c' */99;
     case "D" :
-        return /* 'x' */120;
+      return /* 'x' */120;
     
   }
 }

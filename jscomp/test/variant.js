@@ -15,12 +15,12 @@ function foo(x) {
   }
   switch (x.TAG) {
     case "B" :
-        return x._0;
+      return x._0;
     case "C" :
-        return x._0 + x._1 | 0;
+      return x._0 + x._1 | 0;
     case "D" :
-        let match = x._0;
-        return match[0] + match[1] | 0;
+      let match = x._0;
+      return match[0] + match[1] | 0;
     
   }
 }
@@ -44,11 +44,11 @@ function fooC(x) {
 function switchNum(x) {
   switch (x) {
     case 0 :
-        return "0";
+      return "0";
     case 1 :
-        return "1";
+      return "1";
     case 2 :
-        return "2";
+      return "2";
     default:
       return "_";
   }
@@ -88,10 +88,10 @@ function rollback_path(subst, p) {
     if (exn.RE_EXN_ID === "Not_found") {
       switch (p.TAG) {
         case "Pdot" :
-            return "Pdot";
+          return "Pdot";
         case "Pident" :
         case "Papply" :
-            return "Pident | Papply";
+          return "Pident | Papply";
         
       }
     } else {

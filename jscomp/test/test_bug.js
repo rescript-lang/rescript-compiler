@@ -47,20 +47,20 @@ function escaped(s) {
       } else {
         switch (c$1) {
           case 8 :
-              s$p[n] = /* '\\' */92;
-              n = n + 1 | 0;
-              s$p[n] = /* 'b' */98;
-              break;
+            s$p[n] = /* '\\' */92;
+            n = n + 1 | 0;
+            s$p[n] = /* 'b' */98;
+            break;
           case 9 :
-              s$p[n] = /* '\\' */92;
-              n = n + 1 | 0;
-              s$p[n] = /* 't' */116;
-              break;
+            s$p[n] = /* '\\' */92;
+            n = n + 1 | 0;
+            s$p[n] = /* 't' */116;
+            break;
           case 10 :
-              s$p[n] = /* '\\' */92;
-              n = n + 1 | 0;
-              s$p[n] = /* 'n' */110;
-              break;
+            s$p[n] = /* '\\' */92;
+            n = n + 1 | 0;
+            s$p[n] = /* 'n' */110;
+            break;
           case 0 :
           case 1 :
           case 2 :
@@ -71,13 +71,13 @@ function escaped(s) {
           case 7 :
           case 11 :
           case 12 :
-              exit$1 = 1;
-              break;
+            exit$1 = 1;
+            break;
           case 13 :
-              s$p[n] = /* '\\' */92;
-              n = n + 1 | 0;
-              s$p[n] = /* 'r' */114;
-              break;
+            s$p[n] = /* '\\' */92;
+            n = n + 1 | 0;
+            s$p[n] = /* 'r' */114;
+            break;
           
         }
       }
