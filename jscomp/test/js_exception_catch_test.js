@@ -205,10 +205,13 @@ eq("File \"js_exception_catch_test.res\", line 52, characters 5-12", test(functi
 }), "C_any");
 
 eq("File \"js_exception_catch_test.res\", line 53, characters 5-12", test(function () {
-  throw new Error(new Error("x").RE_EXN_ID, {
-    cause: new Error("x")
+  throw new Error("Failure", {
+    cause: {
+      RE_EXN_ID: "Failure",
+      _1: "x"
+    }
   });
-}), "Js_error");
+}), "Failure");
 
 eq("File \"js_exception_catch_test.res\", line 54, characters 5-12", test(function () {
   throw new Error("Failure", {
@@ -217,7 +220,7 @@ eq("File \"js_exception_catch_test.res\", line 54, characters 5-12", test(functi
       _1: "x"
     }
   });
-}), "Any");
+}), "Failure");
 
 Mt.from_pair_suites("Js_exception_catch_test", suites.contents);
 
