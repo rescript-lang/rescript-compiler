@@ -429,6 +429,7 @@ and pp_one_case_clause :
       'a. _ -> P.t -> (P.t -> 'a -> unit) -> 'a * J.case_clause -> _ =
  fun cxt f pp_cond
      (switch_case, ({ switch_body; should_break; comment } : J.case_clause)) ->
+  P.newline f;
   let cxt =
     P.group f 1 (fun _ ->
         P.group f 0 (fun _ ->
@@ -453,7 +454,6 @@ and pp_one_case_clause :
               semi f);
             cxt))
   in
-  P.newline f;
   cxt
 
 and loop_case_clauses :
@@ -1181,6 +1181,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
           match def with
           | None -> cxt
           | Some def ->
+              P.newline f;
               P.group f 1 (fun _ ->
                   P.string f L.default;
                   P.string f L.colon;
@@ -1199,6 +1200,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
           match def with
           | None -> cxt
           | Some def ->
+              P.newline f;
               P.group f 1 (fun _ ->
                   P.string f L.default;
                   P.string f L.colon;
