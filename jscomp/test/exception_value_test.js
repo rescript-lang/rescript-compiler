@@ -56,9 +56,7 @@ function test_not_found(f, param) {
     if (exn.RE_EXN_ID === "Not_found") {
       return 2;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -69,13 +67,9 @@ function test_js_error2() {
     let e = Caml_js_exceptions.internalToOCamlException(raw_e);
     if (e.RE_EXN_ID === Js_exn.$$Error) {
       console.log(e._1.stack);
-      throw new Error(e.RE_EXN_ID, {
-        cause: e
-      });
+      throw e;
     }
-    throw new Error(e.RE_EXN_ID, {
-      cause: e
-    });
+    throw e;
   }
 }
 

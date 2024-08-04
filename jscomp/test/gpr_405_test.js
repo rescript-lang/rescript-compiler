@@ -19,9 +19,7 @@ function Make(funarg) {
       if (exn.RE_EXN_ID === "Not_found") {
         return false;
       }
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
   };
   let min_cutset = function (gr, first_node) {

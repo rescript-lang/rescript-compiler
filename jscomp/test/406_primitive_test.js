@@ -49,9 +49,7 @@ function f() {
     if (exn.RE_EXN_ID === A) {
       return;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 

@@ -34,9 +34,7 @@ function starts_with(xs, prefix, p) {
     if (exn.RE_EXN_ID === H) {
       return false;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
