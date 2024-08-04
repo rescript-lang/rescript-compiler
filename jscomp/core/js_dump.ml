@@ -857,11 +857,11 @@ and expression_desc cxt ~(level : int) f x : cxt =
           cxt)
   | New (e, el) ->
       P.cond_paren_group f (level > 15) (fun _ ->
-          P.group f 1 (fun _ ->
+          P.group f 0 (fun _ ->
               P.string f L.new_;
               P.space f;
               let cxt = expression ~level:16 cxt f e in
-              P.paren_group f 1 (fun _ ->
+              P.paren_group f 0 (fun _ ->
                   match el with Some el -> arguments cxt f el | None -> cxt)))
   | Cond (e, e1, e2) ->
       let action () =
