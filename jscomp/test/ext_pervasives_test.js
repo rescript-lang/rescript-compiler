@@ -12,8 +12,8 @@ function $$finally(v, action, f) {
   } catch (e$1) {
     action(v);
     throw new Error(e$1.RE_EXN_ID, {
-          cause: e$1
-        });
+      cause: e$1
+    });
   }
   action(v);
   return e;
@@ -39,10 +39,10 @@ function is_pos_pow(n) {
         continue;
       }
       throw new Error(E, {
-            cause: {
-              RE_EXN_ID: E
-            }
-          });
+        cause: {
+          RE_EXN_ID: E
+        }
+      });
     };
   } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -50,8 +50,8 @@ function is_pos_pow(n) {
       return -1;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -75,10 +75,10 @@ function is_pos_pow_2(n) {
         continue;
       }
       throw new Error(E, {
-            cause: {
-              RE_EXN_ID: E
-            }
-          });
+        cause: {
+          RE_EXN_ID: E
+        }
+      });
     };
   } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -86,8 +86,8 @@ function is_pos_pow_2(n) {
       return -1;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 

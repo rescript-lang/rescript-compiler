@@ -68,26 +68,26 @@ function resize(newSize) {
       if (typeof n !== "object") {
         if (n === "One") {
           throw new Error("Assert_failure", {
-                cause: {
-                  RE_EXN_ID: "Assert_failure",
-                  _1: [
-                    "bdd.res",
-                    60,
-                    13
-                  ]
-                }
-              });
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bdd.res",
+                60,
+                13
+              ]
+            }
+          });
         }
         throw new Error("Assert_failure", {
-              cause: {
-                RE_EXN_ID: "Assert_failure",
-                _1: [
-                  "bdd.res",
-                  60,
-                  13
-                ]
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Assert_failure",
+            _1: [
+              "bdd.res",
+              60,
+              13
+            ]
+          }
+        });
       } else {
         let ind = hashVal(getId(n._0), getId(n._3), n._1) & newSz_1;
         Caml_array.set(newArr, ind, {
@@ -146,26 +146,26 @@ function mkNode(low, v, high) {
       if (typeof n !== "object") {
         if (n === "One") {
           throw new Error("Assert_failure", {
-                cause: {
-                  RE_EXN_ID: "Assert_failure",
-                  _1: [
-                    "bdd.res",
-                    121,
-                    15
-                  ]
-                }
-              });
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "bdd.res",
+                121,
+                15
+              ]
+            }
+          });
         }
         throw new Error("Assert_failure", {
-              cause: {
-                RE_EXN_ID: "Assert_failure",
-                _1: [
-                  "bdd.res",
-                  121,
-                  15
-                ]
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Assert_failure",
+            _1: [
+              "bdd.res",
+              121,
+              15
+            ]
+          }
+        });
       } else {
         if (v === n._1 && idl === getId(n._0) && idh === getId(n._3)) {
           return n;
@@ -403,15 +403,15 @@ function main() {
     return;
   }
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "bdd.res",
-            301,
-            2
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "bdd.res",
+        301,
+        2
+      ]
+    }
+  });
 }
 
 main();

@@ -34,11 +34,11 @@ function bal(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Map.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
+        }
+      });
     }
     let lr = l.r;
     let ld = l.d;
@@ -51,11 +51,11 @@ function bal(l, x, d, r) {
       return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -69,11 +69,11 @@ function bal(l, x, d, r) {
   }
   if (typeof r !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   let rr = r.r;
   let rd = r.d;
@@ -86,11 +86,11 @@ function bal(l, x, d, r) {
     return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
+    }
+  });
 }
 
 function add(x, data, param) {
@@ -144,10 +144,10 @@ function find(x, _param) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let c = Caml.int_compare(x, param.v);
     if (c === 0) {
@@ -215,11 +215,11 @@ function bal$1(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Map.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
+        }
+      });
     }
     let lr = l.r;
     let ld = l.d;
@@ -232,11 +232,11 @@ function bal$1(l, x, d, r) {
       return create$1(create$1(ll, lv, ld, lr.l), lr.v, lr.d, create$1(lr.r, x, d, r));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -250,11 +250,11 @@ function bal$1(l, x, d, r) {
   }
   if (typeof r !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   let rr = r.r;
   let rd = r.d;
@@ -267,11 +267,11 @@ function bal$1(l, x, d, r) {
     return create$1(create$1(l, x, d, rl.l), rl.v, rl.d, create$1(rl.r, rv, rd, rr));
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
+    }
+  });
 }
 
 function add$1(x, data, param) {
@@ -325,10 +325,10 @@ function find$1(x, _param) {
     let param = _param;
     if (typeof param !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let c = Caml.string_compare(x, param.v);
     if (c === 0) {

@@ -107,8 +107,8 @@ try {
     tmp = -1;
   } else {
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -184,8 +184,8 @@ try {
     tmp$1 = 4;
   } else {
     throw new Error(exn$1.RE_EXN_ID, {
-          cause: exn$1
-        });
+      cause: exn$1
+    });
   }
 }
 

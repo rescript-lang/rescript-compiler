@@ -34,11 +34,11 @@ function bal(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Map.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
+        }
+      });
     }
     let lr = l._3;
     let ld = l._2;
@@ -51,11 +51,11 @@ function bal(l, x, d, r) {
       return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -69,11 +69,11 @@ function bal(l, x, d, r) {
   }
   if (typeof r !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   let rr = r._3;
   let rd = r._2;
@@ -86,11 +86,11 @@ function bal(l, x, d, r) {
     return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
+    }
+  });
 }
 
 function add(x, data, x_) {
@@ -130,10 +130,10 @@ function find(x, _x_) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let c = Caml.int_compare(x, x_._1);
     if (c === 0) {

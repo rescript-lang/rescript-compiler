@@ -44,11 +44,11 @@ function Make(Ord) {
     if (hl > (hr + 2 | 0)) {
       if (typeof l !== "object") {
         throw new Error("Invalid_argument", {
-              cause: {
-                RE_EXN_ID: "Invalid_argument",
-                _1: "Map.bal"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Map.bal"
+          }
+        });
       }
       let lr = l._3;
       let ld = l._2;
@@ -61,11 +61,11 @@ function Make(Ord) {
         return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
       }
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Map.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
+        }
+      });
     }
     if (hr <= (hl + 2 | 0)) {
       return {
@@ -79,11 +79,11 @@ function Make(Ord) {
     }
     if (typeof r !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Map.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
+        }
+      });
     }
     let rr = r._3;
     let rd = r._2;
@@ -96,11 +96,11 @@ function Make(Ord) {
       return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   };
   let is_empty = function (x) {
     if (typeof x !== "object") {
@@ -145,10 +145,10 @@ function Make(Ord) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
         throw new Error("Not_found", {
-              cause: {
-                RE_EXN_ID: "Not_found"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
       }
       let c = Ord.compare(x, x_._1);
       if (c === 0) {
@@ -177,10 +177,10 @@ function Make(Ord) {
       let x = _x;
       if (typeof x !== "object") {
         throw new Error("Not_found", {
-              cause: {
-                RE_EXN_ID: "Not_found"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
       }
       let l = x._0;
       if (typeof l !== "object") {
@@ -198,10 +198,10 @@ function Make(Ord) {
       let x = _x;
       if (typeof x !== "object") {
         throw new Error("Not_found", {
-              cause: {
-                RE_EXN_ID: "Not_found"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
       }
       let r = x._3;
       if (typeof r !== "object") {
@@ -217,11 +217,11 @@ function Make(Ord) {
   let remove_min_binding = function (x) {
     if (typeof x !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Map.remove_min_elt"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.remove_min_elt"
+        }
+      });
     }
     let l = x._0;
     if (typeof l !== "object") {
@@ -442,15 +442,15 @@ function Make(Ord) {
     }
     if (typeof s2 !== "object") {
       throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "inline_map2_test.res",
-                359,
-                11
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "inline_map2_test.res",
+            359,
+            11
+          ]
+        }
+      });
     }
     let v2 = s2._1;
     let match$1 = split(v2, s1);
@@ -680,11 +680,11 @@ function bal(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Map.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
+        }
+      });
     }
     let lr = l._3;
     let ld = l._2;
@@ -697,11 +697,11 @@ function bal(l, x, d, r) {
       return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -715,11 +715,11 @@ function bal(l, x, d, r) {
   }
   if (typeof r !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   let rr = r._3;
   let rd = r._2;
@@ -732,11 +732,11 @@ function bal(l, x, d, r) {
     return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
+    }
+  });
 }
 
 function is_empty(x) {
@@ -784,10 +784,10 @@ function find(x, _x_) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let c = Caml.int_compare(x, x_._1);
     if (c === 0) {
@@ -818,10 +818,10 @@ function min_binding(_x) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let l = x._0;
     if (typeof l !== "object") {
@@ -840,10 +840,10 @@ function max_binding(_x) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let r = x._3;
     if (typeof r !== "object") {
@@ -860,11 +860,11 @@ function max_binding(_x) {
 function remove_min_binding(x) {
   if (typeof x !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.remove_min_elt"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.remove_min_elt"
+      }
+    });
   }
   let l = x._0;
   if (typeof l !== "object") {
@@ -1099,15 +1099,15 @@ function merge(f, s1, s2) {
   }
   if (typeof s2 !== "object") {
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "inline_map2_test.res",
-              359,
-              11
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "inline_map2_test.res",
+          359,
+          11
+        ]
+      }
+    });
   }
   let v2 = s2._1;
   let match$1 = split(v2, s1);
@@ -1373,11 +1373,11 @@ function bal$1(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Map.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
+        }
+      });
     }
     let lr = l._3;
     let ld = l._2;
@@ -1390,11 +1390,11 @@ function bal$1(l, x, d, r) {
       return create$1(create$1(ll, lv, ld, lr._0), lr._1, lr._2, create$1(lr._3, x, d, r));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -1408,11 +1408,11 @@ function bal$1(l, x, d, r) {
   }
   if (typeof r !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
+      }
+    });
   }
   let rr = r._3;
   let rd = r._2;
@@ -1425,11 +1425,11 @@ function bal$1(l, x, d, r) {
     return create$1(create$1(l, x, d, rl._0), rl._1, rl._2, create$1(rl._3, rv, rd, rr));
   }
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
+    }
+  });
 }
 
 function is_empty$1(x) {
@@ -1477,10 +1477,10 @@ function find$1(x, _x_) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let c = Caml.string_compare(x, x_._1);
     if (c === 0) {
@@ -1511,10 +1511,10 @@ function min_binding$1(_x) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let l = x._0;
     if (typeof l !== "object") {
@@ -1533,10 +1533,10 @@ function max_binding$1(_x) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let r = x._3;
     if (typeof r !== "object") {
@@ -1553,11 +1553,11 @@ function max_binding$1(_x) {
 function remove_min_binding$1(x) {
   if (typeof x !== "object") {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.remove_min_elt"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.remove_min_elt"
+      }
+    });
   }
   let l = x._0;
   if (typeof l !== "object") {
@@ -1792,15 +1792,15 @@ function merge$1(f, s1, s2) {
   }
   if (typeof s2 !== "object") {
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "inline_map2_test.res",
-              359,
-              11
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "inline_map2_test.res",
+          359,
+          11
+        ]
+      }
+    });
   }
   let v2 = s2._1;
   let match$1 = split$1(v2, s1);

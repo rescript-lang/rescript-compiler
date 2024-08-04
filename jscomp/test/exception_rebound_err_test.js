@@ -73,8 +73,8 @@ function f(g) {
       return 1;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 

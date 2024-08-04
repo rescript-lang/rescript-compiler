@@ -35,11 +35,11 @@ function f() {
     for (let i = 0; i <= 200; ++i) {
       if (i === 10) {
         throw new Error(A, {
-              cause: {
-                RE_EXN_ID: A,
-                _1: 0
-              }
-            });
+          cause: {
+            RE_EXN_ID: A,
+            _1: 0
+          }
+        });
       }
       
     }
@@ -50,8 +50,8 @@ function f() {
       return;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 

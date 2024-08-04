@@ -1485,11 +1485,11 @@ function game_win(ctx) {
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("You win!", 180, 128);
   throw new Error("Failure", {
-        cause: {
-          RE_EXN_ID: "Failure",
-          _1: "Game over."
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Failure",
+      _1: "Game over."
+    }
+  });
 }
 
 function game_loss(ctx) {
@@ -1500,11 +1500,11 @@ function game_loss(ctx) {
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("GAME OVER. You lose!", 60, 128);
   throw new Error("Failure", {
-        cause: {
-          RE_EXN_ID: "Failure",
-          _1: "Game over."
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Failure",
+      _1: "Game over."
+    }
+  });
 }
 
 let Draw = {
@@ -2467,11 +2467,11 @@ function choose_enemy_typ(typ) {
       return "Goomba";
     default:
       throw new Error("Failure", {
-            cause: {
-              RE_EXN_ID: "Failure",
-              _1: "Shouldn't reach here"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Failure",
+          _1: "Shouldn't reach here"
+        }
+      });
   }
 }
 
@@ -2492,11 +2492,11 @@ function choose_sblock_typ(typ) {
       return "Ground";
     default:
       throw new Error("Failure", {
-            cause: {
-              RE_EXN_ID: "Failure",
-              _1: "Shouldn't reach here"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Failure",
+          _1: "Shouldn't reach here"
+        }
+      });
   }
 }
 
@@ -3008,11 +3008,11 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
       };
     default:
       throw new Error("Failure", {
-            cause: {
-              RE_EXN_ID: "Failure",
-              _1: "Shouldn't reach here"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Failure",
+          _1: "Shouldn't reach here"
+        }
+      });
   }
 }
 
@@ -3282,11 +3282,11 @@ function load(param) {
   } else {
     console.log("cant find canvas " + canvas_id);
     throw new Error("Failure", {
-          cause: {
-            RE_EXN_ID: "Failure",
-            _1: "fail"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Failure",
+        _1: "fail"
+      }
+    });
   }
   let context = canvas.getContext("2d");
   document.addEventListener("keydown", keydown, true);

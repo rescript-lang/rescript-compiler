@@ -10,20 +10,20 @@ function f0(x) {
     });
   } else {
     throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Not_found"
+      }
+    });
   }
   return tmp(3);
 }
 
 function f1(x) {
   throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Not_found"
+    }
+  });
   return undefined(x);
 }
 
@@ -52,10 +52,10 @@ function f3(x) {
       break;
     default:
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
   }
   return tmp(3);
 }

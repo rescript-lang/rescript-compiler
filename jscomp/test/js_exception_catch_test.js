@@ -72,8 +72,8 @@ try {
     }));
   } else {
     throw new Error(x.RE_EXN_ID, {
-          cause: x
-        });
+      cause: x
+    });
   }
 }
 
@@ -134,89 +134,89 @@ eq("File \"js_exception_catch_test.res\", line 44, characters 5-12", test(functi
 
 eq("File \"js_exception_catch_test.res\", line 45, characters 5-12", test(function () {
   throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Not_found"
+    }
+  });
 }), "Not_found");
 
 eq("File \"js_exception_catch_test.res\", line 46, characters 5-12", test(function () {
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "x"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "x"
+    }
+  });
 }), "Invalid_argument");
 
 eq("File \"js_exception_catch_test.res\", line 47, characters 5-12", test(function () {
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: ""
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: ""
+    }
+  });
 }), "Invalid_any");
 
 eq("File \"js_exception_catch_test.res\", line 48, characters 5-12", test(function () {
   throw new Error(A, {
-        cause: {
-          RE_EXN_ID: A,
-          _1: 2
-        }
-      });
+    cause: {
+      RE_EXN_ID: A,
+      _1: 2
+    }
+  });
 }), "A2");
 
 eq("File \"js_exception_catch_test.res\", line 49, characters 5-12", test(function () {
   throw new Error(A, {
-        cause: {
-          RE_EXN_ID: A,
-          _1: 3
-        }
-      });
+    cause: {
+      RE_EXN_ID: A,
+      _1: 3
+    }
+  });
 }), "A_any");
 
 eq("File \"js_exception_catch_test.res\", line 50, characters 5-12", test(function () {
   throw new Error(B, {
-        cause: {
-          RE_EXN_ID: B
-        }
-      });
+    cause: {
+      RE_EXN_ID: B
+    }
+  });
 }), "B");
 
 eq("File \"js_exception_catch_test.res\", line 51, characters 5-12", test(function () {
   throw new Error(C, {
-        cause: {
-          RE_EXN_ID: C,
-          _1: 1,
-          _2: 2
-        }
-      });
+    cause: {
+      RE_EXN_ID: C,
+      _1: 1,
+      _2: 2
+    }
+  });
 }), "C");
 
 eq("File \"js_exception_catch_test.res\", line 52, characters 5-12", test(function () {
   throw new Error(C, {
-        cause: {
-          RE_EXN_ID: C,
-          _1: 0,
-          _2: 2
-        }
-      });
+    cause: {
+      RE_EXN_ID: C,
+      _1: 0,
+      _2: 2
+    }
+  });
 }), "C_any");
 
 eq("File \"js_exception_catch_test.res\", line 53, characters 5-12", test(function () {
   throw new Error(new Error("x").RE_EXN_ID, {
-        cause: new Error("x")
-      });
+    cause: new Error("x")
+  });
 }), "Js_error");
 
 eq("File \"js_exception_catch_test.res\", line 54, characters 5-12", test(function () {
   throw new Error("Failure", {
-        cause: {
-          RE_EXN_ID: "Failure",
-          _1: "x"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Failure",
+      _1: "x"
+    }
+  });
 }), "Any");
 
 Mt.from_pair_suites("Js_exception_catch_test", suites.contents);

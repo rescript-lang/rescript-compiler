@@ -218,11 +218,11 @@ function for_all_range(s, start, finish, p) {
   let len = s.length;
   if (start < 0 || finish >= len) {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Ext_string_test.for_all_range"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Ext_string_test.for_all_range"
+      }
+    });
   }
   return unsafe_for_all_range(s, start, finish, p);
 }
@@ -274,10 +274,10 @@ function find(startOpt, sub, s) {
     while ((i + n | 0) <= s_len) {
       if (unsafe_is_sub(sub, 0, s, i, n)) {
         throw new Error(Local_exit, {
-              cause: {
-                RE_EXN_ID: Local_exit
-              }
-            });
+          cause: {
+            RE_EXN_ID: Local_exit
+          }
+        });
       }
       i = i + 1 | 0;
     };
@@ -288,8 +288,8 @@ function find(startOpt, sub, s) {
       return i;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -301,11 +301,11 @@ function non_overlap_count(sub, s) {
   let sub_len = sub.length;
   if (sub.length === 0) {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Ext_string_test.non_overlap_count"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Ext_string_test.non_overlap_count"
+      }
+    });
   }
   let _acc = 0;
   let _off = 0;
@@ -329,10 +329,10 @@ function rfind(sub, s) {
     while (i >= 0) {
       if (unsafe_is_sub(sub, 0, s, i, n)) {
         throw new Error(Local_exit, {
-              cause: {
-                RE_EXN_ID: Local_exit
-              }
-            });
+          cause: {
+            RE_EXN_ID: Local_exit
+          }
+        });
       }
       i = i - 1 | 0;
     };
@@ -343,8 +343,8 @@ function rfind(sub, s) {
       return i;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -355,11 +355,11 @@ function tail_from(s, x) {
   }
   let s$1 = "Ext_string_test.tail_from " + (s + (" : " + String(x)));
   throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: s$1
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Invalid_argument",
+      _1: s$1
+    }
+  });
 }
 
 function digits_of_str(s, offset, x) {
@@ -553,11 +553,11 @@ function no_char(x, ch, i, len) {
   let str_len = x.length;
   if (i < 0 || i >= str_len || len >= str_len) {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Ext_string_test.no_char"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Ext_string_test.no_char"
+      }
+    });
   }
   return unsafe_no_char(x, ch, i, len);
 }

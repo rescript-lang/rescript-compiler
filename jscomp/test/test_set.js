@@ -32,11 +32,11 @@ function Make(Ord) {
     if (hl > (hr + 2 | 0)) {
       if (typeof l !== "object") {
         throw new Error("Invalid_argument", {
-              cause: {
-                RE_EXN_ID: "Invalid_argument",
-                _1: "Set.bal"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Set.bal"
+          }
+        });
       }
       let lr = l._2;
       let lv = l._1;
@@ -48,11 +48,11 @@ function Make(Ord) {
         return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
       }
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Set.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.bal"
+        }
+      });
     }
     if (hr <= (hl + 2 | 0)) {
       return {
@@ -65,11 +65,11 @@ function Make(Ord) {
     }
     if (typeof r !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Set.bal"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.bal"
+        }
+      });
     }
     let rr = r._2;
     let rv = r._1;
@@ -81,11 +81,11 @@ function Make(Ord) {
       return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
     }
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal"
+      }
+    });
   };
   let add = function (x, x_) {
     if (typeof x_ !== "object") {
@@ -154,10 +154,10 @@ function Make(Ord) {
       let x = _x;
       if (typeof x !== "object") {
         throw new Error("Not_found", {
-              cause: {
-                RE_EXN_ID: "Not_found"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
       }
       let l = x._0;
       if (typeof l !== "object") {
@@ -172,10 +172,10 @@ function Make(Ord) {
       let x = _x;
       if (typeof x !== "object") {
         throw new Error("Not_found", {
-              cause: {
-                RE_EXN_ID: "Not_found"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
       }
       let r = x._2;
       if (typeof r !== "object") {
@@ -188,11 +188,11 @@ function Make(Ord) {
   let remove_min_elt = function (x) {
     if (typeof x !== "object") {
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Set.remove_min_elt"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.remove_min_elt"
+        }
+      });
     }
     let l = x._0;
     if (typeof l !== "object") {
@@ -573,10 +573,10 @@ function Make(Ord) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
         throw new Error("Not_found", {
-              cause: {
-                RE_EXN_ID: "Not_found"
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Not_found"
+          }
+        });
       }
       let v = x_._1;
       let c = Ord.compare(x, v);
@@ -679,15 +679,15 @@ function Make(Ord) {
         ];
       }
       throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "test_set.res",
-                497,
-                20
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "test_set.res",
+            497,
+            20
+          ]
+        }
+      });
     };
     return sub(List.length(l), l)[0];
   };

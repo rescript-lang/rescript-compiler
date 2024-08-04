@@ -9,11 +9,11 @@ let f;
 
 try {
   throw new Error(A, {
-        cause: {
-          RE_EXN_ID: A,
-          _1: 3
-        }
-      });
+    cause: {
+      RE_EXN_ID: A,
+      _1: 3
+    }
+  });
 } catch (exn) {
   f = 3;
 }

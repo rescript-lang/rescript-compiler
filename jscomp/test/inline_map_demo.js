@@ -34,15 +34,15 @@ function bal(l, x, d, r) {
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
       throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "inline_map_demo.res",
-                41,
-                15
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "inline_map_demo.res",
+            41,
+            15
+          ]
+        }
+      });
     }
     let lr = l._3;
     let ld = l._2;
@@ -55,15 +55,15 @@ function bal(l, x, d, r) {
       return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
     }
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "inline_map_demo.res",
-              47,
-              19
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "inline_map_demo.res",
+          47,
+          19
+        ]
+      }
+    });
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -77,15 +77,15 @@ function bal(l, x, d, r) {
   }
   if (typeof r !== "object") {
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "inline_map_demo.res",
-              55,
-              15
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "inline_map_demo.res",
+          55,
+          15
+        ]
+      }
+    });
   }
   let rr = r._3;
   let rd = r._2;
@@ -98,15 +98,15 @@ function bal(l, x, d, r) {
     return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
   }
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "inline_map_demo.res",
-            61,
-            19
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "inline_map_demo.res",
+        61,
+        19
+      ]
+    }
+  });
 }
 
 function add(x, data, tree) {
@@ -174,10 +174,10 @@ function find(px, _x) {
     let x = _x;
     if (typeof x !== "object") {
       throw new Error("Not_found", {
-            cause: {
-              RE_EXN_ID: "Not_found"
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Not_found"
+        }
+      });
     }
     let c = Caml.int_compare(px, x._1);
     if (c === 0) {

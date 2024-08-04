@@ -29,11 +29,11 @@ function init(l, f) {
   }
   if (l < 0) {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Array.init"
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Array.init"
+      }
+    });
   }
   let res = Caml_array.make(l, f$1(0));
   for (let i = 1; i < l; ++i) {

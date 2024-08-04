@@ -47,15 +47,15 @@ let bbbb = f3();
 
 if (!bbbb) {
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "gpr_2682_test.res",
-            52,
-            0
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "gpr_2682_test.res",
+        52,
+        0
+      ]
+    }
+  });
 }
 
 exports.sum = sum;

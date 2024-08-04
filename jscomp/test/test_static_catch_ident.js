@@ -11,8 +11,8 @@ function scanf_bad_input(ib, x) {
     s = x._1;
   } else {
     throw new Error(x.RE_EXN_ID, {
-          cause: x
-        });
+      cause: x
+    });
   }
   for (let i = 0; i <= 100; ++i) {
     console.log(s);

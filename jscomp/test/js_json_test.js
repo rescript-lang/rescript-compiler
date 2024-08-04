@@ -98,29 +98,29 @@ add_test("File \"js_json_test.res\", line 22, characters 11-18", (function () {
     let ty3 = Js_json.classify(x);
     if (typeof ty3 !== "object") {
       throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "js_json_test.res",
-                37,
-                19
-              ]
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "js_json_test.res",
+            37,
+            19
+          ]
+        }
+      });
     }
     if (ty3.TAG === "JSONNumber") {
       return;
     }
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "js_json_test.res",
-              37,
-              19
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "js_json_test.res",
+          37,
+          19
+        ]
+      }
+    });
   });
   return {
     TAG: "Ok",
@@ -260,15 +260,15 @@ function option_get(x) {
     return Caml_option.valFromOption(x);
   }
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "js_json_test.res",
-            111,
-            12
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "js_json_test.res",
+        111,
+        12
+      ]
+    }
+  });
 }
 
 let dict = {};

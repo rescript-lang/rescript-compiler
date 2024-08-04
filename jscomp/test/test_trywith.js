@@ -19,8 +19,8 @@ function ff(g, x) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID !== "Not_found") {
       throw new Error(exn.RE_EXN_ID, {
-            cause: exn
-          });
+        cause: exn
+      });
     }
     
   }
@@ -30,8 +30,8 @@ function ff(g, x) {
     let exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
     if (exn$1.RE_EXN_ID !== Out_of_memory) {
       throw new Error(exn$1.RE_EXN_ID, {
-            cause: exn$1
-          });
+        cause: exn$1
+      });
     }
     
   }
@@ -41,8 +41,8 @@ function ff(g, x) {
     let exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
     if (exn$2.RE_EXN_ID !== Sys_error) {
       throw new Error(exn$2.RE_EXN_ID, {
-            cause: exn$2
-          });
+        cause: exn$2
+      });
     }
     
   }
@@ -52,8 +52,8 @@ function ff(g, x) {
     let exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
     if (exn$3.RE_EXN_ID !== "Invalid_argument") {
       throw new Error(exn$3.RE_EXN_ID, {
-            cause: exn$3
-          });
+        cause: exn$3
+      });
     }
     
   }
@@ -63,8 +63,8 @@ function ff(g, x) {
     let exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
     if (exn$4.RE_EXN_ID !== "End_of_file") {
       throw new Error(exn$4.RE_EXN_ID, {
-            cause: exn$4
-          });
+        cause: exn$4
+      });
     }
     
   }
@@ -74,8 +74,8 @@ function ff(g, x) {
     let exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$5);
     if (exn$5.RE_EXN_ID !== "Match_failure") {
       throw new Error(exn$5.RE_EXN_ID, {
-            cause: exn$5
-          });
+        cause: exn$5
+      });
     }
     
   }
@@ -85,8 +85,8 @@ function ff(g, x) {
     let exn$6 = Caml_js_exceptions.internalToOCamlException(raw_exn$6);
     if (exn$6.RE_EXN_ID !== Stack_overflow) {
       throw new Error(exn$6.RE_EXN_ID, {
-            cause: exn$6
-          });
+        cause: exn$6
+      });
     }
     
   }
@@ -96,8 +96,8 @@ function ff(g, x) {
     let exn$7 = Caml_js_exceptions.internalToOCamlException(raw_exn$7);
     if (exn$7.RE_EXN_ID !== Sys_blocked_io) {
       throw new Error(exn$7.RE_EXN_ID, {
-            cause: exn$7
-          });
+        cause: exn$7
+      });
     }
     
   }
@@ -107,8 +107,8 @@ function ff(g, x) {
     let exn$8 = Caml_js_exceptions.internalToOCamlException(raw_exn$8);
     if (exn$8.RE_EXN_ID !== "Assert_failure") {
       throw new Error(exn$8.RE_EXN_ID, {
-            cause: exn$8
-          });
+        cause: exn$8
+      });
     }
     
   }
@@ -120,17 +120,17 @@ function ff(g, x) {
       return;
     }
     throw new Error(exn$9.RE_EXN_ID, {
-          cause: exn$9
-        });
+      cause: exn$9
+    });
   }
 }
 
 function u() {
   throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Not_found"
+    }
+  });
 }
 
 function f(x) {
@@ -141,15 +141,15 @@ function f(x) {
     return 1;
   }
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "test_trywith.res",
-            59,
-            9
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "test_trywith.res",
+        59,
+        9
+      ]
+    }
+  });
 }
 
 let u1 = "bad character decimal encoding \\";

@@ -64,15 +64,15 @@ function chop_extension(locOpt, name) {
     if (exn.RE_EXN_ID === "Invalid_argument") {
       let s = "Filename.chop_extension ( " + loc + " : " + name + " )";
       throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: s
-            }
-          });
+        cause: {
+          RE_EXN_ID: "Invalid_argument",
+          _1: s
+        }
+      });
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -85,8 +85,8 @@ function chop_extension_if_any(fname) {
       return fname;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -147,11 +147,11 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
       if (i >= len) {
         let s = "invalid path: " + file2;
         throw new Error("Failure", {
-              cause: {
-                RE_EXN_ID: "Failure",
-                _1: s
-              }
-            });
+          cause: {
+            RE_EXN_ID: "Failure",
+            _1: s
+          }
+        });
       }
       let curr_char = file2.codePointAt(i);
       if (!(curr_char === os_path_separator_char || curr_char === /* '.' */46)) {
@@ -177,11 +177,11 @@ function find_root_filename(_cwd, filename) {
     }
     let s = filename + " not found from " + cwd;
     throw new Error("Failure", {
-          cause: {
-            RE_EXN_ID: "Failure",
-            _1: s
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Failure",
+        _1: s
+      }
+    });
   };
 }
 
@@ -355,11 +355,11 @@ if (Sys.unix) {
 } else {
   let s = "Unknown OS : " + Sys.os_type;
   throw new Error("Failure", {
-        cause: {
-          RE_EXN_ID: "Failure",
-          _1: s
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Failure",
+      _1: s
+    }
+  });
 }
 
 let $slash$slash = Filename.concat;

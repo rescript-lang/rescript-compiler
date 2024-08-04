@@ -28,15 +28,15 @@ $$Array.iter((function (x) {
 
 if (v.contents !== 45) {
   throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "test_closure.res",
-            52,
-            2
-          ]
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "test_closure.res",
+        52,
+        2
+      ]
+    }
+  });
 }
 
 exports.v = v;

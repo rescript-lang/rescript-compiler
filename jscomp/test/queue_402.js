@@ -41,10 +41,10 @@ function add(x, q) {
 function peek(q) {
   if (q.length === 0) {
     throw new Error(Empty, {
-          cause: {
-            RE_EXN_ID: Empty
-          }
-        });
+      cause: {
+        RE_EXN_ID: Empty
+      }
+    });
   }
   return q.tail.next.content;
 }
@@ -52,10 +52,10 @@ function peek(q) {
 function take(q) {
   if (q.length === 0) {
     throw new Error(Empty, {
-          cause: {
-            RE_EXN_ID: Empty
-          }
-        });
+      cause: {
+        RE_EXN_ID: Empty
+      }
+    });
   }
   q.length = q.length - 1 | 0;
   let tail = q.tail;

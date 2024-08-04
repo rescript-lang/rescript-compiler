@@ -7,34 +7,34 @@ let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function f() {
   throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Not_found"
+    }
+  });
 }
 
 function assert_f(x) {
   if (x <= 3) {
     throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "exception_value_test.res",
-              4,
-              11
-            ]
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "exception_value_test.res",
+          4,
+          11
+        ]
+      }
+    });
   }
   return 3;
 }
 
 function hh() {
   throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+    cause: {
+      RE_EXN_ID: "Not_found"
+    }
+  });
 }
 
 let A = /* @__PURE__ */Caml_exceptions.create("Exception_value_test.A");
@@ -57,8 +57,8 @@ function test_not_found(f, param) {
       return 2;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 
@@ -70,12 +70,12 @@ function test_js_error2() {
     if (e.RE_EXN_ID === Js_exn.$$Error) {
       console.log(e._1.stack);
       throw new Error(e.RE_EXN_ID, {
-            cause: e
-          });
+        cause: e
+      });
     }
     throw new Error(e.RE_EXN_ID, {
-          cause: e
-        });
+      cause: e
+    });
   }
 }
 

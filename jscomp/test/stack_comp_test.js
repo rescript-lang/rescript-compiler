@@ -65,8 +65,8 @@ function does_raise(f, s) {
       return true;
     }
     throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+      cause: exn
+    });
   }
 }
 

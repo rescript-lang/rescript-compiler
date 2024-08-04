@@ -70,11 +70,11 @@ function hydrateToElementWithId(reactElement, id) {
   let element = document.getElementById(id);
   if (element == null) {
     throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "ReactDOMRe.hydrateToElementWithId : no element of id " + (id + " found in the HTML.")
-          }
-        });
+      cause: {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "ReactDOMRe.hydrateToElementWithId : no element of id " + (id + " found in the HTML.")
+      }
+    });
   }
   ReactDom.hydrate(reactElement, element);
 }
