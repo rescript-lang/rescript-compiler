@@ -248,7 +248,6 @@ let debugger_nl f =
 
 let break_nl f =
   P.string f L.break;
-  P.space f;
   semi f;
   P.newline f
 
@@ -432,7 +431,7 @@ and pp_one_case_clause :
      (switch_case, ({ switch_body; should_break; comment } : J.case_clause)) ->
   let cxt =
     P.group f 1 (fun _ ->
-        P.group f 1 (fun _ ->
+        P.group f 0 (fun _ ->
             P.string f L.case;
             P.space f;
             pp_comment_option f comment;
@@ -440,7 +439,7 @@ and pp_one_case_clause :
             (* could be integer or string *)
             P.space f;
             P.string f L.colon);
-        P.group f 1 (fun _ ->
+        P.group f 0 (fun _ ->
             let cxt =
               match switch_body with
               | [] -> cxt
