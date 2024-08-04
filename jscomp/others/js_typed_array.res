@@ -132,8 +132,8 @@ module type S = {
   // @bs.send.pipe(: t) external everyi: ((. elt, int) => bool) => bool = "every"
 
   /** should we use `bool` or `boolean` seems they are intechangeable here */
-  // @bs.send.pipe(: t)
-  external filter: ((. elt) => bool) => t = "filter"
+  external // @bs.send.pipe(: t)
+  filter: (elt => bool) => t = "filter"
   // @bs.send.pipe(: t) external filteri: ((. elt, int) => bool) => t = "filter"
 
   // @bs.send.pipe(: t) external find: ((. elt) => bool) => Js.undefined<elt> = "find"
@@ -395,8 +395,7 @@ module Uint8Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint8Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -641,8 +640,7 @@ module Int16Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int16Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -764,8 +762,7 @@ module Uint16Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint16Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -887,8 +884,7 @@ module Int32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int32Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -1013,8 +1009,7 @@ module Uint32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint32Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -1139,8 +1134,7 @@ module Float32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Float32Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes
@@ -1266,8 +1260,7 @@ module Float64Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Float64Array"
 
-  @new 
-  /**
+  @new /**
   **raise** Js.Exn.Error raise Js exception
 
   **param** offset is in bytes

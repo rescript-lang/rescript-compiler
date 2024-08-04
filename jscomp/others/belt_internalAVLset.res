@@ -185,35 +185,35 @@ let rec forEachU = (n, f) =>
   | None => ()
   | Some(n) =>
     forEachU(n.left, f)
-    f(. n.value)
+    f(n.value)
     forEachU(n.right, f)
   }
 
-let forEach = (n, f) => forEachU(n, (. a) => f(a))
+let forEach = (n, f) => forEachU(n, a => f(a))
 
 let rec reduceU = (s, accu, f) =>
   switch s {
   | None => accu
-  | Some(n) => reduceU(n.right, f(. reduceU(n.left, accu, f), n.value), f)
+  | Some(n) => reduceU(n.right, f(reduceU(n.left, accu, f), n.value), f)
   }
 
-let reduce = (s, accu, f) => reduceU(s, accu, (. a, b) => f(a, b))
+let reduce = (s, accu, f) => reduceU(s, accu, (a, b) => f(a, b))
 
 let rec everyU = (n, p) =>
   switch n {
   | None => true
-  | Some(n) => p(. n.value) && (n.left->everyU(p) && n.right->everyU(p))
+  | Some(n) => p(n.value) && (n.left->everyU(p) && n.right->everyU(p))
   }
 
-let every = (n, p) => everyU(n, (. a) => p(a))
+let every = (n, p) => everyU(n, a => p(a))
 
 let rec someU = (n, p) =>
   switch n {
   | None => false
-  | Some(n) => p(. n.value) || (someU(n.left, p) || someU(n.right, p))
+  | Some(n) => p(n.value) || (someU(n.left, p) || someU(n.right, p))
   }
 
-let some = (n, p) => someU(n, (. a) => p(a))
+let some = (n, p) => someU(n, a => p(a))
 /* `addMinElement v n` and `addMaxElement v n`
    assume that the added v is *strictly*
    smaller (or bigger) than all the present elements in the tree.
@@ -272,7 +272,7 @@ let rec partitionSharedU = (n, p) =>
   | Some(n) =>
     let value = n.value
     let (lt, lf) = partitionSharedU(n.left, p)
-    let pv = p(. value)
+    let pv = p(value)
     let (rt, rf) = partitionSharedU(n.right, p)
     if pv {
       (joinShared(lt, value, rt), concatShared(lf, rf))
@@ -281,7 +281,7 @@ let rec partitionSharedU = (n, p) =>
     }
   }
 
-let partitionShared = (n, p) => partitionSharedU(n, (. a) => p(a))
+let partitionShared = (n, p) => partitionSharedU(n, a => p(a))
 
 let rec lengthNode = n => {
   let {left: l, right: r} = n
@@ -343,7 +343,7 @@ let rec fillArrayWithPartition = (n, cursor, arr, p) => {
   | None => ()
   | Some(l) => fillArrayWithPartition(l, cursor, arr, p)
   }
-  if p(. v) {
+  if p(v) {
     let c = cursor.forward
     A.setUnsafe(arr, c, v)
     cursor.forward = c + 1
@@ -364,7 +364,7 @@ let rec fillArrayWithFilter = (n, i, arr, p) => {
   | None => i
   | Some(l) => fillArrayWithFilter(l, i, arr, p)
   }
-  let rnext = if p(. v) {
+  let rnext = if p(v) {
     A.setUnsafe(arr, next, v)
     next + 1
   } else {
@@ -454,7 +454,7 @@ let rec keepSharedU = (n, p) =>
   | Some(n) =>
     let {left: l, value: v, right: r} = n
     let newL = keepSharedU(l, p)
-    let pv = p(. v)
+    let pv = p(v)
     let newR = keepSharedU(r, p)
     if pv {
       if l === newL && r === newR {
@@ -467,7 +467,7 @@ let rec keepSharedU = (n, p) =>
     }
   }
 
-let keepShared = (n, p) => keepSharedU(n, (. a) => p(a))
+let keepShared = (n, p) => keepSharedU(n, a => p(a))
 /* ATT: functional methods in general can be shared with
     imperative methods, however, it does not apply when functional
     methods makes use of referential equality
@@ -483,7 +483,7 @@ let keepCopyU = (n, p): t<_> =>
     fromSortedArrayAux(v, 0, last)
   }
 
-let keepCopy = (n, p) => keepCopyU(n, (. x) => p(x))
+let keepCopy = (n, p) => keepCopyU(n, x => p(x))
 
 let partitionCopyU = (n, p) =>
   switch n {
@@ -498,14 +498,14 @@ let partitionCopyU = (n, p) =>
     (fromSortedArrayAux(v, 0, forwardLen), fromSortedArrayRevAux(v, backward, size - forwardLen))
   }
 
-let partitionCopy = (n, p) => partitionCopyU(n, (. a) => p(a))
+let partitionCopy = (n, p) => partitionCopyU(n, a => p(a))
 
 let rec has = (t: t<_>, x, ~cmp) =>
   switch t {
   | None => false
   | Some(n) =>
     let v = n.value
-    let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+    let c = Belt_Id.getCmpInternal(cmp)(x, v)
     c == 0 ||
       has(
         ~cmp,
@@ -521,7 +521,7 @@ let rec has = (t: t<_>, x, ~cmp) =>
 let rec compareAux = (e1, e2, ~cmp) =>
   switch (e1, e2) {
   | (list{h1, ...t1}, list{h2, ...t2}) =>
-    let c = Belt_Id.getCmpInternal(cmp)(. h1.value, h2.value)
+    let c = Belt_Id.getCmpInternal(cmp)(h1.value, h2.value)
     if c == 0 {
       compareAux(~cmp, h1.right->stackAllLeft(t1), h2.right->stackAllLeft(t2))
     } else {
@@ -550,7 +550,7 @@ let rec subset = (s1: t<_>, s2: t<_>, ~cmp) =>
   | (Some(t1), Some(t2)) =>
     let {left: l1, value: v1, right: r1} = t1
     let {left: l2, value: v2, right: r2} = t2
-    let c = Belt_Id.getCmpInternal(cmp)(. v1, v2)
+    let c = Belt_Id.getCmpInternal(cmp)(v1, v2)
     if c == 0 {
       subset(~cmp, l1, l2) && subset(~cmp, r1, r2)
     } else if c < 0 {
@@ -565,7 +565,7 @@ let rec get = (n: t<_>, x, ~cmp) =>
   | None => None
   | Some(t) /* Node(l, v, r, _) */ =>
     let v = t.value
-    let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+    let c = Belt_Id.getCmpInternal(cmp)(x, v)
     if c == 0 {
       Some(v)
     } else {
@@ -586,7 +586,7 @@ let rec getUndefined = (n: t<_>, x, ~cmp) =>
   | None => Js.Undefined.empty
   | Some(t) /* Node(l, v, r, _) */ =>
     let v = t.value
-    let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+    let c = Belt_Id.getCmpInternal(cmp)(x, v)
     if c == 0 {
       Js.Undefined.return(v)
     } else {
@@ -607,7 +607,7 @@ let rec getExn = (n: t<_>, x, ~cmp) =>
   | None => raise(Not_found)
   | Some(t) /* Node(l, v, r, _) */ =>
     let v = t.value
-    let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+    let c = Belt_Id.getCmpInternal(cmp)(x, v)
     if c == 0 {
       v
     } else {
@@ -716,7 +716,7 @@ let rec addMutate = (~cmp, t: t<_>, x) =>
   | None => singleton(x)
   | Some(nt) =>
     let k = nt.value
-    let c = Belt_Id.getCmpInternal(cmp)(. x, k)
+    let c = Belt_Id.getCmpInternal(cmp)(x, k)
     if c == 0 {
       t
     } else {
@@ -736,7 +736,7 @@ let fromArray = (xs: array<_>, ~cmp) => {
   if len == 0 {
     None
   } else {
-    let next = ref(S.strictlySortedLengthU(xs, (. x, y) => Belt_Id.getCmpInternal(cmp)(. x, y) < 0))
+    let next = ref(S.strictlySortedLengthU(xs, (x, y) => Belt_Id.getCmpInternal(cmp)(x, y) < 0))
     let result = ref(
       if next.contents >= 0 {
         fromSortedArrayAux(xs, 0, next.contents)

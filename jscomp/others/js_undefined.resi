@@ -60,7 +60,7 @@ let maybeGreetWorld = (maybeGreeting: Js.undefined<string>) =>
   Js.Undefined.bind(maybeGreeting, (. greeting) => greeting ++ " world!")
 ```
 */
-let bind: (t<'a>, (. 'a) => 'b) => t<'b>
+let bind: (t<'a>, 'a => 'b) => t<'b>
 
 /**
 Iterates over the contained value with the given function. If
@@ -74,7 +74,7 @@ let maybeSay = (maybeMessage: Js.undefined<string>) =>
   Js.Undefined.iter(maybeMessage, (. message) => Js.log(message))
 ```
 */
-let iter: (t<'a>, (. 'a) => unit) => unit
+let iter: (t<'a>, 'a => unit) => unit
 
 /**
 Maps `option<'a>` to `Js.undefined<'a>`.

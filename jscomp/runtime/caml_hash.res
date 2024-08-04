@@ -141,7 +141,7 @@ let hash = (count: int, _limit, seed: int, obj: Obj.t): int => {
               ++ size
             }
             return size
-          }`)(.obj, (. v) => push_back(queue, v))
+          }`)(obj, v => push_back(queue, v))
           s.contents = hash_mix_int(s.contents, lor(lsl(size, 10), 0)) /* tag */
         }
       }

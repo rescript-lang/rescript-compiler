@@ -21,13 +21,13 @@ let has: (t<'b>, key) => bool
 
 let remove: (t<'a>, key) => unit
 
-let forEachU: (t<'b>, (. key, 'b) => unit) => unit
+let forEachU: (t<'b>, (key, 'b) => unit) => unit
 let forEach: (t<'b>, (key, 'b) => unit) => unit
 
-let reduceU: (t<'b>, 'c, (. 'c, key, 'b) => 'c) => 'c
+let reduceU: (t<'b>, 'c, ('c, key, 'b) => 'c) => 'c
 let reduce: (t<'b>, 'c, ('c, key, 'b) => 'c) => 'c
 
-let keepMapInPlaceU: (t<'a>, (. key, 'a) => option<'a>) => unit
+let keepMapInPlaceU: (t<'a>, (key, 'a) => option<'a>) => unit
 let keepMapInPlace: (t<'a>, (key, 'a) => option<'a>) => unit
 
 let size: t<_> => int

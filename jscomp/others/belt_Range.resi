@@ -28,7 +28,7 @@ Internally it is relying on loops instead of creating new arrays, which makes it
 pretty performant and memory friendly.
 */
 
-let forEachU: (int, int, (. int) => unit) => unit
+let forEachU: (int, int, int => unit) => unit
 
 /**
 `forEach(start, finish, action)` equivalent to `Belt.Array.forEach(Belt.Array.range(start, finish), action))`
@@ -48,7 +48,7 @@ Belt.Range.forEach(0, 4, (i) => Js.log(i))
 */
 let forEach: (int, int, int => unit) => unit
 
-let everyU: (int, int, (. int) => bool) => bool
+let everyU: (int, int, int => bool) => bool
 
 /**
 `every(start, finish, p)` equivalent to `Belt.Array.every(Belt.Array.range(start, finish), p)`
@@ -62,7 +62,7 @@ Belt.Range.every(0, 4, (i) => i < 4) /* false */
 */
 let every: (int, int, int => bool) => bool
 
-let everyByU: (int, int, ~step: int, (. int) => bool) => bool
+let everyByU: (int, int, ~step: int, int => bool) => bool
 
 /**
 `everyBy(start, finish, ~step, p)`. See `Belt.Array.rangeBy`, equivalent to
@@ -78,7 +78,7 @@ Belt.Range.everyBy(0, 4, ~step=2, (i) => mod(i, 2) === 0) /* true */
 */
 let everyBy: (int, int, ~step: int, int => bool) => bool
 
-let someU: (int, int, (. int) => bool) => bool
+let someU: (int, int, int => bool) => bool
 
 /**
 `some(start, finish, p)` equivalent to `Belt.Array.some(Belt.Array.range(start, finish), p)`
@@ -93,7 +93,7 @@ Belt.Range.some(0, 4, (i) => i > 2) /* true */
 */
 let some: (int, int, int => bool) => bool
 
-let someByU: (int, int, ~step: int, (. int) => bool) => bool
+let someByU: (int, int, ~step: int, int => bool) => bool
 
 /**
 `someBy(start, finish, ~step, p)` See `Belt.Array.rangeBy`, equivalent to

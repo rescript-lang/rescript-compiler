@@ -308,7 +308,7 @@ let eq: (t<'value, 'id>, t<'value, 'id>, ~cmp: cmp<'value, 'id>) => bool
 /**
 Same as [forEach](##forEach) but takes uncurried functon.
 */
-let forEachU: (t<'value, 'id>, (. 'value) => unit) => unit
+let forEachU: (t<'value, 'id>, 'value => unit) => unit
 
 /**
 Applies function `f` in turn to all elements of set in increasing order.
@@ -329,7 +329,7 @@ acc /* [6,5,3,2] */
 */
 let forEach: (t<'value, 'id>, 'value => unit) => unit
 
-let reduceU: (t<'value, 'id>, 'a, (. 'a, 'value) => 'a) => 'a
+let reduceU: (t<'value, 'id>, 'a, ('a, 'value) => 'a) => 'a
 
 /**
 Applies function `f` to each element of set in increasing order. Function `f` has two parameters: the item from the set and an “accumulator”, which starts with a value of `initialValue`. `reduce` returns the final value of the accumulator.
@@ -348,7 +348,7 @@ s0->Belt.Set.Dict.reduce(list{}, (acc, element) => acc->Belt.List.add(element)) 
 */
 let reduce: (t<'value, 'id>, 'a, ('a, 'value) => 'a) => 'a
 
-let everyU: (t<'value, 'id>, (. 'value) => bool) => bool
+let everyU: (t<'value, 'id>, 'value => bool) => bool
 
 /**
 Checks if all elements of the set satisfy the predicate. Order unspecified.
@@ -369,7 +369,7 @@ s0->Belt.Set.Dict.every(isEven) /* true */
 */
 let every: (t<'value, 'id>, 'value => bool) => bool
 
-let someU: (t<'value, 'id>, (. 'value) => bool) => bool
+let someU: (t<'value, 'id>, 'value => bool) => bool
 
 /**
 Checks if at least one element of the set satisfies the predicate.
@@ -390,7 +390,7 @@ s0->Belt.Set.Dict.some(isOdd) /* true */
 */
 let some: (t<'value, 'id>, 'value => bool) => bool
 
-let keepU: (t<'value, 'id>, (. 'value) => bool) => t<'value, 'id>
+let keepU: (t<'value, 'id>, 'value => bool) => t<'value, 'id>
 
 /**
 Returns the set of all elements that satisfy the predicate.
@@ -413,7 +413,7 @@ s1->Belt.Set.Dict.toArray /* [2,4] */
 */
 let keep: (t<'value, 'id>, 'value => bool) => t<'value, 'id>
 
-let partitionU: (t<'value, 'id>, (. 'value) => bool) => (t<'value, 'id>, t<'value, 'id>)
+let partitionU: (t<'value, 'id>, 'value => bool) => (t<'value, 'id>, t<'value, 'id>)
 
 /**
 Returns a pair of sets, where first is the set of all the elements of set that satisfy the predicate, and second is the set of all the elements of set that do not satisfy the predicate.

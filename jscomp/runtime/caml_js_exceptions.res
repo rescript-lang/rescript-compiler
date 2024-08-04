@@ -23,13 +23,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 exception Error = JsError
-type js_error = { cause : exn }
+type js_error = {cause: exn}
 /**   
    This function has to be in this module Since 
    [Error] is defined here 
 */
 let internalToOCamlException = (e: unknown) =>
-  if Caml_exceptions.is_extension(((Obj.magic(e): js_error).cause)) {
+  if Caml_exceptions.is_extension((Obj.magic(e): js_error).cause) {
     (Obj.magic(e): js_error).cause
   } else {
     JsError(e)

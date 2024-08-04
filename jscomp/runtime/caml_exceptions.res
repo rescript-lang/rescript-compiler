@@ -24,7 +24,7 @@
 
 module Map = {
   type t<'k, 'v>
-  
+
   @new external make: unit => t<'k, 'v> = "Map"
 
   @send external set: (t<'k, 'v>, 'k, 'v) => unit = "set"
@@ -45,12 +45,12 @@ let idMap: Map.t<string, int> = Map.make()
 
 let create = (str: string): string => {
   let id = switch idMap->Map.get(str) {
-    | Some(v) => {
+  | Some(v) => {
       let id = v + 1
       idMap->Map.set(str, id)
       id
     }
-    | None => {
+  | None => {
       let id = 1
       idMap->Map.set(str, id)
       id

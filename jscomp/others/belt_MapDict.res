@@ -81,7 +81,7 @@ let rec set = (t: t<_>, newK, newD, ~cmp) =>
   | None => N.singleton(newK, newD)
   | Some(n) =>
     let k = n.N.key
-    let c = Belt_Id.getCmpInternal(cmp)(. newK, k)
+    let c = Belt_Id.getCmpInternal(cmp)(newK, k)
     if c == 0 {
       Some(N.updateValue(n, newD))
     } else {
@@ -98,15 +98,15 @@ let rec set = (t: t<_>, newK, newD, ~cmp) =>
 let rec updateU = (t: t<_>, newK, f, ~cmp): t<_> =>
   switch t {
   | None =>
-    switch f(. None) {
+    switch f(None) {
     | None => t
     | Some(newD) => N.singleton(newK, newD)
     }
   | Some(n) =>
     let k = n.N.key
-    let c = Belt_Id.getCmpInternal(cmp)(. newK, k)
+    let c = Belt_Id.getCmpInternal(cmp)(newK, k)
     if c == 0 {
-      switch f(. Some(n.N.value)) {
+      switch f(Some(n.N.value)) {
       | None =>
         let (l, r) = (n.N.left, n.N.right)
         switch (l, r) {
@@ -139,7 +139,7 @@ let rec updateU = (t: t<_>, newK, f, ~cmp): t<_> =>
     }
   }
 
-let update = (t, newK, f, ~cmp) => updateU(t, newK, (. a) => f(a), ~cmp)
+let update = (t, newK, f, ~cmp) => updateU(t, newK, a => f(a), ~cmp)
 
 /* unboxing API was not exported
     since the correct API is really awkard
@@ -158,7 +158,7 @@ let update = (t, newK, f, ~cmp) => updateU(t, newK, (. a) => f(a), ~cmp)
 
 let rec removeAux0 = (n, x, ~cmp) => {
   let {N.left: l, key: v, right: r} = n
-  let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+  let c = Belt_Id.getCmpInternal(cmp)(x, v)
   if c == 0 {
     switch (l, r) {
     | (None, _) => r
@@ -211,7 +211,7 @@ let mergeMany = (h, arr, ~cmp) => {
 
 let rec splitAuxPivot = (n, x, pres, ~cmp) => {
   let {N.left: l, key: v, value: d, right: r} = n
-  let c = Belt_Id.getCmpInternal(cmp)(. x, v)
+  let c = Belt_Id.getCmpInternal(cmp)(x, v)
   if c == 0 {
     pres.contents = Some(d)
     (l, r)
@@ -247,8 +247,8 @@ let findFirstBy = N.findFirstBy
 let rec mergeU = (s1, s2, f, ~cmp) =>
   switch (s1, s2) {
   | (None, None) => None
-  | (Some(_), None) => N.keepMapU(s1, (. k, v) => f(. k, Some(v), None))
-  | (None, Some(_)) => N.keepMapU(s2, (. k, v) => f(. k, None, Some(v)))
+  | (Some(_), None) => N.keepMapU(s1, (k, v) => f(k, Some(v), None))
+  | (None, Some(_)) => N.keepMapU(s2, (k, v) => f(k, None, Some(v)))
   | (Some(s1n), Some(s2n)) =>
     if s1n.height >= s2n.height {
       let {N.left: l1, key: v1, value: d1, right: r1} = s1n
@@ -256,7 +256,7 @@ let rec mergeU = (s1, s2, f, ~cmp) =>
       let (l2, r2) = splitAuxPivot(~cmp, s2n, v1, d2)
       let d2 = d2.contents
       let newLeft = mergeU(~cmp, l1, l2, f)
-      let newD = f(. v1, Some(d1), d2)
+      let newD = f(v1, Some(d1), d2)
       let newRight = mergeU(~cmp, r1, r2, f)
       N.concatOrJoin(newLeft, v1, newD, newRight)
     } else {
@@ -265,13 +265,13 @@ let rec mergeU = (s1, s2, f, ~cmp) =>
       let (l1, r1) = splitAuxPivot(~cmp, s1n, v2, d1)
       let d1 = d1.contents
       let newLeft = mergeU(~cmp, l1, l2, f)
-      let newD = f(. v2, d1, Some(d2))
+      let newD = f(v2, d1, Some(d2))
       let newRight = mergeU(~cmp, r1, r2, f)
       N.concatOrJoin(newLeft, v2, newD, newRight)
     }
   }
 
-let merge = (s1, s2, f, ~cmp) => mergeU(s1, s2, (. a, b, c) => f(a, b, c), ~cmp)
+let merge = (s1, s2, f, ~cmp) => mergeU(s1, s2, (a, b, c) => f(a, b, c), ~cmp)
 
 let rec removeMany0 = (t, xs, i, len, ~cmp) =>
   if i < len {

@@ -64,9 +64,8 @@ let swapUnsafe = (xs, i, j) => {
   setUnsafe(xs, j, tmp)
 }
 
-
-@val @scope("Math") external random : unit => float = "random"
-@val @scope("Math") external floor : float => int = "floor"
+@val @scope("Math") external random: unit => float = "random"
+@val @scope("Math") external floor: float => int = "floor"
 external toFloat: int => float = "%floatofint"
 
 let shuffleInPlace = xs => {
@@ -123,12 +122,12 @@ let makeByU = (l, f) =>
   } else {
     let res = makeUninitializedUnsafe(l)
     for i in 0 to l - 1 {
-      setUnsafe(res, i, f(. i))
+      setUnsafe(res, i, f(i))
     }
     res
   }
 
-let makeBy = (l, f) => makeByU(l, (. a) => f(a))
+let makeBy = (l, f) => makeByU(l, a => f(a))
 
 let makeByAndShuffleU = (l, f) => {
   let u = makeByU(l, f)
@@ -136,7 +135,7 @@ let makeByAndShuffleU = (l, f) => {
   u
 }
 
-let makeByAndShuffle = (l, f) => makeByAndShuffleU(l, (. a) => f(a))
+let makeByAndShuffle = (l, f) => makeByAndShuffleU(l, a => f(a))
 
 let range = (start, finish) => {
   let cut = finish - start
@@ -182,12 +181,12 @@ let zipByU = (xs, ys, f) => {
   let len = Pervasives.min(lenx, leny)
   let s = makeUninitializedUnsafe(len)
   for i in 0 to len - 1 {
-    setUnsafe(s, i, f(. getUnsafe(xs, i), getUnsafe(ys, i)))
+    setUnsafe(s, i, f(getUnsafe(xs, i), getUnsafe(ys, i)))
   }
   s
 }
 
-let zipBy = (xs, ys, f) => zipByU(xs, ys, (. a, b) => f(a, b))
+let zipBy = (xs, ys, f) => zipByU(xs, ys, (a, b) => f(a, b))
 
 let concat = (a1, a2) => {
   let l1 = length(a1)
@@ -328,25 +327,25 @@ let blit = (~src as a1, ~srcOffset as ofs1, ~dst as a2, ~dstOffset as ofs2, ~len
 
 let forEachU = (a, f) =>
   for i in 0 to length(a) - 1 {
-    f(. getUnsafe(a, i))
+    f(getUnsafe(a, i))
   }
 
-let forEach = (a, f) => forEachU(a, (. a) => f(a))
+let forEach = (a, f) => forEachU(a, a => f(a))
 
 let mapU = (a, f) => {
   let l = length(a)
   let r = makeUninitializedUnsafe(l)
   for i in 0 to l - 1 {
-    setUnsafe(r, i, f(. getUnsafe(a, i)))
+    setUnsafe(r, i, f(getUnsafe(a, i)))
   }
   r
 }
 
-let map = (a, f) => mapU(a, (. a) => f(a))
+let map = (a, f) => mapU(a, a => f(a))
 
 let flatMapU = (a, f) => concatMany(mapU(a, f))
 
-let flatMap = (a, f) => flatMapU(a, (. a) => f(a))
+let flatMap = (a, f) => flatMapU(a, a => f(a))
 
 let getByU = (a, p) => {
   let l = length(a)
@@ -354,7 +353,7 @@ let getByU = (a, p) => {
   let r = ref(None)
   while r.contents == None && i.contents < l {
     let v = getUnsafe(a, i.contents)
-    if p(. v) {
+    if p(v) {
       r.contents = Some(v)
     }
     i.contents = i.contents + 1
@@ -362,7 +361,7 @@ let getByU = (a, p) => {
   r.contents
 }
 
-let getBy = (a, p) => getByU(a, (. a) => p(a))
+let getBy = (a, p) => getByU(a, a => p(a))
 
 let getIndexByU = (a, p) => {
   let l = length(a)
@@ -370,7 +369,7 @@ let getIndexByU = (a, p) => {
   let r = ref(None)
   while r.contents == None && i.contents < l {
     let v = getUnsafe(a, i.contents)
-    if p(. v) {
+    if p(v) {
       r.contents = Some(i.contents)
     }
     i.contents = i.contents + 1
@@ -378,7 +377,7 @@ let getIndexByU = (a, p) => {
   r.contents
 }
 
-let getIndexBy = (a, p) => getIndexByU(a, (. a) => p(a))
+let getIndexBy = (a, p) => getIndexByU(a, a => p(a))
 
 let keepU = (a, f) => {
   let l = length(a)
@@ -386,7 +385,7 @@ let keepU = (a, f) => {
   let j = ref(0)
   for i in 0 to l - 1 {
     let v = getUnsafe(a, i)
-    if f(. v) {
+    if f(v) {
       setUnsafe(r, j.contents, v)
       j.contents = j.contents + 1
     }
@@ -395,7 +394,7 @@ let keepU = (a, f) => {
   r
 }
 
-let keep = (a, f) => keepU(a, (. a) => f(a))
+let keep = (a, f) => keepU(a, a => f(a))
 
 let keepWithIndexU = (a, f) => {
   let l = length(a)
@@ -403,7 +402,7 @@ let keepWithIndexU = (a, f) => {
   let j = ref(0)
   for i in 0 to l - 1 {
     let v = getUnsafe(a, i)
-    if f(. v, i) {
+    if f(v, i) {
       setUnsafe(r, j.contents, v)
       j.contents = j.contents + 1
     }
@@ -412,7 +411,7 @@ let keepWithIndexU = (a, f) => {
   r
 }
 
-let keepWithIndex = (a, f) => keepWithIndexU(a, (. a, i) => f(a, i))
+let keepWithIndex = (a, f) => keepWithIndexU(a, (a, i) => f(a, i))
 
 let keepMapU = (a, f) => {
   let l = length(a)
@@ -420,7 +419,7 @@ let keepMapU = (a, f) => {
   let j = ref(0)
   for i in 0 to l - 1 {
     let v = getUnsafe(a, i)
-    switch f(. v) {
+    switch f(v) {
     | None => ()
     | Some(v) =>
       setUnsafe(r, j.contents, v)
@@ -431,71 +430,71 @@ let keepMapU = (a, f) => {
   r
 }
 
-let keepMap = (a, f) => keepMapU(a, (. a) => f(a))
+let keepMap = (a, f) => keepMapU(a, a => f(a))
 
 let forEachWithIndexU = (a, f) =>
   for i in 0 to length(a) - 1 {
-    f(. i, getUnsafe(a, i))
+    f(i, getUnsafe(a, i))
   }
 
-let forEachWithIndex = (a, f) => forEachWithIndexU(a, (. a, b) => f(a, b))
+let forEachWithIndex = (a, f) => forEachWithIndexU(a, (a, b) => f(a, b))
 
 let mapWithIndexU = (a, f) => {
   let l = length(a)
   let r = makeUninitializedUnsafe(l)
   for i in 0 to l - 1 {
-    setUnsafe(r, i, f(. i, getUnsafe(a, i)))
+    setUnsafe(r, i, f(i, getUnsafe(a, i)))
   }
   r
 }
 
-let mapWithIndex = (a, f) => mapWithIndexU(a, (. a, b) => f(a, b))
+let mapWithIndex = (a, f) => mapWithIndexU(a, (a, b) => f(a, b))
 
 let reduceU = (a, x, f) => {
   let r = ref(x)
   for i in 0 to length(a) - 1 {
-    r.contents = f(. r.contents, getUnsafe(a, i))
+    r.contents = f(r.contents, getUnsafe(a, i))
   }
   r.contents
 }
 
-let reduce = (a, x, f) => reduceU(a, x, (. a, b) => f(a, b))
+let reduce = (a, x, f) => reduceU(a, x, (a, b) => f(a, b))
 
 let reduceReverseU = (a, x, f) => {
   let r = ref(x)
   for i in length(a) - 1 downto 0 {
-    r.contents = f(. r.contents, getUnsafe(a, i))
+    r.contents = f(r.contents, getUnsafe(a, i))
   }
   r.contents
 }
 
-let reduceReverse = (a, x, f) => reduceReverseU(a, x, (. a, b) => f(a, b))
+let reduceReverse = (a, x, f) => reduceReverseU(a, x, (a, b) => f(a, b))
 
 let reduceReverse2U = (a, b, x, f) => {
   let r = ref(x)
   let len = Pervasives.min(length(a), length(b))
   for i in len - 1 downto 0 {
-    r.contents = f(. r.contents, getUnsafe(a, i), getUnsafe(b, i))
+    r.contents = f(r.contents, getUnsafe(a, i), getUnsafe(b, i))
   }
   r.contents
 }
 
-let reduceReverse2 = (a, b, x, f) => reduceReverse2U(a, b, x, (. a, b, c) => f(a, b, c))
+let reduceReverse2 = (a, b, x, f) => reduceReverse2U(a, b, x, (a, b, c) => f(a, b, c))
 
 let reduceWithIndexU = (a, x, f) => {
   let r = ref(x)
   for i in 0 to length(a) - 1 {
-    r.contents = f(. r.contents, getUnsafe(a, i), i)
+    r.contents = f(r.contents, getUnsafe(a, i), i)
   }
   r.contents
 }
 
-let reduceWithIndex = (a, x, f) => reduceWithIndexU(a, x, (. a, b, c) => f(a, b, c))
+let reduceWithIndex = (a, x, f) => reduceWithIndexU(a, x, (a, b, c) => f(a, b, c))
 
 let rec everyAux = (arr, i, b, len) =>
   if i == len {
     true
-  } else if b(. getUnsafe(arr, i)) {
+  } else if b(getUnsafe(arr, i)) {
     everyAux(arr, i + 1, b, len)
   } else {
     false
@@ -504,7 +503,7 @@ let rec everyAux = (arr, i, b, len) =>
 let rec someAux = (arr, i, b, len) =>
   if i == len {
     false
-  } else if b(. getUnsafe(arr, i)) {
+  } else if b(getUnsafe(arr, i)) {
     true
   } else {
     someAux(arr, i + 1, b, len)
@@ -515,19 +514,19 @@ let everyU = (arr, b) => {
   everyAux(arr, 0, b, len)
 }
 
-let every = (arr, f) => everyU(arr, (. b) => f(b))
+let every = (arr, f) => everyU(arr, b => f(b))
 
 let someU = (arr, b) => {
   let len = length(arr)
   someAux(arr, 0, b, len)
 }
 
-let some = (arr, f) => someU(arr, (. b) => f(b))
+let some = (arr, f) => someU(arr, b => f(b))
 
 let rec everyAux2 = (arr1, arr2, i, b, len) =>
   if i == len {
     true
-  } else if b(. getUnsafe(arr1, i), getUnsafe(arr2, i)) {
+  } else if b(getUnsafe(arr1, i), getUnsafe(arr2, i)) {
     everyAux2(arr1, arr2, i + 1, b, len)
   } else {
     false
@@ -536,7 +535,7 @@ let rec everyAux2 = (arr1, arr2, i, b, len) =>
 let rec someAux2 = (arr1, arr2, i, b, len) =>
   if i == len {
     false
-  } else if b(. getUnsafe(arr1, i), getUnsafe(arr2, i)) {
+  } else if b(getUnsafe(arr1, i), getUnsafe(arr2, i)) {
     true
   } else {
     someAux2(arr1, arr2, i + 1, b, len)
@@ -544,11 +543,11 @@ let rec someAux2 = (arr1, arr2, i, b, len) =>
 
 let every2U = (a, b, p) => everyAux2(a, b, 0, p, Pervasives.min(length(a), length(b)))
 
-let every2 = (a, b, p) => every2U(a, b, (. a, b) => p(a, b))
+let every2 = (a, b, p) => every2U(a, b, (a, b) => p(a, b))
 
 let some2U = (a, b, p) => someAux2(a, b, 0, p, Pervasives.min(length(a), length(b)))
 
-let some2 = (a, b, p) => some2U(a, b, (. a, b) => p(a, b))
+let some2 = (a, b, p) => some2U(a, b, (a, b) => p(a, b))
 
 let eqU = (a, b, p) => {
   let lena = length(a)
@@ -560,13 +559,13 @@ let eqU = (a, b, p) => {
   }
 }
 
-let eq = (a, b, p) => eqU(a, b, (. a, b) => p(a, b))
+let eq = (a, b, p) => eqU(a, b, (a, b) => p(a, b))
 
 let rec everyCmpAux2 = (arr1, arr2, i, b, len) =>
   if i == len {
     0
   } else {
-    let c = b(. getUnsafe(arr1, i), getUnsafe(arr2, i))
+    let c = b(getUnsafe(arr1, i), getUnsafe(arr2, i))
     if c == 0 {
       everyCmpAux2(arr1, arr2, i + 1, b, len)
     } else {
@@ -586,7 +585,7 @@ let cmpU = (a, b, p) => {
   }
 }
 
-let cmp = (a, b, p) => cmpU(a, b, (. a, b) => p(a, b))
+let cmp = (a, b, p) => cmpU(a, b, (a, b) => p(a, b))
 
 let partitionU = (a, f) => {
   let l = length(a)
@@ -596,7 +595,7 @@ let partitionU = (a, f) => {
   let a2 = makeUninitializedUnsafe(l)
   for ii in 0 to l - 1 {
     let v = getUnsafe(a, ii)
-    if f(. v) {
+    if f(v) {
       setUnsafe(a1, i.contents, v)
       i.contents = i.contents + 1
     } else {
@@ -609,7 +608,7 @@ let partitionU = (a, f) => {
   (a1, a2)
 }
 
-let partition = (a, f) => partitionU(a, (. x) => f(x))
+let partition = (a, f) => partitionU(a, x => f(x))
 
 let unzip = a => {
   let l = length(a)
@@ -630,24 +629,24 @@ let joinWithU = (a, sep, toString) =>
     let lastIndex = l - 1
     let rec aux = (i, res) =>
       if i == lastIndex {
-        res ++ toString(. getUnsafe(a, i))
+        res ++ toString(getUnsafe(a, i))
       } else {
-        aux(i + 1, res ++ (toString(. getUnsafe(a, i)) ++ sep))
+        aux(i + 1, res ++ (toString(getUnsafe(a, i)) ++ sep))
       }
 
     aux(0, "")
   }
 
-let joinWith = (a, sep, toString) => joinWithU(a, sep, (. x) => toString(x))
+let joinWith = (a, sep, toString) => joinWithU(a, sep, x => toString(x))
 
 let initU = (n, f) => {
   let v = makeUninitializedUnsafe(n)
   for i in 0 to n - 1 {
-    setUnsafe(v, i, f(. i))
+    setUnsafe(v, i, f(i))
   }
   v
 }
 
-let init = (n, f) => initU(n, (. i) => f(i))
+let init = (n, f) => initU(n, i => f(i))
 
 @send external push: (t<'a>, 'a) => unit = "push"

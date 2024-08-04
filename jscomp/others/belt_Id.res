@@ -22,13 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-type hash<'a, 'id> = (. 'a) => int
-type eq<'a, 'id> = (. 'a, 'a) => bool
-type cmp<'a, 'id> = (. 'a, 'a) => int
+type hash<'a, 'id> = 'a => int
+type eq<'a, 'id> = ('a, 'a) => bool
+type cmp<'a, 'id> = ('a, 'a) => int
 
-external getHashInternal: hash<'a, 'id> => (. 'a) => int = "%identity"
-external getEqInternal: eq<'a, 'id> => (. 'a, 'a) => bool = "%identity"
-external getCmpInternal: cmp<'a, 'id> => (. 'a, 'a) => int = "%identity"
+external getHashInternal: hash<'a, 'id> => 'a => int = "%identity"
+external getEqInternal: eq<'a, 'id> => ('a, 'a) => bool = "%identity"
+external getCmpInternal: cmp<'a, 'id> => ('a, 'a) => int = "%identity"
 
 module type Comparable = {
   type identity
@@ -41,7 +41,7 @@ type comparable<'key, 'id> = module(Comparable with type t = 'key and type ident
 module MakeComparableU = (
   M: {
     type t
-    let cmp: (. t, t) => int
+    let cmp: (t, t) => int
   },
 ) => {
   type identity
@@ -59,7 +59,7 @@ module MakeComparable = (
   /* see https://github.com/rescript-lang/rescript-compiler/pull/2589/files/5ef875b7665ee08cfdc59af368fc52bac1fe9130#r173330825 */
   let cmp = {
     let cmp = M.cmp
-    (. a, b) => cmp(a, b)
+    (a, b) => cmp(a, b)
   }
 }
 
@@ -91,8 +91,8 @@ type hashable<'key, 'id> = module(Hashable with type t = 'key and type identity 
 module MakeHashableU = (
   M: {
     type t
-    let hash: (. t) => int
-    let eq: (. t, t) => bool
+    let hash: t => int
+    let eq: (t, t) => bool
   },
 ) => {
   type identity
@@ -110,11 +110,11 @@ module MakeHashable = (
   type t = M.t
   let hash = {
     let hash = M.hash
-    (. a) => hash(a)
+    a => hash(a)
   }
   let eq = {
     let eq = M.eq
-    (. a, b) => eq(a, b)
+    (a, b) => eq(a, b)
   }
 }
 

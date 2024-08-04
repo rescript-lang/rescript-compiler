@@ -60,7 +60,7 @@ external keys: t<'a> => array<key> = "Object.keys"
 @obj
 external empty: unit => t<'a> = ""
 
-let unsafeDeleteKey: (. t<string>, string) => unit = %raw(` function (dict,key){
+let unsafeDeleteKey: (t<string>, string) => unit = %raw(` function (dict,key){
       delete dict[key];
      }
   `)
@@ -118,7 +118,7 @@ let map = (f, source) => {
   let l = Js_array2.length(keys)
   for i in 0 to l - 1 {
     let key = Js_array2.unsafe_get(keys, i)
-    set(target, key, f(. unsafeGet(source, key)))
+    set(target, key, f(unsafeGet(source, key)))
   }
   target
 }

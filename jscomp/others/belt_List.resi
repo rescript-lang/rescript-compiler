@@ -161,7 +161,7 @@ Belt.List.make(3, 1) // list{1, 1, 1}
 let make: (int, 'a) => t<'a>
 
 /** Uncurried version of [makeBy](#makeBy) */
-let makeByU: (int, (. int) => 'a) => t<'a>
+let makeByU: (int, int => 'a) => t<'a>
 
 /**
 Return a list of length `numItems` with element `i` initialized with `f(i)`.
@@ -277,7 +277,7 @@ Belt.List.flatten(list{list{1, 2, 3}, list{}, list{3}}) // list{1, 2, 3, 3}
 let flatten: t<t<'a>> => t<'a>
 
 /** Uncurried version of [map](#map). */
-let mapU: (t<'a>, (. 'a) => 'b) => t<'b>
+let mapU: (t<'a>, 'a => 'b) => t<'b>
 
 /**
 Returns a new list with `f` applied to each element of `someList`.
@@ -302,7 +302,7 @@ Belt.List.zip(list{1, 2}, list{3, 4, 5}) // list{(1, 3), (2, 4)}
 let zip: (t<'a>, t<'b>) => t<('a, 'b)>
 
 /** Uncurried version of [zipBy](#zipBy). */
-let zipByU: (t<'a>, t<'b>, (. 'a, 'b) => 'c) => t<'c>
+let zipByU: (t<'a>, t<'b>, ('a, 'b) => 'c) => t<'c>
 
 /**
 See [Belt.List.zip](#zip)
@@ -316,7 +316,7 @@ Belt.List.zipBy(list{1, 2, 3}, list{4, 5}, (a, b) => 2 * a + b) // list{6, 9}
 let zipBy: (t<'a>, t<'b>, ('a, 'b) => 'c) => t<'c>
 
 /** Uncurried version of [mapWithIndex](#mapWithIndex). */
-let mapWithIndexU: (t<'a>, (. int, 'a) => 'b) => t<'b>
+let mapWithIndexU: (t<'a>, (int, 'a) => 'b) => t<'b>
 
 /**
 Applies `f` to each element of `someList`.
@@ -369,7 +369,7 @@ Belt.List.reverse(list{1, 2, 3}) /* list{3, 2, 1} */
 let reverse: t<'a> => t<'a>
 
 /** Uncurried version of [mapReverse](#mapReverse). */
-let mapReverseU: (t<'a>, (. 'a) => 'b) => t<'b>
+let mapReverseU: (t<'a>, 'a => 'b) => t<'b>
 
 /**
 Equivalent to:
@@ -387,7 +387,7 @@ list{3, 4, 5}->Belt.List.mapReverse(x => x * x) /* list{25, 16, 9} */
 let mapReverse: (t<'a>, 'a => 'b) => t<'b>
 
 /** Uncurried version of [forEach](#forEach). */
-let forEachU: (t<'a>, (. 'a) => 'b) => unit
+let forEachU: (t<'a>, 'a => 'b) => unit
 
 /**
 Call `f` on each element of `someList` from the beginning to end.
@@ -408,7 +408,7 @@ Belt.List.forEach(list{"a", "b", "c"}, x => Js.log("Item: " ++ x))
 let forEach: (t<'a>, 'a => 'b) => unit
 
 /** Uncurried version of [forEachWithIndex](#forEachWithIndex). */
-let forEachWithIndexU: (t<'a>, (. int, 'a) => 'b) => unit
+let forEachWithIndexU: (t<'a>, (int, 'a) => 'b) => unit
 
 /**
 Call `f` on each element of `someList` from beginning to end.
@@ -431,7 +431,7 @@ Belt.List.forEachWithIndex(list{"a", "b", "c"}, (index, x) => {
 let forEachWithIndex: (t<'a>, (int, 'a) => 'b) => unit
 
 /** Uncurried version of [reduce](#reduce). */
-let reduceU: (t<'a>, 'b, (. 'b, 'a) => 'b) => 'b
+let reduceU: (t<'a>, 'b, ('b, 'a) => 'b) => 'b
 
 /**
 Applies `f` to each element of `someList` from beginning to end. Function `f` has two parameters: the item from the list and an “accumulator”, which starts with a value of `initialValue`. reduce returns the final value of the accumulator.
@@ -449,7 +449,7 @@ list{1, 2, 3, 4}->Belt.List.reduce(0, (acc, item) => acc + item) /* 10 */
 let reduce: (t<'a>, 'b, ('b, 'a) => 'b) => 'b
 
 /** Uncurried version of [reduceWithIndex](#reduceWithIndex). */
-let reduceWithIndexU: (t<'a>, 'b, (. 'b, 'a, int) => 'b) => 'b
+let reduceWithIndexU: (t<'a>, 'b, ('b, 'a, int) => 'b) => 'b
 
 /**
 Applies `f` to each element of `someList` from beginning to end. Function `f` has three parameters: the item from the list and an “accumulator”, which starts with a value of `initialValue` and the index of each element. `reduceWithIndex` returns the final value of the accumulator.
@@ -463,7 +463,7 @@ list{1, 2, 3, 4}->Belt.List.reduceWithIndex(0, (acc, item, index) => acc + item 
 let reduceWithIndex: (t<'a>, 'b, ('b, 'a, int) => 'b) => 'b
 
 /** Uncurried version of [reduceReverse](#reduceReverse). */
-let reduceReverseU: (t<'a>, 'b, (. 'b, 'a) => 'b) => 'b
+let reduceReverseU: (t<'a>, 'b, ('b, 'a) => 'b) => 'b
 
 /**
 Works like [reduce](#reduce), except that function `f` is applied to each
@@ -482,7 +482,7 @@ list{1, 2, 3, 4}->Belt.List.reduceReverse(list{}, Belt.List.add) // list{1, 2, 3
 let reduceReverse: (t<'a>, 'b, ('b, 'a) => 'b) => 'b
 
 /** Uncurried version of [mapReverse2](#mapReverse2). */
-let mapReverse2U: (t<'a>, t<'b>, (. 'a, 'b) => 'c) => t<'c>
+let mapReverse2U: (t<'a>, t<'b>, ('a, 'b) => 'c) => t<'c>
 
 /**
 Equivalent to: `zipBy(xs, ys, f)->reverse`
@@ -497,7 +497,7 @@ Belt.List.mapReverse2(list{1, 2, 3}, list{1, 2}, (a, b) => a + b) // list{4, 2}
 let mapReverse2: (t<'a>, t<'b>, ('a, 'b) => 'c) => t<'c>
 
 /** Uncurried version of [forEach2](#forEach2). */
-let forEach2U: (t<'a>, t<'b>, (. 'a, 'b) => 'c) => unit
+let forEach2U: (t<'a>, t<'b>, ('a, 'b) => 'c) => unit
 
 /**
 Stops at the length of the shorter list.
@@ -517,7 +517,7 @@ Belt.List.forEach2(list{"Z", "Y"}, list{"A", "B", "C"}, (x, y) => Js.log2(x, y))
 let forEach2: (t<'a>, t<'b>, ('a, 'b) => 'c) => unit
 
 /** Uncurried version of [reduce2](#reduce2). */
-let reduce2U: (t<'b>, t<'c>, 'a, (. 'a, 'b, 'c) => 'a) => 'a
+let reduce2U: (t<'b>, t<'c>, 'a, ('a, 'b, 'c) => 'a) => 'a
 
 /**
 Applies `f` to each element of `firstList` and `secondList` from beginning to end. Stops with the shorter list. Function `f` has three parameters: an “accumulator” which starts with a value of `initialValue`, an item from `firstList`, and an item from `secondList`. `reduce2` returns the final value of the accumulator.
@@ -531,7 +531,7 @@ Belt.List.reduce2(list{1, 2, 3}, list{4, 5}, 0, (acc, x, y) => acc + x * x + y) 
 let reduce2: (t<'b>, t<'c>, 'a, ('a, 'b, 'c) => 'a) => 'a
 
 /** Uncurried version of [reduceReverse2](#reduceReverse2). */
-let reduceReverse2U: (t<'a>, t<'b>, 'c, (. 'c, 'a, 'b) => 'c) => 'c
+let reduceReverse2U: (t<'a>, t<'b>, 'c, ('c, 'a, 'b) => 'c) => 'c
 
 /**
 Applies `f` to each element of `firstList` and `secondList` from end to
@@ -549,7 +549,7 @@ Belt.List.reduceReverse2(list{1, 2, 3}, list{4, 5}, 0, (acc, x, y) => acc + x * 
 let reduceReverse2: (t<'a>, t<'b>, 'c, ('c, 'a, 'b) => 'c) => 'c
 
 /** Uncurried version of [every](#every). */
-let everyU: (t<'a>, (. 'a) => bool) => bool
+let everyU: (t<'a>, 'a => bool) => bool
 
 /**
 Returns `true` if all elements satisfy `pred`, where `pred` is a predicate: a function taking an element and returning a bool.
@@ -567,7 +567,7 @@ list{1, 99, 8, 2}->Belt.List.every(isBelow10) /* false */
 let every: (t<'a>, 'a => bool) => bool
 
 /** Uncurried version of [some](#some). */
-let someU: (t<'a>, (. 'a) => bool) => bool
+let someU: (t<'a>, 'a => bool) => bool
 
 /**
 Returns `true` if at least _one_ of the elements in `someList` satisfies
@@ -587,7 +587,7 @@ list{1, 2, 3, 4}->Belt.List.some(isAbove100) /* false */
 let some: (t<'a>, 'a => bool) => bool
 
 /** Uncurried version of [every2](#every2). */
-let every2U: (t<'a>, t<'b>, (. 'a, 'b) => bool) => bool
+let every2U: (t<'a>, t<'b>, ('a, 'b) => bool) => bool
 
 /**
 Returns `true` if predicate `pred(a, b)` is `true` for all pairs of elements
@@ -608,7 +608,7 @@ Belt.List.every2(list{0, 1}, list{5, 0}, (a, b) => a > b) /* false */
 let every2: (t<'a>, t<'b>, ('a, 'b) => bool) => bool
 
 /** Uncurried version of [some2](#some2). */
-let some2U: (t<'a>, t<'b>, (. 'a, 'b) => bool) => bool
+let some2U: (t<'a>, t<'b>, ('a, 'b) => bool) => bool
 
 /**
 Returns `true` if predicate `pred(a, b)` is true for any pair of elements up
@@ -647,7 +647,7 @@ Belt.List.cmpByLength(list{1, 2, 3, 4}, list{5, 6}) /* = 1 */
 let cmpByLength: (t<'a>, t<'a>) => int
 
 /** Uncurried version of [cmp](#cmp). */
-let cmpU: (t<'a>, t<'a>, (. 'a, 'a) => int) => int
+let cmpU: (t<'a>, t<'a>, ('a, 'a) => int) => int
 
 /**
 Compare elements one by one `compareFn(a, b)`. `compareFn` returns a negative number if `a` is "less than" `b`, zero if `a` is "equal to" `b`, a positive number if `a` is "greater than" `b`.
@@ -678,7 +678,7 @@ For lists, we just compare elements one by one.
 let cmp: (t<'a>, t<'a>, ('a, 'a) => int) => int
 
 /** Uncurried version of [eq](#eq). */
-let eqU: (t<'a>, t<'a>, (. 'a, 'a) => bool) => bool
+let eqU: (t<'a>, t<'a>, ('a, 'a) => bool) => bool
 
 /**
 Check equality of `firstList` and `secondList` using `eqElem` for equality on
@@ -699,7 +699,7 @@ Belt.List.eq(list{1, 2, 3}, list{(-1), (-2), (-3)}, (a, b) => abs(a) == abs(b)) 
 let eq: (t<'a>, t<'a>, ('a, 'a) => bool) => bool
 
 /** Uncurried version of [has](#has). */
-let hasU: (t<'a>, 'b, (. 'a, 'b) => bool) => bool
+let hasU: (t<'a>, 'b, ('a, 'b) => bool) => bool
 
 /**
 Returns `true` if the list contains at least one element for which
@@ -718,7 +718,7 @@ list{(-1), (-2), (-3)}->Belt.List.has(2, (a, b) => abs(a) == abs(b)) /* true */
 let has: (t<'a>, 'b, ('a, 'b) => bool) => bool
 
 /** Uncurried version of [getBy](#getBy). */
-let getByU: (t<'a>, (. 'a) => bool) => option<'a>
+let getByU: (t<'a>, 'a => bool) => option<'a>
 
 /**
 Returns `Some(value)` for the first value in `someList` that satisfies the
@@ -735,7 +735,7 @@ Belt.List.getBy(list{1, 4, 3, 2}, x => x > 4) /* None */
 let getBy: (t<'a>, 'a => bool) => option<'a>
 
 /** Uncurried version of [keep](#keep). */
-let keepU: (t<'a>, (. 'a) => bool) => t<'a>
+let keepU: (t<'a>, 'a => bool) => t<'a>
 
 /**
 Returns a list of all elements in `someList` which satisfy the predicate function `pred`.
@@ -769,7 +769,7 @@ Belt.List.filter(list{None, Some(2), Some(3), None}, Belt.Option.isSome) /* list
 let filter: (t<'a>, 'a => bool) => t<'a>
 
 /** Uncurried version of [keepWithIndex](#keepWithIndex). */
-let keepWithIndexU: (t<'a>, (. 'a, int) => bool) => t<'a>
+let keepWithIndexU: (t<'a>, ('a, int) => bool) => t<'a>
 
 /**
 Returns a list of all elements in `someList` which satisfy the predicate function `pred`.
@@ -802,7 +802,7 @@ Belt.List.filterWithIndex(list{1, 2, 3, 4}, (_x, index) => isEven(index)) /* lis
 let filterWithIndex: (t<'a>, ('a, int) => bool) => t<'a>
 
 /** Uncurried version of [keepMap](#keepMap). */
-let keepMapU: (t<'a>, (. 'a) => option<'b>) => t<'b>
+let keepMapU: (t<'a>, 'a => option<'b>) => t<'b>
 
 /**
 Applies `f` to each element of `someList`. If `f(x)` returns `Some(value)`, then `value` is _kept_ in the resulting list.
@@ -828,7 +828,7 @@ list{Some(1), Some(2), None}->Belt.List.keepMap(x => x) /* list{1, 2} */
 let keepMap: (t<'a>, 'a => option<'b>) => t<'b>
 
 /** Uncurried version of [partition](#partition). */
-let partitionU: (t<'a>, (. 'a) => bool) => (t<'a>, t<'a>)
+let partitionU: (t<'a>, 'a => bool) => (t<'a>, t<'a>)
 
 /**
 Creates a pair of lists; the first list consists of all elements of `someList` that satisfy the predicate function `pred`; the second list consists of all elements of `someList` that _do not_ satisfy `pred.
@@ -862,7 +862,7 @@ Belt.List.unzip(list{("H", "W"), ("e", "o"), ("l", "r"), ("l", "l"), ("o", "d"),
 let unzip: t<('a, 'b)> => (t<'a>, t<'b>)
 
 /** Uncurried version of [getAssoc](#getAssoc). */
-let getAssocU: (t<('a, 'c)>, 'b, (. 'a, 'b) => bool) => option<'c>
+let getAssocU: (t<('a, 'c)>, 'b, ('a, 'b) => bool) => option<'c>
 
 /**
 Return the second element of a pair in `someList` where the first element equals `k` as per the predicate function `eqFunction`, or `None` if not found.
@@ -880,7 +880,7 @@ list{(9, "morning"), (15, "afternoon"), (22, "night")}
 let getAssoc: (t<('a, 'c)>, 'b, ('a, 'b) => bool) => option<'c>
 
 /** Uncurried version of [hasAssoc](#hasAssoc). */
-let hasAssocU: (t<('a, 'c)>, 'b, (. 'a, 'b) => bool) => bool
+let hasAssocU: (t<('a, 'c)>, 'b, ('a, 'b) => bool) => bool
 
 /**
 Returns `true` if there is a pair in `someList` where the first element equals `k` as per the predicate function `eqFunction`.
@@ -897,7 +897,7 @@ list{(9, "morning"), (15, "afternoon"), (22, "night")}
 let hasAssoc: (t<('a, 'c)>, 'b, ('a, 'b) => bool) => bool
 
 /** Uncurried version of [removeAssoc](#removeAssoc). */
-let removeAssocU: (t<('a, 'c)>, 'b, (. 'a, 'b) => bool) => t<('a, 'c)>
+let removeAssocU: (t<('a, 'c)>, 'b, ('a, 'b) => bool) => t<('a, 'c)>
 
 /**
 Return a list after removing the first pair whose first value is `k` per the equality predicate `eqFunction`; if not found, return a new list identical to `someList`.
@@ -915,7 +915,7 @@ list{(9, "morning"), (15, "afternoon"), (22, "night")}
 let removeAssoc: (t<('a, 'c)>, 'b, ('a, 'b) => bool) => t<('a, 'c)>
 
 /** Uncurried version of [setAssoc](#setAssoc). */
-let setAssocU: (t<('a, 'c)>, 'a, 'c, (. 'a, 'a) => bool) => t<('a, 'c)>
+let setAssocU: (t<('a, 'c)>, 'a, 'c, ('a, 'a) => bool) => t<('a, 'c)>
 
 /**
 If `k` exists in `someList` by satisfying the `eqFunction` predicate, return a new list with the key and value replaced by the new `k` and `v`; otherwise, return a new list with the pair `k`, `v` added to the head of `someList`.
@@ -941,7 +941,7 @@ Both the key _and_ the value are replaced in the list.
 let setAssoc: (t<('a, 'c)>, 'a, 'c, ('a, 'a) => bool) => t<('a, 'c)>
 
 /** Uncurried version of [sort](#sort). */
-let sortU: (t<'a>, (. 'a, 'a) => int) => t<'a>
+let sortU: (t<'a>, ('a, 'a) => int) => t<'a>
 
 /**
 Returns a sorted list.

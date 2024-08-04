@@ -39,7 +39,7 @@ type t<'value, 'id> = {
 
 let rec remove0 = (nt, x, ~cmp) => {
   let k = nt.N.value
-  let c = cmp(. x, k)
+  let c = cmp(x, k)
   if c == 0 {
     let {N.left: l, right: r} = nt
     switch (l, r) {
@@ -102,7 +102,7 @@ let removeMany = (d, xs) => {
 
 let rec removeCheck0 = (nt, x, removed, ~cmp) => {
   let k = nt.N.value
-  let c = Belt_Id.getCmpInternal(cmp)(. x, k)
+  let c = Belt_Id.getCmpInternal(cmp)(x, k)
   if c == 0 {
     let () = removed.contents = true
     let {N.left: l, right: r} = nt
@@ -151,7 +151,7 @@ let rec addCheck0 = (t, x, added, ~cmp) =>
     N.singleton(x)
   | Some(nt) =>
     let k = nt.N.value
-    let c = cmp(. x, k)
+    let c = cmp(x, k)
     if c == 0 {
       t
     } else {
@@ -207,13 +207,13 @@ let maximum = d => N.maximum(d.data)
 let maxUndefined = d => N.maxUndefined(d.data)
 
 let forEachU = (d, f) => N.forEachU(d.data, f)
-let forEach = (d, f) => forEachU(d, (. a) => f(a))
+let forEach = (d, f) => forEachU(d, a => f(a))
 let reduceU = (d, acc, cb) => N.reduceU(d.data, acc, cb)
-let reduce = (d, acc, cb) => reduceU(d, acc, (. a, b) => cb(a, b))
+let reduce = (d, acc, cb) => reduceU(d, acc, (a, b) => cb(a, b))
 let everyU = (d, p) => N.everyU(d.data, p)
-let every = (d, p) => everyU(d, (. a) => p(a))
+let every = (d, p) => everyU(d, a => p(a))
 let someU = (d, p) => N.someU(d.data, p)
-let some = (d, p) => someU(d, (. a) => p(a))
+let some = (d, p) => someU(d, a => p(a))
 let size = d => N.size(d.data)
 let toList = d => N.toList(d.data)
 let toArray = d => N.toArray(d.data)
@@ -280,7 +280,7 @@ let split = (d, key) => {
 
 let keepU = (d, p) => {data: N.keepCopyU(d.data, p), cmp: d.cmp}
 
-let keep = (d, p) => keepU(d, (. a) => p(a))
+let keep = (d, p) => keepU(d, a => p(a))
 
 let partitionU = (d, p) => {
   let cmp = d.cmp
@@ -288,7 +288,7 @@ let partitionU = (d, p) => {
   ({data: a, cmp}, {data: b, cmp})
 }
 
-let partition = (d, p) => partitionU(d, (. a) => p(a))
+let partition = (d, p) => partitionU(d, a => p(a))
 
 let subset = (a, b) => N.subset(~cmp=a.cmp, a.data, b.data)
 
@@ -305,8 +305,8 @@ let intersect = (a, b): t<_> => {
     ignore(N.fillArray(datab0, sizea, tmp))
     let p = Belt_Id.getCmpInternal(cmp)
     if (
-      p(. A.getUnsafe(tmp, sizea - 1), A.getUnsafe(tmp, sizea)) < 0 ||
-        p(. A.getUnsafe(tmp, totalSize - 1), A.getUnsafe(tmp, 0)) < 0
+      p(A.getUnsafe(tmp, sizea - 1), A.getUnsafe(tmp, sizea)) < 0 ||
+        p(A.getUnsafe(tmp, totalSize - 1), A.getUnsafe(tmp, 0)) < 0
     ) {
       {cmp, data: None}
     } else {
@@ -334,8 +334,8 @@ let diff = (a, b): t<_> => {
     ignore(N.fillArray(datab0, sizea, tmp))
     let p = Belt_Id.getCmpInternal(cmp)
     if (
-      p(. A.getUnsafe(tmp, sizea - 1), A.getUnsafe(tmp, sizea)) < 0 ||
-        p(. A.getUnsafe(tmp, totalSize - 1), A.getUnsafe(tmp, 0)) < 0
+      p(A.getUnsafe(tmp, sizea - 1), A.getUnsafe(tmp, sizea)) < 0 ||
+        p(A.getUnsafe(tmp, totalSize - 1), A.getUnsafe(tmp, 0)) < 0
     ) {
       {data: N.copy(dataa), cmp}
     } else {
@@ -359,7 +359,7 @@ let union = (a, b) => {
     ignore(N.fillArray(dataa0, 0, tmp))
     ignore(N.fillArray(datab0, sizea, tmp))
     let p = Belt_Id.getCmpInternal(cmp)
-    if p(. A.getUnsafe(tmp, sizea - 1), A.getUnsafe(tmp, sizea)) < 0 {
+    if p(A.getUnsafe(tmp, sizea - 1), A.getUnsafe(tmp, sizea)) < 0 {
       {data: N.fromSortedArrayAux(tmp, 0, totalSize), cmp}
     } else {
       let tmp2 = A.makeUninitializedUnsafe(totalSize)

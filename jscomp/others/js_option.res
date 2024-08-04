@@ -70,7 +70,7 @@ Js.Option.isSomeValue(clockEqual, 3, None) == false
 let isSomeValue = (eq, v, x) =>
   switch x {
   | None => false
-  | Some(x) => eq(. v, x)
+  | Some(x) => eq(v, x)
   }
 
 /** Returns `true` if the argument is `None`; `false` otherwise. */
@@ -119,7 +119,7 @@ let equal = (eq, a, b) =>
   | Some(x) =>
     switch b {
     | None => false
-    | Some(y) => eq(. x, y)
+    | Some(y) => eq(x, y)
     }
   }
 
@@ -141,7 +141,7 @@ Js.Option.andThen(reciprocal, None) == None
 let andThen = (f, x) =>
   switch x {
   | None => None
-  | Some(x) => f(. x)
+  | Some(x) => f(x)
   }
 
 /**
@@ -161,7 +161,7 @@ Js.Option.map(square, None) == None
 let map = (f, x) =>
   switch x {
   | None => None
-  | Some(x) => Some(f(. x))
+  | Some(x) => Some(f(x))
   }
 
 /**
@@ -205,7 +205,7 @@ let filter = (f, x) =>
   switch x {
   | None => None
   | Some(x) =>
-    if f(. x) {
+    if f(x) {
       Some(x)
     } else {
       None

@@ -24,25 +24,25 @@
 
 let forEachU = (s, f, action) =>
   for i in s to f {
-    (action(. i): unit)
+    (action(i): unit)
   }
 
-let forEach = (s, f, action) => forEachU(s, f, (. a) => action(a))
+let forEach = (s, f, action) => forEachU(s, f, a => action(a))
 
 let rec everyU = (s, f, p) =>
   if s > f {
     true
   } else {
-    p(. s) && everyU(s + 1, f, p)
+    p(s) && everyU(s + 1, f, p)
   }
 
-let every = (s, f, p) => everyU(s, f, (. a) => p(a))
+let every = (s, f, p) => everyU(s, f, a => p(a))
 
 let rec everyByAux = (s, f, ~step, p) =>
   if s > f {
     true
   } else {
-    p(. s) && everyByAux(s + step, f, ~step, p)
+    p(s) && everyByAux(s + step, f, ~step, p)
   }
 
 let everyByU = (s, f, ~step, p) =>
@@ -52,22 +52,22 @@ let everyByU = (s, f, ~step, p) =>
     true
   } /* return empty range `true` */
 
-let everyBy = (s, f, ~step, p) => everyByU(s, f, ~step, (. a) => p(a))
+let everyBy = (s, f, ~step, p) => everyByU(s, f, ~step, a => p(a))
 
 let rec someU = (s, f, p) =>
   if s > f {
     false
   } else {
-    p(. s) || someU(s + 1, f, p)
+    p(s) || someU(s + 1, f, p)
   }
 
-let some = (s, f, p) => someU(s, f, (. a) => p(a))
+let some = (s, f, p) => someU(s, f, a => p(a))
 
 let rec someByAux = (s, f, ~step, p) =>
   if s > f {
     false
   } else {
-    p(. s) || someByAux(s + step, f, ~step, p)
+    p(s) || someByAux(s + step, f, ~step, p)
   }
 
 let someByU = (s, f, ~step, p) =>
@@ -77,4 +77,4 @@ let someByU = (s, f, ~step, p) =>
     false
   } /* return empty range, `false` */
 
-let someBy = (s, f, ~step, p) => someByU(s, f, ~step, (. a) => p(a))
+let someBy = (s, f, ~step, p) => someByU(s, f, ~step, a => p(a))

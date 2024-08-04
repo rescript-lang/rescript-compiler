@@ -242,7 +242,7 @@ Belt.HashMap.has(s0, 1) == false
 let remove: (t<'key, 'value, 'id>, 'key) => unit
 
 /** Same as [forEach](#forEach) but takes uncurried function. */
-let forEachU: (t<'key, 'value, 'id>, (. 'key, 'value) => unit) => unit
+let forEachU: (t<'key, 'value, 'id>, ('key, 'value) => unit) => unit
 
 /**
 `forEach(tbl, f)` applies `f` to all bindings in table `tbl`. `f` receives the key as first argument, and the associated value as second argument. Each binding is presented exactly once to `f`.
@@ -264,7 +264,7 @@ Belt.HashMap.forEach(s0, (key, value) => Js.log2(key, value))
 */
 let forEach: (t<'key, 'value, 'id>, ('key, 'value) => unit) => unit
 
-let reduceU: (t<'key, 'value, 'id>, 'c, (. 'c, 'key, 'value) => 'c) => 'c
+let reduceU: (t<'key, 'value, 'id>, 'c, ('c, 'key, 'value) => 'c) => 'c
 /**
 `reduce(tbl, init, f)` computes `(f(kN, dN) ... (f(k1, d1, init))...)`, where `k1 ... kN` are the keys of all bindings in `tbl`, and `d1 ... dN` are the associated values. Each binding is presented exactly once to `f`.
 
@@ -289,7 +289,7 @@ Belt.HashMap.reduce(s0, "", (acc, key, value) => acc ++ (", " ++ value)) == "val
 let reduce: (t<'key, 'value, 'id>, 'c, ('c, 'key, 'value) => 'c) => 'c
 
 /** Same as [keepMapInPlace](#keepMapInPlace) but takes uncurried function.  */
-let keepMapInPlaceU: (t<'key, 'value, 'id>, (. 'key, 'value) => option<'value>) => unit
+let keepMapInPlaceU: (t<'key, 'value, 'id>, ('key, 'value) => option<'value>) => unit
 
 /**
 Filters out values for which function `f` returned `None`.
