@@ -34,44 +34,44 @@ external asJsExn: exn => option<t> = "?as_js_exn"
 @get external name: t => option<string> = "name"
 @get external fileName: t => option<string> = "fileName"
 
-type error
-@new external makeError: string => error = "Error"
+// type error
+// @new external makeError: string => error = "Error"
 external isCamlExceptionOrOpenVariant: 'a => bool = "?is_extension"
 
 external anyToExnInternal: 'a => exn = "#wrap_exn"
 
-let raiseError = str => raise((Obj.magic((makeError(str): error)): exn))
+let raiseError = str => raise(Failure(str))
 
-type eval_error
-@new external makeEvalError: string => eval_error = "EvalError"
-
-let raiseEvalError = str => raise((Obj.magic((makeEvalError(str): eval_error)): exn))
-
-type range_error
-@new external makeRangeError: string => range_error = "RangeError"
-
-let raiseRangeError = str => raise((Obj.magic((makeRangeError(str): range_error)): exn))
-
-type reference_error
-
-@new external makeReferenceError: string => reference_error = "ReferenceError"
-
-let raiseReferenceError = str => raise(Obj.magic(makeReferenceError(str)))
-
-type syntax_error
-@new external makeSyntaxError: string => syntax_error = "SyntaxError"
-
-let raiseSyntaxError = str => raise(Obj.magic(makeSyntaxError(str)))
-
-type type_error
-@new external makeTypeError: string => type_error = "TypeError"
-
-let raiseTypeError = str => raise(Obj.magic(makeTypeError(str)))
-
-type uri_error
-@new external makeURIError: string => uri_error = "URIError"
-
-let raiseUriError = str => raise(Obj.magic(makeURIError(str)))
+// type eval_error
+// @new external makeEvalError: string => eval_error = "EvalError"
+//
+// let raiseEvalError = str => raise((Obj.magic((makeEvalError(str): eval_error)): exn))
+//
+// type range_error
+// @new external makeRangeError: string => range_error = "RangeError"
+//
+// let raiseRangeError = str => raise((Obj.magic((makeRangeError(str): range_error)): exn))
+//
+// type reference_error
+//
+// @new external makeReferenceError: string => reference_error = "ReferenceError"
+//
+// let raiseReferenceError = str => raise(Obj.magic(makeReferenceError(str)))
+//
+// type syntax_error
+// @new external makeSyntaxError: string => syntax_error = "SyntaxError"
+//
+// let raiseSyntaxError = str => raise(Obj.magic(makeSyntaxError(str)))
+//
+// type type_error
+// @new external makeTypeError: string => type_error = "TypeError"
+//
+// let raiseTypeError = str => raise(Obj.magic(makeTypeError(str)))
+//
+// type uri_error
+// @new external makeURIError: string => uri_error = "URIError"
+//
+// let raiseUriError = str => raise(Obj.magic(makeURIError(str)))
 
 /* TODO add predicate to tell which error is which " */
 
