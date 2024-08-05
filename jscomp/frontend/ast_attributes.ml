@@ -163,10 +163,7 @@ let process_derive_type (attrs : t) : derive_attr * t =
         | Some _ -> Bs_syntaxerr.err loc Duplicated_bs_deriving)
       | _ -> (st, attr :: acc))
 
-(* duplicated @uncurry @string not allowed,
-   it is worse in @uncurry since it will introduce
-   inconsistency in arity
-*)
+(* duplicated attributes not allowed *)
 let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
   let st = ref `Nothing in
   let assign v (({loc; _}, _) as attr : attr) =
@@ -181,7 +178,6 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
       | "int" -> assign `Int attr
       | "ignore" -> assign `Ignore attr
       | "unwrap" -> assign `Unwrap attr
-      | "uncurry" -> Used_attributes.mark_used_attribute attr
       | _ -> ());
   !st
 
