@@ -401,9 +401,6 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
         try (attrs, action ())
         with Not_handled_external_attribute -> (attr :: attrs, st))
 
-let has_bs_uncurry (attrs : Ast_attributes.t) =
-  Ext_list.exists_fst attrs (fun {txt; loc = _} -> txt = "uncurry")
-
 let check_return_wrapper loc (wrapper : External_ffi_types.return_wrapper)
     result_type =
   match wrapper with
@@ -931,13 +928,6 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
 let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string) :
     Parsetree.core_type * External_ffi_types.t * Parsetree.attributes * bool =
-  (* sanity check here
-      {[ int -> int -> (int -> int -> int [@uncurry])]}
-      It does not make sense
-  *)
-  if has_bs_uncurry type_annotation.ptyp_attributes then
-    Location.raise_errorf ~loc
-      "%@uncurry can not be applied to the whole definition";
   let prim_name_with_source = {name = prim_name; source = External} in
   let type_annotation, build_uncurried_type =
     match type_annotation.ptyp_desc with
@@ -956,9 +946,6 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
     (* Note this assumes external type is syntatic (no abstraction)*)
     Ast_core_type.list_of_arrow type_annotation
   in
-  if has_bs_uncurry result_type.ptyp_attributes then
-    Location.raise_errorf ~loc:result_type.ptyp_loc
-      "%@uncurry can not be applied to tailed position";
   let no_arguments = arg_types_ty = [] in
   let unused_attrs, external_desc =
     parse_external_attributes no_arguments prim_name prim_name_with_source
