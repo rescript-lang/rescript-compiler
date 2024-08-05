@@ -99,7 +99,7 @@ let code = s => Js.String.charCodeAt(0, s)
 Js.Array.fromMap(strArr, code) == [97.0, 98.0, 99.0, 100.0]
 ```
 */
-external fromMap: (array_like<'a>, @uncurry 'a => 'b) => array<'b> = "Array.from"
+external fromMap: (array_like<'a>, 'a => 'b) => array<'b> = "Array.from"
 
 /* ES2015 */
 
@@ -356,7 +356,7 @@ Js.Array.sortInPlaceWith(reverseNumeric, numbers) == [30, 20, 10, 3, 2, 1]
 ```
 */
 @send
-external sortInPlaceWith: (t<'a>, @uncurry ('a, 'a) => int) => 'this = "sort"
+external sortInPlaceWith: (t<'a>, ('a, 'a) => int) => 'this = "sort"
 let sortInPlaceWith = (arg1, obj) => sortInPlaceWith(obj, arg1)
 
 /**
@@ -711,7 +711,7 @@ Js.Array.every(isEven, [6, 22, 7, 4]) == false
 ```
 */
 @send
-external every: (t<'a>, @uncurry 'a => bool) => bool = "every"
+external every: (t<'a>, 'a => bool) => bool = "every"
 let every = (arg1, obj) => every(obj, arg1)
 
 /**
@@ -728,7 +728,7 @@ Js.Array.everyi(evenIndexPositive, [6, 3, -5, 8]) == false
 ```
 */
 @send
-external everyi: (t<'a>, @uncurry ('a, int) => bool) => bool = "every"
+external everyi: (t<'a>, ('a, int) => bool) => bool = "every"
 let everyi = (arg1, obj) => everyi(obj, arg1)
 
 /**
@@ -742,7 +742,7 @@ Js.Array.filter(nonEmpty, ["abc", "", "", "def", "ghi"]) == ["abc", "def", "ghi"
 ```
 */
 @send
-external filter: (t<'a>, @uncurry 'a => bool) => 'this = "filter"
+external filter: (t<'a>, 'a => bool) => 'this = "filter"
 let filter = (arg1, obj) => filter(obj, arg1)
 
 /**
@@ -762,7 +762,7 @@ Js.Array.filteri(positiveOddElement, [6, 3, 5, 8, 7, -4, 1]) == [3, 8]
 ```
 */
 @send
-external filteri: (t<'a>, @uncurry ('a, int) => bool) => 'this = "filter"
+external filteri: (t<'a>, ('a, int) => bool) => 'this = "filter"
 let filteri = (arg1, obj) => filteri(obj, arg1)
 
 /**
@@ -782,7 +782,7 @@ Js.Array.find(x => x < 0, [33, 22, 55, 77, 44]) == None
 */
 @send
 @return(undefined_to_opt)
-external find: (t<'a>, @uncurry 'a => bool) => option<'a> = "find"
+external find: (t<'a>, 'a => bool) => option<'a> = "find"
 let find = (arg1, obj) => find(obj, arg1)
 
 /**
@@ -800,7 +800,7 @@ Js.Array.findi(positiveOddElement, [66, -33, 55, -88, 22]) == None
 */
 @send
 @return(undefined_to_opt)
-external findi: (t<'a>, @uncurry ('a, int) => bool) => option<'a> = "find"
+external findi: (t<'a>, ('a, int) => bool) => option<'a> = "find"
 let findi = (arg1, obj) => findi(obj, arg1)
 
 /**
@@ -814,7 +814,7 @@ Js.Array.findIndex(x => x < 0, [33, 22, 55, 77, 44]) == -1
 ```
 */
 @send
-external findIndex: (t<'a>, @uncurry 'a => bool) => int = "findIndex"
+external findIndex: (t<'a>, 'a => bool) => int = "findIndex"
 let findIndex = (arg1, obj) => findIndex(obj, arg1)
 
 /**
@@ -831,7 +831,7 @@ Js.Array.findIndexi(positiveOddElement, [66, -33, 55, -88, 22]) == -1
 ```
 */
 @send
-external findIndexi: (t<'a>, @uncurry ('a, int) => bool) => int = "findIndex"
+external findIndexi: (t<'a>, ('a, int) => bool) => int = "findIndex"
 let findIndexi = (arg1, obj) => findIndexi(obj, arg1)
 
 /**
@@ -845,7 +845,7 @@ Js.Array.forEach(x => Js.log(x), ["a", "b", "c"]) == ()
 ```
 */
 @send
-external forEach: (t<'a>, @uncurry 'a => unit) => unit = "forEach"
+external forEach: (t<'a>, 'a => unit) => unit = "forEach"
 let forEach = (arg1, obj) => forEach(obj, arg1)
 
 /**
@@ -859,7 +859,7 @@ Js.Array.forEachi((item, index) => Js.log2(index + 1, item), ["a", "b", "c"]) ==
 ```
 */
 @send
-external forEachi: (t<'a>, @uncurry ('a, int) => unit) => unit = "forEach"
+external forEachi: (t<'a>, ('a, int) => unit) => unit = "forEach"
 let forEachi = (arg1, obj) => forEachi(obj, arg1)
 
 /**
@@ -877,7 +877,7 @@ Js.Array.map(Js.String.length, ["animal", "vegetable", "mineral"]) == [6, 9, 7]
 ```
 */
 @send
-external map: (t<'a>, @uncurry 'a => 'b) => t<'b> = "map"
+external map: (t<'a>, 'a => 'b) => t<'b> = "map"
 let map = (arg1, obj) => map(obj, arg1)
 
 /**
@@ -897,7 +897,7 @@ Js.Array.mapi(product, [10, 11, 12]) == [0, 11, 24]
 ```
 */
 @send
-external mapi: (t<'a>, @uncurry ('a, int) => 'b) => t<'b> = "map"
+external mapi: (t<'a>, ('a, int) => 'b) => t<'b> = "map"
 let mapi = (arg1, obj) => mapi(obj, arg1)
 
 /**
@@ -932,7 +932,7 @@ Js.Array.reduce((acc, item) => item /. acc, 1.0, [2.0, 4.0]) == 2.0 // 4.0 / (2.
 ```
 */
 @send
-external reduce: (t<'a>, @uncurry ('b, 'a) => 'b, 'b) => 'b = "reduce"
+external reduce: (t<'a>, ('b, 'a) => 'b, 'b) => 'b = "reduce"
 let reduce = (arg1, arg2, obj) => reduce(obj, arg1, arg2)
 
 /**
@@ -968,7 +968,7 @@ Js.Array.reducei(sumOfEvens, 0, [2, 5, 1, 4, 3]) == 6
 ```
 */
 @send
-external reducei: (t<'a>, @uncurry ('b, 'a, int) => 'b, 'b) => 'b = "reduce"
+external reducei: (t<'a>, ('b, 'a, int) => 'b, 'b) => 'b = "reduce"
 let reducei = (arg1, arg2, obj) => reducei(obj, arg1, arg2)
 
 /**
@@ -999,7 +999,7 @@ Js.Array.reduceRight((acc, item) => item /. acc, 1.0, [2.0, 4.0]) == 0.5 // 2.0 
 ```
 */
 @send
-external reduceRight: (t<'a>, @uncurry ('b, 'a) => 'b, 'b) => 'b = "reduceRight"
+external reduceRight: (t<'a>, ('b, 'a) => 'b, 'b) => 'b = "reduceRight"
 let reduceRight = (arg1, arg2, obj) => reduceRight(obj, arg1, arg2)
 
 /**
@@ -1037,7 +1037,7 @@ Js.Array.reduceRighti(sumOfEvens, 0, [2, 5, 1, 4, 3]) == 6
 ```
 */
 @send
-external reduceRighti: (t<'a>, @uncurry ('b, 'a, int) => 'b, 'b) => 'b = "reduceRight"
+external reduceRighti: (t<'a>, ('b, 'a, int) => 'b, 'b) => 'b = "reduceRight"
 let reduceRighti = (arg1, arg2, obj) => reduceRighti(obj, arg1, arg2)
 
 /**
@@ -1054,7 +1054,7 @@ Js.Array.some(isEven, [3, 7, 5, 1, 9]) == false
 ```
 */
 @send
-external some: (t<'a>, @uncurry 'a => bool) => bool = "some"
+external some: (t<'a>, 'a => bool) => bool = "some"
 let some = (arg1, obj) => some(obj, arg1)
 
 /**
@@ -1078,7 +1078,7 @@ Js.Array.somei(sameLength, ["a", "bc", "def", "gh"]) == false
 ```
 */
 @send
-external somei: (t<'a>, @uncurry ('a, int) => bool) => bool = "some"
+external somei: (t<'a>, ('a, int) => bool) => bool = "some"
 let somei = (arg1, obj) => somei(obj, arg1)
 
 /**

@@ -6,7 +6,7 @@ let eq = (loc, x, y) => {
     list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Mt.Eq(x, y)), ...suites.contents}
 }
 
-@send external map: (array<'a>, @uncurry ('a => 'b)) => array<'b> = "map"
+@send external map: (array<'a>, ('a => 'b)) => array<'b> = "map"
 
 %%raw(`
 function hi (cb){
@@ -15,7 +15,7 @@ function hi (cb){
 }
 `)
 
-@val external hi: (@uncurry (unit => unit)) => unit = "hi"
+@val external hi: ((unit => unit)) => unit = "hi"
 
 let () = {
   let xs = ref(list{})

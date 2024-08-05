@@ -559,7 +559,7 @@ Js.String.unsafeReplaceBy0(re, matchFn, str) == "bEAUtIfUl vOwEls"
 ```
 */
 @send
-external unsafeReplaceBy0: (t, Js_re.t, @uncurry (t, int, t) => t) => t = "replace"
+external unsafeReplaceBy0: (t, Js_re.t, (t, int, t) => t) => t = "replace"
 let unsafeReplaceBy0 = (arg1, arg2, obj) => unsafeReplaceBy0(obj, arg1, arg2)
 
 /**
@@ -585,7 +585,7 @@ Js.String.unsafeReplaceBy1(re, matchFn, str) == "Jony is 41"
 ```
 */
 @send
-external unsafeReplaceBy1: (t, Js_re.t, @uncurry (t, t, int, t) => t) => t = "replace"
+external unsafeReplaceBy1: (t, Js_re.t, (t, t, int, t) => t) => t = "replace"
 let unsafeReplaceBy1 = (arg1, arg2, obj) => unsafeReplaceBy1(obj, arg1, arg2)
 
 /**
@@ -614,7 +614,7 @@ Js.String.unsafeReplaceBy2(re, matchFn, str) == "42"
 ```
 */
 @send
-external unsafeReplaceBy2: (t, Js_re.t, @uncurry (t, t, t, int, t) => t) => t = "replace"
+external unsafeReplaceBy2: (t, Js_re.t, (t, t, t, int, t) => t) => t = "replace"
 let unsafeReplaceBy2 = (arg1, arg2, obj) => unsafeReplaceBy2(obj, arg1, arg2)
 
 /**
@@ -628,7 +628,7 @@ See [`String.replace`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/R
 on MDN.
 */
 @send
-external unsafeReplaceBy3: (t, Js_re.t, @uncurry (t, t, t, t, int, t) => t) => t = "replace"
+external unsafeReplaceBy3: (t, Js_re.t, (t, t, t, t, int, t) => t) => t = "replace"
 let unsafeReplaceBy3 = (arg1, arg2, obj) => unsafeReplaceBy3(obj, arg1, arg2)
 
 /**

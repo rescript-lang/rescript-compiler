@@ -34,7 +34,7 @@ module StandardNotation = {
   let tsiU = c => setIncrementU(.c, @this (. me, amount) => Js.log(me))
 
   @module("react")
-  external useState: (@uncurry (unit => 'state)) => ('state, ('state => 'state) => unit) =
+  external useState: ((unit => 'state)) => ('state, ('state => 'state) => unit) =
     "useState"
   let (get, set) = useState(() => 3)
 }

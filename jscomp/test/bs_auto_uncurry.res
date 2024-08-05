@@ -1,12 +1,12 @@
 module Curry = {}
 module Block = {}
 
-@val external map: (array<'a>, @uncurry ('a => 'b)) => array<'b> = "Array.prototype.map.call"
+@val external map: (array<'a>, ('a => 'b)) => array<'b> = "Array.prototype.map.call"
 
 type id = int => int
-@val external map2: (array<int>, @uncurry (int => int)) => array<int> = "Array.prototype.map.cal"
+@val external map2: (array<int>, (int => int)) => array<int> = "Array.prototype.map.cal"
 
-/* [@uncurry n] should not be documented,
+/* [n] should not be documented,
     since such inconsistency could not be checked
 */
 
@@ -17,15 +17,15 @@ let f = (cb: int => int) => map([1, 2, 3, 4], cb)
 
 let xs = map([(1,2), (1,2), (2,1)], ((x, y)) => y + x + 1)
 
-@val external map2: (array<'a>, array<'b>, @uncurry ('a, 'b) => 'c) => array<'c> = "map2"
+@val external map2: (array<'a>, array<'b>, ('a, 'b) => 'c) => array<'c> = "map2"
 
-@val external ff: (int, @ignore int, @uncurry (int, int) => int) => int = "ff"
+@val external ff: (int, @ignore int, (int, int) => int) => int = "ff"
 
-@val external ff1: (int, @as(3) _, @uncurry (int, int) => int) => int = "ff1"
+@val external ff1: (int, @as(3) _, (int, int) => int) => int = "ff1"
 
-@val external ff2: (int, @as("3") _, @uncurry (int, int) => int) => int = "ff2"
+@val external ff2: (int, @as("3") _, (int, int) => int) => int = "ff2"
 
-@val external hi: (@uncurry(1) (unit => unit)) => int = "hi"
+@val external hi: (unit => unit) => int = "hi"
 
 /*
 fun (_){
@@ -71,7 +71,7 @@ let h6 = x => ff2(x, add)
 type elem
 @val
 external optional_cb: (
-  @uncurry (string, ~props: elem=?, array<int>) => elem /* This should emit a warning ? */,
+  (string, ~props: elem=?, array<int>) => elem /* This should emit a warning ? */,
   string,
 ) => int = "optional_cb"
 
@@ -90,7 +90,7 @@ let v = fishy_unit_2 () [@bs]
 /*
 external ff : 
     int -> 
-    (unit -> unit [@uncurry]) -> 
+    (unit -> unit) -> 
     int = 
     ""
 [@@val]
@@ -115,7 +115,7 @@ Maybe we can create a sugar
 
 /*
 external config : 
-    hi: (int -> int [@uncurry]) ->    
+    hi: (int -> int) ->    
     lo: int -> 
     unit -> 
     _ = "" [@@obj]

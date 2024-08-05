@@ -1,8 +1,8 @@
 @val external describe: (string, (. unit) => unit) => unit = "describe"
 
-@val external it: (string, @uncurry (unit => unit)) => unit = "it"
+@val external it: (string, (unit => unit)) => unit = "it"
 
-@val external it_promise: (string, @uncurry (unit => Js.Promise.t<_>)) => unit = "it"
+@val external it_promise: (string, (unit => Js.Promise.t<_>)) => unit = "it"
 
 @val @module("assert") external eq: ('a, 'a) => unit = "deepEqual"
 
