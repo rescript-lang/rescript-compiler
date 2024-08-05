@@ -83,7 +83,7 @@
 - Reunify JsxC/JsxU -> Jsx etc. https://github.com/rescript-lang/rescript-compiler/pull/6895
 - Remove the transformation of `foo(1,2)` into `Js.Internal.opaqueFullApply(Internal.opaque(f), 1, 2)`, and change the back-end to treat all applications as uncurried. https://github.com/rescript-lang/rescript-compiler/pull/6893
 - Remove `@uncurry` from ReScript sources (others, tests). https://github.com/rescript-lang/rescript-compiler/pull/6938
-- Remove leftover Fn_uncurry_arity and no_auto_uncurried_arg_types. https://github.com/rescript-lang/rescript-compiler/pull/6939
+- Remove leftover uncurried handling. https://github.com/rescript-lang/rescript-compiler/pull/6939 https://github.com/rescript-lang/rescript-compiler/pull/6940
 
 #### :nail_care: Polish
 
