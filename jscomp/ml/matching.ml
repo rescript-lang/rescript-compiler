@@ -2273,13 +2273,13 @@ let split_variant_cases tag_lambda_list =
   sort_int_lambda_list const,
   sort_int_lambda_list nonconst  
 
-let split_extension_cases tag_lambda_list =
+let get_extension_cases tag_lambda_list =
   let rec split_rec = function
-      [] -> ([], [])
+      [] -> []
     | (cstr, act) :: rem ->
-        let (consts, nonconsts) = split_rec rem in
+        let nonconsts = split_rec rem in
         match cstr with
-        | Cstr_extension(path, _) -> (consts, (path, act) :: nonconsts)
+        | Cstr_extension(path, _) -> ((path, act) :: nonconsts)
         | _ -> assert false in
   split_rec tag_lambda_list
 
@@ -2293,35 +2293,25 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
     let fail, local_jumps =
       mk_failaction_neg partial ctx def in
     let lambda1 =
-      let consts, nonconsts = split_extension_cases tag_lambda_list in
-      let default, consts, nonconsts =
+      let extension_cases = get_extension_cases tag_lambda_list in
+      let default, extension_cases =
         match fail with
         | None ->
-            begin match consts, nonconsts with
-            | _, (_, act)::rem -> act, consts, rem
-            | (_, act)::rem, _ -> act, rem, nonconsts
-            | _ -> assert false
+            begin match extension_cases with
+            | (_, act)::rem -> act, rem
+            | _ -> failwith "Empty extension case list is not possible"
             end
-        | Some fail -> fail, consts, nonconsts in
-      let nonconst_lambda =
-        match nonconsts with
-          [] -> default
+        | Some fail -> fail, extension_cases in
+      match extension_cases with
+        | [] -> default
         | _ ->
           List.fold_right
             (fun (path, act) rem ->
                 let ext = transl_extension_path ex_pat.pat_env path in
                 Lifthenelse(Lprim(extension_slot_eq , [arg; ext], loc),
                             act, rem))
-            nonconsts
+            extension_cases
             default 
-      in
-        List.fold_right
-          (fun (path, act) rem ->
-             let ext = transl_extension_path ex_pat.pat_env path in
-             Lifthenelse(Lprim(extension_slot_eq , [arg; ext], loc),
-                         act, rem))
-          consts
-          nonconst_lambda
     in
     lambda1, jumps_union local_jumps total1
   end else begin
