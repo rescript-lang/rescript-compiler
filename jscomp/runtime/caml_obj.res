@@ -327,7 +327,7 @@ let rec equal = (a: Obj.t, b: Obj.t): bool =>
           let a: {..} = Obj.magic(a)
           let b: {..} = Obj.magic(b)
           if %raw(`b instanceof Error`) && a["message"] === b["message"] {
-            equal(a["clause"], b["clause"])
+            equal(a["cause"], b["cause"])
           } else {
             false
           }
