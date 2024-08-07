@@ -411,16 +411,7 @@ and transl_type_aux env policy styp =
                          row_bound=(); row_closed=true;
                          row_fixed=false; row_name=None}) in
       let hfields = Hashtbl.create 17 in
-      let collection_detect = Hashtbl.create 17 in 
       let add_typed_field loc l f =
-        if not !Config.bs_only  then begin 
-          let h = Btype.hash_variant l in
-          if Hashtbl.mem collection_detect h then 
-            let l' = Hashtbl.find collection_detect h  in 
-            (* Check for tag conflicts *)
-            if l <> l' then raise(Error(styp.ptyp_loc, env, Variant_tags(l, l')));
-          else Hashtbl.add collection_detect h l 
-        end ;
         try
           let (_,f') = Hashtbl.find hfields l in
           let ty = mkfield l f and ty' = mkfield l f' in

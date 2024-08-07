@@ -208,18 +208,9 @@ let make_params env params =
     List.map make_param params
 
 let transl_labels ?record_name env closed lbls =
-  if !Config.bs_only then 
-    match !Builtin_attributes.check_duplicated_labels lbls with 
+  (match !Builtin_attributes.check_duplicated_labels lbls with 
     | None -> ()
-    | Some {loc;txt=name} -> raise (Error(loc,Duplicate_label (name, record_name)))
-  else (
-  let all_labels = ref StringSet.empty in
-  List.iter
-    (fun {pld_name = {txt=name; loc}} ->
-       if StringSet.mem name !all_labels then
-         raise(Error(loc, Duplicate_label (name, record_name)));
-       all_labels := StringSet.add name !all_labels)
-    lbls);
+    | Some {loc;txt=name} -> raise (Error(loc,Duplicate_label (name, record_name))));
   let mk {pld_name=name;pld_mutable=mut;pld_type=arg;pld_loc=loc;
           pld_attributes=attrs} =
     Builtin_attributes.warning_scope attrs
