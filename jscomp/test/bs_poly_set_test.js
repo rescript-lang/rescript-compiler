@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
-let Belt_Id = require("../../lib/js/belt_Id.js");
 let Belt_Set = require("../../lib/js/belt_Set.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Belt_List = require("../../lib/js/belt_List.js");
@@ -32,7 +31,9 @@ function t(loc, x) {
   Mt.throw_suites(test_id, suites, loc, x);
 }
 
-let IntCmp = Belt_Id.comparable(Caml.int_compare);
+let IntCmp = {
+  cmp: Caml.int_compare
+};
 
 let u0 = Belt_Set.fromArray(Array_data_util.range(0, 30), IntCmp);
 
@@ -199,7 +200,7 @@ function testIterToList(xs) {
   let v = {
     contents: /* [] */0
   };
-  Belt_Set.forEach(xs, (function (x) {
+  Belt_SetDict.forEach(xs.data, (function (x) {
     v.contents = {
       hd: x,
       tl: v.contents
@@ -243,33 +244,45 @@ b("File \"bs_poly_set_test.res\", line 112, characters 4-11", Belt_List.every2(t
   return x === y;
 })));
 
-b("File \"bs_poly_set_test.res\", line 113, characters 4-11", Belt_Set.some(u0$1, (function (x) {
+function f(x) {
   return x === 17;
-})));
+}
 
-b("File \"bs_poly_set_test.res\", line 114, characters 4-11", !Belt_Set.some(u1$1, (function (x) {
+b("File \"bs_poly_set_test.res\", line 113, characters 4-11", Belt_SetDict.some(u0$1.data, f));
+
+function f$1(x) {
   return x === 17;
-})));
+}
 
-b("File \"bs_poly_set_test.res\", line 115, characters 4-11", Belt_Set.every(u0$1, (function (x) {
+b("File \"bs_poly_set_test.res\", line 114, characters 4-11", !Belt_SetDict.some(u1$1.data, f$1));
+
+function f$2(x) {
   return x < 24;
-})));
+}
+
+b("File \"bs_poly_set_test.res\", line 115, characters 4-11", Belt_SetDict.every(u0$1.data, f$2));
 
 b("File \"bs_poly_set_test.res\", line 116, characters 4-11", Belt_SetDict.every(u0$1.data, (function (x) {
   return x < 24;
 })));
 
-b("File \"bs_poly_set_test.res\", line 117, characters 4-11", !Belt_Set.every(u2$1, (function (x) {
+function f$3(x) {
   return x < 24;
-})));
+}
 
-b("File \"bs_poly_set_test.res\", line 118, characters 4-11", !Belt_Set.every(Belt_Set.fromArray([
+b("File \"bs_poly_set_test.res\", line 117, characters 4-11", !Belt_SetDict.every(u2$1.data, f$3));
+
+function f$4(x) {
+  return x === 2;
+}
+
+let m = Belt_Set.fromArray([
   1,
   2,
   3
-], IntCmp), (function (x) {
-  return x === 2;
-})));
+], IntCmp);
+
+b("File \"bs_poly_set_test.res\", line 118, characters 4-11", !Belt_SetDict.every(m.data, f$4));
 
 b("File \"bs_poly_set_test.res\", line 119, characters 4-11", Belt_Set.cmp(u1$1, u0$1) < 0);
 
@@ -372,11 +385,11 @@ Belt_List.forEach({
 
 let a = Belt_Set.fromArray([], IntCmp);
 
-let m = Belt_Set.keep(a, (function (x) {
+let m$1 = Belt_Set.keep(a, (function (x) {
   return x % 2 === 0;
 }));
 
-b("File \"bs_poly_set_test.res\", line 151, characters 4-11", Belt_SetDict.isEmpty(m.data));
+b("File \"bs_poly_set_test.res\", line 151, characters 4-11", Belt_SetDict.isEmpty(m$1.data));
 
 let match$5 = Belt_Set.split({
   cmp: IntCmp.cmp,
@@ -419,4 +432,4 @@ exports.IntCmp = IntCmp;
 exports.L = L;
 exports.testIterToList = testIterToList;
 exports.testIterToList2 = testIterToList2;
-/* IntCmp Not a pure module */
+/* u0 Not a pure module */

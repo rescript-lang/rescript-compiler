@@ -52,7 +52,7 @@ let rec sortedLengthAuxLess = (xs, prec, acc, len, lt) =>
     }
   }
 
-let strictlySortedLengthU = (xs, lt) => {
+let strictlySortedLength = (xs, lt) => {
   let len = A.length(xs)
   switch len {
   | 0 | 1 => len
@@ -70,8 +70,6 @@ let strictlySortedLengthU = (xs, lt) => {
   }
 }
 
-let strictlySortedLength = (xs, lt) => strictlySortedLengthU(xs, (x, y) => lt(x, y))
-
 let rec isSortedAux = (a, i, cmp, last_bound) =>
   /* when `i = len - 1`, it reaches the last element */
   if i == last_bound {
@@ -82,7 +80,7 @@ let rec isSortedAux = (a, i, cmp, last_bound) =>
     false
   }
 
-let isSortedU = (a, cmp) => {
+let isSorted = (a, cmp) => {
   let len = A.length(a)
   if len == 0 {
     true
@@ -90,8 +88,6 @@ let isSortedU = (a, cmp) => {
     isSortedAux(a, 0, cmp, len - 1)
   }
 }
-
-let isSorted = (a, cmp) => isSortedU(a, (x, y) => cmp(x, y))
 
 let cutoff = 5
 
@@ -119,7 +115,7 @@ let merge = (src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, cmp) =>
   loop(src1ofs, A.getUnsafe(src, src1ofs), src2ofs, A.getUnsafe(src2, src2ofs), dstofs)
 }
 
-let unionU = (src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, cmp) => {
+let union = (src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, cmp) => {
   let src1r = src1ofs + src1len
   let src2r = src2ofs + src2len
   let rec loop = (i1, s1, i2, s2, d) => {
@@ -165,10 +161,7 @@ let unionU = (src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, cmp) =
   loop(src1ofs, A.getUnsafe(src, src1ofs), src2ofs, A.getUnsafe(src2, src2ofs), dstofs)
 }
 
-let union = (src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, cmp) =>
-  unionU(src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, (x, y) => cmp(x, y))
-
-let intersectU = (src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, cmp) => {
+let intersect = (src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, cmp) => {
   let src1r = src1ofs + src1len
   let src2r = src2ofs + src2len
   let rec loop = (i1, s1, i2, s2, d) => {
@@ -205,10 +198,7 @@ let intersectU = (src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, cm
   loop(src1ofs, A.getUnsafe(src, src1ofs), src2ofs, A.getUnsafe(src2, src2ofs), dstofs)
 }
 
-let intersect = (src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, cmp) =>
-  intersectU(src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, (x, y) => cmp(x, y))
-
-let diffU = (src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, cmp) => {
+let diff = (src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, cmp) => {
   let src1r = src1ofs + src1len
   let src2r = src2ofs + src2len
   let rec loop = (i1, s1, i2, s2, d) => {
@@ -247,9 +237,6 @@ let diffU = (src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, cmp) =>
   loop(src1ofs, A.getUnsafe(src, src1ofs), src2ofs, A.getUnsafe(src2, src2ofs), dstofs)
 }
 
-let diff = (src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, cmp) =>
-  diffU(src, src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs, (x, y) => cmp(x, y))
-
 /* `<=` alone is not enough for stable sort */
 let insertionSort = (src, srcofs, dst, dstofs, len, cmp) =>
   for i in 0 to len - 1 {
@@ -273,7 +260,7 @@ let rec sortTo = (src, srcofs, dst, dstofs, len, cmp) =>
     merge(src, srcofs + l2, l1, dst, dstofs + l1, l2, dst, dstofs, cmp)
   }
 
-let stableSortInPlaceByU = (a, cmp) => {
+let stableSortInPlaceBy = (a, cmp) => {
   let l = A.length(a)
   if l <= cutoff {
     insertionSort(a, 0, a, 0, l, cmp)
@@ -287,15 +274,12 @@ let stableSortInPlaceByU = (a, cmp) => {
   }
 }
 
-let stableSortInPlaceBy = (a, cmp) => stableSortInPlaceByU(a, (x, y) => cmp(x, y))
-
-let stableSortByU = (a, cmp) => {
+let stableSortBy = (a, cmp) => {
   let b = A.copy(a)
-  stableSortInPlaceByU(b, cmp)
+  stableSortInPlaceBy(b, cmp)
   b
 }
 
-let stableSortBy = (a, cmp) => stableSortByU(a, (x, y) => cmp(x, y))
 /*
   `binarySearchAux arr lo hi key cmp`
   range [lo, hi]
@@ -330,7 +314,7 @@ let rec binarySearchAux = (arr, lo, hi, key, cmp) => {
   }
 }
 
-let binarySearchByU = (sorted, key, cmp): int => {
+let binarySearchBy = (sorted, key, cmp): int => {
   let len = A.length(sorted)
   if len == 0 {
     -1
@@ -351,4 +335,11 @@ let binarySearchByU = (sorted, key, cmp): int => {
   }
 }
 
-let binarySearchBy = (sorted, key, cmp) => binarySearchByU(sorted, key, (x, y) => cmp(x, y))
+let binarySearchByU = binarySearchBy
+let diffU = diff
+let intersectU = intersect
+let isSortedU = isSorted
+let stableSortByU = stableSortBy
+let stableSortInPlaceByU = stableSortInPlaceBy
+let strictlySortedLengthU = strictlySortedLength
+let unionU = union

@@ -100,6 +100,7 @@
 - Remove internal option `use-stdlib` from build schema. https://github.com/rescript-lang/rescript-compiler/pull/6778
 - Fix `Js.Types.JSBigInt` payload to use native `bigint` type. https://github.com/rescript-lang/rescript-compiler/pull/6911
 - Deprecate `%external` extension, which has never been officially introduced. https://github.com/rescript-lang/rescript-compiler/pull/6906
+- Deprecate `xxxU` functions in Belt. https://github.com/rescript-lang/rescript-compiler/pull/6941
 
 # 11.1.3
 

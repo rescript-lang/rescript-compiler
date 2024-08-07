@@ -90,19 +90,22 @@ equal elements.
 */
 let eq: (t, t) => bool
 
-let forEachU: (t, (. value) => unit) => unit
+@deprecated("Use `forEach` instead")
+let forEachU: (t, value => unit) => unit
 
 /**
 `forEach(s, f)` applies `f` in turn to all elements of `s`. In increasing order
 */
 let forEach: (t, value => unit) => unit
 
-let reduceU: (t, 'a, (. 'a, value) => 'a) => 'a
+@deprecated("Use `reduce` instead")
+let reduceU: (t, 'a, ('a, value) => 'a) => 'a
 
 /** Iterate in increasing order. */
 let reduce: (t, 'a, ('a, value) => 'a) => 'a
 
-let everyU: (t, (. value) => bool) => bool
+@deprecated("Use `every` instead")
+let everyU: (t, value => bool) => bool
 
 /**
 `every(p, s)` checks if all elements of the set satisfy the predicate `p`. Order
@@ -110,7 +113,8 @@ unspecified.
 */
 let every: (t, value => bool) => bool
 
-let someU: (t, (. value) => bool) => bool
+@deprecated("Use `some` instead")
+let someU: (t, value => bool) => bool
 
 /**
 `some(p, s)` checks if at least one element of the set satisfies the predicate
@@ -118,14 +122,16 @@ let someU: (t, (. value) => bool) => bool
 */
 let some: (t, value => bool) => bool
 
-let keepU: (t, (. value) => bool) => t
+@deprecated("Use `keep` instead")
+let keepU: (t, value => bool) => t
 
 /**
 `keep(p, s)` returns the set of all elements in `s` that satisfy predicate `p`.
 */
 let keep: (t, value => bool) => t
 
-let partitionU: (t, (. value) => bool) => (t, t)
+@deprecated("Use `partition` instead")
+let partitionU: (t, value => bool) => (t, t)
 
 /**
 `partition(p, s)` returns a pair of sets `(s1, s2)`, where `s1` is the set of

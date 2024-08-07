@@ -196,25 +196,14 @@ let mergeMany = (d, arr) => d.data = addArrayMutate(d.data, arr)
 let make = () => {data: None}
 
 let isEmpty = d => N.isEmpty(d.data)
-
 let minimum = d => N.minimum(d.data)
-
 let minUndefined = d => N.minUndefined(d.data)
-
 let maximum = d => N.maximum(d.data)
-
 let maxUndefined = d => N.maxUndefined(d.data)
-
-let forEachU = (d, f) => N.forEachU(d.data, f)
-let forEach = (d, f) => forEachU(d, a => f(a))
-
-let reduceU = (d, acc, cb) => N.reduceU(d.data, acc, cb)
-let reduce = (d, acc, cb) => reduceU(d, acc, (a, b) => cb(a, b))
-
-let everyU = (d, p) => N.everyU(d.data, p)
-let every = (d, p) => everyU(d, a => p(a))
-let someU = (d, p) => N.someU(d.data, p)
-let some = (d, p) => someU(d, a => p(a))
+let forEach = (d, f) => N.forEach(d.data, f)
+let reduce = (d, acc, cb) => N.reduce(d.data, acc, cb)
+let every = (d, p) => N.every(d.data, p)
+let some = (d, p) => N.some(d.data, p)
 let size = d => N.size(d.data)
 let toList = d => N.toList(d.data)
 let toArray = d => N.toArray(d.data)
@@ -255,14 +244,12 @@ let split = (d, key) => {
   }
 }
 
-let keepU = (d, p) => {data: N.keepCopyU(d.data, p)}
-let keep = (d, p) => keepU(d, a => p(a))
+let keep = (d, p) => {data: N.keepCopy(d.data, p)}
 
-let partitionU = (d, p) => {
-  let (a, b) = N.partitionCopyU(d.data, p)
+let partition = (d, p) => {
+  let (a, b) = N.partitionCopy(d.data, p)
   ({data: a}, {data: b})
 }
-let partition = (d, p) => partitionU(d, a => p(a))
 
 let subset = (a, b) => I.subset(a.data, b.data)
 let intersect = (dataa, datab) => {
@@ -337,3 +324,10 @@ let union = (dataa: t, datab: t): t => {
 let has = (d, x) => I.has(d.data, x)
 
 let copy = d => {data: N.copy(d.data)}
+
+let everyU = every
+let forEachU = forEach
+let keepU = keep
+let partitionU = partition
+let reduceU = reduce
+let someU = some

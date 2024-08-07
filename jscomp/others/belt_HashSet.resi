@@ -33,18 +33,18 @@ different _hash_ functions will have different type.
 
 ```rescript
 module I0 = unpack(
-  Belt.Id.hashableU(
-    ~hash=(. a: int) => land(a, 65535),
-    ~eq=(. a, b) => a == b,
+  Belt.Id.hashable(
+    ~hash=(a: int) => land(a, 65535),
+    ~eq=(a, b) => a == b,
   )
 )
 
 let s0 = Belt.HashSet.make(~id=module(I0), ~hintSize=40)
 
 module I1 = unpack(
-  Belt.Id.hashableU(
-    ~hash=(. a: int) => land(a, 255),
-    ~eq=(. a, b) => a == b,
+  Belt.Id.hashable(
+    ~hash=(a: int) => land(a, 255),
+    ~eq=(a, b) => a == b,
   )
 )
 
@@ -101,10 +101,12 @@ let has: (t<'a, 'id>, 'a) => bool
 
 let remove: (t<'a, 'id>, 'a) => unit
 
+@deprecated("Use `forEach` instead")
 let forEachU: (t<'a, 'id>, 'a => unit) => unit
 /** Order unspecified. */
 let forEach: (t<'a, 'id>, 'a => unit) => unit
 
+@deprecated("Use `reduce` instead")
 let reduceU: (t<'a, 'id>, 'c, ('c, 'a) => 'c) => 'c
 /** Order unspecified. */
 let reduce: (t<'a, 'id>, 'c, ('c, 'a) => 'c) => 'c

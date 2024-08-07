@@ -180,40 +180,33 @@ let rec stackAllLeft = (v, s) =>
   | Some(x) => stackAllLeft(x.left, list{x, ...s})
   }
 
-let rec forEachU = (n, f) =>
+let rec forEach = (n, f) =>
   switch n {
   | None => ()
   | Some(n) =>
-    forEachU(n.left, f)
+    forEach(n.left, f)
     f(n.value)
-    forEachU(n.right, f)
+    forEach(n.right, f)
   }
 
-let forEach = (n, f) => forEachU(n, a => f(a))
-
-let rec reduceU = (s, accu, f) =>
+let rec reduce = (s, accu, f) =>
   switch s {
   | None => accu
-  | Some(n) => reduceU(n.right, f(reduceU(n.left, accu, f), n.value), f)
+  | Some(n) => reduce(n.right, f(reduce(n.left, accu, f), n.value), f)
   }
 
-let reduce = (s, accu, f) => reduceU(s, accu, (a, b) => f(a, b))
-
-let rec everyU = (n, p) =>
+let rec every = (n, p) =>
   switch n {
   | None => true
-  | Some(n) => p(n.value) && (n.left->everyU(p) && n.right->everyU(p))
+  | Some(n) => p(n.value) && (n.left->every(p) && n.right->every(p))
   }
 
-let every = (n, p) => everyU(n, a => p(a))
-
-let rec someU = (n, p) =>
+let rec some = (n, p) =>
   switch n {
   | None => false
-  | Some(n) => p(n.value) || (someU(n.left, p) || someU(n.right, p))
+  | Some(n) => p(n.value) || (some(n.left, p) || some(n.right, p))
   }
 
-let some = (n, p) => someU(n, a => p(a))
 /* `addMinElement v n` and `addMaxElement v n`
    assume that the added v is *strictly*
    smaller (or bigger) than all the present elements in the tree.
@@ -266,22 +259,20 @@ let concatShared = (t1, t2) =>
     joinShared(t1, v.contents, t2r)
   }
 
-let rec partitionSharedU = (n, p) =>
+let rec partitionShared = (n, p) =>
   switch n {
   | None => (None, None)
   | Some(n) =>
     let value = n.value
-    let (lt, lf) = partitionSharedU(n.left, p)
+    let (lt, lf) = partitionShared(n.left, p)
     let pv = p(value)
-    let (rt, rf) = partitionSharedU(n.right, p)
+    let (rt, rf) = partitionShared(n.right, p)
     if pv {
       (joinShared(lt, value, rt), concatShared(lf, rf))
     } else {
       (concatShared(lt, rt), joinShared(lf, value, rf))
     }
   }
-
-let partitionShared = (n, p) => partitionSharedU(n, a => p(a))
 
 let rec lengthNode = n => {
   let {left: l, right: r} = n
@@ -448,14 +439,14 @@ let rec fromSortedArrayAux = (arr, off, len) =>
 
 let fromSortedArrayUnsafe = arr => fromSortedArrayAux(arr, 0, A.length(arr))
 
-let rec keepSharedU = (n, p) =>
+let rec keepShared = (n, p) =>
   switch n {
   | None => None
   | Some(n) =>
     let {left: l, value: v, right: r} = n
-    let newL = keepSharedU(l, p)
+    let newL = keepShared(l, p)
     let pv = p(v)
-    let newR = keepSharedU(r, p)
+    let newR = keepShared(r, p)
     if pv {
       if l === newL && r === newR {
         Some(n)
@@ -467,13 +458,12 @@ let rec keepSharedU = (n, p) =>
     }
   }
 
-let keepShared = (n, p) => keepSharedU(n, a => p(a))
 /* ATT: functional methods in general can be shared with
     imperative methods, however, it does not apply when functional
     methods makes use of referential equality
 */
 
-let keepCopyU = (n, p): t<_> =>
+let keepCopy = (n, p): t<_> =>
   switch n {
   | None => None
   | Some(n) =>
@@ -483,9 +473,7 @@ let keepCopyU = (n, p): t<_> =>
     fromSortedArrayAux(v, 0, last)
   }
 
-let keepCopy = (n, p) => keepCopyU(n, x => p(x))
-
-let partitionCopyU = (n, p) =>
+let partitionCopy = (n, p) =>
   switch n {
   | None => (None, None)
   | Some(n) =>
@@ -497,8 +485,6 @@ let partitionCopyU = (n, p) =>
     let forwardLen = cursor.forward
     (fromSortedArrayAux(v, 0, forwardLen), fromSortedArrayRevAux(v, backward, size - forwardLen))
   }
-
-let partitionCopy = (n, p) => partitionCopyU(n, a => p(a))
 
 let rec has = (t: t<_>, x, ~cmp) =>
   switch t {
@@ -736,7 +722,7 @@ let fromArray = (xs: array<_>, ~cmp) => {
   if len == 0 {
     None
   } else {
-    let next = ref(S.strictlySortedLengthU(xs, (x, y) => Belt_Id.getCmpInternal(cmp)(x, y) < 0))
+    let next = ref(S.strictlySortedLength(xs, (x, y) => Belt_Id.getCmpInternal(cmp)(x, y) < 0))
     let result = ref(
       if next.contents >= 0 {
         fromSortedArrayAux(xs, 0, next.contents)

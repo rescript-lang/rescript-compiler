@@ -75,6 +75,7 @@ mismatch if they use different comparison function
 */
 type comparable<'key, 'id> = module(Comparable with type t = 'key and type identity = 'id)
 
+@deprecated("Use `MakeComparable` instead")
 module MakeComparableU: (
   M: {
     type t
@@ -89,6 +90,7 @@ module MakeComparable: (
   },
 ) => (Comparable with type t = M.t)
 
+@deprecated("Use `comparable` instead")
 let comparableU: (~cmp: ('a, 'a) => int) => module(Comparable with type t = 'a)
 
 /**
@@ -124,6 +126,7 @@ mismatch if they use different comparison function
 */
 type hashable<'key, 'id> = module(Hashable with type t = 'key and type identity = 'id)
 
+@deprecated("Use `MakeHashable` instead")
 module MakeHashableU: (
   M: {
     type t
@@ -140,6 +143,7 @@ module MakeHashable: (
   },
 ) => (Hashable with type t = M.t)
 
+@deprecated("Use `hashable` instead")
 let hashableU: (~hash: 'a => int, ~eq: ('a, 'a) => bool) => module(Hashable with type t = 'a)
 
 let hashable: (~hash: 'a => int, ~eq: ('a, 'a) => bool) => module(Hashable with type t = 'a)

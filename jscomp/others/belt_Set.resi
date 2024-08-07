@@ -297,6 +297,7 @@ let eq: (t<'value, 'id>, t<'value, 'id>) => bool
 /**
 Same as [forEach](#forEach) but takes uncurried functon.
 */
+@deprecated("Use `forEach` instead")
 let forEachU: (t<'value, 'id>, 'value => unit) => unit
 
 /**
@@ -315,6 +316,7 @@ acc /* [6,5,3,2] */
 */
 let forEach: (t<'value, 'id>, 'value => unit) => unit
 
+@deprecated("Use `reduce` instead")
 let reduceU: (t<'value, 'id>, 'a, ('a, 'value) => 'a) => 'a
 
 /**
@@ -331,6 +333,7 @@ s0->Belt.Set.reduce(list{}, (acc, element) =>
 */
 let reduce: (t<'value, 'id>, 'a, ('a, 'value) => 'a) => 'a
 
+@deprecated("Use `every` instead")
 let everyU: (t<'value, 'id>, 'value => bool) => bool
 
 /**
@@ -347,6 +350,7 @@ s0->Belt.Set.every(isEven) /* true */
 */
 let every: (t<'value, 'id>, 'value => bool) => bool
 
+@deprecated("Use `some` instead")
 let someU: (t<'value, 'id>, 'value => bool) => bool
 
 /**
@@ -363,6 +367,7 @@ s0->Belt.Set.some(isOdd) /* true */
 */
 let some: (t<'value, 'id>, 'value => bool) => bool
 
+@deprecated("Use `keep` instead")
 let keepU: (t<'value, 'id>, 'value => bool) => t<'value, 'id>
 
 /**
@@ -381,6 +386,7 @@ s1->Belt.Set.toArray /* [2,4] */
 */
 let keep: (t<'value, 'id>, 'value => bool) => t<'value, 'id>
 
+@deprecated("Use `partition` instead")
 let partitionU: (t<'value, 'id>, 'value => bool) => (t<'value, 'id>, t<'value, 'id>)
 
 /**

@@ -9,9 +9,11 @@ let isEmpty: t<'v> => bool
 
 let has: (t<'v>, key) => bool
 
+@deprecated("Use `cmp` instead")
 let cmpU: (t<'v>, t<'v>, ('v, 'v) => int) => int
 let cmp: (t<'v>, t<'v>, ('v, 'v) => int) => int
 
+@deprecated("Use `eq` instead")
 let eqU: (t<'v>, t<'v>, ('v, 'v) => bool) => bool
 
 /**
@@ -21,6 +23,7 @@ equal data.
 */
 let eq: (t<'v>, t<'v>, ('v, 'v) => bool) => bool
 
+@deprecated("Use `findFirstBy` instead")
 let findFirstByU: (t<'v>, (key, 'v) => bool) => option<(key, 'v)>
 
 /**
@@ -34,6 +37,7 @@ findFirstBy(s0, (k, v) => k == 4) == option((4, "4"))
 */
 let findFirstBy: (t<'v>, (key, 'v) => bool) => option<(key, 'v)>
 
+@deprecated("Use `forEach` instead")
 let forEachU: (t<'v>, (key, 'v) => unit) => unit
 
 /**
@@ -44,6 +48,7 @@ order with respect to the ordering over the type of the keys.
 */
 let forEach: (t<'v>, (key, 'v) => unit) => unit
 
+@deprecated("Use `reduce` instead")
 let reduceU: (t<'v>, 'v2, ('v2, key, 'v) => 'v2) => 'v2
 
 /**
@@ -53,6 +58,7 @@ where `k1 ... kN` are the keys of all bindings in `m`
 */
 let reduce: (t<'v>, 'v2, ('v2, key, 'v) => 'v2) => 'v2
 
+@deprecated("Use `every` instead")
 let everyU: (t<'v>, (key, 'v) => bool) => bool
 
 /** 
@@ -60,6 +66,7 @@ let everyU: (t<'v>, (key, 'v) => bool) => bool
 Order unspecified */
 let every: (t<'v>, (key, 'v) => bool) => bool
 
+@deprecated("Use `some` instead")
 let someU: (t<'v>, (key, 'v) => bool) => bool
 
 /** 
@@ -122,9 +129,11 @@ in `m`, its previous binding disappears.
 */
 let set: (t<'v>, key, 'v) => t<'v>
 
+@deprecated("Use `update` instead")
 let updateU: (t<'v>, key, option<'v> => option<'v>) => t<'v>
 let update: (t<'v>, key, option<'v> => option<'v>) => t<'v>
 
+@deprecated("Use `merge` instead")
 let mergeU: (t<'v>, t<'v2>, (key, option<'v>, option<'v2>) => option<'c>) => t<'c>
 
 /**
@@ -136,6 +145,7 @@ let merge: (t<'v>, t<'v2>, (key, option<'v>, option<'v2>) => option<'c>) => t<'c
 
 let mergeMany: (t<'v>, array<(key, 'v)>) => t<'v>
 
+@deprecated("Use `keep` instead")
 let keepU: (t<'v>, (key, 'v) => bool) => t<'v>
 
 /** 
@@ -144,6 +154,7 @@ let keepU: (t<'v>, (key, 'v) => bool) => t<'v>
 */
 let keep: (t<'v>, (key, 'v) => bool) => t<'v>
 
+@deprecated("Use `partition` instead")
 let partitionU: (t<'v>, (key, 'v) => bool) => (t<'v>, t<'v>)
 
 /**
@@ -161,6 +172,7 @@ contains no binding for `x`, or `Some(v)` if `m` binds `v` to `x`.
 */
 let split: (key, t<'v>) => (t<'v>, option<'v>, t<'v>)
 
+@deprecated("Use `map` instead")
 let mapU: (t<'v>, 'v => 'v2) => t<'v2>
 
 /**
@@ -171,5 +183,6 @@ ordering over the type of the keys.
 */
 let map: (t<'v>, 'v => 'v2) => t<'v2>
 
+@deprecated("Use `mapWithKey` instead")
 let mapWithKeyU: (t<'v>, (key, 'v) => 'v2) => t<'v2>
 let mapWithKey: (t<'v>, (key, 'v) => 'v2) => t<'v2>

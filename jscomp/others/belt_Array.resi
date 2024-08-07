@@ -205,6 +205,7 @@ Belt.Array.rangeBy(3, 3, ~step=1) == [3]
 */
 let rangeBy: (int, int, ~step: int) => array<int>
 
+@deprecated("Use `makeBy` instead")
 let makeByU: (int, int => 'a) => t<'a>
 /**
 `makeBy(n, f)` return an empty array when n is negative return an array of size
@@ -220,6 +221,7 @@ Belt.Array.makeBy(5, (i) => i * i) == [0, 1, 4, 9, 16]
 */
 let makeBy: (int, int => 'a) => t<'a>
 
+@deprecated("Use `makeByAndShuffle` instead")
 let makeByAndShuffleU: (int, int => 'a) => t<'a>
 /**
 Equivalent to `shuffle(makeBy(n, f))`
@@ -238,6 +240,7 @@ Belt.Array.zip([1, 2], [3, 4, 5]) == [(1, 3), (2, 4)]
 */
 let zip: (t<'a>, array<'b>) => array<('a, 'b)>
 
+@deprecated("Use `zipBy` instead")
 let zipByU: (t<'a>, array<'b>, ('a, 'b) => 'c) => array<'c>
 /**
 `zipBy(xs, ys, f)` create an array by applying `f` to corresponding elements of
@@ -392,6 +395,7 @@ Unsafe blit without bounds checking.
 */
 let blitUnsafe: (~src: t<'a>, ~srcOffset: int, ~dst: t<'a>, ~dstOffset: int, ~len: int) => unit
 
+@deprecated("Use `forEach` instead")
 let forEachU: (t<'a>, 'a => unit) => unit
 /**
 `forEach(xs, f)`
@@ -420,6 +424,7 @@ total.contents == 1 + 2 + 3 + 4
 */
 let forEach: (t<'a>, 'a => unit) => unit
 
+@deprecated("Use `map` instead")
 let mapU: (t<'a>, 'a => 'b) => array<'b>
 /**
 `map(xs, f)` returns a new array by calling `f` for each element of `xs` from
@@ -433,6 +438,7 @@ Belt.Array.map([1, 2], (x) => x + 1) == [3, 4]
 */
 let map: (t<'a>, 'a => 'b) => array<'b>
 
+@deprecated("Use `flatMap` instead")
 let flatMapU: (t<'a>, 'a => array<'b>) => array<'b>
 /**
 `flatMap(xs, f)` returns a new array by calling `f` for each element of `xs` from
@@ -446,6 +452,7 @@ Belt.Array.flatMap([1, 2], x => [x + 10, x + 20]) == [11, 21, 12, 22]
 */
 let flatMap: (t<'a>, 'a => array<'b>) => array<'b>
 
+@deprecated("Use `getBy` instead")
 let getByU: (t<'a>, 'a => bool) => option<'a>
 /**
 `getBy(xs, p)` returns `Some(value)` for the first value in `xs` that satisifies
@@ -460,6 +467,7 @@ Belt.Array.getBy([15, 13, 11], (x) => mod(x, 2) == 0) == None
 */
 let getBy: (t<'a>, 'a => bool) => option<'a>
 
+@deprecated("Use `getIndexBy` instead")
 let getIndexByU: (t<'a>, 'a => bool) => option<int>
 /**
 `getIndexBy(xs, p)` returns `Some(index)` for the first value in `xs` that
@@ -475,12 +483,14 @@ Belt.Array.getIndexBy([15, 13, 11], (x) => mod(x, 2) == 0) == None
 */
 let getIndexBy: (t<'a>, 'a => bool) => option<int>
 
+@deprecated("Use `keep` instead")
 let keepU: (t<'a>, 'a => bool) => t<'a>
 /**
 `keep(xs, p)` returns a new array that keep all elements satisfy `p`.
 */
 let keep: (t<'a>, 'a => bool) => t<'a>
 
+@deprecated("Use `keepWithIndex` instead")
 let keepWithIndexU: (t<'a>, ('a, int) => bool) => t<'a>
 /**
 `keepWithIndex(xs, p)` returns a new array that keep all elements satisfy `p`.
@@ -493,6 +503,7 @@ Belt.Array.keepWithIndex([1, 2, 3], (_x, i) => i == 1) == [2]
 */
 let keepWithIndex: (t<'a>, ('a, int) => bool) => t<'a>
 
+@deprecated("Use `keepMap` instead")
 let keepMapU: (t<'a>, 'a => option<'b>) => array<'b>
 /**
 `keepMap(xs, p)` returns a new array that keep all elements that return a non
@@ -513,6 +524,7 @@ Belt.Array.keepMap([1, 2, 3], x =>
 */
 let keepMap: (t<'a>, 'a => option<'b>) => array<'b>
 
+@deprecated("Use `forEachWithIndex` instead")
 let forEachWithIndexU: (t<'a>, (int, 'a) => unit) => unit
 /**
 `forEachWithIndex(xs, f)` same as `Belt.Array.forEach`, except that `f` is
@@ -538,6 +550,7 @@ total.contents == 0 + 10 + 1 + 11 + 2 + 12 + 3 + 13
 */
 let forEachWithIndex: (t<'a>, (int, 'a) => unit) => unit
 
+@deprecated("Use `mapWithIndex` instead")
 let mapWithIndexU: (t<'a>, (int, 'a) => 'b) => array<'b>
 /**
 `mapWithIndex(xs, f)` applies `f` to each element of `xs`. Function `f` takes
@@ -551,6 +564,7 @@ Belt.Array.mapWithIndex([1, 2, 3], (i, x) => i + x) == [0 + 1, 1 + 2, 2 + 3]
 */
 let mapWithIndex: (t<'a>, (int, 'a) => 'b) => array<'b>
 
+@deprecated("Use `partition` instead")
 let partitionU: (t<'a>, 'a => bool) => (t<'a>, t<'a>)
 /**
 `partition(f, a)` split array into tuple of two arrays based on predicate `f`;
@@ -566,6 +580,7 @@ Belt.Array.partition([1, 2, 3, 4, 5], (x) => mod(x, 2) != 0) == ([1, 3, 5], [2, 
 */
 let partition: (t<'a>, 'a => bool) => (t<'a>, t<'a>)
 
+@deprecated("Use `reduce` instead")
 let reduceU: (array<'b>, 'a, ('a, 'b) => 'a) => 'a
 /**
 `reduce(xs, init, f)` applies `f` to each element of `xs` from beginning to end.
@@ -583,6 +598,7 @@ Belt.Array.reduce(["a", "b", "c", "d"], "", (a, b) => a ++ b) == "abcd"
 */
 let reduce: (array<'b>, 'a, ('a, 'b) => 'a) => 'a
 
+@deprecated("Use `reduceReverse` instead")
 let reduceReverseU: (array<'b>, 'a, ('a, 'b) => 'a) => 'a
 /**
 `reduceReverse(xs, init, f)` works like `Belt.Array.reduce` except that
@@ -596,6 +612,7 @@ Belt.Array.reduceReverse(["a", "b", "c", "d"], "", (a, b) => a ++ b) == "dcba"
 */
 let reduceReverse: (array<'b>, 'a, ('a, 'b) => 'a) => 'a
 
+@deprecated("Use `reduceReverse2` instead")
 let reduceReverse2U: (t<'a>, array<'b>, 'c, ('c, 'a, 'b) => 'c) => 'c
 /**
 `reduceReverse2(xs, ys, init, f)` reduces two arrays xs and ys;taking items
@@ -609,6 +626,7 @@ Belt.Array.reduceReverse2([1, 2, 3], [1, 2], 0, (acc, x, y) => acc + x + y) == 6
 */
 let reduceReverse2: (t<'a>, array<'b>, 'c, ('c, 'a, 'b) => 'c) => 'c
 
+@deprecated("Use `reduceWithIndex` instead")
 let reduceWithIndexU: (t<'a>, 'b, ('b, 'a, int) => 'b) => 'b
 /**
 Applies `f` to each element of `xs` from beginning to end. Function `f` has
@@ -624,6 +642,7 @@ Belt.Array.reduceWithIndex([1, 2, 3, 4], 0, (acc, x, i) => acc + x + i) == 16
 */
 let reduceWithIndex: (t<'a>, 'b, ('b, 'a, int) => 'b) => 'b
 
+@deprecated("Use `joinWith` instead")
 let joinWithU: (t<'a>, string, 'a => string) => string
 /**
 `joinWith(xs, sep, toString)`
@@ -643,6 +662,7 @@ Belt.Array.joinWith([1], " ", Js.Int.toString) == "1"
 */
 let joinWith: (t<'a>, string, 'a => string) => string
 
+@deprecated("Use `some` instead")
 let someU: (t<'a>, 'a => bool) => bool
 /**
 `some(xs, p)` returns true if at least one of the elements in `xs` satifies `p`;
@@ -658,6 +678,7 @@ Belt.Array.some([(-1), (-3), (-5)], (x) => x > 0) == false
 */
 let some: (t<'a>, 'a => bool) => bool
 
+@deprecated("Use `every` instead")
 let everyU: (t<'a>, 'a => bool) => bool
 /**
 `every(xs, p)` returns `true` if all elements satisfy `p`; where `p` is a
@@ -673,6 +694,7 @@ Belt.Array.every([1, (-3), 5], (x) => x > 0) == false
 */
 let every: (t<'a>, 'a => bool) => bool
 
+@deprecated("Use `every2` instead")
 let every2U: (t<'a>, array<'b>, ('a, 'b) => bool) => bool
 /**
 `every2(xs, ys, p)` returns true if `p(xi, yi)` is true for all pairs of
@@ -692,6 +714,7 @@ Belt.Array.every2([0, 1], [5, 0], (x, y) => x > y) == false
 */
 let every2: (t<'a>, array<'b>, ('a, 'b) => bool) => bool
 
+@deprecated("Use `some2` instead")
 let some2U: (t<'a>, array<'b>, ('a, 'b) => bool) => bool
 /**
 `some2(xs, ys, p)` returns true if `p(xi, yi)` is true for any pair of elements
@@ -709,6 +732,7 @@ Belt.Array.some2([2, 3], [1, 4], (x, y) => x > y) == true
 */
 let some2: (t<'a>, array<'b>, ('a, 'b) => bool) => bool
 
+@deprecated("Use `cmp` instead")
 let cmpU: (t<'a>, t<'a>, ('a, 'a) => int) => int
 /**
 `cmp(xs, ys, f)` compared by length if `length(xs) != length(ys)`; returning `-1`
@@ -730,6 +754,7 @@ Belt.Array.cmp([1, 3, 5], [1, 3, 5], (a, b) => compare(a, b)) == 0
 */
 let cmp: (t<'a>, t<'a>, ('a, 'a) => int) => int
 
+@deprecated("Use `eq` instead")
 let eqU: (t<'a>, t<'a>, ('a, 'a) => bool) => bool
 /**
 `eq(xs, ys)` return `false` if length is not the same otherwise compare items
@@ -761,6 +786,7 @@ arr == ["ant", "bee", "cat"]
 */
 external truncateToLengthUnsafe: (t<'a>, int) => unit = "length"
 
+@deprecated("Use `init` instead")
 let initU: (int, int => 'a) => t<'a>
 let init: (int, int => 'a) => t<'a>
 

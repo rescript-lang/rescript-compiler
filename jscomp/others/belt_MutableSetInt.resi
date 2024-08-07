@@ -61,16 +61,19 @@ let subset: (t, t) => bool
 let cmp: (t, t) => int
 let eq: (t, t) => bool
 
+@deprecated("Use `forEach` instead")
 let forEachU: (t, value => unit) => unit
 
 /** In increasing order*/
 let forEach: (t, value => unit) => unit
 
+@deprecated("Use `reduce` instead")
 let reduceU: (t, 'a, ('a, value) => 'a) => 'a
 
 /** Iterate in increasing order. */
 let reduce: (t, 'a, ('a, value) => 'a) => 'a
 
+@deprecated("Use `every` instead")
 let everyU: (t, value => bool) => bool
 
 /**
@@ -78,6 +81,7 @@ let everyU: (t, value => bool) => bool
 Order unspecified. */
 let every: (t, value => bool) => bool
 
+@deprecated("Use `some` instead")
 let someU: (t, value => bool) => bool
 
 /**
@@ -86,6 +90,7 @@ let someU: (t, value => bool) => bool
 */
 let some: (t, value => bool) => bool
 
+@deprecated("Use `keep` instead")
 let keepU: (t, value => bool) => t
 
 /** 
@@ -94,6 +99,7 @@ predicate `p`.
 */
 let keep: (t, value => bool) => t
 
+@deprecated("Use `partition` instead")
 let partitionU: (t, value => bool) => (t, t)
 
 /** 

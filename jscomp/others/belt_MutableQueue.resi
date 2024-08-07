@@ -89,8 +89,10 @@ Returns the number of elements in a queue.
 */
 let size: t<'a> => int
 
+@deprecated("Use `map` instead")
 let mapU: (t<'a>, 'a => 'b) => t<'b>
 let map: (t<'a>, 'a => 'b) => t<'b>
+@deprecated("Use `forEach` instead")
 let forEachU: (t<'a>, 'a => unit) => unit
 
 /**
@@ -99,6 +101,7 @@ recently entered to the most recently entered. The queue itself is unchanged.
 */
 let forEach: (t<'a>, 'a => unit) => unit
 
+@deprecated("Use `reduce` instead")
 let reduceU: (t<'a>, 'b, ('b, 'a) => 'b) => 'b
 
 /**

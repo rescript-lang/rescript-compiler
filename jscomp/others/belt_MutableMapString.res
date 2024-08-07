@@ -28,18 +28,12 @@ let set = (m: t<_>, k, v) => {
   }
 }
 
-let forEachU = (d, f) => N.forEachU(d.data, f)
-let forEach = (d, f) => forEachU(d, (a, b) => f(a, b))
-let mapU = (d, f) => {data: N.mapU(d.data, f)}
-let map = (d, f) => mapU(d, a => f(a))
-let mapWithKeyU = (d, f) => {data: N.mapWithKeyU(d.data, f)}
-let mapWithKey = (d, f) => mapWithKeyU(d, (a, b) => f(a, b))
-let reduceU = (d, acc, f) => N.reduceU(d.data, acc, f)
-let reduce = (d, acc, f) => reduceU(d, acc, (a, b, c) => f(a, b, c))
-let everyU = (d, f) => N.everyU(d.data, f)
-let every = (d, f) => everyU(d, (a, b) => f(a, b))
-let someU = (d, f) => N.someU(d.data, f)
-let some = (d, f) => someU(d, (a, b) => f(a, b))
+let forEach = (d, f) => N.forEach(d.data, f)
+let map = (d, f) => {data: N.map(d.data, f)}
+let mapWithKey = (d, f) => {data: N.mapWithKey(d.data, f)}
+let reduce = (d, acc, f) => N.reduce(d.data, acc, f)
+let every = (d, f) => N.every(d.data, f)
+let some = (d, f) => N.some(d.data, f)
 let size = d => N.size(d.data)
 let toList = d => N.toList(d.data)
 let toArray = d => N.toArray(d.data)
@@ -126,14 +120,14 @@ let rec updateDone = (t, x: key, f) =>
     }
   }
 
-let updateU = (t, x, f) => {
+let update = (t, x, f) => {
   let oldRoot = t.data
   let newRoot = updateDone(oldRoot, x, f)
   if newRoot !== oldRoot {
     t.data = newRoot
   }
 }
-let update = (t, x, f) => updateU(t, x, a => f(a))
+
 let rec removeArrayMutateAux = (t, xs, i, len) =>
   if i < len {
     let ele = A.getUnsafe(xs, i)
@@ -164,13 +158,21 @@ let removeMany = (d: t<_>, xs) => {
 
 let fromArray = xs => {data: I.fromArray(xs)}
 
-let cmpU = (d0, d1, f) => I.cmpU(d0.data, d1.data, f)
-let cmp = (d0, d1, f) => cmpU(d0, d1, (a, b) => f(a, b))
+let cmp = (d0, d1, f) => I.cmp(d0.data, d1.data, f)
 
-let eqU = (d0, d1, f) => I.eqU(d0.data, d1.data, f)
-let eq = (d0, d1, f) => eqU(d0, d1, (a, b) => f(a, b))
+let eq = (d0, d1, f) => I.eq(d0.data, d1.data, f)
 
 let get = (d, x) => I.get(d.data, x)
 let getUndefined = (d, x) => I.getUndefined(d.data, x)
 let getWithDefault = (d, x, def) => I.getWithDefault(d.data, x, def)
 let getExn = (d, x) => I.getExn(d.data, x)
+
+let cmpU = cmp
+let eqU = eq
+let everyU = every
+let forEachU = forEach
+let mapU = map
+let mapWithKeyU = mapWithKey
+let reduceU = reduce
+let someU = some
+let updateU = update

@@ -32,13 +32,11 @@ and t<'hash, 'eq, 'a> = C.container<'hash, 'eq, bucket<'a>>
 
 let copy: t<'hash, 'eq, 'a> => t<'hash, 'eq, 'a>
 
-let forEachU: (t<'hash, 'eq, 'a>, 'a => unit) => unit
 let forEach: (t<'hash, 'eq, 'a>, 'a => unit) => unit
 let fillArray: (int, array<'a>, bucket<'a>) => int
 
 let toArray: t<_, _, 'a> => array<'a>
 
-let reduceU: (t<_, _, 'a>, 'b, ('b, 'a) => 'b) => 'b
 let reduce: (t<_, _, 'a>, 'b, ('b, 'a) => 'b) => 'b
 
 let logStats: t<_> => unit

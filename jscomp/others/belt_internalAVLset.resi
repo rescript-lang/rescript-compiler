@@ -55,31 +55,23 @@ let isEmpty: t<'a> => bool
 
 let stackAllLeft: (t<'a>, list<node<'a>>) => list<node<'a>>
 
-let forEachU: (t<'a>, 'a => unit) => unit
 let forEach: (t<'a>, 'a => unit) => unit
 
-let reduceU: (t<'a>, 'b, ('b, 'a) => 'b) => 'b
 let reduce: (t<'a>, 'b, ('b, 'a) => 'b) => 'b
 
-let everyU: (t<'a>, 'a => bool) => bool
 let every: (t<'a>, 'a => bool) => bool
 
-let someU: (t<'a>, 'a => bool) => bool
 let some: (t<'a>, 'a => bool) => bool
 
 let joinShared: (t<'a>, 'a, t<'a>) => t<'a>
 let concatShared: (t<'a>, t<'a>) => t<'a>
 
-let keepSharedU: (t<'a>, 'a => bool) => t<'a>
 let keepShared: (t<'a>, 'a => bool) => t<'a>
 
-let keepCopyU: (t<'a>, 'a => bool) => t<'a>
 let keepCopy: (t<'a>, 'a => bool) => t<'a>
 
-let partitionSharedU: (t<'a>, 'a => bool) => (t<'a>, t<'a>)
 let partitionShared: (t<'a>, 'a => bool) => (t<'a>, t<'a>)
 
-let partitionCopyU: (t<'a>, 'a => bool) => (t<'a>, t<'a>)
 let partitionCopy: (t<'a>, 'a => bool) => (t<'a>, t<'a>)
 
 let lengthNode: node<'a> => int

@@ -28,6 +28,7 @@ Internally it is relying on loops instead of creating new arrays, which makes it
 pretty performant and memory friendly.
 */
 
+@deprecated("Use `forEach` instead")
 let forEachU: (int, int, int => unit) => unit
 
 /**
@@ -48,6 +49,7 @@ Belt.Range.forEach(0, 4, (i) => Js.log(i))
 */
 let forEach: (int, int, int => unit) => unit
 
+@deprecated("Use `every` instead")
 let everyU: (int, int, int => bool) => bool
 
 /**
@@ -62,6 +64,7 @@ Belt.Range.every(0, 4, (i) => i < 4) /* false */
 */
 let every: (int, int, int => bool) => bool
 
+@deprecated("Use `everyBy` instead")
 let everyByU: (int, int, ~step: int, int => bool) => bool
 
 /**
@@ -78,6 +81,7 @@ Belt.Range.everyBy(0, 4, ~step=2, (i) => mod(i, 2) === 0) /* true */
 */
 let everyBy: (int, int, ~step: int, int => bool) => bool
 
+@deprecated("Use `some` instead")
 let someU: (int, int, int => bool) => bool
 
 /**
@@ -93,6 +97,7 @@ Belt.Range.some(0, 4, (i) => i > 2) /* true */
 */
 let some: (int, int, int => bool) => bool
 
+@deprecated("Use `someBy` instead")
 let someByU: (int, int, ~step: int, int => bool) => bool
 
 /**

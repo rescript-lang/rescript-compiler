@@ -14,7 +14,7 @@ function f(X, xs) {
   });
 }
 
-Belt_List.forEachU({
+Belt_List.forEach({
   hd: {
     x: 3
   },
@@ -29,7 +29,7 @@ let bar = [{
     foo: "bar"
   }];
 
-Belt_Array.mapU(bar, (function (b) {
+Belt_Array.map(bar, (function (b) {
   return b.foo;
 }));
 

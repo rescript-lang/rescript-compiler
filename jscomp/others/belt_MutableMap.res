@@ -136,14 +136,13 @@ let rec updateDone = (t, x, f, ~cmp) =>
       Some(N.balMutate(nt))
     }
   }
-let updateU = (t, x, f) => {
+let update = (t, x, f) => {
   let oldRoot = t.data
   let newRoot = updateDone(oldRoot, x, f, ~cmp=t.cmp)
   if newRoot !== oldRoot {
     t.data = newRoot
   }
 }
-let update = (t, x, f) => updateU(t, x, a => f(a))
 
 let make = (type key identity, ~id: id<key, identity>) => {
   module M = unpack(id)
@@ -163,14 +162,10 @@ let minUndefined = m => N.minUndefined(m.data)
 let maximum = m => N.maximum(m.data)
 let maxUndefined = m => N.maxUndefined(m.data)
 
-let forEachU = (d, f) => N.forEachU(d.data, f)
-let forEach = (d, f) => forEachU(d, (a, b) => f(a, b))
-let reduceU = (d, acc, cb) => N.reduceU(d.data, acc, cb)
-let reduce = (d, acc, cb) => reduceU(d, acc, (a, b, c) => cb(a, b, c))
-let everyU = (d, p) => N.everyU(d.data, p)
-let every = (d, p) => everyU(d, (a, b) => p(a, b))
-let someU = (d, p) => N.someU(d.data, p)
-let some = (d, p) => someU(d, (a, b) => p(a, b))
+let forEach = (d, f) => N.forEach(d.data, f)
+let reduce = (d, acc, cb) => N.reduce(d.data, acc, cb)
+let every = (d, p) => N.every(d.data, p)
+let some = (d, p) => N.some(d.data, p)
 let size = d => N.size(d.data)
 let toList = d => N.toList(d.data)
 let toArray = d => N.toArray(d.data)
@@ -183,16 +178,12 @@ let valuesToArray = d => N.valuesToArray(d.data)
 
 let checkInvariantInternal = d => N.checkInvariantInternal(d.data)
 
-let cmpU = (m1, m2, cmp) => N.cmpU(~kcmp=m1.cmp, ~vcmp=cmp, m1.data, m2.data)
-let cmp = (m1, m2, cmp) => cmpU(m1, m2, (a, b) => cmp(a, b))
+let cmp = (m1, m2, cmp) => N.cmp(~kcmp=m1.cmp, ~vcmp=cmp, m1.data, m2.data)
 
-let eqU = (m1, m2, cmp) => N.eqU(~kcmp=m1.cmp, ~veq=cmp, m1.data, m2.data)
-let eq = (m1, m2, cmp) => eqU(m1, m2, (a, b) => cmp(a, b))
+let eq = (m1, m2, cmp) => N.eq(~kcmp=m1.cmp, ~veq=cmp, m1.data, m2.data)
 
-let mapU = (m, f) => {cmp: m.cmp, data: N.mapU(m.data, f)}
-let map = (m, f) => mapU(m, a => f(a))
-let mapWithKeyU = (m, f) => {cmp: m.cmp, data: N.mapWithKeyU(m.data, f)}
-let mapWithKey = (m, f) => mapWithKeyU(m, (a, b) => f(a, b))
+let map = (m, f) => {cmp: m.cmp, data: N.map(m.data, f)}
+let mapWithKey = (m, f) => {cmp: m.cmp, data: N.mapWithKey(m.data, f)}
 let get = (m, x) => N.get(~cmp=m.cmp, m.data, x)
 
 let getUndefined = (m, x) => N.getUndefined(~cmp=m.cmp, m.data, x)
@@ -233,3 +224,13 @@ let mergeMany = (d, xs) => {
     d.data = newRoot
   }
 }
+
+let cmpU = cmp
+let eqU = eq
+let everyU = every
+let forEachU = forEach
+let mapU = map
+let mapWithKeyU = mapWithKey
+let reduceU = reduce
+let someU = some
+let updateU = update

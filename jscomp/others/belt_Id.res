@@ -38,7 +38,7 @@ module type Comparable = {
 
 type comparable<'key, 'id> = module(Comparable with type t = 'key and type identity = 'id)
 
-module MakeComparableU = (
+module MakeComparable = (
   M: {
     type t
     let cmp: (t, t) => int
@@ -48,36 +48,13 @@ module MakeComparableU = (
   include M
 }
 
-module MakeComparable = (
-  M: {
-    type t
-    let cmp: (t, t) => int
-  },
-) => {
-  type identity
-  type t = M.t
-  /* see https://github.com/rescript-lang/rescript-compiler/pull/2589/files/5ef875b7665ee08cfdc59af368fc52bac1fe9130#r173330825 */
-  let cmp = {
-    let cmp = M.cmp
-    (a, b) => cmp(a, b)
-  }
-}
-
-let comparableU = (type key, ~cmp): module(Comparable with type t = key) =>
+let comparable = (type key, ~cmp): module(Comparable with type t = key) =>
   module(
-    MakeComparableU({
+    MakeComparable({
       type t = key
       let cmp = cmp
     })
   )
-
-let comparable = (type key, ~cmp) => {
-  module N = MakeComparable({
-    type t = key
-    let cmp = cmp
-  })
-  module(N: Comparable with type t = key)
-}
 
 module type Hashable = {
   type identity
@@ -88,7 +65,7 @@ module type Hashable = {
 
 type hashable<'key, 'id> = module(Hashable with type t = 'key and type identity = 'id)
 
-module MakeHashableU = (
+module MakeHashable = (
   M: {
     type t
     let hash: t => int
@@ -99,39 +76,17 @@ module MakeHashableU = (
   include M
 }
 
-module MakeHashable = (
-  M: {
-    type t
-    let hash: t => int
-    let eq: (t, t) => bool
-  },
-) => {
-  type identity
-  type t = M.t
-  let hash = {
-    let hash = M.hash
-    a => hash(a)
-  }
-  let eq = {
-    let eq = M.eq
-    (a, b) => eq(a, b)
-  }
-}
-
-let hashableU = (type key, ~hash, ~eq): module(Hashable with type t = key) =>
+let hashable = (type key, ~hash, ~eq): module(Hashable with type t = key) =>
   module(
-    MakeHashableU({
+    MakeHashable({
       type t = key
       let hash = hash
       let eq = eq
     })
   )
 
-let hashable = (type key, ~hash, ~eq) => {
-  module N = MakeHashable({
-    type t = key
-    let hash = hash
-    let eq = eq
-  })
-  module(N: Hashable with type t = key)
-}
+module MakeComparableU = MakeComparable
+module MakeHashableU = MakeHashable
+
+let comparableU = comparable
+let hashableU = hashable

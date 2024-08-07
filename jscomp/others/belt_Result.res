@@ -32,29 +32,23 @@ let getExn = x =>
   | Error(_) => raise(Not_found)
   }
 
-let mapWithDefaultU = (opt, default, f) =>
+let mapWithDefault = (opt, default, f) =>
   switch opt {
   | Ok(x) => f(x)
   | Error(_) => default
   }
 
-let mapWithDefault = (opt, default, f) => mapWithDefaultU(opt, default, x => f(x))
-
-let mapU = (opt, f) =>
+let map = (opt, f) =>
   switch opt {
   | Ok(x) => Ok(f(x))
   | Error(y) => Error(y)
   }
 
-let map = (opt, f) => mapU(opt, x => f(x))
-
-let flatMapU = (opt, f) =>
+let flatMap = (opt, f) =>
   switch opt {
   | Ok(x) => f(x)
   | Error(y) => Error(y)
   }
-
-let flatMap = (opt, f) => flatMapU(opt, x => f(x))
 
 let getWithDefault = (opt, default) =>
   switch opt {
@@ -74,7 +68,7 @@ let isError = x =>
   | Error(_) => true
   }
 
-let eqU = (a, b, f) =>
+let eq = (a, b, f) =>
   switch (a, b) {
   | (Ok(a), Ok(b)) => f(a, b)
   | (Error(_), Ok(_))
@@ -82,9 +76,7 @@ let eqU = (a, b, f) =>
   | (Error(_), Error(_)) => true
   }
 
-let eq = (a, b, f) => eqU(a, b, (x, y) => f(x, y))
-
-let cmpU = (a, b, f) =>
+let cmp = (a, b, f) =>
   switch (a, b) {
   | (Ok(a), Ok(b)) => f(a, b)
   | (Error(_), Ok(_)) => -1
@@ -92,4 +84,8 @@ let cmpU = (a, b, f) =>
   | (Error(_), Error(_)) => 0
   }
 
-let cmp = (a, b, f) => cmpU(a, b, (x, y) => f(x, y))
+let cmpU = cmp
+let eqU = eq
+let flatMapU = flatMap
+let mapU = map
+let mapWithDefaultU = mapWithDefault

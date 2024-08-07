@@ -38,7 +38,8 @@ let isEmpty: t<'a> => bool
 
 let has: (t<'a>, key) => bool
 
-let cmpU: (t<'a>, t<'a>, (. 'a, 'a) => int) => int
+@deprecated("Use `cmp` instead")
+let cmpU: (t<'a>, t<'a>, ('a, 'a) => int) => int
 
 /** 
 `cmp(m1, m2, cmp)`. First compare by size, if size is the same, compare by key,
@@ -46,12 +47,14 @@ value pair
 */
 let cmp: (t<'a>, t<'a>, ('a, 'a) => int) => int
 
-let eqU: (t<'a>, t<'a>, (. 'a, 'a) => bool) => bool
+@deprecated("Use `eq` instead")
+let eqU: (t<'a>, t<'a>, ('a, 'a) => bool) => bool
 
 /** `eq(m1, m2, cmp)` */
 let eq: (t<'a>, t<'a>, ('a, 'a) => bool) => bool
 
-let forEachU: (t<'a>, (. key, 'a) => unit) => unit
+@deprecated("Use `forEach` instead")
+let forEachU: (t<'a>, (key, 'a) => unit) => unit
 
 /** 
 `forEach(m, f)` applies `f` to all bindings in map `m`. `f` receives the key as
@@ -59,7 +62,8 @@ first argument, and the associated value as second argument. The application
 order of `f` is in increasing order. */
 let forEach: (t<'a>, (key, 'a) => unit) => unit
 
-let reduceU: (t<'a>, 'b, (. 'b, key, 'a) => 'b) => 'b
+@deprecated("Use `reduce` instead")
+let reduceU: (t<'a>, 'b, ('b, key, 'a) => 'b) => 'b
 
 /** 
 `reduce(m, a, f)` computes `(f kN dN ... (f k1 d1 a)...)`, where `k1 ... kN` are
@@ -67,7 +71,8 @@ the keys of all bindings in `m` (in increasing order), and `d1 ... dN` are the
 associated data. */
 let reduce: (t<'a>, 'b, ('b, key, 'a) => 'b) => 'b
 
-let everyU: (t<'a>, (. key, 'a) => bool) => bool
+@deprecated("Use `every` instead")
+let everyU: (t<'a>, (key, 'a) => bool) => bool
 
 /** 
 `every(m, p)` checks if all the bindings of the map satisfy the predicate `p`.
@@ -75,7 +80,8 @@ The application order of `p` is unspecified.
 */
 let every: (t<'a>, (key, 'a) => bool) => bool
 
-let someU: (t<'a>, (. key, 'a) => bool) => bool
+@deprecated("Use `some` instead")
+let someU: (t<'a>, (key, 'a) => bool) => bool
 
 /** 
 `some(m, p)` checks if at least one binding of the map satisfy the predicate `p`.
@@ -127,10 +133,12 @@ already bound in `m`, its previous binding disappears.
 */
 let set: (t<'a>, key, 'a) => unit
 
-let updateU: (t<'a>, key, (. option<'a>) => option<'a>) => unit
+@deprecated("Use `update` instead")
+let updateU: (t<'a>, key, option<'a> => option<'a>) => unit
 let update: (t<'a>, key, option<'a> => option<'a>) => unit
 
-let mapU: (t<'a>, (. 'a) => 'b) => t<'b>
+@deprecated("Use `map` instead")
+let mapU: (t<'a>, 'a => 'b) => t<'b>
 
 /** 
 `map(m, f)` returns a map with same domain as `m`, where the associated value `a`
@@ -139,5 +147,6 @@ to `a`. The bindings are passed to `f` in increasing order with respect to the
 ordering over the type of the keys. */
 let map: (t<'a>, 'a => 'b) => t<'b>
 
-let mapWithKeyU: (t<'a>, (. key, 'a) => 'b) => t<'b>
+@deprecated("Use `mapWithKey` instead")
+let mapWithKeyU: (t<'a>, (key, 'a) => 'b) => t<'b>
 let mapWithKey: (t<'a>, (key, 'a) => 'b) => t<'b>

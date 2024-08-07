@@ -24,11 +24,8 @@ type t<'a, 'b, 'id> = N.t<hash<'a, 'id>, eq<'a, 'id>, 'a, 'b>
 let clear = C.clear
 let size = h => h.C.size
 let forEach = N.forEach
-let forEachU = N.forEachU
 let reduce = N.reduce
-let reduceU = N.reduceU
 let logStats = N.logStats
-let keepMapInPlaceU = N.keepMapInPlaceU
 let keepMapInPlace = N.keepMapInPlace
 let toArray = N.toArray
 let copy = N.copy
@@ -227,3 +224,7 @@ let mergeMany = (h, arr) => {
 
 module Int = Belt_HashMapInt
 module String = Belt_HashMapString
+
+let forEachU = forEach
+let reduceU = reduce
+let keepMapInPlaceU = keepMapInPlace
