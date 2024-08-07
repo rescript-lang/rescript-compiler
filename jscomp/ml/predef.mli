@@ -77,13 +77,6 @@ val build_initial_env:
 val builtin_values: (string * Ident.t) list
 val builtin_idents: (string * Ident.t) list
 
-(** All predefined exceptions, exposed as [Ident.t] for flambda (for
-    building value approximations).
-    The [Ident.t] for division by zero is also exported explicitly
-    so flambda can generate code to raise it. *)
-val ident_division_by_zero: Ident.t
-val all_predef_exns : Ident.t list
-
 type test =
   | For_sure_yes
   | For_sure_no 

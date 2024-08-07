@@ -7,8 +7,6 @@ let standard_library =
 
 let standard_library_default = standard_library
 
-let bs_only = ref true
-
 let unsafe_empty_array = ref false
 
 let cmi_magic_number = "Caml1999I022"

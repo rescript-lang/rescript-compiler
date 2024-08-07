@@ -1335,7 +1335,6 @@ let make_constr_matching p def ctx = function
           (arg, Alias) :: argl
         else match cstr.cstr_tag with
         | Cstr_block _ when
-            !Config.bs_only &&
             Datarepr.constructor_has_optional_shape cstr
           ->
             begin
@@ -2280,7 +2279,6 @@ let split_extension_cases tag_lambda_list =
     | (cstr, act) :: rem ->
         let (consts, nonconsts) = split_rec rem in
         match cstr with
-          Cstr_extension(path, true) when not !Config.bs_only -> ((path, act) :: consts, nonconsts)
         | Cstr_extension(path, _) -> (consts, (path, act) :: nonconsts)
         | _ -> assert false in
   split_rec tag_lambda_list
@@ -2309,17 +2307,13 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
         match nonconsts with
           [] -> default
         | _ ->
-            let tag = Ident.create "tag" in
-            let tests =
-              List.fold_right
-                (fun (path, act) rem ->
-                   let ext = transl_extension_path ex_pat.pat_env path in
-                   Lifthenelse(Lprim(extension_slot_eq , [Lvar tag; ext], loc),
-                               act, rem))
-                nonconsts
-                default
-            in
-              Llet(Alias, Pgenval,tag,  arg, tests)
+          List.fold_right
+            (fun (path, act) rem ->
+                let ext = transl_extension_path ex_pat.pat_env path in
+                Lifthenelse(Lprim(extension_slot_eq , [arg; ext], loc),
+                            act, rem))
+            nonconsts
+            default 
       in
         List.fold_right
           (fun (path, act) rem ->
@@ -2355,7 +2349,7 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
               (* Typically, match on lists, will avoid isint primitive in that
                 case *)
               let arg = 
-                if !Config.bs_only && Datarepr.constructor_has_optional_shape cstr then
+                if Datarepr.constructor_has_optional_shape cstr then
                   Lprim(is_not_none_bs_primitve , [arg], loc)
                 else arg
               in 
@@ -2452,10 +2446,7 @@ let combine_variant names loc row arg partial ctx def
   else
     num_constr := max_int;
   let test_int_or_block arg if_int if_block =
-    if !Config.bs_only then 
-      Lifthenelse(Lprim (Pccall(Primitive.simple ~name:"#is_poly_var_block" ~arity:1 ~alloc:false), [arg], loc), if_block, if_int)
-    else   
-      Lifthenelse(Lprim (Pisint, [arg], loc), if_int, if_block) in
+    Lifthenelse(Lprim (Pccall(Primitive.simple ~name:"#is_poly_var_block" ~arity:1 ~alloc:false), [arg], loc), if_block, if_int) in
   let sig_complete =  List.length tag_lambda_list = !num_constr
   and one_action = same_actions tag_lambda_list in (* reduandant work under bs context *)
   let fail, local_jumps =
@@ -3001,67 +2992,6 @@ let simple_for_let loc param pat body =
    catch/exit.
 *)
 
-let rec map_return f = function
-  | Llet (str, k, id, l1, l2) -> Llet (str, k, id, l1, map_return f l2)
-  | Lletrec (l1, l2) -> Lletrec (l1, map_return f l2)
-  | Lifthenelse (lcond, lthen, lelse) ->
-      Lifthenelse (lcond, map_return f lthen, map_return f lelse)
-  | Lsequence (l1, l2) -> Lsequence (l1, map_return f l2)
-  | Ltrywith (l1, id, l2) -> Ltrywith (map_return f l1, id, map_return f l2)
-  | Lstaticcatch (l1, b, l2) ->
-      Lstaticcatch (map_return f l1, b, map_return f l2)
-  | Lstaticraise _ | Lprim(Praise _, _, _) as l -> l
-  | l -> f l
-
-(* The 'opt' reference indicates if the optimization is worthy.
-
-   It is shared by the different calls to 'assign_pat' performed from
-   'map_return'. For example with the code
-     let (x, y) = if foo then z else (1,2)
-   the else-branch will activate the optimization for both branches.
-
-   That means that the optimization is activated if *there exists* an
-   interesting tuple in one hole of the let-rhs context. We could
-   choose to activate it only if *all* holes are interesting. We made
-   that choice because being optimistic is extremely cheap (one static
-   exit/catch overhead in the "wrong cases"), while being pessimistic
-   can be costly (one unnecessary tuple allocation).
-*)
-
-let assign_pat opt nraise catch_ids loc pat lam =
-  let rec collect acc pat lam = match pat.pat_desc, lam with
-  | Tpat_tuple patl, Lprim(Pmakeblock _, lams, _) ->
-      opt := true;
-      List.fold_left2 collect acc patl lams
-  | Tpat_tuple patl, Lconst(Const_block( _, scl)) ->
-      opt := true;
-      let collect_const acc pat sc = collect acc pat (Lconst sc) in
-      List.fold_left2 collect_const acc patl scl
-  | _ ->
-    (* pattern idents will be bound in staticcatch (let body), so we
-       refresh them here to guarantee binders  uniqueness *)
-    let pat_ids = pat_bound_idents pat in
-    let fresh_ids = List.map (fun id -> id, Ident.rename id) pat_ids in
-    (fresh_ids, alpha_pat fresh_ids pat, lam) :: acc
-  in
-
-  (* sublets were accumulated by 'collect' with the leftmost tuple
-     pattern at the bottom of the list; to respect right-to-left
-     evaluation order for tuples, we must evaluate sublets
-     top-to-bottom. To preserve tail-rec, we will fold_left the
-     reversed list. *)
-  let rev_sublets = List.rev (collect [] pat lam) in
-  let exit =
-    (* build an Ident.tbl to avoid quadratic refreshing costs *)
-    let add t (id, fresh_id) = Ident.add id fresh_id t in
-    let add_ids acc (ids, _pat, _lam) = List.fold_left add acc ids in
-    let tbl = List.fold_left add_ids Ident.empty rev_sublets in
-    let fresh_var id = Lvar (Ident.find_same id tbl) in
-    Lstaticraise(nraise, List.map fresh_var catch_ids)
-  in
-  let push_sublet code (_ids, pat, lam) = simple_for_let loc lam pat code in
-  List.fold_left push_sublet exit rev_sublets
-
 let for_let loc param pat body =
   match pat.pat_desc with
   | Tpat_any ->
@@ -3072,15 +3002,7 @@ let for_let loc param pat body =
       (* fast path, and keep track of simple bindings to unboxable numbers *)
       Llet(Strict, Pgenval, id, param, body)
   | _ ->
-      (* Turn off such optimization to reduce diff in the beginning - FIXME*)
-      if !Config.bs_only then simple_for_let loc param pat body 
-      else
-      let opt = ref false in
-      let nraise = next_raise_count () in
-      let catch_ids = pat_bound_idents pat in
-      let bind = map_return (assign_pat opt nraise catch_ids loc pat) param in
-      if !opt then Lstaticcatch(bind, (nraise, catch_ids), body)
-      else simple_for_let loc param pat body
+      simple_for_let loc param pat body
 
 (* Handling of tupled functions and matchings *)
 
