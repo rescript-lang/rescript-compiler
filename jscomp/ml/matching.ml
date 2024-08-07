@@ -2279,7 +2279,7 @@ let get_extension_cases tag_lambda_list =
     | (cstr, act) :: rem ->
         let nonconsts = split_rec rem in
         match cstr with
-        | Cstr_extension(path, _) -> ((path, act) :: nonconsts)
+        | Cstr_extension(path) -> ((path, act) :: nonconsts)
         | _ -> assert false in
   split_rec tag_lambda_list
 
