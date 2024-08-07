@@ -60,25 +60,18 @@ let isEmpty: t<_> => bool
 
 let stackAllLeft: (t<'a, 'b>, list<node<'a, 'b>>) => list<node<'a, 'b>>
 
-let findFirstByU: (t<'a, 'b>, ('a, 'b) => bool) => option<('a, 'b)>
 let findFirstBy: (t<'a, 'b>, ('a, 'b) => bool) => option<('a, 'b)>
 
-let forEachU: (t<'a, 'b>, ('a, 'b) => unit) => unit
 let forEach: (t<'a, 'b>, ('a, 'b) => unit) => unit
 
-let mapU: (t<'c, 'a>, 'a => 'b) => t<'c, 'b>
 let map: (t<'c, 'a>, 'a => 'b) => t<'c, 'b>
 
-let mapWithKeyU: (t<'a, 'b>, ('a, 'b) => 'c) => t<'a, 'c>
 let mapWithKey: (t<'a, 'b>, ('a, 'b) => 'c) => t<'a, 'c>
 
-let reduceU: (t<'a, 'b>, 'c, ('c, 'a, 'b) => 'c) => 'c
 let reduce: (t<'a, 'b>, 'c, ('c, 'a, 'b) => 'c) => 'c
 
-let everyU: (t<'a, 'b>, ('a, 'b) => bool) => bool
 let every: (t<'a, 'b>, ('a, 'b) => bool) => bool
 
-let someU: (t<'a, 'b>, ('a, 'b) => bool) => bool
 let some: (t<'a, 'b>, ('a, 'b) => bool) => bool
 
 let join: (t<'a, 'b>, 'a, 'b, t<'a, 'b>) => t<'a, 'b>
@@ -87,14 +80,11 @@ let concat: (t<'a, 'b>, t<'a, 'b>) => t<'a, 'b>
 
 let concatOrJoin: (t<'a, 'b>, 'a, option<'b>, t<'a, 'b>) => t<'a, 'b>
 
-let keepSharedU: (t<'a, 'b>, ('a, 'b) => bool) => t<'a, 'b>
 let keepShared: (t<'a, 'b>, ('a, 'b) => bool) => t<'a, 'b>
 
-let keepMapU: (t<'a, 'b>, ('a, 'b) => option<'c>) => t<'a, 'c>
 let keepMap: (t<'a, 'b>, ('a, 'b) => option<'c>) => t<'a, 'c>
 
 /* seems no sharing, could be shared with mutation */
-let partitionSharedU: (t<'a, 'b>, ('a, 'b) => bool) => (t<'a, 'b>, t<'a, 'b>)
 let partitionShared: (t<'a, 'b>, ('a, 'b) => bool) => (t<'a, 'b>, t<'a, 'b>)
 
 let lengthNode: node<'a, 'b> => int
@@ -115,10 +105,8 @@ let fromSortedArrayAux: (array<('a, 'b)>, int, int) => t<'a, 'b>
 let fromSortedArrayRevAux: (array<('a, 'b)>, int, int) => t<'a, 'b>
 let fromSortedArrayUnsafe: array<('a, 'b)> => t<'a, 'b>
 
-let cmpU: (t<'a, 'b>, t<'a, 'c>, ~kcmp: cmp<'a, _>, ~vcmp: ('b, 'c) => int) => int
 let cmp: (t<'a, 'b>, t<'a, 'c>, ~kcmp: cmp<'a, _>, ~vcmp: ('b, 'c) => int) => int
 
-let eqU: (t<'a, 'b>, t<'a, 'c>, ~kcmp: cmp<'a, _>, ~veq: ('b, 'c) => bool) => bool
 let eq: (t<'a, 'b>, t<'a, 'c>, ~kcmp: cmp<'a, _>, ~veq: ('b, 'c) => bool) => bool
 
 let get: (t<'a, 'b>, 'a, ~cmp: cmp<'a, _>) => option<'b>

@@ -15,10 +15,12 @@ let isEmpty: t<'v> => bool
 
 let has: (t<'v>, key) => bool
 
-let cmpU: (t<'v>, t<'v>, (. 'v, 'v) => int) => int
+@deprecated("Use `cmp` instead")
+let cmpU: (t<'v>, t<'v>, ('v, 'v) => int) => int
 let cmp: (t<'v>, t<'v>, ('v, 'v) => int) => int
 
-let eqU: (t<'v>, t<'v>, (. 'v, 'v) => bool) => bool
+@deprecated("Use `eq` instead")
+let eqU: (t<'v>, t<'v>, ('v, 'v) => bool) => bool
 
 /**
 `eq(m1, m2)` tests whether the maps `m1` and `m2` are
@@ -27,7 +29,8 @@ equal data.
 */
 let eq: (t<'v>, t<'v>, ('v, 'v) => bool) => bool
 
-let findFirstByU: (t<'v>, (. key, 'v) => bool) => option<(key, 'v)>
+@deprecated("Use `findFirstBy` instead")
+let findFirstByU: (t<'v>, (key, 'v) => bool) => option<(key, 'v)>
 
 /**
 `findFirstBy(m, p)` uses funcion `f` to find the first key value pair
@@ -40,7 +43,8 @@ findFirstBy(s0, (k, v) => k == 4) == option((4, "4"))
 */
 let findFirstBy: (t<'v>, (key, 'v) => bool) => option<(key, 'v)>
 
-let forEachU: (t<'v>, (. key, 'v) => unit) => unit
+@deprecated("Use `forEach` instead")
+let forEachU: (t<'v>, (key, 'v) => unit) => unit
 
 /**
 `forEach(m, f)` applies `f` to all bindings in map `m`.
@@ -50,7 +54,8 @@ order with respect to the ordering over the type of the keys.
 */
 let forEach: (t<'v>, (key, 'v) => unit) => unit
 
-let reduceU: (t<'v>, 'v2, (. 'v2, key, 'v) => 'v2) => 'v2
+@deprecated("Use `reduce` instead")
+let reduceU: (t<'v>, 'v2, ('v2, key, 'v) => 'v2) => 'v2
 
 /**
 `reduce(m, a, f)` computes `(f kN dN ... (f k1 d1 a)...)`,
@@ -59,14 +64,16 @@ where `k1 ... kN` are the keys of all bindings in `m`
 */
 let reduce: (t<'v>, 'v2, ('v2, key, 'v) => 'v2) => 'v2
 
-let everyU: (t<'v>, (. key, 'v) => bool) => bool
+@deprecated("Use `every` instead")
+let everyU: (t<'v>, (key, 'v) => bool) => bool
 
 /** 
 `every(m, p)` checks if all the bindings of the map satisfy the predicate `p`.
 Order unspecified */
 let every: (t<'v>, (key, 'v) => bool) => bool
 
-let someU: (t<'v>, (. key, 'v) => bool) => bool
+@deprecated("Use `some` instead")
+let someU: (t<'v>, (key, 'v) => bool) => bool
 
 /** 
 `some(m, p)` checks if at least one binding of the map satisfy the predicate
@@ -128,10 +135,12 @@ in `m`, its previous binding disappears.
 */
 let set: (t<'v>, key, 'v) => t<'v>
 
-let updateU: (t<'v>, key, (. option<'v>) => option<'v>) => t<'v>
+@deprecated("Use `update` instead")
+let updateU: (t<'v>, key, option<'v> => option<'v>) => t<'v>
 let update: (t<'v>, key, option<'v> => option<'v>) => t<'v>
 
-let mergeU: (t<'v>, t<'v2>, (. key, option<'v>, option<'v2>) => option<'c>) => t<'c>
+@deprecated("Use `merge` instead")
+let mergeU: (t<'v>, t<'v2>, (key, option<'v>, option<'v2>) => option<'c>) => t<'c>
 
 /**
 `merge(m1, m2, f)` computes a map whose keys is a subset of keys of `m1`
@@ -142,7 +151,8 @@ let merge: (t<'v>, t<'v2>, (key, option<'v>, option<'v2>) => option<'c>) => t<'c
 
 let mergeMany: (t<'v>, array<(key, 'v)>) => t<'v>
 
-let keepU: (t<'v>, (. key, 'v) => bool) => t<'v>
+@deprecated("Use `keep` instead")
+let keepU: (t<'v>, (key, 'v) => bool) => t<'v>
 
 /** 
 `keep(m, p)` returns the map with all the bindings in `m` that satisfy predicate
@@ -150,7 +160,8 @@ let keepU: (t<'v>, (. key, 'v) => bool) => t<'v>
 */
 let keep: (t<'v>, (key, 'v) => bool) => t<'v>
 
-let partitionU: (t<'v>, (. key, 'v) => bool) => (t<'v>, t<'v>)
+@deprecated("Use `partition` instead")
+let partitionU: (t<'v>, (key, 'v) => bool) => (t<'v>, t<'v>)
 
 /**
 `partition(m, p)` returns a pair of maps `(m1, m2)`, where `m1` contains all the
@@ -167,7 +178,8 @@ contains no binding for `x`, or `Some(v)` if `m` binds `v` to `x`.
 */
 let split: (key, t<'v>) => (t<'v>, option<'v>, t<'v>)
 
-let mapU: (t<'v>, (. 'v) => 'v2) => t<'v2>
+@deprecated("Use `map` instead")
+let mapU: (t<'v>, 'v => 'v2) => t<'v2>
 
 /**
 `map(m, f)` returns a map with same domain as `m`, where the associated value `a`
@@ -177,5 +189,6 @@ ordering over the type of the keys.
 */
 let map: (t<'v>, 'v => 'v2) => t<'v2>
 
-let mapWithKeyU: (t<'v>, (. key, 'v) => 'v2) => t<'v2>
+@deprecated("Use `mapWithKey` instead")
+let mapWithKeyU: (t<'v>, (key, 'v) => 'v2) => t<'v2>
 let mapWithKey: (t<'v>, (key, 'v) => 'v2) => t<'v2>

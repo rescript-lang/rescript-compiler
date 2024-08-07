@@ -161,6 +161,7 @@ Belt.List.make(3, 1) // list{1, 1, 1}
 let make: (int, 'a) => t<'a>
 
 /** Uncurried version of [makeBy](#makeBy) */
+@deprecated("Use `makeBy` instead")
 let makeByU: (int, int => 'a) => t<'a>
 
 /**
@@ -277,6 +278,7 @@ Belt.List.flatten(list{list{1, 2, 3}, list{}, list{3}}) // list{1, 2, 3, 3}
 let flatten: t<t<'a>> => t<'a>
 
 /** Uncurried version of [map](#map). */
+@deprecated("Use `map` instead")
 let mapU: (t<'a>, 'a => 'b) => t<'b>
 
 /**
@@ -302,6 +304,7 @@ Belt.List.zip(list{1, 2}, list{3, 4, 5}) // list{(1, 3), (2, 4)}
 let zip: (t<'a>, t<'b>) => t<('a, 'b)>
 
 /** Uncurried version of [zipBy](#zipBy). */
+@deprecated("Use `zipBy` instead")
 let zipByU: (t<'a>, t<'b>, ('a, 'b) => 'c) => t<'c>
 
 /**
@@ -316,6 +319,7 @@ Belt.List.zipBy(list{1, 2, 3}, list{4, 5}, (a, b) => 2 * a + b) // list{6, 9}
 let zipBy: (t<'a>, t<'b>, ('a, 'b) => 'c) => t<'c>
 
 /** Uncurried version of [mapWithIndex](#mapWithIndex). */
+@deprecated("Use `mapWithIndex` instead")
 let mapWithIndexU: (t<'a>, (int, 'a) => 'b) => t<'b>
 
 /**
@@ -369,6 +373,7 @@ Belt.List.reverse(list{1, 2, 3}) /* list{3, 2, 1} */
 let reverse: t<'a> => t<'a>
 
 /** Uncurried version of [mapReverse](#mapReverse). */
+@deprecated("Use `mapReverse` instead")
 let mapReverseU: (t<'a>, 'a => 'b) => t<'b>
 
 /**
@@ -387,6 +392,7 @@ list{3, 4, 5}->Belt.List.mapReverse(x => x * x) /* list{25, 16, 9} */
 let mapReverse: (t<'a>, 'a => 'b) => t<'b>
 
 /** Uncurried version of [forEach](#forEach). */
+@deprecated("Use `forEach` instead")
 let forEachU: (t<'a>, 'a => 'b) => unit
 
 /**
@@ -408,6 +414,7 @@ Belt.List.forEach(list{"a", "b", "c"}, x => Js.log("Item: " ++ x))
 let forEach: (t<'a>, 'a => 'b) => unit
 
 /** Uncurried version of [forEachWithIndex](#forEachWithIndex). */
+@deprecated("Use `forEachWithIndex` instead")
 let forEachWithIndexU: (t<'a>, (int, 'a) => 'b) => unit
 
 /**
@@ -431,6 +438,7 @@ Belt.List.forEachWithIndex(list{"a", "b", "c"}, (index, x) => {
 let forEachWithIndex: (t<'a>, (int, 'a) => 'b) => unit
 
 /** Uncurried version of [reduce](#reduce). */
+@deprecated("Use `reduce` instead")
 let reduceU: (t<'a>, 'b, ('b, 'a) => 'b) => 'b
 
 /**
@@ -449,6 +457,7 @@ list{1, 2, 3, 4}->Belt.List.reduce(0, (acc, item) => acc + item) /* 10 */
 let reduce: (t<'a>, 'b, ('b, 'a) => 'b) => 'b
 
 /** Uncurried version of [reduceWithIndex](#reduceWithIndex). */
+@deprecated("Use `reduceWithIndex` instead")
 let reduceWithIndexU: (t<'a>, 'b, ('b, 'a, int) => 'b) => 'b
 
 /**
@@ -463,6 +472,7 @@ list{1, 2, 3, 4}->Belt.List.reduceWithIndex(0, (acc, item, index) => acc + item 
 let reduceWithIndex: (t<'a>, 'b, ('b, 'a, int) => 'b) => 'b
 
 /** Uncurried version of [reduceReverse](#reduceReverse). */
+@deprecated("Use `reduceReverse` instead")
 let reduceReverseU: (t<'a>, 'b, ('b, 'a) => 'b) => 'b
 
 /**
@@ -482,6 +492,7 @@ list{1, 2, 3, 4}->Belt.List.reduceReverse(list{}, Belt.List.add) // list{1, 2, 3
 let reduceReverse: (t<'a>, 'b, ('b, 'a) => 'b) => 'b
 
 /** Uncurried version of [mapReverse2](#mapReverse2). */
+@deprecated("Use `mapReverse2` instead")
 let mapReverse2U: (t<'a>, t<'b>, ('a, 'b) => 'c) => t<'c>
 
 /**
@@ -497,6 +508,7 @@ Belt.List.mapReverse2(list{1, 2, 3}, list{1, 2}, (a, b) => a + b) // list{4, 2}
 let mapReverse2: (t<'a>, t<'b>, ('a, 'b) => 'c) => t<'c>
 
 /** Uncurried version of [forEach2](#forEach2). */
+@deprecated("Use `forEach2` instead")
 let forEach2U: (t<'a>, t<'b>, ('a, 'b) => 'c) => unit
 
 /**
@@ -517,6 +529,7 @@ Belt.List.forEach2(list{"Z", "Y"}, list{"A", "B", "C"}, (x, y) => Js.log2(x, y))
 let forEach2: (t<'a>, t<'b>, ('a, 'b) => 'c) => unit
 
 /** Uncurried version of [reduce2](#reduce2). */
+@deprecated("Use `reduce2` instead")
 let reduce2U: (t<'b>, t<'c>, 'a, ('a, 'b, 'c) => 'a) => 'a
 
 /**
@@ -531,6 +544,7 @@ Belt.List.reduce2(list{1, 2, 3}, list{4, 5}, 0, (acc, x, y) => acc + x * x + y) 
 let reduce2: (t<'b>, t<'c>, 'a, ('a, 'b, 'c) => 'a) => 'a
 
 /** Uncurried version of [reduceReverse2](#reduceReverse2). */
+@deprecated("Use `reduceReverse2` instead")
 let reduceReverse2U: (t<'a>, t<'b>, 'c, ('c, 'a, 'b) => 'c) => 'c
 
 /**
@@ -549,6 +563,7 @@ Belt.List.reduceReverse2(list{1, 2, 3}, list{4, 5}, 0, (acc, x, y) => acc + x * 
 let reduceReverse2: (t<'a>, t<'b>, 'c, ('c, 'a, 'b) => 'c) => 'c
 
 /** Uncurried version of [every](#every). */
+@deprecated("Use `every` instead")
 let everyU: (t<'a>, 'a => bool) => bool
 
 /**
@@ -567,6 +582,7 @@ list{1, 99, 8, 2}->Belt.List.every(isBelow10) /* false */
 let every: (t<'a>, 'a => bool) => bool
 
 /** Uncurried version of [some](#some). */
+@deprecated("Use `some` instead")
 let someU: (t<'a>, 'a => bool) => bool
 
 /**
@@ -587,6 +603,7 @@ list{1, 2, 3, 4}->Belt.List.some(isAbove100) /* false */
 let some: (t<'a>, 'a => bool) => bool
 
 /** Uncurried version of [every2](#every2). */
+@deprecated("Use `every2` instead")
 let every2U: (t<'a>, t<'b>, ('a, 'b) => bool) => bool
 
 /**
@@ -608,6 +625,7 @@ Belt.List.every2(list{0, 1}, list{5, 0}, (a, b) => a > b) /* false */
 let every2: (t<'a>, t<'b>, ('a, 'b) => bool) => bool
 
 /** Uncurried version of [some2](#some2). */
+@deprecated("Use `some2` instead")
 let some2U: (t<'a>, t<'b>, ('a, 'b) => bool) => bool
 
 /**
@@ -647,6 +665,7 @@ Belt.List.cmpByLength(list{1, 2, 3, 4}, list{5, 6}) /* = 1 */
 let cmpByLength: (t<'a>, t<'a>) => int
 
 /** Uncurried version of [cmp](#cmp). */
+@deprecated("Use `cmp` instead")
 let cmpU: (t<'a>, t<'a>, ('a, 'a) => int) => int
 
 /**
@@ -678,6 +697,7 @@ For lists, we just compare elements one by one.
 let cmp: (t<'a>, t<'a>, ('a, 'a) => int) => int
 
 /** Uncurried version of [eq](#eq). */
+@deprecated("Use `eq` instead")
 let eqU: (t<'a>, t<'a>, ('a, 'a) => bool) => bool
 
 /**
@@ -699,6 +719,7 @@ Belt.List.eq(list{1, 2, 3}, list{(-1), (-2), (-3)}, (a, b) => abs(a) == abs(b)) 
 let eq: (t<'a>, t<'a>, ('a, 'a) => bool) => bool
 
 /** Uncurried version of [has](#has). */
+@deprecated("Use `has` instead")
 let hasU: (t<'a>, 'b, ('a, 'b) => bool) => bool
 
 /**
@@ -718,6 +739,7 @@ list{(-1), (-2), (-3)}->Belt.List.has(2, (a, b) => abs(a) == abs(b)) /* true */
 let has: (t<'a>, 'b, ('a, 'b) => bool) => bool
 
 /** Uncurried version of [getBy](#getBy). */
+@deprecated("Use `getBy` instead")
 let getByU: (t<'a>, 'a => bool) => option<'a>
 
 /**
@@ -735,6 +757,7 @@ Belt.List.getBy(list{1, 4, 3, 2}, x => x > 4) /* None */
 let getBy: (t<'a>, 'a => bool) => option<'a>
 
 /** Uncurried version of [keep](#keep). */
+@deprecated("Use `keep` instead")
 let keepU: (t<'a>, 'a => bool) => t<'a>
 
 /**
@@ -769,6 +792,7 @@ Belt.List.filter(list{None, Some(2), Some(3), None}, Belt.Option.isSome) /* list
 let filter: (t<'a>, 'a => bool) => t<'a>
 
 /** Uncurried version of [keepWithIndex](#keepWithIndex). */
+@deprecated("Use `keepWithIndex` instead")
 let keepWithIndexU: (t<'a>, ('a, int) => bool) => t<'a>
 
 /**
@@ -802,6 +826,7 @@ Belt.List.filterWithIndex(list{1, 2, 3, 4}, (_x, index) => isEven(index)) /* lis
 let filterWithIndex: (t<'a>, ('a, int) => bool) => t<'a>
 
 /** Uncurried version of [keepMap](#keepMap). */
+@deprecated("Use `keepMap` instead")
 let keepMapU: (t<'a>, 'a => option<'b>) => t<'b>
 
 /**
@@ -828,6 +853,7 @@ list{Some(1), Some(2), None}->Belt.List.keepMap(x => x) /* list{1, 2} */
 let keepMap: (t<'a>, 'a => option<'b>) => t<'b>
 
 /** Uncurried version of [partition](#partition). */
+@deprecated("Use `partition` instead")
 let partitionU: (t<'a>, 'a => bool) => (t<'a>, t<'a>)
 
 /**
@@ -862,6 +888,7 @@ Belt.List.unzip(list{("H", "W"), ("e", "o"), ("l", "r"), ("l", "l"), ("o", "d"),
 let unzip: t<('a, 'b)> => (t<'a>, t<'b>)
 
 /** Uncurried version of [getAssoc](#getAssoc). */
+@deprecated("Use `getAssoc` instead")
 let getAssocU: (t<('a, 'c)>, 'b, ('a, 'b) => bool) => option<'c>
 
 /**
@@ -880,6 +907,7 @@ list{(9, "morning"), (15, "afternoon"), (22, "night")}
 let getAssoc: (t<('a, 'c)>, 'b, ('a, 'b) => bool) => option<'c>
 
 /** Uncurried version of [hasAssoc](#hasAssoc). */
+@deprecated("Use `hasAssoc` instead")
 let hasAssocU: (t<('a, 'c)>, 'b, ('a, 'b) => bool) => bool
 
 /**
@@ -897,6 +925,7 @@ list{(9, "morning"), (15, "afternoon"), (22, "night")}
 let hasAssoc: (t<('a, 'c)>, 'b, ('a, 'b) => bool) => bool
 
 /** Uncurried version of [removeAssoc](#removeAssoc). */
+@deprecated("Use `removeAssoc` instead")
 let removeAssocU: (t<('a, 'c)>, 'b, ('a, 'b) => bool) => t<('a, 'c)>
 
 /**
@@ -915,6 +944,7 @@ list{(9, "morning"), (15, "afternoon"), (22, "night")}
 let removeAssoc: (t<('a, 'c)>, 'b, ('a, 'b) => bool) => t<('a, 'c)>
 
 /** Uncurried version of [setAssoc](#setAssoc). */
+@deprecated("Use `setAssoc` instead")
 let setAssocU: (t<('a, 'c)>, 'a, 'c, ('a, 'a) => bool) => t<('a, 'c)>
 
 /**
@@ -941,6 +971,7 @@ Both the key _and_ the value are replaced in the list.
 let setAssoc: (t<('a, 'c)>, 'a, 'c, ('a, 'a) => bool) => t<('a, 'c)>
 
 /** Uncurried version of [sort](#sort). */
+@deprecated("Use `sort` instead")
 let sortU: (t<'a>, ('a, 'a) => int) => t<'a>
 
 /**

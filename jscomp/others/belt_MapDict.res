@@ -33,19 +33,14 @@ let empty = None
 let fromArray = N.fromArray
 let isEmpty = N.isEmpty
 let cmp = N.cmp
-let cmpU = N.cmpU
 let eq = N.eq
-let eqU = N.eqU
 let has = N.has
+let findFirstBy = N.findFirstBy
 
 let forEach = N.forEach
-let forEachU = N.forEachU
 let reduce = N.reduce
-let reduceU = N.reduceU
 let every = N.every
-let everyU = N.everyU
 let some = N.some
-let someU = N.someU
 
 let size = N.size
 let toList = N.toList
@@ -67,13 +62,9 @@ let getWithDefault = N.getWithDefault
 let getExn = N.getExn
 
 let mapWithKey = N.mapWithKey
-let mapWithKeyU = N.mapWithKeyU
 
-let mapU = N.mapU
 let map = N.map
 let keep = N.keepShared
-let keepU = N.keepSharedU
-let partitionU = N.partitionSharedU
 let partition = N.partitionShared
 let checkInvariantInternal = N.checkInvariantInternal
 let rec set = (t: t<_>, newK, newD, ~cmp) =>
@@ -95,7 +86,7 @@ let rec set = (t: t<_>, newK, newD, ~cmp) =>
     }
   }
 
-let rec updateU = (t: t<_>, newK, f, ~cmp): t<_> =>
+let rec update = (t: t<_>, newK, f, ~cmp): t<_> =>
   switch t {
   | None =>
     switch f(None) {
@@ -122,14 +113,14 @@ let rec updateU = (t: t<_>, newK, f, ~cmp): t<_> =>
     } else {
       let (l, r, v) = (n.N.left, n.N.right, n.N.value)
       if c < 0 {
-        let ll = updateU(~cmp, l, newK, f)
+        let ll = update(~cmp, l, newK, f)
         if l === ll {
           t
         } else {
           N.bal(ll, k, v, r)
         }
       } else {
-        let rr = updateU(~cmp, r, newK, f)
+        let rr = update(~cmp, r, newK, f)
         if r === rr {
           t
         } else {
@@ -138,8 +129,6 @@ let rec updateU = (t: t<_>, newK, f, ~cmp): t<_> =>
       }
     }
   }
-
-let update = (t, newK, f, ~cmp) => updateU(t, newK, a => f(a), ~cmp)
 
 /* unboxing API was not exported
     since the correct API is really awkard
@@ -241,37 +230,32 @@ let split = (n, x, ~cmp) =>
     (v, pres.contents)
   }
 
-let findFirstByU = N.findFirstByU
-let findFirstBy = N.findFirstBy
-
-let rec mergeU = (s1, s2, f, ~cmp) =>
+let rec merge = (s1, s2, f, ~cmp) =>
   switch (s1, s2) {
   | (None, None) => None
-  | (Some(_), None) => N.keepMapU(s1, (k, v) => f(k, Some(v), None))
-  | (None, Some(_)) => N.keepMapU(s2, (k, v) => f(k, None, Some(v)))
+  | (Some(_), None) => N.keepMap(s1, (k, v) => f(k, Some(v), None))
+  | (None, Some(_)) => N.keepMap(s2, (k, v) => f(k, None, Some(v)))
   | (Some(s1n), Some(s2n)) =>
     if s1n.height >= s2n.height {
       let {N.left: l1, key: v1, value: d1, right: r1} = s1n
       let d2 = ref(None)
       let (l2, r2) = splitAuxPivot(~cmp, s2n, v1, d2)
       let d2 = d2.contents
-      let newLeft = mergeU(~cmp, l1, l2, f)
+      let newLeft = merge(~cmp, l1, l2, f)
       let newD = f(v1, Some(d1), d2)
-      let newRight = mergeU(~cmp, r1, r2, f)
+      let newRight = merge(~cmp, r1, r2, f)
       N.concatOrJoin(newLeft, v1, newD, newRight)
     } else {
       let {N.left: l2, key: v2, value: d2, right: r2} = s2n
       let d1 = ref(None)
       let (l1, r1) = splitAuxPivot(~cmp, s1n, v2, d1)
       let d1 = d1.contents
-      let newLeft = mergeU(~cmp, l1, l2, f)
+      let newLeft = merge(~cmp, l1, l2, f)
       let newD = f(v2, d1, Some(d2))
-      let newRight = mergeU(~cmp, r1, r2, f)
+      let newRight = merge(~cmp, r1, r2, f)
       N.concatOrJoin(newLeft, v2, newD, newRight)
     }
   }
-
-let merge = (s1, s2, f, ~cmp) => mergeU(s1, s2, (a, b, c) => f(a, b, c), ~cmp)
 
 let rec removeMany0 = (t, xs, i, len, ~cmp) =>
   if i < len {
@@ -292,3 +276,17 @@ let removeMany = (t, keys, ~cmp) => {
   | Some(t) => removeMany0(t, keys, 0, len, ~cmp)
   }
 }
+
+let cmpU = cmp
+let eqU = eq
+let everyU = every
+let findFirstByU = findFirstBy
+let forEachU = forEach
+let keepU = keep
+let mapU = map
+let mapWithKeyU = mapWithKey
+let mergeU = merge
+let partitionU = partition
+let reduceU = reduce
+let someU = some
+let updateU = update

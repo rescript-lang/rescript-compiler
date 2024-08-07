@@ -223,11 +223,11 @@ let rec stackAllLeft = (v, s) =>
   | Some(x) => stackAllLeft(x.left, list{x, ...s})
   }
 
-let rec findFirstByU = (n, p) =>
+let rec findFirstBy = (n, p) =>
   switch n {
   | None => None
   | Some(n) =>
-    let left = findFirstByU(n.left, p)
+    let left = findFirstBy(n.left, p)
     if left != None {
       left
     } else {
@@ -236,7 +236,7 @@ let rec findFirstByU = (n, p) =>
       if pvd {
         Some(v, d)
       } else {
-        let right = findFirstByU(n.right, p)
+        let right = findFirstBy(n.right, p)
         if right != None {
           right
         } else {
@@ -246,67 +246,55 @@ let rec findFirstByU = (n, p) =>
     }
   }
 
-let findFirstBy = (n, p) => findFirstByU(n, (a, b) => p(a, b))
-
-let rec forEachU = (n, f) =>
+let rec forEach = (n, f) =>
   switch n {
   | None => ()
   | Some(n) =>
-    forEachU(n.left, f)
+    forEach(n.left, f)
     f(n.key, n.value)
-    forEachU(n.right, f)
+    forEach(n.right, f)
   }
 
-let forEach = (n, f) => forEachU(n, (a, b) => f(a, b))
-
-let rec mapU = (n, f) =>
+let rec map = (n, f) =>
   switch n {
   | None => None
   | Some(n) =>
-    let newLeft = mapU(n.left, f)
+    let newLeft = map(n.left, f)
     let newD = f(n.value)
-    let newRight = mapU(n.right, f)
+    let newRight = map(n.right, f)
     Some({left: newLeft, key: n.key, value: newD, right: newRight, height: n.height})
   }
 
-let map = (n, f) => mapU(n, a => f(a))
-
-let rec mapWithKeyU = (n, f) =>
+let rec mapWithKey = (n, f) =>
   switch n {
   | None => None
   | Some(n) =>
     let key = n.key
-    let newLeft = mapWithKeyU(n.left, f)
+    let newLeft = mapWithKey(n.left, f)
     let newD = f(key, n.value)
-    let newRight = mapWithKeyU(n.right, f)
+    let newRight = mapWithKey(n.right, f)
     Some({left: newLeft, key, value: newD, right: newRight, height: n.height})
   }
 
-let mapWithKey = (n, f) => mapWithKeyU(n, (a, b) => f(a, b))
-
-let rec reduceU = (m, accu, f) =>
+let rec reduce = (m, accu, f) =>
   switch m {
   | None => accu
   | Some(n) =>
     let {left: l, key: v, value: d, right: r} = n
-    reduceU(r, f(reduceU(l, accu, f), v, d), f)
+    reduce(r, f(reduce(l, accu, f), v, d), f)
   }
 
-let reduce = (m, accu, f) => reduceU(m, accu, (a, b, c) => f(a, b, c))
-
-let rec everyU = (n, p) =>
+let rec every = (n, p) =>
   switch n {
   | None => true
-  | Some(n) => p(n.key, n.value) && (everyU(n.left, p) && everyU(n.right, p))
+  | Some(n) => p(n.key, n.value) && (every(n.left, p) && every(n.right, p))
   }
-let every = (n, p) => everyU(n, (a, b) => p(a, b))
 
-let rec someU = (n, p) =>
+let rec some = (n, p) =>
   switch n {
   | None => false
-  | Some(n) => p(n.key, n.value) || (someU(n.left, p) || someU(n.right, p))
+  | Some(n) => p(n.key, n.value) || (some(n.left, p) || some(n.right, p))
   }
-let some = (n, p) => someU(n, (a, b) => p(a, b))
 /* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
    does not test for equality with the current min (or max) key.
@@ -366,15 +354,15 @@ let concatOrJoin = (t1, v, d, t2) =>
   | None => concat(t1, t2)
   }
 
-let rec keepSharedU = (n, p) =>
+let rec keepShared = (n, p) =>
   switch n {
   | None => None
   | Some(n) =>
     /* call `p` in the expected left-to-right order */
     let {key: v, value: d} = n
-    let newLeft = keepSharedU(n.left, p)
+    let newLeft = keepShared(n.left, p)
     let pvd = p(v, d)
-    let newRight = keepSharedU(n.right, p)
+    let newRight = keepShared(n.right, p)
     if pvd {
       join(newLeft, v, d, newRight)
     } else {
@@ -382,42 +370,36 @@ let rec keepSharedU = (n, p) =>
     }
   }
 
-let keepShared = (n, p) => keepSharedU(n, (a, b) => p(a, b))
-
-let rec keepMapU = (n, p) =>
+let rec keepMap = (n, p) =>
   switch n {
   | None => None
   | Some(n) =>
     /* call `p` in the expected left-to-right order */
     let {key: v, value: d} = n
-    let newLeft = keepMapU(n.left, p)
+    let newLeft = keepMap(n.left, p)
     let pvd = p(v, d)
-    let newRight = keepMapU(n.right, p)
+    let newRight = keepMap(n.right, p)
     switch pvd {
     | None => concat(newLeft, newRight)
     | Some(d) => join(newLeft, v, d, newRight)
     }
   }
 
-let keepMap = (n, p) => keepMapU(n, (a, b) => p(a, b))
-
-let rec partitionSharedU = (n, p) =>
+let rec partitionShared = (n, p) =>
   switch n {
   | None => (None, None)
   | Some(n) =>
     let {key, value} = n
     /* call `p` in the expected left-to-right order */
-    let (lt, lf) = partitionSharedU(n.left, p)
+    let (lt, lf) = partitionShared(n.left, p)
     let pvd = p(key, value)
-    let (rt, rf) = partitionSharedU(n.right, p)
+    let (rt, rf) = partitionShared(n.right, p)
     if pvd {
       (join(lt, key, value, rt), concat(lf, rf))
     } else {
       (concat(lt, rt), join(lf, key, value, rf))
     }
   }
-
-let partitionShared = (n, p) => partitionSharedU(n, (a, b) => p(a, b))
 
 let rec lengthNode = n => {
   let {left: l, right: r} = n
@@ -667,7 +649,7 @@ let rec eqAux = (e1, e2, ~kcmp, ~veq) =>
   | (_, _) => true
   }
 
-let cmpU = (s1, s2, ~kcmp, ~vcmp) => {
+let cmp = (s1, s2, ~kcmp, ~vcmp) => {
   let (len1, len2) = (size(s1), size(s2))
   if len1 == len2 {
     compareAux(stackAllLeft(s1, list{}), stackAllLeft(s2, list{}), ~kcmp, ~vcmp)
@@ -678,9 +660,7 @@ let cmpU = (s1, s2, ~kcmp, ~vcmp) => {
   }
 }
 
-let cmp = (s1, s2, ~kcmp, ~vcmp) => cmpU(s1, s2, ~kcmp, ~vcmp=(a, b) => vcmp(a, b))
-
-let eqU = (s1, s2, ~kcmp, ~veq) => {
+let eq = (s1, s2, ~kcmp, ~veq) => {
   let (len1, len2) = (size(s1), size(s2))
   if len1 == len2 {
     eqAux(stackAllLeft(s1, list{}), stackAllLeft(s2, list{}), ~kcmp, ~veq)
@@ -688,8 +668,6 @@ let eqU = (s1, s2, ~kcmp, ~veq) => {
     false
   }
 }
-
-let eq = (s1, s2, ~kcmp, ~veq) => eqU(s1, s2, ~kcmp, ~veq=(a, b) => veq(a, b))
 
 let rec get = (n, x, ~cmp) =>
   switch n {
@@ -910,7 +888,7 @@ let fromArray = (xs: array<_>, ~cmp) => {
     None
   } else {
     let next = ref(
-      S.strictlySortedLengthU(xs, ((x0, _), (y0, _)) => Belt_Id.getCmpInternal(cmp)(x0, y0) < 0),
+      S.strictlySortedLength(xs, ((x0, _), (y0, _)) => Belt_Id.getCmpInternal(cmp)(x0, y0) < 0),
     )
 
     let result = ref(

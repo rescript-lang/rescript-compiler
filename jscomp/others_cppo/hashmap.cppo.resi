@@ -27,13 +27,16 @@ let has: (t<'b>, key) => bool
 
 let remove: (t<'a>, key) => unit
 
-let forEachU: (t<'b>, (. key, 'b) => unit) => unit
+@deprecated("Use `forEach` instead")
+let forEachU: (t<'b>, (key, 'b) => unit) => unit
 let forEach: (t<'b>, (key, 'b) => unit) => unit
 
-let reduceU: (t<'b>, 'c, (. 'c, key, 'b) => 'c) => 'c
+@deprecated("Use `reduce` instead")
+let reduceU: (t<'b>, 'c, ('c, key, 'b) => 'c) => 'c
 let reduce: (t<'b>, 'c, ('c, key, 'b) => 'c) => 'c
 
-let keepMapInPlaceU: (t<'a>, (. key, 'a) => option<'a>) => unit
+@deprecated("Use `keepMapInPlace` instead")
+let keepMapInPlaceU: (t<'a>, (key, 'a) => option<'a>) => unit
 let keepMapInPlace: (t<'a>, (key, 'a) => option<'a>) => unit
 
 let size: t<_> => int

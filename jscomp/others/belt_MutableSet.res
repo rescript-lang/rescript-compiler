@@ -206,14 +206,10 @@ let minUndefined = d => N.minUndefined(d.data)
 let maximum = d => N.maximum(d.data)
 let maxUndefined = d => N.maxUndefined(d.data)
 
-let forEachU = (d, f) => N.forEachU(d.data, f)
-let forEach = (d, f) => forEachU(d, a => f(a))
-let reduceU = (d, acc, cb) => N.reduceU(d.data, acc, cb)
-let reduce = (d, acc, cb) => reduceU(d, acc, (a, b) => cb(a, b))
-let everyU = (d, p) => N.everyU(d.data, p)
-let every = (d, p) => everyU(d, a => p(a))
-let someU = (d, p) => N.someU(d.data, p)
-let some = (d, p) => someU(d, a => p(a))
+let forEach = (d, f) => N.forEach(d.data, f)
+let reduce = (d, acc, cb) => N.reduce(d.data, acc, cb)
+let every = (d, p) => N.every(d.data, p)
+let some = (d, p) => N.some(d.data, p)
 let size = d => N.size(d.data)
 let toList = d => N.toList(d.data)
 let toArray = d => N.toArray(d.data)
@@ -244,7 +240,7 @@ let getExn = (d, x) => N.getExn(~cmp=d.cmp, d.data, x)
 let split = (d, key) => {
   let arr = N.toArray(d.data)
   let cmp = d.cmp
-  let i = Sort.binarySearchByU(arr, key, Belt_Id.getCmpInternal(cmp))
+  let i = Sort.binarySearchBy(arr, key, Belt_Id.getCmpInternal(cmp))
   let len = A.length(arr)
   if i < 0 {
     let next = -i - 1
@@ -278,17 +274,13 @@ let split = (d, key) => {
   }
 }
 
-let keepU = (d, p) => {data: N.keepCopyU(d.data, p), cmp: d.cmp}
+let keep = (d, p) => {data: N.keepCopy(d.data, p), cmp: d.cmp}
 
-let keep = (d, p) => keepU(d, a => p(a))
-
-let partitionU = (d, p) => {
+let partition = (d, p) => {
   let cmp = d.cmp
-  let (a, b) = N.partitionCopyU(d.data, p)
+  let (a, b) = N.partitionCopy(d.data, p)
   ({data: a, cmp}, {data: b, cmp})
 }
-
-let partition = (d, p) => partitionU(d, a => p(a))
 
 let subset = (a, b) => N.subset(~cmp=a.cmp, a.data, b.data)
 
@@ -311,7 +303,7 @@ let intersect = (a, b): t<_> => {
       {cmp, data: None}
     } else {
       let tmp2 = A.makeUninitializedUnsafe(Pervasives.min(sizea, sizeb))
-      let k = Sort.intersectU(tmp, 0, sizea, tmp, sizea, sizeb, tmp2, 0, p)
+      let k = Sort.intersect(tmp, 0, sizea, tmp, sizea, sizeb, tmp2, 0, p)
       {
         data: N.fromSortedArrayAux(tmp2, 0, k),
         cmp,
@@ -340,7 +332,7 @@ let diff = (a, b): t<_> => {
       {data: N.copy(dataa), cmp}
     } else {
       let tmp2 = A.makeUninitializedUnsafe(sizea)
-      let k = Sort.diffU(tmp, 0, sizea, tmp, sizea, sizeb, tmp2, 0, p)
+      let k = Sort.diff(tmp, 0, sizea, tmp, sizea, sizeb, tmp2, 0, p)
       {data: N.fromSortedArrayAux(tmp2, 0, k), cmp}
     }
   }
@@ -363,7 +355,7 @@ let union = (a, b) => {
       {data: N.fromSortedArrayAux(tmp, 0, totalSize), cmp}
     } else {
       let tmp2 = A.makeUninitializedUnsafe(totalSize)
-      let k = Sort.unionU(tmp, 0, sizea, tmp, sizea, sizeb, tmp2, 0, p)
+      let k = Sort.union(tmp, 0, sizea, tmp, sizea, sizeb, tmp2, 0, p)
       {data: N.fromSortedArrayAux(tmp2, 0, k), cmp}
     }
   }
@@ -372,3 +364,10 @@ let union = (a, b) => {
 let has = (d, x) => N.has(~cmp=d.cmp, d.data, x)
 
 let copy = d => {data: N.copy(d.data), cmp: d.cmp}
+
+let everyU = every
+let forEachU = forEach
+let keepU = keep
+let partitionU = partition
+let reduceU = reduce
+let someU = some

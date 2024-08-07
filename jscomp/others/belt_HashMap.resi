@@ -33,10 +33,10 @@ _hash_ functions will have different type.
 
 ```rescript
 type t = int
-module I0 = unpack(Belt.Id.hashableU(~hash=(. a: t) => "&"(a, 0xff_ff), ~eq=(. a, b) => a == b))
+module I0 = unpack(Belt.Id.hashable(~hash=(a: t) => "&"(a, 0xff_ff), ~eq=(a, b) => a == b))
 let s0: t<_, string, _> = make(~hintSize=40, ~id=module(I0))
 
-module I1 = unpack(Belt.Id.hashableU(~hash=(. a: t) => "&"(a, 0xff), ~eq=(. a, b) => a == b))
+module I1 = unpack(Belt.Id.hashable(~hash=(a: t) => "&"(a, 0xff), ~eq=(a, b) => a == b))
 let s1: t<_, string, _> = make(~hintSize=40, ~id=module(I1))
 ```
 
@@ -242,6 +242,7 @@ Belt.HashMap.has(s0, 1) == false
 let remove: (t<'key, 'value, 'id>, 'key) => unit
 
 /** Same as [forEach](#forEach) but takes uncurried function. */
+@deprecated("Use `forEach` instead")
 let forEachU: (t<'key, 'value, 'id>, ('key, 'value) => unit) => unit
 
 /**
@@ -264,6 +265,7 @@ Belt.HashMap.forEach(s0, (key, value) => Js.log2(key, value))
 */
 let forEach: (t<'key, 'value, 'id>, ('key, 'value) => unit) => unit
 
+@deprecated("Use `reduce` instead")
 let reduceU: (t<'key, 'value, 'id>, 'c, ('c, 'key, 'value) => 'c) => 'c
 /**
 `reduce(tbl, init, f)` computes `(f(kN, dN) ... (f(k1, d1, init))...)`, where `k1 ... kN` are the keys of all bindings in `tbl`, and `d1 ... dN` are the associated values. Each binding is presented exactly once to `f`.
@@ -289,6 +291,7 @@ Belt.HashMap.reduce(s0, "", (acc, key, value) => acc ++ (", " ++ value)) == "val
 let reduce: (t<'key, 'value, 'id>, 'c, ('c, 'key, 'value) => 'c) => 'c
 
 /** Same as [keepMapInPlace](#keepMapInPlace) but takes uncurried function.  */
+@deprecated("Use `keepMapInPlace` instead")
 let keepMapInPlaceU: (t<'key, 'value, 'id>, ('key, 'value) => option<'value>) => unit
 
 /**

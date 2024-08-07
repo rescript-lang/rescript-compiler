@@ -96,6 +96,7 @@ Belt.Map.has(Belt.Map.fromArray([(1, "1")], ~id=module(IntCmp)), 1) == true
 */
 let has: (t<'k, 'v, 'id>, 'k) => bool
 
+@deprecated("Use `cmp` instead")
 let cmpU: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, ('v, 'v) => int) => int
 /** 
 `cmp(m0, m1, vcmp);`
@@ -106,6 +107,7 @@ It will compare size first and each element following the order one by one.
 */
 let cmp: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, ('v, 'v) => int) => int
 
+@deprecated("Use `eq` instead")
 let eqU: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, ('v, 'v) => bool) => bool
 /**
 eq(m1, m2, veq)` tests whether the maps `m1` and `m2` are equal, that is,
@@ -114,6 +116,7 @@ equality predicate used to compare the data associated with the keys.
 */
 let eq: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, ('v, 'v) => bool) => bool
 
+@deprecated("Use `findFirstBy` instead")
 let findFirstByU: (t<'k, 'v, 'id>, ('k, 'v) => bool) => option<('k, 'v)>
 /** `
 findFirstBy(m, p)` uses function `f` to find the first key value pair to match predicate `p`.
@@ -133,6 +136,7 @@ Belt.Map.findFirstBy(s0, (k, v) => k == 4) /* (4, "4") */
 */
 let findFirstBy: (t<'k, 'v, 'id>, ('k, 'v) => bool) => option<('k, 'v)>
 
+@deprecated("Use `forEach` instead")
 let forEachU: (t<'k, 'v, 'id>, ('k, 'v) => unit) => unit
 /** 
  `forEach(m, f)` applies `f` to all bindings in map `m`. `f` receives the
@@ -159,6 +163,7 @@ acc.contents == list{(4, "4"), (3, "3"), (2, "2"), (1, "1")}
 */
 let forEach: (t<'k, 'v, 'id>, ('k, 'v) => unit) => unit
 
+@deprecated("Use `reduce` instead")
 let reduceU: (t<'k, 'v, 'id>, 'acc, ('acc, 'k, 'v) => 'acc) => 'acc
 /** 
  `reduce(m, a, f)` computes `(f(kN, dN) ... (f(k1, d1, a))...)`, where `k1
@@ -183,6 +188,7 @@ Belt.Map.reduce(s0, list{}, (acc, k, v) => list{
 */
 let reduce: (t<'k, 'v, 'id>, 'acc, ('acc, 'k, 'v) => 'acc) => 'acc
 
+@deprecated("Use `every` instead")
 let everyU: (t<'k, 'v, 'id>, ('k, 'v) => bool) => bool
 /**
 `every(m, p)` checks if all the bindings of the map satisfy the predicate
@@ -190,6 +196,7 @@ let everyU: (t<'k, 'v, 'id>, ('k, 'v) => bool) => bool
 */
 let every: (t<'k, 'v, 'id>, ('k, 'v) => bool) => bool
 
+@deprecated("Use `some` instead")
 let someU: (t<'k, 'v, 'id>, ('k, 'v) => bool) => bool
 /**
 `some(m, p)` checks if at least one binding of the map satisfy the predicate 
@@ -413,6 +420,7 @@ Belt.Map.valuesToArray(s1) == ["1", "3", "3"]
 */
 let set: (t<'k, 'v, 'id>, 'k, 'v) => t<'k, 'v, 'id>
 
+@deprecated("Use `update` instead")
 let updateU: (t<'k, 'v, 'id>, 'k, option<'v> => option<'v>) => t<'k, 'v, 'id>
 /** 
 `update(m, x, f)` returns a map containing the same bindings as `m`, except
@@ -431,6 +439,7 @@ value might be changed even if all values in `xs` exist `s`.
 */
 let mergeMany: (t<'k, 'v, 'id>, array<('k, 'v)>) => t<'k, 'v, 'id>
 
+@deprecated("Use `merge` instead")
 let mergeU: (
   t<'k, 'v, 'id>,
   t<'k, 'v2, 'id>,
@@ -447,6 +456,7 @@ let merge: (
   ('k, option<'v>, option<'v2>) => option<'v3>,
 ) => t<'k, 'v3, 'id>
 
+@deprecated("Use `keep` instead")
 let keepU: (t<'k, 'v, 'id>, ('k, 'v) => bool) => t<'k, 'v, 'id>
 /**
 `keep(m, p)` returns the map with all the bindings in m that satisfy
@@ -454,6 +464,7 @@ predicate `p`.
 */
 let keep: (t<'k, 'v, 'id>, ('k, 'v) => bool) => t<'k, 'v, 'id>
 
+@deprecated("Use `partition` instead")
 let partitionU: (t<'k, 'v, 'id>, ('k, 'v) => bool) => (t<'k, 'v, 'id>, t<'k, 'v, 'id>)
 /**
 `partition(m, p)` returns a pair of maps `(m1, m2)`, where `m1` contains
@@ -471,6 +482,7 @@ all the bindings of m whose 'k is strictly greater than `x`; `data` is
 */
 let split: (t<'k, 'v, 'id>, 'k) => ((t<'k, 'v, 'id>, t<'k, 'v, 'id>), option<'v>)
 
+@deprecated("Use `map` instead")
 let mapU: (t<'k, 'v, 'id>, 'v => 'v2) => t<'k, 'v2, 'id>
 /** 
 `map(m, f) returns a map with same domain as`m`, where the associated
@@ -480,6 +492,7 @@ with respect to the ordering over the type of the keys.
 */
 let map: (t<'k, 'v, 'id>, 'v => 'v2) => t<'k, 'v2, 'id>
 
+@deprecated("Use `mapWithKey` instead")
 let mapWithKeyU: (t<'k, 'v, 'id>, ('k, 'v) => 'v2) => t<'k, 'v2, 'id>
 /** 
 `mapWithKey(m, f)`

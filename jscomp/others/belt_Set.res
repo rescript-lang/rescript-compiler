@@ -101,27 +101,21 @@ let cmp = (m, n) => {
 
 let eq = (m, n) => Dict.eq(~cmp=m.cmp, m.data, n.data)
 
-let forEachU = (m, f) => Dict.forEachU(m.data, f)
-let forEach = (m, f) => forEachU(m, a => f(a))
+let forEach = (m, f) => Dict.forEach(m.data, f)
 
-let reduceU = (m, acc, f) => Dict.reduceU(m.data, acc, f)
-let reduce = (m, acc, f) => reduceU(m, acc, (a, b) => f(a, b))
+let reduce = (m, acc, f) => Dict.reduce(m.data, acc, f)
 
-let everyU = (m, f) => Dict.everyU(m.data, f)
-let every = (m, f) => everyU(m, a => f(a))
+let every = (m, f) => Dict.every(m.data, f)
 
-let someU = (m, f) => Dict.someU(m.data, f)
-let some = (m, f) => someU(m, a => f(a))
+let some = (m, f) => Dict.some(m.data, f)
 
-let keepU = (m, f) => {cmp: m.cmp, data: Dict.keepU(m.data, f)}
-let keep = (m, f) => keepU(m, a => f(a))
+let keep = (m, f) => {cmp: m.cmp, data: Dict.keep(m.data, f)}
 
-let partitionU = (m, f) => {
-  let (l, r) = Dict.partitionU(m.data, f)
+let partition = (m, f) => {
+  let (l, r) = Dict.partition(m.data, f)
   let cmp = m.cmp
   ({data: l, cmp}, {data: r, cmp})
 }
-let partition = (m, f) => partitionU(m, a => f(a))
 
 let size = m => Dict.size(m.data)
 let toList = m => Dict.toList(m.data)
@@ -162,3 +156,10 @@ let packIdData = (type value identity, ~id: id<value, identity>, ~data) => {
 }
 
 let checkInvariantInternal = d => Dict.checkInvariantInternal(d.data)
+
+let everyU = every
+let forEachU = forEach
+let keepU = keep
+let partitionU = partition
+let reduceU = reduce
+let someU = some

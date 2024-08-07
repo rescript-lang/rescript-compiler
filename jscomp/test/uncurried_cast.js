@@ -10,7 +10,7 @@ function raise(e) {
   });
 }
 
-let map = Belt_List.mapU;
+let map = Belt_List.map;
 
 let List = {
   map: map
@@ -31,7 +31,7 @@ function testRaise() {
   });
 }
 
-let l = Belt_List.mapU({
+let l = Belt_List.map({
   hd: 1,
   tl: {
     hd: 2,
@@ -42,7 +42,7 @@ let l = Belt_List.mapU({
 }));
 
 function partial(x) {
-  return Belt_List.mapU({
+  return Belt_List.map({
     hd: 1,
     tl: {
       hd: 2,
@@ -77,7 +77,7 @@ function testRaise$1() {
   });
 }
 
-let l$1 = Belt_List.mapU({
+let l$1 = Belt_List.map({
   hd: 1,
   tl: {
     hd: 2,
@@ -88,7 +88,7 @@ let l$1 = Belt_List.mapU({
 }));
 
 function partial$1(extra) {
-  return Belt_List.mapU({
+  return Belt_List.map({
     hd: 1,
     tl: {
       hd: 2,

@@ -191,12 +191,9 @@ let has = (h, key) => {
 let make = (~hintSize) => C.make(~hintSize, ~hash=(), ~eq=())
 let clear = C.clear
 let size = h => h.C.size
-let forEachU = N.forEachU
 let forEach = N.forEach
-let reduceU = N.reduceU
 let reduce = N.reduce
 let logStats = N.logStats
-let keepMapInPlaceU = N.keepMapInPlaceU
 let keepMapInPlace = N.keepMapInPlace
 let toArray = N.toArray
 let copy = N.copy
@@ -223,3 +220,7 @@ let mergeMany = (h, arr) => {
     set(h, k, v)
   }
 }
+
+let forEachU = forEach
+let reduceU = reduce
+let keepMapInPlaceU = keepMapInPlace

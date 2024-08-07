@@ -87,14 +87,12 @@ let rec doBucketIter = (~f, buckets) =>
     doBucketIter(~f, cell.next)
   }
 
-let forEachU = (h, f) => {
+let forEach = (h, f) => {
   let d = h.C.buckets
   for i in 0 to A.length(d) - 1 {
     doBucketIter(~f, A.getUnsafe(d, i))
   }
 }
-
-let forEach = (h, f) => forEachU(h, a => f(a))
 
 let rec fillArray = (i, arr, cell) => {
   A.setUnsafe(arr, i, cell.key)
@@ -124,7 +122,7 @@ let rec doBucketFold = (~f, b, accu) =>
   | Some(cell) => doBucketFold(~f, cell.next, f(accu, cell.key))
   }
 
-let reduceU = (h, init, f) => {
+let reduce = (h, init, f) => {
   let d = h.C.buckets
   let accu = ref(init)
   for i in 0 to A.length(d) - 1 {
@@ -133,18 +131,16 @@ let reduceU = (h, init, f) => {
   accu.contents
 }
 
-let reduce = (h, init, f) => reduceU(h, init, (a, b) => f(a, b))
-
 let getMaxBucketLength = h =>
-  A.reduceU(h.C.buckets, 0, (m, b) => {
+  A.reduce(h.C.buckets, 0, (m, b) => {
     let len = bucketLength(0, b)
     Pervasives.max(m, len)
   })
 
 let getBucketHistogram = h => {
   let mbl = getMaxBucketLength(h)
-  let histo = A.makeByU(mbl + 1, _ => 0)
-  A.forEachU(h.C.buckets, b => {
+  let histo = A.makeBy(mbl + 1, _ => 0)
+  A.forEach(h.C.buckets, b => {
     let l = bucketLength(0, b)
     A.setUnsafe(histo, l, A.getUnsafe(histo, l) + 1)
   })

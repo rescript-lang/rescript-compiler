@@ -136,9 +136,7 @@ let make = (~hintSize) => C.make(~hintSize, ~hash=(), ~eq=())
 
 let clear = C.clear
 let size = h => h.C.size
-let forEachU = N.forEachU
 let forEach = N.forEach
-let reduceU = N.reduceU
 let reduce = N.reduce
 let logStats = N.logStats
 let toArray = N.toArray
@@ -162,3 +160,6 @@ let mergeMany = (h, arr) => {
     add(h, A.getUnsafe(arr, i))
   }
 }
+
+let forEachU = forEach
+let reduceU = reduce

@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
-let Belt_Id = require("../../lib/js/belt_Id.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
 let Array_data_util = require("./array_data_util.js");
@@ -26,7 +25,9 @@ function b(loc, x) {
   Mt.bool_suites(test_id, suites, loc, x);
 }
 
-let IntCmp = Belt_Id.comparable(Caml.int_compare);
+let IntCmp = {
+  cmp: Caml.int_compare
+};
 
 function fromArray(none) {
   return Belt_MutableSet.fromArray(none, IntCmp);
@@ -356,4 +357,4 @@ exports.empty = empty;
 exports.$plus$plus = $plus$plus;
 exports.f = f;
 exports.$eq$tilde = $eq$tilde;
-/* IntCmp Not a pure module */
+/* u Not a pure module */

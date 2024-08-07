@@ -18,21 +18,14 @@ let minimum = N.minimum
 let minUndefined = N.minUndefined
 let maximum = N.maximum
 let maxUndefined = N.maxUndefined
-let forEachU = N.forEachU
+let findFirstBy = N.findFirstBy
 let forEach = N.forEach
-let mapU = N.mapU
 let map = N.map
-let mapWithKeyU = N.mapWithKeyU
 let mapWithKey = N.mapWithKey
-let reduceU = N.reduceU
 let reduce = N.reduce
-let everyU = N.everyU
 let every = N.every
-let someU = N.someU
 let some = N.some
-let keepU = N.keepSharedU
 let keep = N.keepShared
-let partitionU = N.partitionSharedU
 let partition = N.partitionShared
 let size = N.size
 let toList = N.toList
@@ -58,7 +51,7 @@ let rec set = (t, newK: key, newD: _) =>
     }
   }
 
-let rec updateU = (t, x: key, f) =>
+let rec update = (t, x: key, f) =>
   switch t {
   | None =>
     switch f(None) {
@@ -84,14 +77,14 @@ let rec updateU = (t, x: key, f) =>
     } else {
       let {N.left: l, right: r, value: v} = n
       if x < k {
-        let ll = updateU(l, x, f)
+        let ll = update(l, x, f)
         if l === ll {
           t
         } else {
           N.bal(ll, k, v, r)
         }
       } else {
-        let rr = updateU(r, x, f)
+        let rr = update(r, x, f)
         if r === rr {
           t
         } else {
@@ -100,8 +93,6 @@ let rec updateU = (t, x: key, f) =>
       }
     }
   }
-
-let update = (t, x, f) => updateU(t, x, a => f(a))
 
 let rec removeAux = (n, x: key) => {
   let {N.left: l, key: v, right: r} = n
@@ -162,9 +153,6 @@ let removeMany = (t, keys) => {
   }
 }
 
-let findFirstByU = N.findFirstByU
-let findFirstBy = N.findFirstBy
-
 let mergeMany = (h, arr) => {
   let len = A.length(arr)
   let v = ref(h)
@@ -178,15 +166,26 @@ let mergeMany = (h, arr) => {
 /* let mergeArray = mergeMany */
 
 let has = I.has
-let cmpU = I.cmpU
 let cmp = I.cmp
-let eqU = I.eqU
 let eq = I.eq
 let get = I.get
 let getUndefined = I.getUndefined
 let getWithDefault = I.getWithDefault
 let getExn = I.getExn
 let split = I.split
-let mergeU = I.mergeU
 let merge = I.merge
 let fromArray = I.fromArray
+
+let cmpU = cmp
+let eqU = eq
+let everyU = every
+let findFirstByU = findFirstBy
+let forEachU = forEach
+let keepU = keep
+let mapU = map
+let mapWithKeyU = mapWithKey
+let mergeU = merge
+let partitionU = partition
+let reduceU = reduce
+let someU = some
+let updateU = update

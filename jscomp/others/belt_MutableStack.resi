@@ -51,8 +51,10 @@ let topUndefined: t<'a> => Js.undefined<'a>
 let top: t<'a> => option<'a>
 let isEmpty: t<'a> => bool
 let size: t<'a> => int
+@deprecated("Use `forEach` instead")
 let forEachU: (t<'a>, 'a => unit) => unit
 let forEach: (t<'a>, 'a => unit) => unit
+@deprecated("Use `dynamicPopIter` instead")
 let dynamicPopIterU: (t<'a>, 'a => unit) => unit
 
 /**

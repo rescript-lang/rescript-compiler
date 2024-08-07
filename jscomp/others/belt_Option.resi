@@ -41,6 +41,7 @@ let someString: option<string> = Some("hello")
 */
 
 /** Uncurried version of `keep` */
+@deprecated("Use `keep` instead")
 let keepU: (option<'a>, 'a => bool) => option<'a>
 
 /**
@@ -57,6 +58,7 @@ Belt.Option.keep(None, x => x > 5) /* returns `None` */
 let keep: (option<'a>, 'a => bool) => option<'a>
 
 /** Uncurried version of `forEach` */
+@deprecated("Use `forEach` instead")
 let forEachU: (option<'a>, 'a => unit) => unit
 
 /**
@@ -93,6 +95,7 @@ nor `Some(None(...)))`
 external getUnsafe: option<'a> => 'a = "%identity"
 
 /** Uncurried version of `mapWithDefault` */
+@deprecated("Use `mapWithDefault` instead")
 let mapWithDefaultU: (option<'a>, 'b, 'a => 'b) => 'b
 
 /**
@@ -114,6 +117,7 @@ noneValue->Belt.Option.mapWithDefault(0, x => x + 5) /* 0 */
 let mapWithDefault: (option<'a>, 'b, 'a => 'b) => 'b
 
 /** Uncurried version of `map` */
+@deprecated("Use `map` instead")
 let mapU: (option<'a>, 'a => 'b) => option<'b>
 
 /**
@@ -130,6 +134,7 @@ Belt.Option.map(None, x => x * x) /* None */
 let map: (option<'a>, 'a => 'b) => option<'b>
 
 /** Uncurried version of `flatMap` */
+@deprecated("Use `flatMap` instead")
 let flatMapU: (option<'a>, 'a => option<'b>) => option<'b>
 
 /**
@@ -221,6 +226,7 @@ let isNone: option<'a> => bool
 /**
 Uncurried version of `eq`
 */
+@deprecated("Use `eq` instead")
 let eqU: (option<'a>, option<'b>, ('a, 'b) => bool) => bool
 
 /**
@@ -253,6 +259,7 @@ let eq: (option<'a>, option<'b>, ('a, 'b) => bool) => bool
 /**
 Uncurried version of `cmp`
 */
+@deprecated("Use `cmp` instead")
 let cmpU: (option<'a>, option<'b>, ('a, 'b) => int) => int
 
 /**

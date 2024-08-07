@@ -22,21 +22,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-let keepU = (opt, p) =>
+let keep = (opt, p) =>
   switch opt {
   | Some(x) as some if p(x) => some
   | _ => None
   }
 
-let keep = (opt, p) => keepU(opt, x => p(x))
-
-let forEachU = (opt, f) =>
+let forEach = (opt, f) =>
   switch opt {
   | Some(x) => f(x)
   | None => ()
   }
-
-let forEach = (opt, f) => forEachU(opt, x => f(x))
 
 let getExn = x =>
   switch x {
@@ -46,29 +42,23 @@ let getExn = x =>
 
 external getUnsafe: option<'a> => 'a = "%identity"
 
-let mapWithDefaultU = (opt, default, f) =>
+let mapWithDefault = (opt, default, f) =>
   switch opt {
   | Some(x) => f(x)
   | None => default
   }
 
-let mapWithDefault = (opt, default, f) => mapWithDefaultU(opt, default, x => f(x))
-
-let mapU = (opt, f) =>
+let map = (opt, f) =>
   switch opt {
   | Some(x) => Some(f(x))
   | None => None
   }
 
-let map = (opt, f) => mapU(opt, x => f(x))
-
-let flatMapU = (opt, f) =>
+let flatMap = (opt, f) =>
   switch opt {
   | Some(x) => f(x)
   | None => None
   }
-
-let flatMap = (opt, f) => flatMapU(opt, x => f(x))
 
 let getWithDefault = (opt, default) =>
   switch opt {
@@ -90,7 +80,7 @@ let isSome = x =>
 
 let isNone = x => x == None
 
-let eqU = (a, b, f) =>
+let eq = (a, b, f) =>
   switch a {
   | Some(a) =>
     switch b {
@@ -100,9 +90,7 @@ let eqU = (a, b, f) =>
   | None => b == None
   }
 
-let eq = (a, b, f) => eqU(a, b, (x, y) => f(x, y))
-
-let cmpU = (a, b, f) =>
+let cmp = (a, b, f) =>
   switch (a, b) {
   | (Some(a), Some(b)) => f(a, b)
   | (None, Some(_)) => -1
@@ -110,4 +98,10 @@ let cmpU = (a, b, f) =>
   | (None, None) => 0
   }
 
-let cmp = (a, b, f) => cmpU(a, b, (x, y) => f(x, y))
+let cmpU = cmp
+let eqU = eq
+let flatMapU = flatMap
+let forEachU = forEach
+let keepU = keep
+let mapU = map
+let mapWithDefaultU = mapWithDefault

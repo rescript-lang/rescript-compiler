@@ -83,6 +83,7 @@ equal elements.
 */
 let eq: (t, t) => bool
 
+@deprecated("Use `forEach` instead")
 let forEachU: (t, value => unit) => unit
 
 /**
@@ -90,11 +91,13 @@ let forEachU: (t, value => unit) => unit
 */
 let forEach: (t, value => unit) => unit
 
+@deprecated("Use `reduce` instead")
 let reduceU: (t, 'a, ('a, value) => 'a) => 'a
 
 /** Iterate in increasing order. */
 let reduce: (t, 'a, ('a, value) => 'a) => 'a
 
+@deprecated("Use `every` instead")
 let everyU: (t, value => bool) => bool
 
 /**
@@ -103,6 +106,7 @@ unspecified.
 */
 let every: (t, value => bool) => bool
 
+@deprecated("Use `some` instead")
 let someU: (t, value => bool) => bool
 
 /**
@@ -111,6 +115,7 @@ let someU: (t, value => bool) => bool
 */
 let some: (t, value => bool) => bool
 
+@deprecated("Use `keep` instead")
 let keepU: (t, value => bool) => t
 
 /**
@@ -118,6 +123,7 @@ let keepU: (t, value => bool) => t
 */
 let keep: (t, value => bool) => t
 
+@deprecated("Use `partition` instead")
 let partitionU: (t, value => bool) => (t, t)
 
 /**

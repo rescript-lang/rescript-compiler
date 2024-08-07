@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
-let Belt_Id = require("../../lib/js/belt_Id.js");
 let Belt_Map = require("../../lib/js/belt_Map.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
@@ -27,11 +26,17 @@ function b(loc, v) {
   Mt.bool_suites(test_id, suites, loc, v);
 }
 
-let Icmp = Belt_Id.comparable(Caml.int_compare);
+let Icmp = {
+  cmp: Caml.int_compare
+};
 
-let Icmp2 = Belt_Id.comparable(Caml.int_compare);
+let Icmp2 = {
+  cmp: Caml.int_compare
+};
 
-let Ic3 = Belt_Id.comparable(Caml.int_compare);
+let Ic3 = {
+  cmp: Caml.int_compare
+};
 
 let m0_cmp = Icmp.cmp;
 
@@ -47,9 +52,11 @@ let m00 = {
   data: undefined
 };
 
-let I2 = Belt_Id.comparable(function (x, y) {
-  return Caml.int_compare(y, x);
-});
+let I2 = {
+  cmp: (function (x, y) {
+    return Caml.int_compare(y, x);
+  })
+};
 
 let m_cmp = Icmp2.cmp;
 
@@ -211,4 +218,4 @@ exports.ISet = ISet;
 exports.S0 = S0;
 exports.f = f;
 exports.$eq$tilde = $eq$tilde;
-/* Icmp Not a pure module */
+/*  Not a pure module */

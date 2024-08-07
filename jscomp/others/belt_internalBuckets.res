@@ -84,14 +84,12 @@ let rec do_bucket_iter = (~f, buckets) =>
     do_bucket_iter(~f, cell.next)
   }
 
-let forEachU = (h, f) => {
+let forEach = (h, f) => {
   let d = h.C.buckets
   for i in 0 to A.length(d) - 1 {
     do_bucket_iter(~f, A.getUnsafe(d, i))
   }
 }
-
-let forEach = (h, f) => forEachU(h, (a, b) => f(a, b))
 
 let rec do_bucket_fold = (~f, b, accu) =>
   switch C.toOpt(b) {
@@ -99,7 +97,7 @@ let rec do_bucket_fold = (~f, b, accu) =>
   | Some(cell) => do_bucket_fold(~f, cell.next, f(accu, cell.key, cell.value))
   }
 
-let reduceU = (h, init, f) => {
+let reduce = (h, init, f) => {
   let d = h.C.buckets
   let accu = ref(init)
   for i in 0 to A.length(d) - 1 {
@@ -108,18 +106,16 @@ let reduceU = (h, init, f) => {
   accu.contents
 }
 
-let reduce = (h, init, f) => reduceU(h, init, (a, b, c) => f(a, b, c))
-
 let getMaxBucketLength = h =>
-  A.reduceU(h.C.buckets, 0, (m, b) => {
+  A.reduce(h.C.buckets, 0, (m, b) => {
     let len = bucketLength(0, b)
     Pervasives.max(m, len)
   })
 
 let getBucketHistogram = h => {
   let mbl = getMaxBucketLength(h)
-  let histo = A.makeByU(mbl + 1, _ => 0)
-  A.forEachU(h.C.buckets, b => {
+  let histo = A.makeBy(mbl + 1, _ => 0)
+  A.forEach(h.C.buckets, b => {
     let l = bucketLength(0, b)
     A.setUnsafe(histo, l, A.getUnsafe(histo, l) + 1)
   })
@@ -164,7 +160,7 @@ let rec filterMapInplaceBucket = (f, h, i, prec, cell) => {
   }
 }
 
-let keepMapInPlaceU = (h, f) => {
+let keepMapInPlace = (h, f) => {
   let h_buckets = h.C.buckets
   for i in 0 to A.length(h_buckets) - 1 {
     let v = A.getUnsafe(h_buckets, i)
@@ -174,8 +170,6 @@ let keepMapInPlaceU = (h, f) => {
     }
   }
 }
-
-let keepMapInPlace = (h, f) => keepMapInPlaceU(h, (a, b) => f(a, b))
 
 let rec fillArray = (i, arr, cell) => {
   A.setUnsafe(arr, i, (cell.key, cell.value))

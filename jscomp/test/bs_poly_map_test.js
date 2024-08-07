@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
-let Belt_Id = require("../../lib/js/belt_Id.js");
 let Belt_Map = require("../../lib/js/belt_Map.js");
 let Belt_Set = require("../../lib/js/belt_Set.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
@@ -27,7 +26,9 @@ function b(loc, v) {
   Mt.bool_suites(test_id, suites, loc, v);
 }
 
-let Icmp = Belt_Id.comparable(Caml.int_compare);
+let Icmp = {
+  cmp: Caml.int_compare
+};
 
 function mapOfArray(x) {
   return Belt_Map.fromArray(x, Icmp);
@@ -327,4 +328,4 @@ exports.mergeUnion = mergeUnion;
 exports.mergeDiff = mergeDiff;
 exports.randomRange = randomRange;
 exports.acc = acc;
-/* Icmp Not a pure module */
+/* u0 Not a pure module */

@@ -1,1 +1,1 @@
-Belt.Array.mapU([], (. a, b) => 1)
+Belt.Array.map([], (a, b) => 1)

@@ -14,17 +14,11 @@ let maximum = N.maximum
 let maxUndefined = N.maxUndefined
 
 let forEach = N.forEach
-let forEachU = N.forEachU
 let reduce = N.reduce
-let reduceU = N.reduceU
 let every = N.every
-let everyU = N.everyU
 let some = N.some
-let someU = N.someU
 let keep = N.keepShared
-let keepU = N.keepSharedU
 let partition = N.partitionShared
-let partitionU = N.partitionSharedU
 
 let size = N.size
 let toList = N.toList
@@ -225,3 +219,10 @@ let rec diff = (s1: t, s2: t) =>
       N.joinShared(ll, v1, rr)
     }
   }
+
+let forEachU = forEach
+let reduceU = reduce
+let everyU = every
+let someU = some
+let keepU = keep
+let partitionU = partition

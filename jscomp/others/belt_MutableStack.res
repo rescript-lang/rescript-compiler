@@ -87,17 +87,16 @@ let rec iterAux = (s: opt_cell<_>, f) =>
     iterAux(x.tail, f)
   }
 
-let forEachU = (s, f) => iterAux(s.root, f)
+let forEach = (s, f) => iterAux(s.root, f)
 
-let forEach = (s, f) => forEachU(s, x => f(x))
-
-let rec dynamicPopIterU = (s, f) =>
+let rec dynamicPopIter = (s, f) =>
   switch s.root {
   | Some({tail, head}) =>
     s.root = tail
     f(head)
-    dynamicPopIterU(s, f) /* using root, `f` may change it */
+    dynamicPopIter(s, f) /* using root, `f` may change it */
   | None => ()
   }
 
-let dynamicPopIter = (s, f) => dynamicPopIterU(s, x => f(x))
+let dynamicPopIterU = dynamicPopIter
+let forEachU = forEach

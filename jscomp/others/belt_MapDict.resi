@@ -49,9 +49,11 @@ let isEmpty: t<'k, 'v, 'id> => bool
 
 let has: (t<'k, 'a, 'id>, 'k, ~cmp: cmp<'k, 'id>) => bool
 
+@deprecated("Use `cmp` instead")
 let cmpU: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, ~kcmp: cmp<'k, 'id>, ~vcmp: ('v, 'v) => int) => int
 let cmp: (t<'k, 'v, 'id>, t<'k, 'v, 'id>, ~kcmp: cmp<'k, 'id>, ~vcmp: ('v, 'v) => int) => int
 
+@deprecated("Use `eq` instead")
 let eqU: (t<'k, 'a, 'id>, t<'k, 'a, 'id>, ~kcmp: cmp<'k, 'id>, ~veq: ('a, 'a) => bool) => bool
 /**
 `eq(m1, m2, cmp)` tests whether the maps `m1` and `m2` are equal, that is,
@@ -60,6 +62,7 @@ equality predicate used to compare the data associated with the keys.
 */
 let eq: (t<'k, 'a, 'id>, t<'k, 'a, 'id>, ~kcmp: cmp<'k, 'id>, ~veq: ('a, 'a) => bool) => bool
 
+@deprecated("Use `findFirstBy` instead")
 let findFirstByU: (t<'k, 'v, 'id>, ('k, 'v) => bool) => option<('k, 'v)>
 /** 
 `findFirstBy(m, p)` uses function `f` to find the first key value pair to
@@ -80,6 +83,7 @@ Belt.Map.Dict.findFirstBy(s0, (k, _) => k == 4) == Some((4, "4"))
 */
 let findFirstBy: (t<'k, 'v, 'id>, ('k, 'v) => bool) => option<('k, 'v)>
 
+@deprecated("Use `forEach` instead")
 let forEachU: (t<'k, 'a, 'id>, ('k, 'a) => unit) => unit
 /**
 `forEach(m, f)` applies `f` to all bindings in map `m`. `f` receives the
@@ -89,6 +93,7 @@ over the type of the keys.
 */
 let forEach: (t<'k, 'a, 'id>, ('k, 'a) => unit) => unit
 
+@deprecated("Use `reduce` instead")
 let reduceU: (t<'k, 'a, 'id>, 'b, ('b, 'k, 'a) => 'b) => 'b
 /**
 `reduce(m, a, f)` computes `f(kN, dN ... f(k1, d1, a)...)`, where `k1 ... kN` 
@@ -97,6 +102,7 @@ are the associated data.
 */
 let reduce: (t<'k, 'a, 'id>, 'b, ('b, 'k, 'a) => 'b) => 'b
 
+@deprecated("Use `every` instead")
 let everyU: (t<'k, 'a, 'id>, ('k, 'a) => bool) => bool
 /** 
 `every(m, p)` checks if all the bindings of the map satisfy the predicate
@@ -104,6 +110,7 @@ let everyU: (t<'k, 'a, 'id>, ('k, 'a) => bool) => bool
 */
 let every: (t<'k, 'a, 'id>, ('k, 'a) => bool) => bool
 
+@deprecated("Use `some` instead")
 let someU: (t<'k, 'a, 'id>, ('k, 'a) => bool) => bool
 /**
 `some(m, p)` checks if at least one binding of the map satisfy the
@@ -165,9 +172,11 @@ binding disappears.
 */
 let set: (t<'a, 'b, 'id>, 'a, 'b, ~cmp: cmp<'a, 'id>) => t<'a, 'b, 'id>
 
+@deprecated("Use `update` instead")
 let updateU: (t<'a, 'b, 'id>, 'a, option<'b> => option<'b>, ~cmp: cmp<'a, 'id>) => t<'a, 'b, 'id>
 let update: (t<'a, 'b, 'id>, 'a, option<'b> => option<'b>, ~cmp: cmp<'a, 'id>) => t<'a, 'b, 'id>
 
+@deprecated("Use `merge` instead")
 let mergeU: (
   t<'a, 'b, 'id>,
   t<'a, 'c, 'id>,
@@ -188,6 +197,7 @@ let merge: (
 
 let mergeMany: (t<'a, 'b, 'id>, array<('a, 'b)>, ~cmp: cmp<'a, 'id>) => t<'a, 'b, 'id>
 
+@deprecated("Use `keep` instead")
 let keepU: (t<'k, 'a, 'id>, ('k, 'a) => bool) => t<'k, 'a, 'id>
 /**
 `keep(m, p)` returns the map with all the bindings in `m` that satisfy
@@ -195,6 +205,7 @@ predicate `p`.
 */
 let keep: (t<'k, 'a, 'id>, ('k, 'a) => bool) => t<'k, 'a, 'id>
 
+@deprecated("Use `partition` instead")
 let partitionU: (t<'k, 'a, 'id>, ('k, 'a) => bool) => (t<'k, 'a, 'id>, t<'k, 'a, 'id>)
 /** 
 `partition(m, p)` returns a pair of maps `(m1, m2)`, where `m1` contains
@@ -216,6 +227,7 @@ let split: (
   ~cmp: cmp<'a, 'id>,
 ) => ((t<'a, 'b, 'id>, t<'a, 'b, 'id>), option<'b>)
 
+@deprecated("Use `map` instead")
 let mapU: (t<'k, 'a, 'id>, 'a => 'b) => t<'k, 'b, 'id>
 /** 
 `map(m, f)` returns a map with same domain as `m`, where the associated
@@ -225,5 +237,6 @@ order with respect to the ordering over the type of the keys.
 */
 let map: (t<'k, 'a, 'id>, 'a => 'b) => t<'k, 'b, 'id>
 
+@deprecated("Use `mapWithKey` instead")
 let mapWithKeyU: (t<'k, 'a, 'id>, ('k, 'a) => 'b) => t<'k, 'b, 'id>
 let mapWithKey: (t<'k, 'a, 'id>, ('k, 'a) => 'b) => t<'k, 'b, 'id>

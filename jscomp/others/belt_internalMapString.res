@@ -168,7 +168,7 @@ let split = (x: key, n) =>
   | Some(n) => splitAux(x, n)
   }
 
-let rec mergeU = (s1, s2, f) =>
+let rec merge = (s1, s2, f) =>
   switch (s1, s2) {
   | (None, None) => None
   | (Some(n) /* (Node (l1, v1, d1, r1, h1), _) */, _)
@@ -179,15 +179,13 @@ let rec mergeU = (s1, s2, f) =>
     } =>
     let {N.left: l1, key: v1, value: d1, right: r1} = n
     let (l2, d2, r2) = split(v1, s2)
-    N.concatOrJoin(mergeU(l1, l2, f), v1, f(v1, Some(d1), d2), mergeU(r1, r2, f))
+    N.concatOrJoin(merge(l1, l2, f), v1, f(v1, Some(d1), d2), merge(r1, r2, f))
   | (_, Some(n)) /* Node (l2, v2, d2, r2, h2) */ =>
     let {N.left: l2, key: v2, value: d2, right: r2} = n
     let (l1, d1, r1) = split(v2, s1)
-    N.concatOrJoin(mergeU(l1, l2, f), v2, f(v2, d1, Some(d2)), mergeU(r1, r2, f))
+    N.concatOrJoin(merge(l1, l2, f), v2, f(v2, d1, Some(d2)), merge(r1, r2, f))
   | _ => assert(false)
   }
-
-let merge = (s1, s2, f) => mergeU(s1, s2, (a, b, c) => f(a, b, c))
 
 let rec compareAux = (e1, e2, vcmp) =>
   switch (e1, e2) {
@@ -206,7 +204,7 @@ let rec compareAux = (e1, e2, vcmp) =>
   | (_, _) => 0
   }
 
-let cmpU = (s1, s2, cmp) => {
+let cmp = (s1, s2, cmp) => {
   let (len1, len2) = (N.size(s1), N.size(s2))
   if len1 == len2 {
     compareAux(N.stackAllLeft(s1, list{}), N.stackAllLeft(s2, list{}), cmp)
@@ -216,8 +214,6 @@ let cmpU = (s1, s2, cmp) => {
     1
   }
 }
-
-let cmp = (s1, s2, f) => cmpU(s1, s2, (a, b) => f(a, b))
 
 let rec eqAux = (e1, e2, eq) =>
   switch (e1, e2) {
@@ -230,7 +226,7 @@ let rec eqAux = (e1, e2, eq) =>
   | (_, _) => true
   } /* end */
 
-let eqU = (s1, s2, eq) => {
+let eq = (s1, s2, eq) => {
   let (len1, len2) = (N.size(s1), N.size(s2))
   if len1 == len2 {
     eqAux(N.stackAllLeft(s1, list{}), N.stackAllLeft(s2, list{}), eq)
@@ -238,8 +234,6 @@ let eqU = (s1, s2, eq) => {
     false
   }
 }
-
-let eq = (s1, s2, f) => eqU(s1, s2, (a, b) => f(a, b))
 
 let rec addMutate = (t: t<_>, x, data): t<_> =>
   switch t {
@@ -269,7 +263,7 @@ let fromArray = (xs: array<(key, _)>) => {
   if len == 0 {
     None
   } else {
-    let next = ref(S.strictlySortedLengthU(xs, ((x0, _), (y0, _)) => x0 < y0))
+    let next = ref(S.strictlySortedLength(xs, ((x0, _), (y0, _)) => x0 < y0))
 
     let result = ref(
       if next.contents >= 0 {
@@ -286,3 +280,7 @@ let fromArray = (xs: array<(key, _)>) => {
     result.contents
   }
 }
+
+let cmpU = cmp
+let eqU = eq
+let mergeU = merge
