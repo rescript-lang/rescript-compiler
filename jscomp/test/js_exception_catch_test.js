@@ -205,9 +205,7 @@ eq("File \"js_exception_catch_test.res\", line 52, characters 5-12", test(functi
 }), "C_any");
 
 eq("File \"js_exception_catch_test.res\", line 53, characters 5-12", test(function () {
-  throw new Error(new Error("x").RE_EXN_ID, {
-    cause: new Error("x")
-  });
+  Js_exn.raiseError("x");
 }), "Js_error");
 
 eq("File \"js_exception_catch_test.res\", line 54, characters 5-12", test(function () {
