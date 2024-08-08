@@ -2299,19 +2299,23 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
         | None ->
             begin match extension_cases with
             | (_, act)::rem -> act, rem
-            | _ -> failwith "Empty extension case list is not possible"
+            | _ -> assert false
             end
         | Some fail -> fail, extension_cases in
       match extension_cases with
         | [] -> default
         | _ ->
-          List.fold_right
-            (fun (path, act) rem ->
-                let ext = transl_extension_path ex_pat.pat_env path in
-                Lifthenelse(Lprim(extension_slot_eq , [arg; ext], loc),
-                            act, rem))
-            extension_cases
-            default 
+          let tag = Ident.create "tag" in
+          let tests =
+            List.fold_right
+              (fun (path, act) rem ->
+                  let ext = transl_extension_path ex_pat.pat_env path in
+                  Lifthenelse(Lprim(extension_slot_eq , [Lvar tag; ext], loc),
+                              act, rem))
+              extension_cases
+              default
+          in
+            Llet(Alias, Pgenval,tag,  arg, tests)
     in
     lambda1, jumps_union local_jumps total1
   end else begin
