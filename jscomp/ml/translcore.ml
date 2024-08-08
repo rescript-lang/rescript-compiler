@@ -905,7 +905,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
             in
             try Lconst (Const_block (tag_info, List.map extract_constant ll))
             with Not_constant -> Lprim (Pmakeblock tag_info, ll, e.exp_loc))
-        | Cstr_extension (path, _) ->
+        | Cstr_extension (path) ->
             Lprim
               ( Pmakeblock Blk_extension,
                 transl_extension_path e.exp_env path :: ll,
