@@ -2534,16 +2534,6 @@ and unify_row env row1 row2 =
   let rm1 = row_more row1 and rm2 = row_more row2 in
   if unify_eq rm1 rm2 then () else
   let r1, r2, pairs = merge_row_fields row1.row_fields row2.row_fields in
-  if not !Config.bs_only && (r1 <> [] && r2 <> []) then begin
-    (* pairs are the intersection, r1 , r2 should be disjoint *)
-    let ht = Hashtbl.create (List.length r1) in
-    List.iter (fun (l,_) -> Hashtbl.add ht (hash_variant l) l) r1;
-    List.iter
-      (fun (l,_) ->
-        try raise (Tags(l, Hashtbl.find ht (hash_variant l)))
-        with Not_found -> ())
-      r2
-  end;
   let fixed1 = row_fixed row1 and fixed2 = row_fixed row2 in
   let more =
     if fixed1 then rm1 else
@@ -3712,7 +3702,6 @@ let rec subtype_rec env trace t1 t2 cstrs =
           (trace, t1, t2, !univar_pairs)::cstrs
         end
     | Tvariant v, _ when 
-        !Config.bs_only &&
         !variant_is_subtype env (row_repr v) t2 
       -> 
         cstrs
