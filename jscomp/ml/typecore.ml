@@ -2839,7 +2839,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
                } ] ->
           let path =
             match (Typetexp.find_constructor env lid.loc lid.txt).cstr_tag with
-            | Cstr_extension (path, _) -> path
+            | Cstr_extension (path) -> path
             | _ -> raise (Error (lid.loc, env, Not_an_extension_constructor))
           in
           rue {
