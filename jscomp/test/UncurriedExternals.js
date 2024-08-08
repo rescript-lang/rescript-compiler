@@ -29,9 +29,11 @@ function tg(arr) {
 
 let tc = Object.assign({}, "abc");
 
-let te = {
-  RE_EXN_ID: "Not_found"
-};
+let te = new Error("Not_found", {
+  cause: {
+    RE_EXN_ID: "Not_found"
+  }
+});
 
 let tcr = {};
 

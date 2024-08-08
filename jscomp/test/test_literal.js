@@ -5,11 +5,13 @@ let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 let Custom_inline = /* @__PURE__ */Caml_exceptions.create("Test_literal.Custom_inline");
 
-let v = {
-  RE_EXN_ID: Custom_inline,
-  _1: 1,
-  _2: 2
-};
+let v = new Error(Custom_inline, {
+  cause: {
+    RE_EXN_ID: Custom_inline,
+    _1: 1,
+    _2: 2
+  }
+});
 
 let vv = [
   1,

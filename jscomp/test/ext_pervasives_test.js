@@ -11,9 +11,7 @@ function $$finally(v, action, f) {
     e = f(v);
   } catch (e$1) {
     action(v);
-    throw new Error(e$1.RE_EXN_ID, {
-      cause: e$1
-    });
+    throw e$1;
   }
   action(v);
   return e;
@@ -49,9 +47,7 @@ function is_pos_pow(n) {
     if (exn.RE_EXN_ID === E) {
       return -1;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -85,9 +81,7 @@ function is_pos_pow_2(n) {
     if (exn.RE_EXN_ID === E) {
       return -1;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 

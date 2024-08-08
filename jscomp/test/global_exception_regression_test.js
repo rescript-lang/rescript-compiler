@@ -3,17 +3,23 @@
 
 let Mt = require("./mt.js");
 
-let v = {
-  RE_EXN_ID: "Not_found"
-};
+let v = new Error("Not_found", {
+  cause: {
+    RE_EXN_ID: "Not_found"
+  }
+});
 
-let u = {
-  RE_EXN_ID: "Not_found"
-};
+let u = new Error("Not_found", {
+  cause: {
+    RE_EXN_ID: "Not_found"
+  }
+});
 
-let s = {
-  RE_EXN_ID: "End_of_file"
-};
+let s = new Error("End_of_file", {
+  cause: {
+    RE_EXN_ID: "End_of_file"
+  }
+});
 
 let suites_0 = [
   "not_found_equal",

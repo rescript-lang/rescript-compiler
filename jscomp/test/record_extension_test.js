@@ -27,11 +27,13 @@ function f(x) {
   
 }
 
-let v0 = {
-  RE_EXN_ID: Inline_record,
-  x: 3,
-  y: "4"
-};
+let v0 = new Error(Inline_record, {
+  cause: {
+    RE_EXN_ID: Inline_record,
+    x: 3,
+    y: "4"
+  }
+});
 
 eq("File \"record_extension_test.res\", line 18, characters 3-10", f(v0), 7);
 

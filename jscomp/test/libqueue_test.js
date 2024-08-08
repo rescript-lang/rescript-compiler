@@ -43,9 +43,7 @@ function does_raise(f, q) {
     if (exn.RE_EXN_ID === Queue.Empty) {
       return true;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 

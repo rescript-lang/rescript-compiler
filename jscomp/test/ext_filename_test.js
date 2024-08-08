@@ -70,9 +70,7 @@ function chop_extension(locOpt, name) {
         }
       });
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -84,9 +82,7 @@ function chop_extension_if_any(fname) {
     if (exn.RE_EXN_ID === "Invalid_argument") {
       return fname;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 

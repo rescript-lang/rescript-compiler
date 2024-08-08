@@ -27,35 +27,45 @@ let Small = /* @__PURE__ */Caml_exceptions.create("Large_record_duplication_test
 
 function f_small(x) {
   if (x.RE_EXN_ID === Small) {
-    return {
-      RE_EXN_ID: Small,
-      x: 2,
-      y: x.y
-    };
+    return new Error(Small, {
+      cause: {
+        RE_EXN_ID: Small,
+        x: 2,
+        y: x.y
+      }
+    });
   } else {
-    return {
-      RE_EXN_ID: "Not_found"
-    };
+    return new Error("Not_found", {
+      cause: {
+        RE_EXN_ID: "Not_found"
+      }
+    });
   }
 }
 
-let h = {
-  RE_EXN_ID: Small,
-  x: 1,
-  y: ""
-};
-
-eq("File \"large_record_duplication_test.res\", line 70, characters 3-10", f_small(h), {
-  RE_EXN_ID: Small,
-  x: 2,
-  y: ""
+let h = new Error(Small, {
+  cause: {
+    RE_EXN_ID: Small,
+    x: 1,
+    y: ""
+  }
 });
 
-eq("File \"large_record_duplication_test.res\", line 72, characters 3-10", Caml_obj.equal(h, {
-  RE_EXN_ID: Small,
-  x: 2,
-  y: ""
-}), false);
+eq("File \"large_record_duplication_test.res\", line 70, characters 3-10", f_small(h), new Error(Small, {
+  cause: {
+    RE_EXN_ID: Small,
+    x: 2,
+    y: ""
+  }
+}));
+
+eq("File \"large_record_duplication_test.res\", line 72, characters 3-10", Caml_obj.equal(h, new Error(Small, {
+  cause: {
+    RE_EXN_ID: Small,
+    x: 2,
+    y: ""
+  }
+})), false);
 
 let v1 = {
   TAG: "A0",
@@ -166,40 +176,44 @@ function get_x0$2(x) {
   
 }
 
-let v3 = {
-  RE_EXN_ID: A0,
-  x0: 9,
-  x1: 9,
-  x2: 9,
-  x3: 9,
-  x4: 9,
-  x5: 9,
-  x6: 9,
-  x7: 9,
-  x8: 9,
-  x9: 9,
-  x10: 9,
-  x11: 9,
-  x12: 9,
-  x13: 9,
-  x14: 9,
-  x15: 9,
-  x16: 9,
-  x17: 9,
-  x18: 9,
-  x19: 9,
-  x20: 9,
-  x21: 9,
-  x22: 9
-};
+let v3 = new Error(A0, {
+  cause: {
+    RE_EXN_ID: A0,
+    x0: 9,
+    x1: 9,
+    x2: 9,
+    x3: 9,
+    x4: 9,
+    x5: 9,
+    x6: 9,
+    x7: 9,
+    x8: 9,
+    x9: 9,
+    x10: 9,
+    x11: 9,
+    x12: 9,
+    x13: 9,
+    x14: 9,
+    x15: 9,
+    x16: 9,
+    x17: 9,
+    x18: 9,
+    x19: 9,
+    x20: 9,
+    x21: 9,
+    x22: 9
+  }
+});
 
 eq("File \"large_record_duplication_test.res\", line 275, characters 3-10", get_x0$2(f3(v3)), 1);
 
 eq("File \"large_record_duplication_test.res\", line 276, characters 3-10", get_x0$2(v3), 9);
 
-eq("File \"large_record_duplication_test.res\", line 277, characters 3-10", get_x0$2({
-  RE_EXN_ID: "Not_found"
-}), undefined);
+eq("File \"large_record_duplication_test.res\", line 277, characters 3-10", get_x0$2(new Error("Not_found", {
+  cause: {
+    RE_EXN_ID: "Not_found"
+  }
+})), undefined);
 
 Mt.from_pair_suites("Large_record_duplication_test", suites.contents);
 

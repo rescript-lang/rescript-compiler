@@ -287,9 +287,7 @@ function find(startOpt, sub, s) {
     if (exn.RE_EXN_ID === Local_exit) {
       return i;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -342,9 +340,7 @@ function rfind(sub, s) {
     if (exn.RE_EXN_ID === Local_exit) {
       return i;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 

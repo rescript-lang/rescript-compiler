@@ -10,9 +10,7 @@ function scanf_bad_input(ib, x) {
   if (x.RE_EXN_ID === Scan_failure || x.RE_EXN_ID === "Failure") {
     s = x._1;
   } else {
-    throw new Error(x.RE_EXN_ID, {
-      cause: x
-    });
+    throw x;
   }
   for (let i = 0; i <= 100; ++i) {
     console.log(s);

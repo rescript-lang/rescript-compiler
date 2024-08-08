@@ -18,9 +18,7 @@ function ff(g, x) {
   } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID !== "Not_found") {
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
     
   }
@@ -29,9 +27,7 @@ function ff(g, x) {
   } catch (raw_exn$1) {
     let exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
     if (exn$1.RE_EXN_ID !== Out_of_memory) {
-      throw new Error(exn$1.RE_EXN_ID, {
-        cause: exn$1
-      });
+      throw exn$1;
     }
     
   }
@@ -40,9 +36,7 @@ function ff(g, x) {
   } catch (raw_exn$2) {
     let exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
     if (exn$2.RE_EXN_ID !== Sys_error) {
-      throw new Error(exn$2.RE_EXN_ID, {
-        cause: exn$2
-      });
+      throw exn$2;
     }
     
   }
@@ -51,9 +45,7 @@ function ff(g, x) {
   } catch (raw_exn$3) {
     let exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
     if (exn$3.RE_EXN_ID !== "Invalid_argument") {
-      throw new Error(exn$3.RE_EXN_ID, {
-        cause: exn$3
-      });
+      throw exn$3;
     }
     
   }
@@ -62,9 +54,7 @@ function ff(g, x) {
   } catch (raw_exn$4) {
     let exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
     if (exn$4.RE_EXN_ID !== "End_of_file") {
-      throw new Error(exn$4.RE_EXN_ID, {
-        cause: exn$4
-      });
+      throw exn$4;
     }
     
   }
@@ -73,9 +63,7 @@ function ff(g, x) {
   } catch (raw_exn$5) {
     let exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$5);
     if (exn$5.RE_EXN_ID !== "Match_failure") {
-      throw new Error(exn$5.RE_EXN_ID, {
-        cause: exn$5
-      });
+      throw exn$5;
     }
     
   }
@@ -84,9 +72,7 @@ function ff(g, x) {
   } catch (raw_exn$6) {
     let exn$6 = Caml_js_exceptions.internalToOCamlException(raw_exn$6);
     if (exn$6.RE_EXN_ID !== Stack_overflow) {
-      throw new Error(exn$6.RE_EXN_ID, {
-        cause: exn$6
-      });
+      throw exn$6;
     }
     
   }
@@ -95,9 +81,7 @@ function ff(g, x) {
   } catch (raw_exn$7) {
     let exn$7 = Caml_js_exceptions.internalToOCamlException(raw_exn$7);
     if (exn$7.RE_EXN_ID !== Sys_blocked_io) {
-      throw new Error(exn$7.RE_EXN_ID, {
-        cause: exn$7
-      });
+      throw exn$7;
     }
     
   }
@@ -106,9 +90,7 @@ function ff(g, x) {
   } catch (raw_exn$8) {
     let exn$8 = Caml_js_exceptions.internalToOCamlException(raw_exn$8);
     if (exn$8.RE_EXN_ID !== "Assert_failure") {
-      throw new Error(exn$8.RE_EXN_ID, {
-        cause: exn$8
-      });
+      throw exn$8;
     }
     
   }
@@ -119,9 +101,7 @@ function ff(g, x) {
     if (exn$9.RE_EXN_ID === "Undefined_recursive_module") {
       return;
     }
-    throw new Error(exn$9.RE_EXN_ID, {
-      cause: exn$9
-    });
+    throw exn$9;
   }
 }
 

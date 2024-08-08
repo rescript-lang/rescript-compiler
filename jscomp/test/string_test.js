@@ -72,9 +72,7 @@ function rev_split_by_char(c, s) {
           tl: l
         };
       }
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
   };
   return loop(0, /* [] */0);
@@ -102,9 +100,7 @@ function xsplit(delim, s) {
             tl: l
           };
         }
-        throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+        throw exn;
       }
       let l_0 = $$String.sub(s, i$p + 1 | 0, (x - i$p | 0) - 1 | 0);
       let l$1 = {

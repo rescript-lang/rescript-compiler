@@ -19,9 +19,7 @@ try {
     console.log(msg._1);
     y = 0;
   } else {
-    throw new Error(msg.RE_EXN_ID, {
-      cause: msg
-    });
+    throw msg;
   }
 }
 
