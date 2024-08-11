@@ -10,7 +10,7 @@ function date() {
 
 let suites_0 = [
   "valueOf",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: 195131516789,
@@ -22,7 +22,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "make",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Ok",
         _0: new Date().getTime() > 1487223505382
@@ -32,7 +32,7 @@ let suites_1 = {
   tl: {
     hd: [
       "parseAsFloat",
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: Date.parse("1976-03-08T12:34:56.789+01:23"),
@@ -43,7 +43,7 @@ let suites_1 = {
     tl: {
       hd: [
         "parseAsFloat_invalid",
-        (function (param) {
+        ((param) => {
           return {
             TAG: "Ok",
             _0: Number.isNaN(Date.parse("gibberish"))
@@ -53,7 +53,7 @@ let suites_1 = {
       tl: {
         hd: [
           "fromFloat",
-          (function (param) {
+          ((param) => {
             return {
               TAG: "Eq",
               _0: "1976-03-08T11:11:56.789Z",
@@ -64,7 +64,7 @@ let suites_1 = {
         tl: {
           hd: [
             "fromString_valid",
-            (function (param) {
+            ((param) => {
               return {
                 TAG: "Eq",
                 _0: 195131516789,
@@ -75,7 +75,7 @@ let suites_1 = {
           tl: {
             hd: [
               "fromString_invalid",
-              (function (param) {
+              ((param) => {
                 return {
                   TAG: "Ok",
                   _0: Number.isNaN(new Date("gibberish").getTime())
@@ -85,7 +85,7 @@ let suites_1 = {
             tl: {
               hd: [
                 "makeWithYM",
-                (function (param) {
+                ((param) => {
                   let d = new Date(1984, 4);
                   return {
                     TAG: "Eq",
@@ -103,7 +103,7 @@ let suites_1 = {
               tl: {
                 hd: [
                   "makeWithYMD",
-                  (function (param) {
+                  ((param) => {
                     let d = new Date(1984, 4, 6);
                     return {
                       TAG: "Eq",
@@ -123,7 +123,7 @@ let suites_1 = {
                 tl: {
                   hd: [
                     "makeWithYMDH",
-                    (function (param) {
+                    ((param) => {
                       let d = new Date(1984, 4, 6, 3);
                       return {
                         TAG: "Eq",
@@ -145,7 +145,7 @@ let suites_1 = {
                   tl: {
                     hd: [
                       "makeWithYMDHM",
-                      (function (param) {
+                      ((param) => {
                         let d = new Date(1984, 4, 6, 3, 59);
                         return {
                           TAG: "Eq",
@@ -169,7 +169,7 @@ let suites_1 = {
                     tl: {
                       hd: [
                         "makeWithYMDHMS",
-                        (function (param) {
+                        ((param) => {
                           let d = new Date(1984, 4, 6, 3, 59, 27);
                           return {
                             TAG: "Eq",
@@ -195,7 +195,7 @@ let suites_1 = {
                       tl: {
                         hd: [
                           "utcWithYM",
-                          (function (param) {
+                          ((param) => {
                             let d = Date.UTC(1984, 4);
                             let d$1 = new Date(d);
                             return {
@@ -214,7 +214,7 @@ let suites_1 = {
                         tl: {
                           hd: [
                             "utcWithYMD",
-                            (function (param) {
+                            ((param) => {
                               let d = Date.UTC(1984, 4, 6);
                               let d$1 = new Date(d);
                               return {
@@ -235,7 +235,7 @@ let suites_1 = {
                           tl: {
                             hd: [
                               "utcWithYMDH",
-                              (function (param) {
+                              ((param) => {
                                 let d = Date.UTC(1984, 4, 6, 3);
                                 let d$1 = new Date(d);
                                 return {
@@ -258,7 +258,7 @@ let suites_1 = {
                             tl: {
                               hd: [
                                 "utcWithYMDHM",
-                                (function (param) {
+                                ((param) => {
                                   let d = Date.UTC(1984, 4, 6, 3, 59);
                                   let d$1 = new Date(d);
                                   return {
@@ -283,7 +283,7 @@ let suites_1 = {
                               tl: {
                                 hd: [
                                   "utcWithYMDHMS",
-                                  (function (param) {
+                                  ((param) => {
                                     let d = Date.UTC(1984, 4, 6, 3, 59, 27);
                                     let d$1 = new Date(d);
                                     return {
@@ -310,7 +310,7 @@ let suites_1 = {
                                 tl: {
                                   hd: [
                                     "getFullYear",
-                                    (function (param) {
+                                    ((param) => {
                                       return {
                                         TAG: "Eq",
                                         _0: 1976,
@@ -321,7 +321,7 @@ let suites_1 = {
                                   tl: {
                                     hd: [
                                       "getMilliseconds",
-                                      (function (param) {
+                                      ((param) => {
                                         return {
                                           TAG: "Eq",
                                           _0: 789,
@@ -332,7 +332,7 @@ let suites_1 = {
                                     tl: {
                                       hd: [
                                         "getSeconds",
-                                        (function (param) {
+                                        ((param) => {
                                           return {
                                             TAG: "Eq",
                                             _0: 56,
@@ -343,7 +343,7 @@ let suites_1 = {
                                       tl: {
                                         hd: [
                                           "getTime",
-                                          (function (param) {
+                                          ((param) => {
                                             return {
                                               TAG: "Eq",
                                               _0: 195131516789,
@@ -354,7 +354,7 @@ let suites_1 = {
                                         tl: {
                                           hd: [
                                             "getUTCDate",
-                                            (function (param) {
+                                            ((param) => {
                                               return {
                                                 TAG: "Eq",
                                                 _0: 8,
@@ -365,7 +365,7 @@ let suites_1 = {
                                           tl: {
                                             hd: [
                                               "getUTCDay",
-                                              (function (param) {
+                                              ((param) => {
                                                 return {
                                                   TAG: "Eq",
                                                   _0: 1,
@@ -376,7 +376,7 @@ let suites_1 = {
                                             tl: {
                                               hd: [
                                                 "getUTCFUllYear",
-                                                (function (param) {
+                                                ((param) => {
                                                   return {
                                                     TAG: "Eq",
                                                     _0: 1976,
@@ -387,7 +387,7 @@ let suites_1 = {
                                               tl: {
                                                 hd: [
                                                   "getUTCHours",
-                                                  (function (param) {
+                                                  ((param) => {
                                                     return {
                                                       TAG: "Eq",
                                                       _0: 11,
@@ -398,7 +398,7 @@ let suites_1 = {
                                                 tl: {
                                                   hd: [
                                                     "getUTCMilliseconds",
-                                                    (function (param) {
+                                                    ((param) => {
                                                       return {
                                                         TAG: "Eq",
                                                         _0: 789,
@@ -409,7 +409,7 @@ let suites_1 = {
                                                   tl: {
                                                     hd: [
                                                       "getUTCMinutes",
-                                                      (function (param) {
+                                                      ((param) => {
                                                         return {
                                                           TAG: "Eq",
                                                           _0: 11,
@@ -420,7 +420,7 @@ let suites_1 = {
                                                     tl: {
                                                       hd: [
                                                         "getUTCMonth",
-                                                        (function (param) {
+                                                        ((param) => {
                                                           return {
                                                             TAG: "Eq",
                                                             _0: 2,
@@ -431,7 +431,7 @@ let suites_1 = {
                                                       tl: {
                                                         hd: [
                                                           "getUTCSeconds",
-                                                          (function (param) {
+                                                          ((param) => {
                                                             return {
                                                               TAG: "Eq",
                                                               _0: 56,
@@ -442,7 +442,7 @@ let suites_1 = {
                                                         tl: {
                                                           hd: [
                                                             "getYear",
-                                                            (function (param) {
+                                                            ((param) => {
                                                               return {
                                                                 TAG: "Eq",
                                                                 _0: 1976,
@@ -453,7 +453,7 @@ let suites_1 = {
                                                           tl: {
                                                             hd: [
                                                               "setDate",
-                                                              (function (param) {
+                                                              ((param) => {
                                                                 let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                 d.setDate(12);
                                                                 return {
@@ -466,7 +466,7 @@ let suites_1 = {
                                                             tl: {
                                                               hd: [
                                                                 "setFullYear",
-                                                                (function (param) {
+                                                                ((param) => {
                                                                   let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                   d.setFullYear(1986);
                                                                   return {
@@ -479,7 +479,7 @@ let suites_1 = {
                                                               tl: {
                                                                 hd: [
                                                                   "setFullYearM",
-                                                                  (function (param) {
+                                                                  ((param) => {
                                                                     let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                     d.setFullYear(1986, 7);
                                                                     return {
@@ -498,7 +498,7 @@ let suites_1 = {
                                                                 tl: {
                                                                   hd: [
                                                                     "setFullYearMD",
-                                                                    (function (param) {
+                                                                    ((param) => {
                                                                       let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                       d.setFullYear(1986, 7, 23);
                                                                       return {
@@ -519,7 +519,7 @@ let suites_1 = {
                                                                   tl: {
                                                                     hd: [
                                                                       "setHours",
-                                                                      (function (param) {
+                                                                      ((param) => {
                                                                         let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                         d.setHours(22);
                                                                         return {
@@ -532,7 +532,7 @@ let suites_1 = {
                                                                     tl: {
                                                                       hd: [
                                                                         "setHoursM",
-                                                                        (function (param) {
+                                                                        ((param) => {
                                                                           let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                           d.setHours(22, 48);
                                                                           return {
@@ -551,7 +551,7 @@ let suites_1 = {
                                                                       tl: {
                                                                         hd: [
                                                                           "setHoursMS",
-                                                                          (function (param) {
+                                                                          ((param) => {
                                                                             let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                             d.setHours(22, 48, 54);
                                                                             return {
@@ -572,7 +572,7 @@ let suites_1 = {
                                                                         tl: {
                                                                           hd: [
                                                                             "setMilliseconds",
-                                                                            (function (param) {
+                                                                            ((param) => {
                                                                               let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                               d.setMilliseconds(543);
                                                                               return {
@@ -585,7 +585,7 @@ let suites_1 = {
                                                                           tl: {
                                                                             hd: [
                                                                               "setMinutes",
-                                                                              (function (param) {
+                                                                              ((param) => {
                                                                                 let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                 d.setMinutes(18);
                                                                                 return {
@@ -598,7 +598,7 @@ let suites_1 = {
                                                                             tl: {
                                                                               hd: [
                                                                                 "setMinutesS",
-                                                                                (function (param) {
+                                                                                ((param) => {
                                                                                   let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                   d.setMinutes(18, 42);
                                                                                   return {
@@ -617,7 +617,7 @@ let suites_1 = {
                                                                               tl: {
                                                                                 hd: [
                                                                                   "setMinutesSMs",
-                                                                                  (function (param) {
+                                                                                  ((param) => {
                                                                                     let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                     d.setMinutes(18, 42, 311);
                                                                                     return {
@@ -638,7 +638,7 @@ let suites_1 = {
                                                                                 tl: {
                                                                                   hd: [
                                                                                     "setMonth",
-                                                                                    (function (param) {
+                                                                                    ((param) => {
                                                                                       let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                       d.setMonth(10);
                                                                                       return {
@@ -651,7 +651,7 @@ let suites_1 = {
                                                                                   tl: {
                                                                                     hd: [
                                                                                       "setMonthD",
-                                                                                      (function (param) {
+                                                                                      ((param) => {
                                                                                         let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                         d.setMonth(10, 14);
                                                                                         return {
@@ -670,7 +670,7 @@ let suites_1 = {
                                                                                     tl: {
                                                                                       hd: [
                                                                                         "setSeconds",
-                                                                                        (function (param) {
+                                                                                        ((param) => {
                                                                                           let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                           d.setSeconds(36);
                                                                                           return {
@@ -683,7 +683,7 @@ let suites_1 = {
                                                                                       tl: {
                                                                                         hd: [
                                                                                           "setSecondsMs",
-                                                                                          (function (param) {
+                                                                                          ((param) => {
                                                                                             let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                             d.setSeconds(36, 420);
                                                                                             return {
@@ -702,7 +702,7 @@ let suites_1 = {
                                                                                         tl: {
                                                                                           hd: [
                                                                                             "setUTCDate",
-                                                                                            (function (param) {
+                                                                                            ((param) => {
                                                                                               let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                               d.setUTCDate(12);
                                                                                               return {
@@ -715,7 +715,7 @@ let suites_1 = {
                                                                                           tl: {
                                                                                             hd: [
                                                                                               "setUTCFullYear",
-                                                                                              (function (param) {
+                                                                                              ((param) => {
                                                                                                 let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                 d.setUTCFullYear(1986);
                                                                                                 return {
@@ -728,7 +728,7 @@ let suites_1 = {
                                                                                             tl: {
                                                                                               hd: [
                                                                                                 "setUTCFullYearM",
-                                                                                                (function (param) {
+                                                                                                ((param) => {
                                                                                                   let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                   d.setUTCFullYear(1986, 7);
                                                                                                   return {
@@ -747,7 +747,7 @@ let suites_1 = {
                                                                                               tl: {
                                                                                                 hd: [
                                                                                                   "setUTCFullYearMD",
-                                                                                                  (function (param) {
+                                                                                                  ((param) => {
                                                                                                     let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                     d.setUTCFullYear(1986, 7, 23);
                                                                                                     return {
@@ -768,7 +768,7 @@ let suites_1 = {
                                                                                                 tl: {
                                                                                                   hd: [
                                                                                                     "setUTCHours",
-                                                                                                    (function (param) {
+                                                                                                    ((param) => {
                                                                                                       let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                       d.setUTCHours(22);
                                                                                                       return {
@@ -781,7 +781,7 @@ let suites_1 = {
                                                                                                   tl: {
                                                                                                     hd: [
                                                                                                       "setUTCHoursM",
-                                                                                                      (function (param) {
+                                                                                                      ((param) => {
                                                                                                         let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                         d.setUTCHours(22, 48);
                                                                                                         return {
@@ -800,7 +800,7 @@ let suites_1 = {
                                                                                                     tl: {
                                                                                                       hd: [
                                                                                                         "setUTCHoursMS",
-                                                                                                        (function (param) {
+                                                                                                        ((param) => {
                                                                                                           let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                           d.setUTCHours(22, 48, 54);
                                                                                                           return {
@@ -821,7 +821,7 @@ let suites_1 = {
                                                                                                       tl: {
                                                                                                         hd: [
                                                                                                           "setUTCMilliseconds",
-                                                                                                          (function (param) {
+                                                                                                          ((param) => {
                                                                                                             let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                             d.setUTCMilliseconds(543);
                                                                                                             return {
@@ -834,7 +834,7 @@ let suites_1 = {
                                                                                                         tl: {
                                                                                                           hd: [
                                                                                                             "setUTCMinutes",
-                                                                                                            (function (param) {
+                                                                                                            ((param) => {
                                                                                                               let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                               d.setUTCMinutes(18);
                                                                                                               return {
@@ -847,7 +847,7 @@ let suites_1 = {
                                                                                                           tl: {
                                                                                                             hd: [
                                                                                                               "setUTCMinutesS",
-                                                                                                              (function (param) {
+                                                                                                              ((param) => {
                                                                                                                 let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                                 d.setUTCMinutes(18, 42);
                                                                                                                 return {
@@ -866,7 +866,7 @@ let suites_1 = {
                                                                                                             tl: {
                                                                                                               hd: [
                                                                                                                 "setUTCMinutesSMs",
-                                                                                                                (function (param) {
+                                                                                                                ((param) => {
                                                                                                                   let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                                   d.setUTCMinutes(18, 42, 311);
                                                                                                                   return {
@@ -887,7 +887,7 @@ let suites_1 = {
                                                                                                               tl: {
                                                                                                                 hd: [
                                                                                                                   "setUTCMonth",
-                                                                                                                  (function (param) {
+                                                                                                                  ((param) => {
                                                                                                                     let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                                     d.setUTCMonth(10);
                                                                                                                     return {
@@ -900,7 +900,7 @@ let suites_1 = {
                                                                                                                 tl: {
                                                                                                                   hd: [
                                                                                                                     "setUTCMonthD",
-                                                                                                                    (function (param) {
+                                                                                                                    ((param) => {
                                                                                                                       let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                                       d.setUTCMonth(10, 14);
                                                                                                                       return {
@@ -919,7 +919,7 @@ let suites_1 = {
                                                                                                                   tl: {
                                                                                                                     hd: [
                                                                                                                       "setUTCSeconds",
-                                                                                                                      (function (param) {
+                                                                                                                      ((param) => {
                                                                                                                         let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                                         d.setUTCSeconds(36);
                                                                                                                         return {
@@ -932,7 +932,7 @@ let suites_1 = {
                                                                                                                     tl: {
                                                                                                                       hd: [
                                                                                                                         "setUTCSecondsMs",
-                                                                                                                        (function (param) {
+                                                                                                                        ((param) => {
                                                                                                                           let d = new Date("1976-03-08T12:34:56.789+01:23");
                                                                                                                           d.setUTCSeconds(36, 420);
                                                                                                                           return {
@@ -951,7 +951,7 @@ let suites_1 = {
                                                                                                                       tl: {
                                                                                                                         hd: [
                                                                                                                           "toDateString",
-                                                                                                                          (function (param) {
+                                                                                                                          ((param) => {
                                                                                                                             return {
                                                                                                                               TAG: "Eq",
                                                                                                                               _0: "Mon Mar 08 1976",
@@ -962,7 +962,7 @@ let suites_1 = {
                                                                                                                         tl: {
                                                                                                                           hd: [
                                                                                                                             "toGMTString",
-                                                                                                                            (function (param) {
+                                                                                                                            ((param) => {
                                                                                                                               return {
                                                                                                                                 TAG: "Eq",
                                                                                                                                 _0: "Mon, 08 Mar 1976 11:11:56 GMT",
@@ -973,7 +973,7 @@ let suites_1 = {
                                                                                                                           tl: {
                                                                                                                             hd: [
                                                                                                                               "toISOString",
-                                                                                                                              (function (param) {
+                                                                                                                              ((param) => {
                                                                                                                                 return {
                                                                                                                                   TAG: "Eq",
                                                                                                                                   _0: "1976-03-08T11:11:56.789Z",
@@ -984,7 +984,7 @@ let suites_1 = {
                                                                                                                             tl: {
                                                                                                                               hd: [
                                                                                                                                 "toJSON",
-                                                                                                                                (function (param) {
+                                                                                                                                ((param) => {
                                                                                                                                   return {
                                                                                                                                     TAG: "Eq",
                                                                                                                                     _0: "1976-03-08T11:11:56.789Z",
@@ -995,7 +995,7 @@ let suites_1 = {
                                                                                                                               tl: {
                                                                                                                                 hd: [
                                                                                                                                   "toJSONUnsafe",
-                                                                                                                                  (function (param) {
+                                                                                                                                  ((param) => {
                                                                                                                                     return {
                                                                                                                                       TAG: "Eq",
                                                                                                                                       _0: "1976-03-08T11:11:56.789Z",
@@ -1006,7 +1006,7 @@ let suites_1 = {
                                                                                                                                 tl: {
                                                                                                                                   hd: [
                                                                                                                                     "toUTCString",
-                                                                                                                                    (function (param) {
+                                                                                                                                    ((param) => {
                                                                                                                                       return {
                                                                                                                                         TAG: "Eq",
                                                                                                                                         _0: "Mon, 08 Mar 1976 11:11:56 GMT",
@@ -1017,7 +1017,7 @@ let suites_1 = {
                                                                                                                                   tl: {
                                                                                                                                     hd: [
                                                                                                                                       "eq",
-                                                                                                                                      (function (param) {
+                                                                                                                                      ((param) => {
                                                                                                                                         let a = new Date("2013-03-01T01:10:00");
                                                                                                                                         let b = new Date("2013-03-01T01:10:00");
                                                                                                                                         let c = new Date("2013-03-01T01:10:01");

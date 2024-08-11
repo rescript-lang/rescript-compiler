@@ -20,7 +20,7 @@ function h10(x) {
 }
 
 function h30(x) {
-  return function (a) {
+  return (a) => {
     return x(3, 3, a);
   };
 }
@@ -42,7 +42,7 @@ function a0() {
 }
 
 function a1() {
-  return function (x) {
+  return (x) => {
     return x;
   };
 }
@@ -56,7 +56,7 @@ function a3(x, y, z) {
 }
 
 function xx() {
-  return function (param) {
+  return (param) => {
     console.log(3);
   };
 }

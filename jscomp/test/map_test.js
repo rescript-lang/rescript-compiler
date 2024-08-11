@@ -2001,14 +2001,14 @@ let String_map = {
 };
 
 function of_list(kvs) {
-  return List.fold_left((function (acc, param) {
+  return List.fold_left(((acc, param) => {
     return add(param[0], param[1], acc);
   }), "Empty", kvs);
 }
 
 let int_map_suites_0 = [
   "add",
-  (function (param) {
+  ((param) => {
     let v = of_list({
       hd: [
         1,
@@ -2039,7 +2039,7 @@ let int_map_suites_0 = [
 let int_map_suites_1 = {
   hd: [
     "equal",
-    (function (param) {
+    ((param) => {
       let v = of_list({
         hd: [
           1,
@@ -2088,7 +2088,7 @@ let int_map_suites_1 = {
   tl: {
     hd: [
       "equal2",
-      (function (param) {
+      ((param) => {
         let v = of_list({
           hd: [
             1,
@@ -2130,7 +2130,7 @@ let int_map_suites_1 = {
         return {
           TAG: "Eq",
           _0: true,
-          _1: equal((function (x, y) {
+          _1: equal(((x, y) => {
             return x === y;
           }), u, v)
         };
@@ -2139,7 +2139,7 @@ let int_map_suites_1 = {
     tl: {
       hd: [
         "iteration",
-        (function (param) {
+        ((param) => {
           let m = "Empty";
           for (let i = 0; i <= 10000; ++i) {
             m = add$1(String(i), String(i), m);

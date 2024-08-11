@@ -16,7 +16,7 @@ function $$return() {
 }
 
 function Make(U) {
-  let h = function (x, x$1) {
+  let h = (x, x$1) => {
     console.log(f(x$1, x$1));
     return U.say(x$1, x$1);
   };

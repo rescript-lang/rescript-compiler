@@ -12,7 +12,7 @@ let h = {
 function g1(x, y) {
   let u = x + y | 0;
   h.contents = h.contents + 1 | 0;
-  return function (xx, yy) {
+  return (xx, yy) => {
     return (xx + yy | 0) + u | 0;
   };
 }
@@ -27,7 +27,7 @@ function v(__x) {
 
 let suites_0 = [
   "curry",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: g,
@@ -39,7 +39,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "curry2",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Eq",
         _0: 14,
@@ -50,7 +50,7 @@ let suites_1 = {
   tl: {
     hd: [
       "curry3",
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: x,
@@ -61,7 +61,7 @@ let suites_1 = {
     tl: {
       hd: [
         "File \"ari_regress_test.res\", line 35, characters 5-12",
-        (function (param) {
+        ((param) => {
           return {
             TAG: "Eq",
             _0: h.contents,

@@ -5,7 +5,7 @@
 function f0(x) {
   let tmp;
   if (x > 3) {
-    tmp = (function (x) {
+    tmp = ((x) => {
       return x + 1 | 0;
     });
   } else {
@@ -31,22 +31,22 @@ function f3(x) {
   let tmp;
   switch (x) {
     case 0 :
-      tmp = (function (x) {
+      tmp = ((x) => {
         return x + 1 | 0;
       });
       break;
     case 1 :
-      tmp = (function (x) {
+      tmp = ((x) => {
         return x + 2 | 0;
       });
       break;
     case 2 :
-      tmp = (function (x) {
+      tmp = ((x) => {
         return x + 3 | 0;
       });
       break;
     case 3 :
-      tmp = (function (x) {
+      tmp = ((x) => {
         return x + 4 | 0;
       });
       break;

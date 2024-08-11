@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: x,
@@ -28,7 +28,7 @@ function eq(loc, x, y) {
   };
 }
 
-eq("File \"bs_string_test.res\", line 10, characters 2-9", "ghso ghso g".split(" ").reduce((function (x, y) {
+eq("File \"bs_string_test.res\", line 10, characters 2-9", "ghso ghso g".split(" ").reduce(((x, y) => {
   return x + ("-" + y);
 }), ""), "-ghso-ghso-g");
 

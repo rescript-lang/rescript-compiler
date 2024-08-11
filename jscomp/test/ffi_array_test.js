@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: x,
@@ -33,7 +33,7 @@ eq("File \"ffi_array_test.res\", line 11, characters 12-19", [
   2,
   3,
   4
-].map(function (x) {
+].map((x) => {
   return x + 1 | 0;
 }), [
   2,

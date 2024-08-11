@@ -23,11 +23,11 @@ function xx(obj, a0, a1, a2, a3, a4, a5) {
 
 eq("File \"gpr_3536_test.res\", line 18, characters 12-19", 5, 5);
 
-eq("File \"gpr_3536_test.res\", line 20, characters 12-19", xx(3, (function (prim0, prim1) {
+eq("File \"gpr_3536_test.res\", line 20, characters 12-19", xx(3, ((prim0, prim1) => {
   return prim0 - prim1 | 0;
-}), 2, (function (prim0, prim1) {
+}), 2, ((prim0, prim1) => {
   return prim0 + prim1 | 0;
-}), 4, (function (prim0, prim1) {
+}), 4, ((prim0, prim1) => {
   return Math.imul(prim0, prim1);
 }), 3), 11);
 

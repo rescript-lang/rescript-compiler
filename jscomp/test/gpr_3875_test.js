@@ -58,7 +58,7 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-compilerBug("x", undefined, true, (function () {
+compilerBug("x", undefined, true, (() => {
   return true;
 }));
 

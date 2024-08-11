@@ -367,7 +367,7 @@ function classify$9(v) {
   }
 }
 
-let ff = (function (x) {
+let ff = ((x) => {
   return x + 1 | 0;
 });
 
@@ -488,7 +488,7 @@ async function classify$10(a) {
     return;
   } else {
     if (Array.isArray(a)) {
-      console.log(Belt_Array.joinWith(a, "-", (function (x) {
+      console.log(Belt_Array.joinWith(a, "-", ((x) => {
         return x;
       })));
       return;
@@ -514,7 +514,7 @@ let Arr = {
 
 async function classifyAll(t) {
   if (Array.isArray(t)) {
-    console.log(Belt_Array.joinWith(t, "-", (function (x) {
+    console.log(Belt_Array.joinWith(t, "-", ((x) => {
       return x;
     })));
     return;

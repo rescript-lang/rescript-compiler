@@ -20,7 +20,7 @@ function eq(loc, param) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: x,

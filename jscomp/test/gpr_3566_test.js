@@ -75,7 +75,7 @@ function Test4($star) {
 }
 
 function Test5($star) {
-  let f = function (x) {
+  let f = (x) => {
     return Caml_option.some(x);
   };
   let Caml_option$1 = {};
@@ -87,7 +87,7 @@ function Test5($star) {
 
 function Test6($star) {
   let Caml_option$1 = {};
-  let f = function (x) {
+  let f = (x) => {
     return Caml_option.some(x);
   };
   return {
@@ -105,7 +105,7 @@ function Test7($star) {
 
 function Test8($star) {
   let Curry = {};
-  let f = function (x) {
+  let f = (x) => {
     return x(1);
   };
   return {
@@ -115,7 +115,7 @@ function Test8($star) {
 }
 
 function Test9($star) {
-  let f = function (x) {
+  let f = (x) => {
     return x(1);
   };
   let Curry = {};

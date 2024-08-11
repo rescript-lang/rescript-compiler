@@ -584,7 +584,7 @@ function find(p, _x) {
 }
 
 function find_all(p) {
-  return function (__x) {
+  return (__x) => {
     let _accu = /* [] */0;
     let _x = __x;
     while (true) {
@@ -740,7 +740,7 @@ function chop(_k, _l) {
 }
 
 function stable_sort(cmp, l) {
-  let sort = function (n, l) {
+  let sort = (n, l) => {
     if (n !== 2) {
       if (n === 3 && l) {
         let match = l.tl;
@@ -886,7 +886,7 @@ function stable_sort(cmp, l) {
       continue;
     };
   };
-  let rev_sort = function (n, l) {
+  let rev_sort = (n, l) => {
     if (n !== 2) {
       if (n === 3 && l) {
         let match = l.tl;
@@ -1041,7 +1041,7 @@ function stable_sort(cmp, l) {
 }
 
 function sort_uniq(cmp, l) {
-  let sort = function (n, l) {
+  let sort = (n, l) => {
     if (n !== 2) {
       if (n === 3 && l) {
         let match = l.tl;
@@ -1272,7 +1272,7 @@ function sort_uniq(cmp, l) {
       continue;
     };
   };
-  let rev_sort = function (n, l) {
+  let rev_sort = (n, l) => {
     if (n !== 2) {
       if (n === 3 && l) {
         let match = l.tl;

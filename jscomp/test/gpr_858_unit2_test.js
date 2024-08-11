@@ -3,16 +3,16 @@
 
 
 let delayed = {
-  contents: (function () {
+  contents: (() => {
     
   })
 };
 
 for (let i = 1; i <= 2; ++i) {
-  let f = function (n, x) {
+  let f = (n, x) => {
     if (x !== 0) {
       let prev = delayed.contents;
-      delayed.contents = (function () {
+      delayed.contents = (() => {
         prev();
         f(((n + 1 | 0) + i | 0) - i | 0, x - 1 | 0);
       });

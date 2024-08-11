@@ -8,17 +8,17 @@ let Queue_402 = require("./queue_402.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function Test(Queue) {
-  let to_array = function (q) {
+  let to_array = (q) => {
     let v = Caml_array.make(Queue.length(q), 0);
-    Queue.fold((function (i, e) {
+    Queue.fold(((i, e) => {
       Caml_array.set(v, i, e);
       return i + 1 | 0;
     }), 0, q);
     return v;
   };
-  let queue_1 = function (x) {
+  let queue_1 = (x) => {
     let q = Queue.create();
-    $$Array.iter((function (x) {
+    $$Array.iter(((x) => {
       Queue.add(x, q);
     }), x);
     return to_array(q);
@@ -31,7 +31,7 @@ function Test(Queue) {
 
 function to_array(q) {
   let v = Caml_array.make(q.length, 0);
-  Queue.fold((function (i, e) {
+  Queue.fold(((i, e) => {
     Caml_array.set(v, i, e);
     return i + 1 | 0;
   }), 0, q);
@@ -44,7 +44,7 @@ function queue_1(x) {
     first: "Nil",
     last: "Nil"
   };
-  $$Array.iter((function (x) {
+  $$Array.iter(((x) => {
     Queue.add(x, q);
   }), x);
   return to_array(q);
@@ -57,7 +57,7 @@ let T1 = {
 
 function to_array$1(q) {
   let v = Caml_array.make(q.length, 0);
-  Queue_402.fold((function (i, e) {
+  Queue_402.fold(((i, e) => {
     Caml_array.set(v, i, e);
     return i + 1 | 0;
   }), 0, q);
@@ -69,7 +69,7 @@ function queue_1$1(x) {
     length: 0,
     tail: undefined
   };
-  $$Array.iter((function (x) {
+  $$Array.iter(((x) => {
     Queue_402.add(x, q);
   }), x);
   return to_array$1(q);
@@ -82,7 +82,7 @@ let T2 = {
 
 let suites_0 = [
   "File \"queue_test.res\", line 34, characters 6-13",
-  (function (param) {
+  ((param) => {
     let x = [
       3,
       4,
@@ -100,7 +100,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "File \"queue_test.res\", line 41, characters 6-13",
-    (function (param) {
+    ((param) => {
       let x = [
         3,
         4,

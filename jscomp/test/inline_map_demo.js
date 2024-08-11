@@ -141,7 +141,7 @@ function add(x, data, tree) {
   }
 }
 
-let m = List.fold_left((function (acc, param) {
+let m = List.fold_left(((acc, param) => {
   return add(param[0], param[1], acc);
 }), "Empty", {
   hd: [
@@ -191,7 +191,7 @@ function find(px, _x) {
 Mt.from_pair_suites("Inline_map_demo", {
   hd: [
     "find",
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: find(10, m),

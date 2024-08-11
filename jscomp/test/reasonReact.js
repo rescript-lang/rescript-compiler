@@ -84,7 +84,7 @@ function element(keyOpt, refOpt, component) {
 }
 
 function wrapReasonForJs(component, jsPropsToReason) {
-  let uncurriedJsPropsToReason = function (jsProps) {
+  let uncurriedJsPropsToReason = (jsProps) => {
     return jsPropsToReason(jsProps);
   };
   component.reactClassInternal.prototype.jsPropsToReason = uncurriedJsPropsToReason;
@@ -94,7 +94,7 @@ function wrapReasonForJs(component, jsPropsToReason) {
 let dummyInteropComponent = basicComponent("interop");
 
 function wrapJsForReason(reactClass, props, children) {
-  let jsElementWrapped = (function (extra, extra$1) {
+  let jsElementWrapped = ((extra, extra$1) => {
     let props$1 = Object.assign(Object.assign({}, props), {
       ref: extra$1,
       key: extra

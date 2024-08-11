@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: x,
@@ -32,7 +32,7 @@ function foo(f) {
   console.log(f("a1", undefined));
 }
 
-foo(function (none, extra) {
+foo((none, extra) => {
   return none + "a2";
 });
 

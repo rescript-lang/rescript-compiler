@@ -17,7 +17,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: x,
@@ -35,7 +35,7 @@ let called = {
 
 function g() {
   let v = {};
-  let next = function (i, b) {
+  let next = (i, b) => {
     called.contents = called.contents + 1 | 0;
     if (b) {
       v.contents(i, false);

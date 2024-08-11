@@ -26,7 +26,7 @@ function g(a) {
   regression(a, Pervasives.failwith);
   regression2(3, 2);
   regression3(3, 2);
-  regression4(3, (function (x) {
+  regression4(3, ((x) => {
     return x;
   }));
 }
@@ -54,7 +54,7 @@ let v = $$test(1, 2);
 Mt.from_pair_suites("Unsafe_ppx_test", {
   hd: [
     "unsafe_max",
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: 2,
@@ -65,7 +65,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", {
   tl: {
     hd: [
       "unsafe_test",
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: 3,
@@ -76,7 +76,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", {
     tl: {
       hd: [
         "unsafe_max2",
-        (function () {
+        (() => {
           return {
             TAG: "Eq",
             _0: 2,
@@ -87,7 +87,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", {
       tl: {
         hd: [
           "ffi_keys",
-          (function () {
+          (() => {
             return {
               TAG: "Eq",
               _0: ["a"],

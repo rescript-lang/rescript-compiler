@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: x,
@@ -33,19 +33,19 @@ function f0(x, y, z) {
 }
 
 function f1(x) {
-  return function (y, z) {
+  return (y, z) => {
     return (x + y | 0) + z | 0;
   };
 }
 
 function f2(x, y) {
-  return function (z) {
+  return (z) => {
     return (x + y | 0) + z | 0;
   };
 }
 
 function f3(x) {
-  return function (y, z) {
+  return (y, z) => {
     return (x + y | 0) + z | 0;
   };
 }

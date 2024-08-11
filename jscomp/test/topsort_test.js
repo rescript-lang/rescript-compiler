@@ -61,7 +61,7 @@ let graph = {
 };
 
 function nexts(x, g) {
-  return List.fold_left((function (acc, param) {
+  return List.fold_left(((acc, param) => {
     if (param[0] === x) {
       return {
         hd: param[1],
@@ -173,7 +173,7 @@ if (!Caml_obj.equal(dfs1({
 }
 
 function dfs2(nodes, graph, visited) {
-  let aux = function (_nodes, graph, _visited) {
+  let aux = (_nodes, graph, _visited) => {
     while (true) {
       let visited = _visited;
       let nodes = _nodes;
@@ -275,19 +275,19 @@ function dfs3(nodes, graph) {
   let visited = {
     contents: /* [] */0
   };
-  let aux = function (node, graph) {
+  let aux = (node, graph) => {
     if (!List.mem(node, visited.contents)) {
       visited.contents = {
         hd: node,
         tl: visited.contents
       };
-      return List.iter((function (x) {
+      return List.iter(((x) => {
         aux(x, graph);
       }), nexts(node, graph));
     }
     
   };
-  List.iter((function (node) {
+  List.iter(((node) => {
     aux(node, graph);
   }), nodes);
   return List.rev(visited.contents);
@@ -409,7 +409,7 @@ function unsafe_topsort(graph) {
   let visited = {
     contents: /* [] */0
   };
-  let sort_node = function (node) {
+  let sort_node = (node) => {
     if (List.mem(node, visited.contents)) {
       return;
     }
@@ -420,7 +420,7 @@ function unsafe_topsort(graph) {
       tl: visited.contents
     };
   };
-  List.iter((function (param) {
+  List.iter(((param) => {
     sort_node(param[0]);
   }), graph);
   return visited.contents;
@@ -1316,7 +1316,7 @@ function of_list(l) {
   if (match$3) {
     if (match$3.tl) {
       let l$1 = List.sort_uniq($$String.compare, l);
-      let sub = function (n, l) {
+      let sub = (n, l) => {
         switch (n) {
           case 0 :
             return [
@@ -1474,7 +1474,7 @@ function pathsort(graph) {
     "Empty",
     /* [] */0
   ];
-  let $plus$great = function (node, param) {
+  let $plus$great = (node, param) => {
     let stack = param[1];
     let set = param[0];
     if (mem(node, set)) {
@@ -1496,12 +1496,12 @@ function pathsort(graph) {
       }
     ];
   };
-  let sort_nodes = function (path, nodes) {
-    List.iter((function (node) {
+  let sort_nodes = (path, nodes) => {
+    List.iter(((node) => {
       sort_node(path, node);
     }), nodes);
   };
-  let sort_node = function (path, node) {
+  let sort_node = (path, node) => {
     if (!List.mem(node, visited.contents)) {
       sort_nodes($plus$great(node, path), nexts(node, graph));
       visited.contents = {
@@ -1512,7 +1512,7 @@ function pathsort(graph) {
     }
     
   };
-  List.iter((function (param) {
+  List.iter(((param) => {
     sort_node(empty_path, param[0]);
   }), graph);
   return visited.contents;

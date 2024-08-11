@@ -360,6 +360,12 @@ and pp_function ~return_unit ~async ~is_method ?directive cxt (f : P.t) ~fn_stat
       (* the context will be continued after this function *)
       let outer_cxt = Ext_pp_scope.merge cxt set_env in
 
+      (* whether the function output can use arrow syntax *)
+      let arrow = match fn_state with
+        | Name_top _ -> false
+        | _ -> not is_method
+      in
+
       (* the context used to be printed inside this function
 
          when printing a function,
@@ -388,6 +394,10 @@ and pp_function ~return_unit ~async ~is_method ?directive cxt (f : P.t) ~fn_stat
             P.paren_group f 1 (fun _ -> formal_parameter_list inner_cxt f l)
           in
           P.space f;
+          if arrow then (
+            P.string f (L.arrow);
+            P.space f;
+          );
           P.brace_vgroup f 1 (fun _ -> function_body ?directive ~return_unit cxt f b)
       in
       let enclose () =
@@ -396,24 +406,20 @@ and pp_function ~return_unit ~async ~is_method ?directive cxt (f : P.t) ~fn_stat
             match fn_state with
             | Is_return ->
                 return_sp f;
-                P.string f (L.function_async ~async);
-                P.space f;
+                P.string f (L.function_ ~async ~arrow);
                 param_body ()
             | No_name { single_arg } ->
                 (* see # 1692, add a paren for annoymous function for safety  *)
                 P.cond_paren_group f (not single_arg) (fun _ ->
-                    P.string f (L.function_async ~async);
-                    P.space f;
+                    P.string f (L.function_ ~async ~arrow);
                     param_body ())
             | Name_non_top x ->
                 ignore (pp_var_assign inner_cxt f x : cxt);
-                P.string f (L.function_async ~async);
-                P.space f;
+                P.string f (L.function_ ~async ~arrow);
                 param_body ();
                 semi f
             | Name_top x ->
-                P.string f (L.function_async ~async);
-                P.space f;
+                P.string f (L.function_ ~async ~arrow);
                 ignore (Ext_pp_scope.ident inner_cxt f x : cxt);
                 param_body ())
         in

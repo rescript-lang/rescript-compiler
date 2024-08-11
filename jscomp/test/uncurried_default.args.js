@@ -4,7 +4,7 @@
 
 function withOpt(xOpt, y) {
   let x = xOpt !== undefined ? xOpt : 1;
-  return function (zOpt, w) {
+  return (zOpt, w) => {
     let z = zOpt !== undefined ? zOpt : 1;
     return ((x + y | 0) + z | 0) + w | 0;
   };
@@ -56,7 +56,7 @@ let StandardNotation = {
 
 function withOpt$1(xOpt, y) {
   let x = xOpt !== undefined ? xOpt : 1;
-  return function (zOpt, w) {
+  return (zOpt, w) => {
     let z = zOpt !== undefined ? zOpt : 1;
     return ((x + y | 0) + z | 0) + w | 0;
   };

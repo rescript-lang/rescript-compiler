@@ -1044,7 +1044,7 @@ function of_list(l) {
   if (match$3) {
     if (match$3.tl) {
       let l$1 = List.sort_uniq(AAA.compare, l);
-      let sub = function (n, l) {
+      let sub = (n, l) => {
         switch (n) {
           case 0 :
             return [
@@ -1218,7 +1218,7 @@ Caml_module.update_mod({
 
 let suites_0 = [
   "test1",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: [
@@ -1240,7 +1240,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "test2",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Eq",
         _0: BB.y(),
@@ -1251,7 +1251,7 @@ let suites_1 = {
   tl: {
     hd: [
       "test3",
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: AA.x(),
@@ -1262,7 +1262,7 @@ let suites_1 = {
     tl: {
       hd: [
         "test4",
-        (function (param) {
+        ((param) => {
           return {
             TAG: "Eq",
             _0: true,
@@ -1273,7 +1273,7 @@ let suites_1 = {
       tl: {
         hd: [
           "test4",
-          (function (param) {
+          ((param) => {
             return {
               TAG: "Eq",
               _0: true,
@@ -1284,7 +1284,7 @@ let suites_1 = {
         tl: {
           hd: [
             "test5",
-            (function (param) {
+            ((param) => {
               return {
                 TAG: "Eq",
                 _0: false,
@@ -1295,7 +1295,7 @@ let suites_1 = {
           tl: {
             hd: [
               "test6",
-              (function (param) {
+              ((param) => {
                 return {
                   TAG: "Eq",
                   _0: 2,

@@ -7,7 +7,7 @@ let Js_null_undefined = require("../../lib/js/js_null_undefined.js");
 
 let suites_0 = [
   "toOption - null",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: undefined,
@@ -19,7 +19,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "toOption - undefined",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Eq",
         _0: undefined,
@@ -30,7 +30,7 @@ let suites_1 = {
   tl: {
     hd: [
       "toOption - empty",
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: undefined,
@@ -41,7 +41,7 @@ let suites_1 = {
     tl: {
       hd: [
         "File \"js_null_undefined_test.res\", line 9, characters 5-12",
-        (function (param) {
+        ((param) => {
           return {
             TAG: "Eq",
             _0: "foo",
@@ -52,7 +52,7 @@ let suites_1 = {
       tl: {
         hd: [
           "return",
-          (function (param) {
+          ((param) => {
             return {
               TAG: "Eq",
               _0: "something",
@@ -63,7 +63,7 @@ let suites_1 = {
         tl: {
           hd: [
             "test - null",
-            (function (param) {
+            ((param) => {
               return {
                 TAG: "Eq",
                 _0: true,
@@ -74,7 +74,7 @@ let suites_1 = {
           tl: {
             hd: [
               "test - undefined",
-              (function (param) {
+              ((param) => {
                 return {
                   TAG: "Eq",
                   _0: true,
@@ -85,7 +85,7 @@ let suites_1 = {
             tl: {
               hd: [
                 "test - empty",
-                (function (param) {
+                ((param) => {
                   return {
                     TAG: "Eq",
                     _0: true,
@@ -96,7 +96,7 @@ let suites_1 = {
               tl: {
                 hd: [
                   "File \"js_null_undefined_test.res\", line 14, characters 5-12",
-                  (function (param) {
+                  ((param) => {
                     return {
                       TAG: "Eq",
                       _0: true,
@@ -107,11 +107,11 @@ let suites_1 = {
                 tl: {
                   hd: [
                     "bind - null",
-                    (function (param) {
+                    ((param) => {
                       return {
                         TAG: "StrictEq",
                         _0: null,
-                        _1: Js_null_undefined.bind(null, (function (v) {
+                        _1: Js_null_undefined.bind(null, ((v) => {
                           return v;
                         }))
                       };
@@ -120,11 +120,11 @@ let suites_1 = {
                   tl: {
                     hd: [
                       "bind - undefined",
-                      (function (param) {
+                      ((param) => {
                         return {
                           TAG: "StrictEq",
                           _0: undefined,
-                          _1: Js_null_undefined.bind(undefined, (function (v) {
+                          _1: Js_null_undefined.bind(undefined, ((v) => {
                             return v;
                           }))
                         };
@@ -133,11 +133,11 @@ let suites_1 = {
                     tl: {
                       hd: [
                         "bind - empty",
-                        (function (param) {
+                        ((param) => {
                           return {
                             TAG: "StrictEq",
                             _0: undefined,
-                            _1: Js_null_undefined.bind(undefined, (function (v) {
+                            _1: Js_null_undefined.bind(undefined, ((v) => {
                               return v;
                             }))
                           };
@@ -146,11 +146,11 @@ let suites_1 = {
                       tl: {
                         hd: [
                           "bind - 'a",
-                          (function (param) {
+                          ((param) => {
                             return {
                               TAG: "Eq",
                               _0: 4,
-                              _1: Js_null_undefined.bind(2, (function (n) {
+                              _1: Js_null_undefined.bind(2, ((n) => {
                                 return (n << 1);
                               }))
                             };
@@ -159,11 +159,11 @@ let suites_1 = {
                         tl: {
                           hd: [
                             "iter - null",
-                            (function (param) {
+                            ((param) => {
                               let hit = {
                                 contents: false
                               };
-                              Js_null_undefined.iter(null, (function (param) {
+                              Js_null_undefined.iter(null, ((param) => {
                                 hit.contents = true;
                               }));
                               return {
@@ -176,11 +176,11 @@ let suites_1 = {
                           tl: {
                             hd: [
                               "iter - undefined",
-                              (function (param) {
+                              ((param) => {
                                 let hit = {
                                   contents: false
                                 };
-                                Js_null_undefined.iter(undefined, (function (param) {
+                                Js_null_undefined.iter(undefined, ((param) => {
                                   hit.contents = true;
                                 }));
                                 return {
@@ -193,11 +193,11 @@ let suites_1 = {
                             tl: {
                               hd: [
                                 "iter - empty",
-                                (function (param) {
+                                ((param) => {
                                   let hit = {
                                     contents: false
                                   };
-                                  Js_null_undefined.iter(undefined, (function (param) {
+                                  Js_null_undefined.iter(undefined, ((param) => {
                                     hit.contents = true;
                                   }));
                                   return {
@@ -210,11 +210,11 @@ let suites_1 = {
                               tl: {
                                 hd: [
                                   "iter - 'a",
-                                  (function (param) {
+                                  ((param) => {
                                     let hit = {
                                       contents: 0
                                     };
-                                    Js_null_undefined.iter(2, (function (v) {
+                                    Js_null_undefined.iter(2, ((v) => {
                                       hit.contents = v;
                                     }));
                                     return {
@@ -227,7 +227,7 @@ let suites_1 = {
                                 tl: {
                                   hd: [
                                     "fromOption - None",
-                                    (function (param) {
+                                    ((param) => {
                                       return {
                                         TAG: "Eq",
                                         _0: undefined,
@@ -238,7 +238,7 @@ let suites_1 = {
                                   tl: {
                                     hd: [
                                       "fromOption - Some",
-                                      (function (param) {
+                                      ((param) => {
                                         return {
                                           TAG: "Eq",
                                           _0: 2,
@@ -249,7 +249,7 @@ let suites_1 = {
                                     tl: {
                                       hd: [
                                         "null <> undefined",
-                                        (function (param) {
+                                        ((param) => {
                                           return {
                                             TAG: "Ok",
                                             _0: true
@@ -259,7 +259,7 @@ let suites_1 = {
                                       tl: {
                                         hd: [
                                           "null <> empty",
-                                          (function (param) {
+                                          ((param) => {
                                             return {
                                               TAG: "Ok",
                                               _0: true
@@ -269,7 +269,7 @@ let suites_1 = {
                                         tl: {
                                           hd: [
                                             "undefined = empty",
-                                            (function (param) {
+                                            ((param) => {
                                               return {
                                                 TAG: "Ok",
                                                 _0: true
@@ -279,7 +279,7 @@ let suites_1 = {
                                           tl: {
                                             hd: [
                                               "File \"js_null_undefined_test.res\", line 57, characters 6-13",
-                                              (function (param) {
+                                              ((param) => {
                                                 return {
                                                   TAG: "Ok",
                                                   _0: true

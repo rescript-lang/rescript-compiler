@@ -6,7 +6,7 @@ let Ext_list_test = require("./ext_list_test.js");
 
 let suites_0 = [
   "drop",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: Ext_list_test.drop(3, {
@@ -27,7 +27,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "drop1",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Eq",
         _0: Ext_list_test.drop(2, {
@@ -50,7 +50,7 @@ let suites_1 = {
   tl: {
     hd: [
       "flat_map",
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: {
@@ -69,7 +69,7 @@ let suites_1 = {
               }
             }
           },
-          _1: Ext_list_test.flat_map((function (x) {
+          _1: Ext_list_test.flat_map(((x) => {
             if (x % 2 === 0) {
               return {
                 hd: 0,

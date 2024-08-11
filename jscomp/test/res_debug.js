@@ -33,7 +33,7 @@ function optionMap(x, f) {
   
 }
 
-let ok_name = optionMap(undefined, (function (x) {
+let ok_name = optionMap(undefined, ((x) => {
   return x;
 }));
 
@@ -41,7 +41,7 @@ let ok = {
   name: ok_name
 };
 
-let bad_name = optionMap(undefined, (function (x) {
+let bad_name = optionMap(undefined, ((x) => {
   return x;
 }));
 

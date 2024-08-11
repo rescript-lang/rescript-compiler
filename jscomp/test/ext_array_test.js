@@ -112,7 +112,7 @@ function range(from, to_) {
       }
     });
   }
-  return $$Array.init((to_ - from | 0) + 1 | 0, (function (i) {
+  return $$Array.init((to_ - from | 0) + 1 | 0, ((i) => {
     return i + from | 0;
   }));
 }
@@ -127,7 +127,7 @@ function map2i(f, a, b) {
       }
     });
   }
-  return $$Array.mapi((function (i, a) {
+  return $$Array.mapi(((i, a) => {
     return f(i, a, b[i]);
   }), a);
 }

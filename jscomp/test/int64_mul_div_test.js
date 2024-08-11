@@ -306,13 +306,13 @@ let pairs = [
 ];
 
 function from_pairs(prefix, pairs) {
-  return $$Array.to_list($$Array.mapi((function (i, param) {
+  return $$Array.to_list($$Array.mapi(((i, param) => {
     let b = param[2];
     let a = param[1];
     let result = param[0];
     return [
       prefix + "_" + i,
-      (function (param) {
+      ((param) => {
         return commutative_mul(result, a, b);
       })
     ];
@@ -1509,14 +1509,14 @@ let simple_divs = [
 ];
 
 function from(xs) {
-  return List.mapi((function (i, param) {
+  return List.mapi(((i, param) => {
     let d = param[3];
     let c = param[2];
     let b = param[1];
     let a = param[0];
     return [
       "small_divs " + i,
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: [
@@ -1566,13 +1566,13 @@ let int64_compare_tests = [
 ];
 
 function from_compare(xs) {
-  return List.mapi((function (i, param) {
+  return List.mapi(((i, param) => {
     let c = param[2];
     let b = param[1];
     let a = param[0];
     return [
       "int64_compare " + i,
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: c,
@@ -1584,12 +1584,12 @@ function from_compare(xs) {
 }
 
 function from_to_string(xs) {
-  return List.mapi((function (i, param) {
+  return List.mapi(((i, param) => {
     let str_a = param[1];
     let a = param[0];
     return [
       "to_string " + i,
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: str_a,
@@ -1600,12 +1600,12 @@ function from_to_string(xs) {
   }), $$Array.to_list(xs));
 }
 
-Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pairs), Pervasives.$at(from_pairs("small", small_pairs), Pervasives.$at(List.mapi((function (i, param) {
+Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pairs), Pervasives.$at(from_pairs("small", small_pairs), Pervasives.$at(List.mapi(((i, param) => {
   let f = param[1];
   let i64 = param[0];
   return [
     "to_float_" + i,
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: Caml_int64.to_float(i64),
@@ -1613,12 +1613,12 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
       };
     })
   ];
-}), $$Array.to_list(to_floats)), Pervasives.$at(List.mapi((function (i, param) {
+}), $$Array.to_list(to_floats)), Pervasives.$at(List.mapi(((i, param) => {
   let i64 = param[1];
   let f = param[0];
   return [
     "of_float_" + i,
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: Caml_int64.of_float(f),
@@ -1629,10 +1629,10 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
 }), $$Array.to_list(of_float_pairs)), Pervasives.$at({
   hd: [
     "compare_check_complete",
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
-        _0: $$Array.map((function (param) {
+        _0: $$Array.map(((param) => {
           return true;
         }), check_complete_compare),
         _1: check_complete_compare
@@ -1643,7 +1643,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
 }, Pervasives.$at(from(simple_divs), Pervasives.$at(from_compare(int64_compare_tests), {
   hd: [
     "div_rem_0",
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: Caml_int64.zero,
@@ -1654,7 +1654,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
   tl: {
     hd: [
       "div_rem_1",
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: Caml_int64.neg_one,
@@ -1665,7 +1665,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
     tl: {
       hd: [
         "File \"int64_mul_div_test.res\", line 263, characters 19-26",
-        (function () {
+        (() => {
           return {
             TAG: "Eq",
             _0: Caml_int64.to_float(Int64.max_int),

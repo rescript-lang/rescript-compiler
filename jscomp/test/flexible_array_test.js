@@ -269,10 +269,10 @@ function sort(s) {
     return s;
   }
   let head = get(s, 0);
-  let larger = sort(filter_from(1, (function (x) {
+  let larger = sort(filter_from(1, ((x) => {
     return Caml_obj.greaterthan(x, head);
   }), s));
-  let smaller = sort(filter_from(1, (function (x) {
+  let smaller = sort(filter_from(1, ((x) => {
     return Caml_obj.lessequal(x, head);
   }), s));
   return append(smaller, push_front(larger, head));
@@ -335,11 +335,11 @@ if (!$eq$tilde(sort(u), [
   });
 }
 
-let v = $$Array.init(500, (function (i) {
+let v = $$Array.init(500, ((i) => {
   return 500 - i | 0;
 }));
 
-$eq$tilde(sort(of_array(v)), $$Array.init(500, (function (i) {
+$eq$tilde(sort(of_array(v)), $$Array.init(500, ((i) => {
   return i + 1 | 0;
 })));
 

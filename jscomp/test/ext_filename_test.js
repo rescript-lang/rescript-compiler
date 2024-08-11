@@ -19,7 +19,7 @@ let node_parent = "..";
 
 let node_current = ".";
 
-let cwd = CamlinternalLazy.from_fun(function () {
+let cwd = CamlinternalLazy.from_fun(() => {
   return Caml_sys.sys_getcwd();
 });
 
@@ -33,7 +33,7 @@ function path_as_directory(x) {
 
 function absolute_path(s) {
   let s$1 = Filename.is_relative(s) ? Filename.concat(CamlinternalLazy.force(cwd), s) : s;
-  let aux = function (_s) {
+  let aux = (_s) => {
     while (true) {
       let s = _s;
       let base = Filename.basename(s);
@@ -97,7 +97,7 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
   let relevant_dir2 = file_or_dir_2.NAME === "File" ? Filename.dirname(file_or_dir_2.VAL) : file_or_dir_2.VAL;
   let dir1 = Ext_string_test.split(undefined, relevant_dir1, os_path_separator_char);
   let dir2 = Ext_string_test.split(undefined, relevant_dir2, os_path_separator_char);
-  let go = function (_dir1, _dir2) {
+  let go = (_dir1, _dir2) => {
     while (true) {
       let dir2 = _dir2;
       let dir1 = _dir1;
@@ -106,7 +106,7 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
         _dir1 = dir1.tl;
         continue;
       }
-      return Pervasives.$at(List.map((function (param) {
+      return Pervasives.$at(List.map(((param) => {
         return node_parent;
       }), dir2), dir1);
     };
@@ -141,7 +141,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
         VAL: absolute_path(file1.VAL)
       })) + (node_sep + Filename.basename(file2));
   }
-  let skip = function (_i) {
+  let skip = (_i) => {
     while (true) {
       let i = _i;
       if (i >= len) {
@@ -189,7 +189,7 @@ function find_package_json_dir(cwd) {
   return find_root_filename(cwd, Test_literals.bsconfig_json);
 }
 
-let package_dir = CamlinternalLazy.from_fun(function () {
+let package_dir = CamlinternalLazy.from_fun(() => {
   let cwd$1 = CamlinternalLazy.force(cwd);
   return find_root_filename(cwd$1, Test_literals.bsconfig_json);
 });
@@ -264,7 +264,7 @@ function rel_normalized_absolute_path(from, to_) {
     }
     let xs = xss.tl;
     if (!yss) {
-      return List.fold_left((function (acc, param) {
+      return List.fold_left(((acc, param) => {
         return Filename.concat(acc, Ext_string_test.parent_dir_lit);
       }), Ext_string_test.parent_dir_lit, xs);
     }
@@ -273,7 +273,7 @@ function rel_normalized_absolute_path(from, to_) {
       _xss = xs;
       continue;
     }
-    let start = List.fold_left((function (acc, param) {
+    let start = List.fold_left(((acc, param) => {
       return Filename.concat(acc, Ext_string_test.parent_dir_lit);
     }), Ext_string_test.parent_dir_lit, xs);
     return List.fold_left(Filename.concat, start, yss);
@@ -281,14 +281,14 @@ function rel_normalized_absolute_path(from, to_) {
 }
 
 function normalize_absolute_path(x) {
-  let drop_if_exist = function (xs) {
+  let drop_if_exist = (xs) => {
     if (xs) {
       return xs.tl;
     } else {
       return /* [] */0;
     }
   };
-  let normalize_list = function (_acc, _paths) {
+  let normalize_list = (_acc, _paths) => {
     while (true) {
       let paths = _paths;
       let acc = _acc;
@@ -347,7 +347,7 @@ function get_extension(x) {
 let simple_convert_node_path_to_os_path;
 
 if (Sys.unix) {
-  simple_convert_node_path_to_os_path = (function (x) {
+  simple_convert_node_path_to_os_path = ((x) => {
     return x;
   });
 } else if (Sys.win32 || false) {

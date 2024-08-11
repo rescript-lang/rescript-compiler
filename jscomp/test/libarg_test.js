@@ -365,7 +365,7 @@ function test(argv) {
     }
   };
   if (Caml_obj.notequal(result, reference)) {
-    let f = function (x, y) {
+    let f = (x, y) => {
       console.log(x, y);
     };
     List.iter2(f, result, reference);

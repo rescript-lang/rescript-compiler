@@ -79,18 +79,18 @@ let of_string = [
 ];
 
 function from_float_of_string(xs) {
-  return $$Array.mapi((function (i, param) {
+  return $$Array.mapi(((i, param) => {
     return Pervasives.string_of_float;
   }), xs);
 }
 
 function from_of_string(xs) {
-  return $$Array.to_list($$Array.mapi((function (i, param) {
+  return $$Array.to_list($$Array.mapi(((i, param) => {
     let b = param[1];
     let a = param[0];
     return [
       "of_string " + String(i),
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: Caml_format.int_of_string(b),
@@ -144,7 +144,7 @@ let pairs$1 = [
 let suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
   hd: [
     "isnan_of_string",
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: true,
@@ -153,12 +153,12 @@ let suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
     })
   ],
   tl: /* [] */0
-}, Pervasives.$at($$Array.to_list($$Array.mapi((function (i, param) {
+}, Pervasives.$at($$Array.to_list($$Array.mapi(((i, param) => {
   let b = param[1];
   let a = param[0];
   return [
     "infinity_of_string " + String(i),
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: a,
@@ -169,10 +169,10 @@ let suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
 }), pairs)), Pervasives.$at({
   hd: [
     "throw",
-    (function () {
+    (() => {
       return {
         TAG: "ThrowAny",
-        _0: (function () {
+        _0: (() => {
           Caml_format.float_of_string("");
         })
       };
@@ -181,7 +181,7 @@ let suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
   tl: {
     hd: [
       "format_int",
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: "                              33",
@@ -191,12 +191,12 @@ let suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
     ],
     tl: /* [] */0
   }
-}, $$Array.to_list($$Array.mapi((function (i, param) {
+}, $$Array.to_list($$Array.mapi(((i, param) => {
   let b = param[1];
   let a = param[0];
   return [
     "normal_float_of_string " + String(i),
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: a,
@@ -320,7 +320,7 @@ let float_data = [
 
 let int64_suites_0 = [
   "i64_simple7",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: Caml_int64.to_string([
@@ -335,7 +335,7 @@ let int64_suites_0 = [
 let int64_suites_1 = {
   hd: [
     "i64_simple15",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Eq",
         _0: Caml_int64.to_string(Caml_int64.neg_one),
@@ -346,7 +346,7 @@ let int64_suites_1 = {
   tl: {
     hd: [
       "i64_simple16",
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: Caml_int64.to_string([
@@ -423,13 +423,13 @@ let of_string_data = [
   ]
 ];
 
-Mt.from_pair_suites("Caml_format_test", Pervasives.$at(suites, Pervasives.$at($$Array.to_list($$Array.mapi((function (i, param) {
+Mt.from_pair_suites("Caml_format_test", Pervasives.$at(suites, Pervasives.$at($$Array.to_list($$Array.mapi(((i, param) => {
   let str_result = param[2];
   let f = param[1];
   let fmt = param[0];
   return [
     "loat_format " + String(i),
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: Caml_format.format_float(fmt, f),
@@ -437,12 +437,12 @@ Mt.from_pair_suites("Caml_format_test", Pervasives.$at(suites, Pervasives.$at($$
       };
     })
   ];
-}), float_data)), Pervasives.$at(int64_suites, $$Array.to_list($$Array.mapi((function (i, param) {
+}), float_data)), Pervasives.$at(int64_suites, $$Array.to_list($$Array.mapi(((i, param) => {
   let b = param[1];
   let a = param[0];
   return [
     "int64_of_string " + String(i) + " ",
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: Caml_format.int64_of_string(b),

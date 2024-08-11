@@ -10,7 +10,7 @@ function f(_n, _acc) {
     if (n === 0) {
       return acc();
     }
-    _acc = (function () {
+    _acc = (() => {
       console.log(String(n));
       return acc();
     });
@@ -20,18 +20,18 @@ function f(_n, _acc) {
 }
 
 function test_closure() {
-  let arr = Caml_array.make(6, (function (x) {
+  let arr = Caml_array.make(6, ((x) => {
     return x;
   }));
   for (let i = 0; i <= 6; ++i) {
-    Caml_array.set(arr, i, (function (param) {
+    Caml_array.set(arr, i, ((param) => {
       return i;
     }));
   }
   return arr;
 }
 
-f(10, (function () {
+f(10, (() => {
   
 }));
 

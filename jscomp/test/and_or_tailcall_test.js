@@ -33,7 +33,7 @@ function or_f(b, x, _n) {
 
 let suites_0 = [
   "and_tail",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: false,
@@ -45,7 +45,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "or_tail",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Eq",
         _0: false,

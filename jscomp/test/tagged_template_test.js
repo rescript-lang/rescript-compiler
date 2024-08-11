@@ -44,7 +44,7 @@ let res = foo([
 Mt.from_pair_suites("tagged templates", {
   hd: [
     "with externals, it should return a string with the correct interpolations",
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: query,
@@ -55,7 +55,7 @@ Mt.from_pair_suites("tagged templates", {
   tl: {
     hd: [
       "with module scoped externals, it should also return a string with the correct interpolations",
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: queryWithModule,
@@ -66,7 +66,7 @@ Mt.from_pair_suites("tagged templates", {
     tl: {
       hd: [
         "with externals, it should return the result of the function",
-        (function () {
+        (() => {
           return {
             TAG: "Eq",
             _0: length,
@@ -77,7 +77,7 @@ Mt.from_pair_suites("tagged templates", {
       tl: {
         hd: [
           "with rescript function, it should return a string with the correct encoding and interpolations",
-          (function () {
+          (() => {
             return {
               TAG: "Eq",
               _0: res,
@@ -88,7 +88,7 @@ Mt.from_pair_suites("tagged templates", {
         tl: {
           hd: [
             "a template literal tagged with json should generate a regular string interpolation for now",
-            (function () {
+            (() => {
               return {
                 TAG: "Eq",
                 _0: "some random " + "string",
@@ -99,7 +99,7 @@ Mt.from_pair_suites("tagged templates", {
           tl: {
             hd: [
               "a regular string interpolation should continue working",
-              (function () {
+              (() => {
                 return {
                   TAG: "Eq",
                   _0: "some random string interpolation",

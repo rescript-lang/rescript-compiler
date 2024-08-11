@@ -8,9 +8,9 @@ let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 let function_equal_test;
 
 try {
-  function_equal_test = Caml_obj.equal((function (x) {
+  function_equal_test = Caml_obj.equal(((x) => {
     return x + 1 | 0;
-  }), (function (x) {
+  }), ((x) => {
     return x + 2 | 0;
   }));
 } catch (raw_exn) {
@@ -22,7 +22,7 @@ let suites = {
   contents: {
     hd: [
       "File \"caml_compare_test.res\", line 12, characters 5-12",
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: true,
@@ -33,7 +33,7 @@ let suites = {
     tl: {
       hd: [
         "option2",
-        (function () {
+        (() => {
           return {
             TAG: "Eq",
             _0: true,
@@ -44,7 +44,7 @@ let suites = {
       tl: {
         hd: [
           "File \"caml_compare_test.res\", line 14, characters 5-12",
-          (function () {
+          (() => {
             return {
               TAG: "Eq",
               _0: true,
@@ -58,7 +58,7 @@ let suites = {
         tl: {
           hd: [
             "listeq",
-            (function () {
+            (() => {
               return {
                 TAG: "Eq",
                 _0: true,
@@ -87,7 +87,7 @@ let suites = {
           tl: {
             hd: [
               "listneq",
-              (function () {
+              (() => {
                 return {
                   TAG: "Eq",
                   _0: true,
@@ -116,7 +116,7 @@ let suites = {
             tl: {
               hd: [
                 "custom_u",
-                (function () {
+                (() => {
                   return {
                     TAG: "Eq",
                     _0: true,
@@ -155,7 +155,7 @@ let suites = {
               tl: {
                 hd: [
                   "custom_u2",
-                  (function () {
+                  (() => {
                     return {
                       TAG: "Eq",
                       _0: true,
@@ -194,7 +194,7 @@ let suites = {
                 tl: {
                   hd: [
                     "function",
-                    (function () {
+                    (() => {
                       return {
                         TAG: "Eq",
                         _0: true,
@@ -205,7 +205,7 @@ let suites = {
                   tl: {
                     hd: [
                       "File \"caml_compare_test.res\", line 20, characters 5-12",
-                      (function () {
+                      (() => {
                         return {
                           TAG: "Eq",
                           _0: true,
@@ -216,7 +216,7 @@ let suites = {
                     tl: {
                       hd: [
                         "File \"caml_compare_test.res\", line 21, characters 5-12",
-                        (function () {
+                        (() => {
                           return {
                             TAG: "Eq",
                             _0: true,
@@ -230,7 +230,7 @@ let suites = {
                       tl: {
                         hd: [
                           "File \"caml_compare_test.res\", line 22, characters 5-12",
-                          (function () {
+                          (() => {
                             return {
                               TAG: "Eq",
                               _0: true,
@@ -244,7 +244,7 @@ let suites = {
                         tl: {
                           hd: [
                             "File \"caml_compare_test.res\", line 24, characters 6-13",
-                            (function () {
+                            (() => {
                               return {
                                 TAG: "Eq",
                                 _0: true,
@@ -312,7 +312,7 @@ let suites = {
                           tl: {
                             hd: [
                               "File \"caml_compare_test.res\", line 27, characters 5-12",
-                              (function () {
+                              (() => {
                                 return {
                                   TAG: "Eq",
                                   _0: true,
@@ -332,7 +332,7 @@ let suites = {
                             tl: {
                               hd: [
                                 "File \"caml_compare_test.res\", line 28, characters 5-12",
-                                (function () {
+                                (() => {
                                   return {
                                     TAG: "Eq",
                                     _0: true,
@@ -346,7 +346,7 @@ let suites = {
                               tl: {
                                 hd: [
                                   "File \"caml_compare_test.res\", line 30, characters 6-13",
-                                  (function () {
+                                  (() => {
                                     return {
                                       TAG: "Eq",
                                       _0: true,
@@ -414,7 +414,7 @@ let suites = {
                                 tl: {
                                   hd: [
                                     "File \"caml_compare_test.res\", line 33, characters 5-12",
-                                    (function () {
+                                    (() => {
                                       return {
                                         TAG: "Eq",
                                         _0: false,
@@ -425,7 +425,7 @@ let suites = {
                                   tl: {
                                     hd: [
                                       "File \"caml_compare_test.res\", line 34, characters 5-12",
-                                      (function () {
+                                      (() => {
                                         return {
                                           TAG: "Eq",
                                           _0: false,
@@ -436,7 +436,7 @@ let suites = {
                                     tl: {
                                       hd: [
                                         "File \"caml_compare_test.res\", line 36, characters 6-13",
-                                        (function () {
+                                        (() => {
                                           return {
                                             TAG: "Eq",
                                             _0: false,
@@ -504,7 +504,7 @@ let suites = {
                                       tl: {
                                         hd: [
                                           "File \"caml_compare_test.res\", line 40, characters 6-13",
-                                          (function () {
+                                          (() => {
                                             return {
                                               TAG: "Eq",
                                               _0: false,
@@ -572,7 +572,7 @@ let suites = {
                                         tl: {
                                           hd: [
                                             "cmp_id",
-                                            (function () {
+                                            (() => {
                                               return {
                                                 TAG: "Eq",
                                                 _0: Caml_obj.compare({
@@ -589,7 +589,7 @@ let suites = {
                                           tl: {
                                             hd: [
                                               "cmp_val",
-                                              (function () {
+                                              (() => {
                                                 return {
                                                   TAG: "Eq",
                                                   _0: Caml_obj.compare({
@@ -604,7 +604,7 @@ let suites = {
                                             tl: {
                                               hd: [
                                                 "cmp_val2",
-                                                (function () {
+                                                (() => {
                                                   return {
                                                     TAG: "Eq",
                                                     _0: Caml_obj.compare({
@@ -619,7 +619,7 @@ let suites = {
                                               tl: {
                                                 hd: [
                                                   "cmp_empty",
-                                                  (function () {
+                                                  (() => {
                                                     return {
                                                       TAG: "Eq",
                                                       _0: Caml_obj.compare({}, {}),
@@ -630,7 +630,7 @@ let suites = {
                                                 tl: {
                                                   hd: [
                                                     "cmp_empty2",
-                                                    (function () {
+                                                    (() => {
                                                       return {
                                                         TAG: "Eq",
                                                         _0: Caml_obj.compare({}, {x:1}),
@@ -641,7 +641,7 @@ let suites = {
                                                   tl: {
                                                     hd: [
                                                       "cmp_swap",
-                                                      (function () {
+                                                      (() => {
                                                         return {
                                                           TAG: "Eq",
                                                           _0: Caml_obj.compare({
@@ -658,7 +658,7 @@ let suites = {
                                                     tl: {
                                                       hd: [
                                                         "cmp_size",
-                                                        (function () {
+                                                        (() => {
                                                           return {
                                                             TAG: "Eq",
                                                             _0: Caml_obj.compare({x:1}, {x:1, y:2}),
@@ -669,7 +669,7 @@ let suites = {
                                                       tl: {
                                                         hd: [
                                                           "cmp_size2",
-                                                          (function () {
+                                                          (() => {
                                                             return {
                                                               TAG: "Eq",
                                                               _0: Caml_obj.compare({x:1, y:2}, {x:1}),
@@ -680,7 +680,7 @@ let suites = {
                                                         tl: {
                                                           hd: [
                                                             "cmp_order",
-                                                            (function () {
+                                                            (() => {
                                                               return {
                                                                 TAG: "Eq",
                                                                 _0: Caml_obj.compare({
@@ -697,7 +697,7 @@ let suites = {
                                                           tl: {
                                                             hd: [
                                                               "cmp_order2",
-                                                              (function () {
+                                                              (() => {
                                                                 return {
                                                                   TAG: "Eq",
                                                                   _0: Caml_obj.compare({
@@ -714,7 +714,7 @@ let suites = {
                                                             tl: {
                                                               hd: [
                                                                 "cmp_in_list",
-                                                                (function () {
+                                                                (() => {
                                                                   return {
                                                                     TAG: "Eq",
                                                                     _0: Caml_obj.compare({
@@ -735,7 +735,7 @@ let suites = {
                                                               tl: {
                                                                 hd: [
                                                                   "cmp_in_list2",
-                                                                  (function () {
+                                                                  (() => {
                                                                     return {
                                                                       TAG: "Eq",
                                                                       _0: Caml_obj.compare({
@@ -756,7 +756,7 @@ let suites = {
                                                                 tl: {
                                                                   hd: [
                                                                     "cmp_with_list",
-                                                                    (function () {
+                                                                    (() => {
                                                                       return {
                                                                         TAG: "Eq",
                                                                         _0: Caml_obj.compare({
@@ -777,7 +777,7 @@ let suites = {
                                                                   tl: {
                                                                     hd: [
                                                                       "cmp_with_list2",
-                                                                      (function () {
+                                                                      (() => {
                                                                         return {
                                                                           TAG: "Eq",
                                                                           _0: Caml_obj.compare({
@@ -798,7 +798,7 @@ let suites = {
                                                                     tl: {
                                                                       hd: [
                                                                         "eq_id",
-                                                                        (function () {
+                                                                        (() => {
                                                                           return {
                                                                             TAG: "Ok",
                                                                             _0: Caml_obj.equal({
@@ -814,7 +814,7 @@ let suites = {
                                                                       tl: {
                                                                         hd: [
                                                                           "eq_val",
-                                                                          (function () {
+                                                                          (() => {
                                                                             return {
                                                                               TAG: "Eq",
                                                                               _0: Caml_obj.equal({
@@ -829,7 +829,7 @@ let suites = {
                                                                         tl: {
                                                                           hd: [
                                                                             "eq_val2",
-                                                                            (function () {
+                                                                            (() => {
                                                                               return {
                                                                                 TAG: "Eq",
                                                                                 _0: Caml_obj.equal({
@@ -844,7 +844,7 @@ let suites = {
                                                                           tl: {
                                                                             hd: [
                                                                               "eq_empty",
-                                                                              (function () {
+                                                                              (() => {
                                                                                 return {
                                                                                   TAG: "Eq",
                                                                                   _0: Caml_obj.equal({}, {}),
@@ -855,7 +855,7 @@ let suites = {
                                                                             tl: {
                                                                               hd: [
                                                                                 "eq_empty2",
-                                                                                (function () {
+                                                                                (() => {
                                                                                   return {
                                                                                     TAG: "Eq",
                                                                                     _0: Caml_obj.equal({}, {x:1}),
@@ -866,7 +866,7 @@ let suites = {
                                                                               tl: {
                                                                                 hd: [
                                                                                   "eq_swap",
-                                                                                  (function () {
+                                                                                  (() => {
                                                                                     return {
                                                                                       TAG: "Ok",
                                                                                       _0: Caml_obj.equal({
@@ -882,7 +882,7 @@ let suites = {
                                                                                 tl: {
                                                                                   hd: [
                                                                                     "eq_size",
-                                                                                    (function () {
+                                                                                    (() => {
                                                                                       return {
                                                                                         TAG: "Eq",
                                                                                         _0: Caml_obj.equal({x:1}, {x:1, y:2}),
@@ -893,7 +893,7 @@ let suites = {
                                                                                   tl: {
                                                                                     hd: [
                                                                                       "eq_size2",
-                                                                                      (function () {
+                                                                                      (() => {
                                                                                         return {
                                                                                           TAG: "Eq",
                                                                                           _0: Caml_obj.equal({x:1, y:2}, {x:1}),
@@ -904,7 +904,7 @@ let suites = {
                                                                                     tl: {
                                                                                       hd: [
                                                                                         "eq_in_list",
-                                                                                        (function () {
+                                                                                        (() => {
                                                                                           return {
                                                                                             TAG: "Eq",
                                                                                             _0: Caml_obj.equal({
@@ -925,7 +925,7 @@ let suites = {
                                                                                       tl: {
                                                                                         hd: [
                                                                                           "eq_in_list2",
-                                                                                          (function () {
+                                                                                          (() => {
                                                                                             return {
                                                                                               TAG: "Eq",
                                                                                               _0: Caml_obj.equal({
@@ -946,7 +946,7 @@ let suites = {
                                                                                         tl: {
                                                                                           hd: [
                                                                                             "eq_with_list",
-                                                                                            (function () {
+                                                                                            (() => {
                                                                                               return {
                                                                                                 TAG: "Eq",
                                                                                                 _0: Caml_obj.equal({
@@ -967,7 +967,7 @@ let suites = {
                                                                                           tl: {
                                                                                             hd: [
                                                                                               "eq_with_list2",
-                                                                                              (function () {
+                                                                                              (() => {
                                                                                                 return {
                                                                                                   TAG: "Eq",
                                                                                                   _0: Caml_obj.equal({
@@ -988,7 +988,7 @@ let suites = {
                                                                                             tl: {
                                                                                               hd: [
                                                                                                 "eq_no_prototype",
-                                                                                                (function () {
+                                                                                                (() => {
                                                                                                   return {
                                                                                                     TAG: "Eq",
                                                                                                     _0: Caml_obj.equal({x:1}, ((function(){let o = Object.create(null);o.x = 1;return o;})())),
@@ -999,7 +999,7 @@ let suites = {
                                                                                               tl: {
                                                                                                 hd: [
                                                                                                   "File \"caml_compare_test.res\", line 76, characters 5-12",
-                                                                                                  (function () {
+                                                                                                  (() => {
                                                                                                     return {
                                                                                                       TAG: "Eq",
                                                                                                       _0: Caml_obj.compare(null, {
@@ -1013,7 +1013,7 @@ let suites = {
                                                                                                 tl: {
                                                                                                   hd: [
                                                                                                     "File \"caml_compare_test.res\", line 77, characters 5-12",
-                                                                                                    (function () {
+                                                                                                    (() => {
                                                                                                       return {
                                                                                                         TAG: "Eq",
                                                                                                         _0: Caml_obj.compare({
@@ -1027,7 +1027,7 @@ let suites = {
                                                                                                   tl: {
                                                                                                     hd: [
                                                                                                       "File \"caml_compare_test.res\", line 78, characters 5-12",
-                                                                                                      (function () {
+                                                                                                      (() => {
                                                                                                         return {
                                                                                                           TAG: "Eq",
                                                                                                           _0: Caml_obj.compare(null, 0),
@@ -1038,7 +1038,7 @@ let suites = {
                                                                                                     tl: {
                                                                                                       hd: [
                                                                                                         "File \"caml_compare_test.res\", line 79, characters 5-12",
-                                                                                                        (function () {
+                                                                                                        (() => {
                                                                                                           return {
                                                                                                             TAG: "Eq",
                                                                                                             _0: Caml_obj.compare(0, null),
@@ -1049,7 +1049,7 @@ let suites = {
                                                                                                       tl: {
                                                                                                         hd: [
                                                                                                           "File \"caml_compare_test.res\", line 80, characters 5-12",
-                                                                                                          (function () {
+                                                                                                          (() => {
                                                                                                             return {
                                                                                                               TAG: "Eq",
                                                                                                               _0: Caml_obj.compare(undefined, 0),
@@ -1060,7 +1060,7 @@ let suites = {
                                                                                                         tl: {
                                                                                                           hd: [
                                                                                                             "File \"caml_compare_test.res\", line 81, characters 5-12",
-                                                                                                            (function () {
+                                                                                                            (() => {
                                                                                                               return {
                                                                                                                 TAG: "Eq",
                                                                                                                 _0: Caml_obj.compare(0, undefined),

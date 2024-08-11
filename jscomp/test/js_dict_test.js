@@ -13,7 +13,7 @@ function obj() {
 
 let suites_0 = [
   "empty",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: [],
@@ -25,7 +25,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "get",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Eq",
         _0: 43,
@@ -39,7 +39,7 @@ let suites_1 = {
   tl: {
     hd: [
       "get - property not in object",
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: undefined,
@@ -53,7 +53,7 @@ let suites_1 = {
     tl: {
       hd: [
         "unsafe_get",
-        (function (param) {
+        ((param) => {
           return {
             TAG: "Eq",
             _0: 43,
@@ -67,7 +67,7 @@ let suites_1 = {
       tl: {
         hd: [
           "set",
-          (function (param) {
+          ((param) => {
             let o = {
               foo: 43,
               bar: 86
@@ -83,7 +83,7 @@ let suites_1 = {
         tl: {
           hd: [
             "keys",
-            (function (param) {
+            ((param) => {
               return {
                 TAG: "Eq",
                 _0: [
@@ -100,7 +100,7 @@ let suites_1 = {
           tl: {
             hd: [
               "entries",
-              (function (param) {
+              ((param) => {
                 return {
                   TAG: "Eq",
                   _0: [
@@ -123,7 +123,7 @@ let suites_1 = {
             tl: {
               hd: [
                 "values",
-                (function (param) {
+                ((param) => {
                   return {
                     TAG: "Eq",
                     _0: [
@@ -140,7 +140,7 @@ let suites_1 = {
               tl: {
                 hd: [
                   "fromList - []",
-                  (function (param) {
+                  ((param) => {
                     return {
                       TAG: "Eq",
                       _0: {},
@@ -151,7 +151,7 @@ let suites_1 = {
                 tl: {
                   hd: [
                     "fromList",
-                    (function (param) {
+                    ((param) => {
                       return {
                         TAG: "Eq",
                         _0: [
@@ -183,7 +183,7 @@ let suites_1 = {
                   tl: {
                     hd: [
                       "fromArray - []",
-                      (function (param) {
+                      ((param) => {
                         return {
                           TAG: "Eq",
                           _0: {},
@@ -194,7 +194,7 @@ let suites_1 = {
                     tl: {
                       hd: [
                         "fromArray",
-                        (function (param) {
+                        ((param) => {
                           return {
                             TAG: "Eq",
                             _0: [
@@ -223,14 +223,14 @@ let suites_1 = {
                       tl: {
                         hd: [
                           "map",
-                          (function (param) {
+                          ((param) => {
                             return {
                               TAG: "Eq",
                               _0: {
                                 foo: "43",
                                 bar: "86"
                               },
-                              _1: Js_dict.map((function (i) {
+                              _1: Js_dict.map(((i) => {
                                 return String(i);
                               }), {
                                 foo: 43,

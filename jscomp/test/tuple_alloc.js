@@ -39,7 +39,7 @@ function kf(cb, v) {
 }
 
 function ikf(v) {
-  return kf((function (prim) {
+  return kf(((prim) => {
     
   }), v);
 }

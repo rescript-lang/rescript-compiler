@@ -9,7 +9,7 @@ let Hashtbl = require("../../lib/js/hashtbl.js");
 let MoreLabels = require("../../lib/js/moreLabels.js");
 
 function to_list(tbl) {
-  return Hashtbl.fold((function (k, v, acc) {
+  return Hashtbl.fold(((k, v, acc) => {
     return {
       hd: [
         k,
@@ -25,7 +25,7 @@ function f() {
   Hashtbl.add(tbl, 1, /* '1' */49);
   Hashtbl.add(tbl, 2, /* '2' */50);
   let extra = to_list(tbl);
-  return List.sort((function (param, param$1) {
+  return List.sort(((param, param$1) => {
     return Caml.int_compare(param[0], param$1[0]);
   }), extra);
 }
@@ -39,14 +39,14 @@ function g(count) {
     Hashtbl.replace(tbl, (i$1 << 1), String(i$1));
   }
   let v = to_list(tbl);
-  return $$Array.of_list(List.sort((function (param, param$1) {
+  return $$Array.of_list(List.sort(((param, param$1) => {
     return Caml.int_compare(param[0], param$1[0]);
   }), v));
 }
 
 let suites_0 = [
   "simple",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: {
@@ -70,10 +70,10 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "more_iterations",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Eq",
-        _0: $$Array.init(1001, (function (i) {
+        _0: $$Array.init(1001, ((i) => {
           return [
             (i << 1),
             String(i)
@@ -86,7 +86,7 @@ let suites_1 = {
   tl: {
     hd: [
       "More_labels_regressionfix_374",
-      (function (param) {
+      ((param) => {
         let tbl = MoreLabels.Hashtbl.create(undefined, 30);
         Hashtbl.add(tbl, 3, 3);
         return {

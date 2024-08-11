@@ -19,7 +19,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: x,
@@ -36,7 +36,7 @@ function b(loc, v) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
+      (() => {
         return {
           TAG: "Ok",
           _0: v
@@ -55,7 +55,7 @@ function emptyMap() {
   
 }
 
-let v = Belt_Array.makeByAndShuffle(1000000, (function (i) {
+let v = Belt_Array.makeByAndShuffle(1000000, ((i) => {
   return [
     i,
     i
@@ -68,7 +68,7 @@ Belt_MapInt.checkInvariantInternal(u);
 
 let firstHalf = Belt_Array.slice(v, 0, 2000);
 
-let xx = Belt_Array.reduce(firstHalf, u, (function (acc, param) {
+let xx = Belt_Array.reduce(firstHalf, u, ((acc, param) => {
   return Belt_MapInt.remove(acc, param[0]);
 }));
 

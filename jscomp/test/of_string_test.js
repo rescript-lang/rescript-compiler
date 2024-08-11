@@ -6,7 +6,7 @@ let Pervasives = require("../../lib/js/pervasives.js");
 
 let suites_0 = [
   "string_of_float_1",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: "10.",
@@ -18,7 +18,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "string_of_int",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Eq",
         _0: "10",
@@ -29,7 +29,7 @@ let suites_1 = {
   tl: {
     hd: [
       "valid_float_lexem",
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: "10.",

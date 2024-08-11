@@ -33,7 +33,7 @@ function string_or_number(x) {
 
 let suites_0 = [
   "int_type",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: "number",
@@ -45,7 +45,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "string_type",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Eq",
         _0: "string",
@@ -56,7 +56,7 @@ let suites_1 = {
   tl: {
     hd: [
       "number_gadt_test",
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: Js_types.test(3, "Number"),
@@ -67,7 +67,7 @@ let suites_1 = {
     tl: {
       hd: [
         "boolean_gadt_test",
-        (function (param) {
+        ((param) => {
           return {
             TAG: "Eq",
             _0: Js_types.test(true, "Boolean"),
@@ -78,7 +78,7 @@ let suites_1 = {
       tl: {
         hd: [
           "undefined_gadt_test",
-          (function (param) {
+          ((param) => {
             return {
               TAG: "Eq",
               _0: Js_types.test(undefined, "Undefined"),
@@ -89,7 +89,7 @@ let suites_1 = {
         tl: {
           hd: [
             "string_on_number1",
-            (function (param) {
+            ((param) => {
               return {
                 TAG: "Eq",
                 _0: string_or_number("xx"),
@@ -100,7 +100,7 @@ let suites_1 = {
           tl: {
             hd: [
               "string_on_number2",
-              (function (param) {
+              ((param) => {
                 return {
                   TAG: "Eq",
                   _0: string_or_number(3.02),
@@ -111,10 +111,10 @@ let suites_1 = {
             tl: {
               hd: [
                 "string_on_number3",
-                (function (param) {
+                ((param) => {
                   return {
                     TAG: "Eq",
-                    _0: string_or_number(function (x) {
+                    _0: string_or_number((x) => {
                       return x;
                     }),
                     _1: false
@@ -124,7 +124,7 @@ let suites_1 = {
               tl: {
                 hd: [
                   "string_gadt_test",
-                  (function (param) {
+                  ((param) => {
                     return {
                       TAG: "Eq",
                       _0: Js_types.test("3", "String"),
@@ -135,7 +135,7 @@ let suites_1 = {
                 tl: {
                   hd: [
                     "string_gadt_test_neg",
-                    (function (param) {
+                    ((param) => {
                       return {
                         TAG: "Eq",
                         _0: Js_types.test(3, "String"),
@@ -146,10 +146,10 @@ let suites_1 = {
                   tl: {
                     hd: [
                       "function_gadt_test",
-                      (function (param) {
+                      ((param) => {
                         return {
                           TAG: "Eq",
-                          _0: Js_types.test((function (x) {
+                          _0: Js_types.test(((x) => {
                             return x;
                           }), "Function"),
                           _1: true
@@ -159,7 +159,7 @@ let suites_1 = {
                     tl: {
                       hd: [
                         "object_gadt_test",
-                        (function (param) {
+                        ((param) => {
                           return {
                             TAG: "Eq",
                             _0: Js_types.test({

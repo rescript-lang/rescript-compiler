@@ -29,7 +29,7 @@ function v() {
 
 let suites_0 = [
   "push_test",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: {

@@ -5,8 +5,8 @@ let Mt = require("./mt.js");
 
 let suites_0 = [
   "setTimeout/clearTimeout sanity check",
-  (function (param) {
-    let handle = setTimeout((function () {
+  ((param) => {
+    let handle = setTimeout((() => {
       
     }), 0);
     clearTimeout(handle);
@@ -20,8 +20,8 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "setInerval/clearInterval sanity check",
-    (function (param) {
-      let handle = setInterval((function () {
+    ((param) => {
+      let handle = setInterval((() => {
         
       }), 0);
       clearInterval(handle);
@@ -34,7 +34,7 @@ let suites_1 = {
   tl: {
     hd: [
       "encodeURI",
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: encodeURI("[-=-]"),
@@ -45,7 +45,7 @@ let suites_1 = {
     tl: {
       hd: [
         "decodeURI",
-        (function (param) {
+        ((param) => {
           return {
             TAG: "Eq",
             _0: decodeURI("%5B-=-%5D"),
@@ -56,7 +56,7 @@ let suites_1 = {
       tl: {
         hd: [
           "encodeURIComponent",
-          (function (param) {
+          ((param) => {
             return {
               TAG: "Eq",
               _0: encodeURIComponent("[-=-]"),
@@ -67,7 +67,7 @@ let suites_1 = {
         tl: {
           hd: [
             "decodeURIComponent",
-            (function (param) {
+            ((param) => {
               return {
                 TAG: "Eq",
                 _0: decodeURIComponent("%5B-%3D-%5D"),

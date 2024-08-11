@@ -5,11 +5,11 @@ let Mt = require("./mt.js");
 
 function f(v) {
   if (v % 2 === 0) {
-    return function (v) {
+    return (v) => {
       return Math.imul(v, v);
     };
   } else {
-    return function (v) {
+    return (v) => {
       return v + v | 0;
     };
   }
@@ -19,7 +19,7 @@ let v = [
   1,
   2,
   3
-].map(function (a, b) {
+].map((a, b) => {
   return f(a)(b);
 });
 
@@ -27,7 +27,7 @@ let vv = [
   1,
   2,
   3
-].map(function (a, b) {
+].map((a, b) => {
   return a + b | 0;
 });
 
@@ -35,7 +35,7 @@ let hh = [
   "1",
   "2",
   "3"
-].map(function (x) {
+].map((x) => {
   return parseInt(x);
 });
 
@@ -70,7 +70,7 @@ fff();
 Mt.from_pair_suites("Ffi_arity_test", {
   hd: [
     "File \"ffi_arity_test.res\", line 51, characters 7-14",
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: v,
@@ -85,7 +85,7 @@ Mt.from_pair_suites("Ffi_arity_test", {
   tl: {
     hd: [
       "File \"ffi_arity_test.res\", line 52, characters 7-14",
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: vv,
@@ -100,7 +100,7 @@ Mt.from_pair_suites("Ffi_arity_test", {
     tl: {
       hd: [
         "File \"ffi_arity_test.res\", line 53, characters 7-14",
-        (function () {
+        (() => {
           return {
             TAG: "Eq",
             _0: hh,

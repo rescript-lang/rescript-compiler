@@ -20,7 +20,7 @@ function eq(f, x, y) {
   Mt_global.collect_eq(test_id, suites, f, x, y);
 }
 
-let test_strings = $$Array.init(32, (function (i) {
+let test_strings = $$Array.init(32, ((i) => {
   return Caml_string.make(i, Char.chr(i));
 }));
 

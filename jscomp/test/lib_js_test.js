@@ -18,7 +18,7 @@ console.log("hey");
 
 let suites_0 = [
   "anything_to_string",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: "3",

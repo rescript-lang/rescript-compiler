@@ -17,10 +17,10 @@ function u() {
 Mt.from_pair_suites("Jsoo_400_test", {
   hd: [
     "File \"jsoo_400_test.res\", line 7, characters 38-45",
-    (function () {
+    (() => {
       return {
         TAG: "ThrowAny",
-        _0: (function () {
+        _0: (() => {
           u();
         })
       };

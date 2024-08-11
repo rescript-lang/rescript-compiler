@@ -3,14 +3,14 @@
 
 
 function add(x) {
-  return function (y, z) {
+  return (y, z) => {
     return (x + y | 0) + z | 0;
   };
 }
 
 function f(u) {
   let f$1 = add(u);
-  return function (extra) {
+  return (extra) => {
     return f$1(1, extra);
   };
 }

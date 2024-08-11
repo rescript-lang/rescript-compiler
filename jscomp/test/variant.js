@@ -63,7 +63,7 @@ let Path = {
 };
 
 function Make(M) {
-  let find = function (x) {
+  let find = (x) => {
     
   };
   return {

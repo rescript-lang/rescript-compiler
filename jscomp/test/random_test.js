@@ -16,19 +16,19 @@ let suites = {
 };
 
 function eq(f) {
-  return function (extra, extra$1) {
+  return (extra, extra$1) => {
     return Mt_global.collect_eq(id, suites, f, extra, extra$1);
   };
 }
 
 function neq(f) {
-  return function (extra, extra$1) {
+  return (extra, extra$1) => {
     return Mt_global.collect_neq(id, suites, f, extra, extra$1);
   };
 }
 
 function approx(f) {
-  return function (extra, extra$1) {
+  return (extra, extra$1) => {
     return Mt_global.collect_approx(id, suites, f, extra, extra$1);
   };
 }

@@ -36,11 +36,11 @@ let v1 = {
 
 function f(x) {
   if (x.TAG === "A0") {
-    return List.fold_left((function (prim0, prim1) {
+    return List.fold_left(((prim0, prim1) => {
       return prim0 + prim1 | 0;
     }), x.lbl, x.more);
   } else {
-    return List.fold_left((function (prim0, prim1) {
+    return List.fold_left(((prim0, prim1) => {
       return prim0 + prim1 | 0;
     }), 0, x.more);
   }

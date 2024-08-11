@@ -127,7 +127,7 @@ let suites = {
   contents: {
     hd: [
       "File \"exception_raise_test.res\", line 120, characters 5-12",
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: [
@@ -148,7 +148,7 @@ let suites = {
     tl: {
       hd: [
         "File \"exception_raise_test.res\", line 123, characters 6-13",
-        (function () {
+        (() => {
           if (a1.RE_EXN_ID === Js_exn.$$Error) {
             return {
               TAG: "Eq",

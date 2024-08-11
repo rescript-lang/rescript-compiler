@@ -17,7 +17,7 @@ let s = {
 
 let suites_0 = [
   "not_found_equal",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: u,
@@ -29,7 +29,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "not_found_not_equal_end_of_file",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Neq",
         _0: u,

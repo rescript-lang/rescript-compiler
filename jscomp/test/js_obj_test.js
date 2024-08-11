@@ -5,7 +5,7 @@ let Mt = require("./mt.js");
 
 let suites_0 = [
   "empty",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: 0,
@@ -17,7 +17,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "assign",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Eq",
         _0: {

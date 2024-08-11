@@ -3,12 +3,12 @@
 
 let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
-let lazy1 = CamlinternalLazy.from_fun(function () {
+let lazy1 = CamlinternalLazy.from_fun(() => {
   console.log("Hello, lazy");
   return 1;
 });
 
-let lazy2 = CamlinternalLazy.from_fun(function () {
+let lazy2 = CamlinternalLazy.from_fun(() => {
   return 3;
 });
 

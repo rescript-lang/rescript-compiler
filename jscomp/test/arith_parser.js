@@ -139,7 +139,7 @@ let yynames_block = "\
   ";
 
 let yyact = [
-  (function (param) {
+  ((param) => {
     throw new Error("Failure", {
       cause: {
         RE_EXN_ID: "Failure",
@@ -147,24 +147,24 @@ let yyact = [
       }
     });
   }),
-  (function (__caml_parser_env) {
+  ((__caml_parser_env) => {
     return Parsing.peek_val(__caml_parser_env, 1);
   }),
-  (function (__caml_parser_env) {
+  ((__caml_parser_env) => {
     let _1 = Parsing.peek_val(__caml_parser_env, 0);
     return {
       TAG: "Numeral",
       _0: _1
     };
   }),
-  (function (__caml_parser_env) {
+  ((__caml_parser_env) => {
     let _1 = Parsing.peek_val(__caml_parser_env, 0);
     return {
       TAG: "Variable",
       _0: _1
     };
   }),
-  (function (__caml_parser_env) {
+  ((__caml_parser_env) => {
     let _1 = Parsing.peek_val(__caml_parser_env, 2);
     let _3 = Parsing.peek_val(__caml_parser_env, 0);
     return {
@@ -173,7 +173,7 @@ let yyact = [
       _1: _3
     };
   }),
-  (function (__caml_parser_env) {
+  ((__caml_parser_env) => {
     let _1 = Parsing.peek_val(__caml_parser_env, 2);
     let _3 = Parsing.peek_val(__caml_parser_env, 0);
     return {
@@ -182,7 +182,7 @@ let yyact = [
       _1: _3
     };
   }),
-  (function (__caml_parser_env) {
+  ((__caml_parser_env) => {
     let _1 = Parsing.peek_val(__caml_parser_env, 2);
     let _3 = Parsing.peek_val(__caml_parser_env, 0);
     return {
@@ -191,7 +191,7 @@ let yyact = [
       _1: _3
     };
   }),
-  (function (__caml_parser_env) {
+  ((__caml_parser_env) => {
     let _1 = Parsing.peek_val(__caml_parser_env, 2);
     let _3 = Parsing.peek_val(__caml_parser_env, 0);
     return {
@@ -200,17 +200,17 @@ let yyact = [
       _1: _3
     };
   }),
-  (function (__caml_parser_env) {
+  ((__caml_parser_env) => {
     let _2 = Parsing.peek_val(__caml_parser_env, 0);
     return {
       TAG: "Negate",
       _0: _2
     };
   }),
-  (function (__caml_parser_env) {
+  ((__caml_parser_env) => {
     return Parsing.peek_val(__caml_parser_env, 1);
   }),
-  (function (__caml_parser_env) {
+  ((__caml_parser_env) => {
     throw new Error(Parsing.YYexit, {
       cause: {
         RE_EXN_ID: Parsing.YYexit,

@@ -6,7 +6,7 @@ let Js_math = require("../../lib/js/js_math.js");
 
 let suites_0 = [
   "_E",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "ApproxThreshold",
       _0: 0.001,
@@ -19,7 +19,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "_LN2",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "ApproxThreshold",
         _0: 0.001,
@@ -31,7 +31,7 @@ let suites_1 = {
   tl: {
     hd: [
       "_LN10",
-      (function (param) {
+      ((param) => {
         return {
           TAG: "ApproxThreshold",
           _0: 0.001,
@@ -43,7 +43,7 @@ let suites_1 = {
     tl: {
       hd: [
         "_LOG2E",
-        (function (param) {
+        ((param) => {
           return {
             TAG: "ApproxThreshold",
             _0: 0.001,
@@ -55,7 +55,7 @@ let suites_1 = {
       tl: {
         hd: [
           "_LOG10E",
-          (function (param) {
+          ((param) => {
             return {
               TAG: "ApproxThreshold",
               _0: 0.001,
@@ -67,7 +67,7 @@ let suites_1 = {
         tl: {
           hd: [
             "_PI",
-            (function (param) {
+            ((param) => {
               return {
                 TAG: "ApproxThreshold",
                 _0: 0.00001,
@@ -79,7 +79,7 @@ let suites_1 = {
           tl: {
             hd: [
               "_SQRT1_2",
-              (function (param) {
+              ((param) => {
                 return {
                   TAG: "ApproxThreshold",
                   _0: 0.001,
@@ -91,7 +91,7 @@ let suites_1 = {
             tl: {
               hd: [
                 "_SQRT2",
-                (function (param) {
+                ((param) => {
                   return {
                     TAG: "ApproxThreshold",
                     _0: 0.001,
@@ -103,7 +103,7 @@ let suites_1 = {
               tl: {
                 hd: [
                   "abs_int",
-                  (function (param) {
+                  ((param) => {
                     return {
                       TAG: "Eq",
                       _0: 4,
@@ -114,7 +114,7 @@ let suites_1 = {
                 tl: {
                   hd: [
                     "abs_float",
-                    (function (param) {
+                    ((param) => {
                       return {
                         TAG: "Eq",
                         _0: 1.2,
@@ -125,7 +125,7 @@ let suites_1 = {
                   tl: {
                     hd: [
                       "acos",
-                      (function (param) {
+                      ((param) => {
                         return {
                           TAG: "ApproxThreshold",
                           _0: 0.001,
@@ -137,7 +137,7 @@ let suites_1 = {
                     tl: {
                       hd: [
                         "acosh",
-                        (function (param) {
+                        ((param) => {
                           return {
                             TAG: "ApproxThreshold",
                             _0: 0.001,
@@ -149,7 +149,7 @@ let suites_1 = {
                       tl: {
                         hd: [
                           "asin",
-                          (function (param) {
+                          ((param) => {
                             return {
                               TAG: "ApproxThreshold",
                               _0: 0.001,
@@ -161,7 +161,7 @@ let suites_1 = {
                         tl: {
                           hd: [
                             "asinh",
-                            (function (param) {
+                            ((param) => {
                               return {
                                 TAG: "ApproxThreshold",
                                 _0: 0.001,
@@ -173,7 +173,7 @@ let suites_1 = {
                           tl: {
                             hd: [
                               "atan",
-                              (function (param) {
+                              ((param) => {
                                 return {
                                   TAG: "ApproxThreshold",
                                   _0: 0.001,
@@ -185,7 +185,7 @@ let suites_1 = {
                             tl: {
                               hd: [
                                 "atanh",
-                                (function (param) {
+                                ((param) => {
                                   return {
                                     TAG: "ApproxThreshold",
                                     _0: 0.001,
@@ -197,7 +197,7 @@ let suites_1 = {
                               tl: {
                                 hd: [
                                   "atan2",
-                                  (function (param) {
+                                  ((param) => {
                                     return {
                                       TAG: "ApproxThreshold",
                                       _0: 0.001,
@@ -209,7 +209,7 @@ let suites_1 = {
                                 tl: {
                                   hd: [
                                     "cbrt",
-                                    (function (param) {
+                                    ((param) => {
                                       return {
                                         TAG: "Eq",
                                         _0: 2,
@@ -220,7 +220,7 @@ let suites_1 = {
                                   tl: {
                                     hd: [
                                       "unsafe_ceil_int",
-                                      (function (param) {
+                                      ((param) => {
                                         return {
                                           TAG: "Eq",
                                           _0: 4,
@@ -231,7 +231,7 @@ let suites_1 = {
                                     tl: {
                                       hd: [
                                         "ceil_int",
-                                        (function (param) {
+                                        ((param) => {
                                           return {
                                             TAG: "Eq",
                                             _0: 4,
@@ -242,7 +242,7 @@ let suites_1 = {
                                       tl: {
                                         hd: [
                                           "ceil_float",
-                                          (function (param) {
+                                          ((param) => {
                                             return {
                                               TAG: "Eq",
                                               _0: 4,
@@ -253,7 +253,7 @@ let suites_1 = {
                                         tl: {
                                           hd: [
                                             "cos",
-                                            (function (param) {
+                                            ((param) => {
                                               return {
                                                 TAG: "ApproxThreshold",
                                                 _0: 0.001,
@@ -265,7 +265,7 @@ let suites_1 = {
                                           tl: {
                                             hd: [
                                               "cosh",
-                                              (function (param) {
+                                              ((param) => {
                                                 return {
                                                   TAG: "ApproxThreshold",
                                                   _0: 0.001,
@@ -277,7 +277,7 @@ let suites_1 = {
                                             tl: {
                                               hd: [
                                                 "exp",
-                                                (function (param) {
+                                                ((param) => {
                                                   return {
                                                     TAG: "ApproxThreshold",
                                                     _0: 0.001,
@@ -289,7 +289,7 @@ let suites_1 = {
                                               tl: {
                                                 hd: [
                                                   "expm1",
-                                                  (function (param) {
+                                                  ((param) => {
                                                     return {
                                                       TAG: "ApproxThreshold",
                                                       _0: 0.001,
@@ -301,7 +301,7 @@ let suites_1 = {
                                                 tl: {
                                                   hd: [
                                                     "unsafe_floor_int",
-                                                    (function (param) {
+                                                    ((param) => {
                                                       return {
                                                         TAG: "Eq",
                                                         _0: 3,
@@ -312,7 +312,7 @@ let suites_1 = {
                                                   tl: {
                                                     hd: [
                                                       "floor_int",
-                                                      (function (param) {
+                                                      ((param) => {
                                                         return {
                                                           TAG: "Eq",
                                                           _0: 3,
@@ -323,7 +323,7 @@ let suites_1 = {
                                                     tl: {
                                                       hd: [
                                                         "floor_float",
-                                                        (function (param) {
+                                                        ((param) => {
                                                           return {
                                                             TAG: "Eq",
                                                             _0: 3,
@@ -334,7 +334,7 @@ let suites_1 = {
                                                       tl: {
                                                         hd: [
                                                           "fround",
-                                                          (function (param) {
+                                                          ((param) => {
                                                             return {
                                                               TAG: "Approx",
                                                               _0: 3.2,
@@ -345,7 +345,7 @@ let suites_1 = {
                                                         tl: {
                                                           hd: [
                                                             "hypot",
-                                                            (function (param) {
+                                                            ((param) => {
                                                               return {
                                                                 TAG: "ApproxThreshold",
                                                                 _0: 0.001,
@@ -357,7 +357,7 @@ let suites_1 = {
                                                           tl: {
                                                             hd: [
                                                               "hypotMany",
-                                                              (function (param) {
+                                                              ((param) => {
                                                                 return {
                                                                   TAG: "ApproxThreshold",
                                                                   _0: 0.001,
@@ -369,7 +369,7 @@ let suites_1 = {
                                                             tl: {
                                                               hd: [
                                                                 "imul",
-                                                                (function (param) {
+                                                                ((param) => {
                                                                   return {
                                                                     TAG: "Eq",
                                                                     _0: 8,
@@ -380,7 +380,7 @@ let suites_1 = {
                                                               tl: {
                                                                 hd: [
                                                                   "log",
-                                                                  (function (param) {
+                                                                  ((param) => {
                                                                     return {
                                                                       TAG: "ApproxThreshold",
                                                                       _0: 0.001,
@@ -392,7 +392,7 @@ let suites_1 = {
                                                                 tl: {
                                                                   hd: [
                                                                     "log1p",
-                                                                    (function (param) {
+                                                                    ((param) => {
                                                                       return {
                                                                         TAG: "ApproxThreshold",
                                                                         _0: 0.001,
@@ -404,7 +404,7 @@ let suites_1 = {
                                                                   tl: {
                                                                     hd: [
                                                                       "log10",
-                                                                      (function (param) {
+                                                                      ((param) => {
                                                                         return {
                                                                           TAG: "ApproxThreshold",
                                                                           _0: 0.001,
@@ -416,7 +416,7 @@ let suites_1 = {
                                                                     tl: {
                                                                       hd: [
                                                                         "log2",
-                                                                        (function (param) {
+                                                                        ((param) => {
                                                                           return {
                                                                             TAG: "ApproxThreshold",
                                                                             _0: 0.001,
@@ -428,7 +428,7 @@ let suites_1 = {
                                                                       tl: {
                                                                         hd: [
                                                                           "max_int",
-                                                                          (function (param) {
+                                                                          ((param) => {
                                                                             return {
                                                                               TAG: "Eq",
                                                                               _0: 4,
@@ -439,7 +439,7 @@ let suites_1 = {
                                                                         tl: {
                                                                           hd: [
                                                                             "maxMany_int",
-                                                                            (function (param) {
+                                                                            ((param) => {
                                                                               return {
                                                                                 TAG: "Eq",
                                                                                 _0: 4,
@@ -450,7 +450,7 @@ let suites_1 = {
                                                                           tl: {
                                                                             hd: [
                                                                               "max_float",
-                                                                              (function (param) {
+                                                                              ((param) => {
                                                                                 return {
                                                                                   TAG: "Eq",
                                                                                   _0: 4.2,
@@ -461,7 +461,7 @@ let suites_1 = {
                                                                             tl: {
                                                                               hd: [
                                                                                 "maxMany_float",
-                                                                                (function (param) {
+                                                                                ((param) => {
                                                                                   return {
                                                                                     TAG: "Eq",
                                                                                     _0: 4.2,
@@ -472,7 +472,7 @@ let suites_1 = {
                                                                               tl: {
                                                                                 hd: [
                                                                                   "min_int",
-                                                                                  (function (param) {
+                                                                                  ((param) => {
                                                                                     return {
                                                                                       TAG: "Eq",
                                                                                       _0: 2,
@@ -483,7 +483,7 @@ let suites_1 = {
                                                                                 tl: {
                                                                                   hd: [
                                                                                     "minMany_int",
-                                                                                    (function (param) {
+                                                                                    ((param) => {
                                                                                       return {
                                                                                         TAG: "Eq",
                                                                                         _0: 2,
@@ -494,7 +494,7 @@ let suites_1 = {
                                                                                   tl: {
                                                                                     hd: [
                                                                                       "min_float",
-                                                                                      (function (param) {
+                                                                                      ((param) => {
                                                                                         return {
                                                                                           TAG: "Eq",
                                                                                           _0: 2.7,
@@ -505,7 +505,7 @@ let suites_1 = {
                                                                                     tl: {
                                                                                       hd: [
                                                                                         "minMany_float",
-                                                                                        (function (param) {
+                                                                                        ((param) => {
                                                                                           return {
                                                                                             TAG: "Eq",
                                                                                             _0: 2.7,
@@ -516,7 +516,7 @@ let suites_1 = {
                                                                                       tl: {
                                                                                         hd: [
                                                                                           "random",
-                                                                                          (function (param) {
+                                                                                          ((param) => {
                                                                                             let a = Math.random();
                                                                                             return {
                                                                                               TAG: "Ok",
@@ -527,7 +527,7 @@ let suites_1 = {
                                                                                         tl: {
                                                                                           hd: [
                                                                                             "random_int",
-                                                                                            (function (param) {
+                                                                                            ((param) => {
                                                                                               let a = Js_math.random_int(1, 3);
                                                                                               return {
                                                                                                 TAG: "Ok",
@@ -538,7 +538,7 @@ let suites_1 = {
                                                                                           tl: {
                                                                                             hd: [
                                                                                               "unsafe_round",
-                                                                                              (function (param) {
+                                                                                              ((param) => {
                                                                                                 return {
                                                                                                   TAG: "Eq",
                                                                                                   _0: 3,
@@ -549,7 +549,7 @@ let suites_1 = {
                                                                                             tl: {
                                                                                               hd: [
                                                                                                 "round",
-                                                                                                (function (param) {
+                                                                                                ((param) => {
                                                                                                   return {
                                                                                                     TAG: "Eq",
                                                                                                     _0: 3,
@@ -560,7 +560,7 @@ let suites_1 = {
                                                                                               tl: {
                                                                                                 hd: [
                                                                                                   "sign_int",
-                                                                                                  (function (param) {
+                                                                                                  ((param) => {
                                                                                                     return {
                                                                                                       TAG: "Eq",
                                                                                                       _0: -1,
@@ -571,7 +571,7 @@ let suites_1 = {
                                                                                                 tl: {
                                                                                                   hd: [
                                                                                                     "sign_float",
-                                                                                                    (function (param) {
+                                                                                                    ((param) => {
                                                                                                       return {
                                                                                                         TAG: "Eq",
                                                                                                         _0: -1,
@@ -582,7 +582,7 @@ let suites_1 = {
                                                                                                   tl: {
                                                                                                     hd: [
                                                                                                       "sign_float -0",
-                                                                                                      (function (param) {
+                                                                                                      ((param) => {
                                                                                                         return {
                                                                                                           TAG: "Eq",
                                                                                                           _0: -0,
@@ -593,7 +593,7 @@ let suites_1 = {
                                                                                                     tl: {
                                                                                                       hd: [
                                                                                                         "sin",
-                                                                                                        (function (param) {
+                                                                                                        ((param) => {
                                                                                                           return {
                                                                                                             TAG: "ApproxThreshold",
                                                                                                             _0: 0.001,
@@ -605,7 +605,7 @@ let suites_1 = {
                                                                                                       tl: {
                                                                                                         hd: [
                                                                                                           "sinh",
-                                                                                                          (function (param) {
+                                                                                                          ((param) => {
                                                                                                             return {
                                                                                                               TAG: "ApproxThreshold",
                                                                                                               _0: 0.001,
@@ -617,7 +617,7 @@ let suites_1 = {
                                                                                                         tl: {
                                                                                                           hd: [
                                                                                                             "sqrt",
-                                                                                                            (function (param) {
+                                                                                                            ((param) => {
                                                                                                               return {
                                                                                                                 TAG: "ApproxThreshold",
                                                                                                                 _0: 0.001,
@@ -629,7 +629,7 @@ let suites_1 = {
                                                                                                           tl: {
                                                                                                             hd: [
                                                                                                               "tan",
-                                                                                                              (function (param) {
+                                                                                                              ((param) => {
                                                                                                                 return {
                                                                                                                   TAG: "ApproxThreshold",
                                                                                                                   _0: 0.001,
@@ -641,7 +641,7 @@ let suites_1 = {
                                                                                                             tl: {
                                                                                                               hd: [
                                                                                                                 "tanh",
-                                                                                                                (function (param) {
+                                                                                                                ((param) => {
                                                                                                                   return {
                                                                                                                     TAG: "ApproxThreshold",
                                                                                                                     _0: 0.001,
@@ -653,7 +653,7 @@ let suites_1 = {
                                                                                                               tl: {
                                                                                                                 hd: [
                                                                                                                   "unsafe_trunc",
-                                                                                                                  (function (param) {
+                                                                                                                  ((param) => {
                                                                                                                     return {
                                                                                                                       TAG: "Eq",
                                                                                                                       _0: 4,
@@ -664,7 +664,7 @@ let suites_1 = {
                                                                                                                 tl: {
                                                                                                                   hd: [
                                                                                                                     "trunc",
-                                                                                                                    (function (param) {
+                                                                                                                    ((param) => {
                                                                                                                       return {
                                                                                                                         TAG: "Eq",
                                                                                                                         _0: 4,

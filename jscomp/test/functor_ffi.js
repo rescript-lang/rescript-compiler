@@ -4,7 +4,7 @@
 let Caml_option = require("../../lib/js/caml_option.js");
 
 function Make(S) {
-  let opt_get = function (f, i) {
+  let opt_get = (f, i) => {
     return Caml_option.undefined_to_opt(f[i]);
   };
   return {

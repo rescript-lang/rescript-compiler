@@ -80,13 +80,13 @@ function string_of_rank(x) {
 }
 
 function find_ticker_by_name(all_tickers, ticker) {
-  return List.find((function (param) {
+  return List.find(((param) => {
     return param.ticker_name === ticker;
   }), all_tickers);
 }
 
 function print_all_composite(all_tickers) {
-  List.iter((function (x) {
+  List.iter(((x) => {
     let tmp = x.type_;
     if (typeof tmp !== "object") {
       return;
@@ -1090,8 +1090,8 @@ let Ticker_map = {
 };
 
 function compute_update_sequences(all_tickers) {
-  List.fold_left((function (counter, ticker) {
-    let loop = function (counter, ticker) {
+  List.fold_left(((counter, ticker) => {
+    let loop = (counter, ticker) => {
       let rank = ticker.rank;
       if (typeof rank === "object") {
         return counter;
@@ -1121,7 +1121,7 @@ function compute_update_sequences(all_tickers) {
     };
     return loop(counter, ticker);
   }), 0, all_tickers);
-  let map = List.fold_left((function (map, ticker) {
+  let map = List.fold_left(((map, ticker) => {
     let tmp = ticker.type_;
     if (typeof tmp !== "object") {
       return add(ticker.ticker_name, {
@@ -1129,7 +1129,7 @@ function compute_update_sequences(all_tickers) {
         tl: /* [] */0
       }, map);
     }
-    let loop = function (_up, _map, _ticker) {
+    let loop = (_up, _map, _ticker) => {
       while (true) {
         let ticker = _ticker;
         let map = _map;
@@ -1156,8 +1156,8 @@ function compute_update_sequences(all_tickers) {
     };
     return loop(/* [] */0, map, ticker);
   }), "Empty", List.rev(all_tickers));
-  return fold((function (k, l, map) {
-    let l$1 = List.sort_uniq((function (lhs, rhs) {
+  return fold(((k, l, map) => {
+    let l$1 = List.sort_uniq(((lhs, rhs) => {
       let x = lhs.rank;
       if (typeof x !== "object") {
         if (x === "Uninitialized") {
@@ -1201,7 +1201,7 @@ function compute_update_sequences(all_tickers) {
 
 function process_quote(ticker_map, new_ticker, new_value) {
   let update_sequence = find(new_ticker, ticker_map);
-  List.iter((function (ticker) {
+  List.iter(((ticker) => {
     let match = ticker.type_;
     if (typeof match !== "object") {
       if (ticker.ticker_name === new_ticker) {
@@ -1226,7 +1226,7 @@ function process_quote(ticker_map, new_ticker, new_value) {
 }
 
 function process_input_line(ticker_map, all_tickers, line) {
-  let make_binary_op = function (ticker_name, lhs, rhs, op) {
+  let make_binary_op = (ticker_name, lhs, rhs, op) => {
     let lhs$1 = find_ticker_by_name(all_tickers, lhs);
     let rhs$1 = find_ticker_by_name(all_tickers, rhs);
     return {

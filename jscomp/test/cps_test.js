@@ -9,14 +9,14 @@ function test() {
   let v = {
     contents: 0
   };
-  let f = function (_n, _acc) {
+  let f = (_n, _acc) => {
     while (true) {
       let acc = _acc;
       let n = _n;
       if (n === 0) {
         return acc();
       }
-      _acc = (function () {
+      _acc = (() => {
         v.contents = v.contents + n | 0;
         return acc();
       });
@@ -24,7 +24,7 @@ function test() {
       continue;
     };
   };
-  f(10, (function () {
+  f(10, (() => {
     
   }));
   return v.contents;
@@ -34,15 +34,15 @@ function test_closure() {
   let v = {
     contents: 0
   };
-  let arr = Caml_array.make(6, (function (x) {
+  let arr = Caml_array.make(6, ((x) => {
     return x;
   }));
   for (let i = 0; i <= 5; ++i) {
-    Caml_array.set(arr, i, (function (param) {
+    Caml_array.set(arr, i, ((param) => {
       return i;
     }));
   }
-  $$Array.iter((function (i) {
+  $$Array.iter(((i) => {
     v.contents = v.contents + i(0) | 0;
   }), arr);
   return v.contents;
@@ -52,16 +52,16 @@ function test_closure2() {
   let v = {
     contents: 0
   };
-  let arr = Caml_array.make(6, (function (x) {
+  let arr = Caml_array.make(6, ((x) => {
     return x;
   }));
   for (let i = 0; i <= 5; ++i) {
     let j = i + i | 0;
-    Caml_array.set(arr, i, (function (param) {
+    Caml_array.set(arr, i, ((param) => {
       return j;
     }));
   }
-  $$Array.iter((function (i) {
+  $$Array.iter(((i) => {
     v.contents = v.contents + i(0) | 0;
   }), arr);
   return v.contents;
@@ -70,7 +70,7 @@ function test_closure2() {
 Mt.from_pair_suites("Cps_test", {
   hd: [
     "cps_test_sum",
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: 55,
@@ -81,7 +81,7 @@ Mt.from_pair_suites("Cps_test", {
   tl: {
     hd: [
       "cps_test_closure",
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: 15,
@@ -92,7 +92,7 @@ Mt.from_pair_suites("Cps_test", {
     tl: {
       hd: [
         "cps_test_closure2",
-        (function () {
+        (() => {
           return {
             TAG: "Eq",
             _0: 30,

@@ -41,7 +41,7 @@ function fib(x) {
 Mt.from_pair_suites("Int_overflow_test", {
   hd: [
     "plus_overflow",
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: true,
@@ -52,7 +52,7 @@ Mt.from_pair_suites("Int_overflow_test", {
   tl: {
     hd: [
       "minus_overflow",
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: true,
@@ -63,7 +63,7 @@ Mt.from_pair_suites("Int_overflow_test", {
     tl: {
       hd: [
         "flow_again",
-        (function () {
+        (() => {
           return {
             TAG: "Eq",
             _0: 2147483646,
@@ -74,7 +74,7 @@ Mt.from_pair_suites("Int_overflow_test", {
       tl: {
         hd: [
           "flow_again",
-          (function () {
+          (() => {
             return {
               TAG: "Eq",
               _0: -2,
@@ -85,7 +85,7 @@ Mt.from_pair_suites("Int_overflow_test", {
         tl: {
           hd: [
             "hash_test",
-            (function () {
+            (() => {
               return {
                 TAG: "Eq",
                 _0: hash_variant("xxyyzzuuxxzzyy00112233"),
@@ -96,7 +96,7 @@ Mt.from_pair_suites("Int_overflow_test", {
           tl: {
             hd: [
               "hash_test2",
-              (function () {
+              (() => {
                 return {
                   TAG: "Eq",
                   _0: hash_variant("xxyyzxzzyy"),
@@ -107,7 +107,7 @@ Mt.from_pair_suites("Int_overflow_test", {
             tl: {
               hd: [
                 "File \"int_overflow_test.res\", line 88, characters 5-12",
-                (function () {
+                (() => {
                   return {
                     TAG: "Eq",
                     _0: hash_variant2("xxyyzzuuxxzzyy00112233"),
@@ -118,7 +118,7 @@ Mt.from_pair_suites("Int_overflow_test", {
               tl: {
                 hd: [
                   "File \"int_overflow_test.res\", line 89, characters 5-12",
-                  (function () {
+                  (() => {
                     return {
                       TAG: "Eq",
                       _0: hash_variant2("xxyyzxzzyy"),
@@ -129,7 +129,7 @@ Mt.from_pair_suites("Int_overflow_test", {
                 tl: {
                   hd: [
                     "int_literal_flow",
-                    (function () {
+                    (() => {
                       return {
                         TAG: "Eq",
                         _0: -1,
@@ -140,7 +140,7 @@ Mt.from_pair_suites("Int_overflow_test", {
                   tl: {
                     hd: [
                       "int_literal_flow2",
-                      (function () {
+                      (() => {
                         return {
                           TAG: "Eq",
                           _0: -1,
@@ -151,7 +151,7 @@ Mt.from_pair_suites("Int_overflow_test", {
                     tl: {
                       hd: [
                         "int_literal_flow3",
-                        (function () {
+                        (() => {
                           return {
                             TAG: "Eq",
                             _0: -1,
@@ -162,7 +162,7 @@ Mt.from_pair_suites("Int_overflow_test", {
                       tl: {
                         hd: [
                           "int32_mul",
-                          (function () {
+                          (() => {
                             return {
                               TAG: "Eq",
                               _0: -33554431,
@@ -173,7 +173,7 @@ Mt.from_pair_suites("Int_overflow_test", {
                         tl: {
                           hd: [
                             "File \"int_overflow_test.res\", line 94, characters 5-12",
-                            (function () {
+                            (() => {
                               return {
                                 TAG: "Eq",
                                 _0: Number("3") | 0,
@@ -184,7 +184,7 @@ Mt.from_pair_suites("Int_overflow_test", {
                           tl: {
                             hd: [
                               "File \"int_overflow_test.res\", line 96, characters 5-12",
-                              (function () {
+                              (() => {
                                 return {
                                   TAG: "Eq",
                                   _0: Number("3.2") | 0,

@@ -17,7 +17,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: x,
@@ -97,10 +97,10 @@ eq("File \"recursive_module_test.res\", line 29, characters 12-19", 120, fact$1(
 
 add([
   "File \"recursive_module_test.res\", line 31, characters 14-21",
-  (function () {
+  (() => {
     return {
       TAG: "ThrowAny",
-      _0: (function () {
+      _0: (() => {
         Int3.u(3);
       })
     };

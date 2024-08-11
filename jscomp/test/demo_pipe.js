@@ -3,9 +3,9 @@
 
 
 function register(rl) {
-  return rl.on("line", (function (x) {
+  return rl.on("line", ((x) => {
     console.log(x);
-  })).on("close", (function () {
+  })).on("close", (() => {
     console.log("finished");
   }));
 }

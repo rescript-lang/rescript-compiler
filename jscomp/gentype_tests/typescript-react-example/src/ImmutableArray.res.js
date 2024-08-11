@@ -51,7 +51,7 @@ let rangeBy = Belt_Array.rangeBy;
 let makeByU = Belt_Array.makeByU;
 
 function makeBy(c, f) {
-  return Belt_Array.makeBy(c, (function (x) {
+  return Belt_Array.makeBy(c, ((x) => {
     return f(x);
   }));
 }
@@ -59,7 +59,7 @@ function makeBy(c, f) {
 let makeByAndShuffleU = Belt_Array.makeByAndShuffleU;
 
 function makeByAndShuffle(c, f) {
-  return Belt_Array.makeByAndShuffle(c, (function (x) {
+  return Belt_Array.makeByAndShuffle(c, ((x) => {
     return f(x);
   }));
 }
@@ -69,7 +69,7 @@ let zip = Belt_Array.zip;
 let zipByU = Belt_Array.zipByU;
 
 function zipBy(a1, a2, f) {
-  return Belt_Array.zipBy(a1, a2, (function (x, y) {
+  return Belt_Array.zipBy(a1, a2, ((x, y) => {
     return f(x, y);
   }));
 }
@@ -91,7 +91,7 @@ function copy(a) {
 let forEachU = Belt_Array.forEachU;
 
 function forEach(a, f) {
-  Belt_Array.forEach(a, (function (x) {
+  Belt_Array.forEach(a, ((x) => {
     f(x);
   }));
 }
@@ -99,7 +99,7 @@ function forEach(a, f) {
 let mapU = Belt_Array.mapU;
 
 function map(a, f) {
-  return Belt_Array.map(a, (function (x) {
+  return Belt_Array.map(a, ((x) => {
     return f(x);
   }));
 }
@@ -107,7 +107,7 @@ function map(a, f) {
 let keepWithIndexU = Belt_Array.keepWithIndexU;
 
 function keepWithIndex(a, f) {
-  return Belt_Array.keepWithIndex(a, (function (x, y) {
+  return Belt_Array.keepWithIndex(a, ((x, y) => {
     return f(x, y);
   }));
 }
@@ -115,7 +115,7 @@ function keepWithIndex(a, f) {
 let keepMapU = Belt_Array.keepMapU;
 
 function keepMap(a, f) {
-  return Belt_Array.keepMap(a, (function (x) {
+  return Belt_Array.keepMap(a, ((x) => {
     return f(x);
   }));
 }
@@ -123,7 +123,7 @@ function keepMap(a, f) {
 let forEachWithIndexU = Belt_Array.forEachWithIndexU;
 
 function forEachWithIndex(a, f) {
-  Belt_Array.forEachWithIndex(a, (function (x, y) {
+  Belt_Array.forEachWithIndex(a, ((x, y) => {
     f(x, y);
   }));
 }
@@ -131,7 +131,7 @@ function forEachWithIndex(a, f) {
 let mapWithIndexU = Belt_Array.mapWithIndexU;
 
 function mapWithIndex(a, f) {
-  return Belt_Array.mapWithIndex(a, (function (x, y) {
+  return Belt_Array.mapWithIndex(a, ((x, y) => {
     return f(x, y);
   }));
 }
@@ -139,7 +139,7 @@ function mapWithIndex(a, f) {
 let partitionU = Belt_Array.partitionU;
 
 function partition(a, f) {
-  return Belt_Array.partition(a, (function (x) {
+  return Belt_Array.partition(a, ((x) => {
     return f(x);
   }));
 }
@@ -147,7 +147,7 @@ function partition(a, f) {
 let reduceU = Belt_Array.reduceU;
 
 function reduce(a, b, f) {
-  return Belt_Array.reduce(a, b, (function (x, y) {
+  return Belt_Array.reduce(a, b, ((x, y) => {
     return f(x, y);
   }));
 }
@@ -155,7 +155,7 @@ function reduce(a, b, f) {
 let reduceReverseU = Belt_Array.reduceReverseU;
 
 function reduceReverse(a, b, f) {
-  return Belt_Array.reduceReverse(a, b, (function (x, y) {
+  return Belt_Array.reduceReverse(a, b, ((x, y) => {
     return f(x, y);
   }));
 }
@@ -163,7 +163,7 @@ function reduceReverse(a, b, f) {
 let reduceReverse2U = Belt_Array.reduceReverse2U;
 
 function reduceReverse2(a1, a2, c, f) {
-  return Belt_Array.reduceReverse2(a1, a2, c, (function (x, y, z) {
+  return Belt_Array.reduceReverse2(a1, a2, c, ((x, y, z) => {
     return f(x, y, z);
   }));
 }
@@ -171,7 +171,7 @@ function reduceReverse2(a1, a2, c, f) {
 let someU = Belt_Array.someU;
 
 function some(a, f) {
-  return Belt_Array.some(a, (function (x) {
+  return Belt_Array.some(a, ((x) => {
     return f(x);
   }));
 }
@@ -179,7 +179,7 @@ function some(a, f) {
 let everyU = Belt_Array.everyU;
 
 function every(a, f) {
-  return Belt_Array.every(a, (function (x) {
+  return Belt_Array.every(a, ((x) => {
     return f(x);
   }));
 }
@@ -187,7 +187,7 @@ function every(a, f) {
 let every2U = Belt_Array.every2U;
 
 function every2(a1, a2, f) {
-  return Belt_Array.every2(a1, a2, (function (x, y) {
+  return Belt_Array.every2(a1, a2, ((x, y) => {
     return f(x, y);
   }));
 }
@@ -195,7 +195,7 @@ function every2(a1, a2, f) {
 let some2U = Belt_Array.some2U;
 
 function some2(a1, a2, f) {
-  return Belt_Array.some2(a1, a2, (function (x, y) {
+  return Belt_Array.some2(a1, a2, ((x, y) => {
     return f(x, y);
   }));
 }
@@ -203,7 +203,7 @@ function some2(a1, a2, f) {
 let cmpU = Belt_Array.cmpU;
 
 function cmp(a1, a2, f) {
-  return Belt_Array.cmp(a1, a2, (function (x, y) {
+  return Belt_Array.cmp(a1, a2, ((x, y) => {
     return f(x, y);
   }));
 }
@@ -211,7 +211,7 @@ function cmp(a1, a2, f) {
 let eqU = Belt_Array.eqU;
 
 function eq(a1, a2, f) {
-  return Belt_Array.eq(a1, a2, (function (x, y) {
+  return Belt_Array.eq(a1, a2, ((x, y) => {
     return f(x, y);
   }));
 }

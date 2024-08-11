@@ -22,12 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 let await = "await"
 
-let function_ = "function"
+let function_ ~async ~arrow =
+  match (async, arrow) with
+  | (true, true) -> "async "
+  | (false, true) -> ""
+  | (true, false) -> "async function "
+  | (false, false) -> "function "
 
-let function_async ~async = if async then "async function" else "function"
+let arrow = "=>"
 
 let let_ = "let"
 

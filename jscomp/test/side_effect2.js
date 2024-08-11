@@ -3,7 +3,7 @@
 
 let Belt_Array = require("../../lib/js/belt_Array.js");
 
-let a = Belt_Array.map([1], (function (x) {
+let a = Belt_Array.map([1], ((x) => {
   return x;
 }));
 

@@ -46,7 +46,7 @@ function emptyMap() {
 }
 
 function mergeInter(s1, s2) {
-  let m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
+  let m = Belt_Map.merge(s1, s2, ((k, v1, v2) => {
     if (v1 !== undefined && v2 !== undefined) {
       return Caml_option.some(undefined);
     }
@@ -56,7 +56,7 @@ function mergeInter(s1, s2) {
 }
 
 function mergeUnion(s1, s2) {
-  let m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
+  let m = Belt_Map.merge(s1, s2, ((k, v1, v2) => {
     if (v1 !== undefined || v2 !== undefined) {
       return Caml_option.some(undefined);
     }
@@ -66,7 +66,7 @@ function mergeUnion(s1, s2) {
 }
 
 function mergeDiff(s1, s2) {
-  let m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
+  let m = Belt_Map.merge(s1, s2, ((k, v1, v2) => {
     if (v1 !== undefined && v2 === undefined) {
       return Caml_option.some(undefined);
     }
@@ -76,7 +76,7 @@ function mergeDiff(s1, s2) {
 }
 
 function randomRange(i, j) {
-  return Belt_Array.map(Array_data_util.randomRange(i, j), (function (x) {
+  return Belt_Array.map(Array_data_util.randomRange(i, j), ((x) => {
     return [
       x,
       x
@@ -102,7 +102,7 @@ let a1 = Belt_Map.set(a0, 3, 33);
 
 let a2 = Belt_Map.remove(a1, 3);
 
-let a3 = Belt_Map.update(a2, 3, (function (k) {
+let a3 = Belt_Map.update(a2, 3, ((k) => {
   if (k !== undefined) {
     return k + 1 | 0;
   } else {
@@ -110,7 +110,7 @@ let a3 = Belt_Map.update(a2, 3, (function (k) {
   }
 }));
 
-let a4 = Belt_Map.update(a2, 3, (function (k) {
+let a4 = Belt_Map.update(a2, 3, ((k) => {
   if (k !== undefined) {
     return k + 1 | 0;
   }
@@ -169,8 +169,8 @@ eq("File \"bs_poly_map_test.res\", line 108, characters 5-12", Belt_Map.get(u1$1
 eq("File \"bs_poly_map_test.res\", line 109, characters 5-12", Belt_Map.get(u0$1, 3), 3);
 
 function acc(m, is) {
-  return Belt_Array.reduce(is, m, (function (a, i) {
-    return Belt_Map.update(a, i, (function (n) {
+  return Belt_Array.reduce(is, m, ((a, i) => {
+    return Belt_Map.update(a, i, ((n) => {
       if (n !== undefined) {
         return n + 1 | 0;
       } else {
@@ -189,12 +189,12 @@ let m = {
 
 let m1 = acc(m, Belt_Array.concat(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));
 
-b("File \"bs_poly_map_test.res\", line 126, characters 4-11", Belt_Map.eq(m1, Belt_Map.fromArray(Belt_Array.makeBy(31, (function (i) {
+b("File \"bs_poly_map_test.res\", line 126, characters 4-11", Belt_Map.eq(m1, Belt_Map.fromArray(Belt_Array.makeBy(31, ((i) => {
   return [
     i,
     i >= 10 && i <= 20 ? 2 : 1
   ];
-})), Icmp), (function (x, y) {
+})), Icmp), ((x, y) => {
   return x === y;
 })));
 
@@ -205,21 +205,21 @@ let v0 = {
   data: undefined
 };
 
-let v1 = Belt_Map.mergeMany(v0, Belt_Array.map(Array_data_util.randomRange(0, 10000), (function (x) {
+let v1 = Belt_Map.mergeMany(v0, Belt_Array.map(Array_data_util.randomRange(0, 10000), ((x) => {
   return [
     x,
     x
   ];
 })));
 
-let v2 = Belt_Map.fromArray(Belt_Array.map(Array_data_util.randomRange(0, 10000), (function (x) {
+let v2 = Belt_Map.fromArray(Belt_Array.map(Array_data_util.randomRange(0, 10000), ((x) => {
   return [
     x,
     x
   ];
 })), Icmp);
 
-b("File \"bs_poly_map_test.res\", line 150, characters 4-11", Belt_Map.eq(v1, v2, (function (x, y) {
+b("File \"bs_poly_map_test.res\", line 150, characters 4-11", Belt_Map.eq(v1, v2, ((x, y) => {
   return x === y;
 })));
 
@@ -269,15 +269,15 @@ b("File \"bs_poly_map_test.res\", line 182, characters 4-11", Belt_MapDict.isEmp
 
 b("File \"bs_poly_map_test.res\", line 184, characters 4-11", pres !== undefined ? pres === 5000 : false);
 
-b("File \"bs_poly_map_test.res\", line 190, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[0].data), Belt_Array.makeBy(5000, (function (i) {
+b("File \"bs_poly_map_test.res\", line 190, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[0].data), Belt_Array.makeBy(5000, ((i) => {
   return i;
-})), (function (prim0, prim1) {
+})), ((prim0, prim1) => {
   return prim0 === prim1;
 })));
 
-b("File \"bs_poly_map_test.res\", line 191, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[1].data), Belt_Array.makeBy(5000, (function (i) {
+b("File \"bs_poly_map_test.res\", line 191, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[1].data), Belt_Array.makeBy(5000, ((i) => {
   return 5001 + i | 0;
-})), (function (prim0, prim1) {
+})), ((prim0, prim1) => {
   return prim0 === prim1;
 })));
 
@@ -289,15 +289,15 @@ let match$6 = match$5[0];
 
 b("File \"bs_poly_map_test.res\", line 196, characters 4-11", match$5[1] === undefined);
 
-b("File \"bs_poly_map_test.res\", line 202, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[0].data), Belt_Array.makeBy(5000, (function (i) {
+b("File \"bs_poly_map_test.res\", line 202, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[0].data), Belt_Array.makeBy(5000, ((i) => {
   return i;
-})), (function (prim0, prim1) {
+})), ((prim0, prim1) => {
   return prim0 === prim1;
 })));
 
-b("File \"bs_poly_map_test.res\", line 203, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[1].data), Belt_Array.makeBy(5000, (function (i) {
+b("File \"bs_poly_map_test.res\", line 203, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[1].data), Belt_Array.makeBy(5000, ((i) => {
   return 5001 + i | 0;
-})), (function (prim0, prim1) {
+})), ((prim0, prim1) => {
   return prim0 === prim1;
 })));
 

@@ -7,7 +7,7 @@ let Test_google_closure = require("./test_google_closure.js");
 Mt.from_pair_suites("Closure", {
   hd: [
     "partial",
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: [

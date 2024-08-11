@@ -11,7 +11,7 @@ function length(param) {
 Mt.from_pair_suites("Es6_module_test", {
   hd: [
     "list_length",
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: List.length({
@@ -28,7 +28,7 @@ Mt.from_pair_suites("Es6_module_test", {
   tl: {
     hd: [
       "length",
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: 3,

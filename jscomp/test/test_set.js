@@ -4,14 +4,14 @@
 let List = require("../../lib/js/list.js");
 
 function Make(Ord) {
-  let height = function (x) {
+  let height = (x) => {
     if (typeof x !== "object") {
       return 0;
     } else {
       return x._3;
     }
   };
-  let create = function (l, v, r) {
+  let create = (l, v, r) => {
     let hl;
     hl = typeof l !== "object" ? 0 : l._3;
     let hr;
@@ -24,7 +24,7 @@ function Make(Ord) {
       _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
     };
   };
-  let bal = function (l, v, r) {
+  let bal = (l, v, r) => {
     let hl;
     hl = typeof l !== "object" ? 0 : l._3;
     let hr;
@@ -87,7 +87,7 @@ function Make(Ord) {
       }
     });
   };
-  let add = function (x, x_) {
+  let add = (x, x_) => {
     if (typeof x_ !== "object") {
       return {
         TAG: "Node",
@@ -109,7 +109,7 @@ function Make(Ord) {
       return bal(l, v, add(x, r));
     }
   };
-  let singleton = function (x) {
+  let singleton = (x) => {
     return {
       TAG: "Node",
       _0: "Empty",
@@ -118,21 +118,21 @@ function Make(Ord) {
       _3: 1
     };
   };
-  let add_min_element = function (v, x) {
+  let add_min_element = (v, x) => {
     if (typeof x !== "object") {
       return singleton(v);
     } else {
       return bal(add_min_element(v, x._0), x._1, x._2);
     }
   };
-  let add_max_element = function (v, x) {
+  let add_max_element = (v, x) => {
     if (typeof x !== "object") {
       return singleton(v);
     } else {
       return bal(x._0, x._1, add_max_element(v, x._2));
     }
   };
-  let join = function (l, v, r) {
+  let join = (l, v, r) => {
     if (typeof l !== "object") {
       return add_min_element(v, r);
     }
@@ -149,7 +149,7 @@ function Make(Ord) {
       return create(l, v, r);
     }
   };
-  let min_elt = function (_x) {
+  let min_elt = (_x) => {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
@@ -167,7 +167,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let max_elt = function (_x) {
+  let max_elt = (_x) => {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
@@ -185,7 +185,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let remove_min_elt = function (x) {
+  let remove_min_elt = (x) => {
     if (typeof x !== "object") {
       throw new Error("Invalid_argument", {
         cause: {
@@ -201,7 +201,7 @@ function Make(Ord) {
       return bal(remove_min_elt(l), x._1, x._2);
     }
   };
-  let merge = function (t1, t2) {
+  let merge = (t1, t2) => {
     if (typeof t1 !== "object") {
       return t2;
     } else if (typeof t2 !== "object") {
@@ -210,7 +210,7 @@ function Make(Ord) {
       return bal(t1, min_elt(t2), remove_min_elt(t2));
     }
   };
-  let concat = function (t1, t2) {
+  let concat = (t1, t2) => {
     if (typeof t1 !== "object") {
       return t2;
     } else if (typeof t2 !== "object") {
@@ -219,7 +219,7 @@ function Make(Ord) {
       return join(t1, min_elt(t2), remove_min_elt(t2));
     }
   };
-  let split = function (x, x_) {
+  let split = (x, x_) => {
     if (typeof x_ !== "object") {
       return [
         "Empty",
@@ -253,14 +253,14 @@ function Make(Ord) {
       match$1[2]
     ];
   };
-  let is_empty = function (x) {
+  let is_empty = (x) => {
     if (typeof x !== "object") {
       return true;
     } else {
       return false;
     }
   };
-  let mem = function (x, _x_) {
+  let mem = (x, _x_) => {
     while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
@@ -274,7 +274,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let remove = function (x, x_) {
+  let remove = (x, x_) => {
     if (typeof x_ !== "object") {
       return "Empty";
     }
@@ -290,7 +290,7 @@ function Make(Ord) {
       return bal(l, v, remove(x, r));
     }
   };
-  let union = function (s1, s2) {
+  let union = (s1, s2) => {
     if (typeof s1 !== "object") {
       return s2;
     }
@@ -314,7 +314,7 @@ function Make(Ord) {
     let match$1 = split(v2, s1);
     return join(union(match$1[0], s2._0), v2, union(match$1[2], s2._2));
   };
-  let inter = function (s1, s2) {
+  let inter = (s1, s2) => {
     if (typeof s1 !== "object") {
       return "Empty";
     }
@@ -332,7 +332,7 @@ function Make(Ord) {
       return concat(inter(l1, l2), inter(r1, match[2]));
     }
   };
-  let diff = function (s1, s2) {
+  let diff = (s1, s2) => {
     if (typeof s1 !== "object") {
       return "Empty";
     }
@@ -350,7 +350,7 @@ function Make(Ord) {
       return join(diff(l1, l2), v1, diff(r1, match[2]));
     }
   };
-  let cons_enum = function (_s, _e) {
+  let cons_enum = (_s, _e) => {
     while (true) {
       let e = _e;
       let s = _s;
@@ -367,7 +367,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let compare_aux = function (_e1, _e2) {
+  let compare_aux = (_e1, _e2) => {
     while (true) {
       let e2 = _e2;
       let e1 = _e1;
@@ -390,13 +390,13 @@ function Make(Ord) {
       continue;
     };
   };
-  let compare = function (s1, s2) {
+  let compare = (s1, s2) => {
     return compare_aux(cons_enum(s1, "End"), cons_enum(s2, "End"));
   };
-  let equal = function (s1, s2) {
+  let equal = (s1, s2) => {
     return compare(s1, s2) === 0;
   };
-  let subset = function (_s1, _s2) {
+  let subset = (_s1, _s2) => {
     while (true) {
       let s2 = _s2;
       let s1 = _s1;
@@ -446,7 +446,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let iter = function (f, _x_) {
+  let iter = (f, _x_) => {
     while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
@@ -458,7 +458,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let fold = function (f, _s, _accu) {
+  let fold = (f, _s, _accu) => {
     while (true) {
       let accu = _accu;
       let s = _s;
@@ -470,7 +470,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let for_all = function (p, _x) {
+  let for_all = (p, _x) => {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
@@ -486,7 +486,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let exists = function (p, _x) {
+  let exists = (p, _x) => {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
@@ -502,7 +502,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let filter = function (p, x) {
+  let filter = (p, x) => {
     if (typeof x !== "object") {
       return "Empty";
     }
@@ -516,7 +516,7 @@ function Make(Ord) {
       return concat(l$p, r$p);
     }
   };
-  let partition = function (p, x) {
+  let partition = (p, x) => {
     if (typeof x !== "object") {
       return [
         "Empty",
@@ -543,14 +543,14 @@ function Make(Ord) {
       ];
     }
   };
-  let cardinal = function (x) {
+  let cardinal = (x) => {
     if (typeof x !== "object") {
       return 0;
     } else {
       return (cardinal(x._0) + 1 | 0) + cardinal(x._2) | 0;
     }
   };
-  let elements_aux = function (_accu, _x) {
+  let elements_aux = (_accu, _x) => {
     while (true) {
       let x = _x;
       let accu = _accu;
@@ -565,10 +565,10 @@ function Make(Ord) {
       continue;
     };
   };
-  let elements = function (s) {
+  let elements = (s) => {
     return elements_aux(/* [] */0, s);
   };
-  let find = function (x, _x_) {
+  let find = (x, _x_) => {
     while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
@@ -587,8 +587,8 @@ function Make(Ord) {
       continue;
     };
   };
-  let of_sorted_list = function (l) {
-    let sub = function (n, l) {
+  let of_sorted_list = (l) => {
+    let sub = (n, l) => {
       switch (n) {
         case 0 :
           return [
@@ -691,7 +691,7 @@ function Make(Ord) {
     };
     return sub(List.length(l), l)[0];
   };
-  let of_list = function (l) {
+  let of_list = (l) => {
     if (!l) {
       return "Empty";
     }

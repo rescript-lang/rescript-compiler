@@ -7,14 +7,14 @@ let List = require("../../lib/js/list.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 
 function Make(Ord) {
-  let height = function (x) {
+  let height = (x) => {
     if (typeof x !== "object") {
       return 0;
     } else {
       return x._4;
     }
   };
-  let create = function (l, x, d, r) {
+  let create = (l, x, d, r) => {
     let hl = height(l);
     let hr = height(r);
     return {
@@ -26,7 +26,7 @@ function Make(Ord) {
       _4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
     };
   };
-  let singleton = function (x, d) {
+  let singleton = (x, d) => {
     return {
       TAG: "Node",
       _0: "Empty",
@@ -36,7 +36,7 @@ function Make(Ord) {
       _4: 1
     };
   };
-  let bal = function (l, x, d, r) {
+  let bal = (l, x, d, r) => {
     let hl;
     hl = typeof l !== "object" ? 0 : l._4;
     let hr;
@@ -102,14 +102,14 @@ function Make(Ord) {
       }
     });
   };
-  let is_empty = function (x) {
+  let is_empty = (x) => {
     if (typeof x !== "object") {
       return true;
     } else {
       return false;
     }
   };
-  let add = function (x, data, x_) {
+  let add = (x, data, x_) => {
     if (typeof x_ !== "object") {
       return {
         TAG: "Node",
@@ -140,7 +140,7 @@ function Make(Ord) {
       return bal(l, v, d, add(x, data, r));
     }
   };
-  let find = function (x, _x_) {
+  let find = (x, _x_) => {
     while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
@@ -158,7 +158,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let mem = function (x, _x_) {
+  let mem = (x, _x_) => {
     while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
@@ -172,7 +172,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let min_binding = function (_x) {
+  let min_binding = (_x) => {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
@@ -193,7 +193,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let max_binding = function (_x) {
+  let max_binding = (_x) => {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
@@ -214,7 +214,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let remove_min_binding = function (x) {
+  let remove_min_binding = (x) => {
     if (typeof x !== "object") {
       throw new Error("Invalid_argument", {
         cause: {
@@ -230,7 +230,7 @@ function Make(Ord) {
       return bal(remove_min_binding(l), x._1, x._2, x._3);
     }
   };
-  let remove = function (x, x_) {
+  let remove = (x, x_) => {
     if (typeof x_ !== "object") {
       return "Empty";
     }
@@ -254,7 +254,7 @@ function Make(Ord) {
       return bal(l, v, d, remove(x, r));
     }
   };
-  let iter = function (f, _x) {
+  let iter = (f, _x) => {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
@@ -266,7 +266,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let map = function (f, x) {
+  let map = (f, x) => {
     if (typeof x !== "object") {
       return "Empty";
     }
@@ -282,7 +282,7 @@ function Make(Ord) {
       _4: x._4
     };
   };
-  let mapi = function (f, x) {
+  let mapi = (f, x) => {
     if (typeof x !== "object") {
       return "Empty";
     }
@@ -299,7 +299,7 @@ function Make(Ord) {
       _4: x._4
     };
   };
-  let fold = function (f, _m, _accu) {
+  let fold = (f, _m, _accu) => {
     while (true) {
       let accu = _accu;
       let m = _m;
@@ -311,7 +311,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let for_all = function (p, _x) {
+  let for_all = (p, _x) => {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
@@ -327,7 +327,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let exists = function (p, _x) {
+  let exists = (p, _x) => {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
@@ -343,21 +343,21 @@ function Make(Ord) {
       continue;
     };
   };
-  let add_min_binding = function (k, v, x) {
+  let add_min_binding = (k, v, x) => {
     if (typeof x !== "object") {
       return singleton(k, v);
     } else {
       return bal(add_min_binding(k, v, x._0), x._1, x._2, x._3);
     }
   };
-  let add_max_binding = function (k, v, x) {
+  let add_max_binding = (k, v, x) => {
     if (typeof x !== "object") {
       return singleton(k, v);
     } else {
       return bal(x._0, x._1, x._2, add_max_binding(k, v, x._3));
     }
   };
-  let join = function (l, v, d, r) {
+  let join = (l, v, d, r) => {
     if (typeof l !== "object") {
       return add_min_binding(v, d, r);
     }
@@ -374,7 +374,7 @@ function Make(Ord) {
       return create(l, v, d, r);
     }
   };
-  let concat = function (t1, t2) {
+  let concat = (t1, t2) => {
     if (typeof t1 !== "object") {
       return t2;
     }
@@ -384,14 +384,14 @@ function Make(Ord) {
     let match = min_binding(t2);
     return join(t1, match[0], match[1], remove_min_binding(t2));
   };
-  let concat_or_join = function (t1, v, d, t2) {
+  let concat_or_join = (t1, v, d, t2) => {
     if (d !== undefined) {
       return join(t1, v, Caml_option.valFromOption(d), t2);
     } else {
       return concat(t1, t2);
     }
   };
-  let split = function (x, x_) {
+  let split = (x, x_) => {
     if (typeof x_ !== "object") {
       return [
         "Empty",
@@ -426,7 +426,7 @@ function Make(Ord) {
       match$1[2]
     ];
   };
-  let merge = function (f, s1, s2) {
+  let merge = (f, s1, s2) => {
     if (typeof s1 !== "object") {
       if (typeof s2 !== "object") {
         return "Empty";
@@ -456,7 +456,7 @@ function Make(Ord) {
     let match$1 = split(v2, s1);
     return concat_or_join(merge(f, match$1[0], s2._0), v2, f(v2, match$1[1], Caml_option.some(s2._2)), merge(f, match$1[2], s2._3));
   };
-  let filter = function (p, x) {
+  let filter = (p, x) => {
     if (typeof x !== "object") {
       return "Empty";
     }
@@ -471,7 +471,7 @@ function Make(Ord) {
       return concat(l$p, r$p);
     }
   };
-  let partition = function (p, x) {
+  let partition = (p, x) => {
     if (typeof x !== "object") {
       return [
         "Empty",
@@ -499,7 +499,7 @@ function Make(Ord) {
       ];
     }
   };
-  let cons_enum = function (_m, _e) {
+  let cons_enum = (_m, _e) => {
     while (true) {
       let e = _e;
       let m = _m;
@@ -517,7 +517,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let compare = function (cmp, m1, m2) {
+  let compare = (cmp, m1, m2) => {
     let _e1 = cons_enum(m1, "End");
     let _e2 = cons_enum(m2, "End");
     while (true) {
@@ -546,7 +546,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let equal = function (cmp, m1, m2) {
+  let equal = (cmp, m1, m2) => {
     let _e1 = cons_enum(m1, "End");
     let _e2 = cons_enum(m2, "End");
     while (true) {
@@ -573,14 +573,14 @@ function Make(Ord) {
       continue;
     };
   };
-  let cardinal = function (x) {
+  let cardinal = (x) => {
     if (typeof x !== "object") {
       return 0;
     } else {
       return (cardinal(x._0) + 1 | 0) + cardinal(x._3) | 0;
     }
   };
-  let bindings_aux = function (_accu, _x) {
+  let bindings_aux = (_accu, _x) => {
     while (true) {
       let x = _x;
       let accu = _accu;
@@ -598,7 +598,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let bindings = function (s) {
+  let bindings = (s) => {
     return bindings_aux(/* [] */0, s);
   };
   return {
@@ -1305,7 +1305,7 @@ let IntMap = {
   choose: min_binding
 };
 
-let m = List.fold_left((function (acc, param) {
+let m = List.fold_left(((acc, param) => {
   return add(param[0], param[1], acc);
 }), "Empty", {
   hd: [
@@ -1998,7 +1998,7 @@ let SMap = {
   choose: min_binding$1
 };
 
-let s = List.fold_left((function (acc, param) {
+let s = List.fold_left(((acc, param) => {
   return add$1(param[0], param[1], acc);
 }), "Empty", {
   hd: [
@@ -2029,7 +2029,7 @@ let s = List.fold_left((function (acc, param) {
 Mt.from_pair_suites("Inline_map2_test", {
   hd: [
     "assertion1",
-    (function () {
+    (() => {
       return {
         TAG: "Eq",
         _0: find(10, m),
@@ -2040,7 +2040,7 @@ Mt.from_pair_suites("Inline_map2_test", {
   tl: {
     hd: [
       "assertion2",
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: find$1("10", s),

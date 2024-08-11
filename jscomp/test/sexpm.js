@@ -96,7 +96,7 @@ function to_buf(b, t) {
     if (l) {
       if (l.tl) {
         Buffer.add_char(b, /* '(' */40);
-        List.iteri((function (i, t$p) {
+        List.iteri(((i, t$p) => {
           if (i > 0) {
             Buffer.add_char(b, /* ' ' */32);
           }
@@ -203,7 +203,7 @@ function _error_eof(t) {
 function expr(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, (function (extra) {
+      return _refill(t, ((extra) => {
         return expr(k, extra);
       }), _error_eof);
     }
@@ -224,7 +224,7 @@ function expr(k, t) {
 function expr_starting_with(c, k, t) {
   if (c >= 42) {
     if (c === 59) {
-      return skip_comment((function (param, param$1) {
+      return skip_comment(((param, param$1) => {
         return expr(k, t);
       }), t);
     }
@@ -281,7 +281,7 @@ function expr_starting_with(c, k, t) {
 function expr_list(acc, k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, (function (extra) {
+      return _refill(t, ((extra) => {
         return expr_list(acc, k, extra);
       }), _error_eof);
     }
@@ -297,7 +297,7 @@ function expr_list(acc, k, t) {
     } else if (c > 31 || c < 11) {
       continue;
     }
-    return expr_starting_with(c, (function (last, e) {
+    return expr_starting_with(c, ((last, e) => {
       if (last !== undefined) {
         if (last !== 40) {
           if (last !== 41) {
@@ -315,7 +315,7 @@ function expr_list(acc, k, t) {
             });
           }
         } else {
-          return expr_list(/* [] */0, (function (param, l) {
+          return expr_list(/* [] */0, ((param, l) => {
             return expr_list({
               hd: l,
               tl: acc
@@ -344,9 +344,9 @@ function _return_atom(last, k, t) {
 function atom(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, (function (extra) {
+      return _refill(t, ((extra) => {
         return atom(k, extra);
-      }), (function (extra) {
+      }), ((extra) => {
         return _return_atom(undefined, k, extra);
       }));
     }
@@ -392,7 +392,7 @@ function atom(k, t) {
 function quoted(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, (function (extra) {
+      return _refill(t, ((extra) => {
         return quoted(k, extra);
       }), _error_eof);
     }
@@ -401,7 +401,7 @@ function quoted(k, t) {
       return _return_atom(undefined, k, t);
     }
     if (c === 92) {
-      return escaped((function (c) {
+      return escaped(((c) => {
         Buffer.add_char(t.atom, c);
         return quoted(k, t);
       }), t);
@@ -413,7 +413,7 @@ function quoted(k, t) {
 
 function escaped(k, t) {
   if (t.i === t.len) {
-    return _refill(t, (function (extra) {
+    return _refill(t, ((extra) => {
       return escaped(k, extra);
     }), _error_eof);
   }
@@ -459,7 +459,7 @@ function escaped(k, t) {
     return k(/* '"' */34);
   }
   if (_is_digit(c)) {
-    return read2int(c - /* '0' */48 | 0, (function (n) {
+    return read2int(c - /* '0' */48 | 0, ((n) => {
       return k(Char.chr(n));
     }), t);
   } else {
@@ -469,7 +469,7 @@ function escaped(k, t) {
 
 function read2int(i, k, t) {
   if (t.i === t.len) {
-    return _refill(t, (function (extra) {
+    return _refill(t, ((extra) => {
       return read2int(i, k, extra);
     }), _error_eof);
   }
@@ -483,7 +483,7 @@ function read2int(i, k, t) {
 
 function read1int(i, k, t) {
   if (t.i === t.len) {
-    return _refill(t, (function (extra) {
+    return _refill(t, ((extra) => {
       return read1int(i, k, extra);
     }), _error_eof);
   }
@@ -498,7 +498,7 @@ function read1int(i, k, t) {
 function skip_comment(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, (function (extra) {
+      return _refill(t, ((extra) => {
         return skip_comment(k, extra);
       }), _error_eof);
     }
@@ -513,9 +513,9 @@ function skip_comment(k, t) {
 function expr_or_end(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, (function (extra) {
+      return _refill(t, ((extra) => {
         return expr_or_end(k, extra);
-      }), (function (param) {
+      }), ((param) => {
         return "End";
       }));
     }
@@ -534,7 +534,7 @@ function expr_or_end(k, t) {
 }
 
 function next(t) {
-  return expr_or_end((function (param, x) {
+  return expr_or_end(((param, x) => {
     return {
       NAME: "Ok",
       VAL: x
@@ -547,7 +547,7 @@ function parse_string(s) {
   let stop = {
     contents: false
   };
-  let refill = function (bytes, i, _len) {
+  let refill = (bytes, i, _len) => {
     if (stop.contents) {
       return 0;
     } else {

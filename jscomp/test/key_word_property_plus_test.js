@@ -17,7 +17,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: x,
@@ -34,7 +34,7 @@ eq("File \"key_word_property_plus_test.res\", line 10, characters 2-9", [
   2,
   3,
   4
-].reduce((function (prim0, prim1) {
+].reduce(((prim0, prim1) => {
   return prim0 + prim1 | 0;
 }), 0), ((Global_mangles.$$__dirname + Global_mangles.$$__filename | 0) + Global_mangles.$$exports | 0) + Global_mangles.$$require | 0);
 

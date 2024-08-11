@@ -11,7 +11,7 @@ function f(H) {
   let tbl = H.create(17);
   H.add(tbl, 1, /* '1' */49);
   H.add(tbl, 2, /* '2' */50);
-  let extra = H.fold((function (k, v, acc) {
+  let extra = H.fold(((k, v, acc) => {
     return {
       hd: [
         k,
@@ -20,7 +20,7 @@ function f(H) {
       tl: acc
     };
   }), tbl, /* [] */0);
-  return List.sort((function (param, param$1) {
+  return List.sort(((param, param$1) => {
     return Caml.int_compare(param[0], param$1[0]);
   }), extra);
 }
@@ -33,7 +33,7 @@ function g(H, count) {
   for (let i$1 = 0; i$1 <= count; ++i$1) {
     H.replace(tbl, (i$1 << 1), String(i$1));
   }
-  let v = H.fold((function (k, v, acc) {
+  let v = H.fold(((k, v, acc) => {
     return {
       hd: [
         k,
@@ -42,7 +42,7 @@ function g(H, count) {
       tl: acc
     };
   }), tbl, /* [] */0);
-  return $$Array.of_list(List.sort((function (param, param$1) {
+  return $$Array.of_list(List.sort(((param, param$1) => {
     return Caml.int_compare(param[0], param$1[0]);
   }), v));
 }
@@ -60,7 +60,7 @@ let Int_hash = Hashtbl.Make({
 
 let suites_0 = [
   "simple",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: {
@@ -84,10 +84,10 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "more_iterations",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Eq",
-        _0: $$Array.init(1001, (function (i) {
+        _0: $$Array.init(1001, ((i) => {
           return [
             (i << 1),
             String(i)

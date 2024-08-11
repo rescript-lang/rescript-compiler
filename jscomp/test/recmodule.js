@@ -6,7 +6,7 @@ let Caml_module = require("../../lib/js/caml_module.js");
 let Entity = {};
 
 function MakeLayer(Deps) {
-  let getLight = function (id) {
+  let getLight = (id) => {
     return Deps.presentLight({
       id: id,
       name: "Light 1"
@@ -22,10 +22,10 @@ let UseCase = {
 };
 
 function MakeLayer$1(Deps, UC) {
-  let presentLight = function (light) {
+  let presentLight = (light) => {
     return Deps.presentJson(light, 200);
   };
-  let handleGetLight = function (req) {
+  let handleGetLight = (req) => {
     return UC.getLight(req.params.id);
   };
   return {
@@ -39,7 +39,7 @@ let Adapter = {
 };
 
 function MakeLayer$2(Deps) {
-  let presentJson = function (json, status) {
+  let presentJson = (json, status) => {
     throw new Error("Assert_failure", {
       cause: {
         RE_EXN_ID: "Assert_failure",
@@ -51,7 +51,7 @@ function MakeLayer$2(Deps) {
       }
     });
   };
-  let routes = function () {
+  let routes = () => {
     return [[
         "/lights",
         Deps.handleGetLight

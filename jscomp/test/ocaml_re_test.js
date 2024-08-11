@@ -31,7 +31,7 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
+      (() => {
         return {
           TAG: "Eq",
           _0: x,
@@ -790,7 +790,7 @@ function rename(ids, x) {
     case "Alt" :
       return mk_expr(ids, {
         TAG: "Alt",
-        _0: List.map((function (extra) {
+        _0: List.map(((extra) => {
           return rename(ids, extra);
         }), l._0)
       });
@@ -1001,8 +1001,8 @@ function reset_table(a) {
 }
 
 function mark_used_indices(tbl) {
-  return function (extra) {
-    return List.iter((function (x) {
+  return (extra) => {
+    return List.iter(((x) => {
       switch (x.TAG) {
         case "TSeq" :
           return mark_used_indices(tbl)(x._0);
@@ -1010,7 +1010,7 @@ function mark_used_indices(tbl) {
         case "TMatch" :
           break;
       }
-      List.iter((function (param) {
+      List.iter(((param) => {
         let i = param[1];
         if (i >= 0) {
           return Caml_array.set(tbl, i, true);
@@ -1045,7 +1045,7 @@ function free_index(tbl_ref, l) {
 }
 
 function remove_matches(extra) {
-  return List.filter((function (x) {
+  return List.filter(((x) => {
     switch (x.TAG) {
       case "TSeq" :
       case "TExp" :
@@ -1198,7 +1198,7 @@ function set_idx(idx, x) {
 
 function filter_marks(b, e, marks) {
   return {
-    marks: List.filter((function (param) {
+    marks: List.filter(((param) => {
       let i = param[0];
       if (i < b) {
         return true;
@@ -1243,7 +1243,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
     case "Rep" :
       let kind = s._1;
       let y$p$1 = delta_1(marks, c, next_cat, prev_cat, s._2, /* [] */0);
-      let marks$p = first((function (x) {
+      let marks$p = first(((x) => {
         switch (x.TAG) {
           case "TSeq" :
           case "TExp" :
@@ -1356,7 +1356,7 @@ function delta_2(marks, c, next_cat, prev_cat, l, rem) {
 }
 
 function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
-  let marks = first((function (x) {
+  let marks = first(((x) => {
     switch (x.TAG) {
       case "TSeq" :
       case "TExp" :
@@ -1409,11 +1409,11 @@ function delta(tbl_ref, next_cat, char, st) {
 }
 
 function flatten_match(m) {
-  let ma = List.fold_left((function (ma, param) {
+  let ma = List.fold_left(((ma, param) => {
     return Caml.int_max(ma, param[0]);
   }), -1, m);
   let res = Caml_array.make(ma + 1 | 0, -1);
-  List.iter((function (param) {
+  List.iter(((param) => {
     Caml_array.set(res, param[0], param[1]);
   }), m);
   return res;
@@ -1747,7 +1747,7 @@ function trans_set(cache, cm, s) {
   } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
-      let l = List.fold_right((function (param, l) {
+      let l = List.fold_right(((param, l) => {
         return union(seq(Caml_bytes.get(cm, param[0]), Caml_bytes.get(cm, param[1])), l);
       }), s, /* [] */0);
       cache.contents = add(v, l, cache.contents);
@@ -1795,7 +1795,7 @@ function is_charset(_x) {
 
 function split(s, cm) {
   let _t = s;
-  let f = function (i, j) {
+  let f = (i, j) => {
     Caml_bytes.set(cm, i, /* '\001' */1);
     Caml_bytes.set(cm, j + 1 | 0, /* '\001' */1);
   };
@@ -1848,7 +1848,7 @@ function colorize(c, regexp) {
   let lnl = {
     contents: false
   };
-  let colorize$1 = function (_regexp) {
+  let colorize$1 = (_regexp) => {
     while (true) {
       let regexp = _regexp;
       if (typeof regexp !== "object") {
@@ -2408,7 +2408,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             ];
           }
           return [
-            alt(ids, List.map((function (r$p) {
+            alt(ids, List.map(((r$p) => {
               let match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$p);
               return enforce_kind(ids, kind, match[1], match[0]);
             }), merged_sequences)),
@@ -2422,7 +2422,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
           let cr = match$1[0];
           let rem;
           if (j !== undefined) {
-            let f = greedy === "Non_greedy" ? (function (rem) {
+            let f = greedy === "Non_greedy" ? ((rem) => {
                 return alt(ids, {
                   hd: mk_expr(ids, "Eps"),
                   tl: {
@@ -2430,7 +2430,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
                     tl: /* [] */0
                   }
                 });
-              }) : (function (rem) {
+              }) : ((rem) => {
                 return alt(ids, {
                   hd: seq$1(ids, kind$p, rename(ids, cr), rem),
                   tl: {
@@ -2444,7 +2444,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             rem = rep(ids, greedy, kind$p, cr);
           }
           return [
-            iter(i, (function (rem) {
+            iter(i, ((rem) => {
               return seq$1(ids, kind$p, rename(ids, cr), rem);
             }), rem),
             kind
@@ -2596,12 +2596,12 @@ function handle_case(_ign_case, _x) {
       case "Sequence" :
         return {
           TAG: "Sequence",
-          _0: List.map((function (extra) {
+          _0: List.map(((extra) => {
             return handle_case(ign_case, extra);
           }), x._0)
         };
       case "Alternative" :
-        let l$p = List.map((function (extra) {
+        let l$p = List.map(((extra) => {
           return handle_case(ign_case, extra);
         }), x._0);
         if (is_charset({
@@ -2610,7 +2610,7 @@ function handle_case(_ign_case, _x) {
           })) {
           return {
             TAG: "Set",
-            _0: List.fold_left((function (s, r) {
+            _0: List.fold_left(((s, r) => {
               return union(s, as_set(r));
             }), /* [] */0, l$p)
           };
@@ -2683,22 +2683,22 @@ function handle_case(_ign_case, _x) {
         _ign_case = true;
         continue;
       case "Intersection" :
-        let l$p$1 = List.map((function (r) {
+        let l$p$1 = List.map(((r) => {
           return handle_case(ign_case, r);
         }), x._0);
         return {
           TAG: "Set",
-          _0: List.fold_left((function (s, r) {
+          _0: List.fold_left(((s, r) => {
             return inter(s, as_set(r));
           }), cany, l$p$1)
         };
       case "Complement" :
-        let l$p$2 = List.map((function (r) {
+        let l$p$2 = List.map(((r) => {
           return handle_case(ign_case, r);
         }), x._0);
         return {
           TAG: "Set",
-          _0: diff(cany, List.fold_left((function (s, r) {
+          _0: diff(cany, List.fold_left(((s, r) => {
             return union(s, as_set(r));
           }), /* [] */0, l$p$2))
         };
@@ -3332,21 +3332,21 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     contents: 0
   };
   let l = s.length;
-  let test = function (c) {
+  let test = (c) => {
     if (i.contents !== l) {
       return Caml_string.get(s, i.contents) === c;
     } else {
       return false;
     }
   };
-  let accept = function (c) {
+  let accept = (c) => {
     let r = test(c);
     if (r) {
       i.contents = i.contents + 1 | 0;
     }
     return r;
   };
-  let accept_s = function (s$p) {
+  let accept_s = (s$p) => {
     let len = s$p.length;
     try {
       for (let j = 0; j < len; ++j) {
@@ -3379,12 +3379,12 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       });
     }
   };
-  let get = function () {
+  let get = () => {
     let r = Caml_string.get(s, i.contents);
     i.contents = i.contents + 1 | 0;
     return r;
   };
-  let greedy_mod = function (r) {
+  let greedy_mod = (r) => {
     let gr = accept(/* '?' */63);
     let gr$1 = ungreedy ? !gr : gr;
     if (gr$1) {
@@ -3401,7 +3401,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       };
     }
   };
-  let regexp$p = function (_left) {
+  let regexp$p = (_left) => {
     while (true) {
       let left = _left;
       if (!accept(/* '|' */124)) {
@@ -3417,7 +3417,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       continue;
     };
   };
-  let branch$p = function (_left) {
+  let branch$p = (_left) => {
     while (true) {
       let left = _left;
       if (i.contents === l || test(/* '|' */124) || test(/* ')' */41)) {
@@ -3430,7 +3430,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       continue;
     };
   };
-  let atom = function () {
+  let atom = () => {
     if (accept(/* '.' */46)) {
       if (dotall) {
         return any;
@@ -3693,7 +3693,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       };
     }
   };
-  let integer = function () {
+  let integer = () => {
     if (i.contents === l) {
       return;
     }
@@ -3726,7 +3726,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       };
     }
   };
-  let piece = function () {
+  let piece = () => {
     let r = atom();
     if (accept(/* '*' */42)) {
       return greedy_mod(repn(r, 0, undefined));
@@ -3762,7 +3762,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     i.contents = i.contents - 1 | 0;
     return r;
   };
-  let char = function () {
+  let char = () => {
     if (i.contents === l) {
       throw new Error(Parse_error, {
         cause: {
@@ -4066,7 +4066,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       };
     }
   };
-  let bracket = function (_s) {
+  let bracket = (_s) => {
     while (true) {
       let s = _s;
       if (s !== /* [] */0 && accept(/* ']' */93)) {
@@ -4147,10 +4147,10 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       continue;
     };
   };
-  let branch = function () {
+  let branch = () => {
     return branch$p(/* [] */0);
   };
-  let comment = function () {
+  let comment = () => {
     while (true) {
       if (accept(/* ')' */41)) {
         return epsilon;
@@ -4172,7 +4172,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
 
 function re(flagsOpt, pat) {
   let flags = flagsOpt !== undefined ? flagsOpt : /* [] */0;
-  let opts = List.map((function (x) {
+  let opts = List.map(((x) => {
     if (x === "CASELESS") {
       return "Caseless";
     } else if (x === "ANCHORED") {

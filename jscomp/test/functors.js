@@ -3,10 +3,10 @@
 
 
 function O(X) {
-  let cow = function (x) {
+  let cow = (x) => {
     return X.foo(x);
   };
-  let sheep = function (x) {
+  let sheep = (x) => {
     return 1 + X.foo(x) | 0;
   };
   return {
@@ -16,10 +16,10 @@ function O(X) {
 }
 
 function F(X, Y) {
-  let cow = function (x) {
+  let cow = (x) => {
     return Y.foo(X.foo(x));
   };
-  let sheep = function (x) {
+  let sheep = (x) => {
     return 1 + Y.foo(X.foo(x)) | 0;
   };
   return {
@@ -29,7 +29,7 @@ function F(X, Y) {
 }
 
 function F1(X, Y) {
-  let sheep = function (x) {
+  let sheep = (x) => {
     return 1 + Y.foo(X.foo(x)) | 0;
   };
   return {
@@ -38,7 +38,7 @@ function F1(X, Y) {
 }
 
 function F2(X, Y) {
-  let sheep = function (x) {
+  let sheep = (x) => {
     return 1 + Y.foo(X.foo(x)) | 0;
   };
   return {
@@ -47,8 +47,8 @@ function F2(X, Y) {
 }
 
 let M = {
-  F: (function (funarg, funarg$1) {
-    let sheep = function (x) {
+  F: ((funarg, funarg$1) => {
+    let sheep = (x) => {
       return 1 + funarg$1.foo(funarg.foo(x)) | 0;
     };
     return {

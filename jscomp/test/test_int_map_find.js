@@ -138,7 +138,7 @@ function add(x, data, param) {
   }
 }
 
-List.fold_left((function (acc, param) {
+List.fold_left(((acc, param) => {
   return add(param[0], param[1], acc);
 }), "Empty", {
   hd: [

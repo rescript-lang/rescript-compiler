@@ -59,7 +59,7 @@ function to_list(s) {
 
 let suites_0 = [
   "lexer_stream_genlex",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: {

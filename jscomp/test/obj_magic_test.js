@@ -9,7 +9,7 @@ function is_block(x) {
 
 let suites_0 = [
   "is_block_test1",
-  (function (param) {
+  ((param) => {
     return {
       TAG: "Eq",
       _0: false,
@@ -21,7 +21,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "is_block_test2",
-    (function (param) {
+    ((param) => {
       return {
         TAG: "Eq",
         _0: true,
@@ -35,7 +35,7 @@ let suites_1 = {
   tl: {
     hd: [
       "is_block_test3",
-      (function (param) {
+      ((param) => {
         return {
           TAG: "Eq",
           _0: true,
@@ -46,7 +46,7 @@ let suites_1 = {
     tl: {
       hd: [
         "is_block_test4",
-        (function (param) {
+        ((param) => {
           return {
             TAG: "Eq",
             _0: false,

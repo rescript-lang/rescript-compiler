@@ -57,7 +57,7 @@ function testInstantiateTypeParameter(x) {
 
 let currentTime = new Date();
 
-let optFunction = (function () {
+let optFunction = (() => {
   return 3;
 });
 

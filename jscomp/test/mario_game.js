@@ -948,7 +948,7 @@ function update_player(player, keys, context) {
   let prev_jumping = player.jumping;
   let prev_dir = player.dir;
   let prev_vx = Math.abs(player.vel.x);
-  List.iter((function (extra) {
+  List.iter(((extra) => {
     let lr_acc = player.vel.x * 0.2;
     switch (extra) {
       case "CLeft" :
@@ -2085,7 +2085,7 @@ function process_collision(dir, c1, c2, state) {
 
 function broad_phase(collid, all_collids, state) {
   let obj = collid._2;
-  return List.filter((function (c) {
+  return List.filter(((c) => {
     if (in_viewport(state.vpt, obj.pos) || is_player(collid)) {
       return true;
     } else {
@@ -2205,7 +2205,7 @@ function translate_keys() {
     hd: ctrls_0,
     tl: ctrls_1
   };
-  return List.fold_left((function (a, x) {
+  return List.fold_left(((a, x) => {
     if (x[0]) {
       return {
         hd: x[1],
@@ -2273,7 +2273,7 @@ function update_loop(canvas, param, map_dim) {
     game_over: false
   };
   state.ctx.scale(1, 1);
-  let update_helper = function (time, state, player, objs, parts) {
+  let update_helper = (time, state, player, objs, parts) => {
     if (state.game_over === true) {
       return game_win(state.ctx);
     }
@@ -2299,10 +2299,10 @@ function update_loop(canvas, param, map_dim) {
       multiplier: state.multiplier,
       game_over: state.game_over
     };
-    List.iter((function (obj) {
+    List.iter(((obj) => {
       run_update_collid(state$1, obj, objs);
     }), objs);
-    List.iter((function (part) {
+    List.iter(((part) => {
       process(part);
       let x = part.pos.x - state$1.vpt.pos.x;
       let y = part.pos.y - state$1.vpt.pos.y;
@@ -2321,7 +2321,7 @@ function update_loop(canvas, param, map_dim) {
     }), parts);
     fps(canvas, fps$1);
     hud(canvas, state$1.score, state$1.coins);
-    requestAnimationFrame(function (t) {
+    requestAnimationFrame((t) => {
       update_helper(t, state$1, player$1, collid_objs.contents, particles.contents);
     });
   };
@@ -3308,11 +3308,11 @@ function inc_counter(param) {
 }
 
 function preload(param) {
-  return List.map((function (img_src) {
+  return List.map(((img_src) => {
     let img_src$1 = "sprites/" + img_src;
     let img = document.createElement("img");
     img.src = img_src$1;
-    img.addEventListener("load", (function (ev) {
+    img.addEventListener("load", ((ev) => {
       inc_counter();
       return true;
     }), true);
@@ -3331,7 +3331,7 @@ function preload(param) {
   });
 }
 
-window.onload = (function (param) {
+window.onload = ((param) => {
   preload();
   return true;
 });
