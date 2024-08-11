@@ -408,9 +408,9 @@ and pp_function ~return_unit ~async ~is_method ~need_paren ?directive cxt (f : P
                 return_sp f;
                 P.string f (L.function_ ~async ~arrow);
                 param_body ()
-            | No_name { single_arg } ->
+            | No_name _ ->
                 (* see # 1692, add a paren for annoymous function for safety  *)
-                P.cond_paren_group f (need_paren && not single_arg) (fun _ ->
+                P.cond_paren_group f (need_paren) (fun _ ->
                     P.string f (L.function_ ~async ~arrow);
                     param_body ())
             | Name_non_top x ->
