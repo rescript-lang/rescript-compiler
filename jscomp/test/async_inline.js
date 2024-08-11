@@ -10,17 +10,17 @@ async function willBeInlined() {
 let inlined = willBeInlined();
 
 function wrapSomethingAsync() {
-  ((async (param) => {
-      let test = await Promise.resolve("Test");
-      console.log(test);
-    })(777));
+  (async (param) => {
+    let test = await Promise.resolve("Test");
+    console.log(test);
+  })(777);
 }
 
 function wrapSomethingAsync2() {
-  ((async () => {
-      let test = await Promise.resolve("Test");
-      console.log(test);
-    })());
+  (async () => {
+    let test = await Promise.resolve("Test");
+    console.log(test);
+  })();
 }
 
 async function doSomethingAsync(someAsyncFunction) {

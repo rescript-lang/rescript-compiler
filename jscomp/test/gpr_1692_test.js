@@ -2,8 +2,8 @@
 'use strict';
 
 
-(((f) => {
-    return 0;
-  })(""));
+((f) => {
+  return 0;
+})("");
 
 /*  Not a pure module */
