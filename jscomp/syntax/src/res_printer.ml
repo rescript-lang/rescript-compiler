@@ -4737,15 +4737,15 @@ and print_arguments ~state ?(partial = false)
     Doc.concat [Doc.lparen; arg_doc; Doc.rparen]
   | args ->
     (* Avoid printing trailing comma when there is ... in function application *)
-    let hasDotDotDot, printed_args =
+    let has_partial_attr, printed_args =
       List.fold_right
         (fun arg (flag, acc) ->
           let _, expr = arg in
-          let hasDotDotDot =
+          let has_partial_attr =
             ParsetreeViewer.has_partial_attribute expr.Parsetree.pexp_attributes
           in
           let doc = print_argument ~state arg cmt_tbl in
-          (flag || hasDotDotDot, doc :: acc))
+          (flag || has_partial_attr, doc :: acc))
         args (false, [])
     in
     Doc.group
@@ -4758,7 +4758,7 @@ and print_arguments ~state ?(partial = false)
                   Doc.soft_line;
                   Doc.join ~sep:(Doc.concat [Doc.comma; Doc.line]) printed_args;
                 ]);
-           (if partial || hasDotDotDot then Doc.nil else Doc.trailing_comma);
+           (if partial || has_partial_attr then Doc.nil else Doc.trailing_comma);
            Doc.soft_line;
            Doc.rparen;
          ])
