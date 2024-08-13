@@ -4730,6 +4730,20 @@ and print_arguments ~state ?(partial = false)
     in
     Doc.concat [Doc.lparen; arg_doc; Doc.rparen]
   | args ->
+    (* Avoid printing trailing comma when there is ... in function application *)
+    let hasDotDotDot, printed_args =
+      List.fold_right
+        (fun arg (flag, acc) ->
+          let arg_lbl, _ = arg in
+          let hasDotDotDot =
+            match arg_lbl with
+            | Asttypes.Labelled "..." -> true
+            | _ -> false
+          in
+          let doc = print_argument ~state arg cmt_tbl in
+          (flag || hasDotDotDot, doc :: acc))
+        args (false, [])
+    in
     Doc.group
       (Doc.concat
          [
@@ -4738,13 +4752,9 @@ and print_arguments ~state ?(partial = false)
              (Doc.concat
                 [
                   Doc.soft_line;
-                  Doc.join
-                    ~sep:(Doc.concat [Doc.comma; Doc.line])
-                    (List.map
-                       (fun arg -> print_argument ~state arg cmt_tbl)
-                       args);
+                  Doc.join ~sep:(Doc.concat [Doc.comma; Doc.line]) printed_args;
                 ]);
-           (if partial then Doc.nil else Doc.trailing_comma);
+           (if partial || hasDotDotDot then Doc.nil else Doc.trailing_comma);
            Doc.soft_line;
            Doc.rparen;
          ])
