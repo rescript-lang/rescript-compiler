@@ -57,6 +57,13 @@ let process_partial_app_attribute attrs =
   in
   process false [] attrs
 
+let has_partial_attribute attrs =
+  List.exists
+    (function
+      | {Location.txt = "res.partial"}, _ -> true
+      | _ -> false)
+    attrs
+
 type function_attributes_info = {async: bool; attributes: Parsetree.attributes}
 
 let process_function_attributes attrs =

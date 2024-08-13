@@ -4146,7 +4146,13 @@ and print_pexp_apply ~state expr cmt_tbl =
     let partial, attrs = ParsetreeViewer.process_partial_app_attribute attrs in
     let args =
       if partial then
-        let dummy = Ast_helper.Exp.constant (Ast_helper.Const.int 0) in
+        let loc =
+          {Asttypes.txt = "res.partial"; Asttypes.loc = expr.pexp_loc}
+        in
+        let attr = (loc, Parsetree.PTyp (Ast_helper.Typ.any ())) in
+        let dummy =
+          Ast_helper.Exp.constant ~attrs:[attr] (Ast_helper.Const.int 0)
+        in
         args @ [(Asttypes.Labelled "...", dummy)]
       else args
     in
@@ -4734,11 +4740,9 @@ and print_arguments ~state ?(partial = false)
     let hasDotDotDot, printed_args =
       List.fold_right
         (fun arg (flag, acc) ->
-          let arg_lbl, _ = arg in
+          let _, expr = arg in
           let hasDotDotDot =
-            match arg_lbl with
-            | Asttypes.Labelled "..." -> true
-            | _ -> false
+            ParsetreeViewer.has_partial_attribute expr.Parsetree.pexp_attributes
           in
           let doc = print_argument ~state arg cmt_tbl in
           (flag || hasDotDotDot, doc :: acc))
