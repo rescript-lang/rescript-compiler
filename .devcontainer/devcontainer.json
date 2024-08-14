@@ -1,0 +1,17 @@
+{
+  "name": "ReScript Compiler",
+  "build": {
+    "context": "..",
+    "dockerfile": "../docker/Dockerfile"
+  },
+  "features": {},
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "chenglou92.rescript-vscode",
+        "biomejs.biome"
+      ]
+    }
+  },
+  "postCreateCommand": ".devcontainer/postCreate.sh"
+}
