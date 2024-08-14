@@ -12,7 +12,10 @@
       "extensions": [
         "chenglou92.rescript-vscode",
         "biomejs.biome"
-      ]
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
     }
   },
   "postCreateCommand": ".devcontainer/postCreate.sh",
