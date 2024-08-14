@@ -15,5 +15,6 @@
       ]
     }
   },
-  "postCreateCommand": ".devcontainer/postCreate.sh"
+  "postCreateCommand": ".devcontainer/postCreate.sh",
+  "remoteUser": "devuser"
 }
