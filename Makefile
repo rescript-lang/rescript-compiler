@@ -89,6 +89,9 @@ clean:
 
 clean-all: clean clean-gentype
 
+dev-container:
+	docker build -t rescript-dev-container docker
+
 .DEFAULT_GOAL := build
 
-.PHONY: build watch rewatch ninja bench dce test test-syntax test-syntax-roundtrip test-gentype test-all lib playground playground-cmijs playground-release artifacts format checkformat clean-gentype clean clean-all
+.PHONY: build watch rewatch ninja bench dce test test-syntax test-syntax-roundtrip test-gentype test-all lib playground playground-cmijs playground-release artifacts format checkformat clean-gentype clean clean-all dev-container
