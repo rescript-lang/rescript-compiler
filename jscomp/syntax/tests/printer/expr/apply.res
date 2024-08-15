@@ -73,3 +73,37 @@ f(. {
 
 resolve(.)
 resolve(. ())
+
+let g =  f(
+  a => LongModuleName.functionWithAlongNameThatWrapsTheEditorToTheNextLinexxxxxxxxxxxxxxxxxxxxxx(a),
+  b,
+  c
+)
+
+let g =  f(
+  a => LongModuleName.functionWithAlongNameThatWrapsTheEditorToTheNextLinexxxxxxxxxxxxxxxxxxxxxx(a),
+  b,
+  c, 
+  ...
+)
+
+let g =  f(
+  a => LongModuleName.functionWithAlongNameThatWrapsTheEditorToTheNextLinexxxxxxxxxxxxxxxxxxxxxx(a),
+  b,
+  c => LongModuleName.functionWithAlongNameThatWrapsTheEditorToTheNextLinexxxxxxxxxxxxxxxxxxxxxx(d, ...),
+  ...
+)
+
+let g =  f(
+  a => LongModuleName.functionWithAlongNameThatWrapsTheEditorToTheNextLinexxxxxxxxxxxxxxxxxxxxxx(a, ...),
+  b,
+  c => LongModuleName.functionWithAlongNameThatWrapsTheEditorToTheNextLinexxxxxxxxxxxxxxxxxxxxxx(d),
+  ...
+)
+
+
+let g =  f(
+  a => LongModuleName.functionWithAlongNameThatWrapsTheEditorToTheNextLinexxxxxxxxxxxxxxxxxxxxxx(a),
+  b,
+  c => LongModuleName.functionWithAlongNameThatWrapsTheEditorToTheNextLinexxxxxxxxxxxxxxxxxxxxxx(d, ...)
+)

@@ -12,6 +12,8 @@
 
 # 11.1.4
 
+- Fix issue where long layout break added a trailing comma in partial application `...`. https://github.com/rescript-lang/rescript-compiler/pull/6949
+
 # 11.1.3
 
 #### :bug: Bug Fix

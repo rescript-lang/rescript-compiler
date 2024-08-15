@@ -29,6 +29,8 @@ type functionAttributesInfo = {
   attributes: Parsetree.attributes;
 }
 
+val hasPartialAttribute : Parsetree.attributes -> bool
+
 (* determines whether a function is async and/or uncurried based on the given attributes *)
 val processFunctionAttributes : Parsetree.attributes -> functionAttributesInfo
 

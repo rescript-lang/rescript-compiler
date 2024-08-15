@@ -72,6 +72,13 @@ let processUncurriedAppAttribute attrs =
   in
   process false [] attrs
 
+let hasPartialAttribute attrs =
+  List.exists
+    (function
+      | {Location.txt = "res.partial"}, _ -> true
+      | _ -> false)
+    attrs
+
 let processPartialAppAttribute attrs =
   let rec process partialApp acc attrs =
     match attrs with
