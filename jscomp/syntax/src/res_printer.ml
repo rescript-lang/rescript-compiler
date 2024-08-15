@@ -4146,7 +4146,13 @@ and print_pexp_apply ~state expr cmt_tbl =
     let partial, attrs = ParsetreeViewer.process_partial_app_attribute attrs in
     let args =
       if partial then
-        let dummy = Ast_helper.Exp.constant (Ast_helper.Const.int 0) in
+        let loc =
+          {Asttypes.txt = "res.partial"; Asttypes.loc = expr.pexp_loc}
+        in
+        let attr = (loc, Parsetree.PTyp (Ast_helper.Typ.any ())) in
+        let dummy =
+          Ast_helper.Exp.constant ~attrs:[attr] (Ast_helper.Const.int 0)
+        in
         args @ [(Asttypes.Labelled "...", dummy)]
       else args
     in
@@ -4730,6 +4736,18 @@ and print_arguments ~state ?(partial = false)
     in
     Doc.concat [Doc.lparen; arg_doc; Doc.rparen]
   | args ->
+    (* Avoid printing trailing comma when there is ... in function application *)
+    let has_partial_attr, printed_args =
+      List.fold_right
+        (fun arg (flag, acc) ->
+          let _, expr = arg in
+          let has_partial_attr =
+            ParsetreeViewer.has_partial_attribute expr.Parsetree.pexp_attributes
+          in
+          let doc = print_argument ~state arg cmt_tbl in
+          (flag || has_partial_attr, doc :: acc))
+        args (false, [])
+    in
     Doc.group
       (Doc.concat
          [
@@ -4738,13 +4756,9 @@ and print_arguments ~state ?(partial = false)
              (Doc.concat
                 [
                   Doc.soft_line;
-                  Doc.join
-                    ~sep:(Doc.concat [Doc.comma; Doc.line])
-                    (List.map
-                       (fun arg -> print_argument ~state arg cmt_tbl)
-                       args);
+                  Doc.join ~sep:(Doc.concat [Doc.comma; Doc.line]) printed_args;
                 ]);
-           (if partial then Doc.nil else Doc.trailing_comma);
+           (if partial || has_partial_attr then Doc.nil else Doc.trailing_comma);
            Doc.soft_line;
            Doc.rparen;
          ])

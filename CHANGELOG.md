@@ -23,6 +23,9 @@
   - Removed empty line at the end of `switch` statement
   - Removed empty `default` case from `switch` statement in the generated code
 
+#### :bug: Bug Fix
+- Fix issue where long layout break added a trailing comma in partial application `...`. https://github.com/rescript-lang/rescript-compiler/pull/6949
+
 # 12.0.0-alpha.1
 
 #### :rocket: New Feature
