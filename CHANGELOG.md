@@ -25,6 +25,7 @@
 
 #### :bug: Bug Fix
 - Fix issue where long layout break added a trailing comma in partial application `...`. https://github.com/rescript-lang/rescript-compiler/pull/6949
+- Fix incorrect format of function under unary operator. https://github.com/rescript-lang/rescript-compiler/pull/6953
 
 # 12.0.0-alpha.1
 
