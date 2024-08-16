@@ -21,7 +21,7 @@ let x = apply(arg1, arg2).field
 let x = apply(. arg1, arg2).field
 let x = (-1).x
 let x = (!true).x
-//let x = (x => print(x)).x
+let x = (x => print(x)).x
 let x = (switch x {
   | Blue => ()
   | Yello => ()
