@@ -111,6 +111,11 @@ let unaryExprOperand expr =
       Parenthesized
     | _ when ParsetreeViewer.hasAwaitAttribute expr.pexp_attributes ->
       Parenthesized
+    | {pexp_desc = Pexp_construct ({txt = Lident "Function$"}, Some expr)}
+      when ParsetreeViewer.isUnderscoreApplySugar expr ->
+      Nothing
+    | {pexp_desc = Pexp_construct ({txt = Lident "Function$"}, Some _)} ->
+      Parenthesized
     | _ -> Nothing)
 
 let binaryExprOperand ~isLhs expr =
@@ -275,6 +280,11 @@ let fieldExpr expr =
     } ->
       Parenthesized
     | _ when ParsetreeViewer.hasAwaitAttribute expr.pexp_attributes ->
+      Parenthesized
+    | {pexp_desc = Pexp_construct ({txt = Lident "Function$"}, Some expr)}
+      when ParsetreeViewer.isUnderscoreApplySugar expr ->
+      Nothing
+    | {pexp_desc = Pexp_construct ({txt = Lident "Function$"}, Some _)} ->
       Parenthesized
     | _ -> Nothing)
 
