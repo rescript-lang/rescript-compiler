@@ -66,3 +66,5 @@ let () = {
 
 let x = (!truths)[0]
 (!streets)[0] = "foo-street" 
+
+!(arg => doStuffWith(arg))
