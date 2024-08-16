@@ -13,6 +13,7 @@
 # 11.1.4
 
 - Fix issue where long layout break added a trailing comma in partial application `...`. https://github.com/rescript-lang/rescript-compiler/pull/6949
+- Fix incorrect format of function under unary operator. https://github.com/rescript-lang/rescript-compiler/pull/6953
 
 # 11.1.3
 
