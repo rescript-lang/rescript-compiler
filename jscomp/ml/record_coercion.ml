@@ -2,7 +2,7 @@ let check_record_fields ?repr1 ?repr2 (fields1 : Types.label_declaration list)
     (fields2 : Types.label_declaration list) =
   let field_is_optional id repr =
     match repr with
-    | Some (Types.Record_optional_labels lbls) -> List.mem (Ident.name id) lbls
+    | Some (Types.Record_regular {has_optional = true; optional_labels = lbls}) -> List.mem (Ident.name id) lbls
     | _ -> false
   in
   let violation = ref false in

@@ -3670,7 +3670,7 @@ let rec subtype_rec env trace t1 t2 cstrs =
             else (trace, t1, t2, !univar_pairs)::cstrs
       | (_, _, {type_kind=Type_record (fields1, repr1)}), (_, _, {type_kind=Type_record (fields2, repr2)}) ->
         let same_repr = match repr1, repr2 with
-          | (Record_regular | Record_optional_labels _), (Record_regular | Record_optional_labels _) ->
+          | (Record_regular _), (Record_regular _) ->
             true (* handled in the fields checks *)
           | Record_unboxed b1, Record_unboxed b2 -> b1 = b2
           | Record_inlined _, Record_inlined _ -> repr1 = repr2

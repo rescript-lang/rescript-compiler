@@ -90,7 +90,8 @@ let traslate_declaration_kind ~config ~loc ~output_file_relative ~resolver
       label_declarations =
     let is_optional l =
       match record_representation with
-      | Types.Record_optional_labels lbls -> List.mem l lbls
+      | Types.Record_regular {has_optional = true; optional_labels = lbls} ->
+        List.mem l lbls
       | _ -> false
     in
     let field_translations =
@@ -251,7 +252,9 @@ let traslate_declaration_kind ~config ~loc ~output_file_relative ~resolver
                  [
                    label_declarations
                    |> translate_label_declarations ~inline:true
-                        ~record_representation:Types.Record_regular;
+                        ~record_representation:
+                          (Types.Record_regular
+                             {has_optional = false; optional_labels = []});
                  ]
              in
              let arg_types =

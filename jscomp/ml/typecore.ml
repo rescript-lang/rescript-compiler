@@ -311,13 +311,13 @@ let extract_concrete_variant env ty =
 
 let has_optional_labels ld =
   match ld.lbl_repres with
-  | Record_optional_labels _ -> true
+  | Record_regular {has_optional} -> has_optional
   | Record_inlined {optional_labels} -> optional_labels <> []
   | _ -> false
 
 let label_is_optional ld =
   match ld.lbl_repres with
-  | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
+  | Record_regular {has_optional = true; optional_labels} -> Ext_list.mem_string optional_labels ld.lbl_name
   | Record_inlined {optional_labels} -> Ext_list.mem_string optional_labels ld.lbl_name
   | _ -> false
 
@@ -2293,7 +2293,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
         | (_, { lbl_all = label_descriptions; lbl_repres = representation}, _) :: _, _ -> label_descriptions, representation
         | [], Some (representation) when lid_sexp_list = [] ->
             let optional_labels = match representation with
-            | Record_optional_labels optional_labels -> optional_labels
+            | Record_regular {optional_labels}
             | Record_inlined {optional_labels} -> optional_labels
             | _ -> [] in
             let filter_missing (ld : Types.label_declaration) =
@@ -2309,7 +2309,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
             [||], representation
         | [], _ ->
           if fields = [] && repr_opt <> None then
-            [||], Record_optional_labels []
+            [||], Record_regular {has_optional = false; optional_labels = []}
           else
             raise(Error(loc, env, Empty_record_literal)) in
         let labels_missing = ref [] in

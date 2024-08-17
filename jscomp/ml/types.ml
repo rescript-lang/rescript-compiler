@@ -150,14 +150,15 @@ and type_kind =
   | Type_open
 
 and record_representation =
-  | Record_regular                        (* All fields are boxed / tagged *)
-  | Record_float_unused                   (* Was: all fields are floats. Now: unused *)
+  | Record_regular of {
+    has_optional: bool;                   (* true if optional_labels is non-empty. Needed for convinience to match on Record_regular with optional labels only *)
+    optional_labels : string list
+  }                                       (* All fields are boxed / tagged *)
   | Record_unboxed of bool                (* Unboxed single-field record, inlined or not *)
   | Record_inlined of                     (* Inlined record *)
-      { tag : int ; name : string; num_nonconsts : int; optional_labels : string list; attrs: Parsetree.attributes}
+      { tag : int ; name : string; num_nonconsts : int; optional_labels : string list; attrs: Parsetree.attributes }
   | Record_extension                      (* Inlined record under extension *)
-  | Record_optional_labels of string list (* List of optional labels *)
-
+  
 and label_declaration =
   {
     ld_id: Ident.t;
@@ -310,11 +311,10 @@ type label_description =
    }
 let same_record_representation x y =
   match x with
-  | Record_regular -> y = Record_regular
-  | Record_float_unused -> y = Record_float_unused
-  | Record_optional_labels lbls -> (
+  | Record_regular {optional_labels} -> (
       match y with
-      | Record_optional_labels lbls2 -> lbls = lbls2
+      | Record_regular y ->
+          optional_labels = y.optional_labels
       | _ -> false)
   | Record_inlined {tag; name; num_nonconsts; optional_labels} -> (
       match y with

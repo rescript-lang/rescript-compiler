@@ -216,7 +216,7 @@ let none = {desc = Ttuple []; level = -1; id = -1}
                                         (* Clearly ill-formed type *)
 let dummy_label =
   { lbl_name = ""; lbl_res = none; lbl_arg = none; lbl_mut = Immutable;
-    lbl_pos = (-1); lbl_all = [||]; lbl_repres = Record_regular;
+    lbl_pos = (-1); lbl_all = [||]; lbl_repres = Record_regular {has_optional = false; optional_labels = []};
     lbl_private = Public;
     lbl_loc = Location.none;
     lbl_attributes = [];

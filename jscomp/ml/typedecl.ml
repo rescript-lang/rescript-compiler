@@ -549,9 +549,10 @@ let transl_declaration ~type_record_as_object env sdecl id =
             in
             Ttype_record lbls, Type_record(lbls', if unbox then 
                 Record_unboxed false
-              else if optional_labels <> [] then 
-                Record_optional_labels optional_labels
-              else Record_regular), sdecl
+              else Record_regular {
+                has_optional = optional_labels <> [];
+                optional_labels = optional_labels
+              }), sdecl
           | None ->
              (* Could not find record type decl for ...t: assume t is an object type and this is syntax ambiguity *)
              type_record_as_object := true;
