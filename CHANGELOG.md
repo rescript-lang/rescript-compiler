@@ -22,6 +22,7 @@
   - Fixed tabulation for `throw new Error` bodies
   - Removed empty line at the end of `switch` statement
   - Removed empty `default` case from `switch` statement in the generated code
+- Optimised the Type Extension runtime code and removed trailing `/1` from `RE_EXN_ID` https://github.com/rescript-lang/rescript-compiler/pull/6958
 
 #### :bug: Bug Fix
 - Fix issue where long layout break added a trailing comma in partial application `...`. https://github.com/rescript-lang/rescript-compiler/pull/6949
