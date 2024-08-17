@@ -136,11 +136,6 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.eol lf
 
-      # see https://github.com/ocaml/setup-ocaml/issues/815
-      - name: "Windows: set SHELLOPTS=igncr"
-        if: runner.os == 'Windows'
-        run: echo "SHELLOPTS=igncr" >>"$GITHUB_ENV"
-            
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -160,12 +155,12 @@ jobs:
         with:
           # See https://github.com/ocaml/setup-ocaml/blob/b2105f9/packages/setup-ocaml/src/unix.ts#L9
           packages: bubblewrap darcs g++-multilib gcc-multilib mercurial musl-tools rsync
-          version: v1
+          version: v2
 
       # matrix.ocaml_compiler may contain commas
       - name: Get OPAM cache key
         shell: bash
-        run: echo "opam_cache_key=opam-env-v1-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}" | sed 's/,/-/g' >> $GITHUB_ENV
+        run: echo "opam_cache_key=opam-env-v2-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}" | sed 's/,/-/g' >> $GITHUB_ENV
 
       - name: Restore OPAM environment
         id: cache-opam-env
@@ -181,7 +176,7 @@ jobs:
           key: ${{ env.opam_cache_key }}
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
-        uses: ocaml/setup-ocaml@v3.0.0
+        uses: ocaml/setup-ocaml@v3.0.7
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
         with:
           opam-repositories: |
@@ -260,6 +255,11 @@ jobs:
           fi
         shell: bash
 
+      # see https://github.com/ocaml/setup-ocaml/issues/815
+      - name: "Windows: set SHELLOPTS=igncr"
+        if: runner.os == 'Windows'
+        run: echo "SHELLOPTS=igncr" >>"$GITHUB_ENV"
+          
       - name: Build compiler
         if: runner.os != 'Linux'
         run: opam exec -- dune build --display quiet --profile release
