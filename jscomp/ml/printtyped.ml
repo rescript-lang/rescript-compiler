@@ -386,9 +386,6 @@ and expression i ppf x =
   | Texp_assert (e) ->
       line i ppf "Texp_assert";
       expression i ppf e;
-  | Texp_lazy (e) ->
-      line i ppf "Texp_lazy";
-      expression i ppf e;
   | Texp_object () ->
       ()
   | Texp_pack me ->

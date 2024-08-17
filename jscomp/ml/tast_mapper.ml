@@ -305,8 +305,6 @@ let expr sub x =
         )
     | Texp_assert exp ->
         Texp_assert (sub.expr sub exp)
-    | Texp_lazy exp ->
-        Texp_lazy (sub.expr sub exp)
     | Texp_object () ->
         Texp_object ()
     | Texp_pack mexpr ->

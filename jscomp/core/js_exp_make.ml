@@ -254,7 +254,7 @@ let dummy_obj ?comment (info : Lam_tag_info.t) : t =
       { comment; expression_desc = Object [] }
   | Blk_tuple | Blk_module_export _ ->
       { comment; expression_desc = Array ([], Mutable) }
-  | Blk_some | Blk_some_not_nested | Blk_lazy_general -> assert false
+  | Blk_some | Blk_some_not_nested -> assert false
 
 (* TODO: complete
     pure ...

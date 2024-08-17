@@ -325,7 +325,6 @@ module MakeIterator(Iter : IteratorArgument) : sig
             iter_extension_constructor cd;
             iter_expression exp
         | Texp_assert exp -> iter_expression exp
-        | Texp_lazy exp -> iter_expression exp
         | Texp_object () ->
             ()
         | Texp_pack (mexpr) ->

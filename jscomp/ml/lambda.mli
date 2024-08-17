@@ -60,8 +60,7 @@ type tag_info =
 
   | Blk_some
   | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
-  | Blk_record_ext of {fields : string array; mutable_flag : mutable_flag}
-  | Blk_lazy_general    
+  | Blk_record_ext of {fields : string array; mutable_flag : mutable_flag}  
 
 val find_name :
   Parsetree.attribute -> Asttypes.label option
