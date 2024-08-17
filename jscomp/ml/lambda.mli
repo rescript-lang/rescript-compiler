@@ -179,7 +179,7 @@ type primitive =
   (* External call *)
   | Pccall of Primitive.description
   (* Exceptions *)
-  | Praise of raise_kind
+  | Praise
   (* Boolean operations *)
   | Psequand | Psequor | Pnot
   (* Integer operations *)
@@ -245,11 +245,6 @@ and value_kind =
 and boxed_integer = Primitive.boxed_integer =
     Pbigint | Pint32 | Pint64
 
-
-and raise_kind =
-  | Raise_regular
-  | Raise_reraise
-  | Raise_notrace
 
 type structured_constant =
     Const_base of constant
@@ -402,7 +397,6 @@ val staticfail : lambda (* Anticipated static failure *)
 val is_guarded: lambda -> bool
 val patch_guarded : lambda -> lambda -> lambda
 
-val raise_kind: raise_kind -> string
 val lam_of_loc : loc_kind -> Location.t -> lambda
 
 

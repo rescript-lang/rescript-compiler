@@ -317,9 +317,9 @@ let primitives_table =
       ("%obj_field", Parrayrefu);
       ("%obj_set_field", Parraysetu);
       ("%obj_is_int", Pisint);
-      ("%raise", Praise Raise_regular);
-      ("%reraise", Praise Raise_reraise);
-      ("%raise_notrace", Praise Raise_notrace);
+      ("%raise", Praise);
+      ("%reraise", Praise);
+      ("%raise_notrace", Praise);
       ("%sequand", Psequand);
       ("%sequor", Psequor);
       ("%boolnot", Pnot);
@@ -682,7 +682,7 @@ let assert_failed exp =
   in
   let fname = Filename.basename fname in
   Lprim
-    ( Praise Raise_regular,
+    ( Praise,
       [
         Lprim
           ( Pmakeblock Blk_extension,
@@ -781,15 +781,9 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
         transl_primitive_application e.exp_loc p e.exp_env prim_type args
       in
       match (prim, args) with
-      | Praise k, [ _ ] ->
+      | Praise, [ _ ] ->
           let targ = List.hd argl in
-          let k =
-            match (k, targ) with
-            | Raise_regular, Lvar id when Hashtbl.mem try_ids id ->
-                Raise_reraise
-            | _ -> k
-          in
-          wrap (Lprim (Praise k, [ targ ], e.exp_loc))
+          wrap (Lprim (Praise, [ targ ], e.exp_loc))
       | Ploc kind, [] -> lam_of_loc kind e.exp_loc
       | Ploc kind, [ arg1 ] ->
           let lam = lam_of_loc kind arg1.exp_loc in

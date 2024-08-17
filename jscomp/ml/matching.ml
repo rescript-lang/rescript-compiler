@@ -2918,7 +2918,7 @@ let partial_function loc () =
   let fname = 
     Filename.basename fname
   in   
-  Lprim(Praise Raise_regular, [Lprim(Pmakeblock(Blk_extension),
+  Lprim(Praise, [Lprim(Pmakeblock(Blk_extension),
           [transl_normal_path Predef.path_match_failure;
            Lconst(Const_block(Blk_tuple,
               [Const_base(Const_string (fname, None));
@@ -2931,7 +2931,7 @@ let for_function loc repr param pat_act_list partial =
 (* In the following two cases, exhaustiveness info is not available! *)
 let for_trywith param pat_act_list =
   compile_matching None
-    (fun () -> Lprim(Praise Raise_reraise, [param], Location.none))
+    (fun () -> Lprim(Praise, [param], Location.none))
     param pat_act_list Partial
 
 let simple_for_let loc param pat body =
