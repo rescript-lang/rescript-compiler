@@ -3,48 +3,43 @@
 
 let Belt_Int = require("../../lib/js/belt_Int.js");
 let Nodetest = require("node:test");
-let Nodeassert = require("node:assert");
-
-function eq(loc, a, b) {
-  Nodeassert.strictEqual(a, b, loc);
-}
+let Node_test_util = require("./node_test_util.js");
 
 Nodetest.describe("Belt.Int", () => {
   Nodetest.test("toFloat", () => {
-    eq("File \"belt_int_ntest.res\", line 9, characters 7-14", 1, 1.0);
-    eq("File \"belt_int_ntest.res\", line 10, characters 7-14", -1, -1.0);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 8, characters 7-14", 1, 1.0);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 9, characters 7-14", -1, -1.0);
   });
   Nodetest.test("fromFloat", () => {
-    eq("File \"belt_int_ntest.res\", line 14, characters 7-14", 1, 1);
-    eq("File \"belt_int_ntest.res\", line 15, characters 7-14", 1, 1);
-    eq("File \"belt_int_ntest.res\", line 16, characters 7-14", 1, 1);
-    eq("File \"belt_int_ntest.res\", line 17, characters 7-14", -1, -1);
-    eq("File \"belt_int_ntest.res\", line 18, characters 7-14", -1, -1);
-    eq("File \"belt_int_ntest.res\", line 19, characters 7-14", -1, -1);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 13, characters 7-14", 1, 1);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 14, characters 7-14", 1, 1);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 15, characters 7-14", 1, 1);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 16, characters 7-14", -1, -1);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 17, characters 7-14", -1, -1);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 18, characters 7-14", -1, -1);
   });
   Nodetest.test("fromString", () => {
-    eq("File \"belt_int_ntest.res\", line 23, characters 7-14", Belt_Int.fromString("1"), 1);
-    eq("File \"belt_int_ntest.res\", line 24, characters 7-14", Belt_Int.fromString("-1"), -1);
-    eq("File \"belt_int_ntest.res\", line 25, characters 7-14", Belt_Int.fromString("1.7"), 1);
-    eq("File \"belt_int_ntest.res\", line 26, characters 7-14", Belt_Int.fromString("-1.0"), -1);
-    eq("File \"belt_int_ntest.res\", line 27, characters 7-14", Belt_Int.fromString("-1.5"), -1);
-    eq("File \"belt_int_ntest.res\", line 28, characters 7-14", Belt_Int.fromString("-1.7"), -1);
-    eq("File \"belt_int_ntest.res\", line 29, characters 7-14", Belt_Int.fromString("not an int"), undefined);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 22, characters 7-14", Belt_Int.fromString("1"), 1);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 23, characters 7-14", Belt_Int.fromString("-1"), -1);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 24, characters 7-14", Belt_Int.fromString("1.7"), 1);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 25, characters 7-14", Belt_Int.fromString("-1.0"), -1);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 26, characters 7-14", Belt_Int.fromString("-1.5"), -1);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 27, characters 7-14", Belt_Int.fromString("-1.7"), -1);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 28, characters 7-14", Belt_Int.fromString("not an int"), undefined);
   });
   Nodetest.test("toString", () => {
-    eq("File \"belt_int_ntest.res\", line 33, characters 7-14", String(1), "1");
-    eq("File \"belt_int_ntest.res\", line 34, characters 7-14", String(-1), "-1");
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 32, characters 7-14", String(1), "1");
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 33, characters 7-14", String(-1), "-1");
   });
   Nodetest.test("operators", () => {
-    eq("File \"belt_int_ntest.res\", line 40, characters 7-14", 5, 5);
-    eq("File \"belt_int_ntest.res\", line 41, characters 7-14", -1, -1);
-    eq("File \"belt_int_ntest.res\", line 42, characters 7-14", 6, 6);
-    eq("File \"belt_int_ntest.res\", line 43, characters 7-14", 0, 0);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 39, characters 7-14", 5, 5);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 40, characters 7-14", -1, -1);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 41, characters 7-14", 6, 6);
+    Node_test_util.eq("File \"belt_int_ntest.res\", line 42, characters 7-14", 0, 0);
   });
 });
 
 let I;
 
 exports.I = I;
-exports.eq = eq;
 /*  Not a pure module */

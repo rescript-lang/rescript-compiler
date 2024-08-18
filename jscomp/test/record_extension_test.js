@@ -96,7 +96,7 @@ function u(f) {
   }
 }
 
-eq("File \"record_extension_test.res\", line 59, characters 3-10", u(function () {
+eq("File \"record_extension_test.res\", line 59, characters 3-10", u(() => {
   throw new Error(A, {
     cause: {
       RE_EXN_ID: A,
@@ -106,7 +106,7 @@ eq("File \"record_extension_test.res\", line 59, characters 3-10", u(function ()
   });
 }), 2);
 
-eq("File \"record_extension_test.res\", line 60, characters 3-10", u(function () {
+eq("File \"record_extension_test.res\", line 60, characters 3-10", u(() => {
   throw new Error(B, {
     cause: {
       RE_EXN_ID: B,
@@ -116,7 +116,7 @@ eq("File \"record_extension_test.res\", line 60, characters 3-10", u(function ()
   });
 }), 3);
 
-eq("File \"record_extension_test.res\", line 61, characters 3-10", u(function () {
+eq("File \"record_extension_test.res\", line 61, characters 3-10", u(() => {
   throw new Error(C, {
     cause: {
       RE_EXN_ID: C,
