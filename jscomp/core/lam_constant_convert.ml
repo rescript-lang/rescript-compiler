@@ -69,7 +69,7 @@ let rec convert_constant (const : Lambda.structured_constant) : Lam_constant.t =
           Const_some (convert_constant (Ext_list.singleton_exn xs))
       | Blk_some -> Const_some (convert_constant (Ext_list.singleton_exn xs))
       | Blk_constructor _ | Blk_tuple | Blk_record _ | Blk_module _
-      | Blk_module_export _ | Blk_extension | Blk_record_inlined _
+      | Blk_module_export _ | Blk_extension _ | Blk_record_inlined _
       | Blk_record_ext _ ->
           Const_block (tag, t, Ext_list.map xs convert_constant)
       | Blk_poly_var s -> (

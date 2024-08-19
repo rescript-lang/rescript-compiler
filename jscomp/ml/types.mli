@@ -434,7 +434,7 @@ and constructor_tag =
     Cstr_constant of int                (* Constant constructor (an int) *)
   | Cstr_block of int                   (* Regular constructor (a block) *)
   | Cstr_unboxed                        (* Constructor of an unboxed type *)
-  | Cstr_extension of Path.t            (* Extension constructor *)
+  | Cstr_extension of Path.t * bool     (* Extension constructor. true if is_exception *)
 
 (* Constructors are the same *)
 val equal_tag :  constructor_tag -> constructor_tag -> bool

@@ -201,7 +201,7 @@ let extension_descr path_ext ext =
       cstr_existentials = existentials;
       cstr_args;
       cstr_arity = List.length cstr_args;
-      cstr_tag = Cstr_extension(path_ext);
+      cstr_tag = Cstr_extension(path_ext, ext.ext_is_exception);
       cstr_consts = -1;
       cstr_nonconsts = -1;
       cstr_private = ext.ext_private;

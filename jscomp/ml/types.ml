@@ -282,15 +282,15 @@ and constructor_tag =
     Cstr_constant of int                (* Constant constructor (an int) *)
   | Cstr_block of int                   (* Regular constructor (a block) *)
   | Cstr_unboxed                        (* Constructor of an unboxed type *)
-  | Cstr_extension of Path.t            (* Extension constructor *)
+  | Cstr_extension of Path.t * bool     (* Extension constructor. true if is_exception *)
 
 let equal_tag t1 t2 = 
   match (t1, t2) with
   | Cstr_constant i1, Cstr_constant i2 -> i2 = i1
   | Cstr_block i1, Cstr_block i2 -> i2 = i1
   | Cstr_unboxed, Cstr_unboxed -> true
-  | Cstr_extension (path1), Cstr_extension (path2) -> 
-      Path.same path1 path2
+  | Cstr_extension (path1, is_exception1), Cstr_extension (path2, is_exception2) -> 
+      Path.same path1 path2 && is_exception1 = is_exception2
   | (Cstr_constant _|Cstr_block _|Cstr_unboxed|Cstr_extension _), _ -> false
 
 let may_equal_constr c1 c2 = match c1.cstr_tag,c2.cstr_tag with

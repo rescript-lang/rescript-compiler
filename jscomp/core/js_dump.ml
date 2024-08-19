@@ -104,7 +104,7 @@ let exn_block_as_obj ~(stack : bool) (el : J.expression list) (ext : J.tag_info)
     : J.expression =
   let field_name =
     match ext with
-    | Blk_extension -> (
+    | Blk_extension _ -> (
         fun i ->
           match i with 0 -> Literals.exception_id | i -> "_" ^ string_of_int i)
     | Blk_record_ext { fields = ss } -> (
@@ -170,7 +170,7 @@ let exp_need_paren (e : J.expression) =
       ( _,
         _,
         _,
-        ( Blk_record _ | Blk_module _ | Blk_poly_var _ | Blk_extension
+        ( Blk_record _ | Blk_module _ | Blk_poly_var _ | Blk_extension _
         | Blk_record_ext _ | Blk_record_inlined _ | Blk_constructor _ ) )
   | Object _ ->
       true
@@ -774,7 +774,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
                  (Lit Literals.polyvar_value, value);
                ])
       | _ -> assert false)
-  | Caml_block (el, _, _, ((Blk_extension | Blk_record_ext _) as ext)) ->
+  | Caml_block (el, _, _, ((Blk_extension _ | Blk_record_ext _) as ext)) ->
       expression cxt ~level f (exn_block_as_obj ~stack:false el ext)
   | Caml_block (el, _, tag, Blk_record_inlined p) ->
       let untagged = Ast_untagged_variants.process_untagged p.attrs in
@@ -1236,7 +1236,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
   | Throw e ->
       let e =
         match e.expression_desc with
-        | Caml_block (el, _, _, ((Blk_extension | Blk_record_ext _) as ext)) ->
+        | Caml_block (el, _, _, ((Blk_extension _ | Blk_record_ext _) as ext)) ->
             { e with expression_desc = (exn_block_as_obj ~stack:true el ext).expression_desc }
         | exp -> { e with expression_desc = (exn_ref_as_obj exp).expression_desc }
       in

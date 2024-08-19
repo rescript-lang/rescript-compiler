@@ -47,11 +47,15 @@ type tag_info =
   | Blk_record of {fields : string array; mutable_flag : Asttypes.mutable_flag; record_repr : record_repr}  
   | Blk_module of string list
   | Blk_module_export of Ident.t list
-
-  | Blk_extension  
+  | Blk_extension of {
+    is_exception: bool;
+   }
   | Blk_some
   | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
-  | Blk_record_ext of { fields :  string array; mutable_flag : Asttypes.mutable_flag}
+  | Blk_record_ext of {
+     fields:  string array;
+     mutable_flag: Asttypes.mutable_flag;
+    }
   | Blk_lazy_general
 
 let tag_of_tag_info (tag : tag_info ) = 
@@ -63,7 +67,7 @@ let tag_of_tag_info (tag : tag_info ) =
   | Blk_record _ 
   | Blk_module _ 
   | Blk_module_export _ 
-  | Blk_extension 
+  | Blk_extension _
   | Blk_some (* tag not make sense *)
   | Blk_some_not_nested (* tag not make sense *)
   | Blk_lazy_general (* tag not make sense 248 *)
@@ -81,7 +85,7 @@ let mutable_flag_of_tag_info (tag : tag_info) =
   | Blk_poly_var _ 
   | Blk_module _
   | Blk_module_export _ 
-  | Blk_extension
+  | Blk_extension _
   | Blk_some_not_nested
   | Blk_some 
    -> Immutable

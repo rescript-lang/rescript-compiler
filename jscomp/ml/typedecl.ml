@@ -1531,7 +1531,7 @@ let transl_extension_constructor env type_path type_params
         end;
         let path =
           match cdescr.cstr_tag with
-            Cstr_extension(path) -> path
+            Cstr_extension (path, _) -> path
           | _ -> assert false
         in
         let args =

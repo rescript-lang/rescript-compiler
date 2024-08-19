@@ -685,7 +685,7 @@ let assert_failed exp =
     ( Praise Raise_regular,
       [
         Lprim
-          ( Pmakeblock Blk_extension,
+          ( Pmakeblock (Blk_extension {is_exception = true}),
             [
               transl_normal_path Predef.path_assert_failure;
               Lconst
@@ -905,9 +905,9 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
             in
             try Lconst (Const_block (tag_info, List.map extract_constant ll))
             with Not_constant -> Lprim (Pmakeblock tag_info, ll, e.exp_loc))
-        | Cstr_extension (path) ->
+        | Cstr_extension (path, is_exception) ->
             Lprim
-              ( Pmakeblock Blk_extension,
+              ( Pmakeblock (Blk_extension {is_exception}),
                 transl_extension_path e.exp_env path :: ll,
                 e.exp_loc ))
   | Texp_extension_constructor (_, path) -> transl_extension_path e.exp_env path
