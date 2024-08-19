@@ -1,23 +1,25 @@
 {
   "name": "ReScript Compiler",
   "build": {
-    "context": "..",
-    "dockerfile": "../docker/Dockerfile"
+    "context": ".",
+    "dockerfile": "Dockerfile"
   },
   "features": {
-    "ghcr.io/devcontainers/features/github-cli:1":{}
+    "ghcr.io/devcontainers/features/github-cli:1":{
+      "installDirectlyFromGitHubRelease": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version":"20"
+    }
   },
   "customizations": {
     "vscode": {
       "extensions": [
         "chenglou92.rescript-vscode",
         "biomejs.biome"
-      ],
-      "settings": {
-        "terminal.integrated.defaultProfile.linux": "bash"
-      }
+      ]
     }
   },
-  "postCreateCommand": ".devcontainer/postCreate.sh",
-  "remoteUser": "devuser"
+  "postCreateCommand": ".devcontainer/postCreate.sh"
 }
