@@ -16,6 +16,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "ocamllabs.ocaml-platform",
         "chenglou92.rescript-vscode",
         "biomejs.biome"
       ]
