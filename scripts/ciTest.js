@@ -9,6 +9,7 @@ const { exec } = require("../jscomp/build_tests/utils.js");
 
 let ounitTest = false;
 let mochaTest = false;
+let nodeTest = false;
 let bsbTest = false;
 let formatTest = false;
 
@@ -18,6 +19,10 @@ if (process.argv.includes("-ounit")) {
 
 if (process.argv.includes("-mocha")) {
   mochaTest = true;
+}
+
+if (process.argv.includes("-node")) {
+  nodeTest = true;
 }
 
 if (process.argv.includes("-bsb")) {
@@ -31,6 +36,7 @@ if (process.argv.includes("-format")) {
 if (process.argv.includes("-all")) {
   ounitTest = true;
   mochaTest = true;
+  nodeTest = true;
   bsbTest = true;
   formatTest = true;
 }
@@ -56,7 +62,14 @@ async function runTests() {
 
   // running generated js tests
   if (mochaTest) {
-    cp.execSync(`npx mocha -t 10000 jscomp/test/**/*test.js`, {
+    cp.execSync(`npx mocha -t 10000 jscomp/test/**/*_test.js`, {
+      cwd: path.join(__dirname, ".."),
+      stdio: [0, 1, 2],
+    });
+  }
+
+  if (nodeTest) {
+    cp.execSync(`node --test jscomp/test/*_ntest.js`, {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2],
     });
