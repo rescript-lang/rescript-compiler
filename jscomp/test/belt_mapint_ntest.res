@@ -1,8 +1,8 @@
 @@config({flags: ["-bs-no-cross-module-opt"]})
 
-open NodeTest
+open Node_test
 
-let ok = (loc, a) => Assert.ok(a, ~message=loc)
+let ok = (loc, a) => Node_assert.ok(a, ~message=loc)
 
 module M = Belt.Map.Int
 
