@@ -685,6 +685,18 @@ and print_module_binding ~state ~is_rec module_binding cmt_tbl i =
         Doc.concat [Doc.text ": "; print_mod_type ~state mod_type cmt_tbl] )
     | mod_expr -> (print_mod_expr ~state mod_expr cmt_tbl, Doc.nil)
   in
+  let mod_expr_doc_parens =
+    match module_binding.pmb_expr with
+    | {
+     pmod_desc =
+       Pmod_constraint
+         ( _,
+           {Parsetree.pmty_desc = Pmty_signature [{psig_desc = Psig_module _}]}
+         );
+    } ->
+      true
+    | _ -> false
+  in
   let mod_name =
     let doc = Doc.text module_binding.pmb_name.Location.txt in
     print_comments doc cmt_tbl module_binding.pmb_name.loc
@@ -698,7 +710,9 @@ and print_module_binding ~state ~is_rec module_binding cmt_tbl i =
         mod_name;
         mod_constraint_doc;
         Doc.text " = ";
+        (if mod_expr_doc_parens then Doc.lparen else Doc.nil);
         mod_expr_doc;
+        (if mod_expr_doc_parens then Doc.rparen else Doc.nil);
       ]
   in
   print_comments doc cmt_tbl module_binding.pmb_loc
