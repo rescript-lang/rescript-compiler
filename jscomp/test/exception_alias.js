@@ -3,9 +3,11 @@
 
 let List = require("../../lib/js/list.js");
 
-let a0 = {
-  RE_EXN_ID: "Not_found"
-};
+let a0 = new Error("Not_found", {
+  cause: {
+    RE_EXN_ID: "Not_found"
+  }
+});
 
 let b = List.length({
   hd: 1,

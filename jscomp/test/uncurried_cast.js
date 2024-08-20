@@ -5,9 +5,7 @@ let Belt_List = require("../../lib/js/belt_List.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 function raise(e) {
-  throw new Error(e.RE_EXN_ID, {
-    cause: e
-  });
+  throw e;
 }
 
 let map = Belt_List.map;

@@ -84,9 +84,7 @@ function _must_escape(s) {
     if (exn.RE_EXN_ID === Pervasives.Exit) {
       return true;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 

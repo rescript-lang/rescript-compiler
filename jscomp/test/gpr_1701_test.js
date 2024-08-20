@@ -22,9 +22,7 @@ function test(n) {
     if (exn.RE_EXN_ID === Foo) {
       return;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -42,9 +40,7 @@ function read_lines(inc) {
       if (exn.RE_EXN_ID === "End_of_file") {
         l = undefined;
       } else {
-        throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+        throw exn;
       }
     }
     if (l === undefined) {
@@ -70,9 +66,7 @@ function read_lines2(inc) {
       if (exn.RE_EXN_ID === "End_of_file") {
         return List.rev(acc);
       }
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
     _acc = {
       hd: l,
@@ -95,9 +89,7 @@ function read_lines3(inc) {
       if (exn.RE_EXN_ID === "End_of_file") {
         return List.rev(acc);
       }
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
   };
   return loop(/* [] */0);

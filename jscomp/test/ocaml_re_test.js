@@ -1522,9 +1522,7 @@ function find_state(re, desc) {
       Re_automata_State.Table.add(re.states, desc, st);
       return st;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -1604,9 +1602,7 @@ function final(info, st, cat) {
       };
       return res;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -1626,9 +1622,7 @@ function find_initial_state(re, cat) {
       };
       return st;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -1753,9 +1747,7 @@ function trans_set(cache, cm, s) {
       cache.contents = add(v, l, cache.contents);
       return l;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -3374,9 +3366,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       if (exn$1.RE_EXN_ID === Pervasives.Exit) {
         return false;
       }
-      throw new Error(exn$1.RE_EXN_ID, {
-        cause: exn$1
-      });
+      throw exn$1;
     }
   };
   let get = function () {
@@ -3832,9 +3822,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               }
             });
           }
-          throw new Error(exn.RE_EXN_ID, {
-            cause: exn
-          });
+          throw exn;
         }
         if (!accept_s(":]")) {
           throw new Error(Parse_error, {

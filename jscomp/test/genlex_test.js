@@ -45,9 +45,7 @@ function to_list(s) {
       if (exn.RE_EXN_ID === Stream.Failure) {
         return List.rev(acc);
       }
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
     _acc = {
       hd: v,
