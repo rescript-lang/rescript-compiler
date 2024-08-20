@@ -90,7 +90,7 @@ function from_of_string(xs) {
     let a = param[0];
     return [
       "of_string " + String(i),
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: Caml_format.int_of_string(b),
@@ -320,7 +320,7 @@ let float_data = [
 
 let int64_suites_0 = [
   "i64_simple7",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: Caml_int64.to_string([
@@ -335,7 +335,7 @@ let int64_suites_0 = [
 let int64_suites_1 = {
   hd: [
     "i64_simple15",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: Caml_int64.to_string(Caml_int64.neg_one),
@@ -346,7 +346,7 @@ let int64_suites_1 = {
   tl: {
     hd: [
       "i64_simple16",
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: Caml_int64.to_string([

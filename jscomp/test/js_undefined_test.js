@@ -7,7 +7,7 @@ let Js_undefined = require("../../lib/js/js_undefined.js");
 
 let suites_0 = [
   "toOption - empty",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: undefined,
@@ -19,7 +19,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "File \"js_undefined_test.res\", line 7, characters 5-12",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: undefined,
@@ -30,7 +30,7 @@ let suites_1 = {
   tl: {
     hd: [
       "return",
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: "something",
@@ -41,7 +41,7 @@ let suites_1 = {
     tl: {
       hd: [
         "test - empty",
-        ((param) => {
+        (param => {
           return {
             TAG: "Eq",
             _0: true,
@@ -52,7 +52,7 @@ let suites_1 = {
       tl: {
         hd: [
           "File \"js_undefined_test.res\", line 10, characters 5-12",
-          ((param) => {
+          (param => {
             return {
               TAG: "Eq",
               _0: true,
@@ -63,11 +63,11 @@ let suites_1 = {
         tl: {
           hd: [
             "bind - empty",
-            ((param) => {
+            (param => {
               return {
                 TAG: "Eq",
                 _0: undefined,
-                _1: Js_undefined.bind(undefined, ((v) => {
+                _1: Js_undefined.bind(undefined, (v => {
                   return v;
                 }))
               };
@@ -76,11 +76,11 @@ let suites_1 = {
           tl: {
             hd: [
               "bind - 'a",
-              ((param) => {
+              (param => {
                 return {
                   TAG: "Eq",
                   _0: 4,
-                  _1: Js_undefined.bind(2, ((n) => {
+                  _1: Js_undefined.bind(2, (n => {
                     return (n << 1);
                   }))
                 };
@@ -89,11 +89,11 @@ let suites_1 = {
             tl: {
               hd: [
                 "iter - empty",
-                ((param) => {
+                (param => {
                   let hit = {
                     contents: false
                   };
-                  Js_undefined.iter(undefined, ((param) => {
+                  Js_undefined.iter(undefined, (param => {
                     hit.contents = true;
                   }));
                   return {
@@ -106,11 +106,11 @@ let suites_1 = {
               tl: {
                 hd: [
                   "iter - 'a",
-                  ((param) => {
+                  (param => {
                     let hit = {
                       contents: 0
                     };
-                    Js_undefined.iter(2, ((v) => {
+                    Js_undefined.iter(2, (v => {
                       hit.contents = v;
                     }));
                     return {
@@ -123,7 +123,7 @@ let suites_1 = {
                 tl: {
                   hd: [
                     "fromOption - None",
-                    ((param) => {
+                    (param => {
                       return {
                         TAG: "Eq",
                         _0: undefined,
@@ -134,7 +134,7 @@ let suites_1 = {
                   tl: {
                     hd: [
                       "fromOption - Some",
-                      ((param) => {
+                      (param => {
                         return {
                           TAG: "Eq",
                           _0: 2,

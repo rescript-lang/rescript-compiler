@@ -8,7 +8,7 @@ function from_pair_suites(name, suites) {
     name,
     "testing"
   ]);
-  List.iter(((param) => {
+  List.iter((param => {
     let name = param[0];
     let fn = param[1]();
     switch (fn.TAG) {

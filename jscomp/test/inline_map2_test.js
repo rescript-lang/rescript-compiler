@@ -7,7 +7,7 @@ let List = require("../../lib/js/list.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 
 function Make(Ord) {
-  let height = (x) => {
+  let height = x => {
     if (typeof x !== "object") {
       return 0;
     } else {
@@ -102,7 +102,7 @@ function Make(Ord) {
       }
     });
   };
-  let is_empty = (x) => {
+  let is_empty = x => {
     if (typeof x !== "object") {
       return true;
     } else {
@@ -172,7 +172,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let min_binding = (_x) => {
+  let min_binding = _x => {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
@@ -193,7 +193,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let max_binding = (_x) => {
+  let max_binding = _x => {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
@@ -214,7 +214,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let remove_min_binding = (x) => {
+  let remove_min_binding = x => {
     if (typeof x !== "object") {
       throw new Error("Invalid_argument", {
         cause: {
@@ -573,7 +573,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let cardinal = (x) => {
+  let cardinal = x => {
     if (typeof x !== "object") {
       return 0;
     } else {
@@ -598,7 +598,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let bindings = (s) => {
+  let bindings = s => {
     return bindings_aux(/* [] */0, s);
   };
   return {

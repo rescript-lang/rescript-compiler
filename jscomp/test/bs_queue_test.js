@@ -767,7 +767,7 @@ let i$7 = {
   contents: 1
 };
 
-Belt_MutableQueue.forEach(q$5, ((j) => {
+Belt_MutableQueue.forEach(q$5, (j => {
   if (i$7.contents !== j) {
     throw new Error("Assert_failure", {
       cause: {
@@ -1338,7 +1338,7 @@ let q$6 = Belt_MutableQueue.fromArray([
   4
 ]);
 
-let q1$5 = Belt_MutableQueue.map(q$6, ((x) => {
+let q1$5 = Belt_MutableQueue.map(q$6, (x => {
   return x - 1 | 0;
 }));
 
@@ -1353,7 +1353,7 @@ let q$7 = Belt_MutableQueue.fromArray([]);
 
 b("File \"bs_queue_test.res\", line 198, characters 4-11", q$7.length === 0);
 
-let q$8 = Belt_MutableQueue.map(Belt_MutableQueue.fromArray([]), ((x) => {
+let q$8 = Belt_MutableQueue.map(Belt_MutableQueue.fromArray([]), (x => {
   return x + 1 | 0;
 }));
 

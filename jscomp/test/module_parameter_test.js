@@ -22,7 +22,7 @@ function v(x) {
 
 let suites_0 = [
   "const",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: 1,
@@ -34,7 +34,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "other",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: 3,

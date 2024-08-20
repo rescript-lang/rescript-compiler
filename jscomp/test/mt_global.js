@@ -7,7 +7,7 @@ function collect_eq(test_id, suites, loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: x,
@@ -24,7 +24,7 @@ function collect_neq(test_id, suites, loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      ((param) => {
+      (param => {
         return {
           TAG: "Neq",
           _0: x,
@@ -41,7 +41,7 @@ function collect_approx(test_id, suites, loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      ((param) => {
+      (param => {
         return {
           TAG: "Approx",
           _0: x,

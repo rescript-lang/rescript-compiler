@@ -6,7 +6,7 @@ let Caml_module = require("../../lib/js/caml_module.js");
 let Entity = {};
 
 function MakeLayer(Deps) {
-  let getLight = (id) => {
+  let getLight = id => {
     return Deps.presentLight({
       id: id,
       name: "Light 1"
@@ -22,10 +22,10 @@ let UseCase = {
 };
 
 function MakeLayer$1(Deps, UC) {
-  let presentLight = (light) => {
+  let presentLight = light => {
     return Deps.presentJson(light, 200);
   };
-  let handleGetLight = (req) => {
+  let handleGetLight = req => {
     return UC.getLight(req.params.id);
   };
   return {

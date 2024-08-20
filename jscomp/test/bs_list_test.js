@@ -31,7 +31,7 @@ function sum(xs) {
   let v = {
     contents: 0
   };
-  Belt_List.forEach(xs, ((x) => {
+  Belt_List.forEach(xs, (x => {
     v.contents = v.contents + x | 0;
   }));
   return v.contents;
@@ -47,7 +47,7 @@ function sum2(xs, ys) {
   return v.contents;
 }
 
-let u = Belt_List.makeBy(5, ((i) => {
+let u = Belt_List.makeBy(5, (i => {
   return Math.imul(i, i);
 }));
 
@@ -59,7 +59,7 @@ for (let i = 0; i <= 4; ++i) {
   f(i);
 }
 
-eq("File \"bs_list_test.res\", line 31, characters 5-12", Belt_List.map(u, ((i) => {
+eq("File \"bs_list_test.res\", line 31, characters 5-12", Belt_List.map(u, (i => {
   return i + 1 | 0;
 })), {
   hd: 1,
@@ -90,7 +90,7 @@ eq("File \"bs_list_test.res\", line 32, characters 5-12", Belt_List.getBy({
       }
     }
   }
-}, ((x) => {
+}, (x => {
   return x % 2 === 0;
 })), 4);
 
@@ -106,7 +106,7 @@ eq("File \"bs_list_test.res\", line 33, characters 5-12", Belt_List.getBy({
       }
     }
   }
-}, ((x) => {
+}, (x => {
   return x % 5 === 0;
 })), undefined);
 
@@ -128,7 +128,7 @@ eq("FLATTEN", Belt_List.flatten({
       tl: {
         hd: /* [] */0,
         tl: {
-          hd: Belt_List.makeBy(4, ((i) => {
+          hd: Belt_List.makeBy(4, (i => {
             return i;
           })),
           tl: /* [] */0
@@ -213,7 +213,7 @@ eq("CONCATMANY", Belt_List.concatMany([
     tl: /* [] */0
   },
   /* [] */0,
-  Belt_List.makeBy(4, ((i) => {
+  Belt_List.makeBy(4, (i => {
     return i;
   }))
 ]), {
@@ -321,13 +321,13 @@ eq("CONCATMANY", Belt_List.concatMany([{
   }
 });
 
-eq("File \"bs_list_test.res\", line 66, characters 2-9", Belt_List.toArray(Belt_List.concat(Belt_List.makeBy(100, ((i) => {
+eq("File \"bs_list_test.res\", line 66, characters 2-9", Belt_List.toArray(Belt_List.concat(Belt_List.makeBy(100, (i => {
   return i;
-})), Belt_List.makeBy(100, ((i) => {
+})), Belt_List.makeBy(100, (i => {
   return i;
-})))), Belt_Array.concat(Belt_Array.makeBy(100, ((i) => {
+})))), Belt_Array.concat(Belt_Array.makeBy(100, (i => {
   return i;
-})), Belt_Array.makeBy(100, ((i) => {
+})), Belt_Array.makeBy(100, (i => {
   return i;
 }))));
 
@@ -522,7 +522,7 @@ eq("PARTITION", Belt_List.partition({
       }
     }
   }
-}, ((x) => {
+}, (x => {
   return !mod2(x);
 })), [
   /* [] */0,
@@ -726,7 +726,7 @@ function id(x) {
   return x;
 }
 
-eq("MAP", Belt_List.map(Belt_List.makeBy(5, id), ((x) => {
+eq("MAP", Belt_List.map(Belt_List.makeBy(5, id), (x => {
   return (x << 1);
 })), {
   hd: 0,
@@ -750,7 +750,7 @@ eq("MAP", Belt_List.map(/* [] */0, id), /* [] */0);
 eq("MAP", Belt_List.map({
   hd: 1,
   tl: /* [] */0
-}, ((x) => {
+}, (x => {
   return -x | 0;
 })), {
   hd: -1,
@@ -765,7 +765,7 @@ let length_10_id = Belt_List.makeBy(10, id);
 
 let length_8_id = Belt_List.makeBy(8, id);
 
-let d = Belt_List.makeBy(10, ((x) => {
+let d = Belt_List.makeBy(10, (x => {
   return (x << 1);
 }));
 
@@ -783,7 +783,7 @@ eq("MAP2", Belt_List.zipBy({
 
 eq("MAP2", Belt_List.zipBy(/* [] */0, /* [] */0, add), /* [] */0);
 
-eq("MAP2", Belt_List.zipBy(length_10_id, length_10_id, add), Belt_List.concat(Belt_List.map(length_8_id, ((x) => {
+eq("MAP2", Belt_List.zipBy(length_10_id, length_10_id, add), Belt_List.concat(Belt_List.map(length_8_id, (x => {
   return (x << 1);
 })), {
   hd: 16,
@@ -797,7 +797,7 @@ eq("MAP2", Belt_List.zipBy(length_10_id, length_8_id, add), Belt_List.mapWithInd
   return i + x | 0;
 })));
 
-eq("MAP2", Belt_List.reverse(Belt_List.mapReverse2(length_10_id, length_10_id, add)), Belt_List.map(length_10_id, ((x) => {
+eq("MAP2", Belt_List.reverse(Belt_List.mapReverse2(length_10_id, length_10_id, add)), Belt_List.map(length_10_id, (x => {
   return (x << 1);
 })));
 
@@ -1585,7 +1585,7 @@ eq("File \"bs_list_test.res\", line 260, characters 5-12", Belt_List.map({
     hd: 1,
     tl: /* [] */0
   }
-}, ((i) => {
+}, (i => {
   return Belt_List.getExn({
     hd: 0,
     tl: {
@@ -1645,7 +1645,7 @@ eq("File \"bs_list_test.res\", line 290, characters 5-12", Belt_List.reduce(leng
 
 eq("File \"bs_list_test.res\", line 291, characters 5-12", Belt_List.reduceReverse(length_10_id, 0, add), 45);
 
-eq("File \"bs_list_test.res\", line 292, characters 5-12", Belt_List.reduceReverse(Belt_List.makeBy(10000, ((i) => {
+eq("File \"bs_list_test.res\", line 292, characters 5-12", Belt_List.reduceReverse(Belt_List.makeBy(10000, (i => {
   return i;
 })), 0, ((prim0, prim1) => {
   return prim0 + prim1 | 0;
@@ -1929,7 +1929,7 @@ b("File \"bs_list_test.res\", line 319, characters 4-11", Belt_List.reduceRevers
   return (acc + x | 0) + y | 0;
 })) === 6);
 
-let a$1 = Belt_List.makeBy(10000, ((i) => {
+let a$1 = Belt_List.makeBy(10000, (i => {
   return i;
 }));
 
@@ -2090,7 +2090,7 @@ eq("File \"bs_list_test.res\", line 338, characters 5-12", Belt_List.some2({
 })), false);
 
 function makeTest(n) {
-  eq("File \"bs_list_test.res\", line 341, characters 23-30", Belt_List.make(n, 3), Belt_List.makeBy(n, ((param) => {
+  eq("File \"bs_list_test.res\", line 341, characters 23-30", Belt_List.make(n, 3), Belt_List.makeBy(n, (param => {
     return 3;
   })));
 }
@@ -2444,11 +2444,11 @@ b("File \"bs_list_test.res\", line 377, characters 4-11", !Belt_List.eq({
   return prim0 === prim1;
 })));
 
-let u0 = Belt_List.makeBy(20, ((x) => {
+let u0 = Belt_List.makeBy(20, (x => {
   return x;
 }));
 
-let u1 = Belt_List.keepMap(u0, ((x) => {
+let u1 = Belt_List.keepMap(u0, (x => {
   if (x % 7 === 0) {
     return x + 1 | 0;
   }
@@ -2478,7 +2478,7 @@ b("File \"bs_list_test.res\", line 390, characters 4-11", Caml_obj.equal(Belt_Li
       }
     }
   }
-}, ((x) => {
+}, (x => {
   if (x % 2 === 0) {
     return -x | 0;
   }
@@ -2503,7 +2503,7 @@ b("File \"bs_list_test.res\", line 404, characters 4-11", Belt_List.keepMap({
       }
     }
   }
-}, ((x) => {
+}, (x => {
   if (x % 5 === 0) {
     return x;
   }

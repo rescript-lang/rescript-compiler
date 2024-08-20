@@ -34,15 +34,15 @@ function test_closure() {
   let v = {
     contents: 0
   };
-  let arr = Caml_array.make(6, ((x) => {
+  let arr = Caml_array.make(6, (x => {
     return x;
   }));
   for (let i = 0; i <= 5; ++i) {
-    Caml_array.set(arr, i, ((param) => {
+    Caml_array.set(arr, i, (param => {
       return i;
     }));
   }
-  $$Array.iter(((i) => {
+  $$Array.iter((i => {
     v.contents = v.contents + i(0) | 0;
   }), arr);
   return v.contents;
@@ -52,16 +52,16 @@ function test_closure2() {
   let v = {
     contents: 0
   };
-  let arr = Caml_array.make(6, ((x) => {
+  let arr = Caml_array.make(6, (x => {
     return x;
   }));
   for (let i = 0; i <= 5; ++i) {
     let j = i + i | 0;
-    Caml_array.set(arr, i, ((param) => {
+    Caml_array.set(arr, i, (param => {
       return j;
     }));
   }
-  $$Array.iter(((i) => {
+  $$Array.iter((i => {
     v.contents = v.contents + i(0) | 0;
   }), arr);
   return v.contents;

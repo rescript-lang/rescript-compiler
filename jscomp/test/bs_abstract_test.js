@@ -21,7 +21,7 @@ function uf(u) {
 }
 
 function uf1(u) {
-  return (extra) => {
+  return extra => {
     return u.y1(1, extra);
   };
 }

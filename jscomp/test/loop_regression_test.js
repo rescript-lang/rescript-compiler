@@ -23,7 +23,7 @@ function f() {
 
 let suites_0 = [
   "sum",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: 55,

@@ -45,7 +45,7 @@ function basename(extra) {
 
 let suites_0 = [
   "basename",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: basename("b/c/a.b"),

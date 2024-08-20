@@ -2,7 +2,7 @@
 'use strict';
 
 
-let f8 = import("a").then((m) => {
+let f8 = import("a").then(m => {
   return m.default;
 });
 

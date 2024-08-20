@@ -203,7 +203,7 @@ function _error_eof(t) {
 function expr(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, ((extra) => {
+      return _refill(t, (extra => {
         return expr(k, extra);
       }), _error_eof);
     }
@@ -281,7 +281,7 @@ function expr_starting_with(c, k, t) {
 function expr_list(acc, k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, ((extra) => {
+      return _refill(t, (extra => {
         return expr_list(acc, k, extra);
       }), _error_eof);
     }
@@ -344,9 +344,9 @@ function _return_atom(last, k, t) {
 function atom(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, ((extra) => {
+      return _refill(t, (extra => {
         return atom(k, extra);
-      }), ((extra) => {
+      }), (extra => {
         return _return_atom(undefined, k, extra);
       }));
     }
@@ -392,7 +392,7 @@ function atom(k, t) {
 function quoted(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, ((extra) => {
+      return _refill(t, (extra => {
         return quoted(k, extra);
       }), _error_eof);
     }
@@ -401,7 +401,7 @@ function quoted(k, t) {
       return _return_atom(undefined, k, t);
     }
     if (c === 92) {
-      return escaped(((c) => {
+      return escaped((c => {
         Buffer.add_char(t.atom, c);
         return quoted(k, t);
       }), t);
@@ -413,7 +413,7 @@ function quoted(k, t) {
 
 function escaped(k, t) {
   if (t.i === t.len) {
-    return _refill(t, ((extra) => {
+    return _refill(t, (extra => {
       return escaped(k, extra);
     }), _error_eof);
   }
@@ -459,7 +459,7 @@ function escaped(k, t) {
     return k(/* '"' */34);
   }
   if (_is_digit(c)) {
-    return read2int(c - /* '0' */48 | 0, ((n) => {
+    return read2int(c - /* '0' */48 | 0, (n => {
       return k(Char.chr(n));
     }), t);
   } else {
@@ -469,7 +469,7 @@ function escaped(k, t) {
 
 function read2int(i, k, t) {
   if (t.i === t.len) {
-    return _refill(t, ((extra) => {
+    return _refill(t, (extra => {
       return read2int(i, k, extra);
     }), _error_eof);
   }
@@ -483,7 +483,7 @@ function read2int(i, k, t) {
 
 function read1int(i, k, t) {
   if (t.i === t.len) {
-    return _refill(t, ((extra) => {
+    return _refill(t, (extra => {
       return read1int(i, k, extra);
     }), _error_eof);
   }
@@ -498,7 +498,7 @@ function read1int(i, k, t) {
 function skip_comment(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, ((extra) => {
+      return _refill(t, (extra => {
         return skip_comment(k, extra);
       }), _error_eof);
     }
@@ -513,9 +513,9 @@ function skip_comment(k, t) {
 function expr_or_end(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, ((extra) => {
+      return _refill(t, (extra => {
         return expr_or_end(k, extra);
-      }), ((param) => {
+      }), (param => {
         return "End";
       }));
     }

@@ -58,7 +58,7 @@ function resize(newSize) {
   let arr = htab.contents;
   let newSz_1 = newSize - 1 | 0;
   let newArr = Caml_array.make(newSize, /* [] */0);
-  let copyBucket = (_bucket) => {
+  let copyBucket = _bucket => {
     while (true) {
       let bucket = _bucket;
       if (!bucket) {

@@ -38,7 +38,7 @@ function f(g, h) {
 
 let suites_0 = [
   "eq_with",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: v,

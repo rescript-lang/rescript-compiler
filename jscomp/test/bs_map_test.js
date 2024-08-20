@@ -55,7 +55,7 @@ function emptyMap() {
   
 }
 
-let v = Belt_Array.makeByAndShuffle(1000000, ((i) => {
+let v = Belt_Array.makeByAndShuffle(1000000, (i => {
   return [
     i,
     i

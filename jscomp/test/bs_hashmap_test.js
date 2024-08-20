@@ -98,7 +98,7 @@ for (let i$1 = 0; i$1 <= 2000; ++i$1) {
 
 eqx("File \"bs_hashmap_test.res\", line 57, characters 6-13", v$1.size, 98000);
 
-b("File \"bs_hashmap_test.res\", line 58, characters 4-11", Belt_Array.every(Array_data_util.range(2001, 100000), ((x) => {
+b("File \"bs_hashmap_test.res\", line 58, characters 4-11", Belt_Array.every(Array_data_util.range(2001, 100000), (x => {
   return Belt_HashMap.has(v$1, x);
 })));
 

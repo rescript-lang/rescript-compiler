@@ -584,7 +584,7 @@ function find(p, _x) {
 }
 
 function find_all(p) {
-  return (__x) => {
+  return __x => {
     let _accu = /* [] */0;
     let _x = __x;
     while (true) {

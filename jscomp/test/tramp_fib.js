@@ -22,8 +22,8 @@ function fib(n, k) {
     return {
       TAG: "Suspend",
       _0: (() => {
-        return fib(n - 1 | 0, ((v0) => {
-          return fib(n - 2 | 0, ((v1) => {
+        return fib(n - 1 | 0, (v0 => {
+          return fib(n - 2 | 0, (v1 => {
             return k(v0 + v1 | 0);
           }));
         }));
@@ -32,7 +32,7 @@ function fib(n, k) {
   }
 }
 
-let u = fib(10, ((x) => {
+let u = fib(10, (x => {
   return {
     TAG: "Continue",
     _0: x

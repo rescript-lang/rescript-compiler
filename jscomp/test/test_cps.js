@@ -20,11 +20,11 @@ function f(_n, _acc) {
 }
 
 function test_closure() {
-  let arr = Caml_array.make(6, ((x) => {
+  let arr = Caml_array.make(6, (x => {
     return x;
   }));
   for (let i = 0; i <= 6; ++i) {
-    Caml_array.set(arr, i, ((param) => {
+    Caml_array.set(arr, i, (param => {
       return i;
     }));
   }

@@ -1304,7 +1304,7 @@ let random_data = {
   }
 };
 
-Belt_List.forEach(random_data, ((u) => {
+Belt_List.forEach(random_data, (u => {
   if (u) {
     if (u.tl) {
       throw new Error("Assert_failure", {

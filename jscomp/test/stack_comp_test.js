@@ -31,7 +31,7 @@ function to_list(s) {
   let l = {
     contents: /* [] */0
   };
-  List.iter(((x) => {
+  List.iter((x => {
     l.contents = {
       hd: x,
       tl: l.contents
@@ -358,7 +358,7 @@ let i$7 = {
   contents: 1
 };
 
-List.iter(((j) => {
+List.iter((j => {
   assert_("File \"stack_comp_test.res\", line 143, characters 12-19", i$7.contents === j);
   i$7.contents = i$7.contents + 1 | 0;
 }), s$5.c);

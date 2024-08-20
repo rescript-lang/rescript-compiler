@@ -7,7 +7,7 @@ let Ext_string_test = require("./ext_string_test.js");
 
 let suites_0 = [
   "split",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: Ext_string_test.split(true, "hihi", /* 'i' */105),
@@ -28,7 +28,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "split_non_empty",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: Ext_string_test.split(undefined, "hihi", /* 'i' */105),
@@ -45,7 +45,7 @@ let suites_1 = {
   tl: {
     hd: [
       "split_empty",
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: Ext_string_test.split(true, "", /* 'i' */105),
@@ -56,7 +56,7 @@ let suites_1 = {
     tl: {
       hd: [
         "split_normal",
-        ((param) => {
+        (param => {
           return {
             TAG: "Eq",
             _0: Ext_string_test.split(true, "h i i", /* ' ' */32),
@@ -76,12 +76,12 @@ let suites_1 = {
       tl: {
         hd: [
           "split_by",
-          ((param) => {
+          (param => {
             return {
               TAG: "Eq",
-              _0: List.filter(((s) => {
+              _0: List.filter((s => {
                 return s !== "";
-              }), Ext_string_test.split_by(undefined, ((x) => {
+              }), Ext_string_test.split_by(undefined, (x => {
                 if (x === /* ' ' */32) {
                   return true;
                 } else {

@@ -9,7 +9,7 @@ function for_3(x) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map(((param) => {
+  let arr = $$Array.map((param => {
     return () => {
       
     };
@@ -20,7 +20,7 @@ function for_3(x) {
       v.contents = v.contents + j | 0;
     }));
   }
-  $$Array.iter(((x) => {
+  $$Array.iter((x => {
     x();
   }), arr);
   return v.contents;
@@ -30,7 +30,7 @@ function for_4(x) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map(((param) => {
+  let arr = $$Array.map((param => {
     return () => {
       
     };
@@ -42,7 +42,7 @@ function for_4(x) {
       v.contents = v.contents + k | 0;
     }));
   }
-  $$Array.iter(((x) => {
+  $$Array.iter((x => {
     x();
   }), arr);
   return v.contents;
@@ -52,7 +52,7 @@ function for_5(x, u) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map(((param) => {
+  let arr = $$Array.map((param => {
     return () => {
       
     };
@@ -63,7 +63,7 @@ function for_5(x, u) {
       v.contents = v.contents + k | 0;
     }));
   }
-  $$Array.iter(((x) => {
+  $$Array.iter((x => {
     x();
   }), arr);
   return v.contents;
@@ -73,7 +73,7 @@ function for_6(x, u) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map(((param) => {
+  let arr = $$Array.map((param => {
     return () => {
       
     };
@@ -101,7 +101,7 @@ function for_6(x, u) {
     }
     inspect_3 = v2.contents;
   }
-  $$Array.iter(((x) => {
+  $$Array.iter((x => {
     x();
   }), arr);
   return [
@@ -126,7 +126,7 @@ function for_7() {
       }));
     }
   }
-  $$Array.iter(((f) => {
+  $$Array.iter((f => {
     f();
   }), arr);
   return v.contents;
@@ -148,7 +148,7 @@ function for_8() {
       }));
     }
   }
-  $$Array.iter(((f) => {
+  $$Array.iter((f => {
     f();
   }), arr);
   return v.contents;
@@ -158,7 +158,7 @@ function for_9() {
   let v = {
     contents: /* [] */0
   };
-  let collect = (x) => {
+  let collect = x => {
     v.contents = {
       hd: x,
       tl: v.contents
@@ -192,10 +192,10 @@ function for_9() {
       vv2.contents = vv2.contents + v$1.contents | 0;
     }));
   }
-  $$Array.iter(((f) => {
+  $$Array.iter((f => {
     f();
   }), arr);
-  $$Array.iter(((f) => {
+  $$Array.iter((f => {
     f();
   }), arr2);
   return [[
@@ -207,7 +207,7 @@ function for_9() {
 
 let suites_0 = [
   "for_loop_test_3",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: 90,
@@ -219,7 +219,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "for_loop_test_4",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: 180,
@@ -230,7 +230,7 @@ let suites_1 = {
   tl: {
     hd: [
       "for_loop_test_5",
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: 2420,
@@ -241,7 +241,7 @@ let suites_1 = {
     tl: {
       hd: [
         "for_loop_test_6",
-        ((param) => {
+        (param => {
           return {
             TAG: "Eq",
             _0: [
@@ -257,7 +257,7 @@ let suites_1 = {
       tl: {
         hd: [
           "for_loop_test_7",
-          ((param) => {
+          (param => {
             return {
               TAG: "Eq",
               _0: 84,
@@ -268,7 +268,7 @@ let suites_1 = {
         tl: {
           hd: [
             "for_loop_test_8",
-            ((param) => {
+            (param => {
               return {
                 TAG: "Eq",
                 _0: 294,
@@ -279,7 +279,7 @@ let suites_1 = {
           tl: {
             hd: [
               "for_loop_test_9",
-              ((param) => {
+              (param => {
                 return {
                   TAG: "Eq",
                   _0: [[

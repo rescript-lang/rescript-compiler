@@ -58,10 +58,10 @@ function is_sorted(x) {
 
 let array_suites_0 = [
   "init",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
-      _0: $$Array.init(5, ((x) => {
+      _0: $$Array.init(5, (x => {
         return x;
       })),
       _1: [
@@ -78,8 +78,8 @@ let array_suites_0 = [
 let array_suites_1 = {
   hd: [
     "toList",
-    ((param) => {
-      let aux = (xs) => {
+    (param => {
+      let aux = xs => {
         return List.fold_left(((acc, param) => {
           return {
             hd: [
@@ -107,7 +107,7 @@ let array_suites_1 = {
   tl: {
     hd: [
       "concat",
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: [
@@ -144,7 +144,7 @@ let array_suites_1 = {
     tl: {
       hd: [
         "make",
-        ((param) => {
+        (param => {
           return {
             TAG: "Eq",
             _0: [
@@ -152,10 +152,10 @@ let array_suites_1 = {
               Caml_array.make_float(100)
             ],
             _1: [
-              $$Array.init(100, ((param) => {
+              $$Array.init(100, (param => {
                 return /* 'a' */97;
               })),
-              $$Array.init(100, ((param) => {
+              $$Array.init(100, (param => {
                 return 0;
               }))
             ]
@@ -165,7 +165,7 @@ let array_suites_1 = {
       tl: {
         hd: [
           "sub",
-          ((param) => {
+          (param => {
             return {
               TAG: "Eq",
               _0: $$Array.sub([
@@ -185,13 +185,13 @@ let array_suites_1 = {
         tl: {
           hd: [
             "blit",
-            ((param) => {
+            (param => {
               let u = [
                 100,
                 0,
                 0
               ];
-              let v = $$Array.init(3, ((x) => {
+              let v = $$Array.init(3, (x => {
                 return (x << 1);
               }));
               $$Array.blit(v, 1, u, 1, 2);
@@ -219,8 +219,8 @@ let array_suites_1 = {
           tl: {
             hd: [
               "File \"array_test.res\", line 75, characters 8-15",
-              ((param) => {
-                let a0 = $$Array.init(100, ((i) => {
+              (param => {
+                let a0 = $$Array.init(100, (i => {
                   return (i << 0);
                 }));
                 $$Array.blit(a0, 10, a0, 5, 20);
@@ -261,8 +261,8 @@ let array_suites_1 = {
             tl: {
               hd: [
                 "File \"array_test.res\", line 118, characters 8-15",
-                ((param) => {
-                  let a0 = $$Array.init(100, ((i) => {
+                (param => {
+                  let a0 = $$Array.init(100, (i => {
                     return (i << 0);
                   }));
                   $$Array.blit(a0, 5, a0, 10, 20);
@@ -305,7 +305,7 @@ let array_suites_1 = {
               tl: {
                 hd: [
                   "make",
-                  ((param) => {
+                  (param => {
                     return {
                       TAG: "Eq",
                       _0: Caml_array.make(2, 1),
@@ -319,7 +319,7 @@ let array_suites_1 = {
                 tl: {
                   hd: [
                     "sort",
-                    ((param) => {
+                    (param => {
                       let u = [
                         3,
                         0,
@@ -340,8 +340,8 @@ let array_suites_1 = {
                   tl: {
                     hd: [
                       "sort_large",
-                      ((param) => {
-                        let v = $$Array.init(4, ((i) => {
+                      (param => {
+                        let v = $$Array.init(4, (i => {
                           return i % 17;
                         }));
                         $$Array.sort(Caml.int_compare, v);

@@ -5,11 +5,11 @@ let Mt = require("./mt.js");
 
 function f(v) {
   if (v % 2 === 0) {
-    return (v) => {
+    return v => {
       return Math.imul(v, v);
     };
   } else {
-    return (v) => {
+    return v => {
       return v + v | 0;
     };
   }
@@ -35,7 +35,7 @@ let hh = [
   "1",
   "2",
   "3"
-].map((x) => {
+].map(x => {
   return parseInt(x);
 });
 

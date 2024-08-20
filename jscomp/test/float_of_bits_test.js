@@ -31,7 +31,7 @@ function from_pairs(pair) {
     return {
       hd: [
         "int32_float_of_bits " + i,
-        ((param) => {
+        (param => {
           return {
             TAG: "Eq",
             _0: Caml_float.int_float_of_bits(i32),
@@ -42,7 +42,7 @@ function from_pairs(pair) {
       tl: {
         hd: [
           "int32_bits_of_float " + i,
-          ((param) => {
+          (param => {
             return {
               TAG: "Eq",
               _0: Caml_float.int_bits_of_float(f),

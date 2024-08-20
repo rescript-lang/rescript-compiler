@@ -60,7 +60,7 @@ let Int_hash = Hashtbl.Make({
 
 let suites_0 = [
   "simple",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: {
@@ -84,10 +84,10 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "more_iterations",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
-        _0: $$Array.init(1001, ((i) => {
+        _0: $$Array.init(1001, (i => {
           return [
             (i << 1),
             String(i)

@@ -8,9 +8,9 @@ let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 let function_equal_test;
 
 try {
-  function_equal_test = Caml_obj.equal(((x) => {
+  function_equal_test = Caml_obj.equal((x => {
     return x + 1 | 0;
-  }), ((x) => {
+  }), (x => {
     return x + 2 | 0;
   }));
 } catch (raw_exn) {

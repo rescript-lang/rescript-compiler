@@ -2,7 +2,7 @@
 'use strict';
 
 
-((f) => {
+(f => {
   return 0;
 })("");
 

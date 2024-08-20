@@ -76,7 +76,7 @@ function parse(token) {
   let parse_term = () => {
     return parse_term_aux(parse_atom());
   };
-  let parse_expr_aux = (e1) => {
+  let parse_expr_aux = e1 => {
     let e = token$1();
     if (e.TAG === "Kwd") {
       switch (e._0) {
@@ -93,7 +93,7 @@ function parse(token) {
       return e1;
     }
   };
-  let parse_term_aux = (e1) => {
+  let parse_term_aux = e1 => {
     let e = token$1();
     if (e.TAG === "Kwd") {
       switch (e._0) {
@@ -210,7 +210,7 @@ function l_parse(token) {
         });
     }
   };
-  let parse_f_aux = (_a) => {
+  let parse_f_aux = _a => {
     while (true) {
       let a = _a;
       let t = token$1();
@@ -232,7 +232,7 @@ function l_parse(token) {
       }
     };
   };
-  let parse_t_aux = (_a) => {
+  let parse_t_aux = _a => {
     while (true) {
       let a = _a;
       let t = token$1();

@@ -391,7 +391,11 @@ and pp_function ~return_unit ~async ~is_method ~need_paren ?directive cxt (f : P
                   function_body ?directive ~return_unit cxt f b))
         else
           let cxt =
-            P.paren_group f 1 (fun _ -> formal_parameter_list inner_cxt f l)
+            match l with
+            | [ single ] when arrow ->
+              Ext_pp_scope.ident inner_cxt f single
+            | l ->
+              P.paren_group f 1 (fun _ -> formal_parameter_list inner_cxt f l)
           in
           P.space f;
           if arrow then (

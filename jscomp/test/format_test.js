@@ -77,7 +77,7 @@ eq("File \"format_test.res\", line 45, characters 5-12", (1 + 4095 / 4096) * 8, 
 eq("File \"format_test.res\", line 46, characters 5-12", (1 + 65535 / 65536) * 8, 15.9998779296875);
 
 function f(loc, ls) {
-  List.iter(((param) => {
+  List.iter((param => {
     eq(loc, Caml_format.float_of_string(param[0]), param[1]);
   }), ls);
 }
@@ -107,7 +107,7 @@ function sl(f) {
 }
 
 function aux_list(loc, ls) {
-  List.iter(((param) => {
+  List.iter((param => {
     eq(loc, Caml_format.hexstring_of_float(param[0], -1, /* '-' */45), param[1]);
   }), ls);
 }
@@ -186,7 +186,7 @@ scan_float("File \"format_test.res\", line 80, characters 13-20", "0x3f.p1", 126
 
 scan_float("File \"format_test.res\", line 81, characters 13-20", "0x1.3333333333333p-2", 0.3);
 
-List.iter(((param) => {
+List.iter((param => {
   scan_float("File \"format_test.res\", line 82, characters 35-42", param[1], param[0]);
 }), literals);
 

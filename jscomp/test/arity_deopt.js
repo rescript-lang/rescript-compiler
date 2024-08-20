@@ -39,7 +39,7 @@ function f1(x) {
 }
 
 function f2(x, y) {
-  return (z) => {
+  return z => {
     return (x + y | 0) + z | 0;
   };
 }

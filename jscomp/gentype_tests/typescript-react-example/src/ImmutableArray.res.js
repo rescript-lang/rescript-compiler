@@ -51,7 +51,7 @@ let rangeBy = Belt_Array.rangeBy;
 let makeByU = Belt_Array.makeByU;
 
 function makeBy(c, f) {
-  return Belt_Array.makeBy(c, ((x) => {
+  return Belt_Array.makeBy(c, (x => {
     return f(x);
   }));
 }
@@ -59,7 +59,7 @@ function makeBy(c, f) {
 let makeByAndShuffleU = Belt_Array.makeByAndShuffleU;
 
 function makeByAndShuffle(c, f) {
-  return Belt_Array.makeByAndShuffle(c, ((x) => {
+  return Belt_Array.makeByAndShuffle(c, (x => {
     return f(x);
   }));
 }
@@ -91,7 +91,7 @@ function copy(a) {
 let forEachU = Belt_Array.forEachU;
 
 function forEach(a, f) {
-  Belt_Array.forEach(a, ((x) => {
+  Belt_Array.forEach(a, (x => {
     f(x);
   }));
 }
@@ -99,7 +99,7 @@ function forEach(a, f) {
 let mapU = Belt_Array.mapU;
 
 function map(a, f) {
-  return Belt_Array.map(a, ((x) => {
+  return Belt_Array.map(a, (x => {
     return f(x);
   }));
 }
@@ -115,7 +115,7 @@ function keepWithIndex(a, f) {
 let keepMapU = Belt_Array.keepMapU;
 
 function keepMap(a, f) {
-  return Belt_Array.keepMap(a, ((x) => {
+  return Belt_Array.keepMap(a, (x => {
     return f(x);
   }));
 }
@@ -139,7 +139,7 @@ function mapWithIndex(a, f) {
 let partitionU = Belt_Array.partitionU;
 
 function partition(a, f) {
-  return Belt_Array.partition(a, ((x) => {
+  return Belt_Array.partition(a, (x => {
     return f(x);
   }));
 }
@@ -171,7 +171,7 @@ function reduceReverse2(a1, a2, c, f) {
 let someU = Belt_Array.someU;
 
 function some(a, f) {
-  return Belt_Array.some(a, ((x) => {
+  return Belt_Array.some(a, (x => {
     return f(x);
   }));
 }
@@ -179,7 +179,7 @@ function some(a, f) {
 let everyU = Belt_Array.everyU;
 
 function every(a, f) {
-  return Belt_Array.every(a, ((x) => {
+  return Belt_Array.every(a, (x => {
     return f(x);
   }));
 }

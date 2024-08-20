@@ -10,7 +10,7 @@ async function willBeInlined() {
 let inlined = willBeInlined();
 
 function wrapSomethingAsync() {
-  (async (param) => {
+  (async param => {
     let test = await Promise.resolve("Test");
     console.log(test);
   })(777);
@@ -64,19 +64,19 @@ let tui = 3;
 let tuia = uncurriedIdAsync(3);
 
 function nested1() {
-  return async (y) => {
+  return async y => {
     return await y;
   };
 }
 
 async function nested2() {
-  return async (y) => {
+  return async y => {
     return await y;
   };
 }
 
 function onSubmit() {
-  return React.useCallback(async (b) => {
+  return React.useCallback(async b => {
     return await b;
   });
 }

@@ -123,7 +123,7 @@ function from_pairs(ps) {
     let a = param[0];
     return [
       "pair " + i,
-      ((param) => {
+      (param => {
         return {
           TAG: "Approx",
           _0: a,
@@ -191,7 +191,7 @@ eq("File \"float_test.res\", line 62, characters 4-11", [
   true
 ]);
 
-eq("File \"float_test.res\", line 71, characters 4-11", $$Array.map(((x) => {
+eq("File \"float_test.res\", line 71, characters 4-11", $$Array.map((x => {
   if (x > 0) {
     return 1;
   } else if (x < 0) {
@@ -199,7 +199,7 @@ eq("File \"float_test.res\", line 71, characters 4-11", $$Array.map(((x) => {
   } else {
     return 0;
   }
-}), $$Array.map(((param) => {
+}), $$Array.map((param => {
   return Caml.float_compare(param[0], param[1]);
 }), [
   [

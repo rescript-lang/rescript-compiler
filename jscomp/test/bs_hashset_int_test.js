@@ -33,7 +33,7 @@ function sum2(h) {
   let v = {
     contents: 0
   };
-  Belt_HashSetInt.forEach(h, ((x) => {
+  Belt_HashSetInt.forEach(h, (x => {
     v.contents = v.contents + x | 0;
   }));
   return v.contents;

@@ -27,7 +27,7 @@ function f() {
 
 let suites_0 = [
   "acc",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: f(),
@@ -50,7 +50,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "array_to_list",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: {

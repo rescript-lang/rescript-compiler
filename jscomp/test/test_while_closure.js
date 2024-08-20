@@ -25,7 +25,7 @@ function f() {
 
 f();
 
-$$Array.iter(((x) => {
+$$Array.iter((x => {
   x();
 }), arr);
 

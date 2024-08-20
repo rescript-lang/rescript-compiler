@@ -12,7 +12,7 @@ let xbs = Array.prototype.map.call([
   2,
   3,
   5
-], ((x) => {
+], (x => {
   return x + 1 | 0;
 }));
 
@@ -38,7 +38,7 @@ let xs = Array.prototype.map.call([
     2,
     1
   ]
-], ((param) => {
+], (param => {
   return (param[1] + param[0] | 0) + 1 | 0;
 }));
 
@@ -49,7 +49,7 @@ function f_0() {
 }
 
 function f_01() {
-  return hi((x) => {
+  return hi(x => {
     if (x === undefined) {
       console.log("x");
       return;
@@ -59,7 +59,7 @@ function f_01() {
 }
 
 function f_02(xs) {
-  return hi((x) => {
+  return hi(x => {
     xs.contents = x;
     console.log("x");
   });

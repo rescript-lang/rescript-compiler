@@ -11,7 +11,7 @@ let v = "gso";
 
 let suites_0 = [
   "equal",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: [
@@ -29,7 +29,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "equal2",
-    ((param) => {
+    (param => {
       let u = Bytes.make(3, /* 'a' */97);
       u[0] = /* 'b' */98;
       return {
@@ -48,7 +48,7 @@ let suites_1 = {
   tl: {
     hd: [
       "buffer",
-      ((param) => {
+      (param => {
         let v = Buffer.create(30);
         for (let i = 0; i <= 10; ++i) {
           Buffer.add_string(v, String(i));

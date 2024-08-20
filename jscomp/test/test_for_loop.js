@@ -20,7 +20,7 @@ function for_3(x) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map(((param) => {
+  let arr = $$Array.map((param => {
     return () => {
       
     };
@@ -31,7 +31,7 @@ function for_3(x) {
       v.contents = v.contents + j | 0;
     }));
   }
-  $$Array.iter(((x) => {
+  $$Array.iter((x => {
     x();
   }), arr);
   return v.contents;
@@ -41,7 +41,7 @@ function for_4(x) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map(((param) => {
+  let arr = $$Array.map((param => {
     return () => {
       
     };
@@ -53,7 +53,7 @@ function for_4(x) {
       v.contents = v.contents + k | 0;
     }));
   }
-  $$Array.iter(((x) => {
+  $$Array.iter((x => {
     x();
   }), arr);
   return v.contents;
@@ -63,7 +63,7 @@ function for_5(x, u) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map(((param) => {
+  let arr = $$Array.map((param => {
     return () => {
       
     };
@@ -74,7 +74,7 @@ function for_5(x, u) {
       v.contents = v.contents + k | 0;
     }));
   }
-  $$Array.iter(((x) => {
+  $$Array.iter((x => {
     x();
   }), arr);
   return v.contents;
@@ -84,7 +84,7 @@ function for_6(x, u) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map(((param) => {
+  let arr = $$Array.map((param => {
     return () => {
       
     };
@@ -110,7 +110,7 @@ function for_6(x, u) {
       }));
     }
   }
-  $$Array.iter(((x) => {
+  $$Array.iter((x => {
     x();
   }), arr);
   return v.contents;

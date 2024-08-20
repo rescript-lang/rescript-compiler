@@ -5,7 +5,7 @@ let Mt = require("./mt.js");
 
 let suites_0 = [
   "toExponential",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: "1.23456e+5",
@@ -17,7 +17,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "toExponentialWithPrecision - digits:2",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: "1.23e+5",
@@ -28,7 +28,7 @@ let suites_1 = {
   tl: {
     hd: [
       "toExponentialWithPrecision - digits:4",
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: "1.2346e+5",
@@ -39,7 +39,7 @@ let suites_1 = {
     tl: {
       hd: [
         "toExponentialWithPrecision - digits:20",
-        ((param) => {
+        (param => {
           return {
             TAG: "Eq",
             _0: "0.00000000000000000000e+0",
@@ -50,7 +50,7 @@ let suites_1 = {
       tl: {
         hd: [
           "File \"js_int_test.res\", line 19, characters 5-12",
-          ((param) => {
+          (param => {
             return {
               TAG: "ThrowAny",
               _0: (() => {
@@ -62,7 +62,7 @@ let suites_1 = {
         tl: {
           hd: [
             "toExponentialWithPrecision - digits:-1",
-            ((param) => {
+            (param => {
               return {
                 TAG: "ThrowAny",
                 _0: (() => {
@@ -74,7 +74,7 @@ let suites_1 = {
           tl: {
             hd: [
               "toPrecision",
-              ((param) => {
+              (param => {
                 return {
                   TAG: "Eq",
                   _0: "123456",
@@ -85,7 +85,7 @@ let suites_1 = {
             tl: {
               hd: [
                 "toPrecisionWithPrecision - digits:2",
-                ((param) => {
+                (param => {
                   return {
                     TAG: "Eq",
                     _0: "1.2e+5",
@@ -96,7 +96,7 @@ let suites_1 = {
               tl: {
                 hd: [
                   "toPrecisionWithPrecision - digits:4",
-                  ((param) => {
+                  (param => {
                     return {
                       TAG: "Eq",
                       _0: "1.235e+5",
@@ -107,7 +107,7 @@ let suites_1 = {
                 tl: {
                   hd: [
                     "toPrecisionWithPrecision - digits:20",
-                    ((param) => {
+                    (param => {
                       return {
                         TAG: "Eq",
                         _0: "0.0000000000000000000",
@@ -118,7 +118,7 @@ let suites_1 = {
                   tl: {
                     hd: [
                       "File \"js_int_test.res\", line 37, characters 5-12",
-                      ((param) => {
+                      (param => {
                         return {
                           TAG: "ThrowAny",
                           _0: (() => {
@@ -130,7 +130,7 @@ let suites_1 = {
                     tl: {
                       hd: [
                         "toPrecisionWithPrecision - digits:-1",
-                        ((param) => {
+                        (param => {
                           return {
                             TAG: "ThrowAny",
                             _0: (() => {
@@ -142,7 +142,7 @@ let suites_1 = {
                       tl: {
                         hd: [
                           "toString",
-                          ((param) => {
+                          (param => {
                             return {
                               TAG: "Eq",
                               _0: "123",
@@ -153,7 +153,7 @@ let suites_1 = {
                         tl: {
                           hd: [
                             "toStringWithRadix - radix:2",
-                            ((param) => {
+                            (param => {
                               return {
                                 TAG: "Eq",
                                 _0: "11110001001000000",
@@ -164,7 +164,7 @@ let suites_1 = {
                           tl: {
                             hd: [
                               "toStringWithRadix - radix:16",
-                              ((param) => {
+                              (param => {
                                 return {
                                   TAG: "Eq",
                                   _0: "1e240",
@@ -175,7 +175,7 @@ let suites_1 = {
                             tl: {
                               hd: [
                                 "toStringWithRadix - radix:36",
-                                ((param) => {
+                                (param => {
                                   return {
                                     TAG: "Eq",
                                     _0: "2n9c",
@@ -186,7 +186,7 @@ let suites_1 = {
                               tl: {
                                 hd: [
                                   "toStringWithRadix - radix:37",
-                                  ((param) => {
+                                  (param => {
                                     return {
                                       TAG: "ThrowAny",
                                       _0: (() => {
@@ -198,7 +198,7 @@ let suites_1 = {
                                 tl: {
                                   hd: [
                                     "toStringWithRadix - radix:1",
-                                    ((param) => {
+                                    (param => {
                                       return {
                                         TAG: "ThrowAny",
                                         _0: (() => {
@@ -210,7 +210,7 @@ let suites_1 = {
                                   tl: {
                                     hd: [
                                       "toStringWithRadix - radix:-1",
-                                      ((param) => {
+                                      (param => {
                                         return {
                                           TAG: "ThrowAny",
                                           _0: (() => {

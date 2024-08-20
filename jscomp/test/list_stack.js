@@ -3,7 +3,7 @@
 
 let List = require("../../lib/js/list.js");
 
-List.find(((x) => {
+List.find((x => {
   return x > 3;
 }), /* [] */0);
 

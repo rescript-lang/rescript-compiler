@@ -217,7 +217,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
       }
     }
   }
-}, $$Array.to_list($$Array.map(((i) => {
+}, $$Array.to_list($$Array.map((i => {
   return [
     String(i),
     (() => {

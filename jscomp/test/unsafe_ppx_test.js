@@ -26,7 +26,7 @@ function g(a) {
   regression(a, Pervasives.failwith);
   regression2(3, 2);
   regression3(3, 2);
-  regression4(3, ((x) => {
+  regression4(3, (x => {
     return x;
   }));
 }

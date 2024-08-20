@@ -16,7 +16,7 @@ function f(x) {
   ];
 }
 
-let shift_right_logical_tests_0 = $$Array.map(((x) => {
+let shift_right_logical_tests_0 = $$Array.map((x => {
   return (-1 >>> x) | 0;
 }), Ext_array_test.range(0, 31));
 
@@ -60,7 +60,7 @@ let shift_right_logical_tests = [
   shift_right_logical_tests_1
 ];
 
-let shift_right_tests_0 = $$Array.map(((x) => {
+let shift_right_tests_0 = $$Array.map((x => {
   return (Int32.min_int >> x);
 }), Ext_array_test.range(0, 31));
 
@@ -104,7 +104,7 @@ let shift_right_tests = [
   shift_right_tests_1
 ];
 
-let shift_left_tests_0 = $$Array.map(((x) => {
+let shift_left_tests_0 = $$Array.map((x => {
   return (1 << x);
 }), Ext_array_test.range(0, 31));
 

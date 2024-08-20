@@ -17,7 +17,7 @@ function eq(loc, x, y) {
 }
 
 function f_01() {
-  return hi((x) => {
+  return hi(x => {
     if (x === undefined) {
       console.log("x");
       return;

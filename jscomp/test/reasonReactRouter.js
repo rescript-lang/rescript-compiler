@@ -169,14 +169,14 @@ function useUrl(serverUrl, param) {
   let setUrl = match[1];
   let url$1 = match[0];
   React.useEffect((() => {
-    let watcherId = watchUrl((url) => {
-      setUrl((param) => {
+    let watcherId = watchUrl(url => {
+      setUrl(param => {
         return url;
       });
     });
     let newUrl = url();
     if (urlNotEqual(newUrl, url$1)) {
-      setUrl((param) => {
+      setUrl(param => {
         return newUrl;
       });
     }

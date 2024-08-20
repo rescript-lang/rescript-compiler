@@ -24,7 +24,7 @@ let oppHeroes = {
 let huntGrootCondition = false;
 
 if (List.length(/* [] */0) > 0) {
-  let x = List.filter(((h) => {
+  let x = List.filter((h => {
     return List.hd(/* [] */0) <= 1000;
   }), oppHeroes);
   huntGrootCondition = List.length(x) === 0;
@@ -33,7 +33,7 @@ if (List.length(/* [] */0) > 0) {
 let huntGrootCondition2 = true;
 
 if (List.length(/* [] */0) < 0) {
-  let x$1 = List.filter(((h) => {
+  let x$1 = List.filter((h => {
     return List.hd(/* [] */0) <= 1000;
   }), oppHeroes);
   huntGrootCondition2 = List.length(x$1) === 0;

@@ -6,7 +6,7 @@ let Caml_option = require("../../lib/js/caml_option.js");
 
 let suites_0 = [
   "isArray_array",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: true,
@@ -18,7 +18,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "isArray_int",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: false,
@@ -29,7 +29,7 @@ let suites_1 = {
   tl: {
     hd: [
       "length",
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: 3,
@@ -44,7 +44,7 @@ let suites_1 = {
     tl: {
       hd: [
         "copyWithin",
-        ((param) => {
+        (param => {
           return {
             TAG: "Eq",
             _0: [
@@ -67,7 +67,7 @@ let suites_1 = {
       tl: {
         hd: [
           "copyWithinFrom",
-          ((param) => {
+          (param => {
             return {
               TAG: "Eq",
               _0: [
@@ -90,7 +90,7 @@ let suites_1 = {
         tl: {
           hd: [
             "copyWithinFromRange",
-            ((param) => {
+            (param => {
               return {
                 TAG: "Eq",
                 _0: [
@@ -113,7 +113,7 @@ let suites_1 = {
           tl: {
             hd: [
               "fillInPlace",
-              ((param) => {
+              (param => {
                 return {
                   TAG: "Eq",
                   _0: [
@@ -132,7 +132,7 @@ let suites_1 = {
             tl: {
               hd: [
                 "fillFromInPlace",
-                ((param) => {
+                (param => {
                   return {
                     TAG: "Eq",
                     _0: [
@@ -151,7 +151,7 @@ let suites_1 = {
               tl: {
                 hd: [
                   "fillRangeInPlace",
-                  ((param) => {
+                  (param => {
                     return {
                       TAG: "Eq",
                       _0: [
@@ -170,7 +170,7 @@ let suites_1 = {
                 tl: {
                   hd: [
                     "pop",
-                    ((param) => {
+                    (param => {
                       return {
                         TAG: "Eq",
                         _0: 3,
@@ -185,7 +185,7 @@ let suites_1 = {
                   tl: {
                     hd: [
                       "pop - empty array",
-                      ((param) => {
+                      (param => {
                         return {
                           TAG: "Eq",
                           _0: undefined,
@@ -196,7 +196,7 @@ let suites_1 = {
                     tl: {
                       hd: [
                         "push",
-                        ((param) => {
+                        (param => {
                           return {
                             TAG: "Eq",
                             _0: 4,
@@ -211,7 +211,7 @@ let suites_1 = {
                       tl: {
                         hd: [
                           "pushMany",
-                          ((param) => {
+                          (param => {
                             return {
                               TAG: "Eq",
                               _0: 5,
@@ -226,7 +226,7 @@ let suites_1 = {
                         tl: {
                           hd: [
                             "reverseInPlace",
-                            ((param) => {
+                            (param => {
                               return {
                                 TAG: "Eq",
                                 _0: [
@@ -245,7 +245,7 @@ let suites_1 = {
                           tl: {
                             hd: [
                               "shift",
-                              ((param) => {
+                              (param => {
                                 return {
                                   TAG: "Eq",
                                   _0: 1,
@@ -260,7 +260,7 @@ let suites_1 = {
                             tl: {
                               hd: [
                                 "shift - empty array",
-                                ((param) => {
+                                (param => {
                                   return {
                                     TAG: "Eq",
                                     _0: undefined,
@@ -271,7 +271,7 @@ let suites_1 = {
                               tl: {
                                 hd: [
                                   "sortInPlace",
-                                  ((param) => {
+                                  (param => {
                                     return {
                                       TAG: "Eq",
                                       _0: [
@@ -290,7 +290,7 @@ let suites_1 = {
                                 tl: {
                                   hd: [
                                     "sortInPlaceWith",
-                                    ((param) => {
+                                    (param => {
                                       return {
                                         TAG: "Eq",
                                         _0: [
@@ -311,7 +311,7 @@ let suites_1 = {
                                   tl: {
                                     hd: [
                                       "spliceInPlace",
-                                      ((param) => {
+                                      (param => {
                                         let arr = [
                                           1,
                                           2,
@@ -341,7 +341,7 @@ let suites_1 = {
                                     tl: {
                                       hd: [
                                         "removeFromInPlace",
-                                        ((param) => {
+                                        (param => {
                                           let arr = [
                                             1,
                                             2,
@@ -371,7 +371,7 @@ let suites_1 = {
                                       tl: {
                                         hd: [
                                           "removeCountInPlace",
-                                          ((param) => {
+                                          (param => {
                                             let arr = [
                                               1,
                                               2,
@@ -399,7 +399,7 @@ let suites_1 = {
                                         tl: {
                                           hd: [
                                             "unshift",
-                                            ((param) => {
+                                            (param => {
                                               return {
                                                 TAG: "Eq",
                                                 _0: 4,
@@ -414,7 +414,7 @@ let suites_1 = {
                                           tl: {
                                             hd: [
                                               "unshiftMany",
-                                              ((param) => {
+                                              (param => {
                                                 return {
                                                   TAG: "Eq",
                                                   _0: 5,
@@ -429,7 +429,7 @@ let suites_1 = {
                                             tl: {
                                               hd: [
                                                 "append",
-                                                ((param) => {
+                                                (param => {
                                                   return {
                                                     TAG: "Eq",
                                                     _0: [
@@ -449,7 +449,7 @@ let suites_1 = {
                                               tl: {
                                                 hd: [
                                                   "concat",
-                                                  ((param) => {
+                                                  (param => {
                                                     return {
                                                       TAG: "Eq",
                                                       _0: [
@@ -473,7 +473,7 @@ let suites_1 = {
                                                 tl: {
                                                   hd: [
                                                     "concatMany",
-                                                    ((param) => {
+                                                    (param => {
                                                       return {
                                                         TAG: "Eq",
                                                         _0: [
@@ -502,7 +502,7 @@ let suites_1 = {
                                                   tl: {
                                                     hd: [
                                                       "includes",
-                                                      ((param) => {
+                                                      (param => {
                                                         return {
                                                           TAG: "Eq",
                                                           _0: true,
@@ -517,7 +517,7 @@ let suites_1 = {
                                                     tl: {
                                                       hd: [
                                                         "indexOf",
-                                                        ((param) => {
+                                                        (param => {
                                                           return {
                                                             TAG: "Eq",
                                                             _0: 1,
@@ -532,7 +532,7 @@ let suites_1 = {
                                                       tl: {
                                                         hd: [
                                                           "indexOfFrom",
-                                                          ((param) => {
+                                                          (param => {
                                                             return {
                                                               TAG: "Eq",
                                                               _0: 3,
@@ -548,7 +548,7 @@ let suites_1 = {
                                                         tl: {
                                                           hd: [
                                                             "join",
-                                                            ((param) => {
+                                                            (param => {
                                                               return {
                                                                 TAG: "Eq",
                                                                 _0: "1,2,3",
@@ -563,7 +563,7 @@ let suites_1 = {
                                                           tl: {
                                                             hd: [
                                                               "joinWith",
-                                                              ((param) => {
+                                                              (param => {
                                                                 return {
                                                                   TAG: "Eq",
                                                                   _0: "1;2;3",
@@ -578,7 +578,7 @@ let suites_1 = {
                                                             tl: {
                                                               hd: [
                                                                 "lastIndexOf",
-                                                                ((param) => {
+                                                                (param => {
                                                                   return {
                                                                     TAG: "Eq",
                                                                     _0: 1,
@@ -593,7 +593,7 @@ let suites_1 = {
                                                               tl: {
                                                                 hd: [
                                                                   "lastIndexOfFrom",
-                                                                  ((param) => {
+                                                                  (param => {
                                                                     return {
                                                                       TAG: "Eq",
                                                                       _0: 1,
@@ -609,7 +609,7 @@ let suites_1 = {
                                                                 tl: {
                                                                   hd: [
                                                                     "slice",
-                                                                    ((param) => {
+                                                                    (param => {
                                                                       return {
                                                                         TAG: "Eq",
                                                                         _0: [
@@ -629,7 +629,7 @@ let suites_1 = {
                                                                   tl: {
                                                                     hd: [
                                                                       "copy",
-                                                                      ((param) => {
+                                                                      (param => {
                                                                         return {
                                                                           TAG: "Eq",
                                                                           _0: [
@@ -652,7 +652,7 @@ let suites_1 = {
                                                                     tl: {
                                                                       hd: [
                                                                         "sliceFrom",
-                                                                        ((param) => {
+                                                                        (param => {
                                                                           return {
                                                                             TAG: "Eq",
                                                                             _0: [
@@ -673,7 +673,7 @@ let suites_1 = {
                                                                       tl: {
                                                                         hd: [
                                                                           "toString",
-                                                                          ((param) => {
+                                                                          (param => {
                                                                             return {
                                                                               TAG: "Eq",
                                                                               _0: "1,2,3",
@@ -688,7 +688,7 @@ let suites_1 = {
                                                                         tl: {
                                                                           hd: [
                                                                             "toLocaleString",
-                                                                            ((param) => {
+                                                                            (param => {
                                                                               return {
                                                                                 TAG: "Eq",
                                                                                 _0: "1,2,3",
@@ -703,7 +703,7 @@ let suites_1 = {
                                                                           tl: {
                                                                             hd: [
                                                                               "every",
-                                                                              ((param) => {
+                                                                              (param => {
                                                                                 return {
                                                                                   TAG: "Eq",
                                                                                   _0: true,
@@ -711,7 +711,7 @@ let suites_1 = {
                                                                                     1,
                                                                                     2,
                                                                                     3
-                                                                                  ].every((n) => {
+                                                                                  ].every(n => {
                                                                                     return n > 0;
                                                                                   })
                                                                                 };
@@ -720,7 +720,7 @@ let suites_1 = {
                                                                             tl: {
                                                                               hd: [
                                                                                 "everyi",
-                                                                                ((param) => {
+                                                                                (param => {
                                                                                   return {
                                                                                     TAG: "Eq",
                                                                                     _0: false,
@@ -737,7 +737,7 @@ let suites_1 = {
                                                                               tl: {
                                                                                 hd: [
                                                                                   "filter",
-                                                                                  ((param) => {
+                                                                                  (param => {
                                                                                     return {
                                                                                       TAG: "Eq",
                                                                                       _0: [
@@ -749,7 +749,7 @@ let suites_1 = {
                                                                                         2,
                                                                                         3,
                                                                                         4
-                                                                                      ].filter((n) => {
+                                                                                      ].filter(n => {
                                                                                         return n % 2 === 0;
                                                                                       })
                                                                                     };
@@ -758,7 +758,7 @@ let suites_1 = {
                                                                                 tl: {
                                                                                   hd: [
                                                                                     "filteri",
-                                                                                    ((param) => {
+                                                                                    (param => {
                                                                                       return {
                                                                                         TAG: "Eq",
                                                                                         _0: [
@@ -779,7 +779,7 @@ let suites_1 = {
                                                                                   tl: {
                                                                                     hd: [
                                                                                       "find",
-                                                                                      ((param) => {
+                                                                                      (param => {
                                                                                         return {
                                                                                           TAG: "Eq",
                                                                                           _0: 2,
@@ -788,7 +788,7 @@ let suites_1 = {
                                                                                             2,
                                                                                             3,
                                                                                             4
-                                                                                          ].find((n) => {
+                                                                                          ].find(n => {
                                                                                             return n % 2 === 0;
                                                                                           }))
                                                                                         };
@@ -797,7 +797,7 @@ let suites_1 = {
                                                                                     tl: {
                                                                                       hd: [
                                                                                         "find - no match",
-                                                                                        ((param) => {
+                                                                                        (param => {
                                                                                           return {
                                                                                             TAG: "Eq",
                                                                                             _0: undefined,
@@ -806,7 +806,7 @@ let suites_1 = {
                                                                                               2,
                                                                                               3,
                                                                                               4
-                                                                                            ].find((n) => {
+                                                                                            ].find(n => {
                                                                                               return n % 2 === 5;
                                                                                             }))
                                                                                           };
@@ -815,7 +815,7 @@ let suites_1 = {
                                                                                       tl: {
                                                                                         hd: [
                                                                                           "findi",
-                                                                                          ((param) => {
+                                                                                          (param => {
                                                                                             return {
                                                                                               TAG: "Eq",
                                                                                               _0: 1,
@@ -833,7 +833,7 @@ let suites_1 = {
                                                                                         tl: {
                                                                                           hd: [
                                                                                             "findi - no match",
-                                                                                            ((param) => {
+                                                                                            (param => {
                                                                                               return {
                                                                                                 TAG: "Eq",
                                                                                                 _0: undefined,
@@ -851,7 +851,7 @@ let suites_1 = {
                                                                                           tl: {
                                                                                             hd: [
                                                                                               "findIndex",
-                                                                                              ((param) => {
+                                                                                              (param => {
                                                                                                 return {
                                                                                                   TAG: "Eq",
                                                                                                   _0: 1,
@@ -860,7 +860,7 @@ let suites_1 = {
                                                                                                     2,
                                                                                                     3,
                                                                                                     4
-                                                                                                  ].findIndex((n) => {
+                                                                                                  ].findIndex(n => {
                                                                                                     return n % 2 === 0;
                                                                                                   })
                                                                                                 };
@@ -869,7 +869,7 @@ let suites_1 = {
                                                                                             tl: {
                                                                                               hd: [
                                                                                                 "findIndexi",
-                                                                                                ((param) => {
+                                                                                                (param => {
                                                                                                   return {
                                                                                                     TAG: "Eq",
                                                                                                     _0: 0,
@@ -887,7 +887,7 @@ let suites_1 = {
                                                                                               tl: {
                                                                                                 hd: [
                                                                                                   "forEach",
-                                                                                                  ((param) => {
+                                                                                                  (param => {
                                                                                                     let sum = {
                                                                                                       contents: 0
                                                                                                     };
@@ -895,7 +895,7 @@ let suites_1 = {
                                                                                                       1,
                                                                                                       2,
                                                                                                       3
-                                                                                                    ].forEach((n) => {
+                                                                                                    ].forEach(n => {
                                                                                                       sum.contents = sum.contents + n | 0;
                                                                                                     });
                                                                                                     return {
@@ -908,7 +908,7 @@ let suites_1 = {
                                                                                                 tl: {
                                                                                                   hd: [
                                                                                                     "forEachi",
-                                                                                                    ((param) => {
+                                                                                                    (param => {
                                                                                                       let sum = {
                                                                                                         contents: 0
                                                                                                       };
@@ -929,7 +929,7 @@ let suites_1 = {
                                                                                                   tl: {
                                                                                                     hd: [
                                                                                                       "map",
-                                                                                                      ((param) => {
+                                                                                                      (param => {
                                                                                                         return {
                                                                                                           TAG: "Eq",
                                                                                                           _0: [
@@ -943,7 +943,7 @@ let suites_1 = {
                                                                                                             2,
                                                                                                             3,
                                                                                                             4
-                                                                                                          ].map((n) => {
+                                                                                                          ].map(n => {
                                                                                                             return (n << 1);
                                                                                                           })
                                                                                                         };
@@ -952,7 +952,7 @@ let suites_1 = {
                                                                                                     tl: {
                                                                                                       hd: [
                                                                                                         "map",
-                                                                                                        ((param) => {
+                                                                                                        (param => {
                                                                                                           return {
                                                                                                             TAG: "Eq",
                                                                                                             _0: [
@@ -975,7 +975,7 @@ let suites_1 = {
                                                                                                       tl: {
                                                                                                         hd: [
                                                                                                           "reduce",
-                                                                                                          ((param) => {
+                                                                                                          (param => {
                                                                                                             return {
                                                                                                               TAG: "Eq",
                                                                                                               _0: -10,
@@ -993,7 +993,7 @@ let suites_1 = {
                                                                                                         tl: {
                                                                                                           hd: [
                                                                                                             "reducei",
-                                                                                                            ((param) => {
+                                                                                                            (param => {
                                                                                                               return {
                                                                                                                 TAG: "Eq",
                                                                                                                 _0: -6,
@@ -1011,7 +1011,7 @@ let suites_1 = {
                                                                                                           tl: {
                                                                                                             hd: [
                                                                                                               "reduceRight",
-                                                                                                              ((param) => {
+                                                                                                              (param => {
                                                                                                                 return {
                                                                                                                   TAG: "Eq",
                                                                                                                   _0: -10,
@@ -1029,7 +1029,7 @@ let suites_1 = {
                                                                                                             tl: {
                                                                                                               hd: [
                                                                                                                 "reduceRighti",
-                                                                                                                ((param) => {
+                                                                                                                (param => {
                                                                                                                   return {
                                                                                                                     TAG: "Eq",
                                                                                                                     _0: -6,
@@ -1047,7 +1047,7 @@ let suites_1 = {
                                                                                                               tl: {
                                                                                                                 hd: [
                                                                                                                   "some",
-                                                                                                                  ((param) => {
+                                                                                                                  (param => {
                                                                                                                     return {
                                                                                                                       TAG: "Eq",
                                                                                                                       _0: false,
@@ -1056,7 +1056,7 @@ let suites_1 = {
                                                                                                                         2,
                                                                                                                         3,
                                                                                                                         4
-                                                                                                                      ].some((n) => {
+                                                                                                                      ].some(n => {
                                                                                                                         return n <= 0;
                                                                                                                       })
                                                                                                                     };
@@ -1065,7 +1065,7 @@ let suites_1 = {
                                                                                                                 tl: {
                                                                                                                   hd: [
                                                                                                                     "somei",
-                                                                                                                    ((param) => {
+                                                                                                                    (param => {
                                                                                                                       return {
                                                                                                                         TAG: "Eq",
                                                                                                                         _0: true,

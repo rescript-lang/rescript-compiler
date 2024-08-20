@@ -45,7 +45,7 @@ function f(x, y, z) {
 
 function g(x, y) {
   let u = x + y | 0;
-  return (z) => {
+  return z => {
     return u + z | 0;
   };
 }

@@ -9,7 +9,7 @@ function isLessThan(title, small, big) {
   return {
     hd: [
       "compare: " + title,
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: true,
@@ -20,7 +20,7 @@ function isLessThan(title, small, big) {
     tl: {
       hd: [
         "compare: " + title,
-        ((param) => {
+        (param => {
           return {
             TAG: "Eq",
             _0: true,
@@ -31,7 +31,7 @@ function isLessThan(title, small, big) {
       tl: {
         hd: [
           "< operator: " + title,
-          ((param) => {
+          (param => {
             return {
               TAG: "Eq",
               _0: true,
@@ -42,7 +42,7 @@ function isLessThan(title, small, big) {
         tl: {
           hd: [
             "<= operator: " + title,
-            ((param) => {
+            (param => {
               return {
                 TAG: "Eq",
                 _0: true,
@@ -53,7 +53,7 @@ function isLessThan(title, small, big) {
           tl: {
             hd: [
               "> operator: " + title,
-              ((param) => {
+              (param => {
                 return {
                   TAG: "Eq",
                   _0: true,
@@ -64,7 +64,7 @@ function isLessThan(title, small, big) {
             tl: {
               hd: [
                 ">= operator: " + title,
-                ((param) => {
+                (param => {
                   return {
                     TAG: "Eq",
                     _0: true,
@@ -75,7 +75,7 @@ function isLessThan(title, small, big) {
               tl: {
                 hd: [
                   "min: " + title,
-                  ((param) => {
+                  (param => {
                     return {
                       TAG: "Eq",
                       _0: small,
@@ -86,7 +86,7 @@ function isLessThan(title, small, big) {
                 tl: {
                   hd: [
                     "min: " + title,
-                    ((param) => {
+                    (param => {
                       return {
                         TAG: "Eq",
                         _0: small,
@@ -97,7 +97,7 @@ function isLessThan(title, small, big) {
                   tl: {
                     hd: [
                       "max: " + title,
-                      ((param) => {
+                      (param => {
                         return {
                           TAG: "Eq",
                           _0: big,
@@ -108,7 +108,7 @@ function isLessThan(title, small, big) {
                     tl: {
                       hd: [
                         "max: " + title,
-                        ((param) => {
+                        (param => {
                           return {
                             TAG: "Eq",
                             _0: big,
@@ -119,7 +119,7 @@ function isLessThan(title, small, big) {
                       tl: {
                         hd: [
                           "!== operator: " + title,
-                          ((param) => {
+                          (param => {
                             return {
                               TAG: "Eq",
                               _0: true,
@@ -130,7 +130,7 @@ function isLessThan(title, small, big) {
                         tl: {
                           hd: [
                             "!== operator: " + title,
-                            ((param) => {
+                            (param => {
                               return {
                                 TAG: "Eq",
                                 _0: true,
@@ -141,7 +141,7 @@ function isLessThan(title, small, big) {
                           tl: {
                             hd: [
                               "!= operator: " + title,
-                              ((param) => {
+                              (param => {
                                 return {
                                   TAG: "Eq",
                                   _0: true,
@@ -152,7 +152,7 @@ function isLessThan(title, small, big) {
                             tl: {
                               hd: [
                                 "!= operator: " + title,
-                                ((param) => {
+                                (param => {
                                   return {
                                     TAG: "Eq",
                                     _0: true,
@@ -163,7 +163,7 @@ function isLessThan(title, small, big) {
                               tl: {
                                 hd: [
                                   "== operator: " + title,
-                                  ((param) => {
+                                  (param => {
                                     return {
                                       TAG: "Eq",
                                       _0: false,
@@ -174,7 +174,7 @@ function isLessThan(title, small, big) {
                                 tl: {
                                   hd: [
                                     "== operator: " + title,
-                                    ((param) => {
+                                    (param => {
                                       return {
                                         TAG: "Eq",
                                         _0: false,
@@ -185,7 +185,7 @@ function isLessThan(title, small, big) {
                                   tl: {
                                     hd: [
                                       "=== operator: " + title,
-                                      ((param) => {
+                                      (param => {
                                         return {
                                           TAG: "Eq",
                                           _0: false,
@@ -196,7 +196,7 @@ function isLessThan(title, small, big) {
                                     tl: {
                                       hd: [
                                         "=== operator: " + title,
-                                        ((param) => {
+                                        (param => {
                                           return {
                                             TAG: "Eq",
                                             _0: false,
@@ -229,7 +229,7 @@ function isEqual(title, num1, num2) {
   return {
     hd: [
       "< operator: " + title,
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: false,
@@ -240,7 +240,7 @@ function isEqual(title, num1, num2) {
     tl: {
       hd: [
         "<= operator: " + title,
-        ((param) => {
+        (param => {
           return {
             TAG: "Eq",
             _0: true,
@@ -251,7 +251,7 @@ function isEqual(title, num1, num2) {
       tl: {
         hd: [
           "> operator: " + title,
-          ((param) => {
+          (param => {
             return {
               TAG: "Eq",
               _0: false,
@@ -262,7 +262,7 @@ function isEqual(title, num1, num2) {
         tl: {
           hd: [
             ">= operator: " + title,
-            ((param) => {
+            (param => {
               return {
                 TAG: "Eq",
                 _0: true,
@@ -273,7 +273,7 @@ function isEqual(title, num1, num2) {
           tl: {
             hd: [
               "min: " + title,
-              ((param) => {
+              (param => {
                 return {
                   TAG: "Eq",
                   _0: num1,
@@ -284,7 +284,7 @@ function isEqual(title, num1, num2) {
             tl: {
               hd: [
                 "max: " + title,
-                ((param) => {
+                (param => {
                   return {
                     TAG: "Eq",
                     _0: num1,
@@ -295,7 +295,7 @@ function isEqual(title, num1, num2) {
               tl: {
                 hd: [
                   "compare: " + title,
-                  ((param) => {
+                  (param => {
                     return {
                       TAG: "Eq",
                       _0: 0,
@@ -306,7 +306,7 @@ function isEqual(title, num1, num2) {
                 tl: {
                   hd: [
                     "compare: " + title,
-                    ((param) => {
+                    (param => {
                       return {
                         TAG: "Eq",
                         _0: 0,
@@ -317,7 +317,7 @@ function isEqual(title, num1, num2) {
                   tl: {
                     hd: [
                       "!= operator: " + title,
-                      ((param) => {
+                      (param => {
                         return {
                           TAG: "Eq",
                           _0: false,
@@ -328,7 +328,7 @@ function isEqual(title, num1, num2) {
                     tl: {
                       hd: [
                         "!= operator: " + title,
-                        ((param) => {
+                        (param => {
                           return {
                             TAG: "Eq",
                             _0: false,
@@ -339,7 +339,7 @@ function isEqual(title, num1, num2) {
                       tl: {
                         hd: [
                           "!= operator: " + title,
-                          ((param) => {
+                          (param => {
                             return {
                               TAG: "Eq",
                               _0: false,
@@ -350,7 +350,7 @@ function isEqual(title, num1, num2) {
                         tl: {
                           hd: [
                             "!= operator: " + title,
-                            ((param) => {
+                            (param => {
                               return {
                                 TAG: "Eq",
                                 _0: false,
@@ -361,7 +361,7 @@ function isEqual(title, num1, num2) {
                           tl: {
                             hd: [
                               "== operator: " + title,
-                              ((param) => {
+                              (param => {
                                 return {
                                   TAG: "Eq",
                                   _0: true,
@@ -372,7 +372,7 @@ function isEqual(title, num1, num2) {
                             tl: {
                               hd: [
                                 "== operator: " + title,
-                                ((param) => {
+                                (param => {
                                   return {
                                     TAG: "Eq",
                                     _0: true,
@@ -383,7 +383,7 @@ function isEqual(title, num1, num2) {
                               tl: {
                                 hd: [
                                   "=== operator: " + title,
-                                  ((param) => {
+                                  (param => {
                                     return {
                                       TAG: "Eq",
                                       _0: true,
@@ -394,7 +394,7 @@ function isEqual(title, num1, num2) {
                                 tl: {
                                   hd: [
                                     "=== operator: " + title,
-                                    ((param) => {
+                                    (param => {
                                       return {
                                         TAG: "Eq",
                                         _0: true,

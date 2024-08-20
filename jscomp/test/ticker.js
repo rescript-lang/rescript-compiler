@@ -80,13 +80,13 @@ function string_of_rank(x) {
 }
 
 function find_ticker_by_name(all_tickers, ticker) {
-  return List.find(((param) => {
+  return List.find((param => {
     return param.ticker_name === ticker;
   }), all_tickers);
 }
 
 function print_all_composite(all_tickers) {
-  List.iter(((x) => {
+  List.iter((x => {
     let tmp = x.type_;
     if (typeof tmp !== "object") {
       return;
@@ -1201,7 +1201,7 @@ function compute_update_sequences(all_tickers) {
 
 function process_quote(ticker_map, new_ticker, new_value) {
   let update_sequence = find(new_ticker, ticker_map);
-  List.iter(((ticker) => {
+  List.iter((ticker => {
     let match = ticker.type_;
     if (typeof match !== "object") {
       if (ticker.ticker_name === new_ticker) {

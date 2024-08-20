@@ -38,7 +38,7 @@ function to_int(x) {
 
 let suites_0 = [
   "test_int",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: 3,
@@ -54,7 +54,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "test_int2",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: 0,
@@ -69,7 +69,7 @@ let suites_1 = {
   tl: {
     hd: [
       "test_string",
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: -1,

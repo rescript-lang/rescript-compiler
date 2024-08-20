@@ -6,7 +6,7 @@ let Complex = require("../../lib/js/complex.js");
 
 let suites_0 = [
   "basic_add",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: {

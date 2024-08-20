@@ -7,7 +7,7 @@ let Caml_option = require("../../lib/js/caml_option.js");
 
 let suites_0 = [
   "make",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: "null",
@@ -19,7 +19,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "fromCharCode",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: "a",
@@ -30,7 +30,7 @@ let suites_1 = {
   tl: {
     hd: [
       "fromCharCodeMany",
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: "az",
@@ -41,7 +41,7 @@ let suites_1 = {
     tl: {
       hd: [
         "fromCodePoint",
-        ((param) => {
+        (param => {
           return {
             TAG: "Eq",
             _0: "a",
@@ -52,7 +52,7 @@ let suites_1 = {
       tl: {
         hd: [
           "fromCodePointMany",
-          ((param) => {
+          (param => {
             return {
               TAG: "Eq",
               _0: "az",
@@ -63,7 +63,7 @@ let suites_1 = {
         tl: {
           hd: [
             "length",
-            ((param) => {
+            (param => {
               return {
                 TAG: "Eq",
                 _0: 3,
@@ -74,7 +74,7 @@ let suites_1 = {
           tl: {
             hd: [
               "get",
-              ((param) => {
+              (param => {
                 return {
                   TAG: "Eq",
                   _0: "a",
@@ -85,7 +85,7 @@ let suites_1 = {
             tl: {
               hd: [
                 "charAt",
-                ((param) => {
+                (param => {
                   return {
                     TAG: "Eq",
                     _0: "a",
@@ -96,7 +96,7 @@ let suites_1 = {
               tl: {
                 hd: [
                   "charCodeAt",
-                  ((param) => {
+                  (param => {
                     return {
                       TAG: "Eq",
                       _0: 97,
@@ -107,7 +107,7 @@ let suites_1 = {
                 tl: {
                   hd: [
                     "codePointAt",
-                    ((param) => {
+                    (param => {
                       return {
                         TAG: "Eq",
                         _0: 97,
@@ -118,7 +118,7 @@ let suites_1 = {
                   tl: {
                     hd: [
                       "codePointAt - out of bounds",
-                      ((param) => {
+                      (param => {
                         return {
                           TAG: "Eq",
                           _0: undefined,
@@ -129,7 +129,7 @@ let suites_1 = {
                     tl: {
                       hd: [
                         "concat",
-                        ((param) => {
+                        (param => {
                           return {
                             TAG: "Eq",
                             _0: "foobar",
@@ -140,7 +140,7 @@ let suites_1 = {
                       tl: {
                         hd: [
                           "concatMany",
-                          ((param) => {
+                          (param => {
                             return {
                               TAG: "Eq",
                               _0: "foobarbaz",
@@ -151,7 +151,7 @@ let suites_1 = {
                         tl: {
                           hd: [
                             "endsWith",
-                            ((param) => {
+                            (param => {
                               return {
                                 TAG: "Eq",
                                 _0: true,
@@ -162,7 +162,7 @@ let suites_1 = {
                           tl: {
                             hd: [
                               "endsWithFrom",
-                              ((param) => {
+                              (param => {
                                 return {
                                   TAG: "Eq",
                                   _0: false,
@@ -173,7 +173,7 @@ let suites_1 = {
                             tl: {
                               hd: [
                                 "includes",
-                                ((param) => {
+                                (param => {
                                   return {
                                     TAG: "Eq",
                                     _0: true,
@@ -184,7 +184,7 @@ let suites_1 = {
                               tl: {
                                 hd: [
                                   "includesFrom",
-                                  ((param) => {
+                                  (param => {
                                     return {
                                       TAG: "Eq",
                                       _0: false,
@@ -195,7 +195,7 @@ let suites_1 = {
                                 tl: {
                                   hd: [
                                     "indexOf",
-                                    ((param) => {
+                                    (param => {
                                       return {
                                         TAG: "Eq",
                                         _0: 3,
@@ -206,7 +206,7 @@ let suites_1 = {
                                   tl: {
                                     hd: [
                                       "indexOfFrom",
-                                      ((param) => {
+                                      (param => {
                                         return {
                                           TAG: "Eq",
                                           _0: -1,
@@ -217,7 +217,7 @@ let suites_1 = {
                                     tl: {
                                       hd: [
                                         "lastIndexOf",
-                                        ((param) => {
+                                        (param => {
                                           return {
                                             TAG: "Eq",
                                             _0: 3,
@@ -228,7 +228,7 @@ let suites_1 = {
                                       tl: {
                                         hd: [
                                           "lastIndexOfFrom",
-                                          ((param) => {
+                                          (param => {
                                             return {
                                               TAG: "Eq",
                                               _0: 3,
@@ -239,7 +239,7 @@ let suites_1 = {
                                         tl: {
                                           hd: [
                                             "localeCompare",
-                                            ((param) => {
+                                            (param => {
                                               return {
                                                 TAG: "Eq",
                                                 _0: 0,
@@ -250,7 +250,7 @@ let suites_1 = {
                                           tl: {
                                             hd: [
                                               "match",
-                                              ((param) => {
+                                              (param => {
                                                 return {
                                                   TAG: "Eq",
                                                   _0: [
@@ -264,7 +264,7 @@ let suites_1 = {
                                             tl: {
                                               hd: [
                                                 "match - no match",
-                                                ((param) => {
+                                                (param => {
                                                   return {
                                                     TAG: "Eq",
                                                     _0: undefined,
@@ -275,14 +275,14 @@ let suites_1 = {
                                               tl: {
                                                 hd: [
                                                   "match - not found capture groups",
-                                                  ((param) => {
+                                                  (param => {
                                                     return {
                                                       TAG: "Eq",
                                                       _0: [
                                                         "hello ",
                                                         undefined
                                                       ],
-                                                      _1: Belt_Option.map(Caml_option.null_to_opt("hello word".match(/hello (world)?/)), ((prim) => {
+                                                      _1: Belt_Option.map(Caml_option.null_to_opt("hello word".match(/hello (world)?/)), (prim => {
                                                         return prim.slice();
                                                       }))
                                                     };
@@ -291,7 +291,7 @@ let suites_1 = {
                                                 tl: {
                                                   hd: [
                                                     "normalize",
-                                                    ((param) => {
+                                                    (param => {
                                                       return {
                                                         TAG: "Eq",
                                                         _0: "foo",
@@ -302,7 +302,7 @@ let suites_1 = {
                                                   tl: {
                                                     hd: [
                                                       "normalizeByForm",
-                                                      ((param) => {
+                                                      (param => {
                                                         return {
                                                           TAG: "Eq",
                                                           _0: "foo",
@@ -313,7 +313,7 @@ let suites_1 = {
                                                     tl: {
                                                       hd: [
                                                         "repeat",
-                                                        ((param) => {
+                                                        (param => {
                                                           return {
                                                             TAG: "Eq",
                                                             _0: "foofoofoo",
@@ -324,7 +324,7 @@ let suites_1 = {
                                                       tl: {
                                                         hd: [
                                                           "replace",
-                                                          ((param) => {
+                                                          (param => {
                                                             return {
                                                               TAG: "Eq",
                                                               _0: "fooBORKbaz",
@@ -335,7 +335,7 @@ let suites_1 = {
                                                         tl: {
                                                           hd: [
                                                             "replaceByRe",
-                                                            ((param) => {
+                                                            (param => {
                                                               return {
                                                                 TAG: "Eq",
                                                                 _0: "fooBORKBORK",
@@ -346,7 +346,7 @@ let suites_1 = {
                                                           tl: {
                                                             hd: [
                                                               "unsafeReplaceBy0",
-                                                              ((param) => {
+                                                              (param => {
                                                                 let replace = (whole, offset, s) => {
                                                                   if (whole === "bar") {
                                                                     return "BORK";
@@ -364,7 +364,7 @@ let suites_1 = {
                                                             tl: {
                                                               hd: [
                                                                 "unsafeReplaceBy1",
-                                                                ((param) => {
+                                                                (param => {
                                                                   let replace = (whole, p1, offset, s) => {
                                                                     if (whole === "bar") {
                                                                       return "BORK";
@@ -382,7 +382,7 @@ let suites_1 = {
                                                               tl: {
                                                                 hd: [
                                                                   "unsafeReplaceBy2",
-                                                                  ((param) => {
+                                                                  (param => {
                                                                     let replace = (whole, p1, p2, offset, s) => {
                                                                       if (whole === "bar") {
                                                                         return "BORK";
@@ -400,7 +400,7 @@ let suites_1 = {
                                                                 tl: {
                                                                   hd: [
                                                                     "unsafeReplaceBy3",
-                                                                    ((param) => {
+                                                                    (param => {
                                                                       let replace = (whole, p1, p2, p3, offset, s) => {
                                                                         if (whole === "bar") {
                                                                           return "BORK";
@@ -418,7 +418,7 @@ let suites_1 = {
                                                                   tl: {
                                                                     hd: [
                                                                       "search",
-                                                                      ((param) => {
+                                                                      (param => {
                                                                         return {
                                                                           TAG: "Eq",
                                                                           _0: 3,
@@ -429,7 +429,7 @@ let suites_1 = {
                                                                     tl: {
                                                                       hd: [
                                                                         "slice",
-                                                                        ((param) => {
+                                                                        (param => {
                                                                           return {
                                                                             TAG: "Eq",
                                                                             _0: "bar",
@@ -440,7 +440,7 @@ let suites_1 = {
                                                                       tl: {
                                                                         hd: [
                                                                           "sliceToEnd",
-                                                                          ((param) => {
+                                                                          (param => {
                                                                             return {
                                                                               TAG: "Eq",
                                                                               _0: "barbaz",
@@ -451,7 +451,7 @@ let suites_1 = {
                                                                         tl: {
                                                                           hd: [
                                                                             "split",
-                                                                            ((param) => {
+                                                                            (param => {
                                                                               return {
                                                                                 TAG: "Eq",
                                                                                 _0: [
@@ -466,7 +466,7 @@ let suites_1 = {
                                                                           tl: {
                                                                             hd: [
                                                                               "splitAtMost",
-                                                                              ((param) => {
+                                                                              (param => {
                                                                                 return {
                                                                                   TAG: "Eq",
                                                                                   _0: [
@@ -480,7 +480,7 @@ let suites_1 = {
                                                                             tl: {
                                                                               hd: [
                                                                                 "splitByRe",
-                                                                                ((param) => {
+                                                                                (param => {
                                                                                   return {
                                                                                     TAG: "Eq",
                                                                                     _0: [
@@ -499,7 +499,7 @@ let suites_1 = {
                                                                               tl: {
                                                                                 hd: [
                                                                                   "splitByReAtMost",
-                                                                                  ((param) => {
+                                                                                  (param => {
                                                                                     return {
                                                                                       TAG: "Eq",
                                                                                       _0: [
@@ -514,7 +514,7 @@ let suites_1 = {
                                                                                 tl: {
                                                                                   hd: [
                                                                                     "startsWith",
-                                                                                    ((param) => {
+                                                                                    (param => {
                                                                                       return {
                                                                                         TAG: "Eq",
                                                                                         _0: true,
@@ -525,7 +525,7 @@ let suites_1 = {
                                                                                   tl: {
                                                                                     hd: [
                                                                                       "startsWithFrom",
-                                                                                      ((param) => {
+                                                                                      (param => {
                                                                                         return {
                                                                                           TAG: "Eq",
                                                                                           _0: false,
@@ -536,7 +536,7 @@ let suites_1 = {
                                                                                     tl: {
                                                                                       hd: [
                                                                                         "substr",
-                                                                                        ((param) => {
+                                                                                        (param => {
                                                                                           return {
                                                                                             TAG: "Eq",
                                                                                             _0: "barbaz",
@@ -547,7 +547,7 @@ let suites_1 = {
                                                                                       tl: {
                                                                                         hd: [
                                                                                           "substrAtMost",
-                                                                                          ((param) => {
+                                                                                          (param => {
                                                                                             return {
                                                                                               TAG: "Eq",
                                                                                               _0: "bar",
@@ -558,7 +558,7 @@ let suites_1 = {
                                                                                         tl: {
                                                                                           hd: [
                                                                                             "substring",
-                                                                                            ((param) => {
+                                                                                            (param => {
                                                                                               return {
                                                                                                 TAG: "Eq",
                                                                                                 _0: "bar",
@@ -569,7 +569,7 @@ let suites_1 = {
                                                                                           tl: {
                                                                                             hd: [
                                                                                               "substringToEnd",
-                                                                                              ((param) => {
+                                                                                              (param => {
                                                                                                 return {
                                                                                                   TAG: "Eq",
                                                                                                   _0: "barbaz",
@@ -580,7 +580,7 @@ let suites_1 = {
                                                                                             tl: {
                                                                                               hd: [
                                                                                                 "toLowerCase",
-                                                                                                ((param) => {
+                                                                                                (param => {
                                                                                                   return {
                                                                                                     TAG: "Eq",
                                                                                                     _0: "bork",
@@ -591,7 +591,7 @@ let suites_1 = {
                                                                                               tl: {
                                                                                                 hd: [
                                                                                                   "toLocaleLowerCase",
-                                                                                                  ((param) => {
+                                                                                                  (param => {
                                                                                                     return {
                                                                                                       TAG: "Eq",
                                                                                                       _0: "bork",
@@ -602,7 +602,7 @@ let suites_1 = {
                                                                                                 tl: {
                                                                                                   hd: [
                                                                                                     "toUpperCase",
-                                                                                                    ((param) => {
+                                                                                                    (param => {
                                                                                                       return {
                                                                                                         TAG: "Eq",
                                                                                                         _0: "FUBAR",
@@ -613,7 +613,7 @@ let suites_1 = {
                                                                                                   tl: {
                                                                                                     hd: [
                                                                                                       "toLocaleUpperCase",
-                                                                                                      ((param) => {
+                                                                                                      (param => {
                                                                                                         return {
                                                                                                           TAG: "Eq",
                                                                                                           _0: "FUBAR",
@@ -624,7 +624,7 @@ let suites_1 = {
                                                                                                     tl: {
                                                                                                       hd: [
                                                                                                         "trim",
-                                                                                                        ((param) => {
+                                                                                                        (param => {
                                                                                                           return {
                                                                                                             TAG: "Eq",
                                                                                                             _0: "foo",
@@ -635,7 +635,7 @@ let suites_1 = {
                                                                                                       tl: {
                                                                                                         hd: [
                                                                                                           "anchor",
-                                                                                                          ((param) => {
+                                                                                                          (param => {
                                                                                                             return {
                                                                                                               TAG: "Eq",
                                                                                                               _0: "<a name=\"bar\">foo</a>",
@@ -646,7 +646,7 @@ let suites_1 = {
                                                                                                         tl: {
                                                                                                           hd: [
                                                                                                             "link",
-                                                                                                            ((param) => {
+                                                                                                            (param => {
                                                                                                               return {
                                                                                                                 TAG: "Eq",
                                                                                                                 _0: "<a href=\"https://reason.ml\">foo</a>",
@@ -657,7 +657,7 @@ let suites_1 = {
                                                                                                           tl: {
                                                                                                             hd: [
                                                                                                               "File \"js_string_test.res\", line 138, characters 5-12",
-                                                                                                              ((param) => {
+                                                                                                              (param => {
                                                                                                                 return {
                                                                                                                   TAG: "Ok",
                                                                                                                   _0: "ab".includes("a")

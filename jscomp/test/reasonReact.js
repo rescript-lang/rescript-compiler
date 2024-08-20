@@ -84,7 +84,7 @@ function element(keyOpt, refOpt, component) {
 }
 
 function wrapReasonForJs(component, jsPropsToReason) {
-  let uncurriedJsPropsToReason = (jsProps) => {
+  let uncurriedJsPropsToReason = jsProps => {
     return jsPropsToReason(jsProps);
   };
   component.reactClassInternal.prototype.jsPropsToReason = uncurriedJsPropsToReason;

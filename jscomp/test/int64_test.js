@@ -35,7 +35,7 @@ function commutative_add(result, a, b) {
 
 let generic_compare = Caml_obj.compare;
 
-let shift_left_tests_0 = $$Array.map(((i) => {
+let shift_left_tests_0 = $$Array.map((i => {
   return Caml_int64.lsl_(Caml_int64.one, i);
 }), Ext_array_test.range(0, 63));
 
@@ -297,7 +297,7 @@ let shift_left_tests = [
   shift_left_tests_1
 ];
 
-let shift_right_tests_0 = $$Array.map(((i) => {
+let shift_right_tests_0 = $$Array.map((i => {
   return Caml_int64.asr_(Caml_int64.min_int, i);
 }), Ext_array_test.range(0, 63));
 
@@ -559,7 +559,7 @@ let shift_right_tests = [
   shift_right_tests_1
 ];
 
-let shift_right_logical_suites_0 = $$Array.map(((i) => {
+let shift_right_logical_suites_0 = $$Array.map((i => {
   return Caml_int64.lsr_(Caml_int64.min_int, i);
 }), Ext_array_test.range(0, 63));
 
@@ -1188,9 +1188,9 @@ let suites = Pervasives.$at({
                                                 (() => {
                                                   return {
                                                     TAG: "Eq",
-                                                    _0: $$Array.map(((x) => {
+                                                    _0: $$Array.map((x => {
                                                       return Caml_int64.lsl_(Caml_int64.one, x);
-                                                    }), $$Array.init(64, ((i) => {
+                                                    }), $$Array.init(64, (i => {
                                                       return i;
                                                     }))),
                                                     _1: [
@@ -1454,9 +1454,9 @@ let suites = Pervasives.$at({
                                                   (() => {
                                                     return {
                                                       TAG: "Eq",
-                                                      _0: $$Array.map(((x) => {
+                                                      _0: $$Array.map((x => {
                                                         return Caml_int64.lsr_(Caml_int64.neg_one, x);
-                                                      }), $$Array.init(64, ((i) => {
+                                                      }), $$Array.init(64, (i => {
                                                         return i;
                                                       }))),
                                                       _1: [
@@ -1717,9 +1717,9 @@ let suites = Pervasives.$at({
                                                     (() => {
                                                       return {
                                                         TAG: "Eq",
-                                                        _0: $$Array.map(((x) => {
+                                                        _0: $$Array.map((x => {
                                                           return Caml_int64.asr_(Caml_int64.neg_one, x);
-                                                        }), $$Array.init(64, ((i) => {
+                                                        }), $$Array.init(64, (i => {
                                                           return i;
                                                         }))),
                                                         _1: [

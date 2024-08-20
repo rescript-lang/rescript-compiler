@@ -94,7 +94,7 @@ add_test("File \"js_json_test.res\", line 22, characters 11-18", (() => {
       _0: false
     };
   }
-  ty2._0.forEach((x) => {
+  ty2._0.forEach(x => {
     let ty3 = Js_json.classify(x);
     if (typeof ty3 !== "object") {
       throw new Error("Assert_failure", {
@@ -492,7 +492,7 @@ function eq_at_i(loc, json, i, kind, expected) {
   }
 }
 
-let json$5 = JSON.parse(JSON.stringify($$Array.map(((prim) => {
+let json$5 = JSON.parse(JSON.stringify($$Array.map((prim => {
   return prim;
 }), [
   "string 0",
@@ -538,7 +538,7 @@ let a$1 = [
   -268391749
 ];
 
-let json$8 = JSON.parse(JSON.stringify($$Array.map(((prim) => {
+let json$8 = JSON.parse(JSON.stringify($$Array.map((prim => {
   return prim;
 }), a$1)));
 
@@ -756,7 +756,7 @@ idtest({
   tl: /* [] */0
 });
 
-idtest(Belt_List.makeBy(500, ((i) => {
+idtest(Belt_List.makeBy(500, (i => {
   if (i % 2 === 0) {
     return;
   } else {
@@ -764,7 +764,7 @@ idtest(Belt_List.makeBy(500, ((i) => {
   }
 })));
 
-idtest(Belt_Array.makeBy(500, ((i) => {
+idtest(Belt_Array.makeBy(500, (i => {
   if (i % 2 === 0) {
     return;
   } else {

@@ -20,7 +20,7 @@ let a = 7;
 
 console.log(a);
 
-[1].map((x) => {
+[1].map(x => {
   return x + 1 | 0;
 });
 

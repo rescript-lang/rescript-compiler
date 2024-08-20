@@ -112,7 +112,7 @@ function range(from, to_) {
       }
     });
   }
-  return $$Array.init((to_ - from | 0) + 1 | 0, ((i) => {
+  return $$Array.init((to_ - from | 0) + 1 | 0, (i => {
     return i + from | 0;
   }));
 }

@@ -38,7 +38,7 @@ function ff(x) {
 }
 
 function randomRange(i, j) {
-  return Belt_Array.map(Array_data_util.randomRange(i, j), ((x) => {
+  return Belt_Array.map(Array_data_util.randomRange(i, j), (x => {
     return [
       x,
       x
@@ -79,11 +79,11 @@ let a0$1 = Belt_MutableMap.fromArray(randomRange(0, 10000), Icmp);
 
 Belt_MutableMap.set(a0$1, 2000, 33);
 
-Belt_MutableMap.removeMany(a0$1, Belt_Array.map(randomRange(0, 1998), ((prim) => {
+Belt_MutableMap.removeMany(a0$1, Belt_Array.map(randomRange(0, 1998), (prim => {
   return prim[0];
 })));
 
-Belt_MutableMap.removeMany(a0$1, Belt_Array.map(randomRange(2002, 11000), ((prim) => {
+Belt_MutableMap.removeMany(a0$1, Belt_Array.map(randomRange(2002, 11000), (prim => {
   return prim[0];
 })));
 

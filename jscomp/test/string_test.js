@@ -125,7 +125,7 @@ function xsplit(delim, s) {
 }
 
 function string_of_chars(x) {
-  let xs = List.map(((prim) => {
+  let xs = List.map((prim => {
     return String.fromCharCode(prim);
   }), x);
   return $$Array.of_list(xs).join("");

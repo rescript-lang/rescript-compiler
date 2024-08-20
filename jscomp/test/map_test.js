@@ -2008,7 +2008,7 @@ function of_list(kvs) {
 
 let int_map_suites_0 = [
   "add",
-  ((param) => {
+  (param => {
     let v = of_list({
       hd: [
         1,
@@ -2039,7 +2039,7 @@ let int_map_suites_0 = [
 let int_map_suites_1 = {
   hd: [
     "equal",
-    ((param) => {
+    (param => {
       let v = of_list({
         hd: [
           1,
@@ -2088,7 +2088,7 @@ let int_map_suites_1 = {
   tl: {
     hd: [
       "equal2",
-      ((param) => {
+      (param => {
         let v = of_list({
           hd: [
             1,
@@ -2139,7 +2139,7 @@ let int_map_suites_1 = {
     tl: {
       hd: [
         "iteration",
-        ((param) => {
+        (param => {
           let m = "Empty";
           for (let i = 0; i <= 10000; ++i) {
             m = add$1(String(i), String(i), m);

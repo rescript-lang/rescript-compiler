@@ -38,14 +38,14 @@ let xs = {
   contents: /* [] */0
 };
 
-hi((x) => {
+hi(x => {
   xs.contents = {
     hd: x,
     tl: xs.contents
   };
 });
 
-hi((x) => {
+hi(x => {
   xs.contents = {
     hd: x,
     tl: xs.contents
@@ -64,7 +64,7 @@ eq("File \"bs_auto_uncurry_test.res\", line 28, characters 5-12", [
   1,
   2,
   3
-].map((x) => {
+].map(x => {
   return x + 1 | 0;
 }), [
   2,
@@ -76,7 +76,7 @@ eq("File \"bs_auto_uncurry_test.res\", line 29, characters 5-12", [
   1,
   2,
   3
-].map((x) => {
+].map(x => {
   return x + 1 | 0;
 }), [
   2,
@@ -104,7 +104,7 @@ eq("File \"bs_auto_uncurry_test.res\", line 35, characters 5-12", [
   1,
   2,
   3
-].some((x) => {
+].some(x => {
   return x < 1;
 }), false);
 
@@ -112,7 +112,7 @@ eq("File \"bs_auto_uncurry_test.res\", line 37, characters 5-12", [
   1,
   2,
   3
-].every((x) => {
+].every(x => {
   return x > 0;
 }), true);
 

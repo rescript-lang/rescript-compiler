@@ -46,7 +46,7 @@ function g(count) {
 
 let suites_0 = [
   "simple",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: {
@@ -70,10 +70,10 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "more_iterations",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
-        _0: $$Array.init(1001, ((i) => {
+        _0: $$Array.init(1001, (i => {
           return [
             (i << 1),
             String(i)
@@ -86,7 +86,7 @@ let suites_1 = {
   tl: {
     hd: [
       "More_labels_regressionfix_374",
-      ((param) => {
+      (param => {
         let tbl = MoreLabels.Hashtbl.create(undefined, 30);
         Hashtbl.add(tbl, 3, 3);
         return {

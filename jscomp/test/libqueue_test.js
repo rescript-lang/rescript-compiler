@@ -865,7 +865,7 @@ let i$7 = {
   contents: 1
 };
 
-Queue.iter(((j) => {
+Queue.iter((j => {
   if (i$7.contents !== j) {
     throw new Error("Assert_failure", {
       cause: {

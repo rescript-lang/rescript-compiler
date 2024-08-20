@@ -8,7 +8,7 @@ let $$Array = require("../../lib/js/array.js");
 
 let list_suites_0 = [
   "length",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: 1,
@@ -29,7 +29,7 @@ let list_suites_0 = [
 let list_suites_1 = {
   hd: [
     "length2",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: 5,
@@ -55,11 +55,11 @@ let list_suites_1 = {
   tl: {
     hd: [
       "long_length",
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: 30000,
-          _1: List.length($$Array.to_list($$Array.init(30000, ((param) => {
+          _1: List.length($$Array.to_list($$Array.init(30000, (param => {
             return 0;
           }))))
         };
@@ -68,7 +68,7 @@ let list_suites_1 = {
     tl: {
       hd: [
         "sort",
-        ((param) => {
+        (param => {
           return {
             TAG: "Eq",
             _0: List.sort(Caml.int_compare, {
@@ -103,7 +103,7 @@ let list_suites_1 = {
       tl: {
         hd: [
           "File \"list_test.res\", line 20, characters 5-12",
-          ((param) => {
+          (param => {
             return {
               TAG: "Eq",
               _0: true,
@@ -123,7 +123,7 @@ let list_suites_1 = {
         tl: {
           hd: [
             "File \"list_test.res\", line 21, characters 5-12",
-            ((param) => {
+            (param => {
               return {
                 TAG: "Eq",
                 _0: false,
@@ -143,7 +143,7 @@ let list_suites_1 = {
           tl: {
             hd: [
               "File \"list_test.res\", line 22, characters 5-12",
-              ((param) => {
+              (param => {
                 return {
                   TAG: "Eq",
                   _0: 9,

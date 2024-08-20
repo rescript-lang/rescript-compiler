@@ -75,7 +75,7 @@ let StandardNotation = {
 
 function methodWithAsync() {
   let $$this = this ;
-  return async (arg) => {
+  return async arg => {
     return $$this + arg | 0;
   };
 }

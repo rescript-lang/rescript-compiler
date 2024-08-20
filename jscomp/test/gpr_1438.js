@@ -16,7 +16,7 @@ function actionKey(key, a, b, c, d, e) {
     case 118 :
       return a;
   }
-  return (param) => {
+  return param => {
     
   };
 }

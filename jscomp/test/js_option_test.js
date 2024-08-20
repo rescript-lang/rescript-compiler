@@ -10,7 +10,7 @@ function simpleEq(a, b) {
 
 let option_suites_0 = [
   "option_isSome_Some",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: true,
@@ -22,7 +22,7 @@ let option_suites_0 = [
 let option_suites_1 = {
   hd: [
     "option_isSome_None",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: false,
@@ -33,7 +33,7 @@ let option_suites_1 = {
   tl: {
     hd: [
       "option_isNone_Some",
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: false,
@@ -44,7 +44,7 @@ let option_suites_1 = {
     tl: {
       hd: [
         "option_isNone_None",
-        ((param) => {
+        (param => {
           return {
             TAG: "Eq",
             _0: true,
@@ -55,7 +55,7 @@ let option_suites_1 = {
       tl: {
         hd: [
           "option_isSomeValue_Eq",
-          ((param) => {
+          (param => {
             return {
               TAG: "Eq",
               _0: true,
@@ -66,7 +66,7 @@ let option_suites_1 = {
         tl: {
           hd: [
             "option_isSomeValue_Diff",
-            ((param) => {
+            (param => {
               return {
                 TAG: "Eq",
                 _0: false,
@@ -77,7 +77,7 @@ let option_suites_1 = {
           tl: {
             hd: [
               "option_isSomeValue_DiffNone",
-              ((param) => {
+              (param => {
                 return {
                   TAG: "Eq",
                   _0: false,
@@ -88,7 +88,7 @@ let option_suites_1 = {
             tl: {
               hd: [
                 "option_getExn_Some",
-                ((param) => {
+                (param => {
                   return {
                     TAG: "Eq",
                     _0: 2,
@@ -99,7 +99,7 @@ let option_suites_1 = {
               tl: {
                 hd: [
                   "option_equal_Eq",
-                  ((param) => {
+                  (param => {
                     return {
                       TAG: "Eq",
                       _0: true,
@@ -110,7 +110,7 @@ let option_suites_1 = {
                 tl: {
                   hd: [
                     "option_equal_Diff",
-                    ((param) => {
+                    (param => {
                       return {
                         TAG: "Eq",
                         _0: false,
@@ -121,7 +121,7 @@ let option_suites_1 = {
                   tl: {
                     hd: [
                       "option_equal_DiffNone",
-                      ((param) => {
+                      (param => {
                         return {
                           TAG: "Eq",
                           _0: false,
@@ -132,11 +132,11 @@ let option_suites_1 = {
                     tl: {
                       hd: [
                         "option_andThen_SomeSome",
-                        ((param) => {
+                        (param => {
                           return {
                             TAG: "Eq",
                             _0: true,
-                            _1: Js_option.isSomeValue(simpleEq, 3, Js_option.andThen(((a) => {
+                            _1: Js_option.isSomeValue(simpleEq, 3, Js_option.andThen((a => {
                               return a + 1 | 0;
                             }), 2))
                           };
@@ -145,11 +145,11 @@ let option_suites_1 = {
                       tl: {
                         hd: [
                           "option_andThen_SomeNone",
-                          ((param) => {
+                          (param => {
                             return {
                               TAG: "Eq",
                               _0: false,
-                              _1: Js_option.isSomeValue(simpleEq, 3, Js_option.andThen(((param) => {
+                              _1: Js_option.isSomeValue(simpleEq, 3, Js_option.andThen((param => {
                                 
                               }), 2))
                             };
@@ -158,11 +158,11 @@ let option_suites_1 = {
                         tl: {
                           hd: [
                             "option_map_Some",
-                            ((param) => {
+                            (param => {
                               return {
                                 TAG: "Eq",
                                 _0: true,
-                                _1: Js_option.isSomeValue(simpleEq, 3, Js_option.map(((a) => {
+                                _1: Js_option.isSomeValue(simpleEq, 3, Js_option.map((a => {
                                   return a + 1 | 0;
                                 }), 2))
                               };
@@ -171,11 +171,11 @@ let option_suites_1 = {
                           tl: {
                             hd: [
                               "option_map_None",
-                              ((param) => {
+                              (param => {
                                 return {
                                   TAG: "Eq",
                                   _0: undefined,
-                                  _1: Js_option.map(((a) => {
+                                  _1: Js_option.map((a => {
                                     return a + 1 | 0;
                                   }), undefined)
                                 };
@@ -184,7 +184,7 @@ let option_suites_1 = {
                             tl: {
                               hd: [
                                 "option_default_Some",
-                                ((param) => {
+                                (param => {
                                   return {
                                     TAG: "Eq",
                                     _0: 2,
@@ -195,7 +195,7 @@ let option_suites_1 = {
                               tl: {
                                 hd: [
                                   "option_default_None",
-                                  ((param) => {
+                                  (param => {
                                     return {
                                       TAG: "Eq",
                                       _0: 3,
@@ -206,11 +206,11 @@ let option_suites_1 = {
                                 tl: {
                                   hd: [
                                     "option_filter_Pass",
-                                    ((param) => {
+                                    (param => {
                                       return {
                                         TAG: "Eq",
                                         _0: true,
-                                        _1: Js_option.isSomeValue(simpleEq, 2, Js_option.filter(((a) => {
+                                        _1: Js_option.isSomeValue(simpleEq, 2, Js_option.filter((a => {
                                           return a % 2 === 0;
                                         }), 2))
                                       };
@@ -219,11 +219,11 @@ let option_suites_1 = {
                                   tl: {
                                     hd: [
                                       "option_filter_Reject",
-                                      ((param) => {
+                                      (param => {
                                         return {
                                           TAG: "Eq",
                                           _0: undefined,
-                                          _1: Js_option.filter(((a) => {
+                                          _1: Js_option.filter((a => {
                                             return a % 3 === 0;
                                           }), 2)
                                         };
@@ -232,11 +232,11 @@ let option_suites_1 = {
                                     tl: {
                                       hd: [
                                         "option_filter_None",
-                                        ((param) => {
+                                        (param => {
                                           return {
                                             TAG: "Eq",
                                             _0: undefined,
-                                            _1: Js_option.filter(((a) => {
+                                            _1: Js_option.filter((a => {
                                               return a % 3 === 0;
                                             }), undefined)
                                           };
@@ -245,7 +245,7 @@ let option_suites_1 = {
                                       tl: {
                                         hd: [
                                           "option_firstSome_First",
-                                          ((param) => {
+                                          (param => {
                                             return {
                                               TAG: "Eq",
                                               _0: true,
@@ -256,7 +256,7 @@ let option_suites_1 = {
                                         tl: {
                                           hd: [
                                             "option_firstSome_First",
-                                            ((param) => {
+                                            (param => {
                                               return {
                                                 TAG: "Eq",
                                                 _0: true,
@@ -267,7 +267,7 @@ let option_suites_1 = {
                                           tl: {
                                             hd: [
                                               "option_firstSome_None",
-                                              ((param) => {
+                                              (param => {
                                                 return {
                                                   TAG: "Eq",
                                                   _0: undefined,

@@ -33,7 +33,7 @@ function path_as_directory(x) {
 
 function absolute_path(s) {
   let s$1 = Filename.is_relative(s) ? Filename.concat(CamlinternalLazy.force(cwd), s) : s;
-  let aux = (_s) => {
+  let aux = _s => {
     while (true) {
       let s = _s;
       let base = Filename.basename(s);
@@ -106,7 +106,7 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
         _dir1 = dir1.tl;
         continue;
       }
-      return Pervasives.$at(List.map(((param) => {
+      return Pervasives.$at(List.map((param => {
         return node_parent;
       }), dir2), dir1);
     };
@@ -141,7 +141,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
         VAL: absolute_path(file1.VAL)
       })) + (node_sep + Filename.basename(file2));
   }
-  let skip = (_i) => {
+  let skip = _i => {
     while (true) {
       let i = _i;
       if (i >= len) {
@@ -281,7 +281,7 @@ function rel_normalized_absolute_path(from, to_) {
 }
 
 function normalize_absolute_path(x) {
-  let drop_if_exist = (xs) => {
+  let drop_if_exist = xs => {
     if (xs) {
       return xs.tl;
     } else {
@@ -347,7 +347,7 @@ function get_extension(x) {
 let simple_convert_node_path_to_os_path;
 
 if (Sys.unix) {
-  simple_convert_node_path_to_os_path = ((x) => {
+  simple_convert_node_path_to_os_path = (x => {
     return x;
   });
 } else if (Sys.win32 || false) {

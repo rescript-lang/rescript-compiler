@@ -312,7 +312,7 @@ function from_pairs(prefix, pairs) {
     let result = param[0];
     return [
       prefix + "_" + i,
-      ((param) => {
+      (param => {
         return commutative_mul(result, a, b);
       })
     ];
@@ -1516,7 +1516,7 @@ function from(xs) {
     let a = param[0];
     return [
       "small_divs " + i,
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: [
@@ -1572,7 +1572,7 @@ function from_compare(xs) {
     let a = param[0];
     return [
       "int64_compare " + i,
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: c,
@@ -1589,7 +1589,7 @@ function from_to_string(xs) {
     let a = param[0];
     return [
       "to_string " + i,
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: str_a,
@@ -1632,7 +1632,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
     (() => {
       return {
         TAG: "Eq",
-        _0: $$Array.map(((param) => {
+        _0: $$Array.map((param => {
           return true;
         }), check_complete_compare),
         _1: check_complete_compare

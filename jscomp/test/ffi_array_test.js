@@ -33,7 +33,7 @@ eq("File \"ffi_array_test.res\", line 11, characters 12-19", [
   2,
   3,
   4
-].map((x) => {
+].map(x => {
   return x + 1 | 0;
 }), [
   2,

@@ -8,7 +8,7 @@ let v = (Number.EPSILON?Number.EPSILON:2.220446049250313e-16);
 
 let suites_0 = [
   "epsilon",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: Pervasives.epsilon_float,
@@ -20,7 +20,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "raw_epsilon",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: 2.220446049250313e-16,

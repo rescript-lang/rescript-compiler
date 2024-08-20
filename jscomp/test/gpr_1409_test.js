@@ -46,7 +46,7 @@ function map(f, x) {
 
 function make(foo, param) {
   let tmp = {};
-  let tmp$1 = map(((prim) => {
+  let tmp$1 = map((prim => {
     return String(prim);
   }), foo);
   if (tmp$1 !== undefined) {

@@ -5,7 +5,7 @@
 function f() {
   let n = 0;
   while ((() => {
-      let fib = (x) => {
+      let fib = x => {
         if (x === 0 || x === 1) {
           return 1;
         } else {

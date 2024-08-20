@@ -83,7 +83,7 @@ function read_lines2(inc) {
 }
 
 function read_lines3(inc) {
-  let loop = (acc) => {
+  let loop = acc => {
     try {
       let l = input_line(inc);
       return loop({

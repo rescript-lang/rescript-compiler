@@ -33,7 +33,7 @@ let v = true;
 
 let suites_0 = [
   "?bool_eq_caml_bool",
-  ((param) => {
+  (param => {
     return {
       TAG: "Eq",
       _0: u,
@@ -45,7 +45,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "js_bool_eq_js_bool",
-    ((param) => {
+    (param => {
       return {
         TAG: "Eq",
         _0: v,
@@ -56,7 +56,7 @@ let suites_1 = {
   tl: {
     hd: [
       "js_bool_neq_acml_bool",
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: true,

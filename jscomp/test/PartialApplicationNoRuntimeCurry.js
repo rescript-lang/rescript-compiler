@@ -10,7 +10,7 @@ function add(x) {
 
 function f(u) {
   let f$1 = add(u);
-  return (extra) => {
+  return extra => {
     return f$1(1, extra);
   };
 }

@@ -281,13 +281,13 @@ function dfs3(nodes, graph) {
         hd: node,
         tl: visited.contents
       };
-      return List.iter(((x) => {
+      return List.iter((x => {
         aux(x, graph);
       }), nexts(node, graph));
     }
     
   };
-  List.iter(((node) => {
+  List.iter((node => {
     aux(node, graph);
   }), nodes);
   return List.rev(visited.contents);
@@ -409,7 +409,7 @@ function unsafe_topsort(graph) {
   let visited = {
     contents: /* [] */0
   };
-  let sort_node = (node) => {
+  let sort_node = node => {
     if (List.mem(node, visited.contents)) {
       return;
     }
@@ -420,7 +420,7 @@ function unsafe_topsort(graph) {
       tl: visited.contents
     };
   };
-  List.iter(((param) => {
+  List.iter((param => {
     sort_node(param[0]);
   }), graph);
   return visited.contents;
@@ -1497,7 +1497,7 @@ function pathsort(graph) {
     ];
   };
   let sort_nodes = (path, nodes) => {
-    List.iter(((node) => {
+    List.iter((node => {
       sort_node(path, node);
     }), nodes);
   };
@@ -1512,7 +1512,7 @@ function pathsort(graph) {
     }
     
   };
-  List.iter(((param) => {
+  List.iter((param => {
     sort_node(empty_path, param[0]);
   }), graph);
   return visited.contents;

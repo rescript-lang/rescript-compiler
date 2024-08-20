@@ -221,10 +221,10 @@ function old_from_promise_suites_donotuse(name, suites) {
   if (match) {
     if (is_mocha()) {
       describe(name, (() => {
-        List.iter(((param) => {
+        List.iter((param => {
           let code = param[1];
           it(param[0], (() => {
-            return code.then((x) => {
+            return code.then(x => {
               handleCode(x);
               return val_unit;
             });
@@ -244,7 +244,7 @@ function eq_suites(test_id, suites, loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      ((param) => {
+      (param => {
         return {
           TAG: "Eq",
           _0: x,
@@ -261,7 +261,7 @@ function bool_suites(test_id, suites, loc, x) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      ((param) => {
+      (param => {
         return {
           TAG: "Ok",
           _0: x
@@ -277,7 +277,7 @@ function throw_suites(test_id, suites, loc, x) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      ((param) => {
+      (param => {
         return {
           TAG: "ThrowAny",
           _0: x

@@ -2,7 +2,7 @@
 
 
 function Make($$Error) {
-  let notify = (x) => {
+  let notify = x => {
     return $$Error.notification(x);
   };
   return {

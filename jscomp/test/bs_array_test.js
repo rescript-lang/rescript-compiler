@@ -53,7 +53,7 @@ console.log([
   2,
   3,
   4
-].filter((x) => {
+].filter(x => {
   return x > 2;
 }).map((x, i) => {
   return x + i | 0;
@@ -186,7 +186,7 @@ function add(x, y) {
   return x + y | 0;
 }
 
-let v$5 = Belt_Array.makeBy(3000, ((i) => {
+let v$5 = Belt_Array.makeBy(3000, (i => {
   return i;
 }));
 
@@ -300,11 +300,11 @@ function makeMatrixExn(sx, sy, init) {
   return res;
 }
 
-eq("File \"bs_array_test.res\", line 129, characters 5-12", Belt_Array.makeBy(0, ((param) => {
+eq("File \"bs_array_test.res\", line 129, characters 5-12", Belt_Array.makeBy(0, (param => {
   return 1;
 })), []);
 
-eq("File \"bs_array_test.res\", line 130, characters 5-12", Belt_Array.makeBy(3, ((i) => {
+eq("File \"bs_array_test.res\", line 130, characters 5-12", Belt_Array.makeBy(3, (i => {
   return i;
 })), [
   0,
@@ -345,7 +345,7 @@ eq("File \"bs_array_test.res\", line 134, characters 5-12", makeMatrixExn(1, 1, 
 
 eq("File \"bs_array_test.res\", line 135, characters 5-12", [].slice(0), []);
 
-eq("File \"bs_array_test.res\", line 136, characters 5-12", Belt_Array.map([], ((prim) => {
+eq("File \"bs_array_test.res\", line 136, characters 5-12", Belt_Array.map([], (prim => {
   return prim + 1 | 0;
 })), []);
 
@@ -387,7 +387,7 @@ eq("File \"bs_array_test.res\", line 142, characters 5-12", Belt_Array.map([
   1,
   2,
   3
-], ((prim) => {
+], (prim => {
   return prim + 1 | 0;
 })), [
   2,
@@ -428,19 +428,19 @@ eq("File \"bs_array_test.res\", line 146, characters 5-12", Belt_List.toArray({
   3
 ]);
 
-let v$6 = Belt_Array.makeBy(10, ((i) => {
+let v$6 = Belt_Array.makeBy(10, (i => {
   return i;
 }));
 
-let v0 = Belt_Array.keep(v$6, ((x) => {
+let v0 = Belt_Array.keep(v$6, (x => {
   return x % 2 === 0;
 }));
 
-let v1 = Belt_Array.keep(v$6, ((x) => {
+let v1 = Belt_Array.keep(v$6, (x => {
   return x % 3 === 0;
 }));
 
-let v2 = Belt_Array.keepMap(v$6, ((x) => {
+let v2 = Belt_Array.keepMap(v$6, (x => {
   if (x % 2 === 0) {
     return x + 1 | 0;
   }
@@ -478,7 +478,7 @@ let a = [
   5
 ];
 
-let match = Belt_Array.partition(a, ((x) => {
+let match = Belt_Array.partition(a, (x => {
   return x % 2 === 0;
 }));
 
@@ -493,7 +493,7 @@ eq("File \"bs_array_test.res\", line 169, characters 5-12", match[1], [
   5
 ]);
 
-let match$1 = Belt_Array.partition(a, ((x) => {
+let match$1 = Belt_Array.partition(a, (x => {
   return x === 2;
 }));
 
@@ -506,7 +506,7 @@ eq("File \"bs_array_test.res\", line 172, characters 5-12", match$1[1], [
   5
 ]);
 
-let match$2 = Belt_Array.partition([], ((x) => {
+let match$2 = Belt_Array.partition([], (x => {
   return false;
 }));
 
@@ -633,7 +633,7 @@ eq("File \"bs_array_test.res\", line 205, characters 5-12", Belt_Array.sliceToEn
 
 eq("File \"bs_array_test.res\", line 206, characters 5-12", Belt_Array.sliceToEnd(a$2, 6), []);
 
-let a$3 = Belt_Array.makeBy(10, ((x) => {
+let a$3 = Belt_Array.makeBy(10, (x => {
   return x;
 }));
 
@@ -802,7 +802,7 @@ eq("File \"bs_array_test.res\", line 236, characters 5-12", b$1, [
   3
 ]);
 
-let a0 = Belt_Array.makeBy(10, ((x) => {
+let a0 = Belt_Array.makeBy(10, (x => {
   return x;
 }));
 
@@ -876,7 +876,7 @@ Belt_Array.blit(a0, -11, b0, -11, 2);
 
 eq("File \"bs_array_test.res\", line 253, characters 5-12", b0.slice(0), a0);
 
-let aa = Belt_Array.makeBy(10, ((x) => {
+let aa = Belt_Array.makeBy(10, (x => {
   return x;
 }));
 
@@ -1038,7 +1038,7 @@ eq("File \"bs_array_test.res\", line 274, characters 5-12", Belt_Array.zipBy([
   1,
   1,
   1
-], ((x) => {
+], (x => {
   return -x | 0;
 })));
 
@@ -1072,7 +1072,7 @@ function sumUsingForEach(xs) {
   let v = {
     contents: 0
   };
-  Belt_Array.forEach(xs, ((x) => {
+  Belt_Array.forEach(xs, (x => {
     v.contents = v.contents + x | 0;
   }));
   return v.contents;
@@ -1092,7 +1092,7 @@ b("File \"bs_array_test.res\", line 288, characters 4-11", !Belt_Array.every([
   2,
   3,
   4
-], ((x) => {
+], (x => {
   return x > 2;
 })));
 
@@ -1101,7 +1101,7 @@ b("File \"bs_array_test.res\", line 289, characters 4-11", Belt_Array.some([
   3,
   7,
   8
-], ((x) => {
+], (x => {
   return x % 2 === 0;
 })));
 
@@ -1109,7 +1109,7 @@ b("File \"bs_array_test.res\", line 290, characters 4-11", !Belt_Array.some([
   1,
   3,
   7
-], ((x) => {
+], (x => {
   return x % 2 === 0;
 })));
 
@@ -1446,7 +1446,7 @@ eq("File \"bs_array_test.res\", line 357, characters 5-12", Belt_Array.getBy([
   1,
   2,
   3
-], ((x) => {
+], (x => {
   return x > 1;
 })), 2);
 
@@ -1454,7 +1454,7 @@ eq("File \"bs_array_test.res\", line 358, characters 5-12", Belt_Array.getBy([
   1,
   2,
   3
-], ((x) => {
+], (x => {
   return x > 3;
 })), undefined);
 
@@ -1462,7 +1462,7 @@ eq("File \"bs_array_test.res\", line 362, characters 5-12", Belt_Array.getIndexB
   1,
   2,
   3
-], ((x) => {
+], (x => {
   return x > 1;
 })), 1);
 
@@ -1470,7 +1470,7 @@ eq("File \"bs_array_test.res\", line 363, characters 5-12", Belt_Array.getIndexB
   1,
   2,
   3
-], ((x) => {
+], (x => {
   return x > 3;
 })), undefined);
 

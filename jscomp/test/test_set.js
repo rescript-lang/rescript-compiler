@@ -4,7 +4,7 @@
 let List = require("../../lib/js/list.js");
 
 function Make(Ord) {
-  let height = (x) => {
+  let height = x => {
     if (typeof x !== "object") {
       return 0;
     } else {
@@ -109,7 +109,7 @@ function Make(Ord) {
       return bal(l, v, add(x, r));
     }
   };
-  let singleton = (x) => {
+  let singleton = x => {
     return {
       TAG: "Node",
       _0: "Empty",
@@ -149,7 +149,7 @@ function Make(Ord) {
       return create(l, v, r);
     }
   };
-  let min_elt = (_x) => {
+  let min_elt = _x => {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
@@ -167,7 +167,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let max_elt = (_x) => {
+  let max_elt = _x => {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
@@ -185,7 +185,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let remove_min_elt = (x) => {
+  let remove_min_elt = x => {
     if (typeof x !== "object") {
       throw new Error("Invalid_argument", {
         cause: {
@@ -253,7 +253,7 @@ function Make(Ord) {
       match$1[2]
     ];
   };
-  let is_empty = (x) => {
+  let is_empty = x => {
     if (typeof x !== "object") {
       return true;
     } else {
@@ -543,7 +543,7 @@ function Make(Ord) {
       ];
     }
   };
-  let cardinal = (x) => {
+  let cardinal = x => {
     if (typeof x !== "object") {
       return 0;
     } else {
@@ -565,7 +565,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let elements = (s) => {
+  let elements = s => {
     return elements_aux(/* [] */0, s);
   };
   let find = (x, _x_) => {
@@ -587,7 +587,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let of_sorted_list = (l) => {
+  let of_sorted_list = l => {
     let sub = (n, l) => {
       switch (n) {
         case 0 :
@@ -691,7 +691,7 @@ function Make(Ord) {
     };
     return sub(List.length(l), l)[0];
   };
-  let of_list = (l) => {
+  let of_list = l => {
     if (!l) {
       return "Empty";
     }

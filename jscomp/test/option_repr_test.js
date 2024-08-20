@@ -104,11 +104,11 @@ function f12(x) {
   return x;
 }
 
-let length_8_id = Belt_List.makeBy(8, ((x) => {
+let length_8_id = Belt_List.makeBy(8, (x => {
   return x;
 }));
 
-let length_10_id = Belt_List.makeBy(10, ((x) => {
+let length_10_id = Belt_List.makeBy(10, (x => {
   return x;
 }));
 
@@ -170,7 +170,7 @@ function neqx(a, b) {
 }
 
 function all_true(xs) {
-  return Belt_List.every(xs, ((x) => {
+  return Belt_List.every(xs, (x => {
     return x;
   }));
 }
@@ -182,7 +182,7 @@ let xs = {
   tl: /* [] */0
 };
 
-b("File \"option_repr_test.res\", line 125, characters 8-15", Belt_List.every(xs, ((x) => {
+b("File \"option_repr_test.res\", line 125, characters 8-15", Belt_List.every(xs, (x => {
   return x;
 })));
 
@@ -205,7 +205,7 @@ let xs_1 = {
               tl: {
                 hd: ltx(undefined, null),
                 tl: {
-                  hd: ltx(undefined, ((x) => {
+                  hd: ltx(undefined, (x => {
                     return x;
                   })),
                   tl: {
@@ -227,7 +227,7 @@ let xs$1 = {
   tl: xs_1
 };
 
-b("File \"option_repr_test.res\", line 128, characters 4-11", Belt_List.every(xs$1, ((x) => {
+b("File \"option_repr_test.res\", line 128, characters 4-11", Belt_List.every(xs$1, (x => {
   return x;
 })));
 
@@ -252,7 +252,7 @@ let xs$2 = {
   tl: xs_1$1
 };
 
-b("File \"option_repr_test.res\", line 145, characters 4-11", Belt_List.every(xs$2, ((x) => {
+b("File \"option_repr_test.res\", line 145, characters 4-11", Belt_List.every(xs$2, (x => {
   return x;
 })));
 

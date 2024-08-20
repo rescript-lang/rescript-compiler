@@ -619,7 +619,7 @@ function of_sorted_array(l) {
 }
 
 function is_ordered(cmp, tree) {
-  let is_ordered_min_max = (tree) => {
+  let is_ordered_min_max = tree => {
     if (typeof tree !== "object") {
       return "Empty";
     }
