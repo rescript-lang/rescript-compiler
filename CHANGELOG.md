@@ -30,6 +30,10 @@
 - Fix incorrect format of function under unary operator. https://github.com/rescript-lang/rescript-compiler/pull/6953
 - Fix incorrect incorrect printing of module binding with signature. https://github.com/rescript-lang/rescript-compiler/pull/6963
 
+#### :house: Internal
+
+- Add dev container. https://github.com/rescript-lang/rescript-compiler/pull/6962
+
 # 12.0.0-alpha.1
 
 #### :rocket: New Feature
