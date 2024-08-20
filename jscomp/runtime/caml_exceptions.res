@@ -39,7 +39,7 @@ module Dict = {
 }
 
 /**
-  Needed to have unique extention ids when used with functors.
+  Needs to have unique extension ids when used with functors.
   See discussion in https://github.com/rescript-lang/rescript-compiler/pull/6570
 */
 let idMap = Dict.empty()
