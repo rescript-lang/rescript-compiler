@@ -20,9 +20,7 @@ let a = 7;
 
 console.log(a);
 
-[1].map(x => {
-  return x + 1 | 0;
-});
+[1].map(x => x + 1 | 0);
 
 function ptl(extra) {
   return 10 + extra | 0;

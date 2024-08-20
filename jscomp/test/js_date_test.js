@@ -10,77 +10,63 @@ function date() {
 
 let suites_0 = [
   "valueOf",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: 195131516789,
-      _1: new Date("1976-03-08T12:34:56.789+01:23").valueOf()
-    };
-  })
+  (param => ({
+    TAG: "Eq",
+    _0: 195131516789,
+    _1: new Date("1976-03-08T12:34:56.789+01:23").valueOf()
+  }))
 ];
 
 let suites_1 = {
   hd: [
     "make",
-    (param => {
-      return {
-        TAG: "Ok",
-        _0: new Date().getTime() > 1487223505382
-      };
-    })
+    (param => ({
+      TAG: "Ok",
+      _0: new Date().getTime() > 1487223505382
+    }))
   ],
   tl: {
     hd: [
       "parseAsFloat",
-      (param => {
-        return {
-          TAG: "Eq",
-          _0: Date.parse("1976-03-08T12:34:56.789+01:23"),
-          _1: 195131516789
-        };
-      })
+      (param => ({
+        TAG: "Eq",
+        _0: Date.parse("1976-03-08T12:34:56.789+01:23"),
+        _1: 195131516789
+      }))
     ],
     tl: {
       hd: [
         "parseAsFloat_invalid",
-        (param => {
-          return {
-            TAG: "Ok",
-            _0: Number.isNaN(Date.parse("gibberish"))
-          };
-        })
+        (param => ({
+          TAG: "Ok",
+          _0: Number.isNaN(Date.parse("gibberish"))
+        }))
       ],
       tl: {
         hd: [
           "fromFloat",
-          (param => {
-            return {
-              TAG: "Eq",
-              _0: "1976-03-08T11:11:56.789Z",
-              _1: new Date(195131516789).toISOString()
-            };
-          })
+          (param => ({
+            TAG: "Eq",
+            _0: "1976-03-08T11:11:56.789Z",
+            _1: new Date(195131516789).toISOString()
+          }))
         ],
         tl: {
           hd: [
             "fromString_valid",
-            (param => {
-              return {
-                TAG: "Eq",
-                _0: 195131516789,
-                _1: new Date("1976-03-08T12:34:56.789+01:23").getTime()
-              };
-            })
+            (param => ({
+              TAG: "Eq",
+              _0: 195131516789,
+              _1: new Date("1976-03-08T12:34:56.789+01:23").getTime()
+            }))
           ],
           tl: {
             hd: [
               "fromString_invalid",
-              (param => {
-                return {
-                  TAG: "Ok",
-                  _0: Number.isNaN(new Date("gibberish").getTime())
-                };
-              })
+              (param => ({
+                TAG: "Ok",
+                _0: Number.isNaN(new Date("gibberish").getTime())
+              }))
             ],
             tl: {
               hd: [
@@ -310,145 +296,119 @@ let suites_1 = {
                                 tl: {
                                   hd: [
                                     "getFullYear",
-                                    (param => {
-                                      return {
-                                        TAG: "Eq",
-                                        _0: 1976,
-                                        _1: new Date("1976-03-08T12:34:56.789+01:23").getFullYear()
-                                      };
-                                    })
+                                    (param => ({
+                                      TAG: "Eq",
+                                      _0: 1976,
+                                      _1: new Date("1976-03-08T12:34:56.789+01:23").getFullYear()
+                                    }))
                                   ],
                                   tl: {
                                     hd: [
                                       "getMilliseconds",
-                                      (param => {
-                                        return {
-                                          TAG: "Eq",
-                                          _0: 789,
-                                          _1: new Date("1976-03-08T12:34:56.789+01:23").getMilliseconds()
-                                        };
-                                      })
+                                      (param => ({
+                                        TAG: "Eq",
+                                        _0: 789,
+                                        _1: new Date("1976-03-08T12:34:56.789+01:23").getMilliseconds()
+                                      }))
                                     ],
                                     tl: {
                                       hd: [
                                         "getSeconds",
-                                        (param => {
-                                          return {
-                                            TAG: "Eq",
-                                            _0: 56,
-                                            _1: new Date("1976-03-08T12:34:56.789+01:23").getSeconds()
-                                          };
-                                        })
+                                        (param => ({
+                                          TAG: "Eq",
+                                          _0: 56,
+                                          _1: new Date("1976-03-08T12:34:56.789+01:23").getSeconds()
+                                        }))
                                       ],
                                       tl: {
                                         hd: [
                                           "getTime",
-                                          (param => {
-                                            return {
-                                              TAG: "Eq",
-                                              _0: 195131516789,
-                                              _1: new Date("1976-03-08T12:34:56.789+01:23").getTime()
-                                            };
-                                          })
+                                          (param => ({
+                                            TAG: "Eq",
+                                            _0: 195131516789,
+                                            _1: new Date("1976-03-08T12:34:56.789+01:23").getTime()
+                                          }))
                                         ],
                                         tl: {
                                           hd: [
                                             "getUTCDate",
-                                            (param => {
-                                              return {
-                                                TAG: "Eq",
-                                                _0: 8,
-                                                _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCDate()
-                                              };
-                                            })
+                                            (param => ({
+                                              TAG: "Eq",
+                                              _0: 8,
+                                              _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCDate()
+                                            }))
                                           ],
                                           tl: {
                                             hd: [
                                               "getUTCDay",
-                                              (param => {
-                                                return {
-                                                  TAG: "Eq",
-                                                  _0: 1,
-                                                  _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCDay()
-                                                };
-                                              })
+                                              (param => ({
+                                                TAG: "Eq",
+                                                _0: 1,
+                                                _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCDay()
+                                              }))
                                             ],
                                             tl: {
                                               hd: [
                                                 "getUTCFUllYear",
-                                                (param => {
-                                                  return {
-                                                    TAG: "Eq",
-                                                    _0: 1976,
-                                                    _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCFullYear()
-                                                  };
-                                                })
+                                                (param => ({
+                                                  TAG: "Eq",
+                                                  _0: 1976,
+                                                  _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCFullYear()
+                                                }))
                                               ],
                                               tl: {
                                                 hd: [
                                                   "getUTCHours",
-                                                  (param => {
-                                                    return {
-                                                      TAG: "Eq",
-                                                      _0: 11,
-                                                      _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCHours()
-                                                    };
-                                                  })
+                                                  (param => ({
+                                                    TAG: "Eq",
+                                                    _0: 11,
+                                                    _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCHours()
+                                                  }))
                                                 ],
                                                 tl: {
                                                   hd: [
                                                     "getUTCMilliseconds",
-                                                    (param => {
-                                                      return {
-                                                        TAG: "Eq",
-                                                        _0: 789,
-                                                        _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCMilliseconds()
-                                                      };
-                                                    })
+                                                    (param => ({
+                                                      TAG: "Eq",
+                                                      _0: 789,
+                                                      _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCMilliseconds()
+                                                    }))
                                                   ],
                                                   tl: {
                                                     hd: [
                                                       "getUTCMinutes",
-                                                      (param => {
-                                                        return {
-                                                          TAG: "Eq",
-                                                          _0: 11,
-                                                          _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCMinutes()
-                                                        };
-                                                      })
+                                                      (param => ({
+                                                        TAG: "Eq",
+                                                        _0: 11,
+                                                        _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCMinutes()
+                                                      }))
                                                     ],
                                                     tl: {
                                                       hd: [
                                                         "getUTCMonth",
-                                                        (param => {
-                                                          return {
-                                                            TAG: "Eq",
-                                                            _0: 2,
-                                                            _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCMonth()
-                                                          };
-                                                        })
+                                                        (param => ({
+                                                          TAG: "Eq",
+                                                          _0: 2,
+                                                          _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCMonth()
+                                                        }))
                                                       ],
                                                       tl: {
                                                         hd: [
                                                           "getUTCSeconds",
-                                                          (param => {
-                                                            return {
-                                                              TAG: "Eq",
-                                                              _0: 56,
-                                                              _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCSeconds()
-                                                            };
-                                                          })
+                                                          (param => ({
+                                                            TAG: "Eq",
+                                                            _0: 56,
+                                                            _1: new Date("1976-03-08T12:34:56.789+01:23").getUTCSeconds()
+                                                          }))
                                                         ],
                                                         tl: {
                                                           hd: [
                                                             "getYear",
-                                                            (param => {
-                                                              return {
-                                                                TAG: "Eq",
-                                                                _0: 1976,
-                                                                _1: new Date("1976-03-08T12:34:56.789+01:23").getFullYear()
-                                                              };
-                                                            })
+                                                            (param => ({
+                                                              TAG: "Eq",
+                                                              _0: 1976,
+                                                              _1: new Date("1976-03-08T12:34:56.789+01:23").getFullYear()
+                                                            }))
                                                           ],
                                                           tl: {
                                                             hd: [
@@ -951,68 +911,56 @@ let suites_1 = {
                                                                                                                       tl: {
                                                                                                                         hd: [
                                                                                                                           "toDateString",
-                                                                                                                          (param => {
-                                                                                                                            return {
-                                                                                                                              TAG: "Eq",
-                                                                                                                              _0: "Mon Mar 08 1976",
-                                                                                                                              _1: new Date("1976-03-08T12:34:56.789+01:23").toDateString()
-                                                                                                                            };
-                                                                                                                          })
+                                                                                                                          (param => ({
+                                                                                                                            TAG: "Eq",
+                                                                                                                            _0: "Mon Mar 08 1976",
+                                                                                                                            _1: new Date("1976-03-08T12:34:56.789+01:23").toDateString()
+                                                                                                                          }))
                                                                                                                         ],
                                                                                                                         tl: {
                                                                                                                           hd: [
                                                                                                                             "toGMTString",
-                                                                                                                            (param => {
-                                                                                                                              return {
-                                                                                                                                TAG: "Eq",
-                                                                                                                                _0: "Mon, 08 Mar 1976 11:11:56 GMT",
-                                                                                                                                _1: new Date("1976-03-08T12:34:56.789+01:23").toUTCString()
-                                                                                                                              };
-                                                                                                                            })
+                                                                                                                            (param => ({
+                                                                                                                              TAG: "Eq",
+                                                                                                                              _0: "Mon, 08 Mar 1976 11:11:56 GMT",
+                                                                                                                              _1: new Date("1976-03-08T12:34:56.789+01:23").toUTCString()
+                                                                                                                            }))
                                                                                                                           ],
                                                                                                                           tl: {
                                                                                                                             hd: [
                                                                                                                               "toISOString",
-                                                                                                                              (param => {
-                                                                                                                                return {
-                                                                                                                                  TAG: "Eq",
-                                                                                                                                  _0: "1976-03-08T11:11:56.789Z",
-                                                                                                                                  _1: new Date("1976-03-08T12:34:56.789+01:23").toISOString()
-                                                                                                                                };
-                                                                                                                              })
+                                                                                                                              (param => ({
+                                                                                                                                TAG: "Eq",
+                                                                                                                                _0: "1976-03-08T11:11:56.789Z",
+                                                                                                                                _1: new Date("1976-03-08T12:34:56.789+01:23").toISOString()
+                                                                                                                              }))
                                                                                                                             ],
                                                                                                                             tl: {
                                                                                                                               hd: [
                                                                                                                                 "toJSON",
-                                                                                                                                (param => {
-                                                                                                                                  return {
-                                                                                                                                    TAG: "Eq",
-                                                                                                                                    _0: "1976-03-08T11:11:56.789Z",
-                                                                                                                                    _1: new Date("1976-03-08T12:34:56.789+01:23").toJSON()
-                                                                                                                                  };
-                                                                                                                                })
+                                                                                                                                (param => ({
+                                                                                                                                  TAG: "Eq",
+                                                                                                                                  _0: "1976-03-08T11:11:56.789Z",
+                                                                                                                                  _1: new Date("1976-03-08T12:34:56.789+01:23").toJSON()
+                                                                                                                                }))
                                                                                                                               ],
                                                                                                                               tl: {
                                                                                                                                 hd: [
                                                                                                                                   "toJSONUnsafe",
-                                                                                                                                  (param => {
-                                                                                                                                    return {
-                                                                                                                                      TAG: "Eq",
-                                                                                                                                      _0: "1976-03-08T11:11:56.789Z",
-                                                                                                                                      _1: new Date("1976-03-08T12:34:56.789+01:23").toJSON()
-                                                                                                                                    };
-                                                                                                                                  })
+                                                                                                                                  (param => ({
+                                                                                                                                    TAG: "Eq",
+                                                                                                                                    _0: "1976-03-08T11:11:56.789Z",
+                                                                                                                                    _1: new Date("1976-03-08T12:34:56.789+01:23").toJSON()
+                                                                                                                                  }))
                                                                                                                                 ],
                                                                                                                                 tl: {
                                                                                                                                   hd: [
                                                                                                                                     "toUTCString",
-                                                                                                                                    (param => {
-                                                                                                                                      return {
-                                                                                                                                        TAG: "Eq",
-                                                                                                                                        _0: "Mon, 08 Mar 1976 11:11:56 GMT",
-                                                                                                                                        _1: new Date("1976-03-08T12:34:56.789+01:23").toUTCString()
-                                                                                                                                      };
-                                                                                                                                    })
+                                                                                                                                    (param => ({
+                                                                                                                                      TAG: "Eq",
+                                                                                                                                      _0: "Mon, 08 Mar 1976 11:11:56 GMT",
+                                                                                                                                      _1: new Date("1976-03-08T12:34:56.789+01:23").toUTCString()
+                                                                                                                                    }))
                                                                                                                                   ],
                                                                                                                                   tl: {
                                                                                                                                     hd: [

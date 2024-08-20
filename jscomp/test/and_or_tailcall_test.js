@@ -33,25 +33,21 @@ function or_f(b, x, _n) {
 
 let suites_0 = [
   "and_tail",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: false,
-      _1: f(true, 1, 0)
-    };
-  })
+  (param => ({
+    TAG: "Eq",
+    _0: false,
+    _1: f(true, 1, 0)
+  }))
 ];
 
 let suites_1 = {
   hd: [
     "or_tail",
-    (param => {
-      return {
-        TAG: "Eq",
-        _0: false,
-        _1: or_f(false, 1, 0)
-      };
-    })
+    (param => ({
+      TAG: "Eq",
+      _0: false,
+      _1: or_f(false, 1, 0)
+    }))
   ],
   tl: /* [] */0
 };

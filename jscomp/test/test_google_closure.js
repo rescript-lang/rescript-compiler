@@ -9,9 +9,7 @@ function f(a, b, param) {
 }
 
 function f2(a) {
-  return extra => {
-    return a + 1 | 0;
-  };
+  return extra => a + 1 | 0;
 }
 
 let a = String(3);
@@ -22,14 +20,10 @@ function f3(extra) {
 
 let b = f3(2);
 
-let arr = $$Array.init(2, (param => {
-  return 0;
-}));
+let arr = $$Array.init(2, (param => 0));
 
 for (let i = 0; i <= 1; ++i) {
-  let f3$1 = extra => {
-    return i + 1 | 0;
-  };
+  let f3$1 = extra => i + 1 | 0;
   Caml_array.set(arr, i, f3$1(2));
 }
 

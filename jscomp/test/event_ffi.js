@@ -20,9 +20,7 @@ function h10(x) {
 }
 
 function h30(x) {
-  return a => {
-    return x(3, 3, a);
-  };
+  return a => x(3, 3, a);
 }
 
 function h33(x) {
@@ -42,9 +40,7 @@ function a0() {
 }
 
 function a1() {
-  return x => {
-    return x;
-  };
+  return x => x;
 }
 
 function a2(x, y) {

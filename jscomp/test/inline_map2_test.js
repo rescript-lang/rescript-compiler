@@ -26,16 +26,14 @@ function Make(Ord) {
       _4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
     };
   };
-  let singleton = (x, d) => {
-    return {
-      TAG: "Node",
-      _0: "Empty",
-      _1: x,
-      _2: d,
-      _3: "Empty",
-      _4: 1
-    };
-  };
+  let singleton = (x, d) => ({
+    TAG: "Node",
+    _0: "Empty",
+    _1: x,
+    _2: d,
+    _3: "Empty",
+    _4: 1
+  });
   let bal = (l, x, d, r) => {
     let hl;
     hl = typeof l !== "object" ? 0 : l._4;
@@ -598,9 +596,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let bindings = s => {
-    return bindings_aux(/* [] */0, s);
-  };
+  let bindings = s => bindings_aux(/* [] */0, s);
   return {
     height: height,
     create: create,
@@ -1305,9 +1301,7 @@ let IntMap = {
   choose: min_binding
 };
 
-let m = List.fold_left(((acc, param) => {
-  return add(param[0], param[1], acc);
-}), "Empty", {
+let m = List.fold_left(((acc, param) => add(param[0], param[1], acc)), "Empty", {
   hd: [
     10,
     /* 'a' */97
@@ -1998,9 +1992,7 @@ let SMap = {
   choose: min_binding$1
 };
 
-let s = List.fold_left(((acc, param) => {
-  return add$1(param[0], param[1], acc);
-}), "Empty", {
+let s = List.fold_left(((acc, param) => add$1(param[0], param[1], acc)), "Empty", {
   hd: [
     "10",
     /* 'a' */97
@@ -2029,24 +2021,20 @@ let s = List.fold_left(((acc, param) => {
 Mt.from_pair_suites("Inline_map2_test", {
   hd: [
     "assertion1",
-    (() => {
-      return {
-        TAG: "Eq",
-        _0: find(10, m),
-        _1: /* 'a' */97
-      };
-    })
+    (() => ({
+      TAG: "Eq",
+      _0: find(10, m),
+      _1: /* 'a' */97
+    }))
   ],
   tl: {
     hd: [
       "assertion2",
-      (() => {
-        return {
-          TAG: "Eq",
-          _0: find$1("10", s),
-          _1: /* 'a' */97
-        };
-      })
+      (() => ({
+        TAG: "Eq",
+        _0: find$1("10", s),
+        _1: /* 'a' */97
+      }))
     ],
     tl: /* [] */0
   }

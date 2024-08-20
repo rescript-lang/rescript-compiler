@@ -37,9 +37,7 @@ let l = Belt_List.map({
     hd: 2,
     tl: /* [] */0
   }
-}, (x => {
-  return x + 1 | 0;
-}));
+}, (x => x + 1 | 0));
 
 function partial(x) {
   return Belt_List.map({
@@ -51,9 +49,7 @@ function partial(x) {
   }, x);
 }
 
-let ll = partial(x => {
-  return x + 1 | 0;
-});
+let ll = partial(x => x + 1 | 0);
 
 function withOpts(xOpt, y, zOpt, w) {
   let x = xOpt !== undefined ? xOpt : 3;
@@ -83,9 +79,7 @@ let l$1 = Belt_List.map({
     hd: 2,
     tl: /* [] */0
   }
-}, (x => {
-  return x + 1 | 0;
-}));
+}, (x => x + 1 | 0));
 
 function partial$1(extra) {
   return Belt_List.map({
@@ -97,9 +91,7 @@ function partial$1(extra) {
   }, extra);
 }
 
-let ll$1 = partial$1(x => {
-  return x + 1 | 0;
-});
+let ll$1 = partial$1(x => x + 1 | 0);
 
 function withOpts$1(xOpt, y, zOpt, w) {
   let x = xOpt !== undefined ? xOpt : 3;

@@ -136,9 +136,7 @@ function of_field(name, t) {
 function of_record(l) {
   return {
     NAME: "List",
-    VAL: List.map((param => {
-      return of_field(param[0], param[1]);
-    }), l)
+    VAL: List.map((param => of_field(param[0], param[1])), l)
   };
 }
 
@@ -253,9 +251,7 @@ function to_float(e) {
 }
 
 function to_string(e) {
-  return _try_atom(e, (x => {
-    return x;
-  }));
+  return _try_atom(e, (x => x));
 }
 
 function to_pair(e) {
@@ -280,19 +276,13 @@ function to_pair(e) {
 }
 
 function to_pair_with(f1, f2) {
-  return e => {
-    return $great$great$eq(to_pair(e), (param => {
-      let y = param[1];
-      return $great$great$eq(f1(param[0]), (x => {
-        return $great$great$eq(f2(y), (y => {
-          return [
-            x,
-            y
-          ];
-        }));
-      }));
-    }));
-  };
+  return e => $great$great$eq(to_pair(e), (param => {
+    let y = param[1];
+    return $great$great$eq(f1(param[0]), (x => $great$great$eq(f2(y), (y => [
+      x,
+      y
+    ]))));
+  }));
 }
 
 function to_triple(e) {
@@ -322,23 +312,15 @@ function to_triple(e) {
 }
 
 function to_triple_with(f1, f2, f3) {
-  return e => {
-    return $great$great$eq(to_triple(e), (param => {
-      let z = param[2];
-      let y = param[1];
-      return $great$great$eq(f1(param[0]), (x => {
-        return $great$great$eq(f2(y), (y => {
-          return $great$great$eq(f3(z), (z => {
-            return [
-              x,
-              y,
-              z
-            ];
-          }));
-        }));
-      }));
-    }));
-  };
+  return e => $great$great$eq(to_triple(e), (param => {
+    let z = param[2];
+    let y = param[1];
+    return $great$great$eq(f1(param[0]), (x => $great$great$eq(f2(y), (y => $great$great$eq(f3(z), (z => [
+      x,
+      y,
+      z
+    ]))))));
+  }));
 }
 
 function to_list(e) {
@@ -410,9 +392,7 @@ function get_field(name) {
 }
 
 function field(name, f) {
-  return e => {
-    return $great$great$eq(get_field(name)(e), f);
-  };
+  return e => $great$great$eq(get_field(name)(e), f);
 }
 
 function _get_field_list(name, _l) {

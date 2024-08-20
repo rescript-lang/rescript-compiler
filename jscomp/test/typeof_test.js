@@ -33,141 +33,113 @@ function string_or_number(x) {
 
 let suites_0 = [
   "int_type",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: "number",
-      _1: "number"
-    };
-  })
+  (param => ({
+    TAG: "Eq",
+    _0: "number",
+    _1: "number"
+  }))
 ];
 
 let suites_1 = {
   hd: [
     "string_type",
-    (param => {
-      return {
-        TAG: "Eq",
-        _0: "string",
-        _1: "string"
-      };
-    })
+    (param => ({
+      TAG: "Eq",
+      _0: "string",
+      _1: "string"
+    }))
   ],
   tl: {
     hd: [
       "number_gadt_test",
-      (param => {
-        return {
-          TAG: "Eq",
-          _0: Js_types.test(3, "Number"),
-          _1: true
-        };
-      })
+      (param => ({
+        TAG: "Eq",
+        _0: Js_types.test(3, "Number"),
+        _1: true
+      }))
     ],
     tl: {
       hd: [
         "boolean_gadt_test",
-        (param => {
-          return {
-            TAG: "Eq",
-            _0: Js_types.test(true, "Boolean"),
-            _1: true
-          };
-        })
+        (param => ({
+          TAG: "Eq",
+          _0: Js_types.test(true, "Boolean"),
+          _1: true
+        }))
       ],
       tl: {
         hd: [
           "undefined_gadt_test",
-          (param => {
-            return {
-              TAG: "Eq",
-              _0: Js_types.test(undefined, "Undefined"),
-              _1: true
-            };
-          })
+          (param => ({
+            TAG: "Eq",
+            _0: Js_types.test(undefined, "Undefined"),
+            _1: true
+          }))
         ],
         tl: {
           hd: [
             "string_on_number1",
-            (param => {
-              return {
-                TAG: "Eq",
-                _0: string_or_number("xx"),
-                _1: true
-              };
-            })
+            (param => ({
+              TAG: "Eq",
+              _0: string_or_number("xx"),
+              _1: true
+            }))
           ],
           tl: {
             hd: [
               "string_on_number2",
-              (param => {
-                return {
-                  TAG: "Eq",
-                  _0: string_or_number(3.02),
-                  _1: true
-                };
-              })
+              (param => ({
+                TAG: "Eq",
+                _0: string_or_number(3.02),
+                _1: true
+              }))
             ],
             tl: {
               hd: [
                 "string_on_number3",
-                (param => {
-                  return {
-                    TAG: "Eq",
-                    _0: string_or_number(x => {
-                      return x;
-                    }),
-                    _1: false
-                  };
-                })
+                (param => ({
+                  TAG: "Eq",
+                  _0: string_or_number(x => x),
+                  _1: false
+                }))
               ],
               tl: {
                 hd: [
                   "string_gadt_test",
-                  (param => {
-                    return {
-                      TAG: "Eq",
-                      _0: Js_types.test("3", "String"),
-                      _1: true
-                    };
-                  })
+                  (param => ({
+                    TAG: "Eq",
+                    _0: Js_types.test("3", "String"),
+                    _1: true
+                  }))
                 ],
                 tl: {
                   hd: [
                     "string_gadt_test_neg",
-                    (param => {
-                      return {
-                        TAG: "Eq",
-                        _0: Js_types.test(3, "String"),
-                        _1: false
-                      };
-                    })
+                    (param => ({
+                      TAG: "Eq",
+                      _0: Js_types.test(3, "String"),
+                      _1: false
+                    }))
                   ],
                   tl: {
                     hd: [
                       "function_gadt_test",
-                      (param => {
-                        return {
-                          TAG: "Eq",
-                          _0: Js_types.test((x => {
-                            return x;
-                          }), "Function"),
-                          _1: true
-                        };
-                      })
+                      (param => ({
+                        TAG: "Eq",
+                        _0: Js_types.test((x => x), "Function"),
+                        _1: true
+                      }))
                     ],
                     tl: {
                       hd: [
                         "object_gadt_test",
-                        (param => {
-                          return {
-                            TAG: "Eq",
-                            _0: Js_types.test({
-                              x: 3
-                            }, "Object"),
-                            _1: true
-                          };
-                        })
+                        (param => ({
+                          TAG: "Eq",
+                          _0: Js_types.test({
+                            x: 3
+                          }, "Object"),
+                          _1: true
+                        }))
                       ],
                       tl: /* [] */0
                     }

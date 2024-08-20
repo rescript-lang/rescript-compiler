@@ -55,15 +55,11 @@ let u = Belt_SetInt.intersect(Belt_SetInt.fromArray([
 b("File \"bs_set_int_test.res\", line 27, characters 11-18", Belt_SetInt.eq(Belt_SetInt.fromArray([3]), u));
 
 function range(i, j) {
-  return $$Array.init((j - i | 0) + 1 | 0, (k => {
-    return k + i | 0;
-  }));
+  return $$Array.init((j - i | 0) + 1 | 0, (k => k + i | 0));
 }
 
 function revRange(i, j) {
-  return $$Array.of_list(List.rev($$Array.to_list($$Array.init((j - i | 0) + 1 | 0, (k => {
-    return k + i | 0;
-  })))));
+  return $$Array.of_list(List.rev($$Array.to_list($$Array.init((j - i | 0) + 1 | 0, (k => k + i | 0)))));
 }
 
 let v = Belt_SetInt.fromArray($$Array.append(range(100, 1000), revRange(400, 1500)));
@@ -72,9 +68,7 @@ let i = range(100, 1500);
 
 b("File \"bs_set_int_test.res\", line 37, characters 4-11", Belt_SetInt.eq(Belt_SetInt.fromArray(i), v));
 
-let match = Belt_SetInt.partition(v, (x => {
-  return x % 3 === 0;
-}));
+let match = Belt_SetInt.partition(v, (x => x % 3 === 0));
 
 let l;
 
@@ -162,11 +156,7 @@ function approx(loc, x, y) {
   b(loc, x === y);
 }
 
-eq("File \"bs_set_int_test.res\", line 125, characters 5-12", Belt_SetInt.reduce(v$1, 0, ((x, y) => {
-  return x + y | 0;
-})), Belt_Array.reduce(ss, 0, ((prim0, prim1) => {
-  return prim0 + prim1 | 0;
-})));
+eq("File \"bs_set_int_test.res\", line 125, characters 5-12", Belt_SetInt.reduce(v$1, 0, ((x, y) => x + y | 0)), Belt_Array.reduce(ss, 0, ((prim0, prim1) => prim0 + prim1 | 0)));
 
 approx("File \"bs_set_int_test.res\", line 126, characters 9-16", -1, minv);
 
@@ -216,9 +206,7 @@ let v$10 = Belt_SetInt.remove(v$9, 1);
 
 b("File \"bs_set_int_test.res\", line 146, characters 4-11", Belt_SetInt.isEmpty(v$10));
 
-let v$11 = Belt_Array.makeByAndShuffle(1000000, (i => {
-  return i;
-}));
+let v$11 = Belt_Array.makeByAndShuffle(1000000, (i => i));
 
 let u$1 = Belt_SetInt.fromArray(v$11);
 
@@ -341,9 +329,7 @@ let v3 = Belt_SetInt.removeMany(v2, [
   2001
 ]);
 
-let us = Belt_Array.map(Array_data_util.randomRange(1000, 3000), (x => {
-  return Belt_SetInt.has(v$12, x);
-}));
+let us = Belt_Array.map(Array_data_util.randomRange(1000, 3000), (x => Belt_SetInt.has(v$12, x)));
 
 let counted = Belt_Array.reduce(us, 0, ((acc, x) => {
   if (x) {

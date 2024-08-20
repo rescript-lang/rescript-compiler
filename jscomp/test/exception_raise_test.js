@@ -127,23 +127,21 @@ let suites = {
   contents: {
     hd: [
       "File \"exception_raise_test.res\", line 120, characters 5-12",
-      (() => {
-        return {
-          TAG: "Eq",
-          _0: [
-            f,
-            ff,
-            fff,
-            a0
-          ],
-          _1: [
-            2,
-            2,
-            2,
-            2
-          ]
-        };
-      })
+      (() => ({
+        TAG: "Eq",
+        _0: [
+          f,
+          ff,
+          fff,
+          a0
+        ],
+        _1: [
+          2,
+          2,
+          2,
+          2
+        ]
+      }))
     ],
     tl: {
       hd: [

@@ -6,9 +6,7 @@ let Caml_array = require("../../lib/js/caml_array.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 
 function map(f, a) {
-  let f$1 = x => {
-    return f(x);
-  };
+  let f$1 = x => f(x);
   let l = a.length;
   if (l === 0) {
     return [];
@@ -21,9 +19,7 @@ function map(f, a) {
 }
 
 function init(l, f) {
-  let f$1 = x => {
-    return f(x);
-  };
+  let f$1 = x => f(x);
   if (l === 0) {
     return [];
   }
@@ -43,9 +39,7 @@ function init(l, f) {
 }
 
 function fold_left(f, x, a) {
-  let f$1 = (x, y) => {
-    return f(x, y);
-  };
+  let f$1 = (x, y) => f(x, y);
   let r = x;
   for (let i = 0, i_finish = a.length; i < i_finish; ++i) {
     r = f$1(r, a[i]);
@@ -54,15 +48,9 @@ function fold_left(f, x, a) {
 }
 
 function f2() {
-  let arr = init(30000000, (i => {
-    return i;
-  }));
-  let b = map((i => {
-    return i + i - 1;
-  }), arr);
-  let v = fold_left(((prim0, prim1) => {
-    return prim0 + prim1;
-  }), 0, b);
+  let arr = init(30000000, (i => i));
+  let b = map((i => i + i - 1), arr);
+  let v = fold_left(((prim0, prim1) => prim0 + prim1), 0, b);
   console.log(Pervasives.string_of_float(v));
 }
 
@@ -81,13 +69,11 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (() => {
-        return {
-          TAG: "Eq",
-          _0: x,
-          _1: y
-        };
-      })
+      (() => ({
+        TAG: "Eq",
+        _0: x,
+        _1: y
+      }))
     ],
     tl: suites.contents
   };
@@ -117,15 +103,11 @@ function add5(a0, a1, a2, a3, a4) {
 }
 
 function f(x) {
-  return (extra, extra$1) => {
-    return add5(x, (v.contents = v.contents + 1 | 0, 1), (v.contents = v.contents + 1 | 0, 2), extra, extra$1);
-  };
+  return (extra, extra$1) => add5(x, (v.contents = v.contents + 1 | 0, 1), (v.contents = v.contents + 1 | 0, 2), extra, extra$1);
 }
 
 function g(x) {
-  let u = (a, b) => {
-    return add5(x, (v.contents = v.contents + 1 | 0, 1), (v.contents = v.contents + 1 | 0, 2), a, b);
-  };
+  let u = (a, b) => add5(x, (v.contents = v.contents + 1 | 0, 1), (v.contents = v.contents + 1 | 0, 2), a, b);
   all_v.contents = {
     hd: v.contents,
     tl: all_v.contents

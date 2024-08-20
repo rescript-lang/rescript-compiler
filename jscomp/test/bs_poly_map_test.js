@@ -76,12 +76,10 @@ function mergeDiff(s1, s2) {
 }
 
 function randomRange(i, j) {
-  return Belt_Array.map(Array_data_util.randomRange(i, j), (x => {
-    return [
-      x,
-      x
-    ];
-  }));
+  return Belt_Array.map(Array_data_util.randomRange(i, j), (x => [
+    x,
+    x
+  ]));
 }
 
 let u0 = Belt_Map.fromArray(randomRange(0, 100), Icmp);
@@ -169,15 +167,13 @@ eq("File \"bs_poly_map_test.res\", line 108, characters 5-12", Belt_Map.get(u1$1
 eq("File \"bs_poly_map_test.res\", line 109, characters 5-12", Belt_Map.get(u0$1, 3), 3);
 
 function acc(m, is) {
-  return Belt_Array.reduce(is, m, ((a, i) => {
-    return Belt_Map.update(a, i, (n => {
-      if (n !== undefined) {
-        return n + 1 | 0;
-      } else {
-        return 1;
-      }
-    }));
-  }));
+  return Belt_Array.reduce(is, m, ((a, i) => Belt_Map.update(a, i, (n => {
+    if (n !== undefined) {
+      return n + 1 | 0;
+    } else {
+      return 1;
+    }
+  }))));
 }
 
 let m_cmp = Icmp.cmp;
@@ -189,14 +185,10 @@ let m = {
 
 let m1 = acc(m, Belt_Array.concat(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));
 
-b("File \"bs_poly_map_test.res\", line 126, characters 4-11", Belt_Map.eq(m1, Belt_Map.fromArray(Belt_Array.makeBy(31, (i => {
-  return [
-    i,
-    i >= 10 && i <= 20 ? 2 : 1
-  ];
-})), Icmp), ((x, y) => {
-  return x === y;
-})));
+b("File \"bs_poly_map_test.res\", line 126, characters 4-11", Belt_Map.eq(m1, Belt_Map.fromArray(Belt_Array.makeBy(31, (i => [
+  i,
+  i >= 10 && i <= 20 ? 2 : 1
+])), Icmp), ((x, y) => x === y)));
 
 let v0_cmp = Icmp.cmp;
 
@@ -205,23 +197,17 @@ let v0 = {
   data: undefined
 };
 
-let v1 = Belt_Map.mergeMany(v0, Belt_Array.map(Array_data_util.randomRange(0, 10000), (x => {
-  return [
-    x,
-    x
-  ];
-})));
+let v1 = Belt_Map.mergeMany(v0, Belt_Array.map(Array_data_util.randomRange(0, 10000), (x => [
+  x,
+  x
+])));
 
-let v2 = Belt_Map.fromArray(Belt_Array.map(Array_data_util.randomRange(0, 10000), (x => {
-  return [
-    x,
-    x
-  ];
-})), Icmp);
+let v2 = Belt_Map.fromArray(Belt_Array.map(Array_data_util.randomRange(0, 10000), (x => [
+  x,
+  x
+])), Icmp);
 
-b("File \"bs_poly_map_test.res\", line 150, characters 4-11", Belt_Map.eq(v1, v2, ((x, y) => {
-  return x === y;
-})));
+b("File \"bs_poly_map_test.res\", line 150, characters 4-11", Belt_Map.eq(v1, v2, ((x, y) => x === y)));
 
 function inc(x) {
   if (x !== undefined) {
@@ -269,17 +255,9 @@ b("File \"bs_poly_map_test.res\", line 182, characters 4-11", Belt_MapDict.isEmp
 
 b("File \"bs_poly_map_test.res\", line 184, characters 4-11", pres !== undefined ? pres === 5000 : false);
 
-b("File \"bs_poly_map_test.res\", line 190, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[0].data), Belt_Array.makeBy(5000, (i => {
-  return i;
-})), ((prim0, prim1) => {
-  return prim0 === prim1;
-})));
+b("File \"bs_poly_map_test.res\", line 190, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[0].data), Belt_Array.makeBy(5000, (i => i)), ((prim0, prim1) => prim0 === prim1)));
 
-b("File \"bs_poly_map_test.res\", line 191, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[1].data), Belt_Array.makeBy(5000, (i => {
-  return 5001 + i | 0;
-})), ((prim0, prim1) => {
-  return prim0 === prim1;
-})));
+b("File \"bs_poly_map_test.res\", line 191, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[1].data), Belt_Array.makeBy(5000, (i => 5001 + i | 0)), ((prim0, prim1) => prim0 === prim1)));
 
 let v7 = Belt_Map.remove(v3, 5000);
 
@@ -289,17 +267,9 @@ let match$6 = match$5[0];
 
 b("File \"bs_poly_map_test.res\", line 196, characters 4-11", match$5[1] === undefined);
 
-b("File \"bs_poly_map_test.res\", line 202, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[0].data), Belt_Array.makeBy(5000, (i => {
-  return i;
-})), ((prim0, prim1) => {
-  return prim0 === prim1;
-})));
+b("File \"bs_poly_map_test.res\", line 202, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[0].data), Belt_Array.makeBy(5000, (i => i)), ((prim0, prim1) => prim0 === prim1)));
 
-b("File \"bs_poly_map_test.res\", line 203, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[1].data), Belt_Array.makeBy(5000, (i => {
-  return 5001 + i | 0;
-})), ((prim0, prim1) => {
-  return prim0 === prim1;
-})));
+b("File \"bs_poly_map_test.res\", line 203, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[1].data), Belt_Array.makeBy(5000, (i => 5001 + i | 0)), ((prim0, prim1) => prim0 === prim1)));
 
 Mt.from_pair_suites("Bs_poly_map_test", suites.contents);
 

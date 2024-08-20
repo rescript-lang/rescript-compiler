@@ -26,9 +26,7 @@ function g(a) {
   regression(a, Pervasives.failwith);
   regression2(3, 2);
   regression3(3, 2);
-  regression4(3, (x => {
-    return x;
-  }));
+  regression4(3, (x => x));
 }
 
 let max2 = Math.max;
@@ -54,46 +52,38 @@ let v = $$test(1, 2);
 Mt.from_pair_suites("Unsafe_ppx_test", {
   hd: [
     "unsafe_max",
-    (() => {
-      return {
-        TAG: "Eq",
-        _0: 2,
-        _1: max(1, 2)
-      };
-    })
+    (() => ({
+      TAG: "Eq",
+      _0: 2,
+      _1: max(1, 2)
+    }))
   ],
   tl: {
     hd: [
       "unsafe_test",
-      (() => {
-        return {
-          TAG: "Eq",
-          _0: 3,
-          _1: v
-        };
-      })
+      (() => ({
+        TAG: "Eq",
+        _0: 3,
+        _1: v
+      }))
     ],
     tl: {
       hd: [
         "unsafe_max2",
-        (() => {
-          return {
-            TAG: "Eq",
-            _0: 2,
-            _1: Math.max(1, 2)
-          };
-        })
+        (() => ({
+          TAG: "Eq",
+          _0: 2,
+          _1: Math.max(1, 2)
+        }))
       ],
       tl: {
         hd: [
           "ffi_keys",
-          (() => {
-            return {
-              TAG: "Eq",
-              _0: ["a"],
-              _1: Ffi_js_test.keys({a : 3})
-            };
-          })
+          (() => ({
+            TAG: "Eq",
+            _0: ["a"],
+            _1: Ffi_js_test.keys({a : 3})
+          }))
         ],
         tl: /* [] */0
       }

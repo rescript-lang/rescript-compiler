@@ -80,9 +80,7 @@ function string_of_rank(x) {
 }
 
 function find_ticker_by_name(all_tickers, ticker) {
-  return List.find((param => {
-    return param.ticker_name === ticker;
-  }), all_tickers);
+  return List.find((param => param.ticker_name === ticker), all_tickers);
 }
 
 function print_all_composite(all_tickers) {

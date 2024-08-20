@@ -64,21 +64,15 @@ let tui = 3;
 let tuia = uncurriedIdAsync(3);
 
 function nested1() {
-  return async y => {
-    return await y;
-  };
+  return async y => await y;
 }
 
 async function nested2() {
-  return async y => {
-    return await y;
-  };
+  return async y => await y;
 }
 
 function onSubmit() {
-  return React.useCallback(async b => {
-    return await b;
-  });
+  return React.useCallback(async b => await b);
 }
 
 exports.willBeInlined = willBeInlined;

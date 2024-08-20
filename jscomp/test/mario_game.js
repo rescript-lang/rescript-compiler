@@ -2321,9 +2321,7 @@ function update_loop(canvas, param, map_dim) {
     }), parts);
     fps(canvas, fps$1);
     hud(canvas, state$1.score, state$1.coins);
-    requestAnimationFrame(t => {
-      update_helper(t, state$1, player$1, collid_objs.contents, particles.contents);
-    });
+    requestAnimationFrame(t => update_helper(t, state$1, player$1, collid_objs.contents, particles.contents));
   };
   update_helper(0, state, player, param[1], /* [] */0);
 }

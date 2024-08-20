@@ -19,9 +19,7 @@ let node_parent = "..";
 
 let node_current = ".";
 
-let cwd = CamlinternalLazy.from_fun(() => {
-  return Caml_sys.sys_getcwd();
-});
+let cwd = CamlinternalLazy.from_fun(() => Caml_sys.sys_getcwd());
 
 function path_as_directory(x) {
   if (x === "" || Ext_string_test.ends_with(x, Filename.dir_sep)) {
@@ -106,9 +104,7 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
         _dir1 = dir1.tl;
         continue;
       }
-      return Pervasives.$at(List.map((param => {
-        return node_parent;
-      }), dir2), dir1);
+      return Pervasives.$at(List.map((param => node_parent), dir2), dir1);
     };
   };
   let ys = go(dir1, dir2);
@@ -264,18 +260,14 @@ function rel_normalized_absolute_path(from, to_) {
     }
     let xs = xss.tl;
     if (!yss) {
-      return List.fold_left(((acc, param) => {
-        return Filename.concat(acc, Ext_string_test.parent_dir_lit);
-      }), Ext_string_test.parent_dir_lit, xs);
+      return List.fold_left(((acc, param) => Filename.concat(acc, Ext_string_test.parent_dir_lit)), Ext_string_test.parent_dir_lit, xs);
     }
     if (xss.hd === yss.hd) {
       _yss = yss.tl;
       _xss = xs;
       continue;
     }
-    let start = List.fold_left(((acc, param) => {
-      return Filename.concat(acc, Ext_string_test.parent_dir_lit);
-    }), Ext_string_test.parent_dir_lit, xs);
+    let start = List.fold_left(((acc, param) => Filename.concat(acc, Ext_string_test.parent_dir_lit)), Ext_string_test.parent_dir_lit, xs);
     return List.fold_left(Filename.concat, start, yss);
   };
 }
@@ -347,9 +339,7 @@ function get_extension(x) {
 let simple_convert_node_path_to_os_path;
 
 if (Sys.unix) {
-  simple_convert_node_path_to_os_path = (x => {
-    return x;
-  });
+  simple_convert_node_path_to_os_path = (x => x);
 } else if (Sys.win32 || false) {
   simple_convert_node_path_to_os_path = Ext_string_test.replace_slash_backward;
 } else {

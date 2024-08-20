@@ -7,154 +7,120 @@ let Js_null_undefined = require("../../lib/js/js_null_undefined.js");
 
 let suites_0 = [
   "toOption - null",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: undefined,
-      _1: undefined
-    };
-  })
+  (param => ({
+    TAG: "Eq",
+    _0: undefined,
+    _1: undefined
+  }))
 ];
 
 let suites_1 = {
   hd: [
     "toOption - undefined",
-    (param => {
-      return {
-        TAG: "Eq",
-        _0: undefined,
-        _1: undefined
-      };
-    })
+    (param => ({
+      TAG: "Eq",
+      _0: undefined,
+      _1: undefined
+    }))
   ],
   tl: {
     hd: [
       "toOption - empty",
-      (param => {
-        return {
-          TAG: "Eq",
-          _0: undefined,
-          _1: undefined
-        };
-      })
+      (param => ({
+        TAG: "Eq",
+        _0: undefined,
+        _1: undefined
+      }))
     ],
     tl: {
       hd: [
         "File \"js_null_undefined_test.res\", line 9, characters 5-12",
-        (param => {
-          return {
-            TAG: "Eq",
-            _0: "foo",
-            _1: Caml_option.nullable_to_opt("foo")
-          };
-        })
+        (param => ({
+          TAG: "Eq",
+          _0: "foo",
+          _1: Caml_option.nullable_to_opt("foo")
+        }))
       ],
       tl: {
         hd: [
           "return",
-          (param => {
-            return {
-              TAG: "Eq",
-              _0: "something",
-              _1: Caml_option.nullable_to_opt("something")
-            };
-          })
+          (param => ({
+            TAG: "Eq",
+            _0: "something",
+            _1: Caml_option.nullable_to_opt("something")
+          }))
         ],
         tl: {
           hd: [
             "test - null",
-            (param => {
-              return {
-                TAG: "Eq",
-                _0: true,
-                _1: true
-              };
-            })
+            (param => ({
+              TAG: "Eq",
+              _0: true,
+              _1: true
+            }))
           ],
           tl: {
             hd: [
               "test - undefined",
-              (param => {
-                return {
-                  TAG: "Eq",
-                  _0: true,
-                  _1: true
-                };
-              })
+              (param => ({
+                TAG: "Eq",
+                _0: true,
+                _1: true
+              }))
             ],
             tl: {
               hd: [
                 "test - empty",
-                (param => {
-                  return {
-                    TAG: "Eq",
-                    _0: true,
-                    _1: true
-                  };
-                })
+                (param => ({
+                  TAG: "Eq",
+                  _0: true,
+                  _1: true
+                }))
               ],
               tl: {
                 hd: [
                   "File \"js_null_undefined_test.res\", line 14, characters 5-12",
-                  (param => {
-                    return {
-                      TAG: "Eq",
-                      _0: true,
-                      _1: true
-                    };
-                  })
+                  (param => ({
+                    TAG: "Eq",
+                    _0: true,
+                    _1: true
+                  }))
                 ],
                 tl: {
                   hd: [
                     "bind - null",
-                    (param => {
-                      return {
-                        TAG: "StrictEq",
-                        _0: null,
-                        _1: Js_null_undefined.bind(null, (v => {
-                          return v;
-                        }))
-                      };
-                    })
+                    (param => ({
+                      TAG: "StrictEq",
+                      _0: null,
+                      _1: Js_null_undefined.bind(null, (v => v))
+                    }))
                   ],
                   tl: {
                     hd: [
                       "bind - undefined",
-                      (param => {
-                        return {
-                          TAG: "StrictEq",
-                          _0: undefined,
-                          _1: Js_null_undefined.bind(undefined, (v => {
-                            return v;
-                          }))
-                        };
-                      })
+                      (param => ({
+                        TAG: "StrictEq",
+                        _0: undefined,
+                        _1: Js_null_undefined.bind(undefined, (v => v))
+                      }))
                     ],
                     tl: {
                       hd: [
                         "bind - empty",
-                        (param => {
-                          return {
-                            TAG: "StrictEq",
-                            _0: undefined,
-                            _1: Js_null_undefined.bind(undefined, (v => {
-                              return v;
-                            }))
-                          };
-                        })
+                        (param => ({
+                          TAG: "StrictEq",
+                          _0: undefined,
+                          _1: Js_null_undefined.bind(undefined, (v => v))
+                        }))
                       ],
                       tl: {
                         hd: [
                           "bind - 'a",
-                          (param => {
-                            return {
-                              TAG: "Eq",
-                              _0: 4,
-                              _1: Js_null_undefined.bind(2, (n => {
-                                return (n << 1);
-                              }))
-                            };
-                          })
+                          (param => ({
+                            TAG: "Eq",
+                            _0: 4,
+                            _1: Js_null_undefined.bind(2, (n => (n << 1)))
+                          }))
                         ],
                         tl: {
                           hd: [
@@ -227,64 +193,52 @@ let suites_1 = {
                                 tl: {
                                   hd: [
                                     "fromOption - None",
-                                    (param => {
-                                      return {
-                                        TAG: "Eq",
-                                        _0: undefined,
-                                        _1: Js_null_undefined.fromOption(undefined)
-                                      };
-                                    })
+                                    (param => ({
+                                      TAG: "Eq",
+                                      _0: undefined,
+                                      _1: Js_null_undefined.fromOption(undefined)
+                                    }))
                                   ],
                                   tl: {
                                     hd: [
                                       "fromOption - Some",
-                                      (param => {
-                                        return {
-                                          TAG: "Eq",
-                                          _0: 2,
-                                          _1: Js_null_undefined.fromOption(2)
-                                        };
-                                      })
+                                      (param => ({
+                                        TAG: "Eq",
+                                        _0: 2,
+                                        _1: Js_null_undefined.fromOption(2)
+                                      }))
                                     ],
                                     tl: {
                                       hd: [
                                         "null <> undefined",
-                                        (param => {
-                                          return {
-                                            TAG: "Ok",
-                                            _0: true
-                                          };
-                                        })
+                                        (param => ({
+                                          TAG: "Ok",
+                                          _0: true
+                                        }))
                                       ],
                                       tl: {
                                         hd: [
                                           "null <> empty",
-                                          (param => {
-                                            return {
-                                              TAG: "Ok",
-                                              _0: true
-                                            };
-                                          })
+                                          (param => ({
+                                            TAG: "Ok",
+                                            _0: true
+                                          }))
                                         ],
                                         tl: {
                                           hd: [
                                             "undefined = empty",
-                                            (param => {
-                                              return {
-                                                TAG: "Ok",
-                                                _0: true
-                                              };
-                                            })
+                                            (param => ({
+                                              TAG: "Ok",
+                                              _0: true
+                                            }))
                                           ],
                                           tl: {
                                             hd: [
                                               "File \"js_null_undefined_test.res\", line 57, characters 6-13",
-                                              (param => {
-                                                return {
-                                                  TAG: "Ok",
-                                                  _0: true
-                                                };
-                                              })
+                                              (param => ({
+                                                TAG: "Ok",
+                                                _0: true
+                                              }))
                                             ],
                                             tl: /* [] */0
                                           }

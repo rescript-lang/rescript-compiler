@@ -3,12 +3,8 @@
 
 
 function O(X) {
-  let cow = x => {
-    return X.foo(x);
-  };
-  let sheep = x => {
-    return 1 + X.foo(x) | 0;
-  };
+  let cow = x => X.foo(x);
+  let sheep = x => 1 + X.foo(x) | 0;
   return {
     cow: cow,
     sheep: sheep
@@ -16,12 +12,8 @@ function O(X) {
 }
 
 function F(X, Y) {
-  let cow = x => {
-    return Y.foo(X.foo(x));
-  };
-  let sheep = x => {
-    return 1 + Y.foo(X.foo(x)) | 0;
-  };
+  let cow = x => Y.foo(X.foo(x));
+  let sheep = x => 1 + Y.foo(X.foo(x)) | 0;
   return {
     cow: cow,
     sheep: sheep
@@ -29,18 +21,14 @@ function F(X, Y) {
 }
 
 function F1(X, Y) {
-  let sheep = x => {
-    return 1 + Y.foo(X.foo(x)) | 0;
-  };
+  let sheep = x => 1 + Y.foo(X.foo(x)) | 0;
   return {
     sheep: sheep
   };
 }
 
 function F2(X, Y) {
-  let sheep = x => {
-    return 1 + Y.foo(X.foo(x)) | 0;
-  };
+  let sheep = x => 1 + Y.foo(X.foo(x)) | 0;
   return {
     sheep: sheep
   };
@@ -48,9 +36,7 @@ function F2(X, Y) {
 
 let M = {
   F: ((funarg, funarg$1) => {
-    let sheep = x => {
-      return 1 + funarg$1.foo(funarg.foo(x)) | 0;
-    };
+    let sheep = x => 1 + funarg$1.foo(funarg.foo(x)) | 0;
     return {
       sheep: sheep
     };

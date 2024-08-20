@@ -82,9 +82,7 @@ function split(keep_empty, str, on) {
   if (str === "") {
     return /* [] */0;
   } else {
-    return split_by(keep_empty, (x => {
-      return x === on;
-    }), str);
+    return split_by(keep_empty, (x => x === on), str);
   }
 }
 
@@ -147,9 +145,7 @@ function ends_with_then_chop(s, beg) {
 }
 
 function check_any_suffix_case(s, suffixes) {
-  return List.exists((x => {
-    return ends_with(s, x);
-  }), suffixes);
+  return List.exists((x => ends_with(s, x)), suffixes);
 }
 
 function check_any_suffix_case_then_chop(s, suffixes) {

@@ -138,13 +138,9 @@ function url() {
 function watchUrl(callback) {
   let window = globalThis.window;
   if (window === undefined) {
-    return () => {
-      
-    };
+    return () => {};
   }
-  let watcherID = () => {
-    callback(url());
-  };
+  let watcherID = () => callback(url());
   Caml_option.valFromOption(window).addEventListener("popstate", watcherID);
   return watcherID;
 }
@@ -169,20 +165,12 @@ function useUrl(serverUrl, param) {
   let setUrl = match[1];
   let url$1 = match[0];
   React.useEffect((() => {
-    let watcherId = watchUrl(url => {
-      setUrl(param => {
-        return url;
-      });
-    });
+    let watcherId = watchUrl(url => setUrl(param => url));
     let newUrl = url();
     if (urlNotEqual(newUrl, url$1)) {
-      setUrl(param => {
-        return newUrl;
-      });
+      setUrl(param => newUrl);
     }
-    return (() => {
-      unwatchUrl(watcherId);
-    });
+    return (() => unwatchUrl(watcherId));
   }), []);
   return url$1;
 }

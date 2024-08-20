@@ -11,9 +11,7 @@ let b = {
   x: 3,
   y: [1],
   z: 3,
-  u: ((x, y) => {
-    return x + y | 0;
-  })
+  u: ((x, y) => x + y | 0)
 };
 
 function f(obj) {

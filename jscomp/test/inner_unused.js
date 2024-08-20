@@ -7,9 +7,7 @@ function f(x) {
 }
 
 function M(S) {
-  let f = x => {
-    return x;
-  };
+  let f = x => x;
   return {
     f: f
   };

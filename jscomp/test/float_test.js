@@ -123,13 +123,11 @@ function from_pairs(ps) {
     let a = param[0];
     return [
       "pair " + i,
-      (param => {
-        return {
-          TAG: "Approx",
-          _0: a,
-          _1: b
-        };
-      })
+      (param => ({
+        TAG: "Approx",
+        _0: a,
+        _1: b
+      }))
     ];
   }), ps));
 }
@@ -199,9 +197,7 @@ eq("File \"float_test.res\", line 71, characters 4-11", $$Array.map((x => {
   } else {
     return 0;
   }
-}), $$Array.map((param => {
-  return Caml.float_compare(param[0], param[1]);
-}), [
+}), $$Array.map((param => Caml.float_compare(param[0], param[1])), [
   [
     1,
     3
@@ -325,46 +321,38 @@ let a = match$4[0];
 Mt.from_pair_suites("Float_test", Pervasives.$at({
   hd: [
     "mod_float",
-    (() => {
-      return {
-        TAG: "Approx",
-        _0: 3.2 % 0.5,
-        _1: 0.200000000000000178
-      };
-    })
+    (() => ({
+      TAG: "Approx",
+      _0: 3.2 % 0.5,
+      _1: 0.200000000000000178
+    }))
   ],
   tl: {
     hd: [
       "modf_float1",
-      (() => {
-        return {
-          TAG: "Approx",
-          _0: a,
-          _1: 0.299999999999997158
-        };
-      })
+      (() => ({
+        TAG: "Approx",
+        _0: a,
+        _1: 0.299999999999997158
+      }))
     ],
     tl: {
       hd: [
         "modf_float2",
-        (() => {
-          return {
-            TAG: "Approx",
-            _0: b,
-            _1: 32
-          };
-        })
+        (() => ({
+          TAG: "Approx",
+          _0: b,
+          _1: 32
+        }))
       ],
       tl: {
         hd: [
           "int_of_float",
-          (() => {
-            return {
-              TAG: "Eq",
-              _0: 3,
-              _1: 3
-            };
-          })
+          (() => ({
+            TAG: "Eq",
+            _0: 3,
+            _1: 3
+          }))
         ],
         tl: /* [] */0
       }

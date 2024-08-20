@@ -8,9 +8,7 @@ let v = {
   contents: 0
 };
 
-let arr = Caml_array.make(10, (() => {
-  
-}));
+let arr = Caml_array.make(10, (() => {}));
 
 function f() {
   let n = 0;
@@ -25,9 +23,7 @@ function f() {
 
 f();
 
-$$Array.iter((x => {
-  x();
-}), arr);
+$$Array.iter((x => x()), arr);
 
 console.log(String(v.contents));
 

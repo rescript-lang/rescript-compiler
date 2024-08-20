@@ -1218,108 +1218,94 @@ Caml_module.update_mod({
 
 let suites_0 = [
   "test1",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: [
-        true,
-        true,
-        false,
-        false
-      ],
-      _1: [
-        A.even(2),
-        AA.even(4),
-        B.odd(2),
-        BB.odd(4)
-      ]
-    };
-  })
+  (param => ({
+    TAG: "Eq",
+    _0: [
+      true,
+      true,
+      false,
+      false
+    ],
+    _1: [
+      A.even(2),
+      AA.even(4),
+      B.odd(2),
+      BB.odd(4)
+    ]
+  }))
 ];
 
 let suites_1 = {
   hd: [
     "test2",
-    (param => {
-      return {
-        TAG: "Eq",
-        _0: BB.y(),
-        _1: 32
-      };
-    })
+    (param => ({
+      TAG: "Eq",
+      _0: BB.y(),
+      _1: 32
+    }))
   ],
   tl: {
     hd: [
       "test3",
-      (param => {
-        return {
-          TAG: "Eq",
-          _0: AA.x(),
-          _1: 35
-        };
-      })
+      (param => ({
+        TAG: "Eq",
+        _0: AA.x(),
+        _1: 35
+      }))
     ],
     tl: {
       hd: [
         "test4",
-        (param => {
-          return {
-            TAG: "Eq",
-            _0: true,
-            _1: A.even(2)
-          };
-        })
+        (param => ({
+          TAG: "Eq",
+          _0: true,
+          _1: A.even(2)
+        }))
       ],
       tl: {
         hd: [
           "test4",
-          (param => {
-            return {
-              TAG: "Eq",
-              _0: true,
-              _1: AA.even(4)
-            };
-          })
+          (param => ({
+            TAG: "Eq",
+            _0: true,
+            _1: AA.even(4)
+          }))
         ],
         tl: {
           hd: [
             "test5",
-            (param => {
-              return {
-                TAG: "Eq",
-                _0: false,
-                _1: B.odd(2)
-              };
-            })
+            (param => ({
+              TAG: "Eq",
+              _0: false,
+              _1: B.odd(2)
+            }))
           ],
           tl: {
             hd: [
               "test6",
-              (param => {
-                return {
-                  TAG: "Eq",
-                  _0: 2,
-                  _1: cardinal(of_list({
+              (param => ({
+                TAG: "Eq",
+                _0: 2,
+                _1: cardinal(of_list({
+                  hd: {
+                    TAG: "Leaf",
+                    _0: "a"
+                  },
+                  tl: {
                     hd: {
                       TAG: "Leaf",
-                      _0: "a"
+                      _0: "b"
                     },
                     tl: {
                       hd: {
                         TAG: "Leaf",
-                        _0: "b"
+                        _0: "a"
                       },
-                      tl: {
-                        hd: {
-                          TAG: "Leaf",
-                          _0: "a"
-                        },
-                        tl: /* [] */0
-                      }
+                      tl: /* [] */0
                     }
-                  }))
-                };
-              })
+                  }
+                }))
+              }))
             ],
             tl: /* [] */0
           }

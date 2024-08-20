@@ -3,17 +3,11 @@
 
 
 async function eachIntAsync(list, f) {
-  return (await import("../../lib/js/belt_List.js").then(m => {
-    return m.forEach;
-  }))(list, f);
+  return (await import("../../lib/js/belt_List.js").then(m => m.forEach))(list, f);
 }
 
 function eachIntLazy(list, f) {
-  return import("../../lib/js/belt_List.js").then(m => {
-    return m.forEach;
-  }).then(each => {
-    return Promise.resolve(each(list, f));
-  });
+  return import("../../lib/js/belt_List.js").then(m => m.forEach).then(each => Promise.resolve(each(list, f)));
 }
 
 eachIntLazy({

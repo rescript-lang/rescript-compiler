@@ -7,102 +7,90 @@ let Ext_string_test = require("./ext_string_test.js");
 
 let suites_0 = [
   "split",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: Ext_string_test.split(true, "hihi", /* 'i' */105),
-      _1: {
+  (param => ({
+    TAG: "Eq",
+    _0: Ext_string_test.split(true, "hihi", /* 'i' */105),
+    _1: {
+      hd: "h",
+      tl: {
         hd: "h",
         tl: {
-          hd: "h",
-          tl: {
-            hd: "",
-            tl: /* [] */0
-          }
+          hd: "",
+          tl: /* [] */0
         }
       }
-    };
-  })
+    }
+  }))
 ];
 
 let suites_1 = {
   hd: [
     "split_non_empty",
-    (param => {
-      return {
-        TAG: "Eq",
-        _0: Ext_string_test.split(undefined, "hihi", /* 'i' */105),
-        _1: {
+    (param => ({
+      TAG: "Eq",
+      _0: Ext_string_test.split(undefined, "hihi", /* 'i' */105),
+      _1: {
+        hd: "h",
+        tl: {
           hd: "h",
-          tl: {
-            hd: "h",
-            tl: /* [] */0
-          }
+          tl: /* [] */0
         }
-      };
-    })
+      }
+    }))
   ],
   tl: {
     hd: [
       "split_empty",
-      (param => {
-        return {
-          TAG: "Eq",
-          _0: Ext_string_test.split(true, "", /* 'i' */105),
-          _1: /* [] */0
-        };
-      })
+      (param => ({
+        TAG: "Eq",
+        _0: Ext_string_test.split(true, "", /* 'i' */105),
+        _1: /* [] */0
+      }))
     ],
     tl: {
       hd: [
         "split_normal",
-        (param => {
-          return {
-            TAG: "Eq",
-            _0: Ext_string_test.split(true, "h i i", /* ' ' */32),
-            _1: {
-              hd: "h",
+        (param => ({
+          TAG: "Eq",
+          _0: Ext_string_test.split(true, "h i i", /* ' ' */32),
+          _1: {
+            hd: "h",
+            tl: {
+              hd: "i",
               tl: {
                 hd: "i",
-                tl: {
-                  hd: "i",
-                  tl: /* [] */0
-                }
+                tl: /* [] */0
               }
             }
-          };
-        })
+          }
+        }))
       ],
       tl: {
         hd: [
           "split_by",
-          (param => {
-            return {
-              TAG: "Eq",
-              _0: List.filter((s => {
-                return s !== "";
-              }), Ext_string_test.split_by(undefined, (x => {
-                if (x === /* ' ' */32) {
-                  return true;
-                } else {
-                  return x === /* '\t' */9;
-                }
-              }), "h hgso hgso \t hi")),
-              _1: {
-                hd: "h",
+          (param => ({
+            TAG: "Eq",
+            _0: List.filter((s => s !== ""), Ext_string_test.split_by(undefined, (x => {
+              if (x === /* ' ' */32) {
+                return true;
+              } else {
+                return x === /* '\t' */9;
+              }
+            }), "h hgso hgso \t hi")),
+            _1: {
+              hd: "h",
+              tl: {
+                hd: "hgso",
                 tl: {
                   hd: "hgso",
                   tl: {
-                    hd: "hgso",
-                    tl: {
-                      hd: "hi",
-                      tl: /* [] */0
-                    }
+                    hd: "hi",
+                    tl: /* [] */0
                   }
                 }
               }
-            };
-          })
+            }
+          }))
         ],
         tl: /* [] */0
       }

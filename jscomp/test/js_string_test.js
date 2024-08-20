@@ -7,341 +7,279 @@ let Caml_option = require("../../lib/js/caml_option.js");
 
 let suites_0 = [
   "make",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: "null",
-      _1: String(null).concat("")
-    };
-  })
+  (param => ({
+    TAG: "Eq",
+    _0: "null",
+    _1: String(null).concat("")
+  }))
 ];
 
 let suites_1 = {
   hd: [
     "fromCharCode",
-    (param => {
-      return {
-        TAG: "Eq",
-        _0: "a",
-        _1: String.fromCharCode(97)
-      };
-    })
+    (param => ({
+      TAG: "Eq",
+      _0: "a",
+      _1: String.fromCharCode(97)
+    }))
   ],
   tl: {
     hd: [
       "fromCharCodeMany",
-      (param => {
-        return {
-          TAG: "Eq",
-          _0: "az",
-          _1: String.fromCharCode(97, 122)
-        };
-      })
+      (param => ({
+        TAG: "Eq",
+        _0: "az",
+        _1: String.fromCharCode(97, 122)
+      }))
     ],
     tl: {
       hd: [
         "fromCodePoint",
-        (param => {
-          return {
-            TAG: "Eq",
-            _0: "a",
-            _1: String.fromCodePoint(97)
-          };
-        })
+        (param => ({
+          TAG: "Eq",
+          _0: "a",
+          _1: String.fromCodePoint(97)
+        }))
       ],
       tl: {
         hd: [
           "fromCodePointMany",
-          (param => {
-            return {
-              TAG: "Eq",
-              _0: "az",
-              _1: String.fromCodePoint(97, 122)
-            };
-          })
+          (param => ({
+            TAG: "Eq",
+            _0: "az",
+            _1: String.fromCodePoint(97, 122)
+          }))
         ],
         tl: {
           hd: [
             "length",
-            (param => {
-              return {
-                TAG: "Eq",
-                _0: 3,
-                _1: "foo".length
-              };
-            })
+            (param => ({
+              TAG: "Eq",
+              _0: 3,
+              _1: "foo".length
+            }))
           ],
           tl: {
             hd: [
               "get",
-              (param => {
-                return {
-                  TAG: "Eq",
-                  _0: "a",
-                  _1: "foobar"[4]
-                };
-              })
+              (param => ({
+                TAG: "Eq",
+                _0: "a",
+                _1: "foobar"[4]
+              }))
             ],
             tl: {
               hd: [
                 "charAt",
-                (param => {
-                  return {
-                    TAG: "Eq",
-                    _0: "a",
-                    _1: "foobar".charAt(4)
-                  };
-                })
+                (param => ({
+                  TAG: "Eq",
+                  _0: "a",
+                  _1: "foobar".charAt(4)
+                }))
               ],
               tl: {
                 hd: [
                   "charCodeAt",
-                  (param => {
-                    return {
-                      TAG: "Eq",
-                      _0: 97,
-                      _1: "foobar".charCodeAt(4)
-                    };
-                  })
+                  (param => ({
+                    TAG: "Eq",
+                    _0: 97,
+                    _1: "foobar".charCodeAt(4)
+                  }))
                 ],
                 tl: {
                   hd: [
                     "codePointAt",
-                    (param => {
-                      return {
-                        TAG: "Eq",
-                        _0: 97,
-                        _1: "foobar".codePointAt(4)
-                      };
-                    })
+                    (param => ({
+                      TAG: "Eq",
+                      _0: 97,
+                      _1: "foobar".codePointAt(4)
+                    }))
                   ],
                   tl: {
                     hd: [
                       "codePointAt - out of bounds",
-                      (param => {
-                        return {
-                          TAG: "Eq",
-                          _0: undefined,
-                          _1: "foobar".codePointAt(98)
-                        };
-                      })
+                      (param => ({
+                        TAG: "Eq",
+                        _0: undefined,
+                        _1: "foobar".codePointAt(98)
+                      }))
                     ],
                     tl: {
                       hd: [
                         "concat",
-                        (param => {
-                          return {
-                            TAG: "Eq",
-                            _0: "foobar",
-                            _1: "foo".concat("bar")
-                          };
-                        })
+                        (param => ({
+                          TAG: "Eq",
+                          _0: "foobar",
+                          _1: "foo".concat("bar")
+                        }))
                       ],
                       tl: {
                         hd: [
                           "concatMany",
-                          (param => {
-                            return {
-                              TAG: "Eq",
-                              _0: "foobarbaz",
-                              _1: "foo".concat("bar", "baz")
-                            };
-                          })
+                          (param => ({
+                            TAG: "Eq",
+                            _0: "foobarbaz",
+                            _1: "foo".concat("bar", "baz")
+                          }))
                         ],
                         tl: {
                           hd: [
                             "endsWith",
-                            (param => {
-                              return {
-                                TAG: "Eq",
-                                _0: true,
-                                _1: "foobar".endsWith("bar")
-                              };
-                            })
+                            (param => ({
+                              TAG: "Eq",
+                              _0: true,
+                              _1: "foobar".endsWith("bar")
+                            }))
                           ],
                           tl: {
                             hd: [
                               "endsWithFrom",
-                              (param => {
-                                return {
-                                  TAG: "Eq",
-                                  _0: false,
-                                  _1: "foobar".endsWith("bar", 1)
-                                };
-                              })
+                              (param => ({
+                                TAG: "Eq",
+                                _0: false,
+                                _1: "foobar".endsWith("bar", 1)
+                              }))
                             ],
                             tl: {
                               hd: [
                                 "includes",
-                                (param => {
-                                  return {
-                                    TAG: "Eq",
-                                    _0: true,
-                                    _1: "foobarbaz".includes("bar")
-                                  };
-                                })
+                                (param => ({
+                                  TAG: "Eq",
+                                  _0: true,
+                                  _1: "foobarbaz".includes("bar")
+                                }))
                               ],
                               tl: {
                                 hd: [
                                   "includesFrom",
-                                  (param => {
-                                    return {
-                                      TAG: "Eq",
-                                      _0: false,
-                                      _1: "foobarbaz".includes("bar", 4)
-                                    };
-                                  })
+                                  (param => ({
+                                    TAG: "Eq",
+                                    _0: false,
+                                    _1: "foobarbaz".includes("bar", 4)
+                                  }))
                                 ],
                                 tl: {
                                   hd: [
                                     "indexOf",
-                                    (param => {
-                                      return {
-                                        TAG: "Eq",
-                                        _0: 3,
-                                        _1: "foobarbaz".indexOf("bar")
-                                      };
-                                    })
+                                    (param => ({
+                                      TAG: "Eq",
+                                      _0: 3,
+                                      _1: "foobarbaz".indexOf("bar")
+                                    }))
                                   ],
                                   tl: {
                                     hd: [
                                       "indexOfFrom",
-                                      (param => {
-                                        return {
-                                          TAG: "Eq",
-                                          _0: -1,
-                                          _1: "foobarbaz".indexOf("bar", 4)
-                                        };
-                                      })
+                                      (param => ({
+                                        TAG: "Eq",
+                                        _0: -1,
+                                        _1: "foobarbaz".indexOf("bar", 4)
+                                      }))
                                     ],
                                     tl: {
                                       hd: [
                                         "lastIndexOf",
-                                        (param => {
-                                          return {
-                                            TAG: "Eq",
-                                            _0: 3,
-                                            _1: "foobarbaz".lastIndexOf("bar")
-                                          };
-                                        })
+                                        (param => ({
+                                          TAG: "Eq",
+                                          _0: 3,
+                                          _1: "foobarbaz".lastIndexOf("bar")
+                                        }))
                                       ],
                                       tl: {
                                         hd: [
                                           "lastIndexOfFrom",
-                                          (param => {
-                                            return {
-                                              TAG: "Eq",
-                                              _0: 3,
-                                              _1: "foobarbaz".lastIndexOf("bar", 4)
-                                            };
-                                          })
+                                          (param => ({
+                                            TAG: "Eq",
+                                            _0: 3,
+                                            _1: "foobarbaz".lastIndexOf("bar", 4)
+                                          }))
                                         ],
                                         tl: {
                                           hd: [
                                             "localeCompare",
-                                            (param => {
-                                              return {
-                                                TAG: "Eq",
-                                                _0: 0,
-                                                _1: "foo".localeCompare("foo")
-                                              };
-                                            })
+                                            (param => ({
+                                              TAG: "Eq",
+                                              _0: 0,
+                                              _1: "foo".localeCompare("foo")
+                                            }))
                                           ],
                                           tl: {
                                             hd: [
                                               "match",
-                                              (param => {
-                                                return {
-                                                  TAG: "Eq",
-                                                  _0: [
-                                                    "na",
-                                                    "na"
-                                                  ],
-                                                  _1: Caml_option.null_to_opt("banana".match(/na+/g))
-                                                };
-                                              })
+                                              (param => ({
+                                                TAG: "Eq",
+                                                _0: [
+                                                  "na",
+                                                  "na"
+                                                ],
+                                                _1: Caml_option.null_to_opt("banana".match(/na+/g))
+                                              }))
                                             ],
                                             tl: {
                                               hd: [
                                                 "match - no match",
-                                                (param => {
-                                                  return {
-                                                    TAG: "Eq",
-                                                    _0: undefined,
-                                                    _1: Caml_option.null_to_opt("banana".match(/nanana+/g))
-                                                  };
-                                                })
+                                                (param => ({
+                                                  TAG: "Eq",
+                                                  _0: undefined,
+                                                  _1: Caml_option.null_to_opt("banana".match(/nanana+/g))
+                                                }))
                                               ],
                                               tl: {
                                                 hd: [
                                                   "match - not found capture groups",
-                                                  (param => {
-                                                    return {
-                                                      TAG: "Eq",
-                                                      _0: [
-                                                        "hello ",
-                                                        undefined
-                                                      ],
-                                                      _1: Belt_Option.map(Caml_option.null_to_opt("hello word".match(/hello (world)?/)), (prim => {
-                                                        return prim.slice();
-                                                      }))
-                                                    };
-                                                  })
+                                                  (param => ({
+                                                    TAG: "Eq",
+                                                    _0: [
+                                                      "hello ",
+                                                      undefined
+                                                    ],
+                                                    _1: Belt_Option.map(Caml_option.null_to_opt("hello word".match(/hello (world)?/)), (prim => prim.slice()))
+                                                  }))
                                                 ],
                                                 tl: {
                                                   hd: [
                                                     "normalize",
-                                                    (param => {
-                                                      return {
-                                                        TAG: "Eq",
-                                                        _0: "foo",
-                                                        _1: "foo".normalize()
-                                                      };
-                                                    })
+                                                    (param => ({
+                                                      TAG: "Eq",
+                                                      _0: "foo",
+                                                      _1: "foo".normalize()
+                                                    }))
                                                   ],
                                                   tl: {
                                                     hd: [
                                                       "normalizeByForm",
-                                                      (param => {
-                                                        return {
-                                                          TAG: "Eq",
-                                                          _0: "foo",
-                                                          _1: "foo".normalize("NFKD")
-                                                        };
-                                                      })
+                                                      (param => ({
+                                                        TAG: "Eq",
+                                                        _0: "foo",
+                                                        _1: "foo".normalize("NFKD")
+                                                      }))
                                                     ],
                                                     tl: {
                                                       hd: [
                                                         "repeat",
-                                                        (param => {
-                                                          return {
-                                                            TAG: "Eq",
-                                                            _0: "foofoofoo",
-                                                            _1: "foo".repeat(3)
-                                                          };
-                                                        })
+                                                        (param => ({
+                                                          TAG: "Eq",
+                                                          _0: "foofoofoo",
+                                                          _1: "foo".repeat(3)
+                                                        }))
                                                       ],
                                                       tl: {
                                                         hd: [
                                                           "replace",
-                                                          (param => {
-                                                            return {
-                                                              TAG: "Eq",
-                                                              _0: "fooBORKbaz",
-                                                              _1: "foobarbaz".replace("bar", "BORK")
-                                                            };
-                                                          })
+                                                          (param => ({
+                                                            TAG: "Eq",
+                                                            _0: "fooBORKbaz",
+                                                            _1: "foobarbaz".replace("bar", "BORK")
+                                                          }))
                                                         ],
                                                         tl: {
                                                           hd: [
                                                             "replaceByRe",
-                                                            (param => {
-                                                              return {
-                                                                TAG: "Eq",
-                                                                _0: "fooBORKBORK",
-                                                                _1: "foobarbaz".replace(/ba./g, "BORK")
-                                                              };
-                                                            })
+                                                            (param => ({
+                                                              TAG: "Eq",
+                                                              _0: "fooBORKBORK",
+                                                              _1: "foobarbaz".replace(/ba./g, "BORK")
+                                                            }))
                                                           ],
                                                           tl: {
                                                             hd: [
@@ -418,251 +356,209 @@ let suites_1 = {
                                                                   tl: {
                                                                     hd: [
                                                                       "search",
-                                                                      (param => {
-                                                                        return {
-                                                                          TAG: "Eq",
-                                                                          _0: 3,
-                                                                          _1: "foobarbaz".search(/ba./g)
-                                                                        };
-                                                                      })
+                                                                      (param => ({
+                                                                        TAG: "Eq",
+                                                                        _0: 3,
+                                                                        _1: "foobarbaz".search(/ba./g)
+                                                                      }))
                                                                     ],
                                                                     tl: {
                                                                       hd: [
                                                                         "slice",
-                                                                        (param => {
-                                                                          return {
-                                                                            TAG: "Eq",
-                                                                            _0: "bar",
-                                                                            _1: "foobarbaz".slice(3, 6)
-                                                                          };
-                                                                        })
+                                                                        (param => ({
+                                                                          TAG: "Eq",
+                                                                          _0: "bar",
+                                                                          _1: "foobarbaz".slice(3, 6)
+                                                                        }))
                                                                       ],
                                                                       tl: {
                                                                         hd: [
                                                                           "sliceToEnd",
-                                                                          (param => {
-                                                                            return {
-                                                                              TAG: "Eq",
-                                                                              _0: "barbaz",
-                                                                              _1: "foobarbaz".slice(3)
-                                                                            };
-                                                                          })
+                                                                          (param => ({
+                                                                            TAG: "Eq",
+                                                                            _0: "barbaz",
+                                                                            _1: "foobarbaz".slice(3)
+                                                                          }))
                                                                         ],
                                                                         tl: {
                                                                           hd: [
                                                                             "split",
-                                                                            (param => {
-                                                                              return {
-                                                                                TAG: "Eq",
-                                                                                _0: [
-                                                                                  "foo",
-                                                                                  "bar",
-                                                                                  "baz"
-                                                                                ],
-                                                                                _1: "foo bar baz".split(" ")
-                                                                              };
-                                                                            })
+                                                                            (param => ({
+                                                                              TAG: "Eq",
+                                                                              _0: [
+                                                                                "foo",
+                                                                                "bar",
+                                                                                "baz"
+                                                                              ],
+                                                                              _1: "foo bar baz".split(" ")
+                                                                            }))
                                                                           ],
                                                                           tl: {
                                                                             hd: [
                                                                               "splitAtMost",
-                                                                              (param => {
-                                                                                return {
-                                                                                  TAG: "Eq",
-                                                                                  _0: [
-                                                                                    "foo",
-                                                                                    "bar"
-                                                                                  ],
-                                                                                  _1: "foo bar baz".split(" ", 2)
-                                                                                };
-                                                                              })
+                                                                              (param => ({
+                                                                                TAG: "Eq",
+                                                                                _0: [
+                                                                                  "foo",
+                                                                                  "bar"
+                                                                                ],
+                                                                                _1: "foo bar baz".split(" ", 2)
+                                                                              }))
                                                                             ],
                                                                             tl: {
                                                                               hd: [
                                                                                 "splitByRe",
-                                                                                (param => {
-                                                                                  return {
-                                                                                    TAG: "Eq",
-                                                                                    _0: [
-                                                                                      "a",
-                                                                                      "#",
-                                                                                      undefined,
-                                                                                      "b",
-                                                                                      "#",
-                                                                                      ":",
-                                                                                      "c"
-                                                                                    ],
-                                                                                    _1: "a#b#:c".split(/(#)(:)?/)
-                                                                                  };
-                                                                                })
+                                                                                (param => ({
+                                                                                  TAG: "Eq",
+                                                                                  _0: [
+                                                                                    "a",
+                                                                                    "#",
+                                                                                    undefined,
+                                                                                    "b",
+                                                                                    "#",
+                                                                                    ":",
+                                                                                    "c"
+                                                                                  ],
+                                                                                  _1: "a#b#:c".split(/(#)(:)?/)
+                                                                                }))
                                                                               ],
                                                                               tl: {
                                                                                 hd: [
                                                                                   "splitByReAtMost",
-                                                                                  (param => {
-                                                                                    return {
-                                                                                      TAG: "Eq",
-                                                                                      _0: [
-                                                                                        "a",
-                                                                                        "#",
-                                                                                        undefined
-                                                                                      ],
-                                                                                      _1: "a#b#:c".split(/(#)(:)?/, 3)
-                                                                                    };
-                                                                                  })
+                                                                                  (param => ({
+                                                                                    TAG: "Eq",
+                                                                                    _0: [
+                                                                                      "a",
+                                                                                      "#",
+                                                                                      undefined
+                                                                                    ],
+                                                                                    _1: "a#b#:c".split(/(#)(:)?/, 3)
+                                                                                  }))
                                                                                 ],
                                                                                 tl: {
                                                                                   hd: [
                                                                                     "startsWith",
-                                                                                    (param => {
-                                                                                      return {
-                                                                                        TAG: "Eq",
-                                                                                        _0: true,
-                                                                                        _1: "foobarbaz".startsWith("foo")
-                                                                                      };
-                                                                                    })
+                                                                                    (param => ({
+                                                                                      TAG: "Eq",
+                                                                                      _0: true,
+                                                                                      _1: "foobarbaz".startsWith("foo")
+                                                                                    }))
                                                                                   ],
                                                                                   tl: {
                                                                                     hd: [
                                                                                       "startsWithFrom",
-                                                                                      (param => {
-                                                                                        return {
-                                                                                          TAG: "Eq",
-                                                                                          _0: false,
-                                                                                          _1: "foobarbaz".startsWith("foo", 1)
-                                                                                        };
-                                                                                      })
+                                                                                      (param => ({
+                                                                                        TAG: "Eq",
+                                                                                        _0: false,
+                                                                                        _1: "foobarbaz".startsWith("foo", 1)
+                                                                                      }))
                                                                                     ],
                                                                                     tl: {
                                                                                       hd: [
                                                                                         "substr",
-                                                                                        (param => {
-                                                                                          return {
-                                                                                            TAG: "Eq",
-                                                                                            _0: "barbaz",
-                                                                                            _1: "foobarbaz".substr(3)
-                                                                                          };
-                                                                                        })
+                                                                                        (param => ({
+                                                                                          TAG: "Eq",
+                                                                                          _0: "barbaz",
+                                                                                          _1: "foobarbaz".substr(3)
+                                                                                        }))
                                                                                       ],
                                                                                       tl: {
                                                                                         hd: [
                                                                                           "substrAtMost",
-                                                                                          (param => {
-                                                                                            return {
-                                                                                              TAG: "Eq",
-                                                                                              _0: "bar",
-                                                                                              _1: "foobarbaz".substr(3, 3)
-                                                                                            };
-                                                                                          })
+                                                                                          (param => ({
+                                                                                            TAG: "Eq",
+                                                                                            _0: "bar",
+                                                                                            _1: "foobarbaz".substr(3, 3)
+                                                                                          }))
                                                                                         ],
                                                                                         tl: {
                                                                                           hd: [
                                                                                             "substring",
-                                                                                            (param => {
-                                                                                              return {
-                                                                                                TAG: "Eq",
-                                                                                                _0: "bar",
-                                                                                                _1: "foobarbaz".substring(3, 6)
-                                                                                              };
-                                                                                            })
+                                                                                            (param => ({
+                                                                                              TAG: "Eq",
+                                                                                              _0: "bar",
+                                                                                              _1: "foobarbaz".substring(3, 6)
+                                                                                            }))
                                                                                           ],
                                                                                           tl: {
                                                                                             hd: [
                                                                                               "substringToEnd",
-                                                                                              (param => {
-                                                                                                return {
-                                                                                                  TAG: "Eq",
-                                                                                                  _0: "barbaz",
-                                                                                                  _1: "foobarbaz".substring(3)
-                                                                                                };
-                                                                                              })
+                                                                                              (param => ({
+                                                                                                TAG: "Eq",
+                                                                                                _0: "barbaz",
+                                                                                                _1: "foobarbaz".substring(3)
+                                                                                              }))
                                                                                             ],
                                                                                             tl: {
                                                                                               hd: [
                                                                                                 "toLowerCase",
-                                                                                                (param => {
-                                                                                                  return {
-                                                                                                    TAG: "Eq",
-                                                                                                    _0: "bork",
-                                                                                                    _1: "BORK".toLowerCase()
-                                                                                                  };
-                                                                                                })
+                                                                                                (param => ({
+                                                                                                  TAG: "Eq",
+                                                                                                  _0: "bork",
+                                                                                                  _1: "BORK".toLowerCase()
+                                                                                                }))
                                                                                               ],
                                                                                               tl: {
                                                                                                 hd: [
                                                                                                   "toLocaleLowerCase",
-                                                                                                  (param => {
-                                                                                                    return {
-                                                                                                      TAG: "Eq",
-                                                                                                      _0: "bork",
-                                                                                                      _1: "BORK".toLocaleLowerCase()
-                                                                                                    };
-                                                                                                  })
+                                                                                                  (param => ({
+                                                                                                    TAG: "Eq",
+                                                                                                    _0: "bork",
+                                                                                                    _1: "BORK".toLocaleLowerCase()
+                                                                                                  }))
                                                                                                 ],
                                                                                                 tl: {
                                                                                                   hd: [
                                                                                                     "toUpperCase",
-                                                                                                    (param => {
-                                                                                                      return {
-                                                                                                        TAG: "Eq",
-                                                                                                        _0: "FUBAR",
-                                                                                                        _1: "fubar".toUpperCase()
-                                                                                                      };
-                                                                                                    })
+                                                                                                    (param => ({
+                                                                                                      TAG: "Eq",
+                                                                                                      _0: "FUBAR",
+                                                                                                      _1: "fubar".toUpperCase()
+                                                                                                    }))
                                                                                                   ],
                                                                                                   tl: {
                                                                                                     hd: [
                                                                                                       "toLocaleUpperCase",
-                                                                                                      (param => {
-                                                                                                        return {
-                                                                                                          TAG: "Eq",
-                                                                                                          _0: "FUBAR",
-                                                                                                          _1: "fubar".toLocaleUpperCase()
-                                                                                                        };
-                                                                                                      })
+                                                                                                      (param => ({
+                                                                                                        TAG: "Eq",
+                                                                                                        _0: "FUBAR",
+                                                                                                        _1: "fubar".toLocaleUpperCase()
+                                                                                                      }))
                                                                                                     ],
                                                                                                     tl: {
                                                                                                       hd: [
                                                                                                         "trim",
-                                                                                                        (param => {
-                                                                                                          return {
-                                                                                                            TAG: "Eq",
-                                                                                                            _0: "foo",
-                                                                                                            _1: "  foo  ".trim()
-                                                                                                          };
-                                                                                                        })
+                                                                                                        (param => ({
+                                                                                                          TAG: "Eq",
+                                                                                                          _0: "foo",
+                                                                                                          _1: "  foo  ".trim()
+                                                                                                        }))
                                                                                                       ],
                                                                                                       tl: {
                                                                                                         hd: [
                                                                                                           "anchor",
-                                                                                                          (param => {
-                                                                                                            return {
-                                                                                                              TAG: "Eq",
-                                                                                                              _0: "<a name=\"bar\">foo</a>",
-                                                                                                              _1: "foo".anchor("bar")
-                                                                                                            };
-                                                                                                          })
+                                                                                                          (param => ({
+                                                                                                            TAG: "Eq",
+                                                                                                            _0: "<a name=\"bar\">foo</a>",
+                                                                                                            _1: "foo".anchor("bar")
+                                                                                                          }))
                                                                                                         ],
                                                                                                         tl: {
                                                                                                           hd: [
                                                                                                             "link",
-                                                                                                            (param => {
-                                                                                                              return {
-                                                                                                                TAG: "Eq",
-                                                                                                                _0: "<a href=\"https://reason.ml\">foo</a>",
-                                                                                                                _1: "foo".link("https://reason.ml")
-                                                                                                              };
-                                                                                                            })
+                                                                                                            (param => ({
+                                                                                                              TAG: "Eq",
+                                                                                                              _0: "<a href=\"https://reason.ml\">foo</a>",
+                                                                                                              _1: "foo".link("https://reason.ml")
+                                                                                                            }))
                                                                                                           ],
                                                                                                           tl: {
                                                                                                             hd: [
                                                                                                               "File \"js_string_test.res\", line 138, characters 5-12",
-                                                                                                              (param => {
-                                                                                                                return {
-                                                                                                                  TAG: "Ok",
-                                                                                                                  _0: "ab".includes("a")
-                                                                                                                };
-                                                                                                              })
+                                                                                                              (param => ({
+                                                                                                                TAG: "Ok",
+                                                                                                                _0: "ab".includes("a")
+                                                                                                              }))
                                                                                                             ],
                                                                                                             tl: /* [] */0
                                                                                                           }

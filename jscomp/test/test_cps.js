@@ -20,20 +20,14 @@ function f(_n, _acc) {
 }
 
 function test_closure() {
-  let arr = Caml_array.make(6, (x => {
-    return x;
-  }));
+  let arr = Caml_array.make(6, (x => x));
   for (let i = 0; i <= 6; ++i) {
-    Caml_array.set(arr, i, (param => {
-      return i;
-    }));
+    Caml_array.set(arr, i, (param => i));
   }
   return arr;
 }
 
-f(10, (() => {
-  
-}));
+f(10, (() => {}));
 
 exports.f = f;
 exports.test_closure = test_closure;

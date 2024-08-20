@@ -59,55 +59,53 @@ function to_list(s) {
 
 let suites_0 = [
   "lexer_stream_genlex",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: {
+  (param => ({
+    TAG: "Eq",
+    _0: {
+      hd: {
+        TAG: "Int",
+        _0: 3
+      },
+      tl: {
         hd: {
-          TAG: "Int",
-          _0: 3
+          TAG: "Kwd",
+          _0: "("
         },
         tl: {
           hd: {
-            TAG: "Kwd",
-            _0: "("
+            TAG: "Int",
+            _0: 3
           },
           tl: {
             hd: {
-              TAG: "Int",
-              _0: 3
+              TAG: "Kwd",
+              _0: "+"
             },
             tl: {
               hd: {
-                TAG: "Kwd",
-                _0: "+"
+                TAG: "Int",
+                _0: 2
               },
               tl: {
                 hd: {
                   TAG: "Int",
-                  _0: 2
+                  _0: -1
                 },
                 tl: {
                   hd: {
-                    TAG: "Int",
-                    _0: -1
+                    TAG: "Kwd",
+                    _0: ")"
                   },
-                  tl: {
-                    hd: {
-                      TAG: "Kwd",
-                      _0: ")"
-                    },
-                    tl: /* [] */0
-                  }
+                  tl: /* [] */0
                 }
               }
             }
           }
         }
-      },
-      _1: to_list(lexer(Stream.of_string("3(3 + 2 -1)")))
-    };
-  })
+      }
+    },
+    _1: to_list(lexer(Stream.of_string("3(3 + 2 -1)")))
+  }))
 ];
 
 let suites = {

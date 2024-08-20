@@ -7,84 +7,66 @@ let Caml_option = require("../../lib/js/caml_option.js");
 
 let suites_0 = [
   "toOption - empty",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: undefined,
-      _1: undefined
-    };
-  })
+  (param => ({
+    TAG: "Eq",
+    _0: undefined,
+    _1: undefined
+  }))
 ];
 
 let suites_1 = {
   hd: [
     "toOption - 'a",
-    (param => {
-      return {
-        TAG: "Eq",
-        _0: Caml_option.some(undefined),
-        _1: Caml_option.some()
-      };
-    })
+    (param => ({
+      TAG: "Eq",
+      _0: Caml_option.some(undefined),
+      _1: Caml_option.some()
+    }))
   ],
   tl: {
     hd: [
       "return",
-      (param => {
-        return {
-          TAG: "Eq",
-          _0: "something",
-          _1: Caml_option.null_to_opt("something")
-        };
-      })
+      (param => ({
+        TAG: "Eq",
+        _0: "something",
+        _1: Caml_option.null_to_opt("something")
+      }))
     ],
     tl: {
       hd: [
         "test - empty",
-        (param => {
-          return {
-            TAG: "Eq",
-            _0: true,
-            _1: true
-          };
-        })
+        (param => ({
+          TAG: "Eq",
+          _0: true,
+          _1: true
+        }))
       ],
       tl: {
         hd: [
           "test - 'a",
-          (param => {
-            return {
-              TAG: "Eq",
-              _0: false,
-              _1: false
-            };
-          })
+          (param => ({
+            TAG: "Eq",
+            _0: false,
+            _1: false
+          }))
         ],
         tl: {
           hd: [
             "bind - empty",
-            (param => {
-              return {
-                TAG: "StrictEq",
-                _0: null,
-                _1: Js_null.bind(null, (v => {
-                  return v;
-                }))
-              };
-            })
+            (param => ({
+              TAG: "StrictEq",
+              _0: null,
+              _1: Js_null.bind(null, (v => v))
+            }))
           ],
           tl: {
             hd: [
               "bind - 'a",
-              (param => {
-                return {
-                  TAG: "StrictEq",
-                  _0: 4,
-                  _1: Js_null.bind(2, (n => {
-                    return (n << 1);
-                  }))
-                };
-              })
+              (param => ({
+                TAG: "StrictEq",
+                _0: 4,
+                _1: Js_null.bind(2, (n => (n << 1)))
+              }))
             ],
             tl: {
               hd: [
@@ -123,24 +105,20 @@ let suites_1 = {
                 tl: {
                   hd: [
                     "fromOption - None",
-                    (param => {
-                      return {
-                        TAG: "Eq",
-                        _0: null,
-                        _1: Js_null.fromOption(undefined)
-                      };
-                    })
+                    (param => ({
+                      TAG: "Eq",
+                      _0: null,
+                      _1: Js_null.fromOption(undefined)
+                    }))
                   ],
                   tl: {
                     hd: [
                       "fromOption - Some",
-                      (param => {
-                        return {
-                          TAG: "Eq",
-                          _0: 2,
-                          _1: Js_null.fromOption(2)
-                        };
-                      })
+                      (param => ({
+                        TAG: "Eq",
+                        _0: 2,
+                        _1: Js_null.fromOption(2)
+                      }))
                     ],
                     tl: /* [] */0
                   }

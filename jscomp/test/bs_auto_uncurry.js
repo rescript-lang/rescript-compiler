@@ -12,9 +12,7 @@ let xbs = Array.prototype.map.call([
   2,
   3,
   5
-], (x => {
-  return x + 1 | 0;
-}));
+], (x => x + 1 | 0));
 
 function f(cb) {
   return Array.prototype.map.call([
@@ -38,14 +36,10 @@ let xs = Array.prototype.map.call([
     2,
     1
   ]
-], (param => {
-  return (param[1] + param[0] | 0) + 1 | 0;
-}));
+], (param => (param[1] + param[0] | 0) + 1 | 0));
 
 function f_0() {
-  return hi(() => {
-    
-  });
+  return hi(() => {});
 }
 
 function f_01() {
@@ -78,33 +72,23 @@ function h1(x, y, u, z) {
 }
 
 function add3(x) {
-  return (y, z) => {
-    return (x + y | 0) + z | 0;
-  };
+  return (y, z) => (x + y | 0) + z | 0;
 }
 
 function h2(x) {
-  return ff(x, ((prim0, prim1) => {
-    return prim0 + prim1 | 0;
-  }));
+  return ff(x, ((prim0, prim1) => prim0 + prim1 | 0));
 }
 
 function h3(x) {
-  return ff(x, ((y, z) => {
-    return (1 + y | 0) + z | 0;
-  }));
+  return ff(x, ((y, z) => (1 + y | 0) + z | 0));
 }
 
 function h4(x) {
-  return ff1(x, 3, ((y, z) => {
-    return (1 + y | 0) + z | 0;
-  }));
+  return ff1(x, 3, ((y, z) => (1 + y | 0) + z | 0));
 }
 
 function h5(x) {
-  return ff2(x, "3", ((y, z) => {
-    return (2 + y | 0) + z | 0;
-  }));
+  return ff2(x, "3", ((y, z) => (2 + y | 0) + z | 0));
 }
 
 function add(x, y) {

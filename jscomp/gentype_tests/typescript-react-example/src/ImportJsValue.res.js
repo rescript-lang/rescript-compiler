@@ -51,9 +51,7 @@ function higherOrder(prim) {
   return ImportJsValueGen$1.higherOrder(prim);
 }
 
-let returnedFromHigherOrder = ImportJsValueGen$1.higherOrder((prim0, prim1) => {
-  return prim0 + prim1 | 0;
-});
+let returnedFromHigherOrder = ImportJsValueGen$1.higherOrder((prim0, prim1) => prim0 + prim1 | 0);
 
 function convertVariant(prim) {
   return ImportJsValueGen$1.convertVariant(prim);

@@ -9,15 +9,13 @@ let Hashtbl = require("../../lib/js/hashtbl.js");
 let MoreLabels = require("../../lib/js/moreLabels.js");
 
 function to_list(tbl) {
-  return Hashtbl.fold(((k, v, acc) => {
-    return {
-      hd: [
-        k,
-        v
-      ],
-      tl: acc
-    };
-  }), tbl, /* [] */0);
+  return Hashtbl.fold(((k, v, acc) => ({
+    hd: [
+      k,
+      v
+    ],
+    tl: acc
+  })), tbl, /* [] */0);
 }
 
 function f() {
@@ -25,9 +23,7 @@ function f() {
   Hashtbl.add(tbl, 1, /* '1' */49);
   Hashtbl.add(tbl, 2, /* '2' */50);
   let extra = to_list(tbl);
-  return List.sort(((param, param$1) => {
-    return Caml.int_compare(param[0], param$1[0]);
-  }), extra);
+  return List.sort(((param, param$1) => Caml.int_compare(param[0], param$1[0])), extra);
 }
 
 function g(count) {
@@ -39,49 +35,41 @@ function g(count) {
     Hashtbl.replace(tbl, (i$1 << 1), String(i$1));
   }
   let v = to_list(tbl);
-  return $$Array.of_list(List.sort(((param, param$1) => {
-    return Caml.int_compare(param[0], param$1[0]);
-  }), v));
+  return $$Array.of_list(List.sort(((param, param$1) => Caml.int_compare(param[0], param$1[0])), v));
 }
 
 let suites_0 = [
   "simple",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: {
+  (param => ({
+    TAG: "Eq",
+    _0: {
+      hd: [
+        1,
+        /* '1' */49
+      ],
+      tl: {
         hd: [
-          1,
-          /* '1' */49
+          2,
+          /* '2' */50
         ],
-        tl: {
-          hd: [
-            2,
-            /* '2' */50
-          ],
-          tl: /* [] */0
-        }
-      },
-      _1: f()
-    };
-  })
+        tl: /* [] */0
+      }
+    },
+    _1: f()
+  }))
 ];
 
 let suites_1 = {
   hd: [
     "more_iterations",
-    (param => {
-      return {
-        TAG: "Eq",
-        _0: $$Array.init(1001, (i => {
-          return [
-            (i << 1),
-            String(i)
-          ];
-        })),
-        _1: g(1000)
-      };
-    })
+    (param => ({
+      TAG: "Eq",
+      _0: $$Array.init(1001, (i => [
+        (i << 1),
+        String(i)
+      ])),
+      _1: g(1000)
+    }))
   ],
   tl: {
     hd: [

@@ -9,9 +9,7 @@ let v = {
 };
 
 function f() {
-  let arr = Caml_array.make(10, (param => {
-    
-  }));
+  let arr = Caml_array.make(10, (param => {}));
   for (let i = 0; i <= 9; ++i) {
     Caml_array.set(arr, i, (param => {
       v.contents = v.contents + i | 0;
@@ -22,9 +20,7 @@ function f() {
 
 let u = f();
 
-$$Array.iter((x => {
-  x();
-}), u);
+$$Array.iter((x => x()), u);
 
 if (v.contents !== 45) {
   throw new Error("Assert_failure", {

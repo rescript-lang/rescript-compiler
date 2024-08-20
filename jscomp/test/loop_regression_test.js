@@ -23,13 +23,11 @@ function f() {
 
 let suites_0 = [
   "sum",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: 55,
-      _1: f()
-    };
-  })
+  (param => ({
+    TAG: "Eq",
+    _0: 55,
+    _1: f()
+  }))
 ];
 
 let suites = {

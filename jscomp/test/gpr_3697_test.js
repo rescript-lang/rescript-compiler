@@ -6,9 +6,7 @@ let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 function fix() {
   return {
     TAG: "Fix",
-    _0: CamlinternalLazy.from_fun(() => {
-      return fix();
-    })
+    _0: CamlinternalLazy.from_fun(() => fix())
   };
 }
 

@@ -109,15 +109,13 @@ function Make(Ord) {
       return bal(l, v, add(x, r));
     }
   };
-  let singleton = x => {
-    return {
-      TAG: "Node",
-      _0: "Empty",
-      _1: x,
-      _2: "Empty",
-      _3: 1
-    };
-  };
+  let singleton = x => ({
+    TAG: "Node",
+    _0: "Empty",
+    _1: x,
+    _2: "Empty",
+    _3: 1
+  });
   let add_min_element = (v, x) => {
     if (typeof x !== "object") {
       return singleton(v);
@@ -390,12 +388,8 @@ function Make(Ord) {
       continue;
     };
   };
-  let compare = (s1, s2) => {
-    return compare_aux(cons_enum(s1, "End"), cons_enum(s2, "End"));
-  };
-  let equal = (s1, s2) => {
-    return compare(s1, s2) === 0;
-  };
+  let compare = (s1, s2) => compare_aux(cons_enum(s1, "End"), cons_enum(s2, "End"));
+  let equal = (s1, s2) => compare(s1, s2) === 0;
   let subset = (_s1, _s2) => {
     while (true) {
       let s2 = _s2;
@@ -565,9 +559,7 @@ function Make(Ord) {
       continue;
     };
   };
-  let elements = s => {
-    return elements_aux(/* [] */0, s);
-  };
+  let elements = s => elements_aux(/* [] */0, s);
   let find = (x, _x_) => {
     while (true) {
       let x_ = _x_;

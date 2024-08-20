@@ -17,13 +17,11 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (() => {
-        return {
-          TAG: "Eq",
-          _0: x,
-          _1: y
-        };
-      })
+      (() => ({
+        TAG: "Eq",
+        _0: x,
+        _1: y
+      }))
     ],
     tl: suites.contents
   };
@@ -33,9 +31,7 @@ function f(x) {
   return CamlinternalLazy.force(x) + "abc";
 }
 
-let x = CamlinternalLazy.from_fun(() => {
-  return "def";
-});
+let x = CamlinternalLazy.from_fun(() => "def");
 
 CamlinternalLazy.force(x);
 

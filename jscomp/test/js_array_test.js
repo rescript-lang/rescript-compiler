@@ -6,53 +6,67 @@ let Caml_option = require("../../lib/js/caml_option.js");
 
 let suites_0 = [
   "isArray_array",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: true,
-      _1: Array.isArray([])
-    };
-  })
+  (param => ({
+    TAG: "Eq",
+    _0: true,
+    _1: Array.isArray([])
+  }))
 ];
 
 let suites_1 = {
   hd: [
     "isArray_int",
-    (param => {
-      return {
-        TAG: "Eq",
-        _0: false,
-        _1: Array.isArray(34)
-      };
-    })
+    (param => ({
+      TAG: "Eq",
+      _0: false,
+      _1: Array.isArray(34)
+    }))
   ],
   tl: {
     hd: [
       "length",
-      (param => {
-        return {
-          TAG: "Eq",
-          _0: 3,
-          _1: [
-            1,
-            2,
-            3
-          ].length
-        };
-      })
+      (param => ({
+        TAG: "Eq",
+        _0: 3,
+        _1: [
+          1,
+          2,
+          3
+        ].length
+      }))
     ],
     tl: {
       hd: [
         "copyWithin",
-        (param => {
-          return {
+        (param => ({
+          TAG: "Eq",
+          _0: [
+            1,
+            2,
+            3,
+            1,
+            2
+          ],
+          _1: [
+            1,
+            2,
+            3,
+            4,
+            5
+          ].copyWithin(-2)
+        }))
+      ],
+      tl: {
+        hd: [
+          "copyWithinFrom",
+          (param => ({
             TAG: "Eq",
             _0: [
-              1,
-              2,
+              4,
+              5,
               3,
-              1,
-              2
+              4,
+              5
             ],
             _1: [
               1,
@@ -60,19 +74,17 @@ let suites_1 = {
               3,
               4,
               5
-            ].copyWithin(-2)
-          };
-        })
-      ],
-      tl: {
-        hd: [
-          "copyWithinFrom",
-          (param => {
-            return {
+            ].copyWithin(0, 3)
+          }))
+        ],
+        tl: {
+          hd: [
+            "copyWithinFromRange",
+            (param => ({
               TAG: "Eq",
               _0: [
                 4,
-                5,
+                2,
                 3,
                 4,
                 5
@@ -83,41 +95,33 @@ let suites_1 = {
                 3,
                 4,
                 5
-              ].copyWithin(0, 3)
-            };
-          })
-        ],
-        tl: {
-          hd: [
-            "copyWithinFromRange",
-            (param => {
-              return {
-                TAG: "Eq",
-                _0: [
-                  4,
-                  2,
-                  3,
-                  4,
-                  5
-                ],
-                _1: [
-                  1,
-                  2,
-                  3,
-                  4,
-                  5
-                ].copyWithin(0, 3, 4)
-              };
-            })
+              ].copyWithin(0, 3, 4)
+            }))
           ],
           tl: {
             hd: [
               "fillInPlace",
-              (param => {
-                return {
+              (param => ({
+                TAG: "Eq",
+                _0: [
+                  4,
+                  4,
+                  4
+                ],
+                _1: [
+                  1,
+                  2,
+                  3
+                ].fill(4)
+              }))
+            ],
+            tl: {
+              hd: [
+                "fillFromInPlace",
+                (param => ({
                   TAG: "Eq",
                   _0: [
-                    4,
+                    1,
                     4,
                     4
                   ],
@@ -125,188 +129,146 @@ let suites_1 = {
                     1,
                     2,
                     3
-                  ].fill(4)
-                };
-              })
-            ],
-            tl: {
-              hd: [
-                "fillFromInPlace",
-                (param => {
-                  return {
+                  ].fill(4, 1)
+                }))
+              ],
+              tl: {
+                hd: [
+                  "fillRangeInPlace",
+                  (param => ({
                     TAG: "Eq",
                     _0: [
                       1,
                       4,
-                      4
+                      3
                     ],
                     _1: [
                       1,
                       2,
                       3
-                    ].fill(4, 1)
-                  };
-                })
-              ],
-              tl: {
-                hd: [
-                  "fillRangeInPlace",
-                  (param => {
-                    return {
-                      TAG: "Eq",
-                      _0: [
-                        1,
-                        4,
-                        3
-                      ],
-                      _1: [
-                        1,
-                        2,
-                        3
-                      ].fill(4, 1, 2)
-                    };
-                  })
+                    ].fill(4, 1, 2)
+                  }))
                 ],
                 tl: {
                   hd: [
                     "pop",
-                    (param => {
-                      return {
-                        TAG: "Eq",
-                        _0: 3,
-                        _1: Caml_option.undefined_to_opt([
-                          1,
-                          2,
-                          3
-                        ].pop())
-                      };
-                    })
+                    (param => ({
+                      TAG: "Eq",
+                      _0: 3,
+                      _1: Caml_option.undefined_to_opt([
+                        1,
+                        2,
+                        3
+                      ].pop())
+                    }))
                   ],
                   tl: {
                     hd: [
                       "pop - empty array",
-                      (param => {
-                        return {
-                          TAG: "Eq",
-                          _0: undefined,
-                          _1: Caml_option.undefined_to_opt([].pop())
-                        };
-                      })
+                      (param => ({
+                        TAG: "Eq",
+                        _0: undefined,
+                        _1: Caml_option.undefined_to_opt([].pop())
+                      }))
                     ],
                     tl: {
                       hd: [
                         "push",
-                        (param => {
-                          return {
-                            TAG: "Eq",
-                            _0: 4,
-                            _1: [
-                              1,
-                              2,
-                              3
-                            ].push(4)
-                          };
-                        })
+                        (param => ({
+                          TAG: "Eq",
+                          _0: 4,
+                          _1: [
+                            1,
+                            2,
+                            3
+                          ].push(4)
+                        }))
                       ],
                       tl: {
                         hd: [
                           "pushMany",
-                          (param => {
-                            return {
-                              TAG: "Eq",
-                              _0: 5,
-                              _1: [
-                                1,
-                                2,
-                                3
-                              ].push(4, 5)
-                            };
-                          })
+                          (param => ({
+                            TAG: "Eq",
+                            _0: 5,
+                            _1: [
+                              1,
+                              2,
+                              3
+                            ].push(4, 5)
+                          }))
                         ],
                         tl: {
                           hd: [
                             "reverseInPlace",
-                            (param => {
-                              return {
-                                TAG: "Eq",
-                                _0: [
-                                  3,
-                                  2,
-                                  1
-                                ],
-                                _1: [
-                                  1,
-                                  2,
-                                  3
-                                ].reverse()
-                              };
-                            })
+                            (param => ({
+                              TAG: "Eq",
+                              _0: [
+                                3,
+                                2,
+                                1
+                              ],
+                              _1: [
+                                1,
+                                2,
+                                3
+                              ].reverse()
+                            }))
                           ],
                           tl: {
                             hd: [
                               "shift",
-                              (param => {
-                                return {
-                                  TAG: "Eq",
-                                  _0: 1,
-                                  _1: Caml_option.undefined_to_opt([
-                                    1,
-                                    2,
-                                    3
-                                  ].shift())
-                                };
-                              })
+                              (param => ({
+                                TAG: "Eq",
+                                _0: 1,
+                                _1: Caml_option.undefined_to_opt([
+                                  1,
+                                  2,
+                                  3
+                                ].shift())
+                              }))
                             ],
                             tl: {
                               hd: [
                                 "shift - empty array",
-                                (param => {
-                                  return {
-                                    TAG: "Eq",
-                                    _0: undefined,
-                                    _1: Caml_option.undefined_to_opt([].shift())
-                                  };
-                                })
+                                (param => ({
+                                  TAG: "Eq",
+                                  _0: undefined,
+                                  _1: Caml_option.undefined_to_opt([].shift())
+                                }))
                               ],
                               tl: {
                                 hd: [
                                   "sortInPlace",
-                                  (param => {
-                                    return {
+                                  (param => ({
+                                    TAG: "Eq",
+                                    _0: [
+                                      1,
+                                      2,
+                                      3
+                                    ],
+                                    _1: [
+                                      3,
+                                      1,
+                                      2
+                                    ].sort()
+                                  }))
+                                ],
+                                tl: {
+                                  hd: [
+                                    "sortInPlaceWith",
+                                    (param => ({
                                       TAG: "Eq",
                                       _0: [
-                                        1,
+                                        3,
                                         2,
-                                        3
+                                        1
                                       ],
                                       _1: [
                                         3,
                                         1,
                                         2
-                                      ].sort()
-                                    };
-                                  })
-                                ],
-                                tl: {
-                                  hd: [
-                                    "sortInPlaceWith",
-                                    (param => {
-                                      return {
-                                        TAG: "Eq",
-                                        _0: [
-                                          3,
-                                          2,
-                                          1
-                                        ],
-                                        _1: [
-                                          3,
-                                          1,
-                                          2
-                                        ].sort((a, b) => {
-                                          return b - a | 0;
-                                        })
-                                      };
-                                    })
+                                      ].sort((a, b) => b - a | 0)
+                                    }))
                                   ],
                                   tl: {
                                     hd: [
@@ -399,65 +361,82 @@ let suites_1 = {
                                         tl: {
                                           hd: [
                                             "unshift",
-                                            (param => {
-                                              return {
-                                                TAG: "Eq",
-                                                _0: 4,
-                                                _1: [
-                                                  1,
-                                                  2,
-                                                  3
-                                                ].unshift(4)
-                                              };
-                                            })
+                                            (param => ({
+                                              TAG: "Eq",
+                                              _0: 4,
+                                              _1: [
+                                                1,
+                                                2,
+                                                3
+                                              ].unshift(4)
+                                            }))
                                           ],
                                           tl: {
                                             hd: [
                                               "unshiftMany",
-                                              (param => {
-                                                return {
-                                                  TAG: "Eq",
-                                                  _0: 5,
-                                                  _1: [
-                                                    1,
-                                                    2,
-                                                    3
-                                                  ].unshift(4, 5)
-                                                };
-                                              })
+                                              (param => ({
+                                                TAG: "Eq",
+                                                _0: 5,
+                                                _1: [
+                                                  1,
+                                                  2,
+                                                  3
+                                                ].unshift(4, 5)
+                                              }))
                                             ],
                                             tl: {
                                               hd: [
                                                 "append",
-                                                (param => {
-                                                  return {
+                                                (param => ({
+                                                  TAG: "Eq",
+                                                  _0: [
+                                                    1,
+                                                    2,
+                                                    3,
+                                                    4
+                                                  ],
+                                                  _1: [
+                                                    1,
+                                                    2,
+                                                    3
+                                                  ].concat([4])
+                                                }))
+                                              ],
+                                              tl: {
+                                                hd: [
+                                                  "concat",
+                                                  (param => ({
                                                     TAG: "Eq",
                                                     _0: [
                                                       1,
                                                       2,
                                                       3,
-                                                      4
+                                                      4,
+                                                      5
                                                     ],
                                                     _1: [
                                                       1,
                                                       2,
                                                       3
-                                                    ].concat([4])
-                                                  };
-                                                })
-                                              ],
-                                              tl: {
-                                                hd: [
-                                                  "concat",
-                                                  (param => {
-                                                    return {
+                                                    ].concat([
+                                                      4,
+                                                      5
+                                                    ])
+                                                  }))
+                                                ],
+                                                tl: {
+                                                  hd: [
+                                                    "concatMany",
+                                                    (param => ({
                                                       TAG: "Eq",
                                                       _0: [
                                                         1,
                                                         2,
                                                         3,
                                                         4,
-                                                        5
+                                                        5,
+                                                        6,
+                                                        7
                                                       ],
                                                       _1: [
                                                         1,
@@ -466,155 +445,134 @@ let suites_1 = {
                                                       ].concat([
                                                         4,
                                                         5
+                                                      ], [
+                                                        6,
+                                                        7
                                                       ])
-                                                    };
-                                                  })
-                                                ],
-                                                tl: {
-                                                  hd: [
-                                                    "concatMany",
-                                                    (param => {
-                                                      return {
-                                                        TAG: "Eq",
-                                                        _0: [
-                                                          1,
-                                                          2,
-                                                          3,
-                                                          4,
-                                                          5,
-                                                          6,
-                                                          7
-                                                        ],
-                                                        _1: [
-                                                          1,
-                                                          2,
-                                                          3
-                                                        ].concat([
-                                                          4,
-                                                          5
-                                                        ], [
-                                                          6,
-                                                          7
-                                                        ])
-                                                      };
-                                                    })
+                                                    }))
                                                   ],
                                                   tl: {
                                                     hd: [
                                                       "includes",
-                                                      (param => {
-                                                        return {
-                                                          TAG: "Eq",
-                                                          _0: true,
-                                                          _1: [
-                                                            1,
-                                                            2,
-                                                            3
-                                                          ].includes(3)
-                                                        };
-                                                      })
+                                                      (param => ({
+                                                        TAG: "Eq",
+                                                        _0: true,
+                                                        _1: [
+                                                          1,
+                                                          2,
+                                                          3
+                                                        ].includes(3)
+                                                      }))
                                                     ],
                                                     tl: {
                                                       hd: [
                                                         "indexOf",
-                                                        (param => {
-                                                          return {
-                                                            TAG: "Eq",
-                                                            _0: 1,
-                                                            _1: [
-                                                              1,
-                                                              2,
-                                                              3
-                                                            ].indexOf(2)
-                                                          };
-                                                        })
+                                                        (param => ({
+                                                          TAG: "Eq",
+                                                          _0: 1,
+                                                          _1: [
+                                                            1,
+                                                            2,
+                                                            3
+                                                          ].indexOf(2)
+                                                        }))
                                                       ],
                                                       tl: {
                                                         hd: [
                                                           "indexOfFrom",
-                                                          (param => {
-                                                            return {
-                                                              TAG: "Eq",
-                                                              _0: 3,
-                                                              _1: [
-                                                                1,
-                                                                2,
-                                                                3,
-                                                                2
-                                                              ].indexOf(2, 2)
-                                                            };
-                                                          })
+                                                          (param => ({
+                                                            TAG: "Eq",
+                                                            _0: 3,
+                                                            _1: [
+                                                              1,
+                                                              2,
+                                                              3,
+                                                              2
+                                                            ].indexOf(2, 2)
+                                                          }))
                                                         ],
                                                         tl: {
                                                           hd: [
                                                             "join",
-                                                            (param => {
-                                                              return {
-                                                                TAG: "Eq",
-                                                                _0: "1,2,3",
-                                                                _1: [
-                                                                  1,
-                                                                  2,
-                                                                  3
-                                                                ].join()
-                                                              };
-                                                            })
+                                                            (param => ({
+                                                              TAG: "Eq",
+                                                              _0: "1,2,3",
+                                                              _1: [
+                                                                1,
+                                                                2,
+                                                                3
+                                                              ].join()
+                                                            }))
                                                           ],
                                                           tl: {
                                                             hd: [
                                                               "joinWith",
-                                                              (param => {
-                                                                return {
-                                                                  TAG: "Eq",
-                                                                  _0: "1;2;3",
-                                                                  _1: [
-                                                                    1,
-                                                                    2,
-                                                                    3
-                                                                  ].join(";")
-                                                                };
-                                                              })
+                                                              (param => ({
+                                                                TAG: "Eq",
+                                                                _0: "1;2;3",
+                                                                _1: [
+                                                                  1,
+                                                                  2,
+                                                                  3
+                                                                ].join(";")
+                                                              }))
                                                             ],
                                                             tl: {
                                                               hd: [
                                                                 "lastIndexOf",
-                                                                (param => {
-                                                                  return {
+                                                                (param => ({
+                                                                  TAG: "Eq",
+                                                                  _0: 1,
+                                                                  _1: [
+                                                                    1,
+                                                                    2,
+                                                                    3
+                                                                  ].lastIndexOf(2)
+                                                                }))
+                                                              ],
+                                                              tl: {
+                                                                hd: [
+                                                                  "lastIndexOfFrom",
+                                                                  (param => ({
                                                                     TAG: "Eq",
                                                                     _0: 1,
                                                                     _1: [
                                                                       1,
                                                                       2,
-                                                                      3
-                                                                    ].lastIndexOf(2)
-                                                                  };
-                                                                })
-                                                              ],
-                                                              tl: {
-                                                                hd: [
-                                                                  "lastIndexOfFrom",
-                                                                  (param => {
-                                                                    return {
-                                                                      TAG: "Eq",
-                                                                      _0: 1,
-                                                                      _1: [
-                                                                        1,
-                                                                        2,
-                                                                        3,
-                                                                        2
-                                                                      ].lastIndexOf(2, 2)
-                                                                    };
-                                                                  })
+                                                                      3,
+                                                                      2
+                                                                    ].lastIndexOf(2, 2)
+                                                                  }))
                                                                 ],
                                                                 tl: {
                                                                   hd: [
                                                                     "slice",
-                                                                    (param => {
-                                                                      return {
+                                                                    (param => ({
+                                                                      TAG: "Eq",
+                                                                      _0: [
+                                                                        2,
+                                                                        3
+                                                                      ],
+                                                                      _1: [
+                                                                        1,
+                                                                        2,
+                                                                        3,
+                                                                        4,
+                                                                        5
+                                                                      ].slice(1, 3)
+                                                                    }))
+                                                                  ],
+                                                                  tl: {
+                                                                    hd: [
+                                                                      "copy",
+                                                                      (param => ({
                                                                         TAG: "Eq",
                                                                         _0: [
+                                                                          1,
                                                                           2,
-                                                                          3
+                                                                          3,
+                                                                          4,
+                                                                          5
                                                                         ],
                                                                         _1: [
                                                                           1,
@@ -622,19 +580,15 @@ let suites_1 = {
                                                                           3,
                                                                           4,
                                                                           5
-                                                                        ].slice(1, 3)
-                                                                      };
-                                                                    })
-                                                                  ],
-                                                                  tl: {
-                                                                    hd: [
-                                                                      "copy",
-                                                                      (param => {
-                                                                        return {
+                                                                        ].slice()
+                                                                      }))
+                                                                    ],
+                                                                    tl: {
+                                                                      hd: [
+                                                                        "sliceFrom",
+                                                                        (param => ({
                                                                           TAG: "Eq",
                                                                           _0: [
-                                                                            1,
-                                                                            2,
                                                                             3,
                                                                             4,
                                                                             5
@@ -645,244 +599,178 @@ let suites_1 = {
                                                                             3,
                                                                             4,
                                                                             5
-                                                                          ].slice()
-                                                                        };
-                                                                      })
-                                                                    ],
-                                                                    tl: {
-                                                                      hd: [
-                                                                        "sliceFrom",
-                                                                        (param => {
-                                                                          return {
-                                                                            TAG: "Eq",
-                                                                            _0: [
-                                                                              3,
-                                                                              4,
-                                                                              5
-                                                                            ],
-                                                                            _1: [
-                                                                              1,
-                                                                              2,
-                                                                              3,
-                                                                              4,
-                                                                              5
-                                                                            ].slice(2)
-                                                                          };
-                                                                        })
+                                                                          ].slice(2)
+                                                                        }))
                                                                       ],
                                                                       tl: {
                                                                         hd: [
                                                                           "toString",
-                                                                          (param => {
-                                                                            return {
+                                                                          (param => ({
+                                                                            TAG: "Eq",
+                                                                            _0: "1,2,3",
+                                                                            _1: [
+                                                                              1,
+                                                                              2,
+                                                                              3
+                                                                            ].toString()
+                                                                          }))
+                                                                        ],
+                                                                        tl: {
+                                                                          hd: [
+                                                                            "toLocaleString",
+                                                                            (param => ({
                                                                               TAG: "Eq",
                                                                               _0: "1,2,3",
                                                                               _1: [
                                                                                 1,
                                                                                 2,
                                                                                 3
-                                                                              ].toString()
-                                                                            };
-                                                                          })
-                                                                        ],
-                                                                        tl: {
-                                                                          hd: [
-                                                                            "toLocaleString",
-                                                                            (param => {
-                                                                              return {
-                                                                                TAG: "Eq",
-                                                                                _0: "1,2,3",
-                                                                                _1: [
-                                                                                  1,
-                                                                                  2,
-                                                                                  3
-                                                                                ].toLocaleString()
-                                                                              };
-                                                                            })
+                                                                              ].toLocaleString()
+                                                                            }))
                                                                           ],
                                                                           tl: {
                                                                             hd: [
                                                                               "every",
-                                                                              (param => {
-                                                                                return {
-                                                                                  TAG: "Eq",
-                                                                                  _0: true,
-                                                                                  _1: [
-                                                                                    1,
-                                                                                    2,
-                                                                                    3
-                                                                                  ].every(n => {
-                                                                                    return n > 0;
-                                                                                  })
-                                                                                };
-                                                                              })
+                                                                              (param => ({
+                                                                                TAG: "Eq",
+                                                                                _0: true,
+                                                                                _1: [
+                                                                                  1,
+                                                                                  2,
+                                                                                  3
+                                                                                ].every(n => n > 0)
+                                                                              }))
                                                                             ],
                                                                             tl: {
                                                                               hd: [
                                                                                 "everyi",
-                                                                                (param => {
-                                                                                  return {
-                                                                                    TAG: "Eq",
-                                                                                    _0: false,
-                                                                                    _1: [
-                                                                                      1,
-                                                                                      2,
-                                                                                      3
-                                                                                    ].every((param, i) => {
-                                                                                      return i > 0;
-                                                                                    })
-                                                                                  };
-                                                                                })
+                                                                                (param => ({
+                                                                                  TAG: "Eq",
+                                                                                  _0: false,
+                                                                                  _1: [
+                                                                                    1,
+                                                                                    2,
+                                                                                    3
+                                                                                  ].every((param, i) => i > 0)
+                                                                                }))
                                                                               ],
                                                                               tl: {
                                                                                 hd: [
                                                                                   "filter",
-                                                                                  (param => {
-                                                                                    return {
+                                                                                  (param => ({
+                                                                                    TAG: "Eq",
+                                                                                    _0: [
+                                                                                      2,
+                                                                                      4
+                                                                                    ],
+                                                                                    _1: [
+                                                                                      1,
+                                                                                      2,
+                                                                                      3,
+                                                                                      4
+                                                                                    ].filter(n => n % 2 === 0)
+                                                                                  }))
+                                                                                ],
+                                                                                tl: {
+                                                                                  hd: [
+                                                                                    "filteri",
+                                                                                    (param => ({
                                                                                       TAG: "Eq",
                                                                                       _0: [
-                                                                                        2,
-                                                                                        4
+                                                                                        1,
+                                                                                        3
                                                                                       ],
                                                                                       _1: [
                                                                                         1,
                                                                                         2,
                                                                                         3,
                                                                                         4
-                                                                                      ].filter(n => {
-                                                                                        return n % 2 === 0;
-                                                                                      })
-                                                                                    };
-                                                                                  })
-                                                                                ],
-                                                                                tl: {
-                                                                                  hd: [
-                                                                                    "filteri",
-                                                                                    (param => {
-                                                                                      return {
-                                                                                        TAG: "Eq",
-                                                                                        _0: [
-                                                                                          1,
-                                                                                          3
-                                                                                        ],
-                                                                                        _1: [
-                                                                                          1,
-                                                                                          2,
-                                                                                          3,
-                                                                                          4
-                                                                                        ].filter((param, i) => {
-                                                                                          return i % 2 === 0;
-                                                                                        })
-                                                                                      };
-                                                                                    })
+                                                                                      ].filter((param, i) => i % 2 === 0)
+                                                                                    }))
                                                                                   ],
                                                                                   tl: {
                                                                                     hd: [
                                                                                       "find",
-                                                                                      (param => {
-                                                                                        return {
+                                                                                      (param => ({
+                                                                                        TAG: "Eq",
+                                                                                        _0: 2,
+                                                                                        _1: Caml_option.undefined_to_opt([
+                                                                                          1,
+                                                                                          2,
+                                                                                          3,
+                                                                                          4
+                                                                                        ].find(n => n % 2 === 0))
+                                                                                      }))
+                                                                                    ],
+                                                                                    tl: {
+                                                                                      hd: [
+                                                                                        "find - no match",
+                                                                                        (param => ({
                                                                                           TAG: "Eq",
-                                                                                          _0: 2,
+                                                                                          _0: undefined,
                                                                                           _1: Caml_option.undefined_to_opt([
                                                                                             1,
                                                                                             2,
                                                                                             3,
                                                                                             4
-                                                                                          ].find(n => {
-                                                                                            return n % 2 === 0;
-                                                                                          }))
-                                                                                        };
-                                                                                      })
-                                                                                    ],
-                                                                                    tl: {
-                                                                                      hd: [
-                                                                                        "find - no match",
-                                                                                        (param => {
-                                                                                          return {
+                                                                                          ].find(n => n % 2 === 5))
+                                                                                        }))
+                                                                                      ],
+                                                                                      tl: {
+                                                                                        hd: [
+                                                                                          "findi",
+                                                                                          (param => ({
                                                                                             TAG: "Eq",
-                                                                                            _0: undefined,
+                                                                                            _0: 1,
                                                                                             _1: Caml_option.undefined_to_opt([
                                                                                               1,
                                                                                               2,
                                                                                               3,
                                                                                               4
-                                                                                            ].find(n => {
-                                                                                              return n % 2 === 5;
-                                                                                            }))
-                                                                                          };
-                                                                                        })
-                                                                                      ],
-                                                                                      tl: {
-                                                                                        hd: [
-                                                                                          "findi",
-                                                                                          (param => {
-                                                                                            return {
+                                                                                            ].find((param, i) => i % 2 === 0))
+                                                                                          }))
+                                                                                        ],
+                                                                                        tl: {
+                                                                                          hd: [
+                                                                                            "findi - no match",
+                                                                                            (param => ({
                                                                                               TAG: "Eq",
-                                                                                              _0: 1,
+                                                                                              _0: undefined,
                                                                                               _1: Caml_option.undefined_to_opt([
                                                                                                 1,
                                                                                                 2,
                                                                                                 3,
                                                                                                 4
-                                                                                              ].find((param, i) => {
-                                                                                                return i % 2 === 0;
-                                                                                              }))
-                                                                                            };
-                                                                                          })
-                                                                                        ],
-                                                                                        tl: {
-                                                                                          hd: [
-                                                                                            "findi - no match",
-                                                                                            (param => {
-                                                                                              return {
-                                                                                                TAG: "Eq",
-                                                                                                _0: undefined,
-                                                                                                _1: Caml_option.undefined_to_opt([
-                                                                                                  1,
-                                                                                                  2,
-                                                                                                  3,
-                                                                                                  4
-                                                                                                ].find((param, i) => {
-                                                                                                  return i % 2 === 5;
-                                                                                                }))
-                                                                                              };
-                                                                                            })
+                                                                                              ].find((param, i) => i % 2 === 5))
+                                                                                            }))
                                                                                           ],
                                                                                           tl: {
                                                                                             hd: [
                                                                                               "findIndex",
-                                                                                              (param => {
-                                                                                                return {
+                                                                                              (param => ({
+                                                                                                TAG: "Eq",
+                                                                                                _0: 1,
+                                                                                                _1: [
+                                                                                                  1,
+                                                                                                  2,
+                                                                                                  3,
+                                                                                                  4
+                                                                                                ].findIndex(n => n % 2 === 0)
+                                                                                              }))
+                                                                                            ],
+                                                                                            tl: {
+                                                                                              hd: [
+                                                                                                "findIndexi",
+                                                                                                (param => ({
                                                                                                   TAG: "Eq",
-                                                                                                  _0: 1,
+                                                                                                  _0: 0,
                                                                                                   _1: [
                                                                                                     1,
                                                                                                     2,
                                                                                                     3,
                                                                                                     4
-                                                                                                  ].findIndex(n => {
-                                                                                                    return n % 2 === 0;
-                                                                                                  })
-                                                                                                };
-                                                                                              })
-                                                                                            ],
-                                                                                            tl: {
-                                                                                              hd: [
-                                                                                                "findIndexi",
-                                                                                                (param => {
-                                                                                                  return {
-                                                                                                    TAG: "Eq",
-                                                                                                    _0: 0,
-                                                                                                    _1: [
-                                                                                                      1,
-                                                                                                      2,
-                                                                                                      3,
-                                                                                                      4
-                                                                                                    ].findIndex((param, i) => {
-                                                                                                      return i % 2 === 0;
-                                                                                                    })
-                                                                                                  };
-                                                                                                })
+                                                                                                  ].findIndex((param, i) => i % 2 === 0)
+                                                                                                }))
                                                                                               ],
                                                                                               tl: {
                                                                                                 hd: [
@@ -929,156 +817,124 @@ let suites_1 = {
                                                                                                   tl: {
                                                                                                     hd: [
                                                                                                       "map",
-                                                                                                      (param => {
-                                                                                                        return {
+                                                                                                      (param => ({
+                                                                                                        TAG: "Eq",
+                                                                                                        _0: [
+                                                                                                          2,
+                                                                                                          4,
+                                                                                                          6,
+                                                                                                          8
+                                                                                                        ],
+                                                                                                        _1: [
+                                                                                                          1,
+                                                                                                          2,
+                                                                                                          3,
+                                                                                                          4
+                                                                                                        ].map(n => (n << 1))
+                                                                                                      }))
+                                                                                                    ],
+                                                                                                    tl: {
+                                                                                                      hd: [
+                                                                                                        "map",
+                                                                                                        (param => ({
                                                                                                           TAG: "Eq",
                                                                                                           _0: [
+                                                                                                            0,
                                                                                                             2,
                                                                                                             4,
-                                                                                                            6,
-                                                                                                            8
+                                                                                                            6
                                                                                                           ],
                                                                                                           _1: [
                                                                                                             1,
                                                                                                             2,
                                                                                                             3,
                                                                                                             4
-                                                                                                          ].map(n => {
-                                                                                                            return (n << 1);
-                                                                                                          })
-                                                                                                        };
-                                                                                                      })
-                                                                                                    ],
-                                                                                                    tl: {
-                                                                                                      hd: [
-                                                                                                        "map",
-                                                                                                        (param => {
-                                                                                                          return {
+                                                                                                          ].map((param, i) => (i << 1))
+                                                                                                        }))
+                                                                                                      ],
+                                                                                                      tl: {
+                                                                                                        hd: [
+                                                                                                          "reduce",
+                                                                                                          (param => ({
                                                                                                             TAG: "Eq",
-                                                                                                            _0: [
-                                                                                                              0,
-                                                                                                              2,
-                                                                                                              4,
-                                                                                                              6
-                                                                                                            ],
+                                                                                                            _0: -10,
                                                                                                             _1: [
                                                                                                               1,
                                                                                                               2,
                                                                                                               3,
                                                                                                               4
-                                                                                                            ].map((param, i) => {
-                                                                                                              return (i << 1);
-                                                                                                            })
-                                                                                                          };
-                                                                                                        })
-                                                                                                      ],
-                                                                                                      tl: {
-                                                                                                        hd: [
-                                                                                                          "reduce",
-                                                                                                          (param => {
-                                                                                                            return {
+                                                                                                            ].reduce(((acc, n) => acc - n | 0), 0)
+                                                                                                          }))
+                                                                                                        ],
+                                                                                                        tl: {
+                                                                                                          hd: [
+                                                                                                            "reducei",
+                                                                                                            (param => ({
                                                                                                               TAG: "Eq",
-                                                                                                              _0: -10,
+                                                                                                              _0: -6,
                                                                                                               _1: [
                                                                                                                 1,
                                                                                                                 2,
                                                                                                                 3,
                                                                                                                 4
-                                                                                                              ].reduce(((acc, n) => {
-                                                                                                                return acc - n | 0;
-                                                                                                              }), 0)
-                                                                                                            };
-                                                                                                          })
-                                                                                                        ],
-                                                                                                        tl: {
-                                                                                                          hd: [
-                                                                                                            "reducei",
-                                                                                                            (param => {
-                                                                                                              return {
+                                                                                                              ].reduce(((acc, param, i) => acc - i | 0), 0)
+                                                                                                            }))
+                                                                                                          ],
+                                                                                                          tl: {
+                                                                                                            hd: [
+                                                                                                              "reduceRight",
+                                                                                                              (param => ({
                                                                                                                 TAG: "Eq",
-                                                                                                                _0: -6,
+                                                                                                                _0: -10,
                                                                                                                 _1: [
                                                                                                                   1,
                                                                                                                   2,
                                                                                                                   3,
                                                                                                                   4
-                                                                                                                ].reduce(((acc, param, i) => {
-                                                                                                                  return acc - i | 0;
-                                                                                                                }), 0)
-                                                                                                              };
-                                                                                                            })
-                                                                                                          ],
-                                                                                                          tl: {
-                                                                                                            hd: [
-                                                                                                              "reduceRight",
-                                                                                                              (param => {
-                                                                                                                return {
+                                                                                                                ].reduceRight(((acc, n) => acc - n | 0), 0)
+                                                                                                              }))
+                                                                                                            ],
+                                                                                                            tl: {
+                                                                                                              hd: [
+                                                                                                                "reduceRighti",
+                                                                                                                (param => ({
                                                                                                                   TAG: "Eq",
-                                                                                                                  _0: -10,
+                                                                                                                  _0: -6,
                                                                                                                   _1: [
                                                                                                                     1,
                                                                                                                     2,
                                                                                                                     3,
                                                                                                                     4
-                                                                                                                  ].reduceRight(((acc, n) => {
-                                                                                                                    return acc - n | 0;
-                                                                                                                  }), 0)
-                                                                                                                };
-                                                                                                              })
-                                                                                                            ],
-                                                                                                            tl: {
-                                                                                                              hd: [
-                                                                                                                "reduceRighti",
-                                                                                                                (param => {
-                                                                                                                  return {
+                                                                                                                  ].reduceRight(((acc, param, i) => acc - i | 0), 0)
+                                                                                                                }))
+                                                                                                              ],
+                                                                                                              tl: {
+                                                                                                                hd: [
+                                                                                                                  "some",
+                                                                                                                  (param => ({
                                                                                                                     TAG: "Eq",
-                                                                                                                    _0: -6,
+                                                                                                                    _0: false,
                                                                                                                     _1: [
                                                                                                                       1,
                                                                                                                       2,
                                                                                                                       3,
                                                                                                                       4
-                                                                                                                    ].reduceRight(((acc, param, i) => {
-                                                                                                                      return acc - i | 0;
-                                                                                                                    }), 0)
-                                                                                                                  };
-                                                                                                                })
-                                                                                                              ],
-                                                                                                              tl: {
-                                                                                                                hd: [
-                                                                                                                  "some",
-                                                                                                                  (param => {
-                                                                                                                    return {
+                                                                                                                    ].some(n => n <= 0)
+                                                                                                                  }))
+                                                                                                                ],
+                                                                                                                tl: {
+                                                                                                                  hd: [
+                                                                                                                    "somei",
+                                                                                                                    (param => ({
                                                                                                                       TAG: "Eq",
-                                                                                                                      _0: false,
+                                                                                                                      _0: true,
                                                                                                                       _1: [
                                                                                                                         1,
                                                                                                                         2,
                                                                                                                         3,
                                                                                                                         4
-                                                                                                                      ].some(n => {
-                                                                                                                        return n <= 0;
-                                                                                                                      })
-                                                                                                                    };
-                                                                                                                  })
-                                                                                                                ],
-                                                                                                                tl: {
-                                                                                                                  hd: [
-                                                                                                                    "somei",
-                                                                                                                    (param => {
-                                                                                                                      return {
-                                                                                                                        TAG: "Eq",
-                                                                                                                        _0: true,
-                                                                                                                        _1: [
-                                                                                                                          1,
-                                                                                                                          2,
-                                                                                                                          3,
-                                                                                                                          4
-                                                                                                                        ].some((param, i) => {
-                                                                                                                          return i <= 0;
-                                                                                                                        })
-                                                                                                                      };
-                                                                                                                    })
+                                                                                                                      ].some((param, i) => i <= 0)
+                                                                                                                    }))
                                                                                                                   ],
                                                                                                                   tl: /* [] */0
                                                                                                                 }

@@ -272,9 +272,7 @@ function of_list(l) {
 }
 
 function of_array(l) {
-  return $$Array.fold_left(((acc, x) => {
-    return add(x, acc);
-  }), "Empty", l);
+  return $$Array.fold_left(((acc, x) => add(x, acc)), "Empty", l);
 }
 
 function invariant(t) {

@@ -39,9 +39,7 @@ function kf(cb, v) {
 }
 
 function ikf(v) {
-  return kf((prim => {
-    
-  }), v);
+  return kf((prim => {}), v);
 }
 
 exports.v = v;

@@ -18,9 +18,7 @@ function Test(Queue) {
   };
   let queue_1 = x => {
     let q = Queue.create();
-    $$Array.iter((x => {
-      Queue.add(x, q);
-    }), x);
+    $$Array.iter((x => Queue.add(x, q)), x);
     return to_array(q);
   };
   return {
@@ -44,9 +42,7 @@ function queue_1(x) {
     first: "Nil",
     last: "Nil"
   };
-  $$Array.iter((x => {
-    Queue.add(x, q);
-  }), x);
+  $$Array.iter((x => Queue.add(x, q)), x);
   return to_array(q);
 }
 
@@ -69,9 +65,7 @@ function queue_1$1(x) {
     length: 0,
     tail: undefined
   };
-  $$Array.iter((x => {
-    Queue_402.add(x, q);
-  }), x);
+  $$Array.iter((x => Queue_402.add(x, q)), x);
   return to_array$1(q);
 }
 

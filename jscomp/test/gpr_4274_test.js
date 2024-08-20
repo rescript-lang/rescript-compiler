@@ -29,9 +29,7 @@ let bar = [{
     foo: "bar"
   }];
 
-Belt_Array.map(bar, (b => {
-  return b.foo;
-}));
+Belt_Array.map(bar, (b => b.foo));
 
 exports.N = N;
 exports.f = f;

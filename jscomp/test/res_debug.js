@@ -33,17 +33,13 @@ function optionMap(x, f) {
   
 }
 
-let ok_name = optionMap(undefined, (x => {
-  return x;
-}));
+let ok_name = optionMap(undefined, (x => x));
 
 let ok = {
   name: ok_name
 };
 
-let bad_name = optionMap(undefined, (x => {
-  return x;
-}));
+let bad_name = optionMap(undefined, (x => x));
 
 let bad = {
   name: bad_name

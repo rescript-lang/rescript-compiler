@@ -19,13 +19,11 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (() => {
-        return {
-          TAG: "Eq",
-          _0: x,
-          _1: y
-        };
-      })
+      (() => ({
+        TAG: "Eq",
+        _0: x,
+        _1: y
+      }))
     ],
     tl: suites.contents
   };
@@ -46,9 +44,7 @@ function map(f, x) {
 
 function make(foo, param) {
   let tmp = {};
-  let tmp$1 = map((prim => {
-    return String(prim);
-  }), foo);
+  let tmp$1 = map((prim => String(prim)), foo);
   if (tmp$1 !== undefined) {
     tmp.foo = tmp$1;
   }

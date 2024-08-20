@@ -27,31 +27,25 @@ function add_test(loc, test) {
 }
 
 function eq(loc, x, y) {
-  add_test(loc, (() => {
-    return {
-      TAG: "Eq",
-      _0: x,
-      _1: y
-    };
-  }));
+  add_test(loc, (() => ({
+    TAG: "Eq",
+    _0: x,
+    _1: y
+  })));
 }
 
 function false_(loc) {
-  add_test(loc, (() => {
-    return {
-      TAG: "Ok",
-      _0: false
-    };
-  }));
+  add_test(loc, (() => ({
+    TAG: "Ok",
+    _0: false
+  })));
 }
 
 function true_(loc) {
-  add_test(loc, (() => {
-    return {
-      TAG: "Ok",
-      _0: true
-    };
-  }));
+  add_test(loc, (() => ({
+    TAG: "Ok",
+    _0: true
+  })));
 }
 
 let exit = 0;
@@ -64,12 +58,10 @@ try {
 } catch (raw_x) {
   let x = Caml_js_exceptions.internalToOCamlException(raw_x);
   if (x.RE_EXN_ID === Js_exn.$$Error) {
-    add_test("File \"js_exception_catch_test.res\", line 18, characters 37-44", (() => {
-      return {
-        TAG: "Ok",
-        _0: true
-      };
-    }));
+    add_test("File \"js_exception_catch_test.res\", line 18, characters 37-44", (() => ({
+      TAG: "Ok",
+      _0: true
+    })));
   } else {
     throw new Error(x.RE_EXN_ID, {
       cause: x
@@ -78,12 +70,10 @@ try {
 }
 
 if (exit === 1) {
-  add_test("File \"js_exception_catch_test.res\", line 19, characters 14-21", (() => {
-    return {
-      TAG: "Ok",
-      _0: false
-    };
-  }));
+  add_test("File \"js_exception_catch_test.res\", line 19, characters 14-21", (() => ({
+    TAG: "Ok",
+    _0: false
+  })));
 }
 
 let A = /* @__PURE__ */Caml_exceptions.create("Js_exception_catch_test.A");
@@ -128,9 +118,7 @@ function test(f) {
   }
 }
 
-eq("File \"js_exception_catch_test.res\", line 44, characters 5-12", test(() => {
-  
-}), "No_error");
+eq("File \"js_exception_catch_test.res\", line 44, characters 5-12", test(() => {}), "No_error");
 
 eq("File \"js_exception_catch_test.res\", line 45, characters 5-12", test(() => {
   throw new Error("Not_found", {

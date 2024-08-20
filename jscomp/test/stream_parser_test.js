@@ -73,9 +73,7 @@ function parse(token) {
         });
     }
   };
-  let parse_term = () => {
-    return parse_term_aux(parse_atom());
-  };
+  let parse_term = () => parse_term_aux(parse_atom());
   let parse_expr_aux = e1 => {
     let e = token$1();
     if (e.TAG === "Kwd") {
@@ -113,12 +111,10 @@ function parse(token) {
   let r = parse_expr_aux(parse_term());
   return [
     r,
-    Queue.fold(((acc, x) => {
-      return {
-        hd: x,
-        tl: acc
-      };
-    }), /* [] */0, look_ahead)
+    Queue.fold(((acc, x) => ({
+      hd: x,
+      tl: acc
+    })), /* [] */0, look_ahead)
   ];
 }
 
@@ -144,9 +140,7 @@ let lexer = Genlex.make_lexer({
 
 function token(chars) {
   let strm = lexer(chars);
-  return () => {
-    return Stream.next(strm);
-  };
+  return () => Stream.next(strm);
 }
 
 function l_parse(token) {
@@ -254,18 +248,14 @@ function l_parse(token) {
       }
     };
   };
-  let parse_t = () => {
-    return parse_f_aux(parse_f());
-  };
+  let parse_t = () => parse_f_aux(parse_f());
   let r = parse_t_aux(parse_t());
   return [
     r,
-    Queue.fold(((acc, x) => {
-      return {
-        hd: x,
-        tl: acc
-      };
-    }), /* [] */0, look_ahead)
+    Queue.fold(((acc, x) => ({
+      hd: x,
+      tl: acc
+    })), /* [] */0, look_ahead)
   ];
 }
 
@@ -282,13 +272,11 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (() => {
-        return {
-          TAG: "Eq",
-          _0: x,
-          _1: y
-        };
-      })
+      (() => ({
+        TAG: "Eq",
+        _0: x,
+        _1: y
+      }))
     ],
     tl: suites.contents
   };

@@ -147,9 +147,7 @@ let yyact = [
       }
     });
   }),
-  (__caml_parser_env => {
-    return Parsing.peek_val(__caml_parser_env, 1);
-  }),
+  (__caml_parser_env => Parsing.peek_val(__caml_parser_env, 1)),
   (__caml_parser_env => {
     let _1 = Parsing.peek_val(__caml_parser_env, 0);
     return {
@@ -207,9 +205,7 @@ let yyact = [
       _0: _2
     };
   }),
-  (__caml_parser_env => {
-    return Parsing.peek_val(__caml_parser_env, 1);
-  }),
+  (__caml_parser_env => Parsing.peek_val(__caml_parser_env, 1)),
   (__caml_parser_env => {
     throw new Error(Parsing.YYexit, {
       cause: {

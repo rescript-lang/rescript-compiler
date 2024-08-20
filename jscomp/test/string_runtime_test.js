@@ -9,13 +9,11 @@ let Caml_bytes = require("../../lib/js/caml_bytes.js");
 
 let suites_0 = [
   "?is_printable",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: Test_char.caml_is_printable(/* 'a' */97),
-      _1: true
-    };
-  })
+  (param => ({
+    TAG: "Eq",
+    _0: Test_char.caml_is_printable(/* 'a' */97),
+    _1: true
+  }))
 ];
 
 let suites_1 = {
@@ -27,9 +25,7 @@ let suites_1 = {
         Bytes.fill(b, 0, x, /* 'c' */99);
         return [
           Bytes.to_string(b),
-          Bytes.unsafe_to_string(Bytes.init(x, (param => {
-            return /* 'c' */99;
-          })))
+          Bytes.unsafe_to_string(Bytes.init(x, (param => /* 'c' */99)))
         ];
       }), {
         hd: 1000,

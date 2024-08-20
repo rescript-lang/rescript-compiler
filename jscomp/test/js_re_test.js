@@ -153,35 +153,29 @@ let suites_1 = {
               tl: {
                 hd: [
                   "t_flags",
-                  (param => {
-                    return {
-                      TAG: "Eq",
-                      _0: "gi",
-                      _1: /./ig.flags
-                    };
-                  })
+                  (param => ({
+                    TAG: "Eq",
+                    _0: "gi",
+                    _1: /./ig.flags
+                  }))
                 ],
                 tl: {
                   hd: [
                     "t_global",
-                    (param => {
-                      return {
-                        TAG: "Eq",
-                        _0: true,
-                        _1: /./ig.global
-                      };
-                    })
+                    (param => ({
+                      TAG: "Eq",
+                      _0: true,
+                      _1: /./ig.global
+                    }))
                   ],
                   tl: {
                     hd: [
                       "t_ignoreCase",
-                      (param => {
-                        return {
-                          TAG: "Eq",
-                          _0: true,
-                          _1: /./ig.ignoreCase
-                        };
-                      })
+                      (param => ({
+                        TAG: "Eq",
+                        _0: true,
+                        _1: /./ig.ignoreCase
+                      }))
                     ],
                     tl: {
                       hd: [
@@ -220,46 +214,38 @@ let suites_1 = {
                         tl: {
                           hd: [
                             "t_multiline",
-                            (param => {
-                              return {
-                                TAG: "Eq",
-                                _0: false,
-                                _1: /./ig.multiline
-                              };
-                            })
+                            (param => ({
+                              TAG: "Eq",
+                              _0: false,
+                              _1: /./ig.multiline
+                            }))
                           ],
                           tl: {
                             hd: [
                               "t_source",
-                              (param => {
-                                return {
-                                  TAG: "Eq",
-                                  _0: "f.+o",
-                                  _1: /f.+o/ig.source
-                                };
-                              })
+                              (param => ({
+                                TAG: "Eq",
+                                _0: "f.+o",
+                                _1: /f.+o/ig.source
+                              }))
                             ],
                             tl: {
                               hd: [
                                 "t_sticky",
-                                (param => {
-                                  return {
-                                    TAG: "Eq",
-                                    _0: true,
-                                    _1: /./yg.sticky
-                                  };
-                                })
+                                (param => ({
+                                  TAG: "Eq",
+                                  _0: true,
+                                  _1: /./yg.sticky
+                                }))
                               ],
                               tl: {
                                 hd: [
                                   "t_unicode",
-                                  (param => {
-                                    return {
-                                      TAG: "Eq",
-                                      _0: false,
-                                      _1: /./yg.unicode
-                                    };
-                                  })
+                                  (param => ({
+                                    TAG: "Eq",
+                                    _0: false,
+                                    _1: /./yg.unicode
+                                  }))
                                 ],
                                 tl: /* [] */0
                               }

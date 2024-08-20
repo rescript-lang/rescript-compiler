@@ -31,24 +31,20 @@ function from_pairs(pair) {
     return {
       hd: [
         "int32_float_of_bits " + i,
-        (param => {
-          return {
-            TAG: "Eq",
-            _0: Caml_float.int_float_of_bits(i32),
-            _1: f
-          };
-        })
+        (param => ({
+          TAG: "Eq",
+          _0: Caml_float.int_float_of_bits(i32),
+          _1: f
+        }))
       ],
       tl: {
         hd: [
           "int32_bits_of_float " + i,
-          (param => {
-            return {
-              TAG: "Eq",
-              _0: Caml_float.int_bits_of_float(f),
-              _1: i32
-            };
-          })
+          (param => ({
+            TAG: "Eq",
+            _0: Caml_float.int_bits_of_float(f),
+            _1: i32
+          }))
         ],
         tl: /* [] */0
       }
@@ -59,24 +55,20 @@ function from_pairs(pair) {
 let suites = Pervasives.$at({
   hd: [
     "one",
-    (() => {
-      return {
-        TAG: "Eq",
-        _0: Caml_int64.bits_of_float(1.0),
-        _1: one_float
-      };
-    })
+    (() => ({
+      TAG: "Eq",
+      _0: Caml_int64.bits_of_float(1.0),
+      _1: one_float
+    }))
   ],
   tl: {
     hd: [
       "two",
-      (() => {
-        return {
-          TAG: "Eq",
-          _0: Caml_int64.float_of_bits(one_float),
-          _1: 1.0
-        };
-      })
+      (() => ({
+        TAG: "Eq",
+        _0: Caml_int64.float_of_bits(one_float),
+        _1: 1.0
+      }))
     ],
     tl: /* [] */0
   }

@@ -12,9 +12,7 @@ async function useNext() {
 }
 
 function Make(I) {
-  let get = async key => {
-    return await I.get(key);
-  };
+  let get = async key => await I.get(key);
   return {
     get: get
   };

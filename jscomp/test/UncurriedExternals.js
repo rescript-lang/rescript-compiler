@@ -14,9 +14,7 @@ function dd() {
 let h = sum(1.0, 2.0);
 
 let M = {
-  sum: ((prim0, prim1) => {
-    return sum(prim0, prim1);
-  })
+  sum: ((prim0, prim1) => sum(prim0, prim1))
 };
 
 let hh = M.sum(1.0, 2.0);
@@ -49,9 +47,7 @@ function tsiU(c) {
   });
 }
 
-let match = React.useState(() => {
-  return 3;
-});
+let match = React.useState(() => 3);
 
 let StandardNotation_get = match[0];
 
@@ -75,9 +71,7 @@ let StandardNotation = {
 
 function methodWithAsync() {
   let $$this = this ;
-  return async arg => {
-    return $$this + arg | 0;
-  };
+  return async arg => $$this + arg | 0;
 }
 
 exports.StandardNotation = StandardNotation;

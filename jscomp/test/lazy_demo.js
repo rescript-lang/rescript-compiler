@@ -8,9 +8,7 @@ let lazy1 = CamlinternalLazy.from_fun(() => {
   return 1;
 });
 
-let lazy2 = CamlinternalLazy.from_fun(() => {
-  return 3;
-});
+let lazy2 = CamlinternalLazy.from_fun(() => 3);
 
 console.log(lazy1, lazy2);
 

@@ -7,15 +7,11 @@ function testTuple(param) {
 }
 
 function computeArea(param) {
-  return Math.imul(Math.imul(param[0], param[1]), Belt_Option.mapWithDefault(param[2], 1, (n => {
-    return n;
-  })));
+  return Math.imul(Math.imul(param[0], param[1]), Belt_Option.mapWithDefault(param[2], 1, (n => n)));
 }
 
 function computeAreaWithIdent(param) {
-  return Math.imul(Math.imul(param[0], param[1]), Belt_Option.mapWithDefault(param[2], 1, (n => {
-    return n;
-  })));
+  return Math.imul(Math.imul(param[0], param[1]), Belt_Option.mapWithDefault(param[2], 1, (n => n)));
 }
 
 function computeAreaNoConverters(param) {

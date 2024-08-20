@@ -402,7 +402,20 @@ and pp_function ~return_unit ~async ~is_method ~need_paren ?directive cxt (f : P
             P.string f (L.arrow);
             P.space f;
           );
-          P.brace_vgroup f 1 (fun _ -> function_body ?directive ~return_unit cxt f b)
+          match b with
+          | [ { statement_desc = Return { expression_desc = Undefined _ } } ]
+            when arrow
+            ->
+              P.string f "{";
+              P.string f "}";
+
+          | [ { statement_desc = Return e } ] | [ { statement_desc = Exp e } ]
+            when arrow && directive == None
+            -> (if exp_need_paren e then P.paren_group f 0 else P.group f 0)
+                  (fun _ -> ignore (expression ~level:0 cxt f e))
+
+          | _ ->
+            P.brace_vgroup f 1 (fun _ -> function_body ?directive ~return_unit cxt f b)
       in
       let enclose () =
         let handle () =

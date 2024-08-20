@@ -312,9 +312,7 @@ function from_pairs(prefix, pairs) {
     let result = param[0];
     return [
       prefix + "_" + i,
-      (param => {
-        return commutative_mul(result, a, b);
-      })
+      (param => commutative_mul(result, a, b))
     ];
   }), pairs));
 }
@@ -1516,19 +1514,17 @@ function from(xs) {
     let a = param[0];
     return [
       "small_divs " + i,
-      (param => {
-        return {
-          TAG: "Eq",
-          _0: [
-            c,
-            d
-          ],
-          _1: [
-            Caml_int64.div(a, b),
-            Caml_int64.mod_(a, b)
-          ]
-        };
-      })
+      (param => ({
+        TAG: "Eq",
+        _0: [
+          c,
+          d
+        ],
+        _1: [
+          Caml_int64.div(a, b),
+          Caml_int64.mod_(a, b)
+        ]
+      }))
     ];
   }), $$Array.to_list(xs));
 }
@@ -1572,13 +1568,11 @@ function from_compare(xs) {
     let a = param[0];
     return [
       "int64_compare " + i,
-      (param => {
-        return {
-          TAG: "Eq",
-          _0: c,
-          _1: Caml_int64.compare(a, b)
-        };
-      })
+      (param => ({
+        TAG: "Eq",
+        _0: c,
+        _1: Caml_int64.compare(a, b)
+      }))
     ];
   }), $$Array.to_list(xs));
 }
@@ -1589,13 +1583,11 @@ function from_to_string(xs) {
     let a = param[0];
     return [
       "to_string " + i,
-      (param => {
-        return {
-          TAG: "Eq",
-          _0: str_a,
-          _1: Caml_int64.to_string(a)
-        };
-      })
+      (param => ({
+        TAG: "Eq",
+        _0: str_a,
+        _1: Caml_int64.to_string(a)
+      }))
     ];
   }), $$Array.to_list(xs));
 }
@@ -1605,73 +1597,59 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
   let i64 = param[0];
   return [
     "to_float_" + i,
-    (() => {
-      return {
-        TAG: "Eq",
-        _0: Caml_int64.to_float(i64),
-        _1: f
-      };
-    })
+    (() => ({
+      TAG: "Eq",
+      _0: Caml_int64.to_float(i64),
+      _1: f
+    }))
   ];
 }), $$Array.to_list(to_floats)), Pervasives.$at(List.mapi(((i, param) => {
   let i64 = param[1];
   let f = param[0];
   return [
     "of_float_" + i,
-    (() => {
-      return {
-        TAG: "Eq",
-        _0: Caml_int64.of_float(f),
-        _1: i64
-      };
-    })
+    (() => ({
+      TAG: "Eq",
+      _0: Caml_int64.of_float(f),
+      _1: i64
+    }))
   ];
 }), $$Array.to_list(of_float_pairs)), Pervasives.$at({
   hd: [
     "compare_check_complete",
-    (() => {
-      return {
-        TAG: "Eq",
-        _0: $$Array.map((param => {
-          return true;
-        }), check_complete_compare),
-        _1: check_complete_compare
-      };
-    })
+    (() => ({
+      TAG: "Eq",
+      _0: $$Array.map((param => true), check_complete_compare),
+      _1: check_complete_compare
+    }))
   ],
   tl: /* [] */0
 }, Pervasives.$at(from(simple_divs), Pervasives.$at(from_compare(int64_compare_tests), {
   hd: [
     "div_rem_0",
-    (() => {
-      return {
-        TAG: "Eq",
-        _0: Caml_int64.zero,
-        _1: Caml_int64.zero
-      };
-    })
+    (() => ({
+      TAG: "Eq",
+      _0: Caml_int64.zero,
+      _1: Caml_int64.zero
+    }))
   ],
   tl: {
     hd: [
       "div_rem_1",
-      (() => {
-        return {
-          TAG: "Eq",
-          _0: Caml_int64.neg_one,
-          _1: Caml_int64.neg_one
-        };
-      })
+      (() => ({
+        TAG: "Eq",
+        _0: Caml_int64.neg_one,
+        _1: Caml_int64.neg_one
+      }))
     ],
     tl: {
       hd: [
         "File \"int64_mul_div_test.res\", line 263, characters 19-26",
-        (() => {
-          return {
-            TAG: "Eq",
-            _0: Caml_int64.to_float(Int64.max_int),
-            _1: 9.22337203685477581e+18
-          };
-        })
+        (() => ({
+          TAG: "Eq",
+          _0: Caml_int64.to_float(Int64.max_int),
+          _1: 9.22337203685477581e+18
+        }))
       ],
       tl: /* [] */0
     }

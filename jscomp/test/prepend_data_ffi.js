@@ -12,21 +12,13 @@ let v2 = {
   v: 2
 };
 
-process.on("exit", (exit_code => {
-  return String(exit_code);
-}));
+process.on("exit", (exit_code => String(exit_code)));
 
-process.on(1, (param => {
-  
-}));
+process.on(1, (param => {}));
 
-process.on((i => {
-  return String(i);
-}), "exit");
+process.on((i => String(i)), "exit");
 
-process.on((i => {
-  return String(i);
-}), 1);
+process.on((i => String(i)), 1);
 
 xx(3, 3, "xxx", "a", "b");
 

@@ -16,13 +16,11 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (() => {
-        return {
-          TAG: "Eq",
-          _0: x,
-          _1: y
-        };
-      })
+      (() => ({
+        TAG: "Eq",
+        _0: x,
+        _1: y
+      }))
     ],
     tl: suites.contents
   };
@@ -33,9 +31,7 @@ eq("File \"ffi_array_test.res\", line 11, characters 12-19", [
   2,
   3,
   4
-].map(x => {
-  return x + 1 | 0;
-}), [
+].map(x => x + 1 | 0), [
   2,
   3,
   4,

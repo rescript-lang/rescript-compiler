@@ -11,19 +11,17 @@ let v = "gso";
 
 let suites_0 = [
   "equal",
-  (param => {
-    return {
-      TAG: "Eq",
-      _0: [
-        Caml_bytes.get(Bytes.make(3, /* 'a' */97), 0),
-        Bytes.make(3, /* 'a' */97)[0]
-      ],
-      _1: [
-        /* 'a' */97,
-        /* 'a' */97
-      ]
-    };
-  })
+  (param => ({
+    TAG: "Eq",
+    _0: [
+      Caml_bytes.get(Bytes.make(3, /* 'a' */97), 0),
+      Bytes.make(3, /* 'a' */97)[0]
+    ],
+    _1: [
+      /* 'a' */97,
+      /* 'a' */97
+    ]
+  }))
 ];
 
 let suites_1 = {

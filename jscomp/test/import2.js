@@ -3,9 +3,7 @@
 
 let A = require("a").default;
 
-let a = import("a").then(m => {
-  return m.default;
-});
+let a = import("a").then(m => m.default);
 
 let b = A;
 

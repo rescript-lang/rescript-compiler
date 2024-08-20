@@ -4,9 +4,7 @@
 let Caml_module = require("../../lib/js/caml_module.js");
 
 function Make(X) {
-  let f = () => {
-    
-  };
+  let f = () => {};
   let M = {
     f: f
   };

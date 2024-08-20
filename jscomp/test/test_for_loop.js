@@ -20,20 +20,14 @@ function for_3(x) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map((param => {
-    return () => {
-      
-    };
-  }), x);
+  let arr = $$Array.map((param => ((() => {}))), x);
   for (let i = 0, i_finish = x.length; i <= i_finish; ++i) {
     let j = (i << 1);
     Caml_array.set(arr, i, (() => {
       v.contents = v.contents + j | 0;
     }));
   }
-  $$Array.iter((x => {
-    x();
-  }), arr);
+  $$Array.iter((x => x()), arr);
   return v.contents;
 }
 
@@ -41,11 +35,7 @@ function for_4(x) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map((param => {
-    return () => {
-      
-    };
-  }), x);
+  let arr = $$Array.map((param => ((() => {}))), x);
   for (let i = 0, i_finish = x.length; i <= i_finish; ++i) {
     let j = (i << 1);
     let k = (j << 1);
@@ -53,9 +43,7 @@ function for_4(x) {
       v.contents = v.contents + k | 0;
     }));
   }
-  $$Array.iter((x => {
-    x();
-  }), arr);
+  $$Array.iter((x => x()), arr);
   return v.contents;
 }
 
@@ -63,20 +51,14 @@ function for_5(x, u) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map((param => {
-    return () => {
-      
-    };
-  }), x);
+  let arr = $$Array.map((param => ((() => {}))), x);
   for (let i = 0, i_finish = x.length; i <= i_finish; ++i) {
     let k = Math.imul((u << 1), u);
     Caml_array.set(arr, i, (() => {
       v.contents = v.contents + k | 0;
     }));
   }
-  $$Array.iter((x => {
-    x();
-  }), arr);
+  $$Array.iter((x => x()), arr);
   return v.contents;
 }
 
@@ -84,11 +66,7 @@ function for_6(x, u) {
   let v = {
     contents: 0
   };
-  let arr = $$Array.map((param => {
-    return () => {
-      
-    };
-  }), x);
+  let arr = $$Array.map((param => ((() => {}))), x);
   let v4 = {
     contents: 0
   };
@@ -110,9 +88,7 @@ function for_6(x, u) {
       }));
     }
   }
-  $$Array.iter((x => {
-    x();
-  }), arr);
+  $$Array.iter((x => x()), arr);
   return v.contents;
 }
 

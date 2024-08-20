@@ -2001,9 +2001,7 @@ let String_map = {
 };
 
 function of_list(kvs) {
-  return List.fold_left(((acc, param) => {
-    return add(param[0], param[1], acc);
-  }), "Empty", kvs);
+  return List.fold_left(((acc, param) => add(param[0], param[1], acc)), "Empty", kvs);
 }
 
 let int_map_suites_0 = [
@@ -2130,9 +2128,7 @@ let int_map_suites_1 = {
         return {
           TAG: "Eq",
           _0: true,
-          _1: equal(((x, y) => {
-            return x === y;
-          }), u, v)
+          _1: equal(((x, y) => x === y), u, v)
         };
       })
     ],

@@ -3,9 +3,7 @@
 
 
 let delayed = {
-  contents: (() => {
-    
-  })
+  contents: (() => {})
 };
 
 for (let i = 1; i <= 2; ++i) {
