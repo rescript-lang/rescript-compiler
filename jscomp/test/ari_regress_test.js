@@ -25,39 +25,39 @@ function v(__x) {
 
 let suites_0 = [
   "curry",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: g,
     _1: 7
-  }))
+  })
 ];
 
 let suites_1 = {
   hd: [
     "curry2",
-    (param => ({
+    param => ({
       TAG: "Eq",
       _0: 14,
       _1: (v(1), v(1))
-    }))
+    })
   ],
   tl: {
     hd: [
       "curry3",
-      (param => ({
+      param => ({
         TAG: "Eq",
         _0: x,
         _1: 14
-      }))
+      })
     ],
     tl: {
       hd: [
         "File \"ari_regress_test.res\", line 35, characters 5-12",
-        (param => ({
+        param => ({
           TAG: "Eq",
           _0: h.contents,
           _1: 2
-        }))
+        })
       ],
       tl: /* [] */0
     }

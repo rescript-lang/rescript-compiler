@@ -38,11 +38,11 @@ function f(g, h) {
 
 let suites_0 = [
   "eq_with",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: v,
     _1: u_v
-  }))
+  })
 ];
 
 let suites = {

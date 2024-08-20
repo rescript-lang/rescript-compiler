@@ -16,11 +16,11 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (() => ({
+      () => ({
         TAG: "Eq",
         _0: x,
         _1: y
-      }))
+      })
     ],
     tl: suites.contents
   };
@@ -82,13 +82,13 @@ eq("File \"bs_auto_uncurry_test.res\", line 31, characters 5-12", [
   1,
   2,
   3
-].reduce(((prim0, prim1) => prim0 + prim1 | 0), 0), 6);
+].reduce((prim0, prim1) => prim0 + prim1 | 0, 0), 6);
 
 eq("File \"bs_auto_uncurry_test.res\", line 33, characters 5-12", [
   1,
   2,
   3
-].reduce(((x, y, i) => (x + y | 0) + i | 0), 0), 9);
+].reduce((x, y, i) => (x + y | 0) + i | 0, 0), 9);
 
 eq("File \"bs_auto_uncurry_test.res\", line 35, characters 5-12", [
   1,

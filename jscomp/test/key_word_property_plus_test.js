@@ -17,11 +17,11 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (() => ({
+      () => ({
         TAG: "Eq",
         _0: x,
         _1: y
-      }))
+      })
     ],
     tl: suites.contents
   };
@@ -32,7 +32,7 @@ eq("File \"key_word_property_plus_test.res\", line 10, characters 2-9", [
   2,
   3,
   4
-].reduce(((prim0, prim1) => prim0 + prim1 | 0), 0), ((Global_mangles.$$__dirname + Global_mangles.$$__filename | 0) + Global_mangles.$$exports | 0) + Global_mangles.$$require | 0);
+].reduce((prim0, prim1) => prim0 + prim1 | 0, 0), ((Global_mangles.$$__dirname + Global_mangles.$$__filename | 0) + Global_mangles.$$exports | 0) + Global_mangles.$$require | 0);
 
 Mt.from_pair_suites("Key_word_property_plus_test", suites.contents);
 

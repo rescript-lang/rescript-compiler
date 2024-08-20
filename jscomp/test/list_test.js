@@ -8,7 +8,7 @@ let $$Array = require("../../lib/js/array.js");
 
 let list_suites_0 = [
   "length",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: 1,
     _1: List.length({
@@ -21,13 +21,13 @@ let list_suites_0 = [
       ],
       tl: /* [] */0
     })
-  }))
+  })
 ];
 
 let list_suites_1 = {
   hd: [
     "length2",
-    (param => ({
+    param => ({
       TAG: "Eq",
       _0: 5,
       _1: List.length({
@@ -46,21 +46,21 @@ let list_suites_1 = {
           }
         }
       })
-    }))
+    })
   ],
   tl: {
     hd: [
       "long_length",
-      (param => ({
+      param => ({
         TAG: "Eq",
         _0: 30000,
-        _1: List.length($$Array.to_list($$Array.init(30000, (param => 0))))
-      }))
+        _1: List.length($$Array.to_list($$Array.init(30000, param => 0)))
+      })
     ],
     tl: {
       hd: [
         "sort",
-        (param => ({
+        param => ({
           TAG: "Eq",
           _0: List.sort(Caml.int_compare, {
             hd: 4,
@@ -88,12 +88,12 @@ let list_suites_1 = {
               }
             }
           }
-        }))
+        })
       ],
       tl: {
         hd: [
           "File \"list_test.res\", line 20, characters 5-12",
-          (param => ({
+          param => ({
             TAG: "Eq",
             _0: true,
             _1: List.mem(3, {
@@ -106,12 +106,12 @@ let list_suites_1 = {
                 }
               }
             })
-          }))
+          })
         ],
         tl: {
           hd: [
             "File \"list_test.res\", line 21, characters 5-12",
-            (param => ({
+            param => ({
               TAG: "Eq",
               _0: false,
               _1: List.mem(4, {
@@ -124,12 +124,12 @@ let list_suites_1 = {
                   }
                 }
               })
-            }))
+            })
           ],
           tl: {
             hd: [
               "File \"list_test.res\", line 22, characters 5-12",
-              (param => ({
+              param => ({
                 TAG: "Eq",
                 _0: 9,
                 _1: List.assoc(4, {
@@ -145,7 +145,7 @@ let list_suites_1 = {
                     tl: /* [] */0
                   }
                 })
-              }))
+              })
             ],
             tl: /* [] */0
           }

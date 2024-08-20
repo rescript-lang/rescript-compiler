@@ -27,7 +27,7 @@ function f() {
 
 let suites_0 = [
   "acc",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: f(),
     _1: [
@@ -42,13 +42,13 @@ let suites_0 = [
       36,
       45
     ]
-  }))
+  })
 ];
 
 let suites_1 = {
   hd: [
     "array_to_list",
-    (param => ({
+    param => ({
       TAG: "Eq",
       _0: {
         hd: 1,
@@ -65,7 +65,7 @@ let suites_1 = {
         2,
         3
       ])
-    }))
+    })
   ],
   tl: /* [] */0
 };

@@ -20,7 +20,7 @@ function eq(loc, x, y) {
 }
 
 let Xx = {
-  f: ((prim0, prim1) => hfiehi(prim0, prim1))
+  f: (prim0, prim1) => hfiehi(prim0, prim1)
 };
 
 let Int3 = Caml_module.init_mod([

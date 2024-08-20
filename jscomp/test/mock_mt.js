@@ -8,7 +8,7 @@ function from_pair_suites(name, suites) {
     name,
     "testing"
   ]);
-  List.iter((param => {
+  List.iter(param => {
     let name = param[0];
     let fn = param[1]();
     switch (fn.TAG) {
@@ -79,7 +79,7 @@ function from_pair_suites(name, suites) {
         console.log("failed: " + fn._0);
         return;
     }
-  }), suites);
+  }, suites);
 }
 
 exports.from_pair_suites = from_pair_suites;

@@ -367,7 +367,7 @@ function classify$9(v) {
   }
 }
 
-let ff = (x => x + 1 | 0);
+let ff = x => x + 1 | 0;
 
 let TestFunctionCase = {
   classify: classify$9,
@@ -486,7 +486,7 @@ async function classify$10(a) {
     return;
   } else {
     if (Array.isArray(a)) {
-      console.log(Belt_Array.joinWith(a, "-", (x => x)));
+      console.log(Belt_Array.joinWith(a, "-", x => x));
       return;
     }
     if (a instanceof Promise) {
@@ -510,7 +510,7 @@ let Arr = {
 
 async function classifyAll(t) {
   if (Array.isArray(t)) {
-    console.log(Belt_Array.joinWith(t, "-", (x => x)));
+    console.log(Belt_Array.joinWith(t, "-", x => x));
     return;
   }
   if (t instanceof Promise) {

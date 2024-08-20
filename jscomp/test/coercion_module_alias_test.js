@@ -27,7 +27,7 @@ console.log(prim$2);
 let f = List.length;
 
 function g(x) {
-  return List.length(List.map((prim => prim + 1 | 0), x));
+  return List.length(List.map(prim => prim + 1 | 0, x));
 }
 
 function F(X) {

@@ -2001,12 +2001,12 @@ let String_map = {
 };
 
 function of_list(kvs) {
-  return List.fold_left(((acc, param) => add(param[0], param[1], acc)), "Empty", kvs);
+  return List.fold_left((acc, param) => add(param[0], param[1], acc), "Empty", kvs);
 }
 
 let int_map_suites_0 = [
   "add",
-  (param => {
+  param => {
     let v = of_list({
       hd: [
         1,
@@ -2031,13 +2031,13 @@ let int_map_suites_0 = [
       _0: cardinal(v),
       _1: 3
     };
-  })
+  }
 ];
 
 let int_map_suites_1 = {
   hd: [
     "equal",
-    (param => {
+    param => {
       let v = of_list({
         hd: [
           1,
@@ -2081,12 +2081,12 @@ let int_map_suites_1 = {
         _0: compare$1(Caml.int_compare, u, v),
         _1: 0
       };
-    })
+    }
   ],
   tl: {
     hd: [
       "equal2",
-      (param => {
+      param => {
         let v = of_list({
           hd: [
             1,
@@ -2128,14 +2128,14 @@ let int_map_suites_1 = {
         return {
           TAG: "Eq",
           _0: true,
-          _1: equal(((x, y) => x === y), u, v)
+          _1: equal((x, y) => x === y, u, v)
         };
-      })
+      }
     ],
     tl: {
       hd: [
         "iteration",
-        (param => {
+        param => {
           let m = "Empty";
           for (let i = 0; i <= 10000; ++i) {
             m = add$1(String(i), String(i), m);
@@ -2152,7 +2152,7 @@ let int_map_suites_1 = {
             _0: v,
             _1: -1
           };
-        })
+        }
       ],
       tl: /* [] */0
     }

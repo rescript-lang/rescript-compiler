@@ -47,9 +47,9 @@ function fold_left(f, x, a) {
 }
 
 function f2() {
-  let arr = init(3000000, (i => i));
-  let b = map((i => i + i - 1), arr);
-  let v = fold_left(((prim0, prim1) => prim0 + prim1), 0, b);
+  let arr = init(3000000, i => i);
+  let b = map(i => i + i - 1, arr);
+  let v = fold_left((prim0, prim1) => prim0 + prim1, 0, b);
   console.log(Pervasives.string_of_float(v));
 }
 

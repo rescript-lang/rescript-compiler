@@ -948,7 +948,7 @@ function update_player(player, keys, context) {
   let prev_jumping = player.jumping;
   let prev_dir = player.dir;
   let prev_vx = Math.abs(player.vel.x);
-  List.iter((extra => {
+  List.iter(extra => {
     let lr_acc = player.vel.x * 0.2;
     switch (extra) {
       case "CLeft" :
@@ -988,7 +988,7 @@ function update_player(player, keys, context) {
           return;
         }
     }
-  }), keys);
+  }, keys);
   let v = player.vel.x * 0.9;
   let vel_damped = Math.abs(v) < 0.1 ? 0 : v;
   player.vel.x = vel_damped;
@@ -2085,13 +2085,13 @@ function process_collision(dir, c1, c2, state) {
 
 function broad_phase(collid, all_collids, state) {
   let obj = collid._2;
-  return List.filter((c => {
+  return List.filter(c => {
     if (in_viewport(state.vpt, obj.pos) || is_player(collid)) {
       return true;
     } else {
       return out_of_viewport_below(state.vpt, obj.pos.y);
     }
-  }), all_collids);
+  }, all_collids);
 }
 
 function check_collisions(collid, all_collids, state) {
@@ -2205,7 +2205,7 @@ function translate_keys() {
     hd: ctrls_0,
     tl: ctrls_1
   };
-  return List.fold_left(((a, x) => {
+  return List.fold_left((a, x) => {
     if (x[0]) {
       return {
         hd: x[1],
@@ -2214,7 +2214,7 @@ function translate_keys() {
     } else {
       return a;
     }
-  }), /* [] */0, ctrls);
+  }, /* [] */0, ctrls);
 }
 
 function run_update_collid(state, collid, all_collids) {
@@ -2299,10 +2299,10 @@ function update_loop(canvas, param, map_dim) {
       multiplier: state.multiplier,
       game_over: state.game_over
     };
-    List.iter((obj => {
+    List.iter(obj => {
       run_update_collid(state$1, obj, objs);
-    }), objs);
-    List.iter((part => {
+    }, objs);
+    List.iter(part => {
       process(part);
       let x = part.pos.x - state$1.vpt.pos.x;
       let y = part.pos.y - state$1.vpt.pos.y;
@@ -2318,7 +2318,7 @@ function update_loop(canvas, param, map_dim) {
         return;
       }
       
-    }), parts);
+    }, parts);
     fps(canvas, fps$1);
     hud(canvas, state$1.score, state$1.coins);
     requestAnimationFrame(t => update_helper(t, state$1, player$1, collid_objs.contents, particles.contents));
@@ -3306,15 +3306,15 @@ function inc_counter(param) {
 }
 
 function preload(param) {
-  return List.map((img_src => {
+  return List.map(img_src => {
     let img_src$1 = "sprites/" + img_src;
     let img = document.createElement("img");
     img.src = img_src$1;
-    img.addEventListener("load", (ev => {
+    img.addEventListener("load", ev => {
       inc_counter();
       return true;
-    }), true);
-  }), {
+    }, true);
+  }, {
     hd: "blocks.png",
     tl: {
       hd: "items.png",
@@ -3329,10 +3329,10 @@ function preload(param) {
   });
 }
 
-window.onload = (param => {
+window.onload = param => {
   preload();
   return true;
-});
+};
 
 let Main = {
   Html: undefined,

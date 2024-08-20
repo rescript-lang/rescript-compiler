@@ -53,7 +53,7 @@ let m00 = {
 };
 
 let I2 = {
-  cmp: ((x, y) => Caml.int_compare(y, x))
+  cmp: (x, y) => Caml.int_compare(y, x)
 };
 
 let m_cmp = Icmp2.cmp;
@@ -115,48 +115,48 @@ function $eq$tilde(a, b) {
   return extra => Belt_Map.eq(a, b, extra);
 }
 
-let u0 = Belt_Map.fromArray(Belt_Array.map(Array_data_util.randomRange(0, 39), (x => [
+let u0 = Belt_Map.fromArray(Belt_Array.map(Array_data_util.randomRange(0, 39), x => [
   x,
   x
-])), Icmp);
+]), Icmp);
 
 let u1 = Belt_Map.set(u0, 39, 120);
 
-b("File \"bs_map_set_dict_test.res\", line 72, characters 4-11", Belt_Array.every2(Belt_MapDict.toArray(u0.data), Belt_Array.map(Array_data_util.range(0, 39), (x => [
+b("File \"bs_map_set_dict_test.res\", line 72, characters 4-11", Belt_Array.every2(Belt_MapDict.toArray(u0.data), Belt_Array.map(Array_data_util.range(0, 39), x => [
   x,
   x
-])), ((param, param$1) => {
+]), (param, param$1) => {
   if (param[0] === param$1[0]) {
     return param[1] === param$1[1];
   } else {
     return false;
   }
-})));
+}));
 
-b("File \"bs_map_set_dict_test.res\", line 79, characters 4-11", Belt_List.every2(Belt_MapDict.toList(u0.data), Belt_List.fromArray(Belt_Array.map(Array_data_util.range(0, 39), (x => [
+b("File \"bs_map_set_dict_test.res\", line 79, characters 4-11", Belt_List.every2(Belt_MapDict.toList(u0.data), Belt_List.fromArray(Belt_Array.map(Array_data_util.range(0, 39), x => [
   x,
   x
-]))), ((param, param$1) => {
+])), (param, param$1) => {
   if (param[0] === param$1[0]) {
     return param[1] === param$1[1];
   } else {
     return false;
   }
-})));
+}));
 
 eq("File \"bs_map_set_dict_test.res\", line 84, characters 5-12", Belt_Map.get(u0, 39), 39);
 
 eq("File \"bs_map_set_dict_test.res\", line 85, characters 5-12", Belt_Map.get(u1, 39), 120);
 
-let u = Belt_Map.fromArray(Belt_Array.makeByAndShuffle(10000, (x => [
+let u = Belt_Map.fromArray(Belt_Array.makeByAndShuffle(10000, x => [
   x,
   x
-])), Icmp);
+]), Icmp);
 
-eq("File \"bs_map_set_dict_test.res\", line 90, characters 5-12", Belt_Array.makeBy(10000, (x => [
+eq("File \"bs_map_set_dict_test.res\", line 90, characters 5-12", Belt_Array.makeBy(10000, x => [
   x,
   x
-])), Belt_MapDict.toArray(u.data));
+]), Belt_MapDict.toArray(u.data));
 
 Mt.from_pair_suites("Bs_map_set_dict_test", suites.contents);
 

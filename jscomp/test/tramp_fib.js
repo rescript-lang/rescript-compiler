@@ -21,15 +21,15 @@ function fib(n, k) {
   } else {
     return {
       TAG: "Suspend",
-      _0: (() => fib(n - 1 | 0, (v0 => fib(n - 2 | 0, (v1 => k(v0 + v1 | 0))))))
+      _0: () => fib(n - 1 | 0, v0 => fib(n - 2 | 0, v1 => k(v0 + v1 | 0)))
     };
   }
 }
 
-let u = fib(10, (x => ({
+let u = fib(10, x => ({
   TAG: "Continue",
   _0: x
-})));
+}));
 
 function iter(_bounce) {
   while (true) {
@@ -47,7 +47,7 @@ function isEven(n) {
     if (n !== 1) {
       return {
         TAG: "Suspend",
-        _0: (() => isOdd(n - 1 | 0))
+        _0: () => isOdd(n - 1 | 0)
       };
     } else {
       return {

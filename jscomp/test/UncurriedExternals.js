@@ -14,7 +14,7 @@ function dd() {
 let h = sum(1.0, 2.0);
 
 let M = {
-  sum: ((prim0, prim1) => sum(prim0, prim1))
+  sum: (prim0, prim1) => sum(prim0, prim1)
 };
 
 let hh = M.sum(1.0, 2.0);
@@ -34,17 +34,17 @@ let te = {
 let tcr = {};
 
 function tsiC(c) {
-  c.increment = (function (amount) {
+  c.increment = function (amount) {
     let me = this ;
     console.log(me);
-  });
+  };
 }
 
 function tsiU(c) {
-  c.increment = (function (amount) {
+  c.increment = function (amount) {
     let me = this ;
     console.log(me);
-  });
+  };
 }
 
 let match = React.useState(() => 3);

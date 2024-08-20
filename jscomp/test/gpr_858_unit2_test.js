@@ -3,17 +3,17 @@
 
 
 let delayed = {
-  contents: (() => {})
+  contents: () => {}
 };
 
 for (let i = 1; i <= 2; ++i) {
   let f = (n, x) => {
     if (x !== 0) {
       let prev = delayed.contents;
-      delayed.contents = (() => {
+      delayed.contents = () => {
         prev();
         f(((n + 1 | 0) + i | 0) - i | 0, x - 1 | 0);
-      });
+      };
       return;
     }
     if (i === n) {

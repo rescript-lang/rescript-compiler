@@ -10,24 +10,24 @@ function f(_n, _acc) {
     if (n === 0) {
       return acc();
     }
-    _acc = (() => {
+    _acc = () => {
       console.log(String(n));
       return acc();
-    });
+    };
     _n = n - 1 | 0;
     continue;
   };
 }
 
 function test_closure() {
-  let arr = Caml_array.make(6, (x => x));
+  let arr = Caml_array.make(6, x => x);
   for (let i = 0; i <= 6; ++i) {
-    Caml_array.set(arr, i, (param => i));
+    Caml_array.set(arr, i, param => i);
   }
   return arr;
 }
 
-f(10, (() => {}));
+f(10, () => {});
 
 exports.f = f;
 exports.test_closure = test_closure;

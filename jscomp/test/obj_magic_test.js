@@ -9,42 +9,42 @@ function is_block(x) {
 
 let suites_0 = [
   "is_block_test1",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: false,
     _1: "number" !== "number"
-  }))
+  })
 ];
 
 let suites_1 = {
   hd: [
     "is_block_test2",
-    (param => ({
+    param => ({
       TAG: "Eq",
       _0: true,
       _1: typeof ({
         hd: 3,
         tl: /* [] */0
       }) !== "number"
-    }))
+    })
   ],
   tl: {
     hd: [
       "is_block_test3",
-      (param => ({
+      param => ({
         TAG: "Eq",
         _0: true,
         _1: "string" !== "number"
-      }))
+      })
     ],
     tl: {
       hd: [
         "is_block_test4",
-        (param => ({
+        param => ({
           TAG: "Eq",
           _0: false,
           _1: "number" !== "number"
-        }))
+        })
       ],
       tl: /* [] */0
     }

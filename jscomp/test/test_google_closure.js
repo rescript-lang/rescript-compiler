@@ -20,7 +20,7 @@ function f3(extra) {
 
 let b = f3(2);
 
-let arr = $$Array.init(2, (param => 0));
+let arr = $$Array.init(2, param => 0);
 
 for (let i = 0; i <= 1; ++i) {
   let f3$1 = extra => i + 1 | 0;

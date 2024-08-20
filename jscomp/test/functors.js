@@ -35,12 +35,12 @@ function F2(X, Y) {
 }
 
 let M = {
-  F: ((funarg, funarg$1) => {
+  F: (funarg, funarg$1) => {
     let sheep = x => 1 + funarg$1.foo(funarg.foo(x)) | 0;
     return {
       sheep: sheep
     };
-  })
+  }
 };
 
 exports.O = O;

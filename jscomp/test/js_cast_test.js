@@ -24,11 +24,11 @@ function add_test(loc, test) {
 }
 
 function eq(loc, x, y) {
-  add_test(loc, (() => ({
+  add_test(loc, () => ({
     TAG: "Eq",
     _0: x,
     _1: y
-  })));
+  }));
 }
 
 eq("File \"js_cast_test.res\", line 14, characters 12-19", true, 1);

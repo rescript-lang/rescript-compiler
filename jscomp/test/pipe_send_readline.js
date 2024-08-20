@@ -3,11 +3,11 @@
 
 
 function u(rl) {
-  return rl.on("line", (x => {
+  return rl.on("line", x => {
     console.log(x);
-  })).on("close", (() => {
+  }).on("close", () => {
     console.log("finished");
-  }));
+  });
 }
 
 function xx(h) {

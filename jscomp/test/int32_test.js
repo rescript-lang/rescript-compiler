@@ -16,7 +16,7 @@ function f(x) {
   ];
 }
 
-let shift_right_logical_tests_0 = $$Array.map((x => (-1 >>> x) | 0), Ext_array_test.range(0, 31));
+let shift_right_logical_tests_0 = $$Array.map(x => (-1 >>> x) | 0, Ext_array_test.range(0, 31));
 
 let shift_right_logical_tests_1 = [
   -1,
@@ -58,7 +58,7 @@ let shift_right_logical_tests = [
   shift_right_logical_tests_1
 ];
 
-let shift_right_tests_0 = $$Array.map((x => (Int32.min_int >> x)), Ext_array_test.range(0, 31));
+let shift_right_tests_0 = $$Array.map(x => (Int32.min_int >> x), Ext_array_test.range(0, 31));
 
 let shift_right_tests_1 = [
   -2147483648,
@@ -100,7 +100,7 @@ let shift_right_tests = [
   shift_right_tests_1
 ];
 
-let shift_left_tests_0 = $$Array.map((x => (1 << x)), Ext_array_test.range(0, 31));
+let shift_left_tests_0 = $$Array.map(x => (1 << x), Ext_array_test.range(0, 31));
 
 let shift_left_tests_1 = [
   1,
@@ -150,45 +150,45 @@ let suites = {
   contents: Pervasives.$at({
     hd: [
       "File \"int32_test.res\", line 131, characters 9-16",
-      (() => ({
+      () => ({
         TAG: "Eq",
         _0: 1,
         _1: 1
-      }))
+      })
     ],
     tl: {
       hd: [
         "File \"int32_test.res\", line 132, characters 9-16",
-        (() => ({
+        () => ({
           TAG: "Eq",
           _0: -2147483647,
           _1: -2147483647
-        }))
+        })
       ],
       tl: /* [] */0
     }
-  }, Pervasives.$at($$Array.to_list(Ext_array_test.map2i(((i, a, b) => [
+  }, Pervasives.$at($$Array.to_list(Ext_array_test.map2i((i, a, b) => [
     "shift_right_logical_cases " + i,
-    (() => ({
+    () => ({
       TAG: "Eq",
       _0: a,
       _1: b
-    }))
-  ]), shift_right_logical_tests_0, shift_right_logical_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i(((i, a, b) => [
+    })
+  ], shift_right_logical_tests_0, shift_right_logical_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((i, a, b) => [
     "shift_right_cases " + i,
-    (() => ({
+    () => ({
       TAG: "Eq",
       _0: a,
       _1: b
-    }))
-  ]), shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i(((i, a, b) => [
+    })
+  ], shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i((i, a, b) => [
     "shift_left_cases " + i,
-    (() => ({
+    () => ({
       TAG: "Eq",
       _0: a,
       _1: b
-    }))
-  ]), shift_left_tests_0, shift_left_tests_1)))))
+    })
+  ], shift_left_tests_0, shift_left_tests_1)))))
 };
 
 let test_id = {

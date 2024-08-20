@@ -18,11 +18,11 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (() => ({
+      () => ({
         TAG: "Eq",
         _0: x,
         _1: y
-      }))
+      })
     ],
     tl: suites.contents
   };
@@ -33,7 +33,7 @@ console.log("你好，\n世界");
 console.log("\x3f\u003f\b\t\n\v\f\r\0\"'");
 
 function convert(s) {
-  return $$Array.to_list(Array.from(s, (x => {
+  return $$Array.to_list(Array.from(s, x => {
     let x$1 = x.codePointAt(0);
     if (x$1 !== undefined) {
       return x$1;
@@ -48,7 +48,7 @@ function convert(s) {
         ]
       }
     });
-  })));
+  }));
 }
 
 eq("File \"chn_test.res\", line 24, characters 4-11", "你好，\n世界", "你好，\n世界");

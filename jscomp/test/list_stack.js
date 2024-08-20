@@ -3,6 +3,6 @@
 
 let List = require("../../lib/js/list.js");
 
-List.find((x => x > 3), /* [] */0);
+List.find(x => x > 3, /* [] */0);
 
 /*  Not a pure module */

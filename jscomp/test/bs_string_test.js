@@ -16,17 +16,17 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (() => ({
+      () => ({
         TAG: "Eq",
         _0: x,
         _1: y
-      }))
+      })
     ],
     tl: suites.contents
   };
 }
 
-eq("File \"bs_string_test.res\", line 10, characters 2-9", "ghso ghso g".split(" ").reduce(((x, y) => x + ("-" + y)), ""), "-ghso-ghso-g");
+eq("File \"bs_string_test.res\", line 10, characters 2-9", "ghso ghso g".split(" ").reduce((x, y) => x + ("-" + y), ""), "-ghso-ghso-g");
 
 Mt.from_pair_suites("Bs_string_test", suites.contents);
 

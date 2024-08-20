@@ -37,7 +37,7 @@ let l = Belt_List.map({
     hd: 2,
     tl: /* [] */0
   }
-}, (x => x + 1 | 0));
+}, x => x + 1 | 0);
 
 function partial(x) {
   return Belt_List.map({
@@ -79,7 +79,7 @@ let l$1 = Belt_List.map({
     hd: 2,
     tl: /* [] */0
   }
-}, (x => x + 1 | 0));
+}, x => x + 1 | 0);
 
 function partial$1(extra) {
   return Belt_List.map({

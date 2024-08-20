@@ -16,15 +16,15 @@ function test() {
       if (n === 0) {
         return acc();
       }
-      _acc = (() => {
+      _acc = () => {
         v.contents = v.contents + n | 0;
         return acc();
-      });
+      };
       _n = n - 1 | 0;
       continue;
     };
   };
-  f(10, (() => {}));
+  f(10, () => {});
   return v.contents;
 }
 
@@ -32,13 +32,13 @@ function test_closure() {
   let v = {
     contents: 0
   };
-  let arr = Caml_array.make(6, (x => x));
+  let arr = Caml_array.make(6, x => x);
   for (let i = 0; i <= 5; ++i) {
-    Caml_array.set(arr, i, (param => i));
+    Caml_array.set(arr, i, param => i);
   }
-  $$Array.iter((i => {
+  $$Array.iter(i => {
     v.contents = v.contents + i(0) | 0;
-  }), arr);
+  }, arr);
   return v.contents;
 }
 
@@ -46,43 +46,43 @@ function test_closure2() {
   let v = {
     contents: 0
   };
-  let arr = Caml_array.make(6, (x => x));
+  let arr = Caml_array.make(6, x => x);
   for (let i = 0; i <= 5; ++i) {
     let j = i + i | 0;
-    Caml_array.set(arr, i, (param => j));
+    Caml_array.set(arr, i, param => j);
   }
-  $$Array.iter((i => {
+  $$Array.iter(i => {
     v.contents = v.contents + i(0) | 0;
-  }), arr);
+  }, arr);
   return v.contents;
 }
 
 Mt.from_pair_suites("Cps_test", {
   hd: [
     "cps_test_sum",
-    (() => ({
+    () => ({
       TAG: "Eq",
       _0: 55,
       _1: test()
-    }))
+    })
   ],
   tl: {
     hd: [
       "cps_test_closure",
-      (() => ({
+      () => ({
         TAG: "Eq",
         _0: 15,
         _1: test_closure()
-      }))
+      })
     ],
     tl: {
       hd: [
         "cps_test_closure2",
-        (() => ({
+        () => ({
           TAG: "Eq",
           _0: 30,
           _1: test_closure2()
-        }))
+        })
       ],
       tl: /* [] */0
     }

@@ -18,11 +18,11 @@ console.log("hey");
 
 let suites_0 = [
   "anything_to_string",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: "3",
     _1: String(3)
-  }))
+  })
 ];
 
 let suites = {

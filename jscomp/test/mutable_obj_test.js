@@ -3,10 +3,10 @@
 
 
 function f(x) {
-  x.dec = (x => ({
+  x.dec = x => ({
     x: x,
     y: x
-  }));
+  });
 }
 
 exports.f = f;

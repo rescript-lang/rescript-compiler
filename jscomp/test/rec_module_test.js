@@ -1218,7 +1218,7 @@ Caml_module.update_mod({
 
 let suites_0 = [
   "test1",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: [
       true,
@@ -1232,58 +1232,58 @@ let suites_0 = [
       B.odd(2),
       BB.odd(4)
     ]
-  }))
+  })
 ];
 
 let suites_1 = {
   hd: [
     "test2",
-    (param => ({
+    param => ({
       TAG: "Eq",
       _0: BB.y(),
       _1: 32
-    }))
+    })
   ],
   tl: {
     hd: [
       "test3",
-      (param => ({
+      param => ({
         TAG: "Eq",
         _0: AA.x(),
         _1: 35
-      }))
+      })
     ],
     tl: {
       hd: [
         "test4",
-        (param => ({
+        param => ({
           TAG: "Eq",
           _0: true,
           _1: A.even(2)
-        }))
+        })
       ],
       tl: {
         hd: [
           "test4",
-          (param => ({
+          param => ({
             TAG: "Eq",
             _0: true,
             _1: AA.even(4)
-          }))
+          })
         ],
         tl: {
           hd: [
             "test5",
-            (param => ({
+            param => ({
               TAG: "Eq",
               _0: false,
               _1: B.odd(2)
-            }))
+            })
           ],
           tl: {
             hd: [
               "test6",
-              (param => ({
+              param => ({
                 TAG: "Eq",
                 _0: 2,
                 _1: cardinal(of_list({
@@ -1305,7 +1305,7 @@ let suites_1 = {
                     }
                   }
                 }))
-              }))
+              })
             ],
             tl: /* [] */0
           }

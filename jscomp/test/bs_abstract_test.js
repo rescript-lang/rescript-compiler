@@ -10,7 +10,7 @@ let v = {
 v.tl = v;
 
 let f = {
-  k: ((x, y) => x === y),
+  k: (x, y) => x === y,
   y: "x"
 };
 

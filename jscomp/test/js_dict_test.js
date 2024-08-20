@@ -13,53 +13,53 @@ function obj() {
 
 let suites_0 = [
   "empty",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: [],
     _1: Object.keys({})
-  }))
+  })
 ];
 
 let suites_1 = {
   hd: [
     "get",
-    (param => ({
+    param => ({
       TAG: "Eq",
       _0: 43,
       _1: Js_dict.get({
         foo: 43,
         bar: 86
       }, "foo")
-    }))
+    })
   ],
   tl: {
     hd: [
       "get - property not in object",
-      (param => ({
+      param => ({
         TAG: "Eq",
         _0: undefined,
         _1: Js_dict.get({
           foo: 43,
           bar: 86
         }, "baz")
-      }))
+      })
     ],
     tl: {
       hd: [
         "unsafe_get",
-        (param => ({
+        param => ({
           TAG: "Eq",
           _0: 43,
           _1: ({
               foo: 43,
               bar: 86
             })["foo"]
-        }))
+        })
       ],
       tl: {
         hd: [
           "set",
-          (param => {
+          param => {
             let o = {
               foo: 43,
               bar: 86
@@ -70,12 +70,12 @@ let suites_1 = {
               _0: 36,
               _1: Js_dict.get(o, "foo")
             };
-          })
+          }
         ],
         tl: {
           hd: [
             "keys",
-            (param => ({
+            param => ({
               TAG: "Eq",
               _0: [
                 "foo",
@@ -85,12 +85,12 @@ let suites_1 = {
                 foo: 43,
                 bar: 86
               })
-            }))
+            })
           ],
           tl: {
             hd: [
               "entries",
-              (param => ({
+              param => ({
                 TAG: "Eq",
                 _0: [
                   [
@@ -106,12 +106,12 @@ let suites_1 = {
                   foo: 43,
                   bar: 86
                 })
-              }))
+              })
             ],
             tl: {
               hd: [
                 "values",
-                (param => ({
+                param => ({
                   TAG: "Eq",
                   _0: [
                     43,
@@ -121,21 +121,21 @@ let suites_1 = {
                     foo: 43,
                     bar: 86
                   })
-                }))
+                })
               ],
               tl: {
                 hd: [
                   "fromList - []",
-                  (param => ({
+                  param => ({
                     TAG: "Eq",
                     _0: {},
                     _1: Js_dict.fromList(/* [] */0)
-                  }))
+                  })
                 ],
                 tl: {
                   hd: [
                     "fromList",
-                    (param => ({
+                    param => ({
                       TAG: "Eq",
                       _0: [
                         [
@@ -160,21 +160,21 @@ let suites_1 = {
                           tl: /* [] */0
                         }
                       }))
-                    }))
+                    })
                   ],
                   tl: {
                     hd: [
                       "fromArray - []",
-                      (param => ({
+                      param => ({
                         TAG: "Eq",
                         _0: {},
                         _1: Js_dict.fromArray([])
-                      }))
+                      })
                     ],
                     tl: {
                       hd: [
                         "fromArray",
-                        (param => ({
+                        param => ({
                           TAG: "Eq",
                           _0: [
                             [
@@ -196,22 +196,22 @@ let suites_1 = {
                               46
                             ]
                           ]))
-                        }))
+                        })
                       ],
                       tl: {
                         hd: [
                           "map",
-                          (param => ({
+                          param => ({
                             TAG: "Eq",
                             _0: {
                               foo: "43",
                               bar: "86"
                             },
-                            _1: Js_dict.map((i => String(i)), {
+                            _1: Js_dict.map(i => String(i), {
                               foo: 43,
                               bar: 86
                             })
-                          }))
+                          })
                         ],
                         tl: /* [] */0
                       }

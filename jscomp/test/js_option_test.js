@@ -10,210 +10,210 @@ function simpleEq(a, b) {
 
 let option_suites_0 = [
   "option_isSome_Some",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: true,
     _1: true
-  }))
+  })
 ];
 
 let option_suites_1 = {
   hd: [
     "option_isSome_None",
-    (param => ({
+    param => ({
       TAG: "Eq",
       _0: false,
       _1: false
-    }))
+    })
   ],
   tl: {
     hd: [
       "option_isNone_Some",
-      (param => ({
+      param => ({
         TAG: "Eq",
         _0: false,
         _1: false
-      }))
+      })
     ],
     tl: {
       hd: [
         "option_isNone_None",
-        (param => ({
+        param => ({
           TAG: "Eq",
           _0: true,
           _1: true
-        }))
+        })
       ],
       tl: {
         hd: [
           "option_isSomeValue_Eq",
-          (param => ({
+          param => ({
             TAG: "Eq",
             _0: true,
             _1: Js_option.isSomeValue(simpleEq, 2, 2)
-          }))
+          })
         ],
         tl: {
           hd: [
             "option_isSomeValue_Diff",
-            (param => ({
+            param => ({
               TAG: "Eq",
               _0: false,
               _1: Js_option.isSomeValue(simpleEq, 1, 2)
-            }))
+            })
           ],
           tl: {
             hd: [
               "option_isSomeValue_DiffNone",
-              (param => ({
+              param => ({
                 TAG: "Eq",
                 _0: false,
                 _1: Js_option.isSomeValue(simpleEq, 1, undefined)
-              }))
+              })
             ],
             tl: {
               hd: [
                 "option_getExn_Some",
-                (param => ({
+                param => ({
                   TAG: "Eq",
                   _0: 2,
                   _1: Js_option.getExn(2)
-                }))
+                })
               ],
               tl: {
                 hd: [
                   "option_equal_Eq",
-                  (param => ({
+                  param => ({
                     TAG: "Eq",
                     _0: true,
                     _1: Js_option.equal(simpleEq, 2, 2)
-                  }))
+                  })
                 ],
                 tl: {
                   hd: [
                     "option_equal_Diff",
-                    (param => ({
+                    param => ({
                       TAG: "Eq",
                       _0: false,
                       _1: Js_option.equal(simpleEq, 1, 2)
-                    }))
+                    })
                   ],
                   tl: {
                     hd: [
                       "option_equal_DiffNone",
-                      (param => ({
+                      param => ({
                         TAG: "Eq",
                         _0: false,
                         _1: Js_option.equal(simpleEq, 1, undefined)
-                      }))
+                      })
                     ],
                     tl: {
                       hd: [
                         "option_andThen_SomeSome",
-                        (param => ({
+                        param => ({
                           TAG: "Eq",
                           _0: true,
-                          _1: Js_option.isSomeValue(simpleEq, 3, Js_option.andThen((a => a + 1 | 0), 2))
-                        }))
+                          _1: Js_option.isSomeValue(simpleEq, 3, Js_option.andThen(a => a + 1 | 0, 2))
+                        })
                       ],
                       tl: {
                         hd: [
                           "option_andThen_SomeNone",
-                          (param => ({
+                          param => ({
                             TAG: "Eq",
                             _0: false,
-                            _1: Js_option.isSomeValue(simpleEq, 3, Js_option.andThen((param => {}), 2))
-                          }))
+                            _1: Js_option.isSomeValue(simpleEq, 3, Js_option.andThen(param => {}, 2))
+                          })
                         ],
                         tl: {
                           hd: [
                             "option_map_Some",
-                            (param => ({
+                            param => ({
                               TAG: "Eq",
                               _0: true,
-                              _1: Js_option.isSomeValue(simpleEq, 3, Js_option.map((a => a + 1 | 0), 2))
-                            }))
+                              _1: Js_option.isSomeValue(simpleEq, 3, Js_option.map(a => a + 1 | 0, 2))
+                            })
                           ],
                           tl: {
                             hd: [
                               "option_map_None",
-                              (param => ({
+                              param => ({
                                 TAG: "Eq",
                                 _0: undefined,
-                                _1: Js_option.map((a => a + 1 | 0), undefined)
-                              }))
+                                _1: Js_option.map(a => a + 1 | 0, undefined)
+                              })
                             ],
                             tl: {
                               hd: [
                                 "option_default_Some",
-                                (param => ({
+                                param => ({
                                   TAG: "Eq",
                                   _0: 2,
                                   _1: Js_option.getWithDefault(3, 2)
-                                }))
+                                })
                               ],
                               tl: {
                                 hd: [
                                   "option_default_None",
-                                  (param => ({
+                                  param => ({
                                     TAG: "Eq",
                                     _0: 3,
                                     _1: Js_option.getWithDefault(3, undefined)
-                                  }))
+                                  })
                                 ],
                                 tl: {
                                   hd: [
                                     "option_filter_Pass",
-                                    (param => ({
+                                    param => ({
                                       TAG: "Eq",
                                       _0: true,
-                                      _1: Js_option.isSomeValue(simpleEq, 2, Js_option.filter((a => a % 2 === 0), 2))
-                                    }))
+                                      _1: Js_option.isSomeValue(simpleEq, 2, Js_option.filter(a => a % 2 === 0, 2))
+                                    })
                                   ],
                                   tl: {
                                     hd: [
                                       "option_filter_Reject",
-                                      (param => ({
+                                      param => ({
                                         TAG: "Eq",
                                         _0: undefined,
-                                        _1: Js_option.filter((a => a % 3 === 0), 2)
-                                      }))
+                                        _1: Js_option.filter(a => a % 3 === 0, 2)
+                                      })
                                     ],
                                     tl: {
                                       hd: [
                                         "option_filter_None",
-                                        (param => ({
+                                        param => ({
                                           TAG: "Eq",
                                           _0: undefined,
-                                          _1: Js_option.filter((a => a % 3 === 0), undefined)
-                                        }))
+                                          _1: Js_option.filter(a => a % 3 === 0, undefined)
+                                        })
                                       ],
                                       tl: {
                                         hd: [
                                           "option_firstSome_First",
-                                          (param => ({
+                                          param => ({
                                             TAG: "Eq",
                                             _0: true,
                                             _1: Js_option.isSomeValue(simpleEq, 3, Js_option.firstSome(3, 2))
-                                          }))
+                                          })
                                         ],
                                         tl: {
                                           hd: [
                                             "option_firstSome_First",
-                                            (param => ({
+                                            param => ({
                                               TAG: "Eq",
                                               _0: true,
                                               _1: Js_option.isSomeValue(simpleEq, 2, Js_option.firstSome(undefined, 2))
-                                            }))
+                                            })
                                           ],
                                           tl: {
                                             hd: [
                                               "option_firstSome_None",
-                                              (param => ({
+                                              param => ({
                                                 TAG: "Eq",
                                                 _0: undefined,
                                                 _1: Js_option.firstSome(undefined, undefined)
-                                              }))
+                                              })
                                             ],
                                             tl: /* [] */0
                                           }

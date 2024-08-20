@@ -19,11 +19,11 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (() => ({
+      () => ({
         TAG: "Eq",
         _0: x,
         _1: y
-      }))
+      })
     ],
     tl: suites.contents
   };
@@ -34,10 +34,10 @@ function b(loc, v) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (() => ({
+      () => ({
         TAG: "Ok",
         _0: v
-      }))
+      })
     ],
     tl: suites.contents
   };
@@ -51,10 +51,10 @@ function emptyMap() {
   
 }
 
-let v = Belt_Array.makeByAndShuffle(1000000, (i => [
+let v = Belt_Array.makeByAndShuffle(1000000, i => [
   i,
   i
-]));
+]);
 
 let u = Belt_MapInt.fromArray(v);
 
@@ -62,7 +62,7 @@ Belt_MapInt.checkInvariantInternal(u);
 
 let firstHalf = Belt_Array.slice(v, 0, 2000);
 
-let xx = Belt_Array.reduce(firstHalf, u, ((acc, param) => Belt_MapInt.remove(acc, param[0])));
+let xx = Belt_Array.reduce(firstHalf, u, (acc, param) => Belt_MapInt.remove(acc, param[0]));
 
 Belt_MapInt.checkInvariantInternal(u);
 

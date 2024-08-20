@@ -104,9 +104,9 @@ function f12(x) {
   return x;
 }
 
-let length_8_id = Belt_List.makeBy(8, (x => x));
+let length_8_id = Belt_List.makeBy(8, x => x);
 
-let length_10_id = Belt_List.makeBy(10, (x => x));
+let length_10_id = Belt_List.makeBy(10, x => x);
 
 function f13$1() {
   return Caml_obj.equal(Belt_List.take(length_10_id, 8), {
@@ -166,7 +166,7 @@ function neqx(a, b) {
 }
 
 function all_true(xs) {
-  return Belt_List.every(xs, (x => x));
+  return Belt_List.every(xs, x => x);
 }
 
 let xs_0 = gtx(Caml_option.some(null), Caml_option.some(undefined));
@@ -176,7 +176,7 @@ let xs = {
   tl: /* [] */0
 };
 
-b("File \"option_repr_test.res\", line 125, characters 8-15", Belt_List.every(xs, (x => x)));
+b("File \"option_repr_test.res\", line 125, characters 8-15", Belt_List.every(xs, x => x));
 
 let xs_0$1 = ltx(Caml_option.some(undefined), 3);
 
@@ -197,7 +197,7 @@ let xs_1 = {
               tl: {
                 hd: ltx(undefined, null),
                 tl: {
-                  hd: ltx(undefined, (x => x)),
+                  hd: ltx(undefined, x => x),
                   tl: {
                     hd: ltx(null, 3),
                     tl: /* [] */0
@@ -217,7 +217,7 @@ let xs$1 = {
   tl: xs_1
 };
 
-b("File \"option_repr_test.res\", line 128, characters 4-11", Belt_List.every(xs$1, (x => x)));
+b("File \"option_repr_test.res\", line 128, characters 4-11", Belt_List.every(xs$1, x => x));
 
 let xs_0$2 = eqx(undefined, undefined);
 
@@ -240,7 +240,7 @@ let xs$2 = {
   tl: xs_1$1
 };
 
-b("File \"option_repr_test.res\", line 145, characters 4-11", Belt_List.every(xs$2, (x => x)));
+b("File \"option_repr_test.res\", line 145, characters 4-11", Belt_List.every(xs$2, x => x));
 
 function v(x) {
   return x;

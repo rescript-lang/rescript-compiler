@@ -88,10 +88,11 @@ val str : ?delim: J.delim -> ?comment: string -> string -> t
 val ocaml_fun :
   ?comment:string ->
   ?immutable_mask:bool array ->
+  ?iife:bool ->
+  ?directive:string ->
   return_unit:bool ->
   async:bool ->
   one_unit_arg:bool ->
-  ?directive:string ->
   J.ident list ->
   J.block ->
   t
@@ -99,6 +100,7 @@ val ocaml_fun :
 val method_ :
   ?comment:string ->
   ?immutable_mask:bool array ->
+  ?iife:bool ->
   return_unit:bool ->
   J.ident list ->
   J.block ->

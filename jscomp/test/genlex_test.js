@@ -59,7 +59,7 @@ function to_list(s) {
 
 let suites_0 = [
   "lexer_stream_genlex",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: {
       hd: {
@@ -105,7 +105,7 @@ let suites_0 = [
       }
     },
     _1: to_list(lexer(Stream.of_string("3(3 + 2 -1)")))
-  }))
+  })
 ];
 
 let suites = {

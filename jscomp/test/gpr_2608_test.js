@@ -24,14 +24,14 @@ let oppHeroes = {
 let huntGrootCondition = false;
 
 if (List.length(/* [] */0) > 0) {
-  let x = List.filter((h => List.hd(/* [] */0) <= 1000), oppHeroes);
+  let x = List.filter(h => List.hd(/* [] */0) <= 1000, oppHeroes);
   huntGrootCondition = List.length(x) === 0;
 }
 
 let huntGrootCondition2 = true;
 
 if (List.length(/* [] */0) < 0) {
-  let x$1 = List.filter((h => List.hd(/* [] */0) <= 1000), oppHeroes);
+  let x$1 = List.filter(h => List.hd(/* [] */0) <= 1000, oppHeroes);
   huntGrootCondition2 = List.length(x$1) === 0;
 }
 

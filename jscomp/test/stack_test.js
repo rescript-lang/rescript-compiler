@@ -29,7 +29,7 @@ function v() {
 
 let suites_0 = [
   "push_test",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: {
       hd: 1,
@@ -42,7 +42,7 @@ let suites_0 = [
       }
     },
     _1: v()
-  }))
+  })
 ];
 
 let suites = {

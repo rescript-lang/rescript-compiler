@@ -19,9 +19,9 @@ eachIntLazy({
       tl: /* [] */0
     }
   }
-}, (n => {
+}, n => {
   console.log("lazy", n);
-}));
+});
 
 eachIntAsync({
   hd: 1,
@@ -32,9 +32,9 @@ eachIntAsync({
       tl: /* [] */0
     }
   }
-}, (n => {
+}, n => {
   console.log("async", n);
-}));
+});
 
 let beltAsModule = await import("../../lib/js/belt_List.js");
 

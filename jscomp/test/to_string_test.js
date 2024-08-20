@@ -13,20 +13,20 @@ function f(v) {
 Mt.from_pair_suites("To_string_test", {
   hd: [
     "File \"to_string_test.res\", line 6, characters 8-15",
-    (() => ({
+    () => ({
       TAG: "Eq",
       _0: Pervasives.string_of_float(Pervasives.infinity),
       _1: "inf"
-    }))
+    })
   ],
   tl: {
     hd: [
       "File \"to_string_test.res\", line 6, characters 49-56",
-      (() => ({
+      () => ({
         TAG: "Eq",
         _0: Pervasives.string_of_float(Pervasives.neg_infinity),
         _1: "-inf"
-      }))
+      })
     ],
     tl: /* [] */0
   }

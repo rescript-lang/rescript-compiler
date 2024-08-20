@@ -21,11 +21,11 @@ function test2() {
 
 let suites_0 = [
   "for_order",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: 10,
     _1: test2()
-  }))
+  })
 ];
 
 let suites = {

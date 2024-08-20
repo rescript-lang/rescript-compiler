@@ -136,7 +136,7 @@ function of_field(name, t) {
 function of_record(l) {
   return {
     NAME: "List",
-    VAL: List.map((param => of_field(param[0], param[1])), l)
+    VAL: List.map(param => of_field(param[0], param[1]), l)
   };
 }
 
@@ -251,7 +251,7 @@ function to_float(e) {
 }
 
 function to_string(e) {
-  return _try_atom(e, (x => x));
+  return _try_atom(e, x => x);
 }
 
 function to_pair(e) {
@@ -276,13 +276,13 @@ function to_pair(e) {
 }
 
 function to_pair_with(f1, f2) {
-  return e => $great$great$eq(to_pair(e), (param => {
+  return e => $great$great$eq(to_pair(e), param => {
     let y = param[1];
-    return $great$great$eq(f1(param[0]), (x => $great$great$eq(f2(y), (y => [
+    return $great$great$eq(f1(param[0]), x => $great$great$eq(f2(y), y => [
       x,
       y
-    ]))));
-  }));
+    ]));
+  });
 }
 
 function to_triple(e) {
@@ -312,15 +312,15 @@ function to_triple(e) {
 }
 
 function to_triple_with(f1, f2, f3) {
-  return e => $great$great$eq(to_triple(e), (param => {
+  return e => $great$great$eq(to_triple(e), param => {
     let z = param[2];
     let y = param[1];
-    return $great$great$eq(f1(param[0]), (x => $great$great$eq(f2(y), (y => $great$great$eq(f3(z), (z => [
+    return $great$great$eq(f1(param[0]), x => $great$great$eq(f2(y), y => $great$great$eq(f3(z), z => [
       x,
       y,
       z
-    ]))))));
-  }));
+    ])));
+  });
 }
 
 function to_list(e) {

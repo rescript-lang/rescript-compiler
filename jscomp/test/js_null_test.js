@@ -7,118 +7,118 @@ let Caml_option = require("../../lib/js/caml_option.js");
 
 let suites_0 = [
   "toOption - empty",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: undefined,
     _1: undefined
-  }))
+  })
 ];
 
 let suites_1 = {
   hd: [
     "toOption - 'a",
-    (param => ({
+    param => ({
       TAG: "Eq",
       _0: Caml_option.some(undefined),
       _1: Caml_option.some()
-    }))
+    })
   ],
   tl: {
     hd: [
       "return",
-      (param => ({
+      param => ({
         TAG: "Eq",
         _0: "something",
         _1: Caml_option.null_to_opt("something")
-      }))
+      })
     ],
     tl: {
       hd: [
         "test - empty",
-        (param => ({
+        param => ({
           TAG: "Eq",
           _0: true,
           _1: true
-        }))
+        })
       ],
       tl: {
         hd: [
           "test - 'a",
-          (param => ({
+          param => ({
             TAG: "Eq",
             _0: false,
             _1: false
-          }))
+          })
         ],
         tl: {
           hd: [
             "bind - empty",
-            (param => ({
+            param => ({
               TAG: "StrictEq",
               _0: null,
-              _1: Js_null.bind(null, (v => v))
-            }))
+              _1: Js_null.bind(null, v => v)
+            })
           ],
           tl: {
             hd: [
               "bind - 'a",
-              (param => ({
+              param => ({
                 TAG: "StrictEq",
                 _0: 4,
-                _1: Js_null.bind(2, (n => (n << 1)))
-              }))
+                _1: Js_null.bind(2, n => (n << 1))
+              })
             ],
             tl: {
               hd: [
                 "iter - empty",
-                (param => {
+                param => {
                   let hit = {
                     contents: false
                   };
-                  Js_null.iter(null, (param => {
+                  Js_null.iter(null, param => {
                     hit.contents = true;
-                  }));
+                  });
                   return {
                     TAG: "Eq",
                     _0: false,
                     _1: hit.contents
                   };
-                })
+                }
               ],
               tl: {
                 hd: [
                   "iter - 'a",
-                  (param => {
+                  param => {
                     let hit = {
                       contents: 0
                     };
-                    Js_null.iter(2, (v => {
+                    Js_null.iter(2, v => {
                       hit.contents = v;
-                    }));
+                    });
                     return {
                       TAG: "Eq",
                       _0: 2,
                       _1: hit.contents
                     };
-                  })
+                  }
                 ],
                 tl: {
                   hd: [
                     "fromOption - None",
-                    (param => ({
+                    param => ({
                       TAG: "Eq",
                       _0: null,
                       _1: Js_null.fromOption(undefined)
-                    }))
+                    })
                   ],
                   tl: {
                     hd: [
                       "fromOption - Some",
-                      (param => ({
+                      param => ({
                         TAG: "Eq",
                         _0: 2,
                         _1: Js_null.fromOption(2)
-                      }))
+                      })
                     ],
                     tl: /* [] */0
                   }

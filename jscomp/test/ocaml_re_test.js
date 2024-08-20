@@ -31,11 +31,11 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (() => ({
+      () => ({
         TAG: "Eq",
         _0: x,
         _1: y
-      }))
+      })
     ],
     tl: suites.contents
   };
@@ -788,7 +788,7 @@ function rename(ids, x) {
     case "Alt" :
       return mk_expr(ids, {
         TAG: "Alt",
-        _0: List.map((extra => rename(ids, extra)), l._0)
+        _0: List.map(extra => rename(ids, extra), l._0)
       });
     case "Seq" :
       return mk_expr(ids, {
@@ -997,7 +997,7 @@ function reset_table(a) {
 }
 
 function mark_used_indices(tbl) {
-  return extra => List.iter((x => {
+  return extra => List.iter(x => {
     switch (x.TAG) {
       case "TSeq" :
         return mark_used_indices(tbl)(x._0);
@@ -1005,14 +1005,14 @@ function mark_used_indices(tbl) {
       case "TMatch" :
         break;
     }
-    List.iter((param => {
+    List.iter(param => {
       let i = param[1];
       if (i >= 0) {
         return Caml_array.set(tbl, i, true);
       }
       
-    }), x._0.marks);
-  }), extra);
+    }, x._0.marks);
+  }, extra);
 }
 
 function find_free(tbl, _idx, len) {
@@ -1039,7 +1039,7 @@ function free_index(tbl_ref, l) {
 }
 
 function remove_matches(extra) {
-  return List.filter((x => {
+  return List.filter(x => {
     switch (x.TAG) {
       case "TSeq" :
       case "TExp" :
@@ -1047,7 +1047,7 @@ function remove_matches(extra) {
       case "TMatch" :
         return false;
     }
-  }), extra);
+  }, extra);
 }
 
 function split_at_match_rec(_l$p, _x) {
@@ -1192,14 +1192,14 @@ function set_idx(idx, x) {
 
 function filter_marks(b, e, marks) {
   return {
-    marks: List.filter((param => {
+    marks: List.filter(param => {
       let i = param[0];
       if (i < b) {
         return true;
       } else {
         return i > e;
       }
-    }), marks.marks),
+    }, marks.marks),
     pmarks: marks.pmarks
   };
 }
@@ -1237,7 +1237,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
     case "Rep" :
       let kind = s._1;
       let y$p$1 = delta_1(marks, c, next_cat, prev_cat, s._2, /* [] */0);
-      let marks$p = first((x => {
+      let marks$p = first(x => {
         switch (x.TAG) {
           case "TSeq" :
           case "TExp" :
@@ -1245,7 +1245,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
           case "TMatch" :
             return x._0;
         }
-      }), y$p$1);
+      }, y$p$1);
       let match = marks$p !== undefined ? [
           remove_matches(y$p$1),
           marks$p
@@ -1350,7 +1350,7 @@ function delta_2(marks, c, next_cat, prev_cat, l, rem) {
 }
 
 function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
-  let marks = first((x => {
+  let marks = first(x => {
     switch (x.TAG) {
       case "TSeq" :
       case "TExp" :
@@ -1358,7 +1358,7 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
       case "TMatch" :
         return x._0;
     }
-  }), y);
+  }, y);
   if (marks === undefined) {
     return tseq(kind, y, z, rem);
   }
@@ -1403,9 +1403,9 @@ function delta(tbl_ref, next_cat, char, st) {
 }
 
 function flatten_match(m) {
-  let ma = List.fold_left(((ma, param) => Caml.int_max(ma, param[0])), -1, m);
+  let ma = List.fold_left((ma, param) => Caml.int_max(ma, param[0]), -1, m);
   let res = Caml_array.make(ma + 1 | 0, -1);
-  List.iter((param => Caml_array.set(res, param[0], param[1])), m);
+  List.iter(param => Caml_array.set(res, param[0], param[1]), m);
   return res;
 }
 
@@ -1737,7 +1737,7 @@ function trans_set(cache, cm, s) {
   } catch (raw_exn) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
-      let l = List.fold_right(((param, l) => union(seq(Caml_bytes.get(cm, param[0]), Caml_bytes.get(cm, param[1])), l)), s, /* [] */0);
+      let l = List.fold_right((param, l) => union(seq(Caml_bytes.get(cm, param[0]), Caml_bytes.get(cm, param[1])), l), s, /* [] */0);
       cache.contents = add(v, l, cache.contents);
       return l;
     }
@@ -2396,10 +2396,10 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
             ];
           }
           return [
-            alt(ids, List.map((r$p => {
+            alt(ids, List.map(r$p => {
               let match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$p);
               return enforce_kind(ids, kind, match[1], match[0]);
-            }), merged_sequences)),
+            }, merged_sequences)),
             kind
           ];
         case "Repeat" :
@@ -2410,25 +2410,25 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
           let cr = match$1[0];
           let rem;
           if (j !== undefined) {
-            let f = greedy === "Non_greedy" ? (rem => alt(ids, {
+            let f = greedy === "Non_greedy" ? rem => alt(ids, {
                 hd: mk_expr(ids, "Eps"),
                 tl: {
                   hd: seq$1(ids, kind$p, rename(ids, cr), rem),
                   tl: /* [] */0
                 }
-              })) : (rem => alt(ids, {
+              }) : rem => alt(ids, {
                 hd: seq$1(ids, kind$p, rename(ids, cr), rem),
                 tl: {
                   hd: mk_expr(ids, "Eps"),
                   tl: /* [] */0
                 }
-              }));
+              });
             rem = iter(j - i | 0, f, mk_expr(ids, "Eps"));
           } else {
             rem = rep(ids, greedy, kind$p, cr);
           }
           return [
-            iter(i, (rem => seq$1(ids, kind$p, rename(ids, cr), rem)), rem),
+            iter(i, rem => seq$1(ids, kind$p, rename(ids, cr), rem), rem),
             kind
           ];
         case "Sem" :
@@ -2578,17 +2578,17 @@ function handle_case(_ign_case, _x) {
       case "Sequence" :
         return {
           TAG: "Sequence",
-          _0: List.map((extra => handle_case(ign_case, extra)), x._0)
+          _0: List.map(extra => handle_case(ign_case, extra), x._0)
         };
       case "Alternative" :
-        let l$p = List.map((extra => handle_case(ign_case, extra)), x._0);
+        let l$p = List.map(extra => handle_case(ign_case, extra), x._0);
         if (is_charset({
             TAG: "Alternative",
             _0: l$p
           })) {
           return {
             TAG: "Set",
-            _0: List.fold_left(((s, r) => union(s, as_set(r))), /* [] */0, l$p)
+            _0: List.fold_left((s, r) => union(s, as_set(r)), /* [] */0, l$p)
           };
         } else {
           return {
@@ -2659,16 +2659,16 @@ function handle_case(_ign_case, _x) {
         _ign_case = true;
         continue;
       case "Intersection" :
-        let l$p$1 = List.map((r => handle_case(ign_case, r)), x._0);
+        let l$p$1 = List.map(r => handle_case(ign_case, r), x._0);
         return {
           TAG: "Set",
-          _0: List.fold_left(((s, r) => inter(s, as_set(r))), cany, l$p$1)
+          _0: List.fold_left((s, r) => inter(s, as_set(r)), cany, l$p$1)
         };
       case "Complement" :
-        let l$p$2 = List.map((r => handle_case(ign_case, r)), x._0);
+        let l$p$2 = List.map(r => handle_case(ign_case, r), x._0);
         return {
           TAG: "Set",
-          _0: diff(cany, List.fold_left(((s, r) => union(s, as_set(r))), /* [] */0, l$p$2))
+          _0: diff(cany, List.fold_left((s, r) => union(s, as_set(r)), /* [] */0, l$p$2))
         };
       case "Difference" :
         return {
@@ -4138,7 +4138,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
 
 function re(flagsOpt, pat) {
   let flags = flagsOpt !== undefined ? flagsOpt : /* [] */0;
-  let opts = List.map((x => {
+  let opts = List.map(x => {
     if (x === "CASELESS") {
       return "Caseless";
     } else if (x === "ANCHORED") {
@@ -4146,7 +4146,7 @@ function re(flagsOpt, pat) {
     } else {
       return "Multiline";
     }
-  }), flags);
+  }, flags);
   let optsOpt = opts;
   let opts$1 = optsOpt !== undefined ? optsOpt : /* [] */0;
   let r = parse(List.memq("Multiline", opts$1), List.memq("Dollar_endonly", opts$1), List.memq("Dotall", opts$1), List.memq("Ungreedy", opts$1), pat);

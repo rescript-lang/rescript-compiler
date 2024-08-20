@@ -5,11 +5,11 @@ let Js_promise2 = require("../../lib/js/js_promise2.js");
 
 async function nestedPromise(xxx) {
   let xx = await xxx;
-  Js_promise2.then(xx, (x => Promise.resolve((console.log("Promise2.then", x), undefined))));
-  Js_promise2.$$catch(xx, (x => {
+  Js_promise2.then(xx, x => Promise.resolve((console.log("Promise2.then", x), undefined)));
+  Js_promise2.$$catch(xx, x => {
     console.log("Promise2.catch_", x);
     return Promise.resolve(0);
-  }));
+  });
   xx.then(x => Promise.resolve((console.log("Promise.then_", x), undefined)));
 }
 

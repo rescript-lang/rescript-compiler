@@ -111,10 +111,10 @@ function parse(token) {
   let r = parse_expr_aux(parse_term());
   return [
     r,
-    Queue.fold(((acc, x) => ({
+    Queue.fold((acc, x) => ({
       hd: x,
       tl: acc
-    })), /* [] */0, look_ahead)
+    }), /* [] */0, look_ahead)
   ];
 }
 
@@ -252,10 +252,10 @@ function l_parse(token) {
   let r = parse_t_aux(parse_t());
   return [
     r,
-    Queue.fold(((acc, x) => ({
+    Queue.fold((acc, x) => ({
       hd: x,
       tl: acc
-    })), /* [] */0, look_ahead)
+    }), /* [] */0, look_ahead)
   ];
 }
 
@@ -272,11 +272,11 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (() => ({
+      () => ({
         TAG: "Eq",
         _0: x,
         _1: y
-      }))
+      })
     ],
     tl: suites.contents
   };

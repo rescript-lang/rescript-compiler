@@ -57,7 +57,7 @@ let suites_0 = [
 let suites_1 = {
   hd: [
     "avoid_mutable_inline_test",
-    (() => {
+    () => {
       Caml_array.set(c, 0, 3);
       Caml_array.set(c, 1, 4);
       return {
@@ -72,7 +72,7 @@ let suites_1 = {
         ],
         _1: c
       };
-    })
+    }
   ],
   tl: /* [] */0
 };

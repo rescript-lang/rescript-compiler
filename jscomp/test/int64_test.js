@@ -35,7 +35,7 @@ function commutative_add(result, a, b) {
 
 let generic_compare = Caml_obj.compare;
 
-let shift_left_tests_0 = $$Array.map((i => Caml_int64.lsl_(Caml_int64.one, i)), Ext_array_test.range(0, 63));
+let shift_left_tests_0 = $$Array.map(i => Caml_int64.lsl_(Caml_int64.one, i), Ext_array_test.range(0, 63));
 
 let shift_left_tests_1 = [
   Caml_int64.one,
@@ -295,7 +295,7 @@ let shift_left_tests = [
   shift_left_tests_1
 ];
 
-let shift_right_tests_0 = $$Array.map((i => Caml_int64.asr_(Caml_int64.min_int, i)), Ext_array_test.range(0, 63));
+let shift_right_tests_0 = $$Array.map(i => Caml_int64.asr_(Caml_int64.min_int, i), Ext_array_test.range(0, 63));
 
 let shift_right_tests_1 = [
   Caml_int64.min_int,
@@ -555,7 +555,7 @@ let shift_right_tests = [
   shift_right_tests_1
 ];
 
-let shift_right_logical_suites_0 = $$Array.map((i => Caml_int64.lsr_(Caml_int64.min_int, i)), Ext_array_test.range(0, 63));
+let shift_right_logical_suites_0 = $$Array.map(i => Caml_int64.lsr_(Caml_int64.min_int, i), Ext_array_test.range(0, 63));
 
 let shift_right_logical_suites_1 = [
   Caml_int64.min_int,
@@ -846,62 +846,62 @@ function fac(_n, _acc) {
 let suites = Pervasives.$at({
   hd: [
     "add_one",
-    (() => ({
+    () => ({
       TAG: "Eq",
       _0: v,
       _1: [
         0,
         2147483648
       ]
-    }))
+    })
   ],
   tl: {
     hd: [
       "add_2",
-      (() => ({
+      () => ({
         TAG: "Eq",
         _0: [
           0,
           4294967294
         ],
         _1: Caml_int64.add(a, a)
-      }))
+      })
     ],
     tl: {
       hd: [
         "add_3",
-        (() => ({
+        () => ({
           TAG: "Eq",
           _0: Caml_int64.zero,
           _1: Caml_int64.zero
-        }))
+        })
       ],
       tl: {
         hd: [
           "add_4",
-          (() => commutative_add([
+          () => commutative_add([
             -1,
             4294967294
           ], [
             -1,
             4294967293
-          ], Caml_int64.one))
+          ], Caml_int64.one)
         ],
         tl: {
           hd: [
             "add_5",
-            (() => commutative_add([
+            () => commutative_add([
               -1,
               4294967293
             ], [
               -1,
               4294967293
-            ], Caml_int64.zero))
+            ], Caml_int64.zero)
           ],
           tl: {
             hd: [
               "add_6",
-              (() => commutative_add([
+              () => commutative_add([
                 0,
                 4
               ], [
@@ -910,12 +910,12 @@ let suites = Pervasives.$at({
               ], [
                 0,
                 7
-              ]))
+              ])
             ],
             tl: {
               hd: [
                 "add_7",
-                (() => commutative_add([
+                () => commutative_add([
                   1,
                   0
                 ], [
@@ -924,23 +924,23 @@ let suites = Pervasives.$at({
                 ], [
                   0,
                   2147483648
-                ]))
+                ])
               ],
               tl: {
                 hd: [
                   "add_8",
-                  (() => commutative_add([
+                  () => commutative_add([
                     1,
                     0
                   ], [
                     0,
                     4294967295
-                  ], Caml_int64.one))
+                  ], Caml_int64.one)
                 ],
                 tl: {
                   hd: [
                     "add_9",
-                    (() => commutative_add([
+                    () => commutative_add([
                       0,
                       4294967295
                     ], [
@@ -949,58 +949,58 @@ let suites = Pervasives.$at({
                     ], [
                       0,
                       2147483647
-                    ]))
+                    ])
                   ],
                   tl: {
                     hd: [
                       "add_10",
-                      (() => commutative_add([
+                      () => commutative_add([
                         0,
                         2147483648
                       ], [
                         0,
                         2147483648
-                      ], Caml_int64.zero))
+                      ], Caml_int64.zero)
                     ],
                     tl: {
                       hd: [
                         "add_11",
-                        (() => commutative_add([
+                        () => commutative_add([
                           0,
                           4294967295
                         ], [
                           0,
                           4294967295
-                        ], Caml_int64.zero))
+                        ], Caml_int64.zero)
                       ],
                       tl: {
                         hd: [
                           "to_int32",
-                          (() => ({
+                          () => ({
                             TAG: "Eq",
                             _0: 3,
                             _1: Caml_int64.to_int32([
                               0,
                               3
                             ])
-                          }))
+                          })
                         ],
                         tl: {
                           hd: [
                             "to_int",
-                            (() => ({
+                            () => ({
                               TAG: "Eq",
                               _0: 3,
                               _1: Caml_int64.to_int32([
                                 0,
                                 3
                               ])
-                            }))
+                            })
                           ],
                           tl: {
                             hd: [
                               "of_int",
-                              (() => ({
+                              () => ({
                                 TAG: "Eq",
                                 _0: [
                                   0,
@@ -1010,12 +1010,12 @@ let suites = Pervasives.$at({
                                   0,
                                   3
                                 ]
-                              }))
+                              })
                             ],
                             tl: {
                               hd: [
                                 "lognot",
-                                (() => ({
+                                () => ({
                                   TAG: "Eq",
                                   _0: [
                                     -1,
@@ -1025,12 +1025,12 @@ let suites = Pervasives.$at({
                                     -1,
                                     4294967293
                                   ]
-                                }))
+                                })
                               ],
                               tl: {
                                 hd: [
                                   "neg",
-                                  (() => ({
+                                  () => ({
                                     TAG: "Eq",
                                     _0: [
                                       -1,
@@ -1040,30 +1040,30 @@ let suites = Pervasives.$at({
                                       -1,
                                       4294967294
                                     ]
-                                  }))
+                                  })
                                 ],
                                 tl: {
                                   hd: [
                                     "File \"int64_test.res\", line 277, characters 7-14",
-                                    (() => ({
+                                    () => ({
                                       TAG: "Eq",
                                       _0: Int64.min_int,
                                       _1: Caml_int64.neg(Int64.min_int)
-                                    }))
+                                    })
                                   ],
                                   tl: {
                                     hd: [
                                       "File \"int64_test.res\", line 279, characters 8-15",
-                                      (() => ({
+                                      () => ({
                                         TAG: "Eq",
                                         _0: Int64.max_int,
                                         _1: Caml_int64.neg(Caml_int64.add(Int64.min_int, Caml_int64.one))
-                                      }))
+                                      })
                                     ],
                                     tl: {
                                       hd: [
                                         "sub1",
-                                        (() => ({
+                                        () => ({
                                           TAG: "Eq",
                                           _0: [
                                             0,
@@ -1073,12 +1073,12 @@ let suites = Pervasives.$at({
                                             0,
                                             2
                                           ]
-                                        }))
+                                        })
                                       ],
                                       tl: {
                                         hd: [
                                           "xor1",
-                                          (() => ({
+                                          () => ({
                                             TAG: "Eq",
                                             _0: [
                                               [
@@ -1100,12 +1100,12 @@ let suites = Pervasives.$at({
                                                 2432700672
                                               ]
                                             ]
-                                          }))
+                                          })
                                         ],
                                         tl: {
                                           hd: [
                                             "or",
-                                            (() => ({
+                                            () => ({
                                               TAG: "Eq",
                                               _0: [
                                                 0,
@@ -1115,12 +1115,12 @@ let suites = Pervasives.$at({
                                                 0,
                                                 4294967295
                                               ]
-                                            }))
+                                            })
                                           ],
                                           tl: {
                                             hd: [
                                               "and",
-                                              (() => ({
+                                              () => ({
                                                 TAG: "Eq",
                                                 _0: [
                                                   0,
@@ -1130,14 +1130,14 @@ let suites = Pervasives.$at({
                                                   0,
                                                   4008636142
                                                 ]
-                                              }))
+                                              })
                                             ],
                                             tl: {
                                               hd: [
                                                 "lsl",
-                                                (() => ({
+                                                () => ({
                                                   TAG: "Eq",
-                                                  _0: $$Array.map((x => Caml_int64.lsl_(Caml_int64.one, x)), $$Array.init(64, (i => i))),
+                                                  _0: $$Array.map(x => Caml_int64.lsl_(Caml_int64.one, x), $$Array.init(64, i => i)),
                                                   _1: [
                                                     Caml_int64.one,
                                                     [
@@ -1390,14 +1390,14 @@ let suites = Pervasives.$at({
                                                     ],
                                                     Caml_int64.min_int
                                                   ]
-                                                }))
+                                                })
                                               ],
                                               tl: {
                                                 hd: [
                                                   "lsr",
-                                                  (() => ({
+                                                  () => ({
                                                     TAG: "Eq",
-                                                    _0: $$Array.map((x => Caml_int64.lsr_(Caml_int64.neg_one, x)), $$Array.init(64, (i => i))),
+                                                    _0: $$Array.map(x => Caml_int64.lsr_(Caml_int64.neg_one, x), $$Array.init(64, i => i)),
                                                     _1: [
                                                       Caml_int64.neg_one,
                                                       Caml_int64.max_int,
@@ -1647,14 +1647,14 @@ let suites = Pervasives.$at({
                                                       ],
                                                       Caml_int64.one
                                                     ]
-                                                  }))
+                                                  })
                                                 ],
                                                 tl: {
                                                   hd: [
                                                     "asr",
-                                                    (() => ({
+                                                    () => ({
                                                       TAG: "Eq",
-                                                      _0: $$Array.map((x => Caml_int64.asr_(Caml_int64.neg_one, x)), $$Array.init(64, (i => i))),
+                                                      _0: $$Array.map(x => Caml_int64.asr_(Caml_int64.neg_one, x), $$Array.init(64, i => i)),
                                                       _1: [
                                                         Caml_int64.neg_one,
                                                         Caml_int64.neg_one,
@@ -1721,12 +1721,12 @@ let suites = Pervasives.$at({
                                                         Caml_int64.neg_one,
                                                         Caml_int64.neg_one
                                                       ]
-                                                    }))
+                                                    })
                                                   ],
                                                   tl: {
                                                     hd: [
                                                       "mul simple",
-                                                      (() => ({
+                                                      () => ({
                                                         TAG: "Eq",
                                                         _0: [
                                                           0,
@@ -1736,12 +1736,12 @@ let suites = Pervasives.$at({
                                                           0,
                                                           6
                                                         ]
-                                                      }))
+                                                      })
                                                     ],
                                                     tl: {
                                                       hd: [
                                                         "of_int32",
-                                                        (() => ({
+                                                        () => ({
                                                           TAG: "Eq",
                                                           _0: $$Array.map(Caml_int64.of_int32, [
                                                             0,
@@ -1754,12 +1754,12 @@ let suites = Pervasives.$at({
                                                               2147483648
                                                             ]
                                                           ]
-                                                        }))
+                                                        })
                                                       ],
                                                       tl: {
                                                         hd: [
                                                           "of_int32_singleton",
-                                                          (() => ({
+                                                          () => ({
                                                             TAG: "Eq",
                                                             _0: [
                                                               -1,
@@ -1769,12 +1769,12 @@ let suites = Pervasives.$at({
                                                               -1,
                                                               4294967293
                                                             ]
-                                                          }))
+                                                          })
                                                         ],
                                                         tl: {
                                                           hd: [
                                                             "File \"int64_test.res\", line 526, characters 7-14",
-                                                            (() => ({
+                                                            () => ({
                                                               TAG: "Eq",
                                                               _0: [
                                                                 0,
@@ -1784,12 +1784,12 @@ let suites = Pervasives.$at({
                                                                 0,
                                                                 3
                                                               ]
-                                                            }))
+                                                            })
                                                           ],
                                                           tl: {
                                                             hd: [
                                                               "to_int32",
-                                                              (() => ({
+                                                              () => ({
                                                                 TAG: "Eq",
                                                                 _0: $$Array.map(Caml_int64.to_int32, [
                                                                   Caml_int64.zero,
@@ -1802,21 +1802,21 @@ let suites = Pervasives.$at({
                                                                   0,
                                                                   -2147483648
                                                                 ]
-                                                              }))
+                                                              })
                                                             ],
                                                             tl: {
                                                               hd: [
                                                                 "discard_sign",
-                                                                (() => ({
+                                                                () => ({
                                                                   TAG: "Eq",
                                                                   _0: Caml_int64.discard_sign(Caml_int64.neg_one),
                                                                   _1: Caml_int64.max_int
-                                                                }))
+                                                                })
                                                               ],
                                                               tl: {
                                                                 hd: [
                                                                   "div_mod",
-                                                                  (() => ({
+                                                                  () => ({
                                                                     TAG: "Eq",
                                                                     _0: Caml_int64.div_mod([
                                                                       0,
@@ -1832,33 +1832,33 @@ let suites = Pervasives.$at({
                                                                       ],
                                                                       Caml_int64.one
                                                                     ]
-                                                                  }))
+                                                                  })
                                                                 ],
                                                                 tl: {
                                                                   hd: [
                                                                     "to_hex",
-                                                                    (() => ({
+                                                                    () => ({
                                                                       TAG: "Eq",
                                                                       _0: Caml_int64.to_hex(Caml_int64.neg_one),
                                                                       _1: "ffffffffffffffff"
-                                                                    }))
+                                                                    })
                                                                   ],
                                                                   tl: {
                                                                     hd: [
                                                                       "generic_compare",
-                                                                      (() => ({
+                                                                      () => ({
                                                                         TAG: "Eq",
                                                                         _0: Caml_obj.compare([
                                                                           1,
                                                                           0
                                                                         ], Caml_int64.one) > 0,
                                                                         _1: true
-                                                                      }))
+                                                                      })
                                                                     ],
                                                                     tl: {
                                                                       hd: [
                                                                         "test_compier_literal",
-                                                                        (() => ({
+                                                                        () => ({
                                                                           TAG: "Eq",
                                                                           _0: [
                                                                             0,
@@ -1868,24 +1868,24 @@ let suites = Pervasives.$at({
                                                                             0,
                                                                             4294967295
                                                                           ]
-                                                                        }))
+                                                                        })
                                                                       ],
                                                                       tl: {
                                                                         hd: [
                                                                           "generic_compare2",
-                                                                          (() => ({
+                                                                          () => ({
                                                                             TAG: "Eq",
                                                                             _0: Caml_obj.compare([
                                                                               0,
                                                                               2147483648
                                                                             ], Caml_int64.one) > 0,
                                                                             _1: true
-                                                                          }))
+                                                                          })
                                                                         ],
                                                                         tl: {
                                                                           hd: [
                                                                             "shift_left",
-                                                                            (() => ({
+                                                                            () => ({
                                                                               TAG: "Eq",
                                                                               _0: [
                                                                                 0,
@@ -1895,12 +1895,12 @@ let suites = Pervasives.$at({
                                                                                 0,
                                                                                 4294967040
                                                                               ]
-                                                                            }))
+                                                                            })
                                                                           ],
                                                                           tl: {
                                                                             hd: [
                                                                               "fib_int64",
-                                                                              (() => ({
+                                                                              () => ({
                                                                                 TAG: "Eq",
                                                                                 _0: fib(1000, Caml_int64.one, [
                                                                                   0,
@@ -1910,49 +1910,49 @@ let suites = Pervasives.$at({
                                                                                   -1990564327,
                                                                                   2874523960
                                                                                 ]
-                                                                              }))
+                                                                              })
                                                                             ],
                                                                             tl: {
                                                                               hd: [
                                                                                 "fac_int64",
-                                                                                (() => ({
+                                                                                () => ({
                                                                                   TAG: "Eq",
                                                                                   _0: fac(30, Caml_int64.one),
                                                                                   _1: [
                                                                                     -2040662563,
                                                                                     1409286144
                                                                                   ]
-                                                                                }))
+                                                                                })
                                                                               ],
                                                                               tl: {
                                                                                 hd: [
                                                                                   "File \"int64_test.res\", line 553, characters 8-15",
-                                                                                  (() => ({
+                                                                                  () => ({
                                                                                     TAG: "Eq",
                                                                                     _0: Caml_int64.add(Int64.max_int, Int64.max_int),
                                                                                     _1: [
                                                                                       -1,
                                                                                       4294967294
                                                                                     ]
-                                                                                  }))
+                                                                                  })
                                                                                 ],
                                                                                 tl: {
                                                                                   hd: [
                                                                                     "File \"int64_test.res\", line 563, characters 8-15",
-                                                                                    (() => ({
+                                                                                    () => ({
                                                                                       TAG: "Eq",
                                                                                       _0: Caml_int64.add(Int64.min_int, Int64.min_int),
                                                                                       _1: Caml_int64.zero
-                                                                                    }))
+                                                                                    })
                                                                                   ],
                                                                                   tl: {
                                                                                     hd: [
                                                                                       "File \"int64_test.res\", line 573, characters 8-15",
-                                                                                      (() => ({
+                                                                                      () => ({
                                                                                         TAG: "Eq",
                                                                                         _0: Caml_int64.neg_one,
                                                                                         _1: Caml_int64.neg_one
-                                                                                      }))
+                                                                                      })
                                                                                     ],
                                                                                     tl: /* [] */0
                                                                                   }
@@ -1996,28 +1996,28 @@ let suites = Pervasives.$at({
       }
     }
   }
-}, Pervasives.$at($$Array.to_list(Ext_array_test.map2i(((i, a, b) => [
+}, Pervasives.$at($$Array.to_list(Ext_array_test.map2i((i, a, b) => [
   "shift_left_cases " + i,
-  (() => ({
+  () => ({
     TAG: "Eq",
     _0: a,
     _1: b
-  }))
-]), shift_left_tests_0, shift_left_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i(((i, a, b) => [
+  })
+], shift_left_tests_0, shift_left_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((i, a, b) => [
   "shift_right_cases " + i,
-  (() => ({
+  () => ({
     TAG: "Eq",
     _0: a,
     _1: b
-  }))
-]), shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i(((i, a, b) => [
+  })
+], shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i((i, a, b) => [
   "shift_right_logical_cases " + i,
-  (() => ({
+  () => ({
     TAG: "Eq",
     _0: a,
     _1: b
-  }))
-]), shift_right_logical_suites_0, shift_right_logical_suites_1)))));
+  })
+], shift_right_logical_suites_0, shift_right_logical_suites_1)))));
 
 let suites$1 = {
   contents: suites

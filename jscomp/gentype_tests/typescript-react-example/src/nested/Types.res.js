@@ -57,7 +57,7 @@ function testInstantiateTypeParameter(x) {
 
 let currentTime = new Date();
 
-let optFunction = (() => 3);
+let optFunction = () => 3;
 
 let ObjectId = {};
 

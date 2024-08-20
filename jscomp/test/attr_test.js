@@ -15,9 +15,9 @@ function max2(x, y) {
 let hh = 1 + 2;
 
 function f(x) {
-  des(x, (() => {
+  des(x, () => {
     console.log("hei");
-  }));
+  });
 }
 
 exports.u = u;

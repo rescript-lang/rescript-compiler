@@ -11,7 +11,7 @@ let v = "gso";
 
 let suites_0 = [
   "equal",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: [
       Caml_bytes.get(Bytes.make(3, /* 'a' */97), 0),
@@ -21,13 +21,13 @@ let suites_0 = [
       /* 'a' */97,
       /* 'a' */97
     ]
-  }))
+  })
 ];
 
 let suites_1 = {
   hd: [
     "equal2",
-    (param => {
+    param => {
       let u = Bytes.make(3, /* 'a' */97);
       u[0] = /* 'b' */98;
       return {
@@ -41,12 +41,12 @@ let suites_1 = {
           /* 'g' */103
         ]
       };
-    })
+    }
   ],
   tl: {
     hd: [
       "buffer",
-      (param => {
+      param => {
         let v = Buffer.create(30);
         for (let i = 0; i <= 10; ++i) {
           Buffer.add_string(v, String(i));
@@ -56,7 +56,7 @@ let suites_1 = {
           _0: Buffer.contents(v),
           _1: "012345678910"
         };
-      })
+      }
     ],
     tl: /* [] */0
   }

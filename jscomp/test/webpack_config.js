@@ -39,18 +39,18 @@ let B = {};
 
 function f() {
   return [
-    (prim => {
+    prim => {
       List$3.ff();
-    }),
-    (prim => {
+    },
+    prim => {
       List$3.ff2();
-    }),
-    (prim => {
+    },
+    prim => {
       List$2.ff();
-    }),
-    (prim => {
+    },
+    prim => {
       List$2.ff2();
-    })
+    }
   ];
 }
 

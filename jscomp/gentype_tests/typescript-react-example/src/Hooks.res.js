@@ -10,21 +10,21 @@ function Hooks(Props) {
   let setCount = match[1];
   let count = match[0];
   return React.createElement("div", undefined, React.createElement("p", undefined, "Hooks example " + (vehicle.name + (" clicked " + (String(count) + " times")))), React.createElement("button", {
-    onClick: (param => setCount(param => count + 1 | 0))
+    onClick: param => setCount(param => count + 1 | 0)
   }, "Click me"), React.createElement(ImportHooks.make, {
     person: {
       name: "Mary",
       age: 71
     },
     children: null,
-    renderMe: (x => x.randomString)
+    renderMe: x => x.randomString
   }, "child1", "child2"), React.createElement(ImportHookDefault.make, {
     person: {
       name: "DefaultImport",
       age: 42
     },
     children: null,
-    renderMe: (x => x.randomString)
+    renderMe: x => x.randomString
   }, "child1", "child2"));
 }
 

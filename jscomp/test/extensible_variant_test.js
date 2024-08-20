@@ -38,7 +38,7 @@ function to_int(x) {
 
 let suites_0 = [
   "test_int",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: 3,
     _1: to_int({
@@ -46,13 +46,13 @@ let suites_0 = [
       _1: 3,
       _2: 0
     })
-  }))
+  })
 ];
 
 let suites_1 = {
   hd: [
     "test_int2",
-    (param => ({
+    param => ({
       TAG: "Eq",
       _0: 0,
       _1: to_int({
@@ -60,19 +60,19 @@ let suites_1 = {
         _1: 3,
         _2: 0
       })
-    }))
+    })
   ],
   tl: {
     hd: [
       "test_string",
-      (param => ({
+      param => ({
         TAG: "Eq",
         _0: -1,
         _1: to_int({
           RE_EXN_ID: Str,
           _1: "x"
         })
-      }))
+      })
     ],
     tl: /* [] */0
   }

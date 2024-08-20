@@ -648,7 +648,7 @@ function for_all_opt(p, _x) {
 }
 
 function fold(f, l, init) {
-  return List.fold_left(((acc, i) => f(i, init)), init, l);
+  return List.fold_left((acc, i) => f(i, init), init, l);
 }
 
 function rev_map_acc(acc, f, l) {
@@ -772,7 +772,7 @@ function split_map(f, xs) {
 function reduce_from_right(fn, lst) {
   let match = List.rev(lst);
   if (match) {
-    return List.fold_left(((x, y) => fn(y, x)), match.hd, match.tl);
+    return List.fold_left((x, y) => fn(y, x), match.hd, match.tl);
   }
   throw new Error("Invalid_argument", {
     cause: {

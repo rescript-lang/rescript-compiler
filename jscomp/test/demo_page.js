@@ -41,9 +41,9 @@ function f(extra) {
 }
 
 ReactDom.render(React.createClass({
-  render: (() => React.DOM.div({
+  render: () => React.DOM.div({
     alt: "pic"
-  }, React.DOM.h1(undefined, "hello react"), React.DOM.h2(undefined, "type safe!")))
+  }, React.DOM.h1(undefined, "hello react"), React.DOM.h2(undefined, "type safe!"))
 }), document.getElementById("hi"));
 
 exports.fib = fib;

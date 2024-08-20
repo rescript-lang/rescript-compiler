@@ -80,17 +80,17 @@ function string_of_rank(x) {
 }
 
 function find_ticker_by_name(all_tickers, ticker) {
-  return List.find((param => param.ticker_name === ticker), all_tickers);
+  return List.find(param => param.ticker_name === ticker, all_tickers);
 }
 
 function print_all_composite(all_tickers) {
-  List.iter((x => {
+  List.iter(x => {
     let tmp = x.type_;
     if (typeof tmp !== "object") {
       return;
     }
     console.log(x.ticker_name);
-  }), all_tickers);
+  }, all_tickers);
 }
 
 function height(param) {
@@ -1088,7 +1088,7 @@ let Ticker_map = {
 };
 
 function compute_update_sequences(all_tickers) {
-  List.fold_left(((counter, ticker) => {
+  List.fold_left((counter, ticker) => {
     let loop = (counter, ticker) => {
       let rank = ticker.rank;
       if (typeof rank === "object") {
@@ -1118,8 +1118,8 @@ function compute_update_sequences(all_tickers) {
       return counter$4;
     };
     return loop(counter, ticker);
-  }), 0, all_tickers);
-  let map = List.fold_left(((map, ticker) => {
+  }, 0, all_tickers);
+  let map = List.fold_left((map, ticker) => {
     let tmp = ticker.type_;
     if (typeof tmp !== "object") {
       return add(ticker.ticker_name, {
@@ -1153,9 +1153,9 @@ function compute_update_sequences(all_tickers) {
       };
     };
     return loop(/* [] */0, map, ticker);
-  }), "Empty", List.rev(all_tickers));
-  return fold(((k, l, map) => {
-    let l$1 = List.sort_uniq(((lhs, rhs) => {
+  }, "Empty", List.rev(all_tickers));
+  return fold((k, l, map) => {
+    let l$1 = List.sort_uniq((lhs, rhs) => {
       let x = lhs.rank;
       if (typeof x !== "object") {
         if (x === "Uninitialized") {
@@ -1192,14 +1192,14 @@ function compute_update_sequences(all_tickers) {
           }
         });
       }
-    }), l);
+    }, l);
     return add(k, l$1, map);
-  }), map, map);
+  }, map, map);
 }
 
 function process_quote(ticker_map, new_ticker, new_value) {
   let update_sequence = find(new_ticker, ticker_map);
-  List.iter((ticker => {
+  List.iter(ticker => {
     let match = ticker.type_;
     if (typeof match !== "object") {
       if (ticker.ticker_name === new_ticker) {
@@ -1220,7 +1220,7 @@ function process_quote(ticker_map, new_ticker, new_value) {
         match$1.op === "PLUS" ? match$2 + match$3 : match$2 - match$3
       ) : undefined;
     ticker.value = value;
-  }), update_sequence);
+  }, update_sequence);
 }
 
 function process_input_line(ticker_map, all_tickers, line) {

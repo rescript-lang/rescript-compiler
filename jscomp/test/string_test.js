@@ -125,59 +125,59 @@ function xsplit(delim, s) {
 }
 
 function string_of_chars(x) {
-  let xs = List.map((prim => String.fromCharCode(prim)), x);
+  let xs = List.map(prim => String.fromCharCode(prim), x);
   return $$Array.of_list(xs).join("");
 }
 
 Mt.from_pair_suites("String_test", {
   hd: [
     "mutliple switch",
-    (() => ({
+    () => ({
       TAG: "Eq",
       _0: 9,
       _1: ff("4")
-    }))
+    })
   ],
   tl: {
     hd: [
       "int switch",
-      (() => ({
+      () => ({
         TAG: "Eq",
         _0: 9,
         _1: gg(4)
-      }))
+      })
     ],
     tl: {
       hd: [
         "escape_normal",
-        (() => ({
+        () => ({
           TAG: "Eq",
           _0: "haha",
           _1: $$String.escaped("haha")
-        }))
+        })
       ],
       tl: {
         hd: [
           "escape_bytes",
-          (() => ({
+          () => ({
             TAG: "Eq",
             _0: Bytes.of_string("haha"),
             _1: Bytes.escaped(Bytes.of_string("haha"))
-          }))
+          })
         ],
         tl: {
           hd: [
             "escape_quote",
-            (() => ({
+            () => ({
               TAG: "Eq",
               _0: "\\\"\\\"",
               _1: $$String.escaped("\"\"")
-            }))
+            })
           ],
           tl: {
             hd: [
               "rev_split_by_char",
-              (() => ({
+              () => ({
                 TAG: "Eq",
                 _0: {
                   hd: "",
@@ -190,24 +190,24 @@ Mt.from_pair_suites("String_test", {
                   }
                 },
                 _1: rev_split_by_char(/* 'a' */97, "bbbbabbbba")
-              }))
+              })
             ],
             tl: {
               hd: [
                 "File \"string_test.res\", line 86, characters 5-12",
-                (() => ({
+                () => ({
                   TAG: "Eq",
                   _0: {
                     hd: "aaaa",
                     tl: /* [] */0
                   },
                   _1: rev_split_by_char(/* ',' */44, "aaaa")
-                }))
+                })
               ],
               tl: {
                 hd: [
                   "xsplit",
-                  (() => ({
+                  () => ({
                     TAG: "Eq",
                     _0: {
                       hd: "a",
@@ -220,96 +220,96 @@ Mt.from_pair_suites("String_test", {
                       }
                     },
                     _1: xsplit(/* '.' */46, "a.b.c")
-                  }))
+                  })
                 ],
                 tl: {
                   hd: [
                     "split_empty",
-                    (() => ({
+                    () => ({
                       TAG: "Eq",
                       _0: /* [] */0,
                       _1: Ext_string_test.split(undefined, "", /* '_' */95)
-                    }))
+                    })
                   ],
                   tl: {
                     hd: [
                       "split_empty2",
-                      (() => ({
+                      () => ({
                         TAG: "Eq",
                         _0: {
                           hd: "test_unsafe_obj_ffi_ppx.cmi",
                           tl: /* [] */0
                         },
                         _1: Ext_string_test.split(false, " test_unsafe_obj_ffi_ppx.cmi", /* ' ' */32)
-                      }))
+                      })
                     ],
                     tl: {
                       hd: [
                         "rfind",
-                        (() => ({
+                        () => ({
                           TAG: "Eq",
                           _0: 7,
                           _1: Ext_string_test.rfind("__", "__index__js")
-                        }))
+                        })
                       ],
                       tl: {
                         hd: [
                           "rfind_2",
-                          (() => ({
+                          () => ({
                             TAG: "Eq",
                             _0: 0,
                             _1: Ext_string_test.rfind("__", "__index_js")
-                          }))
+                          })
                         ],
                         tl: {
                           hd: [
                             "rfind_3",
-                            (() => ({
+                            () => ({
                               TAG: "Eq",
                               _0: -1,
                               _1: Ext_string_test.rfind("__", "_index_js")
-                            }))
+                            })
                           ],
                           tl: {
                             hd: [
                               "find",
-                              (() => ({
+                              () => ({
                                 TAG: "Eq",
                                 _0: 0,
                                 _1: Ext_string_test.find(undefined, "__", "__index__js")
-                              }))
+                              })
                             ],
                             tl: {
                               hd: [
                                 "find_2",
-                                (() => ({
+                                () => ({
                                   TAG: "Eq",
                                   _0: 6,
                                   _1: Ext_string_test.find(undefined, "__", "_index__js")
-                                }))
+                                })
                               ],
                               tl: {
                                 hd: [
                                   "find_3",
-                                  (() => ({
+                                  () => ({
                                     TAG: "Eq",
                                     _0: -1,
                                     _1: Ext_string_test.find(undefined, "__", "_index_js")
-                                  }))
+                                  })
                                 ],
                                 tl: {
                                   hd: [
                                     "of_char",
-                                    (() => ({
+                                    () => ({
                                       TAG: "Eq",
                                       _0: String.fromCharCode(/* '0' */48),
                                       _1: "0"
-                                    }))
+                                    })
                                   ],
                                   tl: {
                                     hd: [
                                       "of_chars",
-                                      (() => ({
+                                      () => ({
                                         TAG: "Eq",
                                         _0: string_of_chars({
                                           hd: /* '0' */48,
@@ -322,7 +322,7 @@ Mt.from_pair_suites("String_test", {
                                           }
                                         }),
                                         _1: "012"
-                                      }))
+                                      })
                                     ],
                                     tl: /* [] */0
                                   }

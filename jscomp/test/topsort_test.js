@@ -61,7 +61,7 @@ let graph = {
 };
 
 function nexts(x, g) {
-  return List.fold_left(((acc, param) => {
+  return List.fold_left((acc, param) => {
     if (param[0] === x) {
       return {
         hd: param[1],
@@ -70,7 +70,7 @@ function nexts(x, g) {
     } else {
       return acc;
     }
-  }), /* [] */0, g);
+  }, /* [] */0, g);
 }
 
 function dfs1(_nodes, graph, _visited) {
@@ -281,11 +281,11 @@ function dfs3(nodes, graph) {
         hd: node,
         tl: visited.contents
       };
-      return List.iter((x => aux(x, graph)), nexts(node, graph));
+      return List.iter(x => aux(x, graph), nexts(node, graph));
     }
     
   };
-  List.iter((node => aux(node, graph)), nodes);
+  List.iter(node => aux(node, graph), nodes);
   return List.rev(visited.contents);
 }
 
@@ -416,7 +416,7 @@ function unsafe_topsort(graph) {
       tl: visited.contents
     };
   };
-  List.iter((param => sort_node(param[0])), graph);
+  List.iter(param => sort_node(param[0]), graph);
   return visited.contents;
 }
 
@@ -1490,7 +1490,7 @@ function pathsort(graph) {
       }
     ];
   };
-  let sort_nodes = (path, nodes) => List.iter((node => sort_node(path, node)), nodes);
+  let sort_nodes = (path, nodes) => List.iter(node => sort_node(path, node), nodes);
   let sort_node = (path, node) => {
     if (!List.mem(node, visited.contents)) {
       sort_nodes($plus$great(node, path), nexts(node, graph));
@@ -1502,7 +1502,7 @@ function pathsort(graph) {
     }
     
   };
-  List.iter((param => sort_node(empty_path, param[0])), graph);
+  List.iter(param => sort_node(empty_path, param[0]), graph);
   return visited.contents;
 }
 

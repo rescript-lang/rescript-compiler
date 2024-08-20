@@ -7,7 +7,7 @@ let Ext_string_test = require("./ext_string_test.js");
 
 let suites_0 = [
   "split",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: Ext_string_test.split(true, "hihi", /* 'i' */105),
     _1: {
@@ -20,13 +20,13 @@ let suites_0 = [
         }
       }
     }
-  }))
+  })
 ];
 
 let suites_1 = {
   hd: [
     "split_non_empty",
-    (param => ({
+    param => ({
       TAG: "Eq",
       _0: Ext_string_test.split(undefined, "hihi", /* 'i' */105),
       _1: {
@@ -36,21 +36,21 @@ let suites_1 = {
           tl: /* [] */0
         }
       }
-    }))
+    })
   ],
   tl: {
     hd: [
       "split_empty",
-      (param => ({
+      param => ({
         TAG: "Eq",
         _0: Ext_string_test.split(true, "", /* 'i' */105),
         _1: /* [] */0
-      }))
+      })
     ],
     tl: {
       hd: [
         "split_normal",
-        (param => ({
+        param => ({
           TAG: "Eq",
           _0: Ext_string_test.split(true, "h i i", /* ' ' */32),
           _1: {
@@ -63,20 +63,20 @@ let suites_1 = {
               }
             }
           }
-        }))
+        })
       ],
       tl: {
         hd: [
           "split_by",
-          (param => ({
+          param => ({
             TAG: "Eq",
-            _0: List.filter((s => s !== ""), Ext_string_test.split_by(undefined, (x => {
+            _0: List.filter(s => s !== "", Ext_string_test.split_by(undefined, x => {
               if (x === /* ' ' */32) {
                 return true;
               } else {
                 return x === /* '\t' */9;
               }
-            }), "h hgso hgso \t hi")),
+            }, "h hgso hgso \t hi")),
             _1: {
               hd: "h",
               tl: {
@@ -90,7 +90,7 @@ let suites_1 = {
                 }
               }
             }
-          }))
+          })
         ],
         tl: /* [] */0
       }

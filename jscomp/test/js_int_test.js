@@ -5,181 +5,181 @@ let Mt = require("./mt.js");
 
 let suites_0 = [
   "toExponential",
-  (param => ({
+  param => ({
     TAG: "Eq",
     _0: "1.23456e+5",
     _1: (123456).toExponential()
-  }))
+  })
 ];
 
 let suites_1 = {
   hd: [
     "toExponentialWithPrecision - digits:2",
-    (param => ({
+    param => ({
       TAG: "Eq",
       _0: "1.23e+5",
       _1: (123456).toExponential(2)
-    }))
+    })
   ],
   tl: {
     hd: [
       "toExponentialWithPrecision - digits:4",
-      (param => ({
+      param => ({
         TAG: "Eq",
         _0: "1.2346e+5",
         _1: (123456).toExponential(4)
-      }))
+      })
     ],
     tl: {
       hd: [
         "toExponentialWithPrecision - digits:20",
-        (param => ({
+        param => ({
           TAG: "Eq",
           _0: "0.00000000000000000000e+0",
           _1: (0).toExponential(20)
-        }))
+        })
       ],
       tl: {
         hd: [
           "File \"js_int_test.res\", line 19, characters 5-12",
-          (param => ({
+          param => ({
             TAG: "ThrowAny",
-            _0: (() => {
+            _0: () => {
               (0).toExponential(101);
-            })
-          }))
+            }
+          })
         ],
         tl: {
           hd: [
             "toExponentialWithPrecision - digits:-1",
-            (param => ({
+            param => ({
               TAG: "ThrowAny",
-              _0: (() => {
+              _0: () => {
                 (0).toExponential(-1);
-              })
-            }))
+              }
+            })
           ],
           tl: {
             hd: [
               "toPrecision",
-              (param => ({
+              param => ({
                 TAG: "Eq",
                 _0: "123456",
                 _1: (123456).toPrecision()
-              }))
+              })
             ],
             tl: {
               hd: [
                 "toPrecisionWithPrecision - digits:2",
-                (param => ({
+                param => ({
                   TAG: "Eq",
                   _0: "1.2e+5",
                   _1: (123456).toPrecision(2)
-                }))
+                })
               ],
               tl: {
                 hd: [
                   "toPrecisionWithPrecision - digits:4",
-                  (param => ({
+                  param => ({
                     TAG: "Eq",
                     _0: "1.235e+5",
                     _1: (123456).toPrecision(4)
-                  }))
+                  })
                 ],
                 tl: {
                   hd: [
                     "toPrecisionWithPrecision - digits:20",
-                    (param => ({
+                    param => ({
                       TAG: "Eq",
                       _0: "0.0000000000000000000",
                       _1: (0).toPrecision(20)
-                    }))
+                    })
                   ],
                   tl: {
                     hd: [
                       "File \"js_int_test.res\", line 37, characters 5-12",
-                      (param => ({
+                      param => ({
                         TAG: "ThrowAny",
-                        _0: (() => {
+                        _0: () => {
                           (0).toPrecision(101);
-                        })
-                      }))
+                        }
+                      })
                     ],
                     tl: {
                       hd: [
                         "toPrecisionWithPrecision - digits:-1",
-                        (param => ({
+                        param => ({
                           TAG: "ThrowAny",
-                          _0: (() => {
+                          _0: () => {
                             (0).toPrecision(-1);
-                          })
-                        }))
+                          }
+                        })
                       ],
                       tl: {
                         hd: [
                           "toString",
-                          (param => ({
+                          param => ({
                             TAG: "Eq",
                             _0: "123",
                             _1: (123).toString()
-                          }))
+                          })
                         ],
                         tl: {
                           hd: [
                             "toStringWithRadix - radix:2",
-                            (param => ({
+                            param => ({
                               TAG: "Eq",
                               _0: "11110001001000000",
                               _1: (123456).toString(2)
-                            }))
+                            })
                           ],
                           tl: {
                             hd: [
                               "toStringWithRadix - radix:16",
-                              (param => ({
+                              param => ({
                                 TAG: "Eq",
                                 _0: "1e240",
                                 _1: (123456).toString(16)
-                              }))
+                              })
                             ],
                             tl: {
                               hd: [
                                 "toStringWithRadix - radix:36",
-                                (param => ({
+                                param => ({
                                   TAG: "Eq",
                                   _0: "2n9c",
                                   _1: (123456).toString(36)
-                                }))
+                                })
                               ],
                               tl: {
                                 hd: [
                                   "toStringWithRadix - radix:37",
-                                  (param => ({
+                                  param => ({
                                     TAG: "ThrowAny",
-                                    _0: (() => {
+                                    _0: () => {
                                       (0).toString(37);
-                                    })
-                                  }))
+                                    }
+                                  })
                                 ],
                                 tl: {
                                   hd: [
                                     "toStringWithRadix - radix:1",
-                                    (param => ({
+                                    param => ({
                                       TAG: "ThrowAny",
-                                      _0: (() => {
+                                      _0: () => {
                                         (0).toString(1);
-                                      })
-                                    }))
+                                      }
+                                    })
                                   ],
                                   tl: {
                                     hd: [
                                       "toStringWithRadix - radix:-1",
-                                      (param => ({
+                                      param => ({
                                         TAG: "ThrowAny",
-                                        _0: (() => {
+                                        _0: () => {
                                           (0).toString(-1);
-                                        })
-                                      }))
+                                        }
+                                      })
                                     ],
                                     tl: /* [] */0
                                   }

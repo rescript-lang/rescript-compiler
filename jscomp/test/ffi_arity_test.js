@@ -60,7 +60,7 @@ fff();
 Mt.from_pair_suites("Ffi_arity_test", {
   hd: [
     "File \"ffi_arity_test.res\", line 51, characters 7-14",
-    (() => ({
+    () => ({
       TAG: "Eq",
       _0: v,
       _1: [
@@ -68,12 +68,12 @@ Mt.from_pair_suites("Ffi_arity_test", {
         1,
         4
       ]
-    }))
+    })
   ],
   tl: {
     hd: [
       "File \"ffi_arity_test.res\", line 52, characters 7-14",
-      (() => ({
+      () => ({
         TAG: "Eq",
         _0: vv,
         _1: [
@@ -81,12 +81,12 @@ Mt.from_pair_suites("Ffi_arity_test", {
           3,
           5
         ]
-      }))
+      })
     ],
     tl: {
       hd: [
         "File \"ffi_arity_test.res\", line 53, characters 7-14",
-        (() => ({
+        () => ({
           TAG: "Eq",
           _0: hh,
           _1: [
@@ -94,7 +94,7 @@ Mt.from_pair_suites("Ffi_arity_test", {
             2,
             3
           ]
-        }))
+        })
       ],
       tl: /* [] */0
     }
