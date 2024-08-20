@@ -719,6 +719,11 @@ and printModuleBinding ~state ~isRec moduleBinding cmtTbl i =
         Doc.concat [Doc.text ": "; printModType ~state modType cmtTbl] )
     | modExpr -> (printModExpr ~state modExpr cmtTbl, Doc.nil)
   in
+  let modExprDocParens =
+    if Parens.modExprParens moduleBinding.pmb_expr then
+      Doc.concat [Doc.lparen; modExprDoc; Doc.rparen]
+    else modExprDoc
+  in
   let modName =
     let doc = Doc.text moduleBinding.pmb_name.Location.txt in
     printComments doc cmtTbl moduleBinding.pmb_name.loc
@@ -732,7 +737,7 @@ and printModuleBinding ~state ~isRec moduleBinding cmtTbl i =
         modName;
         modConstraintDoc;
         Doc.text " = ";
-        modExprDoc;
+        modExprDocParens;
       ]
   in
   printComments doc cmtTbl moduleBinding.pmb_loc

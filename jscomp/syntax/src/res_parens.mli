@@ -32,6 +32,8 @@ val callExpr : Parsetree.expression -> kind
 
 val includeModExpr : Parsetree.module_expr -> bool
 
+val modExprParens : Parsetree.module_expr -> bool
+
 val arrowReturnTypExpr : Parsetree.core_type -> bool
 
 val patternRecordRowRhs : Parsetree.pattern -> bool
