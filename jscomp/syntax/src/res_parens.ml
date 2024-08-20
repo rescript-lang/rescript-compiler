@@ -450,6 +450,23 @@ let includeModExpr modExpr =
   | Parsetree.Pmod_constraint _ -> true
   | _ -> false
 
+let modExprParens modExpr =
+  match modExpr with
+  | {
+   Parsetree.pmod_desc =
+     Pmod_constraint
+       ( {Parsetree.pmod_desc = Pmod_structure _},
+         {Parsetree.pmty_desc = Pmty_signature [{psig_desc = Psig_module _}]} );
+  } ->
+    false
+  | {
+   Parsetree.pmod_desc =
+     Pmod_constraint
+       (_, {Parsetree.pmty_desc = Pmty_signature [{psig_desc = Psig_module _}]});
+  } ->
+    true
+  | _ -> false
+
 let arrowReturnTypExpr typExpr =
   match typExpr.Parsetree.ptyp_desc with
   | Parsetree.Ptyp_arrow _ -> true
