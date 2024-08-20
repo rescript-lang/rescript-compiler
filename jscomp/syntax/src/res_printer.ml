@@ -685,6 +685,11 @@ and print_module_binding ~state ~is_rec module_binding cmt_tbl i =
         Doc.concat [Doc.text ": "; print_mod_type ~state mod_type cmt_tbl] )
     | mod_expr -> (print_mod_expr ~state mod_expr cmt_tbl, Doc.nil)
   in
+  let mod_expr_doc_parens =
+    if Parens.mod_expr_parens module_binding.pmb_expr then
+      Doc.concat [Doc.lparen; mod_expr_doc; Doc.rparen]
+    else mod_expr_doc
+  in
   let mod_name =
     let doc = Doc.text module_binding.pmb_name.Location.txt in
     print_comments doc cmt_tbl module_binding.pmb_name.loc
@@ -698,7 +703,7 @@ and print_module_binding ~state ~is_rec module_binding cmt_tbl i =
         mod_name;
         mod_constraint_doc;
         Doc.text " = ";
-        mod_expr_doc;
+        mod_expr_doc_parens;
       ]
   in
   print_comments doc cmt_tbl module_binding.pmb_loc
