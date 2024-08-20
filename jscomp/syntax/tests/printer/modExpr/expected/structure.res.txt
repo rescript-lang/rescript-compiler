@@ -22,3 +22,22 @@ let g = {
   module M: T = {}
   0
 }
+
+module M7: {
+  module N': {
+    let x: int
+  }
+} = (M6: {
+  module N: {
+    let x: int
+  }
+  module N' = N
+})
+
+module M8 = M7
+
+module M7: {
+  let x: int
+} = {
+  let x = 8
+}
