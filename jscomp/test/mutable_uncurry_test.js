@@ -64,9 +64,9 @@ function t3(param, param$1, param$2) {
 function ut4(param, param$1, param$2, param$3) {
   let x0 = param.contents;
   let x1 = param$1.contents;
-  return (function (param) {
+  return (param => {
     let x2 = param.contents;
-    return function (param) {
+    return param => {
       let x3 = param.contents;
       return [
         x0,
@@ -81,9 +81,9 @@ function ut4(param, param$1, param$2, param$3) {
 function t4(param, param$1, param$2, param$3) {
   let x0 = param.contents;
   let x1 = param$1.contents;
-  return (function (param) {
+  return (param => {
     let x2 = param.contents;
-    return function (param) {
+    return param => {
       let x3 = param.contents;
       return [
         x0,
@@ -98,11 +98,11 @@ function t4(param, param$1, param$2, param$3) {
 function ut5(param, param$1, param$2, param$3, param$4) {
   let x0 = param.contents;
   let x1 = param$1.contents;
-  return (function (param) {
+  return (param => {
     let x2 = param.contents;
-    return function (param) {
+    return param => {
       let x3 = param.contents;
-      return function (param) {
+      return param => {
         let x4 = param.contents;
         return [
           x0,
@@ -119,11 +119,11 @@ function ut5(param, param$1, param$2, param$3, param$4) {
 function t5(param, param$1, param$2, param$3, param$4) {
   let x0 = param.contents;
   let x1 = param$1.contents;
-  return (function (param) {
+  return (param => {
     let x2 = param.contents;
-    return function (param) {
+    return param => {
       let x3 = param.contents;
-      return function (param) {
+      return param => {
         let x4 = param.contents;
         return [
           x0,
@@ -142,7 +142,7 @@ function nested0(param, param$1, param$2) {
   let x1 = param$1.contents;
   let x2 = param$2.contents;
   let a = (x0 + x1 | 0) + x2 | 0;
-  return function (param, param$1, param$2) {
+  return (param, param$1, param$2) => {
     let x0 = param.contents;
     let x1 = param$1.contents;
     let x2 = param$2.contents;
@@ -155,7 +155,7 @@ function nested1(param, param$1, param$2) {
   let x1 = param$1.contents;
   let x2 = param$2.contents;
   let a = (x0 + x1 | 0) + x2 | 0;
-  return function (param, param$1, param$2) {
+  return (param, param$1, param$2) => {
     let x0 = param.contents;
     let x1 = param$1.contents;
     let x2 = param$2.contents;

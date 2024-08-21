@@ -29,7 +29,7 @@ function excludes(p, l) {
   let excluded = {
     contents: false
   };
-  let aux = function (_accu, _x) {
+  let aux = (_accu, _x) => {
     while (true) {
       let x = _x;
       let accu = _accu;
@@ -69,7 +69,7 @@ function exclude_with_fact(p, l) {
   let excluded = {
     contents: undefined
   };
-  let aux = function (_accu, _x) {
+  let aux = (_accu, _x) => {
     while (true) {
       let x = _x;
       let accu = _accu;
@@ -105,7 +105,7 @@ function exclude_with_fact2(p1, p2, l) {
   let excluded2 = {
     contents: undefined
   };
-  let aux = function (_accu, _x) {
+  let aux = (_accu, _x) => {
     while (true) {
       let x = _x;
       let accu = _accu;
@@ -161,7 +161,7 @@ function same_length(_xs, _ys) {
 }
 
 function filter_mapi(f, xs) {
-  let aux = function (_i, _xs) {
+  let aux = (_i, _xs) => {
     while (true) {
       let xs = _xs;
       let i = _i;
@@ -223,7 +223,7 @@ function filter_map2(f, _xs, _ys) {
 }
 
 function filter_map2i(f, xs, ys) {
-  let aux = function (_i, _xs, _ys) {
+  let aux = (_i, _xs, _ys) => {
     while (true) {
       let ys = _ys;
       let xs = _xs;
@@ -648,9 +648,7 @@ function for_all_opt(p, _x) {
 }
 
 function fold(f, l, init) {
-  return List.fold_left((function (acc, i) {
-    return f(i, init);
-  }), init, l);
+  return List.fold_left((acc, i) => f(i, init), init, l);
 }
 
 function rev_map_acc(acc, f, l) {
@@ -774,9 +772,7 @@ function split_map(f, xs) {
 function reduce_from_right(fn, lst) {
   let match = List.rev(lst);
   if (match) {
-    return List.fold_left((function (x, y) {
-      return fn(y, x);
-    }), match.hd, match.tl);
+    return List.fold_left((x, y) => fn(y, x), match.hd, match.tl);
   }
   throw new Error("Invalid_argument", {
     cause: {

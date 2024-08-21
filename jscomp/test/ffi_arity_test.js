@@ -5,13 +5,9 @@ let Mt = require("./mt.js");
 
 function f(v) {
   if (v % 2 === 0) {
-    return function (v) {
-      return Math.imul(v, v);
-    };
+    return v => Math.imul(v, v);
   } else {
-    return function (v) {
-      return v + v | 0;
-    };
+    return v => v + v | 0;
   }
 }
 
@@ -19,25 +15,19 @@ let v = [
   1,
   2,
   3
-].map(function (a, b) {
-  return f(a)(b);
-});
+].map((a, b) => f(a)(b));
 
 let vv = [
   1,
   2,
   3
-].map(function (a, b) {
-  return a + b | 0;
-});
+].map((a, b) => a + b | 0);
 
 let hh = [
   "1",
   "2",
   "3"
-].map(function (x) {
-  return parseInt(x);
-});
+].map(x => parseInt(x));
 
 function u() {
   return 3;
@@ -70,46 +60,40 @@ fff();
 Mt.from_pair_suites("Ffi_arity_test", {
   hd: [
     "File \"ffi_arity_test.res\", line 51, characters 7-14",
-    (function () {
-      return {
-        TAG: "Eq",
-        _0: v,
-        _1: [
-          0,
-          1,
-          4
-        ]
-      };
+    () => ({
+      TAG: "Eq",
+      _0: v,
+      _1: [
+        0,
+        1,
+        4
+      ]
     })
   ],
   tl: {
     hd: [
       "File \"ffi_arity_test.res\", line 52, characters 7-14",
-      (function () {
-        return {
-          TAG: "Eq",
-          _0: vv,
-          _1: [
-            1,
-            3,
-            5
-          ]
-        };
+      () => ({
+        TAG: "Eq",
+        _0: vv,
+        _1: [
+          1,
+          3,
+          5
+        ]
       })
     ],
     tl: {
       hd: [
         "File \"ffi_arity_test.res\", line 53, characters 7-14",
-        (function () {
-          return {
-            TAG: "Eq",
-            _0: hh,
-            _1: [
-              1,
-              2,
-              3
-            ]
-          };
+        () => ({
+          TAG: "Eq",
+          _0: hh,
+          _1: [
+            1,
+            2,
+            3
+          ]
         })
       ],
       tl: /* [] */0

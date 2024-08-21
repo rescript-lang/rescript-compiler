@@ -58,7 +58,7 @@ function resize(newSize) {
   let arr = htab.contents;
   let newSz_1 = newSize - 1 | 0;
   let newArr = Caml_array.make(newSize, /* [] */0);
-  let copyBucket = function (_bucket) {
+  let copyBucket = _bucket => {
     while (true) {
       let bucket = _bucket;
       if (!bucket) {
@@ -334,14 +334,14 @@ function xor(n1, n2) {
 }
 
 function hwb(n) {
-  let h = function (i, j) {
+  let h = (i, j) => {
     if (i === j) {
       return mkNode("Zero", i, "One");
     } else {
       return xor(and2(not(mkNode("Zero", j, "One")), h(i, j - 1 | 0)), and2(mkNode("Zero", j, "One"), g(i, j - 1 | 0)));
     }
   };
-  let g = function (i, j) {
+  let g = (i, j) => {
     if (i === j) {
       return mkNode("Zero", i, "One");
     } else {

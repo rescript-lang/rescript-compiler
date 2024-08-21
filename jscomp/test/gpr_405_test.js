@@ -11,7 +11,7 @@ function Make(funarg) {
     equal: $$let.equal,
     hash: $$let.hash
   });
-  let find_default = function (htbl, x) {
+  let find_default = (htbl, x) => {
     try {
       return H.find(htbl, x);
     } catch (raw_exn) {
@@ -24,7 +24,7 @@ function Make(funarg) {
       });
     }
   };
-  let min_cutset = function (gr, first_node) {
+  let min_cutset = (gr, first_node) => {
     let n_labels = H.create(97);
     let l_labels = H.create(97);
     let already_processed = H.create(97);
@@ -35,7 +35,7 @@ function Make(funarg) {
     let counter = {
       contents: 1
     };
-    let step2 = function (top, rest_of_stack) {
+    let step2 = (top, rest_of_stack) => {
       if (find_default(already_processed, top)) {
         throw new Error("Assert_failure", {
           cause: {

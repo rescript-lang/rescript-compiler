@@ -22,7 +22,7 @@ let x = {
   contents: 3
 };
 
-while ((function () {
+while ((() => {
     let y = 3;
     console.log(String(x.contents));
     y = y + 1 | 0;

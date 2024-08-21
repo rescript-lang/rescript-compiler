@@ -5,10 +5,8 @@ import * as Js_promise from "rescript/lib/es6/js_promise.js";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
 
 function convert(p) {
-  return Js_promise.then_((function (param) {
-    return Promise.resolve({
-      result: param.s
-    });
+  return Js_promise.then_(param => Promise.resolve({
+    result: param.s
   }), p);
 }
 

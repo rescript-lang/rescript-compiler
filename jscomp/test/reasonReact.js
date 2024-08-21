@@ -84,9 +84,7 @@ function element(keyOpt, refOpt, component) {
 }
 
 function wrapReasonForJs(component, jsPropsToReason) {
-  let uncurriedJsPropsToReason = function (jsProps) {
-    return jsPropsToReason(jsProps);
-  };
+  let uncurriedJsPropsToReason = jsProps => jsPropsToReason(jsProps);
   component.reactClassInternal.prototype.jsPropsToReason = uncurriedJsPropsToReason;
   return component.reactClassInternal;
 }
@@ -94,7 +92,7 @@ function wrapReasonForJs(component, jsPropsToReason) {
 let dummyInteropComponent = basicComponent("interop");
 
 function wrapJsForReason(reactClass, props, children) {
-  let jsElementWrapped = (function (extra, extra$1) {
+  let jsElementWrapped = (extra, extra$1) => {
     let props$1 = Object.assign(Object.assign({}, props), {
       ref: extra$1,
       key: extra
@@ -104,7 +102,7 @@ function wrapJsForReason(reactClass, props, children) {
       props$1
     ].concat(children);
     return React.createElement.apply(null, varargs);
-  });
+  };
   return {
     debugName: dummyInteropComponent.debugName,
     reactClassInternal: dummyInteropComponent.reactClassInternal,

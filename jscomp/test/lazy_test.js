@@ -9,7 +9,7 @@ let u = {
   contents: 3
 };
 
-let v = CamlinternalLazy.from_fun(function () {
+let v = CamlinternalLazy.from_fun(() => {
   u.contents = 32;
 });
 
@@ -27,7 +27,7 @@ let u_v = {
   contents: 0
 };
 
-let u$1 = CamlinternalLazy.from_fun(function () {
+let u$1 = CamlinternalLazy.from_fun(() => {
   u_v.contents = 2;
 });
 
@@ -35,9 +35,7 @@ CamlinternalLazy.force(u$1);
 
 let exotic = CamlinternalLazy.force;
 
-let l_from_fun = CamlinternalLazy.from_fun(function () {
-  return 3;
-});
+let l_from_fun = CamlinternalLazy.from_fun(() => 3);
 
 function f() {
   let u = 3;
@@ -45,21 +43,13 @@ function f() {
   return u;
 }
 
-let forward_test = CamlinternalLazy.from_fun(function () {
-  return f();
-});
+let forward_test = CamlinternalLazy.from_fun(() => f());
 
-let f005 = CamlinternalLazy.from_fun(function () {
-  return 6;
-});
+let f005 = CamlinternalLazy.from_fun(() => 6);
 
-let f006 = CamlinternalLazy.from_fun(function () {
-  return function () {
-    return 3;
-  };
-});
+let f006 = CamlinternalLazy.from_fun(() => (() => 3));
 
-let f007 = CamlinternalLazy.from_fun(function () {
+let f007 = CamlinternalLazy.from_fun(() => {
   throw new Error("Not_found", {
     cause: {
       RE_EXN_ID: "Not_found"
@@ -76,9 +66,7 @@ function f$1() {
   });
 }
 
-let f008 = CamlinternalLazy.from_fun(function () {
-  return f$1();
-});
+let f008 = CamlinternalLazy.from_fun(() => f$1());
 
 let a2 = CamlinternalLazy.from_val;
 
@@ -97,132 +85,110 @@ let a8 = CamlinternalLazy.force(a6);
 Mt.from_pair_suites("Lazy_test", {
   hd: [
     "simple",
-    (function () {
-      return {
-        TAG: "Eq",
-        _0: lazy_test(),
-        _1: [
-          3,
-          32
-        ]
-      };
+    () => ({
+      TAG: "Eq",
+      _0: lazy_test(),
+      _1: [
+        3,
+        32
+      ]
     })
   ],
   tl: {
     hd: [
       "lazy_force",
-      (function () {
-        return {
-          TAG: "Eq",
-          _0: u_v.contents,
-          _1: 2
-        };
+      () => ({
+        TAG: "Eq",
+        _0: u_v.contents,
+        _1: 2
       })
     ],
     tl: {
       hd: [
         "lazy_from_fun",
-        (function () {
-          return {
-            TAG: "Eq",
-            _0: CamlinternalLazy.force(l_from_fun),
-            _1: 3
-          };
+        () => ({
+          TAG: "Eq",
+          _0: CamlinternalLazy.force(l_from_fun),
+          _1: 3
         })
       ],
       tl: {
         hd: [
           "lazy_from_val",
-          (function () {
-            return {
-              TAG: "Eq",
-              _0: CamlinternalLazy.force(CamlinternalLazy.from_val(3)),
-              _1: 3
-            };
+          () => ({
+            TAG: "Eq",
+            _0: CamlinternalLazy.force(CamlinternalLazy.from_val(3)),
+            _1: 3
           })
         ],
         tl: {
           hd: [
             "lazy_from_val2",
-            (function () {
-              return {
-                TAG: "Eq",
-                _0: CamlinternalLazy.force(CamlinternalLazy.force(CamlinternalLazy.from_val(CamlinternalLazy.from_fun(function () {
-                  return 3;
-                })))),
-                _1: 3
-              };
+            () => ({
+              TAG: "Eq",
+              _0: CamlinternalLazy.force(CamlinternalLazy.force(CamlinternalLazy.from_val(CamlinternalLazy.from_fun(() => 3)))),
+              _1: 3
             })
           ],
           tl: {
             hd: [
               "lazy_from_val3",
-              (function () {
+              () => {
                 debugger;
                 return {
                   TAG: "Eq",
                   _0: CamlinternalLazy.force(CamlinternalLazy.force(CamlinternalLazy.from_val(forward_test))),
                   _1: 4
                 };
-              })
+              }
             ],
             tl: {
               hd: [
                 "lazy_test.res",
-                (function () {
-                  return {
-                    TAG: "Eq",
-                    _0: a3,
-                    _1: a4
-                  };
+                () => ({
+                  TAG: "Eq",
+                  _0: a3,
+                  _1: a4
                 })
               ],
               tl: {
                 hd: [
                   "lazy_test.res",
-                  (function () {
-                    return {
-                      TAG: "Eq",
-                      _0: a7,
-                      _1: undefined
-                    };
+                  () => ({
+                    TAG: "Eq",
+                    _0: a7,
+                    _1: undefined
                   })
                 ],
                 tl: {
                   hd: [
                     "lazy_test.res",
-                    (function () {
-                      return {
-                        TAG: "Eq",
-                        _0: a8,
-                        _1: undefined
-                      };
+                    () => ({
+                      TAG: "Eq",
+                      _0: a8,
+                      _1: undefined
                     })
                   ],
                   tl: {
                     hd: [
                       "File \"lazy_test.res\", line 95, characters 7-14",
-                      (function () {
-                        return {
-                          TAG: "Ok",
-                          _0: Lazy.is_val(CamlinternalLazy.from_val(3))
-                        };
+                      () => ({
+                        TAG: "Ok",
+                        _0: Lazy.is_val(CamlinternalLazy.from_val(3))
                       })
                     ],
                     tl: {
                       hd: [
                         "File \"lazy_test.res\", line 96, characters 7-14",
-                        (function () {
-                          return {
-                            TAG: "Ok",
-                            _0: !Lazy.is_val(CamlinternalLazy.from_fun(function () {
-                              throw new Error("Not_found", {
-                                cause: {
-                                  RE_EXN_ID: "Not_found"
-                                }
-                              });
-                            }))
-                          };
+                        () => ({
+                          TAG: "Ok",
+                          _0: !Lazy.is_val(CamlinternalLazy.from_fun(() => {
+                            throw new Error("Not_found", {
+                              cause: {
+                                RE_EXN_ID: "Not_found"
+                              }
+                            });
+                          }))
                         })
                       ],
                       tl: /* [] */0

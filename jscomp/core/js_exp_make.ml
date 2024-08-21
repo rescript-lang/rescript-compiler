@@ -207,7 +207,7 @@ let unit : t = { expression_desc = Undefined {is_unit = true}; comment = None }
    [Js_fun_env.empty] is a mutable state ..
 *)
 
-let ocaml_fun ?comment ?immutable_mask ~return_unit ~async ~one_unit_arg ?directive params body : t =
+let ocaml_fun ?comment ?immutable_mask ?directive ~return_unit ~async ~one_unit_arg params body : t =
   let params = if one_unit_arg then [] else params in
   let len = List.length params in
   {

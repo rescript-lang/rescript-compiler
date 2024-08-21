@@ -136,9 +136,7 @@ function of_field(name, t) {
 function of_record(l) {
   return {
     NAME: "List",
-    VAL: List.map((function (param) {
-      return of_field(param[0], param[1]);
-    }), l)
+    VAL: List.map(param => of_field(param[0], param[1]), l)
   };
 }
 
@@ -253,9 +251,7 @@ function to_float(e) {
 }
 
 function to_string(e) {
-  return _try_atom(e, (function (x) {
-    return x;
-  }));
+  return _try_atom(e, x => x);
 }
 
 function to_pair(e) {
@@ -280,19 +276,13 @@ function to_pair(e) {
 }
 
 function to_pair_with(f1, f2) {
-  return function (e) {
-    return $great$great$eq(to_pair(e), (function (param) {
-      let y = param[1];
-      return $great$great$eq(f1(param[0]), (function (x) {
-        return $great$great$eq(f2(y), (function (y) {
-          return [
-            x,
-            y
-          ];
-        }));
-      }));
-    }));
-  };
+  return e => $great$great$eq(to_pair(e), param => {
+    let y = param[1];
+    return $great$great$eq(f1(param[0]), x => $great$great$eq(f2(y), y => [
+      x,
+      y
+    ]));
+  });
 }
 
 function to_triple(e) {
@@ -322,23 +312,15 @@ function to_triple(e) {
 }
 
 function to_triple_with(f1, f2, f3) {
-  return function (e) {
-    return $great$great$eq(to_triple(e), (function (param) {
-      let z = param[2];
-      let y = param[1];
-      return $great$great$eq(f1(param[0]), (function (x) {
-        return $great$great$eq(f2(y), (function (y) {
-          return $great$great$eq(f3(z), (function (z) {
-            return [
-              x,
-              y,
-              z
-            ];
-          }));
-        }));
-      }));
-    }));
-  };
+  return e => $great$great$eq(to_triple(e), param => {
+    let z = param[2];
+    let y = param[1];
+    return $great$great$eq(f1(param[0]), x => $great$great$eq(f2(y), y => $great$great$eq(f3(z), z => [
+      x,
+      y,
+      z
+    ])));
+  });
 }
 
 function to_list(e) {
@@ -349,7 +331,7 @@ function to_list(e) {
 }
 
 function to_list_with(f) {
-  return function (e) {
+  return e => {
     if (e.NAME === "List") {
       return map_opt(f, e.VAL);
     }
@@ -358,7 +340,7 @@ function to_list_with(f) {
 }
 
 function get_field(name) {
-  return function (e) {
+  return e => {
     if (e.NAME === "List") {
       let _l = e.VAL;
       while (true) {
@@ -410,9 +392,7 @@ function get_field(name) {
 }
 
 function field(name, f) {
-  return function (e) {
-    return $great$great$eq(get_field(name)(e), f);
-  };
+  return e => $great$great$eq(get_field(name)(e), f);
 }
 
 function _get_field_list(name, _l) {
@@ -453,7 +433,7 @@ function _get_field_list(name, _l) {
 }
 
 function field_list(name, f) {
-  return function (e) {
+  return e => {
     if (e.NAME === "List") {
       return $great$great$eq(_get_field_list(name, e.VAL), f);
     }
@@ -477,7 +457,7 @@ function _get_variant(s, args, _l) {
 }
 
 function get_variant(l) {
-  return function (e) {
+  return e => {
     if (e.NAME !== "List") {
       return _get_variant(e.VAL, /* [] */0, l);
     }

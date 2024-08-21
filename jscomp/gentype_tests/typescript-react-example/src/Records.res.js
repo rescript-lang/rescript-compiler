@@ -6,9 +6,7 @@ import * as Belt_Option from "rescript/lib/es6/belt_Option.js";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
 
 function computeArea(param) {
-  return Math.imul(Math.imul(param.x, param.y), Belt_Option.mapWithDefault(param.z, 1, (function (n) {
-    return n;
-  })));
+  return Math.imul(Math.imul(param.x, param.y), Belt_Option.mapWithDefault(param.z, 1, n => n));
 }
 
 function coord2d(x, y) {
@@ -22,30 +20,20 @@ function coord2d(x, y) {
 let getOpt = Belt_Option.mapWithDefault;
 
 function findAddress(business) {
-  return Belt_Option.mapWithDefault(business.address, /* [] */0, (function (a) {
-    return {
-      hd: a,
-      tl: /* [] */0
-    };
+  return Belt_Option.mapWithDefault(business.address, /* [] */0, a => ({
+    hd: a,
+    tl: /* [] */0
   }));
 }
 
 function findAllAddresses(businesses) {
-  return Belt_List.toArray(Belt_List.flatten(Belt_List.fromArray(Belt_Array.map(businesses, (function (business) {
-    return Belt_List.concat(Belt_Option.mapWithDefault(business.address, /* [] */0, (function (a) {
-      return {
-        hd: a,
-        tl: /* [] */0
-      };
-    })), Belt_Option.mapWithDefault(business.owner, /* [] */0, (function (p) {
-      return Belt_Option.mapWithDefault(p.address, /* [] */0, (function (a) {
-        return {
-          hd: a,
-          tl: /* [] */0
-        };
-      }));
-    })));
-  })))));
+  return Belt_List.toArray(Belt_List.flatten(Belt_List.fromArray(Belt_Array.map(businesses, business => Belt_List.concat(Belt_Option.mapWithDefault(business.address, /* [] */0, a => ({
+    hd: a,
+    tl: /* [] */0
+  })), Belt_Option.mapWithDefault(business.owner, /* [] */0, p => Belt_Option.mapWithDefault(p.address, /* [] */0, a => ({
+    hd: a,
+    tl: /* [] */0
+  }))))))));
 }
 
 function getPayload(param) {
@@ -75,11 +63,9 @@ function getPayloadRecordPlusOne(param) {
 }
 
 function findAddress2(business) {
-  return Belt_Option.mapWithDefault(Caml_option.nullable_to_opt(business.address2), /* [] */0, (function (a) {
-    return {
-      hd: a,
-      tl: /* [] */0
-    };
+  return Belt_Option.mapWithDefault(Caml_option.nullable_to_opt(business.address2), /* [] */0, a => ({
+    hd: a,
+    tl: /* [] */0
   }));
 }
 
@@ -94,15 +80,11 @@ let someBusiness2 = {
 };
 
 function computeArea3(o) {
-  return Math.imul(Math.imul(o.x, o.y), Belt_Option.mapWithDefault(Caml_option.nullable_to_opt(o.z), 1, (function (n) {
-    return n;
-  })));
+  return Math.imul(Math.imul(o.x, o.y), Belt_Option.mapWithDefault(Caml_option.nullable_to_opt(o.z), 1, n => n));
 }
 
 function computeArea4(o) {
-  return Math.imul(Math.imul(o.x, o.y), Belt_Option.mapWithDefault(o.z, 1, (function (n) {
-    return n;
-  })));
+  return Math.imul(Math.imul(o.x, o.y), Belt_Option.mapWithDefault(o.z, 1, n => n));
 }
 
 function testMyRec(x) {

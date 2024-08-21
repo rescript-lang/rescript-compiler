@@ -9,20 +9,20 @@ function eq(loc, a, b) {
   Nodeassert.strictEqual(a, b, loc);
 }
 
-Nodetest.describe("Belt.Int", (function () {
-  Nodetest.test("toFloat", (function () {
+Nodetest.describe("Belt.Int", () => {
+  Nodetest.test("toFloat", () => {
     eq("File \"belt_int_ntest.res\", line 9, characters 7-14", 1, 1.0);
     eq("File \"belt_int_ntest.res\", line 10, characters 7-14", -1, -1.0);
-  }));
-  Nodetest.test("fromFloat", (function () {
+  });
+  Nodetest.test("fromFloat", () => {
     eq("File \"belt_int_ntest.res\", line 14, characters 7-14", 1, 1);
     eq("File \"belt_int_ntest.res\", line 15, characters 7-14", 1, 1);
     eq("File \"belt_int_ntest.res\", line 16, characters 7-14", 1, 1);
     eq("File \"belt_int_ntest.res\", line 17, characters 7-14", -1, -1);
     eq("File \"belt_int_ntest.res\", line 18, characters 7-14", -1, -1);
     eq("File \"belt_int_ntest.res\", line 19, characters 7-14", -1, -1);
-  }));
-  Nodetest.test("fromString", (function () {
+  });
+  Nodetest.test("fromString", () => {
     eq("File \"belt_int_ntest.res\", line 23, characters 7-14", Belt_Int.fromString("1"), 1);
     eq("File \"belt_int_ntest.res\", line 24, characters 7-14", Belt_Int.fromString("-1"), -1);
     eq("File \"belt_int_ntest.res\", line 25, characters 7-14", Belt_Int.fromString("1.7"), 1);
@@ -30,18 +30,18 @@ Nodetest.describe("Belt.Int", (function () {
     eq("File \"belt_int_ntest.res\", line 27, characters 7-14", Belt_Int.fromString("-1.5"), -1);
     eq("File \"belt_int_ntest.res\", line 28, characters 7-14", Belt_Int.fromString("-1.7"), -1);
     eq("File \"belt_int_ntest.res\", line 29, characters 7-14", Belt_Int.fromString("not an int"), undefined);
-  }));
-  Nodetest.test("toString", (function () {
+  });
+  Nodetest.test("toString", () => {
     eq("File \"belt_int_ntest.res\", line 33, characters 7-14", String(1), "1");
     eq("File \"belt_int_ntest.res\", line 34, characters 7-14", String(-1), "-1");
-  }));
-  Nodetest.test("operators", (function () {
+  });
+  Nodetest.test("operators", () => {
     eq("File \"belt_int_ntest.res\", line 40, characters 7-14", 5, 5);
     eq("File \"belt_int_ntest.res\", line 41, characters 7-14", -1, -1);
     eq("File \"belt_int_ntest.res\", line 42, characters 7-14", 6, 6);
     eq("File \"belt_int_ntest.res\", line 43, characters 7-14", 0, 0);
-  }));
-}));
+  });
+});
 
 let I;
 

@@ -7,11 +7,9 @@ let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function to_list(q) {
-  return List.rev(Queue.fold((function (l, x) {
-    return {
-      hd: x,
-      tl: l
-    };
+  return List.rev(Queue.fold((l, x) => ({
+    hd: x,
+    tl: l
   }), /* [] */0, q));
 }
 
@@ -865,7 +863,7 @@ let i$7 = {
   contents: 1
 };
 
-Queue.iter((function (j) {
+Queue.iter(j => {
   if (i$7.contents !== j) {
     throw new Error("Assert_failure", {
       cause: {
@@ -879,7 +877,7 @@ Queue.iter((function (j) {
     });
   }
   i$7.contents = i$7.contents + 1 | 0;
-}), q$5);
+}, q$5);
 
 let q1$1 = {
   length: 0,

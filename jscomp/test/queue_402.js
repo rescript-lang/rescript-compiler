@@ -81,7 +81,7 @@ function copy(q) {
     content: tail.content,
     next: tail$p
   });
-  let copy$1 = function (_prev, _cell) {
+  let copy$1 = (_prev, _cell) => {
     while (true) {
       let cell = _cell;
       let prev = _prev;

@@ -163,7 +163,7 @@ let raw_snippet_exp_simple_enough (s : string) =
 let exp_need_paren (e : J.expression) =
   match e.expression_desc with
   (* | Caml_uninitialized_obj _  *)
-  | Call ({ expression_desc = Fun _ | Raw_js_code _ }, _, _) -> true
+  | Call ({ expression_desc = Raw_js_code _ }, _, _) -> true
   | Raw_js_code { code_info = Exp _ }
   | Fun _
   | Caml_block
@@ -360,6 +360,12 @@ and pp_function ~return_unit ~async ~is_method ?directive cxt (f : P.t) ~fn_stat
       (* the context will be continued after this function *)
       let outer_cxt = Ext_pp_scope.merge cxt set_env in
 
+      (* whether the function output can use arrow syntax *)
+      let arrow = match fn_state with
+        | Name_top _ -> false
+        | _ -> not is_method
+      in
+
       (* the context used to be printed inside this function
 
          when printing a function,
@@ -385,10 +391,31 @@ and pp_function ~return_unit ~async ~is_method ?directive cxt (f : P.t) ~fn_stat
                   function_body ?directive ~return_unit cxt f b))
         else
           let cxt =
-            P.paren_group f 1 (fun _ -> formal_parameter_list inner_cxt f l)
+            match l with
+            | [ single ] when arrow ->
+              Ext_pp_scope.ident inner_cxt f single
+            | l ->
+              P.paren_group f 1 (fun _ -> formal_parameter_list inner_cxt f l)
           in
           P.space f;
-          P.brace_vgroup f 1 (fun _ -> function_body ?directive ~return_unit cxt f b)
+          if arrow then (
+            P.string f (L.arrow);
+            P.space f;
+          );
+          match b with
+          | [ { statement_desc = Return { expression_desc = Undefined _ } } ]
+            when arrow
+            ->
+              P.string f "{";
+              P.string f "}";
+
+          | [ { statement_desc = Return e } ] | [ { statement_desc = Exp e } ]
+            when arrow && directive == None
+            -> (if exp_need_paren e then P.paren_group f 0 else P.group f 0)
+                  (fun _ -> ignore (expression ~level:0 cxt f e))
+
+          | _ ->
+            P.brace_vgroup f 1 (fun _ -> function_body ?directive ~return_unit cxt f b)
       in
       let enclose () =
         let handle () =
@@ -396,24 +423,18 @@ and pp_function ~return_unit ~async ~is_method ?directive cxt (f : P.t) ~fn_stat
             match fn_state with
             | Is_return ->
                 return_sp f;
-                P.string f (L.function_async ~async);
-                P.space f;
+                P.string f (L.function_ ~async ~arrow);
                 param_body ()
-            | No_name { single_arg } ->
-                (* see # 1692, add a paren for annoymous function for safety  *)
-                P.cond_paren_group f (not single_arg) (fun _ ->
-                    P.string f (L.function_async ~async);
-                    P.space f;
-                    param_body ())
+            | No_name _ ->
+                P.string f (L.function_ ~async ~arrow);
+                param_body ()
             | Name_non_top x ->
                 ignore (pp_var_assign inner_cxt f x : cxt);
-                P.string f (L.function_async ~async);
-                P.space f;
+                P.string f (L.function_ ~async ~arrow);
                 param_body ();
                 semi f
             | Name_top x ->
-                P.string f (L.function_async ~async);
-                P.space f;
+                P.string f (L.function_ ~async ~arrow);
                 ignore (Ext_pp_scope.ident inner_cxt f x : cxt);
                 param_body ())
         in
@@ -504,8 +525,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
           expression ~level:0 cxt f e2)
   | Fun { is_method; params; body; env; return_unit; async; directive } ->
       (* TODO: dump for comments *)
-      pp_function ?directive ~is_method cxt f ~fn_state:default_fn_exp_state params body
-        env ~return_unit ~async
+      pp_function ?directive ~is_method ~return_unit ~async
+        ~fn_state:default_fn_exp_state
+        cxt f params body env
       (* TODO:
          when [e] is [Js_raw_code] with arity
          print it in a more precise way
@@ -520,7 +542,11 @@ and expression_desc cxt ~(level : int) f x : cxt =
           P.group f 0 (fun _ ->
               match (info, el) with
               | { arity = Full }, _ | _, [] ->
-                  let cxt = expression ~level:15 cxt f e in
+                  let cxt =
+                    P.cond_paren_group f
+                      (match e.expression_desc with Fun _ -> true | _ -> false)
+                      (fun () -> expression ~level:15 cxt f e )
+                  in
                   P.paren_group f 0 (fun _ ->
                       match el with
                       | [
@@ -538,9 +564,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
                              };
                        };
                       ] ->
-                          pp_function ?directive ~is_method ~return_unit ~async cxt f
+                          pp_function ?directive ~is_method ~return_unit ~async
                             ~fn_state:(No_name { single_arg = true })
-                            params body env
+                            cxt f params body env
                       | _ ->
                         let el = match el with
                         | [e] when e.expression_desc = Undefined {is_unit = true} ->
@@ -941,9 +967,9 @@ and variable_declaration top cxt f (variable : J.variable_declaration) : cxt =
       | _ -> (
           match e.expression_desc with
           | Fun { is_method; params; body; env; return_unit; async; directive } ->
-              pp_function ?directive ~is_method cxt f ~return_unit ~async
+              pp_function ?directive ~is_method ~return_unit ~async
                 ~fn_state:(if top then Name_top name else Name_non_top name)
-                params body env
+                cxt f params body env
           | _ ->
               let cxt = pp_var_assign cxt f name in
               let cxt = expression ~level:1 cxt f e in
@@ -1151,8 +1177,9 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       match e.expression_desc with
       | Fun { is_method; params; body; env; return_unit; async; directive } ->
           let cxt =
-            pp_function ?directive ~return_unit ~is_method ~async cxt f ~fn_state:Is_return
-              params body env
+            pp_function ?directive ~return_unit ~is_method ~async
+              ~fn_state:Is_return
+              cxt f params body env
           in
           semi f;
           cxt

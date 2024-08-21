@@ -118,20 +118,18 @@ let results = $$Array.append([
 ]);
 
 function from_pairs(ps) {
-  return $$Array.to_list($$Array.mapi((function (i, param) {
+  return $$Array.to_list($$Array.mapi((i, param) => {
     let b = param[1];
     let a = param[0];
     return [
       "pair " + i,
-      (function (param) {
-        return {
-          TAG: "Approx",
-          _0: a,
-          _1: b
-        };
+      param => ({
+        TAG: "Approx",
+        _0: a,
+        _1: b
       })
     ];
-  }), ps));
+  }, ps));
 }
 
 let float_compare = Caml.float_compare;
@@ -191,7 +189,7 @@ eq("File \"float_test.res\", line 62, characters 4-11", [
   true
 ]);
 
-eq("File \"float_test.res\", line 71, characters 4-11", $$Array.map((function (x) {
+eq("File \"float_test.res\", line 71, characters 4-11", $$Array.map(x => {
   if (x > 0) {
     return 1;
   } else if (x < 0) {
@@ -199,9 +197,7 @@ eq("File \"float_test.res\", line 71, characters 4-11", $$Array.map((function (x
   } else {
     return 0;
   }
-}), $$Array.map((function (param) {
-  return Caml.float_compare(param[0], param[1]);
-}), [
+}, $$Array.map(param => Caml.float_compare(param[0], param[1]), [
   [
     1,
     3
@@ -325,45 +321,37 @@ let a = match$4[0];
 Mt.from_pair_suites("Float_test", Pervasives.$at({
   hd: [
     "mod_float",
-    (function () {
-      return {
-        TAG: "Approx",
-        _0: 3.2 % 0.5,
-        _1: 0.200000000000000178
-      };
+    () => ({
+      TAG: "Approx",
+      _0: 3.2 % 0.5,
+      _1: 0.200000000000000178
     })
   ],
   tl: {
     hd: [
       "modf_float1",
-      (function () {
-        return {
-          TAG: "Approx",
-          _0: a,
-          _1: 0.299999999999997158
-        };
+      () => ({
+        TAG: "Approx",
+        _0: a,
+        _1: 0.299999999999997158
       })
     ],
     tl: {
       hd: [
         "modf_float2",
-        (function () {
-          return {
-            TAG: "Approx",
-            _0: b,
-            _1: 32
-          };
+        () => ({
+          TAG: "Approx",
+          _0: b,
+          _1: 32
         })
       ],
       tl: {
         hd: [
           "int_of_float",
-          (function () {
-            return {
-              TAG: "Eq",
-              _0: 3,
-              _1: 3
-            };
+          () => ({
+            TAG: "Eq",
+            _0: 3,
+            _1: 3
           })
         ],
         tl: /* [] */0

@@ -25,57 +25,49 @@ let int32_pairs = [
 ];
 
 function from_pairs(pair) {
-  return List.concat($$Array.to_list($$Array.mapi((function (i, param) {
+  return List.concat($$Array.to_list($$Array.mapi((i, param) => {
     let f = param[1];
     let i32 = param[0];
     return {
       hd: [
         "int32_float_of_bits " + i,
-        (function (param) {
-          return {
-            TAG: "Eq",
-            _0: Caml_float.int_float_of_bits(i32),
-            _1: f
-          };
+        param => ({
+          TAG: "Eq",
+          _0: Caml_float.int_float_of_bits(i32),
+          _1: f
         })
       ],
       tl: {
         hd: [
           "int32_bits_of_float " + i,
-          (function (param) {
-            return {
-              TAG: "Eq",
-              _0: Caml_float.int_bits_of_float(f),
-              _1: i32
-            };
+          param => ({
+            TAG: "Eq",
+            _0: Caml_float.int_bits_of_float(f),
+            _1: i32
           })
         ],
         tl: /* [] */0
       }
     };
-  }), int32_pairs)));
+  }, int32_pairs)));
 }
 
 let suites = Pervasives.$at({
   hd: [
     "one",
-    (function () {
-      return {
-        TAG: "Eq",
-        _0: Caml_int64.bits_of_float(1.0),
-        _1: one_float
-      };
+    () => ({
+      TAG: "Eq",
+      _0: Caml_int64.bits_of_float(1.0),
+      _1: one_float
     })
   ],
   tl: {
     hd: [
       "two",
-      (function () {
-        return {
-          TAG: "Eq",
-          _0: Caml_int64.float_of_bits(one_float),
-          _1: 1.0
-        };
+      () => ({
+        TAG: "Eq",
+        _0: Caml_int64.float_of_bits(one_float),
+        _1: 1.0
       })
     ],
     tl: /* [] */0

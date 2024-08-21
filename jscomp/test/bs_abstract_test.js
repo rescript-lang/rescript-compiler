@@ -10,9 +10,7 @@ let v = {
 v.tl = v;
 
 let f = {
-  k: (function (x, y) {
-    return x === y;
-  }),
+  k: (x, y) => x === y,
   y: "x"
 };
 
@@ -21,9 +19,7 @@ function uf(u) {
 }
 
 function uf1(u) {
-  return function (extra) {
-    return u.y1(1, extra);
-  };
+  return extra => u.y1(1, extra);
 }
 
 function uf2(u) {

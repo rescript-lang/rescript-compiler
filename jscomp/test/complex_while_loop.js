@@ -4,8 +4,8 @@
 
 function f() {
   let n = 0;
-  while ((function () {
-      let fib = function (x) {
+  while ((() => {
+      let fib = x => {
         if (x === 0 || x === 1) {
           return 1;
         } else {
@@ -20,7 +20,7 @@ function f() {
 }
 
 function ff() {
-  while ((function () {
+  while ((() => {
       let b = 9;
       return (3 + b | 0) > 10;
     })()) {

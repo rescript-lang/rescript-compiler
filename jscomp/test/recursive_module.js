@@ -20,9 +20,7 @@ function eq(loc, x, y) {
 }
 
 let Xx = {
-  f: (function (prim0, prim1) {
-    return hfiehi(prim0, prim1);
-  })
+  f: (prim0, prim1) => hfiehi(prim0, prim1)
 };
 
 let Int3 = Caml_module.init_mod([
@@ -69,9 +67,7 @@ let Intb = Caml_module.init_mod([
     ]]
 });
 
-let a = CamlinternalLazy.from_fun(function () {
-  return CamlinternalLazy.force(Intb.a);
-});
+let a = CamlinternalLazy.from_fun(() => CamlinternalLazy.force(Intb.a));
 
 Caml_module.update_mod({
   TAG: "Module",
@@ -83,9 +79,7 @@ Caml_module.update_mod({
   a: a
 });
 
-let a$1 = CamlinternalLazy.from_fun(function () {
-  return CamlinternalLazy.force(Inta.a) + 1 | 0;
-});
+let a$1 = CamlinternalLazy.from_fun(() => CamlinternalLazy.force(Inta.a) + 1 | 0);
 
 Caml_module.update_mod({
   TAG: "Module",
@@ -138,9 +132,7 @@ let Intb$1 = Caml_module.init_mod([
     ]]
 });
 
-let a$2 = CamlinternalLazy.from_fun(function () {
-  return CamlinternalLazy.force(Intb$1.a) + 1 | 0;
-});
+let a$2 = CamlinternalLazy.from_fun(() => CamlinternalLazy.force(Intb$1.a) + 1 | 0);
 
 Caml_module.update_mod({
   TAG: "Module",
@@ -152,9 +144,7 @@ Caml_module.update_mod({
   a: a$2
 });
 
-let a$3 = CamlinternalLazy.from_fun(function () {
-  return 2;
-});
+let a$3 = CamlinternalLazy.from_fun(() => 2);
 
 Caml_module.update_mod({
   TAG: "Module",

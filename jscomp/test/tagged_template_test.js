@@ -44,67 +44,55 @@ let res = foo([
 Mt.from_pair_suites("tagged templates", {
   hd: [
     "with externals, it should return a string with the correct interpolations",
-    (function () {
-      return {
-        TAG: "Eq",
-        _0: query,
-        _1: "SELECT * FROM 'users' WHERE id = '5'"
-      };
+    () => ({
+      TAG: "Eq",
+      _0: query,
+      _1: "SELECT * FROM 'users' WHERE id = '5'"
     })
   ],
   tl: {
     hd: [
       "with module scoped externals, it should also return a string with the correct interpolations",
-      (function () {
-        return {
-          TAG: "Eq",
-          _0: queryWithModule,
-          _1: "SELECT * FROM 'users' WHERE id = '5'"
-        };
+      () => ({
+        TAG: "Eq",
+        _0: queryWithModule,
+        _1: "SELECT * FROM 'users' WHERE id = '5'"
       })
     ],
     tl: {
       hd: [
         "with externals, it should return the result of the function",
-        (function () {
-          return {
-            TAG: "Eq",
-            _0: length,
-            _1: 52
-          };
+        () => ({
+          TAG: "Eq",
+          _0: length,
+          _1: 52
         })
       ],
       tl: {
         hd: [
           "with rescript function, it should return a string with the correct encoding and interpolations",
-          (function () {
-            return {
-              TAG: "Eq",
-              _0: res,
-              _1: "| 5 × 10 = 50 |"
-            };
+          () => ({
+            TAG: "Eq",
+            _0: res,
+            _1: "| 5 × 10 = 50 |"
           })
         ],
         tl: {
           hd: [
             "a template literal tagged with json should generate a regular string interpolation for now",
-            (function () {
-              return {
-                TAG: "Eq",
-                _0: "some random " + "string",
-                _1: "some random string"
-              };
+            () => ({
+              TAG: "Eq",
+              _0: "some random " + "string",
+              _1: "some random string"
             })
           ],
           tl: {
             hd: [
               "a regular string interpolation should continue working",
-              (function () {
-                return {
-                  TAG: "Eq",
-                  _0: "some random string interpolation",
-                  _1: "some random string interpolation"
-                };
+              () => ({
+                TAG: "Eq",
+                _0: "some random string interpolation",
+                _1: "some random string interpolation"
               })
             ],
             tl: /* [] */0

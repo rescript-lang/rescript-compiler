@@ -54,7 +54,7 @@ function split_by(keep_emptyOpt, is_delim, str) {
 function trim(s) {
   let i = 0;
   let j = s.length;
-  while ((function () {
+  while ((() => {
       let tmp = false;
       if (i < j) {
         let u = s.codePointAt(i);
@@ -65,7 +65,7 @@ function trim(s) {
     i = i + 1 | 0;
   };
   let k = j - 1 | 0;
-  while ((function () {
+  while ((() => {
       let tmp = false;
       if (k >= i) {
         let u = s.codePointAt(k);
@@ -82,20 +82,18 @@ function split(keep_empty, str, on) {
   if (str === "") {
     return /* [] */0;
   } else {
-    return split_by(keep_empty, (function (x) {
-      return x === on;
-    }), str);
+    return split_by(keep_empty, x => x === on, str);
   }
 }
 
 function quick_split_by_ws(str) {
-  return split_by(false, (function (x) {
+  return split_by(false, x => {
     if (x === /* '\t' */9 || x === /* '\n' */10) {
       return true;
     } else {
       return x === /* ' ' */32;
     }
-  }), str);
+  }, str);
 }
 
 function starts_with(s, beg) {
@@ -147,9 +145,7 @@ function ends_with_then_chop(s, beg) {
 }
 
 function check_any_suffix_case(s, suffixes) {
-  return List.exists((function (x) {
-    return ends_with(s, x);
-  }), suffixes);
+  return List.exists(x => ends_with(s, x), suffixes);
 }
 
 function check_any_suffix_case_then_chop(s, suffixes) {
@@ -169,7 +165,7 @@ function check_any_suffix_case_then_chop(s, suffixes) {
 }
 
 function escaped(s) {
-  let needs_escape = function (_i) {
+  let needs_escape = _i => {
     while (true) {
       let i = _i;
       if (i >= s.length) {
@@ -449,7 +445,7 @@ function is_valid_module_file(s) {
   } else if (match < 65) {
     return false;
   }
-  return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
+  return unsafe_for_all_range(s, 1, len - 1 | 0, x => {
     if (x >= 65) {
       if (x > 96 || x < 91) {
         return x < 123;
@@ -461,7 +457,7 @@ function is_valid_module_file(s) {
     } else {
       return x === 39;
     }
-  }));
+  });
 }
 
 function is_valid_npm_package_name(s) {
@@ -481,7 +477,7 @@ function is_valid_npm_package_name(s) {
   } else if (match !== 64) {
     return false;
   }
-  return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
+  return unsafe_for_all_range(s, 1, len - 1 | 0, x => {
     if (x >= 58) {
       if (x >= 97) {
         return x < 123;
@@ -493,7 +489,7 @@ function is_valid_npm_package_name(s) {
     } else {
       return true;
     }
-  }));
+  });
 }
 
 function is_valid_source_name(name) {
@@ -575,13 +571,13 @@ function replace_slash_backward(x) {
   if (unsafe_no_char(x, /* '/' */47, 0, len - 1 | 0)) {
     return x;
   } else {
-    return $$String.map((function (x) {
+    return $$String.map(x => {
       if (x !== 47) {
         return x;
       } else {
         return /* '\\' */92;
       }
-    }), x);
+    }, x);
   }
 }
 
@@ -590,13 +586,13 @@ function replace_backward_slash(x) {
   if (unsafe_no_char(x, /* '\\' */92, 0, len - 1 | 0)) {
     return x;
   } else {
-    return $$String.map((function (x) {
+    return $$String.map(x => {
       if (x !== 92) {
         return x;
       } else {
         return /* '/' */47;
       }
-    }), x);
+    }, x);
   }
 }
 

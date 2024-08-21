@@ -16,12 +16,10 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
-        return {
-          TAG: "Eq",
-          _0: x,
-          _1: y
-        };
+      () => ({
+        TAG: "Eq",
+        _0: x,
+        _1: y
       })
     ],
     tl: suites.contents
@@ -33,21 +31,15 @@ function f0(x, y, z) {
 }
 
 function f1(x) {
-  return function (y, z) {
-    return (x + y | 0) + z | 0;
-  };
+  return (y, z) => (x + y | 0) + z | 0;
 }
 
 function f2(x, y) {
-  return function (z) {
-    return (x + y | 0) + z | 0;
-  };
+  return z => (x + y | 0) + z | 0;
 }
 
 function f3(x) {
-  return function (y, z) {
-    return (x + y | 0) + z | 0;
-  };
+  return (y, z) => (x + y | 0) + z | 0;
 }
 
 eq("File \"arity_deopt.res\", line 47, characters 11-18", 6, 6);

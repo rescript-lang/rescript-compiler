@@ -220,17 +220,13 @@ function old_from_promise_suites_donotuse(name, suites) {
   let match = $$Array.to_list(Process.argv);
   if (match) {
     if (is_mocha()) {
-      describe(name, (function () {
-        List.iter((function (param) {
-          let code = param[1];
-          it(param[0], (function () {
-            return code.then(function (x) {
-              handleCode(x);
-              return val_unit;
-            });
-          }));
-        }), suites);
-      }));
+      describe(name, () => List.iter(param => {
+        let code = param[1];
+        it(param[0], () => code.then(x => {
+          handleCode(x);
+          return val_unit;
+        }));
+      }, suites));
     } else {
       console.log("promise suites");
     }
@@ -244,12 +240,10 @@ function eq_suites(test_id, suites, loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
-        return {
-          TAG: "Eq",
-          _0: x,
-          _1: y
-        };
+      param => ({
+        TAG: "Eq",
+        _0: x,
+        _1: y
       })
     ],
     tl: suites.contents
@@ -261,11 +255,9 @@ function bool_suites(test_id, suites, loc, x) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
-        return {
-          TAG: "Ok",
-          _0: x
-        };
+      param => ({
+        TAG: "Ok",
+        _0: x
       })
     ],
     tl: suites.contents
@@ -277,11 +269,9 @@ function throw_suites(test_id, suites, loc, x) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function (param) {
-        return {
-          TAG: "ThrowAny",
-          _0: x
-        };
+      param => ({
+        TAG: "ThrowAny",
+        _0: x
       })
     ],
     tl: suites.contents

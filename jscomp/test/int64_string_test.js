@@ -1304,7 +1304,7 @@ let random_data = {
   }
 };
 
-Belt_List.forEach(random_data, (function (u) {
+Belt_List.forEach(random_data, u => {
   if (u) {
     if (u.tl) {
       throw new Error("Assert_failure", {
@@ -1331,7 +1331,7 @@ Belt_List.forEach(random_data, (function (u) {
       ]
     }
   });
-}));
+});
 
 eq("File \"int64_string_test.res\", line 195, characters 3-10", Caml_int64.to_string([
   -2097152,

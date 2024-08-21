@@ -96,12 +96,12 @@ function to_buf(b, t) {
     if (l) {
       if (l.tl) {
         Buffer.add_char(b, /* '(' */40);
-        List.iteri((function (i, t$p) {
+        List.iteri((i, t$p) => {
           if (i > 0) {
             Buffer.add_char(b, /* ' ' */32);
           }
           to_buf(b, t$p);
-        }), l);
+        }, l);
         return Buffer.add_char(b, /* ')' */41);
       } else {
         Buffer.add_string(b, "(");
@@ -203,9 +203,7 @@ function _error_eof(t) {
 function expr(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, (function (extra) {
-        return expr(k, extra);
-      }), _error_eof);
+      return _refill(t, extra => expr(k, extra), _error_eof);
     }
     let c = _get(t);
     if (c >= 11) {
@@ -224,9 +222,7 @@ function expr(k, t) {
 function expr_starting_with(c, k, t) {
   if (c >= 42) {
     if (c === 59) {
-      return skip_comment((function (param, param$1) {
-        return expr(k, t);
-      }), t);
+      return skip_comment((param, param$1) => expr(k, t), t);
     }
     if (c === 92) {
       return _error(t, "unexpected '\\'");
@@ -281,9 +277,7 @@ function expr_starting_with(c, k, t) {
 function expr_list(acc, k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, (function (extra) {
-        return expr_list(acc, k, extra);
-      }), _error_eof);
+      return _refill(t, extra => expr_list(acc, k, extra), _error_eof);
     }
     let c = _get(t);
     if (c > 32 || c < 9) {
@@ -297,7 +291,7 @@ function expr_list(acc, k, t) {
     } else if (c > 31 || c < 11) {
       continue;
     }
-    return expr_starting_with(c, (function (last, e) {
+    return expr_starting_with(c, (last, e) => {
       if (last !== undefined) {
         if (last !== 40) {
           if (last !== 41) {
@@ -315,12 +309,10 @@ function expr_list(acc, k, t) {
             });
           }
         } else {
-          return expr_list(/* [] */0, (function (param, l) {
-            return expr_list({
-              hd: l,
-              tl: acc
-            }, k, t);
-          }), t);
+          return expr_list(/* [] */0, (param, l) => expr_list({
+            hd: l,
+            tl: acc
+          }, k, t), t);
         }
       } else {
         return expr_list({
@@ -328,7 +320,7 @@ function expr_list(acc, k, t) {
           tl: acc
         }, k, t);
       }
-    }), t);
+    }, t);
   };
 }
 
@@ -344,11 +336,7 @@ function _return_atom(last, k, t) {
 function atom(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, (function (extra) {
-        return atom(k, extra);
-      }), (function (extra) {
-        return _return_atom(undefined, k, extra);
-      }));
+      return _refill(t, extra => atom(k, extra), extra => _return_atom(undefined, k, extra));
     }
     let c = _get(t);
     let exit = 0;
@@ -392,19 +380,17 @@ function atom(k, t) {
 function quoted(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, (function (extra) {
-        return quoted(k, extra);
-      }), _error_eof);
+      return _refill(t, extra => quoted(k, extra), _error_eof);
     }
     let c = _get(t);
     if (c === 34) {
       return _return_atom(undefined, k, t);
     }
     if (c === 92) {
-      return escaped((function (c) {
+      return escaped(c => {
         Buffer.add_char(t.atom, c);
         return quoted(k, t);
-      }), t);
+      }, t);
     }
     Buffer.add_char(t.atom, c);
     continue;
@@ -413,9 +399,7 @@ function quoted(k, t) {
 
 function escaped(k, t) {
   if (t.i === t.len) {
-    return _refill(t, (function (extra) {
-      return escaped(k, extra);
-    }), _error_eof);
+    return _refill(t, extra => escaped(k, extra), _error_eof);
   }
   let c = _get(t);
   if (c >= 92) {
@@ -459,9 +443,7 @@ function escaped(k, t) {
     return k(/* '"' */34);
   }
   if (_is_digit(c)) {
-    return read2int(c - /* '0' */48 | 0, (function (n) {
-      return k(Char.chr(n));
-    }), t);
+    return read2int(c - /* '0' */48 | 0, n => k(Char.chr(n)), t);
   } else {
     return _error(t, "unexpected escaped char '" + (c + "'"));
   }
@@ -469,9 +451,7 @@ function escaped(k, t) {
 
 function read2int(i, k, t) {
   if (t.i === t.len) {
-    return _refill(t, (function (extra) {
-      return read2int(i, k, extra);
-    }), _error_eof);
+    return _refill(t, extra => read2int(i, k, extra), _error_eof);
   }
   let c = _get(t);
   if (_is_digit(c)) {
@@ -483,9 +463,7 @@ function read2int(i, k, t) {
 
 function read1int(i, k, t) {
   if (t.i === t.len) {
-    return _refill(t, (function (extra) {
-      return read1int(i, k, extra);
-    }), _error_eof);
+    return _refill(t, extra => read1int(i, k, extra), _error_eof);
   }
   let c = _get(t);
   if (_is_digit(c)) {
@@ -498,9 +476,7 @@ function read1int(i, k, t) {
 function skip_comment(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, (function (extra) {
-        return skip_comment(k, extra);
-      }), _error_eof);
+      return _refill(t, extra => skip_comment(k, extra), _error_eof);
     }
     let match = _get(t);
     if (match === 10) {
@@ -513,11 +489,7 @@ function skip_comment(k, t) {
 function expr_or_end(k, t) {
   while (true) {
     if (t.i === t.len) {
-      return _refill(t, (function (extra) {
-        return expr_or_end(k, extra);
-      }), (function (param) {
-        return "End";
-      }));
+      return _refill(t, extra => expr_or_end(k, extra), param => "End");
     }
     let c = _get(t);
     if (c >= 11) {
@@ -534,11 +506,9 @@ function expr_or_end(k, t) {
 }
 
 function next(t) {
-  return expr_or_end((function (param, x) {
-    return {
-      NAME: "Ok",
-      VAL: x
-    };
+  return expr_or_end((param, x) => ({
+    NAME: "Ok",
+    VAL: x
   }), t);
 }
 
@@ -547,7 +517,7 @@ function parse_string(s) {
   let stop = {
     contents: false
   };
-  let refill = function (bytes, i, _len) {
+  let refill = (bytes, i, _len) => {
     if (stop.contents) {
       return 0;
     } else {

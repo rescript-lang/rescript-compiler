@@ -5,9 +5,7 @@ let Caml_array = require("../../lib/js/caml_array.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 
 function map(f, a) {
-  let f$1 = function (x) {
-    return f(x);
-  };
+  let f$1 = x => f(x);
   let l = a.length;
   if (l === 0) {
     return [];
@@ -20,9 +18,7 @@ function map(f, a) {
 }
 
 function init(l, f) {
-  let f$1 = function (x) {
-    return f(x);
-  };
+  let f$1 = x => f(x);
   if (l === 0) {
     return [];
   }
@@ -42,9 +38,7 @@ function init(l, f) {
 }
 
 function fold_left(f, x, a) {
-  let f$1 = function (x, y) {
-    return f(x, y);
-  };
+  let f$1 = (x, y) => f(x, y);
   let r = x;
   for (let i = 0, i_finish = a.length; i < i_finish; ++i) {
     r = f$1(r, a[i]);
@@ -53,15 +47,9 @@ function fold_left(f, x, a) {
 }
 
 function f2() {
-  let arr = init(3000000, (function (i) {
-    return i;
-  }));
-  let b = map((function (i) {
-    return i + i - 1;
-  }), arr);
-  let v = fold_left((function (prim0, prim1) {
-    return prim0 + prim1;
-  }), 0, b);
+  let arr = init(3000000, i => i);
+  let b = map(i => i + i - 1, arr);
+  let v = fold_left((prim0, prim1) => prim0 + prim1, 0, b);
   console.log(Pervasives.string_of_float(v));
 }
 

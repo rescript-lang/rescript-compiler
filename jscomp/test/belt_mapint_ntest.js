@@ -9,8 +9,8 @@ function ok(loc, a) {
   Nodeassert.ok(a, loc);
 }
 
-Nodetest.describe("Belt.Map.Int", (function () {
-  Nodetest.test("set", (function () {
+Nodetest.describe("Belt.Map.Int", () => {
+  Nodetest.test("set", () => {
     let m;
     for (let i = 0; i <= 999999; ++i) {
       m = Belt_MapInt.set(m, i, i);
@@ -22,8 +22,8 @@ Nodetest.describe("Belt.Map.Int", (function () {
       m = Belt_MapInt.remove(m, i$2);
     }
     ok("File \"belt_mapint_ntest.res\", line 24, characters 7-14", Belt_MapInt.isEmpty(m));
-  }));
-}));
+  });
+});
 
 let M;
 

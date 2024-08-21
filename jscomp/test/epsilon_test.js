@@ -8,24 +8,20 @@ let v = (Number.EPSILON?Number.EPSILON:2.220446049250313e-16);
 
 let suites_0 = [
   "epsilon",
-  (function (param) {
-    return {
-      TAG: "Eq",
-      _0: Pervasives.epsilon_float,
-      _1: v
-    };
+  param => ({
+    TAG: "Eq",
+    _0: Pervasives.epsilon_float,
+    _1: v
   })
 ];
 
 let suites_1 = {
   hd: [
     "raw_epsilon",
-    (function (param) {
-      return {
-        TAG: "Eq",
-        _0: 2.220446049250313e-16,
-        _1: v
-      };
+    param => ({
+      TAG: "Eq",
+      _0: 2.220446049250313e-16,
+      _1: v
     })
   ],
   tl: /* [] */0

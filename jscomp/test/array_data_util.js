@@ -4,15 +4,11 @@
 let Belt_Array = require("../../lib/js/belt_Array.js");
 
 function range(i, j) {
-  return Belt_Array.makeBy((j - i | 0) + 1 | 0, (function (k) {
-    return k + i | 0;
-  }));
+  return Belt_Array.makeBy((j - i | 0) + 1 | 0, k => k + i | 0);
 }
 
 function randomRange(i, j) {
-  let v = Belt_Array.makeBy((j - i | 0) + 1 | 0, (function (k) {
-    return k + i | 0;
-  }));
+  let v = Belt_Array.makeBy((j - i | 0) + 1 | 0, k => k + i | 0);
   Belt_Array.shuffleInPlace(v);
   return v;
 }

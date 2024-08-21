@@ -63,7 +63,7 @@ function inOrder3(v) {
     Belt_MutableStack.push(s, v$1);
     current = v$1.left;
   };
-  Belt_MutableStack.dynamicPopIter(s, (function (popped) {
+  Belt_MutableStack.dynamicPopIter(s, popped => {
     Belt_MutableQueue.add(q, popped.value);
     let current = popped.right;
     while (current !== undefined) {
@@ -71,7 +71,7 @@ function inOrder3(v) {
       Belt_MutableStack.push(s, v);
       current = v.left;
     };
-  }));
+  });
   return Belt_MutableQueue.toArray(q);
 }
 

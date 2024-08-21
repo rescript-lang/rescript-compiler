@@ -767,7 +767,7 @@ let i$7 = {
   contents: 1
 };
 
-Belt_MutableQueue.forEach(q$5, (function (j) {
+Belt_MutableQueue.forEach(q$5, j => {
   if (i$7.contents !== j) {
     throw new Error("Assert_failure", {
       cause: {
@@ -781,7 +781,7 @@ Belt_MutableQueue.forEach(q$5, (function (j) {
     });
   }
   i$7.contents = i$7.contents + 1 | 0;
-}));
+});
 
 let q1$1 = {
   length: 0,
@@ -1312,11 +1312,7 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$4), v)) {
   });
 }
 
-if (Belt_MutableQueue.reduce(q2$4, 0, (function (x, y) {
-    return x - y | 0;
-  })) !== Belt_Array.reduce(v, 0, (function (x, y) {
-    return x - y | 0;
-  }))) {
+if (Belt_MutableQueue.reduce(q2$4, 0, (x, y) => x - y | 0) !== Belt_Array.reduce(v, 0, (x, y) => x - y | 0)) {
   throw new Error("Assert_failure", {
     cause: {
       RE_EXN_ID: "Assert_failure",
@@ -1338,9 +1334,7 @@ let q$6 = Belt_MutableQueue.fromArray([
   4
 ]);
 
-let q1$5 = Belt_MutableQueue.map(q$6, (function (x) {
-  return x - 1 | 0;
-}));
+let q1$5 = Belt_MutableQueue.map(q$6, x => x - 1 | 0);
 
 eq("File \"bs_queue_test.res\", line 197, characters 5-12", Belt_MutableQueue.toArray(q1$5), [
   0,
@@ -1353,9 +1347,7 @@ let q$7 = Belt_MutableQueue.fromArray([]);
 
 b("File \"bs_queue_test.res\", line 198, characters 4-11", q$7.length === 0);
 
-let q$8 = Belt_MutableQueue.map(Belt_MutableQueue.fromArray([]), (function (x) {
-  return x + 1 | 0;
-}));
+let q$8 = Belt_MutableQueue.map(Belt_MutableQueue.fromArray([]), x => x + 1 | 0);
 
 b("File \"bs_queue_test.res\", line 199, characters 4-11", q$8.length === 0);
 

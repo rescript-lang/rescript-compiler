@@ -2,9 +2,7 @@
 'use strict';
 
 
-let f8 = import("a").then(function (m) {
-  return m.default;
-});
+let f8 = import("a").then(m => m.default);
 
 exports.f8 = f8;
 /* f8 Not a pure module */

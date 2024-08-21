@@ -448,7 +448,7 @@ function partition(p, x) {
 }
 
 function of_sorted_list(l) {
-  let sub = function (n, l) {
+  let sub = (n, l) => {
     switch (n) {
       case 0 :
         return [
@@ -553,7 +553,7 @@ function of_sorted_list(l) {
 }
 
 function of_sorted_array(l) {
-  let sub = function (start, n, l) {
+  let sub = (start, n, l) => {
     if (n === 0) {
       return "Empty";
     }
@@ -619,7 +619,7 @@ function of_sorted_array(l) {
 }
 
 function is_ordered(cmp, tree) {
-  let is_ordered_min_max = function (tree) {
+  let is_ordered_min_max = tree => {
     if (typeof tree !== "object") {
       return "Empty";
     }

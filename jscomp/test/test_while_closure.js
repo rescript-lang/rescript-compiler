@@ -8,26 +8,22 @@ let v = {
   contents: 0
 };
 
-let arr = Caml_array.make(10, (function () {
-  
-}));
+let arr = Caml_array.make(10, () => {});
 
 function f() {
   let n = 0;
   while (n < 10) {
     let j = n;
-    Caml_array.set(arr, j, (function () {
+    Caml_array.set(arr, j, () => {
       v.contents = v.contents + j | 0;
-    }));
+    });
     n = n + 1 | 0;
   };
 }
 
 f();
 
-$$Array.iter((function (x) {
-  x();
-}), arr);
+$$Array.iter(x => x(), arr);
 
 console.log(String(v.contents));
 

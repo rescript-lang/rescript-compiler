@@ -22,24 +22,20 @@ function v(x) {
 
 let suites_0 = [
   "const",
-  (function (param) {
-    return {
-      TAG: "Eq",
-      _0: 1,
-      _1: v0
-    };
+  param => ({
+    TAG: "Eq",
+    _0: 1,
+    _1: v0
   })
 ];
 
 let suites_1 = {
   hd: [
     "other",
-    (function (param) {
-      return {
-        TAG: "Eq",
-        _0: 3,
-        _1: v("abc")
-      };
+    param => ({
+      TAG: "Eq",
+      _0: 3,
+      _1: v("abc")
     })
   ],
   tl: /* [] */0

@@ -3,16 +3,12 @@
 
 
 function add(x) {
-  return function (y, z) {
-    return (x + y | 0) + z | 0;
-  };
+  return (y, z) => (x + y | 0) + z | 0;
 }
 
 function f(u) {
   let f$1 = add(u);
-  return function (extra) {
-    return f$1(1, extra);
-  };
+  return extra => f$1(1, extra);
 }
 
 exports.add = add;

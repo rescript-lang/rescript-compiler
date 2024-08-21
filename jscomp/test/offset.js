@@ -865,7 +865,7 @@ function of_list(l) {
   if (match$3) {
     if (match$3.tl) {
       let l$1 = List.sort_uniq($$String.compare, l);
-      let sub = function (n, l) {
+      let sub = (n, l) => {
         switch (n) {
           case 0 :
             return [

@@ -2,9 +2,7 @@
 'use strict';
 
 
-let a = import("./side_effect2.js").then(function (m) {
-  return m.a;
-});
+let a = import("./side_effect2.js").then(m => m.a);
 
 let M = await import("./side_effect.js");
 

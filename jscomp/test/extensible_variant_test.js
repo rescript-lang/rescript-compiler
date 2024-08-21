@@ -38,46 +38,40 @@ function to_int(x) {
 
 let suites_0 = [
   "test_int",
-  (function (param) {
-    return {
-      TAG: "Eq",
-      _0: 3,
-      _1: to_int({
-        RE_EXN_ID: Int,
-        _1: 3,
-        _2: 0
-      })
-    };
+  param => ({
+    TAG: "Eq",
+    _0: 3,
+    _1: to_int({
+      RE_EXN_ID: Int,
+      _1: 3,
+      _2: 0
+    })
   })
 ];
 
 let suites_1 = {
   hd: [
     "test_int2",
-    (function (param) {
-      return {
-        TAG: "Eq",
-        _0: 0,
-        _1: to_int({
-          RE_EXN_ID: Int$1,
-          _1: 3,
-          _2: 0
-        })
-      };
+    param => ({
+      TAG: "Eq",
+      _0: 0,
+      _1: to_int({
+        RE_EXN_ID: Int$1,
+        _1: 3,
+        _2: 0
+      })
     })
   ],
   tl: {
     hd: [
       "test_string",
-      (function (param) {
-        return {
-          TAG: "Eq",
-          _0: -1,
-          _1: to_int({
-            RE_EXN_ID: Str,
-            _1: "x"
-          })
-        };
+      param => ({
+        TAG: "Eq",
+        _0: -1,
+        _1: to_int({
+          RE_EXN_ID: Str,
+          _1: "x"
+        })
       })
     ],
     tl: /* [] */0

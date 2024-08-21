@@ -10,17 +10,17 @@ async function willBeInlined() {
 let inlined = willBeInlined();
 
 function wrapSomethingAsync() {
-  ((async function (param) {
-      let test = await Promise.resolve("Test");
-      console.log(test);
-    })(777));
+  (async param => {
+    let test = await Promise.resolve("Test");
+    console.log(test);
+  })(777);
 }
 
 function wrapSomethingAsync2() {
-  ((async function () {
-      let test = await Promise.resolve("Test");
-      console.log(test);
-    })());
+  (async () => {
+    let test = await Promise.resolve("Test");
+    console.log(test);
+  })();
 }
 
 async function doSomethingAsync(someAsyncFunction) {
@@ -64,21 +64,15 @@ let tui = 3;
 let tuia = uncurriedIdAsync(3);
 
 function nested1() {
-  return async function (y) {
-    return await y;
-  };
+  return async y => await y;
 }
 
 async function nested2() {
-  return async function (y) {
-    return await y;
-  };
+  return async y => await y;
 }
 
 function onSubmit() {
-  return React.useCallback(async function (b) {
-    return await b;
-  });
+  return React.useCallback(async b => await b);
 }
 
 exports.willBeInlined = willBeInlined;

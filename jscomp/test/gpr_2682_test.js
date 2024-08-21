@@ -30,16 +30,16 @@ let N = {
 
 forIn({
   x: 3
-}, (function (x) {
+}, x => {
   console.log(x);
-}));
+});
 
 forIn({
   x: 3,
   y: 3
-}, (function (x) {
+}, x => {
   console.log(x);
-}));
+});
 
 let f3 = (()=>true);
 

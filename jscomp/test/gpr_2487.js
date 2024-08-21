@@ -11,9 +11,7 @@ let b = Belt_Array.eq([
   1,
   2,
   3
-], (function (prim0, prim1) {
-  return prim0 === prim1;
-}));
+], (prim0, prim1) => prim0 === prim1);
 
 let A;
 

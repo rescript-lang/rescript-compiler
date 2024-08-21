@@ -9,24 +9,22 @@ function test() {
   let v = {
     contents: 0
   };
-  let f = function (_n, _acc) {
+  let f = (_n, _acc) => {
     while (true) {
       let acc = _acc;
       let n = _n;
       if (n === 0) {
         return acc();
       }
-      _acc = (function () {
+      _acc = () => {
         v.contents = v.contents + n | 0;
         return acc();
-      });
+      };
       _n = n - 1 | 0;
       continue;
     };
   };
-  f(10, (function () {
-    
-  }));
+  f(10, () => {});
   return v.contents;
 }
 
@@ -34,17 +32,13 @@ function test_closure() {
   let v = {
     contents: 0
   };
-  let arr = Caml_array.make(6, (function (x) {
-    return x;
-  }));
+  let arr = Caml_array.make(6, x => x);
   for (let i = 0; i <= 5; ++i) {
-    Caml_array.set(arr, i, (function (param) {
-      return i;
-    }));
+    Caml_array.set(arr, i, param => i);
   }
-  $$Array.iter((function (i) {
+  $$Array.iter(i => {
     v.contents = v.contents + i(0) | 0;
-  }), arr);
+  }, arr);
   return v.contents;
 }
 
@@ -52,52 +46,42 @@ function test_closure2() {
   let v = {
     contents: 0
   };
-  let arr = Caml_array.make(6, (function (x) {
-    return x;
-  }));
+  let arr = Caml_array.make(6, x => x);
   for (let i = 0; i <= 5; ++i) {
     let j = i + i | 0;
-    Caml_array.set(arr, i, (function (param) {
-      return j;
-    }));
+    Caml_array.set(arr, i, param => j);
   }
-  $$Array.iter((function (i) {
+  $$Array.iter(i => {
     v.contents = v.contents + i(0) | 0;
-  }), arr);
+  }, arr);
   return v.contents;
 }
 
 Mt.from_pair_suites("Cps_test", {
   hd: [
     "cps_test_sum",
-    (function () {
-      return {
-        TAG: "Eq",
-        _0: 55,
-        _1: test()
-      };
+    () => ({
+      TAG: "Eq",
+      _0: 55,
+      _1: test()
     })
   ],
   tl: {
     hd: [
       "cps_test_closure",
-      (function () {
-        return {
-          TAG: "Eq",
-          _0: 15,
-          _1: test_closure()
-        };
+      () => ({
+        TAG: "Eq",
+        _0: 15,
+        _1: test_closure()
       })
     ],
     tl: {
       hd: [
         "cps_test_closure2",
-        (function () {
-          return {
-            TAG: "Eq",
-            _0: 30,
-            _1: test_closure2()
-          };
+        () => ({
+          TAG: "Eq",
+          _0: 30,
+          _1: test_closure2()
         })
       ],
       tl: /* [] */0

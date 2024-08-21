@@ -16,7 +16,7 @@ function parse(token) {
     first: "Nil",
     last: "Nil"
   };
-  let token$1 = function () {
+  let token$1 = () => {
     if (look_ahead.length !== 0) {
       return Queue.pop(look_ahead);
     }
@@ -29,7 +29,7 @@ function parse(token) {
       };
     }
   };
-  let parse_atom = function () {
+  let parse_atom = () => {
     let n = token$1();
     switch (n.TAG) {
       case "Kwd" :
@@ -73,10 +73,8 @@ function parse(token) {
         });
     }
   };
-  let parse_term = function () {
-    return parse_term_aux(parse_atom());
-  };
-  let parse_expr_aux = function (e1) {
+  let parse_term = () => parse_term_aux(parse_atom());
+  let parse_expr_aux = e1 => {
     let e = token$1();
     if (e.TAG === "Kwd") {
       switch (e._0) {
@@ -93,7 +91,7 @@ function parse(token) {
       return e1;
     }
   };
-  let parse_term_aux = function (e1) {
+  let parse_term_aux = e1 => {
     let e = token$1();
     if (e.TAG === "Kwd") {
       switch (e._0) {
@@ -113,11 +111,9 @@ function parse(token) {
   let r = parse_expr_aux(parse_term());
   return [
     r,
-    Queue.fold((function (acc, x) {
-      return {
-        hd: x,
-        tl: acc
-      };
+    Queue.fold((acc, x) => ({
+      hd: x,
+      tl: acc
     }), /* [] */0, look_ahead)
   ];
 }
@@ -144,9 +140,7 @@ let lexer = Genlex.make_lexer({
 
 function token(chars) {
   let strm = lexer(chars);
-  return function () {
-    return Stream.next(strm);
-  };
+  return () => Stream.next(strm);
 }
 
 function l_parse(token) {
@@ -155,7 +149,7 @@ function l_parse(token) {
     first: "Nil",
     last: "Nil"
   };
-  let token$1 = function () {
+  let token$1 = () => {
     if (look_ahead.length !== 0) {
       return Queue.pop(look_ahead);
     }
@@ -168,7 +162,7 @@ function l_parse(token) {
       };
     }
   };
-  let parse_f = function () {
+  let parse_f = () => {
     let i = token$1();
     switch (i.TAG) {
       case "Kwd" :
@@ -210,7 +204,7 @@ function l_parse(token) {
         });
     }
   };
-  let parse_f_aux = function (_a) {
+  let parse_f_aux = _a => {
     while (true) {
       let a = _a;
       let t = token$1();
@@ -232,7 +226,7 @@ function l_parse(token) {
       }
     };
   };
-  let parse_t_aux = function (_a) {
+  let parse_t_aux = _a => {
     while (true) {
       let a = _a;
       let t = token$1();
@@ -254,17 +248,13 @@ function l_parse(token) {
       }
     };
   };
-  let parse_t = function () {
-    return parse_f_aux(parse_f());
-  };
+  let parse_t = () => parse_f_aux(parse_f());
   let r = parse_t_aux(parse_t());
   return [
     r,
-    Queue.fold((function (acc, x) {
-      return {
-        hd: x,
-        tl: acc
-      };
+    Queue.fold((acc, x) => ({
+      hd: x,
+      tl: acc
     }), /* [] */0, look_ahead)
   ];
 }
@@ -282,12 +272,10 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
-        return {
-          TAG: "Eq",
-          _0: x,
-          _1: y
-        };
+      () => ({
+        TAG: "Eq",
+        _0: x,
+        _1: y
       })
     ],
     tl: suites.contents

@@ -6,7 +6,7 @@ let $$Array = require("../../lib/js/array.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 
 function f() {
-  let f$1 = function (_acc, _n) {
+  let f$1 = (_acc, _n) => {
     while (true) {
       let n = _n;
       let acc = _acc;
@@ -27,48 +27,44 @@ function f() {
 
 let suites_0 = [
   "acc",
-  (function (param) {
-    return {
-      TAG: "Eq",
-      _0: f(),
-      _1: [
-        0,
-        1,
-        3,
-        6,
-        10,
-        15,
-        21,
-        28,
-        36,
-        45
-      ]
-    };
+  param => ({
+    TAG: "Eq",
+    _0: f(),
+    _1: [
+      0,
+      1,
+      3,
+      6,
+      10,
+      15,
+      21,
+      28,
+      36,
+      45
+    ]
   })
 ];
 
 let suites_1 = {
   hd: [
     "array_to_list",
-    (function (param) {
-      return {
-        TAG: "Eq",
-        _0: {
-          hd: 1,
+    param => ({
+      TAG: "Eq",
+      _0: {
+        hd: 1,
+        tl: {
+          hd: 2,
           tl: {
-            hd: 2,
-            tl: {
-              hd: 3,
-              tl: /* [] */0
-            }
+            hd: 3,
+            tl: /* [] */0
           }
-        },
-        _1: $$Array.to_list([
-          1,
-          2,
-          3
-        ])
-      };
+        }
+      },
+      _1: $$Array.to_list([
+        1,
+        2,
+        3
+      ])
     })
   ],
   tl: /* [] */0

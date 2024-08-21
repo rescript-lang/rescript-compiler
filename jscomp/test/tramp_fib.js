@@ -21,22 +21,14 @@ function fib(n, k) {
   } else {
     return {
       TAG: "Suspend",
-      _0: (function () {
-        return fib(n - 1 | 0, (function (v0) {
-          return fib(n - 2 | 0, (function (v1) {
-            return k(v0 + v1 | 0);
-          }));
-        }));
-      })
+      _0: () => fib(n - 1 | 0, v0 => fib(n - 2 | 0, v1 => k(v0 + v1 | 0)))
     };
   }
 }
 
-let u = fib(10, (function (x) {
-  return {
-    TAG: "Continue",
-    _0: x
-  };
+let u = fib(10, x => ({
+  TAG: "Continue",
+  _0: x
 }));
 
 function iter(_bounce) {
@@ -55,9 +47,7 @@ function isEven(n) {
     if (n !== 1) {
       return {
         TAG: "Suspend",
-        _0: (function () {
-          return isOdd(n - 1 | 0);
-        })
+        _0: () => isOdd(n - 1 | 0)
       };
     } else {
       return {

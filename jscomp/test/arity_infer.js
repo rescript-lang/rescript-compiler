@@ -5,9 +5,7 @@
 function f0(x) {
   let tmp;
   if (x > 3) {
-    tmp = (function (x) {
-      return x + 1 | 0;
-    });
+    tmp = x => x + 1 | 0;
   } else {
     throw new Error("Not_found", {
       cause: {
@@ -31,24 +29,16 @@ function f3(x) {
   let tmp;
   switch (x) {
     case 0 :
-      tmp = (function (x) {
-        return x + 1 | 0;
-      });
+      tmp = x => x + 1 | 0;
       break;
     case 1 :
-      tmp = (function (x) {
-        return x + 2 | 0;
-      });
+      tmp = x => x + 2 | 0;
       break;
     case 2 :
-      tmp = (function (x) {
-        return x + 3 | 0;
-      });
+      tmp = x => x + 3 | 0;
       break;
     case 3 :
-      tmp = (function (x) {
-        return x + 4 | 0;
-      });
+      tmp = x => x + 4 | 0;
       break;
     default:
       throw new Error("Not_found", {

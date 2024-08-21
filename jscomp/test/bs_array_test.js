@@ -32,12 +32,10 @@ function neq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
-        return {
-          TAG: "Neq",
-          _0: x,
-          _1: y
-        };
+      () => ({
+        TAG: "Neq",
+        _0: x,
+        _1: y
       })
     ],
     tl: suites.contents
@@ -53,13 +51,7 @@ console.log([
   2,
   3,
   4
-].filter(function (x) {
-  return x > 2;
-}).map(function (x, i) {
-  return x + i | 0;
-}).reduce((function (x, y) {
-  return x + y | 0;
-}), 0));
+].filter(x => x > 2).map((x, i) => x + i | 0).reduce((x, y) => x + y | 0, 0));
 
 let v = [
   1,
@@ -80,19 +72,19 @@ eq("File \"bs_array_test.res\", line 31, characters 4-11", [
   undefined
 ]);
 
-$$throw("File \"bs_array_test.res\", line 35, characters 8-15", (function () {
+$$throw("File \"bs_array_test.res\", line 35, characters 8-15", () => {
   Belt_Array.getExn([
     0,
     1
   ], -1);
-}));
+});
 
-$$throw("File \"bs_array_test.res\", line 36, characters 8-15", (function () {
+$$throw("File \"bs_array_test.res\", line 36, characters 8-15", () => {
   Belt_Array.getExn([
     0,
     1
   ], 2);
-}));
+});
 
 function f(extra) {
   return Belt_Array.getExn([
@@ -109,19 +101,15 @@ b("File \"bs_array_test.res\", line 38, characters 4-11", Caml_obj.equal([
   1
 ]));
 
-$$throw("File \"bs_array_test.res\", line 44, characters 8-15", (function () {
-  Belt_Array.setExn([
-    0,
-    1
-  ], -1, 0);
-}));
+$$throw("File \"bs_array_test.res\", line 44, characters 8-15", () => Belt_Array.setExn([
+  0,
+  1
+], -1, 0));
 
-$$throw("File \"bs_array_test.res\", line 45, characters 8-15", (function () {
-  Belt_Array.setExn([
-    0,
-    1
-  ], 2, 0);
-}));
+$$throw("File \"bs_array_test.res\", line 45, characters 8-15", () => Belt_Array.setExn([
+  0,
+  1
+], 2, 0));
 
 b("File \"bs_array_test.res\", line 46, characters 4-11", !Belt_Array.set([
   1,
@@ -186,9 +174,7 @@ function add(x, y) {
   return x + y | 0;
 }
 
-let v$5 = Belt_Array.makeBy(3000, (function (i) {
-  return i;
-}));
+let v$5 = Belt_Array.makeBy(3000, i => i);
 
 let u = Belt_Array.shuffle(v$5);
 
@@ -232,34 +218,26 @@ b("File \"bs_array_test.res\", line 101, characters 4-11", Caml_obj.equal(Belt_A
 
 b("File \"bs_array_test.res\", line 102, characters 4-11", Caml_obj.equal(Belt_Array.rangeBy(3, 3, 1), [3]));
 
-eq("File \"bs_array_test.res\", line 106, characters 5-12", Belt_Array.reduceReverse([], 100, (function (prim0, prim1) {
-  return prim0 - prim1 | 0;
-})), 100);
+eq("File \"bs_array_test.res\", line 106, characters 5-12", Belt_Array.reduceReverse([], 100, (prim0, prim1) => prim0 - prim1 | 0), 100);
 
 eq("File \"bs_array_test.res\", line 107, characters 5-12", Belt_Array.reduceReverse([
   1,
   2
-], 100, (function (prim0, prim1) {
-  return prim0 - prim1 | 0;
-})), 97);
+], 100, (prim0, prim1) => prim0 - prim1 | 0), 97);
 
 eq("File \"bs_array_test.res\", line 108, characters 5-12", Belt_Array.reduceReverse([
   1,
   2,
   3,
   4
-], 100, (function (prim0, prim1) {
-  return prim0 - prim1 | 0;
-})), 90);
+], 100, (prim0, prim1) => prim0 - prim1 | 0), 90);
 
 eq("File \"bs_array_test.res\", line 109, characters 5-12", Belt_Array.reduceWithIndex([
   1,
   2,
   3,
   4
-], 0, (function (acc, x, i) {
-  return (acc + x | 0) + i | 0;
-})), 16);
+], 0, (acc, x, i) => (acc + x | 0) + i | 0), 16);
 
 b("File \"bs_array_test.res\", line 110, characters 4-11", Belt_Array.reduceReverse2([
   1,
@@ -268,9 +246,7 @@ b("File \"bs_array_test.res\", line 110, characters 4-11", Belt_Array.reduceReve
 ], [
   1,
   2
-], 0, (function (acc, x, y) {
-  return (acc + x | 0) + y | 0;
-})) === 6);
+], 0, (acc, x, y) => (acc + x | 0) + y | 0) === 6);
 
 function addone(x) {
   return x + 1 | 0;
@@ -300,13 +276,9 @@ function makeMatrixExn(sx, sy, init) {
   return res;
 }
 
-eq("File \"bs_array_test.res\", line 129, characters 5-12", Belt_Array.makeBy(0, (function (param) {
-  return 1;
-})), []);
+eq("File \"bs_array_test.res\", line 129, characters 5-12", Belt_Array.makeBy(0, param => 1), []);
 
-eq("File \"bs_array_test.res\", line 130, characters 5-12", Belt_Array.makeBy(3, (function (i) {
-  return i;
-})), [
+eq("File \"bs_array_test.res\", line 130, characters 5-12", Belt_Array.makeBy(3, i => i), [
   0,
   1,
   2
@@ -345,9 +317,7 @@ eq("File \"bs_array_test.res\", line 134, characters 5-12", makeMatrixExn(1, 1, 
 
 eq("File \"bs_array_test.res\", line 135, characters 5-12", [].slice(0), []);
 
-eq("File \"bs_array_test.res\", line 136, characters 5-12", Belt_Array.map([], (function (prim) {
-  return prim + 1 | 0;
-})), []);
+eq("File \"bs_array_test.res\", line 136, characters 5-12", Belt_Array.map([], prim => prim + 1 | 0), []);
 
 eq("File \"bs_array_test.res\", line 137, characters 5-12", Belt_Array.mapWithIndex([], add), []);
 
@@ -387,9 +357,7 @@ eq("File \"bs_array_test.res\", line 142, characters 5-12", Belt_Array.map([
   1,
   2,
   3
-], (function (prim) {
-  return prim + 1 | 0;
-})), [
+], prim => prim + 1 | 0), [
   2,
   3,
   4
@@ -428,24 +396,18 @@ eq("File \"bs_array_test.res\", line 146, characters 5-12", Belt_List.toArray({
   3
 ]);
 
-let v$6 = Belt_Array.makeBy(10, (function (i) {
-  return i;
-}));
+let v$6 = Belt_Array.makeBy(10, i => i);
 
-let v0 = Belt_Array.keep(v$6, (function (x) {
-  return x % 2 === 0;
-}));
+let v0 = Belt_Array.keep(v$6, x => x % 2 === 0);
 
-let v1 = Belt_Array.keep(v$6, (function (x) {
-  return x % 3 === 0;
-}));
+let v1 = Belt_Array.keep(v$6, x => x % 3 === 0);
 
-let v2 = Belt_Array.keepMap(v$6, (function (x) {
+let v2 = Belt_Array.keepMap(v$6, x => {
   if (x % 2 === 0) {
     return x + 1 | 0;
   }
   
-}));
+});
 
 eq("File \"bs_array_test.res\", line 160, characters 5-12", v0, [
   0,
@@ -478,9 +440,7 @@ let a = [
   5
 ];
 
-let match = Belt_Array.partition(a, (function (x) {
-  return x % 2 === 0;
-}));
+let match = Belt_Array.partition(a, x => x % 2 === 0);
 
 eq("File \"bs_array_test.res\", line 168, characters 5-12", match[0], [
   2,
@@ -493,9 +453,7 @@ eq("File \"bs_array_test.res\", line 169, characters 5-12", match[1], [
   5
 ]);
 
-let match$1 = Belt_Array.partition(a, (function (x) {
-  return x === 2;
-}));
+let match$1 = Belt_Array.partition(a, x => x === 2);
 
 eq("File \"bs_array_test.res\", line 171, characters 5-12", match$1[0], [2]);
 
@@ -506,9 +464,7 @@ eq("File \"bs_array_test.res\", line 172, characters 5-12", match$1[1], [
   5
 ]);
 
-let match$2 = Belt_Array.partition([], (function (x) {
-  return false;
-}));
+let match$2 = Belt_Array.partition([], x => false);
 
 eq("File \"bs_array_test.res\", line 174, characters 5-12", match$2[0], []);
 
@@ -633,9 +589,7 @@ eq("File \"bs_array_test.res\", line 205, characters 5-12", Belt_Array.sliceToEn
 
 eq("File \"bs_array_test.res\", line 206, characters 5-12", Belt_Array.sliceToEnd(a$2, 6), []);
 
-let a$3 = Belt_Array.makeBy(10, (function (x) {
-  return x;
-}));
+let a$3 = Belt_Array.makeBy(10, x => x);
 
 Belt_Array.fill(a$3, 0, 3, 0);
 
@@ -802,9 +756,7 @@ eq("File \"bs_array_test.res\", line 236, characters 5-12", b$1, [
   3
 ]);
 
-let a0 = Belt_Array.makeBy(10, (function (x) {
-  return x;
-}));
+let a0 = Belt_Array.makeBy(10, x => x);
 
 let b0 = Belt_Array.make(10, 3);
 
@@ -876,9 +828,7 @@ Belt_Array.blit(a0, -11, b0, -11, 2);
 
 eq("File \"bs_array_test.res\", line 253, characters 5-12", b0.slice(0), a0);
 
-let aa = Belt_Array.makeBy(10, (function (x) {
-  return x;
-}));
+let aa = Belt_Array.makeBy(10, x => x);
 
 Belt_Array.blit(aa, -1, aa, 1, 2);
 
@@ -1015,9 +965,7 @@ eq("File \"bs_array_test.res\", line 273, characters 5-12", Belt_Array.zipBy([
   1,
   2,
   3
-], (function (prim0, prim1) {
-  return prim0 - prim1 | 0;
-})), [
+], (prim0, prim1) => prim0 - prim1 | 0), [
   1,
   1,
   1
@@ -1032,15 +980,11 @@ eq("File \"bs_array_test.res\", line 274, characters 5-12", Belt_Array.zipBy([
   3,
   4,
   1
-], (function (prim0, prim1) {
-  return prim0 - prim1 | 0;
-})), Belt_Array.map([
+], (prim0, prim1) => prim0 - prim1 | 0), Belt_Array.map([
   1,
   1,
   1
-], (function (x) {
-  return -x | 0;
-})));
+], x => -x | 0));
 
 eq("File \"bs_array_test.res\", line 275, characters 5-12", Belt_Array.unzip([
   [
@@ -1072,9 +1016,9 @@ function sumUsingForEach(xs) {
   let v = {
     contents: 0
   };
-  Belt_Array.forEach(xs, (function (x) {
+  Belt_Array.forEach(xs, x => {
     v.contents = v.contents + x | 0;
-  }));
+  });
   return v.contents;
 }
 
@@ -1092,33 +1036,25 @@ b("File \"bs_array_test.res\", line 288, characters 4-11", !Belt_Array.every([
   2,
   3,
   4
-], (function (x) {
-  return x > 2;
-})));
+], x => x > 2));
 
 b("File \"bs_array_test.res\", line 289, characters 4-11", Belt_Array.some([
   1,
   3,
   7,
   8
-], (function (x) {
-  return x % 2 === 0;
-})));
+], x => x % 2 === 0));
 
 b("File \"bs_array_test.res\", line 290, characters 4-11", !Belt_Array.some([
   1,
   3,
   7
-], (function (x) {
-  return x % 2 === 0;
-})));
+], x => x % 2 === 0));
 
 b("File \"bs_array_test.res\", line 291, characters 4-11", !Belt_Array.eq([
   0,
   1
-], [1], (function (prim0, prim1) {
-  return prim0 === prim1;
-})));
+], [1], (prim0, prim1) => prim0 === prim1));
 
 let c$1 = {
   contents: 0
@@ -1128,9 +1064,9 @@ b("File \"bs_array_test.res\", line 293, characters 4-11", (Belt_Array.forEachWi
   1,
   1,
   1
-], (function (i, v) {
+], (i, v) => {
   c$1.contents = (c$1.contents + i | 0) + v | 0;
-})), c$1.contents === 6));
+}), c$1.contents === 6));
 
 function id(loc, x) {
   let u = x.slice(0);
@@ -1170,9 +1106,7 @@ function some2(xs, ys, x) {
 eq("File \"bs_array_test.res\", line 326, characters 5-12", every2(/* [] */0, {
   hd: 1,
   tl: /* [] */0
-}, (function (x, y) {
-  return x > y;
-})), true);
+}, (x, y) => x > y), true);
 
 eq("File \"bs_array_test.res\", line 327, characters 5-12", every2({
   hd: 2,
@@ -1183,9 +1117,7 @@ eq("File \"bs_array_test.res\", line 327, characters 5-12", every2({
 }, {
   hd: 1,
   tl: /* [] */0
-}, (function (x, y) {
-  return x > y;
-})), true);
+}, (x, y) => x > y), true);
 
 eq("File \"bs_array_test.res\", line 328, characters 5-12", every2({
   hd: 2,
@@ -1193,9 +1125,7 @@ eq("File \"bs_array_test.res\", line 328, characters 5-12", every2({
 }, {
   hd: 1,
   tl: /* [] */0
-}, (function (x, y) {
-  return x > y;
-})), true);
+}, (x, y) => x > y), true);
 
 eq("File \"bs_array_test.res\", line 329, characters 5-12", every2({
   hd: 2,
@@ -1209,9 +1139,7 @@ eq("File \"bs_array_test.res\", line 329, characters 5-12", every2({
     hd: 4,
     tl: /* [] */0
   }
-}, (function (x, y) {
-  return x > y;
-})), false);
+}, (x, y) => x > y), false);
 
 eq("File \"bs_array_test.res\", line 330, characters 5-12", every2({
   hd: 2,
@@ -1225,16 +1153,12 @@ eq("File \"bs_array_test.res\", line 330, characters 5-12", every2({
     hd: 0,
     tl: /* [] */0
   }
-}, (function (x, y) {
-  return x > y;
-})), true);
+}, (x, y) => x > y), true);
 
 eq("File \"bs_array_test.res\", line 331, characters 5-12", some2(/* [] */0, {
   hd: 1,
   tl: /* [] */0
-}, (function (x, y) {
-  return x > y;
-})), false);
+}, (x, y) => x > y), false);
 
 eq("File \"bs_array_test.res\", line 332, characters 5-12", some2({
   hd: 2,
@@ -1245,9 +1169,7 @@ eq("File \"bs_array_test.res\", line 332, characters 5-12", some2({
 }, {
   hd: 1,
   tl: /* [] */0
-}, (function (x, y) {
-  return x > y;
-})), true);
+}, (x, y) => x > y), true);
 
 eq("File \"bs_array_test.res\", line 333, characters 5-12", some2({
   hd: 2,
@@ -1261,9 +1183,7 @@ eq("File \"bs_array_test.res\", line 333, characters 5-12", some2({
     hd: 4,
     tl: /* [] */0
   }
-}, (function (x, y) {
-  return x > y;
-})), true);
+}, (x, y) => x > y), true);
 
 eq("File \"bs_array_test.res\", line 334, characters 5-12", some2({
   hd: 0,
@@ -1277,9 +1197,7 @@ eq("File \"bs_array_test.res\", line 334, characters 5-12", some2({
     hd: 4,
     tl: /* [] */0
   }
-}, (function (x, y) {
-  return x > y;
-})), false);
+}, (x, y) => x > y), false);
 
 eq("File \"bs_array_test.res\", line 335, characters 5-12", some2({
   hd: 0,
@@ -1293,9 +1211,7 @@ eq("File \"bs_array_test.res\", line 335, characters 5-12", some2({
     hd: 2,
     tl: /* [] */0
   }
-}, (function (x, y) {
-  return x > y;
-})), true);
+}, (x, y) => x > y), true);
 
 eq("File \"bs_array_test.res\", line 339, characters 5-12", Belt_Array.concat([], [
   1,
@@ -1446,33 +1362,25 @@ eq("File \"bs_array_test.res\", line 357, characters 5-12", Belt_Array.getBy([
   1,
   2,
   3
-], (function (x) {
-  return x > 1;
-})), 2);
+], x => x > 1), 2);
 
 eq("File \"bs_array_test.res\", line 358, characters 5-12", Belt_Array.getBy([
   1,
   2,
   3
-], (function (x) {
-  return x > 3;
-})), undefined);
+], x => x > 3), undefined);
 
 eq("File \"bs_array_test.res\", line 362, characters 5-12", Belt_Array.getIndexBy([
   1,
   2,
   3
-], (function (x) {
-  return x > 1;
-})), 1);
+], x => x > 1), 1);
 
 eq("File \"bs_array_test.res\", line 363, characters 5-12", Belt_Array.getIndexBy([
   1,
   2,
   3
-], (function (x) {
-  return x > 3;
-})), undefined);
+], x => x > 3), undefined);
 
 let arr = [];
 

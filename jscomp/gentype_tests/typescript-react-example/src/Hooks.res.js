@@ -6,35 +6,25 @@ import * as ImportHookDefault from "./ImportHookDefault.res.js";
 
 function Hooks(Props) {
   let vehicle = Props.vehicle;
-  let match = React.useState(function () {
-    return 0;
-  });
+  let match = React.useState(() => 0);
   let setCount = match[1];
   let count = match[0];
   return React.createElement("div", undefined, React.createElement("p", undefined, "Hooks example " + (vehicle.name + (" clicked " + (String(count) + " times")))), React.createElement("button", {
-    onClick: (function (param) {
-      setCount(function (param) {
-        return count + 1 | 0;
-      });
-    })
+    onClick: param => setCount(param => count + 1 | 0)
   }, "Click me"), React.createElement(ImportHooks.make, {
     person: {
       name: "Mary",
       age: 71
     },
     children: null,
-    renderMe: (function (x) {
-      return x.randomString;
-    })
+    renderMe: x => x.randomString
   }, "child1", "child2"), React.createElement(ImportHookDefault.make, {
     person: {
       name: "DefaultImport",
       age: 42
     },
     children: null,
-    renderMe: (function (x) {
-      return x.randomString;
-    })
+    renderMe: x => x.randomString
   }, "child1", "child2"));
 }
 
@@ -114,7 +104,7 @@ let WithRename = {
 };
 
 function makeWithRef(vehicle) {
-  return function (ref) {
+  return ref => {
     if (ref == null) {
       return null;
     } else {
@@ -133,15 +123,11 @@ let WithRef = {
   makeWithRef: Hooks$WithRef$makeWithRef
 };
 
-let testForwardRef = React.forwardRef(function (x, y) {
-  return makeWithRef(x.vehicle)(y);
-});
+let testForwardRef = React.forwardRef((x, y) => makeWithRef(x.vehicle)(y));
 
-let input = React.forwardRef(function (r, ref) {
-  return React.createElement("div", {
-    ref: ref
-  }, r.x);
-});
+let input = React.forwardRef((r, ref) => React.createElement("div", {
+  ref: ref
+}, r.x));
 
 let ForwardRef = {
   input: input

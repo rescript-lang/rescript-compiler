@@ -8,9 +8,9 @@ let N = {};
 
 function f(X, xs) {
   X.forEach(xs, {
-    i: (function (x) {
+    i: x => {
       console.log(x.x);
-    })
+    }
   });
 }
 
@@ -19,9 +19,9 @@ Belt_List.forEach({
     x: 3
   },
   tl: /* [] */0
-}, (function (x) {
+}, x => {
   console.log(x.x);
-}));
+});
 
 let Foo = {};
 
@@ -29,9 +29,7 @@ let bar = [{
     foo: "bar"
   }];
 
-Belt_Array.map(bar, (function (b) {
-  return b.foo;
-}));
+Belt_Array.map(bar, b => b.foo);
 
 exports.N = N;
 exports.f = f;

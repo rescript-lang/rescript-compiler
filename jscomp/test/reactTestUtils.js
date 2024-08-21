@@ -7,16 +7,14 @@ let Caml_option = require("../../lib/js/caml_option.js");
 let TestUtils = require("react-dom/test-utils");
 
 function act(func) {
-  let reactFunc = function () {
+  let reactFunc = () => {
     func();
   };
   TestUtils.act(reactFunc);
 }
 
 function actAsync(func) {
-  return TestUtils.act(function () {
-    return func();
-  });
+  return TestUtils.act(() => func());
 }
 
 function changeWithValue(element, value) {
@@ -51,15 +49,11 @@ function findByAllSelector(element, selector) {
 }
 
 function findBySelectorAndTextContent(element, selector, content) {
-  return Belt_Array.getBy(Array.from(element.querySelectorAll(selector)), (function (node) {
-    return node.textContent === content;
-  }));
+  return Belt_Array.getBy(Array.from(element.querySelectorAll(selector)), node => node.textContent === content);
 }
 
 function findBySelectorAndPartialTextContent(element, selector, content) {
-  return Belt_Array.getBy(Array.from(element.querySelectorAll(selector)), (function (node) {
-    return node.textContent.includes(content);
-  }));
+  return Belt_Array.getBy(Array.from(element.querySelectorAll(selector)), node => node.textContent.includes(content));
 }
 
 let DOM = {
@@ -71,16 +65,14 @@ let DOM = {
 
 function prepareContainer(container, param) {
   let containerElement = document.createElement("div");
-  Belt_Option.map(document.body, (function (body) {
-    return body.appendChild(containerElement);
-  }));
+  Belt_Option.map(document.body, body => body.appendChild(containerElement));
   container.contents = Caml_option.some(containerElement);
 }
 
 function cleanupContainer(container, param) {
-  Belt_Option.map(container.contents, (function (prim) {
+  Belt_Option.map(container.contents, prim => {
     prim.remove();
-  }));
+  });
   container.contents = undefined;
 }
 

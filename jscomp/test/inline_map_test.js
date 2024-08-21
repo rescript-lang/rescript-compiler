@@ -144,9 +144,7 @@ function find(x, _x_) {
   };
 }
 
-let m = List.fold_left((function (acc, param) {
-  return add(param[0], param[1], acc);
-}), "Empty", {
+let m = List.fold_left((acc, param) => add(param[0], param[1], acc), "Empty", {
   hd: [
     10,
     /* 'a' */97
@@ -175,12 +173,10 @@ let m = List.fold_left((function (acc, param) {
 Mt.from_pair_suites("Inline_map_test", {
   hd: [
     "find",
-    (function () {
-      return {
-        TAG: "Eq",
-        _0: find(10, m),
-        _1: /* 'a' */97
-      };
+    () => ({
+      TAG: "Eq",
+      _0: find(10, m),
+      _1: /* 'a' */97
     })
   ],
   tl: /* [] */0

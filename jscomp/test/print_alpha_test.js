@@ -5,22 +5,16 @@ let Mt = require("./mt.js");
 
 function f(h, param) {
   console.log(3);
-  return function (x, y) {
-    return h(x, y);
-  };
+  return (x, y) => h(x, y);
 }
 
 Mt.from_pair_suites("Print_alpha_test", {
   hd: [
     "File \"print_alpha_test.res\", line 16, characters 10-17",
-    (function () {
-      return {
-        TAG: "Eq",
-        _0: f((function (prim0, prim1) {
-          return prim0 + prim1 | 0;
-        }), undefined)(1, 2),
-        _1: 3
-      };
+    () => ({
+      TAG: "Eq",
+      _0: f((prim0, prim1) => prim0 + prim1 | 0, undefined)(1, 2),
+      _1: 3
     })
   ],
   tl: /* [] */0

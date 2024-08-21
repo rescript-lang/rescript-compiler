@@ -12,21 +12,13 @@ let v2 = {
   v: 2
 };
 
-process.on("exit", (function (exit_code) {
-  return String(exit_code);
-}));
+process.on("exit", exit_code => String(exit_code));
 
-process.on(1, (function (param) {
-  
-}));
+process.on(1, param => {});
 
-process.on((function (i) {
-  return String(i);
-}), "exit");
+process.on(i => String(i), "exit");
 
-process.on((function (i) {
-  return String(i);
-}), 1);
+process.on(i => String(i), 1);
 
 xx(3, 3, "xxx", "a", "b");
 
@@ -46,14 +38,14 @@ function f(x) {
   x.xx(76, 3, true, false, "你好",  ["你好",1,2,3] ,  [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] ,  [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] , "xxx", 0, "yyy", "b", 1, 2, 3, 4, 5);
 }
 
-process.on("exit", (function (exit_code) {
+process.on("exit", exit_code => {
   console.log("error code: " + String(exit_code));
-}));
+});
 
 function register(p) {
-  p.on("exit", (function (i) {
+  p.on("exit", i => {
     console.log(i);
-  }));
+  });
 }
 
 let config = {

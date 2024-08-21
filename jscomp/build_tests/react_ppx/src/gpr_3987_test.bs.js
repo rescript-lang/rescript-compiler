@@ -33,7 +33,7 @@ let Gpr3987ReproOk = {
   make: make
 };
 
-React.createElement(make, makeProps("test", (function (param, param$1) {
+React.createElement(make, makeProps("test", ((param, param$1) => {
   
 }), undefined));
 
@@ -47,7 +47,7 @@ let Gpr3987ReproOk2 = {
 
 React.createElement(Gpr_3987_test$Gpr3987ReproOk2, {
   value: "test",
-  onChange: (function (param, param$1) {
+  onChange: ((param, param$1) => {
     
   })
 });
@@ -62,7 +62,7 @@ let Gpr3987ReproError = {
 
 React.createElement(Gpr_3987_test$Gpr3987ReproError, {
   value: "test",
-  onChange: (function (param, param$1) {
+  onChange: ((param, param$1) => {
     
   })
 });

@@ -3,7 +3,7 @@
 
 
 function map(f) {
-  return function (x) {
+  return x => {
     if (typeof x !== "object") {
       return "Nil";
     }

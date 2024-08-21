@@ -42,7 +42,7 @@ function f_escaped_not(xs, i) {
 
 function f_escaped_1(xs, i) {
   let x = xs[i];
-  return function () {
+  return () => {
     if (x !== undefined) {
       return x;
     } else {

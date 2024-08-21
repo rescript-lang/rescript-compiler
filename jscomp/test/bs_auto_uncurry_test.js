@@ -16,12 +16,10 @@ function eq(loc, x, y) {
   suites.contents = {
     hd: [
       loc + (" id " + String(test_id.contents)),
-      (function () {
-        return {
-          TAG: "Eq",
-          _0: x,
-          _1: y
-        };
+      () => ({
+        TAG: "Eq",
+        _0: x,
+        _1: y
       })
     ],
     tl: suites.contents
@@ -38,14 +36,14 @@ let xs = {
   contents: /* [] */0
 };
 
-hi(function (x) {
+hi(x => {
   xs.contents = {
     hd: x,
     tl: xs.contents
   };
 });
 
-hi(function (x) {
+hi(x => {
   xs.contents = {
     hd: x,
     tl: xs.contents
@@ -64,9 +62,7 @@ eq("File \"bs_auto_uncurry_test.res\", line 28, characters 5-12", [
   1,
   2,
   3
-].map(function (x) {
-  return x + 1 | 0;
-}), [
+].map(x => x + 1 | 0), [
   2,
   3,
   4
@@ -76,9 +72,7 @@ eq("File \"bs_auto_uncurry_test.res\", line 29, characters 5-12", [
   1,
   2,
   3
-].map(function (x) {
-  return x + 1 | 0;
-}), [
+].map(x => x + 1 | 0), [
   2,
   3,
   4
@@ -88,33 +82,25 @@ eq("File \"bs_auto_uncurry_test.res\", line 31, characters 5-12", [
   1,
   2,
   3
-].reduce((function (prim0, prim1) {
-  return prim0 + prim1 | 0;
-}), 0), 6);
+].reduce((prim0, prim1) => prim0 + prim1 | 0, 0), 6);
 
 eq("File \"bs_auto_uncurry_test.res\", line 33, characters 5-12", [
   1,
   2,
   3
-].reduce((function (x, y, i) {
-  return (x + y | 0) + i | 0;
-}), 0), 9);
+].reduce((x, y, i) => (x + y | 0) + i | 0, 0), 9);
 
 eq("File \"bs_auto_uncurry_test.res\", line 35, characters 5-12", [
   1,
   2,
   3
-].some(function (x) {
-  return x < 1;
-}), false);
+].some(x => x < 1), false);
 
 eq("File \"bs_auto_uncurry_test.res\", line 37, characters 5-12", [
   1,
   2,
   3
-].every(function (x) {
-  return x > 0;
-}), true);
+].every(x => x > 0), true);
 
 Mt.from_pair_suites("Bs_auto_uncurry_test", suites.contents);
 

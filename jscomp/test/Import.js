@@ -3,17 +3,11 @@
 
 
 async function eachIntAsync(list, f) {
-  return (await import("../../lib/js/belt_List.js").then(function (m) {
-    return m.forEach;
-  }))(list, f);
+  return (await import("../../lib/js/belt_List.js").then(m => m.forEach))(list, f);
 }
 
 function eachIntLazy(list, f) {
-  return import("../../lib/js/belt_List.js").then(function (m) {
-    return m.forEach;
-  }).then(function (each) {
-    return Promise.resolve(each(list, f));
-  });
+  return import("../../lib/js/belt_List.js").then(m => m.forEach).then(each => Promise.resolve(each(list, f)));
 }
 
 eachIntLazy({
@@ -25,9 +19,9 @@ eachIntLazy({
       tl: /* [] */0
     }
   }
-}, (function (n) {
+}, n => {
   console.log("lazy", n);
-}));
+});
 
 eachIntAsync({
   hd: 1,
@@ -38,9 +32,9 @@ eachIntAsync({
       tl: /* [] */0
     }
   }
-}, (function (n) {
+}, n => {
   console.log("async", n);
-}));
+});
 
 let beltAsModule = await import("../../lib/js/belt_List.js");
 

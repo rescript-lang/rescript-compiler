@@ -166,16 +166,16 @@ function assertion_test() {
   let m = {
     contents: "Empty"
   };
-  timing("building", (function () {
+  timing("building", () => {
     for (let i = 0; i <= 1000000; ++i) {
       m.contents = add(String(i), String(i), m.contents);
     }
-  }));
-  timing("querying", (function () {
+  });
+  timing("querying", () => {
     for (let i = 0; i <= 1000000; ++i) {
       find(String(i), m.contents);
     }
-  }));
+  });
 }
 
 exports.assertion_test = assertion_test;
