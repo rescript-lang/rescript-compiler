@@ -1,10 +1,8 @@
 @@warning("-45")
 type u = A(int) | B(int, bool) | C(int)
 
-let function_equal_test = try (x => x + 1) == (x => x + 2) catch {
-| Invalid_argument("equal: functional value") => true
-| _ => false
-}
+let fn1 = x => x + 1
+let fn2 = x => x + 2
 
 let suites = ref({
   open Mt
@@ -16,7 +14,9 @@ let suites = ref({
     ("listneq", _ => Eq(true, list{1, 2, 3} > list{1, 2, 2})),
     ("custom_u", _ => Eq(true, (A(3), B(2, false), C(1)) > (A(3), B(2, false), C(0)))),
     ("custom_u2", _ => Eq(true, (A(3), B(2, false), C(1)) == (A(3), B(2, false), C(1)))),
-    ("function", _ => Eq(true, function_equal_test)),
+    ("function", _ => Eq(true, fn1 == fn1)),
+    ("function2", _ => Eq(false, fn1 == fn2)),
+    ("exn", _ => Eq(true, Not_found == Not_found)),
     (__LOC__, _ => Eq(true, None < Some(1))),
     (__LOC__, _ => Eq(true, None < Some([1, 30]))),
     (__LOC__, _ => Eq(true, Some([1, 30]) > None)),

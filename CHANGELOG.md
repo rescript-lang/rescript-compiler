@@ -12,6 +12,10 @@
 
 # 12.0.0-alpha.2 (Unreleased)
 
+#### :rocket: New Feature
+
+- Updated `==` to improve performance and start supporting comparison of `Error` instances. Also, it stopped raising error on comparison of two different functions. https://github.com/rescript-lang/rescript-compiler/pull/6937
+
 #### :nail_care: Polish
 
 - Improve formatting in the generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6932
