@@ -10,5 +10,6 @@ opam install ocaml-lsp-server -y
 
 # Add OPAM environment setup to shell startup script
 echo 'eval $(opam env)' >> ~/.zshrc
+echo 'eval $(opam env)' >> ~/.bashrc
 
 npm install --ignore-scripts
