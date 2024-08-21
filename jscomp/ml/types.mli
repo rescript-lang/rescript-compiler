@@ -350,6 +350,7 @@ type extension_constructor =
       ext_private: private_flag;
       ext_loc: Location.t;
       ext_attributes: Parsetree.attributes;
+      ext_is_exception: bool;
     }
 
 and type_transparence =

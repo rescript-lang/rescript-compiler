@@ -313,7 +313,8 @@ let extension_constructor s ext =
       ext_ret_type = may_map (typexp s) ext.ext_ret_type;
       ext_private = ext.ext_private;
       ext_attributes = attrs s ext.ext_attributes;
-      ext_loc = if s.for_saving then Location.none else ext.ext_loc; }
+      ext_loc = if s.for_saving then Location.none else ext.ext_loc;
+      ext_is_exception = ext.ext_is_exception; }
   in
     cleanup_types ();
     ext

@@ -1,4 +1,4 @@
-/* for o in jscomp/test/*test.js ; do npx mocha  $o ; done */*/
+/* for o in jscomp/test/*test.js ; do npx mocha  $o ; done */ */
 
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
@@ -7,15 +7,19 @@ let eq = (loc, x, y) => Mt.eq_suites(~test_id, ~suites, loc, x, y)
 /* Record_extension */
 type t0 = ..
 type t0 += Inline_record({x: int, y: string})
+type t0 += SinglePayload(string) | TuplePayload(int, string)
 
 let f = x =>
   switch x {
   | Inline_record({x, y}) => Some(x + int_of_string(y))
+  | SinglePayload(v) => Some(int_of_string(v))
+  | TuplePayload(v0, v1) => Some(v0 + int_of_string(v1))
   | _ => None
   }
-let v0 = Inline_record({x: 3, y: "4"})
 
-eq(__LOC__, f(v0), Some(7))
+eq(__LOC__, f(Inline_record({x: 3, y: "4"})), Some(7))
+eq(__LOC__, f(SinglePayload("1")), Some(1))
+eq(__LOC__, f(TuplePayload(1, "2")), Some(3))
 
 /* Record_unboxed */
 type t1 = | @unboxed A({x: int})
@@ -51,5 +55,9 @@ let u = f =>
   | C(x) => x.name
   | _ => -1
   }
+
+eq(__LOC__, u(() => raise(A({name: 1, x: 1}))), 2)
+eq(__LOC__, u(() => raise(B(1, 2))), 3)
+eq(__LOC__, u(() => raise(C({name: 4}))), 4)
 
 let () = Mt.from_pair_suites(__LOC__, suites.contents)

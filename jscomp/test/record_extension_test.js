@@ -20,20 +20,38 @@ function eq(loc, x, y) {
 
 let Inline_record = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.Inline_record");
 
+let SinglePayload = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.SinglePayload");
+
+let TuplePayload = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.TuplePayload");
+
 function f(x) {
   if (x.RE_EXN_ID === Inline_record) {
     return x.x + Caml_format.int_of_string(x.y) | 0;
+  } else if (x.RE_EXN_ID === SinglePayload) {
+    return Caml_format.int_of_string(x._1);
+  } else if (x.RE_EXN_ID === TuplePayload) {
+    return x._1 + Caml_format.int_of_string(x._2) | 0;
+  } else {
+    return;
   }
-  
 }
 
-let v0 = {
+eq("File \"record_extension_test.res\", line 20, characters 3-10", f({
   RE_EXN_ID: Inline_record,
   x: 3,
   y: "4"
-};
+}), 7);
 
-eq("File \"record_extension_test.res\", line 18, characters 3-10", f(v0), 7);
+eq("File \"record_extension_test.res\", line 21, characters 3-10", f({
+  RE_EXN_ID: SinglePayload,
+  _1: "1"
+}), 1);
+
+eq("File \"record_extension_test.res\", line 22, characters 3-10", f({
+  RE_EXN_ID: TuplePayload,
+  _1: 1,
+  _2: "2"
+}), 3);
 
 function f2(x) {
   if (typeof x !== "object" || x.TAG !== "C") {
@@ -78,14 +96,44 @@ function u(f) {
   }
 }
 
-Mt.from_pair_suites("File \"record_extension_test.res\", line 55, characters 29-36", suites.contents);
+eq("File \"record_extension_test.res\", line 59, characters 3-10", u(function () {
+  throw new Error(A, {
+    cause: {
+      RE_EXN_ID: A,
+      name: 1,
+      x: 1
+    }
+  });
+}), 2);
+
+eq("File \"record_extension_test.res\", line 60, characters 3-10", u(function () {
+  throw new Error(B, {
+    cause: {
+      RE_EXN_ID: B,
+      _1: 1,
+      _2: 2
+    }
+  });
+}), 3);
+
+eq("File \"record_extension_test.res\", line 61, characters 3-10", u(function () {
+  throw new Error(C, {
+    cause: {
+      RE_EXN_ID: C,
+      name: 4
+    }
+  });
+}), 4);
+
+Mt.from_pair_suites("File \"record_extension_test.res\", line 63, characters 29-36", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
 exports.Inline_record = Inline_record;
+exports.SinglePayload = SinglePayload;
+exports.TuplePayload = TuplePayload;
 exports.f = f;
-exports.v0 = v0;
 exports.f2 = f2;
 exports.f2_with = f2_with;
 exports.A = A;

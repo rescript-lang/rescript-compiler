@@ -1556,21 +1556,23 @@ let transl_extension_constructor env type_path type_params
         in
         args, ret_type, Text_rebind(path, lid)
   in
+  let is_exception = Path.same type_path Predef.path_exn in
   let ext =
-    { ext_type_path = type_path;
+    { Types.ext_type_path = type_path;
       ext_type_params = typext_params;
       ext_args = args;
       ext_ret_type = ret_type;
       ext_private = priv;
-      Types.ext_loc = sext.pext_loc;
-      Types.ext_attributes = sext.pext_attributes; }
+      ext_loc = sext.pext_loc;
+      ext_attributes = sext.pext_attributes;
+      ext_is_exception = is_exception; }
   in
-    { ext_id = id;
+    { Typedtree.ext_id = id;
       ext_name = sext.pext_name;
       ext_type = ext;
       ext_kind = kind;
-      Typedtree.ext_loc = sext.pext_loc;
-      Typedtree.ext_attributes = sext.pext_attributes; }
+      ext_loc = sext.pext_loc;
+      ext_attributes = sext.pext_attributes; }
 
 let transl_extension_constructor env type_path type_params
     typext_params priv sext =

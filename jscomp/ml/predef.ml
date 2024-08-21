@@ -276,7 +276,7 @@ let common_initial_env add_type add_extension empty_env =
      type_variance = [Variance.covariant]}
   in
 
-  let add_extension id l =
+  let add_exception id l =
     add_extension id
       { ext_type_path = path_exn;
         ext_type_params = [];
@@ -286,19 +286,20 @@ let common_initial_env add_type add_extension empty_env =
         ext_loc = Location.none;
         ext_attributes = [{Asttypes.txt="ocaml.warn_on_literal_pattern";
                            loc=Location.none},
-                          Parsetree.PStr[]] }
+                          Parsetree.PStr[]];
+        ext_is_exception = true }
   in
-  add_extension ident_match_failure
+  add_exception ident_match_failure
                          [newgenty (Ttuple[type_string; type_int; type_int])] (
-  add_extension ident_invalid_argument [type_string] (
-  add_extension ident_js_error [type_unknown] (
-  add_extension ident_failure [type_string] (
-  add_extension ident_not_found [] (
-  add_extension ident_end_of_file [] (
-  add_extension ident_division_by_zero [] (
-  add_extension ident_assert_failure
+  add_exception ident_invalid_argument [type_string] (
+  add_exception ident_js_error [type_unknown] (
+  add_exception ident_failure [type_string] (
+  add_exception ident_not_found [] (
+  add_exception ident_end_of_file [] (
+  add_exception ident_division_by_zero [] (
+  add_exception ident_assert_failure
                          [newgenty (Ttuple[type_string; type_int; type_int])] (
-  add_extension ident_undefined_recursive_module
+  add_exception ident_undefined_recursive_module
                          [newgenty (Ttuple[type_string; type_int; type_int])] (
   add_type ident_int64 decl_abstr (
   add_type ident_bigint decl_abstr (

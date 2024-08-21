@@ -4172,6 +4172,7 @@ let nondep_extension_constructor env mid ext =
         ext_private = ext.ext_private;
         ext_attributes = ext.ext_attributes;
         ext_loc = ext.ext_loc;
+        ext_is_exception = ext.ext_is_exception;
       }
   with Not_found ->
     clear_hash ();
