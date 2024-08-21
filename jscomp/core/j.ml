@@ -135,7 +135,6 @@ and expression_desc =
       env : Js_fun_env.t;
       return_unit : bool;
       async : bool;
-      iife : bool;
       directive : string option;
     }
   | Str of { delim : delim; txt : string }

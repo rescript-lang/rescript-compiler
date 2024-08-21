@@ -301,7 +301,7 @@ let rec try_optimize_curry cxt f len function_id =
   Curry_gen.pp_optimize_curry f len;
   P.paren_group f 1 (fun _ -> expression ~level:1 cxt f function_id)
 
-and pp_function ~return_unit ~async ~is_method ~iife ?directive cxt (f : P.t) ~fn_state
+and pp_function ~return_unit ~async ~is_method ?directive cxt (f : P.t) ~fn_state
     (l : Ident.t list) (b : J.block) (env : Js_fun_env.t) : cxt =
   match b with
   | [
@@ -426,9 +426,8 @@ and pp_function ~return_unit ~async ~is_method ~iife ?directive cxt (f : P.t) ~f
                 P.string f (L.function_ ~async ~arrow);
                 param_body ()
             | No_name _ ->
-                P.cond_paren_group f (iife) (fun _ ->
-                    P.string f (L.function_ ~async ~arrow);
-                    param_body ())
+                P.string f (L.function_ ~async ~arrow);
+                param_body ()
             | Name_non_top x ->
                 ignore (pp_var_assign inner_cxt f x : cxt);
                 P.string f (L.function_ ~async ~arrow);
@@ -524,9 +523,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
           let cxt = expression ~level:0 cxt f e1 in
           comma_sp f;
           expression ~level:0 cxt f e2)
-  | Fun { is_method; params; body; env; return_unit; async; iife; directive } ->
+  | Fun { is_method; params; body; env; return_unit; async; directive } ->
       (* TODO: dump for comments *)
-      pp_function ?directive ~is_method ~return_unit ~async ~iife
+      pp_function ?directive ~is_method ~return_unit ~async
         ~fn_state:default_fn_exp_state
         cxt f params body env
       (* TODO:
@@ -561,12 +560,11 @@ and expression_desc cxt ~(level : int) f x : cxt =
                                env;
                                return_unit;
                                async;
-                               iife;
                                directive;
                              };
                        };
                       ] ->
-                          pp_function ?directive ~is_method ~return_unit ~async ~iife
+                          pp_function ?directive ~is_method ~return_unit ~async
                             ~fn_state:(No_name { single_arg = true })
                             cxt f params body env
                       | _ ->
@@ -970,7 +968,6 @@ and variable_declaration top cxt f (variable : J.variable_declaration) : cxt =
           match e.expression_desc with
           | Fun { is_method; params; body; env; return_unit; async; directive } ->
               pp_function ?directive ~is_method ~return_unit ~async
-                ~iife:false 
                 ~fn_state:(if top then Name_top name else Name_non_top name)
                 cxt f params body env
           | _ ->
@@ -1178,10 +1175,9 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       cxt
   | Return e -> (
       match e.expression_desc with
-      | Fun { is_method; params; body; env; return_unit; async; iife; directive } ->
+      | Fun { is_method; params; body; env; return_unit; async; directive } ->
           let cxt =
             pp_function ?directive ~return_unit ~is_method ~async
-              ~iife
               ~fn_state:Is_return
               cxt f params body env
           in

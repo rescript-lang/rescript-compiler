@@ -54,25 +54,25 @@ function split_by(keep_emptyOpt, is_delim, str) {
 function trim(s) {
   let i = 0;
   let j = s.length;
-  while (((() => {
+  while ((() => {
       let tmp = false;
       if (i < j) {
         let u = s.codePointAt(i);
         tmp = u === /* '\t' */9 || u === /* '\n' */10 || u === /* ' ' */32;
       }
       return tmp;
-    }))()) {
+    })()) {
     i = i + 1 | 0;
   };
   let k = j - 1 | 0;
-  while (((() => {
+  while ((() => {
       let tmp = false;
       if (k >= i) {
         let u = s.codePointAt(k);
         tmp = u === /* '\t' */9 || u === /* '\n' */10 || u === /* ' ' */32;
       }
       return tmp;
-    }))()) {
+    })()) {
     k = k - 1 | 0;
   };
   return $$String.sub(s, i, (k - i | 0) + 1 | 0);

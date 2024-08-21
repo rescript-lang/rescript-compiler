@@ -4,7 +4,7 @@
 
 function f() {
   let n = 0;
-  while (((() => {
+  while ((() => {
       let fib = x => {
         if (x === 0 || x === 1) {
           return 1;
@@ -13,17 +13,17 @@ function f() {
         }
       };
       return fib(n) > 10;
-    }))()) {
+    })()) {
     console.log(String(n));
     n = n + 1 | 0;
   };
 }
 
 function ff() {
-  while (((() => {
+  while ((() => {
       let b = 9;
       return (3 + b | 0) > 10;
-    }))()) {
+    })()) {
     
   };
 }
