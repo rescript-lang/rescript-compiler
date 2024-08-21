@@ -22,42 +22,40 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-module Map = {
-  type t<'k, 'v>
-
-  @new external make: unit => t<'k, 'v> = "Map"
-
-  @send external set: (t<'k, 'v>, 'k, 'v) => unit = "set"
-
-  @send external get: (t<'k, 'v>, 'k) => option<'v> = "get"
-}
-
 type t = {@as("RE_EXN_ID") id: string}
 
+module Dict = {
+  @obj
+  external empty: unit => dict<'a> = ""
+
+  @set_index
+  external set: (dict<'a>, string, 'a) => unit = ""
+
+  @get_index
+  /**
+    It's the same as `Js.Dict.get` but it doesn't have runtime overhead to check if the key exists.
+   */
+  external dangerouslyGetNonOption: (dict<'a>, string) => option<'a> = ""
+}
+
 /**
-   Could be exported for better inlining
-   It's common that we have 
-   {[ a = caml_set_oo_id([248,"string",0]) ]}
-   This can be inlined as 
-   {[ a = caml_set_oo_id([248,"string", caml_oo_last_id++]) ]}
+  Needs to have unique extension ids when used with functors.
+  See discussion in https://github.com/rescript-lang/rescript-compiler/pull/6570
 */
-let idMap: Map.t<string, int> = Map.make()
+let idMap = Dict.empty()
 
 let create = (str: string): string => {
-  let id = switch idMap->Map.get(str) {
+  switch idMap->Dict.dangerouslyGetNonOption(str) {
   | Some(v) => {
       let id = v + 1
-      idMap->Map.set(str, id)
-      id
+      idMap->Dict.set(str, id)
+      str ++ ("/" ++ (Obj.magic((id: int)): string))
     }
   | None => {
-      let id = 1
-      idMap->Map.set(str, id)
-      id
+      idMap->Dict.set(str, 1)
+      str
     }
   }
-
-  str ++ ("/" ++ (Obj.magic((id: int)): string))
 }
 
 /**
