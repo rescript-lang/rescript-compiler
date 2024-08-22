@@ -160,7 +160,7 @@ jobs:
       # matrix.ocaml_compiler may contain commas
       - name: Get OPAM cache key
         shell: bash
-        run: echo "opam_cache_key=opam-env-v2-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}" | sed 's/,/-/g' >> $GITHUB_ENV
+        run: echo "opam_cache_key=opam-env-v3-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}" | sed 's/,/-/g' >> $GITHUB_ENV
 
       - name: Restore OPAM environment
         id: cache-opam-env
@@ -179,8 +179,6 @@ jobs:
         uses: ocaml/setup-ocaml@v3.0.7
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
         with:
-          opam-repositories: |
-            default: https://github.com/rescript-lang/opam-repository.git
           ocaml-compiler: ${{matrix.ocaml_compiler}}
           opam-pin: false
 
