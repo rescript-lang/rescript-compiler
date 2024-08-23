@@ -32,7 +32,11 @@ git clone --depth 1 https://github.com/rescript-lang/rescript-compiler.git
 
 This will only consume less than 50MB.
 
-## Install OCaml compiler + dependencies
+## Installation
+
+### A. Manual installation
+
+#### Install OCaml compiler + dependencies
 
 The ReScript compiler compiles with any recent OCaml compiler. We are using `dune` as a build system for easy workflows and proper IDE support.
 
@@ -51,9 +55,17 @@ opam install . --deps-only
 opam install ocaml-lsp-server
 ```
 
-## npm install
+#### npm install
 
 Run `npm install --ignore-scripts`. This will install the npm dependencies required for the build scripts.
+
+### B. Devcontainer
+
+As an alternative to the manual installation, the repository provides a [development container](https://containers.dev/) definition that can be used with [VS Code's Remote Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers). Use this to get a stable development environment without having to install anything locally other than VS Code and Docker.
+
+Run the `Dev Containers: Rebuild and Reopen in Container` action to get started.
+
+You can also open this dev container with [GitHub Codespaces](https://github.com/features/codespaces/).
 
 ## Building the Compiler
 
