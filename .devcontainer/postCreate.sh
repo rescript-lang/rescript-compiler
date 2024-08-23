@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Install dev dependencies from OPAM
-opam init -y --bare --disable-sandboxing git+https://github.com/rescript-lang/opam-repository
+opam init -y --bare --disable-sandboxing
 opam switch create 5.2.0 --packages ocaml-option-static
 opam install . --deps-only -y
 
