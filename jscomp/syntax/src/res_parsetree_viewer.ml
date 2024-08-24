@@ -1,9 +1,17 @@
 open Parsetree
 
 let arrow_type ?(arity = max_int) ct =
+  let has_as attrs =
+    Ext_list.exists attrs (fun (x, _) -> x.Asttypes.txt = "as")
+  in
+  let is_any ctyp =
+    match ctyp with
+    | {ptyp_desc = Ptyp_any} -> true
+    | _ -> false
+  in
   let rec process attrs_before acc typ arity =
     match typ with
-    | typ when arity <= 0 -> (attrs_before, List.rev acc, typ)
+    | typ when arity < 0 -> (attrs_before, List.rev acc, typ)
     | {
      ptyp_desc = Ptyp_arrow ((Nolabel as lbl), typ1, typ2);
      ptyp_attributes = [];
@@ -24,9 +32,15 @@ let arrow_type ?(arity = max_int) ct =
     | {
      ptyp_desc = Ptyp_arrow (((Labelled _ | Optional _) as lbl), typ1, typ2);
      ptyp_attributes = attrs;
-    } ->
-      let arg = (attrs, lbl, typ1) in
-      process attrs_before (arg :: acc) typ2 (arity - 1)
+    } -> (
+      match typ1 with
+      | {ptyp_desc = Ptyp_any; ptyp_attributes = attrs1} when has_as attrs1 ->
+        let arg = (attrs, lbl, typ1) in
+        let arity = if is_any typ2 then arity - 1 else arity in
+        process attrs_before (arg :: acc) typ2 arity
+      | _ ->
+        let arg = (attrs, lbl, typ1) in
+        process attrs_before (arg :: acc) typ2 (arity - 1))
     | typ -> (attrs_before, List.rev acc, typ)
   in
   match ct with
