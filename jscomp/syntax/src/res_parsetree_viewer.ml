@@ -1,13 +1,8 @@
 open Parsetree
 
 let arrow_type ?(arity = max_int) ct =
-  let has_as attrs =
+  let has_as_attr attrs =
     Ext_list.exists attrs (fun (x, _) -> x.Asttypes.txt = "as")
-  in
-  let is_any ctyp =
-    match ctyp with
-    | {ptyp_desc = Ptyp_any} -> true
-    | _ -> false
   in
   let rec process attrs_before acc typ arity =
     match typ with
@@ -32,15 +27,21 @@ let arrow_type ?(arity = max_int) ct =
     | {
      ptyp_desc = Ptyp_arrow (((Labelled _ | Optional _) as lbl), typ1, typ2);
      ptyp_attributes = attrs;
-    } -> (
-      match typ1 with
-      | {ptyp_desc = Ptyp_any; ptyp_attributes = attrs1} when has_as attrs1 ->
-        let arg = (attrs, lbl, typ1) in
-        let arity = if is_any typ2 then arity - 1 else arity in
-        process attrs_before (arg :: acc) typ2 arity
-      | _ ->
-        let arg = (attrs, lbl, typ1) in
-        process attrs_before (arg :: acc) typ2 (arity - 1))
+    } ->
+      (* Res_core.parse_es6_arrow_type has a workaround that removed an extra arity for the function if the
+         argument is a Ptyp_any with @as attribute i.e. ~x: @as(`{prop: value}`) _.
+
+         When this case is encountered we add that missing arity so the arrow is printed properly.
+      *)
+      let arity =
+        match typ1 with
+        | {ptyp_desc = Ptyp_any; ptyp_attributes = attrs1}
+          when has_as_attr attrs1 ->
+          arity
+        | _ -> arity - 1
+      in
+      let arg = (attrs, lbl, typ1) in
+      process attrs_before (arg :: acc) typ2 arity
     | typ -> (attrs_before, List.rev acc, typ)
   in
   match ct with
