@@ -3704,8 +3704,8 @@ let rec subtype_rec env trace t1 t2 cstrs =
     | (Tvariant {row_closed=true; row_fields}, Tconstr (_, [], _)) 
         when extract_concrete_typedecl_opt env t2 |> Variant_coercion.type_is_variant -> 
       (match extract_concrete_typedecl env t2 with
-      | (_, _, {type_kind=Type_variant (constructors); type_attributes}) -> 
-        (match Variant_coercion.can_coerce_polyvariant_to_variant ~row_fields ~constructors ~type_attributes with 
+      | (_, _, {type_kind=Type_variant variant_constructors; type_attributes}) -> 
+        (match Variant_coercion.can_coerce_polyvariant_to_variant ~row_fields ~variant_constructors ~type_attributes with 
         | Ok _ -> cstrs
         | Error _ -> (trace, t1, t2, !univar_pairs)::cstrs)
       | _ -> (trace, t1, t2, !univar_pairs)::cstrs)
