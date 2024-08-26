@@ -190,9 +190,9 @@ let can_coerce_polyvariant_to_variant ~row_fields ~constructors ~type_attributes
                       However, there's a special case with unboxed types where there's a 
                       string catch-all case. In that case, any polyvariant will match,
                       since the catch-all case will match any string. *)
-                    (match c.cd_args with 
-                    | Cstr_tuple [{desc=Tconstr (p, _, _)}] 
-                      when is_unboxed && Path.same p Predef.path_string -> true 
+                    (match is_unboxed, c.cd_args with 
+                    | true, Cstr_tuple [{desc=Tconstr (p, _, _)}] -> 
+                      Path.same p Predef.path_string 
                     | _ -> polyvariant_value = constructor_name)
                   ))
         polyvariant_runtime_representations
