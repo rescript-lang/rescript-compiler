@@ -293,7 +293,7 @@ and aux = (cmp, x: 'a, xss: list<list<'a>>): list<list<'a>> =>
     }
   }
 
-let stable_group = (cmp, lst) => group(cmp, lst) |> List.rev
+let stable_group = (cmp, lst) => List.rev(group(cmp, lst))
 
 let rec drop = (n, h) =>
   if n < 0 {
@@ -499,4 +499,3 @@ let rec assoc_by_int = (def, k: int, lst) =>
   modulo [1;2;3] [1;2;3;4] => [1;2;3] None 
   modulo [1;2;3] [1;2;3] => [1;2;3] Some []
  */
- 

@@ -30,28 +30,28 @@ let () =
 
 */
 
-let h0 = x => x(.)
+let h0 = x => x()
 /* {[
      function h0 (x){
          return x ()
        }
    ]}
 */
-let h00 = x => x(.)
+let h00 = x => x()
 
-let h1 = (x, y) => x(. y) /* weird case */
-let h10 = x => x(. 3)
+let h1 = (x, y) => x(y) /* weird case */
+let h10 = x => x(3)
 
-let h30 = x => (. a) => x(. 3, 3, a)
-let h33 = x => x(. 1, 2, 3)
-let h34 = x => x(. 1, 2, 3)(4)
+let h30 = x => a => x(3, 3, a)
+let h33 = x => x(1, 2, 3)
+let h34 = x => x(1, 2, 3)(4)
 
-let ocaml_run = (. b, c) => ((. x, y, z) => x + y + z)(. 1, b, c)
+let ocaml_run = (b, c) => ((x, y, z) => x + y + z)(1, b, c)
 
-let a0 = (. ()) => Js.log("hi")
-let a1 = () => (. x) => x
-let a2 = (. x, y) => x + y
-let a3 = (. x, y, z) => x + y + z
+let a0 = () => Js.log("hi")
+let a1 = () => x => x
+let a2 = (x, y) => x + y
+let a3 = (x, y, z) => x + y + z
 /* let a4 = Js.Internal.fn_mk4 (fun x y z -> let u = x * x + y * y + z * z in fun d -> u + d) */
 
 /* let a44 = Js.Internal.fn_mk4 (fun x y z d -> let u = x * x + y * y + z * z in  u + d) */
@@ -61,6 +61,6 @@ let a3 = (. x, y, z) => x + y + z
 
 let test_as: ('a => 'a, _ as 'b) => 'b = List.map
 
-let xx: unit => (. _) => unit = () => (. _) => Js.log(3)
+let xx: unit => _ => unit = () => _ => Js.log(3)
 
 /* let test_hihi = hihi _ [@bs] */

@@ -44,7 +44,7 @@ module M'': {
   module N': {
     let x: int
   }
-} = M'
+} = (M')
 \"@@"(l, M''.N'.x)
 module M2 = {
   include M'
@@ -61,7 +61,7 @@ module M3': {
   module N': {
     let x: int
   }
-} = M2
+} = (M2)
 \"@@"(l, M3'.N'.x)
 
 module M4: {

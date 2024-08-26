@@ -32,7 +32,7 @@ describe("Belt.List", () => {
   test("flatten", () => {
     eq(
       __LOC__,
-      N.flatten(list{list{1}, list{2}, list{3}, list{}, N.makeBy(4, i => i)}) ,
+      N.flatten(list{list{1}, list{2}, list{3}, list{}, N.makeBy(4, i => i)}),
       list{1, 2, 3, 0, 1, 2, 3},
     )
     eq(__LOC__, N.flatten(list{}), list{})
@@ -47,7 +47,11 @@ describe("Belt.List", () => {
     )
     eq(__LOC__, N.concatMany([]), list{})
     eq(__LOC__, N.concatMany([list{}, list{}, list{2}, list{1}, list{2}, list{}]), list{2, 1, 2})
-    eq(__LOC__, N.concatMany([list{}, list{}, list{2, 3}, list{1}, list{2}, list{}]), list{2, 3, 1, 2})
+    eq(
+      __LOC__,
+      N.concatMany([list{}, list{}, list{2, 3}, list{1}, list{2}, list{}]),
+      list{2, 3, 1, 2},
+    )
     eq(__LOC__, N.concatMany([list{1, 2, 3}]), list{1, 2, 3})
   })
 
@@ -55,13 +59,13 @@ describe("Belt.List", () => {
     eq(
       __LOC__,
       N.concat(N.makeBy(100, i => i), N.makeBy(100, i => i))->N.toArray,
-      A.concat(A.makeBy(100, i => i), A.makeBy(100, i => i))
+      A.concat(A.makeBy(100, i => i), A.makeBy(100, i => i)),
     )
 
     eq(__LOC__, N.concat(list{1}, list{}), list{1})
     eq(__LOC__, N.concat(list{}, list{1}), list{1})
   })
-  
+
   test("zip", () => {
     eq(__LOC__, N.zip(list{1, 2, 3}, list{3, 4}), list{(1, 3), (2, 4)})
     eq(__LOC__, N.zip(list{}, list{1}), list{})
@@ -121,16 +125,13 @@ describe("Belt.List", () => {
     eq(__LOC__, map2_add(list{}, list{1}), list{})
     eq(__LOC__, map2_add(list{1}, list{}), list{})
     eq(__LOC__, map2_add(list{}, list{}), list{})
+    eq(__LOC__, map2_add(length_10_id, b), N.concat(N.map(c, x => x * 2), list{16, 18}))
+    eq(__LOC__, map2_add(length_10_id, length_8_id), N.mapWithIndex(length_8_id, (i, x) => i + x))
     eq(
-      __LOC__, 
-      map2_add(length_10_id, b),
-      N.concat(N.map(c, x => x * 2), list{16, 18})
+      __LOC__,
+      N.reverse(N.mapReverse2(length_10_id, length_10_id, add)),
+      N.map(length_10_id, x => x * 2),
     )
-    eq(__LOC__, 
-      map2_add(length_10_id, length_8_id),
-      N.mapWithIndex(length_8_id, (i, x) => i + x)
-    )
-    eq(__LOC__, N.reverse(N.mapReverse2(length_10_id, length_10_id, add)), N.map(length_10_id, x => x * 2))
     let xs = N.reverse(N.mapReverse2(length_8_id, length_10_id, add))
     eq(__LOC__, N.length(xs), 8)
     eq(__LOC__, xs, N.zipBy(length_10_id, length_8_id, add))
@@ -173,9 +174,21 @@ describe("Belt.List", () => {
     ok(__LOC__, N.hasAssoc(list{(1, "1"), (2, "2"), (3, "3")}, 2, \"="))
     ok(__LOC__, !N.hasAssoc(list{(1, "1"), (2, "2"), (3, "3")}, 4, \"="))
     ok(__LOC__, N.hasAssoc(list{(1, "1"), (2, "2"), (3, "3")}, 4, (x, y) => x + 1 == y))
-    eq(__LOC__, N.removeAssoc(list{(1, "1"), (2, "2"), (3, "3")}, 3, \"="), list{(1, "1"), (2, "2")})
-    eq(__LOC__, N.removeAssoc(list{(1, "1"), (2, "2"), (3, "3")}, 1, \"="), list{(2, "2"), (3, "3")})
-    eq(__LOC__, N.removeAssoc(list{(1, "1"), (2, "2"), (3, "3")}, 2, \"="), list{(1, "1"), (3, "3")})
+    eq(
+      __LOC__,
+      N.removeAssoc(list{(1, "1"), (2, "2"), (3, "3")}, 3, \"="),
+      list{(1, "1"), (2, "2")},
+    )
+    eq(
+      __LOC__,
+      N.removeAssoc(list{(1, "1"), (2, "2"), (3, "3")}, 1, \"="),
+      list{(2, "2"), (3, "3")},
+    )
+    eq(
+      __LOC__,
+      N.removeAssoc(list{(1, "1"), (2, "2"), (3, "3")}, 2, \"="),
+      list{(1, "1"), (3, "3")},
+    )
     eq(
       __LOC__,
       N.removeAssoc(list{(1, "1"), (2, "2"), (3, "3")}, 0, \"="),
@@ -211,15 +224,10 @@ describe("Belt.List", () => {
     ok(__LOC__, N.getAssoc(list{(1, "a"), (2, "b"), (3, "c")}, 4, \"=") == None)
   })
 
-
   test("head/tail etc.", () => {
     let succx = x => x + 1
 
-    eq(
-      __LOC__,
-      (N.head(length_10_id), N.tail(length_10_id)),
-      (Some(0), N.drop(length_10_id, 1)),
-    )
+    eq(__LOC__, (N.head(length_10_id), N.tail(length_10_id)), (Some(0), N.drop(length_10_id, 1)))
     eq(__LOC__, N.head(list{}), None)
     throw(__LOC__, () => N.headExn(list{}))
     throw(__LOC__, () => N.tailExn(list{})->ignore)
@@ -237,16 +245,8 @@ describe("Belt.List", () => {
     eq(__LOC__, sum(list{}), 0)
     eq(__LOC__, sum(length_10_id), 45)
     eq(__LOC__, N.makeBy(0, id), list{})
-    eq(
-      __LOC__,
-      N.reverse(N.reverse(length_10_id)),
-      length_10_id,
-    )
-    eq(
-      __LOC__,
-      N.reverse(N.reverse(length_8_id)),
-      length_8_id,
-    )
+    eq(__LOC__, N.reverse(N.reverse(length_10_id)), length_10_id)
+    eq(__LOC__, N.reverse(N.reverse(length_8_id)), length_8_id)
     eq(__LOC__, N.reverse(list{}), list{})
     eq(__LOC__, N.reverse(N.mapReverse(length_10_id, succx)), N.map(length_10_id, succx))
     eq(__LOC__, N.reduce(length_10_id, 0, add), 45)
@@ -303,7 +303,6 @@ describe("Belt.List", () => {
     eq(__LOC__, N.some2(list{1, 2, 3}, list{-1, -2}, (x, y) => x == y), false)
   })
 
-
   test("add", () => {
     eq(__LOC__, list{}->N.add(3)->N.add(2), list{2, 3})
   })
@@ -350,12 +349,13 @@ describe("Belt.List", () => {
 
   test("keepMap", () => {
     let u0 = N.makeBy(20, x => x)
-    let u1 = u0->N.keepMap(x =>
-      if mod(x, 7) == 0 {
-        Some(x + 1)
-      } else {
-        None
-      }
+    let u1 = u0->N.keepMap(
+      x =>
+        if mod(x, 7) == 0 {
+          Some(x + 1)
+        } else {
+          None
+        },
     )
     eq(__LOC__, u1, list{1, 8, 15})
     ok(
@@ -363,23 +363,26 @@ describe("Belt.List", () => {
       {
         open N
 
-        list{1, 2, 3, 4}->keepMap(x =>
-          if mod(x, 2) == 0 {
-            Some(-x)
-          } else {
-            None
-          }
+        list{1, 2, 3, 4}->keepMap(
+          x =>
+            if mod(x, 2) == 0 {
+              Some(-x)
+            } else {
+              None
+            },
         ) == list{-2, -4}
       },
     )
     ok(
       __LOC__,
-      N.keepMap(list{1, 2, 3, 4}, x =>
-        if mod(x, 5) == 0 {
-          Some(x)
-        } else {
-          None
-        }
+      N.keepMap(
+        list{1, 2, 3, 4},
+        x =>
+          if mod(x, 5) == 0 {
+            Some(x)
+          } else {
+            None
+          },
       ) == list{},
     )
   })

@@ -1,5 +1,5 @@
 let u = ref(3)
-let v = Lazy.from_fun(() => (u := 32))
+let v = Lazy.from_fun(() => u := 32)
 
 let lazy_test = () => {
   let h = u.contents
@@ -45,9 +45,9 @@ let forward_test = Lazy.from_fun(() => {
 })
 /* module Mt = Mock_mt */
 
-let f005 = Lazy.from_fun(() => (1 + 2 + 3))
+let f005 = Lazy.from_fun(() => 1 + 2 + 3)
 
-let f006: lazy_t<() => int> = Lazy.from_fun(() => {
+let f006: lazy_t<unit => int> = Lazy.from_fun(() => {
   let x = 3
   _ => x
 })
@@ -63,7 +63,7 @@ let a2 = x => Lazy.from_val(x)
 let a3 = Lazy.from_val(3)
 let a4 = a2(3)
 let a5 = Lazy.from_val(None)
-let a6 = Lazy.from_val(())
+let a6 = Lazy.from_val()
 
 let a7 = Lazy.force(a5)
 let a8 = Lazy.force(a6)
@@ -78,7 +78,10 @@ Mt.from_pair_suites(
       ("lazy_force", _ => Eq(u_v.contents, 2)),
       ("lazy_from_fun", _ => Eq(Lazy.force(l_from_fun), 3)),
       ("lazy_from_val", _ => Eq(Lazy.force(Lazy.from_val(3)), 3)),
-      ("lazy_from_val2", _ => Eq(\"@@"(Lazy.force, Lazy.force(Lazy.from_val(Lazy.from_fun(() => 3)))), 3)),
+      (
+        "lazy_from_val2",
+        _ => Eq(\"@@"(Lazy.force, Lazy.force(Lazy.from_val(Lazy.from_fun(() => 3)))), 3),
+      ),
       (
         "lazy_from_val3",
         _ => Eq(

@@ -5,8 +5,7 @@ let eq = f => Mt_global.collect_eq(id, suites, f, ...)
 let neq = f => Mt_global.collect_neq(id, suites, f, ...)
 let approx = f => Mt_global.collect_approx(id, suites, f, ...)
 
-let () = neq(
-  __LOC__)(
+let () = neq(__LOC__)(
   {
     Random.self_init()
     Random.int(10000)

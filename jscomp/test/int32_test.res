@@ -7,7 +7,7 @@ let f = x => (
 )
 
 let shift_right_logical_tests = (
-  Ext_array_test.range(0, 31) |> Array.map(x => Int32.shift_right_logical(-1l, x)),
+  Array.map(x => Int32.shift_right_logical(-1l, x), Ext_array_test.range(0, 31)),
   [
     -1l,
     2147483647l,
@@ -45,7 +45,7 @@ let shift_right_logical_tests = (
 )
 
 let shift_right_tests = (
-  Ext_array_test.range(0, 31) |> Array.map(x => Int32.shift_right(Int32.min_int, x)),
+  Array.map(x => Int32.shift_right(Int32.min_int, x), Ext_array_test.range(0, 31)),
   [
     -2147483648l,
     -1073741824l,
@@ -83,7 +83,7 @@ let shift_right_tests = (
 )
 
 let shift_left_tests = (
-  Ext_array_test.range(0, 31) |> Array.map(x => Int32.shift_left(1l, x)),
+  Array.map(x => Int32.shift_left(1l, x), Ext_array_test.range(0, 31)),
   [
     1l,
     2l,
@@ -135,28 +135,34 @@ let suites = ref(
     \"@"(
       {
         let (a, b) = shift_right_logical_tests
-        Ext_array_test.map2i(
-          (i, a, b) => ("shift_right_logical_cases " ++ __unsafe_cast(i), _ => Mt.Eq(a, b)),
-          a,
-          b,
-        ) |> Array.to_list
+        Array.to_list(
+          Ext_array_test.map2i(
+            (i, a, b) => ("shift_right_logical_cases " ++ __unsafe_cast(i), _ => Mt.Eq(a, b)),
+            a,
+            b,
+          ),
+        )
       },
       \"@"(
         {
           let (a, b) = shift_right_tests
-          Ext_array_test.map2i(
-            (i, a, b) => ("shift_right_cases " ++ __unsafe_cast(i), _ => Mt.Eq(a, b)),
-            a,
-            b,
-          ) |> Array.to_list
+          Array.to_list(
+            Ext_array_test.map2i(
+              (i, a, b) => ("shift_right_cases " ++ __unsafe_cast(i), _ => Mt.Eq(a, b)),
+              a,
+              b,
+            ),
+          )
         },
         {
           let (a, b) = shift_left_tests
-          Ext_array_test.map2i(
-            (i, a, b) => ("shift_left_cases " ++ __unsafe_cast(i), _ => Mt.Eq(a, b)),
-            a,
-            b,
-          ) |> Array.to_list
+          Array.to_list(
+            Ext_array_test.map2i(
+              (i, a, b) => ("shift_left_cases " ++ __unsafe_cast(i), _ => Mt.Eq(a, b)),
+              a,
+              b,
+            ),
+          )
         },
       ),
     ),

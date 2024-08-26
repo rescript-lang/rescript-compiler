@@ -25,6 +25,6 @@ let h = list{d_empty, d_int(3), d_tuple(3, "hgo"), d_tweak((3, "hgo")), newConte
 
 @deriving(accessors) type xx = {"x": int}
 
-@deriving(accessors) type t = A((. int) => int)
+@deriving(accessors) type t = A(int => int)
 
-let f = a((. x) => x)
+let f = a(x => x)

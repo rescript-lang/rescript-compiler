@@ -32,8 +32,8 @@ let () = {
     (A.get(v, 0), A.get(v, 1), A.get(v, 2), A.get(v, 3), A.get(v, -1)),
     (Some(1), Some(2), None, None, None),
   )
-  throw(__LOC__, _ => A.getExn([0, 1], -1) |> ignore)
-  throw(__LOC__, _ => A.getExn([0, 1], 2) |> ignore)
+  throw(__LOC__, _ => ignore(A.getExn([0, 1], -1)))
+  throw(__LOC__, _ => ignore(A.getExn([0, 1], 2)))
   b(
     __LOC__,
     {
@@ -109,7 +109,7 @@ let () = {
   eq(__LOC__, A.reduceWithIndex([1, 2, 3, 4], 0, (acc, x, i) => acc + x + i), 16)
   b(__LOC__, A.reduceReverse2([1, 2, 3], [1, 2], 0, (acc, x, y) => acc + x + y) == 6)
 }
-let addone = (. x) => x + 1
+let addone = x => x + 1
 
 let makeMatrixExn = (sx, sy, init) => {
   /* let open A in */

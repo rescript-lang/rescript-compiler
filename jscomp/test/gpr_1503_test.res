@@ -6,7 +6,7 @@ let eq = (loc, x, y) => {
     list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Mt.Eq(x, y)), ...suites.contents}
 }
 
-let id = x => x |> Int64.to_string |> Int64.of_string
+let id = x => Int64.of_string(Int64.to_string(x))
 
 let () = {
   let i = 0x7BABABABABABABABL

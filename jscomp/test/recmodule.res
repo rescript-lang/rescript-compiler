@@ -57,7 +57,7 @@ module Infra = {
   }
 
   module MakeLayer = (Deps: Deps): Layer => {
-    let presentJson = (json, ~status) => assert false
+    let presentJson = (json, ~status) => assert(false)
 
     let routes = () => [("/lights", Deps.handleGetLight)]
   }

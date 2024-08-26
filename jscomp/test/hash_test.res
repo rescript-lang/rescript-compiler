@@ -40,13 +40,13 @@ let test_strings_hash_results = [
 ]
 
 let normalize = x => land(x, 0x3FFFFFFF)
-let caml_hash = x => Hashtbl.hash(x) |> normalize
-let () = eq(__LOC__, test_strings |> Array.map(caml_hash), test_strings_hash_results)
+let caml_hash = x => normalize(Hashtbl.hash(x))
+let () = eq(__LOC__, Array.map(caml_hash, test_strings), test_strings_hash_results)
 
-let () = eq(__LOC__, Hashtbl.hash(0) |> normalize, 129913994)
+let () = eq(__LOC__, normalize(Hashtbl.hash(0)), 129913994)
 
-let () = eq(__LOC__, Hashtbl.hash("x") |> normalize, 780510073)
+let () = eq(__LOC__, normalize(Hashtbl.hash("x")), 780510073)
 
-let () = eq(__LOC__, Hashtbl.hash("xy") |> normalize, 194127723)
+let () = eq(__LOC__, normalize(Hashtbl.hash("xy")), 194127723)
 
 let () = Mt.from_pair_suites(__MODULE__, suites.contents)

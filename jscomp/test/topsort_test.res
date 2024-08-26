@@ -32,10 +32,10 @@ let rec dfs1 = (nodes, graph, visited) =>
   }
 
 let () = {
-  assert (dfs1(list{"a"}, graph, list{}) == list{"a", "d", "e", "g", "f", "c", "b"})
+  assert(dfs1(list{"a"}, graph, list{}) == list{"a", "d", "e", "g", "f", "c", "b"})
 
   print_newline()
-  assert (dfs1(list{"b"}, list{("f", "d"), ...graph}, list{}) == list{"b", "e", "g", "f", "d"})
+  assert(dfs1(list{"b"}, list{("f", "d"), ...graph}, list{}) == list{"b", "e", "g", "f", "d"})
 }
 
 let rec dfs2 = (nodes, graph, visited) => {
@@ -54,8 +54,8 @@ let rec dfs2 = (nodes, graph, visited) => {
 
 let () = {
   let dfs1 = dfs2
-  assert (dfs1(list{"a"}, graph, list{}) == list{"a", "d", "e", "g", "f", "c", "b"})
-  assert (dfs1(list{"b"}, list{("f", "d"), ...graph}, list{}) == list{"b", "e", "g", "f", "d"})
+  assert(dfs1(list{"a"}, graph, list{}) == list{"a", "d", "e", "g", "f", "c", "b"})
+  assert(dfs1(list{"b"}, list{("f", "d"), ...graph}, list{}) == list{"b", "e", "g", "f", "d"})
 }
 
 let dfs3 = (nodes, graph) => {
@@ -71,8 +71,8 @@ let dfs3 = (nodes, graph) => {
 
 let () = {
   let dfs1 = dfs3
-  assert (dfs1(list{"a"}, graph) == list{"a", "d", "e", "g", "f", "c", "b"})
-  assert (dfs1(list{"b"}, list{("f", "d"), ...graph}) == list{"b", "e", "g", "f", "d"})
+  assert(dfs1(list{"a"}, graph) == list{"a", "d", "e", "g", "f", "c", "b"})
+  assert(dfs1(list{"b"}, list{("f", "d"), ...graph}) == list{"b", "e", "g", "f", "d"})
 }
 
 /* since [x] is recorded before visiting its successors, so even with 
@@ -109,7 +109,7 @@ let unsafe_topsort = graph => {
   visited.contents
 }
 
-let () = assert (unsafe_topsort(grwork) == list{"wake", "shower", "dress", "eat", "washup", "go"})
+let () = assert(unsafe_topsort(grwork) == list{"wake", "shower", "dress", "eat", "washup", "go"})
 
 module String_set = Set.Make(String)
 exception Cycle(list<string>)
@@ -141,7 +141,7 @@ let pathsort = graph => {
   visited.contents
 }
 
-let () = assert (pathsort(grwork) == list{"wake", "shower", "dress", "eat", "washup", "go"})
+let () = assert(pathsort(grwork) == list{"wake", "shower", "dress", "eat", "washup", "go"})
 
 let () = try {
   \"@@"(ignore, pathsort(list{("go", "eat"), ...grwork}))

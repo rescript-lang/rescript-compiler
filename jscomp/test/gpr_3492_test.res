@@ -4,7 +4,7 @@ let eq = (loc, x, y) => Mt.eq_suites(~test_id, ~suites, loc, x, y)
 
 %%raw("function foo(a){return a()}")
 
-@val("foo") external foo: ((unit => int)) => int = ""
+@val("foo") external foo: (unit => int) => int = ""
 let fn = () => {
   Js.log("hi")
   1

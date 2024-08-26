@@ -27,7 +27,7 @@ include (
 
     \"@@"(
       Mt.from_pair_suites(__MODULE__, ...),
-      list{("int", _ => Eq(IntMap.find(10, m), 'a')), ("string", _ => Eq(SMap.find("10", s), 'a'))},
+      list{("int", _ => Eq(IntMap.find(10, m), 'a')), ("string", _ => Eq(SMap.find("10", s), 'a'))}
     )
   }: {}
 )

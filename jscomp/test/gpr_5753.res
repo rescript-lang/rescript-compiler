@@ -1,5 +1,5 @@
 @@config({
-  flags : ["-w", "-8"]
+  flags: ["-w", "-8"],
 })
 
-'文'-> Js.log
+'文'->Js.log

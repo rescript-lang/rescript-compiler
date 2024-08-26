@@ -12,9 +12,9 @@ function sum(a,b){
 }
 `)
 
-external sum: (. float, float) => float = "sum"
+external sum: (float, float) => float = "sum"
 
-let h = sum(. 1.0, 2.0)
+let h = sum(1.0, 2.0)
 
 let () = eq(__LOC__, h, 3.)
 let () = Mt.from_pair_suites(__MODULE__, suites.contents)

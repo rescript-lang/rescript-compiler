@@ -12,9 +12,9 @@ let f = (e: N.t<_>) => {
   a + b + c
 }
 
-type e = N.t<(. int) => int>
+type e = N.t<int => int>
 
 let f1 = (e: e) => {
   let {a, b, c, d} = e
-  a + b + c + d(. c)
+  a + b + c + d(c)
 }

@@ -30,13 +30,15 @@ let () = {
         switch ty2 {
         | J.JSONArray(x) =>
           /* compiler infer x : J.t array */
-          x->Js.Array2.forEach(x => {
-            let ty3 = J.classify(x)
-            switch ty3 {
-            | J.JSONNumber(_) => ()
-            | _ => assert(false)
-            }
-          }) |> (() => Mt.Ok(true))
+          (() => Mt.Ok(true))(
+            x->Js.Array2.forEach(x => {
+              let ty3 = J.classify(x)
+              switch ty3 {
+              | J.JSONNumber(_) => ()
+              | _ => assert(false)
+              }
+            }),
+          )
         | _ => Mt.Ok(false)
         }
       | None => Mt.Ok(false)
@@ -49,7 +51,7 @@ let () = {
 }
 
 let () = {
-  let json = J.null |> J.stringify |> J.parseExn
+  let json = J.parseExn(J.stringify(J.null))
   let ty = J.classify(json)
   switch ty {
   | J.JSONNull => true_(__LOC__)
@@ -60,7 +62,7 @@ let () = {
 }
 
 let () = {
-  let json = J.string("test string") |> J.stringify |> J.parseExn
+  let json = J.parseExn(J.stringify(J.string("test string")))
 
   let ty = J.classify(json)
   switch ty {
@@ -70,7 +72,7 @@ let () = {
 }
 
 let () = {
-  let json = J.number(1.23456789) |> J.stringify |> J.parseExn
+  let json = J.parseExn(J.stringify(J.number(1.23456789)))
 
   let ty = J.classify(json)
   switch ty {
@@ -80,7 +82,7 @@ let () = {
 }
 
 let () = {
-  let json = J.number(float_of_int(0xAFAFAFAF)) |> J.stringify |> J.parseExn
+  let json = J.parseExn(J.stringify(J.number(float_of_int(0xAFAFAFAF))))
 
   let ty = J.classify(json)
   switch ty {
@@ -91,7 +93,7 @@ let () = {
 
 let () = {
   let test = v => {
-    let json = J.boolean(v) |> J.stringify |> J.parseExn
+    let json = J.parseExn(J.stringify(J.boolean(v)))
 
     let ty = J.classify(json)
     switch ty {
@@ -117,7 +119,7 @@ let () = {
   Js_dict.set(dict, "a", J.string("test string"))
   Js_dict.set(dict, "b", J.number(123.0))
 
-  let json = dict |> J.object_ |> J.stringify |> J.parseExn
+  let json = J.parseExn(J.stringify(J.object_(dict)))
 
   /* Make sure parsed as Object */
   let ty = J.classify(json)
@@ -189,12 +191,9 @@ let eq_at_i = (type a, loc: string, json: J.t, i: int, kind: J.Kind.t<a>, expect
 }
 
 let () = {
-  let json =
-    ["string 0", "string 1", "string 2"]
-    |> Array.map(J.string)
-    |> J.array
-    |> J.stringify
-    |> J.parseExn
+  let json = J.parseExn(
+    J.stringify(J.array(Array.map(J.string, ["string 0", "string 1", "string 2"]))),
+  )
 
   eq_at_i(__LOC__, json, 0, J.Kind.String, "string 0")
   eq_at_i(__LOC__, json, 1, J.Kind.String, "string 1")
@@ -203,7 +202,7 @@ let () = {
 }
 
 let () = {
-  let json = ["string 0", "string 1", "string 2"] |> J.stringArray |> J.stringify |> J.parseExn
+  let json = J.parseExn(J.stringify(J.stringArray(["string 0", "string 1", "string 2"])))
 
   eq_at_i(__LOC__, json, 0, J.Kind.String, "string 0")
   eq_at_i(__LOC__, json, 1, J.Kind.String, "string 1")
@@ -213,7 +212,7 @@ let () = {
 
 let () = {
   let a = [1.0000001, 10000000000.1, 123.0]
-  let json = a |> J.numberArray |> J.stringify |> J.parseExn
+  let json = J.parseExn(J.stringify(J.numberArray(a)))
 
   /* Loop is unrolled to keep relevant location information */
   eq_at_i(__LOC__, json, 0, J.Kind.Number, a[0])
@@ -224,7 +223,7 @@ let () = {
 
 let () = {
   let a = [0, 0xAFAFAFAF, 0xF000AABB]
-  let json = a |> Array.map(float_of_int) |> J.numberArray |> J.stringify |> J.parseExn
+  let json = J.parseExn(J.stringify(J.numberArray(Array.map(float_of_int, a))))
 
   /* Loop is unrolled to keep relevant location information */
   eq_at_i(__LOC__, json, 0, J.Kind.Number, float_of_int(a[0]))
@@ -235,7 +234,7 @@ let () = {
 
 let () = {
   let a = [true, false, true]
-  let json = a |> J.booleanArray |> J.stringify |> J.parseExn
+  let json = J.parseExn(J.stringify(J.booleanArray(a)))
 
   /* Loop is unrolled to keep relevant location information */
   eq_at_i(__LOC__, json, 0, J.Kind.Boolean, a[0])
@@ -253,7 +252,7 @@ let () = {
   }
 
   let a = [make_d("aaa", 123), make_d("bbb", 456)]
-  let json = a |> J.objectArray |> J.stringify |> J.parseExn
+  let json = J.parseExn(J.stringify(J.objectArray(a)))
 
   let ty = J.classify(json)
   switch ty {

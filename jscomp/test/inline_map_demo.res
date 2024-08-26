@@ -1,4 +1,4 @@
-@@config({no_export: no_export, flags: ["-w", "@A"]})
+@@config({no_export, flags: ["-w", "@A"]})
 
 let compare = (x: int, y: int) => compare(x, y)
 

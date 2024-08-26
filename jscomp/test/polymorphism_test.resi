@@ -1,1 +1,1 @@
-let map: ((. 'a) => 'b, list<'a>) => list<'b>
+let map: ('a => 'b, list<'a>) => list<'b>

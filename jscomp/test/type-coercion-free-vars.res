@@ -7,7 +7,7 @@ module NoFreeVars = {
 
   let h = x => (g(x), (x :> int))
 
-//  let h2 = x => ((x :> int), g(x))
+  //  let h2 = x => ((x :> int), g(x))
 }
 
 module WithTypeArg = {
@@ -18,21 +18,20 @@ module WithTypeArg = {
 
 module FunctionType = {
   type t = private int
-  let f = _ => (Obj.magic(3) : t)
-  let _ = f :> (_ => int)
+  let f = (_): t => Obj.magic(3)
+  let _ = (f :> _ => int)
 }
 
 module Contravariant = {
   type t = private int
-  let f1 = (_:int) => ()
-  let _ = f1 :> (t => unit)
-  let f2 = (_:int, _) => ()
-  let _ = f2 :> ((t, _) => unit)
+  let f1 = (_: int) => ()
+  let _ = (f1 :> t => unit)
+  let f2 = (_: int, _) => ()
+  let _ = (f2 :> (t, _) => unit)
 }
-
 
 module Totallypoly = {
   let f = x => (x :> int)
-  let idint = (x:int) => x
+  let idint = (x: int) => x
   let _ = f === idint
 }

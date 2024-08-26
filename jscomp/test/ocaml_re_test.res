@@ -769,8 +769,7 @@ module Re_automata: {
 
   let reset_table = a => Array.fill(a, 0, Array.length(a), false)
 
-  let rec mark_used_indices = tbl =>
-    List.iter(x =>
+  let rec mark_used_indices = tbl => List.iter(x =>
       switch x {
       | E.TSeq(l, _, _) => mark_used_indices(tbl)(l)
       | E.TExp(marks, _)
@@ -780,8 +779,8 @@ module Re_automata: {
             tbl[i] = true
           }
         , marks.Marks.marks)
-      }, ...
-    )
+      }
+    , ...)
 
   let rec find_free = (tbl, idx, len) =>
     if idx == len || !tbl[idx] {
@@ -805,11 +804,11 @@ module Re_automata: {
   /* *** Computation of the next state *** */
 
   let remove_matches = List.filter(x =>
-    switch x {
-    | E.TMatch(_) => false
-    | _ => true
-    }, ...
-  )
+      switch x {
+      | E.TMatch(_) => false
+      | _ => true
+      }
+    , ...)
 
   let rec split_at_match_rec = (l', x) =>
     switch x {
@@ -1249,16 +1248,16 @@ module Re: {
     @raise Not_found if the regular expression can't be found in [str]
 ")
   let exec: (
-    ~pos: int /* Default: 0 */=?,
-    ~len: int /* Default: -1 (until end of string) */=?,
+    ~pos: int=? /* Default: 0 */,
+    ~len: int=? /* Default: -1 (until end of string) */,
     re,
     string,
   ) => groups
 
   @ocaml.doc(" Similar to {!exec}, but returns an option instead of using an exception. ")
   let exec_opt: (
-    ~pos: int /* Default: 0 */=?,
-    ~len: int /* Default: -1 (until end of string) */=?,
+    ~pos: int=? /* Default: 0 */,
+    ~len: int=? /* Default: -1 (until end of string) */,
     re,
     string,
   ) => option<groups>
@@ -1266,16 +1265,16 @@ module Re: {
   @ocaml.doc(" Similar to {!exec}, but returns [true] if the expression matches,
     and [false] if it doesn't ")
   let execp: (
-    ~pos: int /* Default: 0 */=?,
-    ~len: int /* Default: -1 (until end of string) */=?,
+    ~pos: int=? /* Default: 0 */,
+    ~len: int=? /* Default: -1 (until end of string) */,
     re,
     string,
   ) => bool
 
   @ocaml.doc(" More detailed version of {!exec_p} ")
   let exec_partial: (
-    ~pos: int /* Default: 0 */=?,
-    ~len: int /* Default: -1 (until end of string) */=?,
+    ~pos: int=? /* Default: 0 */,
+    ~len: int=? /* Default: -1 (until end of string) */,
     re,
     string,
   ) => [#Full | #Partial | #Mismatch]

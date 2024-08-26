@@ -4,17 +4,15 @@ type \"Type2" = string
 
 type \"Type3" = \"Type1"
 
-type \"Type4" = {
-  field: string,
-}
+type \"Type4" = {field: string}
 let fn1 = v => v.field
 
 type dict = {
-  \"key": int,
+  key: int,
   \"KEY": int,
 }
 
 let dict = {
-  \"key": 1,
+  key: 1,
   \"KEY": 1,
 }

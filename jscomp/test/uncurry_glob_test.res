@@ -1,15 +1,15 @@
 module M = (
   U: {
-    let f: (. int, string) => string
+    let f: (int, string) => string
   },
 ) => {
-  let v = U.f(. 100, "x")
+  let v = U.f(100, "x")
 }
 
-let f = (. ()) => 3
+let f = () => 3
 
-let u = f(.)
+let u = f()
 
-let \"+>" = (. a, h: (. _) => int) => h(. a)
+let \"+>" = (a, h: _ => int) => h(a)
 
-let u = h => \"+>"(. 3, h)
+let u = h => \"+>"(3, h)

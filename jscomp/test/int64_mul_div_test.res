@@ -199,31 +199,28 @@ let simple_divs = [
 /* let f a b = a,b, div a b, rem a b;; */
 
 let from = xs =>
-  xs
-  |> Array.to_list
-  |> List.mapi((i, (a, b, c, d)) => (
-    "small_divs " ++ __unsafe_cast(i),
-    _ => Mt.Eq((c, d), (Int64.div(a, b), Int64.rem(a, b))),
-  ))
+  List.mapi(
+    (i, (a, b, c, d)) => (
+      "small_divs " ++ __unsafe_cast(i),
+      _ => Mt.Eq((c, d), (Int64.div(a, b), Int64.rem(a, b))),
+    ),
+    Array.to_list(xs),
+  )
 let to_string = [(0L, "0")]
 
 let int64_compare_tests = [(1L, 2L, -1), (2L, 1L, 1), (2L, 1L, 1)]
 
 let from_compare = xs =>
-  xs
-  |> Array.to_list
-  |> List.mapi((i, (a, b, c)) => (
-    "int64_compare " ++ __unsafe_cast(i),
-    _ => Mt.Eq(c, Int64.compare(a, b)),
-  ))
+  List.mapi(
+    (i, (a, b, c)) => ("int64_compare " ++ __unsafe_cast(i), _ => Mt.Eq(c, Int64.compare(a, b))),
+    Array.to_list(xs),
+  )
 
 let from_to_string = xs =>
-  xs
-  |> Array.to_list
-  |> List.mapi((i, (a, str_a)) => (
-    "to_string " ++ __unsafe_cast(i),
-    _ => Mt.Eq(str_a, Int64.to_string(a)),
-  ))
+  List.mapi(
+    (i, (a, str_a)) => ("to_string " ++ __unsafe_cast(i), _ => Mt.Eq(str_a, Int64.to_string(a))),
+    Array.to_list(xs),
+  )
 
 \"@@"(
   Mt.from_pair_suites(__MODULE__, ...),
@@ -232,19 +229,15 @@ let from_to_string = xs =>
     \"@"(
       from_pairs("small", small_pairs),
       \"@"(
-        to_floats
-        |> Array.to_list
-        |> List.mapi((i, (i64, f)) => (
-          "to_float_" ++ __unsafe_cast(i),
-          _ => Mt.Eq(Int64.to_float(i64), f),
-        )),
+        List.mapi(
+          (i, (i64, f)) => ("to_float_" ++ __unsafe_cast(i), _ => Mt.Eq(Int64.to_float(i64), f)),
+          Array.to_list(to_floats),
+        ),
         \"@"(
-          of_float_pairs
-          |> Array.to_list
-          |> List.mapi((i, (f, i64)) => (
-            "of_float_" ++ __unsafe_cast(i),
-            _ => Mt.Eq(Int64.of_float(f), i64),
-          )),
+          List.mapi(
+            (i, (f, i64)) => ("of_float_" ++ __unsafe_cast(i), _ => Mt.Eq(Int64.of_float(f), i64)),
+            Array.to_list(of_float_pairs),
+          ),
           \"@"(
             list{
               (
@@ -268,7 +261,7 @@ let from_to_string = xs =>
         ),
       ),
     ),
-  ),
+  )
 )
 /*
   Undefined behaviorJ

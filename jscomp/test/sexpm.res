@@ -108,7 +108,7 @@ module MakeDecode = (M: MONAD) => {
 
   /* get next char, assuming t.i < t.len */
   let _get = t => {
-    assert (t.i < t.len)
+    assert(t.i < t.len)
     let c = Bytes.get(t.buf, t.i)
     t.i = t.i + 1
     if c == '\n' {

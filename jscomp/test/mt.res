@@ -1,8 +1,8 @@
-@val external describe: (string, (. unit) => unit) => unit = "describe"
+@val external describe: (string, unit => unit) => unit = "describe"
 
-@val external it: (string, (unit => unit)) => unit = "it"
+@val external it: (string, unit => unit) => unit = "it"
 
-@val external it_promise: (string, (unit => Js.Promise.t<_>)) => unit = "it"
+@val external it_promise: (string, unit => Js.Promise.t<_>) => unit = "it"
 
 @val @module("assert") external eq: ('a, 'a) => unit = "deepEqual"
 
@@ -18,9 +18,7 @@
 
 @val @variadic external dump: array<'a> => unit = "console.log"
 
-@val
-@module("assert")
-/** There is a problem --
+@val @module("assert") /** There is a problem --
     it does not return [unit]
 */
 external throws: (unit => unit) => unit = "throws"
@@ -248,20 +246,19 @@ let old_from_promise_suites_donotuse = (name, suites: list<(string, Js.Promise.t
   switch Array.to_list(argv) {
   | list{cmd, ..._} =>
     if is_mocha() {
-      describe(name, (. ()) =>
-        suites |> List.iter(((name, code)) =>
+      describe(name, () => List.iter(((name, code)) =>
           it_promise(
             name,
             _ =>
-              code |> Js.Promise.then_(
+              Js.Promise.then_(
                 x => {
                   handleCode(x)
                   val_unit
                 },
+                code,
               ),
           )
-        )
-      )
+        , suites))
     } else {
       Js.log("promise suites")
     } /* TODO */

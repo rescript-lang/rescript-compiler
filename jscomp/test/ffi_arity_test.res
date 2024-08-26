@@ -1,5 +1,5 @@
-@send external map: (array<'a>, (. 'a) => 'b) => array<'b> = "map"
-@send external mapi: (array<'a>, (. 'a, int) => 'b) => array<'b> = "map"
+@send external map: (array<'a>, 'a => 'b) => array<'b> = "map"
+@send external mapi: (array<'a>, ('a, int) => 'b) => array<'b> = "map"
 
 @val external parseInt: string => int = "parseInt"
 @val external parseInt_radix: (string, int) => int = "parseInt"
@@ -11,13 +11,13 @@ let f = v =>
     v => v + v
   }
 
-let v = mapi([1, 2, 3], (. a, b) => f(a)(b))
+let v = mapi([1, 2, 3], (a, b) => f(a)(b))
 
-let vv = mapi([1, 2, 3], (. a, b) => a + b)
+let vv = mapi([1, 2, 3], (a, b) => a + b)
 
-let hh = map(["1", "2", "3"], (. x) => parseInt(x))
+let hh = map(["1", "2", "3"], x => parseInt(x))
 
-let u = (. ()) => 3
+let u = () => 3
 
 let vvv = ref(0)
 let fff = () => {
@@ -27,7 +27,7 @@ let fff = () => {
   incr(vvv)
 }
 
-let g = (. ()) => fff()
+let g = () => fff()
 /* will be compiled into 
   var g = function () { fff (0)}
   not {[ var g = fff ]}
@@ -38,11 +38,11 @@ let abc = (x, y, z) => {
   x + y + z
 }
 
-let abc_u = (. x, y, z) => abc(x, y, z)
+let abc_u = (x, y, z) => abc(x, y, z)
 /* cool, it will be compiled into 
 {[ var absc_u = abc ]}
 */
-let () = g(.)
+let () = g()
 Mt.from_pair_suites(
   __MODULE__,
   {

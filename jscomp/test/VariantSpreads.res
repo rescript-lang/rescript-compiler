@@ -1,6 +1,6 @@
 module S = {
-    type x = Foo | Bar
-    type s = Five(int) | Six
+  type x = Foo | Bar
+  type s = Five(int) | Six
 }
 
 type a = One(bool, S.x) | Two

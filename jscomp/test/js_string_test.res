@@ -42,10 +42,7 @@ let suites = {
     /* es2015 */
     ("repeat", _ => Eq("foofoofoo", "foo"->Js.String2.repeat(3))),
     ("replace", _ => Eq("fooBORKbaz", "foobarbaz"->Js.String2.replace("bar", "BORK"))),
-    (
-      "replaceByRe",
-      _ => Eq("fooBORKBORK", "foobarbaz"->Js.String2.replaceByRe(/ba./g, "BORK")),
-    ),
+    ("replaceByRe", _ => Eq("fooBORKBORK", "foobarbaz"->Js.String2.replaceByRe(/ba./g, "BORK"))),
     (
       "unsafeReplaceBy0",
       _ => {
@@ -107,14 +104,14 @@ let suites = {
       "splitByRe",
       _ => Eq(
         [Some("a"), Some("#"), None, Some("b"), Some("#"), Some(":"), Some("c")],
-        "a#b#:c" |> Js.String.splitByRe(/(#)(:)?/),
+        Js.String.splitByRe(/(#)(:)?/, "a#b#:c"),
       ),
     ),
     (
       "splitByReAtMost",
       _ => Eq(
         [Some("a"), Some("#"), None],
-        "a#b#:c" |> Js.String.splitByReAtMost(/(#)(:)?/, ~limit=3),
+        Js.String.splitByReAtMost(/(#)(:)?/, ~limit=3, "a#b#:c"),
       ),
     ),
     /* es2015 */

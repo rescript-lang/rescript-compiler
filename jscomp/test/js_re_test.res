@@ -68,7 +68,7 @@ let suites = {
       "result_index",
       _ =>
         switch "zbar"->Js.Re.fromString->Js.Re.exec_("foobarbazbar") {
-        | Some(res) => Eq(8, res |> Js.Re.index)
+        | Some(res) => Eq(8, Js.Re.index(res))
         | None => Fail()
         },
     ),
@@ -78,7 +78,7 @@ let suites = {
         let input = "foobar"
 
         switch /foo/g->Js.Re.exec_(input) {
-        | Some(res) => Eq(input, res |> Js.Re.input)
+        | Some(res) => Eq(input, Js.Re.input(res))
         | None => Fail()
         }
       },

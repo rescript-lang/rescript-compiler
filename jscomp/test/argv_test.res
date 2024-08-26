@@ -11,6 +11,6 @@ let arg_spec = {
 Arg.parse_argv(["prog.exe", "-c", "-d"], arg_spec, anno_fun, usage_msg)
 
 {
-  assert (compile.contents == true)
-  assert (test.contents == false)
+  assert(compile.contents == true)
+  assert(test.contents == false)
 }

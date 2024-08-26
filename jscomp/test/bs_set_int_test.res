@@ -29,8 +29,7 @@ let () = b(__LOC__, \"=~"(u, [3]))
 /* inclusive */
 let range = (i, j) => Array.init(j - i + 1, k => k + i)
 
-let revRange = (i, j) =>
-  Array.init(j - i + 1, k => k + i) |> Array.to_list |> List.rev |> Array.of_list
+let revRange = (i, j) => Array.of_list(List.rev(Array.to_list(Array.init(j - i + 1, k => k + i))))
 
 let () = {
   let v = ofA(Array.append(range(100, 1000), revRange(400, 1500)))

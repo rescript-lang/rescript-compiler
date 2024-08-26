@@ -30,7 +30,7 @@ external cloneElement: (reactElement, ~props: {..}=?, array<reactElement>) => re
 external createElementVerbatim: 'a = "createElement"
 
 let createDomElement = (s, ~props, children) => {
-  let vararg = [Obj.magic(s), Obj.magic(props)] |> Js.Array.concat(children)
+  let vararg = Js.Array.concat(children, [Obj.magic(s), Obj.magic(props)])
   /* Use varargs to avoid warnings on duplicate keys in children */
   Obj.magic(createElementVerbatim)["apply"](Js.Nullable.null, vararg)
 }
@@ -58,9 +58,11 @@ and jsPropsToReason<'jsProps, 'state, 'retainedProps, 'action> = 'jsProps => com
   'retainedProps,
   'action,
 >
-and uncurriedJsPropsToReason<'jsProps, 'state, 'retainedProps, 'action> = (
-  . 'jsProps,
-) => component<'state, 'retainedProps, 'action>
+and uncurriedJsPropsToReason<'jsProps, 'state, 'retainedProps, 'action> = 'jsProps => component<
+  'state,
+  'retainedProps,
+  'action,
+>
 /* **
  * Type of hidden field for Reason components that use JS components
  */
@@ -115,7 +117,8 @@ and oldNewSelf<'state, 'retainedProps, 'action> = {
 type rec jsComponentThis<'state, 'props, 'retainedProps, 'action> = {
   "state": totalState<'state, 'retainedProps, 'action>,
   "props": {"reasonProps": 'props},
-  "setState": @meth (
+  "setState": @meth
+  (
     (
       totalState<'state, 'retainedProps, 'action>,
       'props,
@@ -156,7 +159,7 @@ let convertPropsIfTheyreFromJs = (props, jsPropsToReason, debugName) => {
   let props = Obj.magic(props)
   switch (Js.Nullable.toOption(props["reasonProps"]), jsPropsToReason) {
   | (Some(props), _) => props
-  | (None, Some(toReasonProps)) => Element(toReasonProps(. props))
+  | (None, Some(toReasonProps)) => Element(toReasonProps(props))
   | (None, None) =>
     raise(
       Invalid_argument(
@@ -177,7 +180,7 @@ let createClass = Obj.magic
 let basicComponent = debugName => {
   let componentTemplate = {
     reactClassInternal: createClass(debugName),
-    debugName: debugName,
+    debugName,
     /* Keep here as a way to prove that the API may be implemented soundly */
     handedOffState: {
       contents: None,
@@ -265,7 +268,7 @@ let wrapReasonForJs = (
     'state,
     'retainedProps,
     'action,
-  > = (. jsProps) => jsPropsToReason(jsProps)
+  > = jsProps => jsPropsToReason(jsProps)
   Obj.magic(component.reactClassInternal)["prototype"]["jsPropsToReason"] = Some(
     uncurriedJsPropsToReason,
   )
@@ -286,7 +289,7 @@ module WrapProps = {
       Js.Obj.assign(Js.Obj.empty(), Obj.magic(props)),
       {"ref": ref, "key": key},
     )
-    let varargs = [Obj.magic(reactClass), Obj.magic(props)] |> Js.Array.concat(Obj.magic(children))
+    let varargs = Js.Array.concat(Obj.magic(children), [Obj.magic(reactClass), Obj.magic(props)])
     /* Use varargs under the hood */
     Obj.magic(createElementVerbatim)["apply"](Js.Nullable.null, varargs)
   }
@@ -297,7 +300,7 @@ module WrapProps = {
     _,
   > => {
     let jsElementWrapped = Some(wrapProps(~reactClass, ~props, children, ...))
-    {...dummyInteropComponent, jsElementWrapped: jsElementWrapped}
+    {...dummyInteropComponent, jsElementWrapped}
   }
 }
 

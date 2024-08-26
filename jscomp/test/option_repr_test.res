@@ -138,7 +138,7 @@ let all_true = xs => Belt.List.every(xs, x => x)
     ltx(None, Some(Js.null)),
     ltx(None, Some(x => x)),
     ltx(Some(Js.null), Some(Js.Null.return(3))),
-  }),
+  })
 )
 
 \"@@"(
@@ -149,7 +149,7 @@ let all_true = xs => Belt.List.every(xs, x => x)
     eqx(Some(None), Some(None)),
     eqx(Some(Some(None)), Some(Some(None))),
     neqx(Some(Some(Some(None))), Some(Some(None))),
-  }),
+  })
 )
 
 module N0 = {

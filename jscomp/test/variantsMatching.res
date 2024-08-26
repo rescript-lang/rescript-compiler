@@ -289,7 +289,7 @@ module UntaggedWithBool = {
 
 module UntaggedWithTuple = {
   @unboxed @genType
-  type t = String(string) | Tuple((int, float, string)) 
+  type t = String(string) | Tuple((int, float, string))
 
   let classify = x =>
     switch x {

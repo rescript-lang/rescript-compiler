@@ -14,7 +14,7 @@ let f = (module(H: Hashtbl.S with type key = int)) => {
   H.add(tbl, 2, '2')
   \"@@"(
     List.sort(((a: int, _), (b, _)) => compare(a, b), ...),
-    H.fold((k, v, acc) => list{(k, v), ...acc}, tbl, list{}),
+    H.fold((k, v, acc) => list{(k, v), ...acc}, tbl, list{})
   )
 }
 
