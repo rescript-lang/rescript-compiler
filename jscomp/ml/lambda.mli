@@ -47,8 +47,7 @@ type tag_info =
   | Blk_module of string list
   | Blk_module_export of Ident.t list 
   | Blk_extension of {
-    is_exception: bool;
-  }
+      is_exception: bool; }
     (* underlying is the same as tuple, immutable block
       {[
          exception A of int * int 
@@ -63,9 +62,9 @@ type tag_info =
   | Blk_some
   | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
   | Blk_record_ext of {
-    fields: string array;
-    mutable_flag: mutable_flag;
-   }
+      fields: string array;
+      mutable_flag: mutable_flag;
+      is_exception: bool; }
   | Blk_lazy_general    
 
 val find_name :
@@ -83,6 +82,7 @@ val blk_record :
 val blk_record_ext :
   (Types.label_description* Typedtree.record_label_definition) array ->
   mutable_flag -> 
+  bool ->
   tag_info
 
 

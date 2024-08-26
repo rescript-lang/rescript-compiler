@@ -943,7 +943,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
               [ targ ],
               e.exp_loc )
       | Record_unboxed _ -> targ
-      | Record_extension ->
+      | Record_extension _ ->
           Lprim
             ( Pfield
                 (lbl.lbl_pos + 1, Lambda.fld_record_extension lbl),
@@ -958,7 +958,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
         | Record_inlined _ ->
             Psetfield (lbl.lbl_pos, Lambda.fld_record_inline_set lbl)
         | Record_unboxed _ -> assert false
-        | Record_extension ->
+        | Record_extension _ ->
             Psetfield (lbl.lbl_pos + 1, Lambda.fld_record_extension_set lbl)
       in
       Lprim (access, [ transl_exp arg; transl_exp newval ], e.exp_loc)
@@ -1212,7 +1212,7 @@ and transl_record loc env fields repres opt_init_expr =
                     | Record_inlined _ ->
                         Pfield (i, Lambda.fld_record_inline lbl)
                     | Record_unboxed _ -> assert false
-                    | Record_extension ->
+                    | Record_extension _ ->
                         Pfield
                           (i + 1, Lambda.fld_record_extension lbl)
                   in
@@ -1246,7 +1246,7 @@ and transl_record loc env fields repres opt_init_expr =
                        cl ))
             | Record_unboxed _ ->
                 Lconst (match cl with [ v ] -> v | _ -> assert false)
-            | Record_extension -> raise Not_constant
+            | Record_extension _ -> raise Not_constant
           with Not_constant -> (
             match repres with
             | Record_regular ->
@@ -1269,7 +1269,7 @@ and transl_record loc env fields repres opt_init_expr =
                     loc )
             | Record_unboxed _ -> (
                 match ll with [ v ] -> v | _ -> assert false)
-            | Record_extension ->
+            | Record_extension { is_exception } ->
                 let path =
                   let label, _ = fields.(0) in
                   match label.lbl_res.desc with
@@ -1278,7 +1278,7 @@ and transl_record loc env fields repres opt_init_expr =
                 in
                 let slot = transl_extension_path env path in
                 Lprim
-                  ( Pmakeblock (Lambda.blk_record_ext fields mut),
+                  ( Pmakeblock (Lambda.blk_record_ext fields mut is_exception),
                     slot :: ll,
                     loc ))
         in
@@ -1302,7 +1302,7 @@ and transl_record loc env fields repres opt_init_expr =
                 | Record_inlined _ ->
                     Psetfield (lbl.lbl_pos, Lambda.fld_record_inline_set lbl)
                 | Record_unboxed _ -> assert false
-                | Record_extension ->
+                | Record_extension _ ->
                     Psetfield
                       (lbl.lbl_pos + 1, Lambda.fld_record_extension_set lbl)
               in

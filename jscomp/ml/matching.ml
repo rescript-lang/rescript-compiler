@@ -1602,7 +1602,7 @@ let make_record_matching loc all_labels def = function
             | Record_inlined _ ->
               Lprim (Pfield (lbl.lbl_pos, Lambda.fld_record_inline lbl), [arg], loc)
             | Record_unboxed _ -> arg
-            | Record_extension -> Lprim (Pfield (lbl.lbl_pos + 1, Lambda.fld_record_extension lbl), [arg], loc) 
+            | Record_extension _ -> Lprim (Pfield (lbl.lbl_pos + 1, Lambda.fld_record_extension lbl), [arg], loc) 
           in
           let str =
             match lbl.lbl_mut with

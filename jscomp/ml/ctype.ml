@@ -3674,7 +3674,7 @@ let rec subtype_rec env trace t1 t2 cstrs =
             true (* handled in the fields checks *)
           | Record_unboxed b1, Record_unboxed b2 -> b1 = b2
           | Record_inlined _, Record_inlined _ -> repr1 = repr2
-          | Record_extension, Record_extension -> true
+          | Record_extension b1, Record_extension b2 -> b1.is_exception = b2.is_exception
           | _ -> false in
         if same_repr then
           let violation, tl1, tl2 = Record_coercion.check_record_fields ~repr1 ~repr2 fields1 fields2 in

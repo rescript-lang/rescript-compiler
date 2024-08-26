@@ -155,7 +155,8 @@ and record_representation =
   | Record_unboxed of bool                (* Unboxed single-field record, inlined or not *)
   | Record_inlined of                     (* Inlined record *)
       { tag : int ; name : string; num_nonconsts : int; optional_labels : string list; attrs: Parsetree.attributes}
-  | Record_extension                      (* Inlined record under extension *)
+  | Record_extension of                   (* Inlined record under extension *)
+      { is_exception : bool }
   | Record_optional_labels of string list (* List of optional labels *)
 
 and label_declaration =
@@ -322,5 +323,8 @@ let same_record_representation x y =
       | Record_inlined y ->
           tag = y.tag && name = y.name && num_nonconsts = y.num_nonconsts && optional_labels = y.optional_labels
       | _ -> false)
-  | Record_extension -> y = Record_extension
+  | Record_extension {is_exception} -> (
+      match y with
+        | Record_extension y -> is_exception = y.is_exception
+        | _ -> false)
   | Record_unboxed x -> ( match y with Record_unboxed y -> x = y | _ -> false)

@@ -48,14 +48,13 @@ type tag_info =
   | Blk_module of string list
   | Blk_module_export of Ident.t list
   | Blk_extension of {
-    is_exception: bool;
-   }
+      is_exception: bool; }
   | Blk_some
   | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
   | Blk_record_ext of {
-     fields:  string array;
-     mutable_flag: Asttypes.mutable_flag;
-    }
+      fields:  string array;
+      mutable_flag: Asttypes.mutable_flag;
+      is_exception: bool; }
   | Blk_lazy_general
 
 let tag_of_tag_info (tag : tag_info ) = 
@@ -114,14 +113,14 @@ let blk_record (fields : (label * _) array) mut record_repr =
     { fields = all_labels_info; mutable_flag = mut; record_repr }
 
 
-let blk_record_ext fields mutable_flag =
+let blk_record_ext fields mutable_flag is_exception =
   let all_labels_info =
     Array.map
       (fun ((lbl : label), _) ->
         Ext_list.find_def lbl.Types.lbl_attributes find_name lbl.lbl_name)
       fields
   in
-  Blk_record_ext {fields = all_labels_info; mutable_flag }
+  Blk_record_ext {fields = all_labels_info; mutable_flag; is_exception }
 
 let blk_record_inlined fields name num_nonconst optional_labels ~tag ~attrs mutable_flag =
   let fields =
