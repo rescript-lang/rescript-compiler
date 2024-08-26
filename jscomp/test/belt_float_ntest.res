@@ -1,8 +1,7 @@
 open Node_test
+open Node_test_util
 
 module F = Belt.Float
-
-let eq = (loc, a, b) => Node_assert.equal(a, b, ~message=loc)
 
 describe("Belt.Float", () => {
   test("fromInt", () => {

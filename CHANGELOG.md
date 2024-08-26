@@ -33,6 +33,7 @@
 #### :house: Internal
 
 - Add dev container. https://github.com/rescript-lang/rescript-compiler/pull/6962
+- Convert more tests to the node test runner. https://github.com/rescript-lang/rescript-compiler/pull/6956
 
 # 12.0.0-alpha.1
 
@@ -95,7 +96,7 @@
 - Remove the transformation of `foo(1,2)` into `Js.Internal.opaqueFullApply(Internal.opaque(f), 1, 2)`, and change the back-end to treat all applications as uncurried. https://github.com/rescript-lang/rescript-compiler/pull/6893
 - Remove `@uncurry` from ReScript sources (others, tests). https://github.com/rescript-lang/rescript-compiler/pull/6938
 - Remove leftover uncurried handling. https://github.com/rescript-lang/rescript-compiler/pull/6939 https://github.com/rescript-lang/rescript-compiler/pull/6940
-- Use node test runner instead of mocha. https://github.com/rescript-lang/rescript-compiler/pull/6956
+- Start converting tests from mocha to the node test runner. https://github.com/rescript-lang/rescript-compiler/pull/6956
 
 #### :nail_care: Polish
 
