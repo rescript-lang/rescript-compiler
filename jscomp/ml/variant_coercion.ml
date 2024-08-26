@@ -167,6 +167,7 @@ let can_coerce_polyvariant_to_variant ~row_fields ~constructors ~type_attributes
     Error `PolyvariantConstructorHasPayload
   else
     let is_unboxed = Ast_untagged_variants.has_untagged type_attributes in
+    print_endline (string_of_bool is_unboxed);
     if
       List.for_all
         (fun polyvariant_value ->
@@ -179,15 +180,21 @@ let can_coerce_polyvariant_to_variant ~row_fields ~constructors ~type_attributes
                   | Some (String as_runtime_string) ->
                     (* `@as("")`, does the configured string match the polyvariant value? *)
                     as_runtime_string = polyvariant_value
-                  | Some (Untagged StringType) when is_unboxed ->
-                    (* An unboxed variant that has a catch all case will match _any_ string, so it matches anything here. *)
-                    true
                   | Some _ ->
                     (* Any other `@as` can't match since it's by definition not a string *)
                     false
                   | None ->
-                    (* No `@as` means the runtime representation will be the constructor name as a string. *)
-                    polyvariant_value = constructor_name))
+                    (* No `@as` means the runtime representation will be the constructor 
+                      name as a string.
+                      
+                      However, there's a special case with unboxed types where there's a 
+                      string catch-all case. In that case, any polyvariant will match,
+                      since the catch-all case will match any string. *)
+                    (match c.cd_args with 
+                    | Cstr_tuple [{desc=Tconstr (p, _, _)}] 
+                      when is_unboxed && Path.same p Predef.path_string -> true 
+                    | _ -> polyvariant_value = constructor_name)
+                  ))
         polyvariant_runtime_representations
     then Ok ()
     else Error `Unknown

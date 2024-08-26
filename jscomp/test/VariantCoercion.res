@@ -111,4 +111,12 @@ module CoerceFromPolyvariantToVariant = {
 
   let withMoreVariantConstructors: withMoreVariantConstructors = #One
   let withMoreVariantConstructorsP = (withMoreVariantConstructors :> withMoreVariantConstructorsP)
+
+  type withUnboxedCatchAll = [#One | #someOtherThing]
+
+  @unboxed
+  type withUnboxedCatchAllP = One | @as("two") Two | Three | Other(string)
+
+  let withUnboxedCatchAll: withUnboxedCatchAll = #One
+  let withUnboxedCatchAllP = (withUnboxedCatchAll :> withUnboxedCatchAllP)
 }
