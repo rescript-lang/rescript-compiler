@@ -71,6 +71,15 @@ let CoerceFromBigintToVariant = {
   cc: 120n
 };
 
+let CoerceFromPolyvariantToVariant = {
+  simple: "One",
+  simpleP: "One",
+  withAs: "One",
+  withAsP: "One",
+  withMoreVariantConstructors: "One",
+  withMoreVariantConstructorsP: "One"
+};
+
 let a$2 = "Three";
 
 let b = "Three";
@@ -95,4 +104,5 @@ exports.CoerceFromStringToVariant = CoerceFromStringToVariant;
 exports.CoerceFromIntToVariant = CoerceFromIntToVariant;
 exports.CoerceFromFloatToVariant = CoerceFromFloatToVariant;
 exports.CoerceFromBigintToVariant = CoerceFromBigintToVariant;
+exports.CoerceFromPolyvariantToVariant = CoerceFromPolyvariantToVariant;
 /* No side effect */
