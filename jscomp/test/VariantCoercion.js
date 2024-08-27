@@ -77,7 +77,9 @@ let CoerceFromPolyvariantToVariant = {
   withAs: "One",
   withAsP: "One",
   withMoreVariantConstructors: "One",
-  withMoreVariantConstructorsP: "One"
+  withMoreVariantConstructorsP: "One",
+  withUnboxedCatchAll: "One",
+  withUnboxedCatchAllP: "One"
 };
 
 let a$2 = "Three";
