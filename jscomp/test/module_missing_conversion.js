@@ -3,7 +3,6 @@
 
 let $$Array = require("../../lib/js/array.js");
 let $$String = require("../../lib/js/string.js");
-let MoreLabels = require("../../lib/js/moreLabels.js");
 
 function f(x) {
   return x;
@@ -45,10 +44,7 @@ let u = [$$String];
 
 let hh = "x".length;
 
-let ghh = MoreLabels.Hashtbl.create(undefined, 30);
-
 exports.XX = XX;
 exports.u = u;
 exports.hh = hh;
-exports.ghh = ghh;
-/* ghh Not a pure module */
+/* No side effect */

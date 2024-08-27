@@ -1,5 +1,13 @@
 @@config({flags: ["-w", "a", "-bs-no-bin-annot"]})
 
+module Random = {
+  let self_init = () => ()
+
+  let int: int => int = %raw(`(max) => {
+    return ((Math.random() * 100) | 0) % max;
+  }`)
+}
+
 module Actors: {
   type dir_1d = Left | Right
   type dir_2d = North | South | East | West
