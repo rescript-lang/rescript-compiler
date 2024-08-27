@@ -48,7 +48,7 @@ let v = f({
   "x'": 6
 });
 
-eq("File \"gpr_1943_test.res\", line 23, characters 3-10", [
+eq("File \"gpr_1943_test.res\", line 26, characters 3-10", [
   0,
   1,
   2,

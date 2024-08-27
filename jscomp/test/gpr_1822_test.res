@@ -3,7 +3,10 @@ let test_id = ref(0)
 let eq = (loc, x, y) => {
   incr(test_id)
   suites :=
-    list{(loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => Mt.Eq(x, y)), ...suites.contents}
+    list{
+      (loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => Mt.Eq(x, y)),
+      ...suites.contents,
+    }
 }
 
 type shape =

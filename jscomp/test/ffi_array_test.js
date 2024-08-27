@@ -26,7 +26,7 @@ function eq(loc, x, y) {
   };
 }
 
-eq("File \"ffi_array_test.res\", line 11, characters 12-19", [
+eq("File \"ffi_array_test.res\", line 14, characters 12-19", [
   1,
   2,
   3,

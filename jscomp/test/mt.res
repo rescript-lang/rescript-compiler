@@ -301,5 +301,8 @@ let bool_suites = (~test_id, ~suites, loc, x) => {
 let throw_suites = (~test_id, ~suites, loc, x) => {
   incr(test_id)
   suites :=
-    list{(loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => ThrowAny(x)), ...suites.contents}
+    list{
+      (loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => ThrowAny(x)),
+      ...suites.contents,
+    }
 }

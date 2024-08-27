@@ -27,7 +27,7 @@ function eq(loc, x, y) {
   };
 }
 
-eq("File \"key_word_property_plus_test.res\", line 10, characters 2-9", [
+eq("File \"key_word_property_plus_test.res\", line 13, characters 2-9", [
   1,
   2,
   3,

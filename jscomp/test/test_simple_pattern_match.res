@@ -1,5 +1,5 @@
 @module("node:os")
-external platform: unit => string = "platform" 
+external platform: unit => string = "platform"
 
 let (a, b) = switch platform() {
 | "linux" | "darwin" => (1, 2)

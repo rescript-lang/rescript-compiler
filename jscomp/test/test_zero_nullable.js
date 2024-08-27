@@ -280,19 +280,19 @@ let Test_null_def = {
   f11: f11$2
 };
 
-eq("File \"test_zero_nullable.res\", line 244, characters 5-12", f1$2(0), 1);
+eq("File \"test_zero_nullable.res\", line 247, characters 5-12", f1$2(0), 1);
 
-eq("File \"test_zero_nullable.res\", line 245, characters 5-12", f1$2(null), 3);
+eq("File \"test_zero_nullable.res\", line 248, characters 5-12", f1$2(null), 3);
 
-eq("File \"test_zero_nullable.res\", line 246, characters 5-12", f1$2(undefined), 3);
+eq("File \"test_zero_nullable.res\", line 249, characters 5-12", f1$2(undefined), 3);
 
-eq("File \"test_zero_nullable.res\", line 248, characters 5-12", f1(0), 1);
+eq("File \"test_zero_nullable.res\", line 251, characters 5-12", f1(0), 1);
 
-eq("File \"test_zero_nullable.res\", line 249, characters 5-12", f1(null), 3);
+eq("File \"test_zero_nullable.res\", line 252, characters 5-12", f1(null), 3);
 
-eq("File \"test_zero_nullable.res\", line 251, characters 5-12", f1$1(0), 1);
+eq("File \"test_zero_nullable.res\", line 254, characters 5-12", f1$1(0), 1);
 
-eq("File \"test_zero_nullable.res\", line 252, characters 5-12", f1$1(undefined), 3);
+eq("File \"test_zero_nullable.res\", line 255, characters 5-12", f1$1(undefined), 3);
 
 Mt.from_pair_suites("Test_zero_nullable", suites.contents);
 

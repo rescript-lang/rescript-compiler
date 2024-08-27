@@ -26,7 +26,7 @@ function eq(loc, x, y) {
   };
 }
 
-eq("File \"bs_string_test.res\", line 10, characters 2-9", "ghso ghso g".split(" ").reduce((x, y) => x + ("-" + y), ""), "-ghso-ghso-g");
+eq("File \"bs_string_test.res\", line 13, characters 2-9", "ghso ghso g".split(" ").reduce((x, y) => x + ("-" + y), ""), "-ghso-ghso-g");
 
 Mt.from_pair_suites("Bs_string_test", suites.contents);
 

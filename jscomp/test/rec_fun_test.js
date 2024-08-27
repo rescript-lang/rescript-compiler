@@ -62,7 +62,7 @@ Caml_obj.update_dummy(y, {
   tl: x
 });
 
-eq("File \"rec_fun_test.res\", line 29, characters 3-10", called.contents, 2);
+eq("File \"rec_fun_test.res\", line 32, characters 3-10", called.contents, 2);
 
 Mt.from_pair_suites("Rec_fun_test", suites.contents);
 

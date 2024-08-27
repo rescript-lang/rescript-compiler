@@ -39,7 +39,7 @@ let u = hey(undefined, 3);
 
 let z = hey(5, 3);
 
-eq("File \"optional_ffi_test.res\", line 21, characters 12-19", [
+eq("File \"optional_ffi_test.res\", line 24, characters 12-19", [
   [
     u,
     z
@@ -110,9 +110,9 @@ let pair2 = [
   pair2_1
 ];
 
-eq("File \"optional_ffi_test.res\", line 45, characters 5-12", pair);
+eq("File \"optional_ffi_test.res\", line 48, characters 5-12", pair);
 
-eq("File \"optional_ffi_test.res\", line 46, characters 5-12", pair2);
+eq("File \"optional_ffi_test.res\", line 49, characters 5-12", pair2);
 
 function heystr(x, y) {
     if (x === void 0) { x = "3"; }
@@ -127,7 +127,7 @@ let pair$1 = [
   pair_1$1
 ];
 
-eq("File \"optional_ffi_test.res\", line 61, characters 5-12", pair$1);
+eq("File \"optional_ffi_test.res\", line 64, characters 5-12", pair$1);
 
 Mt.from_pair_suites("Optional_ffi_test", suites.contents);
 

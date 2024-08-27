@@ -36,7 +36,7 @@ function foo2(f) {
   return f("a1", undefined);
 }
 
-eq("File \"gpr_1423_app_test.res\", line 15, characters 12-19", "a1a2", "a1a2");
+eq("File \"gpr_1423_app_test.res\", line 18, characters 12-19", "a1a2", "a1a2");
 
 Mt.from_pair_suites("Gpr_1423_app_test", suites.contents);
 

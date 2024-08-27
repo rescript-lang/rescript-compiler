@@ -36,34 +36,34 @@ let v = [
   3
 ];
 
-eq("File \"array_subtle_test.res\", line 11, characters 12-19", [
+eq("File \"array_subtle_test.res\", line 14, characters 12-19", [
   4,
   v.length
 ]);
 
-eq("File \"array_subtle_test.res\", line 14, characters 5-12", [
+eq("File \"array_subtle_test.res\", line 17, characters 5-12", [
   5,
   v.push(3)
 ]);
 
-eq("File \"array_subtle_test.res\", line 15, characters 5-12", [
+eq("File \"array_subtle_test.res\", line 18, characters 5-12", [
   5,
   v.length
 ]);
 
-eq("File \"array_subtle_test.res\", line 16, characters 5-12", [
+eq("File \"array_subtle_test.res\", line 19, characters 5-12", [
   5,
   v.length
 ]);
 
-eq("File \"array_subtle_test.res\", line 20, characters 5-12", [
+eq("File \"array_subtle_test.res\", line 23, characters 5-12", [
   3,
   Caml_array.get(v, 2)
 ]);
 
 Caml_array.set(v, 2, 4);
 
-eq("File \"array_subtle_test.res\", line 22, characters 5-12", [
+eq("File \"array_subtle_test.res\", line 25, characters 5-12", [
   4,
   Caml_array.get(v, 2)
 ]);
@@ -72,7 +72,7 @@ while (v.length > 0) {
   v.pop();
 };
 
-eq("File \"array_subtle_test.res\", line 29, characters 5-12", [
+eq("File \"array_subtle_test.res\", line 32, characters 5-12", [
   0,
   v.length
 ]);
@@ -111,17 +111,17 @@ function fff4(x) {
   }
 }
 
-eq("File \"array_subtle_test.res\", line 61, characters 3-10", [
+eq("File \"array_subtle_test.res\", line 64, characters 3-10", [
   fff3([]),
   1
 ]);
 
-eq("File \"array_subtle_test.res\", line 62, characters 3-10", [
+eq("File \"array_subtle_test.res\", line 65, characters 3-10", [
   fff4([]),
   2
 ]);
 
-eq("File \"array_subtle_test.res\", line 63, characters 3-10", [
+eq("File \"array_subtle_test.res\", line 66, characters 3-10", [
   fff4([1]),
   1
 ]);

@@ -46,18 +46,18 @@ function f(x) {
   
 }
 
-eq("File \"record_extension_test.res\", line 26, characters 3-10", f({
+eq("File \"record_extension_test.res\", line 28, characters 3-10", f({
   RE_EXN_ID: Inline_record,
   x: 3,
   y: "4"
 }), 7);
 
-eq("File \"record_extension_test.res\", line 27, characters 3-10", f({
+eq("File \"record_extension_test.res\", line 29, characters 3-10", f({
   RE_EXN_ID: SinglePayload,
   _1: "1"
 }), 1);
 
-eq("File \"record_extension_test.res\", line 28, characters 3-10", f({
+eq("File \"record_extension_test.res\", line 30, characters 3-10", f({
   RE_EXN_ID: TuplePayload,
   _1: 1,
   _2: "2"
@@ -106,7 +106,7 @@ function u(f) {
   }
 }
 
-eq("File \"record_extension_test.res\", line 65, characters 3-10", u(() => {
+eq("File \"record_extension_test.res\", line 67, characters 3-10", u(() => {
   throw {
     RE_EXN_ID: A,
     name: 1,
@@ -115,7 +115,7 @@ eq("File \"record_extension_test.res\", line 65, characters 3-10", u(() => {
   };
 }), 2);
 
-eq("File \"record_extension_test.res\", line 66, characters 3-10", u(() => {
+eq("File \"record_extension_test.res\", line 68, characters 3-10", u(() => {
   throw {
     RE_EXN_ID: B,
     _1: 1,
@@ -124,7 +124,7 @@ eq("File \"record_extension_test.res\", line 66, characters 3-10", u(() => {
   };
 }), 3);
 
-eq("File \"record_extension_test.res\", line 67, characters 3-10", u(() => {
+eq("File \"record_extension_test.res\", line 69, characters 3-10", u(() => {
   throw {
     RE_EXN_ID: C,
     name: 4,
@@ -132,7 +132,7 @@ eq("File \"record_extension_test.res\", line 67, characters 3-10", u(() => {
   };
 }), 4);
 
-Mt.from_pair_suites("File \"record_extension_test.res\", line 69, characters 29-36", suites.contents);
+Mt.from_pair_suites("File \"record_extension_test.res\", line 71, characters 29-36", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

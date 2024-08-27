@@ -74,7 +74,7 @@ function f(g) {
   }
 }
 
-eq("File \"exception_rebound_err_test.res\", line 31, characters 3-10", test_js_error4(), 7);
+eq("File \"exception_rebound_err_test.res\", line 34, characters 3-10", test_js_error4(), 7);
 
 Mt.from_pair_suites("Exception_rebound_err_test", suites.contents);
 

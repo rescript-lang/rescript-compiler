@@ -41,13 +41,13 @@ function f(x) {
   }
 }
 
-eq("File \"switch_case_test.res\", line 19, characters 5-12", f("xx'''"), 0);
+eq("File \"switch_case_test.res\", line 22, characters 5-12", f("xx'''"), 0);
 
-eq("File \"switch_case_test.res\", line 20, characters 5-12", f("xx\""), 1);
+eq("File \"switch_case_test.res\", line 23, characters 5-12", f("xx\""), 1);
 
-eq("File \"switch_case_test.res\", line 21, characters 5-12", f("xx\\\""), 2);
+eq("File \"switch_case_test.res\", line 24, characters 5-12", f("xx\\\""), 2);
 
-eq("File \"switch_case_test.res\", line 22, characters 5-12", f("xx\\\"\""), 3);
+eq("File \"switch_case_test.res\", line 25, characters 5-12", f("xx\\\"\""), 3);
 
 Mt.from_pair_suites("Switch_case_test", suites.contents);
 

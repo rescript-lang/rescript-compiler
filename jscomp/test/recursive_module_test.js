@@ -36,7 +36,7 @@ function add(suite) {
 
 let Int3 = Caml_module.init_mod([
   "recursive_module_test.res",
-  12,
+  15,
   4
 ], {
   TAG: "Module",
@@ -56,7 +56,7 @@ Caml_module.update_mod({
 
 let M = Caml_module.init_mod([
   "recursive_module_test.res",
-  18,
+  21,
   20
 ], {
   TAG: "Module",
@@ -91,10 +91,10 @@ let Fact = {
   fact: fact$1
 };
 
-eq("File \"recursive_module_test.res\", line 29, characters 12-19", 120, fact$1(5));
+eq("File \"recursive_module_test.res\", line 32, characters 12-19", 120, fact$1(5));
 
 add([
-  "File \"recursive_module_test.res\", line 31, characters 14-21",
+  "File \"recursive_module_test.res\", line 34, characters 14-21",
   () => ({
     TAG: "ThrowAny",
     _0: () => {

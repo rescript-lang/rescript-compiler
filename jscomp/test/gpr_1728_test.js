@@ -35,21 +35,21 @@ function badInlining(obj) {
   Number.parseInt(x) !== 3;
 }
 
-eq("File \"gpr_1728_test.res\", line 18, characters 3-10", badInlining({
+eq("File \"gpr_1728_test.res\", line 21, characters 3-10", badInlining({
   field: "3"
 }), undefined);
 
-eq("File \"gpr_1728_test.res\", line 20, characters 3-10", Number.parseInt("-13"), -13);
+eq("File \"gpr_1728_test.res\", line 23, characters 3-10", Number.parseInt("-13"), -13);
 
-eq("File \"gpr_1728_test.res\", line 21, characters 3-10", Number.parseInt("+13"), 13);
+eq("File \"gpr_1728_test.res\", line 24, characters 3-10", Number.parseInt("+13"), 13);
 
-eq("File \"gpr_1728_test.res\", line 22, characters 3-10", Number.parseInt("13"), 13);
+eq("File \"gpr_1728_test.res\", line 25, characters 3-10", Number.parseInt("13"), 13);
 
-eq("File \"gpr_1728_test.res\", line 23, characters 3-10", Number.parseInt("+0x32"), 50);
+eq("File \"gpr_1728_test.res\", line 26, characters 3-10", Number.parseInt("+0x32"), 50);
 
-eq("File \"gpr_1728_test.res\", line 24, characters 3-10", Number.parseInt("-0x32"), -50);
+eq("File \"gpr_1728_test.res\", line 27, characters 3-10", Number.parseInt("-0x32"), -50);
 
-eq("File \"gpr_1728_test.res\", line 25, characters 3-10", Number.parseInt("0x32"), 50);
+eq("File \"gpr_1728_test.res\", line 28, characters 3-10", Number.parseInt("0x32"), 50);
 
 Mt.from_pair_suites("Gpr_1728_test", suites.contents);
 

@@ -48,7 +48,7 @@ let res = Bytes.unsafe_to_string(b);
 
 console.log(res);
 
-eq("File \"bytes_split_gpr_743_test.res\", line 17, characters 5-12", [
+eq("File \"bytes_split_gpr_743_test.res\", line 20, characters 5-12", [
   "aab",
   res
 ]);
@@ -71,7 +71,7 @@ let res2 = Bytes.unsafe_to_string(b$1);
 
 console.log(res2);
 
-eq("File \"bytes_split_gpr_743_test.res\", line 32, characters 5-12", [
+eq("File \"bytes_split_gpr_743_test.res\", line 35, characters 5-12", [
   "bcc",
   res2
 ]);

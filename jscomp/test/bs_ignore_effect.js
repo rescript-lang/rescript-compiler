@@ -42,9 +42,9 @@ let h = (v.contents = v.contents + 1 | 0, {
 
 let z = (v.contents = v.contents + 1 | 0, "Float", add(3.0, 2.0));
 
-eq("File \"bs_ignore_effect.res\", line 34, characters 5-12", v.contents, 2);
+eq("File \"bs_ignore_effect.res\", line 37, characters 5-12", v.contents, 2);
 
-eq("File \"bs_ignore_effect.res\", line 35, characters 5-12", z, 5.0);
+eq("File \"bs_ignore_effect.res\", line 38, characters 5-12", z, 5.0);
 
 Mt.from_pair_suites("Bs_ignore_effect", suites.contents);
 

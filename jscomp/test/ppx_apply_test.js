@@ -38,7 +38,7 @@ function unary(a) {
 
 let xx = 6;
 
-eq("File \"ppx_apply_test.res\", line 16, characters 12-19", u, 3);
+eq("File \"ppx_apply_test.res\", line 19, characters 12-19", u, 3);
 
 function h(a) {
   return xx(a);

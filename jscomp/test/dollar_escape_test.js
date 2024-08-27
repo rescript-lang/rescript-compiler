@@ -38,9 +38,9 @@ function $$$plus(x, y) {
 
 let u = 3;
 
-eq("File \"dollar_escape_test.res\", line 17, characters 3-10", v, 3);
+eq("File \"dollar_escape_test.res\", line 20, characters 3-10", v, 3);
 
-eq("File \"dollar_escape_test.res\", line 18, characters 3-10", u, 3);
+eq("File \"dollar_escape_test.res\", line 21, characters 3-10", u, 3);
 
 Mt.from_pair_suites("Dollar_escape_test", suites.contents);
 

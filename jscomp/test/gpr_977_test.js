@@ -43,9 +43,9 @@ function int32_f(x) {
 
 let u = f(-2147483648);
 
-eq("File \"gpr_977_test.res\", line 33, characters 5-12", -2147483648, u);
+eq("File \"gpr_977_test.res\", line 36, characters 5-12", -2147483648, u);
 
-eq("File \"gpr_977_test.res\", line 34, characters 5-12", Int32.min_int, int32_f(Int32.min_int));
+eq("File \"gpr_977_test.res\", line 37, characters 5-12", Int32.min_int, int32_f(Int32.min_int));
 
 Mt.from_pair_suites("Gpr_977_test", suites.contents);
 

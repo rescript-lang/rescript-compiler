@@ -66,7 +66,7 @@ function xFromJs(param) {
 }
 
 function idx(v) {
-  eq("File \"ast_abstract_test.res\", line 26, characters 18-25", xFromJs(v), v);
+  eq("File \"ast_abstract_test.res\", line 29, characters 18-25", xFromJs(v), v);
 }
 
 idx("a");

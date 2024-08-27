@@ -14,7 +14,7 @@ function f(v) {
 
 Mt.from_pair_suites("To_string_test", {
   hd: [
-    "File \"to_string_test.res\", line 6, characters 8-15",
+    "File \"to_string_test.res\", line 7, characters 5-12",
     () => ({
       TAG: "Eq",
       _0: Pervasives.infinity.toString(),
@@ -23,7 +23,7 @@ Mt.from_pair_suites("To_string_test", {
   ],
   tl: {
     hd: [
-      "File \"to_string_test.res\", line 6, characters 54-61",
+      "File \"to_string_test.res\", line 8, characters 5-12",
       () => ({
         TAG: "Eq",
         _0: Pervasives.neg_infinity.toString(),

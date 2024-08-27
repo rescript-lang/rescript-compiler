@@ -46,7 +46,7 @@ let a = h.length({
   }
 });
 
-eq("File \"module_alias_test.res\", line 30, characters 3-10", a, 3);
+eq("File \"module_alias_test.res\", line 33, characters 3-10", a, 3);
 
 Mt.from_pair_suites("Module_alias_test", suites.contents);
 

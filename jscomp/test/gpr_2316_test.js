@@ -68,9 +68,9 @@ if (exit === 1) {
   x = undefined;
 }
 
-eq("File \"gpr_2316_test.res\", line 22, characters 5-12", y, "boo");
+eq("File \"gpr_2316_test.res\", line 25, characters 5-12", y, "boo");
 
-eq("File \"gpr_2316_test.res\", line 23, characters 5-12", x, "boo");
+eq("File \"gpr_2316_test.res\", line 26, characters 5-12", x, "boo");
 
 Mt.from_pair_suites("Gpr_2316_test", suites.contents);
 

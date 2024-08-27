@@ -46,12 +46,12 @@ function f(check) {
   }
 }
 
-eq("File \"gpr_904_test.res\", line 16, characters 12-19", f({
+eq("File \"gpr_904_test.res\", line 19, characters 12-19", f({
   x: true,
   y: false
 }), false);
 
-eq("File \"gpr_904_test.res\", line 18, characters 12-19", check_healty({
+eq("File \"gpr_904_test.res\", line 21, characters 12-19", check_healty({
   a: false,
   b: false,
   c: true

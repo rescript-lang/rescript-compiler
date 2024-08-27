@@ -82,7 +82,7 @@ try {
   a7 = 1;
 }
 
-eq("File \"gpr_1760_test.res\", line 57, characters 3-10", [
+eq("File \"gpr_1760_test.res\", line 60, characters 3-10", [
   a0,
   a1,
   a4,

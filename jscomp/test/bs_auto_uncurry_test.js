@@ -50,7 +50,7 @@ hi(x => {
   };
 });
 
-eq("File \"bs_auto_uncurry_test.res\", line 24, characters 5-12", xs.contents, {
+eq("File \"bs_auto_uncurry_test.res\", line 27, characters 5-12", xs.contents, {
   hd: undefined,
   tl: {
     hd: undefined,
@@ -58,45 +58,45 @@ eq("File \"bs_auto_uncurry_test.res\", line 24, characters 5-12", xs.contents, {
   }
 });
 
-eq("File \"bs_auto_uncurry_test.res\", line 28, characters 5-12", [
-  1,
-  2,
-  3
-].map(x => x + 1 | 0), [
-  2,
-  3,
-  4
-]);
-
-eq("File \"bs_auto_uncurry_test.res\", line 29, characters 5-12", [
-  1,
-  2,
-  3
-].map(x => x + 1 | 0), [
-  2,
-  3,
-  4
-]);
-
 eq("File \"bs_auto_uncurry_test.res\", line 31, characters 5-12", [
+  1,
+  2,
+  3
+].map(x => x + 1 | 0), [
+  2,
+  3,
+  4
+]);
+
+eq("File \"bs_auto_uncurry_test.res\", line 32, characters 5-12", [
+  1,
+  2,
+  3
+].map(x => x + 1 | 0), [
+  2,
+  3,
+  4
+]);
+
+eq("File \"bs_auto_uncurry_test.res\", line 34, characters 5-12", [
   1,
   2,
   3
 ].reduce((prim0, prim1) => prim0 + prim1 | 0, 0), 6);
 
-eq("File \"bs_auto_uncurry_test.res\", line 33, characters 5-12", [
+eq("File \"bs_auto_uncurry_test.res\", line 36, characters 5-12", [
   1,
   2,
   3
 ].reduce((x, y, i) => (x + y | 0) + i | 0, 0), 9);
 
-eq("File \"bs_auto_uncurry_test.res\", line 35, characters 5-12", [
+eq("File \"bs_auto_uncurry_test.res\", line 38, characters 5-12", [
   1,
   2,
   3
 ].some(x => x < 1), false);
 
-eq("File \"bs_auto_uncurry_test.res\", line 37, characters 5-12", [
+eq("File \"bs_auto_uncurry_test.res\", line 40, characters 5-12", [
   1,
   2,
   3

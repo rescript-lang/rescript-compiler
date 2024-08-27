@@ -33,7 +33,7 @@ for (let i = 0; i <= 99999; ++i) {
   s = String_set.add(i.toString(), s);
 }
 
-eq("File \"string_set_test.res\", line 15, characters 5-12", String_set.cardinal(s), 100000);
+eq("File \"string_set_test.res\", line 18, characters 5-12", String_set.cardinal(s), 100000);
 
 Mt.from_pair_suites("String_set_test", suites.contents);
 
