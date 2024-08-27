@@ -5,6 +5,7 @@ let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 let Caml_option = require("../../lib/js/caml_option.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function reverse_range(a, i, len) {
   if (len === 0) {
@@ -105,11 +106,9 @@ function filter_map(f, a) {
 
 function range(from, to_) {
   if (from > to_) {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Ext_array_test.range"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Ext_array_test.range"
     });
   }
   return $$Array.init((to_ - from | 0) + 1 | 0, i => i + from | 0);
@@ -118,11 +117,9 @@ function range(from, to_) {
 function map2i(f, a, b) {
   let len = a.length;
   if (len !== b.length) {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Ext_array_test.map2i"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Ext_array_test.map2i"
     });
   }
   return $$Array.mapi((i, a) => f(i, a, b[i]), a);

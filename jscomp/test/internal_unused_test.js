@@ -2,17 +2,14 @@
 'use strict';
 
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 console.log(3);
 
 let A = /* @__PURE__ */Caml_exceptions.create("Internal_unused_test.P1.A");
 
 function f() {
-  throw new Error(A, {
-    cause: {
-      RE_EXN_ID: A
-    }
-  });
+  throw Caml_js_exceptions.internalMakeExn(A);
 }
 
 let c = 5;

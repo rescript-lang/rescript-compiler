@@ -9,14 +9,12 @@ function test_js_error() {
   try {
     e = JSON.parse(" {\"x\" : }");
   } catch (raw_err) {
-    let err = Caml_js_exceptions.internalToOCamlException(raw_err);
+    let err = Caml_js_exceptions.internalAnyToExn(raw_err);
     if (err.RE_EXN_ID === Js_exn.$$Error) {
       console.log(err._1.stack);
       return;
     }
-    throw new Error(err.RE_EXN_ID, {
-      cause: err
-    });
+    throw err;
   }
   return e;
 }
@@ -25,16 +23,12 @@ function test_js_error2() {
   try {
     return JSON.parse(" {\"x\" : }");
   } catch (raw_e) {
-    let e = Caml_js_exceptions.internalToOCamlException(raw_e);
+    let e = Caml_js_exceptions.internalAnyToExn(raw_e);
     if (e.RE_EXN_ID === Js_exn.$$Error) {
       console.log(e._1.stack);
-      throw new Error(e.RE_EXN_ID, {
-        cause: e
-      });
+      throw e;
     }
-    throw new Error(e.RE_EXN_ID, {
-      cause: e
-    });
+    throw e;
   }
 }
 
@@ -43,14 +37,12 @@ function example1() {
   try {
     v = JSON.parse(" {\"x\"  }");
   } catch (raw_err) {
-    let err = Caml_js_exceptions.internalToOCamlException(raw_err);
+    let err = Caml_js_exceptions.internalAnyToExn(raw_err);
     if (err.RE_EXN_ID === Js_exn.$$Error) {
       console.log(err._1.stack);
       return;
     }
-    throw new Error(err.RE_EXN_ID, {
-      cause: err
-    });
+    throw err;
   }
   return v;
 }
@@ -59,13 +51,11 @@ function example2() {
   try {
     return JSON.parse(" {\"x\"}");
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
     if (exn.RE_EXN_ID === Js_exn.$$Error) {
       return;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 

@@ -9,22 +9,16 @@ let Foo = /* @__PURE__ */Caml_exceptions.create("Gpr_1701_test.Foo");
 
 function test(n) {
   if (n === 0) {
-    throw new Error(Foo, {
-      cause: {
-        RE_EXN_ID: Foo
-      }
-    });
+    throw Caml_js_exceptions.internalMakeExn(Foo);
   }
   try {
     return test(n - 1 | 0);
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
     if (exn.RE_EXN_ID === Foo) {
       return;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -38,13 +32,11 @@ function read_lines(inc) {
     try {
       l = input_line(inc);
     } catch (raw_exn) {
-      let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+      let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
       if (exn.RE_EXN_ID === "End_of_file") {
         l = undefined;
       } else {
-        throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+        throw exn;
       }
     }
     if (l === undefined) {
@@ -66,13 +58,11 @@ function read_lines2(inc) {
     try {
       l = input_line(inc);
     } catch (raw_exn) {
-      let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+      let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
       if (exn.RE_EXN_ID === "End_of_file") {
         return List.rev(acc);
       }
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
     _acc = {
       hd: l,
@@ -91,13 +81,11 @@ function read_lines3(inc) {
         tl: acc
       });
     } catch (raw_exn) {
-      let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+      let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
       if (exn.RE_EXN_ID === "End_of_file") {
         return List.rev(acc);
       }
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
   };
   return loop(/* [] */0);

@@ -2,13 +2,10 @@
 'use strict';
 
 let React = require("react");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function dd() {
-  throw new Error("Not_found", {
-    cause: {
-      RE_EXN_ID: "Not_found"
-    }
-  });
+  throw Caml_js_exceptions.internalMakeExn("Not_found");
 }
 
 let h = sum(1.0, 2.0);
@@ -27,9 +24,7 @@ function tg(arr) {
 
 let tc = Object.assign({}, "abc");
 
-let te = {
-  RE_EXN_ID: "Not_found"
-};
+let te = Caml_js_exceptions.internalMakeExn("Not_found");
 
 let tcr = {};
 

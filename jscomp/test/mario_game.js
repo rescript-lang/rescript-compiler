@@ -8,6 +8,7 @@ let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_int32 = require("../../lib/js/caml_int32.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_option = require("../../lib/js/caml_option.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let Actors = {};
 
@@ -1484,11 +1485,9 @@ function game_win(ctx) {
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("You win!", 180, 128);
-  throw new Error("Failure", {
-    cause: {
-      RE_EXN_ID: "Failure",
-      _1: "Game over."
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Failure",
+    _1: "Game over."
   });
 }
 
@@ -1499,11 +1498,9 @@ function game_loss(ctx) {
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("GAME OVER. You lose!", 60, 128);
-  throw new Error("Failure", {
-    cause: {
-      RE_EXN_ID: "Failure",
-      _1: "Game over."
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Failure",
+    _1: "Game over."
   });
 }
 
@@ -2464,11 +2461,9 @@ function choose_enemy_typ(typ) {
     case 2 :
       return "Goomba";
     default:
-      throw new Error("Failure", {
-        cause: {
-          RE_EXN_ID: "Failure",
-          _1: "Shouldn't reach here"
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Failure",
+        _1: "Shouldn't reach here"
       });
   }
 }
@@ -2489,11 +2484,9 @@ function choose_sblock_typ(typ) {
     case 4 :
       return "Ground";
     default:
-      throw new Error("Failure", {
-        cause: {
-          RE_EXN_ID: "Failure",
-          _1: "Shouldn't reach here"
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Failure",
+        _1: "Shouldn't reach here"
       });
   }
 }
@@ -3005,11 +2998,9 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
         tl: /* [] */0
       };
     default:
-      throw new Error("Failure", {
-        cause: {
-          RE_EXN_ID: "Failure",
-          _1: "Shouldn't reach here"
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Failure",
+        _1: "Shouldn't reach here"
       });
   }
 }
@@ -3279,11 +3270,9 @@ function load(param) {
     canvas = el;
   } else {
     console.log("cant find canvas " + canvas_id);
-    throw new Error("Failure", {
-      cause: {
-        RE_EXN_ID: "Failure",
-        _1: "fail"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Failure",
+      _1: "fail"
     });
   }
   let context = canvas.getContext("2d");

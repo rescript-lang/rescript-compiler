@@ -2,10 +2,9 @@
 'use strict';
 
 let List = require("../../lib/js/list.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
-let a0 = {
-  RE_EXN_ID: "Not_found"
-};
+let a0 = Caml_js_exceptions.internalMakeExn("Not_found");
 
 let b = List.length({
   hd: 1,

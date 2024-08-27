@@ -3,6 +3,7 @@
 
 let Mt = require("./mt.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -40,10 +41,10 @@ let A = /* @__PURE__ */Caml_exceptions.create("Record_debug_test.A");
 
 let B = /* @__PURE__ */Caml_exceptions.create("Record_debug_test.B");
 
-let v0 = {
+let v0 = Caml_js_exceptions.internalFromExtension({
   RE_EXN_ID: A,
   _1: 3
-};
+});
 
 let v1 = {
   RE_EXN_ID: B,

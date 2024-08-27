@@ -9,6 +9,7 @@ let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
 let Caml_array = require("../../lib/js/caml_array.js");
 let Caml_option = require("../../lib/js/caml_option.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -91,29 +92,25 @@ add_test("File \"js_json_test.res\", line 22, characters 11-18", () => {
   ty2._0.forEach(x => {
     let ty3 = Js_json.classify(x);
     if (typeof ty3 !== "object") {
-      throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "js_json_test.res",
-            38,
-            21
-          ]
-        }
-      });
-    }
-    if (ty3.TAG === "JSONNumber") {
-      return;
-    }
-    throw new Error("Assert_failure", {
-      cause: {
+      throw Caml_js_exceptions.internalFromExtension({
         RE_EXN_ID: "Assert_failure",
         _1: [
           "js_json_test.res",
           38,
           21
         ]
-      }
+      });
+    }
+    if (ty3.TAG === "JSONNumber") {
+      return;
+    }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "js_json_test.res",
+        38,
+        21
+      ]
     });
   });
   return {
@@ -235,15 +232,13 @@ function option_get(x) {
   if (x !== undefined) {
     return Caml_option.valFromOption(x);
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "js_json_test.res",
-        113,
-        12
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "js_json_test.res",
+      113,
+      12
+    ]
   });
 }
 

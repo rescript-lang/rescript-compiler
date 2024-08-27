@@ -10,7 +10,7 @@ let function_equal_test;
 try {
   function_equal_test = Caml_obj.equal(x => x + 1 | 0, x => x + 2 | 0);
 } catch (raw_exn) {
-  let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+  let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
   function_equal_test = exn.RE_EXN_ID === "Invalid_argument" && exn._1 === "equal: functional value" ? true : false;
 }
 

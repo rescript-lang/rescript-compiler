@@ -4,6 +4,7 @@
 let Mt = require("./mt.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -27,35 +28,33 @@ let Small = /* @__PURE__ */Caml_exceptions.create("Large_record_duplication_test
 
 function f_small(x) {
   if (x.RE_EXN_ID === Small) {
-    return {
+    return Caml_js_exceptions.internalFromExtension({
       RE_EXN_ID: Small,
       x: 2,
       y: x.y
-    };
+    });
   } else {
-    return {
-      RE_EXN_ID: "Not_found"
-    };
+    return Caml_js_exceptions.internalMakeExn("Not_found");
   }
 }
 
-let h = {
+let h = Caml_js_exceptions.internalFromExtension({
   RE_EXN_ID: Small,
   x: 1,
   y: ""
-};
-
-eq("File \"large_record_duplication_test.res\", line 70, characters 3-10", f_small(h), {
-  RE_EXN_ID: Small,
-  x: 2,
-  y: ""
 });
 
-eq("File \"large_record_duplication_test.res\", line 72, characters 3-10", Caml_obj.equal(h, {
+eq("File \"large_record_duplication_test.res\", line 70, characters 3-10", f_small(h), Caml_js_exceptions.internalFromExtension({
   RE_EXN_ID: Small,
   x: 2,
   y: ""
-}), false);
+}));
+
+eq("File \"large_record_duplication_test.res\", line 72, characters 3-10", Caml_obj.equal(h, Caml_js_exceptions.internalFromExtension({
+  RE_EXN_ID: Small,
+  x: 2,
+  y: ""
+})), false);
 
 let v1 = {
   TAG: "A0",
@@ -166,7 +165,7 @@ function get_x0$2(x) {
   
 }
 
-let v3 = {
+let v3 = Caml_js_exceptions.internalFromExtension({
   RE_EXN_ID: A0,
   x0: 9,
   x1: 9,
@@ -191,15 +190,13 @@ let v3 = {
   x20: 9,
   x21: 9,
   x22: 9
-};
+});
 
 eq("File \"large_record_duplication_test.res\", line 275, characters 3-10", get_x0$2(f3(v3)), 1);
 
 eq("File \"large_record_duplication_test.res\", line 276, characters 3-10", get_x0$2(v3), 9);
 
-eq("File \"large_record_duplication_test.res\", line 277, characters 3-10", get_x0$2({
-  RE_EXN_ID: "Not_found"
-}), undefined);
+eq("File \"large_record_duplication_test.res\", line 277, characters 3-10", get_x0$2(Caml_js_exceptions.internalMakeExn("Not_found")), undefined);
 
 Mt.from_pair_suites("Large_record_duplication_test", suites.contents);
 

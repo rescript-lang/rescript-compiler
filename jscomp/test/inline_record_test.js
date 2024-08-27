@@ -4,6 +4,7 @@
 let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -63,15 +64,13 @@ let tmp;
 if (A0 === A0) {
   tmp = 3;
 } else {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "inline_record_test.res",
-        47,
-        9
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "inline_record_test.res",
+      47,
+      9
+    ]
   });
 }
 
@@ -107,15 +106,13 @@ let tmp$1;
 if (v4.TAG === "A0") {
   tmp$1 = v4.x;
 } else {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "inline_record_test.res",
-        74,
-        9
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "inline_record_test.res",
+      74,
+      9
+    ]
   });
 }
 
@@ -124,15 +121,13 @@ eq("File \"inline_record_test.res\", line 71, characters 2-9", tmp$1, 11);
 let tmp$2;
 
 if (v5.TAG === "A0") {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "inline_record_test.res",
-        83,
-        9
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "inline_record_test.res",
+      83,
+      9
+    ]
   });
 }
 
@@ -142,12 +137,12 @@ eq("File \"inline_record_test.res\", line 80, characters 2-9", tmp$2, 22);
 
 let A4 = /* @__PURE__ */Caml_exceptions.create("Inline_record_test.A4");
 
-let v6 = {
+let v6 = Caml_js_exceptions.internalFromExtension({
   RE_EXN_ID: A4,
   x: 0,
   y: 0,
   z: 0
-};
+});
 
 function ff0(x) {
   if (x.RE_EXN_ID === A4) {
@@ -167,15 +162,13 @@ let tmp$3;
 if (v6.RE_EXN_ID === A4) {
   tmp$3 = v6.x;
 } else {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "inline_record_test.res",
-        108,
-        9
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "inline_record_test.res",
+      108,
+      9
+    ]
   });
 }
 

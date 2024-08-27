@@ -2,6 +2,7 @@
 'use strict';
 
 let Parsing = require("../../lib/js/parsing.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let yytransl_const = [
   259,
@@ -140,11 +141,9 @@ let yynames_block = "\
 
 let yyact = [
   param => {
-    throw new Error("Failure", {
-      cause: {
-        RE_EXN_ID: "Failure",
-        _1: "parser"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Failure",
+      _1: "parser"
     });
   },
   __caml_parser_env => Parsing.peek_val(__caml_parser_env, 1),
@@ -207,11 +206,9 @@ let yyact = [
   },
   __caml_parser_env => Parsing.peek_val(__caml_parser_env, 1),
   __caml_parser_env => {
-    throw new Error(Parsing.YYexit, {
-      cause: {
-        RE_EXN_ID: Parsing.YYexit,
-        _1: Parsing.peek_val(__caml_parser_env, 0)
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: Parsing.YYexit,
+      _1: Parsing.peek_val(__caml_parser_env, 0)
     });
   }
 ];

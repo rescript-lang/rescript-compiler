@@ -2,27 +2,26 @@
 'use strict';
 
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let A = /* @__PURE__ */Caml_exceptions.create("Local_exception_test.A");
 
-let v = {
+let v = Caml_js_exceptions.internalFromExtension({
   RE_EXN_ID: A,
   _1: 3,
   _2: true
-};
+});
 
 let B = /* @__PURE__ */Caml_exceptions.create("Local_exception_test.B");
 
-let u = {
-  RE_EXN_ID: B
-};
+let u = Caml_js_exceptions.internalMakeExn(B);
 
 let D = /* @__PURE__ */Caml_exceptions.create("Local_exception_test.D");
 
-let d = {
+let d = Caml_js_exceptions.internalFromExtension({
   RE_EXN_ID: D,
   _1: 3
-};
+});
 
 exports.A = A;
 exports.v = v;

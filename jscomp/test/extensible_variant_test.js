@@ -3,6 +3,7 @@
 
 let Mt = require("./mt.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let Str = /* @__PURE__ */Caml_exceptions.create("Extensible_variant_test.Str");
 
@@ -24,15 +25,13 @@ function to_int(x) {
   if (x.RE_EXN_ID === Int$1) {
     return x._2;
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "extensible_variant_test.res",
-        16,
-        9
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "extensible_variant_test.res",
+      16,
+      9
+    ]
   });
 }
 

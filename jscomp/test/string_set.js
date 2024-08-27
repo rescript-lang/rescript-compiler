@@ -6,6 +6,7 @@ let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
 let $$String = require("../../lib/js/string.js");
 let Set_gen = require("./set_gen.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function split(x, tree) {
   if (typeof tree !== "object") {
@@ -223,11 +224,7 @@ function find(x, _tree) {
   while (true) {
     let tree = _tree;
     if (typeof tree !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let v = tree._1;
     let c = Caml.string_compare(x, v);

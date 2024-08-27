@@ -7,6 +7,7 @@ let Genlex = require("../../lib/js/genlex.js");
 let Stream = require("../../lib/js/stream.js");
 let Caml_int32 = require("../../lib/js/caml_int32.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let Parse_error = /* @__PURE__ */Caml_exceptions.create("Stream_parser_test.Parse_error");
 
@@ -40,36 +41,28 @@ function parse(token) {
             if (match._0 === ")") {
               return v;
             }
-            throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error,
-                _1: "Unbalanced parens"
-              }
-            });
-          }
-          throw new Error(Parse_error, {
-            cause: {
+            throw Caml_js_exceptions.internalFromExtension({
               RE_EXN_ID: Parse_error,
               _1: "Unbalanced parens"
-            }
+            });
+          }
+          throw Caml_js_exceptions.internalFromExtension({
+            RE_EXN_ID: Parse_error,
+            _1: "Unbalanced parens"
           });
         }
         Queue.push(n, look_ahead);
-        throw new Error(Parse_error, {
-          cause: {
-            RE_EXN_ID: Parse_error,
-            _1: "unexpected token"
-          }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: Parse_error,
+          _1: "unexpected token"
         });
       case "Int" :
         return n._0;
       default:
         Queue.push(n, look_ahead);
-        throw new Error(Parse_error, {
-          cause: {
-            RE_EXN_ID: Parse_error,
-            _1: "unexpected token"
-          }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: Parse_error,
+          _1: "unexpected token"
         });
     }
   };
@@ -173,34 +166,26 @@ function l_parse(token) {
             if (t._0 === ")") {
               return v;
             }
-            throw new Error(Parse_error, {
-              cause: {
-                RE_EXN_ID: Parse_error,
-                _1: "Unbalanced )"
-              }
-            });
-          }
-          throw new Error(Parse_error, {
-            cause: {
+            throw Caml_js_exceptions.internalFromExtension({
               RE_EXN_ID: Parse_error,
               _1: "Unbalanced )"
-            }
+            });
+          }
+          throw Caml_js_exceptions.internalFromExtension({
+            RE_EXN_ID: Parse_error,
+            _1: "Unbalanced )"
           });
         }
-        throw new Error(Parse_error, {
-          cause: {
-            RE_EXN_ID: Parse_error,
-            _1: "Unexpected token"
-          }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: Parse_error,
+          _1: "Unexpected token"
         });
       case "Int" :
         return i._0;
       default:
-        throw new Error(Parse_error, {
-          cause: {
-            RE_EXN_ID: Parse_error,
-            _1: "Unexpected token"
-          }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: Parse_error,
+          _1: "Unexpected token"
         });
     }
   };

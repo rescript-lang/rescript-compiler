@@ -2,49 +2,44 @@
 'use strict';
 
 let Js_math = require("../../lib/js/js_math.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let match = 1;
 
 if (match !== undefined) {
   if (match !== 1) {
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "gpr_3980_test.res",
-          15,
-          7
-        ]
-      }
-    });
-  }
-  let match$1 = 1;
-  if (match$1 !== 1) {
-    if (match$1 !== 2) {
-      throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "gpr_3980_test.res",
-            13,
-            9
-          ]
-        }
-      });
-    }
-    Js_math.floor(1);
-  }
-  
-} else {
-  throw new Error("Assert_failure", {
-    cause: {
+    throw Caml_js_exceptions.internalFromExtension({
       RE_EXN_ID: "Assert_failure",
       _1: [
         "gpr_3980_test.res",
         15,
         7
       ]
+    });
+  }
+  let match$1 = 1;
+  if (match$1 !== 1) {
+    if (match$1 !== 2) {
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "gpr_3980_test.res",
+          13,
+          9
+        ]
+      });
     }
+    Js_math.floor(1);
+  }
+  
+} else {
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "gpr_3980_test.res",
+      15,
+      7
+    ]
   });
 }
 

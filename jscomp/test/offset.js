@@ -5,6 +5,7 @@ let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
 let $$String = require("../../lib/js/string.js");
 let Caml_option = require("../../lib/js/caml_option.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function height(param) {
   if (typeof param !== "object") {
@@ -35,11 +36,9 @@ function bal(l, v, r) {
   hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal"
       });
     }
     let lr = l.r;
@@ -51,11 +50,9 @@ function bal(l, v, r) {
     if (typeof lr === "object") {
       return create(create(ll, lv, lr.l), lr.v, create(lr.r, v, r));
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.bal"
     });
   }
   if (hr <= (hl + 2 | 0)) {
@@ -68,11 +65,9 @@ function bal(l, v, r) {
     };
   }
   if (typeof r !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.bal"
     });
   }
   let rr = r.r;
@@ -84,11 +79,9 @@ function bal(l, v, r) {
   if (typeof rl === "object") {
     return create(create(l, v, rl.l), rl.v, create(rl.r, rv, rr));
   }
-  throw new Error("Invalid_argument", {
-    cause: {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Set.bal"
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Set.bal"
   });
 }
 
@@ -173,11 +166,7 @@ function min_elt(_param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let l = param.l;
     if (typeof l !== "object") {
@@ -207,11 +196,7 @@ function max_elt(_param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let r = param.r;
     if (typeof r !== "object") {
@@ -239,11 +224,9 @@ function max_elt_opt(_param) {
 
 function remove_min_elt(param) {
   if (typeof param !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.remove_min_elt"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.remove_min_elt"
     });
   }
   let l = param.l;
@@ -658,11 +641,7 @@ function find(x, _param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let v = param.v;
     let c = Caml.string_compare(x, v);
@@ -678,11 +657,7 @@ function find_first(f, _param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let v = param.v;
     if (f(v)) {
@@ -744,11 +719,7 @@ function find_last(f, _param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let v = param.v;
     if (f(v)) {
@@ -955,15 +926,13 @@ function of_list(l) {
             match$4[1]
           ];
         }
-        throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "set.res",
-              691,
-              20
-            ]
-          }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "set.res",
+            691,
+            20
+          ]
         });
       };
       return sub(List.length(l$1), l$1)[0];

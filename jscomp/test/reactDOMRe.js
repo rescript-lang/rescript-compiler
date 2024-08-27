@@ -3,6 +3,7 @@
 
 let React = require("react");
 let ReactDom = require("react-dom");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function renderToElementWithClassName(reactElement, className) {
   let elements = document.getElementsByClassName(className);
@@ -69,11 +70,9 @@ function hydrateToElementWithClassName(reactElement, className) {
 function hydrateToElementWithId(reactElement, id) {
   let element = document.getElementById(id);
   if (element == null) {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "ReactDOMRe.hydrateToElementWithId : no element of id " + (id + " found in the HTML.")
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "ReactDOMRe.hydrateToElementWithId : no element of id " + (id + " found in the HTML.")
     });
   }
   ReactDom.hydrate(reactElement, element);

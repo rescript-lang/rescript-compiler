@@ -2,18 +2,13 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
-let v = {
-  RE_EXN_ID: "Not_found"
-};
+let v = Caml_js_exceptions.internalMakeExn("Not_found");
 
-let u = {
-  RE_EXN_ID: "Not_found"
-};
+let u = Caml_js_exceptions.internalMakeExn("Not_found");
 
-let s = {
-  RE_EXN_ID: "End_of_file"
-};
+let s = Caml_js_exceptions.internalMakeExn("End_of_file");
 
 let suites_0 = [
   "not_found_equal",

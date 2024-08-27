@@ -2,6 +2,7 @@
 'use strict';
 
 let Caml = require("../../lib/js/caml.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function f(param, v) {
   return ((((param.x0 + param.x1 | 0) + param.x2 | 0) + param.x3 | 0) + param.x4 | 0) + v | 0;
@@ -22,15 +23,13 @@ function f3(param, param$1) {
     }
     rhs === "Uninitialized";
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "fun_pattern_match.res",
-        33,
-        9
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "fun_pattern_match.res",
+      33,
+      9
+    ]
   });
 }
 
@@ -45,15 +44,13 @@ function f4(param, param$1) {
     }
     rhs === "Uninitialized";
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "fun_pattern_match.res",
-        39,
-        9
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "fun_pattern_match.res",
+      39,
+      9
+    ]
   });
 }
 

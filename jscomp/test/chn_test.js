@@ -4,6 +4,7 @@
 let Mt = require("./mt.js");
 let $$Array = require("../../lib/js/array.js");
 let Caml_string = require("../../lib/js/caml_string.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -38,15 +39,13 @@ function convert(s) {
     if (x$1 !== undefined) {
       return x$1;
     }
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "chn_test.res",
-          18,
-          16
-        ]
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "chn_test.res",
+        18,
+        16
+      ]
     });
   }));
 }

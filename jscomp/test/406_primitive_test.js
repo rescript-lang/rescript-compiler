@@ -34,24 +34,20 @@ function f() {
   try {
     for (let i = 0; i <= 200; ++i) {
       if (i === 10) {
-        throw new Error(A, {
-          cause: {
-            RE_EXN_ID: A,
-            _1: 0
-          }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: A,
+          _1: 0
         });
       }
       
     }
     return;
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
     if (exn.RE_EXN_ID === A) {
       return;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 

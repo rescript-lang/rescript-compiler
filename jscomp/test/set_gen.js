@@ -4,6 +4,7 @@
 let List = require("../../lib/js/list.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function cons_enum(_s, _e) {
   while (true) {
@@ -35,11 +36,7 @@ function min_elt(_x) {
   while (true) {
     let x = _x;
     if (typeof x !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let l = x._0;
     if (typeof l !== "object") {
@@ -54,11 +51,7 @@ function max_elt(_x) {
   while (true) {
     let x = _x;
     if (typeof x !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let r = x._2;
     if (typeof r !== "object") {
@@ -208,19 +201,11 @@ function check_height_and_diff(x) {
   let hl = check_height_and_diff(x._0);
   let hr = check_height_and_diff(x._2);
   if (h !== (max_int_2(hl, hr) + 1 | 0)) {
-    throw new Error(Height_invariant_broken, {
-      cause: {
-        RE_EXN_ID: Height_invariant_broken
-      }
-    });
+    throw Caml_js_exceptions.internalMakeExn(Height_invariant_broken);
   }
   let diff = Pervasives.abs(hl - hr | 0);
   if (diff > 2) {
-    throw new Error(Height_diff_borken, {
-      cause: {
-        RE_EXN_ID: Height_diff_borken
-      }
-    });
+    throw Caml_js_exceptions.internalMakeExn(Height_diff_borken);
   }
   return h;
 }
@@ -250,15 +235,13 @@ function internal_bal(l, v, r) {
   hr = typeof r !== "object" ? 0 : r._3;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
-      throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "set_gen.res",
-            278,
-            15
-          ]
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "set_gen.res",
+          278,
+          15
+        ]
       });
     }
     let lr = l._2;
@@ -270,15 +253,13 @@ function internal_bal(l, v, r) {
     if (typeof lr === "object") {
       return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
     }
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "set_gen.res",
-          288,
-          19
-        ]
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "set_gen.res",
+        288,
+        19
+      ]
     });
   }
   if (hr <= (hl + 2 | 0)) {
@@ -291,15 +272,13 @@ function internal_bal(l, v, r) {
     };
   }
   if (typeof r !== "object") {
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "set_gen.res",
-          300,
-          15
-        ]
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "set_gen.res",
+        300,
+        15
+      ]
     });
   }
   let rr = r._2;
@@ -311,25 +290,21 @@ function internal_bal(l, v, r) {
   if (typeof rl === "object") {
     return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "set_gen.res",
-        306,
-        19
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "set_gen.res",
+      306,
+      19
+    ]
   });
 }
 
 function remove_min_elt(x) {
   if (typeof x !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.remove_min_elt"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.remove_min_elt"
     });
   }
   let l = x._0;
@@ -538,15 +513,13 @@ function of_sorted_list(l) {
         match$4[1]
       ];
     }
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "set_gen.res",
-          447,
-          18
-        ]
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "set_gen.res",
+        447,
+        18
+      ]
     });
   };
   return sub(List.length(l), l)[0];

@@ -20,7 +20,7 @@ function appf(g, x) {
   try {
     return g(x);
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
     if (exn.RE_EXN_ID === Local) {
       return 3;
     }
@@ -63,7 +63,7 @@ let f;
 try {
   f = (function () {throw (new Error ("x"))} ());
 } catch (raw_x) {
-  let x = Caml_js_exceptions.internalToOCamlException(raw_x);
+  let x = Caml_js_exceptions.internalAnyToExn(raw_x);
   f = x.RE_EXN_ID === A ? x._1 : 2;
 }
 
@@ -72,7 +72,7 @@ let ff;
 try {
   ff = (function () {throw 3} ());
 } catch (raw_x$1) {
-  let x$1 = Caml_js_exceptions.internalToOCamlException(raw_x$1);
+  let x$1 = Caml_js_exceptions.internalAnyToExn(raw_x$1);
   ff = x$1.RE_EXN_ID === A ? x$1._1 : 2;
 }
 
@@ -81,7 +81,7 @@ let fff;
 try {
   fff = (function () {throw 2} ());
 } catch (raw_x$2) {
-  let x$2 = Caml_js_exceptions.internalToOCamlException(raw_x$2);
+  let x$2 = Caml_js_exceptions.internalAnyToExn(raw_x$2);
   fff = x$2.RE_EXN_ID === A ? x$2._1 : 2;
 }
 
@@ -90,19 +90,17 @@ let a0;
 try {
   a0 = (function (){throw 2} ());
 } catch (raw_x$3) {
-  let x$3 = Caml_js_exceptions.internalToOCamlException(raw_x$3);
+  let x$3 = Caml_js_exceptions.internalAnyToExn(raw_x$3);
   if (x$3.RE_EXN_ID === A || x$3.RE_EXN_ID === Js_exn.$$Error) {
     a0 = x$3._1;
   } else {
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "exception_raise_test.res",
-          104,
-          7
-        ]
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "exception_raise_test.res",
+        104,
+        7
+      ]
     });
   }
 }
@@ -112,7 +110,7 @@ let a1;
 try {
   a1 = (function (){throw 2} ());
 } catch (raw_e) {
-  a1 = Caml_js_exceptions.internalToOCamlException(raw_e);
+  a1 = Caml_js_exceptions.internalAnyToExn(raw_e);
 }
 
 let a2;
@@ -120,7 +118,7 @@ let a2;
 try {
   a2 = (function (){throw (new Error("x"))} ());
 } catch (raw_e$1) {
-  a2 = Caml_js_exceptions.internalToOCamlException(raw_e$1);
+  a2 = Caml_js_exceptions.internalAnyToExn(raw_e$1);
 }
 
 let suites = {
@@ -154,15 +152,13 @@ let suites = {
               _1: 2
             };
           }
-          throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "exception_raise_test.res",
-                127,
-                15
-              ]
-            }
+          throw Caml_js_exceptions.internalFromExtension({
+            RE_EXN_ID: "Assert_failure",
+            _1: [
+              "exception_raise_test.res",
+              127,
+              15
+            ]
           });
         }
       ],
@@ -182,18 +178,14 @@ function eq(loc, x, y) {
 try {
   ((()=>{throw 2})());
 } catch (raw_e$2) {
-  let e = Caml_js_exceptions.internalToOCamlException(raw_e$2);
+  let e = Caml_js_exceptions.internalAnyToExn(raw_e$2);
   eq("File \"exception_raise_test.res\", line 137, characters 10-17", Caml_js_exceptions.as_js_exn(e) !== undefined, true);
 }
 
 try {
-  throw new Error("Not_found", {
-    cause: {
-      RE_EXN_ID: "Not_found"
-    }
-  });
+  throw Caml_js_exceptions.internalMakeExn("Not_found");
 } catch (raw_e$3) {
-  let e$1 = Caml_js_exceptions.internalToOCamlException(raw_e$3);
+  let e$1 = Caml_js_exceptions.internalAnyToExn(raw_e$3);
   eq("File \"exception_raise_test.res\", line 141, characters 10-17", Caml_js_exceptions.as_js_exn(e$1) !== undefined, false);
 }
 
