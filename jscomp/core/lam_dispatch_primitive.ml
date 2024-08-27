@@ -178,9 +178,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
       like normal one to set the identifier *)
   | "?exn_slot_name" | "?is_extension" -> call Js_runtime_modules.exceptions
   | "?as_js_exn" -> call Js_runtime_modules.caml_js_exceptions
-  | "?make_float_vect"
-  | "?floatarray_create" (* TODO: compile float array into TypedArray*) ->
-      E.runtime_call Js_runtime_modules.array "make_float" args
   | "?array_sub" -> E.runtime_call Js_runtime_modules.array "sub" args
   | "?array_concat" -> E.runtime_call Js_runtime_modules.array "concat" args
   (*external concat: 'a array list -> 'a array

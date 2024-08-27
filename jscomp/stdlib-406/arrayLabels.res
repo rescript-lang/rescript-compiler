@@ -28,17 +28,6 @@ external unsafe_sub: (array<'a>, int, int) => array<'a> = "?array_sub"
 
 external concat: list<array<'a>> => array<'a> = "?array_concat"
 external unsafe_blit: (array<'a>, int, array<'a>, int, int) => unit = "?array_blit"
-external create_float: int => array<float> = "?make_float_vect"
-let make_float = create_float
-
-module Floatarray = {
-  external create: int => floatarray = "?floatarray_create"
-  external length: floatarray => int = "%floatarray_length"
-  external get: (floatarray, int) => float = "%floatarray_safe_get"
-  external set: (floatarray, int, float) => unit = "%floatarray_safe_set"
-  external unsafe_get: (floatarray, int) => float = "%floatarray_unsafe_get"
-  external unsafe_set: (floatarray, int, float) => unit = "%floatarray_unsafe_set"
-}
 
 let init = (l, ~f) =>
   if l == 0 {

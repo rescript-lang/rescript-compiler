@@ -30,8 +30,6 @@ let concat: list<array<'a>> => array<'a>
 
 let make: (int, 'a) => array<'a>
 
-let make_float: int => array<float>
-
 let blit: (array<'a>, int, array<'a>, int, int) => unit
 
 let get: (array<'a>, int) => 'a

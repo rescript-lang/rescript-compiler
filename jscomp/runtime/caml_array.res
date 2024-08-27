@@ -87,14 +87,6 @@ let make = (len, init) => {
   b
 }
 
-let make_float = len => {
-  let b = Caml_array_extern.new_uninitialized(len)
-  for i in 0 to len - 1 {
-    b->unsafe_set(i, 0.)
-  }
-  b
-}
-
 let blit = (a1, i1, a2, i2, len) =>
   if i2 <= i1 {
     for j in 0 to len - 1 {

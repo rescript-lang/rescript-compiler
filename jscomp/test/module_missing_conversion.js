@@ -9,7 +9,6 @@ function f(x) {
 }
 
 let XX = {
-  make_float: $$Array.make_float,
   init: $$Array.init,
   make_matrix: $$Array.make_matrix,
   create_matrix: $$Array.create_matrix,
@@ -36,7 +35,6 @@ let XX = {
   sort: $$Array.sort,
   stable_sort: $$Array.stable_sort,
   fast_sort: $$Array.fast_sort,
-  Floatarray: $$Array.Floatarray,
   f: f
 };
 

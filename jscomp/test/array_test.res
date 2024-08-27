@@ -54,13 +54,7 @@ module Make = (Array: ARRAY) => {
         },
       ),
       ("concat", _ => Eq([0, 1, 2, 3, 4, 5], Array.concat(list{[0, 1, 2], [3, 4], [], [5]}))),
-      (
-        "make",
-        _ => Eq(
-          (Array.make(100, 'a'), Array.make_float(100)),
-          (Array.init(100, _ => 'a'), Array.init(100, _ => 0.)),
-        ),
-      ),
+      ("make", _ => Eq(Array.make(100, 'a'), Array.init(100, _ => 'a'))),
       ("sub", _ => Eq(Array.sub([0, 1, 2, 3, 4], 2, 2), [2, 3])),
       (
         "blit",

@@ -133,14 +133,8 @@ let array_suites_1 = {
         "make",
         param => ({
           TAG: "Eq",
-          _0: [
-            Caml_array.make(100, /* 'a' */97),
-            Caml_array.make_float(100)
-          ],
-          _1: [
-            $$Array.init(100, param => /* 'a' */97),
-            $$Array.init(100, param => 0)
-          ]
+          _0: Caml_array.make(100, /* 'a' */97),
+          _1: $$Array.init(100, param => /* 'a' */97)
         })
       ],
       tl: {
@@ -195,7 +189,7 @@ let array_suites_1 = {
           ],
           tl: {
             hd: [
-              "File \"array_test.res\", line 75, characters 8-15",
+              "File \"array_test.res\", line 69, characters 8-15",
               param => {
                 let a0 = $$Array.init(100, i => (i << 0));
                 $$Array.blit(a0, 10, a0, 5, 20);
@@ -233,7 +227,7 @@ let array_suites_1 = {
             ],
             tl: {
               hd: [
-                "File \"array_test.res\", line 118, characters 8-15",
+                "File \"array_test.res\", line 112, characters 8-15",
                 param => {
                   let a0 = $$Array.init(100, i => (i << 0));
                   $$Array.blit(a0, 5, a0, 10, 20);

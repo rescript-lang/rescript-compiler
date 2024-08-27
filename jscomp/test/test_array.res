@@ -1,6 +1,5 @@
 let v = Array.make(6, 5)
 
-let u = Array.make_float(30)
 let h = Array.sub(v, 0, 2)
 let hh = Array.blit
 

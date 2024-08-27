@@ -194,16 +194,6 @@ let mem: ('a, ~set: array<'a>) => bool
    @since 4.03.0 */
 let memq: ('a, ~set: array<'a>) => bool
 
-/** [Array.create_float n] returns a fresh float array of length [n],
-    with uninitialized data.
-    @since 4.03 */
-external create_float: int => array<float> = "?make_float_vect"
-
-@deprecated("Use Array.create_float instead.")
-/** @deprecated [Array.make_float] is an alias for
-    {!Array.create_float}. */
-let make_float: int => array<float>
-
 /* {1 Sorting} */
 
 /** Sort an array in increasing order according to a comparison
@@ -253,12 +243,3 @@ let fast_sort: (~cmp: ('a, 'a) => int, array<'a>) => unit
 
 external unsafe_get: (array<'a>, int) => 'a = "%array_unsafe_get"
 external unsafe_set: (array<'a>, int, 'a) => unit = "%array_unsafe_set"
-
-module Floatarray: {
-  external create: int => floatarray = "?floatarray_create"
-  external length: floatarray => int = "%floatarray_length"
-  external get: (floatarray, int) => float = "%floatarray_safe_get"
-  external set: (floatarray, int, float) => unit = "%floatarray_safe_set"
-  external unsafe_get: (floatarray, int) => float = "%floatarray_unsafe_get"
-  external unsafe_set: (floatarray, int, float) => unit = "%floatarray_unsafe_set"
-}

@@ -347,11 +347,6 @@ let primitives_table =
       ("%array_safe_set", Parraysets);
       ("%array_unsafe_get", Parrayrefu);
       ("%array_unsafe_set", Parraysetu);
-      ("%floatarray_length", Parraylength);
-      ("%floatarray_safe_get", Parrayrefs);
-      ("%floatarray_safe_set", Parraysets);
-      ("%floatarray_unsafe_get", Parrayrefu);
-      ("%floatarray_unsafe_set", Parraysetu);
       ("%lazy_force", Plazyforce);
       ("%int64_of_int", Pbintofint Pint64);
       ("%int64_to_int", Pintofbint Pint64);
