@@ -162,8 +162,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Prevapply -> assert false
   | Pdirapply -> assert false
   | Ploc _ -> assert false (* already compiled away here*)
-  | Pbytes_to_string (* handled very early *) ->
-      prim ~primitive:Pbytes_to_string ~args loc
   | Pcreate_extension s -> prim ~primitive:(Pcreate_extension s) ~args loc
   | Pignore ->
       (* Pignore means return unit, it is not an nop *)
@@ -236,11 +234,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Pstringrefu -> prim ~primitive:Pstringrefu ~args loc
   | Pabsfloat -> assert false
   | Pstringrefs -> prim ~primitive:Pstringrefs ~args loc
-  | Pbyteslength -> prim ~primitive:Pbyteslength ~args loc
-  | Pbytesrefu -> prim ~primitive:Pbytesrefu ~args loc
-  | Pbytessetu -> prim ~primitive:Pbytessetu ~args loc
-  | Pbytesrefs -> prim ~primitive:Pbytesrefs ~args loc
-  | Pbytessets -> prim ~primitive:Pbytessets ~args loc
   | Pisint -> prim ~primitive:Pisint ~args loc
   | Pisout -> (
       match args with

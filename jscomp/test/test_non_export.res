@@ -3,7 +3,7 @@ include (
     module V = String
     module U = V
 
-    let u = U.make
+    let u = U.get
     let v = module(U: Set.OrderedType)
 
     let pack = h => {

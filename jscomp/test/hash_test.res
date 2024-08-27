@@ -2,7 +2,7 @@ let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 let eq = (f, x, y) => Mt_global.collect_eq(test_id, suites, f, x, y)
 
-let test_strings = Array.init(32, i => String.make(i, Char.chr(i)))
+let test_strings = Array.init(32, i => Js.String2.fromCodePoint(i)->Js.String2.repeat(i))
 
 let test_strings_hash_results = [
   0,

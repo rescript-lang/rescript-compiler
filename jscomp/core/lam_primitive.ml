@@ -33,7 +33,6 @@ type record_representation =
 (* Inlined record under extension *)
 
 type t =
-  | Pbytes_to_string
   (* Operations on heap blocks *)
   | Pmakeblock of int * Lam_tag_info.t * Asttypes.mutable_flag
   | Pfield of int * Lam_compat.field_dbg_info
@@ -105,11 +104,6 @@ type t =
   | Pstringrefu
   | Pstringrefs
   | Pstringadd
-  | Pbyteslength
-  | Pbytesrefu
-  | Pbytessetu
-  | Pbytesrefs
-  | Pbytessets
   (* Array operations *)
   | Pmakearray
   | Parraylength
@@ -185,7 +179,6 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Pcreate_extension a -> (
       match rhs with Pcreate_extension b -> a = (b : string) | _ -> false)
   | Pwrap_exn -> rhs = Pwrap_exn
-  | Pbytes_to_string -> rhs = Pbytes_to_string
   | Praise -> rhs = Praise
   | Psequand -> rhs = Psequand
   | Psequor -> rhs = Psequor
@@ -231,11 +224,6 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Pstringrefu -> rhs = Pstringrefu
   | Pstringrefs -> rhs = Pstringrefs
   | Pstringadd -> rhs = Pstringadd
-  | Pbyteslength -> rhs = Pbyteslength
-  | Pbytesrefu -> rhs = Pbytesrefu
-  | Pbytessetu -> rhs = Pbytessetu
-  | Pbytesrefs -> rhs = Pbytesrefs
-  | Pbytessets -> rhs = Pbytessets
   | Pundefined_to_opt -> rhs = Pundefined_to_opt
   | Pnull_to_opt -> rhs = Pnull_to_opt
   | Pnull_undefined_to_opt -> rhs = Pnull_undefined_to_opt

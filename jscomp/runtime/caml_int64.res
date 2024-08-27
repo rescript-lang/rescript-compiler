@@ -33,6 +33,10 @@
   let {shift_right_logical: \">>>~", add: \"+~", mul: \"*~"} = module(Caml_nativeint_extern)
 )
 
+@get external stringLength: string => int = "length"
+@send external stringRepeat: (string, int) => string = "repeat"
+@send external intToString: (int, ~radix: int=?) => string = "toString"
+
 let {i64_eq: eq, i64_ge: ge, i64_gt: gt} = module(Caml)
 
 let lognot = x => lxor(x, -1)
@@ -499,8 +503,7 @@ let to_int32 = x => lor(x.lo, 0) /* signed integer */
 
 let to_hex = (x: int64) => {
   let {hi: x_hi, lo: x_lo} = unsafe_of_int64(x)
-  let aux = (v): string =>
-    Caml_string_extern.of_int(Caml_nativeint_extern.shift_right_logical(v, 0), ~base=16)
+  let aux = (v): string => intToString(Caml_nativeint_extern.shift_right_logical(v, 0), ~radix=16)
 
   switch (x_hi, x_lo) {
   | (0, 0) => "0"
@@ -508,11 +511,11 @@ let to_hex = (x: int64) => {
   | (0, _) => aux(x_lo)
   | (_, _) =>
     let lo = aux(x_lo)
-    let pad = 8 - Caml_string_extern.length(lo)
+    let pad = 8 - stringLength(lo)
     if pad <= 0 {
       aux(x_hi) ++ lo
     } else {
-      aux(x_hi) ++ (Caml_string_extern.repeat("0", pad) ++ lo)
+      aux(x_hi) ++ (stringRepeat("0", pad) ++ lo)
     }
   }
 }

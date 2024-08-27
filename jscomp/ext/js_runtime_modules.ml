@@ -30,9 +30,6 @@ let array = "Caml_array"
 
 let string = "Caml_string"
 
-let bytes = "Caml_bytes"
-let bytes_ = "Bytes"
-
 let float = "Caml_float"
 
 let hash_primitive = "Caml_hash_primitive"

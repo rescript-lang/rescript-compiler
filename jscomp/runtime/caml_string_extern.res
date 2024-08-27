@@ -49,7 +49,6 @@ external of_small_int_array: (@as(json`null`) _, array<int>) => string = "String
 
 external length: string => int = "%string_length"
 external unsafe_get: (string, int) => char = "%string_unsafe_get"
-external unsafe_set: (bytes, int, char) => unit = "%bytes_unsafe_set"
 external get: (string, int) => char = "%string_unsafe_get"
 
 @send external repeat: (string, int) => string = "repeat"

@@ -25,6 +25,7 @@
 let rotl32 = (x: int, n) => lor(lsl(x, n), lsr(x, 32 - n))
 
 @send external charCodeAt: (string, int) => int = "charCodeAt"
+@get external stringLength: string => int = "length"
 
 let hash_mix_int = (h, d) => {
   let d = ref(d)
@@ -46,7 +47,7 @@ let hash_final_mix = h => {
 /* Caml_nativeint_extern.logand  (h.contents ^ (h.contents >>> 16)) 0x3FFFFFFFn */
 
 let hash_mix_string = (h, s) => {
-  let len = Caml_string_extern.length(s)
+  let len = stringLength(s)
   let block = len / 4 - 1
   let hash = ref(h)
   for i in 0 to block {

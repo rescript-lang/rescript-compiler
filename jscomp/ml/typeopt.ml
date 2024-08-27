@@ -140,7 +140,6 @@ let classify env ty =
       if Path.same p Predef.path_float then Float
       else if Path.same p Predef.path_lazy_t then Lazy
       else if Path.same p Predef.path_string
-           || Path.same p Predef.path_bytes
            || Path.same p Predef.path_array
            || Path.same p Predef.path_int64 then Addr
       else begin

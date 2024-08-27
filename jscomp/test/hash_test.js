@@ -2,11 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Char = require("../../lib/js/char.js");
 let $$Array = require("../../lib/js/array.js");
 let Hashtbl = require("../../lib/js/hashtbl.js");
 let Mt_global = require("./mt_global.js");
-let Caml_string = require("../../lib/js/caml_string.js");
 
 let suites = {
   contents: /* [] */0
@@ -20,7 +18,7 @@ function eq(f, x, y) {
   Mt_global.collect_eq(test_id, suites, f, x, y);
 }
 
-let test_strings = $$Array.init(32, i => Caml_string.make(i, Char.chr(i)));
+let test_strings = $$Array.init(32, i => String.fromCodePoint(i).repeat(i));
 
 let test_strings_hash_results = [
   0,

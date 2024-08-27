@@ -177,7 +177,6 @@ type is_safe =
 
 type primitive =
   | Pidentity
-  | Pbytes_to_string
   | Pignore
   | Prevapply
   | Pdirapply
@@ -221,7 +220,6 @@ type primitive =
   | Pbigintcomp of comparison
   (* String operations *)
   | Pstringlength | Pstringrefu  | Pstringrefs
-  | Pbyteslength | Pbytesrefu | Pbytessetu | Pbytesrefs | Pbytessets
   (* Array operations *)
   | Pmakearray of  Asttypes.mutable_flag
   | Parraylength 

@@ -34,15 +34,6 @@ let const_char (i : int) = E.int ~c:i (Int32.of_int @@ i)
 (* string [s[i]] expects to return a [ocaml_char] *)
 let ref_string e e1 = E.string_index e e1
 
-(* [s[i]] excepts to return a [ocaml_char]
-   We use normal array for [bytes]
-   TODO: we can use [Buffer] in the future
-*)
-let ref_byte e e0 = E.array_index e e0
-
-(* {Bytes.set : bytes -> int -> char -> unit }*)
-let set_byte e e0 e1 = E.assign (E.array_index e e0) e1
-
 (**
    Note that [String.fromCharCode] also works, but it only 
    work for small arrays, however, for {bytes_to_string} it is likely the bytes 
@@ -59,5 +50,3 @@ let set_byte e e0 e1 = E.assign (E.array_index e e0) e1
        Maxiume call stack size exceeded
    ]}
 *)
-let bytes_to_string e =
-  E.runtime_call Js_runtime_modules.bytes_ "to_string" [ e ]

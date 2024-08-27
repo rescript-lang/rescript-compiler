@@ -13,5 +13,4 @@ let c = (x, y) => x ++ "hello" ++ ("hi" ++ ("u" ++ ("hi" ++ y)))
 
 let v = String.length("xx")
 
-let h = (s: string, b: bytes) =>
-  String.get(s, 0) == 'a' && (Bytes.get(b, 0) == 'b' && String.get(s, 1) == Bytes.get(b, 2))
+let h = (s: string) => String.get(s, 0) == 'a'

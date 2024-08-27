@@ -2,9 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Bytes = require("../../lib/js/bytes.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
-let Caml_bytes = require("../../lib/js/caml_bytes.js");
 let Caml_string = require("../../lib/js/caml_string.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -12,41 +10,6 @@ let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 let v = "gso";
 
 function is_equal() {
-  if (Caml_bytes.get(Bytes.make(3, /* 'a' */97), 0) !== /* 'a' */97) {
-    throw {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "equal_exception_test.res",
-        4,
-        2
-      ],
-      Error: new Error()
-    };
-  }
-  if (Bytes.make(3, /* 'a' */97)[0] !== /* 'a' */97) {
-    throw {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "equal_exception_test.res",
-        5,
-        2
-      ],
-      Error: new Error()
-    };
-  }
-  let u = Bytes.make(3, /* 'a' */97);
-  u[0] = /* 'b' */98;
-  if (u[0] !== /* 'b' */98) {
-    throw {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "equal_exception_test.res",
-        8,
-        2
-      ],
-      Error: new Error()
-    };
-  }
   if (Caml_string.get(v, 0) === /* 'g' */103) {
     return;
   }
@@ -54,7 +17,7 @@ function is_equal() {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "equal_exception_test.res",
-      9,
+      4,
       2
     ],
     Error: new Error()
@@ -155,7 +118,7 @@ if (Caml_obj.equal(e, {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "equal_exception_test.res",
-      50,
+      45,
       0
     ],
     Error: new Error()
@@ -167,7 +130,7 @@ if (Not_found === "Not_found" !== false) {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "equal_exception_test.res",
-      51,
+      46,
       0
     ],
     Error: new Error()

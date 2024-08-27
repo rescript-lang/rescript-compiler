@@ -122,7 +122,6 @@ let print_taginfo ppf = function
 
 let primitive ppf = function
   | Pidentity -> fprintf ppf "id"
-  | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pignore -> fprintf ppf "ignore"
   | Prevapply -> fprintf ppf "revapply"
   | Pdirapply -> fprintf ppf "dirapply"
@@ -197,12 +196,6 @@ let primitive ppf = function
   | Pstringlength -> fprintf ppf "string.length"
   | Pstringrefu -> fprintf ppf "string.unsafe_get"
   | Pstringrefs -> fprintf ppf "string.get"
-  | Pbyteslength -> fprintf ppf "bytes.length"
-  | Pbytesrefu -> fprintf ppf "bytes.unsafe_get"
-  | Pbytessetu -> fprintf ppf "bytes.unsafe_set"
-  | Pbytesrefs -> fprintf ppf "bytes.get"
-  | Pbytessets -> fprintf ppf "bytes.set"
-
   | Parraylength  -> fprintf ppf "array.length" 
   | Pmakearray Mutable -> fprintf ppf "makearray" 
   | Pmakearray Immutable -> fprintf ppf "makearray_imm" 
@@ -242,7 +235,6 @@ let primitive ppf = function
   | Pcreate_extension s -> fprintf ppf "extension[%s]" s   
 let name_of_primitive = function
   | Pidentity -> "Pidentity"
-  | Pbytes_to_string -> "Pbytes_to_string"
   | Pignore -> "Pignore"
   | Prevapply -> "Prevapply"
   | Pdirapply -> "Pdirapply"
@@ -298,11 +290,6 @@ let name_of_primitive = function
   | Pstringlength -> "Pstringlength"
   | Pstringrefu -> "Pstringrefu"
   | Pstringrefs -> "Pstringrefs"
-  | Pbyteslength -> "Pbyteslength"
-  | Pbytesrefu -> "Pbytesrefu"
-  | Pbytessetu -> "Pbytessetu"
-  | Pbytesrefs -> "Pbytesrefs"
-  | Pbytessets -> "Pbytessets"
   | Parraylength -> "Parraylength"
   | Pmakearray _-> "Pmakearray"
   | Parrayrefu -> "Parrayrefu"

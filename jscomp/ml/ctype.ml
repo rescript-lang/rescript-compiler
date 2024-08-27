@@ -1893,11 +1893,7 @@ let is_instantiable env p =
 
 
 (* PR#7113: -safe-string should be a global property *)
-let compatible_paths p1 p2 =
-  let open Predef in
-  Path.same p1 p2 ||
-  Path.same p1 path_bytes && Path.same p2 path_string ||
-  Path.same p1 path_string && Path.same p2 path_bytes
+let compatible_paths p1 p2 = Path.same p1 p2
 
 (* Check for datatypes carefully; see PR#6348 *)
 let rec expands_to_datatype env ty =

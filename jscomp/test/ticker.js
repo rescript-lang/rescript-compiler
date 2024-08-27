@@ -3,13 +3,11 @@
 
 let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
-let $$String = require("../../lib/js/string.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Belt_Float = require("../../lib/js/belt_Float.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 let Belt_Option = require("../../lib/js/belt_Option.js");
 let Caml_option = require("../../lib/js/caml_option.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function split(delim, s) {
   let len = s.length;
@@ -22,20 +20,14 @@ function split(delim, s) {
       if (x === 0) {
         return l;
       }
-      let i$p;
-      try {
-        i$p = $$String.rindex_from(s, x - 1 | 0, delim);
-      } catch (raw_exn) {
-        let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-        if (exn.RE_EXN_ID === "Not_found") {
-          return {
-            hd: $$String.sub(s, 0, x),
-            tl: l
-          };
-        }
-        throw exn;
+      let i$p = s.lastIndexOf(delim, x - 1 | 0);
+      if (i$p === -1) {
+        return {
+          hd: s.substr(0, x),
+          tl: l
+        };
       }
-      let l_0 = $$String.sub(s, i$p + 1 | 0, (x - i$p | 0) - 1 | 0);
+      let l_0 = s.substr(i$p + 1 | 0, (x - i$p | 0) - 1 | 0);
       let l$1 = {
         hd: l_0,
         tl: l
@@ -1224,7 +1216,7 @@ function process_input_line(ticker_map, all_tickers, line) {
       }
     };
   };
-  let tokens = split(/* '|' */124, line);
+  let tokens = split("|", line);
   if (tokens) {
     switch (tokens.hd) {
       case "Q" :

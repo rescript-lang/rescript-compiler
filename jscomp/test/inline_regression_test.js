@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let $$String = require("../../lib/js/string.js");
 let Caml_string = require("../../lib/js/caml_string.js");
 
 function generic_basename(is_dir_sep, current_dir_name, name) {
@@ -13,7 +12,7 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
     while (true) {
       let n = _n;
       if (n < 0) {
-        return $$String.sub(name, 0, 1);
+        return name.substr(0, 1);
       }
       if (!is_dir_sep(name, n)) {
         let _n$1 = n;
@@ -21,10 +20,10 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
         while (true) {
           let n$1 = _n$1;
           if (n$1 < 0) {
-            return $$String.sub(name, 0, p);
+            return name.substr(0, p);
           }
           if (is_dir_sep(name, n$1)) {
-            return $$String.sub(name, n$1 + 1 | 0, (p - n$1 | 0) - 1 | 0);
+            return name.substr(n$1 + 1 | 0, (p - n$1 | 0) - 1 | 0);
           }
           _n$1 = n$1 - 1 | 0;
           continue;

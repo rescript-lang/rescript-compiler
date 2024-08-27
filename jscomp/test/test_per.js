@@ -2,7 +2,6 @@
 'use strict';
 
 let Caml_obj = require("../../lib/js/caml_obj.js");
-let Caml_bytes = require("../../lib/js/caml_bytes.js");
 let Caml_int64 = require("../../lib/js/caml_int64.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
@@ -84,15 +83,6 @@ let epsilon_float = Caml_int64.float_of_bits([
   0
 ]);
 
-function $caret(s1, s2) {
-  let l1 = s1.length;
-  let l2 = s2.length;
-  let s = Caml_bytes.create(l1 + l2 | 0);
-  blit_string(s1, 0, s, 0, l1);
-  blit_string(s2, 0, s, l1, l2);
-  return s;
-}
-
 function char_of_int(n) {
   if (n < 0 || n > 255) {
     throw {
@@ -121,6 +111,5 @@ exports.nan = nan;
 exports.max_float = max_float;
 exports.min_float = min_float;
 exports.epsilon_float = epsilon_float;
-exports.$caret = $caret;
 exports.char_of_int = char_of_int;
 /* No side effect */

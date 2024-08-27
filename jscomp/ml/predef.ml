@@ -31,7 +31,6 @@ let ident_create_predef_exn = wrap Ident.create_predef_exn
 
 let ident_int = ident_create "int"
 and ident_char = ident_create "char"
-and ident_bytes = ident_create "bytes"
 and ident_float = ident_create "float"
 and ident_bool = ident_create "bool"
 and ident_unit = ident_create "unit"
@@ -75,7 +74,6 @@ let type_is_builtin_path_but_option (p : Path.t) : test  =
 
 let path_int = Pident ident_int
 and path_char = Pident ident_char
-and path_bytes = Pident ident_bytes
 and path_float = Pident ident_float
 and path_bool = Pident ident_bool
 and path_unit = Pident ident_unit
@@ -101,7 +99,6 @@ and path_uncurried = Pident ident_uncurried
 
 let type_int = newgenty (Tconstr(path_int, [], ref Mnil))
 and type_char = newgenty (Tconstr(path_char, [], ref Mnil))
-and type_bytes = newgenty (Tconstr(path_bytes, [], ref Mnil))
 and type_float = newgenty (Tconstr(path_float, [], ref Mnil))
 and type_bool = newgenty (Tconstr(path_bool, [], ref Mnil))
 and type_unit = newgenty (Tconstr(path_unit, [], ref Mnil))
@@ -325,12 +322,11 @@ let common_initial_env add_type add_extension empty_env =
 
 let build_initial_env add_type add_exception empty_env =
   let common = common_initial_env add_type add_exception empty_env in
-  let res = add_type ident_bytes decl_abstr common in 
   let decl_type_char = 
         {decl_abstr with 
         type_manifest = Some type_int; 
         type_private = Private} in 
-    add_type ident_char decl_type_char res 
+    add_type ident_char decl_type_char common
   
   
 let builtin_values =

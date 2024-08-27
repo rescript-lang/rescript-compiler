@@ -16,10 +16,6 @@ o stdlib-406/array.cmj : cc_cmi stdlib-406/array.res | stdlib-406/array.cmi $bsc
 o stdlib-406/array.cmi : cc stdlib-406/array.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/arrayLabels.cmj : cc_cmi stdlib-406/arrayLabels.res | stdlib-406/arrayLabels.cmi $bsc others
 o stdlib-406/arrayLabels.cmi : cc stdlib-406/arrayLabels.resi | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/bytes.cmj : cc_cmi stdlib-406/bytes.res | stdlib-406/bytes.cmi stdlib-406/char.cmj $bsc others
-o stdlib-406/bytes.cmi : cc stdlib-406/bytes.resi | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/bytesLabels.cmj : cc_cmi stdlib-406/bytesLabels.res | stdlib-406/bytesLabels.cmi stdlib-406/char.cmj $bsc others
-o stdlib-406/bytesLabels.cmi : cc stdlib-406/bytesLabels.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/callback.cmj : cc_cmi stdlib-406/callback.res | stdlib-406/callback.cmi $bsc others
 o stdlib-406/callback.cmi : cc stdlib-406/callback.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/camlinternalLazy.cmj : cc_cmi stdlib-406/camlinternalLazy.res | stdlib-406/camlinternalLazy.cmi $bsc others
@@ -56,12 +52,8 @@ o stdlib-406/sort.cmj : cc_cmi stdlib-406/sort.res | stdlib-406/array.cmj stdlib
 o stdlib-406/sort.cmi : cc stdlib-406/sort.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/stack.cmj : cc_cmi stdlib-406/stack.res | stdlib-406/list.cmj stdlib-406/stack.cmi $bsc others
 o stdlib-406/stack.cmi : cc stdlib-406/stack.resi | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/stdLabels.cmj : cc_cmi stdlib-406/stdLabels.res | stdlib-406/arrayLabels.cmj stdlib-406/bytesLabels.cmj stdlib-406/listLabels.cmj stdlib-406/stdLabels.cmi stdlib-406/stringLabels.cmj $bsc others
-o stdlib-406/stdLabels.cmi : cc stdlib-406/stdLabels.resi | stdlib-406/arrayLabels.cmi stdlib-406/bytesLabels.cmi stdlib-406/listLabels.cmi stdlib-406/pervasives.cmj stdlib-406/stringLabels.cmi $bsc others
-o stdlib-406/stream.cmj : cc_cmi stdlib-406/stream.res | stdlib-406/bytes.cmj stdlib-406/lazy.cmj stdlib-406/list.cmj stdlib-406/stream.cmi stdlib-406/string.cmj $bsc others
-o stdlib-406/stream.cmi : cc stdlib-406/stream.resi | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/string.cmj : cc_cmi stdlib-406/string.res | stdlib-406/array.cmj stdlib-406/bytes.cmj stdlib-406/string.cmi $bsc others
+o stdlib-406/stdLabels.cmj : cc_cmi stdlib-406/stdLabels.res | stdlib-406/arrayLabels.cmj stdlib-406/listLabels.cmj stdlib-406/stdLabels.cmi $bsc others
+o stdlib-406/stdLabels.cmi : cc stdlib-406/stdLabels.resi | stdlib-406/arrayLabels.cmi stdlib-406/listLabels.cmi stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/string.cmj : cc_cmi stdlib-406/string.res | stdlib-406/string.cmi $bsc others
 o stdlib-406/string.cmi : cc stdlib-406/string.resi | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/stringLabels.cmj : cc_cmi stdlib-406/stringLabels.res | stdlib-406/array.cmj stdlib-406/bytes.cmj stdlib-406/stringLabels.cmi $bsc others
-o stdlib-406/stringLabels.cmi : cc stdlib-406/stringLabels.resi | stdlib-406/pervasives.cmj $bsc others
-o $stdlib : phony stdlib-406/array.cmi stdlib-406/array.cmj stdlib-406/arrayLabels.cmi stdlib-406/arrayLabels.cmj stdlib-406/bytes.cmi stdlib-406/bytes.cmj stdlib-406/bytesLabels.cmi stdlib-406/bytesLabels.cmj stdlib-406/callback.cmi stdlib-406/callback.cmj stdlib-406/camlinternalLazy.cmi stdlib-406/camlinternalLazy.cmj stdlib-406/camlinternalMod.cmi stdlib-406/camlinternalMod.cmj stdlib-406/char.cmi stdlib-406/char.cmj stdlib-406/complex.cmi stdlib-406/complex.cmj stdlib-406/hashtbl.cmi stdlib-406/hashtbl.cmj stdlib-406/int32.cmi stdlib-406/int32.cmj stdlib-406/int64.cmi stdlib-406/int64.cmj stdlib-406/lazy.cmi stdlib-406/lazy.cmj stdlib-406/list.cmi stdlib-406/list.cmj stdlib-406/listLabels.cmi stdlib-406/listLabels.cmj stdlib-406/map.cmi stdlib-406/map.cmj stdlib-406/mapLabels.cmi stdlib-406/mapLabels.cmj stdlib-406/obj.cmi stdlib-406/obj.cmj stdlib-406/queue.cmi stdlib-406/queue.cmj stdlib-406/set.cmi stdlib-406/set.cmj stdlib-406/setLabels.cmi stdlib-406/setLabels.cmj stdlib-406/sort.cmi stdlib-406/sort.cmj stdlib-406/stack.cmi stdlib-406/stack.cmj stdlib-406/stdLabels.cmi stdlib-406/stdLabels.cmj stdlib-406/stream.cmi stdlib-406/stream.cmj stdlib-406/string.cmi stdlib-406/string.cmj stdlib-406/stringLabels.cmi stdlib-406/stringLabels.cmj
+o $stdlib : phony stdlib-406/array.cmi stdlib-406/array.cmj stdlib-406/arrayLabels.cmi stdlib-406/arrayLabels.cmj stdlib-406/callback.cmi stdlib-406/callback.cmj stdlib-406/camlinternalLazy.cmi stdlib-406/camlinternalLazy.cmj stdlib-406/camlinternalMod.cmi stdlib-406/camlinternalMod.cmj stdlib-406/char.cmi stdlib-406/char.cmj stdlib-406/complex.cmi stdlib-406/complex.cmj stdlib-406/hashtbl.cmi stdlib-406/hashtbl.cmj stdlib-406/int32.cmi stdlib-406/int32.cmj stdlib-406/int64.cmi stdlib-406/int64.cmj stdlib-406/lazy.cmi stdlib-406/lazy.cmj stdlib-406/list.cmi stdlib-406/list.cmj stdlib-406/listLabels.cmi stdlib-406/listLabels.cmj stdlib-406/map.cmi stdlib-406/map.cmj stdlib-406/mapLabels.cmi stdlib-406/mapLabels.cmj stdlib-406/obj.cmi stdlib-406/obj.cmj stdlib-406/queue.cmi stdlib-406/queue.cmj stdlib-406/set.cmi stdlib-406/set.cmj stdlib-406/setLabels.cmi stdlib-406/setLabels.cmj stdlib-406/sort.cmi stdlib-406/sort.cmj stdlib-406/stack.cmi stdlib-406/stack.cmj stdlib-406/stdLabels.cmi stdlib-406/stdLabels.cmj stdlib-406/string.cmi stdlib-406/string.cmj

@@ -23,13 +23,6 @@ external code: char => int = "%identity"
    outside the range 0--255. */
 let chr: int => char
 
-/** Return a string representing the given character,
-    with special characters escaped following the lexical conventions
-    of OCaml.
-    All characters outside the ASCII printable range (32..126) are
-    escaped, as well as backslash, double-quote, and single-quote. */
-let escaped: char => string
-
 @deprecated("Use Char.lowercase_ascii instead.")
 /** Convert the given character to its equivalent lowercase character,
    using the ISO Latin-1 (8859-1) character set.

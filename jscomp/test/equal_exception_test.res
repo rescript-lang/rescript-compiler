@@ -1,11 +1,6 @@
 let v = "gso"
 
 let is_equal = () => {
-  assert(Bytes.get(Bytes.make(3, 'a'), 0) == 'a')
-  assert(Bytes.unsafe_get(Bytes.make(3, 'a'), 0) == 'a')
-  let u = Bytes.make(3, 'a')
-  Bytes.unsafe_set(u, 0, 'b')
-  assert(Bytes.unsafe_get(u, 0) == 'b')
   assert(String.get(v, 0) == 'g')
 }
 

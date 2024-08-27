@@ -4,9 +4,7 @@
 let $$String = require("../../lib/js/string.js");
 
 function v(u) {
-  t({
-    compare: $$String.compare
-  });
+  t($$String);
 }
 
 function u(v) {

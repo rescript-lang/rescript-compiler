@@ -47,7 +47,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
               ( "?int64_float_of_bits"
               (* more safe to check if arguments are constant *)
               (* non-observable side effect *)
-              | "?string_repeat" | "?make_vect" | "?create_bytes"
+              | "?make_vect"
               | "caml_array_dup" | "?nativeint_add" | "?nativeint_div"
               | "?nativeint_mod" | "?nativeint_lsr" | "?nativeint_mul" ),
               _ ) ->
@@ -62,7 +62,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pundefined_to_opt | Pnull_undefined_to_opt | Pjs_fn_make _ | Pjs_fn_make_unit
       | Pjs_object_create _ | Pimport
       (* TODO: check *)
-      | Pbytes_to_string | Pmakeblock _
+      | Pmakeblock _
       (* whether it's mutable or not *)
       | Pfield _ | Pval_from_option | Pval_from_option_not_nest
       (* NOP The compiler already [t option] is the same as t *)
@@ -80,8 +80,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pandbigint | Porbigint | Pxorbigint | Plslbigint | Pasrbigint
       | Pbigintcomp _
       (* String operations *)
-      | Pstringlength | Pstringrefu | Pstringrefs | Pbyteslength | Pbytesrefu
-      | Pbytesrefs | Pmakearray | Parraylength | Parrayrefu | Parrayrefs
+      | Pstringlength | Pstringrefu | Pstringrefs
+      | Pmakearray | Parraylength | Parrayrefu | Parrayrefs
       (* Test if the argument is a block or an immediate integer *)
       | Pisint | Pis_poly_var_block
       (* Test if the (integer) argument is outside an interval *)
@@ -102,7 +102,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pjs_unsafe_downgrade _ | Pdebugger | Pvoid_run | Pfull_apply
       | Pjs_fn_method
       (* TODO *)
-      | Praw_js_code _ | Pbytessetu | Pbytessets
+      | Praw_js_code _
       (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
       | Parraysets
       (* byte swap *)

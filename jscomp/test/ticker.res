@@ -6,20 +6,20 @@ module Util = {
       switch x {
       | 0 => l
       | i =>
-        switch String.rindex_from(s, i - 1, delim) {
+        switch Js.String2.lastIndexOfFrom(s, delim, i - 1) {
+        | -1 => list{Js.String2.substrAtMost(s, ~from=0, ~length=i), ...l}
         | i' =>
-          let l = list{String.sub(s, i' + 1, i - i' - 1), ...l}
+          let l = list{Js.String2.substrAtMost(s, ~from=i' + 1, ~length=i - i' - 1), ...l}
           let l = if i' == 0 {
             list{"", ...l}
           } else {
             l
           }
           loop(l, i')
-        | exception Not_found => list{String.sub(s, 0, i), ...l}
         }
       }
 
-    let len = String.length(s)
+    let len = Js.String2.length(s)
     switch len {
     | 0 => list{}
     | _ => loop(list{}, len)
@@ -202,7 +202,7 @@ let process_input_line = (ticker_map, all_tickers, line) => {
     }
   }
 
-  let tokens = Util.split(~delim='|', line)
+  let tokens = Util.split(~delim="|", line)
 
   let all_tickers = switch tokens {
   | list{"R", ticker_name, "S"} => (
