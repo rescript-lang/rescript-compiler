@@ -13,16 +13,6 @@
 (*                                                                        *)
 (**************************************************************************)
 
-
-
-
-
-type compile_time_constant =
-  | Word_size
-  | Int_size
-  | Max_wosize
-  | Backend_type
-
 type loc_kind =
   | Loc_FILE
   | Loc_LINE
@@ -181,8 +171,6 @@ type immediate_or_pointer =
   | Immediate
   | Pointer
 
-
-
 type is_safe =
   | Safe
   | Unsafe
@@ -261,7 +249,6 @@ type primitive =
   | Plsrbint of boxed_integer
   | Pasrbint of boxed_integer
   | Pbintcomp of boxed_integer * comparison
-  | Pctconst of compile_time_constant
   | Pcreate_extension of string
 and comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge

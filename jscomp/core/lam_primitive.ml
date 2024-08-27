@@ -136,8 +136,6 @@ type t =
   | Plslint64
   | Plsrint64
   | Pasrint64
-  (* Compile time constants *)
-  | Pctconst of Lam_compat.compile_time_constant (* Integer to external pointer *)
   | Pdebugger
   | Pjs_unsafe_downgrade of { name : string; setter : bool }
   | Pinit_mod
@@ -330,12 +328,6 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
       match rhs with
       | Pint64comp comparison1 ->
           Lam_compat.eq_comparison comparison comparison1
-      | _ -> false)
-  | Pctconst compile_time_constant -> (
-      match rhs with
-      | Pctconst compile_time_constant1 ->
-          Lam_compat.eq_compile_time_constant compile_time_constant
-            compile_time_constant1
       | _ -> false)
   | Pjs_unsafe_downgrade { name; setter } -> (
       match rhs with

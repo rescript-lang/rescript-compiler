@@ -172,12 +172,6 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Parraysetu -> fprintf ppf "array.unsafe_set"
   | Parrayrefs -> fprintf ppf "array.get"
   | Parraysets -> fprintf ppf "array.set"
-  | Pctconst c ->
-      let const_name =
-        match c with
-        | Backend_type -> "backend_type"
-      in
-      fprintf ppf "sys.constant_%s" const_name
   | Pisint -> fprintf ppf "isint"
   | Pis_poly_var_block -> fprintf ppf "#is_poly_var_block"
   | Pisout i -> fprintf ppf "isout %d" i

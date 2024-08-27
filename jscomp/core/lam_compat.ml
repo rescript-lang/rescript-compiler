@@ -77,14 +77,6 @@ let cmp_int (cmp : comparison) (a : int) b : bool =
   | Clt -> a < b
   | Cge -> a >= b
 
-type compile_time_constant =
-  | Backend_type
-
-(** relies on the fact that [compile_time_constant] is enum type *)
-let eq_compile_time_constant (p : compile_time_constant)
-    (p1 : compile_time_constant) =
-  p = p1
-
 type let_kind = Lambda.let_kind = Strict | Alias | StrictOpt | Variable
 
 type field_dbg_info = Lambda.field_dbg_info =

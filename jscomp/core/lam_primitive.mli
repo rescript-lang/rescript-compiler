@@ -126,8 +126,6 @@ type t =
   | Plslint64
   | Plsrint64
   | Pasrint64
-  (* Compile time constants *)
-  | Pctconst of Lam_compat.compile_time_constant
   (* Integer to external pointer *)
   | Pdebugger
   | Pjs_unsafe_downgrade of { name : string; setter : bool }

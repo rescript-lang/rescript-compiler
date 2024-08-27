@@ -90,7 +90,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pasrint64 | Pint64comp _
       (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
       (* Compile time constants *)
-      | Pctconst _ (* Integer to external pointer *)
       | Poffsetint _ | Pstringadd | Pjs_function_length | Pcaml_obj_length
       | Pwrap_exn
       | Praw_js_code

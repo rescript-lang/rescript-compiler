@@ -370,12 +370,6 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   (* FIXME, this can be removed later *)
   | Pisint -> E.is_type_number (Ext_list.singleton_exn args)
   | Pis_poly_var_block -> E.is_type_object (Ext_list.singleton_exn args)
-  | Pctconst ct -> (
-      match ct with
-      | Backend_type ->
-          E.make_block E.zero_int_literal
-            (Blk_constructor { name = "Other"; num_nonconst = 1; tag = 0; attrs = [] })
-            [ E.str "BS" ] Immutable)
   | Pduprecord -> (
       match args with
       | [ e1 ] -> E.obj ~dup:e1 []

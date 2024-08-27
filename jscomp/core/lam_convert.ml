@@ -333,13 +333,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
       match x with
       | Pbigint | Pint32 -> prim ~primitive:Pasrint ~args loc
       | Pint64 -> prim ~primitive:Pasrint64 ~args loc)
-  | Pctconst x -> (
-      match x with
-      | Word_size | Int_size ->
-          Lam.const (Const_int { i = 32l; comment = None })
-      | Max_wosize ->
-          Lam.const (Const_int { i = 2147483647l; comment = Some "Max_wosize" })
-      | Backend_type -> prim ~primitive:(Pctconst Backend_type) ~args loc)
   | Pcvtbint (a, b) -> (
       match (a, b) with
       | (Pbigint | Pint32), (Pbigint | Pint32) | Pint64, Pint64 ->

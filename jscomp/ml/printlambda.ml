@@ -210,13 +210,6 @@ let primitive ppf = function
   | Parraysetu -> fprintf ppf "array.unsafe_set" 
   | Parrayrefs -> fprintf ppf "array.get" 
   | Parraysets -> fprintf ppf "array.set" 
-  | Pctconst c ->
-     let const_name = match c with
-       | Word_size -> "word_size"
-       | Int_size -> "int_size"
-       | Max_wosize -> "max_wosize"
-       | Backend_type -> "backend_type" in
-     fprintf ppf "sys.constant_%s" const_name
   | Pisint -> fprintf ppf "isint"
   | Pisout -> fprintf ppf "isout"
   | Pbintofint bi -> print_boxed_integer "of_int" ppf bi
@@ -316,7 +309,6 @@ let name_of_primitive = function
   | Parraysetu -> "Parraysetu"
   | Parrayrefs -> "Parrayrefs"
   | Parraysets -> "Parraysets"
-  | Pctconst _ -> "Pctconst"
   | Pisint -> "Pisint"
   | Pisout -> "Pisout"
   | Pbintofint _ -> "Pbintofint"

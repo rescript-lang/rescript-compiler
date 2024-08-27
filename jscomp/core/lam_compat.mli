@@ -26,9 +26,6 @@ type boxed_integer = Lambda.boxed_integer = Pbigint | Pint32 | Pint64
 
 type comparison = Lambda.comparison = Ceq | Cneq | Clt | Cgt | Cle | Cge
 
-type compile_time_constant =
-  | Backend_type
-
 type let_kind = Lambda.let_kind = Strict | Alias | StrictOpt | Variable
 
 type field_dbg_info = Lambda.field_dbg_info =
@@ -62,6 +59,3 @@ val cmp_int : comparison -> int -> int -> bool
 val eq_comparison : comparison -> comparison -> bool
 
 val eq_boxed_integer : boxed_integer -> boxed_integer -> bool
-
-val eq_compile_time_constant :
-  compile_time_constant -> compile_time_constant -> bool
