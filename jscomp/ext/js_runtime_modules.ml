@@ -28,10 +28,6 @@ let io = "Caml_io"
 
 let sys = "Caml_sys"
 
-let lexer = "Caml_lexer"
-
-let parser = "Caml_parser"
-
 let obj_runtime = "Caml_obj"
 
 let array = "Caml_array"

@@ -209,8 +209,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   | "?sys_getcwd" (* check browser or nodejs *)
   | "?sys_is_directory" | "?sys_exit" ->
       call Js_runtime_modules.sys
-  | "?lex_engine" | "?new_lex_engine" -> call Js_runtime_modules.lexer
-  | "?parse_engine" | "?set_parser_trace" -> call Js_runtime_modules.parser
   | "?make_float_vect"
   | "?floatarray_create" (* TODO: compile float array into TypedArray*) ->
       E.runtime_call Js_runtime_modules.array "make_float" args
