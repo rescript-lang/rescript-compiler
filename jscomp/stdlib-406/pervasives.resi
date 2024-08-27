@@ -619,25 +619,3 @@ external incr: ref<int> => unit = "%incr"
 /** Decrement the integer contained in the given reference.
    Equivalent to [fun r -> r := pred !r]. */
 external decr: ref<int> => unit = "%decr"
-
-/* {1 Program termination} */
-
-/** Terminate the process, returning the given status code
-   to the operating system: usually 0 to indicate no errors,
-   and a small positive integer to indicate failure.
-   All open output channels are flushed with [flush_all].
-   An implicit [exit 0] is performed each time a program
-   terminates normally.  An implicit [exit 2] is performed if the program
-   terminates early because of an uncaught exception. */
-let exit: int => 'a
-
-/** Register the given function to be called at program termination
-   time. The functions registered with [at_exit] will be called when
-   the program does any of the following:
-   - executes {!Pervasives.exit}
-   - terminates, either normally or because of an uncaught
-     exception
-   - executes the C function [caml_shutdown].
-   The functions are called in 'last in, first out' order: the
-   function most recently added with [at_exit] is called first. */
-let at_exit: (unit => unit) => unit

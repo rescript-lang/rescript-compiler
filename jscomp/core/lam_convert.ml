@@ -339,10 +339,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
           Lam.const (Const_int { i = 32l; comment = None })
       | Max_wosize ->
           Lam.const (Const_int { i = 2147483647l; comment = Some "Max_wosize" })
-      | Big_endian -> prim ~primitive:(Pctconst Big_endian) ~args loc
-      | Ostype_unix -> prim ~primitive:(Pctconst Ostype_unix) ~args loc
-      | Ostype_win32 -> prim ~primitive:(Pctconst Ostype_win32) ~args loc
-      | Ostype_cygwin -> Lam.false_
       | Backend_type -> prim ~primitive:(Pctconst Backend_type) ~args loc)
   | Pcvtbint (a, b) -> (
       match (a, b) with
@@ -452,8 +448,6 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         (* ATT: Currently, the arity is one due to PPX *)
         prim ~primitive:Pdebugger ~args:[] loc
     | _ when s = "#null" -> Lam.const Const_js_null
-    | _ when s = "#os_type" ->
-        prim ~primitive:(Pctconst Ostype) ~args:[ unit ] loc
     | _ when s = "#undefined" -> Lam.const (Const_js_undefined {is_unit = false})
     | _ when s = "#init_mod" -> (
         let args = Ext_list.map args convert_aux in

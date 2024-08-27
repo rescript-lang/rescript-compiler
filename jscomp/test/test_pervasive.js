@@ -71,9 +71,7 @@ let Pervasives$1 = {
   epsilon_float: Pervasives.epsilon_float,
   classify_float: Pervasives.classify_float,
   char_of_int: Pervasives.char_of_int,
-  $at: Pervasives.$at,
-  exit: Pervasives.exit,
-  at_exit: Pervasives.at_exit
+  $at: Pervasives.$at
 };
 
 function a0(prim) {

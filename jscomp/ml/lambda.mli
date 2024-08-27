@@ -18,13 +18,9 @@
 open Asttypes
 
 type compile_time_constant =
-  | Big_endian
   | Word_size
   | Int_size
   | Max_wosize
-  | Ostype_unix
-  | Ostype_win32
-  | Ostype_cygwin
   | Backend_type
 
 type loc_kind =

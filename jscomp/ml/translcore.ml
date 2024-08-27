@@ -324,14 +324,10 @@ let primitives_table =
       ("%sequand", Psequand);
       ("%sequor", Psequor);
       ("%boolnot", Pnot);
-      ("%big_endian", Pctconst Big_endian);
       ("%backend_type", Pctconst Backend_type);
       ("%word_size", Pctconst Word_size);
       ("%int_size", Pctconst Int_size);
       ("%max_wosize", Pctconst Max_wosize);
-      ("%ostype_unix", Pctconst Ostype_unix);
-      ("%ostype_win32", Pctconst Ostype_win32);
-      ("%ostype_cygwin", Pctconst Ostype_cygwin);
       ("%negint", Pnegint);
       ("%succint", Poffsetint 1);
       ("%predint", Poffsetint (-1));

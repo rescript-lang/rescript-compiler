@@ -211,26 +211,4 @@ let rec \"@" = (l1, l2) =>
 
 /* Miscellaneous */
 
-external sys_exit: int => 'a = "?sys_exit"
-
-let exit_function = ref(ignore)
-
-let at_exit = f => {
-  let g = exit_function.contents
-  exit_function :=
-    (
-      () => {
-        f()
-        g()
-      }
-    )
-}
-
-let do_at_exit = () => exit_function.contents()
-
-let exit = retcode => {
-  do_at_exit()
-  sys_exit(retcode)
-}
-
 type int32 = int

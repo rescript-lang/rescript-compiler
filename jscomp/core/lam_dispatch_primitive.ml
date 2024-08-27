@@ -205,10 +205,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
       like normal one to set the identifier *)
   | "?exn_slot_name" | "?is_extension" -> call Js_runtime_modules.exceptions
   | "?as_js_exn" -> call Js_runtime_modules.caml_js_exceptions
-  | "?sys_get_argv" | "?sys_file_exists" | "?sys_time" | "?sys_getenv"
-  | "?sys_getcwd" (* check browser or nodejs *)
-  | "?sys_is_directory" | "?sys_exit" ->
-      call Js_runtime_modules.sys
   | "?make_float_vect"
   | "?floatarray_create" (* TODO: compile float array into TypedArray*) ->
       E.runtime_call Js_runtime_modules.array "make_float" args

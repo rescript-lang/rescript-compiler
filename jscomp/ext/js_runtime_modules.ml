@@ -24,10 +24,6 @@
 
 let exceptions = "Caml_exceptions"
 
-let io = "Caml_io"
-
-let sys = "Caml_sys"
-
 let obj_runtime = "Caml_obj"
 
 let array = "Caml_array"

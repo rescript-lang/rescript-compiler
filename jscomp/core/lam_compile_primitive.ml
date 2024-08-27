@@ -372,21 +372,6 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Pis_poly_var_block -> E.is_type_object (Ext_list.singleton_exn args)
   | Pctconst ct -> (
       match ct with
-      | Big_endian -> E.bool Sys.big_endian
-      | Ostype -> E.runtime_call Js_runtime_modules.sys "os_type" args
-      | Ostype_unix ->
-          E.string_equal
-            (E.runtime_call Js_runtime_modules.sys "os_type" args)
-            (E.str "Unix")
-      | Ostype_win32 ->
-          E.string_equal
-            (E.runtime_call Js_runtime_modules.sys "os_type" args)
-            (E.str "Win32")
-      (* | Max_wosize ->
-         (* max_array_length*)
-         E.int 2147483647l (* 2 ^ 31 - 1 *) *)
-      (* 4_294_967_295l  not representable*)
-      (* 2 ^ 32 - 1*)
       | Backend_type ->
           E.make_block E.zero_int_literal
             (Blk_constructor { name = "Other"; num_nonconst = 1; tag = 0; attrs = [] })

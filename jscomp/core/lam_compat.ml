@@ -78,10 +78,6 @@ let cmp_int (cmp : comparison) (a : int) b : bool =
   | Cge -> a >= b
 
 type compile_time_constant =
-  | Big_endian
-  | Ostype_unix
-  | Ostype_win32
-  | Ostype
   | Backend_type
 
 (** relies on the fact that [compile_time_constant] is enum type *)

@@ -27,10 +27,6 @@ type boxed_integer = Lambda.boxed_integer = Pbigint | Pint32 | Pint64
 type comparison = Lambda.comparison = Ceq | Cneq | Clt | Cgt | Cle | Cge
 
 type compile_time_constant =
-  | Big_endian
-  | Ostype_unix
-  | Ostype_win32
-  | Ostype
   | Backend_type
 
 type let_kind = Lambda.let_kind = Strict | Alias | StrictOpt | Variable

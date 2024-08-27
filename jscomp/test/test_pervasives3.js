@@ -20,8 +20,6 @@ let Pervasives$1 = {
   classify_float: Pervasives.classify_float,
   char_of_int: Pervasives.char_of_int,
   $at: Pervasives.$at,
-  exit: Pervasives.exit,
-  at_exit: Pervasives.at_exit,
   length: List.length,
   compare_lengths: List.compare_lengths,
   compare_length_with: List.compare_length_with,

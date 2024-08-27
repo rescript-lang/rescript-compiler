@@ -72,9 +72,7 @@ let List$1 = {
   epsilon_float: Pervasives.epsilon_float,
   classify_float: Pervasives.classify_float,
   char_of_int: Pervasives.char_of_int,
-  $at: Pervasives.$at,
-  exit: Pervasives.exit,
-  at_exit: Pervasives.at_exit
+  $at: Pervasives.$at
 };
 
 let U = {
@@ -103,9 +101,7 @@ let U = {
   epsilon_float: Pervasives.epsilon_float,
   classify_float: Pervasives.classify_float,
   char_of_int: Pervasives.char_of_int,
-  $at: Pervasives.$at,
-  exit: Pervasives.exit,
-  at_exit: Pervasives.at_exit
+  $at: Pervasives.$at
 };
 
 let f = Pervasives.$at;
