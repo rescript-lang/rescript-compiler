@@ -6,7 +6,7 @@ module type Impl = {
 }
 
 module Make = (I: Impl) => {
-  let get = async (key) => await I.get(key)
+  let get = async key => await I.get(key)
 }
 
 let topFoo = async () => 1

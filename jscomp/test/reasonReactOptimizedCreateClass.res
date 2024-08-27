@@ -886,4 +886,4 @@ external newReactComponent: unit => {"updater": 'a} = "Component"
 
 let reactNoopUpdateQueue = newReactComponent()["updater"]
 
-let createClass = factory(. reactComponent, reactIsValidElement, reactNoopUpdateQueue)
+let createClass = factory(reactComponent, reactIsValidElement, reactNoopUpdateQueue)

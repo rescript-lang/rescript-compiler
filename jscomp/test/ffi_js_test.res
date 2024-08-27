@@ -1,4 +1,4 @@
-let keys: (. Obj.t) => array<string> = %raw(" function (x){return Object.keys(x)}")
+let keys: Obj.t => array<string> = %raw(" function (x){return Object.keys(x)}")
 
 %%raw(`
   function $$higher_order(x){
@@ -7,7 +7,7 @@ let keys: (. Obj.t) => array<string> = %raw(" function (x){return Object.keys(x)
    }
   }
 `)
-@val external higher_order: int => (. int, int) => int = "$$higher_order"
+@val external higher_order: int => (int, int) => int = "$$higher_order"
 
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
@@ -27,7 +27,7 @@ let int_config = config(~kind=Int, ~hi=3, ~low=32)
 
 let string_config = config(~kind=Str, ~hi=3, ~low="32")
 
-let () = eq(__LOC__, (6, higher_order(1)(. 2, 3)))
+let () = eq(__LOC__, (6, higher_order(1)(2, 3)))
 
 let same_type = (
   list{int_config, {"hi": 3, "low": 32}},

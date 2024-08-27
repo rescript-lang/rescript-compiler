@@ -17,7 +17,7 @@ case "$(uname -s)" in
     fi
 
     echo "Checking ReScript code formatting..."
-    if ./rescript format -check jscomp/@(others|runtime)/*.@(res|resi); then
+    if ./rescript format -check jscomp/@(others|runtime|test)/*.@(res|resi); then
       printf "${successGreen}✅ ReScript code formatting ok.${reset}\n"
     else
       printf "${warningYellow}⚠️ ReScript code formatting issues found.${reset}\n"

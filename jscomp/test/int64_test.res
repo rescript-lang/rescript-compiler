@@ -10,7 +10,7 @@ let commutative_add = (result, a, b) => Mt.Eq((result, result), (add(a, b), add(
 let generic_compare = Pervasives.compare
 
 let shift_left_tests = (
-  Ext_array_test.range(0, 63) |> Array.map(i => Int64.shift_left(1L, i)),
+  Array.map(i => Int64.shift_left(1L, i), Ext_array_test.range(0, 63)),
   [
     1L,
     2L,
@@ -80,7 +80,7 @@ let shift_left_tests = (
 )
 
 let shift_right_tests = (
-  Ext_array_test.range(0, 63) |> Array.map(i => Int64.shift_right(0x8000_0000_0000_0000L, i)),
+  Array.map(i => Int64.shift_right(0x8000_0000_0000_0000L, i), Ext_array_test.range(0, 63)),
   [
     -9223372036854775808L,
     -4611686018427387904L,
@@ -150,9 +150,7 @@ let shift_right_tests = (
 )
 
 let shift_right_logical_suites = (
-  Ext_array_test.range(0, 63) |> Array.map(i =>
-    Int64.shift_right_logical(0x8000_0000_0000_0000L, i)
-  ),
+  Array.map(i => Int64.shift_right_logical(0x8000_0000_0000_0000L, i), Ext_array_test.range(0, 63)),
   [
     -9223372036854775808L,
     4611686018427387904L,
@@ -307,7 +305,7 @@ let suites: Mt.pair_suites = /* "shift_right",(fun _ ->
       (
         "lsl",
         _ => Eq(
-          Array.init(64, i => i) |> Array.map(x => shift_left(1L, x)),
+          Array.map(x => shift_left(1L, x), Array.init(64, i => i)),
           [
             1L,
             2L,
@@ -379,7 +377,7 @@ let suites: Mt.pair_suites = /* "shift_right",(fun _ ->
       (
         "lsr",
         _ => Eq(
-          Array.init(64, i => i) |> Array.map(x => shift_right_logical(-1L, x)),
+          Array.map(x => shift_right_logical(-1L, x), Array.init(64, i => i)),
           [
             -1L,
             9223372036854775807L,
@@ -451,7 +449,7 @@ let suites: Mt.pair_suites = /* "shift_right",(fun _ ->
       (
         "asr",
         _ => Eq(
-          Array.init(64, i => i) |> Array.map(x => shift_right(-1L, x)),
+          Array.map(x => shift_right(-1L, x), Array.init(64, i => i)),
           [
             -1L,
             -1L,
@@ -584,28 +582,34 @@ let suites: Mt.pair_suites = /* "shift_right",(fun _ ->
   \"@"(
     {
       let (a, b) = shift_left_tests
-      Ext_array_test.map2i(
-        (i, a, b) => ("shift_left_cases " ++ __unsafe_cast(i), _ => Mt.Eq(a, b)),
-        a,
-        b,
-      ) |> Array.to_list
+      Array.to_list(
+        Ext_array_test.map2i(
+          (i, a, b) => ("shift_left_cases " ++ __unsafe_cast(i), _ => Mt.Eq(a, b)),
+          a,
+          b,
+        ),
+      )
     },
     \"@"(
       {
         let (a, b) = shift_right_tests
-        Ext_array_test.map2i(
-          (i, a, b) => ("shift_right_cases " ++ __unsafe_cast(i), _ => Mt.Eq(a, b)),
-          a,
-          b,
-        ) |> Array.to_list
+        Array.to_list(
+          Ext_array_test.map2i(
+            (i, a, b) => ("shift_right_cases " ++ __unsafe_cast(i), _ => Mt.Eq(a, b)),
+            a,
+            b,
+          ),
+        )
       },
       {
         let (a, b) = shift_right_logical_suites
-        Ext_array_test.map2i(
-          (i, a, b) => ("shift_right_logical_cases " ++ __unsafe_cast(i), _ => Mt.Eq(a, b)),
-          a,
-          b,
-        ) |> Array.to_list
+        Array.to_list(
+          Ext_array_test.map2i(
+            (i, a, b) => ("shift_right_logical_cases " ++ __unsafe_cast(i), _ => Mt.Eq(a, b)),
+            a,
+            b,
+          ),
+        )
       },
     ),
   ),

@@ -1,4 +1,4 @@
-let rec f = (. a) => f(. a)
+let rec f = a => f(a)
 
 /* not allowed due to special encoding of unit */
 /* let rec f1 = fun [@bs] () -> f1 () [@bs] */

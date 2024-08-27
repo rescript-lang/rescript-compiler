@@ -6,15 +6,15 @@ let suites = {
   open Mt
   list{
     ("valueOf", _ => Eq(195131516789., N.valueOf(date()))),
-    ("make", _ => Ok(N.make() |> N.getTime > 1487223505382.)),
+    ("make", _ => Ok(N.getTime(N.make()) > 1487223505382.)),
     ("parseAsFloat", _ => Eq(N.parseAsFloat("1976-03-08T12:34:56.789+01:23"), 195131516789.)),
-    ("parseAsFloat_invalid", _ => Ok(N.parseAsFloat("gibberish") |> Js_float.isNaN)),
-    ("fromFloat", _ => Eq("1976-03-08T11:11:56.789Z", N.fromFloat(195131516789.) |> N.toISOString)),
+    ("parseAsFloat_invalid", _ => Ok(Js_float.isNaN(N.parseAsFloat("gibberish")))),
+    ("fromFloat", _ => Eq("1976-03-08T11:11:56.789Z", N.toISOString(N.fromFloat(195131516789.)))),
     (
       "fromString_valid",
-      _ => Eq(195131516789., N.fromString("1976-03-08T12:34:56.789+01:23") |> N.getTime),
+      _ => Eq(195131516789., N.getTime(N.fromString("1976-03-08T12:34:56.789+01:23"))),
     ),
-    ("fromString_invalid", _ => Ok(N.fromString("gibberish") |> N.getTime |> Js_float.isNaN)),
+    ("fromString_invalid", _ => Ok(Js_float.isNaN(N.getTime(N.fromString("gibberish"))))),
     (
       "makeWithYM",
       _ => {

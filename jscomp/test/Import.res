@@ -3,7 +3,7 @@ let eachIntAsync = async (list: list<int>, f: int => unit) => {
 }
 
 let eachIntLazy = (list: list<int>, f: int => unit) =>
-  Js.import(Belt.List.forEach) |> Js.Promise.then_(each => list->each(f)->Js.Promise.resolve)
+  Js.Promise.then_(each => list->each(f)->Js.Promise.resolve, Js.import(Belt.List.forEach))
 
 let _ = list{1, 2, 3}->eachIntLazy(n => Js.log2("lazy", n))
 let _ = list{1, 2, 3}->eachIntAsync(n => Js.log2("async", n))

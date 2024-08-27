@@ -52,5 +52,5 @@ let () = {
   f()
   Array.iter(x => x(), arr)
   print_endline(string_of_int(v.contents))
-  assert (v.contents == 45)
+  assert(v.contents == 45)
 }

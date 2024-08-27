@@ -57,7 +57,7 @@ let test6 = (f, x) => {
       incr(x)
       Some(x.contents)
     },
-    ~xx__hi=?f(. x),
+    ~xx__hi=?f(x),
     ~hi=2,
     (),
   )

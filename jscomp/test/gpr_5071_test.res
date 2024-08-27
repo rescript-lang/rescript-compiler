@@ -1,7 +1,5 @@
 @@config({
-  flags: [
-  "-w","-16"  
-    ],
+  flags: ["-w", "-16"],
 })
 module Test: {
   @obj

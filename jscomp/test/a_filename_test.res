@@ -9,7 +9,7 @@ let eq = (loc, x, y) => {
     list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Mt.Eq(x, y)), ...suites.contents}
 }
 
-let test = (x,y) => Ext_filename_test.node_relative_path(true, x, y)
+let test = (x, y) => Ext_filename_test.node_relative_path(true, x, y)
 let () = /* TODO: adapt these tests to run on Windows. */
 if platform !== #win32 {
   eq(

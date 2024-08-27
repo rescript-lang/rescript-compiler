@@ -21,4 +21,4 @@ let h: list<d>
 
 @deriving(accessors) type hh = Xx(int)
 
-@deriving(accessors) type t = A((. int) => int)
+@deriving(accessors) type t = A(int => int)

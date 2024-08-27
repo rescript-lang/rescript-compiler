@@ -32,19 +32,19 @@ type id = int => int
 
 @variadic @send external cb: (int, string, array<int>) => id = "cb"
 
-type id2 = (. int) => int
+type id2 = int => int
 @variadic @send external cb2: (int, string, array<int>) => id2 = "cb2"
 
 let test_cb = x => {
   ignore((x->cb("hI", [1, 2, 3]))(3))
   \"@@"(ignore, cb(x, "hI", [1, 2, 3])(3))
-  cb2(x, "hI", [1, 2, 3])(. 3)
+  cb2(x, "hI", [1, 2, 3])(3)
 }
 
-type u = (. int) => int
+type u = int => int
 @val external v: u = "v"
 
-let f = x => \"@@"(ignore, v(. x))
+let f = x => \"@@"(ignore, v(x))
 
 @val external fff0: (int, int, @as(json`[undefined,undefined]`) _) => int = "say"
 

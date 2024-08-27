@@ -12,5 +12,4 @@ let mo = makeOptions
 
 let options = mo(~name="foo", ())
 
-let shouldNotFail: (~objectMode: _, ~name: string) => int = (~objectMode, ~name) =>
-  3
+let shouldNotFail: (~objectMode: _, ~name: string) => int = (~objectMode, ~name) => 3

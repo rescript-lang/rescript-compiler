@@ -26,7 +26,7 @@ let suites = {
       _ => Eq(
         14,
         {
-          v(1) |> ignore
+          ignore(v(1))
           v(1)
         },
       ),

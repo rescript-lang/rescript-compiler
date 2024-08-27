@@ -4,7 +4,7 @@ type rec linked_list<'a> = private {
   tl: Js.null<linked_list<'a>>,
 }
 
-type rec t = (. int, int) => bool
+type rec t = (int, int) => bool
 @deriving(abstract)
 and x = private {
   k: t,

@@ -1,7 +1,7 @@
 let f = () => raise(Not_found)
 
 let assert_f = x => {
-  let () = assert (x > 3)
+  let () = assert(x > 3)
   3
 }
 

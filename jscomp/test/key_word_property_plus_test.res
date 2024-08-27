@@ -11,10 +11,7 @@ let () = eq(
   Js.Array2.reduce([1, 2, 3, 4], \"+", 0),
   {
     open Global_mangles
-    __dirname +
-    __filename +
-    exports +
-    require
+    __dirname + __filename + exports + require
   },
 )
 

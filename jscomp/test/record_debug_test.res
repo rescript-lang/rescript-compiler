@@ -51,9 +51,7 @@ let (a, c) = ((1, 2, 2, 4, 3), [1, 2, 3, 4, 5])
 Js.log2(a, c)
 
 %%private(let i = 3)
-%%private(
-  let a = (``, `a`)
-)
+%%private(let a = (``, `a`))
 
 eq(__LOC__, a, ("", "a"))
 

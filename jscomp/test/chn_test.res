@@ -12,12 +12,14 @@ Js.log(`你好，
 Js.log(`\x3f\u003f\b\t\n\v\f\r\0"'`)
 
 let convert = (s: string): list<int> =>
-  Js_array2.fromMap(Js_string.castToArrayLike(s), x =>
-    switch Js_string2.codePointAt(x, 0) {
-    | None => assert(false)
-    | Some(x) => x
-    }
-  ) |> Array.to_list
+  Array.to_list(
+    Js_array2.fromMap(Js_string.castToArrayLike(s), x =>
+      switch Js_string2.codePointAt(x, 0) {
+      | None => assert(false)
+      | Some(x) => x
+      }
+    ),
+  )
 
 let () = {
   eq(
@@ -85,10 +87,6 @@ let () = {
     there is no need for line continuation,
 
  */
-  eq(
-    __LOC__,
-    convert(` \b\t\n\v\f\r"'\\\0a`),
-    list{32, 8, 9, 10, 11, 12, 13, 34, 39, 92, 0, 97},
-  )
+  eq(__LOC__, convert(` \b\t\n\v\f\r"'\\\0a`), list{32, 8, 9, 10, 11, 12, 13, 34, 39, 92, 0, 97})
 }
 let () = Mt.from_pair_suites(__MODULE__, suites.contents)

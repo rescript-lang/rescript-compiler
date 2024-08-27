@@ -1,7 +1,7 @@
 @@config({
   flags: [
     // "-dparsetree"
-    ],
+  ],
 })
 
 let b = List.length(list{1, 2, 3})

@@ -26,12 +26,15 @@ let of_string = [
 /* "0.", 0. */
 /* |] */
 
-let from_float_of_string = xs => xs |> Array.mapi((i, (a, b)) => string_of_float)
+let from_float_of_string = xs => Array.mapi((i, (a, b)) => string_of_float, xs)
 
 let from_of_string = xs =>
-  of_string
-  |> Array.mapi((i, (a, b)) => (`of_string ${string_of_int(i)}`, _ => Mt.Eq(int_of_string(b), a)))
-  |> Array.to_list
+  Array.to_list(
+    Array.mapi(
+      (i, (a, b)) => (`of_string ${string_of_int(i)}`, _ => Mt.Eq(int_of_string(b), a)),
+      of_string,
+    ),
+  )
 
 let to_str = s => int_of_string(s)
 
@@ -51,12 +54,15 @@ let suites: Mt.pair_suites = \"@"(
           (FP_zero, "0."),
         ]
 
-        pairs
-        |> Array.mapi((i, (a, b)) => (
-          `infinity_of_string ${string_of_int(i)}`,
-          _ => Mt.Eq(a, \"@@"(classify_float, float_of_string(b))),
-        ))
-        |> Array.to_list
+        Array.to_list(
+          Array.mapi(
+            (i, (a, b)) => (
+              `infinity_of_string ${string_of_int(i)}`,
+              _ => Mt.Eq(a, \"@@"(classify_float, float_of_string(b))),
+            ),
+            pairs,
+          ),
+        )
       },
       \"@"(
         list{
@@ -66,12 +72,15 @@ let suites: Mt.pair_suites = \"@"(
         {
           let pairs = [(3232., "32_32.0"), (1.000, "1.000"), (12.000, "12.000")]
 
-          pairs
-          |> Array.mapi((i, (a, b)) => (
-            `normal_float_of_string ${string_of_int(i)}`,
-            _ => Mt.Eq(a, float_of_string(b)),
-          ))
-          |> Array.to_list
+          Array.to_list(
+            Array.mapi(
+              (i, (a, b)) => (
+                `normal_float_of_string ${string_of_int(i)}`,
+                _ => Mt.Eq(a, float_of_string(b)),
+              ),
+              pairs,
+            ),
+          )
         },
       ),
     ),
@@ -146,22 +155,27 @@ let () = \"@@"(
   \"@"(
     suites,
     \"@"(
-      Array.mapi(
-        (i, (fmt, f, str_result)) => (
-          `loat_format ${string_of_int(i)}`,
-          _ => Mt.Eq(format_float(fmt, f), str_result),
+      Array.to_list(
+        Array.mapi(
+          (i, (fmt, f, str_result)) => (
+            `loat_format ${string_of_int(i)}`,
+            _ => Mt.Eq(format_float(fmt, f), str_result),
+          ),
+          float_data,
         ),
-        float_data,
-      ) |> Array.to_list,
+      ),
       \"@"(
         int64_suites,
-        of_string_data
-        |> Array.mapi((i, (a, b)) => (
-          `int64_of_string ${string_of_int(i)} `,
-          _ => Mt.Eq(Int64.of_string(b), a),
-        ))
-        |> Array.to_list,
+        Array.to_list(
+          Array.mapi(
+            (i, (a, b)) => (
+              `int64_of_string ${string_of_int(i)} `,
+              _ => Mt.Eq(Int64.of_string(b), a),
+            ),
+            of_string_data,
+          ),
+        ),
       ),
     ),
-  ),
+  )
 )

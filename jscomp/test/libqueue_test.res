@@ -13,7 +13,7 @@
 module Q = {
   include Queue
 
-  let to_list = q => fold((l, x) => list{x, ...l}, list{}, q) |> List.rev
+  let to_list = q => List.rev(fold((l, x) => list{x, ...l}, list{}, q))
 }
 
 let does_raise = (f, q) =>

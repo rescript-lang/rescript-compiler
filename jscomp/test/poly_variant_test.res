@@ -32,13 +32,14 @@ type u = [
   | #on_closed
   | #on_open
   | #in_
-  /* [@as "in"] TODO: warning test */
 ]
+/* [@as "in"] TODO: warning test */
 /* indeed we have a warning here */
 /* TODO: add warning test
  */
 
-/** when marshall, make sure location does not matter */ @val
+/** when marshall, make sure location does not matter */
+@val
 external test_string_type: (~flag: @string [#on_closed | #on_open | @as("in") #in_]) => string =
   "hey_string"
 
@@ -80,14 +81,14 @@ external on: (
   readline,
   @string
   [
-    | #line((. string) => unit)
-    | #close((. ()) => unit)
+    | #line(string => unit)
+    | #close(unit => unit)
   ],
 ) => unit = "on"
 
 let register = readline => {
-  on(readline, #line((. s) => Js.log(s)))
-  on(readline, #close((. ()) => Js.log("finished")))
+  on(readline, #line(s => Js.log(s)))
+  on(readline, #close(() => Js.log("finished")))
 }
 
 /* external on : */
@@ -101,8 +102,8 @@ external on2: (
   readline,
   @string
   [
-    | #line((. string) => unit)
-    | #close((. unit) => unit)
+    | #line(string => unit)
+    | #close(unit => unit)
   ],
 ) => unit = "on2"
 

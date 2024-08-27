@@ -23,5 +23,5 @@ let a = test(201)
 
 let b = test(504)
 
-assert (a == "good response")
-assert (b == "bad response")
+assert(a == "good response")
+assert(b == "bad response")

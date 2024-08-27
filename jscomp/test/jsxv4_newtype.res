@@ -1,6 +1,6 @@
 @@config({
-   flags: ["-bs-jsx", "4"],
- })
+  flags: ["-bs-jsx", "4"],
+})
 
 module V4A = {
   @react.component
@@ -9,7 +9,7 @@ module V4A = {
 
 module V4A1 = {
   @react.component
-  let make = (type x y, ~a:x, ~b:array<y>, ~c:'a) => React.null
+  let make = (type x y, ~a: x, ~b: array<y>, ~c: 'a) => React.null
 }
 
 module type T = {

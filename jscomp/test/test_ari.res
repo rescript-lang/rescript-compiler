@@ -1,4 +1,4 @@
-let f = (x,y) => \"+"(x,y)
+let f = (x, y) => x + y
 /*
 {[
  f = function (x){ function(x,y){x + y} (x) }

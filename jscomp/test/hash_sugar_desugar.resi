@@ -8,7 +8,7 @@ let h5: {..@set "hi": int} => unit
    { mutable "hi" : int  }
 */
 let h6: {.."p": 'a} => 'a
-let h7: {.."m": (. int, int) => 'a} => 'a
+let h7: {.."m": (int, int) => 'a} => 'a
 let h8: {.."hi": (int, int) => 'a} => 'a
 
 let chain_g: {"x": {"y": {"z": int}}} => int

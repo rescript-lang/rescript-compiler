@@ -22,7 +22,7 @@ let h5 = u => u["hi"] = 3
 
 let h6 = u => u["p"]
 
-let h7 = u => u["m"](. 1, 2)
+let h7 = u => u["m"](1, 2)
 
 let h8 = u => {
   let f = u["hi"]

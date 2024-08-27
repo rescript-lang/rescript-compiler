@@ -2,21 +2,21 @@
 
 let foo = (x, y) => x + y
 
-let z = foo(. 3, 4)
+let z = foo(3, 4)
 
-let bar = (. x, y) => x + y
+let bar = (x, y) => x + y
 
 let b = bar(3, 4)
 
 let w = 3->foo(4)
 
-let a = 3->foo(. 4)
+let a = 3->foo(4)
 
 Js.log(a) // Test automatic uncurried application
 
-let _ = Js.Array2.map([1], (. x) => x + 1)
+let _ = Js.Array2.map([1], x => x + 1)
 
-let ptl = @res.partial foo(10) // force partial application
+let ptl = foo(10, ...) // force partial application
 
 let foo2 = (x, y) => x + y
 let bar2: _ => _ = foo2(_, 3)
@@ -31,7 +31,7 @@ let q: cmp = _ => Jsx.null // Check that subtyping works past type definitions
 let inl = () => ()
 
 @inline
-let inl2 = (x,y) => x+y
+let inl2 = (x, y) => x + y
 
 module AllLabels = {
   let foo = (~x, ~y, ~z) => (x, y, z)
@@ -54,7 +54,17 @@ module OptAtEnd = {
 }
 
 module OptMixed = {
-  let foo = (~d1="d1=0", ~x, ~d2="d2=0",  ~y, ~d3="d3=0", ~z, ~d4="d4=0", ~w, ~d5="d5=0") => (d1, x, d2, y, d3, z, d4, w, d5)
+  let foo = (~d1="d1=0", ~x, ~d2="d2=0", ~y, ~d3="d3=0", ~z, ~d4="d4=0", ~w, ~d5="d5=0") => (
+    d1,
+    x,
+    d2,
+    y,
+    d3,
+    z,
+    d4,
+    w,
+    d5,
+  )
 
   let ptl = foo(~y="y", ~w="w", ...)
 
@@ -72,7 +82,7 @@ let fn = cb => {
 
 fn(s => Js.log(#foo(s)))
 
-let fn1 = (a, b, ()) => a() + b 
+let fn1 = (a, b, ()) => a() + b
 
 let a = fn1(() => 1, 2, _)
 
@@ -93,7 +103,7 @@ module PartialApplication = {
 
 module ReverseApplication = {
   let hello1 = (y, f) => f(y)
-  let hello2 = (y, f) => y |> f
+  let hello2 = (y, f) => f(y)
 }
 
 module Pipe = {

@@ -1,10 +1,10 @@
 module Curry = {}
 module Block = {}
 
-@val external map: (array<'a>, ('a => 'b)) => array<'b> = "Array.prototype.map.call"
+@val external map: (array<'a>, 'a => 'b) => array<'b> = "Array.prototype.map.call"
 
 type id = int => int
-@val external map2: (array<int>, (int => int)) => array<int> = "Array.prototype.map.cal"
+@val external map2: (array<int>, int => int) => array<int> = "Array.prototype.map.cal"
 
 /* [n] should not be documented,
     since such inconsistency could not be checked
@@ -15,7 +15,7 @@ let xbs = map([1, 2, 3, 5], x => x + 1)
 
 let f = (cb: int => int) => map([1, 2, 3, 4], cb)
 
-let xs = map([(1,2), (1,2), (2,1)], ((x, y)) => y + x + 1)
+let xs = map([(1, 2), (1, 2), (2, 1)], ((x, y)) => y + x + 1)
 
 @val external map2: (array<'a>, array<'b>, ('a, 'b) => 'c) => array<'c> = "map2"
 

@@ -18,7 +18,7 @@ let suites = {
       "lexer_stream_genlex",
       _ => Eq(
         list{Int(3), Kwd("("), Int(3), Kwd("+"), Int(2), Int(-1), Kwd(")")},
-        "3(3 + 2 -1)" |> Stream.of_string |> lexer |> to_list,
+        to_list(lexer(Stream.of_string("3(3 + 2 -1)"))),
       ),
     ),
   }

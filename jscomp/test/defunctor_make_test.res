@@ -1,6 +1,6 @@
 module Comparable: {
   type comparator<'a>
-  let getcompare: comparator<'a> => (. 'a, 'a) => int
+  let getcompare: comparator<'a> => ('a, 'a) => int
   module type C = {
     type id
     type key
@@ -10,12 +10,12 @@ module Comparable: {
   module Make: (
     M: {
       type key
-      let compare: (. key, key) => int
+      let compare: (key, key) => int
     },
   ) => (C with type key = M.key)
 } = {
-  type comparator<'a> = (. 'a, 'a) => int
-  let getcompare: comparator<'a> => (. 'a, 'a) => int = x => x
+  type comparator<'a> = ('a, 'a) => int
+  let getcompare: comparator<'a> => ('a, 'a) => int = x => x
   module type C = {
     type id
     type key
@@ -26,7 +26,7 @@ module Comparable: {
   module Make = (
     M: {
       type key
-      let compare: (. key, key) => int
+      let compare: (key, key) => int
     },
   ) => {
     type id
@@ -116,7 +116,7 @@ let rec add = (x, data, compare, x_) =>
   switch x_ {
   | Empty => Node(Empty, x, data, Empty, 1)
   | Node(l, v, d, r, h) =>
-    let c = compare(. x, v)
+    let c = compare(x, v)
     if c == 0 {
       Node(l, x, data, r, h)
     } else if c < 0 {
@@ -154,11 +154,11 @@ module U = struct
 
 module V0 = Comparable.Make({
   type key = int
-  let compare = (. x: key, y) => Pervasives.compare((x: key), y)
+  let compare = (x: key, y) => Pervasives.compare((x: key), y)
 })
 module V1 = Comparable.Make({
   type key = int
-  let compare = (. x: key, y) => Pervasives.compare(x, y)
+  let compare = (x: key, y) => Pervasives.compare(x, y)
 })
 let v0 = empty(module(V0))
 let v1 = empty(module(V1))

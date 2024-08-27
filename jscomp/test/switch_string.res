@@ -6,8 +6,9 @@ let foo = x =>
 
 let s = "😀"
 
-let bar = x => switch x {
+let bar = x =>
+  switch x {
   | "\\" => "\\"
   | "😀" => "😀"
   | _ => ""
-}
+  }

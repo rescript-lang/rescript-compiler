@@ -36,9 +36,7 @@ let results = Array.append(
 )
 
 let from_pairs = ps =>
-  ps
-  |> Array.mapi((i, (a, b)) => ("pair " ++ __unsafe_cast(i), _ => Mt.Approx(a, b)))
-  |> Array.to_list
+  Array.to_list(Array.mapi((i, (a, b)) => ("pair " ++ __unsafe_cast(i), _ => Mt.Approx(a, b)), ps))
 
 let float_compare = (x: float, y) => Pervasives.compare(x, y)
 let generic_compare = Pervasives.compare
@@ -67,9 +65,7 @@ let () = {
     (true, true),
   )
   /* modf nan => (nan,nan) */
-  eq(
-    __LOC__,
-    Array.map(((x, y)) => float_compare(x, y), [(1., 3.), (2., 1.), (3., 2.)]) |> Array.map(x =>
+  eq(__LOC__, Array.map(x =>
       if x > 0 {
         1
       } else if x < 0 {
@@ -77,9 +73,7 @@ let () = {
       } else {
         0
       }
-    ),
-    [-1, 1, 1],
-  )
+    , Array.map(((x, y)) => float_compare(x, y), [(1., 3.), (2., 1.), (3., 2.)])), [-1, 1, 1])
   eq(__LOC__, copysign(-3., 0.), 3.)
   eq(__LOC__, copysign(3., 0.), 3.)
   eq(__LOC__, log10(10.), 1.)
@@ -145,6 +139,6 @@ let () = {
         }
       },
       \"@"(from_pairs(results), suites.contents),
-    ),
+    )
   )
 }

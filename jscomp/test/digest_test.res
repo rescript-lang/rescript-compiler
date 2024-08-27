@@ -188,12 +188,15 @@ let f = x => \"@@"(Digest.to_hex, Digest.string(x))
         "b325dc1c6f5e7a2b7cf465b9feab7948",
       ]
 
-      Ext_array_test.range(0, 129)
-      |> Array.map(i => (
-        Belt.Int.toString(i),
-        _ => Mt.Eq(\"@@"(Digest.to_hex, \"@@"(Digest.string, String.make(i, 'a'))), ref[i]),
-      ))
-      |> Array.to_list
+      Array.to_list(
+        Array.map(
+          i => (
+            Belt.Int.toString(i),
+            _ => Mt.Eq(\"@@"(Digest.to_hex, \"@@"(Digest.string, String.make(i, 'a'))), ref[i]),
+          ),
+          Ext_array_test.range(0, 129),
+        ),
+      )
     },
-  ),
+  )
 )

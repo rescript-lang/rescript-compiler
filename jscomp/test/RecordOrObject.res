@@ -1,10 +1,10 @@
 type rx = {x: int}
 type ry = {y: string}
-type rxi = {...rx, i?:int}
+type rxi = {...rx, i?: int}
 type rxy = {...rx, ...ry} // this is a record
 
 let vxy: rxy = {x: 10, y: "abc"}
-let xxi : rxi = {x:10}
+let xxi: rxi = {x: 10}
 
 type ox = {"x": int}
 type oy = {"y": int}

@@ -21,17 +21,17 @@ let z = xx(~x=2 + 3, ~y=3, ())
 let () = eq(__LOC__, ((u, z), (6, 8)))
 
 let counter = ref(0)
-let side_effect = (. x) => {
+let side_effect = x => {
   incr(x)
   x.contents
 }
 
-let bug_to_fix = (f, x) => xx(~x=f(. x), ~y=3, ()) /* : [f x] is done once */
+let bug_to_fix = (f, x) => xx(~x=f(x), ~y=3, ()) /* : [f x] is done once */
 
-let bug_to_fix2 = (f, x) => xx(~x=?f(. x), ~y=3, ()) /* : [f x] is done once */
+let bug_to_fix2 = (f, x) => xx(~x=?f(x), ~y=3, ()) /* : [f x] is done once */
 
 let counter2 = ref(0)
-let side_effect2 = (. x) => {
+let side_effect2 = x => {
   incr(x)
   Some(x.contents)
 }

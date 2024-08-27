@@ -26,7 +26,7 @@ let f = () => raise(A)
 %%private(
   let d = c
   let f = d
-  let h = (. a, b) => a + b
+  let h = (a, b) => a + b
 )
 
 %%private(let h0 = 1)
@@ -51,14 +51,12 @@ Js.log(h2)
 
 Js.log(f)
 
-Js.log(h(. 1, 2))
+Js.log(h(1, 2))
 
 /* module%private X  = Arg
  type x = X.spec */
 /* [%%debugger.chrome] */
 
 module H = () => {
-  %%private(
-    @module("./x") external x: int => int = "x"
-  )
+  %%private(@module("./x") external x: int => int = "x")
 }

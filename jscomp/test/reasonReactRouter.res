@@ -69,9 +69,10 @@ let path = () =>
   switch window {
   | None => list{}
   | Some(window) =>
-    switch window |> location |> pathname {
+    switch pathname(location(window)) {
     | ""
-    | "/" => list{}
+    | "/" =>
+      list{}
     | raw =>
       /* remove the preceeding /, which every pathname seems to have */
       let raw = Js.String.sliceToEnd(~from=1, raw)
@@ -80,32 +81,32 @@ let path = () =>
       | "/" => Js.String.slice(~from=0, ~to_=-1, raw)
       | _ => raw
       }
-      raw |> Js.String.split("/") |> arrayToList
+      arrayToList(Js.String.split("/", raw))
     }
   }
 let hash = () =>
   switch window {
   | None => ""
   | Some(window) =>
-    switch window |> location |> hash {
+    switch hash(location(window)) {
     | ""
     | "#" => ""
     | raw =>
       /* remove the preceeding #, which every hash seems to have.
        Why is this even included in location.hash?? */
-      raw |> Js.String.sliceToEnd(~from=1)
+      Js.String.sliceToEnd(~from=1, raw)
     }
   }
 let search = () =>
   switch window {
   | None => ""
   | Some(window) =>
-    switch window |> location |> search {
+    switch search(location(window)) {
     | ""
     | "?" => ""
     | raw =>
       /* remove the preceeding ?, which every search seems to have. */
-      raw |> Js.String.sliceToEnd(~from=1)
+      Js.String.sliceToEnd(~from=1, raw)
     }
   }
 let push = path =>
@@ -174,9 +175,9 @@ let useUrl = (~serverUrl=?, ()) => {
     let watcherId = watchUrl(url => setUrl(_ => url))
 
     /*
-      * check for updates that may have occured between
-      * the initial state and the subscribe above
-      */
+     * check for updates that may have occured between
+     * the initial state and the subscribe above
+     */
     let newUrl = dangerouslyGetInitialUrl()
     if urlNotEqual(newUrl, url) {
       setUrl(_ => newUrl)

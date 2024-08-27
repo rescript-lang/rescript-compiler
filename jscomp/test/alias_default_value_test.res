@@ -35,7 +35,7 @@ module C4 = {
 
 module C6 = {
   module type Comp = {
-    let xx : int
+    let xx: int
     @react.component
     let make: unit => React.element
   }

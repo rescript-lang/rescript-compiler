@@ -21,13 +21,10 @@ let suites = {
     ("entries", _ => Eq([("foo", 43), ("bar", 86)], entries(obj()))),
     ("values", _ => Eq([43, 86], values(obj()))),
     ("fromList - []", _ => Eq(empty(), fromList(list{}))),
-    ("fromList", _ => Eq([("x", 23), ("y", 46)], fromList(list{("x", 23), ("y", 46)}) |> entries)),
+    ("fromList", _ => Eq([("x", 23), ("y", 46)], entries(fromList(list{("x", 23), ("y", 46)})))),
     ("fromArray - []", _ => Eq(empty(), fromArray([]))),
-    ("fromArray", _ => Eq([("x", 23), ("y", 46)], fromArray([("x", 23), ("y", 46)]) |> entries)),
-    (
-      "map",
-      _ => Eq({"foo": "43", "bar": "86"} |> Obj.magic, map((. i) => string_of_int(i), obj())),
-    ),
+    ("fromArray", _ => Eq([("x", 23), ("y", 46)], entries(fromArray([("x", 23), ("y", 46)])))),
+    ("map", _ => Eq(Obj.magic({"foo": "43", "bar": "86"}), map(i => string_of_int(i), obj()))),
   }
 }
 Mt.from_pair_suites(__MODULE__, suites)

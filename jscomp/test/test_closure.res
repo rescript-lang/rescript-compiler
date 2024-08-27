@@ -49,5 +49,5 @@ let f = () => {
 let () = {
   let u = f()
   Array.iter(x => x(), u)
-  assert (v.contents == 45)
+  assert(v.contents == 45)
 }

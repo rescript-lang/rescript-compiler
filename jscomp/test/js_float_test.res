@@ -102,7 +102,7 @@ let suites = {
     ("fromString - 0x11", _ => Eq(17., fromString("0x11"))),
     ("fromString - 0b11", _ => Eq(3., fromString("0b11"))),
     ("fromString - 0o11", _ => Eq(9., fromString("0o11"))),
-    ("fromString - invalid string", _ => Eq(true, fromString("foo") |> isNaN)),
+    ("fromString - invalid string", _ => Eq(true, isNaN(fromString("foo")))),
   }
 }
 
