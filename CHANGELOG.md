@@ -29,6 +29,7 @@
 - Fix issue where long layout break added a trailing comma in partial application `...`. https://github.com/rescript-lang/rescript-compiler/pull/6949
 - Fix incorrect format of function under unary operator. https://github.com/rescript-lang/rescript-compiler/pull/6953
 - Fix incorrect incorrect printing of module binding with signature. https://github.com/rescript-lang/rescript-compiler/pull/6963
+- Fix incorrect printing of external with `@as` attribute and `_` placholder (fixed argument). https://github.com/rescript-lang/rescript-compiler/pull/6970
 
 #### :house: Internal
 

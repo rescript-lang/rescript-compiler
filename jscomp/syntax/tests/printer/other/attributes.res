@@ -24,3 +24,30 @@ let x = 1
 )
 let x = 1
 
+@obj external ff: (~x: int, ~g: int, ~h: int) => _ = ""
+
+@obj external ff: (~x: int, ~g: int, ~h: @as(3) _) => _ = ""
+
+@obj external ff: (~x: int) => (~h: @as(3) _) => _ = ""
+
+@obj
+external ff: (
+  ~lo: @as(3) _,
+  ~mid: @as(3) _,
+  ~hi: int,
+) => _ = ""
+
+
+@obj
+external ff: (
+  ~hi: int,
+  ~lo: @as(3) _
+) => _ = ""
+
+@obj
+external ff: (
+  ~hi: int,
+  ~mid: @as(3) _,
+  ~lo: @as(3) _
+) => _ = ""
+
