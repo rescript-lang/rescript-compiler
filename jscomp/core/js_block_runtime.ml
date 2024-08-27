@@ -26,8 +26,13 @@ let option_id = Ident.create_persistent Js_runtime_modules.option
 
 let curry_id = Ident.create_persistent Js_runtime_modules.curry
 
+let caml_js_exceptions_id = Ident.create_persistent Js_runtime_modules.caml_js_exceptions
+
+(* This function is responsible for checking the expressions used in the file,
+   and listing the additional runtime dependencies it requires *)
 let check_additional_id (x : J.expression) : Ident.t option =
   match x.expression_desc with
   | Optional_block (_, false) -> Some option_id
   | Call (_, _, { arity = NA }) -> Some curry_id
+  | Caml_block (el, _, _, ((Blk_extension { is_exception = true } | Blk_record_ext { is_exception = true }))) -> Some caml_js_exceptions_id
   | _ -> None
