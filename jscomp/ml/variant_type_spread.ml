@@ -4,6 +4,7 @@ let mk_constructor_comes_from_spread_attr () : Parsetree.attribute =
 type variant_type_spread_error =
   | CouldNotFindType
   | HasTypeParams
+  | InvalidType
   | DuplicateConstructor of {
       variant_with_overlapping_constructor: string;
       overlapping_constructor_name: string;
@@ -31,6 +32,7 @@ let map_constructors ~(sdecl : Parsetree.type_declaration) ~all_constructors env
     in
 
     match type_decl with
+    | {type_kind = Type_variant [] } -> raise (VariantTypeSpreadError (loc.loc, InvalidType))
     | {type_kind = Type_variant cstrs; type_attributes; type_params} ->
       if List.length type_params > 0 then
         raise (VariantTypeSpreadError (loc.loc, HasTypeParams));
@@ -83,7 +85,7 @@ let map_constructors ~(sdecl : Parsetree.type_declaration) ~all_constructors env
                     pcd_args = Pcstr_tuple [];
                     pcd_name = Location.mkloc cstr.cd_id.name cstr.cd_loc;
                   }))
-    | _ -> [c])
+    | _ -> raise (VariantTypeSpreadError (loc.loc, InvalidType)))
   | _ ->
     Hashtbl.add all_constructors c.pcd_name.txt ();
     [c]
