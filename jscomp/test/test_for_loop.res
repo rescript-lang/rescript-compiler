@@ -1,15 +1,15 @@
 let for_ = x =>
   for i in 0 to {
-    print_endline("hi")
+    Js.log("hi")
     ignore(3)
     Array.length(x)
   } {
-    print_endline(x[i])
+    Js.log(x[i])
   }
 
 let for_2 = x =>
   for i in 0 to Array.length(x) {
-    print_endline(x[i])
+    Js.log(x[i])
   }
 
 let for_3 = x => {

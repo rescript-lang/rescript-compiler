@@ -1426,7 +1426,7 @@ module Draw: {
     let (dx, dy) = (posx, posy)
     let (dw, dh) = sprite.params.frame_size
     let sx = sx +. float_of_int(sprite.frame.contents) *. sw
-    /* print_endline (string_of_int !(sprite.frame)); */
+    /* Js.log(sprite.frame) */
     /* context##clearRect(0.,0.,sw, sh); */
     context["drawImage"](sprite.img, sx, sy, sw, sh, dx, dy, dw, dh)
   }
@@ -1450,8 +1450,8 @@ module Draw: {
 
   /* Displays the text for score and coins. */
   let hud = (canvas, score, coins) => {
-    let score_string = string_of_int(score)
-    let coin_string = string_of_int(coins)
+    let score_string = Js.Int.toString(score)
+    let coin_string = Js.Int.toString(coins)
     let canvas = Dom_html.canvasElementToJsObj(canvas)
     let context = Dom_html.canvasRenderingContext2DToJsObj(canvas["getContext"]("2d"))
     \"@@"(ignore, context["font"] = "10px 'Press Start 2P'")
@@ -1464,7 +1464,7 @@ module Draw: {
 
   /* Displays the fps. */
   let fps = (canvas, fps_val) => {
-    let fps_str = string_of_int(int_of_float(fps_val))
+    let fps_str = fps_val->Js.Float.toFixed
     let canvas = Dom_html.canvasElementToJsObj(canvas)
     let context = Dom_html.canvasRenderingContext2DToJsObj(canvas["getContext"]("2d"))
     \"@@"(ignore, context["fillText"](fps_str, 10., 18.))
@@ -2600,7 +2600,7 @@ module Main = {
       Pg.generate(level_width, level_height, context),
       (level_width, level_height),
     )
-    print_endline("asd")
+    Js.log("asd")
     ()
   }
 

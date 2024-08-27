@@ -133,30 +133,6 @@ external of_int32: int => int64 = "%int64_of_int32"
    during the conversion.  */
 external to_int32: int64 => int = "%int64_to_int32"
 
-/** Convert the given string to a 64-bit integer.
-   The string is read in decimal (by default, or if the string 
-   begins with [0u]) or in hexadecimal, octal or binary if the
-   string begins with [0x], [0o] or [0b] respectively.
-
-   The [0u] prefix reads the input as an unsigned integer in the range
-   [[0, 2*Int64.max_int+1]].  If the input exceeds {!Int64.max_int}
-   it is converted to the signed integer
-   [Int64.min_int + input - Int64.max_int - 1].
-
-   The [_] (underscore) character can appear anywhere in the string
-   and is ignored.
-   Raise [Failure "Int64.of_string"] if the given string is not
-   a valid representation of an integer, or if the integer represented
-   exceeds the range of integers representable in type [int64]. */
-external of_string: string => int64 = "?int64_of_string"
-
-/** Same as [of_string], but return [None] instead of raising.
-    @since 4.05 */
-let of_string_opt: string => option<int64>
-
-/** Return the string representation of its argument, in decimal. */
-let to_string: int64 => string
-
 /** Return the internal representation of the given float according
    to the IEEE 754 floating-point 'double format' bit layout.
    Bit 63 of the result represents the sign of the float;
@@ -181,9 +157,3 @@ let compare: (t, t) => int
 /** The equal function for int64s.
     @since 4.03.0 */
 let equal: (t, t) => bool
-
-/* {1 Deprecated functions} */
-
-/** Do not use this deprecated function.  Instead,
-   used {!Printf.sprintf} with a [%L...] format. */
-external format: (string, int64) => string = "?int64_format"

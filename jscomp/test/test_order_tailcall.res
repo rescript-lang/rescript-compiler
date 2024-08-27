@@ -1,7 +1,7 @@
 let rec f = (x, y) => f(y, x)
 
 let rec f1 = (x, y, z) => {
-  print_endline(z)
+  Js.log(z)
   f1(y, z, x)
 }
 

@@ -289,17 +289,17 @@ let from_pair_suites_non_top name suites =
 let eq_suites = (~test_id, ~suites, loc, x, y) => {
   incr(test_id)
   suites :=
-    list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Eq(x, y)), ...suites.contents}
+    list{(loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => Eq(x, y)), ...suites.contents}
 }
 
 let bool_suites = (~test_id, ~suites, loc, x) => {
   incr(test_id)
   suites :=
-    list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Ok(x)), ...suites.contents}
+    list{(loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => Ok(x)), ...suites.contents}
 }
 
 let throw_suites = (~test_id, ~suites, loc, x) => {
   incr(test_id)
   suites :=
-    list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => ThrowAny(x)), ...suites.contents}
+    list{(loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => ThrowAny(x)), ...suites.contents}
 }

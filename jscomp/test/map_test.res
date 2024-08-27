@@ -41,11 +41,11 @@ let int_map_suites = {
         let m = ref(String_map.empty)
         let count = 1_0000
         for i in 0 to count {
-          m := String_map.add(string_of_int(i), string_of_int(i), m.contents)
+          m := String_map.add(Js.Int.toString(i), Js.Int.toString(i), m.contents)
         }
         let v = ref(-1)
         for i in 0 to count {
-          if String_map.find(string_of_int(i), m.contents) !== string_of_int(i) {
+          if String_map.find(Js.Int.toString(i), m.contents) !== Js.Int.toString(i) {
             v := i
           }
         }

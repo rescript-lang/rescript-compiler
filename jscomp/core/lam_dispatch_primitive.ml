@@ -220,10 +220,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
      Not good for inline *)
   | "?array_blit" -> E.runtime_call Js_runtime_modules.array "blit" args
   | "?make_vect" -> E.runtime_call Js_runtime_modules.array "make" args
-  | "?format_float" | "?hexstring_of_float" | "?float_of_string"
-  | "?int_of_string" (* what is the semantics?*)
-  | "?int64_format" | "?int64_of_string" | "?format_int" ->
-      call Js_runtime_modules.format
   | "?obj_tag" -> (
       (* Note that in ocaml, [int] has tag [1000] and [string] has tag [252]
          also now we need do nullary check

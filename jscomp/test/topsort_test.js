@@ -132,7 +132,7 @@ if (!Caml_obj.equal(dfs1({
   };
 }
 
-console.log("");
+console.log();
 
 if (!Caml_obj.equal(dfs1({
     hd: "b",

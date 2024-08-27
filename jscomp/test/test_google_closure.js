@@ -12,7 +12,7 @@ function f2(a) {
   return extra => a + 1 | 0;
 }
 
-let a = String(3);
+let a = (3).toString();
 
 function f3(extra) {
   return 101;

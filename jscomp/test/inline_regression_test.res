@@ -23,7 +23,7 @@ let generic_basename = (is_dir_sep, current_dir_name, name) => {
   }
 }
 
-let basename = generic_basename((s, i) => String.get(s, i) == '/', Filename.current_dir_name, ...)
+let basename = generic_basename((s, i) => String.get(s, i) == '/', "", ...)
 
 let suites = {
   open Mt

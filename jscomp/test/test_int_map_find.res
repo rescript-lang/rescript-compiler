@@ -17,11 +17,11 @@ include (
 
     let assert_test = () =>
       if IntMap.find(10, m) == 'a' {
-        prerr_endline("hi")
+        Js.log("hi")
       } else {
         /* log ('a', "succeed") */
 
-        prerr_endline("hi")
+        Js.log("hi")
       }
   }: {}
 )

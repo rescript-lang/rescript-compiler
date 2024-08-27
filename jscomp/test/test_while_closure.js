@@ -25,7 +25,7 @@ f();
 
 $$Array.iter(x => x(), arr);
 
-console.log(String(v.contents));
+console.log(v.contents.toString());
 
 if (v.contents !== 45) {
   throw {

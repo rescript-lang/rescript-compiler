@@ -14,7 +14,7 @@ function f() {
       };
       return fib(n) > 10;
     })()) {
-    console.log(String(n));
+    console.log(n.toString());
     n = n + 1 | 0;
   };
 }

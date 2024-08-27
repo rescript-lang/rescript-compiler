@@ -4,10 +4,12 @@
 let Mt = require("./mt.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 
-let ff = Pervasives.string_of_float;
+function ff(v) {
+  return v.toString();
+}
 
 function f(v) {
-  return String(v);
+  return v.toString();
 }
 
 Mt.from_pair_suites("To_string_test", {
@@ -15,17 +17,17 @@ Mt.from_pair_suites("To_string_test", {
     "File \"to_string_test.res\", line 6, characters 8-15",
     () => ({
       TAG: "Eq",
-      _0: Pervasives.string_of_float(Pervasives.infinity),
-      _1: "inf"
+      _0: Pervasives.infinity.toString(),
+      _1: "Infinity"
     })
   ],
   tl: {
     hd: [
-      "File \"to_string_test.res\", line 6, characters 49-56",
+      "File \"to_string_test.res\", line 6, characters 54-61",
       () => ({
         TAG: "Eq",
-        _0: Pervasives.string_of_float(Pervasives.neg_infinity),
-        _1: "-inf"
+        _0: Pervasives.neg_infinity.toString(),
+        _1: "-Infinity"
       })
     ],
     tl: /* [] */0

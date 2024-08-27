@@ -5,8 +5,9 @@ let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
 let $$String = require("../../lib/js/string.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
+let Belt_Float = require("../../lib/js/belt_Float.js");
 let Pervasives = require("../../lib/js/pervasives.js");
-let Caml_format = require("../../lib/js/caml_format.js");
+let Belt_Option = require("../../lib/js/belt_Option.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -54,7 +55,7 @@ function split(delim, s) {
 
 function string_of_float_option(x) {
   if (x !== undefined) {
-    return Pervasives.string_of_float(x);
+    return x.toString();
   } else {
     return "nan";
   }
@@ -1239,7 +1240,7 @@ function process_input_line(ticker_map, all_tickers, line) {
               };
             }
             let ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
-            let value = Caml_format.float_of_string(match$1.hd);
+            let value = Belt_Option.getExn(Belt_Float.fromString(match$1.hd));
             process_quote(ticker_map$1, match.hd, value);
             return [
               all_tickers,

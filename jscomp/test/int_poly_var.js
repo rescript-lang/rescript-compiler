@@ -165,7 +165,7 @@ function f(x) {
   if (x.NAME === 1) {
     return x.VAL;
   } else {
-    return String(x.VAL);
+    return x.VAL.toString();
   }
 }
 

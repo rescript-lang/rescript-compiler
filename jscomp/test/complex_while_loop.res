@@ -8,7 +8,7 @@ let f = () => {
       }
     fib(n.contents) > 10
   } {
-    print_endline(string_of_int(n.contents))
+    n.contents->Js.Int.toString->Js.log
     incr(n)
   }
 }

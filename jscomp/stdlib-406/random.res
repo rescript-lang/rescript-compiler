@@ -40,7 +40,7 @@ module State = {
   }
 
   let full_init = (s, seed) => {
-    let combine = (accu, x) => Digest.string(accu ++ string_of_int(x))
+    let combine = (accu, x) => Digest.string(accu ++ Js.Int.toString(x))
     let extract = d =>
       Char.code(String.get(d, 0)) +
       lsl(Char.code(String.get(d, 1)), 8) +

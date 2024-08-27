@@ -573,77 +573,6 @@ let char_of_int: int => char
    avoids the warning. */
 external ignore: 'a => unit = "%ignore"
 
-/* {1 String conversion functions} */
-
-/** Return the string representation of a boolean. As the returned values
-   may be shared, the user should not modify them directly.
-*/
-let string_of_bool: bool => string
-
-/** Convert the given string to a boolean.
-   Raise [Invalid_argument "bool_of_string"] if the string is not
-   ["true"] or ["false"]. */
-let bool_of_string: string => bool
-
-/** Convert the given string to a boolean.
-    Return [None] if the string is not
-    ["true"] or ["false"].
-    @since 4.05
-*/
-let bool_of_string_opt: string => option<bool>
-
-@val /** Return the string representation of an integer, in decimal. */
-external string_of_int: int => string = "String"
-
-/** Convert the given string to an integer.
-   The string is read in decimal (by default, or if the string 
-   begins with [0u]), in hexadecimal (if it begins with [0x] or
-   [0X]), in octal (if it begins with [0o] or [0O]), or in binary
-   (if it begins with [0b] or [0B]).
-
-   The [0u] prefix reads the input as an unsigned integer in the range
-   [[0, 2*max_int+1]].  If the input exceeds {!max_int}
-   it is converted to the signed integer
-   [min_int + input - max_int - 1].
-
-   The [_] (underscore) character can appear anywhere in the string
-   and is ignored.
-   Raise [Failure "int_of_string"] if the given string is not
-   a valid representation of an integer, or if the integer represented
-   exceeds the range of integers representable in type [int]. */
-external int_of_string: string => int = "?int_of_string"
-
-/** Same as [int_of_string], but returns [None] instead of raising.
-    @since 4.05
-*/
-let int_of_string_opt: string => option<int>
-
-@deprecated("Please use Js.Float.toString instead, string_of_float generates unparseable floats")
-/** Return the string representation of a floating-point number. */
-let string_of_float: float => string
-
-/** Convert the given string to a float.  The string is read in decimal
-   (by default) or in hexadecimal (marked by [0x] or [0X]).
-   The format of decimal floating-point numbers is
-   [ [-] dd.ddd (e|E) [+|-] dd ], where [d] stands for a decimal digit.
-   The format of hexadecimal floating-point numbers is
-   [ [-] 0(x|X) hh.hhh (p|P) [+|-] dd ], where [h] stands for an
-   hexadecimal digit and [d] for a decimal digit.
-   In both cases, at least one of the integer and fractional parts must be
-   given; the exponent part is optional.
-   The [_] (underscore) character can appear anywhere in the string
-   and is ignored.
-   Depending on the execution platforms, other representations of
-   floating-point numbers can be accepted, but should not be relied upon.
-   Raise [Failure "float_of_string"] if the given string is not a valid
-   representation of a float. */
-external float_of_string: string => float = "?float_of_string"
-
-/** Same as [float_of_string], but returns [None] instead of raising.
-    @since 4.05
-*/
-let float_of_string_opt: string => option<float>
-
 /* {1 Pair operations} */
 
 /** Return the first component of a pair. */
@@ -663,37 +592,6 @@ external snd: (('a, 'b)) => 'b = "%field1"
 let \"@": (list<'a>, list<'a>) => list<'a>
 
 type int32 = int
-
-/** Print a string on standard output. */
-let print_string: string => unit
-
-/** Print an integer, in decimal, on standard output. */
-let print_int: int => unit
-
-/** Print a floating-point number, in decimal, on standard output. */
-let print_float: float => unit
-
-/** Print a floating-point number, in decimal, on standard output. */
-@val
-@scope("console")
-/** Print a string, followed by a newline character, on
-   standard output and flush standard output. */
-external print_endline: string => unit = "log"
-
-/** Print a newline character on standard output, and flush
-   standard output. This can be used to simulate line
-   buffering of standard output. */
-let print_newline: unit => unit
-
-@val
-@scope("console")
-/** Print a string, followed by a newline character on standard
-   error and flush standard error. */
-external prerr_endline: string => unit = "error"
-
-/** Print a newline character on standard error, and flush
-   standard error. */
-let prerr_newline: unit => unit
 
 /* {1 References} */
 
@@ -743,5 +641,3 @@ let exit: int => 'a
    The functions are called in 'last in, first out' order: the
    function most recently added with [at_exit] is called first. */
 let at_exit: (unit => unit) => unit
-
-let valid_float_lexem: string => string

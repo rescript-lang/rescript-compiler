@@ -97,5 +97,3 @@ let lsing: (unit => 'a) => t<'a>
 
 let sempty: t<'a>
 let slazy: (unit => t<'a>) => t<'a>
-
-let dump: ('a => unit, t<'a>) => unit

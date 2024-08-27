@@ -170,9 +170,8 @@ let classify_float = (x: float): fpclass =>
 
 /* String and byte sequence operations -- more in modules String and Bytes */
 
-external string_length: string => int = "%string_length"
-
 external \"^": (string, string) => string = "#string_append"
+
 /* Character operations -- more in module Char */
 
 external int_of_char: char => int = "%identity"
@@ -202,66 +201,6 @@ external \":=": (ref<'a>, 'a) => unit = "%bs_ref_setfield0"
 external incr: ref<int> => unit = "%incr"
 external decr: ref<int> => unit = "%decr"
 
-/* String conversion functions */
-external format_float: (string, float) => string = "?format_float"
-
-let string_of_bool = b =>
-  if b {
-    "true"
-  } else {
-    "false"
-  }
-let bool_of_string = param =>
-  switch param {
-  | "true" => true
-  | "false" => false
-  | _ => invalid_arg("bool_of_string")
-  }
-
-let bool_of_string_opt = param =>
-  switch param {
-  | "true" => Some(true)
-  | "false" => Some(false)
-  | _ => None
-  }
-
-@val external string_of_int: int => string = "String"
-
-external int_of_string: string => int = "?int_of_string"
-
-let int_of_string_opt = s =>
-  /* TODO: provide this directly as a non-raising primitive. */
-  try Some(int_of_string(s)) catch {
-  | Failure(_) => None
-  }
-
-external string_get: (string, int) => char = "%string_safe_get"
-
-let valid_float_lexem = s => {
-  let l = string_length(s)
-  let rec loop = i =>
-    if i >= l {
-      s ++ "."
-    } else {
-      switch string_get(s, i) {
-      | '0' .. '9' | '-' => loop(i + 1)
-      | _ => s
-      }
-    }
-
-  loop(0)
-}
-
-let string_of_float = f => valid_float_lexem(format_float("%.12g", f))
-
-external float_of_string: string => float = "?float_of_string"
-
-let float_of_string_opt = s =>
-  /* TODO: provide this directly as a non-raising primitive. */
-  try Some(float_of_string(s)) catch {
-  | Failure(_) => None
-  }
-
 /* List operations -- more in module List */
 
 let rec \"@" = (l1, l2) =>
@@ -269,20 +208,6 @@ let rec \"@" = (l1, l2) =>
   | list{} => l2
   | list{hd, ...tl} => list{hd, ...\"@"(tl, l2)}
   }
-
-/* Output functions on standard output */
-
-@val @scope("console") external print_endline: string => unit = "log"
-let print_newline = () => print_endline("")
-
-/* Output functions on standard error */
-
-@val @scope("console") external prerr_endline: string => unit = "error"
-let prerr_newline = () => prerr_endline("")
-
-let print_int = (i: int) => print_endline(string_of_int(i))
-let print_float = (i: float) => print_endline(string_of_float(i))
-let print_string = print_endline
 
 /* Miscellaneous */
 

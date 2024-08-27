@@ -2,7 +2,7 @@
 'use strict';
 
 
-console.log(String(3));
+console.log(3);
 
 let b = 3;
 

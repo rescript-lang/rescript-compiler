@@ -18,12 +18,12 @@ include (
       let count = 1000000
       \"@@"(timing("building", ...), _ =>
         for i in 0 to count {
-          m := StringMap.add(string_of_int(i), string_of_int(i), m.contents)
+          m := StringMap.add(Js.Int.toString(i), Js.Int.toString(i), m.contents)
         }
       )
       \"@@"(timing("querying", ...), _ =>
         for i in 0 to count {
-          ignore(StringMap.find(string_of_int(i), m.contents))
+          ignore(StringMap.find(Js.Int.toString(i), m.contents))
         }
       )
     }

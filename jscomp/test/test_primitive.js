@@ -46,7 +46,7 @@ let a = Caml_string.get(xxx, 0);
 
 function u(b) {
   if (b) {
-    console.log(String(1));
+    console.log(1);
     return 32;
   } else {
     return 7;

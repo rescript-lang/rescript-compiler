@@ -163,12 +163,12 @@ function assertion_test() {
   };
   timing("building", () => {
     for (let i = 0; i <= 1000000; ++i) {
-      m.contents = add(String(i), String(i), m.contents);
+      m.contents = add(i.toString(), i.toString(), m.contents);
     }
   });
   timing("querying", () => {
     for (let i = 0; i <= 1000000; ++i) {
-      find(String(i), m.contents);
+      find(i.toString(), m.contents);
     }
   });
 }

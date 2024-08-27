@@ -123,30 +123,6 @@ external of_float: float => t = "?int_of_float"
 /** Convert the given 32-bit integer to a floating-point number. */
 external to_float: t => float = "?int_to_float"
 
-/** Convert the given string to a 32-bit integer.
-   The string is read in decimal (by default, or if the string 
-   begins with [0u]) or in hexadecimal, octal or binary if the
-   string begins with [0x], [0o] or [0b] respectively.
-
-   The [0u] prefix reads the input as an unsigned integer in the range
-   [[0, 2*Int32.max_int+1]].  If the input exceeds {!Int32.max_int}
-   it is converted to the signed integer
-   [Int32.min_int + input - Int32.max_int - 1].
-
-   The [_] (underscore) character can appear anywhere in the string
-   and is ignored.
-   Raise [Failure "Int32.of_string"] if the given string is not
-   a valid representation of an integer, or if the integer represented
-   exceeds the range of integers representable in type [t]. */
-external of_string: string => t = "?int_of_string"
-
-/** Same as [of_string], but return [None] instead of raising.
-    @since 4.05 */
-let of_string_opt: string => option<t>
-
-/** Return the string representation of its argument, in signed decimal. */
-let to_string: t => string
-
 /** Return the internal representation of the given float according
    to the IEEE 754 floating-point 'single format' bit layout.
    Bit 31 of the result represents the sign of the float;
@@ -168,9 +144,3 @@ let compare: (t, t) => int
 /** The equal function for int32s.
     @since 4.03.0 */
 let equal: (t, t) => bool
-
-/* {1 Deprecated functions} */
-
-/** Do not use this deprecated function.  Instead,
-   used {!Printf.sprintf} with a [%l...] format. */
-external format: (string, t) => string = "?format_int"

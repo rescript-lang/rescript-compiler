@@ -50,17 +50,6 @@ let min_int = 0x8000000000000000L
 let max_int = 0x7FFFFFFFFFFFFFFFL
 let lognot = n => logxor(n, -1L)
 
-external format: (string, int64) => string = "?int64_format"
-external to_string: int64 => string = "?int64_to_string"
-
-external of_string: string => int64 = "?int64_of_string"
-
-let of_string_opt = s =>
-  /* TODO: expose a non-raising primitive directly. */
-  try Some(of_string(s)) catch {
-  | Failure(_) => None
-  }
-
 external bits_of_float: float => int64 = "?int64_bits_of_float"
 
 external float_of_bits: int64 => float = "?int64_float_of_bits"

@@ -49,16 +49,5 @@ let min_int = 0x80000000l
 let max_int = 0x7FFFFFFFl
 let lognot = n => logxor(n, -1l)
 
-external format: (string, t) => string = "?format_int"
-let to_string = n => format("%d", n)
-
-external of_string: string => t = "?int_of_string"
-
-let of_string_opt = s =>
-  /* TODO: expose a non-raising primitive directly. */
-  try Some(of_string(s)) catch {
-  | Failure(_) => None
-  }
-
 let compare = (x: t, y: t) => Pervasives.compare(x, y)
 let equal = (x: t, y: t) => compare(x, y) == 0

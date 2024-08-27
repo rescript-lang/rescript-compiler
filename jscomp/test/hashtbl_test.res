@@ -12,10 +12,10 @@ let f = () => {
 let g = count => {
   let tbl = Hashtbl.create(17)
   for i in 0 to count {
-    replace(tbl, i * 2, string_of_int(i))
+    replace(tbl, i * 2, Js.Int.toString(i))
   }
   for i in 0 to count {
-    replace(tbl, i * 2, string_of_int(i))
+    replace(tbl, i * 2, Js.Int.toString(i))
   }
   let v = to_list(tbl)
   let v = \"@@"(List.sort(((x, _), (y: int, _)) => compare(x, y), ...), v)
@@ -30,7 +30,7 @@ let suites = {
       "more_iterations",
       _ => {
         let count = 1000
-        Eq(Array.init(count + 1, i => (2 * i, string_of_int(i))), g(count))
+        Eq(Array.init(count + 1, i => (2 * i, Js.Int.toString(i))), g(count))
       },
     ),
     (

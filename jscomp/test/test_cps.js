@@ -11,7 +11,7 @@ function f(_n, _acc) {
       return acc();
     }
     _acc = () => {
-      console.log(String(n));
+      console.log(n.toString());
       return acc();
     };
     _n = n - 1 | 0;

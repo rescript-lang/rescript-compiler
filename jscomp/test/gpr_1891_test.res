@@ -1,7 +1,7 @@
 let foo = x =>
   switch x {
-  | #Foo(3) => print_endline("1")
-  | _ => print_endline("2")
+  | #Foo(3) => Js.log("1")
+  | _ => Js.log("2")
   }
 
 let foo2 = x =>

@@ -200,4 +200,4 @@ let () = {
   assert(Q.to_list(q2) == list{5, 6, 7, 8, 1, 2, 3, 4})
 }
 
-let () = print_endline("OK")
+let () = Js.log("OK")

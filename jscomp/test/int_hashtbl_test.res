@@ -21,10 +21,10 @@ let f = (module(H: Hashtbl.S with type key = int)) => {
 let g = (module(H: S), count) => {
   let tbl = H.create(17)
   for i in 0 to count {
-    H.replace(tbl, i * 2, string_of_int(i))
+    H.replace(tbl, i * 2, Js.Int.toString(i))
   }
   for i in 0 to count {
-    H.replace(tbl, i * 2, string_of_int(i))
+    H.replace(tbl, i * 2, Js.Int.toString(i))
   }
   let v = H.fold((k, v, acc) => list{(k, v), ...acc}, tbl, list{})
   let v = \"@@"(List.sort(((x, _), (y: int, _)) => compare(x, y), ...), v)
@@ -45,7 +45,7 @@ let suites = {
       "more_iterations",
       _ => {
         let count = 1000
-        Eq(Array.init(count + 1, i => (2 * i, string_of_int(i))), g(module(Int_hash), count))
+        Eq(Array.init(count + 1, i => (2 * i, Js.Int.toString(i))), g(module(Int_hash), count))
       },
     ),
   }

@@ -36,8 +36,6 @@ let obj_runtime = "Caml_obj"
 
 let array = "Caml_array"
 
-let format = "Caml_format"
-
 let string = "Caml_string"
 
 let bytes = "Caml_bytes"

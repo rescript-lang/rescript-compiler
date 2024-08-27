@@ -6,7 +6,7 @@ let v = {
   contents: 0
 };
 
-while (console.log(String(v.contents)), v.contents = v.contents + 1 | 0, v.contents < 10) {
+while (console.log(v.contents.toString()), v.contents = v.contents + 1 | 0, v.contents < 10) {
   
 };
 
@@ -24,12 +24,12 @@ let x = {
 
 while ((() => {
     let y = 3;
-    console.log(String(x.contents));
+    console.log(x.contents.toString());
     y = y + 1 | 0;
     x.contents = x.contents + 1 | 0;
     return (fib(x.contents) + fib(x.contents) | 0) < 20;
   })()) {
-  console.log(String(3));
+  console.log((3).toString());
 };
 
 exports.v = v;

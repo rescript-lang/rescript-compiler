@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -30,7 +30,7 @@ function eq(loc, x, y) {
 let s = String_set.empty;
 
 for (let i = 0; i <= 99999; ++i) {
-  s = String_set.add(String(i), s);
+  s = String_set.add(i.toString(), s);
 }
 
 eq("File \"string_set_test.res\", line 15, characters 5-12", String_set.cardinal(s), 100000);

@@ -2,7 +2,6 @@
 'use strict';
 
 let Caml_array = require("../../lib/js/caml_array.js");
-let Pervasives = require("../../lib/js/pervasives.js");
 
 function map(f, a) {
   let f$1 = x => f(x);
@@ -49,7 +48,7 @@ function f2() {
   let arr = init(3000000, i => i);
   let b = map(i => i + i - 1, arr);
   let v = fold_left((prim0, prim1) => prim0 + prim1, 0, b);
-  console.log(Pervasives.string_of_float(v));
+  console.log("%f", v);
 }
 
 f2();

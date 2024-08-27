@@ -2116,11 +2116,11 @@ let int_map_suites_1 = {
         param => {
           let m = "Empty";
           for (let i = 0; i <= 10000; ++i) {
-            m = add$1(String(i), String(i), m);
+            m = add$1(i.toString(), i.toString(), m);
           }
           let v = -1;
           for (let i$1 = 0; i$1 <= 10000; ++i$1) {
-            if (find$1(String(i$1), m) !== String(i$1)) {
+            if (find$1(i$1.toString(), m) !== i$1.toString()) {
               v = i$1;
             }
             

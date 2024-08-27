@@ -12,13 +12,13 @@ let v2 = {
   v: 2
 };
 
-process.on("exit", exit_code => String(exit_code));
+process.on("exit", exit_code => exit_code.toString());
 
 process.on(1, param => {});
 
-process.on(i => String(i), "exit");
+process.on(i => i.toString(), "exit");
 
-process.on(i => String(i), 1);
+process.on(i => i.toString(), 1);
 
 xx(3, 3, "xxx", "a", "b");
 
@@ -39,7 +39,7 @@ function f(x) {
 }
 
 process.on("exit", exit_code => {
-  console.log("error code: " + String(exit_code));
+  console.log("error code: %d", exit_code);
 });
 
 function register(p) {

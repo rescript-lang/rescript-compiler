@@ -27,7 +27,7 @@ function foo(strings, values) {
   let res = "";
   let valueCount = values.length;
   for (let i = 0; i < valueCount; ++i) {
-    res = res + Caml_array.get(strings, i) + String(Math.imul(Caml_array.get(values, i), 10));
+    res = res + Caml_array.get(strings, i) + Math.imul(Caml_array.get(values, i), 10).toString();
   }
   return res + Caml_array.get(strings, valueCount);
 }

@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let Caml_array = require("../../lib/js/caml_array.js");
-let Pervasives = require("../../lib/js/pervasives.js");
 
 function map(f, a) {
   let f$1 = x => f(x);
@@ -50,7 +49,7 @@ function f2() {
   let arr = init(30000000, i => i);
   let b = map(i => i + i - 1, arr);
   let v = fold_left((prim0, prim1) => prim0 + prim1, 0, b);
-  console.log(Pervasives.string_of_float(v));
+  console.log(v.toString());
 }
 
 f2();
@@ -67,7 +66,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,

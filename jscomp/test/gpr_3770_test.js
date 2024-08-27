@@ -7,7 +7,7 @@ function show(x) {
   if (a === 0 && x._1 === 0 && x._2 === 0) {
     return "zeroes";
   }
-  return String(a) + String(x._1);
+  return a.toString() + x._1.toString();
 }
 
 exports.show = show;

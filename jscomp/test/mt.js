@@ -239,7 +239,7 @@ function eq_suites(test_id, suites, loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       param => ({
         TAG: "Eq",
         _0: x,
@@ -254,7 +254,7 @@ function bool_suites(test_id, suites, loc, x) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       param => ({
         TAG: "Ok",
         _0: x
@@ -268,7 +268,7 @@ function throw_suites(test_id, suites, loc, x) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       param => ({
         TAG: "ThrowAny",
         _0: x

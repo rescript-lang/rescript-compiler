@@ -51,6 +51,6 @@ let f = () => {
 let () = {
   f()
   Array.iter(x => x(), arr)
-  print_endline(string_of_int(v.contents))
+  v.contents->Js.Int.toString->Js.log
   assert(v.contents == 45)
 }

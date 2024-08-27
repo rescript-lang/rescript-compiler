@@ -225,36 +225,3 @@ let lsing = f => Some({count: 0, data: Slazy(Lazy.from_fun(() => Scons(f(), Semp
 
 let sempty = None
 let slazy = f => Some({count: 0, data: Slazy(Lazy.from_fun(() => data(f())))})
-
-/* For debugging use */
-
-let rec dump:
-  type v. (v => unit, t<v>) => unit =
-  (f, s) => {
-    print_string("{count = ")
-    print_int(count(s))
-    print_string("; data = ")
-    dump_data(f, data(s))
-    print_string("}")
-    print_newline()
-  }
-and dump_data:
-  type v. (v => unit, data<v>) => unit =
-  (f, param) =>
-    switch param {
-    | Sempty => print_string("Sempty")
-    | Scons(a, d) =>
-      print_string("Scons (")
-      f(a)
-      print_string(", ")
-      dump_data(f, d)
-      print_string(")")
-    | Sapp(d1, d2) =>
-      print_string("Sapp (")
-      dump_data(f, d1)
-      print_string(", ")
-      dump_data(f, d2)
-      print_string(")")
-    | Slazy(_) => print_string("Slazy")
-    | Sgen(_) => print_string("Sgen")
-    }

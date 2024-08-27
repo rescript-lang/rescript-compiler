@@ -53,7 +53,7 @@ let f = {
     let arr = init(10000000, i => float_of_int(i))
     let b = map(i => i +. i -. 1., arr)
     let v = fold_left(\"+.", 0., b)
-    print_endline(string_of_float(v))
+    v->Js.Float.toString->Js.log
   }
 }
 
@@ -61,7 +61,7 @@ let f2 = () => {
   let arr = init(30_000_000, i => float_of_int(i))
   let b = map(i => i +. i -. 1., arr)
   let v = fold_left(\"+.", 0., b)
-  print_endline(string_of_float(v))
+    v->Js.Float.toString->Js.log
 }
 
 /* let time label f = */
@@ -83,7 +83,7 @@ let test_id = ref(0)
 let eq = (loc, x, y) => {
   incr(test_id)
   suites :=
-    list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Mt.Eq(x, y)), ...suites.contents}
+    list{(loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => Mt.Eq(x, y)), ...suites.contents}
 }
 
 let v = ref(0)

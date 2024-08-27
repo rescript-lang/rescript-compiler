@@ -6,7 +6,7 @@ let v = 0;
 
 v = v + 1 | 0;
 
-console.log(String(v));
+console.log(v.toString());
 
 function unuse_v() {
   return 35;

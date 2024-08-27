@@ -10,7 +10,7 @@ module rec PA: {
 and P: {
   let print: int => unit
 } = {
-  let print = i => print_endline(string_of_int(i))
+  let print = i => Js.log2("%d", i)
 }
 
 let () = PA.print([1, 2])

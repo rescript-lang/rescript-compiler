@@ -1463,8 +1463,8 @@ function clear_canvas(canvas) {
 }
 
 function hud(canvas, score, coins) {
-  let score_string = String(score);
-  let coin_string = String(coins);
+  let score_string = score.toString();
+  let coin_string = coins.toString();
   let context = canvas.getContext("2d");
   context.font = "10px 'Press Start 2P'";
   context.fillText("Score: " + score_string, canvas.width - 140, 18);
@@ -1472,7 +1472,7 @@ function hud(canvas, score, coins) {
 }
 
 function fps(canvas, fps_val) {
-  let fps_str = String(fps_val | 0);
+  let fps_str = fps_val.toFixed();
   let context = canvas.getContext("2d");
   context.fillText(fps_str, 10, 18);
 }

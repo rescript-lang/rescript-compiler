@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let $$String = require("../../lib/js/string.js");
-let Filename = require("../../lib/js/filename.js");
 let Caml_string = require("../../lib/js/caml_string.js");
 
 function generic_basename(is_dir_sep, current_dir_name, name) {
@@ -38,7 +37,7 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
 }
 
 function basename(extra) {
-  return generic_basename((s, i) => Caml_string.get(s, i) === /* '/' */47, Filename.current_dir_name, extra);
+  return generic_basename((s, i) => Caml_string.get(s, i) === /* '/' */47, "", extra);
 }
 
 let suites_0 = [

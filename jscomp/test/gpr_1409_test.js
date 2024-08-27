@@ -18,7 +18,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -44,7 +44,7 @@ function map(f, x) {
 
 function make(foo, param) {
   let tmp = {};
-  let tmp$1 = map(prim => String(prim), foo);
+  let tmp$1 = map(prim => prim.toString(), foo);
   if (tmp$1 !== undefined) {
     tmp.foo = tmp$1;
   }

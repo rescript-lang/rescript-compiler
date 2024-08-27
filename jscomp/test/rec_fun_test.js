@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -43,7 +43,7 @@ function g() {
   Caml_obj.update_dummy(v, {
     contents: next
   });
-  console.log(String(next(0, true)));
+  console.log(next(0, true).toString());
 }
 
 g();

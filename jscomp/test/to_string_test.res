@@ -1,7 +1,7 @@
-let ff = v => string_of_float(v)
-let f = v => string_of_int(v)
+let ff = v => Js.Float.toString(v)
+let f = v => Js.Int.toString(v)
 
 Mt.from_pair_suites(
   __MODULE__,
-  list{(__LOC__, _ => Eq(ff(infinity), "inf")), (__LOC__, _ => Eq(ff(neg_infinity), "-inf"))},
+  list{(__LOC__, _ => Eq(ff(infinity), "Infinity")), (__LOC__, _ => Eq(ff(neg_infinity), "-Infinity"))},
 )

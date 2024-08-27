@@ -24,10 +24,10 @@ function f(H) {
 function g(H, count) {
   let tbl = H.create(17);
   for (let i = 0; i <= count; ++i) {
-    H.replace(tbl, (i << 1), String(i));
+    H.replace(tbl, (i << 1), i.toString());
   }
   for (let i$1 = 0; i$1 <= count; ++i$1) {
-    H.replace(tbl, (i$1 << 1), String(i$1));
+    H.replace(tbl, (i$1 << 1), i$1.toString());
   }
   let v = H.fold((k, v, acc) => ({
     hd: [
@@ -78,7 +78,7 @@ let suites_1 = {
       TAG: "Eq",
       _0: $$Array.init(1001, i => [
         (i << 1),
-        String(i)
+        i.toString()
       ]),
       _1: g(Int_hash, 1000)
     })

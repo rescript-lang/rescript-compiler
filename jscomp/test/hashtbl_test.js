@@ -29,10 +29,10 @@ function f() {
 function g(count) {
   let tbl = Hashtbl.create(undefined, 17);
   for (let i = 0; i <= count; ++i) {
-    Hashtbl.replace(tbl, (i << 1), String(i));
+    Hashtbl.replace(tbl, (i << 1), i.toString());
   }
   for (let i$1 = 0; i$1 <= count; ++i$1) {
-    Hashtbl.replace(tbl, (i$1 << 1), String(i$1));
+    Hashtbl.replace(tbl, (i$1 << 1), i$1.toString());
   }
   let v = to_list(tbl);
   return $$Array.of_list(List.sort((param, param$1) => Caml.int_compare(param[0], param$1[0]), v));
@@ -66,7 +66,7 @@ let suites_1 = {
       TAG: "Eq",
       _0: $$Array.init(1001, i => [
         (i << 1),
-        String(i)
+        i.toString()
       ]),
       _1: g(1000)
     })

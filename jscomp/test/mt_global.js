@@ -6,7 +6,7 @@ function collect_eq(test_id, suites, loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       param => ({
         TAG: "Eq",
         _0: x,
@@ -21,7 +21,7 @@ function collect_neq(test_id, suites, loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       param => ({
         TAG: "Neq",
         _0: x,
@@ -36,7 +36,7 @@ function collect_approx(test_id, suites, loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       param => ({
         TAG: "Approx",
         _0: x,

@@ -3,7 +3,7 @@ let test_id = ref(0)
 let eq = (loc, x, y) => {
   incr(test_id)
   suites :=
-    list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Mt.Eq(x, y)), ...suites.contents}
+    list{(loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => Mt.Eq(x, y)), ...suites.contents}
 }
 
 /* type t */
@@ -18,7 +18,7 @@ let map = (f, x) =>
   | Some(x) => Some(f(x))
   }
 
-let make = (~foo: option<int>=?, ()) => make(~foo=?map(string_of_int, foo), ())
+let make = (~foo: option<int>=?, ()) => make(~foo=?map(Js.Int.toString, foo), ())
 
 let a_ = make()
 let b_ = make(~foo=42, ())

@@ -45,7 +45,7 @@ let f2 = () => {
   let arr = init(3_000_000, i => float_of_int(i))
   let b = map(i => i +. i -. 1., arr)
   let v = fold_left(\"+.", 0., b)
-  print_endline(string_of_float(v))
+  Js.log2("%f", v)
 }
 
 f2()

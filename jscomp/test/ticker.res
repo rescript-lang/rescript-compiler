@@ -28,7 +28,7 @@ module Util = {
 
   let string_of_float_option = x =>
     switch x {
-    | Some(x) => string_of_float(x)
+    | Some(x) => Js.Float.toString(x)
     | None => "nan"
     }
 }
@@ -76,8 +76,8 @@ let print_all_composite = all_tickers => List.iter(x =>
     | {type_: Market, _} => ()
     | {type_: Binary_op(_), ticker_name, value} =>
       switch value {
-      | Some(v) => print_endline(ticker_name)
-      | None => print_endline(ticker_name)
+      | Some(v) => Js.log(ticker_name)
+      | None => Js.log(ticker_name)
       }
     }
   , all_tickers)
@@ -222,7 +222,7 @@ let process_input_line = (ticker_map, all_tickers, line) => {
     | Some(ticker_map) => ticker_map
     | None => compute_update_sequences(all_tickers)
     }
-    let value = float_of_string(value)
+    let value = value->Belt.Float.fromString->Belt.Option.getExn
     process_quote(ticker_map, ticker_name, value)
     (all_tickers, Some(ticker_map))
   | _ => failwith("Invalid input line")

@@ -72,21 +72,9 @@ let List$1 = {
   epsilon_float: Pervasives.epsilon_float,
   classify_float: Pervasives.classify_float,
   char_of_int: Pervasives.char_of_int,
-  string_of_bool: Pervasives.string_of_bool,
-  bool_of_string: Pervasives.bool_of_string,
-  bool_of_string_opt: Pervasives.bool_of_string_opt,
-  int_of_string_opt: Pervasives.int_of_string_opt,
-  string_of_float: Pervasives.string_of_float,
-  float_of_string_opt: Pervasives.float_of_string_opt,
   $at: Pervasives.$at,
-  print_string: Pervasives.print_string,
-  print_int: Pervasives.print_int,
-  print_float: Pervasives.print_float,
-  print_newline: Pervasives.print_newline,
-  prerr_newline: Pervasives.prerr_newline,
   exit: Pervasives.exit,
-  at_exit: Pervasives.at_exit,
-  valid_float_lexem: Pervasives.valid_float_lexem
+  at_exit: Pervasives.at_exit
 };
 
 let U = {
@@ -115,21 +103,9 @@ let U = {
   epsilon_float: Pervasives.epsilon_float,
   classify_float: Pervasives.classify_float,
   char_of_int: Pervasives.char_of_int,
-  string_of_bool: Pervasives.string_of_bool,
-  bool_of_string: Pervasives.bool_of_string,
-  bool_of_string_opt: Pervasives.bool_of_string_opt,
-  int_of_string_opt: Pervasives.int_of_string_opt,
-  string_of_float: Pervasives.string_of_float,
-  float_of_string_opt: Pervasives.float_of_string_opt,
   $at: Pervasives.$at,
-  print_string: Pervasives.print_string,
-  print_int: Pervasives.print_int,
-  print_float: Pervasives.print_float,
-  print_newline: Pervasives.print_newline,
-  prerr_newline: Pervasives.prerr_newline,
   exit: Pervasives.exit,
-  at_exit: Pervasives.at_exit,
-  valid_float_lexem: Pervasives.valid_float_lexem
+  at_exit: Pervasives.at_exit
 };
 
 let f = Pervasives.$at;

@@ -13,7 +13,7 @@ let counter = {
 
 function add_test(loc, test) {
   counter.contents = counter.contents + 1 | 0;
-  let id = loc + (" id " + String(counter.contents));
+  let id = loc + (" id " + counter.contents.toString());
   suites.contents = {
     hd: [
       id,

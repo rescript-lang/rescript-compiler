@@ -7,7 +7,7 @@ let rec odd = z => {
     let even = even * even
     even + 4 + even
   }
-  print_endline(string_of_int(a))
+  a->Js.Int.toString->Js.log
   even(32)
 }
 and even = y => odd(y)

@@ -1523,7 +1523,7 @@ Nodetest.describe("Belt.List", () => {
           tl: /* [] */0
         }
       }
-    }, "2", (x, s) => String(x) === s), true);
+    }, "2", (x, s) => x.toString() === s), true);
     Node_test_util.eq("File \"belt_list_ntest.res\", line 272, characters 7-14", Belt_List.has({
       hd: 1,
       tl: {
@@ -1533,7 +1533,7 @@ Nodetest.describe("Belt.List", () => {
           tl: /* [] */0
         }
       }
-    }, "0", (x, s) => String(x) === s), false);
+    }, "0", (x, s) => x.toString() === s), false);
     Node_test_util.ok("File \"belt_list_ntest.res\", line 274, characters 7-14", Belt_List.reduceReverse({
       hd: 1,
       tl: {
