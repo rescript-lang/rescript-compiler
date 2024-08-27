@@ -5,12 +5,12 @@
     "dockerfile": "Dockerfile"
   },
   "features": {
-    "ghcr.io/devcontainers/features/github-cli:1":{
+    "ghcr.io/devcontainers/features/github-cli:1": {
       "installDirectlyFromGitHubRelease": true,
       "version": "latest"
     },
     "ghcr.io/devcontainers/features/node:1": {
-      "version":"20"
+      "version": "20"
     }
   },
   "customizations": {
