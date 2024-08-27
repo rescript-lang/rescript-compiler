@@ -219,7 +219,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
          also now we need do nullary check
       *)
       match args with [ e ] -> E.tag e | _ -> assert false)
-  | "?md5_string" -> call Js_runtime_modules.md5
   | "?hash_mix_string" | "?hash_mix_int" | "?hash_final_mix" ->
       call Js_runtime_modules.hash_primitive
   | "?hash" -> call Js_runtime_modules.hash
