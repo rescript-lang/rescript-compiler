@@ -2184,6 +2184,8 @@ let report_error ppf = function
       ^ other_variant_text
       ^ ". Both variants must have the same @tag attribute configuration, or no \
         @tag attribute at all")
+  | Variant_spread_fail Variant_type_spread.InvalidType ->
+    fprintf ppf "@[This type is not a valid type to spread. It's only possible to spread other variants.@]"
   | Variant_spread_fail Variant_type_spread.CouldNotFindType ->
     fprintf ppf "@[This type could not be found. It's only possible to spread variants that are known as the spread happens. This means for example that you can't spread variants in recursive definitions.@]"
   | Variant_spread_fail Variant_type_spread.HasTypeParams ->
