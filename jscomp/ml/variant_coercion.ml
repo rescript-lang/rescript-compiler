@@ -151,3 +151,55 @@ let variant_configuration_can_be_coerced_raises ~is_spread_context ~left_loc
               right_loc;
               error = TagName {left_tag; right_tag};
             }))
+
+let can_coerce_polyvariant_to_variant ~row_fields ~variant_constructors ~type_attributes
+    =
+  let polyvariant_runtime_representations =
+    row_fields
+    |> List.filter_map (fun (label, (field : Types.row_field)) ->
+            (* Check that there's no payload in the polyvariant *)
+            match field with
+            | Rpresent None -> Some label
+            | _ -> None)
+  in
+  if List.length polyvariant_runtime_representations <> List.length row_fields
+  then
+    (* Error: At least one polyvariant constructor has a payload. Cannot have payloads. *)
+    Error `PolyvariantConstructorHasPayload
+  else
+    let is_unboxed = Ast_untagged_variants.has_untagged type_attributes in
+    if
+      List.for_all
+        (fun polyvariant_value ->
+          variant_constructors
+          |> List.exists (fun (c : Types.constructor_declaration) ->
+                  let constructor_name = Ident.name c.cd_id in
+                  match
+                    Ast_untagged_variants.process_tag_type c.cd_attributes
+                  with
+                  | Some (String as_runtime_string) ->
+                    (* `@as("")`, does the configured string match the polyvariant value? *)
+                    as_runtime_string = polyvariant_value
+                  | Some _ ->
+                    (* Any other `@as` can't match since it's by definition not a string *)
+                    false
+                  | None ->
+                    (* No `@as` means the runtime representation will be the constructor 
+                      name as a string.
+                      
+                      However, there's a special case with unboxed types where there's a 
+                      string catch-all case. In that case, any polyvariant will match,
+                      since the catch-all case will match any string. *)
+                    (match is_unboxed, c.cd_args with 
+                    | true, Cstr_tuple [{desc=Tconstr (p, _, _)}] -> 
+                      Path.same p Predef.path_string 
+                    | _ -> polyvariant_value = constructor_name)
+                  ))
+        polyvariant_runtime_representations
+    then Ok ()
+    else Error `Unknown
+
+let type_is_variant (typ: (Path.t * Path.t * Types.type_declaration) option) = 
+  match typ with 
+  | Some (_, _, {type_kind = Type_variant _; _}) -> true 
+  | _ -> false

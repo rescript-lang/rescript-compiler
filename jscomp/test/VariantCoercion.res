@@ -92,3 +92,31 @@ module CoerceFromBigintToVariant = {
   let c = 120n
   let cc: mixed = (c :> mixed)
 }
+
+module CoerceFromPolyvariantToVariant = {
+  type simple = [#One | #Two]
+  type simpleP = One | Two
+
+  let simple: simple = #One
+  let simpleP = (simple :> simpleP)
+
+  type withAs = [#One | #two]
+  type withAsP = One | @as("two") Two
+
+  let withAs: withAs = #One
+  let withAsP = (withAs :> withAsP)
+
+  type withMoreVariantConstructors = [#One | #two]
+  type withMoreVariantConstructorsP = One | @as("two") Two | Three
+
+  let withMoreVariantConstructors: withMoreVariantConstructors = #One
+  let withMoreVariantConstructorsP = (withMoreVariantConstructors :> withMoreVariantConstructorsP)
+
+  type withUnboxedCatchAll = [#One | #someOtherThing]
+
+  @unboxed
+  type withUnboxedCatchAllP = One | @as("two") Two | Three | Other(string)
+
+  let withUnboxedCatchAll: withUnboxedCatchAll = #One
+  let withUnboxedCatchAllP = (withUnboxedCatchAll :> withUnboxedCatchAllP)
+}

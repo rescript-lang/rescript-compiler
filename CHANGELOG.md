@@ -12,6 +12,10 @@
 
 # 12.0.0-alpha.2 (Unreleased)
 
+#### :rocket: New Feature
+
+- Allow coercing polyvariants to variants when we can guarantee that the runtime representation matches. https://github.com/rescript-lang/rescript-compiler/pull/6981
+
 #### :nail_care: Polish
 
 - Improve formatting in the generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6932
