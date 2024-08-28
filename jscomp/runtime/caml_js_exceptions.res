@@ -24,16 +24,6 @@
 
 exception Error = JsError
 
-let internalAnyToExn = (any: 'a): exn =>
-  if Obj.magic(any) && Js.typeof(Obj.magic(any)["RE_EXN_ID"]) === "string" {
-    any->Obj.magic
-  } else {
-    {
-      "RE_EXN_ID": "JsError",
-      "_1": any,
-    }->Obj.magic
-  }
-
 %%raw(`class RescriptError extends Error {
   constructor(message) {
     super(message);
@@ -49,6 +39,15 @@ let internalMakeExn = internalMakeExn
 let internalFromExtension = (_ext: 'a): exn => {
   %raw(`Object.assign(new RescriptError(_ext.RE_EXN_ID), _ext)`)
 }
+
+let internalAnyToExn = (any: 'a): exn =>
+  if Obj.magic(any) && Js.typeof(Obj.magic(any)["RE_EXN_ID"]) === "string" {
+    any->Obj.magic
+  } else {
+    let exn = internalMakeExn("JsError")
+    Obj.magic(exn)["_1"] = any
+    exn
+  }
 
 let as_js_exn = exn =>
   switch exn {
