@@ -51,12 +51,9 @@ type error =
   | Misplaced_label_syntax
   | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
-  | Bs_uncurried_arity_too_large
 
 val err : Location.t -> error -> 'a
 
 val optional_err : Location.t -> Asttypes.arg_label -> unit
 
 val err_if_label : Location.t -> Asttypes.arg_label -> unit
-
-val err_large_arity : Location.t -> int -> unit
