@@ -22,23 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val to_uncurry_fn :
-  Parsetree.expression ->
-  Bs_ast_mapper.mapper ->
-  Asttypes.arg_label ->
-  Parsetree.pattern ->
-  Parsetree.expression ->
-  bool ->
-  (* async *)
-  Parsetree.expression
-(** 
-    [function] can only take one argument, that is the reason we did not adopt it
-    syntax:
-   {[ fun [@bs] pat pat1-> body ]}
-    [to_uncurry_fn (fun pat -> (fun pat1 -> ...  body))]
-
-*)
-
 val to_method_callback :
   Location.t ->
   Bs_ast_mapper.mapper ->
