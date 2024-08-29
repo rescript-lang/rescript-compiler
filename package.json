@@ -39,7 +39,7 @@
     "bsc": "bsc",
     "bstracing": "lib/bstracing",
     "rescript": "rescript",
-    "rewatch": "scripts/rewatch"
+    "rewatch": "cli/rewatch"
   },
   "scripts": {
     "postinstall": "node cli/rescript_postinstall.js",
