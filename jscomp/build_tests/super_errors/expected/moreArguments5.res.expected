@@ -7,5 +7,5 @@
   [1;31m5[0m [2m│[0m let y = [1;31mx[0m(2).Sub.a
   6 [2m│[0m 
 
-  This uncurried function has type (int, 'a, 'b, 'c) => Sub.a
+  This function has type (int, 'a, 'b, 'c) => Sub.a
   It is applied with [1;31m1[0m arguments but it requires [1;33m4[0m.
