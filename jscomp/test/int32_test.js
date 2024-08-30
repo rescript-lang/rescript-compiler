@@ -199,9 +199,9 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"int32_test.res\", line 170, characters 5-12", Caml_float.int_bits_of_float(0.3), 1050253722);
+eq("File \"int32_test.res\", line 176, characters 5-12", Caml_float.int_bits_of_float(0.3), 1050253722);
 
-eq("File \"int32_test.res\", line 171, characters 5-12", Caml_float.int_float_of_bits(1050253722), 0.300000011920928955);
+eq("File \"int32_test.res\", line 177, characters 5-12", Caml_float.int_float_of_bits(1050253722), 0.300000011920928955);
 
 Mt.from_pair_suites("Int32_test", suites.contents);
 

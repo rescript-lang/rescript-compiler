@@ -123,15 +123,15 @@ let c = g(0)(3, 4);
 
 let d = g(0)(3, 5);
 
-eq("File \"earger_curry_test.res\", line 141, characters 5-12", a, 10);
+eq("File \"earger_curry_test.res\", line 142, characters 5-12", a, 10);
 
-eq("File \"earger_curry_test.res\", line 142, characters 5-12", b, 11);
+eq("File \"earger_curry_test.res\", line 143, characters 5-12", b, 11);
 
-eq("File \"earger_curry_test.res\", line 143, characters 5-12", c, 10);
+eq("File \"earger_curry_test.res\", line 144, characters 5-12", c, 10);
 
-eq("File \"earger_curry_test.res\", line 144, characters 5-12", d, 11);
+eq("File \"earger_curry_test.res\", line 145, characters 5-12", d, 11);
 
-eq("File \"earger_curry_test.res\", line 145, characters 5-12", all_v.contents, {
+eq("File \"earger_curry_test.res\", line 146, characters 5-12", all_v.contents, {
   hd: 8,
   tl: {
     hd: 6,

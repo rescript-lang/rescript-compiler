@@ -86,7 +86,7 @@ let c = [
 
 console.log(a, c);
 
-eq("File \"record_debug_test.res\", line 58, characters 3-10", [
+eq("File \"record_debug_test.res\", line 56, characters 3-10", [
   "",
   "a"
 ], [

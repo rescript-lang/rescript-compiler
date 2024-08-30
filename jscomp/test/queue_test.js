@@ -75,7 +75,7 @@ let T2 = {
 };
 
 let suites_0 = [
-  "File \"queue_test.res\", line 34, characters 6-13",
+  "File \"queue_test.res\", line 33, characters 6-13",
   param => {
     let x = [
       3,
@@ -93,7 +93,7 @@ let suites_0 = [
 
 let suites_1 = {
   hd: [
-    "File \"queue_test.res\", line 41, characters 6-13",
+    "File \"queue_test.res\", line 40, characters 6-13",
     param => {
       let x = [
         3,

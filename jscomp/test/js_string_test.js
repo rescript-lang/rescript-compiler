@@ -554,7 +554,7 @@ let suites_1 = {
                                                                                                           ],
                                                                                                           tl: {
                                                                                                             hd: [
-                                                                                                              "File \"js_string_test.res\", line 138, characters 5-12",
+                                                                                                              "File \"js_string_test.res\", line 135, characters 5-12",
                                                                                                               param => ({
                                                                                                                 TAG: "Ok",
                                                                                                                 _0: "ab".includes("a")

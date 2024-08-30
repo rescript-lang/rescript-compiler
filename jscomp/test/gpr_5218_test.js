@@ -25,7 +25,7 @@ function test(x) {
   }
 }
 
-Mt.eq_suites(test_id, suites, "File \"gpr_5218_test.res\", line 11, characters 27-34", test({
+Mt.eq_suites(test_id, suites, "File \"gpr_5218_test.res\", line 11, characters 29-36", test({
   NAME: 1,
   VAL: 3
 }), {
@@ -33,7 +33,7 @@ Mt.eq_suites(test_id, suites, "File \"gpr_5218_test.res\", line 11, characters 2
   VAL: 3
 });
 
-Mt.eq_suites(test_id, suites, "File \"gpr_5218_test.res\", line 13, characters 27-34", test({
+Mt.eq_suites(test_id, suites, "File \"gpr_5218_test.res\", line 13, characters 29-36", test({
   NAME: 2,
   VAL: 3
 }), {

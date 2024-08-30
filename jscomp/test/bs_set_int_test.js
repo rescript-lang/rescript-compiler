@@ -66,7 +66,7 @@ let v = Belt_SetInt.fromArray($$Array.append(range(100, 1000), revRange(400, 150
 
 let i = range(100, 1500);
 
-b("File \"bs_set_int_test.res\", line 37, characters 4-11", Belt_SetInt.eq(Belt_SetInt.fromArray(i), v));
+b("File \"bs_set_int_test.res\", line 36, characters 4-11", Belt_SetInt.eq(Belt_SetInt.fromArray(i), v));
 
 let match = Belt_SetInt.partition(v, x => x % 3 === 0);
 
@@ -86,45 +86,45 @@ let nl = l;
 
 let nr = r;
 
-b("File \"bs_set_int_test.res\", line 50, characters 4-11", Belt_SetInt.eq(match[0], nl));
+b("File \"bs_set_int_test.res\", line 49, characters 4-11", Belt_SetInt.eq(match[0], nl));
 
-b("File \"bs_set_int_test.res\", line 51, characters 4-11", Belt_SetInt.eq(match[1], nr));
+b("File \"bs_set_int_test.res\", line 50, characters 4-11", Belt_SetInt.eq(match[1], nr));
 
 let i$2 = range(50, 100);
 
 let s = Belt_SetInt.intersect(Belt_SetInt.fromArray(range(1, 100)), Belt_SetInt.fromArray(range(50, 200)));
 
-b("File \"bs_set_int_test.res\", line 55, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$2), s));
+b("File \"bs_set_int_test.res\", line 54, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$2), s));
 
 let i$3 = range(1, 200);
 
 let s$1 = Belt_SetInt.union(Belt_SetInt.fromArray(range(1, 100)), Belt_SetInt.fromArray(range(50, 200)));
 
-b("File \"bs_set_int_test.res\", line 66, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$3), s$1));
+b("File \"bs_set_int_test.res\", line 65, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$3), s$1));
 
 let i$4 = range(1, 49);
 
 let s$2 = Belt_SetInt.diff(Belt_SetInt.fromArray(range(1, 100)), Belt_SetInt.fromArray(range(50, 200)));
 
-b("File \"bs_set_int_test.res\", line 77, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$4), s$2));
+b("File \"bs_set_int_test.res\", line 76, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$4), s$2));
 
 let i$5 = revRange(50, 100);
 
 let s$3 = Belt_SetInt.intersect(Belt_SetInt.fromArray(revRange(1, 100)), Belt_SetInt.fromArray(revRange(50, 200)));
 
-b("File \"bs_set_int_test.res\", line 88, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$5), s$3));
+b("File \"bs_set_int_test.res\", line 87, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$5), s$3));
 
 let i$6 = revRange(1, 200);
 
 let s$4 = Belt_SetInt.union(Belt_SetInt.fromArray(revRange(1, 100)), Belt_SetInt.fromArray(revRange(50, 200)));
 
-b("File \"bs_set_int_test.res\", line 99, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$6), s$4));
+b("File \"bs_set_int_test.res\", line 98, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$6), s$4));
 
 let i$7 = revRange(1, 49);
 
 let s$5 = Belt_SetInt.diff(Belt_SetInt.fromArray(revRange(1, 100)), Belt_SetInt.fromArray(revRange(50, 200)));
 
-b("File \"bs_set_int_test.res\", line 110, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$7), s$5));
+b("File \"bs_set_int_test.res\", line 109, characters 2-9", Belt_SetInt.eq(Belt_SetInt.fromArray(i$7), s$5));
 
 let ss = [
   1,
@@ -156,11 +156,11 @@ function approx(loc, x, y) {
   b(loc, x === y);
 }
 
-eq("File \"bs_set_int_test.res\", line 125, characters 5-12", Belt_SetInt.reduce(v$1, 0, (x, y) => x + y | 0), Belt_Array.reduce(ss, 0, (prim0, prim1) => prim0 + prim1 | 0));
+eq("File \"bs_set_int_test.res\", line 124, characters 5-12", Belt_SetInt.reduce(v$1, 0, (x, y) => x + y | 0), Belt_Array.reduce(ss, 0, (prim0, prim1) => prim0 + prim1 | 0));
 
-approx("File \"bs_set_int_test.res\", line 126, characters 9-16", -1, minv);
+approx("File \"bs_set_int_test.res\", line 125, characters 9-16", -1, minv);
 
-approx("File \"bs_set_int_test.res\", line 127, characters 9-16", 222, maxv);
+approx("File \"bs_set_int_test.res\", line 126, characters 9-16", 222, maxv);
 
 let v$2 = Belt_SetInt.remove(v$1, 3);
 
@@ -168,9 +168,9 @@ let minv$1 = Belt_SetInt.minimum(v$2);
 
 let maxv$1 = Belt_SetInt.maximum(v$2);
 
-eq("File \"bs_set_int_test.res\", line 130, characters 5-12", minv$1, -1);
+eq("File \"bs_set_int_test.res\", line 129, characters 5-12", minv$1, -1);
 
-eq("File \"bs_set_int_test.res\", line 131, characters 5-12", maxv$1, 222);
+eq("File \"bs_set_int_test.res\", line 130, characters 5-12", maxv$1, 222);
 
 let v$3 = Belt_SetInt.remove(v$2, 222);
 
@@ -178,9 +178,9 @@ let minv$2 = Belt_SetInt.minimum(v$3);
 
 let maxv$2 = Belt_SetInt.maximum(v$3);
 
-eq("File \"bs_set_int_test.res\", line 134, characters 5-12", minv$2, -1);
+eq("File \"bs_set_int_test.res\", line 133, characters 5-12", minv$2, -1);
 
-eq("File \"bs_set_int_test.res\", line 135, characters 5-12", maxv$2, 33);
+eq("File \"bs_set_int_test.res\", line 134, characters 5-12", maxv$2, 33);
 
 let v$4 = Belt_SetInt.remove(v$3, -1);
 
@@ -188,9 +188,9 @@ let minv$3 = Belt_SetInt.minimum(v$4);
 
 let maxv$3 = Belt_SetInt.maximum(v$4);
 
-eq("File \"bs_set_int_test.res\", line 138, characters 5-12", minv$3, 0);
+eq("File \"bs_set_int_test.res\", line 137, characters 5-12", minv$3, 0);
 
-eq("File \"bs_set_int_test.res\", line 139, characters 5-12", maxv$3, 33);
+eq("File \"bs_set_int_test.res\", line 138, characters 5-12", maxv$3, 33);
 
 let v$5 = Belt_SetInt.remove(v$4, 0);
 
@@ -204,7 +204,7 @@ let v$9 = Belt_SetInt.remove(v$8, 4);
 
 let v$10 = Belt_SetInt.remove(v$9, 1);
 
-b("File \"bs_set_int_test.res\", line 146, characters 4-11", Belt_SetInt.isEmpty(v$10));
+b("File \"bs_set_int_test.res\", line 145, characters 4-11", Belt_SetInt.isEmpty(v$10));
 
 let v$11 = Belt_Array.makeByAndShuffle(1000000, i => i);
 
@@ -218,7 +218,7 @@ let xx = Belt_Array.reduce(firstHalf, u$1, Belt_SetInt.remove);
 
 Belt_SetInt.checkInvariantInternal(u$1);
 
-b("File \"bs_set_int_test.res\", line 158, characters 4-11", Belt_SetInt.eq(Belt_SetInt.union(Belt_SetInt.fromArray(firstHalf), xx), u$1));
+b("File \"bs_set_int_test.res\", line 157, characters 4-11", Belt_SetInt.eq(Belt_SetInt.union(Belt_SetInt.fromArray(firstHalf), xx), u$1));
 
 let aa = Belt_SetInt.fromArray(Array_data_util.randomRange(0, 100));
 
@@ -228,17 +228,17 @@ let cc = Belt_SetInt.fromArray(Array_data_util.randomRange(120, 200));
 
 let dd = Belt_SetInt.union(aa, cc);
 
-b("File \"bs_set_int_test.res\", line 171, characters 4-11", Belt_SetInt.subset(aa, bb));
+b("File \"bs_set_int_test.res\", line 170, characters 4-11", Belt_SetInt.subset(aa, bb));
 
-b("File \"bs_set_int_test.res\", line 172, characters 4-11", Belt_SetInt.subset(dd, bb));
+b("File \"bs_set_int_test.res\", line 171, characters 4-11", Belt_SetInt.subset(dd, bb));
 
-b("File \"bs_set_int_test.res\", line 173, characters 4-11", Belt_SetInt.subset(Belt_SetInt.add(dd, 200), bb));
+b("File \"bs_set_int_test.res\", line 172, characters 4-11", Belt_SetInt.subset(Belt_SetInt.add(dd, 200), bb));
 
-b("File \"bs_set_int_test.res\", line 174, characters 4-11", Belt_SetInt.add(dd, 200) === dd);
+b("File \"bs_set_int_test.res\", line 173, characters 4-11", Belt_SetInt.add(dd, 200) === dd);
 
-b("File \"bs_set_int_test.res\", line 175, characters 4-11", Belt_SetInt.add(dd, 0) === dd);
+b("File \"bs_set_int_test.res\", line 174, characters 4-11", Belt_SetInt.add(dd, 0) === dd);
 
-b("File \"bs_set_int_test.res\", line 176, characters 4-11", !Belt_SetInt.subset(Belt_SetInt.add(dd, 201), bb));
+b("File \"bs_set_int_test.res\", line 175, characters 4-11", !Belt_SetInt.subset(Belt_SetInt.add(dd, 201), bb));
 
 let aa$1 = Belt_SetInt.fromArray(Array_data_util.randomRange(0, 100));
 
@@ -250,13 +250,13 @@ let dd$1 = Belt_SetInt.remove(bb$1, 99);
 
 let ee = Belt_SetInt.add(dd$1, 101);
 
-b("File \"bs_set_int_test.res\", line 185, characters 4-11", Belt_SetInt.eq(aa$1, bb$1));
+b("File \"bs_set_int_test.res\", line 184, characters 4-11", Belt_SetInt.eq(aa$1, bb$1));
 
-b("File \"bs_set_int_test.res\", line 186, characters 4-11", !Belt_SetInt.eq(aa$1, cc$1));
+b("File \"bs_set_int_test.res\", line 185, characters 4-11", !Belt_SetInt.eq(aa$1, cc$1));
 
-b("File \"bs_set_int_test.res\", line 187, characters 4-11", !Belt_SetInt.eq(dd$1, cc$1));
+b("File \"bs_set_int_test.res\", line 186, characters 4-11", !Belt_SetInt.eq(dd$1, cc$1));
 
-b("File \"bs_set_int_test.res\", line 188, characters 4-11", !Belt_SetInt.eq(bb$1, ee));
+b("File \"bs_set_int_test.res\", line 187, characters 4-11", !Belt_SetInt.eq(bb$1, ee));
 
 let a1 = Belt_SetInt.mergeMany(undefined, Array_data_util.randomRange(0, 100));
 
@@ -272,17 +272,17 @@ let a5 = match$2[1];
 
 let a4 = match$2[0];
 
-b("File \"bs_set_int_test.res\", line 197, characters 4-11", Belt_SetInt.eq(a1, Belt_SetInt.fromArray(Array_data_util.randomRange(0, 100))));
+b("File \"bs_set_int_test.res\", line 196, characters 4-11", Belt_SetInt.eq(a1, Belt_SetInt.fromArray(Array_data_util.randomRange(0, 100))));
 
-b("File \"bs_set_int_test.res\", line 198, characters 4-11", Belt_SetInt.eq(a2, a3));
+b("File \"bs_set_int_test.res\", line 197, characters 4-11", Belt_SetInt.eq(a2, a3));
 
-b("File \"bs_set_int_test.res\", line 199, characters 4-11", match$1[1]);
+b("File \"bs_set_int_test.res\", line 198, characters 4-11", match$1[1]);
 
-b("File \"bs_set_int_test.res\", line 200, characters 4-11", Belt_SetInt.eq(a3, a4));
+b("File \"bs_set_int_test.res\", line 199, characters 4-11", Belt_SetInt.eq(a3, a4));
 
 let a6 = Belt_SetInt.remove(Belt_SetInt.removeMany(a1, Array_data_util.randomRange(0, 39)), 40);
 
-b("File \"bs_set_int_test.res\", line 202, characters 4-11", Belt_SetInt.eq(a5, a6));
+b("File \"bs_set_int_test.res\", line 201, characters 4-11", Belt_SetInt.eq(a5, a6));
 
 let a7 = Belt_SetInt.remove(a1, 40);
 
@@ -292,29 +292,29 @@ let match$4 = match$3[0];
 
 let a9 = match$4[1];
 
-b("File \"bs_set_int_test.res\", line 205, characters 4-11", !match$3[1]);
+b("File \"bs_set_int_test.res\", line 204, characters 4-11", !match$3[1]);
 
-b("File \"bs_set_int_test.res\", line 206, characters 4-11", Belt_SetInt.eq(a4, match$4[0]));
+b("File \"bs_set_int_test.res\", line 205, characters 4-11", Belt_SetInt.eq(a4, match$4[0]));
 
-b("File \"bs_set_int_test.res\", line 207, characters 4-11", Belt_SetInt.eq(a5, a9));
+b("File \"bs_set_int_test.res\", line 206, characters 4-11", Belt_SetInt.eq(a5, a9));
 
 let a10 = Belt_SetInt.removeMany(a9, Array_data_util.randomRange(42, 2000));
 
-eq("File \"bs_set_int_test.res\", line 209, characters 5-12", Belt_SetInt.size(a10), 1);
+eq("File \"bs_set_int_test.res\", line 208, characters 5-12", Belt_SetInt.size(a10), 1);
 
 let a11 = Belt_SetInt.removeMany(a9, Array_data_util.randomRange(0, 2000));
 
-b("File \"bs_set_int_test.res\", line 211, characters 4-11", Belt_SetInt.isEmpty(a11));
+b("File \"bs_set_int_test.res\", line 210, characters 4-11", Belt_SetInt.isEmpty(a11));
 
 let match$5 = Belt_SetInt.split(undefined, 0);
 
 let match$6 = match$5[0];
 
-b("File \"bs_set_int_test.res\", line 216, characters 4-11", Belt_SetInt.isEmpty(match$6[0]));
+b("File \"bs_set_int_test.res\", line 215, characters 4-11", Belt_SetInt.isEmpty(match$6[0]));
 
-b("File \"bs_set_int_test.res\", line 217, characters 4-11", Belt_SetInt.isEmpty(match$6[1]));
+b("File \"bs_set_int_test.res\", line 216, characters 4-11", Belt_SetInt.isEmpty(match$6[1]));
 
-b("File \"bs_set_int_test.res\", line 218, characters 4-11", !match$5[1]);
+b("File \"bs_set_int_test.res\", line 217, characters 4-11", !match$5[1]);
 
 let v$12 = Belt_SetInt.fromArray(Array_data_util.randomRange(0, 2000));
 
@@ -339,23 +339,23 @@ let counted = Belt_Array.reduce(us, 0, (acc, x) => {
   }
 });
 
-eq("File \"bs_set_int_test.res\", line 235, characters 5-12", counted, 1001);
+eq("File \"bs_set_int_test.res\", line 234, characters 5-12", counted, 1001);
 
-b("File \"bs_set_int_test.res\", line 236, characters 4-11", Belt_SetInt.eq(v$12, v0));
+b("File \"bs_set_int_test.res\", line 235, characters 4-11", Belt_SetInt.eq(v$12, v0));
 
-b("File \"bs_set_int_test.res\", line 237, characters 4-11", Belt_SetInt.cmp(v$12, v0) === 0);
+b("File \"bs_set_int_test.res\", line 236, characters 4-11", Belt_SetInt.cmp(v$12, v0) === 0);
 
-b("File \"bs_set_int_test.res\", line 238, characters 4-11", Belt_SetInt.cmp(v$12, v1) < 0);
+b("File \"bs_set_int_test.res\", line 237, characters 4-11", Belt_SetInt.cmp(v$12, v1) < 0);
 
-b("File \"bs_set_int_test.res\", line 239, characters 4-11", Belt_SetInt.cmp(v$12, v2) > 0);
+b("File \"bs_set_int_test.res\", line 238, characters 4-11", Belt_SetInt.cmp(v$12, v2) > 0);
 
-b("File \"bs_set_int_test.res\", line 240, characters 4-11", Belt_SetInt.subset(v3, v0));
+b("File \"bs_set_int_test.res\", line 239, characters 4-11", Belt_SetInt.subset(v3, v0));
 
-b("File \"bs_set_int_test.res\", line 241, characters 4-11", !Belt_SetInt.subset(v1, v0));
+b("File \"bs_set_int_test.res\", line 240, characters 4-11", !Belt_SetInt.subset(v1, v0));
 
-eq("File \"bs_set_int_test.res\", line 242, characters 5-12", Belt_SetInt.get(v$12, 30), 30);
+eq("File \"bs_set_int_test.res\", line 241, characters 5-12", Belt_SetInt.get(v$12, 30), 30);
 
-eq("File \"bs_set_int_test.res\", line 243, characters 5-12", Belt_SetInt.get(v$12, 3000), undefined);
+eq("File \"bs_set_int_test.res\", line 242, characters 5-12", Belt_SetInt.get(v$12, 3000), undefined);
 
 Mt.from_pair_suites("Bs_set_int_test", suites.contents);
 

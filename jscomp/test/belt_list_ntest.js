@@ -229,7 +229,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 50, characters 7-14", Belt_List.concatMany([
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 51, characters 6-13", Belt_List.concatMany([
       /* [] */0,
       /* [] */0,
       {
@@ -261,7 +261,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 51, characters 7-14", Belt_List.concatMany([{
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 55, characters 7-14", Belt_List.concatMany([{
         hd: 1,
         tl: {
           hd: 2,
@@ -282,15 +282,15 @@ Nodetest.describe("Belt.List", () => {
     });
   });
   Nodetest.test("concat", () => {
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 56, characters 6-13", Belt_List.toArray(Belt_List.concat(Belt_List.makeBy(100, i => i), Belt_List.makeBy(100, i => i))), Belt_Array.concat(Belt_Array.makeBy(100, i => i), Belt_Array.makeBy(100, i => i)));
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 61, characters 7-14", Belt_List.concat({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 60, characters 6-13", Belt_List.toArray(Belt_List.concat(Belt_List.makeBy(100, i => i), Belt_List.makeBy(100, i => i))), Belt_Array.concat(Belt_Array.makeBy(100, i => i), Belt_Array.makeBy(100, i => i)));
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 65, characters 7-14", Belt_List.concat({
       hd: 1,
       tl: /* [] */0
     }, /* [] */0), {
       hd: 1,
       tl: /* [] */0
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 62, characters 7-14", Belt_List.concat(/* [] */0, {
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 66, characters 7-14", Belt_List.concat(/* [] */0, {
       hd: 1,
       tl: /* [] */0
     }), {
@@ -299,7 +299,7 @@ Nodetest.describe("Belt.List", () => {
     });
   });
   Nodetest.test("zip", () => {
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 66, characters 7-14", Belt_List.zip({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 70, characters 7-14", Belt_List.zip({
       hd: 1,
       tl: {
         hd: 2,
@@ -327,12 +327,12 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 67, characters 7-14", Belt_List.zip(/* [] */0, {
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 71, characters 7-14", Belt_List.zip(/* [] */0, {
       hd: 1,
       tl: /* [] */0
     }), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 68, characters 7-14", Belt_List.zip(/* [] */0, /* [] */0), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 69, characters 7-14", Belt_List.zip({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 72, characters 7-14", Belt_List.zip(/* [] */0, /* [] */0), /* [] */0);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 73, characters 7-14", Belt_List.zip({
       hd: 1,
       tl: {
         hd: 2,
@@ -342,7 +342,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }, /* [] */0), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 70, characters 7-14", Belt_List.zip({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 74, characters 7-14", Belt_List.zip({
       hd: 1,
       tl: {
         hd: 2,
@@ -383,7 +383,7 @@ Nodetest.describe("Belt.List", () => {
   let mod2 = x => x % 2 === 0;
   let evenIndex = (_x, i) => i % 2 === 0;
   Nodetest.test("partition", () => {
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 77, characters 7-14", Belt_List.partition({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 81, characters 7-14", Belt_List.partition({
       hd: 1,
       tl: {
         hd: 2,
@@ -423,7 +423,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     ]);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 78, characters 7-14", Belt_List.partition({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 82, characters 7-14", Belt_List.partition({
       hd: 2,
       tl: {
         hd: 2,
@@ -451,7 +451,7 @@ Nodetest.describe("Belt.List", () => {
       },
       /* [] */0
     ]);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 79, characters 7-14", Belt_List.partition({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 83, characters 7-14", Belt_List.partition({
       hd: 2,
       tl: {
         hd: 2,
@@ -479,17 +479,17 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     ]);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 80, characters 7-14", Belt_List.partition(/* [] */0, mod2), [
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 84, characters 7-14", Belt_List.partition(/* [] */0, mod2), [
       /* [] */0,
       /* [] */0
     ]);
   });
   Nodetest.test("unzip", () => {
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 84, characters 7-14", Belt_List.unzip(/* [] */0), [
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 88, characters 7-14", Belt_List.unzip(/* [] */0), [
       /* [] */0,
       /* [] */0
     ]);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 85, characters 7-14", Belt_List.unzip({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 89, characters 7-14", Belt_List.unzip({
       hd: [
         1,
         2
@@ -505,7 +505,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     ]);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 86, characters 7-14", Belt_List.unzip({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 90, characters 7-14", Belt_List.unzip({
       hd: [
         1,
         2
@@ -535,7 +535,7 @@ Nodetest.describe("Belt.List", () => {
     ]);
   });
   Nodetest.test("filter", () => {
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 90, characters 7-14", Belt_List.keep({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 94, characters 7-14", Belt_List.keep({
       hd: 1,
       tl: {
         hd: 2,
@@ -554,7 +554,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 91, characters 7-14", Belt_List.keep({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 95, characters 7-14", Belt_List.keep({
       hd: 1,
       tl: {
         hd: 3,
@@ -564,8 +564,8 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }, mod2), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 92, characters 7-14", Belt_List.keep(/* [] */0, mod2), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 93, characters 7-14", Belt_List.keep({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 96, characters 7-14", Belt_List.keep(/* [] */0, mod2), /* [] */0);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 97, characters 7-14", Belt_List.keep({
       hd: 2,
       tl: {
         hd: 2,
@@ -598,8 +598,8 @@ Nodetest.describe("Belt.List", () => {
     });
   });
   Nodetest.test("keepWithIndex", () => {
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 97, characters 7-14", Belt_List.keepWithIndex(/* [] */0, evenIndex), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 98, characters 7-14", Belt_List.keepWithIndex({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 101, characters 7-14", Belt_List.keepWithIndex(/* [] */0, evenIndex), /* [] */0);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 102, characters 7-14", Belt_List.keepWithIndex({
       hd: 1,
       tl: {
         hd: 2,
@@ -618,7 +618,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 99, characters 7-14", Belt_List.keepWithIndex({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 103, characters 7-14", Belt_List.keepWithIndex({
       hd: 0,
       tl: {
         hd: 1,
@@ -658,7 +658,7 @@ Nodetest.describe("Belt.List", () => {
   });
   let id = x => x;
   Nodetest.test("map", () => {
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 105, characters 7-14", Belt_List.map(Belt_List.makeBy(5, id), x => (x << 1)), {
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 109, characters 7-14", Belt_List.map(Belt_List.makeBy(5, id), x => (x << 1)), {
       hd: 0,
       tl: {
         hd: 2,
@@ -674,8 +674,8 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 106, characters 7-14", Belt_List.map(/* [] */0, id), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 107, characters 7-14", Belt_List.map({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 110, characters 7-14", Belt_List.map(/* [] */0, id), /* [] */0);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 111, characters 7-14", Belt_List.map({
       hd: 1,
       tl: /* [] */0
     }, x => -x | 0), {
@@ -688,17 +688,17 @@ Nodetest.describe("Belt.List", () => {
   let length_8_id = Belt_List.makeBy(8, id);
   Nodetest.test("mapWithIndex etc.", () => {
     let d = Belt_List.makeBy(10, x => (x << 1));
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 120, characters 7-14", Belt_List.zipBy(length_10_id, length_10_id, add), d);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 121, characters 7-14", Belt_List.zipBy(/* [] */0, {
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 124, characters 7-14", Belt_List.zipBy(length_10_id, length_10_id, add), d);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 125, characters 7-14", Belt_List.zipBy(/* [] */0, {
       hd: 1,
       tl: /* [] */0
     }, add), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 122, characters 7-14", Belt_List.zipBy({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 126, characters 7-14", Belt_List.zipBy({
       hd: 1,
       tl: /* [] */0
     }, /* [] */0, add), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 123, characters 7-14", Belt_List.zipBy(/* [] */0, /* [] */0, add), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 125, characters 6-13", Belt_List.zipBy(length_10_id, length_10_id, add), Belt_List.concat(Belt_List.map(length_8_id, x => (x << 1)), {
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 127, characters 7-14", Belt_List.zipBy(/* [] */0, /* [] */0, add), /* [] */0);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 128, characters 7-14", Belt_List.zipBy(length_10_id, length_10_id, add), Belt_List.concat(Belt_List.map(length_8_id, x => (x << 1)), {
       hd: 16,
       tl: {
         hd: 18,
@@ -706,11 +706,11 @@ Nodetest.describe("Belt.List", () => {
       }
     }));
     Node_test_util.eq("File \"belt_list_ntest.res\", line 129, characters 7-14", Belt_List.zipBy(length_10_id, length_8_id, add), Belt_List.mapWithIndex(length_8_id, (i, x) => i + x | 0));
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 133, characters 7-14", Belt_List.reverse(Belt_List.mapReverse2(length_10_id, length_10_id, add)), Belt_List.map(length_10_id, x => (x << 1)));
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 131, characters 6-13", Belt_List.reverse(Belt_List.mapReverse2(length_10_id, length_10_id, add)), Belt_List.map(length_10_id, x => (x << 1)));
     let xs = Belt_List.reverse(Belt_List.mapReverse2(length_8_id, length_10_id, add));
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 135, characters 7-14", Belt_List.length(xs), 8);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 136, characters 7-14", xs, Belt_List.zipBy(length_10_id, length_8_id, add));
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 137, characters 7-14", Belt_List.mapReverse2({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 136, characters 7-14", Belt_List.length(xs), 8);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 137, characters 7-14", xs, Belt_List.zipBy(length_10_id, length_8_id, add));
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 138, characters 7-14", Belt_List.mapReverse2({
       hd: 1,
       tl: {
         hd: 2,
@@ -734,7 +734,7 @@ Nodetest.describe("Belt.List", () => {
     });
   });
   Nodetest.test("take", () => {
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 141, characters 7-14", Belt_List.take({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 142, characters 7-14", Belt_List.take({
       hd: 1,
       tl: {
         hd: 2,
@@ -750,15 +750,15 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 142, characters 7-14", Belt_List.take(/* [] */0, 1), undefined);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 143, characters 7-14", Belt_List.take({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 143, characters 7-14", Belt_List.take(/* [] */0, 1), undefined);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 144, characters 7-14", Belt_List.take({
       hd: 1,
       tl: {
         hd: 2,
         tl: /* [] */0
       }
     }, 3), undefined);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 144, characters 7-14", Belt_List.take({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 145, characters 7-14", Belt_List.take({
       hd: 1,
       tl: {
         hd: 2,
@@ -771,31 +771,31 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 145, characters 7-14", Belt_List.take(length_10_id, 8), length_8_id);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 146, characters 7-14", Belt_List.take(length_10_id, 0), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 147, characters 7-14", Belt_List.take(length_8_id, -2), undefined);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 146, characters 7-14", Belt_List.take(length_10_id, 8), length_8_id);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 147, characters 7-14", Belt_List.take(length_10_id, 0), /* [] */0);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 148, characters 7-14", Belt_List.take(length_8_id, -2), undefined);
   });
   Nodetest.test("droo", () => {
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 151, characters 7-14", Belt_List.drop(length_10_id, 10), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 152, characters 7-14", Belt_List.drop(length_10_id, 8), {
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 152, characters 7-14", Belt_List.drop(length_10_id, 10), /* [] */0);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 153, characters 7-14", Belt_List.drop(length_10_id, 8), {
       hd: 8,
       tl: {
         hd: 9,
         tl: /* [] */0
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 153, characters 7-14", Belt_List.drop(length_10_id, 0), length_10_id);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 154, characters 7-14", Belt_List.drop(length_8_id, -1), undefined);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 154, characters 7-14", Belt_List.drop(length_10_id, 0), length_10_id);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 155, characters 7-14", Belt_List.drop(length_8_id, -1), undefined);
   });
   Nodetest.test("splitAt", () => {
     let a = Belt_List.makeBy(5, id);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 159, characters 7-14", Belt_List.splitAt(/* [] */0, 1), undefined);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 160, characters 7-14", Belt_List.splitAt(a, 6), undefined);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 161, characters 7-14", Belt_List.splitAt(a, 5), [
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 160, characters 7-14", Belt_List.splitAt(/* [] */0, 1), undefined);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 161, characters 7-14", Belt_List.splitAt(a, 6), undefined);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 162, characters 7-14", Belt_List.splitAt(a, 5), [
       a,
       /* [] */0
     ]);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 162, characters 7-14", Belt_List.splitAt(a, 4), [
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 163, characters 7-14", Belt_List.splitAt(a, 4), [
       {
         hd: 0,
         tl: {
@@ -814,7 +814,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     ]);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 163, characters 7-14", Belt_List.splitAt(a, 3), [
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 164, characters 7-14", Belt_List.splitAt(a, 3), [
       {
         hd: 0,
         tl: {
@@ -833,7 +833,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     ]);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 164, characters 7-14", Belt_List.splitAt(a, 2), [
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 165, characters 7-14", Belt_List.splitAt(a, 2), [
       {
         hd: 0,
         tl: {
@@ -852,7 +852,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     ]);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 165, characters 7-14", Belt_List.splitAt(a, 1), [
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 166, characters 7-14", Belt_List.splitAt(a, 1), [
       {
         hd: 0,
         tl: /* [] */0
@@ -871,15 +871,15 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     ]);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 166, characters 7-14", Belt_List.splitAt(a, 0), [
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 167, characters 7-14", Belt_List.splitAt(a, 0), [
       /* [] */0,
       a
     ]);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 167, characters 7-14", Belt_List.splitAt(a, -1), undefined);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 168, characters 7-14", Belt_List.splitAt(a, -1), undefined);
   });
   Nodetest.test("removeAssoc", () => {
     let eqx = (x, y) => x === y;
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 173, characters 7-14", Belt_List.hasAssoc({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 174, characters 7-14", Belt_List.hasAssoc({
       hd: [
         1,
         "1"
@@ -898,7 +898,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }, 2, (prim0, prim1) => prim0 === prim1));
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 174, characters 7-14", !Belt_List.hasAssoc({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 175, characters 7-14", !Belt_List.hasAssoc({
       hd: [
         1,
         "1"
@@ -917,7 +917,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }, 4, (prim0, prim1) => prim0 === prim1));
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 175, characters 7-14", Belt_List.hasAssoc({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 176, characters 7-14", Belt_List.hasAssoc({
       hd: [
         1,
         "1"
@@ -936,7 +936,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }, 4, (x, y) => (x + 1 | 0) === y));
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 176, characters 7-14", Belt_List.removeAssoc({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 178, characters 6-13", Belt_List.removeAssoc({
       hd: [
         1,
         "1"
@@ -967,7 +967,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 177, characters 7-14", Belt_List.removeAssoc({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 183, characters 6-13", Belt_List.removeAssoc({
       hd: [
         1,
         "1"
@@ -998,7 +998,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 178, characters 7-14", Belt_List.removeAssoc({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 188, characters 6-13", Belt_List.removeAssoc({
       hd: [
         1,
         "1"
@@ -1029,7 +1029,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 180, characters 6-13", Belt_List.removeAssoc({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 193, characters 6-13", Belt_List.removeAssoc({
       hd: [
         1,
         "1"
@@ -1066,7 +1066,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 185, characters 7-14", Belt_List.removeAssoc({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 198, characters 7-14", Belt_List.removeAssoc({
       hd: [
         1,
         "1"
@@ -1097,7 +1097,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 186, characters 7-14", Belt_List.removeAssoc({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 199, characters 7-14", Belt_List.removeAssoc({
       hd: [
         1,
         "1"
@@ -1128,7 +1128,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 187, characters 7-14", Belt_List.removeAssoc({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 200, characters 7-14", Belt_List.removeAssoc({
       hd: [
         1,
         "1"
@@ -1159,7 +1159,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 188, characters 7-14", Belt_List.removeAssoc(/* [] */0, 2, eqx), /* [] */0);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 201, characters 7-14", Belt_List.removeAssoc(/* [] */0, 2, eqx), /* [] */0);
     let ll = {
       hd: [
         1,
@@ -1180,9 +1180,9 @@ Nodetest.describe("Belt.List", () => {
       }
     };
     let ll0 = Belt_List.removeAssoc(ll, 0, eqx);
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 191, characters 7-14", ll === ll0);
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 204, characters 7-14", ll === ll0);
     let ll1 = Belt_List.setAssoc(ll, 2, "22", (prim0, prim1) => prim0 === prim1);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 193, characters 7-14", ll1, {
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 206, characters 7-14", ll1, {
       hd: [
         1,
         "1"
@@ -1202,15 +1202,15 @@ Nodetest.describe("Belt.List", () => {
       }
     });
     let ll2 = Belt_List.setAssoc(ll1, 22, "2", (prim0, prim1) => prim0 === prim1);
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 195, characters 7-14", Caml_obj.equal(ll2, {
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 208, characters 7-14", Caml_obj.equal(ll2, {
       hd: [
         22,
         "2"
       ],
       tl: ll1
     }));
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 196, characters 7-14", Belt_List.tailExn(ll2) === ll1);
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 198, characters 6-13", Caml_obj.equal(Belt_List.setAssoc({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 209, characters 7-14", Belt_List.tailExn(ll2) === ll1);
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 211, characters 6-13", Caml_obj.equal(Belt_List.setAssoc({
       hd: [
         1,
         "a"
@@ -1247,7 +1247,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }));
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 203, characters 6-13", Caml_obj.equal(Belt_List.setAssoc({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 216, characters 6-13", Caml_obj.equal(Belt_List.setAssoc({
       hd: [
         1,
         "a"
@@ -1278,14 +1278,14 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }));
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 206, characters 7-14", Belt_List.setAssoc(/* [] */0, 1, "1", (prim0, prim1) => prim0 === prim1), {
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 219, characters 7-14", Belt_List.setAssoc(/* [] */0, 1, "1", (prim0, prim1) => prim0 === prim1), {
       hd: [
         1,
         "1"
       ],
       tl: /* [] */0
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 207, characters 7-14", Belt_List.setAssoc({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 220, characters 7-14", Belt_List.setAssoc({
       hd: [
         1,
         "2"
@@ -1298,7 +1298,7 @@ Nodetest.describe("Belt.List", () => {
       ],
       tl: /* [] */0
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 209, characters 7-14", Belt_List.setAssoc({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 222, characters 7-14", Belt_List.setAssoc({
       hd: [
         0,
         "0"
@@ -1323,7 +1323,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     });
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 210, characters 7-14", Caml_obj.equal(Belt_List.getAssoc({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 223, characters 7-14", Caml_obj.equal(Belt_List.getAssoc({
       hd: [
         1,
         "a"
@@ -1342,7 +1342,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }, 2, (prim0, prim1) => prim0 === prim1), "b"));
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 211, characters 7-14", Belt_List.getAssoc({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 224, characters 7-14", Belt_List.getAssoc({
       hd: [
         1,
         "a"
@@ -1364,19 +1364,19 @@ Nodetest.describe("Belt.List", () => {
   });
   Nodetest.test("head/tail etc.", () => {
     let succx = x => x + 1 | 0;
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 219, characters 6-13", [
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 230, characters 7-14", [
       Belt_List.head(length_10_id),
       Belt_List.tail(length_10_id)
     ], [
       0,
       Belt_List.drop(length_10_id, 1)
     ]);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 223, characters 7-14", Belt_List.head(/* [] */0), undefined);
-    Node_test_util.$$throw("File \"belt_list_ntest.res\", line 224, characters 10-17", () => Belt_List.headExn(/* [] */0));
-    Node_test_util.$$throw("File \"belt_list_ntest.res\", line 225, characters 10-17", () => {
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 231, characters 7-14", Belt_List.head(/* [] */0), undefined);
+    Node_test_util.$$throw("File \"belt_list_ntest.res\", line 232, characters 10-17", () => Belt_List.headExn(/* [] */0));
+    Node_test_util.$$throw("File \"belt_list_ntest.res\", line 233, characters 10-17", () => {
       Belt_List.tailExn(/* [] */0);
     });
-    Node_test_util.$$throw("File \"belt_list_ntest.res\", line 226, characters 10-17", () => {
+    Node_test_util.$$throw("File \"belt_list_ntest.res\", line 234, characters 10-17", () => {
       Belt_List.getExn({
         hd: 0,
         tl: {
@@ -1385,7 +1385,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }, -1);
     });
-    Node_test_util.$$throw("File \"belt_list_ntest.res\", line 227, characters 10-17", () => {
+    Node_test_util.$$throw("File \"belt_list_ntest.res\", line 235, characters 10-17", () => {
       Belt_List.getExn({
         hd: 0,
         tl: {
@@ -1394,7 +1394,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }, 2);
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 228, characters 7-14", Belt_List.map({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 236, characters 7-14", Belt_List.map({
       hd: 0,
       tl: {
         hd: 1,
@@ -1413,25 +1413,25 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 229, characters 7-14", Belt_List.headExn({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 237, characters 7-14", Belt_List.headExn({
       hd: 1,
       tl: /* [] */0
     }), 1);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 230, characters 7-14", Belt_List.tailExn({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 238, characters 7-14", Belt_List.tailExn({
       hd: 1,
       tl: /* [] */0
     }), /* [] */0);
-    Belt_List.forEachWithIndex(length_10_id, (i, x) => Node_test_util.eq("File \"belt_list_ntest.res\", line 231, characters 50-57", Belt_List.get(length_10_id, i), x));
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 232, characters 7-14", Belt_List.tail(/* [] */0), undefined);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 233, characters 7-14", Belt_List.drop(/* [] */0, 3), undefined);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 234, characters 7-14", Belt_List.mapWithIndex(/* [] */0, (i, x) => i + x | 0), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 235, characters 7-14", Belt_List.get(length_10_id, -1), undefined);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 236, characters 7-14", Belt_List.get(length_10_id, 12), undefined);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 237, characters 7-14", sum(/* [] */0), 0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 238, characters 7-14", sum(length_10_id), 45);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 239, characters 7-14", Belt_List.makeBy(0, id), /* [] */0);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 241, characters 6-13", Belt_List.reverse(Belt_List.reverse(length_10_id)), length_10_id);
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 246, characters 6-13", Belt_List.reverse(Belt_List.reverse(length_8_id)), length_8_id);
+    Belt_List.forEachWithIndex(length_10_id, (i, x) => Node_test_util.eq("File \"belt_list_ntest.res\", line 239, characters 50-57", Belt_List.get(length_10_id, i), x));
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 240, characters 7-14", Belt_List.tail(/* [] */0), undefined);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 241, characters 7-14", Belt_List.drop(/* [] */0, 3), undefined);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 242, characters 7-14", Belt_List.mapWithIndex(/* [] */0, (i, x) => i + x | 0), /* [] */0);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 243, characters 7-14", Belt_List.get(length_10_id, -1), undefined);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 244, characters 7-14", Belt_List.get(length_10_id, 12), undefined);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 245, characters 7-14", sum(/* [] */0), 0);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 246, characters 7-14", sum(length_10_id), 45);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 247, characters 7-14", Belt_List.makeBy(0, id), /* [] */0);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 248, characters 7-14", Belt_List.reverse(Belt_List.reverse(length_10_id)), length_10_id);
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 249, characters 7-14", Belt_List.reverse(Belt_List.reverse(length_8_id)), length_8_id);
     Node_test_util.eq("File \"belt_list_ntest.res\", line 250, characters 7-14", Belt_List.reverse(/* [] */0), /* [] */0);
     Node_test_util.eq("File \"belt_list_ntest.res\", line 251, characters 7-14", Belt_List.reverse(Belt_List.mapReverse(length_10_id, succx)), Belt_List.map(length_10_id, succx));
     Node_test_util.eq("File \"belt_list_ntest.res\", line 252, characters 7-14", Belt_List.reduce(length_10_id, 0, add), 45);
@@ -1791,7 +1791,7 @@ Nodetest.describe("Belt.List", () => {
       }
     }, (x, y) => x === y), false);
   });
-  Nodetest.test("add", () => Node_test_util.eq("File \"belt_list_ntest.res\", line 308, characters 7-14", {
+  Nodetest.test("add", () => Node_test_util.eq("File \"belt_list_ntest.res\", line 307, characters 7-14", {
     hd: 2,
     tl: {
       hd: 3,
@@ -1805,7 +1805,7 @@ Nodetest.describe("Belt.List", () => {
     }
   }));
   Nodetest.test("cmp", () => {
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 312, characters 7-14", Belt_List.cmp({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 311, characters 7-14", Belt_List.cmp({
       hd: 1,
       tl: {
         hd: 2,
@@ -1827,7 +1827,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }, Caml.int_compare) > 0);
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 313, characters 7-14", Belt_List.cmp({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 312, characters 7-14", Belt_List.cmp({
       hd: 1,
       tl: {
         hd: 2,
@@ -1849,7 +1849,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }, Caml.int_compare) > 0);
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 314, characters 7-14", Belt_List.cmp({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 313, characters 7-14", Belt_List.cmp({
       hd: 1,
       tl: {
         hd: 2,
@@ -1871,7 +1871,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }, Caml.int_compare) < 0);
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 315, characters 7-14", Belt_List.cmp({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 314, characters 7-14", Belt_List.cmp({
       hd: 1,
       tl: {
         hd: 2,
@@ -1890,7 +1890,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }, Caml.int_compare) > 0);
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 316, characters 7-14", Belt_List.cmp({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 315, characters 7-14", Belt_List.cmp({
       hd: 1,
       tl: {
         hd: 2,
@@ -1909,7 +1909,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }, Caml.int_compare) === 0);
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 317, characters 7-14", Belt_List.cmp({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 316, characters 7-14", Belt_List.cmp({
       hd: 1,
       tl: {
         hd: 2,
@@ -1930,16 +1930,16 @@ Nodetest.describe("Belt.List", () => {
     }, Caml.int_compare) > 0);
   });
   Nodetest.test("cmpByLength", () => {
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 321, characters 7-14", Belt_List.cmpByLength(/* [] */0, /* [] */0) === 0);
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 322, characters 7-14", Belt_List.cmpByLength({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 320, characters 7-14", Belt_List.cmpByLength(/* [] */0, /* [] */0) === 0);
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 321, characters 7-14", Belt_List.cmpByLength({
       hd: 1,
       tl: /* [] */0
     }, /* [] */0) > 0);
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 323, characters 7-14", Belt_List.cmpByLength(/* [] */0, {
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 322, characters 7-14", Belt_List.cmpByLength(/* [] */0, {
       hd: 1,
       tl: /* [] */0
     }) < 0);
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 324, characters 7-14", Belt_List.cmpByLength({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 323, characters 7-14", Belt_List.cmpByLength({
       hd: 1,
       tl: {
         hd: 2,
@@ -1949,7 +1949,7 @@ Nodetest.describe("Belt.List", () => {
       hd: 1,
       tl: /* [] */0
     }) > 0);
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 325, characters 7-14", Belt_List.cmpByLength({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 324, characters 7-14", Belt_List.cmpByLength({
       hd: 1,
       tl: /* [] */0
     }, {
@@ -1959,7 +1959,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     }) < 0);
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 326, characters 7-14", Belt_List.cmpByLength({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 325, characters 7-14", Belt_List.cmpByLength({
       hd: 1,
       tl: {
         hd: 3,
@@ -1974,7 +1974,7 @@ Nodetest.describe("Belt.List", () => {
     }) === 0);
   });
   Nodetest.test("makeBy", () => {
-    let makeTest = n => Node_test_util.eq("File \"belt_list_ntest.res\", line 330, characters 27-34", Belt_List.make(n, 3), Belt_List.makeBy(n, param => 3));
+    let makeTest = n => Node_test_util.eq("File \"belt_list_ntest.res\", line 329, characters 27-34", Belt_List.make(n, 3), Belt_List.makeBy(n, param => 3));
     makeTest(0);
     makeTest(1);
     makeTest(2);
@@ -1982,7 +1982,7 @@ Nodetest.describe("Belt.List", () => {
   });
   Nodetest.test("sort", () => {
     let cmp = (a, b) => a - b | 0;
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 340, characters 7-14", Belt_List.sort({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 339, characters 7-14", Belt_List.sort({
       hd: 5,
       tl: {
         hd: 4,
@@ -2007,7 +2007,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     });
-    Node_test_util.eq("File \"belt_list_ntest.res\", line 341, characters 7-14", Belt_List.sort({
+    Node_test_util.eq("File \"belt_list_ntest.res\", line 340, characters 7-14", Belt_List.sort({
       hd: 3,
       tl: {
         hd: 9,
@@ -2040,7 +2040,7 @@ Nodetest.describe("Belt.List", () => {
     });
   });
   Nodetest.test("eq", () => {
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 345, characters 7-14", !Belt_List.eq({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 344, characters 7-14", !Belt_List.eq({
       hd: 1,
       tl: {
         hd: 2,
@@ -2056,7 +2056,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     }, (x, y) => x === y));
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 346, characters 7-14", Belt_List.eq({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 345, characters 7-14", Belt_List.eq({
       hd: 1,
       tl: {
         hd: 2,
@@ -2075,7 +2075,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }, (x, y) => x === y));
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 347, characters 7-14", !Belt_List.eq({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 346, characters 7-14", !Belt_List.eq({
       hd: 1,
       tl: {
         hd: 2,
@@ -2094,7 +2094,7 @@ Nodetest.describe("Belt.List", () => {
         }
       }
     }, (x, y) => x === y));
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 348, characters 7-14", !Belt_List.eq({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 347, characters 7-14", !Belt_List.eq({
       hd: 1,
       tl: {
         hd: 2,
@@ -2159,7 +2159,7 @@ Nodetest.describe("Belt.List", () => {
         tl: /* [] */0
       }
     }));
-    Node_test_util.ok("File \"belt_list_ntest.res\", line 376, characters 6-13", Belt_List.keepMap({
+    Node_test_util.ok("File \"belt_list_ntest.res\", line 377, characters 6-13", Belt_List.keepMap({
       hd: 1,
       tl: {
         hd: 2,

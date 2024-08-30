@@ -27,7 +27,7 @@ function approx(f) {
   return (extra, extra$1) => Mt_global.collect_approx(id, suites, f, extra, extra$1);
 }
 
-Mt_global.collect_neq(id, suites, "File \"random_test.res\", line 9, characters 2-9", (Random.self_init(), Random.int(10000)), (Random.self_init(), Random.int(1000)));
+Mt_global.collect_neq(id, suites, "File \"random_test.res\", line 8, characters 13-20", (Random.self_init(), Random.int(10000)), (Random.self_init(), Random.int(1000)));
 
 Random.init(0);
 
@@ -37,7 +37,7 @@ for (let i = 0; i <= 9; ++i) {
   Caml_array.set(v, i, Random.bool());
 }
 
-Mt_global.collect_eq(id, suites, "File \"random_test.res\", line 28, characters 12-19", v, [
+Mt_global.collect_eq(id, suites, "File \"random_test.res\", line 27, characters 12-19", v, [
   true,
   true,
   true,
