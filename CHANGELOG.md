@@ -120,6 +120,7 @@
 - Fix `Js.Types.JSBigInt` payload to use native `bigint` type. https://github.com/rescript-lang/rescript-compiler/pull/6911
 - Deprecate `%external` extension, which has never been officially introduced. https://github.com/rescript-lang/rescript-compiler/pull/6906
 - Deprecate `xxxU` functions in Belt. https://github.com/rescript-lang/rescript-compiler/pull/6941
+- Improve error messages for function arity errors. https://github.com/rescript-lang/rescript-compiler/pull/6990
 
 # 11.1.3
 

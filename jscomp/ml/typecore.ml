@@ -4011,7 +4011,7 @@ let report_error env ppf = function
   | Empty_record_literal ->
       fprintf ppf  "Empty record literal {} should be type annotated or used in a record context."
   | Uncurried_arity_mismatch (typ, arity, args) ->
-    fprintf ppf "@[<v>@[<2>This uncurried function has type@ %a@]"
+    fprintf ppf "@[<v>@[<2>This function has type@ %a@]"
       type_expr typ;
     fprintf ppf "@ @[It is applied with @{<error>%d@} argument%s but it requires @{<info>%d@}.@]@]"
       args (if args = 0 then "" else "s") arity
