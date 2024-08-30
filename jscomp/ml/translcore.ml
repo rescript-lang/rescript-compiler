@@ -720,7 +720,7 @@ let extract_directive_for_fn exp =
   exp.exp_attributes |> List.find_map (
     fun ({txt}, payload) -> if txt = "directive" then Ast_payload.is_single_string payload else None)
 
-let args_elgible_for_dict_inlining (args : expression list) =
+let args_eligible_for_dict_inlining (args : expression list) =
   args
   |> List.find_opt (fun (arg : expression) ->
          match arg.exp_desc with
@@ -818,7 +818,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
                 _ );
         },
         [(_lbl, Some {exp_desc = Texp_array args})] )
-    when Ident.name module_name = "Js" && args_elgible_for_dict_inlining args ->
+    when Ident.name module_name = "Js" && args_eligible_for_dict_inlining args ->
     let fields = Array.make (List.length args) "" in
     let args =
       args
