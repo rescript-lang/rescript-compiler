@@ -1077,7 +1077,7 @@ function split_at_match_rec(_l$p, _x) {
           RE_EXN_ID: "Assert_failure",
           _1: [
             "ocaml_re_test.res",
-            816,
+            815,
             16
           ]
         }
@@ -1887,7 +1887,7 @@ function colorize(c, regexp) {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
                   "ocaml_re_test.res",
-                  2169,
+                  2168,
                   8
                 ]
               }
@@ -2497,7 +2497,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _x) 
               RE_EXN_ID: "Assert_failure",
               _1: [
                 "ocaml_re_test.res",
-                2403,
+                2402,
                 80
               ]
             }
@@ -2540,7 +2540,7 @@ function as_set(x) {
         RE_EXN_ID: "Assert_failure",
         _1: [
           "ocaml_re_test.res",
-          2438,
+          2437,
           11
         ]
       }
@@ -2554,7 +2554,7 @@ function as_set(x) {
       RE_EXN_ID: "Assert_failure",
       _1: [
         "ocaml_re_test.res",
-        2438,
+        2437,
         11
       ]
     }
@@ -4189,7 +4189,7 @@ function exec(rex, pos, s) {
 
 let s = "a".repeat(1048575) + "b";
 
-eq("File \"ocaml_re_test.res\", line 3843, characters 7-14", get(exec(compile(re(undefined, "aa?b")), undefined, s), 0), "aab");
+eq("File \"ocaml_re_test.res\", line 3842, characters 7-14", get(exec(compile(re(undefined, "aa?b")), undefined, s), 0), "aab");
 
 Mt.from_pair_suites("Ocaml_re_test", suites.contents);
 

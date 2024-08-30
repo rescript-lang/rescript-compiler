@@ -58,13 +58,13 @@ let vv = [
   hey_int(4)
 ];
 
-eq("File \"poly_variant_test.res\", line 64, characters 5-12", vv, [
+eq("File \"poly_variant_test.res\", line 65, characters 5-12", vv, [
   3,
   0,
   4
 ]);
 
-eq("File \"poly_variant_test.res\", line 65, characters 5-12", [
+eq("File \"poly_variant_test.res\", line 66, characters 5-12", [
   hey_int(5),
   hey_int(6)
 ], [
@@ -72,7 +72,7 @@ eq("File \"poly_variant_test.res\", line 65, characters 5-12", [
   6
 ]);
 
-eq("File \"poly_variant_test.res\", line 66, characters 5-12", uu, [
+eq("File \"poly_variant_test.res\", line 67, characters 5-12", uu, [
   "on_open",
   "on_closed",
   "in"
@@ -90,9 +90,9 @@ function p_is_int_test(x) {
   }
 }
 
-eq("File \"poly_variant_test.res\", line 156, characters 5-12", 2, 2);
+eq("File \"poly_variant_test.res\", line 157, characters 5-12", 2, 2);
 
-eq("File \"poly_variant_test.res\", line 157, characters 5-12", 3, p_is_int_test({
+eq("File \"poly_variant_test.res\", line 158, characters 5-12", 3, p_is_int_test({
   NAME: "b",
   VAL: 2
 }));

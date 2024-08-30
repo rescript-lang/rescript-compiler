@@ -81,11 +81,11 @@ function isOdd(n) {
   }
 }
 
-eq("File \"tramp_fib.res\", line 57, characters 3-10", iter(u), 89);
+eq("File \"tramp_fib.res\", line 53, characters 3-10", iter(u), 89);
 
-eq("File \"tramp_fib.res\", line 59, characters 3-10", iter(isEven(20000)), true);
+eq("File \"tramp_fib.res\", line 55, characters 3-10", iter(isEven(20000)), true);
 
-Mt.from_pair_suites("File \"tramp_fib.res\", line 61, characters 20-27", suites.contents);
+Mt.from_pair_suites("File \"tramp_fib.res\", line 57, characters 20-27", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

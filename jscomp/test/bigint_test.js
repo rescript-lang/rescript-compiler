@@ -106,65 +106,65 @@ eq("File \"bigint_test.res\", line 36, characters 5-12", Caml.bigint_compare(1n,
 
 eq("File \"bigint_test.res\", line 37, characters 5-12", Caml_obj.compare(1n, 1n), 0);
 
-eq("File \"bigint_test.res\", line 38, characters 5-12", 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n === 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, true);
+eq("File \"bigint_test.res\", line 39, characters 4-11", 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n === 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, true);
 
-eq("File \"bigint_test.res\", line 39, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), true);
+eq("File \"bigint_test.res\", line 47, characters 4-11", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), true);
 
-eq("File \"bigint_test.res\", line 40, characters 5-12", 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n === 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001n, false);
+eq("File \"bigint_test.res\", line 55, characters 4-11", 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n === 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001n, false);
 
-eq("File \"bigint_test.res\", line 41, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001n), false);
+eq("File \"bigint_test.res\", line 63, characters 4-11", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001n), false);
 
-eq("File \"bigint_test.res\", line 42, characters 5-12", 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n === -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, false);
+eq("File \"bigint_test.res\", line 71, characters 4-11", 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n === -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, false);
 
-eq("File \"bigint_test.res\", line 43, characters 5-12", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), false);
+eq("File \"bigint_test.res\", line 79, characters 4-11", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), false);
 
-eq("File \"bigint_test.res\", line 44, characters 5-12", (
+eq("File \"bigint_test.res\", line 87, characters 4-11", (
   1n !== 1n ? (
       1n !== 2n ? 0n : 4n
     ) : 3n
 ) === 3n, true);
 
-eq("File \"bigint_test.res\", line 49, characters 5-12", Caml_obj.equal(1n !== 1n ? (
+eq("File \"bigint_test.res\", line 99, characters 4-11", Caml_obj.equal(1n !== 1n ? (
     1n !== 2n ? 0n : 4n
   ) : 3n, 3n), true);
 
-eq("File \"bigint_test.res\", line 54, characters 5-12", (
+eq("File \"bigint_test.res\", line 111, characters 4-11", (
   -1n !== -2n ? (
       -1n !== -1n ? 0n : 3n
     ) : 4n
 ) === 3n, true);
 
-eq("File \"bigint_test.res\", line 59, characters 5-12", Caml_obj.equal(-1n !== -1n ? (
+eq("File \"bigint_test.res\", line 123, characters 4-11", Caml_obj.equal(-1n !== -1n ? (
     -1n !== 2n ? 0n : 4n
   ) : 3n, 3n), true);
 
-eq("File \"bigint_test.res\", line 64, characters 5-12", (
+eq("File \"bigint_test.res\", line 135, characters 4-11", (
   -1000n !== -1000n ? (
       -1000n !== -2n ? 0n : 4n
     ) : 3n
 ) === 3n, true);
 
-eq("File \"bigint_test.res\", line 69, characters 5-12", Caml_obj.equal(-1000n !== -1000n ? (
+eq("File \"bigint_test.res\", line 147, characters 4-11", Caml_obj.equal(-1000n !== -1000n ? (
     -1000n !== -2n ? 0n : 4n
   ) : 3n, 3n), true);
 
-eq("File \"bigint_test.res\", line 74, characters 5-12", 9n & 1n, 1n);
+eq("File \"bigint_test.res\", line 158, characters 5-12", 9n & 1n, 1n);
 
-eq("File \"bigint_test.res\", line 75, characters 5-12", 9n | 1n, 9n);
+eq("File \"bigint_test.res\", line 159, characters 5-12", 9n | 1n, 9n);
 
-eq("File \"bigint_test.res\", line 76, characters 5-12", 9n ^ 1n, 8n);
+eq("File \"bigint_test.res\", line 160, characters 5-12", 9n ^ 1n, 8n);
 
-eq("File \"bigint_test.res\", line 77, characters 5-12", (9n << 1n), 18n);
+eq("File \"bigint_test.res\", line 161, characters 5-12", (9n << 1n), 18n);
 
-eq("File \"bigint_test.res\", line 78, characters 5-12", (9n << -1n), 4n);
+eq("File \"bigint_test.res\", line 162, characters 5-12", (9n << -1n), 4n);
 
-eq("File \"bigint_test.res\", line 79, characters 5-12", (9n >> 1n), 4n);
+eq("File \"bigint_test.res\", line 163, characters 5-12", (9n >> 1n), 4n);
 
-eq("File \"bigint_test.res\", line 80, characters 5-12", (9n >> -1n), 18n);
+eq("File \"bigint_test.res\", line 164, characters 5-12", (9n >> -1n), 18n);
 
-eq("File \"bigint_test.res\", line 81, characters 5-12", (-9n >> 1n), -5n);
+eq("File \"bigint_test.res\", line 165, characters 5-12", (-9n >> 1n), -5n);
 
-eq("File \"bigint_test.res\", line 82, characters 5-12", (-9n >> -1n), -18n);
+eq("File \"bigint_test.res\", line 166, characters 5-12", (-9n >> -1n), -18n);
 
 Mt.from_pair_suites("Bigint_test", suites.contents);
 

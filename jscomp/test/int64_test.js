@@ -1044,7 +1044,7 @@ let suites = Pervasives.$at({
                                 ],
                                 tl: {
                                   hd: [
-                                    "File \"int64_test.res\", line 277, characters 7-14",
+                                    "File \"int64_test.res\", line 275, characters 7-14",
                                     () => ({
                                       TAG: "Eq",
                                       _0: Int64.min_int,
@@ -1053,7 +1053,7 @@ let suites = Pervasives.$at({
                                   ],
                                   tl: {
                                     hd: [
-                                      "File \"int64_test.res\", line 279, characters 8-15",
+                                      "File \"int64_test.res\", line 277, characters 8-15",
                                       () => ({
                                         TAG: "Eq",
                                         _0: Int64.max_int,
@@ -1773,7 +1773,7 @@ let suites = Pervasives.$at({
                                                         ],
                                                         tl: {
                                                           hd: [
-                                                            "File \"int64_test.res\", line 526, characters 7-14",
+                                                            "File \"int64_test.res\", line 524, characters 7-14",
                                                             () => ({
                                                               TAG: "Eq",
                                                               _0: [
@@ -1926,7 +1926,7 @@ let suites = Pervasives.$at({
                                                                               ],
                                                                               tl: {
                                                                                 hd: [
-                                                                                  "File \"int64_test.res\", line 553, characters 8-15",
+                                                                                  "File \"int64_test.res\", line 551, characters 8-15",
                                                                                   () => ({
                                                                                     TAG: "Eq",
                                                                                     _0: Caml_int64.add(Int64.max_int, Int64.max_int),
@@ -1938,7 +1938,7 @@ let suites = Pervasives.$at({
                                                                                 ],
                                                                                 tl: {
                                                                                   hd: [
-                                                                                    "File \"int64_test.res\", line 563, characters 8-15",
+                                                                                    "File \"int64_test.res\", line 561, characters 8-15",
                                                                                     () => ({
                                                                                       TAG: "Eq",
                                                                                       _0: Caml_int64.add(Int64.min_int, Int64.min_int),
@@ -1947,7 +1947,7 @@ let suites = Pervasives.$at({
                                                                                   ],
                                                                                   tl: {
                                                                                     hd: [
-                                                                                      "File \"int64_test.res\", line 573, characters 8-15",
+                                                                                      "File \"int64_test.res\", line 571, characters 8-15",
                                                                                       () => ({
                                                                                         TAG: "Eq",
                                                                                         _0: Caml_int64.neg_one,
@@ -2041,39 +2041,39 @@ function id(loc, x) {
   }
 }
 
-eq("File \"int64_test.res\", line 629, characters 5-12", Caml_int64.bits_of_float(0.3), [
+eq("File \"int64_test.res\", line 633, characters 5-12", Caml_int64.bits_of_float(0.3), [
   1070805811,
   858993459
 ]);
 
-eq("File \"int64_test.res\", line 630, characters 5-12", Caml_int64.float_of_bits([
+eq("File \"int64_test.res\", line 634, characters 5-12", Caml_int64.float_of_bits([
   1070805811,
   858993459
 ]), 0.3);
 
-id("File \"int64_test.res\", line 631, characters 5-12", Caml_int64.neg_one);
+id("File \"int64_test.res\", line 635, characters 5-12", Caml_int64.neg_one);
 
-id("File \"int64_test.res\", line 632, characters 5-12", [
+id("File \"int64_test.res\", line 636, characters 5-12", [
   -1,
   4294967196
 ]);
 
-id("File \"int64_test.res\", line 633, characters 5-12", [
+id("File \"int64_test.res\", line 637, characters 5-12", [
   0,
   4294967295
 ]);
 
-id("File \"int64_test.res\", line 634, characters 5-12", [
+id("File \"int64_test.res\", line 638, characters 5-12", [
   0,
   536870911
 ]);
 
-id("File \"int64_test.res\", line 635, characters 5-12", [
+id("File \"int64_test.res\", line 639, characters 5-12", [
   0,
   536870655
 ]);
 
-eq("File \"int64_test.res\", line 637, characters 4-11", Caml_int64.div(Int64.min_int, [
+eq("File \"int64_test.res\", line 641, characters 4-11", Caml_int64.div(Int64.min_int, [
   0,
   10
 ]), [
@@ -2081,24 +2081,24 @@ eq("File \"int64_test.res\", line 637, characters 4-11", Caml_int64.div(Int64.mi
   858993460
 ]);
 
-eq("File \"int64_test.res\", line 645, characters 4-11", Caml_int64.to_string(Caml_int64.div(Int64.min_int, [
+eq("File \"int64_test.res\", line 649, characters 4-11", Caml_int64.to_string(Caml_int64.div(Int64.min_int, [
   0,
   10
 ])), "-922337203685477580");
 
-eq("File \"int64_test.res\", line 653, characters 4-11", Caml_int64.mul(Int64.min_int, [
+eq("File \"int64_test.res\", line 657, characters 4-11", Caml_int64.mul(Int64.min_int, [
   0,
   10
 ]), Caml_int64.zero);
 
-eq("File \"int64_test.res\", line 661, characters 4-11", Caml_int64.mul([
+eq("File \"int64_test.res\", line 665, characters 4-11", Caml_int64.mul([
   0,
   10
 ], Int64.min_int), Caml_int64.zero);
 
-eq("File \"int64_test.res\", line 669, characters 4-11", Caml_int64.mul(Caml_int64.one, Int64.min_int), Int64.min_int);
+eq("File \"int64_test.res\", line 673, characters 4-11", Caml_int64.mul(Caml_int64.one, Int64.min_int), Int64.min_int);
 
-eq("File \"int64_test.res\", line 677, characters 4-11", Caml_int64.mul(Int64.max_int, [
+eq("File \"int64_test.res\", line 681, characters 4-11", Caml_int64.mul(Int64.max_int, [
   0,
   10
 ]), [
@@ -2106,14 +2106,14 @@ eq("File \"int64_test.res\", line 677, characters 4-11", Caml_int64.mul(Int64.ma
   4294967286
 ]);
 
-eq("File \"int64_test.res\", line 685, characters 4-11", Caml_int64.succ(Int64.max_int), Int64.min_int);
+eq("File \"int64_test.res\", line 689, characters 4-11", Caml_int64.succ(Int64.max_int), Int64.min_int);
 
-eq("File \"int64_test.res\", line 693, characters 4-11", Caml_int64.succ(Int64.min_int), [
+eq("File \"int64_test.res\", line 697, characters 4-11", Caml_int64.succ(Int64.min_int), [
   -2147483648,
   1
 ]);
 
-eq("File \"int64_test.res\", line 700, characters 5-12", Caml_int64.succ([
+eq("File \"int64_test.res\", line 704, characters 5-12", Caml_int64.succ([
   0,
   4294967295
 ]), [

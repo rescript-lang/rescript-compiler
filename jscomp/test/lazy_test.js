@@ -171,7 +171,7 @@ Mt.from_pair_suites("Lazy_test", {
                   ],
                   tl: {
                     hd: [
-                      "File \"lazy_test.res\", line 95, characters 7-14",
+                      "File \"lazy_test.res\", line 98, characters 7-14",
                       () => ({
                         TAG: "Ok",
                         _0: Lazy.is_val(CamlinternalLazy.from_val(3))
@@ -179,7 +179,7 @@ Mt.from_pair_suites("Lazy_test", {
                     ],
                     tl: {
                       hd: [
-                        "File \"lazy_test.res\", line 96, characters 7-14",
+                        "File \"lazy_test.res\", line 99, characters 7-14",
                         () => ({
                           TAG: "Ok",
                           _0: !Lazy.is_val(CamlinternalLazy.from_fun(() => {
