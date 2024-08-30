@@ -1345,6 +1345,19 @@ and walk_expression expr t comments =
     walk_list
       [Expression parent_expr; Expression member_expr; Expression target_expr]
       t comments
+  | Pexp_apply
+      ( {
+          pexp_desc =
+            Pexp_ident
+              {
+                txt =
+                  Longident.Ldot
+                    (Longident.Ldot (Lident "Js", "Dict"), "fromArray");
+              };
+        },
+        [(Nolabel, key_values)] )
+    when Res_parsetree_viewer.is_tuple_array key_values ->
+    walk_list [Expression key_values] t comments
   | Pexp_apply (call_expr, arguments) ->
     let before, inside, after = partition_by_loc comments call_expr.pexp_loc in
     let after =

@@ -1406,6 +1406,49 @@ and print_record_declaration ~state (lds : Parsetree.label_declaration list)
          Doc.rbrace;
        ])
 
+and print_literal_dict_expr ~state (e : Parsetree.expression) cmt_tbl =
+  let force_break =
+    e.pexp_loc.loc_start.pos_lnum < e.pexp_loc.loc_end.pos_lnum
+  in
+  let tuple_to_row (e : Parsetree.expression) =
+    match e with
+    | {
+     pexp_desc =
+       Pexp_tuple
+         [
+           {pexp_desc = Pexp_constant (Pconst_string (name, _)); pexp_loc}; value;
+         ];
+    } ->
+      Some ((Location.mkloc (Longident.Lident name) pexp_loc, value), e)
+    | _ -> None
+  in
+  let rows =
+    match e with
+    | {pexp_desc = Pexp_array expressions} ->
+      List.filter_map tuple_to_row expressions
+    | _ -> []
+  in
+  Doc.breakable_group ~force_break
+    (Doc.concat
+       [
+         Doc.indent
+           (Doc.concat
+              [
+                Doc.soft_line;
+                Doc.join
+                  ~sep:(Doc.concat [Doc.text ","; Doc.line])
+                  (List.map
+                     (fun ((row, e) :
+                            (Longident.t Location.loc * Parsetree.expression)
+                            * Parsetree.expression) ->
+                       let doc = print_bs_object_row ~state row cmt_tbl in
+                       print_comments doc cmt_tbl e.pexp_loc)
+                     rows);
+              ]);
+         Doc.trailing_comma;
+         Doc.soft_line;
+       ])
+
 and print_constructor_declarations ~state ~private_flag
     (cds : Parsetree.constructor_declaration list) cmt_tbl =
   let force_break =
@@ -4032,6 +4075,24 @@ and print_pexp_apply ~state expr cmt_tbl =
     | attrs ->
       Doc.group (Doc.concat [print_attributes ~state attrs cmt_tbl; doc]))
   | Pexp_apply
+      ( {
+          pexp_desc =
+            Pexp_ident
+              {
+                txt =
+                  Longident.Ldot
+                    (Longident.Ldot (Lident "Js", "Dict"), "fromArray");
+              };
+        },
+        [(Nolabel, key_values)] )
+    when Res_parsetree_viewer.is_tuple_array key_values ->
+    Doc.concat
+      [
+        Doc.text "dict{";
+        print_literal_dict_expr ~state key_values cmt_tbl;
+        Doc.rbrace;
+      ]
+  | Pexp_apply
       ( {pexp_desc = Pexp_ident {txt = Longident.Ldot (Lident "Array", "get")}},
         [(Nolabel, parent_expr); (Nolabel, member_expr)] )
     when not (ParsetreeViewer.is_rewritten_underscore_apply_sugar parent_expr)
@@ -4541,7 +4602,7 @@ and print_jsx_name {txt = lident} =
     Doc.join ~sep:Doc.dot segments
 
 and print_arguments_with_callback_in_first_position ~state args cmt_tbl =
-  (* Because the same subtree gets printed twice, we need to copy the cmtTbl.
+  (* Because the same subtree gets printed twice, we need to copy the cmt_tbl.
    * consumed comments need to be marked not-consumed and reprinted…
    * Cheng's different comment algorithm will solve this. *)
   let state = State.next_custom_layout state in
@@ -4624,7 +4685,7 @@ and print_arguments_with_callback_in_first_position ~state args cmt_tbl =
     Doc.custom_layout [Lazy.force fits_on_one_line; Lazy.force break_all_args]
 
 and print_arguments_with_callback_in_last_position ~state args cmt_tbl =
-  (* Because the same subtree gets printed twice, we need to copy the cmtTbl.
+  (* Because the same subtree gets printed twice, we need to copy the cmt_tbl.
    * consumed comments need to be marked not-consumed and reprinted…
    * Cheng's different comment algorithm will solve this. *)
   let state = state |> State.next_custom_layout in
@@ -5822,7 +5883,7 @@ let print_pattern p = print_pattern ~state:(State.init ()) p
 let print_implementation ~width (s : Parsetree.structure) ~comments =
   let cmt_tbl = CommentTable.make () in
   CommentTable.walk_structure s cmt_tbl comments;
-  (* CommentTable.log cmtTbl; *)
+  (* CommentTable.log cmt_tbl; *)
   let doc = print_structure ~state:(State.init ()) s cmt_tbl in
   (* Doc.debug doc; *)
   Doc.to_string ~width doc ^ "\n"

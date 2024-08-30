@@ -222,6 +222,7 @@ let get_closing_token = function
   | Lbrace -> Rbrace
   | Lbracket -> Rbracket
   | List -> Rbrace
+  | Dict -> Rbrace
   | LessThan -> GreaterThan
   | _ -> assert false
 
@@ -233,7 +234,7 @@ let rec go_to_closing closing_token state =
   | GreaterThan, GreaterThan ->
     Parser.next state;
     ()
-  | ((Token.Lbracket | Lparen | Lbrace | List | LessThan) as t), _ ->
+  | ((Token.Lbracket | Lparen | Lbrace | List | Dict | LessThan) as t), _ ->
     Parser.next state;
     go_to_closing (get_closing_token t) state;
     go_to_closing closing_token state
@@ -1896,6 +1897,9 @@ and parse_atomic_expr p =
     | List ->
       Parser.next p;
       parse_list_expr ~start_pos p
+    | Dict ->
+      Parser.next p;
+      parse_dict_expr ~start_pos p
     | Module ->
       Parser.next p;
       parse_first_class_module_expr ~start_pos p
@@ -3122,6 +3126,20 @@ and parse_record_expr_row p =
     | _ -> None)
   | _ -> None
 
+and parse_dict_expr_row p =
+  match p.Parser.token with
+  | String s -> (
+    let loc = mk_loc p.start_pos p.end_pos in
+    Parser.next p;
+    let field = Location.mkloc (Longident.Lident s) loc in
+    match p.Parser.token with
+    | Colon ->
+      Parser.next p;
+      let fieldExpr = parse_expr p in
+      Some (field, fieldExpr)
+    | _ -> Some (field, Ast_helper.Exp.ident ~loc:field.loc field))
+  | _ -> None
+
 and parse_record_expr_with_string_keys ~start_pos first_row p =
   let rows =
     first_row
@@ -3902,6 +3920,36 @@ and parse_list_expr ~start_pos p =
                (Longident.Ldot (Longident.Lident "Belt", "List"), "concatMany"))
             loc))
       [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc list_exprs)]
+
+and parse_dict_expr ~start_pos p =
+  let rows =
+    parse_comma_delimited_region ~grammar:Grammar.DictRows ~closing:Rbrace
+      ~f:parse_dict_expr_row p
+  in
+  let loc = mk_loc start_pos p.end_pos in
+  let to_key_value_pair
+      (record_item : Longident.t Location.loc * Parsetree.expression) =
+    match record_item with
+    | ( {Location.txt = Longident.Lident key; loc = keyLoc},
+        ({pexp_loc = value_loc} as value_expr) ) ->
+      Some
+        (Ast_helper.Exp.tuple
+           ~loc:(mk_loc keyLoc.loc_start value_loc.loc_end)
+           [
+             Ast_helper.Exp.constant ~loc:keyLoc (Pconst_string (key, None));
+             value_expr;
+           ])
+    | _ -> None
+  in
+  let key_value_pairs = List.filter_map to_key_value_pair rows in
+  Parser.expect Rbrace p;
+  Ast_helper.Exp.apply ~loc
+    (Ast_helper.Exp.ident ~loc
+       (Location.mkloc
+          (Longident.Ldot
+             (Longident.Ldot (Longident.Lident "Js", "Dict"), "fromArray"))
+          loc))
+    [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc key_value_pairs)]
 
 and parse_array_exp p =
   let start_pos = p.Parser.start_pos in
