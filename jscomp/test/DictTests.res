@@ -1,8 +1,8 @@
-let dictCreationCanBeInlined = Js.Dict.fromArray([
-  ("name", "hello"),
-  ("age", "what"),
-  ("more", "stuff"),
-])
+let dictCreationCanBeInlined = dict{
+  "name": "hello",
+  "age": "what",
+  "more": "stuff",
+}
 
 external imaginaryExternalArgs: array<(string, string)> = "imaginary"
 
