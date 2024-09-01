@@ -186,8 +186,7 @@ let rec collectExpr super self (e : Typedtree.expression) =
         {cstr_loc = {Location.loc_start = posTo; loc_ghost} as locTo; cstr_tag},
         _ ) ->
     (match cstr_tag with
-    | Cstr_extension (path, _) ->
-      path |> DeadException.markAsUsed ~locFrom ~locTo
+    | Cstr_extension path -> path |> DeadException.markAsUsed ~locFrom ~locTo
     | _ -> ());
     if !Config.analyzeTypes && not loc_ghost then
       DeadType.addTypeReference ~posTo ~posFrom:locFrom.loc_start
