@@ -24,11 +24,6 @@ type iterator =
   {
     case: iterator -> case -> unit;
     cases: iterator -> case list -> unit;
-    class_description: iterator -> class_description -> unit;
-    class_signature: iterator -> class_signature -> unit;
-    class_type: iterator -> class_type -> unit;
-    class_type_declaration: iterator -> class_type_declaration -> unit;
-    class_type_field: iterator -> class_type_field -> unit;
     env: iterator -> Env.t -> unit;
     expr: iterator -> expression -> unit;
     extension_constructor: iterator -> extension_constructor -> unit;
