@@ -283,16 +283,16 @@ let format ~path =
     in
     if List.length diagnostics > 0 then ""
     else
-      Res_printer.print_implementation ~width:!Res_cli.ResClflags.width
-        ~comments structure
+      Res_printer.print_implementation
+        ~width:Res_multi_printer.default_print_width ~comments structure
   else if Filename.check_suffix path ".resi" then
     let {Res_driver.parsetree = signature; comments; diagnostics} =
       Res_driver.parsing_engine.parse_interface ~for_printer:true ~filename:path
     in
     if List.length diagnostics > 0 then ""
     else
-      Res_printer.print_interface ~width:!Res_cli.ResClflags.width ~comments
-        signature
+      Res_printer.print_interface ~width:Res_multi_printer.default_print_width
+        ~comments signature
   else ""
 
 let diagnosticSyntax ~path =
