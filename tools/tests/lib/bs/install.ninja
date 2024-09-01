@@ -1,0 +1,22 @@
+rescript = 1
+rule cp
+  command = cp $i $out
+rule touch
+ command = touch $out
+o ModC.cmi : cp ../bs/src/ModC.cmi
+o ModC.cmj : cp ../bs/src/ModC.cmj
+o ModC.cmt : cp ../bs/src/ModC.cmt
+o ModC.res : cp ../../src/ModC.res
+o ModC.resi : cp ../../src/ModC.resi
+o ModC.cmti : cp ../bs/src/ModC.cmti
+o DocExtraction2.cmi : cp ../bs/src/DocExtraction2.cmi
+o DocExtraction2.cmj : cp ../bs/src/DocExtraction2.cmj
+o DocExtraction2.cmt : cp ../bs/src/DocExtraction2.cmt
+o DocExtraction2.res : cp ../../src/DocExtraction2.res
+o DocExtraction2.resi : cp ../../src/DocExtraction2.resi
+o DocExtraction2.cmti : cp ../bs/src/DocExtraction2.cmti
+o DocExtractionRes.cmi : cp ../bs/src/DocExtractionRes.cmi
+o DocExtractionRes.cmj : cp ../bs/src/DocExtractionRes.cmj
+o DocExtractionRes.cmt : cp ../bs/src/DocExtractionRes.cmt
+o DocExtractionRes.res : cp ../../src/DocExtractionRes.res
+build install.stamp : touch ModC.cmi ModC.cmj DocExtraction2.cmi DocExtraction2.cmj DocExtractionRes.cmi DocExtractionRes.cmj 
