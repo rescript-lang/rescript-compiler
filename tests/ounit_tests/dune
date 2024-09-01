@@ -6,6 +6,7 @@
 (executable
  (name ounit_tests_main)
  (public_name ounit_tests)
+ (package rescript)
  (enabled_if
   (<> %{profile} browser))
  (flags
