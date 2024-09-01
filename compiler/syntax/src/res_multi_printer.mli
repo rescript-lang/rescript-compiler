@@ -1,4 +1,4 @@
-val default_print_width : int
+val default_print_width : int [@@live]
 
 (* Interface to print source code to res.
  * Takes a filename called "input" and returns the corresponding formatted res syntax *)
