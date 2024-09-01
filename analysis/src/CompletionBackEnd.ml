@@ -1741,11 +1741,11 @@ let rec completeTypedValue ?(typeArgContext : typeArgContext option) ~rawOpens
           ~env;
       ]
     else []
-  | Tfunction {env; typ; args; uncurried; returnType}
+  | Tfunction {env; typ; args; returnType}
     when prefix = "" && mode = Expression ->
     if Debug.verbose () then
       print_endline "[complete_typed_value]--> Tfunction #1";
-    let shouldPrintAsUncurried = uncurried && !Config.uncurried <> Uncurried in
+    let shouldPrintAsUncurried = false in
     let mkFnArgs ~asSnippet =
       match args with
       | [(Nolabel, argTyp)] when TypeUtils.typeIsUnit argTyp ->
