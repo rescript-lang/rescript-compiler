@@ -1,0 +1,2271 @@
+Complete src/Completion.res 1:11
+posCursor:[1:11] posNoWhite:[1:10] Found expr:[1:3->1:11]
+Pexp_ident MyList.m:[1:3->1:11]
+Completable: Cpath Value[MyList, m]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[MyList, m]
+Path MyList.m
+[{
+    "label": "mapReverse",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a>, 'a => 'b) => t<'b>",
+    "documentation": {"kind": "markdown", "value": "\nEquivalent to:\n\n```res\nmap(someList, f)->reverse\n```\n\n## Examples\n\n```rescript\nlist{3, 4, 5}->Belt.List.mapReverse(x => x * x) /* list{25, 16, 9} */\n```\n"}
+  }, {
+    "label": "makeBy",
+    "kind": 12,
+    "tags": [],
+    "detail": "(int, int => 'a) => t<'a>",
+    "documentation": {"kind": "markdown", "value": "\nReturn a list of length `numItems` with element `i` initialized with `f(i)`.\nReturns an empty list if `numItems` is negative.\n\n## Examples\n\n```rescript\nBelt.List.makeBy(5, i => i) // list{0, 1, 2, 3, 4}\n\nBelt.List.makeBy(5, i => i * i) // list{0, 1, 4, 9, 16}\n```\n"}
+  }, {
+    "label": "make",
+    "kind": 12,
+    "tags": [],
+    "detail": "(int, 'a) => t<'a>",
+    "documentation": {"kind": "markdown", "value": "\nReturns a list of length `numItems` with each element filled with value `v`. Returns an empty list if `numItems` is negative.\n\n## Examples\n\n```rescript\nBelt.List.make(3, 1) // list{1, 1, 1}\n```\n"}
+  }, {
+    "label": "mapReverse2U",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a>, t<'b>, ('a, 'b) => 'c) => t<'c>",
+    "documentation": {"kind": "markdown", "value": " Uncurried version of [mapReverse2](#mapReverse2). "}
+  }, {
+    "label": "map",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a>, 'a => 'b) => t<'b>",
+    "documentation": {"kind": "markdown", "value": "\nReturns a new list with `f` applied to each element of `someList`.\n\n## Examples\n\n```rescript\nlist{1, 2}->Belt.List.map(x => x + 1) // list{3, 4}\n```\n"}
+  }, {
+    "label": "mapWithIndexU",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a>, (int, 'a) => 'b) => t<'b>",
+    "documentation": {"kind": "markdown", "value": " Uncurried version of [mapWithIndex](#mapWithIndex). "}
+  }, {
+    "label": "mapU",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a>, 'a => 'b) => t<'b>",
+    "documentation": {"kind": "markdown", "value": " Uncurried version of [map](#map). "}
+  }, {
+    "label": "makeByU",
+    "kind": 12,
+    "tags": [],
+    "detail": "(int, int => 'a) => t<'a>",
+    "documentation": {"kind": "markdown", "value": " Uncurried version of [makeBy](#makeBy) "}
+  }, {
+    "label": "mapReverse2",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a>, t<'b>, ('a, 'b) => 'c) => t<'c>",
+    "documentation": {"kind": "markdown", "value": "\nEquivalent to: `zipBy(xs, ys, f)->reverse`\n\n## Examples\n\n```rescript\n\nBelt.List.mapReverse2(list{1, 2, 3}, list{1, 2}, (a, b) => a + b) // list{4, 2}\n```\n"}
+  }, {
+    "label": "mapWithIndex",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a>, (int, 'a) => 'b) => t<'b>",
+    "documentation": {"kind": "markdown", "value": "\nApplies `f` to each element of `someList`.\nFunction `f` takes two arguments: the index starting from 0 and the element from `someList`, in that order.\n\n## Examples\n\n```rescript\nlist{1, 2, 3}->Belt.List.mapWithIndex((index, x) => index + x) // list{1, 3, 5}\n```\n"}
+  }, {
+    "label": "mapReverseU",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a>, 'a => 'b) => t<'b>",
+    "documentation": {"kind": "markdown", "value": " Uncurried version of [mapReverse](#mapReverse). "}
+  }]
+
+Complete src/Completion.res 3:9
+posCursor:[3:9] posNoWhite:[3:8] Found expr:[3:3->3:9]
+Pexp_ident Array.:[3:3->3:9]
+Completable: Cpath Value[Array, ""]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Array, ""]
+Path Array.
+[{
+    "label": "fold_left",
+    "kind": 12,
+    "tags": [],
+    "detail": "(('a, 'b) => 'a, 'a, array<'b>) => 'a",
+    "documentation": {"kind": "markdown", "value": " [Array.fold_left f x a] computes\n   [f (... (f (f x a.(0)) a.(1)) ...) a.(n-1)],\n   where [n] is the length of the array [a]. "}
+  }, {
+    "label": "concat",
+    "kind": 12,
+    "tags": [],
+    "detail": "list<array<'a>> => array<'a>",
+    "documentation": {"kind": "markdown", "value": " Same as {!Array.append}, but concatenates a list of arrays. "}
+  }, {
+    "label": "mapi",
+    "kind": 12,
+    "tags": [],
+    "detail": "((int, 'a) => 'b, array<'a>) => array<'b>",
+    "documentation": {"kind": "markdown", "value": " Same as {!Array.map}, but the\n   function is applied to the index of the element as first argument,\n   and the element itself as second argument. "}
+  }, {
+    "label": "exists",
+    "kind": 12,
+    "tags": [],
+    "detail": "('a => bool, array<'a>) => bool",
+    "documentation": {"kind": "markdown", "value": " [Array.exists p [|a1; ...; an|]] checks if at least one element of\n    the array satisfies the predicate [p]. That is, it returns\n    [(p a1) || (p a2) || ... || (p an)].\n    @since 4.03.0 "}
+  }, {
+    "label": "for_all",
+    "kind": 12,
+    "tags": [],
+    "detail": "('a => bool, array<'a>) => bool",
+    "documentation": {"kind": "markdown", "value": " [Array.for_all p [|a1; ...; an|]] checks if all elements of the array\n   satisfy the predicate [p]. That is, it returns\n   [(p a1) && (p a2) && ... && (p an)].\n   @since 4.03.0 "}
+  }, {
+    "label": "copy",
+    "kind": 12,
+    "tags": [],
+    "detail": "array<'a> => array<'a>",
+    "documentation": {"kind": "markdown", "value": " [Array.copy a] returns a copy of [a], that is, a fresh array\n   containing the same elements as [a]. "}
+  }, {
+    "label": "iter2",
+    "kind": 12,
+    "tags": [],
+    "detail": "(('a, 'b) => unit, array<'a>, array<'b>) => unit",
+    "documentation": {"kind": "markdown", "value": " [Array.iter2 f a b] applies function [f] to all the elements of [a]\n   and [b].\n   Raise [Invalid_argument] if the arrays are not the same size.\n   @since 4.03.0 "}
+  }, {
+    "label": "to_list",
+    "kind": 12,
+    "tags": [],
+    "detail": "array<'a> => list<'a>",
+    "documentation": {"kind": "markdown", "value": " [Array.to_list a] returns the list of all the elements of [a]. "}
+  }, {
+    "label": "stable_sort",
+    "kind": 12,
+    "tags": [],
+    "detail": "(('a, 'a) => int, array<'a>) => unit",
+    "documentation": {"kind": "markdown", "value": " Same as {!Array.sort}, but the sorting algorithm is stable (i.e.\n   elements that compare equal are kept in their original order) and\n   not guaranteed to run in constant heap space.\n\n   The current implementation uses Merge Sort. It uses [n/2]\n   words of heap space, where [n] is the length of the array.\n   It is usually faster than the current implementation of {!Array.sort}.\n"}
+  }, {
+    "label": "iteri",
+    "kind": 12,
+    "tags": [],
+    "detail": "((int, 'a) => unit, array<'a>) => unit",
+    "documentation": {"kind": "markdown", "value": " Same as {!Array.iter}, but the\n   function is applied with the index of the element as first argument,\n   and the element itself as second argument. "}
+  }, {
+    "label": "memq",
+    "kind": 12,
+    "tags": [],
+    "detail": "('a, array<'a>) => bool",
+    "documentation": {"kind": "markdown", "value": " Same as {!Array.mem}, but uses physical equality instead of structural\n   equality to compare array elements.\n   @since 4.03.0 "}
+  }, {
+    "label": "map2",
+    "kind": 12,
+    "tags": [],
+    "detail": "(('a, 'b) => 'c, array<'a>, array<'b>) => array<'c>",
+    "documentation": {"kind": "markdown", "value": " [Array.map2 f a b] applies function [f] to all the elements of [a]\n   and [b], and builds an array with the results returned by [f]:\n   [[| f a.(0) b.(0); ...; f a.(Array.length a - 1) b.(Array.length b - 1)|]].\n   Raise [Invalid_argument] if the arrays are not the same size.\n   @since 4.03.0 "}
+  }, {
+    "label": "set",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, int, 'a) => unit",
+    "documentation": {"kind": "markdown", "value": " [Array.set a n x] modifies array [a] in place, replacing\n   element number [n] with [x].\n   You can also write [a.(n) <- x] instead of [Array.set a n x].\n\n   Raise [Invalid_argument \"index out of bounds\"]\n   if [n] is outside the range 0 to [Array.length a - 1]. "}
+  }, {
+    "label": "make",
+    "kind": 12,
+    "tags": [],
+    "detail": "(int, 'a) => array<'a>",
+    "documentation": {"kind": "markdown", "value": " [Array.make n x] returns a fresh array of length [n],\n   initialized with [x].\n   All the elements of this new array are initially\n   physically equal to [x] (in the sense of the [==] predicate).\n   Consequently, if [x] is mutable, it is shared among all elements\n   of the array, and modifying [x] through one of the array entries\n   will modify all other entries at the same time.\n\n   Raise [Invalid_argument] if [n < 0] or [n > Sys.max_array_length].\n   If the value of [x] is a floating-point number, then the maximum\n   size is only [Sys.max_array_length / 2]."}
+  }, {
+    "label": "make_float",
+    "kind": 12,
+    "tags": [1],
+    "detail": "int => array<float>",
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use Array.create_float instead.\n\n @deprecated [Array.make_float] is an alias for {!Array.create_float}. "}
+  }, {
+    "label": "fold_right",
+    "kind": 12,
+    "tags": [],
+    "detail": "(('b, 'a) => 'a, array<'b>, 'a) => 'a",
+    "documentation": {"kind": "markdown", "value": " [Array.fold_right f a x] computes\n   [f a.(0) (f a.(1) ( ... (f a.(n-1) x) ...))],\n   where [n] is the length of the array [a]. "}
+  }, {
+    "label": "sort",
+    "kind": 12,
+    "tags": [],
+    "detail": "(('a, 'a) => int, array<'a>) => unit",
+    "documentation": {"kind": "markdown", "value": " Sort an array in increasing order according to a comparison\n   function.  The comparison function must return 0 if its arguments\n   compare as equal, a positive integer if the first is greater,\n   and a negative integer if the first is smaller (see below for a\n   complete specification).  For example, {!Pervasives.compare} is\n   a suitable comparison function, provided there are no floating-point\n   NaN values in the data.  After calling [Array.sort], the\n   array is sorted in place in increasing order.\n   [Array.sort] is guaranteed to run in constant heap space\n   and (at most) logarithmic stack space.\n\n   The current implementation uses Heap Sort.  It runs in constant\n   stack space.\n\n   Specification of the comparison function:\n   Let [a] be the array and [cmp] the comparison function.  The following\n   must be true for all x, y, z in a :\n-   [cmp x y] > 0 if and only if [cmp y x] < 0\n-   if [cmp x y] >= 0 and [cmp y z] >= 0 then [cmp x z] >= 0\n\n   When [Array.sort] returns, [a] contains the same elements as before,\n   reordered in such a way that for all i and j valid indices of [a] :\n-   [cmp a.(i) a.(j)] >= 0 if and only if i >= j\n"}
+  }, {
+    "label": "length",
+    "kind": 12,
+    "tags": [],
+    "detail": "array<'a> => int",
+    "documentation": {"kind": "markdown", "value": " Return the length (number of elements) of the given array. "}
+  }, {
+    "label": "sub",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, int, int) => array<'a>",
+    "documentation": {"kind": "markdown", "value": " [Array.sub a start len] returns a fresh array of length [len],\n   containing the elements number [start] to [start + len - 1]\n   of array [a].\n\n   Raise [Invalid_argument \"Array.sub\"] if [start] and [len] do not\n   designate a valid subarray of [a]; that is, if\n   [start < 0], or [len < 0], or [start + len > Array.length a]. "}
+  }, {
+    "label": "of_list",
+    "kind": 12,
+    "tags": [],
+    "detail": "list<'a> => array<'a>",
+    "documentation": {"kind": "markdown", "value": " [Array.of_list l] returns a fresh array containing the elements\n   of [l]. "}
+  }, {
+    "label": "iter",
+    "kind": 12,
+    "tags": [],
+    "detail": "('a => unit, array<'a>) => unit",
+    "documentation": {"kind": "markdown", "value": " [Array.iter f a] applies function [f] in turn to all\n   the elements of [a].  It is equivalent to\n   [f a.(0); f a.(1); ...; f a.(Array.length a - 1); ()]. "}
+  }, {
+    "label": "map",
+    "kind": 12,
+    "tags": [],
+    "detail": "('a => 'b, array<'a>) => array<'b>",
+    "documentation": {"kind": "markdown", "value": " [Array.map f a] applies function [f] to all the elements of [a],\n   and builds an array with the results returned by [f]:\n   [[| f a.(0); f a.(1); ...; f a.(Array.length a - 1) |]]. "}
+  }, {
+    "label": "unsafe_get",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, int) => 'a",
+    "documentation": null
+  }, {
+    "label": "make_matrix",
+    "kind": 12,
+    "tags": [],
+    "detail": "(int, int, 'a) => array<array<'a>>",
+    "documentation": {"kind": "markdown", "value": " [Array.make_matrix dimx dimy e] returns a two-dimensional array\n   (an array of arrays) with first dimension [dimx] and\n   second dimension [dimy]. All the elements of this new matrix\n   are initially physically equal to [e].\n   The element ([x,y]) of a matrix [m] is accessed\n   with the notation [m.(x).(y)].\n\n   Raise [Invalid_argument] if [dimx] or [dimy] is negative or\n   greater than {!Sys.max_array_length}.\n   If the value of [e] is a floating-point number, then the maximum\n   size is only [Sys.max_array_length / 2]. "}
+  }, {
+    "label": "mem",
+    "kind": 12,
+    "tags": [],
+    "detail": "('a, array<'a>) => bool",
+    "documentation": {"kind": "markdown", "value": " [mem a l] is true if and only if [a] is equal\n   to an element of [l].\n   @since 4.03.0 "}
+  }, {
+    "label": "get",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, int) => 'a",
+    "documentation": {"kind": "markdown", "value": " [Array.get a n] returns the element number [n] of array [a].\n   The first element has number 0.\n   The last element has number [Array.length a - 1].\n   You can also write [a.(n)] instead of [Array.get a n].\n\n   Raise [Invalid_argument \"index out of bounds\"]\n   if [n] is outside the range 0 to [(Array.length a - 1)]. "}
+  }, {
+    "label": "append",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, array<'a>) => array<'a>",
+    "documentation": {"kind": "markdown", "value": " [Array.append v1 v2] returns a fresh array containing the\n   concatenation of the arrays [v1] and [v2]. "}
+  }, {
+    "label": "unsafe_set",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, int, 'a) => unit",
+    "documentation": null
+  }, {
+    "label": "create_matrix",
+    "kind": 12,
+    "tags": [1],
+    "detail": "(int, int, 'a) => array<array<'a>>",
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use Array.make_matrix instead.\n\n @deprecated [Array.create_matrix] is an alias for {!Array.make_matrix}. "}
+  }, {
+    "label": "create_float",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => array<float>",
+    "documentation": {"kind": "markdown", "value": " [Array.create_float n] returns a fresh float array of length [n],\n    with uninitialized data.\n    @since 4.03 "}
+  }, {
+    "label": "create",
+    "kind": 12,
+    "tags": [1],
+    "detail": "(int, 'a) => array<'a>",
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use Array.make instead.\n\n @deprecated [Array.create] is an alias for {!Array.make}. "}
+  }, {
+    "label": "init",
+    "kind": 12,
+    "tags": [],
+    "detail": "(int, int => 'a) => array<'a>",
+    "documentation": {"kind": "markdown", "value": " [Array.init n f] returns a fresh array of length [n],\n   with element number [i] initialized to the result of [f i].\n   In other terms, [Array.init n f] tabulates the results of [f]\n   applied to the integers [0] to [n-1].\n\n   Raise [Invalid_argument] if [n < 0] or [n > Sys.max_array_length].\n   If the return type of [f] is [float], then the maximum\n   size is only [Sys.max_array_length / 2]."}
+  }, {
+    "label": "fast_sort",
+    "kind": 12,
+    "tags": [],
+    "detail": "(('a, 'a) => int, array<'a>) => unit",
+    "documentation": {"kind": "markdown", "value": " Same as {!Array.sort} or {!Array.stable_sort}, whichever is faster\n    on typical input.\n"}
+  }, {
+    "label": "fill",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, int, int, 'a) => unit",
+    "documentation": {"kind": "markdown", "value": " [Array.fill a ofs len x] modifies the array [a] in place,\n   storing [x] in elements number [ofs] to [ofs + len - 1].\n\n   Raise [Invalid_argument \"Array.fill\"] if [ofs] and [len] do not\n   designate a valid subarray of [a]. "}
+  }, {
+    "label": "blit",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, int, array<'a>, int, int) => unit",
+    "documentation": {"kind": "markdown", "value": " [Array.blit v1 o1 v2 o2 len] copies [len] elements\n   from array [v1], starting at element number [o1], to array [v2],\n   starting at element number [o2]. It works correctly even if\n   [v1] and [v2] are the same array, and the source and\n   destination chunks overlap.\n\n   Raise [Invalid_argument \"Array.blit\"] if [o1] and [len] do not\n   designate a valid subarray of [v1], or if [o2] and [len] do not\n   designate a valid subarray of [v2]. "}
+  }, {
+    "label": "Floatarray",
+    "kind": 9,
+    "tags": [],
+    "detail": "module Floatarray",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 5:10
+posCursor:[5:10] posNoWhite:[5:9] Found expr:[5:3->5:10]
+Pexp_ident Array.m:[5:3->5:10]
+Completable: Cpath Value[Array, m]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Array, m]
+Path Array.m
+[{
+    "label": "mapi",
+    "kind": 12,
+    "tags": [],
+    "detail": "((int, 'a) => 'b, array<'a>) => array<'b>",
+    "documentation": {"kind": "markdown", "value": " Same as {!Array.map}, but the\n   function is applied to the index of the element as first argument,\n   and the element itself as second argument. "}
+  }, {
+    "label": "memq",
+    "kind": 12,
+    "tags": [],
+    "detail": "('a, array<'a>) => bool",
+    "documentation": {"kind": "markdown", "value": " Same as {!Array.mem}, but uses physical equality instead of structural\n   equality to compare array elements.\n   @since 4.03.0 "}
+  }, {
+    "label": "map2",
+    "kind": 12,
+    "tags": [],
+    "detail": "(('a, 'b) => 'c, array<'a>, array<'b>) => array<'c>",
+    "documentation": {"kind": "markdown", "value": " [Array.map2 f a b] applies function [f] to all the elements of [a]\n   and [b], and builds an array with the results returned by [f]:\n   [[| f a.(0) b.(0); ...; f a.(Array.length a - 1) b.(Array.length b - 1)|]].\n   Raise [Invalid_argument] if the arrays are not the same size.\n   @since 4.03.0 "}
+  }, {
+    "label": "make",
+    "kind": 12,
+    "tags": [],
+    "detail": "(int, 'a) => array<'a>",
+    "documentation": {"kind": "markdown", "value": " [Array.make n x] returns a fresh array of length [n],\n   initialized with [x].\n   All the elements of this new array are initially\n   physically equal to [x] (in the sense of the [==] predicate).\n   Consequently, if [x] is mutable, it is shared among all elements\n   of the array, and modifying [x] through one of the array entries\n   will modify all other entries at the same time.\n\n   Raise [Invalid_argument] if [n < 0] or [n > Sys.max_array_length].\n   If the value of [x] is a floating-point number, then the maximum\n   size is only [Sys.max_array_length / 2]."}
+  }, {
+    "label": "make_float",
+    "kind": 12,
+    "tags": [1],
+    "detail": "int => array<float>",
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use Array.create_float instead.\n\n @deprecated [Array.make_float] is an alias for {!Array.create_float}. "}
+  }, {
+    "label": "map",
+    "kind": 12,
+    "tags": [],
+    "detail": "('a => 'b, array<'a>) => array<'b>",
+    "documentation": {"kind": "markdown", "value": " [Array.map f a] applies function [f] to all the elements of [a],\n   and builds an array with the results returned by [f]:\n   [[| f a.(0); f a.(1); ...; f a.(Array.length a - 1) |]]. "}
+  }, {
+    "label": "make_matrix",
+    "kind": 12,
+    "tags": [],
+    "detail": "(int, int, 'a) => array<array<'a>>",
+    "documentation": {"kind": "markdown", "value": " [Array.make_matrix dimx dimy e] returns a two-dimensional array\n   (an array of arrays) with first dimension [dimx] and\n   second dimension [dimy]. All the elements of this new matrix\n   are initially physically equal to [e].\n   The element ([x,y]) of a matrix [m] is accessed\n   with the notation [m.(x).(y)].\n\n   Raise [Invalid_argument] if [dimx] or [dimy] is negative or\n   greater than {!Sys.max_array_length}.\n   If the value of [e] is a floating-point number, then the maximum\n   size is only [Sys.max_array_length / 2]. "}
+  }, {
+    "label": "mem",
+    "kind": 12,
+    "tags": [],
+    "detail": "('a, array<'a>) => bool",
+    "documentation": {"kind": "markdown", "value": " [mem a l] is true if and only if [a] is equal\n   to an element of [l].\n   @since 4.03.0 "}
+  }]
+
+Complete src/Completion.res 15:17
+posCursor:[15:17] posNoWhite:[15:16] Found expr:[15:12->15:17]
+Pexp_ident Dep.c:[15:12->15:17]
+Completable: Cpath Value[Dep, c]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Dep, c]
+Path Dep.c
+[{
+    "label": "customDouble",
+    "kind": 12,
+    "tags": [1],
+    "detail": "int => int",
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use customDouble instead\n\nSome doc comment"}
+  }]
+
+Complete src/Completion.res 23:20
+posCursor:[23:20] posNoWhite:[23:19] Found expr:[23:11->23:20]
+Pexp_apply ...[23:11->23:18] ()
+Completable: CnamedArg(Value[Lib, foo], "", [])
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Lib, foo]
+Path Lib.foo
+Found type for function (~age: int, ~name: string) => string
+[{
+    "label": "age",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "name",
+    "kind": 4,
+    "tags": [],
+    "detail": "string",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 26:13
+posCursor:[26:13] posNoWhite:[26:12] Found expr:[26:3->26:13]
+Completable: Cpath array<int>->m
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath array<int>->m
+ContextPath array<int>
+CPPipe env:Completion
+Path Js.Array2.m
+[{
+    "label": "Js.Array2.mapi",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a>, ('a, int) => 'b) => t<'b>",
+    "documentation": {"kind": "markdown", "value": "\nApplies the function (the second argument) to each item in the array, returning\na new array. The function acceps two arguments: an item from the array and its\nindex number. The result array does not have to have elements of the same type\nas the input array. See\n[`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)\non MDN.\n\n## Examples\n\n```rescript\n// multiply each item in array by its position\nlet product = (item, index) => item * index\nJs.Array2.mapi([10, 11, 12], product) == [0, 11, 24]\n```\n"}
+  }, {
+    "label": "Js.Array2.map",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a>, 'a => 'b) => t<'b>",
+    "documentation": {"kind": "markdown", "value": "\nApplies the function (the second argument) to each item in the array, returning\na new array. The result array does not have to have elements of the same type\nas the input array. See\n[`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)\non MDN.\n\n## Examples\n\n```rescript\nJs.Array2.map([12, 4, 8], x => x * x) == [144, 16, 64]\nJs.Array2.map([\"animal\", \"vegetable\", \"mineral\"], Js.String.length) == [6, 9, 7]\n```\n"}
+  }]
+
+Complete src/Completion.res 29:13
+posCursor:[29:13] posNoWhite:[29:12] Found expr:[29:3->29:13]
+Completable: Cpath string->toU
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath string->toU
+ContextPath string
+CPPipe env:Completion
+Path Js.String2.toU
+[{
+    "label": "Js.String2.toUpperCase",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => t",
+    "documentation": {"kind": "markdown", "value": "\n`toUpperCase(str)` converts `str` to upper case using the locale-insensitive\ncase mappings in the Unicode Character Database. Notice that the conversion can\nexpand the number of letters in the result; for example the German ß\ncapitalizes to two Ses in a row.\n\nSee [`String.toUpperCase`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toUpperCase)\non MDN.\n\n## Examples\n\n```rescript\nJs.String2.toUpperCase(\"abc\") == \"ABC\"\nJs.String2.toUpperCase(`Straße`) == `STRASSE`\nJs.String2.toUpperCase(`πς`) == `ΠΣ`\n```\n"}
+  }]
+
+Complete src/Completion.res 34:8
+posCursor:[34:8] posNoWhite:[34:7] Found expr:[34:3->34:8]
+Completable: Cpath Value[op]->e
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[op]->e
+ContextPath Value[op]
+Path op
+CPPipe env:Completion
+Path Belt.Option.e
+[{
+    "label": "Belt.Option.eqU",
+    "kind": 12,
+    "tags": [],
+    "detail": "(option<'a>, option<'b>, ('a, 'b) => bool) => bool",
+    "documentation": {"kind": "markdown", "value": "\nUncurried version of `eq`\n"}
+  }, {
+    "label": "Belt.Option.eq",
+    "kind": 12,
+    "tags": [],
+    "detail": "(option<'a>, option<'b>, ('a, 'b) => bool) => bool",
+    "documentation": {"kind": "markdown", "value": "\nEvaluates two optional values for equality with respect to a predicate\nfunction. If both `optValue1` and `optValue2` are `None`, returns `true`.\nIf one of the arguments is `Some(value)` and the other is `None`, returns\n`false`.\n\nIf arguments are `Some(value1)` and `Some(value2)`, returns the result of\n`predicate(value1, value2)`; the predicate function must return a bool.\n\n## Examples\n\n```rescript\nlet clockEqual = (a, b) => mod(a, 12) == mod(b, 12)\n\nopen Belt.Option\n\neq(Some(3), Some(15), clockEqual) /* true */\n\neq(Some(3), None, clockEqual) /* false */\n\neq(None, Some(3), clockEqual) /* false */\n\neq(None, None, clockEqual) /* true */\n```\n"}
+  }]
+
+Complete src/Completion.res 44:7
+posCursor:[44:7] posNoWhite:[44:6] Found expr:[44:3->54:3]
+Pexp_apply ...[50:9->50:10] (...[44:3->50:8], ...[51:2->54:3])
+posCursor:[44:7] posNoWhite:[44:6] Found expr:[44:3->50:8]
+Completable: Cpath Value[fa]->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[fa]->
+ContextPath Value[fa]
+Path fa
+CPPipe env:Completion
+CPPipe type path:ForAuto.t
+CPPipe pathFromEnv:ForAuto found:true
+Path ForAuto.
+[{
+    "label": "ForAuto.abc",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }, {
+    "label": "ForAuto.abd",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 47:21
+posCursor:[47:21] posNoWhite:[47:20] Found expr:[47:3->47:21]
+posCursor:[47:21] posNoWhite:[47:20] Found expr:[47:12->47:21]
+Pexp_ident Js.Dict.u:[47:12->47:21]
+Completable: Cpath Value[Js, Dict, u]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Js, Dict, u]
+Path Js.Dict.u
+[{
+    "label": "unsafeGet",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a>, key) => 'a",
+    "documentation": {"kind": "markdown", "value": "\n`Js.Dict.unsafeGet(key)` returns the value if the key exists, otherwise an `undefined` value is returned. Use this only when you are sure the key exists (i.e. when having used the `keys()` function to check that the key is valid).\n\n## Examples\n\n```rescript\nJs.Dict.unsafeGet(ages, \"Fred\") == 49\nJs.Dict.unsafeGet(ages, \"Paul\") // returns undefined\n```\n"}
+  }, {
+    "label": "unsafeDeleteKey",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<string>, string) => unit",
+    "documentation": {"kind": "markdown", "value": " Experimental internal function "}
+  }]
+
+Complete src/Completion.res 59:30
+posCursor:[59:30] posNoWhite:[59:29] Found expr:[59:15->59:30]
+JSX <O.Comp:[59:15->59:21] second[59:22->59:28]=...[59:29->59:30]> _children:None
+Completable: Cexpression CJsxPropValue [O, Comp] second=z
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath CJsxPropValue [O, Comp] second
+Path O.Comp.make
+[{
+    "label": "zzz",
+    "kind": 12,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 62:23
+posCursor:[62:23] posNoWhite:[62:22] Found expr:[62:15->62:23]
+JSX <O.Comp:[62:15->62:21] z[62:22->62:23]=...[62:22->62:23]> _children:None
+Completable: Cjsx([O, Comp], z, [z])
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+Path O.Comp.make
+[{
+    "label": "zoo",
+    "kind": 4,
+    "tags": [],
+    "detail": "option<int>",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 65:8
+Attribute id:reac:[65:3->65:8] label:reac
+Completable: Cdecorator(reac)
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+[{
+    "label": "react.component",
+    "kind": 4,
+    "tags": [],
+    "detail": "",
+    "documentation": {"kind": "markdown", "value": "The `@react.component` decorator is used to annotate functions that are RescriptReact components.\n\nYou will need this decorator whenever you want to use a ReScript / React component in ReScript JSX expressions.\n\nNote: The `@react.component` decorator requires the `jsx` config to be set in your `rescript.json`/`bsconfig.json` to enable the required React transformations.\n\n[Read more and see examples in the documentation](https://rescript-lang.org/syntax-lookup#react-component-decorator)."},
+    "insertTextFormat": 2
+  }]
+
+Complete src/Completion.res 68:10
+posCursor:[68:10] posNoWhite:[68:9] Found expr:[0:-1->86:1]
+Pexp_apply ...[80:6->80:7] (...[80:8->86:1])
+Attribute id:react.let:[68:3->80:3] label:react.
+Completable: Cdecorator(react.)
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+[{
+    "label": "component",
+    "kind": 4,
+    "tags": [],
+    "detail": "",
+    "documentation": {"kind": "markdown", "value": "The `@react.component` decorator is used to annotate functions that are RescriptReact components.\n\nYou will need this decorator whenever you want to use a ReScript / React component in ReScript JSX expressions.\n\nNote: The `@react.component` decorator requires the `jsx` config to be set in your `rescript.json`/`bsconfig.json` to enable the required React transformations.\n\n[Read more and see examples in the documentation](https://rescript-lang.org/syntax-lookup#react-component-decorator)."},
+    "insertTextFormat": 2
+  }]
+
+Complete src/Completion.res 71:27
+posCursor:[71:27] posNoWhite:[71:26] Found expr:[71:11->71:27]
+Pexp_apply ...[71:11->71:18] (~name71:20->71:24=...[71:20->71:24])
+Completable: CnamedArg(Value[Lib, foo], "", [name])
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Lib, foo]
+Path Lib.foo
+Found type for function (~age: int, ~name: string) => string
+[{
+    "label": "age",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 74:26
+posCursor:[74:26] posNoWhite:[74:25] Found expr:[74:11->74:26]
+Pexp_apply ...[74:11->74:18] (~age74:20->74:23=...[74:20->74:23])
+Completable: CnamedArg(Value[Lib, foo], "", [age])
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Lib, foo]
+Path Lib.foo
+Found type for function (~age: int, ~name: string) => string
+[{
+    "label": "name",
+    "kind": 4,
+    "tags": [],
+    "detail": "string",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 77:32
+posCursor:[77:32] posNoWhite:[77:31] Found expr:[77:11->77:32]
+Pexp_apply ...[77:11->77:18] (~age77:20->77:23=...[77:25->77:28])
+Completable: CnamedArg(Value[Lib, foo], "", [age])
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Lib, foo]
+Path Lib.foo
+Found type for function (~age: int, ~name: string) => string
+[{
+    "label": "name",
+    "kind": 4,
+    "tags": [],
+    "detail": "string",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 82:5
+posCursor:[82:5] posNoWhite:[82:4] Found expr:[80:8->86:1]
+Pexp_apply ...[80:8->80:15] (~age84:3->84:6=...[84:7->84:8], ~name85:3->85:7=...[85:8->85:10])
+Completable: CnamedArg(Value[Lib, foo], "", [age, name])
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Lib, foo]
+Path Lib.foo
+Found type for function (~age: int, ~name: string) => string
+[]
+
+Complete src/Completion.res 90:13
+posCursor:[90:13] posNoWhite:[90:12] Found expr:[90:3->93:18]
+Pexp_send a[90:12->90:13] e:[90:3->90:10]
+Completable: Cpath Value[someObj]["a"]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[someObj]["a"]
+ContextPath Value[someObj]
+Path someObj
+[{
+    "label": "age",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 95:24
+posCursor:[95:24] posNoWhite:[95:23] Found expr:[95:3->99:6]
+Pexp_send [95:24->95:24] e:[95:3->95:22]
+Completable: Cpath Value[nestedObj]["x"]["y"][""]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[nestedObj]["x"]["y"][""]
+ContextPath Value[nestedObj]["x"]["y"]
+ContextPath Value[nestedObj]["x"]
+ContextPath Value[nestedObj]
+Path nestedObj
+[{
+    "label": "age",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "name",
+    "kind": 4,
+    "tags": [],
+    "detail": "string",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 99:7
+posCursor:[99:7] posNoWhite:[99:6] Found expr:[99:3->102:20]
+Pexp_send a[99:6->99:7] e:[99:3->99:4]
+Completable: Cpath Value[o]["a"]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[o]["a"]
+ContextPath Value[o]
+Path o
+[{
+    "label": "age",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 104:17
+posCursor:[104:17] posNoWhite:[104:16] Found expr:[104:3->125:19]
+Pexp_send [104:17->104:17] e:[104:3->104:15]
+Completable: Cpath Value[no]["x"]["y"][""]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[no]["x"]["y"][""]
+ContextPath Value[no]["x"]["y"]
+ContextPath Value[no]["x"]
+ContextPath Value[no]
+Path no
+[{
+    "label": "name",
+    "kind": 4,
+    "tags": [],
+    "detail": "string",
+    "documentation": null
+  }, {
+    "label": "age",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 110:5
+posCursor:[110:5] posNoWhite:[110:4] Found expr:[110:3->110:5]
+Pexp_field [110:3->110:4] _:[116:0->110:5]
+Completable: Cpath Value[r].""
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[r].""
+ContextPath Value[r]
+Path r
+[{
+    "label": "x",
+    "kind": 5,
+    "tags": [],
+    "detail": "int",
+    "documentation": {"kind": "markdown", "value": "```rescript\nx: int\n```\n\n```rescript\ntype r = {x: int, y: string}\n```"}
+  }, {
+    "label": "y",
+    "kind": 5,
+    "tags": [],
+    "detail": "string",
+    "documentation": {"kind": "markdown", "value": "```rescript\ny: string\n```\n\n```rescript\ntype r = {x: int, y: string}\n```"}
+  }]
+
+Complete src/Completion.res 113:25
+posCursor:[113:25] posNoWhite:[113:24] Found expr:[113:3->113:25]
+Pexp_field [113:3->113:24] _:[116:0->113:25]
+Completable: Cpath Value[Objects, Rec, recordVal].""
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Objects, Rec, recordVal].""
+ContextPath Value[Objects, Rec, recordVal]
+Path Objects.Rec.recordVal
+[{
+    "label": "xx",
+    "kind": 5,
+    "tags": [],
+    "detail": "int",
+    "documentation": {"kind": "markdown", "value": "```rescript\nxx: int\n```\n\n```rescript\ntype recordt = {xx: int, ss: string}\n```"}
+  }, {
+    "label": "ss",
+    "kind": 5,
+    "tags": [],
+    "detail": "string",
+    "documentation": {"kind": "markdown", "value": "```rescript\nss: string\n```\n\n```rescript\ntype recordt = {xx: int, ss: string}\n```"}
+  }]
+
+Complete src/Completion.res 120:7
+posCursor:[120:7] posNoWhite:[120:6] Found expr:[119:11->123:1]
+posCursor:[120:7] posNoWhite:[120:6] Found expr:[119:11->123:1]
+posCursor:[120:7] posNoWhite:[120:6] Found expr:[120:5->122:5]
+posCursor:[120:7] posNoWhite:[120:6] Found expr:[120:5->120:7]
+Pexp_ident my:[120:5->120:7]
+Completable: Cpath Value[my]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[my]
+Path my
+[{
+    "label": "myAmazingFunction",
+    "kind": 12,
+    "tags": [],
+    "detail": "(int, int) => int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 125:19
+posCursor:[125:19] posNoWhite:[125:18] Found expr:[125:3->145:32]
+Pexp_send [125:19->125:19] e:[125:3->125:17]
+Completable: Cpath Value[Objects, object][""]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Objects, object][""]
+ContextPath Value[Objects, object]
+Path Objects.object
+[{
+    "label": "name",
+    "kind": 4,
+    "tags": [],
+    "detail": "string",
+    "documentation": null
+  }, {
+    "label": "age",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 151:6
+posCursor:[151:6] posNoWhite:[151:5] Found expr:[151:4->151:6]
+JSX <O.:[151:4->151:6] > _children:None
+Completable: Cpath Module[O, ""]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Module[O, ""]
+Path O.
+[{
+    "label": "Comp",
+    "kind": 9,
+    "tags": [],
+    "detail": "module Comp",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 157:8
+posCursor:[157:8] posNoWhite:[157:7] Found expr:[157:3->157:8]
+Pexp_field [157:3->157:7] _:[165:0->157:8]
+Completable: Cpath Value[q].aa.""
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[q].aa.""
+ContextPath Value[q].aa
+ContextPath Value[q]
+Path q
+[{
+    "label": "x",
+    "kind": 5,
+    "tags": [],
+    "detail": "int",
+    "documentation": {"kind": "markdown", "value": "```rescript\nx: int\n```\n\n```rescript\ntype aa = {x: int, name: string}\n```"}
+  }, {
+    "label": "name",
+    "kind": 5,
+    "tags": [],
+    "detail": "string",
+    "documentation": {"kind": "markdown", "value": "```rescript\nname: string\n```\n\n```rescript\ntype aa = {x: int, name: string}\n```"}
+  }]
+
+Complete src/Completion.res 159:9
+posCursor:[159:9] posNoWhite:[159:8] Found expr:[159:3->159:9]
+Pexp_field [159:3->159:7] n:[159:8->159:9]
+Completable: Cpath Value[q].aa.n
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[q].aa.n
+ContextPath Value[q].aa
+ContextPath Value[q]
+Path q
+[{
+    "label": "name",
+    "kind": 5,
+    "tags": [],
+    "detail": "string",
+    "documentation": {"kind": "markdown", "value": "```rescript\nname: string\n```\n\n```rescript\ntype aa = {x: int, name: string}\n```"}
+  }]
+
+Complete src/Completion.res 162:6
+posCursor:[162:6] posNoWhite:[162:5] Found expr:[162:3->162:6]
+Pexp_construct Lis:[162:3->162:6] None
+Completable: Cpath Value[Lis]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Lis]
+Path Lis
+[{
+    "label": "List",
+    "kind": 9,
+    "tags": [],
+    "detail": "module List",
+    "documentation": null,
+    "data": {
+      "modulePath": "List",
+      "filePath": "src/Completion.res"
+    }
+  }, {
+    "label": "ListLabels",
+    "kind": 9,
+    "tags": [],
+    "detail": "module ListLabels",
+    "documentation": null,
+    "data": {
+      "modulePath": "ListLabels",
+      "filePath": "src/Completion.res"
+    }
+  }]
+
+Complete src/Completion.res 169:16
+posCursor:[169:16] posNoWhite:[169:15] Found expr:[169:4->169:16]
+JSX <WithChildren:[169:4->169:16] > _children:None
+Completable: Cpath Module[WithChildren]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Module[WithChildren]
+Path WithChildren
+[{
+    "label": "WithChildren",
+    "kind": 9,
+    "tags": [],
+    "detail": "module WithChildren",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 172:16
+posCursor:[172:16] posNoWhite:[172:15] Found type:[172:12->172:16]
+Ptyp_constr Js.n:[172:12->172:16]
+Completable: Cpath Type[Js, n]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Type[Js, n]
+Path Js.n
+[{
+    "label": "null_undefined",
+    "kind": 22,
+    "tags": [],
+    "detail": "type null_undefined",
+    "documentation": {"kind": "markdown", "value": "```rescript\ntype null_undefined<'a> = nullable<'a>\n```"}
+  }, {
+    "label": "nullable",
+    "kind": 22,
+    "tags": [],
+    "detail": "type nullable",
+    "documentation": {"kind": "markdown", "value": "```rescript\ntype nullable<'a> = Value('a) | Null | Undefined\n```"}
+  }, {
+    "label": "null",
+    "kind": 22,
+    "tags": [],
+    "detail": "type null",
+    "documentation": {"kind": "markdown", "value": "\n  Nullable value of this type can be either null or 'a. This type is equivalent to Js.Null.t.\n\n\n```rescript\ntype null<'a> = Value('a) | Null\n```"}
+  }]
+
+Complete src/Completion.res 174:20
+posCursor:[174:20] posNoWhite:[174:19] Found type:[174:12->174:20]
+Ptyp_constr ForAuto.:[174:12->174:20]
+Completable: Cpath Type[ForAuto, ""]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Type[ForAuto, ""]
+Path ForAuto.
+[{
+    "label": "t",
+    "kind": 22,
+    "tags": [],
+    "detail": "type t",
+    "documentation": {"kind": "markdown", "value": "```rescript\ntype t = int\n```"}
+  }]
+
+Complete src/Completion.res 179:13
+posCursor:[179:13] posNoWhite:[179:12] Found expr:[179:11->179:13]
+Pexp_construct As:[179:11->179:13] None
+Completable: Cpath Value[As]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[As]
+Path As
+[{
+    "label": "Asterix",
+    "kind": 4,
+    "tags": [],
+    "detail": "Asterix",
+    "documentation": {"kind": "markdown", "value": "```rescript\nAsterix\n```\n\n```rescript\ntype z = Allo | Asterix | Baba\n```"}
+  }]
+
+Complete src/Completion.res 182:17
+Pmod_ident For:[182:14->182:17]
+Completable: Cpath Module[For]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Module[For]
+Path For
+[{
+    "label": "ForAuto",
+    "kind": 9,
+    "tags": [],
+    "detail": "module ForAuto",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 190:11
+posCursor:[190:11] posNoWhite:[190:10] Found expr:[190:3->190:11]
+Pexp_ident Private.:[190:3->190:11]
+Completable: Cpath Value[Private, ""]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Private, ""]
+Path Private.
+[{
+    "label": "b",
+    "kind": 12,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 202:6
+posCursor:[202:6] posNoWhite:[202:5] Found expr:[202:3->202:6]
+Pexp_ident sha:[202:3->202:6]
+Completable: Cpath Value[sha]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[sha]
+Path sha
+[]
+
+Complete src/Completion.res 205:6
+posCursor:[205:6] posNoWhite:[205:5] Found expr:[205:3->205:6]
+Pexp_ident sha:[205:3->205:6]
+Completable: Cpath Value[sha]
+Raw opens: 1 Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 2 pervasives Completion.res
+ContextPath Value[sha]
+Path sha
+[{
+    "label": "shadowed",
+    "kind": 12,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 208:6
+posCursor:[208:6] posNoWhite:[208:5] Found expr:[208:3->208:6]
+Pexp_ident sha:[208:3->208:6]
+Completable: Cpath Value[sha]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[sha]
+Path sha
+[{
+    "label": "shadowed",
+    "kind": 12,
+    "tags": [],
+    "detail": "string",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 221:22
+posCursor:[221:22] posNoWhite:[221:21] Found expr:[221:3->224:22]
+Pexp_send [221:22->221:22] e:[221:3->221:20]
+Completable: Cpath Value[FAO, forAutoObject][""]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[FAO, forAutoObject][""]
+ContextPath Value[FAO, forAutoObject]
+Path FAO.forAutoObject
+[{
+    "label": "age",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "forAutoLabel",
+    "kind": 4,
+    "tags": [],
+    "detail": "FAR.forAutoRecord",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 224:37
+posCursor:[224:37] posNoWhite:[224:36] Found expr:[224:3->224:37]
+Pexp_field [224:3->224:36] _:[233:0->224:37]
+Completable: Cpath Value[FAO, forAutoObject]["forAutoLabel"].""
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[FAO, forAutoObject]["forAutoLabel"].""
+ContextPath Value[FAO, forAutoObject]["forAutoLabel"]
+ContextPath Value[FAO, forAutoObject]
+Path FAO.forAutoObject
+[{
+    "label": "forAuto",
+    "kind": 5,
+    "tags": [],
+    "detail": "ForAuto.t",
+    "documentation": {"kind": "markdown", "value": "```rescript\nforAuto: ForAuto.t\n```\n\n```rescript\ntype forAutoRecord = {\n  forAuto: ForAuto.t,\n  something: option<int>,\n}\n```"}
+  }, {
+    "label": "something",
+    "kind": 5,
+    "tags": [],
+    "detail": "option<int>",
+    "documentation": {"kind": "markdown", "value": "```rescript\nsomething: option<int>\n```\n\n```rescript\ntype forAutoRecord = {\n  forAuto: ForAuto.t,\n  something: option<int>,\n}\n```"}
+  }]
+
+Complete src/Completion.res 227:46
+posCursor:[227:46] posNoWhite:[227:45] Found expr:[227:3->0:-1]
+Completable: Cpath Value[FAO, forAutoObject]["forAutoLabel"].forAuto->
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[FAO, forAutoObject]["forAutoLabel"].forAuto->
+ContextPath Value[FAO, forAutoObject]["forAutoLabel"].forAuto
+ContextPath Value[FAO, forAutoObject]["forAutoLabel"]
+ContextPath Value[FAO, forAutoObject]
+Path FAO.forAutoObject
+CPPipe env:Completion envFromCompletionItem:Completion.FAR
+CPPipe type path:ForAuto.t
+CPPipe pathFromEnv:ForAuto found:false
+Path ForAuto.
+[{
+    "label": "ForAuto.abc",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }, {
+    "label": "ForAuto.abd",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 230:55
+posCursor:[230:55] posNoWhite:[230:54] Found expr:[230:3->230:55]
+posCursor:[230:55] posNoWhite:[230:54] Found expr:[230:46->230:55]
+Pexp_ident ForAuto.a:[230:46->230:55]
+Completable: Cpath Value[ForAuto, a]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[ForAuto, a]
+Path ForAuto.a
+[{
+    "label": "abc",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }, {
+    "label": "abd",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 234:34
+posCursor:[234:34] posNoWhite:[234:33] Found expr:[234:18->234:36]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[234:18->234:34], ...[234:34->234:35])
+posCursor:[234:34] posNoWhite:[234:33] Found expr:[234:18->234:34]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[234:18->234:30], ...[234:32->234:34])
+posCursor:[234:34] posNoWhite:[234:33] Found expr:[234:32->234:34]
+Pexp_ident na:[234:32->234:34]
+Completable: Cpath Value[na]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[na]
+Path na
+[{
+    "label": "name",
+    "kind": 12,
+    "tags": [],
+    "detail": "string",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 237:17
+posCursor:[237:17] posNoWhite:[237:14] Found expr:[237:14->237:22]
+Completable: Cnone
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+[]
+
+Complete src/Completion.res 243:8
+posCursor:[243:8] posNoWhite:[243:7] Found expr:[242:14->243:8]
+Pexp_apply ...[243:3->243:4] (...[242:14->242:15], ...[243:5->243:8])
+posCursor:[243:8] posNoWhite:[243:7] Found expr:[243:5->243:8]
+Pexp_field [243:5->243:7] _:[245:0->243:8]
+Completable: Cpath Value[_z].""
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[_z].""
+ContextPath Value[_z]
+Path _z
+[{
+    "label": "x",
+    "kind": 5,
+    "tags": [],
+    "detail": "int",
+    "documentation": {"kind": "markdown", "value": "```rescript\nx: int\n```\n\n```rescript\ntype r = {x: int, y: string}\n```"}
+  }, {
+    "label": "y",
+    "kind": 5,
+    "tags": [],
+    "detail": "string",
+    "documentation": {"kind": "markdown", "value": "```rescript\ny: string\n```\n\n```rescript\ntype r = {x: int, y: string}\n```"}
+  }]
+
+Complete src/Completion.res 254:17
+posCursor:[254:17] posNoWhite:[254:16] Found expr:[254:11->254:17]
+Pexp_construct SomeLo:[254:11->254:17] None
+Completable: Cpath Value[SomeLo]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[SomeLo]
+Path SomeLo
+[{
+    "label": "SomeLocalModule",
+    "kind": 9,
+    "tags": [],
+    "detail": "module SomeLocalModule",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 256:29
+posCursor:[256:29] posNoWhite:[256:28] Found type:[256:13->256:29]
+Ptyp_constr SomeLocalModule.:[256:13->256:29]
+Completable: Cpath Type[SomeLocalModule, ""]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Type[SomeLocalModule, ""]
+Path SomeLocalModule.
+[{
+    "label": "zz",
+    "kind": 22,
+    "tags": [],
+    "detail": "type zz",
+    "documentation": {"kind": "markdown", "value": "```rescript\ntype zz = int\n```"}
+  }]
+
+Complete src/Completion.res 261:33
+posCursor:[261:33] posNoWhite:[261:32] Found type:[261:17->263:11]
+Ptyp_constr SomeLocalModule.:[261:17->263:11]
+Completable: Cpath Type[SomeLocalModule, ""]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Type[SomeLocalModule, ""]
+Path SomeLocalModule.
+[{
+    "label": "zz",
+    "kind": 22,
+    "tags": [],
+    "detail": "type zz",
+    "documentation": {"kind": "markdown", "value": "```rescript\ntype zz = int\n```"}
+  }]
+
+Complete src/Completion.res 268:21
+Ptype_variant unary SomeLocal:[268:12->268:21]
+Completable: Cpath Value[SomeLocal]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[SomeLocal]
+Path SomeLocal
+[{
+    "label": "SomeLocalVariantItem",
+    "kind": 4,
+    "tags": [],
+    "detail": "SomeLocalVariantItem",
+    "documentation": {"kind": "markdown", "value": "```rescript\nSomeLocalVariantItem\n```\n\n```rescript\ntype someLocalVariant = SomeLocalVariantItem\n```"}
+  }, {
+    "label": "SomeLocalModule",
+    "kind": 9,
+    "tags": [],
+    "detail": "module SomeLocalModule",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 271:20
+posCursor:[271:20] posNoWhite:[271:19] Found pattern:[271:7->274:3]
+posCursor:[271:20] posNoWhite:[271:19] Found type:[271:11->274:3]
+Ptyp_constr SomeLocal:[271:11->274:3]
+Completable: Cpath Type[SomeLocal]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Type[SomeLocal]
+Path SomeLocal
+[{
+    "label": "SomeLocalModule",
+    "kind": 9,
+    "tags": [],
+    "detail": "module SomeLocalModule",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 275:15
+posCursor:[275:15] posNoWhite:[275:14] Found expr:[274:11->278:1]
+posCursor:[275:15] posNoWhite:[275:14] Found expr:[274:11->278:1]
+posCursor:[275:15] posNoWhite:[275:14] Found expr:[275:5->277:3]
+posCursor:[275:15] posNoWhite:[275:14] Found expr:[275:13->275:15]
+Pexp_ident _w:[275:13->275:15]
+Completable: Cpath Value[_w]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[_w]
+Path _w
+[{
+    "label": "_world",
+    "kind": 12,
+    "tags": [],
+    "detail": "'a",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 281:22
+posCursor:[281:22] posNoWhite:[281:21] Found type:[281:21->281:22]
+Ptyp_constr s:[281:21->281:22]
+Completable: Cpath Type[s]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Type[s]
+Path s
+[{
+    "label": "someType",
+    "kind": 22,
+    "tags": [],
+    "detail": "type someType",
+    "documentation": {"kind": "markdown", "value": "```rescript\ntype someType = {hello: string}\n```"}
+  }, {
+    "label": "someLocalVariant",
+    "kind": 22,
+    "tags": [],
+    "detail": "type someLocalVariant",
+    "documentation": {"kind": "markdown", "value": "```rescript\ntype someLocalVariant = SomeLocalVariantItem\n```"}
+  }]
+
+Complete src/Completion.res 291:30
+posCursor:[291:30] posNoWhite:[291:29] Found expr:[291:11->291:32]
+Pexp_apply ...[291:11->291:28] ()
+Completable: CnamedArg(Value[funRecord].someFun, "", [])
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[funRecord].someFun
+ContextPath Value[funRecord]
+Path funRecord
+Found type for function (~name: string) => unit
+[{
+    "label": "name",
+    "kind": 4,
+    "tags": [],
+    "detail": "string",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 296:11
+posCursor:[296:11] posNoWhite:[296:10] Found expr:[296:3->296:11]
+Pexp_field [296:3->296:10] _:[299:0->296:11]
+Completable: Cpath Value[retAA](Nolabel).""
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[retAA](Nolabel).""
+ContextPath Value[retAA](Nolabel)
+ContextPath Value[retAA]
+Path retAA
+[{
+    "label": "x",
+    "kind": 5,
+    "tags": [],
+    "detail": "int",
+    "documentation": {"kind": "markdown", "value": "```rescript\nx: int\n```\n\n```rescript\ntype aa = {x: int, name: string}\n```"}
+  }, {
+    "label": "name",
+    "kind": 5,
+    "tags": [],
+    "detail": "string",
+    "documentation": {"kind": "markdown", "value": "```rescript\nname: string\n```\n\n```rescript\ntype aa = {x: int, name: string}\n```"}
+  }]
+
+Complete src/Completion.res 301:13
+posCursor:[301:13] posNoWhite:[301:12] Found expr:[301:3->301:13]
+Pexp_apply ...[301:3->301:11] ()
+Completable: CnamedArg(Value[ff](~c), "", [])
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[ff](~c)
+ContextPath Value[ff]
+Path ff
+Found type for function (
+  ~opt1: int=?,
+  ~a: int,
+  ~b: int,
+  unit,
+  ~opt2: int=?,
+  unit,
+) => int
+[{
+    "label": "opt1",
+    "kind": 4,
+    "tags": [],
+    "detail": "option<int>",
+    "documentation": null
+  }, {
+    "label": "a",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "b",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "opt2",
+    "kind": 4,
+    "tags": [],
+    "detail": "option<int>",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 304:15
+posCursor:[304:15] posNoWhite:[304:14] Found expr:[304:3->304:15]
+Pexp_apply ...[304:3->304:13] ()
+Completable: CnamedArg(Value[ff](~c)(Nolabel), "", [])
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[ff](~c)(Nolabel)
+ContextPath Value[ff](~c)
+ContextPath Value[ff]
+Path ff
+Found type for function (~a: int, ~b: int, ~opt2: int=?, unit) => int
+[{
+    "label": "a",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "b",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "opt2",
+    "kind": 4,
+    "tags": [],
+    "detail": "option<int>",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 307:17
+posCursor:[307:17] posNoWhite:[307:16] Found expr:[307:3->307:17]
+Pexp_apply ...[307:3->307:15] ()
+Completable: CnamedArg(Value[ff](~c, Nolabel), "", [])
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[ff](~c, Nolabel)
+ContextPath Value[ff]
+Path ff
+Found type for function (~a: int, ~b: int, ~opt2: int=?, unit) => int
+[{
+    "label": "a",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "b",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "opt2",
+    "kind": 4,
+    "tags": [],
+    "detail": "option<int>",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 310:21
+posCursor:[310:21] posNoWhite:[310:20] Found expr:[310:3->310:21]
+Pexp_apply ...[310:3->310:19] ()
+Completable: CnamedArg(Value[ff](~c, Nolabel, Nolabel), "", [])
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[ff](~c, Nolabel, Nolabel)
+ContextPath Value[ff]
+Path ff
+Found type for function (~a: int, ~b: int) => int
+[{
+    "label": "a",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "b",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 313:23
+posCursor:[313:23] posNoWhite:[313:22] Found expr:[313:3->313:23]
+Pexp_apply ...[313:3->313:21] ()
+Completable: CnamedArg(Value[ff](~c, Nolabel, ~b), "", [])
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[ff](~c, Nolabel, ~b)
+ContextPath Value[ff]
+Path ff
+Found type for function (~a: int, ~opt2: int=?, unit) => int
+[{
+    "label": "a",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "opt2",
+    "kind": 4,
+    "tags": [],
+    "detail": "option<int>",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 316:16
+posCursor:[316:16] posNoWhite:[316:15] Found expr:[316:3->316:16]
+Pexp_apply ...[316:3->316:14] ()
+Completable: CnamedArg(Value[ff](~opt2), "", [])
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[ff](~opt2)
+ContextPath Value[ff]
+Path ff
+Found type for function (~opt1: int=?, ~a: int, ~b: int, unit, unit, ~c: int) => int
+[{
+    "label": "opt1",
+    "kind": 4,
+    "tags": [],
+    "detail": "option<int>",
+    "documentation": null
+  }, {
+    "label": "a",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "b",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "c",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 323:17
+posCursor:[323:17] posNoWhite:[323:16] Found expr:[323:3->323:17]
+Pexp_apply ...[323:3->323:15] ()
+Completable: CnamedArg(Value[withCallback], "", [])
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[withCallback]
+Path withCallback
+Found type for function (~b: int) => callback
+[{
+    "label": "b",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "a",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 326:21
+posCursor:[326:21] posNoWhite:[326:20] Found expr:[326:3->326:21]
+Pexp_apply ...[326:3->326:19] ()
+Completable: CnamedArg(Value[withCallback](~a), "", [])
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[withCallback](~a)
+ContextPath Value[withCallback]
+Path withCallback
+Found type for function int
+[]
+
+Complete src/Completion.res 329:21
+posCursor:[329:21] posNoWhite:[329:20] Found expr:[329:3->329:21]
+Pexp_apply ...[329:3->329:19] ()
+Completable: CnamedArg(Value[withCallback](~b), "", [])
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[withCallback](~b)
+ContextPath Value[withCallback]
+Path withCallback
+Found type for function (~a: int) => int
+[{
+    "label": "a",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 336:26
+posCursor:[336:26] posNoWhite:[336:25] Found expr:[333:3->346:23]
+JSX <div:[333:3->333:6] onClick[334:4->334:11]=...[334:13->346:23]> _children:None
+posCursor:[336:26] posNoWhite:[336:25] Found expr:[334:13->346:23]
+posCursor:[336:26] posNoWhite:[336:25] Found expr:[334:13->338:6]
+posCursor:[336:26] posNoWhite:[336:25] Found expr:[334:13->338:6]
+posCursor:[336:26] posNoWhite:[336:25] Found expr:[335:6->338:5]
+posCursor:[336:26] posNoWhite:[336:25] Found expr:[336:16->338:5]
+posCursor:[336:26] posNoWhite:[336:25] Found pattern:[336:20->338:5]
+posCursor:[336:26] posNoWhite:[336:25] Found type:[336:23->338:5]
+Ptyp_constr Res:[336:23->338:5]
+posCursor:[336:26] posNoWhite:[336:25] Found pattern:[336:20->338:5]
+posCursor:[336:26] posNoWhite:[336:25] Found type:[336:23->338:5]
+Ptyp_constr Res:[336:23->338:5]
+Completable: Cpath Type[Res]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Type[Res]
+Path Res
+[{
+    "label": "RescriptReactErrorBoundary",
+    "kind": 9,
+    "tags": [],
+    "detail": "module RescriptReactErrorBoundary",
+    "documentation": null,
+    "data": {
+      "modulePath": "RescriptReactErrorBoundary",
+      "filePath": "src/Completion.res"
+    }
+  }, {
+    "label": "RescriptReactRouter",
+    "kind": 9,
+    "tags": [],
+    "detail": "module RescriptReactRouter",
+    "documentation": null,
+    "data": {
+      "modulePath": "RescriptReactRouter",
+      "filePath": "src/Completion.res"
+    }
+  }]
+
+Complete src/Completion.res 343:57
+posCursor:[343:57] posNoWhite:[343:56] Found expr:[343:53->346:23]
+posCursor:[343:57] posNoWhite:[343:56] Found expr:[343:53->343:57]
+Pexp_ident this:[343:53->343:57]
+Completable: Cpath Value[this]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[this]
+Path this
+[{
+    "label": "thisIsNotSaved",
+    "kind": 12,
+    "tags": [],
+    "detail": "\\\"Type Not Known\"",
+    "documentation": null
+  }]
+
+Hover src/Completion.res 346:14
+Nothing at that position. Now trying to use completion.
+posCursor:[346:14] posNoWhite:[346:13] Found expr:[346:9->346:23]
+JSX <div:[346:9->346:12] name[346:13->346:17]=...[346:18->346:20]> _children:346:21
+Completable: Cjsx([div], name, [name])
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+Path ReactDOM.domProps
+Path PervasivesU.JsxDOM.domProps
+{"contents": {"kind": "markdown", "value": "```rescript\nstring\n```"}}
+
+Hover src/Completion.res 349:17
+Nothing at that position. Now trying to use completion.
+posCursor:[349:17] posNoWhite:[349:16] Found expr:[349:11->349:35]
+Pexp_send age[349:30->349:33] e:[349:11->349:28]
+posCursor:[349:17] posNoWhite:[349:16] Found expr:[349:11->349:28]
+Pexp_ident FAO.forAutoObject:[349:11->349:28]
+Completable: Cpath Value[FAO, forAutoObject]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[FAO, forAutoObject]
+Path FAO.forAutoObject
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+{"contents": {"kind": "markdown", "value": "```rescript\n{\"age\": int, \"forAutoLabel\": FAR.forAutoRecord}\n```"}}
+
+Hover src/Completion.res 352:17
+Nothing at that position. Now trying to use completion.
+posCursor:[352:17] posNoWhite:[352:16] Found expr:[352:11->352:22]
+Pexp_apply ...[352:11->352:13] (~opt1352:15->352:19=...[352:20->352:21])
+Completable: CnamedArg(Value[ff], opt1, [opt1])
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[ff]
+Path ff
+Found type for function (
+  ~opt1: int=?,
+  ~a: int,
+  ~b: int,
+  unit,
+  ~opt2: int=?,
+  unit,
+  ~c: int,
+) => int
+{"contents": {"kind": "markdown", "value": "```rescript\noption<int>\n```"}}
+
+Complete src/Completion.res 355:23
+posCursor:[355:23] posNoWhite:[355:22] Found expr:[0:-1->355:23]
+posCursor:[355:23] posNoWhite:[355:22] Found expr:[355:12->355:23]
+[]
+
+Complete src/Completion.res 362:8
+posCursor:[362:8] posNoWhite:[362:7] Found expr:[360:8->365:3]
+posCursor:[362:8] posNoWhite:[362:7] Found expr:[360:8->365:3]
+posCursor:[362:8] posNoWhite:[362:7] Found pattern:[362:7->364:5]
+posCursor:[362:8] posNoWhite:[362:7] Found pattern:[362:7->362:8]
+Ppat_construct T:[362:7->362:8]
+Completable: Cpattern Value[x]=T
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[x]
+Path x
+Completable: Cpath Value[T]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[T]
+Path T
+[{
+    "label": "That",
+    "kind": 4,
+    "tags": [],
+    "detail": "That",
+    "documentation": {"kind": "markdown", "value": "```rescript\nThat\n```\n\n```rescript\ntype v = This | That\n```"}
+  }, {
+    "label": "This",
+    "kind": 4,
+    "tags": [],
+    "detail": "This",
+    "documentation": {"kind": "markdown", "value": "```rescript\nThis\n```\n\n```rescript\ntype v = This | That\n```"}
+  }, {
+    "label": "TableclothMap",
+    "kind": 9,
+    "tags": [],
+    "detail": "module TableclothMap",
+    "documentation": null,
+    "data": {
+      "modulePath": "TableclothMap",
+      "filePath": "src/Completion.res"
+    }
+  }, {
+    "label": "TypeAtPosCompletion",
+    "kind": 9,
+    "tags": [],
+    "detail": "module TypeAtPosCompletion",
+    "documentation": null,
+    "data": {
+      "modulePath": "TypeAtPosCompletion",
+      "filePath": "src/Completion.res"
+    }
+  }, {
+    "label": "TypeDefinition",
+    "kind": 9,
+    "tags": [],
+    "detail": "module TypeDefinition",
+    "documentation": null,
+    "data": {
+      "modulePath": "TypeDefinition",
+      "filePath": "src/Completion.res"
+    }
+  }]
+
+Complete src/Completion.res 373:21
+posCursor:[373:21] posNoWhite:[373:20] Found expr:[371:8->376:3]
+posCursor:[373:21] posNoWhite:[373:20] Found expr:[371:8->376:3]
+posCursor:[373:21] posNoWhite:[373:20] Found pattern:[373:7->375:5]
+posCursor:[373:21] posNoWhite:[373:20] Found pattern:[373:7->373:21]
+Ppat_construct AndThatOther.T:[373:7->373:21]
+Completable: Cpath Value[AndThatOther, T]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[AndThatOther, T]
+Path AndThatOther.T
+[{
+    "label": "ThatOther",
+    "kind": 4,
+    "tags": [],
+    "detail": "ThatOther",
+    "documentation": {"kind": "markdown", "value": "```rescript\nThatOther\n```\n\n```rescript\ntype v = And | ThatOther\n```"}
+  }]
+
+Complete src/Completion.res 378:24
+posCursor:[378:24] posNoWhite:[378:23] Found expr:[378:12->378:26]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[378:12->378:24], ...[378:24->378:25])
+posCursor:[378:24] posNoWhite:[378:23] Found expr:[378:12->378:24]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[378:12->378:14], ...[378:16->378:24])
+posCursor:[378:24] posNoWhite:[378:23] Found expr:[378:16->378:24]
+Pexp_ident ForAuto.:[378:16->378:24]
+Completable: Cpath Value[ForAuto, ""]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[ForAuto, ""]
+Path ForAuto.
+[{
+    "label": "abc",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }, {
+    "label": "abd",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 381:38
+posCursor:[381:38] posNoWhite:[381:37] Found expr:[381:12->381:41]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[381:12->381:39], ...[381:39->381:40])
+posCursor:[381:38] posNoWhite:[381:37] Found expr:[381:12->381:39]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[381:12->381:17], ...[381:19->381:39])
+posCursor:[381:38] posNoWhite:[381:37] Found expr:[381:19->381:39]
+Pexp_send [381:38->381:38] e:[381:19->381:36]
+Completable: Cpath Value[FAO, forAutoObject][""]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[FAO, forAutoObject][""]
+ContextPath Value[FAO, forAutoObject]
+Path FAO.forAutoObject
+[{
+    "label": "age",
+    "kind": 4,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "forAutoLabel",
+    "kind": 4,
+    "tags": [],
+    "detail": "FAR.forAutoRecord",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 384:24
+posCursor:[384:24] posNoWhite:[384:23] Found expr:[384:11->384:26]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[384:11->384:24], ...[384:24->384:25])
+posCursor:[384:24] posNoWhite:[384:23] Found expr:[384:11->384:24]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[384:11->384:12], ...[384:14->384:24])
+posCursor:[384:24] posNoWhite:[384:23] Found expr:[384:14->384:24]
+Pexp_field [384:14->384:23] _:[384:24->384:24]
+Completable: Cpath Value[funRecord].""
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[funRecord].""
+ContextPath Value[funRecord]
+Path funRecord
+[{
+    "label": "someFun",
+    "kind": 5,
+    "tags": [],
+    "detail": "(~name: string) => unit",
+    "documentation": {"kind": "markdown", "value": "```rescript\nsomeFun: (~name: string) => unit\n```\n\n```rescript\ntype funRecord = {\n  someFun: (~name: string) => unit,\n  stuff: string,\n}\n```"}
+  }, {
+    "label": "stuff",
+    "kind": 5,
+    "tags": [],
+    "detail": "string",
+    "documentation": {"kind": "markdown", "value": "```rescript\nstuff: string\n```\n\n```rescript\ntype funRecord = {\n  someFun: (~name: string) => unit,\n  stuff: string,\n}\n```"}
+  }]
+
+Complete src/Completion.res 389:12
+posCursor:[389:12] posNoWhite:[389:11] Found expr:[387:8->392:1]
+posCursor:[389:12] posNoWhite:[389:11] Found expr:[387:8->392:1]
+posCursor:[389:12] posNoWhite:[389:11] Found expr:[388:2->391:4]
+posCursor:[389:12] posNoWhite:[389:11] Found expr:[389:6->391:4]
+posCursor:[389:12] posNoWhite:[389:11] Found expr:[389:6->389:12]
+Completable: Cpath array->ma
+Raw opens: 3 Js.place holder ... Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 4 pervasives Completion.res Completion.res js.ml
+ContextPath array->ma
+ContextPath array
+CPPipe env:Completion
+Path Js.Array2.ma
+[{
+    "label": "Array2.mapi",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a>, ('a, int) => 'b) => t<'b>",
+    "documentation": {"kind": "markdown", "value": "\nApplies the function (the second argument) to each item in the array, returning\na new array. The function acceps two arguments: an item from the array and its\nindex number. The result array does not have to have elements of the same type\nas the input array. See\n[`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)\non MDN.\n\n## Examples\n\n```rescript\n// multiply each item in array by its position\nlet product = (item, index) => item * index\nJs.Array2.mapi([10, 11, 12], product) == [0, 11, 24]\n```\n"}
+  }, {
+    "label": "Array2.map",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a>, 'a => 'b) => t<'b>",
+    "documentation": {"kind": "markdown", "value": "\nApplies the function (the second argument) to each item in the array, returning\na new array. The result array does not have to have elements of the same type\nas the input array. See\n[`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)\non MDN.\n\n## Examples\n\n```rescript\nJs.Array2.map([12, 4, 8], x => x * x) == [144, 16, 64]\nJs.Array2.map([\"animal\", \"vegetable\", \"mineral\"], Js.String.length) == [6, 9, 7]\n```\n"}
+  }]
+
+Complete src/Completion.res 397:14
+posCursor:[397:14] posNoWhite:[397:13] Found expr:[396:14->397:20]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[396:14->397:16], ...[397:16->397:19])
+posCursor:[397:14] posNoWhite:[397:13] Found expr:[396:14->397:16]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[396:14->397:11], ...[397:13->397:16])
+posCursor:[397:14] posNoWhite:[397:13] Found expr:[397:13->397:16]
+Pexp_ident red:[397:13->397:16]
+Completable: Cpath Value[red]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[red]
+Path red
+[{
+    "label": "red",
+    "kind": 12,
+    "tags": [],
+    "detail": "string",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 402:25
+posCursor:[402:25] posNoWhite:[402:24] Found expr:[400:14->402:31]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[400:14->402:27], ...[402:27->402:30])
+posCursor:[402:25] posNoWhite:[402:24] Found expr:[400:14->402:27]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[400:14->402:22], ...[402:24->402:27])
+posCursor:[402:25] posNoWhite:[402:24] Found expr:[402:24->402:27]
+Pexp_ident red:[402:24->402:27]
+Completable: Cpath Value[red]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[red]
+Path red
+[{
+    "label": "red",
+    "kind": 12,
+    "tags": [],
+    "detail": "string",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 405:22
+posCursor:[405:22] posNoWhite:[405:21] Found expr:[405:11->467:0]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[405:11->423:17], ...[428:0->467:0])
+posCursor:[405:22] posNoWhite:[405:21] Found expr:[405:11->423:17]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[405:11->405:19], ...[405:21->423:17])
+posCursor:[405:22] posNoWhite:[405:21] Found expr:[405:21->423:17]
+posCursor:[405:22] posNoWhite:[405:21] Found expr:[405:21->405:22]
+Pexp_ident r:[405:21->405:22]
+Completable: Cpath Value[r]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[r]
+Path r
+[{
+    "label": "red",
+    "kind": 12,
+    "tags": [],
+    "detail": "string",
+    "documentation": null
+  }, {
+    "label": "retAA",
+    "kind": 12,
+    "tags": [],
+    "detail": "unit => aa",
+    "documentation": null
+  }, {
+    "label": "r",
+    "kind": 12,
+    "tags": [],
+    "detail": "rAlias",
+    "documentation": {"kind": "markdown", "value": "```rescript\ntype r = {x: int, y: string}\n```"}
+  }]
+
+Complete src/Completion.res 409:21
+posCursor:[409:21] posNoWhite:[409:20] Found expr:[408:14->415:1]
+posCursor:[409:21] posNoWhite:[409:20] Found expr:[408:14->415:1]
+posCursor:[409:21] posNoWhite:[409:20] Found expr:[409:5->414:17]
+posCursor:[409:21] posNoWhite:[409:20] Found expr:[409:5->411:42]
+posCursor:[409:21] posNoWhite:[409:20] Found expr:[409:5->411:5]
+Pexp_ident SomeLocalModule.:[409:5->411:5]
+Completable: Cpath Value[SomeLocalModule, ""]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[SomeLocalModule, ""]
+Path SomeLocalModule.
+[{
+    "label": "bb",
+    "kind": 12,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "aa",
+    "kind": 12,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 412:21
+posCursor:[412:21] posNoWhite:[412:20] Found expr:[408:14->415:1]
+posCursor:[412:21] posNoWhite:[412:20] Found expr:[408:14->415:1]
+posCursor:[412:21] posNoWhite:[412:20] Found expr:[411:2->414:17]
+posCursor:[412:21] posNoWhite:[412:20] Found expr:[412:5->414:17]
+Pexp_apply ...[412:5->414:8] (...[414:9->414:16])
+posCursor:[412:21] posNoWhite:[412:20] Found expr:[412:5->414:8]
+Pexp_ident SomeLocalModule.:[412:5->414:8]
+Completable: Cpath Value[SomeLocalModule, ""]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[SomeLocalModule, ""]
+Path SomeLocalModule.
+[{
+    "label": "bb",
+    "kind": 12,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "aa",
+    "kind": 12,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 417:17
+posCursor:[417:17] posNoWhite:[417:16] Found expr:[417:11->417:17]
+Completable: Cpath int->t
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath int->t
+ContextPath int
+CPPipe env:Completion
+Path Belt.Int.t
+[{
+    "label": "Belt.Int.toString",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => string",
+    "documentation": {"kind": "markdown", "value": "\nConverts a given `int` to a `string`. Uses the JavaScript `String` constructor under the hood.\n\n## Examples\n\n```rescript\nJs.log(Belt.Int.toString(1) === \"1\") /* true */\n```\n"}
+  }, {
+    "label": "Belt.Int.toFloat",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => float",
+    "documentation": {"kind": "markdown", "value": "\nConverts a given `int` to a `float`.\n\n## Examples\n\n```rescript\nJs.log(Belt.Int.toFloat(1) === 1.0) /* true */\n```\n"}
+  }]
+
+Complete src/Completion.res 420:19
+posCursor:[420:19] posNoWhite:[420:18] Found expr:[420:11->420:19]
+Completable: Cpath float->t
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath float->t
+ContextPath float
+CPPipe env:Completion
+Path Belt.Float.t
+[{
+    "label": "Belt.Float.toInt",
+    "kind": 12,
+    "tags": [],
+    "detail": "float => int",
+    "documentation": {"kind": "markdown", "value": "\nConverts a given `float` to an `int`.\n\n## Examples\n\n```rescript\nJs.log(Belt.Float.toInt(1.0) === 1) /* true */\n```\n"}
+  }, {
+    "label": "Belt.Float.toString",
+    "kind": 12,
+    "tags": [],
+    "detail": "float => string",
+    "documentation": {"kind": "markdown", "value": "\nConverts a given `float` to a `string`. Uses the JavaScript `String` constructor under the hood.\n\n## Examples\n\n```rescript\nJs.log(Belt.Float.toString(1.0) === \"1.0\") /* true */\n```\n"}
+  }]
+
+Complete src/Completion.res 425:8
+posCursor:[425:8] posNoWhite:[425:7] Found expr:[425:3->425:8]
+Completable: Cpath Value[ok]->g
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[ok]->g
+ContextPath Value[ok]
+Path ok
+CPPipe env:Completion
+Path Belt.Result.g
+[{
+    "label": "Belt.Result.getExn",
+    "kind": 12,
+    "tags": [],
+    "detail": "t<'a, 'b> => 'a",
+    "documentation": {"kind": "markdown", "value": "\n`getExn(res)`: when `res` is `Ok(n)`, returns `n` when `res` is `Error(m)`, raise an exception\n\n## Examples\n\n```rescript\nBelt.Result.getExn(Belt.Result.Ok(42)) == 42\n\nBelt.Result.getExn(Belt.Result.Error(\"Invalid data\")) /* raises exception */\n```\n"}
+  }, {
+    "label": "Belt.Result.getWithDefault",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t<'a, 'b>, 'a) => 'a",
+    "documentation": {"kind": "markdown", "value": "\n`getWithDefault(res, defaultValue)`: If `res` is `Ok(n)`, returns `n`,\notherwise `default`\n\n## Examples\n\n```rescript\nBelt.Result.getWithDefault(Ok(42), 0) == 42\n\nBelt.Result.getWithDefault(Error(\"Invalid Data\"), 0) == 0\n```\n"}
+  }]
+
+Complete src/Completion.res 443:15
+posCursor:[443:15] posNoWhite:[443:14] Found expr:[443:3->443:15]
+Pexp_field [443:3->443:12] so:[443:13->443:15]
+Completable: Cpath Value[rWithDepr].so
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[rWithDepr].so
+ContextPath Value[rWithDepr]
+Path rWithDepr
+[{
+    "label": "someInt",
+    "kind": 5,
+    "tags": [1],
+    "detail": "int",
+    "documentation": {"kind": "markdown", "value": "Deprecated: \n\n```rescript\nsomeInt: int\n```\n\n```rescript\ntype someRecordWithDeprecatedField = {\n  name: string,\n  someInt: int,\n  someFloat: float,\n}\n```"}
+  }, {
+    "label": "someFloat",
+    "kind": 5,
+    "tags": [1],
+    "detail": "float",
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use 'someInt'.\n\n```rescript\nsomeFloat: float\n```\n\n```rescript\ntype someRecordWithDeprecatedField = {\n  name: string,\n  someInt: int,\n  someFloat: float,\n}\n```"}
+  }]
+
+Complete src/Completion.res 450:37
+XXX Not found!
+Completable: Cexpression Type[someVariantWithDeprecated]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Type[someVariantWithDeprecated]
+Path someVariantWithDeprecated
+[{
+    "label": "DoNotUseMe",
+    "kind": 4,
+    "tags": [1],
+    "detail": "DoNotUseMe",
+    "documentation": {"kind": "markdown", "value": "Deprecated: \n\n```rescript\nDoNotUseMe\n```\n\n```rescript\ntype someVariantWithDeprecated =\n  | DoNotUseMe\n  | UseMeInstead\n  | AndNotMe\n```"},
+    "insertText": "DoNotUseMe",
+    "insertTextFormat": 2
+  }, {
+    "label": "UseMeInstead",
+    "kind": 4,
+    "tags": [],
+    "detail": "UseMeInstead",
+    "documentation": {"kind": "markdown", "value": "```rescript\nUseMeInstead\n```\n\n```rescript\ntype someVariantWithDeprecated =\n  | DoNotUseMe\n  | UseMeInstead\n  | AndNotMe\n```"},
+    "insertText": "UseMeInstead",
+    "insertTextFormat": 2
+  }, {
+    "label": "AndNotMe",
+    "kind": 4,
+    "tags": [1],
+    "detail": "AndNotMe",
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use 'UseMeInstead'\n\n```rescript\nAndNotMe\n```\n\n```rescript\ntype someVariantWithDeprecated =\n  | DoNotUseMe\n  | UseMeInstead\n  | AndNotMe\n```"},
+    "insertText": "AndNotMe",
+    "insertTextFormat": 2
+  }]
+
+Complete src/Completion.res 455:30
+posCursor:[455:30] posNoWhite:[455:29] Found expr:[455:11->455:30]
+Completable: Cpath Value[uncurried](Nolabel)->toS
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Value[uncurried](Nolabel)->toS
+ContextPath Value[uncurried](Nolabel)
+ContextPath Value[uncurried]
+Path uncurried
+CPPipe env:Completion
+Path Belt.Int.toS
+[{
+    "label": "Belt.Int.toString",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => string",
+    "documentation": {"kind": "markdown", "value": "\nConverts a given `int` to a `string`. Uses the JavaScript `String` constructor under the hood.\n\n## Examples\n\n```rescript\nJs.log(Belt.Int.toString(1) === \"1\") /* true */\n```\n"}
+  }]
+
+Complete src/Completion.res 462:30
+XXX Not found!
+Completable: Cexpression Type[withUncurried]->recordField(fn)
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath Type[withUncurried]
+Path withUncurried
+[{
+    "label": "v => v",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => unit",
+    "documentation": null,
+    "sortText": "A",
+    "insertText": "${1:v} => ${0:v}",
+    "insertTextFormat": 2
+  }]
+
+Complete src/Completion.res 465:26
+posCursor:[465:26] posNoWhite:[465:25] Found expr:[465:22->465:26]
+Pexp_ident FAR.:[465:22->465:26]
+Completable: Cpath ValueOrField[FAR, ""]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 3 pervasives Completion.res Completion.res
+ContextPath ValueOrField[FAR, ""]
+Path FAR.
+[{
+    "label": "forAutoRecord",
+    "kind": 12,
+    "tags": [],
+    "detail": "forAutoRecord",
+    "documentation": {"kind": "markdown", "value": "```rescript\ntype forAutoRecord = {\n  forAuto: ForAuto.t,\n  something: option<int>,\n}\n```"}
+  }, {
+    "label": "forAuto",
+    "kind": 5,
+    "tags": [],
+    "detail": "ForAuto.t",
+    "documentation": {"kind": "markdown", "value": "```rescript\nforAuto: ForAuto.t\n```\n\n```rescript\ntype forAutoRecord = {\n  forAuto: ForAuto.t,\n  something: option<int>,\n}\n```"}
+  }, {
+    "label": "something",
+    "kind": 5,
+    "tags": [],
+    "detail": "option<int>",
+    "documentation": {"kind": "markdown", "value": "```rescript\nsomething: option<int>\n```\n\n```rescript\ntype forAutoRecord = {\n  forAuto: ForAuto.t,\n  something: option<int>,\n}\n```"}
+  }]
+

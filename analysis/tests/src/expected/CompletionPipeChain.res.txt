@@ -1,0 +1,575 @@
+Complete src/CompletionPipeChain.res 27:16
+posCursor:[27:16] posNoWhite:[27:15] Found expr:[27:11->0:-1]
+Completable: Cpath Value[int]->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[int]->
+ContextPath Value[int]
+Path int
+CPPipe env:CompletionPipeChain
+CPPipe type path:Integer.t
+CPPipe pathFromEnv:Integer found:true
+Path Integer.
+[{
+    "label": "Integer.toInt",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => int",
+    "documentation": null
+  }, {
+    "label": "Integer.increment",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }, {
+    "label": "Integer.decrement",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int => int) => t",
+    "documentation": null
+  }, {
+    "label": "Integer.make",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => t",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 30:23
+posCursor:[30:23] posNoWhite:[30:22] Found expr:[30:11->0:-1]
+Completable: Cpath Value[toFlt](Nolabel)->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[toFlt](Nolabel)->
+ContextPath Value[toFlt](Nolabel)
+ContextPath Value[toFlt]
+Path toFlt
+CPPipe env:CompletionPipeChain
+CPPipe type path:SuperFloat.t
+CPPipe pathFromEnv:SuperFloat found:true
+Path SuperFloat.
+[{
+    "label": "SuperFloat.fromInteger",
+    "kind": 12,
+    "tags": [],
+    "detail": "Integer.t => t",
+    "documentation": null
+  }, {
+    "label": "SuperFloat.toInteger",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => Integer.t",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 33:38
+posCursor:[33:38] posNoWhite:[33:37] Found expr:[33:11->0:-1]
+Completable: Cpath Value[Integer, increment](Nolabel, Nolabel)->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Integer, increment](Nolabel, Nolabel)->
+ContextPath Value[Integer, increment](Nolabel, Nolabel)
+ContextPath Value[Integer, increment]
+Path Integer.increment
+CPPipe env:CompletionPipeChain envFromCompletionItem:CompletionPipeChain.Integer
+CPPipe type path:t
+CPPipe pathFromEnv:Integer found:true
+Path Integer.
+[{
+    "label": "Integer.toInt",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => int",
+    "documentation": null
+  }, {
+    "label": "Integer.increment",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }, {
+    "label": "Integer.decrement",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int => int) => t",
+    "documentation": null
+  }, {
+    "label": "Integer.make",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => t",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 36:38
+posCursor:[36:38] posNoWhite:[36:37] Found expr:[36:11->0:-1]
+Completable: Cpath Value[Integer, increment](Nolabel, Nolabel)->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Integer, increment](Nolabel, Nolabel)->
+ContextPath Value[Integer, increment](Nolabel, Nolabel)
+ContextPath Value[Integer, increment]
+Path Integer.increment
+CPPipe env:CompletionPipeChain envFromCompletionItem:CompletionPipeChain.Integer
+CPPipe type path:t
+CPPipe pathFromEnv:Integer found:true
+Path Integer.
+[{
+    "label": "Integer.toInt",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => int",
+    "documentation": null
+  }, {
+    "label": "Integer.increment",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }, {
+    "label": "Integer.decrement",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int => int) => t",
+    "documentation": null
+  }, {
+    "label": "Integer.make",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => t",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 39:47
+posCursor:[39:47] posNoWhite:[39:46] Found expr:[39:11->0:-1]
+Completable: Cpath Value[Integer, decrement](Nolabel, Nolabel)->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Integer, decrement](Nolabel, Nolabel)->
+ContextPath Value[Integer, decrement](Nolabel, Nolabel)
+ContextPath Value[Integer, decrement]
+Path Integer.decrement
+CPPipe env:CompletionPipeChain envFromCompletionItem:CompletionPipeChain.Integer
+CPPipe type path:t
+CPPipe pathFromEnv:Integer found:true
+Path Integer.
+[{
+    "label": "Integer.toInt",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => int",
+    "documentation": null
+  }, {
+    "label": "Integer.increment",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }, {
+    "label": "Integer.decrement",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int => int) => t",
+    "documentation": null
+  }, {
+    "label": "Integer.make",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => t",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 42:69
+posCursor:[42:69] posNoWhite:[42:68] Found expr:[42:11->0:-1]
+Completable: Cpath Value[Integer, decrement](Nolabel, Nolabel)->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Integer, decrement](Nolabel, Nolabel)->
+ContextPath Value[Integer, decrement](Nolabel, Nolabel)
+ContextPath Value[Integer, decrement]
+Path Integer.decrement
+CPPipe env:CompletionPipeChain envFromCompletionItem:CompletionPipeChain.Integer
+CPPipe type path:t
+CPPipe pathFromEnv:Integer found:true
+Path Integer.
+[{
+    "label": "Integer.toInt",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => int",
+    "documentation": null
+  }, {
+    "label": "Integer.increment",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }, {
+    "label": "Integer.decrement",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int => int) => t",
+    "documentation": null
+  }, {
+    "label": "Integer.make",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => t",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 45:62
+posCursor:[45:62] posNoWhite:[45:61] Found expr:[45:11->0:-1]
+Completable: Cpath Value[SuperFloat, fromInteger](Nolabel)->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[SuperFloat, fromInteger](Nolabel)->
+ContextPath Value[SuperFloat, fromInteger](Nolabel)
+ContextPath Value[SuperFloat, fromInteger]
+Path SuperFloat.fromInteger
+CPPipe env:CompletionPipeChain envFromCompletionItem:CompletionPipeChain.SuperFloat
+CPPipe type path:t
+CPPipe pathFromEnv:SuperFloat found:true
+Path SuperFloat.
+[{
+    "label": "SuperFloat.fromInteger",
+    "kind": 12,
+    "tags": [],
+    "detail": "Integer.t => t",
+    "documentation": null
+  }, {
+    "label": "SuperFloat.toInteger",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => Integer.t",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 48:63
+posCursor:[48:63] posNoWhite:[48:62] Found expr:[48:11->48:63]
+Completable: Cpath Value[SuperFloat, fromInteger](Nolabel)->t
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[SuperFloat, fromInteger](Nolabel)->t
+ContextPath Value[SuperFloat, fromInteger](Nolabel)
+ContextPath Value[SuperFloat, fromInteger]
+Path SuperFloat.fromInteger
+CPPipe env:CompletionPipeChain envFromCompletionItem:CompletionPipeChain.SuperFloat
+CPPipe type path:t
+CPPipe pathFromEnv:SuperFloat found:true
+Path SuperFloat.t
+[{
+    "label": "SuperFloat.toInteger",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => Integer.t",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 51:82
+posCursor:[51:82] posNoWhite:[51:81] Found expr:[51:11->0:-1]
+Completable: Cpath Value[CompletionSupport, Test, make](Nolabel)->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[CompletionSupport, Test, make](Nolabel)->
+ContextPath Value[CompletionSupport, Test, make](Nolabel)
+ContextPath Value[CompletionSupport, Test, make]
+Path CompletionSupport.Test.make
+CPPipe env:CompletionPipeChain envFromCompletionItem:CompletionSupport.Test
+CPPipe type path:t
+CPPipe pathFromEnv:Test found:true
+Path CompletionSupport.Test.
+[{
+    "label": "CompletionSupport.Test.add",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => int",
+    "documentation": null
+  }, {
+    "label": "CompletionSupport.Test.addSelf",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => t",
+    "documentation": null
+  }, {
+    "label": "CompletionSupport.Test.make",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => t",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 54:78
+posCursor:[54:78] posNoWhite:[54:77] Found expr:[54:11->0:-1]
+Completable: Cpath Value[CompletionSupport, Test, addSelf](Nolabel, Nolabel)->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[CompletionSupport, Test, addSelf](Nolabel, Nolabel)->
+ContextPath Value[CompletionSupport, Test, addSelf](Nolabel, Nolabel)
+ContextPath Value[CompletionSupport, Test, addSelf]
+Path CompletionSupport.Test.addSelf
+CPPipe env:CompletionPipeChain envFromCompletionItem:CompletionSupport.Test
+CPPipe type path:t
+CPPipe pathFromEnv:Test found:true
+Path CompletionSupport.Test.
+[{
+    "label": "CompletionSupport.Test.add",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => int",
+    "documentation": null
+  }, {
+    "label": "CompletionSupport.Test.addSelf",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => t",
+    "documentation": null
+  }, {
+    "label": "CompletionSupport.Test.make",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => t",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 58:5
+posCursor:[58:5] posNoWhite:[58:4] Found expr:[57:8->0:-1]
+Completable: Cpath Value[Js, Array2, forEach](Nolabel, Nolabel)->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Js, Array2, forEach](Nolabel, Nolabel)->
+ContextPath Value[Js, Array2, forEach](Nolabel, Nolabel)
+ContextPath Value[Js, Array2, forEach]
+Path Js.Array2.forEach
+CPPipe env:CompletionPipeChain envFromCompletionItem:Js_array2
+CPPipe type path:unit
+CPPipe pathFromEnv: found:true
+[]
+
+Complete src/CompletionPipeChain.res 62:6
+posCursor:[62:6] posNoWhite:[62:5] Found expr:[61:8->62:6]
+Completable: Cpath Value[Belt, Array, reduce](Nolabel, Nolabel, Nolabel)->t
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[Belt, Array, reduce](Nolabel, Nolabel, Nolabel)->t
+ContextPath Value[Belt, Array, reduce](Nolabel, Nolabel, Nolabel)
+ContextPath Value[Belt, Array, reduce]
+Path Belt.Array.reduce
+CPPipe env:CompletionPipeChain envFromCompletionItem:Belt_Array
+Path Belt.Int.t
+[{
+    "label": "Belt.Int.toString",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => string",
+    "documentation": {"kind": "markdown", "value": "\nConverts a given `int` to a `string`. Uses the JavaScript `String` constructor under the hood.\n\n## Examples\n\n```rescript\nJs.log(Belt.Int.toString(1) === \"1\") /* true */\n```\n"}
+  }, {
+    "label": "Belt.Int.toFloat",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => float",
+    "documentation": {"kind": "markdown", "value": "\nConverts a given `int` to a `float`.\n\n## Examples\n\n```rescript\nJs.log(Belt.Int.toFloat(1) === 1.0) /* true */\n```\n"}
+  }]
+
+Complete src/CompletionPipeChain.res 70:12
+posCursor:[70:12] posNoWhite:[70:11] Found expr:[70:3->0:-1]
+Completable: Cpath Value[aliased]->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[aliased]->
+ContextPath Value[aliased]
+Path aliased
+CPPipe env:CompletionPipeChain
+CPPipe type path:CompletionSupport.Test.t
+CPPipe pathFromEnv:CompletionSupport.Test found:false
+Path CompletionSupport.Test.
+[{
+    "label": "CompletionSupport.Test.add",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => int",
+    "documentation": null
+  }, {
+    "label": "CompletionSupport.Test.addSelf",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => t",
+    "documentation": null
+  }, {
+    "label": "CompletionSupport.Test.make",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => t",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 73:15
+posCursor:[73:15] posNoWhite:[73:14] Found expr:[73:3->0:-1]
+Completable: Cpath Value[notAliased]->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[notAliased]->
+ContextPath Value[notAliased]
+Path notAliased
+CPPipe env:CompletionPipeChain
+CPPipe type path:CompletionSupport.Test.t
+CPPipe pathFromEnv:CompletionSupport.Test found:false
+Path CompletionSupport.Test.
+[{
+    "label": "CompletionSupport.Test.add",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => int",
+    "documentation": null
+  }, {
+    "label": "CompletionSupport.Test.addSelf",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => t",
+    "documentation": null
+  }, {
+    "label": "CompletionSupport.Test.make",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => t",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 82:30
+posCursor:[82:30] posNoWhite:[82:29] Found expr:[76:15->93:1]
+Pexp_apply ...[76:15->76:46] (~prepare77:3->77:10=...[77:11->77:24], ~render78:3->78:9=...[78:10->91:3], ...[92:2->92:4])
+posCursor:[82:30] posNoWhite:[82:29] Found expr:[78:10->91:3]
+posCursor:[82:30] posNoWhite:[82:29] Found expr:[78:10->91:3]
+posCursor:[82:30] posNoWhite:[82:29] Found expr:[79:4->90:14]
+posCursor:[82:30] posNoWhite:[82:29] Found expr:[82:7->90:14]
+posCursor:[82:30] posNoWhite:[82:29] Found expr:[82:7->82:30]
+Completable: Cpath Value[props].support.root->ren
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[props].support.root->ren
+ContextPath Value[props].support.root
+ContextPath Value[props].support
+ContextPath Value[props]
+Path props
+CPPipe env:CompletionPipeChain envFromCompletionItem:CompletionSupport.Nested
+CPPipe type path:ReactDOM.Client.Root.t
+CPPipe pathFromEnv:ReactDOM.Client.Root found:false
+Path ReactDOM.Client.Root.ren
+[{
+    "label": "ReactDOM.Client.Root.render",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, React.element) => unit",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 88:16
+posCursor:[88:16] posNoWhite:[88:15] Found expr:[76:15->93:1]
+Pexp_apply ...[76:15->76:46] (~prepare77:3->77:10=...[77:11->77:24], ~render78:3->78:9=...[78:10->91:3], ...[92:2->92:4])
+posCursor:[88:16] posNoWhite:[88:15] Found expr:[78:10->91:3]
+posCursor:[88:16] posNoWhite:[88:15] Found expr:[78:10->91:3]
+posCursor:[88:16] posNoWhite:[88:15] Found expr:[79:4->90:14]
+posCursor:[88:16] posNoWhite:[88:15] Found expr:[84:4->90:14]
+posCursor:[88:16] posNoWhite:[88:15] Found expr:[85:4->90:14]
+posCursor:[88:16] posNoWhite:[88:15] Found expr:[88:7->90:14]
+posCursor:[88:16] posNoWhite:[88:15] Found expr:[88:7->88:16]
+Completable: Cpath Value[root]->ren
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[root]->ren
+ContextPath Value[root]
+Path root
+CPPipe env:CompletionPipeChain
+CPPipe type path:ReactDOM.Client.Root.t
+CPPipe pathFromEnv:ReactDOM.Client.Root found:false
+Path ReactDOM.Client.Root.ren
+[{
+    "label": "ReactDOM.Client.Root.render",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, React.element) => unit",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 95:20
+posCursor:[95:20] posNoWhite:[95:19] Found expr:[95:3->95:21]
+Pexp_apply ...[95:3->95:14] (...[95:15->0:-1])
+posCursor:[95:20] posNoWhite:[95:19] Found expr:[95:15->0:-1]
+posCursor:[95:20] posNoWhite:[95:19] Found expr:[95:15->0:-1]
+Completable: Cpath Value[int]->
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[int]->
+ContextPath Value[int]
+Path int
+CPPipe env:CompletionPipeChain
+CPPipe type path:Integer.t
+CPPipe pathFromEnv:Integer found:true
+Path Integer.
+[{
+    "label": "Integer.toInt",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => int",
+    "documentation": null
+  }, {
+    "label": "Integer.increment",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int) => t",
+    "documentation": null
+  }, {
+    "label": "Integer.decrement",
+    "kind": 12,
+    "tags": [],
+    "detail": "(t, int => int) => t",
+    "documentation": null
+  }, {
+    "label": "Integer.make",
+    "kind": 12,
+    "tags": [],
+    "detail": "int => t",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 98:21
+posCursor:[98:21] posNoWhite:[98:20] Found expr:[98:3->98:22]
+Pexp_apply ...[98:3->98:14] (...[98:15->98:21])
+posCursor:[98:21] posNoWhite:[98:20] Found expr:[98:15->98:21]
+Completable: Cpath Value[int]->t
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[int]->t
+ContextPath Value[int]
+Path int
+CPPipe env:CompletionPipeChain
+CPPipe type path:Integer.t
+CPPipe pathFromEnv:Integer found:true
+Path Integer.t
+[{
+    "label": "Integer.toInt",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => int",
+    "documentation": null
+  }]
+
+Complete src/CompletionPipeChain.res 103:8
+posCursor:[103:8] posNoWhite:[103:7] Found expr:[103:3->103:8]
+Completable: Cpath Value[r]->la
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[r]->la
+ContextPath Value[r]
+Path r
+CPPipe env:CompletionPipeChain
+Path Js.Re.la
+[{
+    "label": "Js.Re.lastIndex",
+    "kind": 12,
+    "tags": [],
+    "detail": "t => int",
+    "documentation": {"kind": "markdown", "value": "\nReturns the index where the next match will start its search. This property\nwill be modified when the RegExp object is used, if the global (\"g\") flag is\nset.\n\n## Examples\n\n```rescript\nlet re = %re(\"/ab*TODO/g\")\nlet str = \"abbcdefabh\"\n\nlet break = ref(false)\nwhile !break.contents {\n  switch Js.Re.exec_(re, str) {\n  | Some(result) => Js.Nullable.iter(Js.Re.captures(result)[0], (. match_) => {\n      let next = Belt.Int.toString(Js.Re.lastIndex(re))\n      Js.log(\"Found \" ++ (match_ ++ (\". Next match starts at \" ++ next)))\n    })\n  | None => break := true\n  }\n}\n```\n\nSee\n[`RegExp: lastIndex`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex)\non MDN.\n"}
+  }]
+

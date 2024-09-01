@@ -41,3 +41,13 @@
   (reanalyze
    (= 2.25.1))
   dune))
+
+(package
+ (name analysis)
+ (synopsis "ReScript Analysis")
+ (depends
+  (ocaml
+   (>= 4.10))
+  (cppo
+   (= 1.6.9))
+  dune))
