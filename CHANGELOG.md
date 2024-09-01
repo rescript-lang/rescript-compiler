@@ -16,6 +16,7 @@
 - Fix incorrect format of function under unary operator. https://github.com/rescript-lang/rescript-compiler/pull/6953
 - Fix incorrect incorrect printing of module binding with signature. https://github.com/rescript-lang/rescript-compiler/pull/6963
 - Disallow spreading anything but regular variants inside of other variants. https://github.com/rescript-lang/rescript-compiler/pull/6980
+- Fix comment removed when function signature has `type` keyword. https://github.com/rescript-lang/rescript-compiler/pull/6997
 
 # 11.1.3
 

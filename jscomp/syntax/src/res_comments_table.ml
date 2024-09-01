@@ -1404,6 +1404,8 @@ and walkExpression expr t comments =
         attach t.leading expr.pexp_loc leading;
         walkExpression expr t inside;
         attach t.trailing expr.pexp_loc trailing
+    | Pexp_construct ({txt = Longident.Lident "Function$"}, Some returnExpr) ->
+      walkExpression returnExpr t comments
     | _ ->
       if isBlockExpr returnExpr then walkExpression returnExpr t comments
       else
