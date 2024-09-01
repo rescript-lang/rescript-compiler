@@ -15,3 +15,7 @@ let q = 11
   multiline doc comment
   */
 type h = int
+
+type pathItem = {}
+/** Issue 6844: doc comment before "and" */
+and operation =  {}
