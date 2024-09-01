@@ -138,20 +138,20 @@ module Event = struct
         if !Common.Cli.debug then Log_.item "%a@." print ev;
         let nestedExceptions = loop Exceptions.empty nestedEvents in
         (if Exceptions.isEmpty nestedExceptions (* catch-all *) then
-         let name =
-           match nestedEvents with
-           | {kind = Call {callee}} :: _ -> callee |> Common.Path.toName
-           | _ -> "expression" |> Name.create
-         in
-         Log_.warning ~loc
-           (Common.ExceptionAnalysis
-              {
-                message =
-                  Format.asprintf
-                    "@{<info>%s@} does not raise and is annotated with \
-                     redundant @doesNotRaise"
-                    (name |> Name.toString);
-              }));
+           let name =
+             match nestedEvents with
+             | {kind = Call {callee}} :: _ -> callee |> Common.Path.toName
+             | _ -> "expression" |> Name.create
+           in
+           Log_.warning ~loc
+             (Common.ExceptionAnalysis
+                {
+                  message =
+                    Format.asprintf
+                      "@{<info>%s@} does not raise and is annotated with \
+                       redundant @doesNotRaise"
+                      (name |> Name.toString);
+                }));
         loop exnSet rest
       | ({kind = Catches nestedEvents; exceptions} as ev) :: rest ->
         if !Common.Cli.debug then Log_.item "%a@." print ev;
@@ -192,11 +192,11 @@ module Checks = struct
     let missingAnnotations = Exceptions.diff raiseSet exceptions in
     let redundantAnnotations = Exceptions.diff exceptions raiseSet in
     (if not (Exceptions.isEmpty missingAnnotations) then
-     let description =
-       Common.ExceptionAnalysisMissing
-         {exnName; exnTable; raiseSet; missingAnnotations; locFull}
-     in
-     Log_.warning ~loc description);
+       let description =
+         Common.ExceptionAnalysisMissing
+           {exnName; exnTable; raiseSet; missingAnnotations; locFull}
+       in
+       Log_.warning ~loc description);
     if not (Exceptions.isEmpty redundantAnnotations) then
       Log_.warning ~loc
         (Common.ExceptionAnalysis
@@ -356,14 +356,14 @@ let traverseAst () =
       cases |> iterCases self
     | _ -> super.expr self expr |> ignore);
     (if isDoesNoRaise then
-     let nestedEvents = !currentEvents in
-     currentEvents :=
-       {
-         Event.exceptions = Exceptions.empty;
-         loc;
-         kind = DoesNotRaise nestedEvents;
-       }
-       :: oldEvents);
+       let nestedEvents = !currentEvents in
+       currentEvents :=
+         {
+           Event.exceptions = Exceptions.empty;
+           loc;
+           kind = DoesNotRaise nestedEvents;
+         }
+         :: oldEvents);
     expr
   in
   let getExceptionsFromAnnotations attributes =

@@ -110,7 +110,7 @@ let cli () =
   let versionAndExit () =
     print_endline usage;
     exit 0
-    [@@raises exit]
+      [@@raises exit]
   in
   let rec setAll cmtRoot =
     RunConfig.all ();
@@ -216,7 +216,7 @@ let cli () =
   if !analysisKindSet = false then setConfig ();
   let cmtRoot = !cmtRootRef in
   runAnalysisAndReport ~cmtRoot
-  [@@raises exit]
+[@@raises exit]
 
 module RunConfig = RunConfig
 module Log_ = Log_

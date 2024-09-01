@@ -813,10 +813,10 @@ module Compile = struct
             | _ ->
               Stats.logHygieneNamedArgValue ~label ~loc;
               raise ArgError
-            [@@raises ArgError]
+              [@@raises ArgError]
           in
           functionArg ()
-          [@@raises ArgError]
+            [@@raises ArgError]
         in
         let functionArgsOpt =
           try Some (functionDefinition.kind |> List.map getFunctionArg)
@@ -1320,7 +1320,7 @@ let traverseAst ~valueBindingsTable =
                    progressFunctionsFromAttributes valueBinding.vb_attributes
                  with
                  | None -> (progressFunctions, functionsToAnalyze)
-                 | Some newProgressFunctions -> (
+                 | Some newProgressFunctions ->
                    ( StringSet.union
                        (StringSet.of_list newProgressFunctions)
                        progressFunctions,
@@ -1328,7 +1328,7 @@ let traverseAst ~valueBindingsTable =
                      | Tpat_var (id, _) ->
                        (Ident.name id, valueBinding.vb_expr.exp_loc)
                        :: functionsToAnalyze
-                     | _ -> functionsToAnalyze )))
+                     | _ -> functionsToAnalyze ))
                (StringSet.empty, [])
         in
         (progressFunctions0, functionsToAnalyze0 |> List.rev)

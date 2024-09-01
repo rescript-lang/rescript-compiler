@@ -9,8 +9,8 @@ let addReference ~extra stamp loc =
     (loc
     ::
     (if Hashtbl.mem extra.internalReferences stamp then
-     Hashtbl.find extra.internalReferences stamp
-    else []))
+       Hashtbl.find extra.internalReferences stamp
+     else []))
 
 let extraForFile ~(file : File.t) =
   let extra = initExtra () in
@@ -66,8 +66,8 @@ let addExternalReference ~extra moduleName path tip loc =
     ((path, tip, loc)
     ::
     (if Hashtbl.mem extra.externalReferences moduleName then
-     Hashtbl.find extra.externalReferences moduleName
-    else []))
+       Hashtbl.find extra.externalReferences moduleName
+     else []))
 
 let addFileReference ~extra moduleName loc =
   let newLocs =

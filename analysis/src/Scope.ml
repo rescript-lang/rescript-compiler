@@ -14,7 +14,7 @@ let itemToString item =
   | Module (s, loc) -> "Module " ^ s ^ " " ^ Loc.toString loc
   | Value (s, loc, _, _) -> "Value " ^ s ^ " " ^ Loc.toString loc
   | Type (s, loc) -> "Type " ^ s ^ " " ^ Loc.toString loc
-  [@@live]
+[@@live]
 
 let create () : t = []
 let addConstructor ~name ~loc x = Constructor (name, loc) :: x
@@ -24,12 +24,12 @@ let addOpen ~lid x = Open (Utils.flattenLongIdent lid @ ["place holder"]) :: x
 let addValue ~name ~loc ?contextPath x =
   let showDebug = !Cfg.debugFollowCtxPath in
   (if showDebug then
-   match contextPath with
-   | None -> Printf.printf "adding value '%s', no ctxPath\n" name
-   | Some contextPath ->
-     if showDebug then
-       Printf.printf "adding value '%s' with ctxPath: %s\n" name
-         (SharedTypes.Completable.contextPathToString contextPath));
+     match contextPath with
+     | None -> Printf.printf "adding value '%s', no ctxPath\n" name
+     | Some contextPath ->
+       if showDebug then
+         Printf.printf "adding value '%s' with ctxPath: %s\n" name
+           (SharedTypes.Completable.contextPathToString contextPath));
   Value (name, loc, contextPath, x) :: x
 let addType ~name ~loc x = Type (name, loc) :: x
 

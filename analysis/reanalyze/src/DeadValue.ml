@@ -45,12 +45,12 @@ let collectValueBinding super self (vb : Typedtree.value_binding) =
         | _ -> false
       in
       (if (not exists) && not isFirstClassModule then
-       (* This is never toplevel currently *)
-       let isToplevel = oldLastBinding = Location.none in
-       let sideEffects = SideEffects.checkExpr vb.vb_expr in
-       name
-       |> addValueDeclaration ~isToplevel ~loc ~moduleLoc:currentModulePath.loc
-            ~optionalArgs ~path ~sideEffects);
+         (* This is never toplevel currently *)
+         let isToplevel = oldLastBinding = Location.none in
+         let sideEffects = SideEffects.checkExpr vb.vb_expr in
+         name
+         |> addValueDeclaration ~isToplevel ~loc
+              ~moduleLoc:currentModulePath.loc ~optionalArgs ~path ~sideEffects);
       (match PosHash.find_opt decls loc_start with
       | None -> ()
       | Some decl ->

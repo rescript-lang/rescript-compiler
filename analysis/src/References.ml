@@ -66,7 +66,7 @@ let getLocItem ~full ~pos ~debug =
   | [
    ({locType = Typed (_, _, LocalReference _)} as li1);
    ({locType = Typed (_, _, GlobalReference ("Js_OO", ["unsafe_downgrade"], _))}
-   as li2);
+    as li2);
    li3;
   ]
   (* For older compiler 9.0 or earlier *)

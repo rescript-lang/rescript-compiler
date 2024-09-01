@@ -75,10 +75,10 @@ module Loc = struct
         pos_cnum = char;
         pos_fname =
           (let open Filename in
-          match is_implicit pos.pos_fname with
-          | _ when !Cli.ci -> basename pos.pos_fname
-          | true -> concat (Sys.getcwd ()) pos.pos_fname
-          | false -> pos.pos_fname);
+           match is_implicit pos.pos_fname with
+           | _ when !Cli.ci -> basename pos.pos_fname
+           | true -> concat (Sys.getcwd ()) pos.pos_fname
+           | false -> pos.pos_fname);
       }
     in
     Location.print_loc ppf
