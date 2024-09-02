@@ -2511,7 +2511,7 @@ and parse_attributes_and_binding (p : Parser.t) =
   let comments = p.comments in
 
   match p.Parser.token with
-  | At -> (
+  | At | DocComment (_, _) -> (
     let attrs = parse_attributes p in
     match p.Parser.token with
     | And -> attrs
