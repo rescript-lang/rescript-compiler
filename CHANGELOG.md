@@ -17,6 +17,7 @@
 - Fix incorrect incorrect printing of module binding with signature. https://github.com/rescript-lang/rescript-compiler/pull/6963
 - Disallow spreading anything but regular variants inside of other variants. https://github.com/rescript-lang/rescript-compiler/pull/6980
 - Fix comment removed when function signature has `type` keyword. https://github.com/rescript-lang/rescript-compiler/pull/6997
+- Fix parse error on doc comment before "and" in type def. https://github.com/rescript-lang/rescript-compiler/pull/7001
 
 # 11.1.3
 

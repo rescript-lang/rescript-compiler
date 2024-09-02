@@ -27,3 +27,7 @@ type h = int
 
 /** doc comment and 0 attributes */
 let x = 10
+
+type pathItem = {}
+/** Issue 6844: doc comment before "and" */
+and operation =  {}
