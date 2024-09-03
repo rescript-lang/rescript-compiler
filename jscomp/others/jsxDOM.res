@@ -136,6 +136,7 @@ type domProps = {
   defaultValue?: string,
   /* global html attributes */
   accessKey?: string,
+  capture?: [#user | #environment],
   className?: string /* substitute for "class" */,
   contentEditable?: bool,
   contextMenu?: string,
