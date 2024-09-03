@@ -275,16 +275,6 @@ let get : attr = ({txt = "get"; loc = locg}, Ast_payload.empty)
 
 let get_index : attr = ({txt = "get_index"; loc = locg}, Ast_payload.empty)
 
-let bs_get_arity : attr =
-  ( {txt = "internal.arity"; loc = locg},
-    PStr
-      [
-        {
-          pstr_desc = Pstr_eval (Ast_compatible.const_exp_int ~loc:locg 1, []);
-          pstr_loc = locg;
-        };
-      ] )
-
 let set : attr = ({txt = "set"; loc = locg}, Ast_payload.empty)
 
 let internal_expansive : attr =

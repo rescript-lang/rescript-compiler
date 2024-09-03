@@ -57,7 +57,7 @@ let is_abstract (xs : Ast_payload.action list) =
 let get_optional_attrs =
   [Ast_attributes.get; Ast_attributes.bs_return_undefined]
 
-let get_attrs = [Ast_attributes.bs_get_arity]
+let get_attrs = []
 
 let set_attrs = [Ast_attributes.set]
 

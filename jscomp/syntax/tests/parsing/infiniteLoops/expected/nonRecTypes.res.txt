@@ -25,39 +25,39 @@
 
 
   Syntax error!
-  tests/parsing/infiniteLoops/nonRecTypes.res:67:26-68:3
+  tests/parsing/infiniteLoops/nonRecTypes.res:61:26-62:3
 
-  65 │         };
-  66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
-  67 │ let rec minNode = node =>
-  68 │ let findMin = rbt =>
-  69 │ let removeNode = (rbt, node) => {
-  70 │   let nodeToRemove =
-
-  I'm not sure what to parse here when looking at "let".
-
-
-  Syntax error!
-  tests/parsing/infiniteLoops/nonRecTypes.res:68:21-69:3
-
-  66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
-  67 │ let rec minNode = node =>
-  68 │ let findMin = rbt =>
-  69 │ let removeNode = (rbt, node) => {
-  70 │   let nodeToRemove =
-  71 │     switch (leftGet(node), rightGet(node)) {
+  59 │         };
+  60 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
+  61 │ let rec minNode = node =>
+  62 │ let findMin = rbt =>
+  63 │ let removeNode = (rbt, node) => {
+  64 │   let nodeToRemove =
 
   I'm not sure what to parse here when looking at "let".
 
 
   Syntax error!
-  tests/parsing/infiniteLoops/nonRecTypes.res:434:31-38
+  tests/parsing/infiniteLoops/nonRecTypes.res:62:21-63:3
 
-  432 │     updateSum(Some(node), ~delta);
-  433 │   };
-  434 │ type nonrec oldNewVisibleNodes('value) = {
-  435 │   mutable old: array('value),
-  436 │   mutable new_: array('value),
+  60 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
+  61 │ let rec minNode = node =>
+  62 │ let findMin = rbt =>
+  63 │ let removeNode = (rbt, node) => {
+  64 │   let nodeToRemove =
+  65 │     switch (leftGet(node), rightGet(node)) {
+
+  I'm not sure what to parse here when looking at "let".
+
+
+  Syntax error!
+  tests/parsing/infiniteLoops/nonRecTypes.res:428:31-38
+
+  426 │     updateSum(Some(node), ~delta);
+  427 │   };
+  428 │ type nonrec oldNewVisibleNodes('value) = {
+  429 │   mutable old: array('value),
+  430 │   mutable new_: array('value),
 
   Type parameters require angle brackets:
   oldNewVisibleNodes<'value>
@@ -93,10 +93,8 @@ include
         ;;{js|BS:6.0.1\x84\x95\xa6\xbe\0\0\0\x15\0\0\0\t\0\0\0\x1a\0\0\0\x19\xb0\xa0\xa0A\x91@\xa0\xa0A\x04\x03@E\x97\xa0$size@|js}
         ;;[|(({js|use sizeGet instead or use {abstract = light} explicitly|js})
             [@ocaml.deprecated ])|]
-        ;;[|((1)[@internal.arity ])|]
         external size : ('value t -> int, [ `Has_arity1 ]) function$ = ""
         ;;{js|BS:6.0.1\x84\x95\xa6\xbe\0\0\0\x10\0\0\0\x07\0\0\0\x14\0\0\0\x13\xb0\xa0\xa0A\x91@@A\x98\xa0$size@|js}
-        ;;[|((1)[@internal.arity ])|]
         external sizeGet : ('value t -> int, [ `Has_arity1 ]) function$ = ""
         ;;{js|BS:6.0.1\x84\x95\xa6\xbe\0\0\0\x10\0\0\0\x07\0\0\0\x14\0\0\0\x13\xb0\xa0\xa0A\x91@@A\x98\xa0$size@|js}
         external rootSet :
@@ -105,24 +103,20 @@ include
         ;;{js|BS:6.0.1\x84\x95\xa6\xbe\0\0\0\x15\0\0\0\t\0\0\0\x1a\0\0\0\x19\xb0\xa0\xa0A\x91@\xa0\xa0A\x04\x03@E\x97\xa0$root@|js}
         ;;[|(({js|use rootGet instead or use {abstract = light} explicitly|js})
             [@ocaml.deprecated ])|]
-        ;;[|((1)[@internal.arity ])|]
         external root :
           ('value t -> 'value node option, [ `Has_arity1 ]) function$ = ""
         ;;{js|BS:6.0.1\x84\x95\xa6\xbe\0\0\0\x10\0\0\0\x07\0\0\0\x14\0\0\0\x13\xb0\xa0\xa0A\x91@@A\x98\xa0$root@|js}
-        ;;[|((1)[@internal.arity ])|]
         external rootGet :
           ('value t -> 'value node option, [ `Has_arity1 ]) function$ = ""
         ;;{js|BS:6.0.1\x84\x95\xa6\xbe\0\0\0\x10\0\0\0\x07\0\0\0\x14\0\0\0\x13\xb0\xa0\xa0A\x91@@A\x98\xa0$root@|js}
         ;;[|(({js|use compareGet instead or use {abstract = light} explicitly|js})
             [@ocaml.deprecated ])|]
-        ;;[|((1)[@internal.arity ])|]
         external compare :
           ('value t -> [ [%rescript.typehole ]] Js.Internal.fn,
             [ `Has_arity1 ]) function$
         ;;(({js|Arity_2('value, 'value)], int) =
             ""
             "BS:6.0.1\x84\x95\xa6\xbe\0\0\0\x13\0\0\0\x07\0\0\0\x14\0\0\0\x13\xb0\xa0\xa0A\x91@@A\x98\xa0'compare@";
-          [@internal.arity 1]
           external compareGet:
             t('value) => Js.Internal.fn([ | |js})
           [@res.template ])
