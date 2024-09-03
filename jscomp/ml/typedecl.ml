@@ -1730,21 +1730,7 @@ let transl_value_decl env loc valdecl =
   | [] ->
       raise (Error(valdecl.pval_loc, Val_in_structure))
   | _ ->
-      let arity, from_constructor =
-          let rec scan_attributes (attrs : Parsetree.attributes)  = 
-            match attrs with 
-            | ({txt = "internal.arity";_}, (* This is likely not needed in uncurried mode *)
-              PStr [ {pstr_desc = Pstr_eval
-                        (
-                          ({pexp_desc = Pexp_constant (Pconst_integer (i,_))} :
-                             Parsetree.expression) ,_)}]) :: _ ->
-               Some (int_of_string i)              
-            | _ :: rest  -> scan_attributes rest 
-            | [] -> None 
-          in 
-          match scan_attributes valdecl.pval_attributes with 
-          | None ->  parse_arity env valdecl.pval_type ty 
-          | Some x -> x, false
+      let arity, from_constructor = parse_arity env valdecl.pval_type ty
       in
       let prim = Primitive.parse_declaration valdecl ~arity ~from_constructor in
       let prim_native_name = prim.prim_native_name in 

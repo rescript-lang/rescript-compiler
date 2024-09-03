@@ -58,8 +58,6 @@ val get : attr
 
 val get_index : attr
 
-val bs_get_arity : attr
-
 val set : attr
 
 val bs_return_undefined : attr
