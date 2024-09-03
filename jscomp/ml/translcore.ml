@@ -720,14 +720,6 @@ let extract_directive_for_fn exp =
   exp.exp_attributes |> List.find_map (
     fun ({txt}, payload) -> if txt = "directive" then Ast_payload.is_single_string payload else None)
 
-let args_eligible_for_dict_inlining (args : expression list) =
-  args
-  |> List.find_opt (fun (arg : expression) ->
-         match arg.exp_desc with
-         | Texp_tuple [{exp_desc = Texp_constant (Const_string _)}; _] -> false
-         | _ -> true)
-  |> Option.is_none
-
 let rec transl_exp e =
   List.iter (Translattribute.check_attribute e) e.exp_attributes;
   transl_exp0 e
@@ -809,33 +801,6 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
           | _ ->
               wrap (Lprim (prim, argl, e.exp_loc))
               ))
-  | Texp_apply
-      ( {
-          exp_desc =
-            Texp_ident
-              ( Pdot (Pdot (Pident module_name, "Dict", _), "fromArray", _),
-                _,
-                _ );
-        },
-        [(_lbl, Some {exp_desc = Texp_array args})] )
-    when Ident.name module_name = "Js" && args_eligible_for_dict_inlining args ->
-    let fields = Array.make (List.length args) "" in
-    let args =
-      args
-      |> List.mapi (fun index (arg : expression) ->
-              match arg.exp_desc with
-              | Texp_tuple
-                  [{exp_desc = Texp_constant (Const_string (fieldName, _))}; exp]
-                ->
-                Array.set fields index fieldName;
-                exp |> transl_exp |> extract_constant
-              | _ -> assert false)
-    in
-    Lconst
-      (Const_block
-          ( Blk_record
-              {fields; mutable_flag = Mutable; record_repr = Record_regular},
-            args ))
   | Texp_apply (funct, oargs) ->
       let inlined, funct =
         Translattribute.get_and_remove_inlined_attribute funct
