@@ -4081,7 +4081,7 @@ and print_pexp_apply ~state expr cmt_tbl =
               {
                 txt =
                   Longident.Ldot
-                    (Longident.Ldot (Lident "Js", "Dict"), "fromArray");
+                    (Longident.Ldot (Lident "Js", "Dict"), "unsafe_create");
               };
         },
         [(Nolabel, key_values)] )

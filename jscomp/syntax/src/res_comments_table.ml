@@ -1352,7 +1352,7 @@ and walk_expression expr t comments =
               {
                 txt =
                   Longident.Ldot
-                    (Longident.Ldot (Lident "Js", "Dict"), "fromArray");
+                    (Longident.Ldot (Lident "Js", "Dict"), "unsafe_create");
               };
         },
         [(Nolabel, key_values)] )
