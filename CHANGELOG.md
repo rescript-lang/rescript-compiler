@@ -2618,5 +2618,4 @@ Features:
   - #686, introduce phantom arguments (`bs.ignore`) for ad-hoc polymorphism
 
 # 1.0.0
-
 Initial release
