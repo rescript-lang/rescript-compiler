@@ -23,7 +23,6 @@ darwinarm64/ninja.exe
 darwinarm64/rescript.exe
 darwinarm64/rewatch.exe
 docs/docson/build-schema.json
-lib/bs/.project-files-cache
 lib/bstracing
 lib/es6/arg.js
 lib/es6/array.js
