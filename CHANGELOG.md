@@ -45,6 +45,7 @@
 - Add dev container. https://github.com/rescript-lang/rescript-compiler/pull/6962
 - Convert more tests to the node test runner. https://github.com/rescript-lang/rescript-compiler/pull/6956
 - Remove attribute "internal.arity". https://github.com/rescript-lang/rescript-compiler/pull/7004
+- Remove dead modules. https://github.com/rescript-lang/rescript-compiler/pull/7008
 
 # 12.0.0-alpha.1
 
