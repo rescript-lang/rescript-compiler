@@ -11,6 +11,16 @@ let createdDict = {
   otherStr: someString
 };
 
+let intDict = {
+  one: 1,
+  two: 2,
+  three: 3
+};
+
+let three = 3;
+
 exports.someString = someString;
 exports.createdDict = createdDict;
+exports.three = three;
+exports.intDict = intDict;
 /* createdDict Not a pure module */
