@@ -240,7 +240,7 @@ let rec expression : Env.env -> Typedtree.expression -> Use.t =
   | Texp_construct (_, desc, exprs) ->
       let access_constructor =
         match desc.cstr_tag with
-        | Cstr_extension (pth) -> Use.inspect (path env pth)
+        | Cstr_extension (pth, _) -> Use.inspect (path env pth)
         | _ -> Use.empty
       in
       let use =
@@ -256,7 +256,7 @@ let rec expression : Env.env -> Typedtree.expression -> Use.t =
         match rep with
         | Record_unboxed _ -> fun x -> x
         | Record_float_unused -> assert false
-        | Record_optional_labels _ | Record_regular | Record_inlined _ | Record_extension
+        | Record_optional_labels _ | Record_regular | Record_inlined _ | Record_extension _
           ->
             Use.guard
       in

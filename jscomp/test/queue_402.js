@@ -3,6 +3,7 @@
 
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let Empty = /* @__PURE__ */Caml_exceptions.create("Queue_402.Empty");
 
@@ -40,22 +41,14 @@ function add(x, q) {
 
 function peek(q) {
   if (q.length === 0) {
-    throw new Error(Empty, {
-      cause: {
-        RE_EXN_ID: Empty
-      }
-    });
+    throw Caml_js_exceptions.internalMakeExn(Empty);
   }
   return q.tail.next.content;
 }
 
 function take(q) {
   if (q.length === 0) {
-    throw new Error(Empty, {
-      cause: {
-        RE_EXN_ID: Empty
-      }
-    });
+    throw Caml_js_exceptions.internalMakeExn(Empty);
   }
   q.length = q.length - 1 | 0;
   let tail = q.tail;

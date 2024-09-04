@@ -2,6 +2,7 @@
 'use strict';
 
 let Caml_array = require("../../lib/js/caml_array.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function $$eval(_bdd, vars) {
   while (true) {
@@ -67,26 +68,22 @@ function resize(newSize) {
       let n = bucket.hd;
       if (typeof n !== "object") {
         if (n === "One") {
-          throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "bdd.res",
-                60,
-                13
-              ]
-            }
-          });
-        }
-        throw new Error("Assert_failure", {
-          cause: {
+          throw Caml_js_exceptions.internalFromExtension({
             RE_EXN_ID: "Assert_failure",
             _1: [
               "bdd.res",
               60,
               13
             ]
-          }
+          });
+        }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "bdd.res",
+            60,
+            13
+          ]
         });
       } else {
         let ind = hashVal(getId(n._0), getId(n._3), n._1) & newSz_1;
@@ -145,26 +142,22 @@ function mkNode(low, v, high) {
       let n = b.hd;
       if (typeof n !== "object") {
         if (n === "One") {
-          throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "bdd.res",
-                121,
-                15
-              ]
-            }
-          });
-        }
-        throw new Error("Assert_failure", {
-          cause: {
+          throw Caml_js_exceptions.internalFromExtension({
             RE_EXN_ID: "Assert_failure",
             _1: [
               "bdd.res",
               121,
               15
             ]
-          }
+          });
+        }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "bdd.res",
+            121,
+            15
+          ]
         });
       } else {
         if (v === n._1 && idl === getId(n._0) && idh === getId(n._3)) {
@@ -402,15 +395,13 @@ function main() {
   if (succeeded) {
     return;
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "bdd.res",
-        301,
-        2
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "bdd.res",
+      301,
+      2
+    ]
   });
 }
 

@@ -83,7 +83,7 @@ function u(f) {
   try {
     return f();
   } catch (raw_x) {
-    let x = Caml_js_exceptions.internalToOCamlException(raw_x);
+    let x = Caml_js_exceptions.internalAnyToExn(raw_x);
     if (x.RE_EXN_ID === A) {
       return x.name + x.x | 0;
     } else if (x.RE_EXN_ID === B) {
@@ -97,31 +97,25 @@ function u(f) {
 }
 
 eq("File \"record_extension_test.res\", line 59, characters 3-10", u(() => {
-  throw new Error(A, {
-    cause: {
-      RE_EXN_ID: A,
-      name: 1,
-      x: 1
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: A,
+    name: 1,
+    x: 1
   });
 }), 2);
 
 eq("File \"record_extension_test.res\", line 60, characters 3-10", u(() => {
-  throw new Error(B, {
-    cause: {
-      RE_EXN_ID: B,
-      _1: 1,
-      _2: 2
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: B,
+    _1: 1,
+    _2: 2
   });
 }), 3);
 
 eq("File \"record_extension_test.res\", line 61, characters 3-10", u(() => {
-  throw new Error(C, {
-    cause: {
-      RE_EXN_ID: C,
-      name: 4
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: C,
+    name: 4
   });
 }), 4);
 

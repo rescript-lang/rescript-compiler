@@ -89,12 +89,8 @@ let create = (str: string): string => {
 
    This is not a problem in `try .. with` since the logic above is not expressible, see more design in [destruct_exn.md]
 */
-let is_extension = (type a, e: a): bool =>
-  if Js.testAny(e) {
-    false
-  } else {
-    Js.typeof((Obj.magic(e): t).id) == "string"
-  }
+let is_extension = (any: 'a): bool =>
+  Obj.magic(any) && Js.typeof((Obj.magic(any): t).id) === "string"
 
 /** FIXME: remove the trailing `/` */
 let exn_slot_name = (x: t): string => x.id

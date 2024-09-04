@@ -3,6 +3,7 @@
 
 let Caml_bytes = require("../../lib/js/caml_bytes.js");
 let Caml_string = require("../../lib/js/caml_string.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function f(x) {
   switch (x) {
@@ -11,15 +12,13 @@ function f(x) {
     case "bbbb" :
       return 1;
     default:
-      throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "test_string.res",
-            5,
-            17
-          ]
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "test_string.res",
+          5,
+          17
+        ]
       });
   }
 }

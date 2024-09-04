@@ -13,110 +13,86 @@ let v = "gso";
 
 function is_equal() {
   if (Caml_bytes.get(Bytes.make(3, /* 'a' */97), 0) !== /* 'a' */97) {
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "equal_exception_test.res",
-          4,
-          2
-        ]
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "equal_exception_test.res",
+        4,
+        2
+      ]
     });
   }
   if (Bytes.make(3, /* 'a' */97)[0] !== /* 'a' */97) {
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "equal_exception_test.res",
-          5,
-          2
-        ]
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "equal_exception_test.res",
+        5,
+        2
+      ]
     });
   }
   let u = Bytes.make(3, /* 'a' */97);
   u[0] = /* 'b' */98;
   if (u[0] !== /* 'b' */98) {
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "equal_exception_test.res",
-          8,
-          2
-        ]
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "equal_exception_test.res",
+        8,
+        2
+      ]
     });
   }
   if (Caml_string.get(v, 0) === /* 'g' */103) {
     return;
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "equal_exception_test.res",
-        9,
-        2
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "equal_exception_test.res",
+      9,
+      2
+    ]
   });
 }
 
 function is_exception() {
   try {
-    throw new Error("Not_found", {
-      cause: {
-        RE_EXN_ID: "Not_found"
-      }
-    });
+    throw Caml_js_exceptions.internalMakeExn("Not_found");
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       return;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
 function is_normal_exception(_x) {
   let A = /* @__PURE__ */Caml_exceptions.create("A");
-  let v = {
+  let v = Caml_js_exceptions.internalFromExtension({
     RE_EXN_ID: A,
     _1: 3
-  };
+  });
   try {
-    throw new Error(v.RE_EXN_ID, {
-      cause: v
-    });
+    throw v;
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
     if (exn.RE_EXN_ID === A) {
       if (exn._1 === 3) {
         return;
       }
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
 function is_arbitrary_exception() {
   let A = /* @__PURE__ */Caml_exceptions.create("A");
   try {
-    throw new Error(A, {
-      cause: {
-        RE_EXN_ID: A
-      }
-    });
+    throw Caml_js_exceptions.internalMakeExn(A);
   } catch (exn) {
     return;
   }
@@ -152,9 +128,7 @@ let suites = {
   tl: suites_1
 };
 
-let e = {
-  RE_EXN_ID: "Not_found"
-};
+let e = Caml_js_exceptions.internalMakeExn("Not_found");
 
 function eq(x) {
   return x.RE_EXN_ID === "Not_found";
@@ -162,31 +136,25 @@ function eq(x) {
 
 let Not_found = /* @__PURE__ */Caml_exceptions.create("Equal_exception_test.Not_found");
 
-if (Caml_obj.equal(e, {
-    RE_EXN_ID: Not_found
-  }) !== false) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "equal_exception_test.res",
-        50,
-        0
-      ]
-    }
+if (Caml_obj.equal(e, Caml_js_exceptions.internalMakeExn(Not_found)) !== false) {
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "equal_exception_test.res",
+      50,
+      0
+    ]
   });
 }
 
 if (Not_found === "Not_found" !== false) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "equal_exception_test.res",
-        51,
-        0
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "equal_exception_test.res",
+      51,
+      0
+    ]
   });
 }
 

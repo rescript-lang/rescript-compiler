@@ -2,6 +2,7 @@
 'use strict';
 
 let Caml_option = require("../../lib/js/caml_option.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function test(dom) {
   let elem = dom.getElementById("haha");
@@ -18,15 +19,13 @@ function f_undefined(xs, i) {
   if (k !== undefined) {
     return k;
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "return_check.res",
-        23,
-        12
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "return_check.res",
+      23,
+      12
+    ]
   });
 }
 
@@ -60,15 +59,13 @@ function f_null(xs, i) {
   if (k !== null) {
     return k;
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "return_check.res",
-        51,
-        12
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "return_check.res",
+      51,
+      12
+    ]
   });
 }
 
@@ -77,15 +74,13 @@ function f_null_undefined(xs, i) {
   if (!(k == null)) {
     return k;
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "return_check.res",
-        59,
-        12
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "return_check.res",
+      59,
+      12
+    ]
   });
 }
 

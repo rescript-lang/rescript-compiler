@@ -56,16 +56,14 @@ try {
   e = JSON.parse(" {\"x\"}");
   exit = 1;
 } catch (raw_x) {
-  let x = Caml_js_exceptions.internalToOCamlException(raw_x);
+  let x = Caml_js_exceptions.internalAnyToExn(raw_x);
   if (x.RE_EXN_ID === Js_exn.$$Error) {
     add_test("File \"js_exception_catch_test.res\", line 18, characters 37-44", () => ({
       TAG: "Ok",
       _0: true
     }));
   } else {
-    throw new Error(x.RE_EXN_ID, {
-      cause: x
-    });
+    throw x;
   }
 }
 
@@ -87,7 +85,7 @@ function test(f) {
     f();
     return "No_error";
   } catch (raw_e) {
-    let e = Caml_js_exceptions.internalToOCamlException(raw_e);
+    let e = Caml_js_exceptions.internalAnyToExn(raw_e);
     if (e.RE_EXN_ID === "Not_found") {
       return "Not_found";
     } else if (e.RE_EXN_ID === "Invalid_argument") {
@@ -121,89 +119,65 @@ function test(f) {
 eq("File \"js_exception_catch_test.res\", line 44, characters 5-12", test(() => {}), "No_error");
 
 eq("File \"js_exception_catch_test.res\", line 45, characters 5-12", test(() => {
-  throw new Error("Not_found", {
-    cause: {
-      RE_EXN_ID: "Not_found"
-    }
-  });
+  throw Caml_js_exceptions.internalMakeExn("Not_found");
 }), "Not_found");
 
 eq("File \"js_exception_catch_test.res\", line 46, characters 5-12", test(() => {
-  throw new Error("Invalid_argument", {
-    cause: {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "x"
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Invalid_argument",
+    _1: "x"
   });
 }), "Invalid_argument");
 
 eq("File \"js_exception_catch_test.res\", line 47, characters 5-12", test(() => {
-  throw new Error("Invalid_argument", {
-    cause: {
-      RE_EXN_ID: "Invalid_argument",
-      _1: ""
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Invalid_argument",
+    _1: ""
   });
 }), "Invalid_any");
 
 eq("File \"js_exception_catch_test.res\", line 48, characters 5-12", test(() => {
-  throw new Error(A, {
-    cause: {
-      RE_EXN_ID: A,
-      _1: 2
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: A,
+    _1: 2
   });
 }), "A2");
 
 eq("File \"js_exception_catch_test.res\", line 49, characters 5-12", test(() => {
-  throw new Error(A, {
-    cause: {
-      RE_EXN_ID: A,
-      _1: 3
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: A,
+    _1: 3
   });
 }), "A_any");
 
 eq("File \"js_exception_catch_test.res\", line 50, characters 5-12", test(() => {
-  throw new Error(B, {
-    cause: {
-      RE_EXN_ID: B
-    }
-  });
+  throw Caml_js_exceptions.internalMakeExn(B);
 }), "B");
 
 eq("File \"js_exception_catch_test.res\", line 51, characters 5-12", test(() => {
-  throw new Error(C, {
-    cause: {
-      RE_EXN_ID: C,
-      _1: 1,
-      _2: 2
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: C,
+    _1: 1,
+    _2: 2
   });
 }), "C");
 
 eq("File \"js_exception_catch_test.res\", line 52, characters 5-12", test(() => {
-  throw new Error(C, {
-    cause: {
-      RE_EXN_ID: C,
-      _1: 0,
-      _2: 2
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: C,
+    _1: 0,
+    _2: 2
   });
 }), "C_any");
 
 eq("File \"js_exception_catch_test.res\", line 53, characters 5-12", test(() => {
-  throw new Error(new Error("x").RE_EXN_ID, {
-    cause: new Error("x")
-  });
+  throw new Error("x");
 }), "Js_error");
 
 eq("File \"js_exception_catch_test.res\", line 54, characters 5-12", test(() => {
-  throw new Error("Failure", {
-    cause: {
-      RE_EXN_ID: "Failure",
-      _1: "x"
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Failure",
+    _1: "x"
   });
 }), "Any");
 

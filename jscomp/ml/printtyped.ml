@@ -150,7 +150,7 @@ let record_representation i ppf = let open Types in function
     line i ppf "Record_optional_labels %s\n" (lbls |> String.concat ", ")
   | Record_unboxed b -> line i ppf "Record_unboxed %b\n" b
   | Record_inlined {tag = i} -> line i ppf "Record_inlined %d\n" i
-  | Record_extension -> line i ppf "Record_extension\n"
+  | Record_extension _ -> line i ppf "Record_extension\n"
 
 let attributes i ppf l =
   let i = i + 1 in

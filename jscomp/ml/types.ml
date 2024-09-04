@@ -155,7 +155,8 @@ and record_representation =
   | Record_unboxed of bool                (* Unboxed single-field record, inlined or not *)
   | Record_inlined of                     (* Inlined record *)
       { tag : int ; name : string; num_nonconsts : int; optional_labels : string list; attrs: Parsetree.attributes}
-  | Record_extension                      (* Inlined record under extension *)
+  | Record_extension of                   (* Inlined record under extension *)
+      { is_exception : bool }
   | Record_optional_labels of string list (* List of optional labels *)
 
 and label_declaration =
@@ -282,15 +283,15 @@ and constructor_tag =
     Cstr_constant of int                (* Constant constructor (an int) *)
   | Cstr_block of int                   (* Regular constructor (a block) *)
   | Cstr_unboxed                        (* Constructor of an unboxed type *)
-  | Cstr_extension of Path.t            (* Extension constructor *)
+  | Cstr_extension of Path.t * bool     (* Extension constructor. true if is_exception *)
 
 let equal_tag t1 t2 = 
   match (t1, t2) with
   | Cstr_constant i1, Cstr_constant i2 -> i2 = i1
   | Cstr_block i1, Cstr_block i2 -> i2 = i1
   | Cstr_unboxed, Cstr_unboxed -> true
-  | Cstr_extension (path1), Cstr_extension (path2) -> 
-      Path.same path1 path2
+  | Cstr_extension (path1, is_exception1), Cstr_extension (path2, is_exception2) -> 
+      Path.same path1 path2 && is_exception1 = is_exception2
   | (Cstr_constant _|Cstr_block _|Cstr_unboxed|Cstr_extension _), _ -> false
 
 let may_equal_constr c1 c2 = match c1.cstr_tag,c2.cstr_tag with
@@ -322,5 +323,8 @@ let same_record_representation x y =
       | Record_inlined y ->
           tag = y.tag && name = y.name && num_nonconsts = y.num_nonconsts && optional_labels = y.optional_labels
       | _ -> false)
-  | Record_extension -> y = Record_extension
+  | Record_extension {is_exception} -> (
+      match y with
+        | Record_extension y -> is_exception = y.is_exception
+        | _ -> false)
   | Record_unboxed x -> ( match y with Record_unboxed y -> x = y | _ -> false)

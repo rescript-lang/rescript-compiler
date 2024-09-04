@@ -3,6 +3,7 @@
 
 let $$Array = require("../../lib/js/array.js");
 let Caml_array = require("../../lib/js/caml_array.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let v = {
   contents: 0
@@ -28,15 +29,13 @@ $$Array.iter(x => x(), arr);
 console.log(String(v.contents));
 
 if (v.contents !== 45) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "test_while_closure.res",
-        55,
-        2
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "test_while_closure.res",
+      55,
+      2
+    ]
   });
 }
 

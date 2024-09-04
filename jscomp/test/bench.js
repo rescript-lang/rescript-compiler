@@ -3,6 +3,7 @@
 
 let Caml_array = require("../../lib/js/caml_array.js");
 let Pervasives = require("../../lib/js/pervasives.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function map(f, a) {
   let f$1 = x => f(x);
@@ -23,11 +24,9 @@ function init(l, f) {
     return [];
   }
   if (l < 0) {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Array.init"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Array.init"
     });
   }
   let res = Caml_array.make(l, f$1(0));

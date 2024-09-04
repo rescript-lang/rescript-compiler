@@ -549,7 +549,7 @@ let is_ident = function
   | Pdot _ | Papply _ -> false
 
 let is_local_ext = function
-  | {cstr_tag = Cstr_extension(p)} -> is_ident p
+  | {cstr_tag = Cstr_extension(p, _)} -> is_ident p
   | _ -> false
 
 let diff env1 env2 =

@@ -20,23 +20,17 @@ function starts_with(xs, prefix, p) {
   try {
     for (let i = 0; i < len2; ++i) {
       if (!p(Caml_array.get(xs, i), Caml_array.get(prefix, i))) {
-        throw new Error(H, {
-          cause: {
-            RE_EXN_ID: H
-          }
-        });
+        throw Caml_js_exceptions.internalMakeExn(H);
       }
       
     }
     return true;
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
     if (exn.RE_EXN_ID === H) {
       return false;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 

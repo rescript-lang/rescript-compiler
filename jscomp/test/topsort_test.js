@@ -121,15 +121,13 @@ if (!Caml_obj.equal(dfs1({
       }
     }
   })) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "topsort_test.res",
-        35,
-        2
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "topsort_test.res",
+      35,
+      2
+    ]
   });
 }
 
@@ -160,15 +158,13 @@ if (!Caml_obj.equal(dfs1({
       }
     }
   })) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "topsort_test.res",
-        38,
-        2
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "topsort_test.res",
+      38,
+      2
+    ]
   });
 }
 
@@ -222,15 +218,13 @@ if (!Caml_obj.equal(dfs2({
       }
     }
   })) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "topsort_test.res",
-        57,
-        2
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "topsort_test.res",
+      57,
+      2
+    ]
   });
 }
 
@@ -259,15 +253,13 @@ if (!Caml_obj.equal(dfs2({
       }
     }
   })) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "topsort_test.res",
-        58,
-        2
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "topsort_test.res",
+      58,
+      2
+    ]
   });
 }
 
@@ -314,15 +306,13 @@ if (!Caml_obj.equal(dfs3({
       }
     }
   })) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "topsort_test.res",
-        74,
-        2
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "topsort_test.res",
+      74,
+      2
+    ]
   });
 }
 
@@ -351,15 +341,13 @@ if (!Caml_obj.equal(dfs3({
       }
     }
   })) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "topsort_test.res",
-        75,
-        2
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "topsort_test.res",
+      75,
+      2
+    ]
   });
 }
 
@@ -439,15 +427,13 @@ if (!Caml_obj.equal(unsafe_topsort(grwork), {
       }
     }
   })) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "topsort_test.res",
-        112,
-        9
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "topsort_test.res",
+      112,
+      9
+    ]
   });
 }
 
@@ -480,11 +466,9 @@ function bal(l, v, r) {
   hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal"
       });
     }
     let lr = l.r;
@@ -496,11 +480,9 @@ function bal(l, v, r) {
     if (typeof lr === "object") {
       return create(create(ll, lv, lr.l), lr.v, create(lr.r, v, r));
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.bal"
     });
   }
   if (hr <= (hl + 2 | 0)) {
@@ -513,11 +495,9 @@ function bal(l, v, r) {
     };
   }
   if (typeof r !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.bal"
     });
   }
   let rr = r.r;
@@ -529,11 +509,9 @@ function bal(l, v, r) {
   if (typeof rl === "object") {
     return create(create(l, v, rl.l), rl.v, create(rl.r, rv, rr));
   }
-  throw new Error("Invalid_argument", {
-    cause: {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Set.bal"
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Set.bal"
   });
 }
 
@@ -618,11 +596,7 @@ function min_elt(_param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let l = param.l;
     if (typeof l !== "object") {
@@ -652,11 +626,7 @@ function max_elt(_param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let r = param.r;
     if (typeof r !== "object") {
@@ -684,11 +654,9 @@ function max_elt_opt(_param) {
 
 function remove_min_elt(param) {
   if (typeof param !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.remove_min_elt"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.remove_min_elt"
     });
   }
   let l = param.l;
@@ -1103,11 +1071,7 @@ function find(x, _param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let v = param.v;
     let c = Caml.string_compare(x, v);
@@ -1123,11 +1087,7 @@ function find_first(f, _param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let v = param.v;
     if (f(v)) {
@@ -1189,11 +1149,7 @@ function find_last(f, _param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let v = param.v;
     if (f(v)) {
@@ -1400,15 +1356,13 @@ function of_list(l) {
             match$4[1]
           ];
         }
-        throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "set.res",
-              691,
-              20
-            ]
-          }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "set.res",
+            691,
+            20
+          ]
         });
       };
       return sub(List.length(l$1), l$1)[0];
@@ -1472,13 +1426,11 @@ function pathsort(graph) {
     let stack = param[1];
     let set = param[0];
     if (mem(node, set)) {
-      throw new Error(Cycle, {
-        cause: {
-          RE_EXN_ID: Cycle,
-          _1: {
-            hd: node,
-            tl: stack
-          }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: Cycle,
+        _1: {
+          hd: node,
+          tl: stack
         }
       });
     }
@@ -1525,15 +1477,13 @@ if (!Caml_obj.equal(pathsort(grwork), {
       }
     }
   })) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "topsort_test.res",
-        144,
-        9
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "topsort_test.res",
+      144,
+      9
+    ]
   });
 }
 
@@ -1545,18 +1495,16 @@ try {
     ],
     tl: grwork
   });
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "topsort_test.res",
-        148,
-        2
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "topsort_test.res",
+      148,
+      2
+    ]
   });
 } catch (raw_exn) {
-  let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+  let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
   let exit = 0;
   if (exn.RE_EXN_ID === Cycle) {
     let match = exn._1;
@@ -1583,15 +1531,13 @@ try {
     exit = 1;
   }
   if (exit === 1) {
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "topsort_test.res",
-          151,
-          7
-        ]
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "topsort_test.res",
+        151,
+        7
+      ]
     });
   }
   

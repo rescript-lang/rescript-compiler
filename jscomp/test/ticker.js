@@ -25,16 +25,14 @@ function split(delim, s) {
       try {
         i$p = $$String.rindex_from(s, x - 1 | 0, delim);
       } catch (raw_exn) {
-        let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+        let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
         if (exn.RE_EXN_ID === "Not_found") {
           return {
             hd: $$String.sub(s, 0, x),
             tl: l
           };
         }
-        throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+        throw exn;
       }
       let l_0 = $$String.sub(s, i$p + 1 | 0, (x - i$p | 0) - 1 | 0);
       let l$1 = {
@@ -132,11 +130,9 @@ function bal(l, x, d, r) {
   hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
       });
     }
     let lr = l.r;
@@ -149,11 +145,9 @@ function bal(l, x, d, r) {
     if (typeof lr === "object") {
       return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
     });
   }
   if (hr <= (hl + 2 | 0)) {
@@ -167,11 +161,9 @@ function bal(l, x, d, r) {
     };
   }
   if (typeof r !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
     });
   }
   let rr = r.r;
@@ -184,11 +176,9 @@ function bal(l, x, d, r) {
   if (typeof rl === "object") {
     return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
-  throw new Error("Invalid_argument", {
-    cause: {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.bal"
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Map.bal"
   });
 }
 
@@ -250,11 +240,7 @@ function find(x, _param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let c = Caml_obj.compare(x, param.v);
     if (c === 0) {
@@ -269,11 +255,7 @@ function find_first(f, _param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let v = param.v;
     if (f(v)) {
@@ -347,11 +329,7 @@ function find_last(f, _param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let v = param.v;
     if (f(v)) {
@@ -455,11 +433,7 @@ function min_binding(_param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let l = param.l;
     if (typeof l !== "object") {
@@ -495,11 +469,7 @@ function max_binding(_param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let r = param.r;
     if (typeof r !== "object") {
@@ -533,11 +503,9 @@ function max_binding_opt(_param) {
 
 function remove_min_binding(param) {
   if (typeof param !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.remove_min_elt"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.remove_min_elt"
     });
   }
   let l = param.l;
@@ -842,15 +810,13 @@ function merge$1(f, s1, s2) {
     
   }
   if (typeof s2 !== "object") {
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "map.res",
-          552,
-          11
-        ]
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "map.res",
+        552,
+        11
+      ]
     });
   }
   let v2 = s2.v;
@@ -1159,18 +1125,14 @@ function compute_update_sequences(all_tickers) {
       let x = lhs.rank;
       if (typeof x !== "object") {
         if (x === "Uninitialized") {
-          throw new Error("Failure", {
-            cause: {
-              RE_EXN_ID: "Failure",
-              _1: "All nodes should be ranked"
-            }
-          });
-        }
-        throw new Error("Failure", {
-          cause: {
+          throw Caml_js_exceptions.internalFromExtension({
             RE_EXN_ID: "Failure",
             _1: "All nodes should be ranked"
-          }
+          });
+        }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: "Failure",
+          _1: "All nodes should be ranked"
         });
       } else {
         let y = rhs.rank;
@@ -1178,18 +1140,14 @@ function compute_update_sequences(all_tickers) {
           return Caml.int_compare(x._0, y._0);
         }
         if (y === "Uninitialized") {
-          throw new Error("Failure", {
-            cause: {
-              RE_EXN_ID: "Failure",
-              _1: "All nodes should be ranked"
-            }
-          });
-        }
-        throw new Error("Failure", {
-          cause: {
+          throw Caml_js_exceptions.internalFromExtension({
             RE_EXN_ID: "Failure",
             _1: "All nodes should be ranked"
-          }
+          });
+        }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: "Failure",
+          _1: "All nodes should be ranked"
         });
       }
     }, l);
@@ -1206,11 +1164,9 @@ function process_quote(ticker_map, new_ticker, new_value) {
         ticker.value = new_value;
         return;
       }
-      throw new Error("Failure", {
-        cause: {
-          RE_EXN_ID: "Failure",
-          _1: "Only single Market ticker should be udpated upon a new quote"
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Failure",
+        _1: "Only single Market ticker should be udpated upon a new quote"
       });
     }
     let match$1 = match._0;
@@ -1250,11 +1206,9 @@ function process_input_line(ticker_map, all_tickers, line) {
           let match$1 = match.tl;
           if (match$1) {
             if (match$1.tl) {
-              throw new Error("Failure", {
-                cause: {
-                  RE_EXN_ID: "Failure",
-                  _1: "Invalid input line"
-                }
+              throw Caml_js_exceptions.internalFromExtension({
+                RE_EXN_ID: "Failure",
+                _1: "Invalid input line"
               });
             }
             let ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
@@ -1265,18 +1219,14 @@ function process_input_line(ticker_map, all_tickers, line) {
               Caml_option.some(ticker_map$1)
             ];
           }
-          throw new Error("Failure", {
-            cause: {
-              RE_EXN_ID: "Failure",
-              _1: "Invalid input line"
-            }
-          });
-        }
-        throw new Error("Failure", {
-          cause: {
+          throw Caml_js_exceptions.internalFromExtension({
             RE_EXN_ID: "Failure",
             _1: "Invalid input line"
-          }
+          });
+        }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: "Failure",
+          _1: "Invalid input line"
         });
       case "R" :
         let match$2 = tokens.tl;
@@ -1291,11 +1241,9 @@ function process_input_line(ticker_map, all_tickers, line) {
                   let match$5 = match$4.tl;
                   if (match$5) {
                     if (match$5.tl) {
-                      throw new Error("Failure", {
-                        cause: {
-                          RE_EXN_ID: "Failure",
-                          _1: "Invalid input line"
-                        }
+                      throw Caml_js_exceptions.internalFromExtension({
+                        RE_EXN_ID: "Failure",
+                        _1: "Invalid input line"
                       });
                     }
                     return [
@@ -1306,18 +1254,14 @@ function process_input_line(ticker_map, all_tickers, line) {
                       ticker_map
                     ];
                   }
-                  throw new Error("Failure", {
-                    cause: {
-                      RE_EXN_ID: "Failure",
-                      _1: "Invalid input line"
-                    }
-                  });
-                }
-                throw new Error("Failure", {
-                  cause: {
+                  throw Caml_js_exceptions.internalFromExtension({
                     RE_EXN_ID: "Failure",
                     _1: "Invalid input line"
-                  }
+                  });
+                }
+                throw Caml_js_exceptions.internalFromExtension({
+                  RE_EXN_ID: "Failure",
+                  _1: "Invalid input line"
                 });
               case "-" :
                 let match$6 = match$3.tl;
@@ -1325,11 +1269,9 @@ function process_input_line(ticker_map, all_tickers, line) {
                   let match$7 = match$6.tl;
                   if (match$7) {
                     if (match$7.tl) {
-                      throw new Error("Failure", {
-                        cause: {
-                          RE_EXN_ID: "Failure",
-                          _1: "Invalid input line"
-                        }
+                      throw Caml_js_exceptions.internalFromExtension({
+                        RE_EXN_ID: "Failure",
+                        _1: "Invalid input line"
                       });
                     }
                     return [
@@ -1340,26 +1282,20 @@ function process_input_line(ticker_map, all_tickers, line) {
                       ticker_map
                     ];
                   }
-                  throw new Error("Failure", {
-                    cause: {
-                      RE_EXN_ID: "Failure",
-                      _1: "Invalid input line"
-                    }
-                  });
-                }
-                throw new Error("Failure", {
-                  cause: {
+                  throw Caml_js_exceptions.internalFromExtension({
                     RE_EXN_ID: "Failure",
                     _1: "Invalid input line"
-                  }
+                  });
+                }
+                throw Caml_js_exceptions.internalFromExtension({
+                  RE_EXN_ID: "Failure",
+                  _1: "Invalid input line"
                 });
               case "S" :
                 if (match$3.tl) {
-                  throw new Error("Failure", {
-                    cause: {
-                      RE_EXN_ID: "Failure",
-                      _1: "Invalid input line"
-                    }
+                  throw Caml_js_exceptions.internalFromExtension({
+                    RE_EXN_ID: "Failure",
+                    _1: "Invalid input line"
                   });
                 }
                 return [
@@ -1375,43 +1311,33 @@ function process_input_line(ticker_map, all_tickers, line) {
                   ticker_map
                 ];
               default:
-                throw new Error("Failure", {
-                  cause: {
-                    RE_EXN_ID: "Failure",
-                    _1: "Invalid input line"
-                  }
+                throw Caml_js_exceptions.internalFromExtension({
+                  RE_EXN_ID: "Failure",
+                  _1: "Invalid input line"
                 });
             }
           } else {
-            throw new Error("Failure", {
-              cause: {
-                RE_EXN_ID: "Failure",
-                _1: "Invalid input line"
-              }
+            throw Caml_js_exceptions.internalFromExtension({
+              RE_EXN_ID: "Failure",
+              _1: "Invalid input line"
             });
           }
         } else {
-          throw new Error("Failure", {
-            cause: {
-              RE_EXN_ID: "Failure",
-              _1: "Invalid input line"
-            }
+          throw Caml_js_exceptions.internalFromExtension({
+            RE_EXN_ID: "Failure",
+            _1: "Invalid input line"
           });
         }
       default:
-        throw new Error("Failure", {
-          cause: {
-            RE_EXN_ID: "Failure",
-            _1: "Invalid input line"
-          }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: "Failure",
+          _1: "Invalid input line"
         });
     }
   } else {
-    throw new Error("Failure", {
-      cause: {
-        RE_EXN_ID: "Failure",
-        _1: "Invalid input line"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Failure",
+      _1: "Invalid input line"
     });
   }
 }

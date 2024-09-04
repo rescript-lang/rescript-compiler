@@ -2,6 +2,7 @@
 'use strict';
 
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function insert(queue, prio, elt) {
   if (typeof queue !== "object") {
@@ -40,11 +41,7 @@ let Queue_is_empty = /* @__PURE__ */Caml_exceptions.create("Pq_test.PrioQueue.Qu
 
 function remove_top(x) {
   if (typeof x !== "object") {
-    throw new Error(Queue_is_empty, {
-      cause: {
-        RE_EXN_ID: Queue_is_empty
-      }
-    });
+    throw Caml_js_exceptions.internalMakeExn(Queue_is_empty);
   }
   let left = x._2;
   let tmp = x._3;
@@ -84,11 +81,7 @@ function extract(x) {
       remove_top(x)
     ];
   }
-  throw new Error(Queue_is_empty, {
-    cause: {
-      RE_EXN_ID: Queue_is_empty
-    }
-  });
+  throw Caml_js_exceptions.internalMakeExn(Queue_is_empty);
 }
 
 let PrioQueue = {

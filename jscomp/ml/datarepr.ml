@@ -194,14 +194,14 @@ let extension_descr path_ext ext =
   in
   let existentials, cstr_args, cstr_inlined =
     constructor_args ext.ext_private ext.ext_args ext.ext_ret_type
-      path_ext Record_extension
+      path_ext (Record_extension { is_exception = ext.ext_is_exception })
   in
     { cstr_name = Path.last path_ext;
       cstr_res = ty_res;
       cstr_existentials = existentials;
       cstr_args;
       cstr_arity = List.length cstr_args;
-      cstr_tag = Cstr_extension(path_ext);
+      cstr_tag = Cstr_extension(path_ext, ext.ext_is_exception);
       cstr_consts = -1;
       cstr_nonconsts = -1;
       cstr_private = ext.ext_private;

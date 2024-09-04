@@ -4,6 +4,7 @@
 let Mt = require("./mt.js");
 let List = require("../../lib/js/list.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -68,15 +69,13 @@ function tl_exn(x) {
   if (typeof x === "object") {
     return x.next;
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "recursive_records_test.res",
-        49,
-        11
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "recursive_records_test.res",
+      49,
+      11
+    ]
   });
 }
 

@@ -79,7 +79,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Pcreate_extension s -> E.make_exception s
   | Pwrap_exn ->
       E.runtime_call Js_runtime_modules.caml_js_exceptions
-        "internalToOCamlException" args
+        "internalAnyToExn" args
   | Praw_js_code { code; code_info } -> E.raw_js_code code_info code
   (* FIXME: save one allocation
      trim can not be done before syntax checking

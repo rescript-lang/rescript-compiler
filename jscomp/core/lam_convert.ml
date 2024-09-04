@@ -179,7 +179,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
       | Blk_some_not_nested -> prim ~primitive:Psome_not_nest ~args loc
       | Blk_some -> prim ~primitive:Psome ~args loc
       | Blk_constructor _ | Blk_tuple | Blk_record _ | Blk_record_inlined _
-      | Blk_module _ | Blk_module_export _ | Blk_extension | Blk_record_ext _ ->
+      | Blk_module _ | Blk_module_export _ | Blk_extension _ | Blk_record_ext _ ->
           prim ~primitive:(Pmakeblock (tag, info, mutable_flag)) ~args loc
       | Blk_poly_var s -> (
           match args with

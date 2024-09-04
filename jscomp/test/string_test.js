@@ -65,16 +65,14 @@ function rev_split_by_char(c, s) {
           tl: l
         }));
     } catch (raw_exn) {
-      let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+      let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
       if (exn.RE_EXN_ID === "Not_found") {
         return {
           hd: $$String.sub(s, i, s.length - i | 0),
           tl: l
         };
       }
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
   };
   return loop(0, /* [] */0);
@@ -95,16 +93,14 @@ function xsplit(delim, s) {
       try {
         i$p = $$String.rindex_from(s, x - 1 | 0, delim);
       } catch (raw_exn) {
-        let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+        let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
         if (exn.RE_EXN_ID === "Not_found") {
           return {
             hd: $$String.sub(s, 0, x),
             tl: l
           };
         }
-        throw new Error(exn.RE_EXN_ID, {
-          cause: exn
-        });
+        throw exn;
       }
       let l_0 = $$String.sub(s, i$p + 1 | 0, (x - i$p | 0) - 1 | 0);
       let l$1 = {

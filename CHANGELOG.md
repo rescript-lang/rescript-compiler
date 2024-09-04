@@ -16,6 +16,7 @@
 
 - Allow coercing polyvariants to variants when we can guarantee that the runtime representation matches. https://github.com/rescript-lang/rescript-compiler/pull/6981
 - Add new dict literal syntax (`dict{"foo": "bar"}`). https://github.com/rescript-lang/rescript-compiler/pull/6774
+- Use `RescriptError` for runtime representation of exceptions and fix regression with not being able to throw raw Js values. https://github.com/rescript-lang/rescript-compiler/pull/6979
 
 #### :nail_care: Polish
 

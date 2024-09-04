@@ -5,6 +5,7 @@ let Mt = require("./mt.js");
 let Int64 = require("../../lib/js/int64.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let Caml_int64 = require("../../lib/js/caml_int64.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -1307,29 +1308,25 @@ let random_data = {
 Belt_List.forEach(random_data, u => {
   if (u) {
     if (u.tl) {
-      throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "int64_string_test.res",
-            191,
-            9
-          ]
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "int64_string_test.res",
+          191,
+          9
+        ]
       });
     }
     let match = u.hd;
     return eq("File \"int64_string_test.res\", line 190, characters 25-32", Caml_int64.to_string(match[0]), match[1]);
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "int64_string_test.res",
-        191,
-        9
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "int64_string_test.res",
+      191,
+      9
+    ]
   });
 });
 

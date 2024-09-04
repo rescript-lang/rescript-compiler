@@ -2,17 +2,16 @@
 'use strict';
 
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let A = /* @__PURE__ */Caml_exceptions.create("Test_exception_escape.N.A");
 
 let f;
 
 try {
-  throw new Error(A, {
-    cause: {
-      RE_EXN_ID: A,
-      _1: 3
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: A,
+    _1: 3
   });
 } catch (exn) {
   f = 3;

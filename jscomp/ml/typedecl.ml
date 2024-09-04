@@ -1531,7 +1531,7 @@ let transl_extension_constructor env type_path type_params
         end;
         let path =
           match cdescr.cstr_tag with
-            Cstr_extension(path) -> path
+            Cstr_extension (path, _) -> path
           | _ -> assert false
         in
         let args =
@@ -1549,7 +1549,7 @@ let transl_extension_constructor env type_path type_params
               List.iter2 (Ctype.unify env) decl.type_params tl;
               let lbls =
                 match decl.type_kind with
-                | Type_record (lbls, Record_extension) -> lbls
+                | Type_record (lbls, Record_extension _) -> lbls
                 | _ -> assert false
               in
               Types.Cstr_record lbls

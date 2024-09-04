@@ -1602,7 +1602,7 @@ let make_record_matching loc all_labels def = function
             | Record_inlined _ ->
               Lprim (Pfield (lbl.lbl_pos, Lambda.fld_record_inline lbl), [arg], loc)
             | Record_unboxed _ -> arg
-            | Record_extension -> Lprim (Pfield (lbl.lbl_pos + 1, Lambda.fld_record_extension lbl), [arg], loc) 
+            | Record_extension _ -> Lprim (Pfield (lbl.lbl_pos + 1, Lambda.fld_record_extension lbl), [arg], loc) 
           in
           let str =
             match lbl.lbl_mut with
@@ -2279,7 +2279,7 @@ let get_extension_cases tag_lambda_list =
     | (cstr, act) :: rem ->
         let nonconsts = split_rec rem in
         match cstr with
-        | Cstr_extension(path) -> ((path, act) :: nonconsts)
+        | Cstr_extension(path, _) -> ((path, act) :: nonconsts)
         | _ -> assert false in
   split_rec tag_lambda_list
 
@@ -2918,7 +2918,9 @@ let partial_function loc () =
   let fname = 
     Filename.basename fname
   in   
-  Lprim(Praise Raise_regular, [Lprim(Pmakeblock(Blk_extension),
+  Lprim(Praise Raise_regular, [Lprim(Pmakeblock(Blk_extension {
+    is_exception = true;
+  }),
           [transl_normal_path Predef.path_match_failure;
            Lconst(Const_block(Blk_tuple,
               [Const_base(Const_string (fname, None));

@@ -2,14 +2,15 @@
 'use strict';
 
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let Custom_inline = /* @__PURE__ */Caml_exceptions.create("Test_literal.Custom_inline");
 
-let v = {
+let v = Caml_js_exceptions.internalFromExtension({
   RE_EXN_ID: Custom_inline,
   _1: 1,
   _2: 2
-};
+});
 
 let vv = [
   1,

@@ -3,43 +3,38 @@
 
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_option = require("../../lib/js/caml_option.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 if (!Caml_obj.equal(Caml_option.nullable_to_opt(""), "")) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "gpr_974_test.res",
-        2,
-        2
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "gpr_974_test.res",
+      2,
+      2
+    ]
   });
 }
 
 if (!Caml_obj.equal(Caml_option.undefined_to_opt(""), "")) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "gpr_974_test.res",
-        3,
-        2
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "gpr_974_test.res",
+      3,
+      2
+    ]
   });
 }
 
 if (!Caml_obj.equal(Caml_option.null_to_opt(""), "")) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "gpr_974_test.res",
-        4,
-        2
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "gpr_974_test.res",
+      4,
+      2
+    ]
   });
 }
 

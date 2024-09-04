@@ -81,7 +81,7 @@ function rollback_path(subst, p) {
   try {
     return "try";
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Caml_js_exceptions.internalAnyToExn(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       switch (p.TAG) {
         case "Pdot" :
@@ -91,9 +91,7 @@ function rollback_path(subst, p) {
           return "Pident | Papply";
       }
     } else {
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
   }
 }
@@ -112,7 +110,7 @@ function fooExn(f) {
   try {
     return f();
   } catch (raw_n) {
-    let n = Caml_js_exceptions.internalToOCamlException(raw_n);
+    let n = Caml_js_exceptions.internalAnyToExn(raw_n);
     if (n.RE_EXN_ID === EA1) {
       return 1;
     }
@@ -129,9 +127,7 @@ function fooExn(f) {
       let match = n._1;
       return match[0] + match[1] | 0;
     }
-    throw new Error(n.RE_EXN_ID, {
-      cause: n
-    });
+    throw n;
   }
 }
 

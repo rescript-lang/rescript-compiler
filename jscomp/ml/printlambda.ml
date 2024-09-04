@@ -106,7 +106,7 @@ let str_of_field_info (fld_info : Lambda.field_dbg_info)=
   | Fld_cons -> "cons"
   | Fld_array -> "[||]" 
 let print_taginfo ppf = function
-  | Blk_extension -> fprintf ppf "ext" 
+  | Blk_extension _ -> fprintf ppf "ext" 
   | Blk_record_ext {fields = ss} -> fprintf ppf "[%s]" (String.concat ";" (Array.to_list ss) )
   | Blk_tuple -> fprintf ppf "tuple"
   | Blk_constructor {name ;num_nonconst} -> fprintf ppf "%s/%i" name num_nonconst

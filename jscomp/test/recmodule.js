@@ -2,6 +2,7 @@
 'use strict';
 
 let Caml_module = require("../../lib/js/caml_module.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let Entity = {};
 
@@ -34,15 +35,13 @@ let Adapter = {
 
 function MakeLayer$2(Deps) {
   let presentJson = (json, status) => {
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "recmodule.res",
-          60,
-          41
-        ]
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "recmodule.res",
+        60,
+        41
+      ]
     });
   };
   let routes = () => [[
@@ -108,15 +107,13 @@ let U = Caml_module.init_mod([
 });
 
 function presentJson(json, status) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "recmodule.res",
-        60,
-        41
-      ]
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "recmodule.res",
+      60,
+      41
+    ]
   });
 }
 

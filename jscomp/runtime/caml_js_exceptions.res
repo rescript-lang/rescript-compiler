@@ -23,16 +23,30 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 exception Error = JsError
-type js_error = {cause: exn}
-/**   
-   This function has to be in this module Since 
-   [Error] is defined here 
-*/
-let internalToOCamlException = (e: unknown) =>
-  if Caml_exceptions.is_extension((Obj.magic(e): js_error).cause) {
-    (Obj.magic(e): js_error).cause
+
+%%raw(`class RescriptError extends Error {
+  constructor(message) {
+    super(message);
+    this.RE_EXN_ID = message;
+  }
+}`)
+
+@new
+external internalMakeExn: string => exn = "RescriptError"
+// Reassign it here from external to let, since RescriptError is not exported
+let internalMakeExn = internalMakeExn
+
+let internalFromExtension = (_ext: 'a): exn => {
+  %raw(`Object.assign(new RescriptError(_ext.RE_EXN_ID), _ext)`)
+}
+
+let internalAnyToExn = (any: 'a): exn =>
+  if Obj.magic(any) && Js.typeof(Obj.magic(any)["RE_EXN_ID"]) === "string" {
+    any->Obj.magic
   } else {
-    JsError(e)
+    let exn = internalMakeExn("JsError")
+    Obj.magic(exn)["_1"] = any
+    exn
   }
 
 let as_js_exn = exn =>

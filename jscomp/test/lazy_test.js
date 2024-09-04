@@ -4,6 +4,7 @@
 let Mt = require("./mt.js");
 let Lazy = require("../../lib/js/lazy.js");
 let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let u = {
   contents: 3
@@ -50,20 +51,12 @@ let f005 = CamlinternalLazy.from_fun(() => 6);
 let f006 = CamlinternalLazy.from_fun(() => (() => 3));
 
 let f007 = CamlinternalLazy.from_fun(() => {
-  throw new Error("Not_found", {
-    cause: {
-      RE_EXN_ID: "Not_found"
-    }
-  });
+  throw Caml_js_exceptions.internalMakeExn("Not_found");
 });
 
 function f$1() {
   console.log("hi");
-  throw new Error("Not_found", {
-    cause: {
-      RE_EXN_ID: "Not_found"
-    }
-  });
+  throw Caml_js_exceptions.internalMakeExn("Not_found");
 }
 
 let f008 = CamlinternalLazy.from_fun(() => f$1());
@@ -183,11 +176,7 @@ Mt.from_pair_suites("Lazy_test", {
                         () => ({
                           TAG: "Ok",
                           _0: !Lazy.is_val(CamlinternalLazy.from_fun(() => {
-                            throw new Error("Not_found", {
-                              cause: {
-                                RE_EXN_ID: "Not_found"
-                              }
-                            });
+                            throw Caml_js_exceptions.internalMakeExn("Not_found");
                           }))
                         })
                       ],

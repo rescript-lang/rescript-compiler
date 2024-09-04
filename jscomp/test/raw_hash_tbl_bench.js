@@ -2,6 +2,7 @@
 'use strict';
 
 let Hashtbl = require("../../lib/js/hashtbl.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function bench() {
   let table = Hashtbl.create(undefined, 1000000);
@@ -10,15 +11,13 @@ function bench() {
   }
   for (let i$1 = 0; i$1 <= 1000000; ++i$1) {
     if (!Hashtbl.mem(table, i$1)) {
-      throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "raw_hash_tbl_bench.res",
-            8,
-            4
-          ]
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "raw_hash_tbl_bench.res",
+          8,
+          4
+        ]
       });
     }
     

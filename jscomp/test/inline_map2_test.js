@@ -5,6 +5,7 @@ let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
 let Caml_option = require("../../lib/js/caml_option.js");
+let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function Make(Ord) {
   let height = x => {
@@ -41,11 +42,9 @@ function Make(Ord) {
     hr = typeof r !== "object" ? 0 : r._4;
     if (hl > (hr + 2 | 0)) {
       if (typeof l !== "object") {
-        throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Map.bal"
-          }
+        throw Caml_js_exceptions.internalFromExtension({
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.bal"
         });
       }
       let lr = l._3;
@@ -58,11 +57,9 @@ function Make(Ord) {
       if (typeof lr === "object") {
         return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
       }
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
       });
     }
     if (hr <= (hl + 2 | 0)) {
@@ -76,11 +73,9 @@ function Make(Ord) {
       };
     }
     if (typeof r !== "object") {
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
       });
     }
     let rr = r._3;
@@ -93,11 +88,9 @@ function Make(Ord) {
     if (typeof rl === "object") {
       return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
     });
   };
   let is_empty = x => {
@@ -142,11 +135,7 @@ function Make(Ord) {
     while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
-        throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+        throw Caml_js_exceptions.internalMakeExn("Not_found");
       }
       let c = Ord.compare(x, x_._1);
       if (c === 0) {
@@ -174,11 +163,7 @@ function Make(Ord) {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
-        throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+        throw Caml_js_exceptions.internalMakeExn("Not_found");
       }
       let l = x._0;
       if (typeof l !== "object") {
@@ -195,11 +180,7 @@ function Make(Ord) {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
-        throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+        throw Caml_js_exceptions.internalMakeExn("Not_found");
       }
       let r = x._3;
       if (typeof r !== "object") {
@@ -214,11 +195,9 @@ function Make(Ord) {
   };
   let remove_min_binding = x => {
     if (typeof x !== "object") {
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.remove_min_elt"
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.remove_min_elt"
       });
     }
     let l = x._0;
@@ -439,15 +418,13 @@ function Make(Ord) {
       
     }
     if (typeof s2 !== "object") {
-      throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "inline_map2_test.res",
-            359,
-            11
-          ]
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "inline_map2_test.res",
+          359,
+          11
+        ]
       });
     }
     let v2 = s2._1;
@@ -675,11 +652,9 @@ function bal(l, x, d, r) {
   hr = typeof r !== "object" ? 0 : r._4;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
       });
     }
     let lr = l._3;
@@ -692,11 +667,9 @@ function bal(l, x, d, r) {
     if (typeof lr === "object") {
       return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
     });
   }
   if (hr <= (hl + 2 | 0)) {
@@ -710,11 +683,9 @@ function bal(l, x, d, r) {
     };
   }
   if (typeof r !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
     });
   }
   let rr = r._3;
@@ -727,11 +698,9 @@ function bal(l, x, d, r) {
   if (typeof rl === "object") {
     return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
   }
-  throw new Error("Invalid_argument", {
-    cause: {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.bal"
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Map.bal"
   });
 }
 
@@ -779,11 +748,7 @@ function find(x, _x_) {
   while (true) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let c = Caml.int_compare(x, x_._1);
     if (c === 0) {
@@ -813,11 +778,7 @@ function min_binding(_x) {
   while (true) {
     let x = _x;
     if (typeof x !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let l = x._0;
     if (typeof l !== "object") {
@@ -835,11 +796,7 @@ function max_binding(_x) {
   while (true) {
     let x = _x;
     if (typeof x !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let r = x._3;
     if (typeof r !== "object") {
@@ -855,11 +812,9 @@ function max_binding(_x) {
 
 function remove_min_binding(x) {
   if (typeof x !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.remove_min_elt"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.remove_min_elt"
     });
   }
   let l = x._0;
@@ -1094,15 +1049,13 @@ function merge(f, s1, s2) {
     
   }
   if (typeof s2 !== "object") {
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "inline_map2_test.res",
-          359,
-          11
-        ]
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "inline_map2_test.res",
+        359,
+        11
+      ]
     });
   }
   let v2 = s2._1;
@@ -1366,11 +1319,9 @@ function bal$1(l, x, d, r) {
   hr = typeof r !== "object" ? 0 : r._4;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
+      throw Caml_js_exceptions.internalFromExtension({
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal"
       });
     }
     let lr = l._3;
@@ -1383,11 +1334,9 @@ function bal$1(l, x, d, r) {
     if (typeof lr === "object") {
       return create$1(create$1(ll, lv, ld, lr._0), lr._1, lr._2, create$1(lr._3, x, d, r));
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
     });
   }
   if (hr <= (hl + 2 | 0)) {
@@ -1401,11 +1350,9 @@ function bal$1(l, x, d, r) {
     };
   }
   if (typeof r !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal"
     });
   }
   let rr = r._3;
@@ -1418,11 +1365,9 @@ function bal$1(l, x, d, r) {
   if (typeof rl === "object") {
     return create$1(create$1(l, x, d, rl._0), rl._1, rl._2, create$1(rl._3, rv, rd, rr));
   }
-  throw new Error("Invalid_argument", {
-    cause: {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.bal"
-    }
+  throw Caml_js_exceptions.internalFromExtension({
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Map.bal"
   });
 }
 
@@ -1470,11 +1415,7 @@ function find$1(x, _x_) {
   while (true) {
     let x_ = _x_;
     if (typeof x_ !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let c = Caml.string_compare(x, x_._1);
     if (c === 0) {
@@ -1504,11 +1445,7 @@ function min_binding$1(_x) {
   while (true) {
     let x = _x;
     if (typeof x !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let l = x._0;
     if (typeof l !== "object") {
@@ -1526,11 +1463,7 @@ function max_binding$1(_x) {
   while (true) {
     let x = _x;
     if (typeof x !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw Caml_js_exceptions.internalMakeExn("Not_found");
     }
     let r = x._3;
     if (typeof r !== "object") {
@@ -1546,11 +1479,9 @@ function max_binding$1(_x) {
 
 function remove_min_binding$1(x) {
   if (typeof x !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.remove_min_elt"
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.remove_min_elt"
     });
   }
   let l = x._0;
@@ -1785,15 +1716,13 @@ function merge$1(f, s1, s2) {
     
   }
   if (typeof s2 !== "object") {
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "inline_map2_test.res",
-          359,
-          11
-        ]
-      }
+    throw Caml_js_exceptions.internalFromExtension({
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "inline_map2_test.res",
+        359,
+        11
+      ]
     });
   }
   let v2 = s2._1;
