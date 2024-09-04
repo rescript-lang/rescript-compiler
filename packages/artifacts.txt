@@ -80,6 +80,7 @@ lib/es6/caml_array_extern.js
 lib/es6/caml_bigint.js
 lib/es6/caml_bigint_extern.js
 lib/es6/caml_bytes.js
+lib/es6/caml_dict.js
 lib/es6/caml_exceptions.js
 lib/es6/caml_float.js
 lib/es6/caml_float_extern.js
@@ -238,6 +239,7 @@ lib/js/caml_array_extern.js
 lib/js/caml_bigint.js
 lib/js/caml_bigint_extern.js
 lib/js/caml_bytes.js
+lib/js/caml_dict.js
 lib/js/caml_exceptions.js
 lib/js/caml_float.js
 lib/js/caml_float_extern.js

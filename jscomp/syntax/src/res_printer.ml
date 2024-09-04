@@ -4078,11 +4078,7 @@ and print_pexp_apply ~state expr cmt_tbl =
       ( {
           pexp_desc =
             Pexp_ident
-              {
-                txt =
-                  Longident.Ldot
-                    (Longident.Ldot (Lident "Js", "Dict"), "fromArray");
-              };
+              {txt = Longident.Ldot (Lident "Caml_dict", "unsafe_create")};
         },
         [(Nolabel, key_values)] )
     when Res_parsetree_viewer.is_tuple_array key_values ->

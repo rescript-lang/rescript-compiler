@@ -17,15 +17,6 @@ let x = dict{
 	"baz": baz
 }
 
-let x = Js.Dict.fromArray([("foo", "bar"), ("bar", "baz")])
-let x = Js.Dict.fromArray([("foo", "bar"), ("bar", "baz"), ("baz", baz)])
-
-let x = Js.Dict.fromArray([
-	("foo", "bar"),
-	("bar", "baz"),
-	("baz", baz)
-])
-
 // comments
 let x = dict{/* foo */ "foo": "bar"}
 let x = dict{"foo": /* foo */ "bar"}
@@ -63,23 +54,3 @@ let x = dict{
 	"bar": "baz" /* bar */,
 	"baz": baz /* bar */
 }
-
-let x = Js.Dict.fromArray([/* foo */ ("foo", "bar"), /* bar */ ("bar", "baz")])
-let x = Js.Dict.fromArray([(/* foo */ "foo", "bar"), (/* bar */"bar", "baz"), (/* baz */ "baz", baz)])
-let x = Js.Dict.fromArray([("foo", /* foo */"bar"), ("bar", /* bar */"baz"), ("baz", /* baz */baz)])
-let x = Js.Dict.fromArray([("foo", "bar" /* foo */), ("bar", "baz" /* bar */), ("baz", baz /* baz */)])
-
-let x = Js.Dict.fromArray([
-	// foo
-	("foo", "bar"),
-	// bar
-	("bar", "baz"),
-	// baz
-	("baz", baz)
-])
-
-let x = Js.Dict.fromArray([
-	("foo", "bar"), // foo
-	("bar", "baz"), // bar
-	("baz", baz) // baz
-])

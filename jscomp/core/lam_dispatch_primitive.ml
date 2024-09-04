@@ -264,6 +264,17 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
       match args with
       | [e] -> {e with expression_desc = Await e}
       | _ -> assert false)
+  | "?create_dict" -> (
+    match args with
+    | [{expression_desc = Array (items, _)}] ->
+        E.obj
+        (items
+        |> List.filter_map (fun (exp : J.expression) ->
+                match exp.expression_desc with
+                | Caml_block ([{expression_desc = Str {txt}}; expr], _, _, _) ->
+                    Some (Js_op.Lit txt, expr)
+                | _ -> None))
+    | _ -> assert false)
   | missing_impl ->
     let msg = Warnings.message (Bs_unimplemented_primitive missing_impl) in
     Location.raise_errorf ~loc "%s" msg
