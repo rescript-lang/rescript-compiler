@@ -996,11 +996,6 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
   | Texp_assert cond ->
       if !Clflags.noassert then lambda_unit
       else Lifthenelse (transl_exp cond, lambda_unit, assert_failed e)
-  | Texp_lazy e ->
-      (* when e needs no computation (constants, identifiers, ...), we
-         optimize the translation just as Lazy.lazy_from_val would
-         do *)
-      Lprim (Pmakeblock Blk_lazy_general, [ transl_exp e ], e.exp_loc)
   | Texp_object () -> assert false
   | Texp_unreachable -> raise (Error (e.exp_loc, Unreachable_reached))
 

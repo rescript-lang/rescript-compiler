@@ -849,7 +849,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
       ( _,
         _,
         _,
-        (Blk_module_export _ | Blk_some | Blk_some_not_nested | Blk_lazy_general)
+        (Blk_module_export _ | Blk_some | Blk_some_not_nested)
       ) ->
       assert false
   | Caml_block (el, mutable_flag, _tag, Blk_tuple) ->

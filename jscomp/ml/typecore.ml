@@ -1607,7 +1607,6 @@ let rec is_nonexpansive exp =
   | Texp_new _ ->
       assert false
   (* Note: nonexpansive only means no _observable_ side effects *)
-  | Texp_lazy e -> is_nonexpansive e
   | Texp_object () ->
     assert false
   | Texp_letmodule (_, _, mexp, e) ->
@@ -2710,18 +2709,8 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
         exp_attributes = sexp.pexp_attributes;
         exp_env = env;
       }
-  | Pexp_lazy e ->
-      let ty = newgenvar () in
-      let to_unify = Predef.type_lazy_t ty in
-      unify_exp_types loc env to_unify ty_expected;
-      let arg = type_expect env e ty in
-      re {
-        exp_desc = Texp_lazy arg;
-        exp_loc = loc; exp_extra = [];
-        exp_type = instance env ty_expected;
-        exp_attributes = sexp.pexp_attributes;
-        exp_env = env;
-      }
+  | Pexp_lazy _ ->
+    assert false  
   | Pexp_object _ -> assert false  
   | Pexp_poly(sbody, sty) ->
       let ty, cty =

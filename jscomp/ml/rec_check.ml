@@ -191,7 +191,7 @@ let rec classify_expression : Typedtree.expression -> sd =
   | Texp_ident _ | Texp_for _ | Texp_constant _ | Texp_new _ | Texp_instvar _
   | Texp_tuple _ | Texp_array _ | Texp_construct _ | Texp_variant _
   | Texp_record _ | Texp_setfield _ | Texp_while _ | Texp_setinstvar _
-  | Texp_pack _ | Texp_object _ | Texp_function _ | Texp_lazy _
+  | Texp_pack _ | Texp_object _ | Texp_function _
   | Texp_unreachable | Texp_extension_constructor _ ->
       Static
   | Texp_apply ({ exp_desc = Texp_ident (_, _, vd) }, _) when is_ref vd ->
@@ -292,10 +292,6 @@ let rec expression : Env.env -> Typedtree.expression -> Use.t =
   | Texp_override () -> assert false
   | Texp_function { cases } ->
       Use.delay (list (case ~scrutinee:Use.empty) env cases)
-  | Texp_lazy e -> (
-      match Typeopt.classify_lazy_argument e with
-      | `Constant_or_function | `Identifier _ | `Float -> expression env e
-      | `Other -> Use.delay (expression env e))
   | Texp_unreachable -> Use.empty
   | Texp_extension_constructor _ -> Use.empty
 
