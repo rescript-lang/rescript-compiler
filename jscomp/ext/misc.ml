@@ -75,109 +75,6 @@ let rec split_last = function
       let (lst, last) = split_last tl in
       (hd :: lst, last)
 
-module Stdlib = struct
-  module List = struct
-    type 'a t = 'a list
-
-    let rec compare cmp l1 l2 =
-      match l1, l2 with
-      | [], [] -> 0
-      | [], _::_ -> -1
-      | _::_, [] -> 1
-      | h1::t1, h2::t2 ->
-        let c = cmp h1 h2 in
-        if c <> 0 then c
-        else compare cmp t1 t2
-
-    let rec equal eq l1 l2 =
-      match l1, l2 with
-      | ([], []) -> true
-      | (hd1 :: tl1, hd2 :: tl2) -> eq hd1 hd2 && equal eq tl1 tl2
-      | (_, _) -> false
-
-    let filter_map f l =
-      let rec aux acc l =
-        match l with
-        | [] -> List.rev acc
-        | h :: t ->
-          match f h with
-          | None -> aux acc t
-          | Some v -> aux (v :: acc) t
-      in
-      aux [] l
-
-    let map2_prefix f l1 l2 =
-      let rec aux acc l1 l2 =
-        match l1, l2 with
-        | [], _ -> (List.rev acc, l2)
-        | _ :: _, [] -> raise (Invalid_argument "map2_prefix")
-        | h1::t1, h2::t2 ->
-          let h = f h1 h2 in
-          aux (h :: acc) t1 t2
-      in
-      aux [] l1 l2
-
-    let some_if_all_elements_are_some l =
-      let rec aux acc l =
-        match l with
-        | [] -> Some (List.rev acc)
-        | None :: _ -> None
-        | Some h :: t -> aux (h :: acc) t
-      in
-      aux [] l
-
-    let split_at n l =
-      let rec aux n acc l =
-        if n = 0
-        then List.rev acc, l
-        else
-          match l with
-          | [] -> raise (Invalid_argument "split_at")
-          | t::q -> aux (n-1) (t::acc) q
-      in
-      aux n [] l
-  end
-
-  module Option = struct
-    type 'a t = 'a option
-
-    let equal eq o1 o2 =
-      match o1, o2 with
-      | None, None -> true
-      | Some e1, Some e2 -> eq e1 e2
-      | _, _ -> false
-
-    let iter f = function
-      | Some x -> f x
-      | None -> ()
-
-    let map f = function
-      | Some x -> Some (f x)
-      | None -> None
-
-    let fold f a b =
-      match a with
-      | None -> b
-      | Some a -> f a b
-
-    let value_default f ~default a =
-      match a with
-      | None -> default
-      | Some a -> f a
-  end
-
-  module Array = struct
-    let exists2 p a1 a2 =
-      let n = Array.length a1 in
-      if Array.length a2 <> n then invalid_arg "Misc.Stdlib.Array.exists2";
-      let rec loop i =
-        if i = n then false
-        else if p (Array.unsafe_get a1 i) (Array.unsafe_get a2 i) then true
-        else loop (succ i) in
-      loop 0
-  end
-end
-
 let may = Stdlib.Option.iter
 let may_map = Stdlib.Option.map
 
@@ -391,52 +288,6 @@ let fst4 (x, _, _, _) = x
 let snd4 (_,x,_, _) = x
 let thd4 (_,_,x,_) = x
 let for4 (_,_,_,x) = x
-
-
-module LongString = struct
-  type t = bytes array
-
-  let create str_size =
-    let tbl_size = str_size / Sys.max_string_length + 1 in
-    let tbl = Array.make tbl_size Bytes.empty in
-    for i = 0 to tbl_size - 2 do
-      tbl.(i) <- Bytes.create Sys.max_string_length;
-    done;
-    tbl.(tbl_size - 1) <- Bytes.create (str_size mod Sys.max_string_length);
-    tbl
-
-  let length tbl =
-    let tbl_size = Array.length tbl in
-    Sys.max_string_length * (tbl_size - 1) + Bytes.length tbl.(tbl_size - 1)
-
-  let get tbl ind =
-    Bytes.get tbl.(ind / Sys.max_string_length) (ind mod Sys.max_string_length)
-
-  let set tbl ind c =
-    Bytes.set tbl.(ind / Sys.max_string_length) (ind mod Sys.max_string_length)
-              c
-
-  let blit src srcoff dst dstoff len =
-    for i = 0 to len - 1 do
-      set dst (dstoff + i) (get src (srcoff + i))
-    done
-
-  let output oc tbl pos len =
-    for i = pos to pos + len - 1 do
-      output_char oc (get tbl i)
-    done
-
-  let unsafe_blit_to_bytes src srcoff dst dstoff len =
-    for i = 0 to len - 1 do
-      Bytes.unsafe_set dst (dstoff + i) (get src (srcoff + i))
-    done
-
-  let input_bytes ic len =
-    let tbl = create len in
-    Array.iter (fun str -> really_input ic str 0 (Bytes.length str)) tbl;
-    tbl
-end
-
 
 let edit_distance a b cutoff =
   let la, lb = String.length a, String.length b in
@@ -713,34 +564,9 @@ exception HookExn of exn
 
 let raise_direct_hook_exn e = raise (HookExn e)
 
-let fold_hooks list hook_info ast =
-  List.fold_left (fun ast (hook_name,f) ->
-    try
-      f hook_info ast
-    with
-    | HookExn e -> raise e
-    | error -> raise (HookExnWrapper {error; hook_name; hook_info})
-       (* when explicit reraise with backtrace will be available,
-          it should be used here *)
-
-  ) ast (List.sort compare list)
-
 module type HookSig = sig
   type t
 
   val add_hook : string -> (hook_info -> t -> t) -> unit
   val apply_hooks : hook_info -> t -> t
-end
-
-module MakeHooks(M: sig
-    type t
-  end) : HookSig with type t = M.t
-= struct
-
-  type t = M.t
-
-  let hooks = ref []
-  let add_hook name f = hooks := (name, f) :: !hooks
-  let apply_hooks sourcefile intf =
-    fold_hooks !hooks sourcefile intf
 end

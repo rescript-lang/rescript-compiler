@@ -48,58 +48,6 @@ val protect_refs : ref_and_value list -> (unit -> 'a) -> 'a
     while executing [f]. The previous contents of the references is restored
     even if [f] raises an exception. *)
 
-module Stdlib : sig
-  module List : sig
-    type 'a t = 'a list
-
-    val compare : ('a -> 'a -> int) -> 'a t -> 'a t -> int
-    (** The lexicographic order supported by the provided order.
-        There is no constraint on the relative lengths of the lists. *)
-
-    val equal : ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
-    (** Returns [true] iff the given lists have the same length and content
-        with respect to the given equality function. *)
-
-    val filter_map : ('a -> 'b option) -> 'a t -> 'b t
-    (** [filter_map f l] applies [f] to every element of [l], filters
-        out the [None] elements and returns the list of the arguments of
-        the [Some] elements. *)
-
-    val some_if_all_elements_are_some : 'a option t -> 'a t option
-    (** If all elements of the given list are [Some _] then [Some xs]
-        is returned with the [xs] being the contents of those [Some]s, with
-        order preserved.  Otherwise return [None]. *)
-
-    val map2_prefix : ('a -> 'b -> 'c) -> 'a t -> 'b t -> ('c t * 'b t)
-    (** [let r1, r2 = map2_prefix f l1 l2]
-        If [l1] is of length n and [l2 = h2 @ t2] with h2 of length n,
-        r1 is [List.map2 f l1 h1] and r2 is t2. *)
-
-    val split_at : int -> 'a t -> 'a t * 'a t
-    (** [split_at n l] returns the pair [before, after] where [before] is
-        the [n] first elements of [l] and [after] the remaining ones.
-        If [l] has less than [n] elements, raises Invalid_argument. *)
-  end
-
-  module Option : sig
-    type 'a t = 'a option
-
-    val equal : ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
-
-    val iter : ('a -> unit) -> 'a t -> unit
-    val map : ('a -> 'b) -> 'a t -> 'b t
-    val fold : ('a -> 'b -> 'b) -> 'a t -> 'b -> 'b
-    val value_default : ('a -> 'b) -> default:'b -> 'a t -> 'b
-  end
-
-  module Array : sig
-    val exists2 : ('a -> 'b -> bool) -> 'a array -> 'b array -> bool
-    (* Same as [Array.exists], but for a two-argument predicate. Raise
-       Invalid_argument if the two arrays are determined to have
-       different lengths. *)
-  end
-end
-
 val find_in_path: string list -> string -> string
         (* Search a file in a list of directories. *)
 val find_in_path_rel: string list -> string -> string
@@ -200,19 +148,6 @@ val fst4: 'a * 'b * 'c * 'd -> 'a
 val snd4: 'a * 'b * 'c * 'd -> 'b
 val thd4: 'a * 'b * 'c * 'd -> 'c
 val for4: 'a * 'b * 'c * 'd -> 'd
-
-module LongString :
-  sig
-    type t = bytes array
-    val create : int -> t
-    val length : t -> int
-    val get : t -> int -> char
-    val set : t -> int -> char -> unit
-    val blit : t -> int -> t -> int -> int -> unit
-    val output : out_channel -> t -> int -> int -> unit
-    val unsafe_blit_to_bytes : t -> int -> bytes -> int -> int -> unit
-    val input_bytes : in_channel -> int -> t
-  end
 
 val edit_distance : string -> string -> int -> int option
 (** [edit_distance a b cutoff] computes the edit distance between
@@ -350,5 +285,3 @@ module type HookSig = sig
   val add_hook : string -> (hook_info -> t -> t) -> unit
   val apply_hooks : hook_info -> t -> t
 end
-
-module MakeHooks : functor (M : sig type t end) -> HookSig with type t = M.t

@@ -180,6 +180,11 @@ let is_ref : Types.value_description -> bool = function
 
 type sd = Static | Dynamic
 
+let value_default f ~default a =
+  match a with
+  | None -> default
+  | Some a -> f a
+
 let rec classify_expression : Typedtree.expression -> sd =
  fun exp ->
   match exp.exp_desc with
@@ -300,7 +305,7 @@ let rec expression : Env.env -> Typedtree.expression -> Use.t =
   | Texp_extension_constructor _ -> Use.empty
 
 and option : 'a. (Env.env -> 'a -> Use.t) -> Env.env -> 'a option -> Use.t =
- fun f env -> Misc.Stdlib.Option.value_default (f env) ~default:Use.empty
+ fun f env -> value_default (f env) ~default:Use.empty
 
 and list : 'a. (Env.env -> 'a -> Use.t) -> Env.env -> 'a list -> Use.t =
  fun f env ->
