@@ -1,7 +1,7 @@
-let x = Js.Dict.unsafe_create [||]
-let x = Js.Dict.unsafe_create [|("foo", {js|bar|js})|]
-let x = Js.Dict.unsafe_create [|("foo", {js|bar|js});("bar", {js|baz|js})|]
+let x = Caml_dict.unsafe_create [||]
+let x = Caml_dict.unsafe_create [|("foo", {js|bar|js})|]
+let x = Caml_dict.unsafe_create [|("foo", {js|bar|js});("bar", {js|baz|js})|]
 let baz = {js|foo|js}
 let x =
-  Js.Dict.unsafe_create
+  Caml_dict.unsafe_create
     [|("foo", {js|bar|js});("bar", {js|baz|js});("baz", baz)|]

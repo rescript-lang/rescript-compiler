@@ -171,5 +171,3 @@ salePrices == Js.Dict.fromList(list{("pen", 0.90), ("book", 4.50), ("stapler", 6
 ```
 */
 let map: ('a => 'b, t<'a>) => t<'b>
-
-external unsafe_create: array<(string, 'a)> => dict<'a> = "?create_dict"
