@@ -44,7 +44,8 @@ fn get_dep_modules(
                         _ => dep_first,
                     };
                     let namespaced_name = dep.to_owned() + "-" + namespace;
-                    if package_modules.contains(&namespaced_name) {
+                    if package_modules.contains(&namespaced_name) || valid_modules.contains(&namespaced_name)
+                    {
                         namespaced_name
                     } else {
                         dep.to_string()

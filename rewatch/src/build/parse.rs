@@ -203,6 +203,29 @@ pub fn generate_asts(
                     namespaces::compile_mlmap(package, module_name, &build_state.bsc_path);
                     let mlmap_hash_after = helpers::compute_file_hash(&compile_path);
 
+                    let suffix = package
+                        .namespace
+                        .to_suffix()
+                        .expect("namespace should be set for mlmap module");
+                    // copy the mlmap to the bs build path for editor tooling
+                    let base_build_path = package.get_build_path() + "/" + &suffix;
+                    let base_bs_build_path = package.get_bs_build_path() + "/" + &suffix;
+                    let _ = std::fs::copy(
+                        base_build_path.to_string() + ".cmi",
+                        base_bs_build_path.to_string() + ".cmi",
+                    );
+                    let _ = std::fs::copy(
+                        base_build_path.to_string() + ".cmt",
+                        base_bs_build_path.to_string() + ".cmt",
+                    );
+                    let _ = std::fs::copy(
+                        base_build_path.to_string() + ".cmj",
+                        base_bs_build_path.to_string() + ".cmj",
+                    );
+                    let _ = std::fs::copy(
+                        base_build_path.to_string() + ".mlmap",
+                        base_bs_build_path.to_string() + ".mlmap",
+                    );
                     match (mlmap_hash, mlmap_hash_after) {
                         (Some(digest), Some(digest_after)) => !digest.eq(&digest_after),
                         _ => true,
@@ -299,7 +322,7 @@ fn generate_ast(
     );
 
     /* Create .ast */
-    if let Some(res_to_ast) = Some(
+    let result = if let Some(res_to_ast) = Some(
         Command::new(bsc_path)
             .current_dir(&build_path_abs)
             .args(parser_args)
@@ -322,7 +345,20 @@ fn generate_ast(
             "Could not find canonicalize_string_path for file {} in package {}",
             filename, package.name
         ))
+    };
+    match &result {
+        Ok((ast_path, _)) => {
+            let dir = std::path::Path::new(filename).parent().unwrap();
+            let _ = std::fs::copy(
+                build_path_abs.to_string() + "/" + ast_path,
+                std::path::Path::new(&package.get_bs_build_path())
+                    .join(dir)
+                    .join(ast_path),
+            );
+        }
+        Err(_) => (),
     }
+    result
 }
 
 fn path_to_ast_extension(path: &Path) -> &str {

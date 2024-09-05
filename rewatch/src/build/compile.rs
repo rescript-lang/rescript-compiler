@@ -46,10 +46,10 @@ pub fn compile(
     // for sure clean modules -- after checking the hash of the cmi
     let mut clean_modules = AHashSet::<String>::new();
 
-    // TODO: calculate the real dirty modules from the orginal dirty modules in each iteration
+    // TODO: calculate the real dirty modules from the original dirty modules in each iteration
     // taken into account the modules that we know are clean, so they don't propagate through the
     // deps graph
-    // create a hashset of all clean modules form the file-hashes
+    // create a hashset of all clean modules from the file-hashes
     let mut loop_count = 0;
     let mut files_total_count = compiled_modules.len();
     let mut files_current_loop_count;
@@ -575,7 +575,7 @@ fn compile_file(
                         // because editor tooling doesn't support namespace entries yet
                         // we just remove the @ for now. This makes sure the editor support
                         // doesn't break
-                        .join(module_name.to_owned().replace('@', "") + ".cmi"),
+                        .join(module_name.to_owned() + ".cmi"),
                 );
                 let _ = std::fs::copy(
                     build_path_abs.to_string() + "/" + &module_name + ".cmj",
@@ -590,7 +590,7 @@ fn compile_file(
                         // because editor tooling doesn't support namespace entries yet
                         // we just remove the @ for now. This makes sure the editor support
                         // doesn't break
-                        .join(module_name.to_owned().replace('@', "") + ".cmt"),
+                        .join(module_name.to_owned() + ".cmt"),
                 );
             } else {
                 let _ = std::fs::copy(

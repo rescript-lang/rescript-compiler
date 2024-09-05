@@ -180,7 +180,7 @@ pub fn read_folders(
 /// Given a projects' root folder and a `bsconfig::Source`, this recursively creates all the
 /// sources in a flat list. In the process, it removes the children, as they are being resolved
 /// because of the recursiveness. So you get a flat list of files back, retaining the type_ and
-/// wether it needs to recurse into all structures
+/// whether it needs to recurse into all structures
 fn get_source_dirs(source: bsconfig::Source, sub_path: Option<PathBuf>) -> AHashSet<bsconfig::PackageSource> {
     let mut source_folders: AHashSet<bsconfig::PackageSource> = AHashSet::new();
 
@@ -276,7 +276,7 @@ pub fn read_dependency(
 
 /// # Make Package
 
-/// Given a bsconfig, reqursively finds all dependencies.
+/// Given a bsconfig, recursively finds all dependencies.
 /// 1. It starts with registering dependencies and
 /// prevents the operation for the ones which are already
 /// registerd for the parent packages. Especially relevant for peerDependencies.
@@ -430,7 +430,7 @@ fn read_packages(project_root: &str, workspace_root: Option<String>) -> AHashMap
 /// data from the config and pushes it forwards. Another thing is the 'type_', some files / folders
 /// can be marked with the type 'dev'. Which means that they may not be around in the distributed
 /// NPM package. The file reader allows for this, just warns when this happens.
-/// TODO -> Check wether we actually need the `fs::Metadata`
+/// TODO -> Check whether we actually need the `fs::Metadata`
 pub fn get_source_files(
     package_dir: &Path,
     filter: &Option<regex::Regex>,

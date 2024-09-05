@@ -32,7 +32,7 @@ pub fn gen_mlmap(
     let path = build_path_abs.to_string() + "/" + namespace + ".mlmap";
     let mut file = File::create(&path).expect("Unable to create mlmap");
 
-    file.write_all(b"randjbuildsystem\n" as &[u8])
+    file.write_all(b"randjbuildsystem\n")
         .expect("Unable to write mlmap");
 
     let mut modules = Vec::from_iter(depending_modules.to_owned());

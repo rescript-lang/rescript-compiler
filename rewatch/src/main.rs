@@ -45,11 +45,18 @@ struct Args {
     #[arg(short, long)]
     create_sourcedirs: Option<bool>,
 
+    /// This prints the compiler arguments. It expects the path to a rescript.json file.
+    /// This also requires --bsc-path and --rescript-version to be present
     #[arg(long)]
     compiler_args: Option<String>,
 
+    /// To be used in conjunction with compiler_args
     #[arg(long)]
     rescript_version: Option<String>,
+
+    /// A custom path to bsc
+    #[arg(long)]
+    bsc_path: Option<String>,
 }
 
 fn main() {
@@ -65,7 +72,10 @@ fn main() {
     match args.compiler_args {
         None => (),
         Some(path) => {
-            println!("{}", build::get_compiler_args(&path, args.rescript_version));
+            println!(
+                "{}",
+                build::get_compiler_args(&path, args.rescript_version, args.bsc_path)
+            );
             std::process::exit(0);
         }
     }
@@ -76,13 +86,14 @@ fn main() {
             std::process::exit(1)
         }
         lock::Lock::Aquired(_) => match command {
-            Command::Clean => build::clean::clean(&folder),
+            Command::Clean => build::clean::clean(&folder, args.bsc_path),
             Command::Build => {
                 match build::build(
                     &filter,
                     &folder,
                     args.no_timing.unwrap_or(false),
                     args.create_sourcedirs.unwrap_or(false),
+                    args.bsc_path,
                 ) {
                     Err(e) => {
                         eprintln!("Error Building: {e}");

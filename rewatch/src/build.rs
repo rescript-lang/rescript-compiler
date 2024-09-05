@@ -18,6 +18,7 @@ use console::style;
 use indicatif::{ProgressBar, ProgressStyle};
 use serde::Serialize;
 use std::fmt;
+use std::fs::File;
 use std::io::{stdout, Write};
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
@@ -52,7 +53,7 @@ pub struct CompilerArgs {
     pub parser_args: Vec<String>,
 }
 
-pub fn get_compiler_args(path: &str, rescript_version: Option<String>) -> String {
+pub fn get_compiler_args(path: &str, rescript_version: Option<String>, bsc_path: Option<String>) -> String {
     let filename = &helpers::get_abs_path(path);
     let package_root = helpers::get_abs_path(
         &helpers::get_nearest_bsconfig(&std::path::PathBuf::from(path)).expect("Couldn't find package root"),
@@ -64,7 +65,10 @@ pub fn get_compiler_args(path: &str, rescript_version: Option<String>) -> String
     let rescript_version = if let Some(rescript_version) = rescript_version {
         rescript_version
     } else {
-        let bsc_path = helpers::get_bsc(&package_root, workspace_root.to_owned());
+        let bsc_path = match bsc_path {
+            Some(bsc_path) => bsc_path,
+            None => helpers::get_bsc(&package_root, workspace_root.to_owned()),
+        };
         helpers::get_rescript_version(&bsc_path)
     };
     // make PathBuf from package root and get the relative path for filename
@@ -134,10 +138,14 @@ pub fn initialize_build(
     default_timing: Option<Duration>,
     filter: &Option<regex::Regex>,
     path: &str,
+    bsc_path: Option<String>,
 ) -> Result<BuildState, InitializeBuildError> {
     let project_root = helpers::get_abs_path(path);
     let workspace_root = helpers::get_workspace_root(&project_root);
-    let bsc_path = helpers::get_bsc(&project_root, workspace_root.to_owned());
+    let bsc_path = match bsc_path {
+        Some(bsc_path) => bsc_path,
+        None => helpers::get_bsc(&project_root, workspace_root.to_owned()),
+    };
     let root_config_name = packages::get_package_name(&project_root);
     let rescript_version = helpers::get_rescript_version(&bsc_path);
 
@@ -407,11 +415,26 @@ impl fmt::Display for BuildError {
     }
 }
 
+pub fn write_build_ninja(build_state: &BuildState) {
+    // write build.ninja files in the packages after a non-incremental build
+    // this is necessary to bust the editor tooling cache. The editor tooling
+    // is watching this file.
+    // we don't need to do this in an incremental build because there are no file
+    // changes (deletes / additions)
+    for package in build_state.packages.values() {
+        // write empty file:
+        let mut f = File::create(std::path::Path::new(&package.get_bs_build_path()).join("build.ninja"))
+            .expect("Unable to write file");
+        f.write_all(b"").expect("unable to write to ninja file");
+    }
+}
+
 pub fn build(
     filter: &Option<regex::Regex>,
     path: &str,
     no_timing: bool,
     create_sourcedirs: bool,
+    bsc_path: Option<String>,
 ) -> Result<BuildState, BuildError> {
     let default_timing: Option<std::time::Duration> = if no_timing {
         Some(std::time::Duration::new(0.0 as u64, 0.0 as u32))
@@ -420,7 +443,7 @@ pub fn build(
     };
     let timing_total = Instant::now();
     let mut build_state =
-        initialize_build(default_timing, filter, path).map_err(BuildError::InitializeBuild)?;
+        initialize_build(default_timing, filter, path, bsc_path).map_err(BuildError::InitializeBuild)?;
 
     match incremental_build(&mut build_state, default_timing, true, false, create_sourcedirs) {
         Ok(_) => {
@@ -432,10 +455,12 @@ pub fn build(
                 default_timing.unwrap_or(timing_total_elapsed).as_secs_f64()
             );
             clean::cleanup_after_build(&build_state);
+            write_build_ninja(&build_state);
             Ok(build_state)
         }
         Err(e) => {
             clean::cleanup_after_build(&build_state);
+            write_build_ninja(&build_state);
             Err(BuildError::IncrementalBuild(e))
         }
     }
