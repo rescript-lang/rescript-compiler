@@ -160,7 +160,7 @@ let raw_snippet_exp_simple_enough (s : string) =
 
 (* e = function(x){...}(x);  is good
 *)
-let exp_need_paren (e : J.expression) =
+let rec exp_need_paren ?(arrow=false) (e : J.expression) =
   match e.expression_desc with
   (* | Caml_uninitialized_obj _  *)
   | Call ({ expression_desc = Raw_js_code _ }, _, _) -> true
@@ -178,11 +178,13 @@ let exp_need_paren (e : J.expression) =
   | Length _ | Call _ | Caml_block_tag _ | Seq _ | Static_index _ | Cond _
   | Bin _ | Is_null_or_undefined _ | String_index _ | Array_index _
   | String_append _ | Var _ | Undefined _ | Null | Str _ | Array _
-  | Optional_block _ | Caml_block _ | FlatCall _ | Typeof _ | Number _
+  | Caml_block _ | FlatCall _ | Typeof _ | Number _
   | Js_not _ | Bool _ | New _ ->
       false
   | Await _ -> false
   | Tagged_template _ -> false
+  | Optional_block (e, true) when arrow -> exp_need_paren ~arrow e
+  | Optional_block _ -> false
 
 (** Print as underscore for unused vars, may not be 
     needed in the future *)
@@ -411,7 +413,7 @@ and pp_function ~return_unit ~async ~is_method ?directive cxt (f : P.t) ~fn_stat
 
           | [ { statement_desc = Return e } ] | [ { statement_desc = Exp e } ]
             when arrow && directive == None
-            -> (if exp_need_paren e then P.paren_group f 0 else P.group f 0)
+            -> (if exp_need_paren ~arrow e then P.paren_group f 0 else P.group f 0)
                   (fun _ -> ignore (expression ~level:0 cxt f e))
 
           | _ ->

@@ -2,12 +2,20 @@
 'use strict';
 
 
-function f() {
-  return () => {
+function f1() {
+  return () => ({
+    a: 1,
+    b: 2
+  });
+}
+
+function f2() {
+  return {
     a: 1,
     b: 2
   };
 }
 
-exports.f = f;
+exports.f1 = f1;
+exports.f2 = f2;
 /* No side effect */
