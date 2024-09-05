@@ -4,9 +4,9 @@
 let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
-let Caml_int32 = require("../../lib/js/caml_int32.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 let Caml_option = require("../../lib/js/caml_option.js");
+let Runtime_int = require("../../lib/js/runtime_int.js");
 
 function self_init() {
   
@@ -674,7 +674,7 @@ function update_animation(spr) {
   if (curr_ticks >= spr.params.max_ticks) {
     spr.ticks.contents = 0;
     if (spr.params.loop) {
-      spr.frame.contents = Caml_int32.mod_(spr.frame.contents + 1 | 0, spr.params.max_frames);
+      spr.frame.contents = Runtime_int.mod_(spr.frame.contents + 1 | 0, spr.params.max_frames);
       return;
     } else {
       return;
@@ -2294,7 +2294,7 @@ function update_loop(canvas, param, map_dim) {
     clear_canvas(canvas);
     let vpos_x_int = state.vpt.pos.x / 5 | 0;
     let bgd_width = state.bgd.params.frame_size[0] | 0;
-    draw_bgd(state.bgd, Caml_int32.mod_(vpos_x_int, bgd_width));
+    draw_bgd(state.bgd, Runtime_int.mod_(vpos_x_int, bgd_width));
     let player$1 = run_update_collid(state, player, objs);
     if (player$1._2.kill === true) {
       return game_loss(state.ctx);

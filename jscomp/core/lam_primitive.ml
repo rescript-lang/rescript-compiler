@@ -95,7 +95,6 @@ type t =
   | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
-  | Pint64comp of Lam_compat.comparison
   | Pbigintcomp of Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
@@ -116,20 +115,6 @@ type t =
   | Pis_poly_var_block
   (* Test if the (integer) argument is outside an interval *)
   | Pisout of int
-  | Pint64ofint
-  | Pintofint64
-  | Pnegint64
-  | Paddint64
-  | Psubint64
-  | Pmulint64
-  | Pdivint64
-  | Pmodint64
-  | Pandint64
-  | Porint64
-  | Pxorint64
-  | Plslint64
-  | Plsrint64
-  | Pasrint64
   | Pdebugger
   | Pjs_unsafe_downgrade of { name : string; setter : bool }
   | Pinit_mod
@@ -298,25 +283,6 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Parraysetu -> rhs = Parraysetu
   | Parrayrefs -> rhs = Parrayrefs
   | Parraysets -> rhs = Parraysets
-  | Pint64ofint -> rhs = Pint64ofint
-  | Pintofint64 -> rhs = Pintofint64
-  | Pnegint64 -> rhs = Pnegint64
-  | Paddint64 -> rhs = Paddint64
-  | Psubint64 -> rhs = Psubint64
-  | Pmulint64 -> rhs = Pmulint64
-  | Pdivint64 -> rhs = Pdivint64
-  | Pmodint64 -> rhs = Pmodint64
-  | Pandint64 -> rhs = Pandint64
-  | Porint64 -> rhs = Porint64
-  | Pxorint64 -> rhs = Pxorint64
-  | Plslint64 -> rhs = Plslint64
-  | Plsrint64 -> rhs = Plsrint64
-  | Pasrint64 -> rhs = Pasrint64
-  | Pint64comp comparison -> (
-      match rhs with
-      | Pint64comp comparison1 ->
-          Lam_compat.eq_comparison comparison comparison1
-      | _ -> false)
   | Pjs_unsafe_downgrade { name; setter } -> (
       match rhs with
       | Pjs_unsafe_downgrade rhs -> name = rhs.name && setter = rhs.setter

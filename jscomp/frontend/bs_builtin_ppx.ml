@@ -317,19 +317,6 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) :
                   pval_attributes = [];
                 };
           }
-        | Pexp_constant (Pconst_integer (s, Some 'L')) ->
-          let s = Int64.of_string s in
-          succeed attr pval_attributes;
-          {
-            sigi with
-            psig_desc =
-              Psig_value
-                {
-                  value_desc with
-                  pval_prim = External_ffi_types.inline_int64_primitive s;
-                  pval_attributes = [];
-                };
-          }
         | Pexp_constant (Pconst_integer (s, Some 'n')) ->
           succeed attr pval_attributes;
           {
@@ -422,21 +409,6 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) :
               pval_loc = pvb_loc;
               pval_attributes = [];
               pval_prim = External_ffi_types.inline_int_primitive s;
-            };
-      }
-    | Some attr, Pexp_constant (Pconst_integer (s, Some 'L')) ->
-      let s = Int64.of_string s in
-      succeed attr pvb_attributes;
-      {
-        str with
-        pstr_desc =
-          Pstr_primitive
-            {
-              pval_name;
-              pval_type = Ast_literal.type_int64;
-              pval_loc = pvb_loc;
-              pval_attributes = [];
-              pval_prim = External_ffi_types.inline_int64_primitive s;
             };
       }
     | Some attr, Pexp_constant (Pconst_float (s, None)) ->

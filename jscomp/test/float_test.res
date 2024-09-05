@@ -2,8 +2,6 @@ let (test_id, suites) = (ref(0), ref(list{}))
 let eq = (loc, x, y) => Mt_global.collect_eq(test_id, suites, loc, x, y)
 let approx = (loc, x, y) => Mt_global.collect_approx(test_id, suites, loc, x, y)
 
-let epsilon_float = Int64.float_of_bits(0x3C_B0_00_00_00_00_00_00L)
-
 let results = Array.append(
   [
     (log10(2.), 0.301029995663981198),

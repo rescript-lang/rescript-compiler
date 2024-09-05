@@ -90,12 +90,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
       match args with [ e0; e1 ] -> E.string_comp Lt e0 e1 | _ -> assert false)
   | "caml_string_greaterequal" -> (
       match args with [ e0; e1 ] -> E.string_comp Ge e0 e1 | _ -> assert false)
-  | "caml_int64_equal_null" -> Js_long.equal_null args
-  | "caml_int64_equal_undefined" -> Js_long.equal_undefined args
-  | "caml_int64_equal_nullable" -> Js_long.equal_nullable args
-  | "caml_int64_min" -> Js_long.min args
-  | "caml_int64_max" -> Js_long.max args
-  | "caml_int64_compare" -> Js_long.compare args
   | "caml_string_greaterthan" -> (
       match args with [ e0; e1 ] -> E.string_comp Gt e0 e1 | _ -> assert false)
   | "caml_bool_notequal" -> (
@@ -162,13 +156,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   (******************************************************************************)
   | "?int_of_float" -> (
       match args with [ e ] -> E.to_int32 e | _ -> assert false)
-  | "?int64_succ" -> E.runtime_call Js_runtime_modules.int64 "succ" args
-  | "?int64_to_string" ->
-      E.runtime_call Js_runtime_modules.int64 "to_string" args
-  | "?int64_to_float" -> Js_long.to_float args
-  | "?int64_of_float" -> Js_long.of_float args
-  | "?int64_bits_of_float" -> Js_long.bits_of_float args
-  | "?int64_float_of_bits" -> Js_long.float_of_bits args
   | "?int_float_of_bits" | "?int_bits_of_float" | "?modf_float" | "?ldexp_float"
   | "?frexp_float" | "?copysign_float" | "?expm1_float" | "?hypot_float" ->
       call Js_runtime_modules.float
@@ -192,24 +179,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   | "?hash_mix_string" | "?hash_mix_int" | "?hash_final_mix" ->
       call Js_runtime_modules.hash_primitive
   | "?hash" -> call Js_runtime_modules.hash
-  | "?nativeint_add" -> (
-      match args with
-      | [ e1; e2 ] -> E.unchecked_int32_add e1 e2
-      | _ -> assert false)
-  | "?nativeint_div" -> (
-      match args with
-      | [ e1; e2 ] -> E.int32_div e1 e2 ~checked:false
-      | _ -> assert false)
-  | "?nativeint_mod" -> (
-      match args with
-      | [ e1; e2 ] -> E.int32_mod e1 e2 ~checked:false
-      | _ -> assert false)
-  | "?nativeint_lsr" -> (
-      match args with [ e1; e2 ] -> E.int32_lsr e1 e2 | _ -> assert false)
-  | "?nativeint_mul" -> (
-      match args with
-      | [ e1; e2 ] -> E.unchecked_int32_mul e1 e2
-      | _ -> assert false)
   | "?bigint_div" -> (
       match args with
       | [ e1; e2 ] -> E.bigint_div e1 e2 ~checked:false

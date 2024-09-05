@@ -4,7 +4,6 @@
 let Mt = require("./mt.js");
 let Caml = require("../../lib/js/caml.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
-let Caml_int64 = require("../../lib/js/caml_int64.js");
 
 let suites = {
   contents: /* [] */0
@@ -44,42 +43,21 @@ let f5_min = Caml_obj.min;
 
 let f5_max = Caml_obj.max;
 
-b("File \"bs_min_max_test.res\", line 19, characters 4-11", Caml.i64_eq(Caml.i64_min(Caml_int64.zero, Caml_int64.one), Caml_int64.zero));
+eq("File \"bs_min_max_test.res\", line 19, characters 5-12", Caml_obj.min(undefined, 3), undefined);
 
-b("File \"bs_min_max_test.res\", line 20, characters 4-11", Caml.i64_eq(Caml.i64_max([
-  0,
-  22
-], Caml_int64.one), [
-  0,
-  22
-]));
+eq("File \"bs_min_max_test.res\", line 20, characters 5-12", Caml_obj.min(3, undefined), undefined);
 
-b("File \"bs_min_max_test.res\", line 21, characters 4-11", Caml.i64_eq(Caml.i64_max([
-  -1,
-  4294967293
-], [
-  0,
-  3
-]), [
-  0,
-  3
-]));
+eq("File \"bs_min_max_test.res\", line 21, characters 5-12", Caml_obj.max(3, undefined), 3);
 
-eq("File \"bs_min_max_test.res\", line 22, characters 5-12", Caml_obj.min(undefined, 3), undefined);
+eq("File \"bs_min_max_test.res\", line 22, characters 5-12", Caml_obj.max(undefined, 3), 3);
 
-eq("File \"bs_min_max_test.res\", line 23, characters 5-12", Caml_obj.min(3, undefined), undefined);
+b("File \"bs_min_max_test.res\", line 23, characters 4-11", Caml_obj.greaterequal(5, undefined));
 
-eq("File \"bs_min_max_test.res\", line 24, characters 5-12", Caml_obj.max(3, undefined), 3);
+b("File \"bs_min_max_test.res\", line 24, characters 4-11", Caml_obj.lessequal(undefined, 5));
 
-eq("File \"bs_min_max_test.res\", line 25, characters 5-12", Caml_obj.max(undefined, 3), 3);
+b("File \"bs_min_max_test.res\", line 25, characters 4-11", true);
 
-b("File \"bs_min_max_test.res\", line 26, characters 4-11", Caml_obj.greaterequal(5, undefined));
-
-b("File \"bs_min_max_test.res\", line 27, characters 4-11", Caml_obj.lessequal(undefined, 5));
-
-b("File \"bs_min_max_test.res\", line 28, characters 4-11", true);
-
-b("File \"bs_min_max_test.res\", line 29, characters 4-11", true);
+b("File \"bs_min_max_test.res\", line 26, characters 4-11", true);
 
 Mt.from_pair_suites("Bs_min_max_test", suites.contents);
 

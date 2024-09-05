@@ -296,9 +296,6 @@ let inline_bool_primitive b : string list =
 let inline_int_primitive (i : int32) : string list =
   [""; to_string (Ffi_inline_const (Const_int {i; comment = None}))]
 
-let inline_int64_primitive (i : int64) : string list =
-  [""; to_string (Ffi_inline_const (Const_int64 i))]
-
 let inline_bigint_primitive (i : string) : string list =
   let sign, i = Bigint_utils.parse_bigint i in
   [""; to_string (Ffi_inline_const (Const_bigint (sign, i)))]

@@ -77,7 +77,6 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
   match (path |> path_to_list |> List.rev, params_translation) with
   | (["FB"; "bool"] | ["bool"]), [] -> {dependencies = []; type_ = boolean_t}
   | (["FB"; "int"] | ["int"]), [] -> {dependencies = []; type_ = number_t}
-  | (["Int64"; "t"] | ["int64"]), [] -> {dependencies = []; type_ = int64_t}
   | (["FB"; "float"] | ["float"]), [] -> {dependencies = []; type_ = number_t}
   | ( ( ["FB"; "string"]
       | ["string"]

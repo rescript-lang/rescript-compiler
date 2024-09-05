@@ -16,9 +16,6 @@ let f5_min = (x, y) => min(x, y)
 let f5_max = (x, y) => max(x, y)
 
 let () = {
-  b(__LOC__, min(0L, 1L) == 0L)
-  b(__LOC__, max(22L, 1L) == 22L)
-  b(__LOC__, max(-3L, 3L) == 3L)
   eq(__LOC__, f5_min(None, Some(3)), None)
   eq(__LOC__, f5_min(Some(3), None), None)
   eq(__LOC__, f5_max(Some(3), None), Some(3))

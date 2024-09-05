@@ -20,9 +20,4 @@ let () = {
   eq(__LOC__, f7, 0.000003)
 }
 
-let h = {
-  open Inline_const
-  Int64.add(Int64.add(v, Int64.one), u)
-}
-
 let () = Mt.from_pair_suites(__LOC__, suites.contents)

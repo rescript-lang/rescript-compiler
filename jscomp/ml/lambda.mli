@@ -203,35 +203,12 @@ type primitive =
   | Pisint
   (* Test if the (integer) argument is outside an interval *)
   | Pisout
-  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-  | Pbintofint of boxed_integer
-  | Pintofbint of boxed_integer
-  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
-  | Pnegbint of boxed_integer
-  | Paddbint of boxed_integer
-  | Psubbint of boxed_integer
-  | Pmulbint of boxed_integer
-  | Pdivbint of { size : boxed_integer; is_safe : is_safe }
-  | Pmodbint of { size : boxed_integer; is_safe : is_safe }
-  | Pandbint of boxed_integer
-  | Porbint of boxed_integer
-  | Pxorbint of boxed_integer
-  | Plslbint of boxed_integer
-  | Plsrbint of boxed_integer
-  | Pasrbint of boxed_integer
-  | Pbintcomp of boxed_integer * comparison
   | Pcreate_extension of string
 and comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge
 
-
 and value_kind =
     Pgenval 
-
-
-and boxed_integer = Primitive.boxed_integer =
-    Pbigint | Pint32 | Pint64
-
 
 and raise_kind =
   | Raise_regular

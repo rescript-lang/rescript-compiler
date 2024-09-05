@@ -26,7 +26,6 @@
 let not_zero_constant (x : Lam_constant.t) =
   match x with
   | Const_int { i } -> i <> 0l
-  | Const_int64 i -> i <> 0L
   | Const_bigint (_, i) -> i <> "0"
   | _ -> false
 
@@ -43,17 +42,15 @@ let rec no_side_effects (lam : Lam.t) : bool =
       match primitive with
       | Pccall { prim_name } -> (
           match (prim_name, args) with
-          | ( (* register to c runtime does not make sense  in ocaml *)
-              ( "?int64_float_of_bits"
+          | (
+              (
               (* more safe to check if arguments are constant *)
               (* non-observable side effect *)
-              | "?make_vect"
-              | "caml_array_dup" | "?nativeint_add" | "?nativeint_div"
-              | "?nativeint_mod" | "?nativeint_lsr" | "?nativeint_mul" ),
+              "?make_vect" | "caml_array_dup" ),
               _ ) ->
               true
           | _, _ -> false)
-      | Pmodint | Pdivint | Pdivint64 | Pmodint64 | Pdivbigint | Pmodbigint -> (
+      | Pmodint | Pdivint | Pdivbigint | Pmodbigint -> (
           match args with
           | [ _; Lconst cst ] -> not_zero_constant cst
           | _ -> false)
@@ -85,9 +82,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* Test if the argument is a block or an immediate integer *)
       | Pisint | Pis_poly_var_block
       (* Test if the (integer) argument is outside an interval *)
-      | Pisout _ | Pint64ofint | Pintofint64 | Pnegint64 | Paddint64 | Psubint64
-      | Pmulint64 | Pandint64 | Porint64 | Pxorint64 | Plslint64 | Plsrint64
-      | Pasrint64 | Pint64comp _
+      | Pisout _
       (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
       (* Compile time constants *)
       | Poffsetint _ | Pstringadd | Pjs_function_length | Pcaml_obj_length
@@ -103,10 +98,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pjs_fn_method
       (* TODO *)
       | Praw_js_code _
-      (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-      | Parraysets
       (* byte swap *)
-      | Parraysetu | Poffsetref _ | Praise | Plazyforce | Psetfield _ ->
+      | Parraysets | Parraysetu | Poffsetref _ | Praise | Plazyforce | Psetfield _ ->
           false)
   | Llet (_, _, arg, body) -> no_side_effects arg && no_side_effects body
   | Lswitch (_, _) -> false
@@ -195,7 +188,7 @@ let rec size (lam : Lam.t) =
 
 and size_constant x =
   match x with
-  | Const_int _ | Const_char _ | Const_float _ | Const_int64 _ | Const_bigint _ | Const_pointer _
+  | Const_int _ | Const_char _ | Const_float _ | Const_bigint _ | Const_pointer _
   | Const_js_null | Const_js_undefined _ | Const_module_alias | Const_js_true
   | Const_js_false ->
       1

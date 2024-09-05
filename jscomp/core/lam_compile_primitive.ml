@@ -181,28 +181,24 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Pnegint ->
       (* #977 *)
       E.int32_minus E.zero_int_literal (Ext_list.singleton_exn args)
-  | Pnegint64 -> Js_long.neg args
   | Pnegfloat -> E.float_minus E.zero_float_lit (Ext_list.singleton_exn args)
   | Pnegbigint -> E.bigint_op Minus E.zero_bigint_literal (Ext_list.singleton_exn args)
   (* Negate boxed int end*)
   (* Int addition and subtraction *)
   | Paddint -> (
       match args with [ e1; e2 ] -> E.int32_add e1 e2 | _ -> assert false)
-  | Paddint64 -> Js_long.add args
   | Paddfloat -> (
       match args with [ e1; e2 ] -> E.float_add e1 e2 | _ -> assert false)
   | Paddbigint -> (
     match args with [ e1; e2 ] -> E.bigint_op Plus e1 e2 | _ -> assert false)
   | Psubint -> (
       match args with [ e1; e2 ] -> E.int32_minus e1 e2 | _ -> assert false)
-  | Psubint64 -> Js_long.sub args
   | Psubfloat -> (
       match args with [ e1; e2 ] -> E.float_minus e1 e2 | _ -> assert false)
   | Psubbigint -> (
       match args with [ e1; e2 ] -> E.bigint_op Minus e1 e2 | _ -> assert false)
   | Pmulint -> (
       match args with [ e1; e2 ] -> E.int32_mul e1 e2 | _ -> assert false)
-  | Pmulint64 -> Js_long.mul args
   | Pmulfloat -> (
       match args with [ e1; e2 ] -> E.float_mul e1 e2 | _ -> assert false)
   | Pmulbigint -> (
@@ -213,7 +209,6 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       match args with
       | [ e1; e2 ] -> E.int32_div ~checked:!Js_config.check_div_by_zero e1 e2
       | _ -> assert false)
-  | Pdivint64 -> Js_long.div args
   | Pdivbigint -> (
       match args with
       | [ e1; e2 ] -> E.bigint_div ~checked:!Js_config.check_div_by_zero e1 e2
@@ -222,7 +217,6 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       match args with
       | [ e1; e2 ] -> E.int32_mod ~checked:!Js_config.check_div_by_zero e1 e2
       | _ -> assert false)
-  | Pmodint64 -> Js_long.mod_ args
   | Pmodbigint -> (
       match args with
       | [ e1; e2 ] -> E.bigint_mod ~checked:!Js_config.check_div_by_zero e1 e2
@@ -230,7 +224,6 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Ppowbigint -> (match args with [ e1; e2 ] -> E.bigint_op Pow e1 e2 | _ -> assert false)
   | Plslint -> (
       match args with [ e1; e2 ] -> E.int32_lsl e1 e2 | _ -> assert false)
-  | Plslint64 -> Js_long.lsl_ args
   | Plslbigint -> (
       match args with [ e1; e2 ] -> E.bigint_op Lsl e1 e2 | _ -> assert false)
   | Plsrint -> (
@@ -240,25 +233,20 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
           e1
       | [ e1; e2 ] -> E.to_int32 @@ E.int32_lsr e1 e2
       | _ -> assert false)
-  | Plsrint64 -> Js_long.lsr_ args
   | Pasrint -> (
       match args with [ e1; e2 ] -> E.int32_asr e1 e2 | _ -> assert false)
-  | Pasrint64 -> Js_long.asr_ args
   | Pasrbigint -> (
       match args with [ e1; e2 ] -> E.bigint_op Asr e1 e2 | _ -> assert false)
   | Pandint -> (
       match args with [ e1; e2 ] -> E.int32_band e1 e2 | _ -> assert false)
-  | Pandint64 -> Js_long.and_ args
   | Pandbigint -> (
       match args with [ e1; e2 ] -> E.bigint_op Band e1 e2 | _ -> assert false)
   | Porint -> (
       match args with [ e1; e2 ] -> E.int32_bor e1 e2 | _ -> assert false)
-  | Porint64 -> Js_long.or_ args
   | Porbigint -> (
       match args with [ e1; e2 ] -> E.bigint_op Bor e1 e2 | _ -> assert false)
   | Pxorint -> (
       match args with [ e1; e2 ] -> E.int32_bxor e1 e2 | _ -> assert false)
-  | Pxorint64 -> Js_long.xor args
   | Pxorbigint -> (
       match args with [ e1; e2 ] -> E.bigint_op Bxor e1 e2 | _ -> assert false)
   | Pjscomp cmp -> (
@@ -273,12 +261,9 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   (* List --> stamp = 0
      Assert_false --> stamp = 26
   *)
-  | Pint64comp cmp -> Js_long.comp cmp args
   | Pintoffloat -> (
       match args with [ e ] -> E.to_int32 e | _ -> assert false)
-  | Pint64ofint -> Js_long.of_int32 args
   | Pfloatofint -> Ext_list.singleton_exn args
-  | Pintofint64 -> Js_long.to_int32 args
   | Pnot -> E.not (Ext_list.singleton_exn args)
   | Poffsetint n -> E.offset (Ext_list.singleton_exn args) n
   | Poffsetref n ->

@@ -103,8 +103,6 @@ val inline_bool_primitive : bool -> string list
 
 val inline_int_primitive : int32 -> string list
 
-val inline_int64_primitive : int64 -> string list
-
 val inline_float_primitive : string -> string list
 
 val inline_bigint_primitive : string -> string list

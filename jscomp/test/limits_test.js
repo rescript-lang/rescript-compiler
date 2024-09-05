@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Int32 = require("../../lib/js/int32.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 
 let suites = {
@@ -31,10 +30,6 @@ function eq(loc, x, y) {
 eq("File \"limits_test.res\", line 13, characters 5-12", Pervasives.max_int, 2147483647);
 
 eq("File \"limits_test.res\", line 14, characters 5-12", Pervasives.min_int, -2147483648);
-
-eq("File \"limits_test.res\", line 15, characters 5-12", Int32.max_int, 2147483647);
-
-eq("File \"limits_test.res\", line 16, characters 5-12", Int32.min_int, -2147483648);
 
 Mt.from_pair_suites("Limits_test", suites.contents);
 

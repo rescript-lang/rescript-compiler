@@ -44,7 +44,6 @@ let hash_final_mix = h => {
   h.contents = h.contents * 0xc2b2ae35
   lxor(h.contents, lsr(h.contents, 16))
 }
-/* Caml_nativeint_extern.logand  (h.contents ^ (h.contents >>> 16)) 0x3FFFFFFFn */
 
 let hash_mix_string = (h, s) => {
   let len = stringLength(s)

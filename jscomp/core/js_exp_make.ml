@@ -900,22 +900,6 @@ let rec int32_bor ?comment (e1 : J.expression) (e2 : J.expression) :
       int32_bor e1 e2
   | _ -> { comment; expression_desc = Bin (Bor, e1, e2) }
 
-(* Arithmatic operations
-   TODO: distinguish between int and float
-   TODO: Note that we have to use Int64 to avoid integer overflow, this is fine
-   since Js only have .
-
-   like code below
-   {[
-     MAX_INT_VALUE - (MAX_INT_VALUE - 100) + 20
-   ]}
-
-   {[
-     MAX_INT_VALUE - x + 30
-   ]}
-
-   check: Re-association: avoid integer overflow
-*)
 let to_int32 ?comment (e : J.expression) : J.expression =
   int32_bor ?comment e zero_int_literal
 (* TODO: if we already know the input is int32, [x|0] can be reduced into [x] *)
@@ -1180,7 +1164,7 @@ let int32_div ~checked ?comment (e1 : t) (e2 : t) : t =
       | Number (Int { i = i0 }) -> int (Int32.div i0 i1)
       | _ -> to_int32 (float_div ?comment e1 e2))
   | _, _ ->
-      if checked then runtime_call Js_runtime_modules.int32 "div" [ e1; e2 ]
+      if checked then runtime_call Js_runtime_modules.int "div" [ e1; e2 ]
       else to_int32 (float_div ?comment e1 e2)
 
 let int32_mod ~checked ?comment e1 (e2 : t) : J.expression =
@@ -1188,7 +1172,7 @@ let int32_mod ~checked ?comment e1 (e2 : t) : J.expression =
   | Number (Int { i }) when i <> 0l ->
       { comment; expression_desc = Bin (Mod, e1, e2) }
   | _ ->
-      if checked then runtime_call Js_runtime_modules.int32 "mod_" [ e1; e2 ]
+      if checked then runtime_call Js_runtime_modules.int "mod_" [ e1; e2 ]
       else { comment; expression_desc = Bin (Mod, e1, e2) }
 
 let float_mul ?comment e1 e2 = bin ?comment Mul e1 e2

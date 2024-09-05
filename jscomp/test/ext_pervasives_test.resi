@@ -29,10 +29,6 @@ external reraise: exn => 'a = "%reraise"
 
 let finally: ('a, 'a => 'c, 'a => 'b) => 'b
 
-let is_pos_pow: Int32.t => int
-
-let is_pos_pow_2: Int32.t => int
-
 /** Copied from {!Btype.hash_variant}:
     need sync up and add test case
 */

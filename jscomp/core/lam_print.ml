@@ -24,7 +24,6 @@ let rec struct_const ppf (cst : Lam_constant.t) =
   | Const_char i -> fprintf ppf "%s" (Ext_util.string_of_int_as_char i)
   | Const_string { s } -> fprintf ppf "%S" s
   | Const_float f -> fprintf ppf "%s" f
-  | Const_int64 n -> fprintf ppf "%LiL" n
   | Const_bigint (sign, i) -> fprintf ppf "%sn" (Bigint_utils.to_string sign i)
   | Const_pointer name -> fprintf ppf "`%s" name
   | Const_some n -> fprintf ppf "[some-c]%a" struct_const n
@@ -169,26 +168,6 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pisint -> fprintf ppf "isint"
   | Pis_poly_var_block -> fprintf ppf "#is_poly_var_block"
   | Pisout i -> fprintf ppf "isout %d" i
-  | Pint64ofint -> fprintf ppf "of_int"
-  | Pintofint64 -> fprintf ppf "to_int"
-  | Pnegint64 -> fprintf ppf "neg64"
-  | Paddint64 -> fprintf ppf "add64"
-  | Psubint64 -> fprintf ppf "sub64"
-  | Pmulint64 -> fprintf ppf "mul64"
-  | Pdivint64 -> fprintf ppf "div64"
-  | Pmodint64 -> fprintf ppf "mod64"
-  | Pandint64 -> fprintf ppf "and64"
-  | Porint64 -> fprintf ppf "or64"
-  | Pxorint64 -> fprintf ppf "xor64"
-  | Plslint64 -> fprintf ppf "lsl64"
-  | Plsrint64 -> fprintf ppf "lsr64"
-  | Pasrint64 -> fprintf ppf "asr64"
-  | Pint64comp Ceq -> fprintf ppf "=="
-  | Pint64comp Cneq -> fprintf ppf "!="
-  | Pint64comp Clt -> fprintf ppf "<"
-  | Pint64comp Cgt -> fprintf ppf ">"
-  | Pint64comp Cle -> fprintf ppf "<="
-  | Pint64comp Cge -> fprintf ppf ">="
 
 type print_kind = Alias | Strict | StrictOpt | Variable | Recursive
 

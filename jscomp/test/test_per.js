@@ -2,7 +2,6 @@
 'use strict';
 
 let Caml_obj = require("../../lib/js/caml_obj.js");
-let Caml_int64 = require("../../lib/js/caml_int64.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 function failwith(s) {
@@ -53,36 +52,6 @@ function lnot(x) {
 
 let min_int = -2147483648;
 
-let infinity = Caml_int64.float_of_bits([
-  2146435072,
-  0
-]);
-
-let neg_infinity = Caml_int64.float_of_bits([
-  -1048576,
-  0
-]);
-
-let nan = Caml_int64.float_of_bits([
-  2146435072,
-  1
-]);
-
-let max_float = Caml_int64.float_of_bits([
-  2146435071,
-  4294967295
-]);
-
-let min_float = Caml_int64.float_of_bits([
-  1048576,
-  0
-]);
-
-let epsilon_float = Caml_int64.float_of_bits([
-  1018167296,
-  0
-]);
-
 function char_of_int(n) {
   if (n < 0 || n > 255) {
     throw {
@@ -105,11 +74,5 @@ exports.abs = abs;
 exports.lnot = lnot;
 exports.max_int = max_int;
 exports.min_int = min_int;
-exports.infinity = infinity;
-exports.neg_infinity = neg_infinity;
-exports.nan = nan;
-exports.max_float = max_float;
-exports.min_float = min_float;
-exports.epsilon_float = epsilon_float;
 exports.char_of_int = char_of_int;
 /* No side effect */

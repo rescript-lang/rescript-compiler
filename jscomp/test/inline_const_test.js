@@ -2,8 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Int64 = require("../../lib/js/int64.js");
-let Caml_int64 = require("../../lib/js/caml_int64.js");
 let Inline_const = require("./inline_const.js");
 
 let suites = {
@@ -46,12 +44,7 @@ eq("File \"inline_const_test.res\", line 19, characters 5-12", 1, 1);
 
 eq("File \"inline_const_test.res\", line 20, characters 5-12", 3e-6, 0.000003);
 
-let h = Caml_int64.add(Caml_int64.add([
-  0,
-  100
-], Int64.one), Caml_int64.one);
-
-Mt.from_pair_suites("File \"inline_const_test.res\", line 28, characters 29-36", suites.contents);
+Mt.from_pair_suites("File \"inline_const_test.res\", line 23, characters 29-36", suites.contents);
 
 let f5 = true;
 
@@ -71,5 +64,4 @@ exports.f4 = f4;
 exports.f5 = f5;
 exports.f6 = f6;
 exports.f7 = f7;
-exports.h = h;
 /*  Not a pure module */

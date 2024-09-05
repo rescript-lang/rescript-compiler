@@ -2,8 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_int32 = require("../../lib/js/caml_int32.js");
-let Caml_int64 = require("../../lib/js/caml_int64.js");
+let Runtime_int = require("../../lib/js/runtime_int.js");
 
 let suites = {
   contents: /* [] */0
@@ -31,7 +30,7 @@ function eq(loc, x, y) {
 let a0;
 
 try {
-  Caml_int32.div(0, 0);
+  Runtime_int.div(0, 0);
   a0 = 0;
 } catch (exn) {
   a0 = 1;
@@ -40,60 +39,16 @@ try {
 let a1;
 
 try {
-  Caml_int32.mod_(0, 0);
+  Runtime_int.mod_(0, 0);
   a1 = 0;
 } catch (exn$1) {
   a1 = 1;
 }
 
-let a4;
-
-try {
-  Caml_int32.div(0, 0);
-  a4 = 0;
-} catch (exn$2) {
-  a4 = 1;
-}
-
-let a5;
-
-try {
-  Caml_int32.mod_(0, 0);
-  a5 = 0;
-} catch (exn$3) {
-  a5 = 1;
-}
-
-let a6;
-
-try {
-  Caml_int64.div(Caml_int64.zero, Caml_int64.zero);
-  a6 = 0;
-} catch (exn$4) {
-  a6 = 1;
-}
-
-let a7;
-
-try {
-  Caml_int64.mod_(Caml_int64.zero, Caml_int64.zero);
-  a7 = 0;
-} catch (exn$5) {
-  a7 = 1;
-}
-
-eq("File \"gpr_1760_test.res\", line 60, characters 3-10", [
+eq("File \"gpr_1760_test.res\", line 26, characters 3-10", [
   a0,
-  a1,
-  a4,
-  a5,
-  a6,
-  a7
+  a1
 ], [
-  1,
-  1,
-  1,
-  1,
   1,
   1
 ]);
@@ -105,8 +60,4 @@ exports.test_id = test_id;
 exports.eq = eq;
 exports.a0 = a0;
 exports.a1 = a1;
-exports.a4 = a4;
-exports.a5 = a5;
-exports.a6 = a6;
-exports.a7 = a7;
 /* a0 Not a pure module */

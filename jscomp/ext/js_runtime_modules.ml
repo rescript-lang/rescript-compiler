@@ -40,10 +40,6 @@ let curry = "Curry"
 
 let caml_primitive = "Caml"
 
-let int64 = "Caml_int64"
-
-let int32 = "Caml_int32"
-
 let bigint = "Caml_bigint"
 
 let option = "Caml_option"
@@ -51,6 +47,8 @@ let option = "Caml_option"
 let module_ = "Caml_module"
 
 let caml_js_exceptions = "Caml_js_exceptions"
+
+let int = "Runtime_int"
 
 let deriving = "Runtime_deriving"
 

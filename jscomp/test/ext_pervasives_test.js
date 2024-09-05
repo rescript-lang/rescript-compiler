@@ -2,8 +2,6 @@
 'use strict';
 
 let Caml_string = require("../../lib/js/caml_string.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function $$finally(v, action, f) {
   let e;
@@ -15,72 +13,6 @@ function $$finally(v, action, f) {
   }
   action(v);
   return e;
-}
-
-function is_pos_pow(n) {
-  let E = /* @__PURE__ */Caml_exceptions.create("E");
-  try {
-    let _c = 0;
-    let _n = n;
-    while (true) {
-      let n$1 = _n;
-      let c = _c;
-      if (n$1 <= 0) {
-        return -2;
-      }
-      if (n$1 === 1) {
-        return c;
-      }
-      if ((n$1 & 1) === 0) {
-        _n = (n$1 >> 1);
-        _c = c + 1 | 0;
-        continue;
-      }
-      throw {
-        RE_EXN_ID: E,
-        Error: new Error()
-      };
-    };
-  } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.RE_EXN_ID === E) {
-      return -1;
-    }
-    throw exn;
-  }
-}
-
-function is_pos_pow_2(n) {
-  let E = /* @__PURE__ */Caml_exceptions.create("E");
-  try {
-    let _c = 0;
-    let _n = n;
-    while (true) {
-      let n$1 = _n;
-      let c = _c;
-      if (n$1 <= 0) {
-        return -2;
-      }
-      if (n$1 === 1) {
-        return c;
-      }
-      if ((n$1 & 1) === 0) {
-        _n = (n$1 >> 1);
-        _c = c + 1 | 0;
-        continue;
-      }
-      throw {
-        RE_EXN_ID: E,
-        Error: new Error()
-      };
-    };
-  } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn.RE_EXN_ID === E) {
-      return -1;
-    }
-    throw exn;
-  }
 }
 
 function hash_variant(s) {
@@ -101,8 +33,6 @@ let LargeFile = {
 };
 
 exports.$$finally = $$finally;
-exports.is_pos_pow = is_pos_pow;
-exports.is_pos_pow_2 = is_pos_pow_2;
 exports.hash_variant = hash_variant;
 exports.LargeFile = LargeFile;
 /* No side effect */

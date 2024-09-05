@@ -21,7 +21,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
-@@config({flags: ["-bs-noassertfalse"]})
+
+external int_of_float: float => int = "?int_of_float"
+
 type rec cell<'a> = {
   content: 'a,
   mutable next: option<cell<'a>>,
@@ -79,7 +81,7 @@ let {hash_mix_int, hash_final_mix, hash_mix_string} = module(Caml_hash_primitive
 let hash = (count: int, _limit, seed: int, obj: Obj.t): int => {
   let s = ref(seed)
   if Js.typeof(obj) == "number" {
-    let u = Caml_nativeint_extern.of_float(Obj.magic(obj))
+    let u = int_of_float(Obj.magic(obj))
     s.contents = hash_mix_int(s.contents, u + u + 1)
     hash_final_mix(s.contents)
   } else if Js.typeof(obj) == "string" {
@@ -98,7 +100,7 @@ let hash = (count: int, _limit, seed: int, obj: Obj.t): int => {
     while !is_empty_queue(queue) && num.contents > 0 {
       let obj = unsafe_pop(queue)
       if Js.typeof(obj) == "number" {
-        let u = Caml_nativeint_extern.of_float(Obj.magic(obj))
+        let u = int_of_float(Obj.magic(obj))
         s.contents = hash_mix_int(s.contents, u + u + 1)
         num.contents = num.contents - 1
       } else if Js.typeof(obj) == "string" {

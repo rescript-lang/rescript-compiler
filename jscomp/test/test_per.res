@@ -129,13 +129,6 @@ external float: int => float = "%floatofint"
 external float_of_int: int => float = "%floatofint"
 external truncate: float => int = "%intoffloat"
 external int_of_float: float => int = "%intoffloat"
-external float_of_bits: int64 => float = "?int64_float_of_bits"
-let infinity = float_of_bits(0x7F_F0_00_00_00_00_00_00L)
-let neg_infinity = float_of_bits(0xFF_F0_00_00_00_00_00_00L)
-let nan = float_of_bits(0x7F_F0_00_00_00_00_00_01L)
-let max_float = float_of_bits(0x7F_EF_FF_FF_FF_FF_FF_FFL)
-let min_float = float_of_bits(0x00_10_00_00_00_00_00_00L)
-let epsilon_float = float_of_bits(0x3C_B0_00_00_00_00_00_00L)
 
 type fpclass =
   | FP_normal

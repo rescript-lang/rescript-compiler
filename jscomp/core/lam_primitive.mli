@@ -85,7 +85,6 @@ type t =
   | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
-  | Pint64comp of Lam_compat.comparison
   | Pbigintcomp of Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
@@ -105,21 +104,6 @@ type t =
   | Pis_poly_var_block
   (* Test if the (integer) argument is outside an interval *)
   | Pisout of int
-  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-  | Pint64ofint
-  | Pintofint64
-  | Pnegint64
-  | Paddint64
-  | Psubint64
-  | Pmulint64
-  | Pdivint64
-  | Pmodint64
-  | Pandint64
-  | Porint64
-  | Pxorint64
-  | Plslint64
-  | Plsrint64
-  | Pasrint64
   (* Integer to external pointer *)
   | Pdebugger
   | Pjs_unsafe_downgrade of { name : string; setter : bool }

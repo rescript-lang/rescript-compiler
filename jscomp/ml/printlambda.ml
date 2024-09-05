@@ -46,10 +46,6 @@ let rec struct_const ppf = function
 
   | Const_false -> fprintf ppf "false"      
   | Const_true -> fprintf ppf "true"
-let boxed_integer_name = function
-  | Pbigint -> "bigint"
-  | Pint32 -> "int32"
-  | Pint64 -> "int64"
 
 let value_kind = function
   | Pgenval -> ""
@@ -59,20 +55,6 @@ let value_kind = function
   | Pintval -> "int"
   | Pfloatval -> "float"
   | Pboxedintval bi -> boxed_integer_name bi *)
-
-let print_boxed_integer_conversion ppf bi1 bi2 =
-  fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
-
-let boxed_integer_mark name = function
-  | Pbigint -> Printf.sprintf "BigInt.%s" name
-  | Pint32 -> Printf.sprintf "Int32.%s" name
-  | Pint64 -> Printf.sprintf "Int64.%s" name
-
-let print_boxed_integer name ppf bi =
-  fprintf ppf "%s" (boxed_integer_mark name bi);;
-
-
-
 
 let string_of_loc_kind = function
   | Loc_FILE -> "loc_FILE"
@@ -205,33 +187,6 @@ let primitive ppf = function
   | Parraysets -> fprintf ppf "array.set" 
   | Pisint -> fprintf ppf "isint"
   | Pisout -> fprintf ppf "isout"
-  | Pbintofint bi -> print_boxed_integer "of_int" ppf bi
-  | Pintofbint bi -> print_boxed_integer "to_int" ppf bi
-  | Pcvtbint (bi1, bi2) -> print_boxed_integer_conversion ppf bi1 bi2
-  | Pnegbint bi -> print_boxed_integer "neg" ppf bi
-  | Paddbint bi -> print_boxed_integer "add" ppf bi
-  | Psubbint bi -> print_boxed_integer "sub" ppf bi
-  | Pmulbint bi -> print_boxed_integer "mul" ppf bi
-  | Pdivbint { size = bi; is_safe = Safe } ->
-      print_boxed_integer "div" ppf bi
-  | Pdivbint { size = bi; is_safe = Unsafe } ->
-      print_boxed_integer "div_unsafe" ppf bi
-  | Pmodbint { size = bi; is_safe = Safe } ->
-      print_boxed_integer "mod" ppf bi
-  | Pmodbint { size = bi; is_safe = Unsafe } ->
-      print_boxed_integer "mod_unsafe" ppf bi
-  | Pandbint bi -> print_boxed_integer "and" ppf bi
-  | Porbint bi -> print_boxed_integer "or" ppf bi
-  | Pxorbint bi -> print_boxed_integer "xor" ppf bi
-  | Plslbint bi -> print_boxed_integer "lsl" ppf bi
-  | Plsrbint bi -> print_boxed_integer "lsr" ppf bi
-  | Pasrbint bi -> print_boxed_integer "asr" ppf bi
-  | Pbintcomp(bi, Ceq) -> print_boxed_integer "==" ppf bi
-  | Pbintcomp(bi, Cneq) -> print_boxed_integer "!=" ppf bi
-  | Pbintcomp(bi, Clt) -> print_boxed_integer "<" ppf bi
-  | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi
-  | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
-  | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
   | Pcreate_extension s -> fprintf ppf "extension[%s]" s   
 let name_of_primitive = function
   | Pidentity -> "Pidentity"
@@ -298,22 +253,6 @@ let name_of_primitive = function
   | Parraysets -> "Parraysets"
   | Pisint -> "Pisint"
   | Pisout -> "Pisout"
-  | Pbintofint _ -> "Pbintofint"
-  | Pintofbint _ -> "Pintofbint"
-  | Pcvtbint _ -> "Pcvtbint"
-  | Pnegbint _ -> "Pnegbint"
-  | Paddbint _ -> "Paddbint"
-  | Psubbint _ -> "Psubbint"
-  | Pmulbint _ -> "Pmulbint"
-  | Pdivbint _ -> "Pdivbint"
-  | Pmodbint _ -> "Pmodbint"
-  | Pandbint _ -> "Pandbint"
-  | Porbint _ -> "Porbint"
-  | Pxorbint _ -> "Pxorbint"
-  | Plslbint _ -> "Plslbint"
-  | Plsrbint _ -> "Plsrbint"
-  | Pasrbint _ -> "Pasrbint"
-  | Pbintcomp _ -> "Pbintcomp"
   | Pcreate_extension _ -> "Pcreate_extension"
 
 let function_attribute ppf { inline; is_a_functor; return_unit } =

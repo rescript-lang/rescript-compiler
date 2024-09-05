@@ -12,8 +12,6 @@ let eq = (loc, x, y) => {
 let () = {
   eq(__LOC__, max_int, %raw("2147483647"))
   eq(__LOC__, min_int, %raw("-2147483648"))
-  eq(__LOC__, Int32.max_int, %raw("2147483647"))
-  eq(__LOC__, Int32.min_int, %raw("-2147483648"))
 }
 
 let () = Mt.from_pair_suites(__MODULE__, suites.contents)

@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Int32 = require("../../lib/js/int32.js");
 
 let suites = {
   contents: /* [] */0
@@ -34,18 +33,9 @@ function f(x) {
   return -x | 0;
 }
 
-function int32_f(x) {
-  for (let i = 0; i <= 100; ++i) {
-    console.log(".");
-  }
-  return -x | 0;
-}
-
 let u = f(-2147483648);
 
-eq("File \"gpr_977_test.res\", line 36, characters 5-12", -2147483648, u);
-
-eq("File \"gpr_977_test.res\", line 37, characters 5-12", Int32.min_int, int32_f(Int32.min_int));
+eq("File \"gpr_977_test.res\", line 23, characters 5-12", -2147483648, u);
 
 Mt.from_pair_suites("Gpr_977_test", suites.contents);
 
@@ -55,7 +45,6 @@ exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
 exports.f = f;
-exports.int32_f = int32_f;
 exports.min_32_int = min_32_int;
 exports.u = u;
 /* u Not a pure module */

@@ -78,7 +78,6 @@ and path_list = Pident ident_list
 and path_option = Pident ident_option
 and path_result = Pident ident_result
 and path_dict = Pident ident_dict
-and path_int64 = Pident ident_int64
 and path_bigint = Pident ident_bigint
 and path_lazy_t = Pident ident_lazy_t
 and path_string = Pident ident_string
@@ -99,7 +98,6 @@ and type_option t = newgenty (Tconstr(path_option, [t], ref Mnil))
 and type_result t1 t2 = newgenty (Tconstr(path_result, [t1; t2], ref Mnil))
 and type_dict t = newgenty (Tconstr(path_dict, [t], ref Mnil))
 
-and type_int64 = newgenty (Tconstr(path_int64, [], ref Mnil))
 and type_bigint = newgenty (Tconstr(path_bigint, [], ref Mnil))
 and type_lazy_t t = newgenty (Tconstr(path_lazy_t, [t], ref Mnil))
 and type_string = newgenty (Tconstr(path_string, [], ref Mnil))

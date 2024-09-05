@@ -39,13 +39,3 @@ let bool_max: selector<bool>
 let int_max: selector<int>
 let float_max: selector<float>
 let string_max: selector<string>
-
-let i64_eq: (Caml_int64_extern.t, Caml_int64_extern.t) => bool
-let i64_neq: (Caml_int64_extern.t, Caml_int64_extern.t) => bool
-let i64_lt: (Caml_int64_extern.t, Caml_int64_extern.t) => bool
-let i64_gt: (Caml_int64_extern.t, Caml_int64_extern.t) => bool
-let i64_le: (Caml_int64_extern.t, Caml_int64_extern.t) => bool
-let i64_ge: (Caml_int64_extern.t, Caml_int64_extern.t) => bool
-
-let i64_min: (Caml_int64_extern.t, Caml_int64_extern.t) => Caml_int64_extern.t
-let i64_max: (Caml_int64_extern.t, Caml_int64_extern.t) => Caml_int64_extern.t

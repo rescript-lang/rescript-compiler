@@ -43,7 +43,7 @@ let transform_under_supply n ap_info fn args =
         | Lvar _
         | Lconst
             ( Const_int _ | Const_char _ | Const_string _ | Const_float _ | Const_bigint _
-            | Const_int64 _ | Const_pointer _ | Const_js_true | Const_js_false
+            | Const_pointer _ | Const_js_true | Const_js_false
             | Const_js_undefined _ )
         | Lprim { primitive = Pfield (_, Fld_module _); _ }
         | Lfunction _ ->
