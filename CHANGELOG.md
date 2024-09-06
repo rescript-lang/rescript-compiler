@@ -10,11 +10,11 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 12.0.0-alpha.3 (Unreleased)
+# 12.0.0-alpha.3
 
 #### :bug: Bug fix
 
-- Revert Throws an instance of JavaScript's `new Error()` and adds the extension payload for `cause` option introduced in https://github.com/rescript-lang/rescript-compiler/pull/6611. https://github.com/rescript-lang/rescript-compiler/pull/7016
+- Revert "Throws an instance of JavaScript's `new Error()` and adds the extension payload for `cause` option" (https://github.com/rescript-lang/rescript-compiler/pull/6611). https://github.com/rescript-lang/rescript-compiler/pull/7016
 - Fix dict literals error. https://github.com/rescript-lang/rescript-compiler/pull/7019
 
 # 12.0.0-alpha.2
@@ -26,6 +26,7 @@
 - Optimize usage of the new dict literal syntax to emit an actual JS object literal. https://github.com/rescript-lang/rescript-compiler/pull/6538
 
 #### :bug: Bug Fix
+
 - Fix issue where long layout break added a trailing comma in partial application `...`. https://github.com/rescript-lang/rescript-compiler/pull/6949
 - Fix incorrect format of function under unary operator. https://github.com/rescript-lang/rescript-compiler/pull/6953
 - Fix incorrect printing of module binding with signature. https://github.com/rescript-lang/rescript-compiler/pull/6963
