@@ -15,6 +15,7 @@
 #### :bug: Bug fix
 
 - Revert Throws an instance of JavaScript's `new Error()` and adds the extension payload for `cause` option introduced in https://github.com/rescript-lang/rescript-compiler/pull/6611. https://github.com/rescript-lang/rescript-compiler/pull/7016
+- Fix dict literals error. https://github.com/rescript-lang/rescript-compiler/pull/7019
 
 # 12.0.0-alpha.2
 
