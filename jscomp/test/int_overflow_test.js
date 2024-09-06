@@ -2,12 +2,12 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_string = require("../../lib/js/caml_string.js");
+let Primitive_string = require("../../lib/js/primitive_string.js");
 
 function hash_variant(s) {
   let accu = 0;
   for (let i = 0, i_finish = s.length; i < i_finish; ++i) {
-    accu = Math.imul(223, accu) + Caml_string.get(s, i) & 2147483647;
+    accu = Math.imul(223, accu) + Primitive_string.get(s, i) & 2147483647;
   }
   if (accu > 1073741823) {
     return accu - -2147483648 | 0;
@@ -19,7 +19,7 @@ function hash_variant(s) {
 function hash_variant2(s) {
   let accu = 0;
   for (let i = 0, i_finish = s.length; i < i_finish; ++i) {
-    accu = Math.imul(223, accu) + Caml_string.get(s, i) | 0;
+    accu = Math.imul(223, accu) + Primitive_string.get(s, i) | 0;
   }
   accu = accu & 2147483647;
   if (accu > 1073741823) {

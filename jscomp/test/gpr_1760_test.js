@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Runtime_int = require("../../lib/js/runtime_int.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
 
 let suites = {
   contents: /* [] */0
@@ -30,7 +30,7 @@ function eq(loc, x, y) {
 let a0;
 
 try {
-  Runtime_int.div(0, 0);
+  Primitive_int.div(0, 0);
   a0 = 0;
 } catch (exn) {
   a0 = 1;
@@ -39,7 +39,7 @@ try {
 let a1;
 
 try {
-  Runtime_int.mod_(0, 0);
+  Primitive_int.mod_(0, 0);
   a1 = 0;
 } catch (exn$1) {
   a1 = 1;

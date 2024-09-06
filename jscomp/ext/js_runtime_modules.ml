@@ -22,15 +22,27 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let bool = "Primitive_bool"
+
+let int = "Primitive_int"
+
+let float = "Primitive_float"
+
+let bigint = "Primitive_bigint"
+
+let string = "Primitive_string"
+
+let deriving = "Runtime_deriving"
+
+let promise = "Runtime_promise"
+
+let astExtensions = "Runtime_ast_extensions"
+
 let exceptions = "Caml_exceptions"
 
 let obj_runtime = "Caml_obj"
 
 let array = "Caml_array"
-
-let string = "Caml_string"
-
-let float = "Caml_float"
 
 let hash_primitive = "Caml_hash_primitive"
 
@@ -38,20 +50,8 @@ let hash = "Caml_hash"
 
 let curry = "Curry"
 
-let caml_primitive = "Caml"
-
-let bigint = "Caml_bigint"
-
 let option = "Caml_option"
 
 let module_ = "Caml_module"
 
 let caml_js_exceptions = "Caml_js_exceptions"
-
-let int = "Runtime_int"
-
-let deriving = "Runtime_deriving"
-
-let promise = "Runtime_promise"
-
-let astExtensions = "Runtime_ast_extensions"

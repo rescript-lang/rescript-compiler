@@ -122,35 +122,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
       match args with
       | [ e0; e1 ] -> E.string_comp EqEqEq e0 e1
       | _ -> assert false)
-  | "caml_bool_compare" -> (
-      match args with
-      | [ { expression_desc = Bool a }; { expression_desc = Bool b } ] ->
-          let c = compare (a : bool) b in
-          E.int (if c = 0 then 0l else if c > 0 then 1l else -1l)
-      | _ -> call Js_runtime_modules.caml_primitive)
-  | "caml_int_compare" ->
-      E.runtime_call Js_runtime_modules.caml_primitive "int_compare" args
-  | "caml_float_compare" -> call Js_runtime_modules.caml_primitive
-  | "caml_bigint_compare" -> call Js_runtime_modules.caml_primitive
-  | "caml_string_compare" -> call Js_runtime_modules.caml_primitive
-  | "caml_bool_min" | "caml_int_min" | "caml_float_min" | "caml_bigint_min" | "caml_string_min" -> (
-      match args with
-      | [ a; b ] ->
-          if
-            Js_analyzer.is_okay_to_duplicate a
-            && Js_analyzer.is_okay_to_duplicate b
-          then E.econd (E.js_comp Clt a b) a b
-          else call Js_runtime_modules.caml_primitive
-      | _ -> assert false)
-  | "caml_bool_max" | "caml_int_max" | "caml_float_max" | "caml_bigint_max" | "caml_string_max" -> (
-      match args with
-      | [ a; b ] ->
-          if
-            Js_analyzer.is_okay_to_duplicate a
-            && Js_analyzer.is_okay_to_duplicate b
-          then E.econd (E.js_comp Cgt a b) a b
-          else call Js_runtime_modules.caml_primitive
-      | _ -> assert false)
   (******************************************************************************)
   (************************* customized primitives ******************************)
   (******************************************************************************)
@@ -179,14 +150,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   | "?hash_mix_string" | "?hash_mix_int" | "?hash_final_mix" ->
       call Js_runtime_modules.hash_primitive
   | "?hash" -> call Js_runtime_modules.hash
-  | "?bigint_div" -> (
-      match args with
-      | [ e1; e2 ] -> E.bigint_div e1 e2 ~checked:false
-      | _ -> assert false)
-  | "?bigint_mod" -> (
-      match args with
-      | [ e1; e2 ] -> E.bigint_mod e1 e2 ~checked:false
-      | _ -> assert false)
   | "?await" -> (
       match args with
       | [e] -> {e with expression_desc = Await e}

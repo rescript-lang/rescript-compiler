@@ -2,11 +2,12 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
 let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
+let Primitive_string = require("../../lib/js/primitive_string.js");
 
-let compare = Caml.int_compare;
+let compare = Primitive_int.compare;
 
 let Int = {
   compare: compare
@@ -130,7 +131,7 @@ function add(x, data, param) {
   let d = param.d;
   let v = param.v;
   let l = param.l;
-  let c = Caml.int_compare(x, v);
+  let c = Primitive_int.compare(x, v);
   if (c === 0) {
     if (d === data) {
       return param;
@@ -170,7 +171,7 @@ function find(x, _param) {
         Error: new Error()
       };
     }
-    let c = Caml.int_compare(x, param.v);
+    let c = Primitive_int.compare(x, param.v);
     if (c === 0) {
       return param.d;
     }
@@ -339,7 +340,7 @@ function find_opt(x, _param) {
     if (typeof param !== "object") {
       return;
     }
-    let c = Caml.int_compare(x, param.v);
+    let c = Primitive_int.compare(x, param.v);
     if (c === 0) {
       return Caml_option.some(param.d);
     }
@@ -354,7 +355,7 @@ function mem(x, _param) {
     if (typeof param !== "object") {
       return false;
     }
-    let c = Caml.int_compare(x, param.v);
+    let c = Primitive_int.compare(x, param.v);
     if (c === 0) {
       return true;
     }
@@ -476,7 +477,7 @@ function remove(x, param) {
   let d = param.d;
   let v = param.v;
   let l = param.l;
-  let c = Caml.int_compare(x, v);
+  let c = Primitive_int.compare(x, v);
   if (c === 0) {
     return merge(l, r);
   }
@@ -516,7 +517,7 @@ function update(x, f, param) {
   let d = param.d;
   let v = param.v;
   let l = param.l;
-  let c = Caml.int_compare(x, v);
+  let c = Primitive_int.compare(x, v);
   if (c === 0) {
     let data$1 = f(Caml_option.some(d));
     if (data$1 === undefined) {
@@ -712,7 +713,7 @@ function split(x, param) {
   let d = param.d;
   let v = param.v;
   let l = param.l;
-  let c = Caml.int_compare(x, v);
+  let c = Primitive_int.compare(x, v);
   if (c === 0) {
     return [
       l,
@@ -885,7 +886,7 @@ function compare$1(cmp, m1, m2) {
     if (typeof e2 !== "object") {
       return 1;
     }
-    let c = Caml.int_compare(e1._0, e2._0);
+    let c = Primitive_int.compare(e1._0, e2._0);
     if (c !== 0) {
       return c;
     }
@@ -1113,7 +1114,7 @@ function add$1(x, data, param) {
   let d = param.d;
   let v = param.v;
   let l = param.l;
-  let c = Caml.string_compare(x, v);
+  let c = Primitive_string.compare(x, v);
   if (c === 0) {
     if (d === data) {
       return param;
@@ -1153,7 +1154,7 @@ function find$1(x, _param) {
         Error: new Error()
       };
     }
-    let c = Caml.string_compare(x, param.v);
+    let c = Primitive_string.compare(x, param.v);
     if (c === 0) {
       return param.d;
     }
@@ -1322,7 +1323,7 @@ function find_opt$1(x, _param) {
     if (typeof param !== "object") {
       return;
     }
-    let c = Caml.string_compare(x, param.v);
+    let c = Primitive_string.compare(x, param.v);
     if (c === 0) {
       return Caml_option.some(param.d);
     }
@@ -1337,7 +1338,7 @@ function mem$1(x, _param) {
     if (typeof param !== "object") {
       return false;
     }
-    let c = Caml.string_compare(x, param.v);
+    let c = Primitive_string.compare(x, param.v);
     if (c === 0) {
       return true;
     }
@@ -1459,7 +1460,7 @@ function remove$1(x, param) {
   let d = param.d;
   let v = param.v;
   let l = param.l;
-  let c = Caml.string_compare(x, v);
+  let c = Primitive_string.compare(x, v);
   if (c === 0) {
     return merge$2(l, r);
   }
@@ -1499,7 +1500,7 @@ function update$1(x, f, param) {
   let d = param.d;
   let v = param.v;
   let l = param.l;
-  let c = Caml.string_compare(x, v);
+  let c = Primitive_string.compare(x, v);
   if (c === 0) {
     let data$1 = f(Caml_option.some(d));
     if (data$1 === undefined) {
@@ -1695,7 +1696,7 @@ function split$1(x, param) {
   let d = param.d;
   let v = param.v;
   let l = param.l;
-  let c = Caml.string_compare(x, v);
+  let c = Primitive_string.compare(x, v);
   if (c === 0) {
     return [
       l,
@@ -1868,7 +1869,7 @@ function compare$2(cmp, m1, m2) {
     if (typeof e2 !== "object") {
       return 1;
     }
-    let c = Caml.string_compare(e1._0, e2._0);
+    let c = Primitive_string.compare(e1._0, e2._0);
     if (c !== 0) {
       return c;
     }
@@ -1898,7 +1899,7 @@ function equal$1(cmp, m1, m2) {
     if (typeof e2 !== "object") {
       return false;
     }
-    if (Caml.string_compare(e1._0, e2._0) !== 0) {
+    if (e1._0 !== e2._0) {
       return false;
     }
     if (!cmp(e1._1, e2._1)) {
@@ -2056,7 +2057,7 @@ let int_map_suites_1 = {
       });
       return {
         TAG: "Eq",
-        _0: compare$1(Caml.int_compare, u, v),
+        _0: compare$1(Primitive_int.compare, u, v),
         _1: 0
       };
     }

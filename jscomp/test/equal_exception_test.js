@@ -3,14 +3,14 @@
 
 let Mt = require("./mt.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
-let Caml_string = require("../../lib/js/caml_string.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Primitive_string = require("../../lib/js/primitive_string.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let v = "gso";
 
 function is_equal() {
-  if (Caml_string.get(v, 0) === /* 'g' */103) {
+  if (Primitive_string.get(v, 0) === /* 'g' */103) {
     return;
   }
   throw {

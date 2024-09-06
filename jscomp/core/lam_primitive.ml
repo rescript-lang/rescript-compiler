@@ -37,10 +37,13 @@ type t =
   | Pmakeblock of int * Lam_tag_info.t * Asttypes.mutable_flag
   | Pfield of int * Lam_compat.field_dbg_info
   | Psetfield of int * Lam_compat.set_field_dbg_info
+
   (* could have field info at least for record *)
   | Pduprecord
+
   (* Force lazy values *)
   | Plazyforce
+
   (* External call *)
   | Pccall of { prim_name : string }
   | Pjs_call of {
@@ -50,13 +53,20 @@ type t =
       dynamic_import: bool;
     }
   | Pjs_object_create of External_arg_spec.obj_params
+
   (* Exceptions *)
   | Praise
-  (* Boolean operations *)
+
+  (* Boolean primitives *)
   | Psequand
   | Psequor
   | Pnot
-  (* Integer operations *)
+  | Pboolorder
+  | Pboolmin
+  | Pboolmax
+
+  (* Integer primitives *)
+  | Pisint
   | Pnegint
   | Paddint
   | Psubint
@@ -71,7 +81,12 @@ type t =
   | Pasrint
   | Poffsetint of int
   | Poffsetref of int
-  (* Float operations *)
+  | Pintcomp of Lam_compat.comparison
+  | Pintorder
+  | Pintmin
+  | Pintmax
+
+  (* Float primitives *)
   | Pintoffloat
   | Pfloatofint
   | Pnegfloat
@@ -79,6 +94,11 @@ type t =
   | Psubfloat
   | Pmulfloat
   | Pdivfloat
+  | Pfloatcomp of Lam_compat.comparison
+  | Pfloatorder
+  | Pfloatmin
+  | Pfloatmax
+
   (* BigInt operations *)
   | Pnegbigint
   | Paddbigint
@@ -92,29 +112,34 @@ type t =
   | Pxorbigint
   | Plslbigint
   | Pasrbigint
-  | Pintcomp of Lam_compat.comparison
-  | Pfloatcomp of Lam_compat.comparison
-  | Pjscomp of Lam_compat.comparison
   | Pbigintcomp of Lam_compat.comparison
-  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
-  | Pjs_runtime_apply (* [f; [...]] *)
-  (* String operations *)
+  | Pbigintorder
+  | Pbigintmin
+  | Pbigintmax
+
+  (* String primitives *)
   | Pstringlength
   | Pstringrefu
   | Pstringrefs
   | Pstringadd
-  (* Array operations *)
+  | Pstringorder
+  | Pstringmin
+  | Pstringmax
+
+  (* Array primitives *)
   | Pmakearray
   | Parraylength
   | Parrayrefu
   | Parraysetu
   | Parrayrefs
   | Parraysets
-  (* Test if the argument is a block or an immediate integer *)
-  | Pisint
+
+  (* etc or deprecated *)
   | Pis_poly_var_block
-  (* Test if the (integer) argument is outside an interval *)
   | Pisout of int
+  | Pjscomp of Lam_compat.comparison
+  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
+  | Pjs_runtime_apply (* [f; [...]] *)
   | Pdebugger
   | Pjs_unsafe_downgrade of { name : string; setter : bool }
   | Pinit_mod
@@ -161,75 +186,106 @@ let eq_tag_info (x : Lam_tag_info.t) y = x = y
 
 let eq_primitive_approx (lhs : t) (rhs : t) =
   match lhs with
+  | Pwrap_exn
+  | Praise
+  (* bool primitives *)
+  | Psequand
+  | Psequor
+  | Pnot
+  | Pboolorder
+  | Pboolmin
+  | Pboolmax
+  (* int primitives *)
+  | Pisint
+  | Pnegint
+  | Paddint
+  | Psubint
+  | Pmulint
+  | Pdivint
+  | Pmodint
+  | Pandint
+  | Porint
+  | Pxorint
+  | Plslint
+  | Plsrint
+  | Pasrint
+  | Pintorder
+  | Pintmin
+  | Pintmax
+  (* float primitives *)
+  | Pintoffloat
+  | Pfloatofint
+  | Pnegfloat
+  | Paddfloat
+  | Psubfloat
+  | Pmulfloat
+  | Pdivfloat
+  | Pfloatorder
+  | Pfloatmin
+  | Pfloatmax
+  (* bigint primitives *)
+  | Pnegbigint
+  | Paddbigint
+  | Psubbigint
+  | Pmulbigint
+  | Pdivbigint
+  | Pmodbigint
+  | Ppowbigint
+  | Pandbigint
+  | Porbigint
+  | Pxorbigint
+  | Plslbigint
+  | Pasrbigint
+  | Pbigintorder
+  | Pbigintmin
+  | Pbigintmax
+  (* string primitives *)
+  | Pstringlength
+  | Pstringrefu
+  | Pstringrefs
+  | Pstringadd
+  | Pstringorder
+  | Pstringmin
+  | Pstringmax
+  (* etc *)
+  | Pjs_apply
+  | Pjs_runtime_apply
+  | Pval_from_option
+  | Pval_from_option_not_nest
+  | Pundefined_to_opt
+  | Pnull_to_opt
+  | Pnull_undefined_to_opt
+  | Pis_null
+  | Pis_not_none
+  | Psome
+  | Psome_not_nest
+  | Pis_undefined
+  | Pis_null_undefined
+  | Pimport
+  | Pjs_typeof
+  | Plazyforce
+  | Pis_poly_var_block
+  | Pdebugger
+  | Pinit_mod
+  | Pupdate_mod
+  | Pjs_function_length
+  | Pcaml_obj_length
+  | Pduprecord
+  | Pmakearray
+  | Parraylength
+  | Parrayrefu
+  | Parraysetu
+  | Parrayrefs
+  | Parraysets
+
+  | Pjs_fn_make_unit
+  | Pvoid_run
+  | Pfull_apply
+  | Pjs_fn_method ->
+    rhs = lhs
   | Pcreate_extension a -> (
       match rhs with Pcreate_extension b -> a = (b : string) | _ -> false)
-  | Pwrap_exn -> rhs = Pwrap_exn
-  | Praise -> rhs = Praise
-  | Psequand -> rhs = Psequand
-  | Psequor -> rhs = Psequor
-  | Pnot -> rhs = Pnot
-  | Pnegint -> rhs = Pnegint
-  | Paddint -> rhs = Paddint
-  | Psubint -> rhs = Psubint
-  | Pmulint -> rhs = Pmulint
-  | Pdivint -> rhs = Pdivint
-  | Pmodint -> rhs = Pmodint
-  | Pandint -> rhs = Pandint
-  | Porint -> rhs = Porint
-  | Pxorint -> rhs = Pxorint
-  | Plslint -> rhs = Plslint
-  | Plsrint -> rhs = Plsrint
-  | Pasrint -> rhs = Pasrint
-  | Pval_from_option -> rhs = Pval_from_option
-  | Pval_from_option_not_nest -> rhs = Pval_from_option_not_nest
-  | Plazyforce -> rhs = Plazyforce
-  | Pintoffloat -> rhs = Pintoffloat
-  | Pfloatofint -> rhs = Pfloatofint
-  | Pnegfloat -> rhs = Pnegfloat
-  (* | Pabsfloat -> rhs = Pabsfloat *)
-  | Paddfloat -> rhs = Paddfloat
-  | Psubfloat -> rhs = Psubfloat
-  | Pmulfloat -> rhs = Pmulfloat
-  | Pdivfloat -> rhs = Pdivfloat
-  | Pnegbigint -> rhs = Pnegbigint
-  | Paddbigint -> rhs = Paddbigint
-  | Psubbigint -> rhs = Psubbigint
-  | Pmulbigint -> rhs = Pmulbigint
-  | Pdivbigint -> rhs = Pdivbigint
-  | Pmodbigint -> rhs = Pmodbigint
-  | Ppowbigint -> rhs = Ppowbigint
-  | Pandbigint -> rhs = Pandbigint
-  | Porbigint -> rhs = Porbigint
-  | Pxorbigint -> rhs = Pxorbigint
-  | Plslbigint -> rhs = Plslbigint
-  | Pasrbigint -> rhs = Pasrbigint
-  | Pjs_apply -> rhs = Pjs_apply
-  | Pjs_runtime_apply -> rhs = Pjs_runtime_apply
-  | Pstringlength -> rhs = Pstringlength
-  | Pstringrefu -> rhs = Pstringrefu
-  | Pstringrefs -> rhs = Pstringrefs
-  | Pstringadd -> rhs = Pstringadd
-  | Pundefined_to_opt -> rhs = Pundefined_to_opt
-  | Pnull_to_opt -> rhs = Pnull_to_opt
-  | Pnull_undefined_to_opt -> rhs = Pnull_undefined_to_opt
-  | Pis_null -> rhs = Pis_null
-  | Pis_not_none -> rhs = Pis_not_none
-  | Psome -> rhs = Psome
-  | Psome_not_nest -> rhs = Psome_not_nest
-  | Pis_undefined -> rhs = Pis_undefined
-  | Pis_null_undefined -> rhs = Pis_null_undefined
-  | Pimport -> rhs = Pimport
-  | Pjs_typeof -> rhs = Pjs_typeof
-  | Pisint -> rhs = Pisint
-  | Pis_poly_var_block -> rhs = Pis_poly_var_block
   | Pisout l -> ( match rhs with Pisout r -> l = r | _ -> false)
-  | Pdebugger -> rhs = Pdebugger
-  | Pinit_mod -> rhs = Pinit_mod
-  | Pupdate_mod -> rhs = Pupdate_mod
-  | Pjs_function_length -> rhs = Pjs_function_length
-  (* | Pjs_string_of_small_array -> rhs = Pjs_string_of_small_array *)
-  (* | Pjs_is_instance_array -> rhs = Pjs_is_instance_array *)
-  | Pcaml_obj_length -> rhs = Pcaml_obj_length
   (* | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length *)
   | Pccall { prim_name = n0 } -> (
       match rhs with Pccall { prim_name = n1 } -> n0 = n1 | _ -> false)
@@ -246,7 +302,6 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
       | Pmakeblock (i1, info1, flag1) ->
           i0 = i1 && flag0 = flag1 && eq_tag_info info0 info1
       | _ -> false)
-  | Pduprecord -> rhs = Pduprecord
   | Pjs_call { prim_name; arg_types; ffi; dynamic_import } -> (
       match rhs with
       | Pjs_call rhs ->
@@ -277,20 +332,11 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
       | _ -> false)
   | Poffsetint i0 -> ( match rhs with Poffsetint i1 -> i0 = i1 | _ -> false)
   | Poffsetref i0 -> ( match rhs with Poffsetref i1 -> i0 = i1 | _ -> false)
-  | Pmakearray -> rhs = Pmakearray
-  | Parraylength -> rhs = Parraylength
-  | Parrayrefu -> rhs = Parrayrefu
-  | Parraysetu -> rhs = Parraysetu
-  | Parrayrefs -> rhs = Parrayrefs
-  | Parraysets -> rhs = Parraysets
   | Pjs_unsafe_downgrade { name; setter } -> (
       match rhs with
       | Pjs_unsafe_downgrade rhs -> name = rhs.name && setter = rhs.setter
       | _ -> false)
   | Pjs_fn_make i -> ( match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
-  | Pjs_fn_make_unit -> rhs = Pjs_fn_make_unit
-  | Pvoid_run -> rhs = Pvoid_run
-  | Pfull_apply -> rhs = Pfull_apply
-  | Pjs_fn_method -> rhs = Pjs_fn_method
+
   | Praw_js_code _ -> false
 (* TOO lazy, here comparison is only approximation*)

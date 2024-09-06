@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
 
 let suites = {
   contents: /* [] */0
@@ -22,22 +22,16 @@ function b(extra, extra$1) {
 }
 
 function f(x, y) {
-  return Caml.int_compare(x + y | 0, y + x | 0);
+  return Primitive_int.compare(x + y | 0, y + x | 0);
 }
 
 function f2(x, y) {
-  return Caml.int_compare(x + y | 0, y);
+  return Primitive_int.compare(x + y | 0, y);
 }
 
-let f3 = Caml.int_compare;
+let f3 = Primitive_int.compare;
 
-function f4(x, y) {
-  if (x < y) {
-    return x;
-  } else {
-    return y;
-  }
-}
+let f4 = Primitive_int.min;
 
 let f5_min = Caml_obj.min;
 

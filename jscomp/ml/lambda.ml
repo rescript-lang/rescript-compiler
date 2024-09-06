@@ -196,12 +196,14 @@ type primitive =
   | Praise of raise_kind
   (* Boolean operations *)
   | Psequand | Psequor | Pnot
+  | Pboolorder | Pboolmin | Pboolmax
   (* Integer operations *)
   | Pnegint | Paddint | Psubint | Pmulint
   | Pdivint of is_safe | Pmodint of is_safe
   | Pandint | Porint | Pxorint
   | Plslint | Plsrint | Pasrint
   | Pintcomp of comparison
+  | Pintorder | Pintmin | Pintmax
   | Poffsetint of int
   | Poffsetref of int
   (* Float operations *)
@@ -209,14 +211,17 @@ type primitive =
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of comparison
+  | Pfloatorder | Pfloatmin | Pfloatmax
   (* BigInt operations *)
   | Pnegbigint | Paddbigint | Psubbigint | Ppowbigint
   | Pmulbigint | Pdivbigint | Pmodbigint
   | Pandbigint | Porbigint | Pxorbigint
   | Plslbigint | Pasrbigint
   | Pbigintcomp of comparison
+  | Pbigintorder | Pbigintmin | Pbigintmax
   (* String operations *)
   | Pstringlength | Pstringrefu  | Pstringrefs
+  | Pstringorder | Pstringmin | Pstringmax
   (* Array operations *)
   | Pmakearray of  Asttypes.mutable_flag
   | Parraylength 

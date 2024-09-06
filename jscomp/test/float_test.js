@@ -2,12 +2,11 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
 let $$Array = require("../../lib/js/array.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Mt_global = require("./mt_global.js");
-let Caml_float = require("../../lib/js/caml_float.js");
 let Pervasives = require("../../lib/js/pervasives.js");
+let Primitive_float = require("../../lib/js/primitive_float.js");
 
 let test_id = {
   contents: 0
@@ -25,11 +24,11 @@ function approx(loc, x, y) {
   Mt_global.collect_approx(test_id, suites, loc, x, y);
 }
 
-let match = Caml_float.frexp_float(12.0);
+let match = Primitive_float.frexp_float(12.0);
 
-let match$1 = Caml_float.frexp_float(0);
+let match$1 = Primitive_float.frexp_float(0);
 
-let match$2 = Caml_float.frexp_float(-12.0);
+let match$2 = Primitive_float.frexp_float(-12.0);
 
 let results = $$Array.append([
   [
@@ -37,47 +36,47 @@ let results = $$Array.append([
     0.301029995663981198
   ],
   [
-    Caml_float.ldexp_float(1, 6),
+    Primitive_float.ldexp_float(1, 6),
     64
   ],
   [
-    Caml_float.ldexp_float(1, 5),
+    Primitive_float.ldexp_float(1, 5),
     32
   ],
   [
-    Caml_float.ldexp_float(1.e-5, 1024),
+    Primitive_float.ldexp_float(1.e-5, 1024),
     1.79769313486231605e+303
   ],
   [
-    Caml_float.ldexp_float(1, -1024),
+    Primitive_float.ldexp_float(1, -1024),
     5.56268464626800346e-309
   ],
   [
-    Caml_float.hypot_float(3, 4),
+    Primitive_float.hypot_float(3, 4),
     5
   ],
   [
-    Caml_float.hypot_float(4, 3),
+    Primitive_float.hypot_float(4, 3),
     5
   ],
   [
-    Caml_float.hypot_float(5, 12),
+    Primitive_float.hypot_float(5, 12),
     13
   ],
   [
-    Caml_float.hypot_float(12, 5),
+    Primitive_float.hypot_float(12, 5),
     13
   ],
   [
-    Caml_float.copysign_float(22.3, -1),
+    Primitive_float.copysign_float(22.3, -1),
     -22.3
   ],
   [
-    Caml_float.copysign_float(22.3, 1),
+    Primitive_float.copysign_float(22.3, 1),
     22.3
   ],
   [
-    Caml_float.expm1_float(1e-15),
+    Primitive_float.expm1_float(1e-15),
     1.00000000000000067e-15
   ],
   [
@@ -126,7 +125,7 @@ function from_pairs(ps) {
   }, ps));
 }
 
-let float_compare = Caml.float_compare;
+let float_compare = Primitive_float.compare;
 
 let generic_compare = Caml_obj.compare;
 
@@ -168,12 +167,12 @@ let generic_greaterequal = Caml_obj.greaterequal;
 
 eq("File \"float_test.res\", line 55, characters 5-12", Pervasives.classify_float(3), "FP_normal");
 
-eq("File \"float_test.res\", line 56, characters 5-12", Caml_float.modf_float(-3.125), [
+eq("File \"float_test.res\", line 56, characters 5-12", Primitive_float.modf_float(-3.125), [
   -0.125,
   -3
 ]);
 
-let match$3 = Caml_float.modf_float(Number.NaN);
+let match$3 = Primitive_float.modf_float(Number.NaN);
 
 eq("File \"float_test.res\", line 58, characters 4-11", [
   Number.isNaN(match$3[0]),
@@ -191,7 +190,7 @@ eq("File \"float_test.res\", line 66, characters 5-12", $$Array.map(x => {
   } else {
     return 0;
   }
-}, $$Array.map(param => Caml.float_compare(param[0], param[1]), [
+}, $$Array.map(param => Primitive_float.compare(param[0], param[1]), [
   [
     1,
     3
@@ -210,27 +209,27 @@ eq("File \"float_test.res\", line 66, characters 5-12", $$Array.map(x => {
   1
 ]);
 
-eq("File \"float_test.res\", line 75, characters 5-12", Caml_float.copysign_float(-3, 0), 3);
+eq("File \"float_test.res\", line 75, characters 5-12", Primitive_float.copysign_float(-3, 0), 3);
 
-eq("File \"float_test.res\", line 76, characters 5-12", Caml_float.copysign_float(3, 0), 3);
+eq("File \"float_test.res\", line 76, characters 5-12", Primitive_float.copysign_float(3, 0), 3);
 
 eq("File \"float_test.res\", line 77, characters 5-12", Math.log10(10), 1);
 
-eq("File \"float_test.res\", line 78, characters 5-12", Caml_float.expm1_float(0), 0);
+eq("File \"float_test.res\", line 78, characters 5-12", Primitive_float.expm1_float(0), 0);
 
 eq("File \"float_test.res\", line 79, characters 5-12", Number("3.0"), 3.0);
 
-approx("File \"float_test.res\", line 80, characters 9-16", Caml_float.expm1_float(2), 6.38905609893065);
+approx("File \"float_test.res\", line 80, characters 9-16", Primitive_float.expm1_float(2), 6.38905609893065);
 
-eq("File \"float_test.res\", line 81, characters 5-12", Caml.float_compare(NaN, NaN), 0);
+eq("File \"float_test.res\", line 81, characters 5-12", Primitive_float.compare(NaN, NaN), 0);
 
 eq("File \"float_test.res\", line 82, characters 5-12", Caml_obj.compare(NaN, NaN), 0);
 
-eq("File \"float_test.res\", line 83, characters 5-12", Caml.float_compare(NaN, Pervasives.neg_infinity), -1);
+eq("File \"float_test.res\", line 83, characters 5-12", Primitive_float.compare(NaN, Pervasives.neg_infinity), -1);
 
 eq("File \"float_test.res\", line 84, characters 5-12", Caml_obj.compare(NaN, Pervasives.neg_infinity), -1);
 
-eq("File \"float_test.res\", line 85, characters 5-12", Caml.float_compare(Pervasives.neg_infinity, NaN), 1);
+eq("File \"float_test.res\", line 85, characters 5-12", Primitive_float.compare(Pervasives.neg_infinity, NaN), 1);
 
 eq("File \"float_test.res\", line 86, characters 5-12", Caml_obj.compare(Pervasives.neg_infinity, NaN), 1);
 
@@ -306,7 +305,7 @@ eq("File \"float_test.res\", line 121, characters 5-12", NaN >= 4.2, false);
 
 eq("File \"float_test.res\", line 122, characters 5-12", Caml_obj.greaterequal(NaN, 4.2), false);
 
-let match$4 = Caml_float.modf_float(32.3);
+let match$4 = Primitive_float.modf_float(32.3);
 
 let b = match$4[1];
 

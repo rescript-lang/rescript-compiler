@@ -936,37 +936,13 @@ let rec int_comp (cmp : Lam_compat.comparison) ?comment (e0 : t) (e1 : t) =
       Call
         ( {
             expression_desc =
-              Var (Qualified ({ kind = Runtime }, Some "int_compare"));
+              Var (Qualified ({ kind = Runtime }, Some "compare"));
             _;
           },
           [ l; r ],
           _ ),
       Number (Int { i = 0l }) ) ->
       int_comp cmp l r (* = 0 > 0 < 0 *)
-  | ( Ceq,
-      Call
-        ( ({
-             expression_desc =
-               Var
-                 (Qualified
-                   (({ id = _; kind = Runtime } as iid), Some "compare"));
-             _;
-           } as fn),
-          ([ _; _ ] as args),
-          call_info ),
-      Number (Int { i = 0l }) ) ->
-      (* This is now generalized for runtime modules
-         `RuntimeModule.compare x y = 0 ` -->
-         `RuntimeModule.equal x y`
-      *)
-      {
-        e0 with
-        expression_desc =
-          Call
-            ( { fn with expression_desc = Var (Qualified (iid, Some "equal")) },
-              args,
-              call_info );
-      }
   | Ceq, Optional_block _, Undefined _ | Ceq, Undefined _, Optional_block _ ->
       false_
   | Ceq, _, _ -> int_equal e0 e1

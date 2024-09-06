@@ -2,7 +2,6 @@
 'use strict';
 
 let List = require("../../lib/js/list.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 
 function length_aux(_len, _x) {
@@ -426,7 +425,7 @@ function mem(x, _x_) {
     if (!x_) {
       return false;
     }
-    if (Caml_obj.equal(x_.hd, x)) {
+    if (x_.hd === x) {
       return true;
     }
     _x_ = x_.tl;
@@ -453,7 +452,7 @@ function assoc(x, _x_) {
     let x_ = _x_;
     if (x_) {
       let match = x_.hd;
-      if (Caml_obj.equal(match[0], x)) {
+      if (match[0] === x) {
         return match[1];
       }
       _x_ = x_.tl;
@@ -490,7 +489,7 @@ function mem_assoc(x, _x_) {
     if (!x_) {
       return false;
     }
-    if (Caml_obj.equal(x_.hd[0], x)) {
+    if (x_.hd[0] === x) {
       return true;
     }
     _x_ = x_.tl;
@@ -518,7 +517,7 @@ function remove_assoc(x, x_) {
   }
   let l = x_.tl;
   let pair = x_.hd;
-  if (Caml_obj.equal(pair[0], x)) {
+  if (pair[0] === x) {
     return l;
   } else {
     return {

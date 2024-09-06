@@ -62,7 +62,7 @@ module Obj: {
 module Pervasives: {
   external compare: ('a, 'a) => int = "%compare"
   external not: bool => bool = "%boolnot"
-  external min: ('a, 'a) => 'a = "%bs_min"
-  external max: ('a, 'a) => 'a = "%bs_max"
+  external min: ('a, 'a) => 'a = "%min"
+  external max: ('a, 'a) => 'a = "%max"
   external \"=": ('a, 'a) => bool = "%equal"
 }

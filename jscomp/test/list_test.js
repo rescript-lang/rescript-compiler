@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
 
 let list_suites_0 = [
   "length",
@@ -62,7 +62,7 @@ let list_suites_1 = {
         "sort",
         param => ({
           TAG: "Eq",
-          _0: List.sort(Caml.int_compare, {
+          _0: List.sort(Primitive_int.compare, {
             hd: 4,
             tl: {
               hd: 1,

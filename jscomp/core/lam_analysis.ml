@@ -64,20 +64,25 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pfield _ | Pval_from_option | Pval_from_option_not_nest
       (* NOP The compiler already [t option] is the same as t *)
       | Pduprecord
-      (* Boolean operations *)
+      (* bool primitives *)
       | Psequand | Psequor | Pnot
-      (* Integer operations *)
+      | Pboolorder | Pboolmin | Pboolmax
+      (* int primitives *)
       | Pnegint | Paddint | Psubint | Pmulint | Pandint | Porint | Pxorint
       | Plslint | Plsrint | Pasrint | Pintcomp _
-      (* Float operations *)
+      | Pintorder | Pintmin | Pintmax
+      (* float primitives *)
       | Pintoffloat | Pfloatofint | Pnegfloat
-      (* | Pabsfloat *)
-      | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat | Pfloatcomp _ | Pjscomp _
+      | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+      | Pfloatcomp _ | Pjscomp _ | Pfloatorder | Pfloatmin | Pfloatmax
+      (* bigint primitives *)
       | Pnegbigint | Paddbigint | Psubbigint | Pmulbigint | Ppowbigint
       | Pandbigint | Porbigint | Pxorbigint | Plslbigint | Pasrbigint
-      | Pbigintcomp _
-      (* String operations *)
+      | Pbigintcomp _ | Pbigintorder | Pbigintmin | Pbigintmax
+      (* string primitives *)
       | Pstringlength | Pstringrefu | Pstringrefs
+      | Pstringorder | Pstringmin | Pstringmax
+      (* array primitives *)
       | Pmakearray | Parraylength | Parrayrefu | Parrayrefs
       (* Test if the argument is a block or an immediate integer *)
       | Pisint | Pis_poly_var_block

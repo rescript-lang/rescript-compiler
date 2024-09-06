@@ -2,9 +2,10 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
 let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
+let Primitive_string = require("../../lib/js/primitive_string.js");
 
 function Make(Ord) {
   let height = x => {
@@ -745,7 +746,7 @@ function add(x, data, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Caml.int_compare(x, v);
+  let c = Primitive_int.compare(x, v);
   if (c === 0) {
     return {
       TAG: "Node",
@@ -771,7 +772,7 @@ function find(x, _x_) {
         Error: new Error()
       };
     }
-    let c = Caml.int_compare(x, x_._1);
+    let c = Primitive_int.compare(x, x_._1);
     if (c === 0) {
       return x_._2;
     }
@@ -786,7 +787,7 @@ function mem(x, _x_) {
     if (typeof x_ !== "object") {
       return false;
     }
-    let c = Caml.int_compare(x, x_._1);
+    let c = Primitive_int.compare(x, x_._1);
     if (c === 0) {
       return true;
     }
@@ -861,7 +862,7 @@ function remove(x, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Caml.int_compare(x, v);
+  let c = Primitive_int.compare(x, v);
   if (c === 0) {
     if (typeof l !== "object") {
       return r;
@@ -1038,7 +1039,7 @@ function split(x, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Caml.int_compare(x, v);
+  let c = Primitive_int.compare(x, v);
   if (c === 0) {
     return [
       l,
@@ -1172,7 +1173,7 @@ function compare(cmp, m1, m2) {
     if (typeof e2 !== "object") {
       return 1;
     }
-    let c = Caml.int_compare(e1._0, e2._0);
+    let c = Primitive_int.compare(e1._0, e2._0);
     if (c !== 0) {
       return c;
     }
@@ -1427,7 +1428,7 @@ function add$1(x, data, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Caml.string_compare(x, v);
+  let c = Primitive_string.compare(x, v);
   if (c === 0) {
     return {
       TAG: "Node",
@@ -1453,7 +1454,7 @@ function find$1(x, _x_) {
         Error: new Error()
       };
     }
-    let c = Caml.string_compare(x, x_._1);
+    let c = Primitive_string.compare(x, x_._1);
     if (c === 0) {
       return x_._2;
     }
@@ -1468,7 +1469,7 @@ function mem$1(x, _x_) {
     if (typeof x_ !== "object") {
       return false;
     }
-    let c = Caml.string_compare(x, x_._1);
+    let c = Primitive_string.compare(x, x_._1);
     if (c === 0) {
       return true;
     }
@@ -1543,7 +1544,7 @@ function remove$1(x, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Caml.string_compare(x, v);
+  let c = Primitive_string.compare(x, v);
   if (c === 0) {
     if (typeof l !== "object") {
       return r;
@@ -1720,7 +1721,7 @@ function split$1(x, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Caml.string_compare(x, v);
+  let c = Primitive_string.compare(x, v);
   if (c === 0) {
     return [
       l,
@@ -1854,7 +1855,7 @@ function compare$1(cmp, m1, m2) {
     if (typeof e2 !== "object") {
       return 1;
     }
-    let c = Caml.string_compare(e1._0, e2._0);
+    let c = Primitive_string.compare(e1._0, e2._0);
     if (c !== 0) {
       return c;
     }
@@ -1884,7 +1885,7 @@ function equal$1(cmp, m1, m2) {
     if (typeof e2 !== "object") {
       return false;
     }
-    if (Caml.string_compare(e1._0, e2._0) !== 0) {
+    if (e1._0 !== e2._0) {
       return false;
     }
     if (!cmp(e1._1, e2._1)) {

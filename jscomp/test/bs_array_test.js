@@ -2,10 +2,10 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
 
 let suites = {
   contents: /* [] */0
@@ -1312,7 +1312,7 @@ b("File \"bs_array_test.res\", line 349, characters 4-11", Belt_Array.cmp([
   1,
   2,
   3
-], Caml.int_compare) < 0);
+], Primitive_int.compare) < 0);
 
 b("File \"bs_array_test.res\", line 350, characters 4-11", Belt_Array.cmp([
   0,
@@ -1323,7 +1323,7 @@ b("File \"bs_array_test.res\", line 350, characters 4-11", Belt_Array.cmp([
   1,
   2,
   3
-], Caml.int_compare) > 0);
+], Primitive_int.compare) > 0);
 
 b("File \"bs_array_test.res\", line 351, characters 4-11", Belt_Array.cmp([
   1,
@@ -1333,7 +1333,7 @@ b("File \"bs_array_test.res\", line 351, characters 4-11", Belt_Array.cmp([
   0,
   1,
   2
-], Caml.int_compare) > 0);
+], Primitive_int.compare) > 0);
 
 b("File \"bs_array_test.res\", line 352, characters 4-11", Belt_Array.cmp([
   1,
@@ -1343,7 +1343,7 @@ b("File \"bs_array_test.res\", line 352, characters 4-11", Belt_Array.cmp([
   1,
   2,
   3
-], Caml.int_compare) === 0);
+], Primitive_int.compare) === 0);
 
 b("File \"bs_array_test.res\", line 353, characters 4-11", Belt_Array.cmp([
   1,
@@ -1353,7 +1353,7 @@ b("File \"bs_array_test.res\", line 353, characters 4-11", Belt_Array.cmp([
   1,
   2,
   3
-], Caml.int_compare) > 0);
+], Primitive_int.compare) > 0);
 
 eq("File \"bs_array_test.res\", line 357, characters 5-12", Belt_Array.getBy([
   1,

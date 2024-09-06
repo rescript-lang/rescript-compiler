@@ -2,8 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
+let Primitive_string = require("../../lib/js/primitive_string.js");
 
 function height(param) {
   if (typeof param !== "object") {
@@ -104,7 +105,7 @@ function add(x, data, param) {
   let d = param.d;
   let v = param.v;
   let l = param.l;
-  let c = Caml.int_compare(x, v);
+  let c = Primitive_int.compare(x, v);
   if (c === 0) {
     if (d === data) {
       return param;
@@ -144,7 +145,7 @@ function find(x, _param) {
         Error: new Error()
       };
     }
-    let c = Caml.int_compare(x, param.v);
+    let c = Primitive_int.compare(x, param.v);
     if (c === 0) {
       return param.d;
     }
@@ -278,7 +279,7 @@ function add$1(x, data, param) {
   let d = param.d;
   let v = param.v;
   let l = param.l;
-  let c = Caml.string_compare(x, v);
+  let c = Primitive_string.compare(x, v);
   if (c === 0) {
     if (d === data) {
       return param;
@@ -318,7 +319,7 @@ function find$1(x, _param) {
         Error: new Error()
       };
     }
-    let c = Caml.string_compare(x, param.v);
+    let c = Primitive_string.compare(x, param.v);
     if (c === 0) {
       return param.d;
     }

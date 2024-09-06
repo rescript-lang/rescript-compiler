@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Runtime_int = require("../../lib/js/runtime_int.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
 
 let suites = {
   contents: /* [] */0
@@ -39,7 +39,7 @@ add([
   () => ({
     TAG: "ThrowAny",
     _0: () => {
-      Runtime_int.div(3, 0);
+      Primitive_int.div(3, 0);
     }
   })
 ]);
@@ -49,13 +49,13 @@ add([
   () => ({
     TAG: "ThrowAny",
     _0: () => {
-      Runtime_int.mod_(3, 0);
+      Primitive_int.mod_(3, 0);
     }
   })
 ]);
 
 function div(x, y) {
-  return Runtime_int.div(x, y) + 3 | 0;
+  return Primitive_int.div(x, y) + 3 | 0;
 }
 
 Mt.from_pair_suites("Div_by_zero_test", suites.contents);

@@ -2,12 +2,12 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
 let Belt_Map = require("../../lib/js/belt_Map.js");
 let Belt_Set = require("../../lib/js/belt_Set.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 let Belt_MapDict = require("../../lib/js/belt_MapDict.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
 let Array_data_util = require("./array_data_util.js");
 
 let suites = {
@@ -27,7 +27,7 @@ function b(loc, v) {
 }
 
 let Icmp = {
-  cmp: Caml.int_compare
+  cmp: Primitive_int.compare
 };
 
 function mapOfArray(x) {

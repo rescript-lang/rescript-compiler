@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
 let Array_data_util = require("./array_data_util.js");
 let Belt_MutableSet = require("../../lib/js/belt_MutableSet.js");
 let Belt_internalAVLset = require("../../lib/js/belt_internalAVLset.js");
@@ -26,7 +26,7 @@ function b(loc, x) {
 }
 
 let IntCmp = {
-  cmp: Caml.int_compare
+  cmp: Primitive_int.compare
 };
 
 function fromArray(none) {

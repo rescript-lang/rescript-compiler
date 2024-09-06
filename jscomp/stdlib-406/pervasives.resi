@@ -106,12 +106,12 @@ external compare: ('a, 'a) => int = "%compare"
 /** Return the smaller of the two arguments.
     The result is unspecified if one of the arguments contains
     the float value [nan]. */
-external min: ('a, 'a) => 'a = "%bs_min"
+external min: ('a, 'a) => 'a = "%min"
 
 /** Return the greater of the two arguments.
     The result is unspecified if one of the arguments contains
     the float value [nan]. */
-external max: ('a, 'a) => 'a = "%bs_max"
+external max: ('a, 'a) => 'a = "%max"
 
 /** [e1 == e2] tests for physical equality of [e1] and [e2].
    On mutable types such as references, arrays, byte sequences, records with

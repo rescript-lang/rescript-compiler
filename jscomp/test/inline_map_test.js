@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
 
 function height(x) {
   if (typeof x !== "object") {
@@ -104,7 +104,7 @@ function add(x, data, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Caml.int_compare(x, v);
+  let c = Primitive_int.compare(x, v);
   if (c === 0) {
     return {
       TAG: "Node",
@@ -130,7 +130,7 @@ function find(x, _x_) {
         Error: new Error()
       };
     }
-    let c = Caml.int_compare(x, x_._1);
+    let c = Primitive_int.compare(x, x_._1);
     if (c === 0) {
       return x_._2;
     }

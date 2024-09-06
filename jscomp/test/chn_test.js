@@ -3,7 +3,7 @@
 
 let Mt = require("./mt.js");
 let $$Array = require("../../lib/js/array.js");
-let Caml_string = require("../../lib/js/caml_string.js");
+let Primitive_string = require("../../lib/js/primitive_string.js");
 
 let suites = {
   contents: /* [] */0
@@ -184,9 +184,9 @@ eq("File \"chn_test.res\", line 68, characters 5-12", convert("\uD83D\uDE80\uD83
 
 eq("No inline string length", "\uD83D\uDE80\0".length, 3);
 
-eq("File \"chn_test.res\", line 75, characters 4-11", Caml_string.get("\uD83D\uDE80\0", 0), 128640);
+eq("File \"chn_test.res\", line 75, characters 4-11", Primitive_string.get("\uD83D\uDE80\0", 0), 128640);
 
-eq("File \"chn_test.res\", line 80, characters 5-12", Caml_string.get("🚀", 0), 128640);
+eq("File \"chn_test.res\", line 80, characters 5-12", Primitive_string.get("🚀", 0), 128640);
 
 eq("File \"chn_test.res\", line 85, characters 5-12", convert("\uD83D\uDE80"), {
   hd: 128640,

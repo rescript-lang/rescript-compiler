@@ -2,8 +2,8 @@
 'use strict';
 
 let $$Set = require("../../lib/js/set.js");
-let Caml = require("../../lib/js/caml.js");
 let Caml_module = require("../../lib/js/caml_module.js");
+let Primitive_string = require("../../lib/js/primitive_string.js");
 
 let A = Caml_module.init_mod([
   "rec_module_opt.res",
@@ -22,7 +22,7 @@ let ASet = $$Set.Make(A);
 function compare(t1, t2) {
   if (t1.TAG === "Leaf") {
     if (t2.TAG === "Leaf") {
-      return Caml.string_compare(t1._0, t2._0);
+      return Primitive_string.compare(t1._0, t2._0);
     } else {
       return 1;
     }

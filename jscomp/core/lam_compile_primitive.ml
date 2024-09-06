@@ -304,6 +304,103 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       match args with
       | [ e; e1 ] -> Js_of_lam_string.ref_string e e1
       | _ -> assert false)
+  | Pboolorder -> (
+      match args with
+      | [ { expression_desc = Bool a }; { expression_desc = Bool b } ] ->
+          let c = compare (a : bool) b in
+          E.int (if c = 0 then 0l else if c > 0 then 1l else -1l)
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.bool "compare" args
+      | _ -> assert false)
+  | Pboolmin -> (
+      match args with
+      | [ { expression_desc = Bool _ } as a; { expression_desc = Bool _ } as b ] ->
+          if
+            Js_analyzer.is_okay_to_duplicate a
+            && Js_analyzer.is_okay_to_duplicate b
+          then E.econd (E.js_comp Clt a b) a b
+          else E.runtime_call Js_runtime_modules.bool "min" args
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.bool "min" args
+      | _ -> assert false)
+  | Pboolmax -> (
+      match args with
+      | [ { expression_desc = Bool _ } as a; { expression_desc = Bool _ } as b ]
+        when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
+            E.econd (E.js_comp Cgt a b) a b
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.bool "max" args
+      | _ -> assert false)
+  | Pintorder -> (
+      match args with
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.int "compare" args
+      | _ -> assert false)
+  | Pintmin -> (
+      match args with
+      | [ { expression_desc = Number (Int _) } as a; { expression_desc = Number (Int _) } as b ]
+        when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
+            E.econd (E.js_comp Clt a b) a b
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.int "min" args
+      | _ -> assert false)
+  | Pintmax -> (
+      match args with
+      | [ { expression_desc = Number (Int _) } as a; { expression_desc = Number (Int _) } as b ]
+        when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
+            E.econd (E.js_comp Cgt a b) a b
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.int "max" args
+      | _ -> assert false)
+  | Pfloatorder -> (
+      match args with
+      | [ a; b ] as args ->
+        E.runtime_call Js_runtime_modules.float "compare" args
+      | _ -> assert false)
+  | Pfloatmin -> (
+      match args with
+      | [ { expression_desc = Number (Float _) } as a; { expression_desc = Number (Float _) } as b ]
+        when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
+            E.econd (E.js_comp Clt a b) a b
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.float "min" args
+      | _ -> assert false)
+  | Pfloatmax -> (
+      match args with
+      | [ { expression_desc = Number (Float _) } as a; { expression_desc = Number (Float _) } as b ]
+        when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
+            E.econd (E.js_comp Cgt a b) a b
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.float "max" args
+      | _ -> assert false)
+  | Pbigintorder -> (
+      match args with
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.bigint "compare" args
+      | _ -> assert false)
+  | Pbigintmin -> (
+      match args with
+      | [ { expression_desc = Number (BigInt _) } as a; { expression_desc = Number (BigInt _) } as b ]
+        when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
+            E.econd (E.js_comp Clt a b) a b
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.bigint "min" args
+      | _ -> assert false)
+  | Pbigintmax -> (
+      match args with
+      | [ { expression_desc = Number (Float _) } as a; { expression_desc = Number (Float _) } as b ]
+        when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
+            E.econd (E.js_comp Cgt a b) a b
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.bigint "max" args
+      | _ -> assert false)
+  | Pstringorder -> (
+      match args with
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.string "compare" args
+      | _ -> assert false)
+  | Pstringmin -> (
+      match args with
+      | [ { expression_desc = Str _ } as a; { expression_desc = Str _ } as b ]
+        when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
+            E.econd (E.js_comp Clt a b) a b
+      | [a; b] -> E.runtime_call Js_runtime_modules.string "min" args
+      | _ -> assert false)
+  | Pstringmax -> (
+      match args with
+      | [ { expression_desc = Str _ } as a; { expression_desc = Str _ } as b ]
+        when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
+            E.econd (E.js_comp Cgt a b) a b
+      | [a; b] -> E.runtime_call Js_runtime_modules.string "max" args
+      | _ -> assert false)
   (* only when Lapply -> expand = true*)
   | Praise -> assert false (* handled before here *)
   (* Runtime encoding relevant *)

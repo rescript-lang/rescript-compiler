@@ -46,9 +46,17 @@ type t =
     }
   | Pjs_object_create of External_arg_spec.obj_params
   | Praise
+
+  (* bool primitives *)
   | Psequand
   | Psequor
   | Pnot
+  | Pboolorder
+  | Pboolmin
+  | Pboolmax
+
+  (* int primitives *)
+  | Pisint
   | Pnegint
   | Paddint
   | Psubint
@@ -63,6 +71,12 @@ type t =
   | Pasrint
   | Poffsetint of int
   | Poffsetref of int
+  | Pintcomp of Lam_compat.comparison
+  | Pintorder
+  | Pintmin
+  | Pintmax
+
+  (* float primitives *)
   | Pintoffloat
   | Pfloatofint
   | Pnegfloat
@@ -70,6 +84,12 @@ type t =
   | Psubfloat
   | Pmulfloat
   | Pdivfloat
+  | Pfloatcomp of Lam_compat.comparison
+  | Pfloatorder
+  | Pfloatmin
+  | Pfloatmax
+
+  (* bigint primitives *)
   | Pnegbigint
   | Paddbigint
   | Psubbigint
@@ -82,29 +102,34 @@ type t =
   | Pxorbigint
   | Plslbigint
   | Pasrbigint
-  | Pintcomp of Lam_compat.comparison
-  | Pfloatcomp of Lam_compat.comparison
-  | Pjscomp of Lam_compat.comparison
   | Pbigintcomp of Lam_compat.comparison
-  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
-  | Pjs_runtime_apply (* [f; [...]] *)
+  | Pbigintorder
+  | Pbigintmin
+  | Pbigintmax
+
+  (* string primitives *)
   | Pstringlength
   | Pstringrefu
   | Pstringrefs
   | Pstringadd
-  (* Array operations *)
+  | Pstringorder
+  | Pstringmin
+  | Pstringmax
+
+  (* Array primitives *)
   | Pmakearray
   | Parraylength
   | Parrayrefu
   | Parraysetu
   | Parrayrefs
   | Parraysets
-  (* Test if the argument is a block or an immediate integer *)
-  | Pisint
   | Pis_poly_var_block
-  (* Test if the (integer) argument is outside an interval *)
+
+  (* etc and deprecated *)
   | Pisout of int
-  (* Integer to external pointer *)
+  | Pjscomp of Lam_compat.comparison
+  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
+  | Pjs_runtime_apply (* [f; [...]] *)
   | Pdebugger
   | Pjs_unsafe_downgrade of { name : string; setter : bool }
   | Pinit_mod

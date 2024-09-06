@@ -2,8 +2,8 @@
 'use strict';
 
 let Caml_array = require("../../lib/js/caml_array.js");
-let Caml_string = require("../../lib/js/caml_string.js");
 let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
+let Primitive_string = require("../../lib/js/primitive_string.js");
 
 function a4(prim) {
   return [
@@ -42,7 +42,7 @@ let v = [
 
 let xxx = "a";
 
-let a = Caml_string.get(xxx, 0);
+let a = Primitive_string.get(xxx, 0);
 
 function u(b) {
   if (b) {

@@ -12,7 +12,7 @@ function isLessThan(title, small, big) {
       param => ({
         TAG: "Eq",
         _0: true,
-        _1: Caml_obj.compare(big, small) > 0
+        _1: big > small
       })
     ],
     tl: {
@@ -21,7 +21,7 @@ function isLessThan(title, small, big) {
         param => ({
           TAG: "Eq",
           _0: true,
-          _1: Caml_obj.compare(small, big) < 0
+          _1: small < big
         })
       ],
       tl: {

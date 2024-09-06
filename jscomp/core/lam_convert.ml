@@ -218,6 +218,9 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Psequand -> prim ~primitive:Psequand ~args loc
   | Psequor -> prim ~primitive:Psequor ~args loc
   | Pnot -> prim ~primitive:Pnot ~args loc
+  | Pboolorder -> prim ~primitive:Pboolorder ~args loc
+  | Pboolmin -> prim ~primitive:Pboolmin ~args loc
+  | Pboolmax -> prim ~primitive:Pboolmax ~args loc
   | Pnegint -> prim ~primitive:Pnegint ~args loc
   | Paddint -> prim ~primitive:Paddint ~args loc
   | Psubint -> prim ~primitive:Psubint ~args loc
@@ -230,8 +233,14 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Plslint -> prim ~primitive:Plslint ~args loc
   | Plsrint -> prim ~primitive:Plsrint ~args loc
   | Pasrint -> prim ~primitive:Pasrint ~args loc
+  | Pintorder -> prim ~primitive:Pintorder ~args loc
+  | Pintmin -> prim ~primitive:Pintmin ~args loc
+  | Pintmax -> prim ~primitive:Pintmax ~args loc
   | Pstringlength -> prim ~primitive:Pstringlength ~args loc
   | Pstringrefu -> prim ~primitive:Pstringrefu ~args loc
+  | Pstringorder -> prim ~primitive:Pstringorder ~args loc
+  | Pstringmin -> prim ~primitive:Pstringmin ~args loc
+  | Pstringmax -> prim ~primitive:Pstringmax ~args loc
   | Pabsfloat -> assert false
   | Pstringrefs -> prim ~primitive:Pstringrefs ~args loc
   | Pisint -> prim ~primitive:Pisint ~args loc
@@ -247,6 +256,9 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Psubfloat -> prim ~primitive:Psubfloat ~args loc
   | Pmulfloat -> prim ~primitive:Pmulfloat ~args loc
   | Pdivfloat -> prim ~primitive:Pdivfloat ~args loc
+  | Pfloatorder -> prim ~primitive:Pfloatorder ~args loc
+  | Pfloatmin -> prim ~primitive:Pfloatmin ~args loc
+  | Pfloatmax -> prim ~primitive:Pfloatmax ~args loc
   | Pnegbigint -> prim ~primitive:Pnegbigint ~args loc
   | Paddbigint -> prim ~primitive:Paddbigint ~args loc
   | Psubbigint -> prim ~primitive:Psubbigint ~args loc
@@ -260,6 +272,9 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Plslbigint -> prim ~primitive:Plslbigint ~args loc
   | Pasrbigint -> prim ~primitive:Pasrbigint ~args loc
   | Pbigintcomp x -> prim ~primitive:(Pbigintcomp x) ~args loc
+  | Pbigintorder -> prim ~primitive:Pbigintorder ~args loc
+  | Pbigintmin -> prim ~primitive:Pbigintorder ~args loc
+  | Pbigintmax -> prim ~primitive:Pbigintorder ~args loc
   | Pintcomp x -> prim ~primitive:(Pintcomp x) ~args loc
   | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args loc
   | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args loc

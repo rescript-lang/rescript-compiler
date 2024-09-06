@@ -2,11 +2,11 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
 let List = require("../../lib/js/list.js");
 let $$Array = require("../../lib/js/array.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_array = require("../../lib/js/caml_array.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -286,7 +286,7 @@ let array_suites_1 = {
                         0,
                         1
                       ];
-                      $$Array.sort(Caml.int_compare, u);
+                      $$Array.sort(Primitive_int.compare, u);
                       return {
                         TAG: "Eq",
                         _0: Caml_obj.equal([
@@ -303,7 +303,7 @@ let array_suites_1 = {
                       "sort_large",
                       param => {
                         let v = $$Array.init(4, i => i % 17);
-                        $$Array.sort(Caml.int_compare, v);
+                        $$Array.sort(Primitive_int.compare, v);
                         return {
                           TAG: "Eq",
                           _0: true,

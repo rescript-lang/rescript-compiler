@@ -171,42 +171,31 @@ let comparisons_table =
           gencomp =
             Pccall (Primitive.simple ~name:"caml_compare" ~arity:2 ~alloc:true);
           (* Not unboxed since the comparison is done directly on tagged int *)
-          intcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_int_compare" ~arity:2 ~alloc:false);
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_compare" ~arity:2 ~alloc:false);
-          floatcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_float_compare" ~arity:2 ~alloc:false);
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_compare" ~arity:2
-                 ~alloc:false);
-          bigintcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bigint_compare" ~arity:2 ~alloc:false);
+          intcomp = Pintorder;
+          boolcomp = Pboolorder;
+          floatcomp = Pfloatorder;
+          stringcomp = Pstringorder;
+          bigintcomp = Pbigintorder;
           simplify_constant_constructor = false;
         } );
-      ( "%bs_max",
+      ( "%max",
         {
           gencomp = arity2 "caml_max";
-          intcomp = arity2 "caml_int_max";
-          boolcomp = arity2 "caml_bool_max";
-          floatcomp = arity2 "caml_float_max";
-          stringcomp = arity2 "caml_string_max";
-          bigintcomp = arity2 "caml_bigint_max";
+          intcomp = Pintmax;
+          boolcomp = Pboolmax;
+          floatcomp = Pboolmax;
+          stringcomp = Pstringmax;
+          bigintcomp = Pbigintmax;
           simplify_constant_constructor = false;
         } );
-      ( "%bs_min",
+      ( "%min",
         {
           gencomp = arity2 "caml_min";
-          intcomp = arity2 "caml_int_min";
-          boolcomp = arity2 "caml_bool_min";
-          floatcomp = arity2 "caml_float_min";
-          stringcomp = arity2 "caml_string_min";
-          bigintcomp = arity2 "caml_bigint_min";
+          intcomp = Pintmin;
+          boolcomp = Pboolmin;
+          floatcomp = Pfloatmin;
+          stringcomp = Pstringmin;
+          bigintcomp = Pbigintmin;
           simplify_constant_constructor = false;
         } );
       ( "%bs_equal_null",
@@ -248,30 +237,42 @@ let primitives_table =
       ("%ignore", Pignore);
       ("%revapply", Prevapply);
       ("%apply", Pdirapply);
+
       ("%loc_LOC", Ploc Loc_LOC);
       ("%loc_FILE", Ploc Loc_FILE);
       ("%loc_LINE", Ploc Loc_LINE);
       ("%loc_POS", Ploc Loc_POS);
       ("%loc_MODULE", Ploc Loc_MODULE);
+
       (* BEGIN Triples for  ref data type *)
       ("%bs_ref_setfield0", Psetfield (0, Lambda.ref_field_set_info));
       ("%bs_ref_field0", Pfield (0, Lambda.ref_field_info));
       ("%makemutable", Pmakeblock Lambda.ref_tag_info);
+
       ("%incr", Poffsetref 1);
       ("%decr", Poffsetref (-1));
+
       (* Finish Triples for  ref data type *)
       ("%field0", Pfield (0, Fld_tuple));
       ("%field1", Pfield (1, Fld_tuple));
       ("%obj_dup", Pduprecord);
       ("%obj_field", Parrayrefu);
       ("%obj_set_field", Parraysetu);
-      ("%obj_is_int", Pisint);
+
       ("%raise", Praise Raise_regular);
       ("%reraise", Praise Raise_reraise);
       ("%raise_notrace", Praise Raise_notrace);
+
+      (* bool primitives *)
       ("%sequand", Psequand);
       ("%sequor", Psequor);
       ("%boolnot", Pnot);
+      ("%boolorder", Pboolorder);
+      ("%boolmin", Pboolmin);
+      ("%boolmax", Pboolmax);
+
+      (* int primitives *)
+      ("%obj_is_int", Pisint);
       ("%negint", Pnegint);
       ("%succint", Poffsetint 1);
       ("%predint", Poffsetint (-1));
@@ -286,19 +287,17 @@ let primitives_table =
       ("%lslint", Plslint);
       ("%lsrint", Plsrint);
       ("%asrint", Pasrint);
-      ("%andbigint", Pandbigint);
-      ("%orbigint", Porbigint);
-      ("%xorbigint", Pxorbigint);
-      ("%lslbigint", Plslbigint);
-      ("%asrbigint", Pasrbigint);
       ("%eq", Pintcomp Ceq);
       ("%noteq", Pintcomp Cneq);
       ("%ltint", Pintcomp Clt);
       ("%leint", Pintcomp Cle);
       ("%gtint", Pintcomp Cgt);
       ("%geint", Pintcomp Cge);
-      ("%intoffloat", Pintoffloat);
-      ("%floatofint", Pfloatofint);
+      ("%intorder", Pintorder);
+      ("%intmin", Pintmin);
+      ("%intmax", Pintmax);
+
+      (* float primitives *)
       ("%negfloat", Pnegfloat);
       ("%absfloat", Pabsfloat);
       ("%addfloat", Paddfloat);
@@ -311,6 +310,11 @@ let primitives_table =
       ("%lefloat", Pfloatcomp Cle);
       ("%gtfloat", Pfloatcomp Cgt);
       ("%gefloat", Pfloatcomp Cge);
+      ("%floatorder", Pfloatorder);
+      ("%floatmin", Pfloatmin);
+      ("%floatmax", Pfloatmax);
+
+      (* bigint primitives *)
       ("%negbigint", Pnegbigint);
       ("%addbigint", Paddbigint);
       ("%subbigint", Psubbigint);
@@ -324,15 +328,34 @@ let primitives_table =
       ("%lebigint", Pbigintcomp Cle);
       ("%gtbigint", Pbigintcomp Cgt);
       ("%gebigint", Pbigintcomp Cge);
+      ("%andbigint", Pandbigint);
+      ("%orbigint", Porbigint);
+      ("%xorbigint", Pxorbigint);
+      ("%lslbigint", Plslbigint);
+      ("%asrbigint", Pasrbigint);
+      ("%bigintorder", Pbigintorder);
+      ("%bigintmin", Pbigintmin);
+      ("%bigintmax", Pbigintmax);
+
+      (* string primitives *)
       ("%string_length", Pstringlength);
       ("%string_safe_get", Pstringrefs);
       ("%string_unsafe_get", Pstringrefu);
+      ("%stringorder", Pstringorder);
+      ("%stringmin", Pstringmin);
+      ("%stringmax", Pstringmax);
+
+      (* array primitives *)
       ("%array_length", Parraylength);
       ("%array_safe_get", Parrayrefs);
       ("%array_safe_set", Parraysets);
       ("%array_unsafe_get", Parrayrefu);
       ("%array_unsafe_set", Parraysetu);
+
+      (* etc, depreacted *)
       ("%lazy_force", Plazyforce);
+      ("%intoffloat", Pintoffloat);
+      ("%floatofint", Pfloatofint);
     ]
 
 let find_primitive prim_name = Hashtbl.find primitives_table prim_name
