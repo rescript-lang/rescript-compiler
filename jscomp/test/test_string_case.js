@@ -9,16 +9,15 @@ function f(x) {
     case "bcde" :
       return 1;
     default:
-      throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "test_string_case.res",
-            5,
-            9
-          ]
-        }
-      });
+      throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "test_string_case.res",
+          5,
+          9
+        ],
+        Error: new Error()
+      };
   }
 }
 

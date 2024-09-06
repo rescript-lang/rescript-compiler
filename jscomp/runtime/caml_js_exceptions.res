@@ -29,8 +29,8 @@ type js_error = {cause: exn}
    [Error] is defined here 
 */
 let internalToOCamlException = (e: unknown) =>
-  if Caml_exceptions.is_extension((Obj.magic(e): js_error).cause) {
-    (Obj.magic(e): js_error).cause
+  if Caml_exceptions.is_extension(e) {
+    (Obj.magic(e): exn)
   } else {
     JsError(e)
   }

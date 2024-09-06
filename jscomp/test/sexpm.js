@@ -22,18 +22,16 @@ function _must_escape(s) {
           if (c !== 92) {
             exit = 1;
           } else {
-            throw new Error(Pervasives.Exit, {
-              cause: {
-                RE_EXN_ID: Pervasives.Exit
-              }
-            });
+            throw {
+              RE_EXN_ID: Pervasives.Exit,
+              Error: new Error()
+            };
           }
         } else {
-          throw new Error(Pervasives.Exit, {
-            cause: {
-              RE_EXN_ID: Pervasives.Exit
-            }
-          });
+          throw {
+            RE_EXN_ID: Pervasives.Exit,
+            Error: new Error()
+          };
         }
       } else if (c >= 11) {
         if (c >= 32) {
@@ -50,31 +48,28 @@ function _must_escape(s) {
             case 34 :
             case 40 :
             case 41 :
-              throw new Error(Pervasives.Exit, {
-                cause: {
-                  RE_EXN_ID: Pervasives.Exit
-                }
-              });
+              throw {
+                RE_EXN_ID: Pervasives.Exit,
+                Error: new Error()
+              };
           }
         } else {
           exit = 1;
         }
       } else {
         if (c >= 9) {
-          throw new Error(Pervasives.Exit, {
-            cause: {
-              RE_EXN_ID: Pervasives.Exit
-            }
-          });
+          throw {
+            RE_EXN_ID: Pervasives.Exit,
+            Error: new Error()
+          };
         }
         exit = 1;
       }
       if (exit === 1 && c > 127) {
-        throw new Error(Pervasives.Exit, {
-          cause: {
-            RE_EXN_ID: Pervasives.Exit
-          }
-        });
+        throw {
+          RE_EXN_ID: Pervasives.Exit,
+          Error: new Error()
+        };
       }
       
     }
@@ -84,9 +79,7 @@ function _must_escape(s) {
     if (exn.RE_EXN_ID === Pervasives.Exit) {
       return true;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -161,16 +154,15 @@ function _refill(t, k_succ, k_fail) {
 
 function _get(t) {
   if (t.i >= t.len) {
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "sexpm.res",
-          111,
-          4
-        ]
-      }
-    });
+    throw {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "sexpm.res",
+        111,
+        4
+      ],
+      Error: new Error()
+    };
   }
   let c = Caml_bytes.get(t.buf, t.i);
   t.i = t.i + 1 | 0;
@@ -232,16 +224,15 @@ function expr_starting_with(c, k, t) {
     if (c >= 32) {
       switch (c) {
         case 32 :
-          throw new Error("Assert_failure", {
-            cause: {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "sexpm.res",
-                152,
-                27
-              ]
-            }
-          });
+          throw {
+            RE_EXN_ID: "Assert_failure",
+            _1: [
+              "sexpm.res",
+              152,
+              27
+            ],
+            Error: new Error()
+          };
         case 34 :
           return quoted(k, t);
         case 33 :
@@ -259,16 +250,15 @@ function expr_starting_with(c, k, t) {
     }
     
   } else if (c >= 9) {
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "sexpm.res",
-          152,
-          27
-        ]
-      }
-    });
+    throw {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "sexpm.res",
+        152,
+        27
+      ],
+      Error: new Error()
+    };
   }
   Buffer.add_char(t.atom, c);
   return atom(k, t);

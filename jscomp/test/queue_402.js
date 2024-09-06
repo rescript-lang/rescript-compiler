@@ -40,22 +40,20 @@ function add(x, q) {
 
 function peek(q) {
   if (q.length === 0) {
-    throw new Error(Empty, {
-      cause: {
-        RE_EXN_ID: Empty
-      }
-    });
+    throw {
+      RE_EXN_ID: Empty,
+      Error: new Error()
+    };
   }
   return q.tail.next.content;
 }
 
 function take(q) {
   if (q.length === 0) {
-    throw new Error(Empty, {
-      cause: {
-        RE_EXN_ID: Empty
-      }
-    });
+    throw {
+      RE_EXN_ID: Empty,
+      Error: new Error()
+    };
   }
   q.length = q.length - 1 | 0;
   let tail = q.tail;

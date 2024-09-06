@@ -3,55 +3,51 @@
 
 
 function peek_queue(param) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "format_regression.res",
-        10,
-        22
-      ]
-    }
-  });
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "format_regression.res",
+      10,
+      22
+    ],
+    Error: new Error()
+  };
 }
 
 function int_of_size(param) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "format_regression.res",
-        11,
-        23
-      ]
-    }
-  });
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "format_regression.res",
+      11,
+      23
+    ],
+    Error: new Error()
+  };
 }
 
 function take_queue(param) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "format_regression.res",
-        12,
-        22
-      ]
-    }
-  });
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "format_regression.res",
+      12,
+      22
+    ],
+    Error: new Error()
+  };
 }
 
 function format_pp_token(param, param$1, param$2) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "format_regression.res",
-        13,
-        35
-      ]
-    }
-  });
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "format_regression.res",
+      13,
+      35
+    ],
+    Error: new Error()
+  };
 }
 
 function advance_loop(state) {

@@ -40,11 +40,10 @@ let Queue_is_empty = /* @__PURE__ */Caml_exceptions.create("Pq_test.PrioQueue.Qu
 
 function remove_top(x) {
   if (typeof x !== "object") {
-    throw new Error(Queue_is_empty, {
-      cause: {
-        RE_EXN_ID: Queue_is_empty
-      }
-    });
+    throw {
+      RE_EXN_ID: Queue_is_empty,
+      Error: new Error()
+    };
   }
   let left = x._2;
   let tmp = x._3;
@@ -84,11 +83,10 @@ function extract(x) {
       remove_top(x)
     ];
   }
-  throw new Error(Queue_is_empty, {
-    cause: {
-      RE_EXN_ID: Queue_is_empty
-    }
-  });
+  throw {
+    RE_EXN_ID: Queue_is_empty,
+    Error: new Error()
+  };
 }
 
 let PrioQueue = {

@@ -13,24 +13,22 @@ function caml_array_sub(x, offset, len) {
 
 function caml_array_set(xs, index, newval) {
   if (index < 0 || index >= xs.length) {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "index out of bounds"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "index out of bounds",
+      Error: new Error()
+    };
   }
   Caml_array.set(xs, index, newval);
 }
 
 function caml_array_get(xs, index) {
   if (index < 0 || index >= xs.length) {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "index out of bounds"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "index out of bounds",
+      Error: new Error()
+    };
   }
   return Caml_array.get(xs, index);
 }

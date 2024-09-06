@@ -105,12 +105,11 @@ function filter_map(f, a) {
 
 function range(from, to_) {
   if (from > to_) {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Ext_array_test.range"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Ext_array_test.range",
+      Error: new Error()
+    };
   }
   return $$Array.init((to_ - from | 0) + 1 | 0, i => i + from | 0);
 }
@@ -118,12 +117,11 @@ function range(from, to_) {
 function map2i(f, a, b) {
   let len = a.length;
   if (len !== b.length) {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Ext_array_test.map2i"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Ext_array_test.map2i",
+      Error: new Error()
+    };
   }
   return $$Array.mapi((i, a) => f(i, a, b[i]), a);
 }

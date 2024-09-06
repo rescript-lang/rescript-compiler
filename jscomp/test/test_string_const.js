@@ -16,9 +16,7 @@ try {
     console.log(e._1);
     hh = /* 'a' */97;
   } else {
-    throw new Error(e.RE_EXN_ID, {
-      cause: e
-    });
+    throw e;
   }
 }
 

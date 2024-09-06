@@ -7,21 +7,19 @@ let Caml_int64 = require("../../lib/js/caml_int64.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 function failwith(s) {
-  throw new Error("Failure", {
-    cause: {
-      RE_EXN_ID: "Failure",
-      _1: s
-    }
-  });
+  throw {
+    RE_EXN_ID: "Failure",
+    _1: s,
+    Error: new Error()
+  };
 }
 
 function invalid_arg(s) {
-  throw new Error("Invalid_argument", {
-    cause: {
-      RE_EXN_ID: "Invalid_argument",
-      _1: s
-    }
-  });
+  throw {
+    RE_EXN_ID: "Invalid_argument",
+    _1: s,
+    Error: new Error()
+  };
 }
 
 let Exit = /* @__PURE__ */Caml_exceptions.create("Test_per.Exit");
@@ -97,12 +95,11 @@ function $caret(s1, s2) {
 
 function char_of_int(n) {
   if (n < 0 || n > 255) {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "char_of_int"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "char_of_int",
+      Error: new Error()
+    };
   }
   return n;
 }

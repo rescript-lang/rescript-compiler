@@ -8,11 +8,10 @@ console.log(3);
 let A = /* @__PURE__ */Caml_exceptions.create("Internal_unused_test.P1.A");
 
 function f() {
-  throw new Error(A, {
-    cause: {
-      RE_EXN_ID: A
-    }
-  });
+  throw {
+    RE_EXN_ID: A,
+    Error: new Error()
+  };
 }
 
 let c = 5;

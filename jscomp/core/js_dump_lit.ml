@@ -168,9 +168,3 @@ let block_variant = "variant"
 let block_simple_variant = "simpleVariant"
 
 let case = "case"
-
-let cause = "cause"
-
-let error = "Error"
-
-let exception_id = "RE_EXN_ID"

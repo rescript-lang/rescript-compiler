@@ -91,9 +91,7 @@ function rollback_path(subst, p) {
           return "Pident | Papply";
       }
     } else {
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
   }
 }
@@ -129,9 +127,7 @@ function fooExn(f) {
       let match = n._1;
       return match[0] + match[1] | 0;
     }
-    throw new Error(n.RE_EXN_ID, {
-      cause: n
-    });
+    throw n;
   }
 }
 

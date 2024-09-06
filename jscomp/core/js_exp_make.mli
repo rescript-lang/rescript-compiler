@@ -170,7 +170,7 @@ val variant_access : t -> int32 -> t
 
 val cons_access : t -> int32 -> t
 
-val extension_access : t -> ?name:string -> Int32.t -> t
+val extension_access : t -> string option -> Int32.t -> t
 
 val record_assign : t -> int32 -> string -> t -> t
 

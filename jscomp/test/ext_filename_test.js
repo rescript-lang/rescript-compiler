@@ -61,16 +61,13 @@ function chop_extension(locOpt, name) {
     let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Invalid_argument") {
       let s = "Filename.chop_extension ( " + loc + " : " + name + " )";
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: s
-        }
-      });
+      throw {
+        RE_EXN_ID: "Invalid_argument",
+        _1: s,
+        Error: new Error()
+      };
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -82,9 +79,7 @@ function chop_extension_if_any(fname) {
     if (exn.RE_EXN_ID === "Invalid_argument") {
       return fname;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -142,12 +137,11 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
       let i = _i;
       if (i >= len) {
         let s = "invalid path: " + file2;
-        throw new Error("Failure", {
-          cause: {
-            RE_EXN_ID: "Failure",
-            _1: s
-          }
-        });
+        throw {
+          RE_EXN_ID: "Failure",
+          _1: s,
+          Error: new Error()
+        };
       }
       let curr_char = file2.codePointAt(i);
       if (!(curr_char === os_path_separator_char || curr_char === /* '.' */46)) {
@@ -172,12 +166,11 @@ function find_root_filename(_cwd, filename) {
       continue;
     }
     let s = filename + " not found from " + cwd;
-    throw new Error("Failure", {
-      cause: {
-        RE_EXN_ID: "Failure",
-        _1: s
-      }
-    });
+    throw {
+      RE_EXN_ID: "Failure",
+      _1: s,
+      Error: new Error()
+    };
   };
 }
 
@@ -344,12 +337,11 @@ if (Sys.unix) {
   simple_convert_node_path_to_os_path = Ext_string_test.replace_slash_backward;
 } else {
   let s = "Unknown OS : " + Sys.os_type;
-  throw new Error("Failure", {
-    cause: {
-      RE_EXN_ID: "Failure",
-      _1: s
-    }
-  });
+  throw {
+    RE_EXN_ID: "Failure",
+    _1: s,
+    Error: new Error()
+  };
 }
 
 let $slash$slash = Filename.concat;

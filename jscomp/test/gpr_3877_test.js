@@ -21,29 +21,27 @@ let a = "good response";
 let b = "bad response";
 
 if (a !== "good response") {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "gpr_3877_test.res",
-        26,
-        0
-      ]
-    }
-  });
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "gpr_3877_test.res",
+      26,
+      0
+    ],
+    Error: new Error()
+  };
 }
 
 if (b !== "bad response") {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "gpr_3877_test.res",
-        27,
-        0
-      ]
-    }
-  });
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "gpr_3877_test.res",
+      27,
+      0
+    ],
+    Error: new Error()
+  };
 }
 
 exports.test = test;

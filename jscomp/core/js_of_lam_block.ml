@@ -38,8 +38,8 @@ let field (field_info : Lam_compat.field_dbg_info) e (i : int32) =
         e i
   | Fld_poly_var_content -> E.poly_var_value_access e
   | Fld_poly_var_tag -> E.poly_var_tag_access e
-  | Fld_record_extension { name } -> E.extension_access e ~name i
-  | Fld_extension -> E.extension_access e i
+  | Fld_record_extension { name } -> E.extension_access e (Some name) i
+  | Fld_extension -> E.extension_access e None i
   | Fld_variant -> E.variant_access e i
   | Fld_cons -> E.cons_access e i
   | Fld_record_inline { name } -> E.inline_record_access e name i

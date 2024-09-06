@@ -97,32 +97,29 @@ function u(f) {
 }
 
 eq("File \"record_extension_test.res\", line 59, characters 3-10", u(() => {
-  throw new Error(A, {
-    cause: {
-      RE_EXN_ID: A,
-      name: 1,
-      x: 1
-    }
-  });
+  throw {
+    RE_EXN_ID: A,
+    name: 1,
+    x: 1,
+    Error: new Error()
+  };
 }), 2);
 
 eq("File \"record_extension_test.res\", line 60, characters 3-10", u(() => {
-  throw new Error(B, {
-    cause: {
-      RE_EXN_ID: B,
-      _1: 1,
-      _2: 2
-    }
-  });
+  throw {
+    RE_EXN_ID: B,
+    _1: 1,
+    _2: 2,
+    Error: new Error()
+  };
 }), 3);
 
 eq("File \"record_extension_test.res\", line 61, characters 3-10", u(() => {
-  throw new Error(C, {
-    cause: {
-      RE_EXN_ID: C,
-      name: 4
-    }
-  });
+  throw {
+    RE_EXN_ID: C,
+    name: 4,
+    Error: new Error()
+  };
 }), 4);
 
 Mt.from_pair_suites("File \"record_extension_test.res\", line 63, characters 29-36", suites.contents);

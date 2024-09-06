@@ -22,17 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let caml_id_field_info : Lambda.field_dbg_info =
+  Fld_record { name = Literals.exception_id; mutable_flag = Immutable }
+
+let lam_caml_id : Lam_primitive.t = Pfield (0, caml_id_field_info)
 let prim = Lam.prim
 
-let lam_extension_id =
-  let lam_caml_id : Lam_primitive.t =
-    let caml_id_field_info : Lambda.field_dbg_info =
-      Fld_record { name = Js_dump_lit.exception_id; mutable_flag = Immutable }
-    in
-    Pfield (0, caml_id_field_info)
-  in
-  fun loc (head : Lam.t) ->
-    prim ~primitive:lam_caml_id ~args:[ head ] loc
+let lam_extension_id loc (head : Lam.t) =
+  prim ~primitive:lam_caml_id ~args:[ head ] loc
 
 let lazy_block_info : Lam_tag_info.t =
   Blk_record
