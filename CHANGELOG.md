@@ -12,6 +12,10 @@
 
 # 12.0.0-alpha.3 (Unreleased)
 
+#### :bug: Bug fix
+
+- Revert Throws an instance of JavaScript's `new Error()` and adds the extension payload for `cause` option introduced in https://github.com/rescript-lang/rescript-compiler/pull/6611. https://github.com/rescript-lang/rescript-compiler/pull/7016
+
 # 12.0.0-alpha.2
 
 #### :rocket: New Feature
