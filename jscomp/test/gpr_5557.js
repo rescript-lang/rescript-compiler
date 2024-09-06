@@ -6,16 +6,15 @@ function isA(c) {
   if (c === 97) {
     return true;
   }
-  throw new Error("Match_failure", {
-    cause: {
-      RE_EXN_ID: "Match_failure",
-      _1: [
-        "gpr_5557.res",
-        5,
-        2
-      ]
-    }
-  });
+  throw {
+    RE_EXN_ID: "Match_failure",
+    _1: [
+      "gpr_5557.res",
+      5,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 let h = /* 'a' */97;

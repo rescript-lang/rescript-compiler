@@ -416,7 +416,7 @@ let poly_var_value_access (e : t) =
         comment = None;
       }
 
-let extension_access (e : t) ?name (pos : int32) : t =
+let extension_access (e : t) name (pos : int32) : t =
   match e.expression_desc with
   | Array (l, _) (* Float i -- should not appear here *)
   | Caml_block (l, _, _, _)

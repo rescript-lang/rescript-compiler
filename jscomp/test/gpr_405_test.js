@@ -19,9 +19,7 @@ function Make(funarg) {
       if (exn.RE_EXN_ID === "Not_found") {
         return false;
       }
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
   };
   let min_cutset = (gr, first_node) => {
@@ -37,28 +35,26 @@ function Make(funarg) {
     };
     let step2 = (top, rest_of_stack) => {
       if (find_default(already_processed, top)) {
-        throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "gpr_405_test.res",
-              40,
-              6
-            ]
-          }
-        });
+        throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "gpr_405_test.res",
+            40,
+            6
+          ],
+          Error: new Error()
+        };
       }
       if (find_default(on_the_stack, top)) {
-        throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "gpr_405_test.res",
-              41,
-              6
-            ]
-          }
-        });
+        throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "gpr_405_test.res",
+            41,
+            6
+          ],
+          Error: new Error()
+        };
       }
       H.add(on_the_stack, top, true);
       H.add(n_labels, top, counter.contents);
@@ -96,12 +92,11 @@ function Make(funarg) {
           H.add(l_labels, top$1, 0);
         }
         if (H.find(l_labels, top$1) > H.find(n_labels, top$1)) {
-          throw new Error("Invalid_argument", {
-            cause: {
-              RE_EXN_ID: "Invalid_argument",
-              _1: "Graph.Mincut: graph not reducible"
-            }
-          });
+          throw {
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Graph.Mincut: graph not reducible",
+            Error: new Error()
+          };
         }
         if (!rest_of_stack$1) {
           return cut_set.contents;

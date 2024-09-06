@@ -31,12 +31,11 @@ function Make(Ord) {
     hr = typeof r !== "object" ? 0 : r._3;
     if (hl > (hr + 2 | 0)) {
       if (typeof l !== "object") {
-        throw new Error("Invalid_argument", {
-          cause: {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "Set.bal"
-          }
-        });
+        throw {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.bal",
+          Error: new Error()
+        };
       }
       let lr = l._2;
       let lv = l._1;
@@ -47,12 +46,11 @@ function Make(Ord) {
       if (typeof lr === "object") {
         return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
       }
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal",
+        Error: new Error()
+      };
     }
     if (hr <= (hl + 2 | 0)) {
       return {
@@ -64,12 +62,11 @@ function Make(Ord) {
       };
     }
     if (typeof r !== "object") {
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal",
+        Error: new Error()
+      };
     }
     let rr = r._2;
     let rv = r._1;
@@ -80,12 +77,11 @@ function Make(Ord) {
     if (typeof rl === "object") {
       return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.bal",
+      Error: new Error()
+    };
   };
   let add = (x, x_) => {
     if (typeof x_ !== "object") {
@@ -151,11 +147,10 @@ function Make(Ord) {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
-        throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+        throw {
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
+        };
       }
       let l = x._0;
       if (typeof l !== "object") {
@@ -169,11 +164,10 @@ function Make(Ord) {
     while (true) {
       let x = _x;
       if (typeof x !== "object") {
-        throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+        throw {
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
+        };
       }
       let r = x._2;
       if (typeof r !== "object") {
@@ -185,12 +179,11 @@ function Make(Ord) {
   };
   let remove_min_elt = x => {
     if (typeof x !== "object") {
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Set.remove_min_elt"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.remove_min_elt",
+        Error: new Error()
+      };
     }
     let l = x._0;
     if (typeof l !== "object") {
@@ -564,11 +557,10 @@ function Make(Ord) {
     while (true) {
       let x_ = _x_;
       if (typeof x_ !== "object") {
-        throw new Error("Not_found", {
-          cause: {
-            RE_EXN_ID: "Not_found"
-          }
-        });
+        throw {
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
+        };
       }
       let v = x_._1;
       let c = Ord.compare(x, v);
@@ -670,16 +662,15 @@ function Make(Ord) {
           match$4[1]
         ];
       }
-      throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "test_set.res",
-            497,
-            20
-          ]
-        }
-      });
+      throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "test_set.res",
+          497,
+          20
+        ],
+        Error: new Error()
+      };
     };
     return sub(List.length(l), l)[0];
   };

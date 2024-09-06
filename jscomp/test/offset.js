@@ -35,12 +35,11 @@ function bal(l, v, r) {
   hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Set.bal",
+        Error: new Error()
+      };
     }
     let lr = l.r;
     let lv = l.v;
@@ -51,12 +50,11 @@ function bal(l, v, r) {
     if (typeof lr === "object") {
       return create(create(ll, lv, lr.l), lr.v, create(lr.r, v, r));
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.bal",
+      Error: new Error()
+    };
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -68,12 +66,11 @@ function bal(l, v, r) {
     };
   }
   if (typeof r !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.bal",
+      Error: new Error()
+    };
   }
   let rr = r.r;
   let rv = r.v;
@@ -84,12 +81,11 @@ function bal(l, v, r) {
   if (typeof rl === "object") {
     return create(create(l, v, rl.l), rl.v, create(rl.r, rv, rr));
   }
-  throw new Error("Invalid_argument", {
-    cause: {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Set.bal"
-    }
-  });
+  throw {
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Set.bal",
+    Error: new Error()
+  };
 }
 
 function add(x, param) {
@@ -173,11 +169,10 @@ function min_elt(_param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     let l = param.l;
     if (typeof l !== "object") {
@@ -207,11 +202,10 @@ function max_elt(_param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     let r = param.r;
     if (typeof r !== "object") {
@@ -239,12 +233,11 @@ function max_elt_opt(_param) {
 
 function remove_min_elt(param) {
   if (typeof param !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.remove_min_elt"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Set.remove_min_elt",
+      Error: new Error()
+    };
   }
   let l = param.l;
   if (typeof l !== "object") {
@@ -658,11 +651,10 @@ function find(x, _param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     let v = param.v;
     let c = Caml.string_compare(x, v);
@@ -678,11 +670,10 @@ function find_first(f, _param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     let v = param.v;
     if (f(v)) {
@@ -744,11 +735,10 @@ function find_last(f, _param) {
   while (true) {
     let param = _param;
     if (typeof param !== "object") {
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
     }
     let v = param.v;
     if (f(v)) {
@@ -955,16 +945,15 @@ function of_list(l) {
             match$4[1]
           ];
         }
-        throw new Error("Assert_failure", {
-          cause: {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "set.res",
-              691,
-              20
-            ]
-          }
-        });
+        throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "set.res",
+            691,
+            20
+          ],
+          Error: new Error()
+        };
       };
       return sub(List.length(l$1), l$1)[0];
     } else {

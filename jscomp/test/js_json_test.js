@@ -91,30 +91,28 @@ add_test("File \"js_json_test.res\", line 22, characters 11-18", () => {
   ty2._0.forEach(x => {
     let ty3 = Js_json.classify(x);
     if (typeof ty3 !== "object") {
-      throw new Error("Assert_failure", {
-        cause: {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "js_json_test.res",
-            38,
-            21
-          ]
-        }
-      });
-    }
-    if (ty3.TAG === "JSONNumber") {
-      return;
-    }
-    throw new Error("Assert_failure", {
-      cause: {
+      throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
           "js_json_test.res",
           38,
           21
-        ]
-      }
-    });
+        ],
+        Error: new Error()
+      };
+    }
+    if (ty3.TAG === "JSONNumber") {
+      return;
+    }
+    throw {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "js_json_test.res",
+        38,
+        21
+      ],
+      Error: new Error()
+    };
   });
   return {
     TAG: "Ok",
@@ -235,16 +233,15 @@ function option_get(x) {
   if (x !== undefined) {
     return Caml_option.valFromOption(x);
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "js_json_test.res",
-        113,
-        12
-      ]
-    }
-  });
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "js_json_test.res",
+      113,
+      12
+    ],
+    Error: new Error()
+  };
 }
 
 let dict = {};

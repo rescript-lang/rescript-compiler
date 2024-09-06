@@ -160,7 +160,7 @@ let caml_lex_engine_aux: (
         if (state < 0) {
             lexbuf.lex_curr_pos = lexbuf.lex_last_pos;
             if (lexbuf.lex_last_action == -1)
-                throw new Error(exn.RE_EXN_ID, { cause: exn })
+                throw exn
             else
                 return lexbuf.lex_last_action;
         }
@@ -308,7 +308,7 @@ let caml_new_lex_engine_aux: (
         if (state < 0) {
             lexbuf.lex_curr_pos = lexbuf.lex_last_pos;
             if (lexbuf.lex_last_action == -1)
-                throw new Error(exn.RE_EXN_ID, { cause: exn });
+                throw exn;
             else
                 return lexbuf.lex_last_action;
         }

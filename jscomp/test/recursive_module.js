@@ -100,9 +100,7 @@ try {
   if (exn.RE_EXN_ID === Lazy.Undefined) {
     tmp = -1;
   } else {
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 
@@ -173,9 +171,7 @@ try {
   if (exn$1.RE_EXN_ID === "Undefined_recursive_module") {
     tmp$1 = 4;
   } else {
-    throw new Error(exn$1.RE_EXN_ID, {
-      cause: exn$1
-    });
+    throw exn$1;
   }
 }
 

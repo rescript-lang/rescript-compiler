@@ -97,11 +97,8 @@ type cxt = Ext_pp_scope.t
 let semi f = P.string f L.semi
 let comma f = P.string f L.comma
 
-let new_error name cause =
-  E.new_ (E.js_global Js_dump_lit.error) [ name; cause ]
-
 let exn_block_as_obj ~(stack : bool) (el : J.expression list) (ext : J.tag_info)
-    : J.expression =
+    : J.expression_desc =
   let field_name =
     match ext with
     | Blk_extension -> (
@@ -111,29 +108,12 @@ let exn_block_as_obj ~(stack : bool) (el : J.expression list) (ext : J.tag_info)
         fun i -> match i with 0 -> Literals.exception_id | i -> ss.(i - 1))
     | _ -> assert false
   in
-    let cause =
-    {
-      J.expression_desc =
-        Object (List.mapi (fun i e -> (Js_op.Lit (field_name i), e)) el);
-      comment = None;
-    }
-  in
-   if stack then
-      new_error (List.hd el)
-        {
-          J.expression_desc = Object [ (Lit Js_dump_lit.cause, cause) ];
-          comment = None;
-        }
-    else cause
-
-let exn_ref_as_obj e : J.expression =
-  let cause = { J.expression_desc = e; comment = None; } in
-  new_error
-    (E.record_access cause Js_dump_lit.exception_id 0l)
-    {
-      J.expression_desc = Object [ (Lit Js_dump_lit.cause, cause) ];
-      comment = None;
-    }
+  Object
+    (if stack then
+     Ext_list.mapi_append el
+       (fun i e -> (Js_op.Lit (field_name i), e))
+       [ (Js_op.Lit "Error", E.new_ (E.js_global "Error") []) ]
+    else Ext_list.mapi el (fun i e -> (Js_op.Lit (field_name i), e)))
 
 let rec iter_lst cxt (f : P.t) ls element inter =
   match ls with
@@ -777,7 +757,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
                ])
       | _ -> assert false)
   | Caml_block (el, _, _, ((Blk_extension | Blk_record_ext _) as ext)) ->
-      expression cxt ~level f (exn_block_as_obj ~stack:false el ext)
+      expression_desc cxt ~level f (exn_block_as_obj ~stack:false el ext)
   | Caml_block (el, _, tag, Blk_record_inlined p) ->
       let untagged = Ast_untagged_variants.process_untagged p.attrs in
       let objs =
@@ -1239,8 +1219,8 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       let e =
         match e.expression_desc with
         | Caml_block (el, _, _, ((Blk_extension | Blk_record_ext _) as ext)) ->
-            { e with expression_desc = (exn_block_as_obj ~stack:true el ext).expression_desc }
-        | exp -> { e with expression_desc = (exn_ref_as_obj exp).expression_desc }
+            { e with expression_desc = exn_block_as_obj ~stack:true el ext }
+        | _ -> e
       in
       P.string f L.throw;
       P.space f;

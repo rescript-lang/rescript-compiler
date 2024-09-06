@@ -69,12 +69,11 @@ function hydrateToElementWithClassName(reactElement, className) {
 function hydrateToElementWithId(reactElement, id) {
   let element = document.getElementById(id);
   if (element == null) {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "ReactDOMRe.hydrateToElementWithId : no element of id " + (id + " found in the HTML.")
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "ReactDOMRe.hydrateToElementWithId : no element of id " + (id + " found in the HTML."),
+      Error: new Error()
+    };
   }
   ReactDom.hydrate(reactElement, element);
 }

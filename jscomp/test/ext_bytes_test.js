@@ -134,11 +134,10 @@ function starts_with(xs, prefix, p) {
   try {
     for (let i = 0; i < len2; ++i) {
       if (!p(Caml_bytes.get(xs, i), Caml_bytes.get(prefix, i))) {
-        throw new Error(H, {
-          cause: {
-            RE_EXN_ID: H
-          }
-        });
+        throw {
+          RE_EXN_ID: H,
+          Error: new Error()
+        };
       }
       
     }
@@ -148,9 +147,7 @@ function starts_with(xs, prefix, p) {
     if (exn.RE_EXN_ID === H) {
       return false;
     }
-    throw new Error(exn.RE_EXN_ID, {
-      cause: exn
-    });
+    throw exn;
   }
 }
 

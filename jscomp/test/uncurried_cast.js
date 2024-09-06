@@ -5,9 +5,7 @@ let Belt_List = require("../../lib/js/belt_List.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 function raise(e) {
-  throw new Error(e.RE_EXN_ID, {
-    cause: e
-  });
+  throw e;
 }
 
 let map = Belt_List.map;
@@ -24,11 +22,10 @@ let Uncurried = {
 let E = /* @__PURE__ */Caml_exceptions.create("Uncurried_cast.E");
 
 function testRaise() {
-  throw new Error(E, {
-    cause: {
-      RE_EXN_ID: E
-    }
-  });
+  throw {
+    RE_EXN_ID: E,
+    Error: new Error()
+  };
 }
 
 let l = Belt_List.map({
@@ -66,11 +63,10 @@ let StandardNotation = {
 };
 
 function testRaise$1() {
-  throw new Error(E, {
-    cause: {
-      RE_EXN_ID: E
-    }
-  });
+  throw {
+    RE_EXN_ID: E,
+    Error: new Error()
+  };
 }
 
 let l$1 = Belt_List.map({

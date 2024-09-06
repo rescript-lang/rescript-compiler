@@ -26,34 +26,31 @@ function hd(x) {
   if (x) {
     return x.hd;
   }
-  throw new Error("Failure", {
-    cause: {
-      RE_EXN_ID: "Failure",
-      _1: "hd"
-    }
-  });
+  throw {
+    RE_EXN_ID: "Failure",
+    _1: "hd",
+    Error: new Error()
+  };
 }
 
 function tl(x) {
   if (x) {
     return x.tl;
   }
-  throw new Error("Failure", {
-    cause: {
-      RE_EXN_ID: "Failure",
-      _1: "tl"
-    }
-  });
+  throw {
+    RE_EXN_ID: "Failure",
+    _1: "tl",
+    Error: new Error()
+  };
 }
 
 function nth(l, n) {
   if (n < 0) {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.nth"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.nth",
+      Error: new Error()
+    };
   }
   let _l = l;
   let _n = n;
@@ -68,12 +65,11 @@ function nth(l, n) {
       _l = l$1.tl;
       continue;
     }
-    throw new Error("Failure", {
-      cause: {
-        RE_EXN_ID: "Failure",
-        _1: "nth"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Failure",
+      _1: "nth",
+      Error: new Error()
+    };
   };
 }
 
@@ -207,22 +203,20 @@ function map2(f, l1, l2) {
         tl: map2(f, l1.tl, l2.tl)
       };
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.map2"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.map2",
+      Error: new Error()
+    };
   }
   if (!l2) {
     return /* [] */0;
   }
-  throw new Error("Invalid_argument", {
-    cause: {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "List.map2"
-    }
-  });
+  throw {
+    RE_EXN_ID: "Invalid_argument",
+    _1: "List.map2",
+    Error: new Error()
+  };
 }
 
 function rev_map2(f, l1, l2) {
@@ -243,20 +237,18 @@ function rev_map2(f, l1, l2) {
         };
         continue;
       }
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.rev_map2"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.rev_map2",
+        Error: new Error()
+      };
     }
     if (l2$1) {
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.rev_map2"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.rev_map2",
+        Error: new Error()
+      };
     }
     return accu;
   };
@@ -273,22 +265,20 @@ function iter2(f, _l1, _l2) {
         _l1 = l1.tl;
         continue;
       }
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.iter2"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.iter2",
+        Error: new Error()
+      };
     }
     if (!l2) {
       return;
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.iter2"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.iter2",
+      Error: new Error()
+    };
   };
 }
 
@@ -304,20 +294,18 @@ function fold_left2(f, _accu, _l1, _l2) {
         _accu = f(accu, l1.hd, l2.hd);
         continue;
       }
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.fold_left2"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.fold_left2",
+        Error: new Error()
+      };
     }
     if (l2) {
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.fold_left2"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.fold_left2",
+        Error: new Error()
+      };
     }
     return accu;
   };
@@ -328,20 +316,18 @@ function fold_right2(f, l1, l2, accu) {
     if (l2) {
       return f(l1.hd, l2.hd, fold_right2(f, l1.tl, l2.tl, accu));
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.fold_right2"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.fold_right2",
+      Error: new Error()
+    };
   }
   if (l2) {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.fold_right2"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.fold_right2",
+      Error: new Error()
+    };
   }
   return accu;
 }
@@ -387,22 +373,20 @@ function for_all2(p, _l1, _l2) {
         _l1 = l1.tl;
         continue;
       }
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.for_all2"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.for_all2",
+        Error: new Error()
+      };
     }
     if (!l2) {
       return true;
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.for_all2"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.for_all2",
+      Error: new Error()
+    };
   };
 }
 
@@ -419,22 +403,20 @@ function exists2(p, _l1, _l2) {
         _l1 = l1.tl;
         continue;
       }
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "List.exists2"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "List.exists2",
+        Error: new Error()
+      };
     }
     if (!l2) {
       return false;
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.exists2"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.exists2",
+      Error: new Error()
+    };
   };
 }
 
@@ -477,11 +459,10 @@ function assoc(x, _x_) {
       _x_ = x_.tl;
       continue;
     }
-    throw new Error("Not_found", {
-      cause: {
-        RE_EXN_ID: "Not_found"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Not_found",
+      Error: new Error()
+    };
   };
 }
 
@@ -496,11 +477,10 @@ function assq(x, _x_) {
       _x_ = x_.tl;
       continue;
     }
-    throw new Error("Not_found", {
-      cause: {
-        RE_EXN_ID: "Not_found"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Not_found",
+      Error: new Error()
+    };
   };
 }
 
@@ -575,11 +555,10 @@ function find(p, _x) {
       _x = x.tl;
       continue;
     }
-    throw new Error("Not_found", {
-      cause: {
-        RE_EXN_ID: "Not_found"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Not_found",
+      Error: new Error()
+    };
   };
 }
 
@@ -674,22 +653,20 @@ function combine(l1, l2) {
         tl: combine(l1.tl, l2.tl)
       };
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.combine"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "List.combine",
+      Error: new Error()
+    };
   }
   if (!l2) {
     return /* [] */0;
   }
-  throw new Error("Invalid_argument", {
-    cause: {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "List.combine"
-    }
-  });
+  throw {
+    RE_EXN_ID: "Invalid_argument",
+    _1: "List.combine",
+    Error: new Error()
+  };
 }
 
 function merge(cmp, l1, l2) {
@@ -726,16 +703,15 @@ function chop(_k, _l) {
       _k = k - 1 | 0;
       continue;
     }
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "test_list.res",
-          343,
-          11
-        ]
-      }
-    });
+    throw {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "test_list.res",
+        343,
+        11
+      ],
+      Error: new Error()
+    };
   };
 }
 

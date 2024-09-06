@@ -23,16 +23,15 @@ let u = f();
 $$Array.iter(x => x(), u);
 
 if (v.contents !== 45) {
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "test_closure.res",
-        52,
-        2
-      ]
-    }
-  });
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "test_closure.res",
+      52,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 exports.v = v;

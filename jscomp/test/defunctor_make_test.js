@@ -44,12 +44,11 @@ function bal(l, x, d, r) {
   hr = typeof r !== "object" ? 0 : r._4;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
-      throw new Error("Invalid_argument", {
-        cause: {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Invalid_argument",
+        _1: "Map.bal",
+        Error: new Error()
+      };
     }
     let lr = l._3;
     let ld = l._2;
@@ -61,12 +60,11 @@ function bal(l, x, d, r) {
     if (typeof lr === "object") {
       return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
     }
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal",
+      Error: new Error()
+    };
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -79,12 +77,11 @@ function bal(l, x, d, r) {
     };
   }
   if (typeof r !== "object") {
-    throw new Error("Invalid_argument", {
-      cause: {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "Map.bal",
+      Error: new Error()
+    };
   }
   let rr = r._3;
   let rd = r._2;
@@ -96,12 +93,11 @@ function bal(l, x, d, r) {
   if (typeof rl === "object") {
     return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
   }
-  throw new Error("Invalid_argument", {
-    cause: {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.bal"
-    }
-  });
+  throw {
+    RE_EXN_ID: "Invalid_argument",
+    _1: "Map.bal",
+    Error: new Error()
+  };
 }
 
 function add(x, data, compare, x_) {

@@ -23,24 +23,22 @@ function assoc3(x, _l) {
       _l = l.tl;
       continue;
     }
-    throw new Error("Not_found", {
-      cause: {
-        RE_EXN_ID: "Not_found"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Not_found",
+      Error: new Error()
+    };
   };
 }
 
 function help_action() {
-  throw new Error(Stop, {
-    cause: {
-      RE_EXN_ID: Stop,
-      _1: {
-        TAG: "Unknown",
-        _0: "-help"
-      }
-    }
-  });
+  throw {
+    RE_EXN_ID: Stop,
+    _1: {
+      TAG: "Unknown",
+      _0: "-help"
+    },
+    Error: new Error()
+  };
 }
 
 function v(speclist) {
@@ -72,9 +70,7 @@ function add_help(speclist) {
         tl: /* [] */0
       };
     } else {
-      throw new Error(exn.RE_EXN_ID, {
-        cause: exn
-      });
+      throw exn;
     }
   }
   let add2;
@@ -96,9 +92,7 @@ function add_help(speclist) {
         tl: /* [] */0
       };
     } else {
-      throw new Error(exn$1.RE_EXN_ID, {
-        cause: exn$1
-      });
+      throw exn$1;
     }
   }
   return Pervasives.$at(speclist, Pervasives.$at(add1, add2));

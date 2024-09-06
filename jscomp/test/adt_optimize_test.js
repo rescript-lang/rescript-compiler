@@ -182,16 +182,15 @@ function f11(x) {
   if (x.TAG === "D") {
     return 1;
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "adt_optimize_test.res",
-        202,
-        9
-      ]
-    }
-  });
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "adt_optimize_test.res",
+      202,
+      9
+    ],
+    Error: new Error()
+  };
 }
 
 exports.f = f;

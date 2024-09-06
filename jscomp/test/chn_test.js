@@ -38,16 +38,15 @@ function convert(s) {
     if (x$1 !== undefined) {
       return x$1;
     }
-    throw new Error("Assert_failure", {
-      cause: {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "chn_test.res",
-          18,
-          16
-        ]
-      }
-    });
+    throw {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "chn_test.res",
+        18,
+        16
+      ],
+      Error: new Error()
+    };
   }));
 }
 

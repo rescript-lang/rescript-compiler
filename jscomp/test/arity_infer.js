@@ -7,21 +7,19 @@ function f0(x) {
   if (x > 3) {
     tmp = x => x + 1 | 0;
   } else {
-    throw new Error("Not_found", {
-      cause: {
-        RE_EXN_ID: "Not_found"
-      }
-    });
+    throw {
+      RE_EXN_ID: "Not_found",
+      Error: new Error()
+    };
   }
   return tmp(3);
 }
 
 function f1(x) {
-  throw new Error("Not_found", {
-    cause: {
-      RE_EXN_ID: "Not_found"
-    }
-  });
+  throw {
+    RE_EXN_ID: "Not_found",
+    Error: new Error()
+  };
   return undefined(x);
 }
 
@@ -41,11 +39,10 @@ function f3(x) {
       tmp = x => x + 4 | 0;
       break;
     default:
-      throw new Error("Not_found", {
-        cause: {
-          RE_EXN_ID: "Not_found"
-        }
-      });
+      throw {
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
   }
   return tmp(3);
 }

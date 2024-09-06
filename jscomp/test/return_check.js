@@ -18,16 +18,15 @@ function f_undefined(xs, i) {
   if (k !== undefined) {
     return k;
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "return_check.res",
-        23,
-        12
-      ]
-    }
-  });
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "return_check.res",
+      23,
+      12
+    ],
+    Error: new Error()
+  };
 }
 
 function f_escaped_not(xs, i) {
@@ -60,16 +59,15 @@ function f_null(xs, i) {
   if (k !== null) {
     return k;
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "return_check.res",
-        51,
-        12
-      ]
-    }
-  });
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "return_check.res",
+      51,
+      12
+    ],
+    Error: new Error()
+  };
 }
 
 function f_null_undefined(xs, i) {
@@ -77,16 +75,15 @@ function f_null_undefined(xs, i) {
   if (!(k == null)) {
     return k;
   }
-  throw new Error("Assert_failure", {
-    cause: {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "return_check.res",
-        59,
-        12
-      ]
-    }
-  });
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "return_check.res",
+      59,
+      12
+    ],
+    Error: new Error()
+  };
 }
 
 exports.test = test;
