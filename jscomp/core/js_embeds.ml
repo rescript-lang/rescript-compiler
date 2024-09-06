@@ -22,7 +22,7 @@ let write_text output text =
   output_string oc text;
   close_out oc
 
-let write_embeds ~extension_points ~moduleFilename ~output ast =
+let write_embeds ~extension_points ~module_filename ~output ast =
   match extension_points with
   | [] -> write_text output "[]"
   | extension_points -> (
@@ -58,19 +58,19 @@ let write_embeds ~extension_points ~moduleFilename ~output ast =
       let text =
         "[\n"
         ^ (content |> List.rev
-          |> List.map (fun (loc, extensionName, contents) ->
+          |> List.map (fun (loc, extension_name, contents) ->
                  let current_tag_count =
-                   match Hashtbl.find_opt counts extensionName with
+                   match Hashtbl.find_opt counts extension_name with
                    | None -> 0
                    | Some count -> count
                  in
                  let tag_count = current_tag_count + 1 in
-                 Hashtbl.replace counts extensionName tag_count;
+                 Hashtbl.replace counts extension_name tag_count;
 
                  let target_file_name =
                    Printf.sprintf "%s.res"
                      (Bs_embed_lang.make_embed_target_module_name
-                        ~moduleFilename ~extensionName ~tag_count)
+                        ~module_filename ~extension_name ~tag_count)
                  in
                  Printf.sprintf
                    "  {\n\
@@ -79,7 +79,7 @@ let write_embeds ~extension_points ~moduleFilename ~output ast =
                    \    \"contents\": \"%s\",\n\
                    \    \"loc\": {\"start\": {\"line\": %s, \"col\": %s}, \
                     \"end\": {\"line\": %s, \"col\": %s}}\n\
-                   \  }" (escape extensionName) target_file_name
+                   \  }" (escape extension_name) target_file_name
                    (escape contents)
                    (loc.Location.loc_start.pos_lnum |> string_of_int)
                    (loc.loc_start.pos_cnum |> string_of_int)

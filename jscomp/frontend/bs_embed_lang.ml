@@ -1,9 +1,9 @@
 let should_transform name = !Js_config.embeds |> List.mem name
 
-let make_embed_target_module_name ~moduleFilename ~extensionName ~tag_count =
+let make_embed_target_module_name ~module_filename ~extension_name ~tag_count =
   Printf.sprintf "%s__%s_%i"
-    (String.capitalize_ascii moduleFilename)
-    (String.map (fun c -> if c = '.' then '_' else c) extensionName)
+    (String.capitalize_ascii module_filename)
+    (String.map (fun c -> if c = '.' then '_' else c) extension_name)
     tag_count
 
 let transformed_count = Hashtbl.create 10
@@ -34,8 +34,8 @@ let make_lident ~extension_name ~transform_mode filename =
   in
   Longident.parse
     (Printf.sprintf "%s%s"
-       (make_embed_target_module_name ~moduleFilename:module_name
-          ~extensionName:extension_name
+       (make_embed_target_module_name ~module_filename:module_name
+          ~extension_name
           ~tag_count:(get_transformed_count extension_name))
        (match transform_mode with
        | LetBinding -> ".default"

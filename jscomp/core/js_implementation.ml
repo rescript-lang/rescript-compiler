@@ -129,7 +129,7 @@ let no_export (rest : Parsetree.structure) : Parsetree.structure =
 
 let write_embeds outputprefix (ast : Parsetree.structure) =
   if !Clflags.only_parse = false && !Js_config.binary_ast then
-    Js_embeds.write_embeds ~moduleFilename:outputprefix
+    Js_embeds.write_embeds ~module_filename:outputprefix
       ~extension_points:!Js_config.embeds
       ~output:(outputprefix ^ Literals.suffix_embeds)
       ast;
