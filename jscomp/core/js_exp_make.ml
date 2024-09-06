@@ -882,30 +882,27 @@ let tag ?comment ?(name=Js_dump_lit.tag) e : t =
 let rec int32_bor ?comment (e1 : J.expression) (e2 : J.expression) :
     J.expression =
   match (e1.expression_desc, e2.expression_desc) with
-  | Number (Int { i = i1 } | Uint i1), Number (Int { i = i2 }) ->
+  | Number (Int { i = i1 }), Number (Int { i = i2 }) ->
       int ?comment (Int32.logor i1 i2)
-  | _, Bin (Lsr, e2, { expression_desc = Number (Int { i = 0l } | Uint 0l); _ })
+  | _, Bin (Lsr, e2, { expression_desc = Number (Int { i = 0l }); _ })
     ->
       int32_bor e1 e2
-  | Bin (Lsr, e1, { expression_desc = Number (Int { i = 0l } | Uint 0l); _ }), _
+  | Bin (Lsr, e1, { expression_desc = Number (Int { i = 0l }); _ }), _
     ->
       int32_bor e1 e2
-  | ( Bin (Lsr, _, { expression_desc = Number (Int { i } | Uint i); _ }),
-      Number (Int { i = 0l } | Uint 0l) )
+  | ( Bin (Lsr, _, { expression_desc = Number (Int { i }); _ }),
+      Number (Int { i = 0l }) )
     when i > 0l ->
       (* a >>> 3 | 0 -> a >>> 3 *)
       e1
-  | ( Bin (Bor, e1, { expression_desc = Number (Int { i = 0l } | Uint 0l); _ }),
-      Number (Int { i = 0l } | Uint 0l) ) ->
+  | ( Bin (Bor, e1, { expression_desc = Number (Int { i = 0l }); _ }),
+      Number (Int { i = 0l }) ) ->
       int32_bor e1 e2
   | _ -> { comment; expression_desc = Bin (Bor, e1, e2) }
 
 let to_int32 ?comment (e : J.expression) : J.expression =
   int32_bor ?comment e zero_int_literal
 (* TODO: if we already know the input is int32, [x|0] can be reduced into [x] *)
-
-let uint32 ?comment n : J.expression =
-  { expression_desc = Number (Uint n); comment }
 
 let string_comp (cmp : J.binop) ?comment (e0 : t) (e1 : t) =
   match (e0.expression_desc, e1.expression_desc) with
@@ -931,19 +928,9 @@ let compare_int_aux (cmp : Lam_compat.comparison) (l : int) r =
 
 let rec int_comp (cmp : Lam_compat.comparison) ?comment (e0 : t) (e1 : t) =
   match (cmp, e0.expression_desc, e1.expression_desc) with
-  | _, Number ((Int _ | Uint _) as l), Number ((Int _ | Uint _) as r) ->
-      let l =
-        match l with
-        | Uint l -> Ext_int.int32_unsigned_to_int l
-        | Int { i = l } -> Int32.to_int l
-        | _ -> assert false
-      in
-      let r =
-        match r with
-        | Uint l -> Ext_int.int32_unsigned_to_int l
-        | Int { i = l } -> Int32.to_int l
-        | _ -> assert false
-      in
+  | _, Number ((Int { i = l })), Number ((Int { i = r })) ->
+      let l = Ext_int.int32_unsigned_to_int l in
+      let r = Int32.to_int r in
       bool (compare_int_aux cmp l r)
   | ( _,
       Call
@@ -1025,20 +1012,17 @@ let js_comp cmp ?comment e0 e1 =
 
 let rec int32_lsr ?comment (e1 : J.expression) (e2 : J.expression) :
     J.expression =
-  let aux i1 i = uint32 (Int32.shift_right_logical i1 i) in
+  let aux i1 i = int (Int32.shift_right_logical i1 i) in
   match (e1.expression_desc, e2.expression_desc) with
-  | Number (Int { i = i1 } | Uint i1), Number (Int { i = i2 } | Uint i2) ->
+  | Number (Int { i = i1 }), Number (Int { i = i2 }) ->
       aux i1 (Int32.to_int i2)
-  | Bin (Lsr, _, _), Number (Int { i = 0l } | Uint 0l) ->
+  | Bin (Lsr, _, _), Number (Int { i = 0l }) ->
       e1 (* TODO: more opportunities here *)
   | ( Bin
-        (Bor, e1, { expression_desc = Number (Int { i = 0l; _ } | Uint 0l); _ }),
-      Number (Int { i = 0l } | Uint 0l) ) ->
+        (Bor, e1, { expression_desc = Number (Int { i = 0l; _ }); _ }),
+      Number (Int { i = 0l }) ) ->
       int32_lsr ?comment e1 e2
-  | _, _ -> { comment; expression_desc = Bin (Lsr, e1, e2) (* uint32 *) }
-
-let to_uint32 ?comment (e : J.expression) : J.expression =
-  int32_lsr ?comment e zero_int_literal
+  | _, _ -> { comment; expression_desc = Bin (Lsr, e1, e2) }
 
 (* TODO:
    we can apply a more general optimization here,
@@ -1094,10 +1078,11 @@ let rec is_out ?comment (e : t) (range : t) : t =
                      { expression_desc = Var _; _ },
                      { expression_desc = Number (Int { i = _; _ }) } ) );
            } as e),
-          { expression_desc = Number (Int { i = 0l } | Uint 0l); _ } ) ) ->
+          { expression_desc = Number (Int { i = 0l }); _ } ) ) ->
       (* TODO: check correctness *)
       is_out ?comment e range
-  | _, _ -> int_comp ?comment Cgt (to_uint32 e) range
+  | _, _ ->
+      int_comp ?comment Cgt e range
 
 let rec float_add ?comment (e1 : t) (e2 : t) =
   match (e1.expression_desc, e2.expression_desc) with
@@ -1158,7 +1143,7 @@ let int32_asr ?comment e1 e2 : J.expression =
 (** Division by zero is undefined behavior*)
 let int32_div ~checked ?comment (e1 : t) (e2 : t) : t =
   match (e1.expression_desc, e2.expression_desc) with
-  | Length _, Number (Int { i = 2l } | Uint 2l) -> int32_asr e1 one_int_literal
+  | Length _, Number (Int { i = 2l }) -> int32_asr e1 one_int_literal
   | e1_desc, Number (Int { i = i1 }) when i1 <> 0l -> (
       match e1_desc with
       | Number (Int { i = i0 }) -> int (Int32.div i0 i1)
@@ -1179,8 +1164,8 @@ let float_mul ?comment e1 e2 = bin ?comment Mul e1 e2
 
 let int32_lsl ?comment (e1 : J.expression) (e2 : J.expression) : J.expression =
   match (e1, e2) with
-  | ( { expression_desc = Number (Int { i = i0 } | Uint i0) },
-      { expression_desc = Number (Int { i = i1 } | Uint i1) } ) ->
+  | ( { expression_desc = Number (Int { i = i0 }) },
+      { expression_desc = Number (Int { i = i1 }) } ) ->
       int ?comment (Int32.shift_left i0 (Int32.to_int i1))
   | _ -> { comment; expression_desc = Bin (Lsl, e1, e2) }
 
@@ -1196,17 +1181,17 @@ let is_pos_pow n =
 
 let int32_mul ?comment (e1 : J.expression) (e2 : J.expression) : J.expression =
   match (e1, e2) with
-  | { expression_desc = Number (Int { i = 0l } | Uint 0l); _ }, x
+  | { expression_desc = Number (Int { i = 0l }); _ }, x
     when Js_analyzer.no_side_effect_expression x ->
       zero_int_literal
-  | x, { expression_desc = Number (Int { i = 0l } | Uint 0l); _ }
+  | x, { expression_desc = Number (Int { i = 0l }); _ }
     when Js_analyzer.no_side_effect_expression x ->
       zero_int_literal
   | ( { expression_desc = Number (Int { i = i0 }); _ },
       { expression_desc = Number (Int { i = i1 }); _ } ) ->
       int (Int32.mul i0 i1)
-  | e, { expression_desc = Number (Int { i = i0 } | Uint i0); _ }
-  | { expression_desc = Number (Int { i = i0 } | Uint i0); _ }, e ->
+  | e, { expression_desc = Number (Int { i = i0 }); _ }
+  | { expression_desc = Number (Int { i = i0 }); _ }, e ->
       let i = is_pos_pow i0 in
       if i >= 0 then int32_lsl e (small_int i)
       else
@@ -1225,10 +1210,10 @@ let rec int32_bxor ?comment (e1 : t) (e2 : t) : J.expression =
   match (e1.expression_desc, e2.expression_desc) with
   | Number (Int { i = i1 }), Number (Int { i = i2 }) ->
       int ?comment (Int32.logxor i1 i2)
-  | _, Bin (Lsr, e2, { expression_desc = Number (Int { i = 0l } | Uint 0l); _ })
+  | _, Bin (Lsr, e2, { expression_desc = Number (Int { i = 0l }); _ })
     ->
       int32_bxor e1 e2
-  | Bin (Lsr, e1, { expression_desc = Number (Int { i = 0l } | Uint 0l); _ }), _
+  | Bin (Lsr, e1, { expression_desc = Number (Int { i = 0l }); _ }), _
     ->
       int32_bxor e1 e2
   | _ -> { comment; expression_desc = Bin (Bxor, e1, e2) }

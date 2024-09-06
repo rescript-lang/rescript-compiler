@@ -108,8 +108,6 @@ val econd : ?comment:string -> t -> t -> t -> t
 
 val int : ?comment:string -> ?c:int -> int32 -> t
 
-val uint32 : ?comment:string -> int32 -> t
-
 val small_int : int -> t
 
 val bigint : ?comment:string -> bool -> string -> t
@@ -224,8 +222,6 @@ val instanceof : ?comment:string -> t -> t -> t
 val is_array : t -> t
 
 val to_int32 : ?comment:string -> t -> t
-
-val to_uint32 : ?comment:string -> t -> t
 
 val unchecked_int32_add : ?comment:string -> t -> t -> t
 

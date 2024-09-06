@@ -642,7 +642,6 @@ and expression_desc cxt ~(level : int) f x : cxt =
         | Int { i; c = None } ->
             Int32.to_string i
             (* check , js convention with ocaml lexical convention *)
-        | Uint i -> Format.asprintf "%lu" i
         | BigInt {positive; value} -> Format.asprintf "%sn" (Bigint_utils.to_string positive value)
       in
       let need_paren =
@@ -651,8 +650,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
         else
           level = 15 (* Parenthesize as well when followed by a dot. *)
           && s.[0] <> 'I' (* Infinity *)
-          && s.[0] <> 'N'
-        (* NaN *)
+          && s.[0] <> 'N' (* NaN *)
       in
       let action _ = P.string f s in
       if need_paren then P.paren f action else action ();

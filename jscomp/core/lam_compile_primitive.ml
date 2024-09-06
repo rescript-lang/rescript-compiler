@@ -228,7 +228,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       match args with [ e1; e2 ] -> E.bigint_op Lsl e1 e2 | _ -> assert false)
   | Plsrint -> (
       match args with
-      | [ e1; { J.expression_desc = Number (Int { i = 0l; _ } | Uint 0l); _ } ]
+      | [ e1; { J.expression_desc = Number (Int { i = 0l; _ }); _ } ]
         ->
           e1
       | [ e1; e2 ] -> E.to_int32 @@ E.int32_lsr e1 e2

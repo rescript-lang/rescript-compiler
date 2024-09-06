@@ -131,7 +131,6 @@ type bigint_lit = { positive: bool; value: string }
 type number =
   | Float of float_lit
   | Int of { i : int32; c : int option }
-  | Uint of int32
   | BigInt of bigint_lit
 
 (* becareful when constant folding +/-,

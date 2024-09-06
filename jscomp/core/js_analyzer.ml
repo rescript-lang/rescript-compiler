@@ -210,8 +210,6 @@ let rec eq_expression ({ expression_desc = x0 } : J.expression)
   | Length _ | Is_null_or_undefined _ | String_append _ | Typeof _ | Js_not _
   | Cond _ | FlatCall _ | New _ | Fun _ | Raw_js_code _ | Array _
   | Caml_block_tag _ | Object _ | Tagged_template _
-  | Number (Uint _) ->
-      false
   | Await _ -> false
   | Spread _ -> false
 
