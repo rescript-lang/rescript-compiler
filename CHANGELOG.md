@@ -10,7 +10,7 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 12.0.0-alpha.2 (Unreleased)
+# 12.0.0-alpha.2
 
 #### :rocket: New Feature
 
@@ -18,24 +18,10 @@
 - Add new dict literal syntax (`dict{"foo": "bar"}`). https://github.com/rescript-lang/rescript-compiler/pull/6774
 - Optimize usage of the new dict literal syntax to emit an actual JS object literal. https://github.com/rescript-lang/rescript-compiler/pull/6538
 
-#### :nail_care: Polish
-
-- Improve formatting in the generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6932
-  - `}\ncatch{` -> `} catch {`
-  - `for(let i = 0 ,i_finish = r.length; i < i_finish; ++i){` -> `for (let i = 0, i_finish = r.length; i < i_finish; ++i) {`
-  - `while(true) {` -> `while (true) {`
-  - Fixed tabulation for `switch case` bodies
-  - Fixed tabulation for `throw new Error` bodies
-  - Removed empty line at the end of `switch` statement
-  - Removed empty `default` case from `switch` statement in the generated code
-- Optimised the Type Extension runtime code and removed trailing `/1` from `RE_EXN_ID` https://github.com/rescript-lang/rescript-compiler/pull/6958
-- Compact output for anonymous functions. https://github.com/rescript-lang/rescript-compiler/pull/6945
-- Rewatch 1.0.9. https://github.com/rescript-lang/rescript-compiler/pull/7010
-
 #### :bug: Bug Fix
 - Fix issue where long layout break added a trailing comma in partial application `...`. https://github.com/rescript-lang/rescript-compiler/pull/6949
 - Fix incorrect format of function under unary operator. https://github.com/rescript-lang/rescript-compiler/pull/6953
-- Fix incorrect incorrect printing of module binding with signature. https://github.com/rescript-lang/rescript-compiler/pull/6963
+- Fix incorrect printing of module binding with signature. https://github.com/rescript-lang/rescript-compiler/pull/6963
 - Fix incorrect printing of external with `@as` attribute and `_` placholder (fixed argument). https://github.com/rescript-lang/rescript-compiler/pull/6970
 - Disallow spreading anything but regular variants inside of other variants. https://github.com/rescript-lang/rescript-compiler/pull/6980
 - Fix comment removed when function signature has `type` keyword. https://github.com/rescript-lang/rescript-compiler/pull/6997
@@ -47,6 +33,20 @@
 - Convert more tests to the node test runner. https://github.com/rescript-lang/rescript-compiler/pull/6956
 - Remove attribute "internal.arity". https://github.com/rescript-lang/rescript-compiler/pull/7004
 - Remove dead modules. https://github.com/rescript-lang/rescript-compiler/pull/7008
+
+#### :nail_care: Polish
+
+- Improve formatting in the generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6932
+  - `}\ncatch{` -> `} catch {`
+  - `for(let i = 0 ,i_finish = r.length; i < i_finish; ++i){` -> `for (let i = 0, i_finish = r.length; i < i_finish; ++i) {`
+  - `while(true) {` -> `while (true) {`
+  - Fixed tabulation for `switch case` bodies
+  - Fixed tabulation for `throw new Error` bodies
+  - Removed empty line at the end of `switch` statement
+  - Removed empty `default` case from `switch` statement in the generated code
+- Optimised the Type Extension runtime code and removed trailing `/1` from `RE_EXN_ID`. https://github.com/rescript-lang/rescript-compiler/pull/6958
+- Compact output for anonymous functions. https://github.com/rescript-lang/rescript-compiler/pull/6945 https://github.com/rescript-lang/rescript-compiler/pull/7013
+- Rewatch 1.0.9. https://github.com/rescript-lang/rescript-compiler/pull/7010
 
 # 12.0.0-alpha.1
 
