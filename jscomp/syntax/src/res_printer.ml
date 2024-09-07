@@ -1591,7 +1591,14 @@ and print_label_declaration ~state (ld : Parsetree.label_declaration) cmt_tbl =
        ])
 
 and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
-  let parent_has_attrs = Ast_uncurried.core_type_is_uncurried_fun typ_expr  && not (typ_expr.ptyp_attributes = []) in
+  let parent_has_attrs =
+    let attrs = ParsetreeViewer.filter_parsing_attrs typ_expr.ptyp_attributes in
+    if Ast_uncurried.core_type_is_uncurried_fun typ_expr && not (attrs = [])
+    then
+      let arity, _ = Ast_uncurried.core_type_extract_uncurried_fun typ_expr in
+      arity > 0
+    else false
+  in
   let print_arrow ?(arity = max_int) typ_expr =
     let attrs_before, args, return_type =
       ParsetreeViewer.arrow_type ~arity typ_expr
