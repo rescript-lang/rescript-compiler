@@ -1591,17 +1591,13 @@ and print_label_declaration ~state (ld : Parsetree.label_declaration) cmt_tbl =
        ])
 
 and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
-  let parent_has_attrs =
+  let parent_attrs =
     let attrs = ParsetreeViewer.filter_parsing_attrs typ_expr.ptyp_attributes in
-    if Ast_uncurried.core_type_is_uncurried_fun typ_expr && not (attrs = [])
-    then
-      let arity, _ = Ast_uncurried.core_type_extract_uncurried_fun typ_expr in
-      arity > 0
-    else false
+    if Ast_uncurried.core_type_is_uncurried_fun typ_expr then attrs else []
   in
   let print_arrow ?(arity = max_int) typ_expr =
     let attrs_before, args, return_type =
-      ParsetreeViewer.arrow_type ~arity typ_expr
+      ParsetreeViewer.arrow_type ~arity ~attrs:parent_attrs typ_expr
     in
     let return_type_needs_parens =
       match return_type.ptyp_desc with
@@ -1634,7 +1630,7 @@ and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
            [
              Doc.group attrs;
              Doc.group
-               (if has_attrs_before || parent_has_attrs then
+               (if has_attrs_before then
                   Doc.concat
                     [
                       Doc.lparen;
@@ -1849,6 +1845,8 @@ and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
   in
   let should_print_its_own_attributes =
     match typ_expr.ptyp_desc with
+    | Ptyp_constr _ when Ast_uncurried.core_type_is_uncurried_fun typ_expr ->
+      true
     | Ptyp_arrow _ (* es6 arrow types print their own attributes *) -> true
     | _ -> false
   in
