@@ -1591,6 +1591,7 @@ and print_label_declaration ~state (ld : Parsetree.label_declaration) cmt_tbl =
        ])
 
 and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
+  let parent_has_attrs = Ast_uncurried.core_type_is_uncurried_fun typ_expr  && not (typ_expr.ptyp_attributes = []) in
   let print_arrow ?(arity = max_int) typ_expr =
     let attrs_before, args, return_type =
       ParsetreeViewer.arrow_type ~arity typ_expr
@@ -1626,7 +1627,7 @@ and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
            [
              Doc.group attrs;
              Doc.group
-               (if has_attrs_before then
+               (if has_attrs_before || parent_has_attrs then
                   Doc.concat
                     [
                       Doc.lparen;

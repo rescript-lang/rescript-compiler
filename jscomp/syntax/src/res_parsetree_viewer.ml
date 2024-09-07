@@ -1,5 +1,30 @@
 open Parsetree
 
+let attrs_string attrs =
+  List.map (fun (attr, _) -> print_endline attr.Asttypes.txt) attrs
+
+let ident_string ident =
+  match ident with
+  | Longident.Lident v -> v
+  | Longident.Ldot (_, v) -> v
+  | Longident.Lapply _ -> "Lapply"
+
+let print_ct ct =
+  match ct with
+  | {ptyp_desc = Ptyp_constr (ident, _); ptyp_attributes = attrs} ->
+    let _ =
+      print_endline
+        ("Ptyp_constr: " ^ ident_string ident.txt ^ " attrs: "
+        ^ string_of_int (List.length attrs))
+    in
+    let _ = attrs_string attrs in
+    ()
+  | {ptyp_desc = Ptyp_arrow _; ptyp_attributes = attrs} ->
+    print_endline
+      ("Ptyp_arrow: " ^ " attrs: " ^ string_of_int (List.length attrs))
+  | {ptyp_desc = Ptyp_variant _} -> print_endline "Ptyp_variant"
+  | _ -> print_endline "Something else"
+
 let arrow_type ?(arity = max_int) ct =
   let has_as_attr attrs =
     Ext_list.exists attrs (fun (x, _) -> x.Asttypes.txt = "as")
