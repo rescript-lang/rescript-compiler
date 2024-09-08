@@ -1335,11 +1335,17 @@ and walk_expression expr t comments =
     (* (List.concat [inside; after]); *)
     attach t.trailing operand2.pexp_loc after
   | Pexp_apply
-      ( {pexp_desc = Pexp_ident {txt = Longident.Ldot (Lident "Array", "get")}},
+      ( {
+          pexp_desc =
+            Pexp_ident {txt = Longident.Ldot (Lident "Primitive_array", "get")};
+        },
         [(Nolabel, parent_expr); (Nolabel, member_expr)] ) ->
     walk_list [Expression parent_expr; Expression member_expr] t comments
   | Pexp_apply
-      ( {pexp_desc = Pexp_ident {txt = Longident.Ldot (Lident "Array", "set")}},
+      ( {
+          pexp_desc =
+            Pexp_ident {txt = Longident.Ldot (Lident "Primitive_array", "set")};
+        },
         [(Nolabel, parent_expr); (Nolabel, member_expr); (Nolabel, target_expr)]
       ) ->
     walk_list

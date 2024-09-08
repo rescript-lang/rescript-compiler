@@ -40,16 +40,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       Ext_list.for_all args no_side_effects
       &&
       match primitive with
-      | Pccall { prim_name } -> (
-          match (prim_name, args) with
-          | (
-              (
-              (* more safe to check if arguments are constant *)
-              (* non-observable side effect *)
-              "?make_vect" | "caml_array_dup" ),
-              _ ) ->
-              true
-          | _, _ -> false)
+      | Pccall _ -> true
       | Pmodint | Pdivint | Pdivbigint | Pmodbigint -> (
           match args with
           | [ _; Lconst cst ] -> not_zero_constant cst

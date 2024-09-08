@@ -5,8 +5,8 @@ let Mt = require("./mt.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
 let Belt_Range = require("../../lib/js/belt_Range.js");
-let Caml_array = require("../../lib/js/caml_array.js");
 let Array_data_util = require("./array_data_util.js");
+let Primitive_array = require("../../lib/js/primitive_array.js");
 let Belt_MutableSetInt = require("../../lib/js/belt_MutableSetInt.js");
 let Belt_internalAVLset = require("../../lib/js/belt_internalAVLset.js");
 let Belt_internalSetInt = require("../../lib/js/belt_internalSetInt.js");
@@ -436,7 +436,7 @@ eq("File \"bs_mutable_set_test.res\", line 210, characters 5-12", Belt_internalA
 let vv = Array_data_util.randomRange(0, 100000);
 
 for (let i$4 = 0, i_finish$2 = vv.length; i$4 < i_finish$2; ++i$4) {
-  Belt_MutableSetInt.remove(v$3, Caml_array.get(vv, i$4));
+  Belt_MutableSetInt.remove(v$3, Primitive_array.get(vv, i$4));
 }
 
 eq("File \"bs_mutable_set_test.res\", line 216, characters 5-12", Belt_internalAVLset.size(v$3.data), 0);
@@ -464,7 +464,7 @@ eq("File \"bs_mutable_set_test.res\", line 227, characters 5-12", Belt_internalA
 let vv$1 = Array_data_util.randomRange(1, 28);
 
 for (let i$5 = 0, i_finish$3 = vv$1.length; i$5 < i_finish$3; ++i$5) {
-  Belt_MutableSetInt.remove(v$4, Caml_array.get(vv$1, i$5));
+  Belt_MutableSetInt.remove(v$4, Primitive_array.get(vv$1, i$5));
 }
 
 eq("File \"bs_mutable_set_test.res\", line 232, characters 5-12", Belt_internalAVLset.size(v$4.data), 0);

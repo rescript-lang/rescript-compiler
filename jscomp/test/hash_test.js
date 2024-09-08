@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let $$Array = require("../../lib/js/array.js");
 let Hashtbl = require("../../lib/js/hashtbl.js");
 let Mt_global = require("./mt_global.js");
+let Belt_Array = require("../../lib/js/belt_Array.js");
 
 let suites = {
   contents: /* [] */0
@@ -18,7 +18,7 @@ function eq(f, x, y) {
   Mt_global.collect_eq(test_id, suites, f, x, y);
 }
 
-let test_strings = $$Array.init(32, i => String.fromCodePoint(i).repeat(i));
+let test_strings = Belt_Array.init(32, i => String.fromCodePoint(i).repeat(i));
 
 let test_strings_hash_results = [
   0,
@@ -63,13 +63,13 @@ function caml_hash(x) {
   return Hashtbl.hash(x) & 1073741823;
 }
 
-eq("File \"hash_test.res\", line 44, characters 12-19", $$Array.map(caml_hash, test_strings), test_strings_hash_results);
+eq("File \"hash_test.res\", line 46, characters 12-19", Belt_Array.map(test_strings, caml_hash), test_strings_hash_results);
 
-eq("File \"hash_test.res\", line 46, characters 12-19", Hashtbl.hash(0) & 1073741823, 129913994);
+eq("File \"hash_test.res\", line 48, characters 12-19", Hashtbl.hash(0) & 1073741823, 129913994);
 
-eq("File \"hash_test.res\", line 48, characters 12-19", Hashtbl.hash("x") & 1073741823, 780510073);
+eq("File \"hash_test.res\", line 50, characters 12-19", Hashtbl.hash("x") & 1073741823, 780510073);
 
-eq("File \"hash_test.res\", line 50, characters 12-19", Hashtbl.hash("xy") & 1073741823, 194127723);
+eq("File \"hash_test.res\", line 52, characters 12-19", Hashtbl.hash("xy") & 1073741823, 194127723);
 
 Mt.from_pair_suites("Hash_test", suites.contents);
 

@@ -39,14 +39,14 @@ let getId = bdd =>
 let initSize_1 = 8 * 1024 - 1
 let nodeC = ref(1)
 let sz_1 = ref(initSize_1)
-let htab = ref(Array.make(sz_1.contents + 1, list{}))
+let htab = ref(Belt.Array.make(sz_1.contents + 1, list{}))
 let n_items = ref(0)
 let hashVal = (x, y, v) => lsl(x, 1) + y + lsl(v, 2)
 
 let resize = newSize => {
   let arr = htab.contents
   let newSz_1 = newSize - 1
-  let newArr = Array.make(newSize, list{})
+  let newArr = Belt.Array.make(newSize, list{})
   let rec copyBucket = bucket =>
     switch bucket {
     | list{} => ()
@@ -81,7 +81,7 @@ let rec insert = (idl, idh, v, ind, bucket, newNode) =>
 
 let resetUnique = () => {
   sz_1 := initSize_1
-  htab := Array.make(sz_1.contents + 1, list{})
+  htab := Belt.Array.make(sz_1.contents + 1, list{})
   n_items := 0
   nodeC := 1
 }
@@ -143,6 +143,8 @@ let one = One
 let mkVar = x => mkNode(zero, x, one)
 
 let cacheSize = 1999
+
+open Belt
 let andslot1 = Array.make(cacheSize, 0)
 let andslot2 = Array.make(cacheSize, 0)
 let andslot3 = Array.make(cacheSize, zero)

@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let $$Array = require("../../lib/js/array.js");
-let Caml_array = require("../../lib/js/caml_array.js");
+let Belt_Array = require("../../lib/js/belt_Array.js");
+let Primitive_array = require("../../lib/js/primitive_array.js");
 
 function f() {
   let f$1 = (_acc, _n) => {
@@ -18,9 +18,9 @@ function f() {
       continue;
     };
   };
-  let v = Caml_array.make(10, 0);
+  let v = Belt_Array.make(10, 0);
   for (let i = 0; i <= 9; ++i) {
-    Caml_array.set(v, i, f$1(0, i));
+    Primitive_array.set(v, i, f$1(0, i));
   }
   return v;
 }
@@ -45,34 +45,9 @@ let suites_0 = [
   })
 ];
 
-let suites_1 = {
-  hd: [
-    "array_to_list",
-    param => ({
-      TAG: "Eq",
-      _0: {
-        hd: 1,
-        tl: {
-          hd: 2,
-          tl: {
-            hd: 3,
-            tl: /* [] */0
-          }
-        }
-      },
-      _1: $$Array.to_list([
-        1,
-        2,
-        3
-      ])
-    })
-  ],
-  tl: /* [] */0
-};
-
 let suites = {
   hd: suites_0,
-  tl: suites_1
+  tl: /* [] */0
 };
 
 Mt.from_pair_suites("Tailcall_inline_test", suites);

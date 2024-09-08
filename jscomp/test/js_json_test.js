@@ -2,13 +2,12 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let $$Array = require("../../lib/js/array.js");
 let Js_dict = require("../../lib/js/js_dict.js");
 let Js_json = require("../../lib/js/js_json.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
-let Caml_array = require("../../lib/js/caml_array.js");
 let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_array = require("../../lib/js/primitive_array.js");
 
 let suites = {
   contents: /* [] */0
@@ -321,7 +320,7 @@ function eq_at_i(loc, json, i, kind, expected) {
       _0: false
     }));
   }
-  let ty$1 = Js_json.classify(Caml_array.get(ty._0, i));
+  let ty$1 = Js_json.classify(Primitive_array.get(ty._0, i));
   switch (kind) {
     case "String" :
       if (typeof ty$1 !== "object") {
@@ -419,11 +418,11 @@ function eq_at_i(loc, json, i, kind, expected) {
   }
 }
 
-let json$5 = JSON.parse(JSON.stringify($$Array.map(prim => prim, [
+let json$5 = JSON.parse(JSON.stringify(Belt_Array.map([
   "string 0",
   "string 1",
   "string 2"
-])));
+], prim => prim)));
 
 eq_at_i("File \"js_json_test.res\", line 198, characters 10-17", json$5, 0, "String", "string 0");
 
@@ -451,11 +450,11 @@ let a = [
 
 let json$7 = JSON.parse(JSON.stringify(a));
 
-eq_at_i("File \"js_json_test.res\", line 218, characters 10-17", json$7, 0, "Number", Caml_array.get(a, 0));
+eq_at_i("File \"js_json_test.res\", line 218, characters 10-17", json$7, 0, "Number", Primitive_array.get(a, 0));
 
-eq_at_i("File \"js_json_test.res\", line 219, characters 10-17", json$7, 1, "Number", Caml_array.get(a, 1));
+eq_at_i("File \"js_json_test.res\", line 219, characters 10-17", json$7, 1, "Number", Primitive_array.get(a, 1));
 
-eq_at_i("File \"js_json_test.res\", line 220, characters 10-17", json$7, 2, "Number", Caml_array.get(a, 2));
+eq_at_i("File \"js_json_test.res\", line 220, characters 10-17", json$7, 2, "Number", Primitive_array.get(a, 2));
 
 let a$1 = [
   0,
@@ -463,13 +462,13 @@ let a$1 = [
   -268391749
 ];
 
-let json$8 = JSON.parse(JSON.stringify($$Array.map(prim => prim, a$1)));
+let json$8 = JSON.parse(JSON.stringify(Belt_Array.map(a$1, prim => prim)));
 
-eq_at_i("File \"js_json_test.res\", line 229, characters 10-17", json$8, 0, "Number", Caml_array.get(a$1, 0));
+eq_at_i("File \"js_json_test.res\", line 229, characters 10-17", json$8, 0, "Number", Primitive_array.get(a$1, 0));
 
-eq_at_i("File \"js_json_test.res\", line 230, characters 10-17", json$8, 1, "Number", Caml_array.get(a$1, 1));
+eq_at_i("File \"js_json_test.res\", line 230, characters 10-17", json$8, 1, "Number", Primitive_array.get(a$1, 1));
 
-eq_at_i("File \"js_json_test.res\", line 231, characters 10-17", json$8, 2, "Number", Caml_array.get(a$1, 2));
+eq_at_i("File \"js_json_test.res\", line 231, characters 10-17", json$8, 2, "Number", Primitive_array.get(a$1, 2));
 
 let a$2 = [
   true,
@@ -479,11 +478,11 @@ let a$2 = [
 
 let json$9 = JSON.parse(JSON.stringify(a$2));
 
-eq_at_i("File \"js_json_test.res\", line 240, characters 10-17", json$9, 0, "Boolean", Caml_array.get(a$2, 0));
+eq_at_i("File \"js_json_test.res\", line 240, characters 10-17", json$9, 0, "Boolean", Primitive_array.get(a$2, 0));
 
-eq_at_i("File \"js_json_test.res\", line 241, characters 10-17", json$9, 1, "Boolean", Caml_array.get(a$2, 1));
+eq_at_i("File \"js_json_test.res\", line 241, characters 10-17", json$9, 1, "Boolean", Primitive_array.get(a$2, 1));
 
-eq_at_i("File \"js_json_test.res\", line 242, characters 10-17", json$9, 2, "Boolean", Caml_array.get(a$2, 2));
+eq_at_i("File \"js_json_test.res\", line 242, characters 10-17", json$9, 2, "Boolean", Primitive_array.get(a$2, 2));
 
 function make_d(s, i) {
   let d = {};
@@ -507,7 +506,7 @@ if (typeof ty$6 !== "object") {
     _0: false
   }));
 } else if (ty$6.TAG === "JSONArray") {
-  let ty$7 = Js_json.classify(Caml_array.get(ty$6._0, 1));
+  let ty$7 = Js_json.classify(Primitive_array.get(ty$6._0, 1));
   if (typeof ty$7 !== "object") {
     add_test("File \"js_json_test.res\", line 268, characters 18-25", () => ({
       TAG: "Ok",

@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let $$Array = require("../../lib/js/array.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 let String_set = require("./string_set.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 
@@ -55,13 +55,13 @@ let a_ = make(undefined, undefined);
 
 let b_ = make(42, undefined);
 
-eq("File \"gpr_1409_test.res\", line 29, characters 3-10", b_.foo, "42");
+eq("File \"gpr_1409_test.res\", line 31, characters 3-10", b_.foo, "42");
 
 console.log(Object.keys(a_));
 
 console.log(a, b, a_, b_);
 
-eq("File \"gpr_1409_test.res\", line 34, characters 3-10", Object.keys(a_).length, 0);
+eq("File \"gpr_1409_test.res\", line 36, characters 3-10", Object.keys(a_).length, 0);
 
 let test2 = {
   hi: 2
@@ -128,15 +128,15 @@ function test6(f, x) {
 }
 
 function keys(xs, ys) {
-  return String_set.equal(String_set.of_list(xs), String_set.of_list($$Array.to_list(ys)));
+  return String_set.equal(String_set.of_list(xs), String_set.of_list(Belt_List.fromArray(ys)));
 }
 
-eq("File \"gpr_1409_test.res\", line 72, characters 3-10", keys({
+eq("File \"gpr_1409_test.res\", line 74, characters 3-10", keys({
   hd: "hi",
   tl: /* [] */0
 }, Object.keys(test3(undefined, undefined))), true);
 
-eq("File \"gpr_1409_test.res\", line 74, characters 3-10", keys({
+eq("File \"gpr_1409_test.res\", line 76, characters 3-10", keys({
   hd: "hi",
   tl: {
     hd: "_open",
@@ -144,7 +144,7 @@ eq("File \"gpr_1409_test.res\", line 74, characters 3-10", keys({
   }
 }, Object.keys(test3(2, undefined))), true);
 
-eq("File \"gpr_1409_test.res\", line 76, characters 3-10", keys({
+eq("File \"gpr_1409_test.res\", line 78, characters 3-10", keys({
   hd: "hi",
   tl: {
     hd: "_open",

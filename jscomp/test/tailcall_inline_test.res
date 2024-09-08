@@ -6,7 +6,7 @@ let f = () => {
       acc
     }
   let len = 10
-  let v = Array.make(len, 0)
+  let v = Belt.Array.make(len, 0)
   for i in 0 to len - 1 {
     v[i] = f(0, i)
   }
@@ -15,10 +15,7 @@ let f = () => {
 
 let suites = {
   open Mt
-  list{
-    ("acc", _ => Eq(f(), [0, 1, 3, 6, 10, 15, 21, 28, 36, 45])),
-    ("array_to_list", _ => Eq(list{1, 2, 3}, Array.to_list([1, 2, 3]))),
-  }
+  list{("acc", _ => Eq(f(), [0, 1, 3, 6, 10, 15, 21, 28, 36, 45]))}
 }
 
 Mt.from_pair_suites(__MODULE__, suites)

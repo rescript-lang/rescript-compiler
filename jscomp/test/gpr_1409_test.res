@@ -1,3 +1,5 @@
+open Belt
+
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 let eq = (loc, x, y) => {
@@ -67,7 +69,7 @@ let test6 = (f, x) => {
 }
 
 let keys = (xs, ys) =>
-  String_set.equal(String_set.of_list(xs), String_set.of_list(Array.to_list(ys)))
+  String_set.equal(String_set.of_list(xs), String_set.of_list(List.fromArray(ys)))
 
 eq(__LOC__, keys(list{"hi"}, Js.Obj.keys(test3(None, None))), true)
 

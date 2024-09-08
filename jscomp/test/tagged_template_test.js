@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_array = require("../../lib/js/caml_array.js");
+let Primitive_array = require("../../lib/js/primitive_array.js");
 let Tagged_template_libJs = require("./tagged_template_lib.js");
 
 function sql(prim0, prim1) {
@@ -27,9 +27,9 @@ function foo(strings, values) {
   let res = "";
   let valueCount = values.length;
   for (let i = 0; i < valueCount; ++i) {
-    res = res + Caml_array.get(strings, i) + Math.imul(Caml_array.get(values, i), 10).toString();
+    res = res + Primitive_array.get(strings, i) + Math.imul(Primitive_array.get(values, i), 10).toString();
   }
-  return res + Caml_array.get(strings, valueCount);
+  return res + Primitive_array.get(strings, valueCount);
 }
 
 let res = foo([

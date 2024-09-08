@@ -1,3 +1,5 @@
+open Belt
+
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 let eq = (f, x, y) => Mt_global.collect_eq(test_id, suites, f, x, y)
@@ -41,7 +43,7 @@ let test_strings_hash_results = [
 
 let normalize = x => land(x, 0x3FFFFFFF)
 let caml_hash = x => normalize(Hashtbl.hash(x))
-let () = eq(__LOC__, Array.map(caml_hash, test_strings), test_strings_hash_results)
+let () = eq(__LOC__, test_strings->Array.map(caml_hash), test_strings_hash_results)
 
 let () = eq(__LOC__, normalize(Hashtbl.hash(0)), 129913994)
 

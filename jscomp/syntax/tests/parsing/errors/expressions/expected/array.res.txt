@@ -9,4 +9,6 @@
   Did you forget a `]` here?
 
 let xs =
-  x.map ((Function$ (fun key -> [|key;(predicates.(key))|]))[@res.arity 1])
+  x.map
+    ((Function$ (fun key -> [|key;(Primitive_array.get predicates key)|]))
+    [@res.arity 1])

@@ -2,9 +2,9 @@
 'use strict';
 
 let List = require("../../lib/js/list.js");
-let $$Array = require("../../lib/js/array.js");
 let $$String = require("../../lib/js/string.js");
 let Set_gen = require("./set_gen.js");
+let Belt_Array = require("../../lib/js/belt_Array.js");
 let Primitive_string = require("../../lib/js/primitive_string.js");
 
 function split(x, tree) {
@@ -271,7 +271,7 @@ function of_list(l) {
 }
 
 function of_array(l) {
-  return $$Array.fold_left((acc, x) => add(x, acc), "Empty", l);
+  return Belt_Array.reduceReverse(l, "Empty", (acc, x) => add(x, acc));
 }
 
 function invariant(t) {

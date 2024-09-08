@@ -23,4 +23,4 @@ exports.str_b = str_b;
 exports.int_equal = int_equal;
 exports.v = v;
 exports.float_equal = float_equal;
-/* str_b Not a pure module */
+/* No side effect */

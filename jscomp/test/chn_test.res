@@ -1,3 +1,5 @@
+open Belt
+
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 let eq = (loc, x, y) => {
@@ -15,7 +17,7 @@ Js.log(`你好，
 Js.log(`\x3f\u003f\b\t\n\v\f\r\0"'`)
 
 let convert = (s: string): list<int> =>
-  Array.to_list(
+  List.fromArray(
     Js_array2.fromMap(Js_string.castToArrayLike(s), x =>
       switch Js_string2.codePointAt(x, 0) {
       | None => assert(false)

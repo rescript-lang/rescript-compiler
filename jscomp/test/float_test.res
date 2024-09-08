@@ -1,8 +1,10 @@
+open Belt
+
 let (test_id, suites) = (ref(0), ref(list{}))
 let eq = (loc, x, y) => Mt_global.collect_eq(test_id, suites, loc, x, y)
 let approx = (loc, x, y) => Mt_global.collect_approx(test_id, suites, loc, x, y)
 
-let results = Array.append(
+let results = Array.concat(
   [
     (log10(2.), 0.301029995663981198),
     (ldexp(1., 6), 64.) /* 1. * 2. ^ 6 */,
@@ -34,7 +36,9 @@ let results = Array.append(
 )
 
 let from_pairs = ps =>
-  Array.to_list(Array.mapi((i, (a, b)) => ("pair " ++ __unsafe_cast(i), _ => Mt.Approx(a, b)), ps))
+  List.fromArray(
+    ps->Array.mapWithIndex((i, (a, b)) => ("pair " ++ __unsafe_cast(i), _ => Mt.Approx(a, b))),
+  )
 
 let float_compare = (x: float, y) => Pervasives.compare(x, y)
 let generic_compare = Pervasives.compare
@@ -63,7 +67,12 @@ let () = {
     (true, true),
   )
   /* modf nan => (nan,nan) */
-  eq(__LOC__, Array.map(x =>
+  eq(
+    __LOC__,
+    [-1, 1, 1],
+    [(1., 3.), (2., 1.), (3., 2.)]
+    ->Array.map(((x, y)) => float_compare(x, y))
+    ->Array.map(x =>
       if x > 0 {
         1
       } else if x < 0 {
@@ -71,7 +80,8 @@ let () = {
       } else {
         0
       }
-    , Array.map(((x, y)) => float_compare(x, y), [(1., 3.), (2., 1.), (3., 2.)])), [-1, 1, 1])
+    ),
+  )
   eq(__LOC__, copysign(-3., 0.), 3.)
   eq(__LOC__, copysign(3., 0.), 3.)
   eq(__LOC__, log10(10.), 1.)

@@ -195,7 +195,7 @@ let of_list = l =>
   | _ => of_sorted_list(List.sort_uniq(compare_elt, l))
   }
 
-let of_array = l => Array.fold_left((acc, x) => add(x, acc), empty, l)
+let of_array = l => l->Belt.Array.reduceReverse(empty, (acc, x) => add(x, acc))
 
 /* also check order */
 let invariant = t => {

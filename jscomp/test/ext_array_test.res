@@ -22,14 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+open Belt
+
 let reverse_range = (a, i, len) =>
   if len == 0 {
     ()
   } else {
     for k in 0 to (len - 1) / 2 {
-      let t = Array.unsafe_get(a, i + k)
-      Array.unsafe_set(a, i + k, Array.unsafe_get(a, i + len - 1 - k))
-      Array.unsafe_set(a, i + len - 1 - k, t)
+      let t = Array.getUnsafe(a, i + k)
+      Array.setUnsafe(a, i + k, Array.getUnsafe(a, i + len - 1 - k))
+      Array.setUnsafe(a, i + len - 1 - k, t)
     }
   }
 
@@ -42,7 +44,7 @@ let reverse = a => {
   } else {
     let b = Array.copy(a)
     for i in 0 to b_len - 1 {
-      Array.unsafe_set(b, i, Array.unsafe_get(a, b_len - 1 - i))
+      Array.setUnsafe(b, i, Array.getUnsafe(a, b_len - 1 - i))
     }
     b
   }
@@ -58,7 +60,7 @@ let reverse_of_list = x =>
       switch x {
       | list{} => a
       | list{hd, ...tl} =>
-        Array.unsafe_set(a, len - i - 2, hd)
+        Array.setUnsafe(a, len - i - 2, hd)
         fill(i + 1, tl)
       }
     fill(0, tl)
@@ -70,7 +72,7 @@ let filter = (f, a) => {
     if i == arr_len {
       reverse_of_list(acc)
     } else {
-      let v = Array.unsafe_get(a, i)
+      let v = Array.getUnsafe(a, i)
       if f(v) {
         aux(list{v, ...acc}, i + 1)
       } else {
@@ -86,7 +88,7 @@ let filter_map = (f: _ => option<_>, a) => {
     if i == arr_len {
       reverse_of_list(acc)
     } else {
-      let v = Array.unsafe_get(a, i)
+      let v = Array.getUnsafe(a, i)
       switch f(v) {
       | Some(v) => aux(list{v, ...acc}, i + 1)
       | None => aux(acc, i + 1)
@@ -107,7 +109,7 @@ let map2i = (f, a, b) => {
   if len != Array.length(b) {
     invalid_arg("Ext_array_test.map2i")
   } else {
-    Array.mapi((i, a) => f(i, a, Array.unsafe_get(b, i)), a)
+    a->Array.mapWithIndex((i, a) => f(i, a, Array.getUnsafe(b, i)))
   }
 }
 
@@ -115,7 +117,7 @@ let rec tolist_aux = (a, f, i, res) =>
   if i < 0 {
     res
   } else {
-    let v = Array.unsafe_get(a, i)
+    let v = Array.getUnsafe(a, i)
     tolist_aux(
       a,
       f,
@@ -143,7 +145,7 @@ let of_list_map = (f, a) =>
       switch x {
       | list{} => arr
       | list{hd, ...tl} =>
-        Array.unsafe_set(arr, i, f(hd))
+        Array.setUnsafe(arr, i, f(hd))
         fill(i + 1, tl)
       }
     fill(1, tl)
@@ -166,7 +168,7 @@ let rfind_with_index = (arr, cmp, v) => {
   let rec aux = i =>
     if i < 0 {
       i
-    } else if cmp(Array.unsafe_get(arr, i), v) {
+    } else if cmp(Array.getUnsafe(arr, i), v) {
       i
     } else {
       aux(i - 1)
@@ -180,7 +182,10 @@ let rfind_and_split = (arr, cmp, v): split<_> => {
   if i < 0 {
     #No_split
   } else {
-    #Split(Array.sub(arr, 0, i), Array.sub(arr, i + 1, Array.length(arr) - i - 1))
+    #Split(
+      Array.slice(arr, ~offset=0, ~len=i),
+      Array.slice(arr, ~offset=i + 1, ~len=Array.length(arr) - i - 1),
+    )
   }
 }
 
@@ -189,7 +194,7 @@ let find_with_index = (arr, cmp, v) => {
   let rec aux = (i, len) =>
     if i >= len {
       -1
-    } else if cmp(Array.unsafe_get(arr, i), v) {
+    } else if cmp(Array.getUnsafe(arr, i), v) {
       i
     } else {
       aux(i + 1, len)
@@ -202,18 +207,19 @@ let find_and_split = (arr, cmp, v): split<_> => {
   if i < 0 {
     #No_split
   } else {
-    #Split(Array.sub(arr, 0, i), Array.sub(arr, i + 1, Array.length(arr) - i - 1))
+    #Split(
+      Array.slice(arr, ~offset=0, ~len=i),
+      Array.slice(arr, ~offset=i + 1, ~len=Array.length(arr) - i - 1),
+    )
   }
 }
-
-/* TODO: available since 4.03, use {!Array.exists} */
 
 let exists = (p, a) => {
   let n = Array.length(a)
   let rec loop = i =>
     if i == n {
       false
-    } else if p(Array.unsafe_get(a, i)) {
+    } else if p(Array.getUnsafe(a, i)) {
       true
     } else {
       loop(succ(i))
@@ -227,7 +233,7 @@ let rec unsafe_loop = (index, len, p, xs, ys) =>
   if index >= len {
     true
   } else {
-    p(Array.unsafe_get(xs, index), Array.unsafe_get(ys, index)) &&
+    p(Array.getUnsafe(xs, index), Array.getUnsafe(ys, index)) &&
     unsafe_loop(succ(index), len, p, xs, ys)
   }
 

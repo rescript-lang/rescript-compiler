@@ -2020,8 +2020,17 @@ and parse_bracket_access p expr start_pos =
       Parser.leave_breadcrumb p ExprArrayMutation;
       Parser.next p;
       let rhs_expr = parse_expr p in
+      (* FIXME: Do not implicitly rely on specific module name, even primitive one
+
+         This can be abused like
+           module Primitive_array = MyModule
+
+         Find better mechanism to support it
+      *)
       let array_set =
-        Location.mkloc (Longident.Ldot (Lident "Array", "set")) array_loc
+        Location.mkloc
+          (Longident.Ldot (Lident "Primitive_array", "set"))
+          array_loc
       in
       let end_pos = p.prev_end_pos in
       let array_set =
@@ -2036,7 +2045,9 @@ and parse_bracket_access p expr start_pos =
       let e =
         Ast_helper.Exp.apply ~loc:(mk_loc start_pos end_pos)
           (Ast_helper.Exp.ident ~loc:array_loc
-             (Location.mkloc (Longident.Ldot (Lident "Array", "get")) array_loc))
+             (Location.mkloc
+                (Longident.Ldot (Lident "Primitive_array", "get"))
+                array_loc))
           [(Nolabel, expr); (Nolabel, access_expr)]
       in
       parse_primary_expr ~operand:e p)

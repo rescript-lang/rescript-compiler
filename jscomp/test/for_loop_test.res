@@ -1,41 +1,43 @@
+open Belt
+
 let for_3 = x => {
   let v = ref(0)
-  let arr = Array.map(_ => _ => (), x)
+  let arr = x->Array.map(_ => _ => ())
   for i in 0 to Array.length(x) - 1 {
     let j = i * 2
     arr[i] = _ => v := v.contents + j
   }
-  Array.iter(x => x(), arr)
+  arr->Array.forEach(x => x())
   v.contents
 }
 
 let for_4 = x => {
   let v = ref(0)
-  let arr = Array.map(_ => _ => (), x)
+  let arr = x->Array.map(_ => _ => ())
   for i in 0 to Array.length(x) - 1 {
     let j = i * 2
     let k = 2 * j
     arr[i] = _ => v := v.contents + k
   }
-  Array.iter(x => x(), arr)
+  arr->Array.forEach(x => x())
   v.contents
 }
 
 let for_5 = (x, u) => {
   let v = ref(0)
-  let arr = Array.map(_ => _ => (), x)
+  let arr = x->Array.map(_ => _ => ())
   for i in 0 to Array.length(x) - 1 {
     let _j = i * 2
     let k = 2 * u * u
     arr[i] = _ => v := v.contents + k
   }
-  Array.iter(x => x(), arr)
+  arr->Array.forEach(x => x())
   v.contents
 }
 
 let for_6 = (x, u) => {
   let v = ref(0)
-  let arr = Array.map(_ => _ => (), x)
+  let arr = x->Array.map(_ => _ => ())
   let v4 = ref(0)
   let v5 = ref(0)
   let inspect_3 = ref(-1)
@@ -54,7 +56,7 @@ let for_6 = (x, u) => {
     }
     inspect_3 := v2.contents
   }
-  Array.iter(x => x(), arr)
+  arr->Array.forEach(x => x())
   [v.contents, v4.contents, v5.contents, inspect_3.contents]
 }
 
@@ -68,7 +70,7 @@ let for_7 = () => {
       arr[i * j_len + j] = _ => v := v.contents + i + j
     }
   }
-  Array.iter(f => f(), arr)
+  arr->Array.forEach(f => f())
   v.contents
 }
 
@@ -84,14 +86,14 @@ let for_8 = () => {
       arr[i * j_len + j] = _ => v := v.contents + i + j + h + k
     }
   }
-  Array.iter(f => f(), arr)
+  arr->Array.forEach(f => f())
   v.contents
 }
 
 let for_9 = () => {
   let (collect, get) = {
     let v: ref<list<int>> = ref(list{})
-    (x => v := list{x, ...v.contents}, () => \"@@"(Array.of_list, List.rev(v.contents)))
+    (x => v := list{x, ...v.contents}, () => \"@@"(List.toArray, List.reverse(v.contents)))
   }
 
   let i_len = 2
@@ -128,8 +130,8 @@ let for_9 = () => {
         v is changed
  */
   }
-  Array.iter(f => f(), arr)
-  Array.iter(f => f(), arr2)
+  arr->Array.forEach(f => f())
+  arr2->Array.forEach(f => f())
   [(vv.contents, get(), vv2.contents)]
 }
 

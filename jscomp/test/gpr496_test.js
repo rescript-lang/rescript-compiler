@@ -79,4 +79,4 @@ exports.expected = expected;
 exports.expected2 = expected2;
 exports.u = u;
 exports.ff = ff;
-/* expected Not a pure module */
+/*  Not a pure module */

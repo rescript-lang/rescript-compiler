@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_array = require("../../lib/js/caml_array.js");
+let Primitive_array = require("../../lib/js/primitive_array.js");
 
 let a = [
   0,
@@ -26,8 +26,8 @@ let c = [
 ];
 
 function f() {
-  Caml_array.set(a, 0, 3.0);
-  Caml_array.set(b, 0, 3);
+  Primitive_array.set(a, 0, 3.0);
+  Primitive_array.set(b, 0, 3);
 }
 
 function h() {
@@ -39,8 +39,8 @@ function g() {
   return {
     TAG: "Eq",
     _0: [
-      Caml_array.get(a, 0),
-      Caml_array.get(b, 0)
+      Primitive_array.get(a, 0),
+      Primitive_array.get(b, 0)
     ],
     _1: [
       3.0,
@@ -58,8 +58,8 @@ let suites_1 = {
   hd: [
     "avoid_mutable_inline_test",
     () => {
-      Caml_array.set(c, 0, 3);
-      Caml_array.set(c, 1, 4);
+      Primitive_array.set(c, 0, 3);
+      Primitive_array.set(c, 1, 4);
       return {
         TAG: "Eq",
         _0: [

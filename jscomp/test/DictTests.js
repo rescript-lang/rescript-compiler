@@ -23,4 +23,4 @@ exports.someString = someString;
 exports.createdDict = createdDict;
 exports.three = three;
 exports.intDict = intDict;
-/* createdDict Not a pure module */
+/* No side effect */

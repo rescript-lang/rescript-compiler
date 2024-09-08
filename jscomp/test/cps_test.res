@@ -1,3 +1,5 @@
+open Belt
+
 let test = () => {
   let v = ref(0)
   let rec f = (n, acc) =>
@@ -20,7 +22,7 @@ let test_closure = () => {
   for i in 0 to n - 1 {
     arr[i] = _ => i
   }
-  Array.iter(i => v := v.contents + i(0), arr)
+  arr->Array.forEach(i => v := v.contents + i(0))
   v.contents
 }
 
@@ -32,7 +34,7 @@ let test_closure2 = () => {
     let j = i + i
     arr[i] = _ => j
   }
-  Array.iter(i => v := v.contents + i(0), arr)
+  arr->Array.forEach(i => v := v.contents + i(0))
   v.contents
 }
 

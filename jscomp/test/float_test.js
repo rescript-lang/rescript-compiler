@@ -2,9 +2,10 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let $$Array = require("../../lib/js/array.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 let Mt_global = require("./mt_global.js");
+let Belt_Array = require("../../lib/js/belt_Array.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 let Primitive_float = require("../../lib/js/primitive_float.js");
 
@@ -30,7 +31,7 @@ let match$1 = Primitive_float.frexp_float(0);
 
 let match$2 = Primitive_float.frexp_float(-12.0);
 
-let results = $$Array.append([
+let results = Belt_Array.concat([
   [
     Math.log10(2),
     0.301029995663981198
@@ -111,7 +112,7 @@ let results = $$Array.append([
 ]);
 
 function from_pairs(ps) {
-  return $$Array.to_list($$Array.mapi((i, param) => {
+  return Belt_List.fromArray(Belt_Array.mapWithIndex(ps, (i, param) => {
     let b = param[1];
     let a = param[0];
     return [
@@ -122,7 +123,7 @@ function from_pairs(ps) {
         _1: b
       })
     ];
-  }, ps));
+  }));
 }
 
 let float_compare = Primitive_float.compare;
@@ -165,16 +166,16 @@ function float_greaterequal(x, y) {
 
 let generic_greaterequal = Caml_obj.greaterequal;
 
-eq("File \"float_test.res\", line 55, characters 5-12", Pervasives.classify_float(3), "FP_normal");
+eq("File \"float_test.res\", line 59, characters 5-12", Pervasives.classify_float(3), "FP_normal");
 
-eq("File \"float_test.res\", line 56, characters 5-12", Primitive_float.modf_float(-3.125), [
+eq("File \"float_test.res\", line 60, characters 5-12", Primitive_float.modf_float(-3.125), [
   -0.125,
   -3
 ]);
 
 let match$3 = Primitive_float.modf_float(Number.NaN);
 
-eq("File \"float_test.res\", line 58, characters 4-11", [
+eq("File \"float_test.res\", line 62, characters 4-11", [
   Number.isNaN(match$3[0]),
   Number.isNaN(match$3[1])
 ], [
@@ -182,15 +183,11 @@ eq("File \"float_test.res\", line 58, characters 4-11", [
   true
 ]);
 
-eq("File \"float_test.res\", line 66, characters 5-12", $$Array.map(x => {
-  if (x > 0) {
-    return 1;
-  } else if (x < 0) {
-    return -1;
-  } else {
-    return 0;
-  }
-}, $$Array.map(param => Primitive_float.compare(param[0], param[1]), [
+eq("File \"float_test.res\", line 71, characters 4-11", [
+  -1,
+  1,
+  1
+], Belt_Array.map(Belt_Array.map([
   [
     1,
     3
@@ -203,107 +200,111 @@ eq("File \"float_test.res\", line 66, characters 5-12", $$Array.map(x => {
     3,
     2
   ]
-])), [
-  -1,
-  1,
-  1
-]);
+], param => Primitive_float.compare(param[0], param[1])), x => {
+  if (x > 0) {
+    return 1;
+  } else if (x < 0) {
+    return -1;
+  } else {
+    return 0;
+  }
+}));
 
-eq("File \"float_test.res\", line 75, characters 5-12", Primitive_float.copysign_float(-3, 0), 3);
+eq("File \"float_test.res\", line 85, characters 5-12", Primitive_float.copysign_float(-3, 0), 3);
 
-eq("File \"float_test.res\", line 76, characters 5-12", Primitive_float.copysign_float(3, 0), 3);
+eq("File \"float_test.res\", line 86, characters 5-12", Primitive_float.copysign_float(3, 0), 3);
 
-eq("File \"float_test.res\", line 77, characters 5-12", Math.log10(10), 1);
+eq("File \"float_test.res\", line 87, characters 5-12", Math.log10(10), 1);
 
-eq("File \"float_test.res\", line 78, characters 5-12", Primitive_float.expm1_float(0), 0);
+eq("File \"float_test.res\", line 88, characters 5-12", Primitive_float.expm1_float(0), 0);
 
-eq("File \"float_test.res\", line 79, characters 5-12", Number("3.0"), 3.0);
+eq("File \"float_test.res\", line 89, characters 5-12", Number("3.0"), 3.0);
 
-approx("File \"float_test.res\", line 80, characters 9-16", Primitive_float.expm1_float(2), 6.38905609893065);
+approx("File \"float_test.res\", line 90, characters 9-16", Primitive_float.expm1_float(2), 6.38905609893065);
 
-eq("File \"float_test.res\", line 81, characters 5-12", Primitive_float.compare(NaN, NaN), 0);
+eq("File \"float_test.res\", line 91, characters 5-12", Primitive_float.compare(NaN, NaN), 0);
 
-eq("File \"float_test.res\", line 82, characters 5-12", Caml_obj.compare(NaN, NaN), 0);
+eq("File \"float_test.res\", line 92, characters 5-12", Caml_obj.compare(NaN, NaN), 0);
 
-eq("File \"float_test.res\", line 83, characters 5-12", Primitive_float.compare(NaN, Pervasives.neg_infinity), -1);
+eq("File \"float_test.res\", line 93, characters 5-12", Primitive_float.compare(NaN, Pervasives.neg_infinity), -1);
 
-eq("File \"float_test.res\", line 84, characters 5-12", Caml_obj.compare(NaN, Pervasives.neg_infinity), -1);
+eq("File \"float_test.res\", line 94, characters 5-12", Caml_obj.compare(NaN, Pervasives.neg_infinity), -1);
 
-eq("File \"float_test.res\", line 85, characters 5-12", Primitive_float.compare(Pervasives.neg_infinity, NaN), 1);
+eq("File \"float_test.res\", line 95, characters 5-12", Primitive_float.compare(Pervasives.neg_infinity, NaN), 1);
 
-eq("File \"float_test.res\", line 86, characters 5-12", Caml_obj.compare(Pervasives.neg_infinity, NaN), 1);
+eq("File \"float_test.res\", line 96, characters 5-12", Caml_obj.compare(Pervasives.neg_infinity, NaN), 1);
 
-eq("File \"float_test.res\", line 87, characters 5-12", NaN === NaN, false);
+eq("File \"float_test.res\", line 97, characters 5-12", NaN === NaN, false);
 
-eq("File \"float_test.res\", line 88, characters 5-12", Caml_obj.equal(NaN, NaN), false);
+eq("File \"float_test.res\", line 98, characters 5-12", Caml_obj.equal(NaN, NaN), false);
 
-eq("File \"float_test.res\", line 89, characters 5-12", 4.2 === NaN, false);
+eq("File \"float_test.res\", line 99, characters 5-12", 4.2 === NaN, false);
 
-eq("File \"float_test.res\", line 90, characters 5-12", Caml_obj.equal(4.2, NaN), false);
+eq("File \"float_test.res\", line 100, characters 5-12", Caml_obj.equal(4.2, NaN), false);
 
-eq("File \"float_test.res\", line 91, characters 5-12", NaN === 4.2, false);
+eq("File \"float_test.res\", line 101, characters 5-12", NaN === 4.2, false);
 
-eq("File \"float_test.res\", line 92, characters 5-12", Caml_obj.equal(NaN, 4.2), false);
+eq("File \"float_test.res\", line 102, characters 5-12", Caml_obj.equal(NaN, 4.2), false);
 
-eq("File \"float_test.res\", line 93, characters 5-12", NaN !== NaN, true);
+eq("File \"float_test.res\", line 103, characters 5-12", NaN !== NaN, true);
 
-eq("File \"float_test.res\", line 94, characters 5-12", Caml_obj.notequal(NaN, NaN), true);
+eq("File \"float_test.res\", line 104, characters 5-12", Caml_obj.notequal(NaN, NaN), true);
 
-eq("File \"float_test.res\", line 95, characters 5-12", 4.2 !== NaN, true);
+eq("File \"float_test.res\", line 105, characters 5-12", 4.2 !== NaN, true);
 
-eq("File \"float_test.res\", line 96, characters 5-12", Caml_obj.notequal(4.2, NaN), true);
+eq("File \"float_test.res\", line 106, characters 5-12", Caml_obj.notequal(4.2, NaN), true);
 
-eq("File \"float_test.res\", line 97, characters 5-12", NaN !== 4.2, true);
+eq("File \"float_test.res\", line 107, characters 5-12", NaN !== 4.2, true);
 
-eq("File \"float_test.res\", line 98, characters 5-12", Caml_obj.notequal(NaN, 4.2), true);
+eq("File \"float_test.res\", line 108, characters 5-12", Caml_obj.notequal(NaN, 4.2), true);
 
-eq("File \"float_test.res\", line 99, characters 5-12", NaN < NaN, false);
+eq("File \"float_test.res\", line 109, characters 5-12", NaN < NaN, false);
 
-eq("File \"float_test.res\", line 100, characters 5-12", Caml_obj.lessthan(NaN, NaN), false);
+eq("File \"float_test.res\", line 110, characters 5-12", Caml_obj.lessthan(NaN, NaN), false);
 
-eq("File \"float_test.res\", line 101, characters 5-12", 4.2 < NaN, false);
+eq("File \"float_test.res\", line 111, characters 5-12", 4.2 < NaN, false);
 
-eq("File \"float_test.res\", line 102, characters 5-12", Caml_obj.lessthan(4.2, NaN), false);
+eq("File \"float_test.res\", line 112, characters 5-12", Caml_obj.lessthan(4.2, NaN), false);
 
-eq("File \"float_test.res\", line 103, characters 5-12", NaN < 4.2, false);
+eq("File \"float_test.res\", line 113, characters 5-12", NaN < 4.2, false);
 
-eq("File \"float_test.res\", line 104, characters 5-12", Caml_obj.lessthan(NaN, 4.2), false);
+eq("File \"float_test.res\", line 114, characters 5-12", Caml_obj.lessthan(NaN, 4.2), false);
 
-eq("File \"float_test.res\", line 105, characters 5-12", NaN > NaN, false);
+eq("File \"float_test.res\", line 115, characters 5-12", NaN > NaN, false);
 
-eq("File \"float_test.res\", line 106, characters 5-12", Caml_obj.greaterthan(NaN, NaN), false);
+eq("File \"float_test.res\", line 116, characters 5-12", Caml_obj.greaterthan(NaN, NaN), false);
 
-eq("File \"float_test.res\", line 107, characters 5-12", 4.2 > NaN, false);
+eq("File \"float_test.res\", line 117, characters 5-12", 4.2 > NaN, false);
 
-eq("File \"float_test.res\", line 108, characters 5-12", Caml_obj.greaterthan(4.2, NaN), false);
+eq("File \"float_test.res\", line 118, characters 5-12", Caml_obj.greaterthan(4.2, NaN), false);
 
-eq("File \"float_test.res\", line 109, characters 5-12", NaN > 4.2, false);
+eq("File \"float_test.res\", line 119, characters 5-12", NaN > 4.2, false);
 
-eq("File \"float_test.res\", line 110, characters 5-12", Caml_obj.greaterthan(NaN, 4.2), false);
+eq("File \"float_test.res\", line 120, characters 5-12", Caml_obj.greaterthan(NaN, 4.2), false);
 
-eq("File \"float_test.res\", line 111, characters 5-12", NaN <= NaN, false);
+eq("File \"float_test.res\", line 121, characters 5-12", NaN <= NaN, false);
 
-eq("File \"float_test.res\", line 112, characters 5-12", Caml_obj.lessequal(NaN, NaN), false);
+eq("File \"float_test.res\", line 122, characters 5-12", Caml_obj.lessequal(NaN, NaN), false);
 
-eq("File \"float_test.res\", line 113, characters 5-12", 4.2 <= NaN, false);
+eq("File \"float_test.res\", line 123, characters 5-12", 4.2 <= NaN, false);
 
-eq("File \"float_test.res\", line 114, characters 5-12", Caml_obj.lessequal(4.2, NaN), false);
+eq("File \"float_test.res\", line 124, characters 5-12", Caml_obj.lessequal(4.2, NaN), false);
 
-eq("File \"float_test.res\", line 115, characters 5-12", NaN <= 4.2, false);
+eq("File \"float_test.res\", line 125, characters 5-12", NaN <= 4.2, false);
 
-eq("File \"float_test.res\", line 116, characters 5-12", Caml_obj.lessequal(NaN, 4.2), false);
+eq("File \"float_test.res\", line 126, characters 5-12", Caml_obj.lessequal(NaN, 4.2), false);
 
-eq("File \"float_test.res\", line 117, characters 5-12", NaN >= NaN, false);
+eq("File \"float_test.res\", line 127, characters 5-12", NaN >= NaN, false);
 
-eq("File \"float_test.res\", line 118, characters 5-12", Caml_obj.greaterequal(NaN, NaN), false);
+eq("File \"float_test.res\", line 128, characters 5-12", Caml_obj.greaterequal(NaN, NaN), false);
 
-eq("File \"float_test.res\", line 119, characters 5-12", 4.2 >= NaN, false);
+eq("File \"float_test.res\", line 129, characters 5-12", 4.2 >= NaN, false);
 
-eq("File \"float_test.res\", line 120, characters 5-12", Caml_obj.greaterequal(4.2, NaN), false);
+eq("File \"float_test.res\", line 130, characters 5-12", Caml_obj.greaterequal(4.2, NaN), false);
 
-eq("File \"float_test.res\", line 121, characters 5-12", NaN >= 4.2, false);
+eq("File \"float_test.res\", line 131, characters 5-12", NaN >= 4.2, false);
 
-eq("File \"float_test.res\", line 122, characters 5-12", Caml_obj.greaterequal(NaN, 4.2), false);
+eq("File \"float_test.res\", line 132, characters 5-12", Caml_obj.greaterequal(NaN, 4.2), false);
 
 let match$4 = Primitive_float.modf_float(32.3);
 

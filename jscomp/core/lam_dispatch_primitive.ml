@@ -136,12 +136,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
       like normal one to set the identifier *)
   | "?exn_slot_name" | "?is_extension" -> call Js_runtime_modules.exceptions
   | "?as_js_exn" -> call Js_runtime_modules.caml_js_exceptions
-  | "?array_sub" -> E.runtime_call Js_runtime_modules.array "sub" args
-  | "?array_concat" -> E.runtime_call Js_runtime_modules.array "concat" args
-  (*external concat: 'a array list -> 'a array
-     Not good for inline *)
-  | "?array_blit" -> E.runtime_call Js_runtime_modules.array "blit" args
-  | "?make_vect" -> E.runtime_call Js_runtime_modules.array "make" args
   | "?obj_tag" -> (
       (* Note that in ocaml, [int] has tag [1000] and [string] has tag [252]
          also now we need do nullary check

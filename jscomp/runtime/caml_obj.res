@@ -22,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+external array_unsafe_get: (array<'a>, int) => 'a = "%array_unsafe_get"
+
 type t = Obj.t
 
 module O = {
@@ -193,7 +195,7 @@ and aux_same_length = (a: array<Obj.t>, b: array<Obj.t>, i, same_length) =>
   if i == same_length {
     0
   } else {
-    let res = compare(Caml_array_extern.unsafe_get(a, i), Caml_array_extern.unsafe_get(b, i))
+    let res = compare(array_unsafe_get(a, i), array_unsafe_get(b, i))
 
     if res != 0 {
       res
@@ -206,7 +208,7 @@ and aux_length_a_short = (a: array<Obj.t>, b: array<Obj.t>, i, short_length) =>
   if i == short_length {
     -1
   } else {
-    let res = compare(Caml_array_extern.unsafe_get(a, i), Caml_array_extern.unsafe_get(b, i))
+    let res = compare(array_unsafe_get(a, i), array_unsafe_get(b, i))
 
     if res != 0 {
       res
@@ -219,7 +221,7 @@ and aux_length_b_short = (a: array<Obj.t>, b: array<Obj.t>, i, short_length) =>
   if i == short_length {
     1
   } else {
-    let res = compare(Caml_array_extern.unsafe_get(a, i), Caml_array_extern.unsafe_get(b, i))
+    let res = compare(array_unsafe_get(a, i), array_unsafe_get(b, i))
 
     if res != 0 {
       res
@@ -318,7 +320,7 @@ and aux_equal_length = (a: array<Obj.t>, b: array<Obj.t>, i, same_length) =>
   if i == same_length {
     true
   } else {
-    equal(Caml_array_extern.unsafe_get(a, i), Caml_array_extern.unsafe_get(b, i)) &&
+    equal(array_unsafe_get(a, i), array_unsafe_get(b, i)) &&
     aux_equal_length(a, b, i + 1, same_length)
   }
 

@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_array = require("../../lib/js/caml_array.js");
+let Belt_Array = require("../../lib/js/belt_Array.js");
 
 let suites = {
   contents: /* [] */0
@@ -28,7 +28,7 @@ let a = [];
 
 a.push(1, 2, 3, 4);
 
-eq("File \"splice_test.res\", line 23, characters 5-12", a, [
+eq("File \"splice_test.res\", line 25, characters 5-12", a, [
   1,
   2,
   3,
@@ -38,13 +38,10 @@ eq("File \"splice_test.res\", line 23, characters 5-12", a, [
 function dynamic(arr) {
   let a = [];
   a.push(1, ...arr);
-  eq("File \"splice_test.res\", line 29, characters 5-12", a, Caml_array.concat({
-    hd: [1],
-    tl: {
-      hd: arr,
-      tl: /* [] */0
-    }
-  }));
+  eq("File \"splice_test.res\", line 31, characters 5-12", a, Belt_Array.concatMany([
+    [1],
+    arr
+  ]));
 }
 
 dynamic([
@@ -63,7 +60,7 @@ dynamic([
 
 let a$1 = new Array(1, 2, 3, 4);
 
-eq("File \"splice_test.res\", line 44, characters 5-12", a$1, [
+eq("File \"splice_test.res\", line 46, characters 5-12", a$1, [
   1,
   2,
   3,
@@ -72,16 +69,13 @@ eq("File \"splice_test.res\", line 44, characters 5-12", a$1, [
 
 function dynamicNew(arr) {
   let a = new Array(1, 2, ...arr);
-  eq("File \"splice_test.res\", line 49, characters 5-12", a, Caml_array.concat({
-    hd: [
+  eq("File \"splice_test.res\", line 51, characters 5-12", a, Belt_Array.concatMany([
+    [
       1,
       2
     ],
-    tl: {
-      hd: arr,
-      tl: /* [] */0
-    }
-  }));
+    arr
+  ]));
 }
 
 dynamicNew([
@@ -105,7 +99,7 @@ class Foo {
 
 let f = new Foo("a", "b", "c");
 
-eq("File \"splice_test.res\", line 71, characters 5-12", f.names, [
+eq("File \"splice_test.res\", line 73, characters 5-12", f.names, [
   "a",
   "b",
   "c"
@@ -113,7 +107,7 @@ eq("File \"splice_test.res\", line 71, characters 5-12", f.names, [
 
 function dynamicFoo(arr) {
   let f = new Foo(...arr);
-  eq("File \"splice_test.res\", line 76, characters 5-12", f.names, arr);
+  eq("File \"splice_test.res\", line 78, characters 5-12", f.names, arr);
 }
 
 dynamicFoo([]);
@@ -130,7 +124,7 @@ let a$2 = [];
 
 a$2.push(1, 2, 3, 4);
 
-eq("File \"splice_test.res\", line 93, characters 7-14", a$2, [
+eq("File \"splice_test.res\", line 95, characters 7-14", a$2, [
   1,
   2,
   3,
@@ -140,13 +134,10 @@ eq("File \"splice_test.res\", line 93, characters 7-14", a$2, [
 function dynamic$1(arr) {
   let a = [];
   a.push(1, ...arr);
-  eq("File \"splice_test.res\", line 99, characters 7-14", a, Caml_array.concat({
-    hd: [1],
-    tl: {
-      hd: arr,
-      tl: /* [] */0
-    }
-  }));
+  eq("File \"splice_test.res\", line 101, characters 7-14", a, Belt_Array.concatMany([
+    [1],
+    arr
+  ]));
 }
 
 dynamic$1([
@@ -171,11 +162,11 @@ function f1(c) {
   return Math.max(1, ...c);
 }
 
-eq("File \"splice_test.res\", line 109, characters 3-10", Math.max(1, 2, 3), 3);
+eq("File \"splice_test.res\", line 111, characters 3-10", Math.max(1, 2, 3), 3);
 
-eq("File \"splice_test.res\", line 110, characters 3-10", Math.max(1), 1);
+eq("File \"splice_test.res\", line 112, characters 3-10", Math.max(1), 1);
 
-eq("File \"splice_test.res\", line 111, characters 3-10", Math.max(1, 1, 2, 3, 4, 5, 2, 3), 5);
+eq("File \"splice_test.res\", line 113, characters 3-10", Math.max(1, 1, 2, 3, 4, 5, 2, 3), 5);
 
 Mt.from_pair_suites("splice_test.res", suites.contents);
 

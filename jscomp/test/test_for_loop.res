@@ -1,3 +1,5 @@
+open Belt
+
 let for_ = x =>
   for i in 0 to {
     Js.log("hi")
@@ -14,42 +16,42 @@ let for_2 = x =>
 
 let for_3 = x => {
   let v = ref(0)
-  let arr = Array.map(_ => _ => (), x)
+  let arr = x->Array.map(_ => _ => ())
   for i in 0 to Array.length(x) {
     let j = i * 2
     arr[i] = _ => v := v.contents + j
   }
-  Array.iter(x => x(), arr)
+  arr->Array.forEach(x => x())
   v.contents
 }
 
 let for_4 = x => {
   let v = ref(0)
-  let arr = Array.map(_ => _ => (), x)
+  let arr = x->Array.map(_ => _ => ())
   for i in 0 to Array.length(x) {
     let j = i * 2
     let k = 2 * j
     arr[i] = _ => v := v.contents + k
   }
-  Array.iter(x => x(), arr)
+  arr->Array.forEach(x => x())
   v.contents
 }
 
 let for_5 = (x, u) => {
   let v = ref(0)
-  let arr = Array.map(_ => _ => (), x)
+  let arr = x->Array.map(_ => _ => ())
   for i in 0 to Array.length(x) {
     let _j = i * 2
     let k = 2 * u * u
     arr[i] = _ => v := v.contents + k
   }
-  Array.iter(x => x(), arr)
+  arr->Array.forEach(x => x())
   v.contents
 }
 
 let for_6 = (x, u) => {
   let v = ref(0)
-  let arr = Array.map(_ => _ => (), x)
+  let arr = x->Array.map(_ => _ => ())
   let v4 = ref(0)
   let v5 = ref(0)
   incr(v4)
@@ -65,6 +67,6 @@ let for_6 = (x, u) => {
       arr[i] = _ => v := v.contents + k + v2.contents + v3 + v4.contents + v5.contents + h
     }
   }
-  Array.iter(x => x(), arr)
+  arr->Array.forEach(x => x())
   v.contents
 }

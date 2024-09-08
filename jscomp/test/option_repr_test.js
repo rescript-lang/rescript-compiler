@@ -178,22 +178,22 @@ let xs = {
 
 b("File \"option_repr_test.res\", line 125, characters 8-15", Belt_List.every(xs, x => x));
 
-let xs_0$1 = ltx(Caml_option.some(undefined), 3);
+let xs_0$1 = Caml_obj.lessthan(Caml_option.some(undefined), 3) && Caml_obj.greaterthan(3, Caml_option.some(undefined));
 
 let xs_1 = {
-  hd: ltx(Caml_option.some(undefined), Caml_option.some(Caml_option.some(undefined))),
+  hd: Caml_obj.lessthan(Caml_option.some(undefined), Caml_option.some(Caml_option.some(undefined))) && Caml_obj.greaterthan(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(undefined)),
   tl: {
-    hd: ltx(Caml_option.some(undefined), "3"),
+    hd: Caml_obj.lessthan(Caml_option.some(undefined), "3") && Caml_obj.greaterthan("3", Caml_option.some(undefined)),
     tl: {
-      hd: ltx(Caml_option.some(undefined), true),
+      hd: Caml_obj.lessthan(Caml_option.some(undefined), true) && Caml_obj.greaterthan(true, Caml_option.some(undefined)),
       tl: {
-        hd: ltx(Caml_option.some(undefined), false),
+        hd: Caml_obj.lessthan(Caml_option.some(undefined), false) && Caml_obj.greaterthan(false, Caml_option.some(undefined)),
         tl: {
-          hd: ltx(false, true),
+          hd: Caml_obj.lessthan(false, true) && Caml_obj.greaterthan(true, false),
           tl: {
-            hd: ltx(false, true),
+            hd: Caml_obj.lessthan(false, true) && Caml_obj.greaterthan(true, false),
             tl: {
-              hd: ltx(undefined, Caml_option.some(undefined)),
+              hd: Caml_obj.lessthan(undefined, Caml_option.some(undefined)) && Caml_obj.greaterthan(Caml_option.some(undefined), undefined),
               tl: {
                 hd: ltx(undefined, null),
                 tl: {
@@ -219,16 +219,16 @@ let xs$1 = {
 
 b("File \"option_repr_test.res\", line 128, characters 4-11", Belt_List.every(xs$1, x => x));
 
-let xs_0$2 = eqx(undefined, undefined);
+let xs_0$2 = true && true;
 
 let xs_1$1 = {
   hd: neqx(undefined, null),
   tl: {
-    hd: eqx(Caml_option.some(undefined), Caml_option.some(undefined)),
+    hd: Caml_obj.equal(Caml_option.some(undefined), Caml_option.some(undefined)) && Caml_obj.equal(Caml_option.some(undefined), Caml_option.some(undefined)),
     tl: {
-      hd: eqx(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))),
+      hd: Caml_obj.equal(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))) && Caml_obj.equal(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))),
       tl: {
-        hd: neqx(Caml_option.some(Caml_option.some(Caml_option.some(undefined))), Caml_option.some(Caml_option.some(undefined))),
+        hd: Caml_obj.notequal(Caml_option.some(Caml_option.some(Caml_option.some(undefined))), Caml_option.some(Caml_option.some(undefined))) && Caml_obj.notequal(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(Caml_option.some(undefined)))),
         tl: /* [] */0
       }
     }

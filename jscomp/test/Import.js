@@ -116,7 +116,6 @@ async function f6() {
 }
 
 async function f7() {
-  await import("../../lib/js/belt_MapInt.js");
   return 1;
 }
 

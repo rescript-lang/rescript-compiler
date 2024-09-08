@@ -1,9 +1,10 @@
+open Belt
+
 let v = Array.make(6, 5)
 
-let h = Array.sub(v, 0, 2)
+let h = Array.slice(v, ~offset=0, ~len=2)
 let hh = Array.blit
 
-let hhh = Array.append([1, 2, 3, 4], [1, 2, 3, 5])
+let hhh = Array.concat([1, 2, 3, 4], [1, 2, 3, 5])
 
-let u = Array.concat(list{[1, 2], [2, 3], [3, 4]})
-/* console.log(v ) */
+let u = Array.concatMany([[1, 2], [2, 3], [3, 4]])

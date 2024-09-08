@@ -404,7 +404,10 @@ let has_attributes attrs =
 let is_array_access expr =
   match expr.pexp_desc with
   | Pexp_apply
-      ( {pexp_desc = Pexp_ident {txt = Longident.Ldot (Lident "Array", "get")}},
+      ( {
+          pexp_desc =
+            Pexp_ident {txt = Longident.Ldot (Lident "Primitive_array", "get")};
+        },
         [(Nolabel, _parentExpr); (Nolabel, _memberExpr)] ) ->
     true
   | _ -> false

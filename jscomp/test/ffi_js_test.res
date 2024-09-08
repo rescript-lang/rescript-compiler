@@ -38,8 +38,8 @@ let same_type = (
 )
 
 let () = {
-  eq(__LOC__, (Array.length(Js_obj.keys(int_config)), 2))
-  eq(__LOC__, (Array.length(Js_obj.keys(string_config)), 2))
+  eq(__LOC__, (Belt.Array.length(Js_obj.keys(int_config)), 2))
+  eq(__LOC__, (Belt.Array.length(Js_obj.keys(string_config)), 2))
 }
 
 let u = ref(3)

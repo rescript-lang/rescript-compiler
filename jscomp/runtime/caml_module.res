@@ -35,11 +35,11 @@ type rec shape =
   | Class
   | Module(array<(shape, string)>)
   | Value(Obj.t)
-/* ATTENTION: check across versions */
-module Array = Caml_array_extern
+
+@get external array_length: array<'a> => int = "length"
+@get_index external array_unsafe_get: (array<'a>, int) => 'a = ""
 
 @set_index external set_field: (Obj.t, string, Obj.t) => unit = ""
-
 @get_index external get_field: (Obj.t, string) => Obj.t = ""
 
 module type Empty = {}
@@ -69,9 +69,9 @@ let init_mod = (loc: (string, int, int), shape: shape) => {
     | Module(comps) =>
       let v = Obj.repr(module({}: Empty))
       set_field(struct_, idx, v)
-      let len = Array.length(comps)
+      let len = array_length(comps)
       for i in 0 to len - 1 {
-        let (shape, name) = Caml_array_extern.unsafe_get(comps, i)
+        let (shape, name) = array_unsafe_get(comps, i)
         loop(shape, v, name)
       }
     | Value(v) => set_field(struct_, idx, v)
@@ -94,16 +94,16 @@ let update_mod = (shape: shape, o: Obj.t, n: Obj.t): unit => {
     | Class =>
       Caml_obj.update_dummy(o, n)
     | Module(comps) =>
-      for i in 0 to Array.length(comps) - 1 {
-        let (shape, name) = Caml_array_extern.unsafe_get(comps, i)
+      for i in 0 to array_length(comps) - 1 {
+        let (shape, name) = array_unsafe_get(comps, i)
         aux(shape, get_field(o, name), get_field(n, name), o, name)
       }
     | Value(_) => ()
     }
   switch shape {
   | Module(comps) =>
-    for i in 0 to Array.length(comps) - 1 {
-      let (shape, name) = Caml_array_extern.unsafe_get(comps, i)
+    for i in 0 to array_length(comps) - 1 {
+      let (shape, name) = array_unsafe_get(comps, i)
       aux(shape, get_field(o, name), get_field(n, name), o, name)
     }
   | _ => assert(false)

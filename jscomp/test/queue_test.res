@@ -1,3 +1,5 @@
+open Belt
+
 module Test = (Queue: module type of Queue) => {
   let to_array = q => {
     let v = Array.make(Queue.length(q), 0)
@@ -12,7 +14,7 @@ module Test = (Queue: module type of Queue) => {
   let queue_1 = x => {
     let q = Queue.create()
     /* dump [|q|]; */
-    Array.iter(x => Queue.add(x, q), x)
+    x->Array.forEach(x => Queue.add(x, q))
     /* dump [|q|]; */
     to_array(q)
   }

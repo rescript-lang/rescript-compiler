@@ -8,4 +8,4 @@ let M = await import("./side_effect.js");
 
 exports.a = a;
 exports.M = M;
-/* M Not a pure module */
+/* Side_effect Not a pure module */

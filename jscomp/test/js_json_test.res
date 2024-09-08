@@ -192,7 +192,7 @@ let eq_at_i = (type a, loc: string, json: J.t, i: int, kind: J.Kind.t<a>, expect
 
 let () = {
   let json = J.parseExn(
-    J.stringify(J.array(Array.map(J.string, ["string 0", "string 1", "string 2"]))),
+    J.stringify(J.array(Belt.Array.map(["string 0", "string 1", "string 2"], J.string))),
   )
 
   eq_at_i(__LOC__, json, 0, J.Kind.String, "string 0")
@@ -223,7 +223,7 @@ let () = {
 
 let () = {
   let a = [0, 0xAFAFAFAF, 0xF000AABB]
-  let json = J.parseExn(J.stringify(J.numberArray(Array.map(float_of_int, a))))
+  let json = J.parseExn(J.stringify(J.numberArray(a->Belt.Array.map(float_of_int))))
 
   /* Loop is unrolled to keep relevant location information */
   eq_at_i(__LOC__, json, 0, J.Kind.Number, float_of_int(a[0]))

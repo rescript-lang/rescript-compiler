@@ -34,7 +34,7 @@ let assert_fail = msg => fail((), (), Js.Undefined.return(msg), "")
 @module("path") external basename: string => string = "basename"
 
 let is_mocha = () =>
-  switch Array.to_list(argv) {
+  switch Belt.List.fromArray(argv) {
   | list{_node, mocha, ..._} =>
     let exec = basename(mocha)
     exec == "mocha" || exec == "_mocha"
@@ -44,16 +44,16 @@ let is_mocha = () =>
  */
 
 let from_suites = %raw(`
-function from_suites(name, suite) {
-  var match = $$Array.to_list(Process.argv);
+function from_suites(name, suites) {
+  var match = Belt_List.fromArray(Process.argv);
   if (match && is_mocha(undefined)) {
     describe(name, (function () {
-            return List.iter((function (param) {
+            return Belt_List.forEach(suites, (function (param) {
                           var partial_arg = param[1];
                           it(param[0], (function () {
                                   return partial_arg(undefined);
                                 }));
-                        }), suite);
+                        }));
           }));
     return ;
   }
@@ -118,16 +118,16 @@ let handleCode = spec =>
 
 let from_pair_suites = %raw(`
 function from_pair_suites(name, suites) {
-  var match = $$Array.to_list(Process.argv);
+  var match = Belt_List.fromArray(Process.argv);
   if (match) {
     if (is_mocha(undefined)) {
       describe(name, (function () {
-              return List.iter((function (param) {
+              return Belt_List.forEach(suites, (function (param) {
                             var code = param[1];
                             it(param[0], (function () {
                                     return handleCode(code(undefined));
                                   }));
-                          }), suites);
+                          }));
             }));
       return ;
     } else {
@@ -135,7 +135,7 @@ function from_pair_suites(name, suites) {
             name,
             "testing"
           ]);
-      return List.iter((function (param) {
+      return Belt_List.forEach(suites, (function (param) {
                     var name = param[0];
                     var fn = param[1](undefined);
                     switch (fn.TAG) {
@@ -207,7 +207,7 @@ function from_pair_suites(name, suites) {
                           return ;
                       
                     }
-                  }), suites);
+                  }));
     }
   }
   
@@ -218,11 +218,11 @@ let val_unit = Js.Promise.resolve()
 let from_promise_suites = %raw(`
 
 function from_promise_suites(name, suites) {
-  var match = $$Array.to_list(Process.argv);
+  var match = Belt_List.fromArray(Process.argv);
   if (match) {
     if (is_mocha(undefined)) {
       describe(name, (function () {
-              return List.iter((function (param) {
+              return Belt_List.forEach(suites, (function (param) {
                             var code = param[1];
                             it(param[0], (function () {
                                     var arg1 = function (x) {
@@ -231,7 +231,7 @@ function from_promise_suites(name, suites) {
                                     };
                                     return code.then(arg1);
                                   }));
-                          }), suites);
+                          }));
             }));
     } else {
       console.log("promise suites");
@@ -243,10 +243,11 @@ function from_promise_suites(name, suites) {
 `)
 
 let old_from_promise_suites_donotuse = (name, suites: list<(string, Js.Promise.t<_>)>) =>
-  switch Array.to_list(argv) {
+  switch Belt.List.fromArray(argv) {
   | list{cmd, ..._} =>
     if is_mocha() {
-      describe(name, () => List.iter(((name, code)) =>
+      describe(name, () =>
+        suites->Belt.List.forEach(((name, code)) =>
           it_promise(
             name,
             _ =>
@@ -258,7 +259,8 @@ let old_from_promise_suites_donotuse = (name, suites: list<(string, Js.Promise.t
                 code,
               ),
           )
-        , suites))
+        )
+      )
     } else {
       Js.log("promise suites")
     } /* TODO */

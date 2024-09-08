@@ -3,7 +3,7 @@ module rec PA: {
 } = {
   /* let () = P.print 3 */
   let print = {
-    let iter = Array.iter(P.print, ...)
+    let iter = Belt.Array.forEach(_, P.print)
     a => iter(a)
   }
 }

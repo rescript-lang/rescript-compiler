@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_array = require("../../lib/js/caml_array.js");
 let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_array = require("../../lib/js/primitive_array.js");
 
 let suites_0 = [
   "captures",
@@ -16,8 +16,8 @@ let suites_0 = [
         _0: undefined
       };
     }
-    let defined = Caml_array.get(result, 1);
-    let $$undefined = Caml_array.get(result, 2);
+    let defined = Primitive_array.get(result, 1);
+    let $$undefined = Primitive_array.get(result, 2);
     return {
       TAG: "Eq",
       _0: [
@@ -39,7 +39,7 @@ let suites_1 = {
       let contentOf = (tag, xmlString) => {
         let x = Caml_option.null_to_opt(new RegExp("<" + (tag + (">(.*?)<\\/" + (tag + ">")))).exec(xmlString));
         if (x !== undefined) {
-          return Caml_option.nullable_to_opt(Caml_array.get(Caml_option.valFromOption(x), 1));
+          return Caml_option.nullable_to_opt(Primitive_array.get(Caml_option.valFromOption(x), 1));
         }
         
       };
@@ -59,7 +59,7 @@ let suites_1 = {
           return {
             TAG: "Eq",
             _0: "http://xxx",
-            _1: Caml_array.get(res, 0)
+            _1: Primitive_array.get(res, 0)
           };
         } else {
           return {

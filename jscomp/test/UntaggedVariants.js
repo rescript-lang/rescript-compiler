@@ -3,8 +3,8 @@
 
 let Js_dict = require("../../lib/js/js_dict.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
-let Caml_array = require("../../lib/js/caml_array.js");
 let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_array = require("../../lib/js/primitive_array.js");
 
 function classify(x) {
   if (x === "A" && typeof x !== "number") {
@@ -290,7 +290,7 @@ let OverlapObject = {
 
 function classify$7(v) {
   if (Array.isArray(v)) {
-    return Caml_array.get(v, 0);
+    return Primitive_array.get(v, 0);
   } else {
     return v.x;
   }
@@ -304,7 +304,7 @@ function classify$8(v) {
   if (typeof v === "object" && !Array.isArray(v)) {
     return v.x;
   } else {
-    return Caml_array.get(v, 0);
+    return Primitive_array.get(v, 0);
   }
 }
 
@@ -357,7 +357,7 @@ let OptionUnboxingHeuristic = {
 
 function classify$9(v) {
   if (Array.isArray(v)) {
-    return Caml_array.get(v, 0);
+    return Primitive_array.get(v, 0);
   }
   switch (typeof v) {
     case "object" :
