@@ -125,13 +125,13 @@ type t = (
 type t = (@attr string, @attr float) => unit
 type t = (@attr @attr2 string, @attr @attr2 float, @attr3 int) => unit
 
-type t = @attr string => unit
+type t = @attr (string => unit)
 type t = @attr (foo, bar, baz) => unit
 type t = @attr (foo, @attr2 ~f: bar, @attr3 ~f: baz) => unit
 
-type t = @attr string => @attr int => unit
+type t = @attr (string => @attr (int => unit))
 type t = @attr (string, int) => @attr (int, float) => unit
-type t = @attr int => @attr (int, float) => @attr unit => unit => unit
+type t = @attr (int => @attr (int, float) => @attr (unit => unit => unit))
 type t = @attr (@attr2 ~f: int, @attr3 ~g: float) => unit
 
 type f = (
@@ -144,50 +144,50 @@ type f = (
   @attr3 ~h: ccccrazysldkfjslkdjflksdjkf=?,
 ) => unit
 
-type t = @attr
-stringWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong => @attr2
-floatWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong => @attr3
-intWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong => unitWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong
+type t = @attr (
+  stringWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong => @attr2 (
+    floatWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong => @attr3 (
+      intWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong => unitWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong
+    )
+  )
+)
 
-type t = @attr
-(
+type t = @attr (
   fooWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong,
   barWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong,
   bazWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong,
-) => @attr2
-(
+) => @attr2 (
   stringWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong,
   floatWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong,
 ) => unit
 
 type t = @attr
 @attrWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong
-@attrWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong
-(
+@attrWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong (
   fooWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong,
   barWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong,
   bazWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong,
 ) => @attr2
 @attrWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong
-@attrWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong
-(
+@attrWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong (
   stringWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong,
   floatWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong,
 ) => unit
 
 external debounce: (int, @meth unit) => unit = "debounce"
 
-external debounce: int => @meth unit => unit = "debounce"
+external debounce: int => @meth (unit => unit) = "debounce"
 
-external debounce: (int, @meth unit => unit) => @meth unit => unit = "debounce"
+external debounce: (int, @meth (unit => unit)) => @meth (unit => unit) = "debounce"
 
-external debounce: (int, @meth unit => unit, @meth unit => unit) => @meth unit => unit = "debounce"
+external debounce: (int, @meth (unit => unit), @meth (unit => unit)) => @meth (unit => unit) =
+  "debounce"
 
 external debounce: (
   int,
-  @meth unit => unit,
-  @meth unit => @meth unit => unit,
-) => @meth unit => unit = "debounce"
+  @meth (unit => unit),
+  @meth (unit => @meth (unit => unit)),
+) => @meth (unit => unit) = "debounce"
 
 type returnTyp = (int, int) => @magic float
 type returnTyp = (
@@ -214,7 +214,7 @@ type t = (@attrOnInt int, @attrOnInt int, @attrOnInt int, @attrOnInt int) => int
 type t = (@attr ~x: int, ~y: int, @attr ~z: int, @attr ~omega: int) => unit
 
 @val external requestAnimationFrame: (float => unit) => unit = "requestAnimationFrame"
-@val external requestAnimationFrame: @attr (float => unit) => unit = "requestAnimationFrame"
+@val external requestAnimationFrame: @attr ((float => unit) => unit) = "requestAnimationFrame"
 
 type arrows = (int, (float => unit) => unit, float) => unit
 
