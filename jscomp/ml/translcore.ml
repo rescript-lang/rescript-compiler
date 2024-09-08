@@ -63,8 +63,8 @@ let arity2 name : Lambda.primitive =
   Lambda.Pccall (Primitive.simple ~name ~arity:2 ~alloc:true)
 
 let comparisons_table =
-  create_hashtable 11
-    [
+  create_hashtable
+    [|
       ( "%equal",
         {
           gencomp =
@@ -228,11 +228,11 @@ let comparisons_table =
           bigintcomp = arity2 "caml_bigint_equal_nullable";
           simplify_constant_constructor = true;
         } );
-    ]
+    |]
 
 let primitives_table =
-  create_hashtable 57
-    [
+  create_hashtable
+    [|
       ("%identity", Pidentity);
       ("%ignore", Pignore);
       ("%revapply", Prevapply);
@@ -352,11 +352,17 @@ let primitives_table =
       ("%array_unsafe_get", Parrayrefu);
       ("%array_unsafe_set", Parraysetu);
 
+      (* promise *)
+      ("%await", Pawait);
+
+      (* module *)
+      ("%import", Pimport);
+
       (* etc, depreacted *)
       ("%lazy_force", Plazyforce);
       ("%intoffloat", Pintoffloat);
       ("%floatofint", Pfloatofint);
-    ]
+    |]
 
 let find_primitive prim_name = Hashtbl.find primitives_table prim_name
 
