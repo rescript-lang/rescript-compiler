@@ -1865,6 +1865,7 @@ and parseConstrainedExprRegion p =
   | token when Grammar.isExprStart token -> (
     let expr = parseExpr p in
     match p.Parser.token with
+    | ColonGreaterThan -> Some (parseCoercedExpr ~expr p)
     | Colon ->
       Parser.next p;
       let typ = parseTypExpr p in
