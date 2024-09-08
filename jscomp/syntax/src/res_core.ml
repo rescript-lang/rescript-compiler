@@ -1823,6 +1823,7 @@ and parse_constrained_expr_region p =
   | token when Grammar.is_expr_start token -> (
     let expr = parse_expr p in
     match p.Parser.token with
+    | ColonGreaterThan -> Some (parse_coerced_expr ~expr p)
     | Colon ->
       Parser.next p;
       let typ = parse_typ_expr p in

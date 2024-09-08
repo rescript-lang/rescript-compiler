@@ -1,2 +1,6 @@
 let foo = ((Function$ (fun (x : int) -> (x :> int)))[@res.arity 1])
 let foo = ((Function$ (fun x -> ((x : t) :> int)))[@res.arity 1])
+let _ = (x : int)
+let foo = ((x : int), (y :> float))
+let foo = ((x : int), (y :> float), (z :> int))
+let foo = ((x : int), y, (z :> int))
