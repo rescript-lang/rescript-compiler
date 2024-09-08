@@ -202,7 +202,10 @@ let primitive ppf = function
   | Parraysets -> fprintf ppf "array.set" 
   | Pisint -> fprintf ppf "isint"
   | Pisout -> fprintf ppf "isout"
-  | Pcreate_extension s -> fprintf ppf "extension[%s]" s   
+  | Pcreate_extension s -> fprintf ppf "extension[%s]" s
+  | Pawait -> fprintf ppf "await"
+  | Pimport -> fprintf ppf "import"
+
 let name_of_primitive = function
   | Pidentity -> "Pidentity"
   | Pignore -> "Pignore"
@@ -284,6 +287,8 @@ let name_of_primitive = function
   | Pisint -> "Pisint"
   | Pisout -> "Pisout"
   | Pcreate_extension _ -> "Pcreate_extension"
+  | Pawait -> "Pawait"
+  | Pimport -> "Pimport"
 
 let function_attribute ppf { inline; is_a_functor; return_unit } =
   if is_a_functor then

@@ -123,9 +123,12 @@ type t =
   | Parraysetu
   | Parrayrefs
   | Parraysets
-  | Pis_poly_var_block
 
-  (* etc and deprecated *)
+  (* promise *)
+  | Pawait
+
+  (* etc or deprecated *)
+  | Pis_poly_var_block
   | Pisout of int
   | Pjscomp of Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)

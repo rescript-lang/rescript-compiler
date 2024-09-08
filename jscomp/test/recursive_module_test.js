@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_module = require("../../lib/js/caml_module.js");
+let Primitive_module = require("../../lib/js/primitive_module.js");
 
 let suites = {
   contents: /* [] */0
@@ -34,7 +34,7 @@ function add(suite) {
   };
 }
 
-let Int3 = Caml_module.init_mod([
+let Int3 = Primitive_module.init_mod([
   "recursive_module_test.res",
   15,
   4
@@ -46,7 +46,7 @@ let Int3 = Caml_module.init_mod([
     ]]
 });
 
-Caml_module.update_mod({
+Primitive_module.update_mod({
   TAG: "Module",
   _0: [[
       "Function",
@@ -54,7 +54,7 @@ Caml_module.update_mod({
     ]]
 }, Int3, Int3);
 
-let M = Caml_module.init_mod([
+let M = Primitive_module.init_mod([
   "recursive_module_test.res",
   21,
   20
@@ -74,7 +74,7 @@ function fact(n) {
   }
 }
 
-Caml_module.update_mod({
+Primitive_module.update_mod({
   TAG: "Module",
   _0: [[
       "Function",

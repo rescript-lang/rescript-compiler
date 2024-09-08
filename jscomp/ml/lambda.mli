@@ -204,6 +204,10 @@ type primitive =
   | Parraysetu 
   | Parrayrefs 
   | Parraysets 
+  (* promise *)
+  | Pawait
+  (* modules *)
+  | Pimport
   (* Test if the argument is a block or an immediate integer *)
   | Pisint
   (* Test if the (integer) argument is outside an interval *)

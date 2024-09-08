@@ -134,6 +134,9 @@ type t =
   | Parrayrefs
   | Parraysets
 
+  (* promise *)
+  | Pawait
+
   (* etc or deprecated *)
   | Pis_poly_var_block
   | Pisout of int
@@ -247,6 +250,8 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Pstringorder
   | Pstringmin
   | Pstringmax
+  (* promise *)
+  | Pawait
   (* etc *)
   | Pjs_apply
   | Pjs_runtime_apply

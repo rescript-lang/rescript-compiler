@@ -182,6 +182,7 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pisint -> fprintf ppf "isint"
   | Pis_poly_var_block -> fprintf ppf "#is_poly_var_block"
   | Pisout i -> fprintf ppf "isout %d" i
+  | Pawait -> fprintf ppf "await"
 
 type print_kind = Alias | Strict | StrictOpt | Variable | Recursive
 

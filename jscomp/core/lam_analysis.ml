@@ -92,6 +92,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pjs_apply | Pjs_runtime_apply | Pjs_call _ | Pinit_mod | Pupdate_mod
       | Pjs_unsafe_downgrade _ | Pdebugger | Pvoid_run | Pfull_apply
       | Pjs_fn_method
+      (* Await promise *)
+      | Pawait
       (* TODO *)
       | Praw_js_code _
       (* byte swap *)

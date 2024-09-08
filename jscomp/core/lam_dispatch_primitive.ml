@@ -144,10 +144,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   | "?hash_mix_string" | "?hash_mix_int" | "?hash_final_mix" ->
       call Js_runtime_modules.hash_primitive
   | "?hash" -> call Js_runtime_modules.hash
-  | "?await" -> (
-      match args with
-      | [e] -> {e with expression_desc = Await e}
-      | _ -> assert false)
   | "?create_dict" -> (
     match args with
     | [{expression_desc = Array (items, _)}] ->

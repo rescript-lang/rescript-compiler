@@ -426,6 +426,10 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       | [ e; e0; e1 ] ->
           ensure_value_unit cxt.continuation (Js_of_lam_array.set_array e e0 e1)
       | _ -> assert false)
+  | Pawait -> (
+    match args with
+    | [e] -> {e with expression_desc = Await e}
+    | _ -> assert false)
   | Pccall prim -> Lam_dispatch_primitive.translate loc prim.prim_name args
   (* Lam_compile_external_call.translate loc cxt prim args *)
   (* Test if the argument is a block or an immediate integer *)

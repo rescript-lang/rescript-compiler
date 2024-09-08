@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_module = require("../../lib/js/caml_module.js");
+let Primitive_module = require("../../lib/js/primitive_module.js");
 
-let A = Caml_module.init_mod([
+let A = Primitive_module.init_mod([
   "rec_module_test.res",
   3,
   4
@@ -16,7 +16,7 @@ let A = Caml_module.init_mod([
     ]]
 });
 
-let B = Caml_module.init_mod([
+let B = Primitive_module.init_mod([
   "rec_module_test.res",
   15,
   4
@@ -38,7 +38,7 @@ function even(n) {
   }
 }
 
-Caml_module.update_mod({
+Primitive_module.update_mod({
   TAG: "Module",
   _0: [[
       "Function",
@@ -58,7 +58,7 @@ function odd(n) {
   }
 }
 
-Caml_module.update_mod({
+Primitive_module.update_mod({
   TAG: "Module",
   _0: [[
       "Function",
@@ -68,7 +68,7 @@ Caml_module.update_mod({
   odd: odd
 });
 
-let AA = Caml_module.init_mod([
+let AA = Primitive_module.init_mod([
   "rec_module_test.res",
   29,
   4
@@ -86,7 +86,7 @@ let AA = Caml_module.init_mod([
   ]
 });
 
-let BB = Caml_module.init_mod([
+let BB = Primitive_module.init_mod([
   "rec_module_test.res",
   43,
   4
@@ -118,7 +118,7 @@ function x() {
   return BB.y() + 3 | 0;
 }
 
-Caml_module.update_mod({
+Primitive_module.update_mod({
   TAG: "Module",
   _0: [
     [
@@ -149,7 +149,7 @@ function y() {
   return 32;
 }
 
-Caml_module.update_mod({
+Primitive_module.update_mod({
   TAG: "Module",
   _0: [
     [

@@ -2,9 +2,9 @@
 'use strict';
 
 let Belt_Array = require("../../lib/js/belt_Array.js");
-let Caml_module = require("../../lib/js/caml_module.js");
+let Primitive_module = require("../../lib/js/primitive_module.js");
 
-let PA = Caml_module.init_mod([
+let PA = Primitive_module.init_mod([
   "gpr_3931_test.res",
   3,
   4
@@ -16,7 +16,7 @@ let PA = Caml_module.init_mod([
     ]]
 });
 
-let P = Caml_module.init_mod([
+let P = Primitive_module.init_mod([
   "gpr_3931_test.res",
   12,
   4
@@ -32,7 +32,7 @@ function print(a) {
   Belt_Array.forEach(a, P.print);
 }
 
-Caml_module.update_mod({
+Primitive_module.update_mod({
   TAG: "Module",
   _0: [[
       "Function",
@@ -46,7 +46,7 @@ function print$1(i) {
   console.log("%d", i);
 }
 
-Caml_module.update_mod({
+Primitive_module.update_mod({
   TAG: "Module",
   _0: [[
       "Function",

@@ -2,10 +2,10 @@
 'use strict';
 
 let Belt_Id = require("../../lib/js/belt_Id.js");
-let Caml_module = require("../../lib/js/caml_module.js");
+let Primitive_module = require("../../lib/js/primitive_module.js");
 let Primitive_string = require("../../lib/js/primitive_string.js");
 
-let A = Caml_module.init_mod([
+let A = Primitive_module.init_mod([
   "rec_module_opt.res",
   15,
   4
@@ -33,7 +33,7 @@ function cmp(t1, t2) {
   }
 }
 
-Caml_module.update_mod({
+Primitive_module.update_mod({
   TAG: "Module",
   _0: [[
       "Function",
@@ -47,7 +47,7 @@ let X0 = {};
 
 let Y0 = {};
 
-let X1 = Caml_module.init_mod([
+let X1 = Primitive_module.init_mod([
   "rec_module_opt.res",
   44,
   19
@@ -59,7 +59,7 @@ let X1 = Caml_module.init_mod([
     ]]
 });
 
-let Y1 = Caml_module.init_mod([
+let Y1 = Primitive_module.init_mod([
   "rec_module_opt.res",
   47,
   12
@@ -75,7 +75,7 @@ function f(x) {
   return x + 1 | 0;
 }
 
-Caml_module.update_mod({
+Primitive_module.update_mod({
   TAG: "Module",
   _0: [[
       "Function",
@@ -89,7 +89,7 @@ function f$1(x) {
   return x + 2 | 0;
 }
 
-Caml_module.update_mod({
+Primitive_module.update_mod({
   TAG: "Module",
   _0: [[
       "Function",

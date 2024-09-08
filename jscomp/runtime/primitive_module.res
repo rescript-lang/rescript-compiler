@@ -1,31 +1,4 @@
-/* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
-
-/*** This module replaced camlinternalMod completely. 
-    Note we can replace {!CamlinternalMod} completely, but it is not replaced 
-    due to we believe this is an even low level dependency
-*/
+external import: 'a => promise<'a> = "#import"
 
 @@warning("-37") /* `Function` may be used in runtime */
 
@@ -54,18 +27,7 @@ let init_mod = (loc: (string, int, int), shape: shape) => {
     switch shape {
     | Function => set_field(struct_, idx, Obj.magic(undef_module))
     | Lazy => set_field(struct_, idx, Obj.magic(undef_module))
-    | Class =>
-      set_field(
-        struct_,
-        idx,
-        Obj.magic /* ref {!CamlinternalOO.dummy_class loc} */((
-          undef_module,
-          undef_module,
-          undef_module,
-          0,
-        )),
-        /* depends on dummy class representation */
-      )
+    | Class => set_field(struct_, idx, Obj.magic((undef_module, undef_module, undef_module, 0)))
     | Module(comps) =>
       let v = Obj.repr(module({}: Empty))
       set_field(struct_, idx, v)

@@ -53,4 +53,4 @@ external all6: (
 @val @scope("Promise") external race: array<promise<'a>> => promise<'a> = "race"
 
 external unsafe_async: 'a => promise<'a> = "%identity"
-external unsafe_await: promise<'a> => 'a = "?await"
+external unsafe_await: promise<'a> => 'a = "%await"

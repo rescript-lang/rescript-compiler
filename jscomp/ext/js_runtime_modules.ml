@@ -34,9 +34,11 @@ let string = "Primitive_string"
 
 let array = "Primitive_array"
 
-let deriving = "Runtime_deriving"
+let promise = "Primitive_promise"
 
-let promise = "Runtime_promise"
+let module_ = "Primitive_module"
+
+let deriving = "Runtime_deriving"
 
 let astExtensions = "Runtime_ast_extensions"
 
@@ -51,7 +53,5 @@ let hash = "Caml_hash"
 let curry = "Curry"
 
 let option = "Caml_option"
-
-let module_ = "Caml_module"
 
 let caml_js_exceptions = "Caml_js_exceptions"

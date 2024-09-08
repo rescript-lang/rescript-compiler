@@ -285,6 +285,8 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Parraysetu -> prim ~primitive:Parraysetu ~args loc
   | Parrayrefs -> prim ~primitive:Parrayrefs ~args loc
   | Parraysets -> prim ~primitive:Parraysets ~args loc
+  | Pawait -> prim ~primitive:Pawait ~args loc
+  | Pimport -> prim ~primitive:Pimport ~args loc
 
 (* Does not exist since we compile array in js backend unlike native backend *)
 
