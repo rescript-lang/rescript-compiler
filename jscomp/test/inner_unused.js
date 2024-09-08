@@ -6,7 +6,7 @@ function f(x) {
   return x + 3 | 0;
 }
 
-function M(S) {
+function M(Id) {
   let f = x => x;
   return {
     f: f

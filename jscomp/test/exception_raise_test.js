@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let List = require("../../lib/js/list.js");
 let Js_exn = require("../../lib/js/js_exn.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -211,7 +211,7 @@ function input_lines(ic, _acc) {
     try {
       line = input_line(ic);
     } catch (exn) {
-      return List.rev(acc);
+      return Belt_List.reverse(acc);
     }
     _acc = {
       hd: line,

@@ -1,3 +1,5 @@
+open Belt
+
 /** General purpose utility functions
   */
 module Util = {
@@ -69,9 +71,10 @@ let string_of_rank = x =>
   }
 
 let find_ticker_by_name = (all_tickers, ticker) =>
-  List.find(({ticker_name, _}) => ticker_name == ticker, all_tickers)
+  all_tickers->List.getBy(({ticker_name, _}) => ticker_name == ticker)->Option.getExn
 
-let print_all_composite = all_tickers => List.iter(x =>
+let print_all_composite = all_tickers =>
+  all_tickers->List.forEach(x =>
     switch x {
     | {type_: Market, _} => ()
     | {type_: Binary_op(_), ticker_name, value} =>
@@ -80,12 +83,9 @@ let print_all_composite = all_tickers => List.iter(x =>
       | None => Js.log(ticker_name)
       }
     }
-  , all_tickers)
+  )
 
-module Ticker_map = Map.Make({
-  type t = string
-  let compare = Pervasives.compare
-})
+module Ticker_map = Map.String
 
 /** For each market tickers, this function will compute 
     the associated list of tickers value to be updated
@@ -102,72 +102,77 @@ module Ticker_map = Map.Make({
 let compute_update_sequences = all_tickers => {
   /* Ranking */
 
-  \"@@"(ignore, List.fold_left((counter, ticker) => {
-      let rec loop = (counter, {rank, _} as ticker) =>
-        switch rank {
-        | Ranked(_) => counter
-        | Visited => counter
-        | Uninitialized =>
-          ticker.rank = Visited
-          switch ticker.type_ {
-          | Market =>
-            let counter = counter + 1
-            ticker.rank = Ranked(counter)
-            counter
-          | Binary_op({lhs, rhs, _}) =>
-            let counter = loop(counter, lhs)
-            let counter = loop(counter, rhs)
-            let counter = counter + 1
-            ticker.rank = Ranked(counter)
-            counter
-          }
+  all_tickers
+  ->List.reduceReverse(0, (counter, ticker) => {
+    let rec loop = (counter, {rank, _} as ticker) =>
+      switch rank {
+      | Ranked(_) => counter
+      | Visited => counter
+      | Uninitialized =>
+        ticker.rank = Visited
+        switch ticker.type_ {
+        | Market =>
+          let counter = counter + 1
+          ticker.rank = Ranked(counter)
+          counter
+        | Binary_op({lhs, rhs, _}) =>
+          let counter = loop(counter, lhs)
+          let counter = loop(counter, rhs)
+          let counter = counter + 1
+          ticker.rank = Ranked(counter)
+          counter
         }
+      }
 
-      loop(counter, ticker)
-    }, 0, all_tickers))
+    loop(counter, ticker)
+  })
+  ->ignore
 
   /* collect all dependencies of market tickers */
 
-  let map = List.fold_left((map, {ticker_name, type_, _} as ticker) =>
-    switch type_ {
-    | Market => Ticker_map.add(ticker_name, list{ticker}, map)
-    | _ =>
-      let rec loop = (up, map, {ticker_name, type_} as ticker) =>
-        switch type_ {
-        | Market =>
-          let l = Ticker_map.find(ticker_name, map)
-          Ticker_map.add(ticker_name, \"@"(up, l), map)
-        | Binary_op({lhs, rhs, _}) =>
-          let map = loop(list{ticker, ...up}, map, lhs)
-          loop(list{ticker, ...up}, map, rhs)
-        }
+  let map =
+    all_tickers
+    ->List.reverse
+    ->List.reduceReverse(Ticker_map.empty, (map, {ticker_name, type_, _} as ticker) =>
+      switch type_ {
+      | Market => map->Ticker_map.set(ticker_name, list{ticker})
+      | _ =>
+        let rec loop = (up, map, {ticker_name, type_} as ticker) =>
+          switch type_ {
+          | Market =>
+            let l = map->Ticker_map.getExn(ticker_name)
+            map->Ticker_map.set(ticker_name, \"@"(up, l))
+          | Binary_op({lhs, rhs, _}) =>
+            let map = loop(list{ticker, ...up}, map, lhs)
+            loop(list{ticker, ...up}, map, rhs)
+          }
 
-      loop(list{}, map, ticker)
-    }
-  , Ticker_map.empty, List.rev(all_tickers))
+        loop(list{}, map, ticker)
+      }
+    )
   /* `List.rev is needed to process the node in the order they were processed
       TODO: this code should be more robust
  */
 
   /* order dependencies based on rank */
 
-  Ticker_map.fold((k, l, map) => {
-    let l = List.sort_uniq((lhs, rhs) =>
+  map->Ticker_map.reduce(map, (map, k, l) => {
+    let l = l->List.sort((lhs, rhs) =>
       switch (lhs, rhs) {
       | ({rank: Ranked(x)}, {rank: Ranked(y)}) => Pervasives.compare(x, y)
       | (_, _) => failwith("All nodes should be ranked")
       }
-    , l)
-    Ticker_map.add(k, l, map)
-  }, map, map)
+    )
+    map->Ticker_map.set(k, l)
+  })
 }
 
 /** Process a new quote for a market ticker 
  */
 let process_quote = (ticker_map, new_ticker, new_value) => {
-  let update_sequence = Ticker_map.find(new_ticker, ticker_map)
+  let update_sequence = ticker_map->Ticker_map.getExn(new_ticker)
 
-  List.iter(ticker =>
+  update_sequence->List.forEach(ticker =>
     switch ticker {
     | {type_: Market, ticker_name, _} if ticker_name == new_ticker => ticker.value = Some(new_value)
 
@@ -187,7 +192,7 @@ let process_quote = (ticker_map, new_ticker, new_value) => {
       }
       ticker.value = value
     }
-  , update_sequence)
+  )
 }
 
 let process_input_line = (ticker_map, all_tickers, line) => {
@@ -222,7 +227,7 @@ let process_input_line = (ticker_map, all_tickers, line) => {
     | Some(ticker_map) => ticker_map
     | None => compute_update_sequences(all_tickers)
     }
-    let value = value->Belt.Float.fromString->Belt.Option.getExn
+    let value = value->Float.fromString->Option.getExn
     process_quote(ticker_map, ticker_name, value)
     (all_tickers, Some(ticker_map))
   | _ => failwith("Invalid input line")

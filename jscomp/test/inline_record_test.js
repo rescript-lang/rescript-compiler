@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let List = require("../../lib/js/list.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 let suites = {
@@ -36,9 +36,9 @@ let v1 = {
 
 function f(x) {
   if (x.TAG === "A0") {
-    return List.fold_left((prim0, prim1) => prim0 + prim1 | 0, x.lbl, x.more);
+    return Belt_List.reduceReverse(x.more, x.lbl, (prim0, prim1) => prim0 + prim1 | 0);
   } else {
-    return List.fold_left((prim0, prim1) => prim0 + prim1 | 0, 0, x.more);
+    return Belt_List.reduceReverse(x.more, 0, (prim0, prim1) => prim0 + prim1 | 0);
   }
 }
 

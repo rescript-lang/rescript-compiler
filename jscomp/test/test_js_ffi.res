@@ -8,12 +8,17 @@ let v = u => {
   u
 }
 
-@val("t") external test_f: module(Set.OrderedType) => unit = "?update_dummy"
+module type OrderedType = {
+  type t
+  let compare: (t, t) => int
+}
 
-let v = u => test_f(module(String))
+@val("t") external test_f: module(OrderedType) => unit = "?update_dummy"
 
-module type X = module type of String
+let v = u => test_f(module(Test_order))
+
+module type X = module type of Test_order
 
 let u = (v: module(X)) => v
 
-let s = u(module(String))
+let s = u(module(Test_order))

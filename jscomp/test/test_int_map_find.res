@@ -1,22 +1,20 @@
+open Belt
+
 include (
   {
-    module IntMap = Map.Make({
-      type t = int
-      let compare = (x: t, y) => compare(x, y)
-    })
+    module IntMap = Map.Int
 
     let empty = IntMap.empty
 
-    let m = List.fold_left(
-      (acc, (k, v)) => IntMap.add(k, v, acc),
-      empty,
-      list{(10, 'a'), (3, 'b'), (7, 'c'), (20, 'd')},
-    )
+    let m = List.reduceReverse(list{(10, 'a'), (3, 'b'), (7, 'c'), (20, 'd')}, empty, (
+      acc,
+      (k, v),
+    ) => acc->IntMap.set(k, v))
 
     /* external log : 'a -> unit = "" [@@val "console.log"] */
 
     let assert_test = () =>
-      if IntMap.find(10, m) == 'a' {
+      if m->IntMap.get(10) == Some('a') {
         Js.log("hi")
       } else {
         /* log ('a', "succeed") */

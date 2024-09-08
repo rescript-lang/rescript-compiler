@@ -150,7 +150,7 @@ type in_channel
 @val external input_line: in_channel => string = "input_line"
 let rec input_lines = (ic, acc) =>
   switch input_line(ic) {
-  | exception _ => List.rev(acc)
+  | exception _ => Belt.List.reverse(acc)
   | line => input_lines(ic, list{line, ...acc})
   }
 

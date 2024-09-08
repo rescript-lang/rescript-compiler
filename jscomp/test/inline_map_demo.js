@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let List = require("../../lib/js/list.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 let Primitive_int = require("../../lib/js/primitive_int.js");
 
 function height(x) {
@@ -137,7 +137,7 @@ function add(x, data, tree) {
   }
 }
 
-let m = List.fold_left((acc, param) => add(param[0], param[1], acc), "Empty", {
+let m = Belt_List.reduceReverse({
   hd: [
     10,
     /* 'a' */97
@@ -161,7 +161,7 @@ let m = List.fold_left((acc, param) => add(param[0], param[1], acc), "Empty", {
       }
     }
   }
-});
+}, "Empty", (acc, param) => add(param[0], param[1], acc));
 
 function find(px, _x) {
   while (true) {

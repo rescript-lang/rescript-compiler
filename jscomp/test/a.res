@@ -1,3 +1,12 @@
+module type OrderedType = {
+  type t
+  let compare: (t, t) => int
+}
+
+module Make = (U: OrderedType) => {
+  let v = U.compare
+}
+
 include (
   {
     module M = (
@@ -11,20 +20,16 @@ include (
       let add = (x, y) => x + y
     })
 
+    open Belt
+
     include List
     module N = List
     let v = N.length
 
-    module Make = (U: Set.OrderedType) => {
-      include U
-      let v = compare
+    module Make = (U: OrderedType) => {
+      let v = U.compare
     }
 
-    module X = Make(String)
     module U = Make(Test_order)
-
-    include N
-    /* let v = "xhg" */
-    /* let () = v.[0] <- 'a' */
   }: {}
 )

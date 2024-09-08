@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let List = require("../../lib/js/list.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 let Caml_option = require("../../lib/js/caml_option.js");
 let Primitive_int = require("../../lib/js/primitive_int.js");
 let Primitive_string = require("../../lib/js/primitive_string.js");
@@ -1284,7 +1284,7 @@ let IntMap = {
   choose: min_binding
 };
 
-let m = List.fold_left((acc, param) => add(param[0], param[1], acc), "Empty", {
+let m = Belt_List.reduceReverse({
   hd: [
     10,
     /* 'a' */97
@@ -1308,7 +1308,7 @@ let m = List.fold_left((acc, param) => add(param[0], param[1], acc), "Empty", {
       }
     }
   }
-});
+}, "Empty", (acc, param) => add(param[0], param[1], acc));
 
 function height$1(x) {
   if (typeof x !== "object") {
@@ -1966,7 +1966,7 @@ let SMap = {
   choose: min_binding$1
 };
 
-let s = List.fold_left((acc, param) => add$1(param[0], param[1], acc), "Empty", {
+let s = Belt_List.reduceReverse({
   hd: [
     "10",
     /* 'a' */97
@@ -1990,7 +1990,7 @@ let s = List.fold_left((acc, param) => add$1(param[0], param[1], acc), "Empty", 
       }
     }
   }
-});
+}, "Empty", (acc, param) => add$1(param[0], param[1], acc));
 
 Mt.from_pair_suites("Inline_map2_test", {
   hd: [

@@ -1,9 +1,6 @@
 include (
   {
-    module StringMap = Map.Make({
-      type t = string
-      let compare = (x: string, y) => compare(x, y)
-    })
+    module StringMap = Belt.Map.String
     @val("console.time") external time: string => unit = ""
     @val("console.timeEnd") external timeEnd: string => unit = ""
 
@@ -18,12 +15,12 @@ include (
       let count = 1000000
       \"@@"(timing("building", ...), _ =>
         for i in 0 to count {
-          m := StringMap.add(Js.Int.toString(i), Js.Int.toString(i), m.contents)
+          m := m.contents->StringMap.set(Js.Int.toString(i), Js.Int.toString(i))
         }
       )
       \"@@"(timing("querying", ...), _ =>
         for i in 0 to count {
-          ignore(StringMap.find(Js.Int.toString(i), m.contents))
+          m.contents->StringMap.get(Js.Int.toString(i))->ignore
         }
       )
     }

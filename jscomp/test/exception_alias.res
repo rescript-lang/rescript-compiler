@@ -10,6 +10,8 @@ let a4 = a3
 
 let a5 = a4
 
+open Belt
+
 module List = {
   include List
   let b = length(list{1, 2})

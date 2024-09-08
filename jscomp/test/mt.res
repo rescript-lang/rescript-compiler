@@ -80,7 +80,7 @@ let close_enough = (~threshold=0.0000001 /* epsilon_float */, a, b) => abs_float
 
 let node_from_pair_suites = (name: string, suites: pair_suites) => {
   Js.log((name, "testing"))
-  List.iter(((name, code)) =>
+  suites->Belt.List.forEach(((name, code)) =>
     switch code() {
     | Eq(a, b) => Js.log((name, a, "eq?", b))
     | Neq(a, b) => Js.log((name, a, "neq?", b))
@@ -93,7 +93,7 @@ let node_from_pair_suites = (name: string, suites: pair_suites) => {
     | FailWith(msg) => Js.log("failed: " ++ msg)
     | Ok(a) => Js.log((name, a, "ok?"))
     }
-  , suites)
+  )
 }
 
 let handleCode = spec =>

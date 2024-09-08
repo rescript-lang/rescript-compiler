@@ -67,7 +67,8 @@ let () = {
   eq(
     __LOC__,
     {
-      open List
+      let hd = Belt.List.headExn
+      let tl = Belt.List.tailExn
       hd(rec_cell3) + hd(tl(rec_cell3)) + hd(tl(tl(rec_cell3)))
     },
     9,
@@ -76,7 +77,8 @@ let () = {
   eq(
     __LOC__,
     {
-      open List
+      let hd = Belt.List.headExn
+      let tl = Belt.List.tailExn
       hd(rec_cell3) + hd(tl(rec_cell3)) + hd(tl(tl(rec_cell3)))
     },
     9,

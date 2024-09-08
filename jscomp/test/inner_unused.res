@@ -7,7 +7,7 @@ let f = x => {
   x + 3
 }
 
-module M = (S: Set.S): {
+module M = (Id: Belt.Id.Comparable): {
   let f: int => int
 } => {
   let f = x => x

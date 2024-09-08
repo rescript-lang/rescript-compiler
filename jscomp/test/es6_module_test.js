@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let List = require("../../lib/js/list.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 
 function length(param) {
   return 3;
@@ -13,7 +13,7 @@ Mt.from_pair_suites("Es6_module_test", {
     "list_length",
     () => ({
       TAG: "Eq",
-      _0: List.length({
+      _0: Belt_List.length({
         hd: 1,
         tl: {
           hd: 2,

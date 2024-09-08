@@ -451,7 +451,7 @@ let of_sorted_list = l => {
       }
     }
 
-  fst(sub(List.length(l), l))
+  fst(sub(Belt.List.length(l), l))
 }
 
 let of_sorted_array = l => {

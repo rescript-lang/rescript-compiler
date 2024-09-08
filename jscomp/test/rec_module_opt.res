@@ -10,20 +10,20 @@
 })
 
 module rec A: {
-  type t = Leaf(string) | Node(ASet.t)
-  let compare: (t, t) => int
+  type t = Leaf(string) | Node(AComparable.t)
+  let cmp: (t, t) => int
 } = {
-  type t = Leaf(string) | Node(ASet.t)
-  let compare = (t1, t2) =>
+  type t = Leaf(string) | Node(AComparable.t)
+  let cmp = (t1, t2) =>
     switch (t1, t2) {
     | (Leaf(s1), Leaf(s2)) => Pervasives.compare(s1, s2)
     | (Leaf(_), Node(_)) => 1
     | (Node(_), Leaf(_)) => -1
-    | (Node(n1), Node(n2)) => ASet.compare(n1, n2)
+    | (Node(n1), Node(n2)) => Obj.magic(AComparable.cmp)(n1, n2)
     }
   let hello = x => x
 }
-and ASet: Set.S with type elt = A.t = Set.Make(A)
+and AComparable: Belt.Id.Comparable with type t = A.t = Belt.Id.MakeComparable(A)
 
 module rec X: {} = X
 

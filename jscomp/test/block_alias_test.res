@@ -22,7 +22,7 @@ module V = {
 }
 let f = (a, b) => a == b
 
-let h = List.length
+let h = Belt.List.length
 
 eq(__LOC__, h(list{1, 2}), 2)
 b(__LOC__, f(v0, A(0, 1)))

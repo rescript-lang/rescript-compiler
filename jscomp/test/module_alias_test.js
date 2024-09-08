@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let List = require("../../lib/js/list.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 
 let suites = {
   contents: /* [] */0
@@ -29,8 +29,8 @@ function eq(loc, x, y) {
 
 function f(x) {
   console.log(x);
-  console.log(List.length(x));
-  return List;
+  console.log(Belt_List.length(x));
+  return Belt_List;
 }
 
 let h = f(/* [] */0);
@@ -46,7 +46,7 @@ let a = h.length({
   }
 });
 
-eq("File \"module_alias_test.res\", line 33, characters 3-10", a, 3);
+eq("File \"module_alias_test.res\", line 35, characters 3-10", a, 3);
 
 Mt.from_pair_suites("Module_alias_test", suites.contents);
 

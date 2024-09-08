@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let List = require("../../lib/js/list.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 
 let suites = {
   contents: /* [] */0
@@ -100,11 +100,11 @@ function f3(x) {
   return rec_cell3;
 }
 
-eq("File \"recursive_records_test.res\", line 68, characters 4-11", (List.hd(rec_cell3) + List.hd(List.tl(rec_cell3)) | 0) + List.hd(List.tl(List.tl(rec_cell3))) | 0, 9);
+eq("File \"recursive_records_test.res\", line 68, characters 4-11", (Belt_List.headExn(rec_cell3) + Belt_List.headExn(Belt_List.tailExn(rec_cell3)) | 0) + Belt_List.headExn(Belt_List.tailExn(Belt_List.tailExn(rec_cell3))) | 0, 9);
 
 let rec_cell3$1 = f3(3);
 
-eq("File \"recursive_records_test.res\", line 77, characters 4-11", (List.hd(rec_cell3$1) + List.hd(List.tl(rec_cell3$1)) | 0) + List.hd(List.tl(List.tl(rec_cell3$1))) | 0, 9);
+eq("File \"recursive_records_test.res\", line 78, characters 4-11", (Belt_List.headExn(rec_cell3$1) + Belt_List.headExn(Belt_List.tailExn(rec_cell3$1)) | 0) + Belt_List.headExn(Belt_List.tailExn(Belt_List.tailExn(rec_cell3$1))) | 0, 9);
 
 Mt.from_pair_suites("recursive_records_test.res", suites.contents);
 

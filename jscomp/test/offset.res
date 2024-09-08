@@ -16,7 +16,7 @@ module M = {
   let x = 0
   let x = 1
 
-  module Set = Set.Make(String)
+  module Set = Belt.Set.String
 }
 
 include M

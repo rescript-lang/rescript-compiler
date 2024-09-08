@@ -2,7 +2,7 @@
 'use strict';
 
 let Char = require("../../lib/js/char.js");
-let List = require("../../lib/js/list.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 
 function l(prim) {
   console.log(prim);
@@ -24,10 +24,10 @@ let prim$2 = Char.chr(66);
 
 console.log(prim$2);
 
-let f = List.length;
+let f = Belt_List.length;
 
 function g(x) {
-  return List.length(List.map(prim => prim + 1 | 0, x));
+  return Belt_List.length(Belt_List.map(x, prim => prim + 1 | 0));
 }
 
 function F(X) {

@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let List = require("../../lib/js/list.js");
 let Caml_obj = require("../../lib/js/caml_obj.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 
 let suites = {
   contents: /* [] */0
@@ -44,15 +44,15 @@ let N = {
 
 let Caml_obj$1 = {};
 
-let List$1 = {};
+let List = {};
 
 let V = {
-  List: List$1
+  List: List
 };
 
 let f = Caml_obj.equal;
 
-eq("File \"block_alias_test.res\", line 27, characters 3-10", List.length({
+eq("File \"block_alias_test.res\", line 27, characters 3-10", Belt_List.length({
   hd: 1,
   tl: {
     hd: 2,
@@ -70,7 +70,7 @@ eq("File \"block_alias_test.res\", line 29, characters 3-10", v0, v1);
 
 Mt.from_pair_suites("Block_alias_test", suites.contents);
 
-let h = List.length;
+let h = Belt_List.length;
 
 exports.suites = suites;
 exports.test_id = test_id;
