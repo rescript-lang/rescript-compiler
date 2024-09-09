@@ -76,8 +76,6 @@ val type_bool : core_type_lit
 
 val type_int : core_type_lit
 
-val type_int64 : Parsetree.core_type
-
 val type_float : Parsetree.core_type
 
 val type_bigint : core_type_lit
