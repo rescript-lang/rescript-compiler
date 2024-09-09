@@ -32,8 +32,8 @@ type t<'a> = {
   /* its type is ['a] or [unit -> 'a ] */
 }
 
-%%private(external fnToVal: ((. unit) => 'a) => 'a = "%identity")
-%%private(external valToFn: 'a => (. unit) => 'a = "%identity")
+%%private(external fnToVal: (unit => 'a) => 'a = "%identity")
+%%private(external valToFn: 'a => unit => 'a = "%identity")
 %%private(external castToConcrete: lazy_t<'a> => t<'a> = "%identity")
 %%private(external castFromConcrete: t<'a> => lazy_t<'a> = "%identity")
 
@@ -42,15 +42,15 @@ let is_val = (type a, l: lazy_t<a>): bool => castToConcrete(l).tag
 exception Undefined
 
 %%private(
-  let forward_with_closure = (type a, blk: t<a>, closure: (. unit) => a): a => {
-    let result = closure(.)
+  let forward_with_closure = (type a, blk: t<a>, closure: unit => a): a => {
+    let result = closure()
     blk.value = result
     blk.tag = true
     result
   }
 )
 
-%%private(let raise_undefined = (. ()) => raise(Undefined))
+%%private(let raise_undefined = () => raise(Undefined))
 
 /* Assume [blk] is a block with tag lazy */
 %%private(
@@ -59,7 +59,7 @@ exception Undefined
     blk.value = fnToVal(raise_undefined)
     try forward_with_closure(blk, closure) catch {
     | e =>
-      blk.value = fnToVal((. ()) => raise(e))
+      blk.value = fnToVal(() => raise(e))
       raise(e)
     }
   }
@@ -92,7 +92,7 @@ let force_val = (type a, lzv: lazy_t<a>): a => {
   }
 }
 
-let from_fun = (type a, closure: (. unit) => a): lazy_t<a> => {
+let from_fun = (type a, closure: unit => a): lazy_t<a> => {
   let blk = {
     tag: false,
     value: fnToVal(closure),
@@ -103,7 +103,7 @@ let from_fun = (type a, closure: (. unit) => a): lazy_t<a> => {
 let from_val = (type a, value: a): lazy_t<a> => {
   let blk = {
     tag: true,
-    value: value,
+    value,
   }
   castFromConcrete(blk)
 }

@@ -1498,7 +1498,7 @@ let get_mod_field modname field =
 
 
 let code_force =
-    get_mod_field "CamlinternalLazy" "force"
+    get_mod_field Js_runtime_modules.lazy_ "force"
 ;;
 
 (* inline_lazy_force inlines the beginning of the code of Lazy.force. When

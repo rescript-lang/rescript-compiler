@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let Lazy = require("../../lib/js/lazy.js");
-let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 let Primitive_module = require("../../lib/js/primitive_module.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -67,7 +66,7 @@ let Intb = Primitive_module.init_mod([
     ]]
 });
 
-let a = CamlinternalLazy.from_fun(() => CamlinternalLazy.force(Intb.a));
+let a = Lazy.from_fun(() => Lazy.force(Intb.a));
 
 Primitive_module.update_mod({
   TAG: "Module",
@@ -79,7 +78,7 @@ Primitive_module.update_mod({
   a: a
 });
 
-let a$1 = CamlinternalLazy.from_fun(() => CamlinternalLazy.force(Inta.a) + 1 | 0);
+let a$1 = Lazy.from_fun(() => Lazy.force(Inta.a) + 1 | 0);
 
 Primitive_module.update_mod({
   TAG: "Module",
@@ -94,7 +93,7 @@ Primitive_module.update_mod({
 let tmp;
 
 try {
-  tmp = CamlinternalLazy.force(Intb.a);
+  tmp = Lazy.force(Intb.a);
 } catch (raw_exn) {
   let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
   if (exn.RE_EXN_ID === Lazy.Undefined) {
@@ -130,7 +129,7 @@ let Intb$1 = Primitive_module.init_mod([
     ]]
 });
 
-let a$2 = CamlinternalLazy.from_fun(() => CamlinternalLazy.force(Intb$1.a) + 1 | 0);
+let a$2 = Lazy.from_fun(() => Lazy.force(Intb$1.a) + 1 | 0);
 
 Primitive_module.update_mod({
   TAG: "Module",
@@ -142,7 +141,7 @@ Primitive_module.update_mod({
   a: a$2
 });
 
-let a$3 = CamlinternalLazy.from_fun(() => 2);
+let a$3 = Lazy.from_fun(() => 2);
 
 Primitive_module.update_mod({
   TAG: "Module",
@@ -159,7 +158,7 @@ let A = {
   Intb: Intb$1
 };
 
-eq("File \"recursive_module.res\", line 59, characters 3-10", CamlinternalLazy.force(Inta$1.a), 3);
+eq("File \"recursive_module.res\", line 59, characters 3-10", Lazy.force(Inta$1.a), 3);
 
 let tmp$1;
 

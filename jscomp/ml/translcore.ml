@@ -356,7 +356,6 @@ let primitives_table =
       ("%await", Pawait);
 
       (* etc, depreacted *)
-      ("%lazy_force", Plazyforce);
       ("%intoffloat", Pintoffloat);
       ("%floatofint", Pfloatofint);
     |]

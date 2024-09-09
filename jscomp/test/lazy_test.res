@@ -47,7 +47,7 @@ let forward_test = Lazy.from_fun(() => {
 
 let f005 = Lazy.from_fun(() => 1 + 2 + 3)
 
-let f006: lazy_t<unit => int> = Lazy.from_fun(() => {
+let f006: Lazy.t<unit => int> = Lazy.from_fun(() => {
   let x = 3
   _ => x
 })
