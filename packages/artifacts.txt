@@ -67,7 +67,6 @@ lib/es6/belt_internalMapString.js
 lib/es6/belt_internalSetBuckets.js
 lib/es6/belt_internalSetInt.js
 lib/es6/belt_internalSetString.js
-lib/es6/callback.js
 lib/es6/caml_exceptions.js
 lib/es6/caml_hash.js
 lib/es6/caml_hash_primitive.js
@@ -76,7 +75,6 @@ lib/es6/caml_obj.js
 lib/es6/caml_option.js
 lib/es6/caml_undefined_extern.js
 lib/es6/camlinternalLazy.js
-lib/es6/camlinternalMod.js
 lib/es6/char.js
 lib/es6/curry.js
 lib/es6/dom.js
@@ -183,7 +181,6 @@ lib/js/belt_internalMapString.js
 lib/js/belt_internalSetBuckets.js
 lib/js/belt_internalSetInt.js
 lib/js/belt_internalSetString.js
-lib/js/callback.js
 lib/js/caml_exceptions.js
 lib/js/caml_hash.js
 lib/js/caml_hash_primitive.js
@@ -192,7 +189,6 @@ lib/js/caml_obj.js
 lib/js/caml_option.js
 lib/js/caml_undefined_extern.js
 lib/js/camlinternalLazy.js
-lib/js/camlinternalMod.js
 lib/js/char.js
 lib/js/curry.js
 lib/js/dom.js

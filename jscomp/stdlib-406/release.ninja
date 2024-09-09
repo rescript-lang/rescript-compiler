@@ -12,12 +12,8 @@ o stdlib-406/pervasives.cmj : cc_cmi stdlib-406/pervasives.res | stdlib-406/perv
     bsc_flags = $bsc_flags -nopervasives
 o stdlib-406/pervasives.cmi : cc stdlib-406/pervasives.resi | $bsc others
     bsc_flags = $bsc_flags -nopervasives
-o stdlib-406/callback.cmj : cc_cmi stdlib-406/callback.res | stdlib-406/callback.cmi $bsc others
-o stdlib-406/callback.cmi : cc stdlib-406/callback.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/camlinternalLazy.cmj : cc_cmi stdlib-406/camlinternalLazy.res | stdlib-406/camlinternalLazy.cmi $bsc others
 o stdlib-406/camlinternalLazy.cmi : cc stdlib-406/camlinternalLazy.resi | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/camlinternalMod.cmj : cc_cmi stdlib-406/camlinternalMod.res | stdlib-406/camlinternalMod.cmi stdlib-406/obj.cmj $bsc others
-o stdlib-406/camlinternalMod.cmi : cc stdlib-406/camlinternalMod.resi | stdlib-406/obj.cmi stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/char.cmj : cc_cmi stdlib-406/char.res | stdlib-406/char.cmi $bsc others
 o stdlib-406/char.cmi : cc stdlib-406/char.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/hashtbl.cmj : cc_cmi stdlib-406/hashtbl.res | stdlib-406/hashtbl.cmi $bsc others
@@ -28,4 +24,4 @@ o stdlib-406/obj.cmj : cc_cmi stdlib-406/obj.res | stdlib-406/obj.cmi $bsc other
 o stdlib-406/obj.cmi : cc stdlib-406/obj.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/string.cmj : cc_cmi stdlib-406/string.res | stdlib-406/string.cmi $bsc others
 o stdlib-406/string.cmi : cc stdlib-406/string.resi | stdlib-406/pervasives.cmj $bsc others
-o $stdlib : phony stdlib-406/callback.cmi stdlib-406/callback.cmj stdlib-406/camlinternalLazy.cmi stdlib-406/camlinternalLazy.cmj stdlib-406/camlinternalMod.cmi stdlib-406/camlinternalMod.cmj stdlib-406/char.cmi stdlib-406/char.cmj stdlib-406/hashtbl.cmi stdlib-406/hashtbl.cmj stdlib-406/lazy.cmi stdlib-406/lazy.cmj stdlib-406/obj.cmi stdlib-406/obj.cmj stdlib-406/string.cmi stdlib-406/string.cmj
+o $stdlib : phony stdlib-406/camlinternalLazy.cmi stdlib-406/camlinternalLazy.cmj stdlib-406/char.cmi stdlib-406/char.cmj stdlib-406/hashtbl.cmi stdlib-406/hashtbl.cmj stdlib-406/lazy.cmi stdlib-406/lazy.cmj stdlib-406/obj.cmi stdlib-406/obj.cmj stdlib-406/string.cmi stdlib-406/string.cmj
