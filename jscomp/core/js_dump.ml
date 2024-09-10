@@ -162,6 +162,7 @@ let rec exp_need_paren ?(arrow=false) (e : J.expression) =
   | Js_not _ | Bool _ | New _ ->
       false
   | Await _ -> false
+  | Spread _ -> false
   | Tagged_template _ -> false
   | Optional_block (e, true) when arrow -> exp_need_paren ~arrow e
   | Optional_block _ -> false
@@ -906,6 +907,10 @@ and expression_desc cxt ~(level : int) f x : cxt =
   | Await e ->
       P.cond_paren_group f (level > 13) (fun _ ->
           P.string f "await ";
+          expression ~level:13 cxt f e)
+  | Spread e ->
+      P.cond_paren_group f (level > 13) (fun _ ->
+          P.string f "...";
           expression ~level:13 cxt f e)
 
 and property_name_and_value_list cxt f (l : J.property_map) =

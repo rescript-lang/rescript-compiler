@@ -1368,3 +1368,9 @@ let neq_null_undefined_boolean ?comment (a : t) (b : t) =
 
 let make_exception (s : string) =
   pure_runtime_call Js_runtime_modules.exceptions Literals.create [ str s ]
+
+let rec variadic_args (args : t list) =
+  match args with
+  | [] -> []
+  | [last] -> [{ last with expression_desc = Spread last }]
+  | arg :: args -> arg :: variadic_args args

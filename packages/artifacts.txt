@@ -97,7 +97,6 @@ lib/es6/caml_nativeint_extern.js
 lib/es6/caml_obj.js
 lib/es6/caml_option.js
 lib/es6/caml_parser.js
-lib/es6/caml_splice_call.js
 lib/es6/caml_string.js
 lib/es6/caml_string_extern.js
 lib/es6/caml_sys.js
@@ -256,7 +255,6 @@ lib/js/caml_nativeint_extern.js
 lib/js/caml_obj.js
 lib/js/caml_option.js
 lib/js/caml_parser.js
-lib/js/caml_splice_call.js
 lib/js/caml_string.js
 lib/js/caml_string_extern.js
 lib/js/caml_sys.js

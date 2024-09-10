@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let Caml_array = require("../../lib/js/caml_array.js");
-let Caml_splice_call = require("../../lib/js/caml_splice_call.js");
 
 let suites = {
   contents: /* [] */0
@@ -17,7 +16,7 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-let Caml_splice_call$1 = {};
+let Caml_splice_call = {};
 
 Math.max(1);
 
@@ -38,10 +37,7 @@ eq("File \"splice_test.res\", line 23, characters 5-12", a, [
 
 function dynamic(arr) {
   let a = [];
-  Caml_splice_call.spliceObjApply(a, "push", [
-    1,
-    arr
-  ]);
+  a.push(1, ...arr);
   eq("File \"splice_test.res\", line 29, characters 5-12", a, Caml_array.concat({
     hd: [1],
     tl: {
@@ -75,11 +71,7 @@ eq("File \"splice_test.res\", line 44, characters 5-12", a$1, [
 ]);
 
 function dynamicNew(arr) {
-  let a = Caml_splice_call.spliceNewApply(Array, [
-    1,
-    2,
-    arr
-  ]);
+  let a = new Array(1, 2, ...arr);
   eq("File \"splice_test.res\", line 49, characters 5-12", a, Caml_array.concat({
     hd: [
       1,
@@ -120,7 +112,7 @@ eq("File \"splice_test.res\", line 71, characters 5-12", f.names, [
 ]);
 
 function dynamicFoo(arr) {
-  let f = Caml_splice_call.spliceNewApply(Foo, [arr]);
+  let f = new Foo(...arr);
   eq("File \"splice_test.res\", line 76, characters 5-12", f.names, arr);
 }
 
@@ -147,10 +139,7 @@ eq("File \"splice_test.res\", line 93, characters 7-14", a$2, [
 
 function dynamic$1(arr) {
   let a = [];
-  Caml_splice_call.spliceObjApply(a, "push", [
-    1,
-    arr
-  ]);
+  a.push(1, ...arr);
   eq("File \"splice_test.res\", line 99, characters 7-14", a, Caml_array.concat({
     hd: [1],
     tl: {
@@ -179,10 +168,7 @@ let Pipe = {
 };
 
 function f1(c) {
-  return Caml_splice_call.spliceApply(Math.max, [
-    1,
-    c
-  ]);
+  return Math.max(1, ...c);
 }
 
 eq("File \"splice_test.res\", line 109, characters 3-10", Math.max(1, 2, 3), 3);
@@ -196,7 +182,7 @@ Mt.from_pair_suites("splice_test.res", suites.contents);
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
-exports.Caml_splice_call = Caml_splice_call$1;
+exports.Caml_splice_call = Caml_splice_call;
 exports.f00 = f00;
 exports.dynamic = dynamic;
 exports.dynamicNew = dynamicNew;

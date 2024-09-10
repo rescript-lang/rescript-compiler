@@ -3,14 +3,10 @@
 
 let Mt = require("./mt.js");
 let Caml_array = require("../../lib/js/caml_array.js");
-let Caml_splice_call = require("../../lib/js/caml_splice_call.js");
 let Tagged_template_libJs = require("./tagged_template_lib.js");
 
 function sql(prim0, prim1) {
-  return Caml_splice_call.spliceApply(Tagged_template_libJs.sql, [
-    prim0,
-    prim1
-  ]);
+  return Tagged_template_libJs.sql(prim0, ...prim1);
 }
 
 let Pg = {
