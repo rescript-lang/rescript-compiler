@@ -52,13 +52,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   (******************************************************************************)
   (************************* customized primitives ******************************)
   (******************************************************************************)
-  | "?int_of_float" -> (
-      match args with [ e ] -> E.to_int32 e | _ -> assert false)
-  | "?int_float_of_bits" | "?int_bits_of_float" | "?modf_float" | "?ldexp_float"
-  | "?frexp_float" | "?copysign_float" | "?expm1_float" | "?hypot_float" ->
-      call Js_runtime_modules.float
-  | "?fmod_float" (* float module like js number module *) -> (
-      match args with [ e0; e1 ] -> E.float_mod e0 e1 | _ -> assert false)
   (* Note we captured [exception/extension] creation in the early pass, this primitive is
       like normal one to set the identifier *)
   | "?exn_slot_name" | "?is_extension" -> call Js_runtime_modules.exceptions
