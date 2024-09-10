@@ -13,7 +13,12 @@
 # 12.0.0-alpha.4 (Unreleased)
 
 #### :bug: Bug fix
+
 - Fix tuple coercion. https://github.com/rescript-lang/rescript-compiler/pull/7024
+
+#### :nail_care: Polish
+
+- Improve bigint literal comparison. https://github.com/rescript-lang/rescript-compiler/pull/7029
 
 # 12.0.0-alpha.3
 
