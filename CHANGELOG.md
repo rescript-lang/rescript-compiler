@@ -19,6 +19,7 @@
 #### :nail_care: Polish
 
 - Improve bigint literal comparison. https://github.com/rescript-lang/rescript-compiler/pull/7029
+- Improve output of `@variadic` bindings. https://github.com/rescript-lang/rescript-compiler/pull/7030
 
 # 12.0.0-alpha.3
 
