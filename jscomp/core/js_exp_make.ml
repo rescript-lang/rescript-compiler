@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -29,7 +29,7 @@ type t = J.expression
 (*
   [remove_pure_sub_exp x]
   Remove pure part of the expression (minor optimization)
-  and keep the non-pure part while preserve the semantics 
+  and keep the non-pure part while preserve the semantics
   (modulo return value)
   It will return None if  [x] is pure
  *)
@@ -86,8 +86,8 @@ let runtime_var_dot ?comment (x : string) (e1 : string) : J.expression =
 let ml_var_dot ?comment ?(dynamic_import = false) (id : Ident.t) e : J.expression =
   { expression_desc = Var (Qualified ({ id; kind = Ml; dynamic_import }, Some e)); comment }
 
-(** 
-   module as a value 
+(**
+   module as a value
    {[
      var http = require("http")
    ]}
@@ -182,7 +182,7 @@ let instanceof ?comment (e0 : t) (e1: t) : t =
 let is_array  (e0 : t) : t =
   let f = str "Array.isArray" ~delim:DNoQuotes in
   { expression_desc = Call (f, [e0], Js_call_info.ml_full_call); comment=None }
-  
+
 let new_ ?comment e0 args : t =
   { expression_desc = New (e0, Some args); comment }
 
@@ -455,7 +455,7 @@ let assign_by_exp (e : t) index value : t =
   | Array _
   (*
      Temporary block -- address not held
-     Optimize cases like this which is really 
+     Optimize cases like this which is really
      rare {[
                   (ref x) :=  3
                 ]}
@@ -474,7 +474,7 @@ let record_assign (e : t) (pos : int32) (name : string) (value : t) =
   | Array _
   (*
      Temporary block -- address not held
-     Optimize cases like this which is really 
+     Optimize cases like this which is really
      rare {[
                   (ref x) :=  3
                 ]}
@@ -492,7 +492,7 @@ let extension_assign (e : t) (pos : int32) name (value : t) =
   | Array _
   (*
            Temporary block -- address not held
-           Optimize cases like this which is really 
+           Optimize cases like this which is really
            rare {[
                   (ref x) :=  3
                 ]}
@@ -809,7 +809,7 @@ let tag_type = function
   | Ast_untagged_variants.String s -> str s ~delim:DStarJ
   | Int i -> small_int i
   | Float f -> float f
-  | BigInt i -> 
+  | BigInt i ->
     let sign, i = Bigint_utils.parse_bigint i in
     bigint sign i
   | Bool b -> bool b
@@ -841,7 +841,7 @@ let rec emit_check (check : t Ast_untagged_variants.DynamicChecks.t) = match che
   | IsInstanceOf (Array, x) -> is_array (emit_check x)
   | IsInstanceOf (instance, x) ->
     let instance_name = Ast_untagged_variants.Instance.to_string instance in
-    instanceof (emit_check x) (str instance_name ~delim:DNoQuotes) 
+    instanceof (emit_check x) (str instance_name ~delim:DNoQuotes)
   | Not x -> not (emit_check x)
   | Expr x -> x
 
@@ -1266,14 +1266,36 @@ let rec int32_band ?comment (e1 : J.expression) (e2 : J.expression) :
 let bigint_op ?comment op (e1: t) (e2: t) = bin ?comment op e1 e2
 
 let bigint_comp (cmp : Lam_compat.comparison) ?comment (e0: t) (e1: t) =
-  bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+  let normalize s =
+    let len = String.length s in
+    let buf = Buffer.create len in
+    let trim = ref false in
+    s |> String.iteri (fun i c -> (
+      match (c, i, !trim) with
+      | ('0', 0, _) -> trim := true
+      | ('0', _, true) -> ()
+      | ('_', _, _) -> ()
+      | _ -> (
+        trim := false;
+        Buffer.add_char buf c
+      )
+    ));
+    buf |> Buffer.to_bytes |> Bytes.to_string
+  in
+  match (cmp, e0.expression_desc, e1.expression_desc) with
+  | Ceq, Number (BigInt { positive = p1; value = v1 }), Number (BigInt { positive = p2; value = v2 }) ->
+    bool (p1 = p2 && String.equal (normalize v1) (normalize v2))
+  | Cneq, Number (BigInt { positive = p1; value = v1 }), Number (BigInt { positive = p2; value = v2 }) ->
+    not (bool (p1 = p2 && String.equal (normalize v1) (normalize v2)))
+  | _ ->
+    bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
 let bigint_div ~checked ?comment (e0: t) (e1: t) =
   if checked then
     runtime_call Js_runtime_modules.bigint "div" [e0; e1]
   else
     bigint_op ?comment Div e0 e1
-    
+
 let bigint_mod ~checked ?comment (e0: t) (e1: t) =
   if checked then
     runtime_call Js_runtime_modules.bigint "mod_" [e0; e1]
