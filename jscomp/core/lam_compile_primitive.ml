@@ -251,6 +251,9 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       match args with [ e1; e2 ] -> E.bigint_op Bxor e1 e2 | _ -> assert false)
   | Pjscomp cmp -> (
       match args with [ l; r ] -> E.js_comp cmp l r | _ -> assert false)
+  | Pboolcomp cmp -> (
+      match args with [ e1; e2 ] -> E.bool_comp cmp e1 e2 | _ -> assert false
+  )
   | Pfloatcomp cmp | Pintcomp cmp -> (
       (* Global Builtin Exception is an int, like
          [Not_found] or [Invalid_argument] ?
@@ -261,6 +264,9 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   (* List --> stamp = 0
      Assert_false --> stamp = 26
   *)
+  | Pstringcomp cmp -> (
+      match args with [ e1; e2 ] -> E.string_comp cmp e1 e2 | _ -> assert false
+  )
   | Pintoffloat -> (
       match args with [ e ] -> E.to_int32 e | _ -> assert false)
   | Pfloatofint -> Ext_list.singleton_exn args
@@ -303,6 +309,37 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Pstringrefu -> (
       match args with
       | [ e; e1 ] -> Js_of_lam_string.ref_string e e1
+      | _ -> assert false)
+  (* polymorphic operations *)
+  | Pobjcomp cmp -> (
+      match args with
+      | [ e1; e2 ]
+      when cmp = Ceq && (E.for_sure_js_null_undefined e1 || E.for_sure_js_null_undefined e2)
+      ->
+        E.eq_null_undefined_boolean e1 e2
+      | [ e1; e2 ]
+      when cmp = Cneq && (E.for_sure_js_null_undefined e1 || E.for_sure_js_null_undefined e2)
+      ->
+        E.neq_null_undefined_boolean e1 e2
+      | [ e1; e2 ] ->
+        Location.prerr_warning loc Warnings.Bs_polymorphic_comparison;
+        E.runtime_call Js_runtime_modules.object_
+            (Lam_compile_util.runtime_of_comp cmp) args
+      | _ -> assert false)
+  | Pobjorder -> (
+      Location.prerr_warning loc Warnings.Bs_polymorphic_comparison;
+      match args with
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.object_ "compare" args
+      | _ -> assert false)
+  | Pobjmin -> (
+      Location.prerr_warning loc Warnings.Bs_polymorphic_comparison;
+      match args with
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.object_ "min" args
+      | _ -> assert false)
+  | Pobjmax -> (
+      Location.prerr_warning loc Warnings.Bs_polymorphic_comparison;
+      match args with
+      | [ a; b ] -> E.runtime_call Js_runtime_modules.object_ "max" args
       | _ -> assert false)
   | Pboolorder -> (
       match args with

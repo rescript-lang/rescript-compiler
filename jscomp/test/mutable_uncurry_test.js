@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let suites = {
   contents: /* [] */0
@@ -24,7 +24,7 @@ function eq(param, param$1) {
 
 function eq2(x, param) {
   let y = param.contents;
-  return Caml_obj.equal(x.contents, y);
+  return Primitive_object.equal(x.contents, y);
 }
 
 eqs("File \"mutable_uncurry_test.res\", line 15, characters 4-11", false, eq({

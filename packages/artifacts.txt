@@ -71,10 +71,8 @@ lib/es6/caml_exceptions.js
 lib/es6/caml_hash.js
 lib/es6/caml_hash_primitive.js
 lib/es6/caml_js_exceptions.js
-lib/es6/caml_obj.js
 lib/es6/caml_option.js
 lib/es6/caml_undefined_extern.js
-lib/es6/camlinternalLazy.js
 lib/es6/char.js
 lib/es6/curry.js
 lib/es6/dom.js
@@ -131,7 +129,9 @@ lib/es6/primitive_bool.js
 lib/es6/primitive_float.js
 lib/es6/primitive_float_extern.js
 lib/es6/primitive_int.js
+lib/es6/primitive_lazy.js
 lib/es6/primitive_module.js
+lib/es6/primitive_object.js
 lib/es6/primitive_promise.js
 lib/es6/primitive_string.js
 lib/es6/primitive_string_extern.js
@@ -185,10 +185,8 @@ lib/js/caml_exceptions.js
 lib/js/caml_hash.js
 lib/js/caml_hash_primitive.js
 lib/js/caml_js_exceptions.js
-lib/js/caml_obj.js
 lib/js/caml_option.js
 lib/js/caml_undefined_extern.js
-lib/js/camlinternalLazy.js
 lib/js/char.js
 lib/js/curry.js
 lib/js/dom.js
@@ -244,7 +242,9 @@ lib/js/primitive_bool.js
 lib/js/primitive_float.js
 lib/js/primitive_float_extern.js
 lib/js/primitive_int.js
+lib/js/primitive_lazy.js
 lib/js/primitive_module.js
+lib/js/primitive_object.js
 lib/js/primitive_promise.js
 lib/js/primitive_string.js
 lib/js/primitive_string_extern.js

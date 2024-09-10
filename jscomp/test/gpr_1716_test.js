@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let suites = {
   contents: /* [] */0
@@ -31,11 +31,11 @@ let a = {};
 
 let b = {};
 
-Caml_obj.update_dummy(a, {
+Primitive_object.update_dummy(a, {
   b: b
 });
 
-Caml_obj.update_dummy(b, {
+Primitive_object.update_dummy(b, {
   a: a
 });
 

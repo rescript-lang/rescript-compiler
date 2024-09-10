@@ -215,9 +215,14 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Pduprecord -> prim ~primitive:Pduprecord ~args loc
   | Plazyforce -> prim ~primitive:Plazyforce ~args loc
   | Praise _ -> prim ~primitive:Praise ~args loc
+  | Pobjcomp x -> prim ~primitive:(Pobjcomp x) ~args loc
+  | Pobjorder -> prim ~primitive:Pobjorder ~args loc
+  | Pobjmin -> prim ~primitive:Pobjmin ~args loc
+  | Pobjmax -> prim ~primitive:Pobjmax ~args loc
   | Psequand -> prim ~primitive:Psequand ~args loc
   | Psequor -> prim ~primitive:Psequor ~args loc
   | Pnot -> prim ~primitive:Pnot ~args loc
+  | Pboolcomp x -> prim ~primitive:(Pboolcomp x) ~args loc
   | Pboolorder -> prim ~primitive:Pboolorder ~args loc
   | Pboolmin -> prim ~primitive:Pboolmin ~args loc
   | Pboolmax -> prim ~primitive:Pboolmax ~args loc
@@ -238,6 +243,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Pintmax -> prim ~primitive:Pintmax ~args loc
   | Pstringlength -> prim ~primitive:Pstringlength ~args loc
   | Pstringrefu -> prim ~primitive:Pstringrefu ~args loc
+  | Pstringcomp x -> prim ~primitive:(Pstringcomp x) ~args loc
   | Pstringorder -> prim ~primitive:Pstringorder ~args loc
   | Pstringmin -> prim ~primitive:Pstringmin ~args loc
   | Pstringmax -> prim ~primitive:Pstringmax ~args loc
@@ -402,7 +408,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         match Ext_list.map args convert_aux with
         | [ lhs; rhs ] ->
             prim
-              ~primitive:(Pccall { prim_name = "caml_string_equal" })
+              ~primitive:(Pstringcomp Ceq)
               ~args:[ lam_extension_id loc lhs; rhs ]
               loc
         | _ -> assert false)

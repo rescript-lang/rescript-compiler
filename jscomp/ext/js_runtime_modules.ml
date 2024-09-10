@@ -34,6 +34,8 @@ let string = "Primitive_string"
 
 let array = "Primitive_array"
 
+let object_ = "Primitive_object"
+
 let promise = "Primitive_promise"
 
 let module_ = "Primitive_module"
@@ -45,8 +47,6 @@ let deriving = "Runtime_deriving"
 let astExtensions = "Runtime_ast_extensions"
 
 let exceptions = "Caml_exceptions"
-
-let obj_runtime = "Caml_obj"
 
 let hash_primitive = "Caml_hash_primitive"
 

@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
 let Mt_global = require("./mt_global.js");
 let Primitive_bigint = require("../../lib/js/primitive_bigint.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let test_id = {
   contents: 0
@@ -24,43 +24,43 @@ function approx(loc, x, y) {
 
 let bigint_compare = Primitive_bigint.compare;
 
-let generic_compare = Caml_obj.compare;
+let generic_compare = Primitive_object.compare;
 
 function bigint_equal(x, y) {
   return x === y;
 }
 
-let generic_equal = Caml_obj.equal;
+let generic_equal = Primitive_object.equal;
 
 function bigint_notequal(x, y) {
   return x !== y;
 }
 
-let generic_notequal = Caml_obj.notequal;
+let generic_notequal = Primitive_object.notequal;
 
 function bigint_lessthan(x, y) {
   return x < y;
 }
 
-let generic_lessthan = Caml_obj.lessthan;
+let generic_lessthan = Primitive_object.lessthan;
 
 function bigint_greaterthan(x, y) {
   return x > y;
 }
 
-let generic_greaterthan = Caml_obj.greaterthan;
+let generic_greaterthan = Primitive_object.greaterthan;
 
 function bigint_lessequal(x, y) {
   return x <= y;
 }
 
-let generic_lessequal = Caml_obj.lessequal;
+let generic_lessequal = Primitive_object.lessequal;
 
 function bigint_greaterequal(x, y) {
   return x >= y;
 }
 
-let generic_greaterequal = Caml_obj.greaterequal;
+let generic_greaterequal = Primitive_object.greaterequal;
 
 function bigint_land(prim0, prim1) {
   return prim0 & prim1;
@@ -84,51 +84,51 @@ function bigint_asr(prim0, prim1) {
 
 eq("File \"bigint_test.res\", line 26, characters 5-12", Primitive_bigint.compare(1n, 1n), 0);
 
-eq("File \"bigint_test.res\", line 27, characters 5-12", Caml_obj.compare(1n, 1n), 0);
+eq("File \"bigint_test.res\", line 27, characters 5-12", Primitive_object.compare(1n, 1n), 0);
 
 eq("File \"bigint_test.res\", line 28, characters 5-12", Primitive_bigint.compare(-0n, -1n), 1);
 
-eq("File \"bigint_test.res\", line 29, characters 5-12", Caml_obj.compare(-0n, -1n), 1);
+eq("File \"bigint_test.res\", line 29, characters 5-12", Primitive_object.compare(-0n, -1n), 1);
 
 eq("File \"bigint_test.res\", line 30, characters 5-12", Primitive_bigint.compare(0n, -1n), 1);
 
-eq("File \"bigint_test.res\", line 31, characters 5-12", Caml_obj.compare(0n, -1n), 1);
+eq("File \"bigint_test.res\", line 31, characters 5-12", Primitive_object.compare(0n, -1n), 1);
 
 eq("File \"bigint_test.res\", line 32, characters 5-12", Primitive_bigint.compare(1n, 2n), -1);
 
-eq("File \"bigint_test.res\", line 33, characters 5-12", Caml_obj.compare(1n, 2n), -1);
+eq("File \"bigint_test.res\", line 33, characters 5-12", Primitive_object.compare(1n, 2n), -1);
 
 eq("File \"bigint_test.res\", line 34, characters 5-12", Primitive_bigint.compare(1n, 2n), -1);
 
-eq("File \"bigint_test.res\", line 35, characters 5-12", Caml_obj.compare(1n, 2n), -1);
+eq("File \"bigint_test.res\", line 35, characters 5-12", Primitive_object.compare(1n, 2n), -1);
 
 eq("File \"bigint_test.res\", line 36, characters 5-12", Primitive_bigint.compare(1n, 1n), 0);
 
-eq("File \"bigint_test.res\", line 37, characters 5-12", Caml_obj.compare(1n, 1n), 0);
+eq("File \"bigint_test.res\", line 37, characters 5-12", Primitive_object.compare(1n, 1n), 0);
 
 eq("File \"bigint_test.res\", line 39, characters 4-11", true, true);
 
-eq("File \"bigint_test.res\", line 47, characters 4-11", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), true);
+eq("File \"bigint_test.res\", line 47, characters 4-11", Primitive_object.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), true);
 
 eq("File \"bigint_test.res\", line 55, characters 4-11", false, false);
 
-eq("File \"bigint_test.res\", line 63, characters 4-11", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001n), false);
+eq("File \"bigint_test.res\", line 63, characters 4-11", Primitive_object.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001n), false);
 
 eq("File \"bigint_test.res\", line 71, characters 4-11", false, false);
 
-eq("File \"bigint_test.res\", line 79, characters 4-11", Caml_obj.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), false);
+eq("File \"bigint_test.res\", line 79, characters 4-11", Primitive_object.equal(1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n, -1000000000000000000000000000000000000000000000000000000000000000000000000000000000000n), false);
 
 eq("File \"bigint_test.res\", line 87, characters 4-11", true, true);
 
-eq("File \"bigint_test.res\", line 99, characters 4-11", Caml_obj.equal(3n, 3n), true);
+eq("File \"bigint_test.res\", line 99, characters 4-11", Primitive_object.equal(3n, 3n), true);
 
 eq("File \"bigint_test.res\", line 111, characters 4-11", true, true);
 
-eq("File \"bigint_test.res\", line 123, characters 4-11", Caml_obj.equal(3n, 3n), true);
+eq("File \"bigint_test.res\", line 123, characters 4-11", Primitive_object.equal(3n, 3n), true);
 
 eq("File \"bigint_test.res\", line 135, characters 4-11", true, true);
 
-eq("File \"bigint_test.res\", line 147, characters 4-11", Caml_obj.equal(3n, 3n), true);
+eq("File \"bigint_test.res\", line 147, characters 4-11", Primitive_object.equal(3n, 3n), true);
 
 eq("File \"bigint_test.res\", line 158, characters 5-12", 9n & 1n, 1n);
 

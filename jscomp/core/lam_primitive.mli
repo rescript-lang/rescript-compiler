@@ -47,10 +47,17 @@ type t =
   | Pjs_object_create of External_arg_spec.obj_params
   | Praise
 
+  (* object primitives *)
+  | Pobjcomp of Lam_compat.comparison
+  | Pobjorder
+  | Pobjmin
+  | Pobjmax
+
   (* bool primitives *)
   | Psequand
   | Psequor
   | Pnot
+  | Pboolcomp of Lam_compat.comparison
   | Pboolorder
   | Pboolmin
   | Pboolmax
@@ -112,6 +119,7 @@ type t =
   | Pstringrefu
   | Pstringrefs
   | Pstringadd
+  | Pstringcomp of Lam_compat.comparison
   | Pstringorder
   | Pstringmin
   | Pstringmax

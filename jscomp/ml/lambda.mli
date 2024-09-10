@@ -169,8 +169,14 @@ type primitive =
   | Pccall of Primitive.description
   (* Exceptions *)
   | Praise of raise_kind
+  (* object primitives *)
+  | Pobjcomp of comparison
+  | Pobjorder
+  | Pobjmin
+  | Pobjmax
   (* Boolean operations *)
   | Psequand | Psequor | Pnot
+  | Pboolcomp of comparison
   | Pboolorder | Pboolmin | Pboolmax
   (* Integer operations *)
   | Pnegint | Paddint | Psubint | Pmulint
@@ -196,6 +202,7 @@ type primitive =
   | Pbigintorder | Pbigintmin | Pbigintmax
   (* String operations *)
   | Pstringlength | Pstringrefu  | Pstringrefs
+  | Pstringcomp of comparison
   | Pstringorder | Pstringmin | Pstringmax
   (* Array operations *)
   | Pmakearray of  mutable_flag

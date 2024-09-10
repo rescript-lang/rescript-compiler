@@ -2,12 +2,12 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
 let Primitive_int = require("../../lib/js/primitive_int.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
-let eq = Caml_obj.equal;
+let eq = Primitive_object.equal;
 
 let list_suites_0 = [
   "length",

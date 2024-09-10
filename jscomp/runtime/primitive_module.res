@@ -54,7 +54,7 @@ let update_mod = (shape: shape, o: Obj.t, n: Obj.t): unit => {
 
     | Lazy
     | Class =>
-      Caml_obj.update_dummy(o, n)
+      Primitive_object.update_dummy(o, n)
     | Module(comps) =>
       for i in 0 to array_length(comps) - 1 {
         let (shape, name) = array_unsafe_get(comps, i)

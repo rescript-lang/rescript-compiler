@@ -57,10 +57,17 @@ type t =
   (* Exceptions *)
   | Praise
 
+  (* object primitives *)
+  | Pobjcomp of Lam_compat.comparison
+  | Pobjorder
+  | Pobjmin
+  | Pobjmax
+
   (* Boolean primitives *)
   | Psequand
   | Psequor
   | Pnot
+  | Pboolcomp of Lam_compat.comparison
   | Pboolorder
   | Pboolmin
   | Pboolmax
@@ -122,6 +129,7 @@ type t =
   | Pstringrefu
   | Pstringrefs
   | Pstringadd
+  | Pstringcomp of Lam_compat.comparison
   | Pstringorder
   | Pstringmin
   | Pstringmax
@@ -191,10 +199,15 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   match lhs with
   | Pwrap_exn
   | Praise
+  (* generic comparison *)
+  | Pobjorder
+  | Pobjmin
+  | Pobjmax
   (* bool primitives *)
   | Psequand
   | Psequor
   | Pnot
+  | Pboolcomp _
   | Pboolorder
   | Pboolmin
   | Pboolmax
@@ -247,6 +260,7 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Pstringrefu
   | Pstringrefs
   | Pstringadd
+  | Pstringcomp _
   | Pstringorder
   | Pstringmin
   | Pstringmax
@@ -316,6 +330,10 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Pjs_object_create obj_create -> (
       match rhs with
       | Pjs_object_create obj_create1 -> obj_create = obj_create1
+      | _ -> false)
+  | Pobjcomp comparison -> (
+      match rhs with
+      | Pobjcomp comparison1 -> Lam_compat.eq_comparison comparison comparison1
       | _ -> false)
   | Pintcomp comparison -> (
       match rhs with

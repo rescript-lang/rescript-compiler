@@ -141,9 +141,9 @@ external log: 'a => unit = "log"
 @val @scope("console") @variadic /** A convenience function to console.log more than 4 arguments */
 external logMany: array<'a> => unit = "log"
 
-external eqNull: ('a, null<'a>) => bool = "%bs_equal_null"
-external eqUndefined: ('a, undefined<'a>) => bool = "%bs_equal_undefined"
-external eqNullable: ('a, nullable<'a>) => bool = "%bs_equal_nullable"
+external eqNull: ('a, null<'a>) => bool = "%equal_null"
+external eqUndefined: ('a, undefined<'a>) => bool = "%equal_undefined"
+external eqNullable: ('a, nullable<'a>) => bool = "%equal_nullable"
 
 /* ## Operators */
 

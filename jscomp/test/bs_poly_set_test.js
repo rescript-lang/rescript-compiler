@@ -3,13 +3,13 @@
 
 let Mt = require("./mt.js");
 let Belt_Set = require("../../lib/js/belt_Set.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
 let Belt_SetDict = require("../../lib/js/belt_SetDict.js");
 let Primitive_int = require("../../lib/js/primitive_int.js");
 let Belt_SortArray = require("../../lib/js/belt_SortArray.js");
 let Array_data_util = require("./array_data_util.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let suites = {
   contents: /* [] */0
@@ -156,7 +156,7 @@ let u29 = Belt_Set.union(u26, u27);
 
 b("File \"bs_poly_set_test.res\", line 71, characters 4-11", Belt_Set.eq(u28, u29));
 
-b("File \"bs_poly_set_test.res\", line 72, characters 4-11", Caml_obj.equal(Belt_SetDict.toArray(u29.data), Belt_SortArray.stableSortBy(Belt_Array.concat(ss, [3]), Primitive_int.compare)));
+b("File \"bs_poly_set_test.res\", line 72, characters 4-11", Primitive_object.equal(Belt_SetDict.toArray(u29.data), Belt_SortArray.stableSortBy(Belt_Array.concat(ss, [3]), Primitive_int.compare)));
 
 b("File \"bs_poly_set_test.res\", line 73, characters 4-11", Belt_Set.eq(u19, u20));
 
@@ -178,7 +178,7 @@ b("File \"bs_poly_set_test.res\", line 81, characters 4-11", Belt_Set.subset(u21
 
 b("File \"bs_poly_set_test.res\", line 82, characters 4-11", 47 === Belt_Set.getUndefined(u22, 47));
 
-b("File \"bs_poly_set_test.res\", line 83, characters 4-11", Caml_obj.equal(47, Belt_Set.get(u22, 47)));
+b("File \"bs_poly_set_test.res\", line 83, characters 4-11", Primitive_object.equal(47, Belt_Set.get(u22, 47)));
 
 b("File \"bs_poly_set_test.res\", line 84, characters 4-11", Belt_Set.getUndefined(u22, 59) === undefined);
 

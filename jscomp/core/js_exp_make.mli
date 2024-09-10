@@ -269,7 +269,7 @@ val int_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 
 val bool_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 
-val string_comp : Js_op.binop -> ?comment:string -> t -> t -> t
+val string_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 
 val float_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 

@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 let Belt_MutableQueue = require("../../lib/js/belt_MutableQueue.js");
 
 let suites = {
@@ -42,7 +42,7 @@ let q = {
   last: undefined
 };
 
-if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), []) && q.length === 0)) {
+if (!(Primitive_object.equal(Belt_MutableQueue.toArray(q), []) && q.length === 0)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -54,7 +54,7 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), []) && q.length === 0)) {
   };
 }
 
-if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 1), q)), [1]) && q.length === 1)) {
+if (!(Primitive_object.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 1), q)), [1]) && q.length === 1)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -66,7 +66,7 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 1), q))
   };
 }
 
-if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2), q)), [
+if (!(Primitive_object.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2), q)), [
     1,
     2
   ]) && q.length === 2)) {
@@ -81,7 +81,7 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2), q))
   };
 }
 
-if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3), q)), [
+if (!(Primitive_object.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3), q)), [
     1,
     2,
     3
@@ -97,7 +97,7 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3), q))
   };
 }
 
-if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 4), q)), [
+if (!(Primitive_object.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 4), q)), [
     1,
     2,
     3,
@@ -126,7 +126,7 @@ if (Belt_MutableQueue.popExn(q) !== 1) {
   };
 }
 
-if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), [
+if (!(Primitive_object.equal(Belt_MutableQueue.toArray(q), [
     2,
     3,
     4
@@ -154,7 +154,7 @@ if (Belt_MutableQueue.popExn(q) !== 2) {
   };
 }
 
-if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), [
+if (!(Primitive_object.equal(Belt_MutableQueue.toArray(q), [
     3,
     4
   ]) && q.length === 2)) {
@@ -181,7 +181,7 @@ if (Belt_MutableQueue.popExn(q) !== 3) {
   };
 }
 
-if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), [4]) && q.length === 1)) {
+if (!(Primitive_object.equal(Belt_MutableQueue.toArray(q), [4]) && q.length === 1)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -205,7 +205,7 @@ if (Belt_MutableQueue.popExn(q) !== 4) {
   };
 }
 
-if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), []) && q.length === 0)) {
+if (!(Primitive_object.equal(Belt_MutableQueue.toArray(q), []) && q.length === 0)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -469,7 +469,7 @@ if (!does_raise(Belt_MutableQueue.popExn, q$3)) {
   };
 }
 
-if (!Caml_obj.equal(q$3, {
+if (!Primitive_object.equal(q$3, {
     length: 0,
     first: undefined,
     last: undefined
@@ -511,7 +511,7 @@ for (let i$1 = 1; i$1 <= 10; ++i$1) {
 
 let q2 = Belt_MutableQueue.copy(q1);
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1), [
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q1), [
     1,
     2,
     3,
@@ -534,7 +534,7 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1), [
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2), [
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q2), [
     1,
     2,
     3,
@@ -759,7 +759,7 @@ if (q1$1.length !== 0) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$1), [])) {
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q1$1), [])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -783,7 +783,7 @@ if (q2$1.length !== 0) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$1), [])) {
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q2$1), [])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -809,7 +809,7 @@ if (q1$1.length !== 0) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$1), [])) {
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q1$1), [])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -833,7 +833,7 @@ if (q2$1.length !== 0) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$1), [])) {
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q2$1), [])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -873,7 +873,7 @@ if (q1$2.length !== 4) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$2), [
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q1$2), [
     1,
     2,
     3,
@@ -902,7 +902,7 @@ if (q2$2.length !== 0) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$2), [])) {
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q2$2), [])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -928,7 +928,7 @@ if (q1$2.length !== 0) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$2), [])) {
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q1$2), [])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -952,7 +952,7 @@ if (q2$2.length !== 4) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$2), [
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q2$2), [
     1,
     2,
     3,
@@ -997,7 +997,7 @@ if (q1$3.length !== 0) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$3), [])) {
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q1$3), [])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1021,7 +1021,7 @@ if (q2$3.length !== 4) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$3), [
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q2$3), [
     5,
     6,
     7,
@@ -1052,7 +1052,7 @@ if (q1$3.length !== 0) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$3), [])) {
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q1$3), [])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1076,7 +1076,7 @@ if (q2$3.length !== 4) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$3), [
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q2$3), [
     5,
     6,
     7,
@@ -1125,7 +1125,7 @@ if (q1$4.length !== 4) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$4), [
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q1$4), [
     1,
     2,
     3,
@@ -1154,7 +1154,7 @@ if (q2$4.length !== 4) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$4), [
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q2$4), [
     5,
     6,
     7,
@@ -1185,7 +1185,7 @@ if (q1$4.length !== 0) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$4), [])) {
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q1$4), [])) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -1220,7 +1220,7 @@ if (q2$4.length !== 8) {
   };
 }
 
-if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$4), v)) {
+if (!Primitive_object.equal(Belt_MutableQueue.toArray(q2$4), v)) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [

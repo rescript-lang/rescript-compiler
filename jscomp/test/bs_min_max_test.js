@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
 let Primitive_int = require("../../lib/js/primitive_int.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let suites = {
   contents: /* [] */0
@@ -33,21 +33,21 @@ let f3 = Primitive_int.compare;
 
 let f4 = Primitive_int.min;
 
-let f5_min = Caml_obj.min;
+let f5_min = Primitive_object.min;
 
-let f5_max = Caml_obj.max;
+let f5_max = Primitive_object.max;
 
-eq("File \"bs_min_max_test.res\", line 19, characters 5-12", Caml_obj.min(undefined, 3), undefined);
+eq("File \"bs_min_max_test.res\", line 19, characters 5-12", Primitive_object.min(undefined, 3), undefined);
 
-eq("File \"bs_min_max_test.res\", line 20, characters 5-12", Caml_obj.min(3, undefined), undefined);
+eq("File \"bs_min_max_test.res\", line 20, characters 5-12", Primitive_object.min(3, undefined), undefined);
 
-eq("File \"bs_min_max_test.res\", line 21, characters 5-12", Caml_obj.max(3, undefined), 3);
+eq("File \"bs_min_max_test.res\", line 21, characters 5-12", Primitive_object.max(3, undefined), 3);
 
-eq("File \"bs_min_max_test.res\", line 22, characters 5-12", Caml_obj.max(undefined, 3), 3);
+eq("File \"bs_min_max_test.res\", line 22, characters 5-12", Primitive_object.max(undefined, 3), 3);
 
-b("File \"bs_min_max_test.res\", line 23, characters 4-11", Caml_obj.greaterequal(5, undefined));
+b("File \"bs_min_max_test.res\", line 23, characters 4-11", Primitive_object.greaterequal(5, undefined));
 
-b("File \"bs_min_max_test.res\", line 24, characters 4-11", Caml_obj.lessequal(undefined, 5));
+b("File \"bs_min_max_test.res\", line 24, characters 4-11", Primitive_object.lessequal(undefined, 5));
 
 b("File \"bs_min_max_test.res\", line 25, characters 4-11", true);
 

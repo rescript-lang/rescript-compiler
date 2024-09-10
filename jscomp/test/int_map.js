@@ -2,9 +2,9 @@
 'use strict';
 
 let Belt_Map = require("../../lib/js/belt_Map.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
-let cmp = Caml_obj.compare;
+let cmp = Primitive_object.compare;
 
 let IntCmp = {
   cmp: cmp

@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let suites = {
   contents: /* [] */0
@@ -109,7 +109,7 @@ let length_8_id = Belt_List.makeBy(8, x => x);
 let length_10_id = Belt_List.makeBy(10, x => x);
 
 function f13$1() {
-  return Caml_obj.equal(Belt_List.take(length_10_id, 8), {
+  return Primitive_object.equal(Belt_List.take(length_10_id, 8), {
     hd: 1,
     tl: {
       hd: 2,
@@ -121,45 +121,45 @@ function f13$1() {
   });
 }
 
-b("File \"option_repr_test.res\", line 93, characters 4-11", Caml_obj.lessthan(undefined, null));
+b("File \"option_repr_test.res\", line 93, characters 4-11", Primitive_object.lessthan(undefined, null));
 
-b("File \"option_repr_test.res\", line 94, characters 4-11", !Caml_obj.greaterthan(undefined, null));
+b("File \"option_repr_test.res\", line 94, characters 4-11", !Primitive_object.greaterthan(undefined, null));
 
-b("File \"option_repr_test.res\", line 95, characters 4-11", Caml_obj.greaterthan(null, undefined));
+b("File \"option_repr_test.res\", line 95, characters 4-11", Primitive_object.greaterthan(null, undefined));
 
-b("File \"option_repr_test.res\", line 96, characters 4-11", Caml_obj.lessthan(undefined, Caml_option.some(undefined)));
+b("File \"option_repr_test.res\", line 96, characters 4-11", Primitive_object.lessthan(undefined, Caml_option.some(undefined)));
 
-b("File \"option_repr_test.res\", line 97, characters 4-11", Caml_obj.greaterthan(Caml_option.some(undefined), undefined));
+b("File \"option_repr_test.res\", line 97, characters 4-11", Primitive_object.greaterthan(Caml_option.some(undefined), undefined));
 
 console.log(6, undefined);
 
 function ltx(a, b) {
-  if (Caml_obj.lessthan(a, b)) {
-    return Caml_obj.greaterthan(b, a);
+  if (Primitive_object.lessthan(a, b)) {
+    return Primitive_object.greaterthan(b, a);
   } else {
     return false;
   }
 }
 
 function gtx(a, b) {
-  if (Caml_obj.greaterthan(a, b)) {
-    return Caml_obj.lessthan(b, a);
+  if (Primitive_object.greaterthan(a, b)) {
+    return Primitive_object.lessthan(b, a);
   } else {
     return false;
   }
 }
 
 function eqx(a, b) {
-  if (Caml_obj.equal(a, b)) {
-    return Caml_obj.equal(b, a);
+  if (Primitive_object.equal(a, b)) {
+    return Primitive_object.equal(b, a);
   } else {
     return false;
   }
 }
 
 function neqx(a, b) {
-  if (Caml_obj.notequal(a, b)) {
-    return Caml_obj.notequal(b, a);
+  if (Primitive_object.notequal(a, b)) {
+    return Primitive_object.notequal(b, a);
   } else {
     return false;
   }
@@ -178,22 +178,22 @@ let xs = {
 
 b("File \"option_repr_test.res\", line 125, characters 8-15", Belt_List.every(xs, x => x));
 
-let xs_0$1 = Caml_obj.lessthan(Caml_option.some(undefined), 3) && Caml_obj.greaterthan(3, Caml_option.some(undefined));
+let xs_0$1 = Primitive_object.lessthan(Caml_option.some(undefined), 3) && Primitive_object.greaterthan(3, Caml_option.some(undefined));
 
 let xs_1 = {
-  hd: Caml_obj.lessthan(Caml_option.some(undefined), Caml_option.some(Caml_option.some(undefined))) && Caml_obj.greaterthan(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(undefined)),
+  hd: Primitive_object.lessthan(Caml_option.some(undefined), Caml_option.some(Caml_option.some(undefined))) && Primitive_object.greaterthan(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(undefined)),
   tl: {
-    hd: Caml_obj.lessthan(Caml_option.some(undefined), "3") && Caml_obj.greaterthan("3", Caml_option.some(undefined)),
+    hd: Primitive_object.lessthan(Caml_option.some(undefined), "3") && Primitive_object.greaterthan("3", Caml_option.some(undefined)),
     tl: {
-      hd: Caml_obj.lessthan(Caml_option.some(undefined), true) && Caml_obj.greaterthan(true, Caml_option.some(undefined)),
+      hd: Primitive_object.lessthan(Caml_option.some(undefined), true) && Primitive_object.greaterthan(true, Caml_option.some(undefined)),
       tl: {
-        hd: Caml_obj.lessthan(Caml_option.some(undefined), false) && Caml_obj.greaterthan(false, Caml_option.some(undefined)),
+        hd: Primitive_object.lessthan(Caml_option.some(undefined), false) && Primitive_object.greaterthan(false, Caml_option.some(undefined)),
         tl: {
-          hd: Caml_obj.lessthan(false, true) && Caml_obj.greaterthan(true, false),
+          hd: Primitive_object.lessthan(false, true) && Primitive_object.greaterthan(true, false),
           tl: {
-            hd: Caml_obj.lessthan(false, true) && Caml_obj.greaterthan(true, false),
+            hd: Primitive_object.lessthan(false, true) && Primitive_object.greaterthan(true, false),
             tl: {
-              hd: Caml_obj.lessthan(undefined, Caml_option.some(undefined)) && Caml_obj.greaterthan(Caml_option.some(undefined), undefined),
+              hd: Primitive_object.lessthan(undefined, Caml_option.some(undefined)) && Primitive_object.greaterthan(Caml_option.some(undefined), undefined),
               tl: {
                 hd: ltx(undefined, null),
                 tl: {
@@ -224,11 +224,11 @@ let xs_0$2 = true && true;
 let xs_1$1 = {
   hd: neqx(undefined, null),
   tl: {
-    hd: Caml_obj.equal(Caml_option.some(undefined), Caml_option.some(undefined)) && Caml_obj.equal(Caml_option.some(undefined), Caml_option.some(undefined)),
+    hd: Primitive_object.equal(Caml_option.some(undefined), Caml_option.some(undefined)) && Primitive_object.equal(Caml_option.some(undefined), Caml_option.some(undefined)),
     tl: {
-      hd: Caml_obj.equal(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))) && Caml_obj.equal(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))),
+      hd: Primitive_object.equal(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))) && Primitive_object.equal(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))),
       tl: {
-        hd: Caml_obj.notequal(Caml_option.some(Caml_option.some(Caml_option.some(undefined))), Caml_option.some(Caml_option.some(undefined))) && Caml_obj.notequal(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(Caml_option.some(undefined)))),
+        hd: Primitive_object.notequal(Caml_option.some(Caml_option.some(Caml_option.some(undefined))), Caml_option.some(Caml_option.some(undefined))) && Primitive_object.notequal(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(Caml_option.some(undefined)))),
         tl: /* [] */0
       }
     }

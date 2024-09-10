@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
 let Pervasives = require("../../lib/js/pervasives.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 function isLessThan(title, small, big) {
   return {
@@ -30,7 +30,7 @@ function isLessThan(title, small, big) {
           param => ({
             TAG: "Eq",
             _0: true,
-            _1: Caml_obj.lessthan(small, big)
+            _1: Primitive_object.lessthan(small, big)
           })
         ],
         tl: {
@@ -39,7 +39,7 @@ function isLessThan(title, small, big) {
             param => ({
               TAG: "Eq",
               _0: true,
-              _1: Caml_obj.lessequal(small, big)
+              _1: Primitive_object.lessequal(small, big)
             })
           ],
           tl: {
@@ -48,7 +48,7 @@ function isLessThan(title, small, big) {
               param => ({
                 TAG: "Eq",
                 _0: true,
-                _1: Caml_obj.greaterthan(big, small)
+                _1: Primitive_object.greaterthan(big, small)
               })
             ],
             tl: {
@@ -57,7 +57,7 @@ function isLessThan(title, small, big) {
                 param => ({
                   TAG: "Eq",
                   _0: true,
-                  _1: Caml_obj.greaterequal(big, small)
+                  _1: Primitive_object.greaterequal(big, small)
                 })
               ],
               tl: {
@@ -66,7 +66,7 @@ function isLessThan(title, small, big) {
                   param => ({
                     TAG: "Eq",
                     _0: small,
-                    _1: Caml_obj.min(big, small)
+                    _1: Primitive_object.min(big, small)
                   })
                 ],
                 tl: {
@@ -75,7 +75,7 @@ function isLessThan(title, small, big) {
                     param => ({
                       TAG: "Eq",
                       _0: small,
-                      _1: Caml_obj.min(small, big)
+                      _1: Primitive_object.min(small, big)
                     })
                   ],
                   tl: {
@@ -84,7 +84,7 @@ function isLessThan(title, small, big) {
                       param => ({
                         TAG: "Eq",
                         _0: big,
-                        _1: Caml_obj.max(big, small)
+                        _1: Primitive_object.max(big, small)
                       })
                     ],
                     tl: {
@@ -93,7 +93,7 @@ function isLessThan(title, small, big) {
                         param => ({
                           TAG: "Eq",
                           _0: big,
-                          _1: Caml_obj.max(small, big)
+                          _1: Primitive_object.max(small, big)
                         })
                       ],
                       tl: {
@@ -120,7 +120,7 @@ function isLessThan(title, small, big) {
                               param => ({
                                 TAG: "Eq",
                                 _0: true,
-                                _1: Caml_obj.notequal(big, small)
+                                _1: Primitive_object.notequal(big, small)
                               })
                             ],
                             tl: {
@@ -129,7 +129,7 @@ function isLessThan(title, small, big) {
                                 param => ({
                                   TAG: "Eq",
                                   _0: true,
-                                  _1: Caml_obj.notequal(small, big)
+                                  _1: Primitive_object.notequal(small, big)
                                 })
                               ],
                               tl: {
@@ -138,7 +138,7 @@ function isLessThan(title, small, big) {
                                   param => ({
                                     TAG: "Eq",
                                     _0: false,
-                                    _1: Caml_obj.equal(big, small)
+                                    _1: Primitive_object.equal(big, small)
                                   })
                                 ],
                                 tl: {
@@ -147,7 +147,7 @@ function isLessThan(title, small, big) {
                                     param => ({
                                       TAG: "Eq",
                                       _0: false,
-                                      _1: Caml_obj.equal(small, big)
+                                      _1: Primitive_object.equal(small, big)
                                     })
                                   ],
                                   tl: {
@@ -196,7 +196,7 @@ function isEqual(title, num1, num2) {
       param => ({
         TAG: "Eq",
         _0: false,
-        _1: Caml_obj.lessthan(num2, num1)
+        _1: Primitive_object.lessthan(num2, num1)
       })
     ],
     tl: {
@@ -205,7 +205,7 @@ function isEqual(title, num1, num2) {
         param => ({
           TAG: "Eq",
           _0: true,
-          _1: Caml_obj.lessequal(num2, num1)
+          _1: Primitive_object.lessequal(num2, num1)
         })
       ],
       tl: {
@@ -214,7 +214,7 @@ function isEqual(title, num1, num2) {
           param => ({
             TAG: "Eq",
             _0: false,
-            _1: Caml_obj.greaterthan(num1, num2)
+            _1: Primitive_object.greaterthan(num1, num2)
           })
         ],
         tl: {
@@ -223,7 +223,7 @@ function isEqual(title, num1, num2) {
             param => ({
               TAG: "Eq",
               _0: true,
-              _1: Caml_obj.greaterequal(num1, num2)
+              _1: Primitive_object.greaterequal(num1, num2)
             })
           ],
           tl: {
@@ -232,7 +232,7 @@ function isEqual(title, num1, num2) {
               param => ({
                 TAG: "Eq",
                 _0: num1,
-                _1: Caml_obj.min(num1, num2)
+                _1: Primitive_object.min(num1, num2)
               })
             ],
             tl: {
@@ -241,7 +241,7 @@ function isEqual(title, num1, num2) {
                 param => ({
                   TAG: "Eq",
                   _0: num1,
-                  _1: Caml_obj.max(num1, num2)
+                  _1: Primitive_object.max(num1, num2)
                 })
               ],
               tl: {
@@ -250,7 +250,7 @@ function isEqual(title, num1, num2) {
                   param => ({
                     TAG: "Eq",
                     _0: 0,
-                    _1: Caml_obj.compare(num1, num2)
+                    _1: Primitive_object.compare(num1, num2)
                   })
                 ],
                 tl: {
@@ -259,7 +259,7 @@ function isEqual(title, num1, num2) {
                     param => ({
                       TAG: "Eq",
                       _0: 0,
-                      _1: Caml_obj.compare(num2, num1)
+                      _1: Primitive_object.compare(num2, num1)
                     })
                   ],
                   tl: {
@@ -286,7 +286,7 @@ function isEqual(title, num1, num2) {
                           param => ({
                             TAG: "Eq",
                             _0: false,
-                            _1: Caml_obj.notequal(num1, num2)
+                            _1: Primitive_object.notequal(num1, num2)
                           })
                         ],
                         tl: {
@@ -295,7 +295,7 @@ function isEqual(title, num1, num2) {
                             param => ({
                               TAG: "Eq",
                               _0: false,
-                              _1: Caml_obj.notequal(num2, num1)
+                              _1: Primitive_object.notequal(num2, num1)
                             })
                           ],
                           tl: {
@@ -304,7 +304,7 @@ function isEqual(title, num1, num2) {
                               param => ({
                                 TAG: "Eq",
                                 _0: true,
-                                _1: Caml_obj.equal(num1, num2)
+                                _1: Primitive_object.equal(num1, num2)
                               })
                             ],
                             tl: {
@@ -313,7 +313,7 @@ function isEqual(title, num1, num2) {
                                 param => ({
                                   TAG: "Eq",
                                   _0: true,
-                                  _1: Caml_obj.equal(num2, num1)
+                                  _1: Primitive_object.equal(num2, num1)
                                 })
                               ],
                               tl: {

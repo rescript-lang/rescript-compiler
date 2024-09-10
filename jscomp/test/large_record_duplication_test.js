@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let suites = {
   contents: /* [] */0
@@ -51,7 +51,7 @@ eq("File \"large_record_duplication_test.res\", line 70, characters 3-10", f_sma
   y: ""
 });
 
-eq("File \"large_record_duplication_test.res\", line 72, characters 3-10", Caml_obj.equal(h, {
+eq("File \"large_record_duplication_test.res\", line 72, characters 3-10", Primitive_object.equal(h, {
   RE_EXN_ID: Small,
   x: 2,
   y: ""

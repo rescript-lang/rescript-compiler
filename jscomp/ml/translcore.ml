@@ -50,7 +50,7 @@ let transl_extension_constructor env path ext =
 (* Translation of primitives *)
 
 type specialized = {
-  gencomp : Lambda.primitive;
+  objcomp : Lambda.primitive;
   intcomp : Lambda.primitive;
   boolcomp : Lambda.primitive;
   floatcomp : Lambda.primitive;
@@ -59,118 +59,72 @@ type specialized = {
   simplify_constant_constructor : bool;
 }
 
-let arity2 name : Lambda.primitive =
-  Lambda.Pccall (Primitive.simple ~name ~arity:2 ~alloc:true)
-
 let comparisons_table =
   create_hashtable
     [|
       ( "%equal",
         {
-          gencomp =
-            Pccall (Primitive.simple ~name:"caml_equal" ~arity:2 ~alloc:true);
+          objcomp = Pobjcomp Ceq;
           intcomp = Pintcomp Ceq;
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_equal" ~arity:2 ~alloc:false);
+          boolcomp = Pboolcomp Ceq;
           floatcomp = Pfloatcomp Ceq;
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_equal" ~arity:2 ~alloc:false);
+          stringcomp = Pstringcomp Ceq;
           bigintcomp = Pbigintcomp Ceq;
           simplify_constant_constructor = true;
         } );
       ( "%notequal",
         {
-          gencomp =
-            Pccall (Primitive.simple ~name:"caml_notequal" ~arity:2 ~alloc:true);
+          objcomp = Pobjcomp Cneq;
           intcomp = Pintcomp Cneq;
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_notequal" ~arity:2 ~alloc:false);
+          boolcomp = Pboolcomp Cneq;
           floatcomp = Pfloatcomp Cneq;
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_notequal" ~arity:2
-                 ~alloc:false);
+          stringcomp = Pstringcomp Cneq;
           bigintcomp = Pbigintcomp Cneq;
           simplify_constant_constructor = true;
         } );
       ( "%lessthan",
         {
-          gencomp =
-            Pccall (Primitive.simple ~name:"caml_lessthan" ~arity:2 ~alloc:true);
+          objcomp = Pobjcomp Clt;
           intcomp = Pintcomp Clt;
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_lessthan" ~arity:2 ~alloc:false);
+          boolcomp = Pboolcomp Clt;
           floatcomp = Pfloatcomp Clt;
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_lessthan" ~arity:2
-                 ~alloc:false);
+          stringcomp = Pstringcomp Clt;
           bigintcomp = Pbigintcomp Clt;
           simplify_constant_constructor = false;
         } );
       ( "%greaterthan",
         {
-          gencomp =
-            Pccall
-              (Primitive.simple ~name:"caml_greaterthan" ~arity:2 ~alloc:true);
+          objcomp = Pobjcomp Cgt;
           intcomp = Pintcomp Cgt;
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_greaterthan" ~arity:2
-                 ~alloc:false);
+          boolcomp = Pboolcomp Cgt;
           floatcomp = Pfloatcomp Cgt;
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_greaterthan" ~arity:2
-                 ~alloc:false);
+          stringcomp = Pstringcomp Cgt;
           bigintcomp = Pbigintcomp Cgt;
           simplify_constant_constructor = false;
         } );
       ( "%lessequal",
         {
-          gencomp =
-            Pccall
-              (Primitive.simple ~name:"caml_lessequal" ~arity:2 ~alloc:true);
+          objcomp = Pobjcomp Cle;
           intcomp = Pintcomp Cle;
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_lessequal" ~arity:2
-                 ~alloc:false);
+          boolcomp = Pboolcomp Cle;
           floatcomp = Pfloatcomp Cle;
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_lessequal" ~arity:2
-                 ~alloc:false);
+          stringcomp = Pstringcomp Cle;
           bigintcomp = Pbigintcomp Cle;
           simplify_constant_constructor = false;
         } );
       ( "%greaterequal",
         {
-          gencomp =
-            Pccall
-              (Primitive.simple ~name:"caml_greaterequal" ~arity:2 ~alloc:true);
+          objcomp = Pobjcomp Cge;
           intcomp = Pintcomp Cge;
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_greaterequal" ~arity:2
-                 ~alloc:false);
+          boolcomp = Pboolcomp Cge;
           floatcomp = Pfloatcomp Cge;
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_greaterequal" ~arity:2
-                 ~alloc:false);
+          stringcomp = Pstringcomp Cge;
           bigintcomp = Pbigintcomp Cge;
           simplify_constant_constructor = false;
         } );
       ( "%compare",
         {
-          gencomp =
-            Pccall (Primitive.simple ~name:"caml_compare" ~arity:2 ~alloc:true);
-          (* Not unboxed since the comparison is done directly on tagged int *)
+          objcomp = Pobjorder;
           intcomp = Pintorder;
           boolcomp = Pboolorder;
           floatcomp = Pfloatorder;
@@ -180,7 +134,7 @@ let comparisons_table =
         } );
       ( "%max",
         {
-          gencomp = arity2 "caml_max";
+          objcomp = Pobjmax;
           intcomp = Pintmax;
           boolcomp = Pboolmax;
           floatcomp = Pboolmax;
@@ -190,7 +144,7 @@ let comparisons_table =
         } );
       ( "%min",
         {
-          gencomp = arity2 "caml_min";
+          objcomp = Pobjmin;
           intcomp = Pintmin;
           boolcomp = Pboolmin;
           floatcomp = Pfloatmin;
@@ -198,35 +152,35 @@ let comparisons_table =
           bigintcomp = Pbigintmin;
           simplify_constant_constructor = false;
         } );
-      ( "%bs_equal_null",
+      ( "%equal_null",
         {
-          gencomp = arity2 "caml_equal_null";
-          intcomp = arity2 "caml_int_equal_null";
-          boolcomp = arity2 "caml_bool_equal_null";
-          floatcomp = arity2 "caml_float_equal_null";
-          stringcomp = arity2 "caml_string_equal_null";
-          bigintcomp = arity2 "caml_bigint_equal_null";
-          simplify_constant_constructor = true;
+          objcomp = Pobjcomp Ceq;
+          intcomp = Pintcomp Ceq;
+          boolcomp = Pboolcomp Ceq;
+          floatcomp = Pfloatcomp Ceq;
+          stringcomp = Pstringcomp Ceq;
+          bigintcomp = Pbigintcomp Ceq;
+          simplify_constant_constructor = false;
         } );
-      ( "%bs_equal_undefined",
+      ( "%equal_undefined",
         {
-          gencomp = arity2 "caml_equal_undefined";
-          intcomp = arity2 "caml_int_equal_undefined";
-          boolcomp = arity2 "caml_bool_equal_undefined";
-          floatcomp = arity2 "caml_float_equal_undefined";
-          stringcomp = arity2 "caml_string_equal_undefined";
-          bigintcomp = arity2 "caml_bigint_equal_undefined";
-          simplify_constant_constructor = true;
+          objcomp = Pobjcomp Ceq;
+          intcomp = Pintcomp Ceq;
+          boolcomp = Pboolcomp Ceq;
+          floatcomp = Pfloatcomp Ceq;
+          stringcomp = Pstringcomp Ceq;
+          bigintcomp = Pbigintcomp Ceq;
+          simplify_constant_constructor = false;
         } );
-      ( "%bs_equal_nullable",
+      ( "%equal_nullable",
         {
-          gencomp = arity2 "caml_equal_nullable";
-          intcomp = arity2 "caml_int_equal_nullable";
-          boolcomp = arity2 "caml_bool_equal_nullable";
-          floatcomp = arity2 "caml_float_equal_nullable";
-          stringcomp = arity2 "caml_string_equal_nullable";
-          bigintcomp = arity2 "caml_bigint_equal_nullable";
-          simplify_constant_constructor = true;
+          objcomp = Pobjcomp Ceq;
+          intcomp = Pintcomp Ceq;
+          boolcomp = Pboolcomp Ceq;
+          floatcomp = Pfloatcomp Ceq;
+          stringcomp = Pstringcomp Ceq;
+          bigintcomp = Pbigintcomp Ceq;
+          simplify_constant_constructor = false;
         } );
     |]
 
@@ -363,7 +317,7 @@ let primitives_table =
 let find_primitive prim_name = Hashtbl.find primitives_table prim_name
 
 let specialize_comparison
-    ({ gencomp; intcomp; floatcomp; stringcomp; bigintcomp; boolcomp } :
+    ({ objcomp; intcomp; floatcomp; stringcomp; bigintcomp; boolcomp } :
       specialized) env ty =
   match () with
   | ()
@@ -375,7 +329,7 @@ let specialize_comparison
   | () when is_base_type env ty Predef.path_string -> stringcomp
   | () when is_base_type env ty Predef.path_bigint -> bigintcomp
   | () when is_base_type env ty Predef.path_bool -> boolcomp
-  | () -> gencomp
+  | () -> objcomp
 
 (* Specialize a primitive from available type information,
    raise Not_found if primitive is unknown  *)
@@ -385,7 +339,7 @@ let specialize_primitive p env ty (* ~has_constant_constructor *) =
     let table = Hashtbl.find comparisons_table p.prim_name in
     match is_function_type env ty with
     | Some (lhs, _rhs) -> specialize_comparison table env lhs
-    | None -> table.gencomp
+    | None -> table.objcomp
   with Not_found -> find_primitive p.prim_name
 
 (* Eta-expand a primitive *)

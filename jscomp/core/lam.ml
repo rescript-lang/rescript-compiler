@@ -581,9 +581,13 @@ let has_boolean_type (x : t) =
   | Lprim
       {
         primitive =
-          ( Pnot | Psequand | Psequor | Pisout _ | Pintcomp _ | Pis_not_none
+          ( Pnot | Psequand | Psequor | Pisout _ | Pis_not_none
+          | Pobjcomp _
+          | Pboolcomp _
+          | Pintcomp _ 
           | Pfloatcomp _
-          | Pccall { prim_name = "caml_string_equal" | "caml_string_notequal" }
+          | Pbigintcomp _
+          | Pstringcomp _
             );
         loc;
       } ->

@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 let Primitive_string = require("../../lib/js/primitive_string.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -111,7 +111,7 @@ function eq(x) {
 
 let Not_found = /* @__PURE__ */Caml_exceptions.create("Equal_exception_test.Not_found");
 
-if (Caml_obj.equal(e, {
+if (Primitive_object.equal(e, {
     RE_EXN_ID: Not_found
   }) !== false) {
   throw {

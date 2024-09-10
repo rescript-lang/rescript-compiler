@@ -793,18 +793,6 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
 
 let int_equal = float_equal
 
-let string_equal ?comment (e0 : t) (e1 : t) : t =
-  let default () : t = { expression_desc = Bin (EqEqEq, e0, e1); comment } in
-  match (e0.expression_desc, e1.expression_desc) with
-  | Str { txt = a0; delim = d0 }, Str { txt = a1; delim = d1 } when d0 = d1 ->
-    (match str_equal a0 d0 a1 d1 with
-    | Some b -> bool b
-    | None -> default ())
-  | _, _ -> default ()
-
-let is_type_number ?comment (e : t) : t =
-  string_equal ?comment (typeof e) (str "number")
-
 let tag_type = function
   | Ast_untagged_variants.String s -> str s ~delim:DStarJ
   | Int i -> small_int i
@@ -853,11 +841,6 @@ let is_int_tag ?has_null_undefined_other e =
     let check = Ast_untagged_variants.DynamicChecks.is_int_tag ?has_null_undefined_other (Expr e) in
     emit_check check
 
-let is_type_string ?comment (e : t) : t =
-  string_equal ?comment (typeof e) (str "string")
-
-let is_type_object (e : t) : t = string_equal (typeof e) (str "object")
-
 (* we are calling [Caml_primitive.primitive_name], since it's under our
    control, we should make it follow the javascript name convention, and
    call plain [dot]
@@ -904,15 +887,26 @@ let to_int32 ?comment (e : J.expression) : J.expression =
   int32_bor ?comment e zero_int_literal
 (* TODO: if we already know the input is int32, [x|0] can be reduced into [x] *)
 
-let string_comp (cmp : J.binop) ?comment (e0 : t) (e1 : t) =
+let string_comp (cmp : Lam_compat.comparison) ?comment (e0 : t) (e1 : t) =
   match (e0.expression_desc, e1.expression_desc) with
   | Str { txt = a0; delim = d0 }, Str { txt = a1; delim = d1 } -> (
     match cmp, str_equal a0 d0 a1 d1 with
-      | EqEqEq, Some b -> bool b
-      | NotEqEq, Some b -> bool (b = false)
+      | Ceq, Some b -> bool b
+      | Cneq, Some b -> bool (b = false)
       | _ ->
-        bin ?comment cmp e0 e1)
-  | _ -> bin ?comment cmp e0 e1
+        bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1)
+  | _ -> bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+
+let string_equal ?comment (e0 : t) (e1 : t) : t =
+  string_comp Ceq ?comment e0 e1
+
+let is_type_number ?comment (e : t) : t =
+  string_equal ?comment (typeof e) (str "number")
+
+let is_type_string ?comment (e : t) : t =
+  string_equal ?comment (typeof e) (str "string")
+
+let is_type_object (e : t) : t = string_equal (typeof e) (str "object")
 
 let obj_length ?comment e : t =
   to_int32 { expression_desc = Length (e, Caml_block); comment }

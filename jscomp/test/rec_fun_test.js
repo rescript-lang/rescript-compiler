@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let suites = {
   contents: /* [] */0
@@ -40,7 +40,7 @@ function g() {
     }
     return i + 1 | 0;
   };
-  Caml_obj.update_dummy(v, {
+  Primitive_object.update_dummy(v, {
     contents: next
   });
   console.log(next(0, true).toString());
@@ -52,12 +52,12 @@ let x = {};
 
 let y = {};
 
-Caml_obj.update_dummy(x, {
+Primitive_object.update_dummy(x, {
   hd: 1,
   tl: y
 });
 
-Caml_obj.update_dummy(y, {
+Primitive_object.update_dummy(y, {
   hd: 2,
   tl: x
 });

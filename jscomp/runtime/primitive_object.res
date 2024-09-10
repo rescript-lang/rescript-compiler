@@ -343,24 +343,6 @@ and aux_obj_equal = (a: Obj.t, b: Obj.t) => {
   result.contents
 }
 
-let equal_null = (x: Obj.t, y: Js.null<Obj.t>) =>
-  switch Js.nullToOption(y) {
-  | None => x === Obj.magic(y)
-  | Some(y) => equal(x, y)
-  }
-
-let equal_undefined = (x: Obj.t, y: Js.undefined<Obj.t>) =>
-  switch Js.undefinedToOption(y) {
-  | None => x === Obj.magic(y)
-  | Some(y) => equal(x, y)
-  }
-
-let equal_nullable = (x: Obj.t, y: Js.nullable<Obj.t>) =>
-  switch Js.toOption(y) {
-  | None => x === Obj.magic(y)
-  | Some(y) => equal(x, y)
-  }
-
 @inline
 let isNumberOrBigInt = a => Js.typeof(a) == "number" || Js.typeof(a) == "bigint"
 

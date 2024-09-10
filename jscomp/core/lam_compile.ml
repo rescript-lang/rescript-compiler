@@ -446,7 +446,7 @@ and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
               (Ext_list.append b
                  [
                    S.exp
-                     (E.runtime_call Js_runtime_modules.obj_runtime
+                     (E.runtime_call Js_runtime_modules.object_
                         "update_dummy" [ E.var id; v ]);
                  ]),
             [ S.define_variable ~kind:Variable id (E.dummy_obj tag_info) ] )

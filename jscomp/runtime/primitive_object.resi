@@ -29,13 +29,7 @@ let update_dummy: (Obj.t, Obj.t) => unit
 let compare: (Obj.t, Obj.t) => int
 
 type eq = (Obj.t, Obj.t) => bool
-
 let equal: eq
-
-let equal_null: (Obj.t, Js.null<Obj.t>) => bool
-let equal_undefined: (Obj.t, Js.undefined<Obj.t>) => bool
-let equal_nullable: (Obj.t, Js.nullable<Obj.t>) => bool
-
 let notequal: eq
 let greaterequal: eq
 let greaterthan: eq

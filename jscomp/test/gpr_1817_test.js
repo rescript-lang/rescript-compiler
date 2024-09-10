@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let suites = {
   contents: /* [] */0
@@ -31,8 +31,8 @@ function f() {
   let x = new Date();
   let y = new Date();
   return [
-    Caml_obj.greaterthan(y, x),
-    Caml_obj.lessthan(y, x),
+    Primitive_object.greaterthan(y, x),
+    Primitive_object.lessthan(y, x),
     true
   ];
 }
