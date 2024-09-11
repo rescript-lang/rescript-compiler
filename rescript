@@ -14,13 +14,17 @@ var bsb = require("./cli/rescript_bsb.js");
 var cwd = process.cwd();
 process.env.BSB_PROJECT_ROOT = cwd;
 
-if (process.env.NINJA_ANSI_FORCED === undefined) {
+if (process.env.FORCE_COLOR === undefined) {
   if (require("tty").isatty(1)) {
+    process.env.FORCE_COLOR = "1";
     process.env.NINJA_ANSI_FORCED = "1";
   }
 } else {
+  if (process.env.FORCE_COLOR === "1" && process.env.NINJA_ANSI_FORCED === undefined) {
+    process.env.NINJA_ANSI_FORCED = "1";
+  }
   if (process.argv.includes("-verbose")) {
-    console.log(`NINJA_ANSI_FORCED: "${process.env.NINJA_ANSI_FORCED}"`);
+    console.log(`FORCE_COLOR: "${process.env.FORCE_COLOR}"`);
   }
 }
 
