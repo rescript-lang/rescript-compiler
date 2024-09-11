@@ -2406,7 +2406,8 @@ and print_pattern ~state (p : Parsetree.pattern) cmt_tbl =
       Doc.group (Doc.concat [variant_name; args_doc])
     | Ppat_type ident ->
       let prefix =
-        if ParsetreeViewer.hasResPatVariantSpreadAttribute p.ppat_attributes
+        if
+          ParsetreeViewer.has_res_pat_variant_spread_attribute p.ppat_attributes
         then ""
         else "#"
       in

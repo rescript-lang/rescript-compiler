@@ -97,7 +97,7 @@ let has_await_attribute attrs =
       | _ -> false)
     attrs
 
-let hasResPatVariantSpreadAttribute attrs =
+let has_res_pat_variant_spread_attribute attrs =
   List.exists
     (function
       | {Location.txt = "res.patVariantSpread"}, _ -> true

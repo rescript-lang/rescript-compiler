@@ -26,7 +26,7 @@ val process_function_attributes :
   Parsetree.attributes -> function_attributes_info
 
 val has_await_attribute : Parsetree.attributes -> bool
-val hasResPatVariantSpreadAttribute : Parsetree.attributes -> bool
+val has_res_pat_variant_spread_attribute : Parsetree.attributes -> bool
 
 type if_condition_kind =
   | If of Parsetree.expression

@@ -175,7 +175,7 @@ let suppress_fragile_match_warning_attr =
       ] )
 let make_braces_attr loc = (Location.mkloc "res.braces" loc, Parsetree.PStr [])
 let template_literal_attr = (Location.mknoloc "res.template", Parsetree.PStr [])
-let makePatVariantSpreadAttr =
+let make_pat_variant_spread_attr =
   (Location.mknoloc "res.patVariantSpread", Parsetree.PStr [])
 
 let tagged_template_literal_attr =
@@ -1083,7 +1083,7 @@ let rec parse_pattern ?(alias = true) ?(or_ = true) p =
       Parser.next p;
       let ident = parse_value_path p in
       let loc = mk_loc start_pos ident.loc.loc_end in
-      Ast_helper.Pat.type_ ~loc ~attrs:(makePatVariantSpreadAttr :: attrs) ident
+      Ast_helper.Pat.type_ ~loc ~attrs:(make_pat_variant_spread_attr :: attrs) ident
     | Hash -> (
       Parser.next p;
       if p.Parser.token == DotDotDot then (
