@@ -76,16 +76,16 @@ let tag_type_to_possible_values (tag_type : Ast_untagged_variants.tag_type) :
   | Untagged UnknownType -> Any
   | _ -> Any
 
-let process_fields fields env type_expr_to_possible_values =
+let process_fields fields env to_runtime_representation =
   fields
   |> List.map (fun (label : Types.label_declaration) ->
          {
            optional = false (* TODO: Replicate existing rules*);
            key = label.ld_id.name (* TODO: @as attribute *);
-           value = Known (type_expr_to_possible_values label.ld_type env);
+           value = Known (to_runtime_representation label.ld_type env);
          })
 
-let rec type_expr_to_possible_values (type_expr : Types.type_expr) (env : Env.t)
+let rec to_runtime_representation (type_expr : Types.type_expr) (env : Env.t)
     : runtime_js_value list =
   match type_expr.desc with
   (* Builtins *)
@@ -97,9 +97,9 @@ let rec type_expr_to_possible_values (type_expr : Types.type_expr) (env : Env.t)
     when Path.same p Predef.path_float || Path.same p Predef.path_int ->
     [Number {value = Unknown}]
   | Tconstr (p, [inner], _) when Path.same p Predef.path_option ->
-    [UndefinedLiteral] @ type_expr_to_possible_values inner env
+    [UndefinedLiteral] @ to_runtime_representation inner env
   | Tconstr (p, [inner], _) when Path.same p Predef.path_dict ->
-    [Dict {value_type = type_expr_to_possible_values inner env}]
+    [Dict {value_type = to_runtime_representation inner env}]
   (* Types needing lookup*)
   | Tconstr (_, _, _) -> (
     try
@@ -109,7 +109,7 @@ let rec type_expr_to_possible_values (type_expr : Types.type_expr) (env : Env.t)
         [
           Object
             {
-              properties = process_fields fields env type_expr_to_possible_values;
+              properties = process_fields fields env to_runtime_representation;
               can_have_unknown_properties = false;
             };
         ]
@@ -152,7 +152,7 @@ let rec type_expr_to_possible_values (type_expr : Types.type_expr) (env : Env.t)
                                   key = "_" ^ string_of_int index;
                                   value =
                                     Known
-                                      (type_expr_to_possible_values payload env);
+                                      (to_runtime_representation payload env);
                                 }));
                      can_have_unknown_properties = false;
                    }
@@ -175,7 +175,7 @@ let rec type_expr_to_possible_values (type_expr : Types.type_expr) (env : Env.t)
                            value = Known [tag_value];
                          };
                        ]
-                       @ process_fields fields env type_expr_to_possible_values;
+                       @ process_fields fields env to_runtime_representation;
                      can_have_unknown_properties = false;
                    })
     with Not_found -> [Any])
@@ -200,7 +200,7 @@ let rec type_expr_to_possible_values (type_expr : Types.type_expr) (env : Env.t)
                        {
                          key = "VAL";
                          optional = false;
-                         value = Known (type_expr_to_possible_values inner env);
+                         value = Known (to_runtime_representation inner env);
                        };
                      ];
                  };
@@ -232,11 +232,11 @@ let a_can_be_represented_as_b (a : runtime_js_value list)
 let log t1 t2 env =
   Printf.sprintf "Can be coerced: %b\n\nt1 dump: %s\n\nt2 dump: %s\n"
     (a_can_be_represented_as_b
-       (type_expr_to_possible_values t1 env)
-       (type_expr_to_possible_values t2 env))
-    (type_expr_to_possible_values t1 env
+       (to_runtime_representation t1 env)
+       (to_runtime_representation t2 env))
+    (to_runtime_representation t1 env
     |> List.map debug_print_runtime_value
     |> String.concat " | ")
-    (type_expr_to_possible_values t2 env
+    (to_runtime_representation t2 env
     |> List.map debug_print_runtime_value
     |> String.concat " | ")
