@@ -19,6 +19,7 @@
 #### :nail_care: Polish
 
 - Improve bigint literal comparison. https://github.com/rescript-lang/rescript-compiler/pull/7029
+- Force color output in `rescript_bsb.js` if `NINJA_ANSI_FORCED=1`. https://github.com/rescript-lang/rescript-compiler/pull/7032
 
 # 12.0.0-alpha.3
 
