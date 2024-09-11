@@ -1,12 +1,6 @@
-type x = [#One | #Two]
+type one = OK
+type two = NOPE
 
-@tag("kind")
-type y = | @as("one") One({hello: [#hello]}) | @as(null) Two
+let one: one = OK
 
-let x: x = #One
-
-let xx = #One({"hello": "hi"})
-
-let y: y = One({hello: #hello})
-
-let z = (x :> y)
+let two = (one :> two)

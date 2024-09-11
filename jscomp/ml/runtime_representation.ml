@@ -213,6 +213,14 @@ let rec to_runtime_representation (type_expr : Types.type_expr) (env : Env.t)
     |> List.concat
   | _ -> []
 
+let explain_why_not_matching (a : runtime_js_value) (b : runtime_js_value) = 
+  match (a, b) with
+  | StringLiteral {value = a_value}, StringLiteral {value = b_value} when a_value != b_value ->
+    [Printf.sprintf "The left hand is will be the string '%s' in runtime, and the right hand will be '%s'." b_value a_value]
+  | Any, _ -> ["We don't know what value left hand side would have at runtime."]
+  | _, Any -> ["We don't know what value right hand side would have at runtime."]
+  | _ -> []
+
 let runtime_values_match (a : runtime_js_value) (b : runtime_js_value) =
   match (a, b) with
   | StringLiteral {value = a_value}, StringLiteral {value = b_value} ->

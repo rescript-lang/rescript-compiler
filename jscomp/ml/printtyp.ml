@@ -1523,6 +1523,22 @@ let report_subtyping_error ppf env tr1 txt1 tr2 =
     let tr1 = List.map prepare_expansion tr1
     and tr2 = List.map prepare_expansion tr2 in
     fprintf ppf "@[<v>%a" (trace true (tr2 = []) txt1) tr1;
+    (match tr1 with 
+    | [(t1, _); (_, t2)] ->
+      let a_runtime_representation = Runtime_representation.to_runtime_representation t2 env in
+      let b_runtime_representation = Runtime_representation.to_runtime_representation t1 env in
+      a_runtime_representation |> List.iter(
+        fun a_value -> 
+          b_runtime_representation |> List.iter(
+            fun b_value -> 
+              if Runtime_representation.runtime_values_match a_value b_value then (
+                ()
+              ) 
+              else Runtime_representation.explain_why_not_matching a_value b_value 
+                |> List.iter(fun s -> fprintf ppf "@ %s" s)
+          ))
+          | _ -> ()
+    );
     if tr2 = [] then fprintf ppf "@]" else
     let mis = mismatch tr2 in
     fprintf ppf "%a%t@]"
