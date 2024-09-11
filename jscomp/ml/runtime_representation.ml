@@ -10,10 +10,14 @@ type object_property = {
   optional: bool;
 }
 and runtime_js_value =
-  | String of {value: string value}
-  | Number of {value: string value}
-  | BigInt of {value: string value}
-  | Boolean of {value: bool value}
+  | StringLiteral of {value: string}
+  | String
+  | NumberLiteral of {value: string}
+  | Number
+  | BigIntLiteral of {value: string}
+  | BigInt
+  | BooleanLiteral of {value: bool}
+  | Boolean
   | NullLiteral
   | UndefinedLiteral
   | Array of {element_type: runtime_js_value value}
@@ -27,14 +31,14 @@ and runtime_js_value =
 
 let rec debug_print_runtime_value (value : runtime_js_value) =
   match value with
-  | String {value = Known v} -> Printf.sprintf "String(%s)" v
-  | String {value = Unknown} -> "String"
-  | Number {value = Known v} -> Printf.sprintf "Number(%s)" v
-  | Number {value = Unknown} -> "Number"
-  | BigInt {value = Known v} -> Printf.sprintf "BigInt(%s)" v
-  | BigInt {value = Unknown} -> "BigInt"
-  | Boolean {value = Known v} -> Printf.sprintf "Boolean(%b)" v
-  | Boolean {value = Unknown} -> "Boolean"
+  | StringLiteral {value =  v} -> Printf.sprintf "StringLiteral(%s)" v
+  | String -> "String"
+  | NumberLiteral {value = v} -> Printf.sprintf "Number(%s)" v
+  | Number -> "Number"
+  | BigIntLiteral {value = v} -> Printf.sprintf "BigInt(%s)" v
+  | BigInt -> "BigInt"
+  | BooleanLiteral {value = v} -> Printf.sprintf "Boolean(%b)" v
+  | Boolean -> "Boolean"
   | NullLiteral -> "Null"
   | UndefinedLiteral -> "Undefined"
   | Array {element_type = Known v} ->
@@ -61,16 +65,16 @@ type runtime_representation = {possible_values: runtime_js_value list}
 let tag_type_to_possible_values (tag_type : Ast_untagged_variants.tag_type) :
     runtime_js_value =
   match tag_type with
-  | String v -> String {value = Known v}
-  | Int v -> Number {value = Known (string_of_int v)}
-  | Float v -> Number {value = Known v}
-  | BigInt v -> BigInt {value = Known v}
-  | Bool v -> Boolean {value = Known v}
+  | String v -> StringLiteral {value = v}
+  | Int v -> NumberLiteral {value = (string_of_int v)}
+  | Float v -> NumberLiteral {value = v}
+  | BigInt v -> BigIntLiteral {value = v}
+  | Bool v -> BooleanLiteral {value = v}
   | Null -> NullLiteral
   | Undefined -> UndefinedLiteral
-  | Untagged (IntType | FloatType) -> Number {value = Unknown}
-  | Untagged StringType -> String {value = Unknown}
-  | Untagged BooleanType -> Boolean {value = Unknown}
+  | Untagged (IntType | FloatType) -> Number
+  | Untagged StringType -> String
+  | Untagged BooleanType -> Boolean
   | Untagged ObjectType ->
     Object {properties = []; can_have_unknown_properties = true}
   | Untagged UnknownType -> Any
@@ -90,12 +94,12 @@ let rec to_runtime_representation (type_expr : Types.type_expr) (env : Env.t)
   match type_expr.desc with
   (* Builtins *)
   | Tconstr (p, _, _) when Path.same p Predef.path_string ->
-    [String {value = Unknown}]
+    [String]
   | Tconstr (p, _, _) when Path.same p Predef.path_bool ->
-    [Boolean {value = Unknown}]
+    [Boolean]
   | Tconstr (p, _, _)
     when Path.same p Predef.path_float || Path.same p Predef.path_int ->
-    [Number {value = Unknown}]
+    [Number]
   | Tconstr (p, [inner], _) when Path.same p Predef.path_option ->
     [UndefinedLiteral] @ to_runtime_representation inner env
   | Tconstr (p, [inner], _) when Path.same p Predef.path_dict ->
@@ -123,14 +127,14 @@ let rec to_runtime_representation (type_expr : Types.type_expr) (env : Env.t)
                  Ast_untagged_variants.process_tag_type c.cd_attributes
                in
                match (c.cd_args, tag_type) with
-               | Cstr_tuple [], None -> String {value = Known c.cd_id.name}
+               | Cstr_tuple [], None -> StringLiteral {value = c.cd_id.name}
                | Cstr_tuple [], Some tag_type ->
                  tag_type_to_possible_values tag_type
                | Cstr_tuple payloads, maybe_tag_type ->
                  let tag_value =
                    match maybe_tag_type with
                    | Some tag_type -> tag_type_to_possible_values tag_type
-                   | None -> String {value = Known c.cd_id.name}
+                   | None -> StringLiteral {value = c.cd_id.name}
                  in
                  Object
                    {
@@ -160,7 +164,7 @@ let rec to_runtime_representation (type_expr : Types.type_expr) (env : Env.t)
                  let tag_value =
                    match maybe_tag_type with
                    | Some tag_type -> tag_type_to_possible_values tag_type
-                   | None -> String {value = Known c.cd_id.name}
+                   | None -> StringLiteral {value = c.cd_id.name}
                  in
                  Object
                    {
@@ -184,7 +188,7 @@ let rec to_runtime_representation (type_expr : Types.type_expr) (env : Env.t)
     row_fields
     |> List.map (fun ((label, field) : string * Types.row_field) ->
            match field with
-           | Rpresent None -> [String {value = Known label}]
+           | Rpresent None -> [StringLiteral {value = label}]
            | Rpresent (Some inner) ->
              [
                Object
@@ -194,7 +198,7 @@ let rec to_runtime_representation (type_expr : Types.type_expr) (env : Env.t)
                      [
                        {
                          key = "NAME";
-                         value = Known [String {value = Known label}];
+                         value = Known [StringLiteral {value = label}];
                          optional = false;
                        };
                        {
@@ -211,13 +215,13 @@ let rec to_runtime_representation (type_expr : Types.type_expr) (env : Env.t)
 
 let runtime_values_match (a : runtime_js_value) (b : runtime_js_value) =
   match (a, b) with
-  | String {value = Known a_value}, String {value = Known b_value} ->
+  | StringLiteral {value = a_value}, StringLiteral {value = b_value} ->
     a_value = b_value
-  | Number {value = Known a_value}, Number {value = Known b_value} ->
+  | NumberLiteral {value = a_value}, NumberLiteral {value = b_value} ->
     a_value = b_value
-  | BigInt {value = Known a_value}, BigInt {value = Known b_value} ->
+  | BigIntLiteral {value = a_value}, BigIntLiteral {value = b_value} ->
     a_value = b_value
-  | Boolean {value = Known a_value}, Boolean {value = Known b_value} ->
+  | BooleanLiteral {value = a_value}, BooleanLiteral {value = b_value} ->
     a_value = b_value
   | NullLiteral, NullLiteral -> true
   | UndefinedLiteral, UndefinedLiteral -> true
