@@ -106,4 +106,4 @@ let blit = (a1, i1, a2, i2, len) =>
     }
   }
 
-external unsafe_spread: array<'a> => 'a = "?array_spread"
+external unsafe_spread: array<'a> => 'a = "%array_spread"

@@ -82,7 +82,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pbigintcomp _
       (* String operations *)
       | Pstringlength | Pstringrefu | Pstringrefs | Pbyteslength | Pbytesrefu
-      | Pbytesrefs | Pmakearray | Parraylength | Parrayrefu | Parrayrefs
+      | Pbytesrefs | Pmakearray | Parrayspread | Parraylength | Parrayrefu | Parrayrefs 
       (* Test if the argument is a block or an immediate integer *)
       | Pisint | Pis_poly_var_block
       (* Test if the (integer) argument is outside an interval *)

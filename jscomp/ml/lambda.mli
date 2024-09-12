@@ -206,6 +206,7 @@ type primitive =
   | Pbyteslength | Pbytesrefu | Pbytessetu | Pbytesrefs | Pbytessets
   (* Array operations *)
   | Pmakearray of  mutable_flag
+  | Parrayspread
   | Parraylength 
   | Parrayrefu 
   | Parraysetu 

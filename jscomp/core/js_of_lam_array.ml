@@ -49,6 +49,10 @@ module E = Js_exp_make
 (* Parrayref(u|s) *)
 let make_array mt args = E.array mt args
 
+let spread_array args = match args with
+| [e] -> {e with J.expression_desc = Spread e}
+| _ -> assert false
+
 let set_array e e0 e1 = E.assign (E.array_index e e0) e1
 
 let ref_array e e0 = E.array_index e e0

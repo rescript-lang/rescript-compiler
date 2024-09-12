@@ -240,6 +240,7 @@ type primitive =
   | Pbyteslength | Pbytesrefu | Pbytessetu | Pbytesrefs | Pbytessets
   (* Array operations *)
   | Pmakearray of  Asttypes.mutable_flag
+  | Parrayspread
   | Parraylength 
   | Parrayrefu 
   | Parraysetu 
