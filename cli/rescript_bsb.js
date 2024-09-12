@@ -110,8 +110,8 @@ function clean(args) {
   delegate(["clean", ...args]);
 }
 
-const isTtyError = process.stderr.isTTY;
-const isTtyStd = process.stdout.isTTY;
+const shouldColorizeError = process.stderr.isTTY || process.env.FORCE_COLOR == "1";
+const shouldColorize = process.stdout.isTTY || process.env.FORCE_COLOR == "1";
 
 /**
  * @type {[number,number]}
@@ -133,7 +133,7 @@ function logFinishCompiling(code) {
   if (code) {
     log = log + " (exit: " + code + ")";
   }
-  if (isTtyStd) {
+  if (shouldColorize) {
     log = "\x1b[36m" + log + "\x1b[0m";
   }
   if (code) {
@@ -146,7 +146,7 @@ function logFinishCompiling(code) {
 function logStartCompiling() {
   updateStartTime();
   let log = `>>>> Start compiling`;
-  if (isTtyStd) {
+  if (shouldColorize) {
     log = "\x1b[36m" + log + "\x1b[0m";
   }
   console.log(log);
@@ -265,7 +265,7 @@ function watch(args) {
       .on("error", function (err) {
         // @ts-ignore
         if (err !== undefined && err.code === "EADDRINUSE") {
-          var error = isTtyStd ? `\x1b[1;31mERROR:\x1b[0m` : `ERROR:`;
+          var error = shouldColorize ? `\x1b[1;31mERROR:\x1b[0m` : `ERROR:`;
           console.error(`${error} The websocket port number ${webSocketPort} is in use.
 Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
         } else {
@@ -358,7 +358,7 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
    * @param highlight {string}
    */
   function outputError(error, highlight) {
-    if (isTtyError && highlight) {
+    if (shouldColorizeError && highlight) {
       process.stderr.write(
         error.replace(highlight, "\x1b[1;31m" + highlight + "\x1b[0m"),
       );
