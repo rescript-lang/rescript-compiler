@@ -12,6 +12,10 @@
 
 # 12.0.0-alpha.4 (Unreleased)
 
+#### :rocket: New Feature
+
+- Use FORCE_COLOR environmental variable to force colorized output https://github.com/rescript-lang/rescript-compiler/pull/7033
+
 #### :bug: Bug fix
 
 - Fix tuple coercion. https://github.com/rescript-lang/rescript-compiler/pull/7024
