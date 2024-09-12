@@ -20,6 +20,7 @@
 
 - Improve bigint literal comparison. https://github.com/rescript-lang/rescript-compiler/pull/7029
 - Improve output of `@variadic` bindings. https://github.com/rescript-lang/rescript-compiler/pull/7030
+- Emit array spreads as the native ES `...` spread syntax, instead of `Belt.Array.concatMany`. https://github.com/rescript-lang/rescript-compiler/pull/7034
 
 # 12.0.0-alpha.3
 
