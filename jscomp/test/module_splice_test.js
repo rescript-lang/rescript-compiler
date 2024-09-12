@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let JoinClasses = require("./joinClasses");
-let Caml_splice_call = require("../../lib/js/caml_splice_call.js");
 
 let suites = {
   contents: /* [] */0
@@ -31,7 +30,7 @@ function eq(loc, param) {
 }
 
 function joinClasses(prim) {
-  return Caml_splice_call.spliceApply(JoinClasses, [prim]);
+  return JoinClasses(...prim);
 }
 
 let a = JoinClasses(1, 2, 3);

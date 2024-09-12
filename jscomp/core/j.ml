@@ -163,6 +163,7 @@ and expression_desc =
   | Undefined of {is_unit: bool}
   | Null
   | Await of expression
+  | Spread of expression
 
 and for_ident_expression = expression
 (* pure*)
