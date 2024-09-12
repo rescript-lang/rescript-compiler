@@ -26,18 +26,6 @@
 
 module E = Js_exp_make
 
-let splice_apply fn args =
-  E.runtime_call Js_runtime_modules.caml_splice_call "spliceApply"
-    [ fn; E.array Immutable args ]
-
-let splice_new_apply fn args =
-  E.runtime_call Js_runtime_modules.caml_splice_call "spliceNewApply"
-    [ fn; E.array Immutable args ]
-
-let splice_obj_apply obj name args =
-  E.runtime_call Js_runtime_modules.caml_splice_call "spliceObjApply"
-    [ obj; E.str name; E.array Immutable args ]
-
 (** 
    [bind_name] is a hint to the compiler to generate 
    better names for external module 
@@ -278,17 +266,18 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
       (match args with
       | [ {expression_desc = Array (strings, _); _}; {expression_desc = Array (values, _); _} ] -> 
         E.tagged_template fn strings values
-      | _ -> let args, eff, dynamic = assemble_args_has_splice arg_types args in
-        add_eff eff
-          (if dynamic then splice_apply fn args
-          else E.call ~info:{ arity = Full; call_info = Call_na } fn args))
+      | _ ->
+        let args, eff, dynamic = assemble_args_has_splice arg_types args in
+        let args = if dynamic then E.variadic_args args else args in
+        add_eff eff (
+          E.call ~info:{ arity = Full; call_info = Call_na } fn args))
   | Js_call { external_module_name = module_name; name = fn; splice; scopes; tagged_template = false } ->
       let fn = translate_scoped_module_val module_name fn scopes ~dynamic_import in
       if splice then
         let args, eff, dynamic = assemble_args_has_splice arg_types args in
-        add_eff eff
-          (if dynamic then splice_apply fn args
-          else E.call ~info:{ arity = Full; call_info = Call_na } fn args)
+        let args = if dynamic then E.variadic_args args else args in
+        add_eff eff (
+          E.call ~info:{ arity = Full; call_info = Call_na } fn args)
       else
         let args, eff = assemble_args_no_splice arg_types args in
         add_eff eff
@@ -297,10 +286,9 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
       let fn = external_var external_module_name ~dynamic_import in
       if splice then
         let args, eff, dynamic = assemble_args_has_splice arg_types args in
-        (* TODO: fix in rest calling convention *)
-        add_eff eff
-          (if dynamic then splice_apply fn args
-          else E.call ~info:{ arity = Full; call_info = Call_na } fn args)
+        let args = if dynamic then E.variadic_args args else args in
+        add_eff eff (
+          E.call ~info:{ arity = Full; call_info = Call_na } fn args)
       else
         let args, eff = assemble_args_no_splice arg_types args in
         (* TODO: fix in rest calling convention *)
@@ -324,11 +312,11 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
       in
       if splice then
         let args, eff, dynamic = assemble_args_has_splice arg_types args in
+        let args = if dynamic then E.variadic_args args else args in
         let fn = translate_scoped_module_val module_name fn scopes ~dynamic_import in
         add_eff eff
           (mark ();
-          if dynamic then splice_new_apply fn args
-          else E.new_ fn args)
+          E.new_ fn args)
       else
         let args, eff = assemble_args_no_splice arg_types args in
         let fn = translate_scoped_module_val module_name fn scopes ~dynamic_import in
@@ -342,13 +330,12 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
           let[@warning "-8"] (_self_type :: arg_types) = arg_types in
           if splice then
             let args, eff, dynamic = assemble_args_has_splice arg_types args in
+            let args = if dynamic then E.variadic_args args else args in
             add_eff eff
               (let self = translate_scoped_access js_send_scopes self in
-               if dynamic then splice_obj_apply self name args
-               else
-                 E.call
-                   ~info:{ arity = Full; call_info = Call_na }
-                   (E.dot self name) args)
+                E.call
+                  ~info:{ arity = Full; call_info = Call_na }
+                  (E.dot self name) args)
           else
             let args, eff = assemble_args_no_splice arg_types args in
             add_eff eff
