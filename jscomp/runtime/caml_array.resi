@@ -37,3 +37,5 @@ let blit: (array<'a>, int, array<'a>, int, int) => unit
 let get: (array<'a>, int) => 'a
 
 let set: (array<'a>, int, 'a) => unit
+
+external unsafe_spread: array<'a> => 'a = "?array_spread"

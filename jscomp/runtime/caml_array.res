@@ -105,3 +105,5 @@ let blit = (a1, i1, a2, i2, len) =>
       a2->unsafe_set(j + i2, a1->unsafe_get(j + i1))
     }
   }
+
+external unsafe_spread: array<'a> => 'a = "?array_spread"

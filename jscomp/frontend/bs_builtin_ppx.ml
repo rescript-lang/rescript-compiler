@@ -246,6 +246,23 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
               me,
             self.expr self expr );
     }
+  | Pexp_array exprs
+    when exprs
+         |> List.exists (fun e ->
+                Res_parsetree_viewer.has_array_spread_attribute
+                  e.Parsetree.pexp_attributes) ->
+    {
+      e with
+      pexp_desc =
+        Pexp_array
+          (exprs
+          |> List.map (fun e ->
+                 if
+                   Res_parsetree_viewer.has_array_spread_attribute
+                     e.Parsetree.pexp_attributes
+                 then Ast_array_spread.create_array_spread_expression e
+                 else e));
+    }
   | _ -> default_expr_mapper self e
 
 let expr_mapper ~async_context ~in_function_def (self : mapper)

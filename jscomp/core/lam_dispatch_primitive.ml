@@ -264,6 +264,10 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
       match args with
       | [e] -> {e with expression_desc = Await e}
       | _ -> assert false)
+  | "?array_spread" -> (
+      match args with
+      | [e] -> {e with expression_desc = Spread e}
+      | _ -> assert false)
   | "?create_dict" -> (
     match args with
     | [{expression_desc = Array (items, _)}] ->

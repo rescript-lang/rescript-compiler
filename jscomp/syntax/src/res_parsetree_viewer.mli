@@ -27,6 +27,8 @@ val process_function_attributes :
 
 val has_await_attribute : Parsetree.attributes -> bool
 
+val has_array_spread_attribute : Parsetree.attributes -> bool
+
 type if_condition_kind =
   | If of Parsetree.expression
   | IfLet of Parsetree.pattern * Parsetree.expression
@@ -38,10 +40,6 @@ val collect_if_expressions :
   Parsetree.expression ->
   (Location.t * if_condition_kind * Parsetree.expression) list
   * Parsetree.expression option
-
-val collect_array_expressions :
-  Parsetree.expression ->
-  Parsetree.expression list * Parsetree.expression option
 
 val collect_list_expressions :
   Parsetree.expression ->
@@ -139,8 +137,6 @@ val is_tagged_template_literal : Parsetree.expression -> bool
 val has_template_literal_attr : Parsetree.attributes -> bool
 
 val is_spread_belt_list_concat : Parsetree.expression -> bool
-
-val is_spread_belt_array_concat : Parsetree.expression -> bool
 
 val collect_or_pattern_chain : Parsetree.pattern -> Parsetree.pattern list
 

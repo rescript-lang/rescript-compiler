@@ -35,9 +35,7 @@ let flags =
               (fun items ->
                  ((match items with
                    | [|{js|-pp|js};_ppFlag;rest|] -> loop rest
-                   | [|x;rest|] ->
-                       ((Belt.Array.concatMany)[@res.spread ])
-                         [|[|x|];(loop rest)|]
+                   | [|x;rest|] -> [|x;((loop rest)[@res.arraySpread ])|]
                    | [||] -> [||])
                  [@res.braces ])))
           [@res.arity 1]) in
