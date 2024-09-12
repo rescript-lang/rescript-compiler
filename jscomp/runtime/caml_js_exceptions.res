@@ -34,9 +34,3 @@ let internalToOCamlException = (e: unknown) =>
   } else {
     JsError(e)
   }
-
-let as_js_exn = exn =>
-  switch exn {
-  | Error(t) => Some(t)
-  | _ => None
-  }

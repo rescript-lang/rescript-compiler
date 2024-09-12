@@ -29,7 +29,7 @@ o runtime/primitive_module.cmj : cc_cmi runtime/primitive_module.res | runtime/l
 o runtime/primitive_module.cmi : cc runtime/primitive_module.resi | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 o runtime/primitive_object.cmj : cc_cmi runtime/primitive_object.res | runtime/caml_option.cmj runtime/primitive_bool.cmj runtime/primitive_float.cmj runtime/primitive_int.cmj runtime/primitive_object.cmi runtime/primitive_string.cmj
 o runtime/primitive_object.cmi : cc runtime/primitive_object.resi | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
-o runtime/caml_js_exceptions.cmi runtime/caml_js_exceptions.cmj : cc runtime/caml_js_exceptions.res | runtime/bs_stdlib_mini.cmi runtime/caml_exceptions.cmj runtime/caml_option.cmj runtime/js.cmi runtime/js.cmj
+o runtime/caml_js_exceptions.cmi runtime/caml_js_exceptions.cmj : cc runtime/caml_js_exceptions.res | runtime/bs_stdlib_mini.cmi runtime/caml_exceptions.cmj runtime/js.cmi runtime/js.cmj
 o runtime/caml_undefined_extern.cmi runtime/caml_undefined_extern.cmj : cc runtime/caml_undefined_extern.res | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 o runtime/curry.cmi runtime/curry.cmj : cc runtime/curry.res | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 o runtime/primitive_array.cmi runtime/primitive_array.cmj : cc runtime/primitive_array.res | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj

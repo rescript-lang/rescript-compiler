@@ -52,10 +52,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   (******************************************************************************)
   (************************* customized primitives ******************************)
   (******************************************************************************)
-  (* Note we captured [exception/extension] creation in the early pass, this primitive is
-      like normal one to set the identifier *)
-  | "?exn_slot_name" | "?is_extension" -> call Js_runtime_modules.exceptions
-  | "?as_js_exn" -> call Js_runtime_modules.caml_js_exceptions
   | "?obj_tag" -> (
       (* Note that in ocaml, [int] has tag [1000] and [string] has tag [252]
          also now we need do nullary check
