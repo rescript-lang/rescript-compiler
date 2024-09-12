@@ -291,6 +291,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Parraysetu -> prim ~primitive:Parraysetu ~args loc
   | Parrayrefs -> prim ~primitive:Parrayrefs ~args loc
   | Parraysets -> prim ~primitive:Parraysets ~args loc
+  | Pmakedict -> prim ~primitive:Pmakedict ~args loc
   | Pawait -> prim ~primitive:Pawait ~args loc
   | Pimport -> prim ~primitive:Pimport ~args loc
 

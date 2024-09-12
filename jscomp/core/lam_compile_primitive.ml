@@ -457,6 +457,17 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Parrayrefs -> E.runtime_call Js_runtime_modules.array "get" args
   | Parraysets -> E.runtime_call Js_runtime_modules.array "set" args
   | Pmakearray -> Js_of_lam_array.make_array Mutable args
+  | Pmakedict -> (
+    match args with
+    | [{expression_desc = Array (items, _)}] ->
+        E.obj
+        (items
+        |> List.filter_map (fun (exp : J.expression) ->
+                match exp.expression_desc with
+                | Caml_block ([{expression_desc = Str {txt}}; expr], _, _, _) ->
+                    Some (Js_op.Lit txt, expr)
+                | _ -> None))
+    | _ -> assert false)
   | Parraysetu -> (
       match args with
       (* wrong*)

@@ -132,6 +132,9 @@ type t =
   | Parrayrefs
   | Parraysets
 
+  (* dict primitives *)
+  | Pmakedict
+
   (* promise *)
   | Pawait
 

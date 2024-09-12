@@ -4087,8 +4087,7 @@ and print_pexp_apply ~state expr cmt_tbl =
   | Pexp_apply
       ( {
           pexp_desc =
-            Pexp_ident
-              {txt = Longident.Ldot (Lident "Runtime_dict", "unsafe_create")};
+            Pexp_ident {txt = Longident.Ldot (Lident "Primitive_dict", "make")};
         },
         [(Nolabel, key_values)] )
     when Res_parsetree_viewer.is_tuple_array key_values ->

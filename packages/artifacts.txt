@@ -126,6 +126,7 @@ lib/es6/pervasives.js
 lib/es6/primitive_array.js
 lib/es6/primitive_bigint.js
 lib/es6/primitive_bool.js
+lib/es6/primitive_dict.js
 lib/es6/primitive_float.js
 lib/es6/primitive_float_extern.js
 lib/es6/primitive_int.js
@@ -239,6 +240,7 @@ lib/js/pervasives.js
 lib/js/primitive_array.js
 lib/js/primitive_bigint.js
 lib/js/primitive_bool.js
+lib/js/primitive_dict.js
 lib/js/primitive_float.js
 lib/js/primitive_float_extern.js
 lib/js/primitive_int.js

@@ -236,6 +236,8 @@ type primitive =
   | Parraysetu 
   | Parrayrefs 
   | Parraysets 
+  (* dict primitives *)
+  | Pmakedict
   (* promise *)
   | Pawait
   (* module *)

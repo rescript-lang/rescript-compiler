@@ -78,6 +78,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pstringcomp _ | Pstringorder | Pstringmin | Pstringmax
       (* array primitives *)
       | Pmakearray | Parraylength | Parrayrefu | Parrayrefs
+      (* dict primitives *)
+      | Pmakedict
       (* Test if the argument is a block or an immediate integer *)
       | Pisint | Pis_poly_var_block
       (* Test if the (integer) argument is outside an interval *)

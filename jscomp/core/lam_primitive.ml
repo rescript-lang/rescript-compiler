@@ -142,6 +142,9 @@ type t =
   | Parrayrefs
   | Parraysets
 
+  (* dict primitives *)
+  | Pmakedict
+
   (* promise *)
   | Pawait
 
@@ -264,6 +267,8 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Pstringorder
   | Pstringmin
   | Pstringmax
+  (* dict primitives *)
+  | Pmakedict
   (* promise *)
   | Pawait
   (* etc *)

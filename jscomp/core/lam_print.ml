@@ -196,6 +196,7 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pstringmax -> fprintf ppf "max"
   | Parraylength -> fprintf ppf "array.length"
   | Pmakearray -> fprintf ppf "makearray"
+  | Pmakedict -> fprintf ppf "makedict"
   | Parrayrefu -> fprintf ppf "array.unsafe_get"
   | Parraysetu -> fprintf ppf "array.unsafe_set"
   | Parrayrefs -> fprintf ppf "array.get"

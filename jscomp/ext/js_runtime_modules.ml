@@ -34,6 +34,8 @@ let string = "Primitive_string"
 
 let array = "Primitive_array"
 
+let dict = "Primitive_dict"
+
 let object_ = "Primitive_object"
 
 let promise = "Primitive_promise"

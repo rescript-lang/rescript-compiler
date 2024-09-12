@@ -306,6 +306,9 @@ let primitives_table =
       ("%array_unsafe_get", Parrayrefu);
       ("%array_unsafe_set", Parraysetu);
 
+      (* dict primitives *)
+      ("%makedict", Pmakedict);
+
       (* promise *)
       ("%await", Pawait);
 

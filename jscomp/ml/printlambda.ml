@@ -221,6 +221,7 @@ let primitive ppf = function
   | Parraysetu -> fprintf ppf "array.unsafe_set" 
   | Parrayrefs -> fprintf ppf "array.get" 
   | Parraysets -> fprintf ppf "array.set" 
+  | Pmakedict -> fprintf ppf "makedict"
   | Pisint -> fprintf ppf "isint"
   | Pisout -> fprintf ppf "isout"
   | Pcreate_extension s -> fprintf ppf "extension[%s]" s
