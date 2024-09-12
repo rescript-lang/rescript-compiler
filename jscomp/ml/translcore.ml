@@ -312,6 +312,9 @@ let primitives_table =
       (* promise *)
       ("%await", Pawait);
 
+      (* module *)
+      ("%import", Pimport);
+
       (* etc, depreacted *)
       ("%intoffloat", Pintoffloat);
       ("%floatofint", Pfloatofint);

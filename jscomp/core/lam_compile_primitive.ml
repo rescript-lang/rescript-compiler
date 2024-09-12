@@ -114,7 +114,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
           | _ -> E.runtime_call Js_runtime_modules.option "nullable_to_opt" args
           )
       | _ -> assert false)
-  (* Compile #import: The module argument for dynamic import is represented as a path,
+  (* Compile %import: The module argument for dynamic import is represented as a path,
      and the module value is expressed through wrapping it with promise.then *)
   | Pimport -> (
       match args with

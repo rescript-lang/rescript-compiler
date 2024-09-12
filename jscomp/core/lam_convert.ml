@@ -429,7 +429,6 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           | "#nullable_to_opt" -> Pnull_undefined_to_opt
           | "#null_to_opt" -> Pnull_to_opt
           | "#is_nullable" -> Pis_null_undefined
-          | "#import" ->Pimport
           | "#string_append" -> Pstringadd
           | "#wrap_exn" -> Pwrap_exn
           | "#obj_length" -> Pcaml_obj_length
@@ -455,9 +454,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
                  primitive %s"
                 s
         in
-        let dynamic_import = primitive = Pimport in
-        let args = Ext_list.map args (convert_aux ~dynamic_import) in
-        prim ~primitive ~args loc
+        prim ~primitive ~args:(Ext_list.map args convert_aux) loc
   and convert_aux ?(dynamic_import = false) (lam : Lambda.lambda) : Lam.t =
     match lam with
     | Lvar x -> Lam.var (Hash_ident.find_default alias_tbl x x)
@@ -519,6 +516,9 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           may_depend may_depends (Lam_module_ident.of_ml ~dynamic_import id);
           assert (args = []);
           Lam.global_module ~dynamic_import id)
+    | Lprim (Pimport, args, loc) ->
+        let args = Ext_list.map args (convert_aux ~dynamic_import:true) in
+        lam_prim ~primitive:Pimport ~args loc
     | Lprim (primitive, args, loc) ->
         let args = Ext_list.map args (convert_aux ~dynamic_import) in
         lam_prim ~primitive ~args loc

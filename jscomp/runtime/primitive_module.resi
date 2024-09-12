@@ -1,4 +1,4 @@
-external import: 'a => promise<'a> = "#import"
+external import: 'a => promise<'a> = "%import"
 
 type shape
 let init_mod: ((string, int, int), shape) => Obj.t

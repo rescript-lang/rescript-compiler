@@ -1,4 +1,4 @@
-external import: 'a => promise<'a> = "#import"
+external import: 'a => promise<'a> = "%import"
 
 @@warning("-37") /* `Function` may be used in runtime */
 
