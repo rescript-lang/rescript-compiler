@@ -272,6 +272,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args loc
   | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args loc
   | Pmakearray _mutable_flag (*FIXME*) -> prim ~primitive:Pmakearray ~args loc
+  | Parrayspread -> prim ~primitive:Parrayspread ~args loc
   | Parraylength -> prim ~primitive:Parraylength ~args loc
   | Parrayrefu -> prim ~primitive:Parrayrefu ~args loc
   | Parraysetu -> prim ~primitive:Parraysetu ~args loc

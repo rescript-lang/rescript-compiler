@@ -26,6 +26,8 @@ let add_parens doc =
          Doc.rparen;
        ])
 
+let add_spread doc = Doc.concat [Doc.dotdotdot; doc]
+
 let add_braces doc =
   Doc.group
     (Doc.concat
@@ -2923,10 +2925,17 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
                            let doc =
                              print_expression_with_comments ~state expr cmt_tbl
                            in
-                           match Parens.expr expr with
-                           | Parens.Parenthesized -> add_parens doc
-                           | Braced braces -> print_braces doc expr braces
-                           | Nothing -> doc)
+                           let doc =
+                             match Parens.expr expr with
+                             | Parens.Parenthesized -> add_parens doc
+                             | Braced braces -> print_braces doc expr braces
+                             | Nothing -> doc
+                           in
+                           if
+                             ParsetreeViewer.has_array_spread_attribute
+                               expr.pexp_attributes
+                           then add_spread doc
+                           else doc)
                          exprs);
                   ]);
              Doc.trailing_comma;
@@ -3117,9 +3126,6 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
         Doc.text expr
       | extension ->
         print_extension ~state ~at_module_lvl:false extension cmt_tbl)
-    | Pexp_apply (e, [(Nolabel, {pexp_desc = Pexp_array sub_lists})])
-      when ParsetreeViewer.is_spread_belt_array_concat e ->
-      print_belt_array_concat_apply ~state sub_lists cmt_tbl
     | Pexp_apply (e, [(Nolabel, {pexp_desc = Pexp_array sub_lists})])
       when ParsetreeViewer.is_spread_belt_list_concat e ->
       print_belt_list_concat_apply ~state sub_lists cmt_tbl
@@ -3898,62 +3904,6 @@ and print_binary_expression ~state (expr : Parsetree.expression) cmt_tbl =
            | Nothing -> doc);
          ])
   | _ -> Doc.nil
-
-and print_belt_array_concat_apply ~state sub_lists cmt_tbl =
-  let make_spread_doc comma_before_spread = function
-    | Some expr ->
-      Doc.concat
-        [
-          comma_before_spread;
-          Doc.dotdotdot;
-          (let doc = print_expression_with_comments ~state expr cmt_tbl in
-           match Parens.expr expr with
-           | Parens.Parenthesized -> add_parens doc
-           | Braced braces -> print_braces doc expr braces
-           | Nothing -> doc);
-        ]
-    | None -> Doc.nil
-  in
-  let make_sub_list_doc (expressions, spread) =
-    let comma_before_spread =
-      match expressions with
-      | [] -> Doc.nil
-      | _ -> Doc.concat [Doc.text ","; Doc.line]
-    in
-    let spread_doc = make_spread_doc comma_before_spread spread in
-    Doc.concat
-      [
-        Doc.join
-          ~sep:(Doc.concat [Doc.text ","; Doc.line])
-          (List.map
-             (fun expr ->
-               let doc = print_expression_with_comments ~state expr cmt_tbl in
-               match Parens.expr expr with
-               | Parens.Parenthesized -> add_parens doc
-               | Braced braces -> print_braces doc expr braces
-               | Nothing -> doc)
-             expressions);
-        spread_doc;
-      ]
-  in
-  Doc.group
-    (Doc.concat
-       [
-         Doc.lbracket;
-         Doc.indent
-           (Doc.concat
-              [
-                Doc.soft_line;
-                Doc.join
-                  ~sep:(Doc.concat [Doc.text ","; Doc.line])
-                  (List.map make_sub_list_doc
-                     (List.map ParsetreeViewer.collect_array_expressions
-                        sub_lists));
-              ]);
-         Doc.trailing_comma;
-         Doc.soft_line;
-         Doc.rbracket;
-       ])
 
 and print_belt_list_concat_apply ~state sub_lists cmt_tbl =
   let make_spread_doc comma_before_spread = function

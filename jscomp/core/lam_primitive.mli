@@ -101,6 +101,7 @@ type t =
   | Pbytessets
   (* Array operations *)
   | Pmakearray
+  | Parrayspread
   | Parraylength
   | Parrayrefu
   | Parraysetu

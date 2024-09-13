@@ -396,6 +396,7 @@ let primitives_table =
       ("%array_safe_set", Parraysets);
       ("%array_unsafe_get", Parrayrefu);
       ("%array_unsafe_set", Parraysetu);
+      ("%array_spread", Parrayspread);
       ("%floatarray_length", Parraylength);
       ("%floatarray_safe_get", Parrayrefs);
       ("%floatarray_safe_set", Parraysets);

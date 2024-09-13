@@ -97,10 +97,12 @@ let has_await_attribute attrs =
       | _ -> false)
     attrs
 
-let collect_array_expressions expr =
-  match expr.pexp_desc with
-  | Pexp_array exprs -> (exprs, None)
-  | _ -> ([], Some expr)
+let has_array_spread_attribute attrs =
+  List.exists
+    (function
+      | {Location.txt = "res.arraySpread"}, _ -> true
+      | _ -> false)
+    attrs
 
 let collect_list_expressions expr =
   let rec collect acc expr =
@@ -219,7 +221,8 @@ let filter_parsing_attrs attrs =
             Location.txt =
               ( "res.arity" | "res.braces" | "ns.braces" | "res.iflet"
               | "res.namedArgLoc" | "res.optional" | "res.ternary" | "res.async"
-              | "res.await" | "res.template" | "res.taggedTemplate" );
+              | "res.await" | "res.template" | "res.taggedTemplate"
+              | "res.arraySpread" );
           },
           _ ) ->
         false
@@ -676,17 +679,6 @@ let is_spread_belt_list_concat expr =
         txt =
           Longident.Ldot
             (Longident.Ldot (Longident.Lident "Belt", "List"), "concatMany");
-      } ->
-    has_spread_attr expr.pexp_attributes
-  | _ -> false
-
-let is_spread_belt_array_concat expr =
-  match expr.pexp_desc with
-  | Pexp_ident
-      {
-        txt =
-          Longident.Ldot
-            (Longident.Ldot (Longident.Lident "Belt", "Array"), "concatMany");
       } ->
     has_spread_attr expr.pexp_attributes
   | _ -> false

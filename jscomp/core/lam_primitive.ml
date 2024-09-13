@@ -112,6 +112,7 @@ type t =
   | Pbytessets
   (* Array operations *)
   | Pmakearray
+  | Parrayspread
   | Parraylength
   | Parrayrefu
   | Parraysetu
@@ -307,6 +308,7 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Poffsetint i0 -> ( match rhs with Poffsetint i1 -> i0 = i1 | _ -> false)
   | Poffsetref i0 -> ( match rhs with Poffsetref i1 -> i0 = i1 | _ -> false)
   | Pmakearray -> rhs = Pmakearray
+  | Parrayspread -> rhs = Parrayspread
   | Parraylength -> rhs = Parraylength
   | Parrayrefu -> rhs = Parrayrefu
   | Parraysetu -> rhs = Parraysetu

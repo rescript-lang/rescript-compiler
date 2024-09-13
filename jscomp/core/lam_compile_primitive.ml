@@ -355,6 +355,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Parrayrefs -> E.runtime_call Js_runtime_modules.array "get" args
   | Parraysets -> E.runtime_call Js_runtime_modules.array "set" args
   | Pmakearray -> Js_of_lam_array.make_array Mutable args
+  | Parrayspread -> Js_of_lam_array.spread_array args
   | Parraysetu -> (
       match args with
       (* wrong*)

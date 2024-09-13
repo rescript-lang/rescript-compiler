@@ -168,6 +168,7 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pbytessets -> fprintf ppf "bytes.set"
   | Parraylength -> fprintf ppf "array.length"
   | Pmakearray -> fprintf ppf "makearray"
+  | Parrayspread -> fprintf ppf "array.spread"
   | Parrayrefu -> fprintf ppf "array.unsafe_get"
   | Parraysetu -> fprintf ppf "array.unsafe_set"
   | Parrayrefs -> fprintf ppf "array.get"
