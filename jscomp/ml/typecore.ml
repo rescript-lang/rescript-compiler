@@ -3771,6 +3771,7 @@ let report_error env ppf = function
   | Pattern_type_clash trace ->
     (* modified *)
     super_report_unification_error ppf env trace
+      ~print_extra_info:Error_message_utils.print_contextual_unification_error
       (function ppf ->
          fprintf ppf "This pattern matches values of type")
       (function ppf ->

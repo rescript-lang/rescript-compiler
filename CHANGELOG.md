@@ -22,6 +22,7 @@
 
 #### :nail_care: Polish
 
+- Improve error messages for pattern matching on option vs non-option, and vice versa. https://github.com/rescript-lang/rescript-compiler/pull/7035
 - Improve bigint literal comparison. https://github.com/rescript-lang/rescript-compiler/pull/7029
 - Improve output of `@variadic` bindings. https://github.com/rescript-lang/rescript-compiler/pull/7030
 
