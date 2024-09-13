@@ -213,3 +213,27 @@ let type_clash_context_in_statement sexp =
   match sexp.Parsetree.pexp_desc with
   | Pexp_apply _ -> Some (Statement FunctionCall)
   | _ -> None
+
+let print_contextual_unification_error ppf t1 t2 =
+  (* TODO: Maybe we should do the same for Null.t and Nullable.t as we do for options 
+    below, now that they also are more first class for values that might not exist? *)
+
+  match (t1.Types.desc, t2.Types.desc) with
+  | Tconstr (p1, _, _), Tconstr (p2, _, _)
+    when Path.same p1 Predef.path_option
+          && Path.same p2 Predef.path_option <> true ->
+    fprintf ppf
+      "@,@\n\
+        @[<v 0>You're expecting the value you're pattern matching on to be an \
+        @{<info>option@}, but the value is actually not an option.@ Change your \
+        pattern match to work on the concrete value (remove @{<error>Some(_)@} \
+        or @{<error>None@} from the pattern) to make it work.@]"
+  | Tconstr (p1, _, _), Tconstr (p2, _, _)
+    when Path.same p2 Predef.path_option
+          && Path.same p1 Predef.path_option <> true ->
+    fprintf ppf
+      "@,@\n\
+        @[<v 0>The value you're pattern matching on here is wrapped in an \
+        @{<info>option@}, but you're trying to match on the actual value.@ Wrap \
+        the highlighted pattern in @{<info>Some()@} to make it work.@]"
+  | _ -> ()

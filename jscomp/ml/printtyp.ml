@@ -1471,7 +1471,7 @@ let super_trace ppf =
     | _ -> ()
   in super_trace true ppf
 
-let super_unification_error unif tr txt1 ppf txt2 = begin
+let super_unification_error ?print_extra_info unif tr txt1 ppf txt2 = begin
   reset ();
   trace_same_names tr;
   let tr = List.map (fun (t, t') -> (t, hide_variant_name t')) tr in
@@ -1490,18 +1490,20 @@ let super_unification_error unif tr txt1 ppf txt2 = begin
           @[<hov 2>%t@ %a@]\
           %a\
           %t\
+          %t\
         @]"
         txt1 (super_type_expansion ~tag:"error" t1) t1'
         txt2 (super_type_expansion ~tag:"info" t2) t2'
         super_trace tr
-        (explanation unif mis);
+        (explanation unif mis)
+        (fun ppf -> match print_extra_info with | None -> () | Some f -> f ppf t1 t2);
     with exn ->
       raise exn
 end
 
-let super_report_unification_error ppf env ?(unif=true)
+let super_report_unification_error ?print_extra_info ppf env ?(unif=true)
     tr txt1 txt2 =
-  wrap_printing_env env (fun () -> super_unification_error unif tr txt1 ppf txt2)
+  wrap_printing_env env (fun () -> super_unification_error ?print_extra_info unif tr txt1 ppf txt2)
 ;;
 
 
