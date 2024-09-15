@@ -367,7 +367,10 @@ let make_props_record_type ~core_type_of_attr ~external_ ~typ_vars_of_core_type
 (* type props<'x, 'y, ...> = { x: 'x, y?: 'y, ... } *)
 let make_props_record_type_sig ~core_type_of_attr ~external_
     ~typ_vars_of_core_type props_name loc named_type_list =
-  let attrs = if external_ then [live_attr] else [] in
+  let attrs =
+    if external_ then [jsx_component_props_attr; live_attr]
+    else [jsx_component_props_attr]
+  in
   Sig.type_ Nonrecursive
     (match core_type_of_attr with
     | None -> make_type_decls ~attrs props_name loc named_type_list
