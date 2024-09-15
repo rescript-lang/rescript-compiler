@@ -246,6 +246,10 @@ type jsx_prop_error_info = {
   props_record_path: Path.t;
 }
 
+let attributes_include_jsx_component_props (attrs : Parsetree.attributes) =
+  attrs
+  |> List.exists (fun ({Location.txt}, _) -> txt = "res.jsxComponentProps")
+
 let path_to_jsx_component_name p =
   match p |> Path.name |> String.split_on_char '.' |> List.rev with
   | "props" :: component_name :: _ -> Some component_name
@@ -260,9 +264,7 @@ let get_jsx_component_props
       | ( _p0,
           _p,
           {Types.type_kind = Type_record (fields, _repr); type_attributes} )
-        when type_attributes
-              |> List.exists (fun ({Location.txt}, _) ->
-                    txt = "res.jsxComponentProps") ->
+        when attributes_include_jsx_component_props type_attributes ->
         Some {props_record_path = p; fields}
       | _ -> None
     with _ -> None)
