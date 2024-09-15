@@ -310,7 +310,8 @@ let make_label_decls named_type_list =
     | hd :: tl ->
       if mem_label hd tl then
         let _, label, _, loc, _ = hd in
-        Jsx_common.raise_error ~loc "JSX: found the duplicated prop `%s`" label
+        Jsx_common.raise_error ~loc
+          "The prop `%s` is defined several times in this component." label
       else check_duplicated_label tl
   in
   let () = named_type_list |> List.rev |> check_duplicated_label in
