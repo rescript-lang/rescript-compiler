@@ -963,12 +963,12 @@ let type_label_a_list ?labels loc closed env type_lbl_a opath lid_a_list k =
 let check_recordpat_labels ~get_jsx_component_error_info loc lbl_pat_list closed =
   match lbl_pat_list with
   | [] -> ()                            (* should not happen *)
-  | (_, label1, (tpat: Typedtree.pattern)) :: _ ->
+  | ((l: Longident.t loc), label1, _) :: _ ->
       let all = label1.lbl_all in
       let defined = Array.make (Array.length all) false in
       let check_defined (_, label, _) =
         if defined.(label.lbl_pos)
-        then raise(Error(tpat.pat_loc, Env.empty, Label_multiply_defined {
+        then raise(Error(l.loc, Env.empty, Label_multiply_defined {
           label = label.lbl_name; 
           jsx_component_info = get_jsx_component_error_info ();
         }))
@@ -1902,8 +1902,8 @@ let duplicate_ident_types caselist env =
 (* note: check_duplicates would better be implemented in
          type_label_a_list directly *)  
 let rec check_duplicates ~get_jsx_component_error_info loc env = function
-  | (_, lbl1, _) :: (_, lbl2, (texp: Typedtree.expression)) :: _ when lbl1.lbl_pos = lbl2.lbl_pos ->
-    raise(Error(texp.exp_loc, env, Label_multiply_defined {
+  | (_, lbl1, _) :: ((l: Longident.t loc), lbl2, _) :: _ when lbl1.lbl_pos = lbl2.lbl_pos ->
+    raise(Error(l.loc, env, Label_multiply_defined {
       label = lbl1.lbl_name; 
       jsx_component_info = get_jsx_component_error_info();
       }))
