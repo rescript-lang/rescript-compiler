@@ -1,7 +1,9 @@
 module Outer = {
+  @res.jsxComponentProps
   type props = {}
   let make = (_: props) => {
     module Inner = {
+      @res.jsxComponentProps
       type props = {}
 
       let make = (_: props) => ReactDOM.jsx("div", {})

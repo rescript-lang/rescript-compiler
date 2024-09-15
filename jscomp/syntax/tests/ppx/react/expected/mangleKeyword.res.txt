@@ -37,6 +37,7 @@ let c3a1 = React.createElement(C3A1.make, C3A1.makeProps(~_open="x", ~_type="t",
 @@jsxConfig({version: 4, mode: "classic"})
 
 module C4C0 = {
+  @res.jsxComponentProps
   type props<'T_open, 'T_type> = {@as("open") _open: 'T_open, @as("type") _type: 'T_type}
 
   let make = ({@as("open") _open, @as("type") _type, _}: props<_, string>) => React.string(_open)
@@ -47,7 +48,7 @@ module C4C0 = {
   }
 }
 module C4C1 = {
-  @live
+  @res.jsxComponentProps @live
   type props<'T_open, 'T_type> = {@as("open") _open: 'T_open, @as("type") _type: 'T_type}
 
   external make: @as("open") React.componentLike<props<string, string>, React.element> = "default"
@@ -59,6 +60,7 @@ let c4c1 = React.createElement(C4C1.make, {_open: "x", _type: "t"})
 @@jsxConfig({version: 4, mode: "automatic"})
 
 module C4A0 = {
+  @res.jsxComponentProps
   type props<'T_open, 'T_type> = {@as("open") _open: 'T_open, @as("type") _type: 'T_type}
 
   let make = ({@as("open") _open, @as("type") _type, _}: props<_, string>) => React.string(_open)
@@ -69,7 +71,7 @@ module C4A0 = {
   }
 }
 module C4A1 = {
-  @live
+  @res.jsxComponentProps @live
   type props<'T_open, 'T_type> = {@as("open") _open: 'T_open, @as("type") _type: 'T_type}
 
   external make: @as("open") React.componentLike<props<string, string>, React.element> = "default"

@@ -13,7 +13,7 @@ let t = React.createElement(Foo.component, Foo.componentProps(~a=1, ~b={"1"}, ()
 @@jsxConfig({version: 4, mode: "classic"})
 
 module Foo = {
-  @live
+  @res.jsxComponentProps @live
   type props<'a, 'b> = {a: 'a, b: 'b}
 
   @module("Foo")
@@ -25,7 +25,7 @@ let t = React.createElement(Foo.component, {a: 1, b: "1"})
 @@jsxConfig({version: 4, mode: "automatic"})
 
 module Foo = {
-  @live
+  @res.jsxComponentProps @live
   type props<'a, 'b> = {a: 'a, b: 'b}
 
   @module("Foo")

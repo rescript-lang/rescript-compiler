@@ -18,7 +18,7 @@ module V3 = {
 @@jsxConfig({version: 4, mode: "classic"})
 
 module V4C = {
-  @live
+  @res.jsxComponentProps @live
   type props<'x, 'ref> = {
     x: 'x,
     ref?: 'ref,
@@ -30,7 +30,7 @@ module V4C = {
 }
 
 module type V4CType = {
-  @live
+  @res.jsxComponentProps @live
   type props<'x, 'y> = {
     x: 'x,
     y: 'y,
@@ -43,7 +43,7 @@ module type V4CType = {
 @@jsxConfig({version: 4, mode: "automatic"})
 
 module V4C = {
-  @live
+  @res.jsxComponentProps @live
   type props<'x, 'ref> = {
     x: 'x,
     ref?: 'ref,

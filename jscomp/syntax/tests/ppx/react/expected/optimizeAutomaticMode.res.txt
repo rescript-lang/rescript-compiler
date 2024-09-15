@@ -4,6 +4,7 @@ module User = {
   type t = {firstName: string, lastName: string}
 
   let format = user => "Dr." ++ user.lastName
+  @res.jsxComponentProps
   type props<'doctor> = {doctor: 'doctor}
 
   let make = ({doctor, _}: props<_>) => {

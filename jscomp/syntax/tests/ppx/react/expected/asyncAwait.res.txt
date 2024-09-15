@@ -1,6 +1,7 @@
 let f = a => Js.Promise.resolve(a + a)
 
 module C0 = {
+  @res.jsxComponentProps
   type props<'a> = {a: 'a}
 
   let make = async ({a, _}: props<_>) => {
@@ -15,6 +16,7 @@ module C0 = {
 }
 
 module C1 = {
+  @res.jsxComponentProps
   type props<'status> = {status: 'status}
 
   let make = async ({status, _}: props<_>) => {

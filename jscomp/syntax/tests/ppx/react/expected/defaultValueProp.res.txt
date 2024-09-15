@@ -1,4 +1,5 @@
 module C0 = {
+  @res.jsxComponentProps
   type props<'a, 'b> = {a?: 'a, b?: 'b}
   let make = ({a: ?__a, b: ?__b, _}: props<_, _>) => {
     let a = switch __a {
@@ -19,6 +20,7 @@ module C0 = {
 }
 
 module C1 = {
+  @res.jsxComponentProps
   type props<'a, 'b> = {a?: 'a, b: 'b}
 
   let make = ({a: ?__a, b, _}: props<_, _>) => {
@@ -38,6 +40,7 @@ module C1 = {
 
 module C2 = {
   let a = "foo"
+  @res.jsxComponentProps
   type props<'a> = {a?: 'a}
 
   let make = ({a: ?__a, _}: props<_>) => {
@@ -56,6 +59,7 @@ module C2 = {
 }
 
 module C3 = {
+  @res.jsxComponentProps
   type props<'disabled> = {disabled?: 'disabled}
 
   let make = ({disabled: ?__everythingDisabled, _}: props<bool>) => {

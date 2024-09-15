@@ -16,6 +16,7 @@ module V3 = {
 @@jsxConfig({version: 4, mode: "classic"})
 
 module V4C = {
+  @res.jsxComponentProps
   type props = {}
 
   let make = (type a, _: props) => (~a, ~b, _) => ReactDOM.createDOMElementVariadic("div", [])
@@ -29,6 +30,7 @@ module V4C = {
 @@jsxConfig({version: 4, mode: "automatic"})
 
 module V4A = {
+  @res.jsxComponentProps
   type props = {}
 
   let make = (type a, _: props) => (~a, ~b, _) => ReactDOM.jsx("div", {})
