@@ -69,7 +69,7 @@ type error =
   | Expr_type_clash of (type_expr * type_expr) list * (Error_message_utils.type_clash_context option)
   | Apply_non_function of type_expr
   | Apply_wrong_label of arg_label * type_expr
-  | Label_multiply_defined of string
+  | Label_multiply_defined of {label: string; jsx_component_info: Error_message_utils.jsx_prop_error_info option}
   | Labels_missing of {labels: string list; jsx_component_info: Error_message_utils.jsx_prop_error_info option}
   | Label_not_mutable of Longident.t
   | Wrong_name of string * type_expr * string * Path.t * string * string list

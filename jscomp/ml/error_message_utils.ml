@@ -288,3 +288,9 @@ let print_component_labels_missing_error ppf labels
   fprintf ppf "is missing these required props:@\n";
   labels |> List.iter (fun lbl -> fprintf ppf "@ %s" lbl);
   fprintf ppf "@]"
+
+let get_jsx_component_error_info ~extract_concrete_typedecl opath env ty_record () =
+  match opath with
+  | Some (p, _) ->
+    get_jsx_component_props ~extract_concrete_typedecl env ty_record p
+  | None -> None
