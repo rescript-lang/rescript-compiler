@@ -3857,6 +3857,9 @@ let report_error env ppf = function
   | Label_not_mutable lid ->
       fprintf ppf "The record field %a is not mutable" longident lid
   | Wrong_name (eorp, ty, kind, p, name, valid_names) ->
+    (match get_jsx_component_props ~extract_concrete_typedecl env ty p with 
+    | Some fields -> print_component_wrong_prop_error ppf p fields name; spellcheck ppf name valid_names;
+    | None ->
     (* modified *)
     if Path.is_constructor_typath p then begin
       fprintf ppf "@[The field %s is not part of the record \
@@ -3876,6 +3879,7 @@ let report_error env ppf = function
       fprintf ppf "@]";      
     end;
     spellcheck ppf name valid_names;
+  )
   | Name_type_mismatch (kind, lid, tp, tpl) ->
       let name = label_of_kind kind in
       report_ambiguous_type_error ppf env tp tpl
