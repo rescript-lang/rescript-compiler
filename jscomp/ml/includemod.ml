@@ -513,8 +513,8 @@ let show_loc msg ppf loc =
   fprintf ppf "@\n@[<2>%a:@ %s@]" Location.print_loc loc msg
 
 let show_locs ppf (loc1, loc2) =
-  show_loc "Expected declaration" ppf loc2;
-  show_loc "Actual declaration" ppf loc1
+  show_loc "Interface" ppf loc2;
+  show_loc "Implementation" ppf loc1
 
 let include_err ~env ppf = function
   | Missing_field (id, loc, kind) ->
@@ -530,18 +530,15 @@ let include_err ~env ppf = function
         | _ -> ("", "")
       in
       fprintf ppf
-        "@[<hv 2>Values do not match:@ %a%s@;<1 -2>is not included in@ %a%s@]"
+        "@[<hv 2>Values does not have the same type:@ %a%s@;<1 -2>is not included in@ %a%s@]"
         (value_description id) d1 curry_kind_1 (value_description id) d2 curry_kind_2;
       show_locs ppf (d1.val_loc, d2.val_loc);
   | Type_declarations(id, d1, d2, errs) ->
-      fprintf ppf "@[<v>@[<hv>%s:@;<1 2>%a@ %s@;<1 2>%a@]%a%a@]"
-        "Type declarations do not match"
-        (type_declaration id) d1
-        "is not included in"
-        (type_declaration id) d2
-        show_locs (d1.type_loc, d2.type_loc)
+      fprintf ppf "@[<v>@[<hv>The type of type @{<info>%s@} differs between interface and implementation.@\n@]%a@\n%a@]"
+        (Ident.name id)
         (Includecore.report_type_mismatch
-           "the first" "the second" "declaration") errs
+           "the implementation" "the interface" "declaration") errs
+        show_locs (d1.type_loc, d2.type_loc)
   | Extension_constructors(id, x1, x2) ->
       fprintf ppf
        "@[<hv 2>Extension declarations do not match:@ \
@@ -549,12 +546,9 @@ let include_err ~env ppf = function
       (extension_constructor id) x1
       (extension_constructor id) x2;
       show_locs ppf (x1.ext_loc, x2.ext_loc)
-  | Module_types(mty1, mty2)->
+  | Module_types(_mty1, _mty2)->
       fprintf ppf
-       "@[<hv 2>Modules do not match:@ \
-        %a@;<1 -2>is not included in@ %a@]"
-      modtype mty1
-      modtype mty2
+       "@[<hv 2>Module implementation differs from its interface.@]@\n"
   | Modtype_infos(id, d1, d2) ->
       fprintf ppf
        "@[<hv 2>Module type declarations do not match:@ \

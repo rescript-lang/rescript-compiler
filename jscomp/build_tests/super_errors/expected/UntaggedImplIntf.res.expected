@@ -9,21 +9,13 @@
   [1;31m5[0m [2m│[0m [1;31m}[0m
 
   Signature mismatch:
-  Modules do not match:
-    {
-  type t = @as(null) A
-}
-  is not included in
-    {
-  @unboxed type t = @as(null) A
-}
-  Type declarations do not match:
-    type t = @as(null) A
-  is not included in
-    @unboxed type t = @as(null) A
+  Module implementation differs from its interface.
+  
+  The type of type [1;33mt[0m differs between interface and implementation.
+  
+  - Their internal representations differ: the interface declaration uses unboxed representation
+  
   [36m/.../fixtures/UntaggedImplIntf.res[0m:[2m2:12-33[0m:
-    Expected declaration
+    Interface
   [36m/.../fixtures/UntaggedImplIntf.res[0m:[2m4:3-24[0m:
-    Actual declaration
-  Their internal representations differ:
-  the second declaration uses unboxed representation.
+    Implementation

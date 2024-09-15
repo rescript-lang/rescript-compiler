@@ -21,21 +21,22 @@ open Types
 exception Dont_match
 
 type type_mismatch =
-    Arity
+    Arity of {left_arity: int; right_arity: int}
   | Privacy
   | Kind
   | Constraint
   | Manifest
   | Variance
-  | Field_type of Ident.t
-  | Field_mutable of Ident.t
+  | Field_type of {field_name: Ident.t; left_field: Types.label_declaration; right_field: Types.label_declaration}
+  | Constructor_type of Ident.t
+  | Field_mutable of {field_name: Ident.t; left_is_mutable: bool}
   | Field_arity of Ident.t
   | Field_names of int * string * string
   | Field_missing of bool * Ident.t
   | Record_representation of record_representation * record_representation
   | Unboxed_representation of bool
   | Immediate
-  | Tag_name
+  | Tag_name of {left_value: string option; right_value: string option} 
   | Variant_representation of Ident.t
 
 val value_descriptions:

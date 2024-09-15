@@ -746,7 +746,7 @@ let check_coherence env loc id decl =
             let decl' = Env.find_type path env in
             let err =
               if List.length args <> List.length decl.type_params
-              then [Includecore.Arity]
+              then [Includecore.Arity {left_arity = List.length args; right_arity = List.length decl.type_params}]
               else if not (Ctype.equal env false args decl.type_params)
               then [Includecore.Constraint]
               else
@@ -1615,7 +1615,7 @@ let transl_type_extension extend env loc styext =
   in
   let err =
     if type_decl.type_arity <> List.length styext.ptyext_params then
-      [Includecore.Arity]
+      [Includecore.Arity {left_arity = type_decl.type_arity; right_arity = List.length styext.ptyext_params}]
     else
       if List.for_all2
            (fun (c1, n1, _) (c2, n2, _) -> (not c2 || c1) && (not n2 || n1))

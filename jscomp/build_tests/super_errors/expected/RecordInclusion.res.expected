@@ -11,12 +11,11 @@
 
   Signature mismatch:
   ...
-  Type declarations do not match:
-    type t<'a, 'b, 'c> = {x: int, y: list<('a, 'c)>, z: int}
-  is not included in
-    type t<'a, 'b, 'c> = {x: int, y: list<('a, 'b)>, z: int}
+  The type of type [1;33mt[0m differs between interface and implementation.
+  
+  - Field [1;33my[0m has type [1;31mlist<('a, 'c)>[0m in the implementation, but should have type [1;33mlist<('a0, 'b)>[0m according to the interface
+  
   [36m/.../fixtures/RecordInclusion.res[0m:[2m2:3-55[0m:
-    Expected declaration
+    Interface
   [36m/.../fixtures/RecordInclusion.res[0m:[2m4:3-55[0m:
-    Actual declaration
-  The types for field y are not equal.
+    Implementation
