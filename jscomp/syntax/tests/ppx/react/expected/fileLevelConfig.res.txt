@@ -18,6 +18,7 @@ module V3 = {
 @@jsxConfig({version: 4, mode: "classic"})
 
 module V4C = {
+  @res.jsxComponentProps
   type props<'msg> = {msg: 'msg}
 
   let make = ({msg, _}: props<_>) => {
@@ -33,6 +34,7 @@ module V4C = {
 @@jsxConfig({version: 4, mode: "automatic"})
 
 module V4A = {
+  @res.jsxComponentProps
   type props<'msg> = {msg: 'msg}
 
   let make = ({msg, _}: props<_>) => {

@@ -35,8 +35,8 @@ type error =
   | Expr_type_clash of (type_expr * type_expr) list * (type_clash_context option)
   | Apply_non_function of type_expr
   | Apply_wrong_label of arg_label * type_expr
-  | Label_multiply_defined of string
-  | Labels_missing of string list * bool
+  | Label_multiply_defined of {label: string; jsx_component_info: jsx_prop_error_info option}
+  | Labels_missing of {labels: string list; jsx_component_info: jsx_prop_error_info option}
   | Label_not_mutable of Longident.t
   | Wrong_name of string * type_expr * string * Path.t * string * string list
   | Name_type_mismatch of
@@ -960,15 +960,18 @@ let type_label_a_list ?labels loc closed env type_lbl_a opath lid_a_list k =
 (* Checks over the labels mentioned in a record pattern:
    no duplicate definitions (error); properly closed (warning) *)
 
-let check_recordpat_labels loc lbl_pat_list closed =
+let check_recordpat_labels ~get_jsx_component_error_info loc lbl_pat_list closed =
   match lbl_pat_list with
   | [] -> ()                            (* should not happen *)
-  | (_, label1, _) :: _ ->
+  | ((l: Longident.t loc), label1, _) :: _ ->
       let all = label1.lbl_all in
       let defined = Array.make (Array.length all) false in
       let check_defined (_, label, _) =
         if defined.(label.lbl_pos)
-        then raise(Error(loc, Env.empty, Label_multiply_defined label.lbl_name))
+        then raise(Error(l.loc, Env.empty, Label_multiply_defined {
+          label = label.lbl_name; 
+          jsx_component_info = get_jsx_component_error_info ();
+        }))
         else defined.(label.lbl_pos) <- true in
       List.iter check_defined lbl_pat_list;
       if closed = Closed
@@ -1292,6 +1295,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
           Some (p0, p), expected_ty
         with Not_found -> None, newvar ()
       in
+      let get_jsx_component_error_info = get_jsx_component_error_info ~extract_concrete_typedecl opath !env record_ty in
       let process_optional_label (ld, pat) =
         let exp_optional_attr = check_optional_attr !env ld pat.ppat_attributes pat.ppat_loc in
         let is_from_pamatch = match pat.ppat_desc with
@@ -1330,7 +1334,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
           k (label_lid, label, arg))
       in
       let k' k lbl_pat_list =
-        check_recordpat_labels loc lbl_pat_list closed;
+        check_recordpat_labels ~get_jsx_component_error_info loc lbl_pat_list closed;
         unify_pat_types loc !env record_ty expected_ty;
         rp k {
         pat_desc = Tpat_record (lbl_pat_list, closed);
@@ -1897,11 +1901,14 @@ let duplicate_ident_types caselist env =
 (* type_label_a_list returns a list of labels sorted by lbl_pos *)
 (* note: check_duplicates would better be implemented in
          type_label_a_list directly *)  
-let rec check_duplicates loc env = function
-  | (_, lbl1, _) :: (_, lbl2, _) :: _ when lbl1.lbl_pos = lbl2.lbl_pos ->
-    raise(Error(loc, env, Label_multiply_defined lbl1.lbl_name))
+let rec check_duplicates ~get_jsx_component_error_info loc env = function
+  | (_, lbl1, _) :: ((l: Longident.t loc), lbl2, _) :: _ when lbl1.lbl_pos = lbl2.lbl_pos ->
+    raise(Error(l.loc, env, Label_multiply_defined {
+      label = lbl1.lbl_name; 
+      jsx_component_info = get_jsx_component_error_info();
+      }))
   | _ :: rem ->
-      check_duplicates loc env rem
+      check_duplicates ~get_jsx_component_error_info loc env rem
   | [] -> ()  
 (* Getting proper location of already typed expressions.
 
@@ -1974,11 +1981,6 @@ let rec lower_args env seen ty_fun  =
 let not_function env ty =
   let ls, tvar = list_labels env ty in
   ls = [] && not tvar
-
-let check_might_be_component env ty_record =
-  match (expand_head env ty_record).desc with 
-  | Tconstr (path, _, _) when path |> Path.last = "props" -> true 
-  | _ -> false
     
 type lazy_args = 
   (Asttypes.arg_label * (unit -> Typedtree.expression) option) list
@@ -2280,6 +2282,10 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
                newvar (), None, [], None
           
         in
+        let get_jsx_component_error_info () = (match opath with 
+        | Some (p, _) -> get_jsx_component_props ~extract_concrete_typedecl env ty_record p
+        | None -> None)
+        in
         let lbl_exp_list =
           wrap_disambiguate "This record expression is expected to have" ty_record
             (type_label_a_list loc true env
@@ -2288,7 +2294,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
             (fun x -> x)
         in
         unify_exp_types loc env ty_record (instance env ty_expected);
-        check_duplicates loc env lbl_exp_list;
+        check_duplicates ~get_jsx_component_error_info loc env lbl_exp_list;
         let label_descriptions, representation = match lbl_exp_list, repr_opt with
         | (_, { lbl_all = label_descriptions; lbl_repres = representation}, _) :: _, _ -> label_descriptions, representation
         | [], Some (representation) when lid_sexp_list = [] ->
@@ -2304,8 +2310,10 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
                 Some name in
             let labels_missing = fields |> List.filter_map filter_missing in
             if labels_missing <> [] then (
-              let might_be_component = check_might_be_component env ty_record in
-              raise(Error(loc, env, Labels_missing (labels_missing, might_be_component))));
+              raise(Error(loc, env, Labels_missing {
+                labels = labels_missing; 
+                jsx_component_info = get_jsx_component_error_info ();
+              })));
             [||], representation
         | [], _ ->
           if fields = [] && repr_opt <> None then
@@ -2330,8 +2338,10 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
                   label_descriptions
         in
         if !labels_missing <> [] then (
-          let might_be_component = check_might_be_component env ty_record in
-          raise(Error(loc, env, Labels_missing ((List.rev !labels_missing), might_be_component))));
+          raise(Error(loc, env, Labels_missing {
+            labels=(List.rev !labels_missing);
+            jsx_component_info = get_jsx_component_error_info ();
+          })));
         let fields =
           Array.map2 (fun descr def -> descr, def)
             label_descriptions label_definitions
@@ -2372,6 +2382,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
             end
         | op -> ty_expected, op
       in
+      let get_jsx_component_error_info = get_jsx_component_error_info ~extract_concrete_typedecl opath env ty_record in
       let closed = false in
       let lbl_exp_list =
         wrap_disambiguate "This record expression is expected to have" ty_record
@@ -2381,7 +2392,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg=Rejected) env sexp ty
           (fun x -> x)
       in
       unify_exp_types loc env ty_record (instance env ty_expected);
-      check_duplicates loc env lbl_exp_list;
+      check_duplicates ~get_jsx_component_error_info loc env lbl_exp_list;
       let opt_exp, label_definitions =
         let (_lid, lbl, _lbl_exp) = List.hd lbl_exp_list in
         let matching_label lbl =
@@ -3846,17 +3857,25 @@ let report_error env ppf = function
         "@[<v>@[<2>The function applied to this argument has type@ %a@]@.\
           This argument cannot be applied %a@]"
         type_expr ty print_label l
-  | Label_multiply_defined s ->
-      fprintf ppf "The record field label %s is defined several times" s
-  | Labels_missing (labels, might_be_component) ->
+  | Label_multiply_defined {label; jsx_component_info = Some jsx_component_info} ->
+      fprintf ppf "The prop @{<info>%s@} has already been passed to the component " label;
+      print_component_name ppf jsx_component_info.props_record_path;
+      fprintf ppf "@,@,You can't pass the same prop more than once.";
+  | Label_multiply_defined {label} ->
+    fprintf ppf "The record field label %s is defined several times" label
+  | Labels_missing {labels; jsx_component_info = Some jsx_component_info} ->
+    print_component_labels_missing_error ppf labels jsx_component_info
+  | Labels_missing {labels} ->
       let print_labels ppf =
         List.iter (fun lbl -> fprintf ppf "@ %s" ( lbl)) in
-      let component_text = if might_be_component then " If this is a component, add the missing props." else "" in
-      fprintf ppf "@[<hov>Some required record fields are missing:%a.%s@]"
-        print_labels labels component_text
+      fprintf ppf "@[<hov>Some required record fields are missing:%a.@]"
+        print_labels labels
   | Label_not_mutable lid ->
       fprintf ppf "The record field %a is not mutable" longident lid
   | Wrong_name (eorp, ty, kind, p, name, valid_names) ->
+    (match get_jsx_component_props ~extract_concrete_typedecl env ty p with 
+    | Some {fields} -> print_component_wrong_prop_error ppf p fields name; spellcheck ppf name valid_names;
+    | None ->
     (* modified *)
     if Path.is_constructor_typath p then begin
       fprintf ppf "@[The field %s is not part of the record \
@@ -3876,6 +3895,7 @@ let report_error env ppf = function
       fprintf ppf "@]";      
     end;
     spellcheck ppf name valid_names;
+  )
   | Name_type_mismatch (kind, lid, tp, tpl) ->
       let name = label_of_kind kind in
       report_ambiguous_type_error ppf env tp tpl

@@ -69,6 +69,7 @@ module V3 = {
 
 module V4C = {
   module FancyInput = {
+    @res.jsxComponentProps
     type props<'className, 'children, 'ref> = {
       className?: 'className,
       children: 'children,
@@ -100,6 +101,7 @@ module V4C = {
       \"ForwardRef$V4C$FancyInput"
     })
   }
+  @res.jsxComponentProps
   type props = {}
 
   let make = (_: props) => {
@@ -124,6 +126,7 @@ module V4C = {
 
 module V4CUncurried = {
   module FancyInput = {
+    @res.jsxComponentProps
     type props<'className, 'children, 'ref> = {
       className?: 'className,
       children: 'children,
@@ -155,6 +158,7 @@ module V4CUncurried = {
       \"ForwardRef$V4CUncurried$FancyInput"
     })
   }
+  @res.jsxComponentProps
   type props = {}
 
   let make = (_: props) => {
@@ -181,6 +185,7 @@ module V4CUncurried = {
 
 module V4A = {
   module FancyInput = {
+    @res.jsxComponentProps
     type props<'className, 'children, 'ref> = {
       className?: 'className,
       children: 'children,
@@ -210,6 +215,7 @@ module V4A = {
       \"ForwardRef$V4A$FancyInput"
     })
   }
+  @res.jsxComponentProps
   type props = {}
 
   let make = (_: props) => {
@@ -233,6 +239,7 @@ module V4A = {
 
 module V4AUncurried = {
   module FancyInput = {
+    @res.jsxComponentProps
     type props<'className, 'children, 'ref> = {
       className?: 'className,
       children: 'children,
@@ -262,6 +269,7 @@ module V4AUncurried = {
       \"ForwardRef$V4AUncurried$FancyInput"
     })
   }
+  @res.jsxComponentProps
   type props = {}
 
   let make = (_: props) => {

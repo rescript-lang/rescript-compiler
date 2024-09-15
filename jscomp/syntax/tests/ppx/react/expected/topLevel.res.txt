@@ -22,6 +22,7 @@ module V3 = {
 @@jsxConfig({version: 4, mode: "classic"})
 
 module V4C = {
+  @res.jsxComponentProps
   type props<'a, 'b> = {a: 'a, b: 'b}
 
   let make = ({a, b, _}: props<_, _>) => {
@@ -38,6 +39,7 @@ module V4C = {
 @@jsxConfig({version: 4, mode: "automatic"})
 
 module V4A = {
+  @res.jsxComponentProps
   type props<'a, 'b> = {a: 'a, b: 'b}
 
   let make = ({a, b, _}: props<_, _>) => {

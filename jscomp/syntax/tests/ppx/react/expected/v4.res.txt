@@ -1,3 +1,4 @@
+@res.jsxComponentProps
 type props<'x, 'y> = {x: 'x, y: 'y} // Component with type constraint
 let make = ({x, y, _}: props<string, string>) => React.string(x ++ y)
 let make = {
@@ -6,6 +7,7 @@ let make = {
 }
 
 module AnotherName = {
+  @res.jsxComponentProps
   type // Component with another name than "make"
   props<'x> = {x: 'x}
 
@@ -18,6 +20,7 @@ module AnotherName = {
 }
 
 module Uncurried = {
+  @res.jsxComponentProps
   type props<'x> = {x: 'x}
 
   let make = ({x, _}: props<_>) => React.string(x)
@@ -29,26 +32,28 @@ module Uncurried = {
 }
 
 module type TUncurried = {
+  @res.jsxComponentProps
   type props<'x> = {x: 'x}
 
   let make: React.componentLike<props<string>, React.element>
 }
 
 module E = {
-  @live
+  @res.jsxComponentProps @live
   type props<'x> = {x: 'x}
 
   external make: React.componentLike<props<string>, React.element> = "default"
 }
 
 module EUncurried = {
-  @live
+  @res.jsxComponentProps @live
   type props<'x> = {x: 'x}
 
   external make: React.componentLike<props<string>, React.element> = "default"
 }
 
 module Rec = {
+  @res.jsxComponentProps
   type props = {}
 
   let rec make = {
@@ -66,6 +71,7 @@ module Rec = {
 }
 
 module Rec1 = {
+  @res.jsxComponentProps
   type props = {}
 
   let rec make = {
@@ -83,6 +89,7 @@ module Rec1 = {
 }
 
 module Rec2 = {
+  @res.jsxComponentProps
   type props = {}
 
   let rec make = {

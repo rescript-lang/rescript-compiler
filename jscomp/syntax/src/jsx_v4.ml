@@ -310,7 +310,8 @@ let make_label_decls named_type_list =
     | hd :: tl ->
       if mem_label hd tl then
         let _, label, _, loc, _ = hd in
-        Jsx_common.raise_error ~loc "JSX: found the duplicated prop `%s`" label
+        Jsx_common.raise_error ~loc
+          "The prop `%s` is defined several times in this component." label
       else check_duplicated_label tl
   in
   let () = named_type_list |> List.rev |> check_duplicated_label in
@@ -347,11 +348,16 @@ let make_type_decls_with_core_type props_name loc core_type typ_vars =
   ]
 
 let live_attr = ({txt = "live"; loc = Location.none}, PStr [])
+let jsx_component_props_attr =
+  ({txt = "res.jsxComponentProps"; loc = Location.none}, PStr [])
 
 (* type props<'x, 'y, ...> = { x: 'x, y?: 'y, ... } *)
 let make_props_record_type ~core_type_of_attr ~external_ ~typ_vars_of_core_type
     props_name loc named_type_list =
-  let attrs = if external_ then [live_attr] else [] in
+  let attrs =
+    if external_ then [jsx_component_props_attr; live_attr]
+    else [jsx_component_props_attr]
+  in
   Str.type_ Nonrecursive
     (match core_type_of_attr with
     | None -> make_type_decls ~attrs props_name loc named_type_list
@@ -362,7 +368,10 @@ let make_props_record_type ~core_type_of_attr ~external_ ~typ_vars_of_core_type
 (* type props<'x, 'y, ...> = { x: 'x, y?: 'y, ... } *)
 let make_props_record_type_sig ~core_type_of_attr ~external_
     ~typ_vars_of_core_type props_name loc named_type_list =
-  let attrs = if external_ then [live_attr] else [] in
+  let attrs =
+    if external_ then [jsx_component_props_attr; live_attr]
+    else [jsx_component_props_attr]
+  in
   Sig.type_ Nonrecursive
     (match core_type_of_attr with
     | None -> make_type_decls ~attrs props_name loc named_type_list

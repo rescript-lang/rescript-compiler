@@ -1,3 +1,4 @@
+@res.jsxComponentProps
 type props<'msg> = {msg: 'msg} // test React JSX file
 
 let make = ({msg, _}: props<_>) => {

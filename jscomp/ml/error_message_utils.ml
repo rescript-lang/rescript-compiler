@@ -1,3 +1,6 @@
+type extract_concrete_typedecl =
+  Env.t -> Types.type_expr -> Path.t * Path.t * Types.type_declaration
+
 type type_clash_statement = FunctionCall
 type type_clash_context =
   | SetRecordField
@@ -237,3 +240,59 @@ let print_contextual_unification_error ppf t1 t2 =
         @{<info>option@}, but you're trying to match on the actual value.@ Wrap \
         the highlighted pattern in @{<info>Some()@} to make it work.@]"
   | _ -> ()
+
+type jsx_prop_error_info = {
+  fields: Types.label_declaration list;
+  props_record_path: Path.t;
+}
+
+let attributes_include_jsx_component_props (attrs : Parsetree.attributes) =
+  attrs
+  |> List.exists (fun ({Location.txt}, _) -> txt = "res.jsxComponentProps")
+
+let path_to_jsx_component_name p =
+  match p |> Path.name |> String.split_on_char '.' |> List.rev with
+  | "props" :: component_name :: _ -> Some component_name
+  | _ -> None
+
+let get_jsx_component_props
+    ~(extract_concrete_typedecl : extract_concrete_typedecl) env ty p =
+  match Path.last p with
+  | "props" -> (
+    try
+      match extract_concrete_typedecl env ty with
+      | ( _p0,
+          _p,
+          {Types.type_kind = Type_record (fields, _repr); type_attributes} )
+        when attributes_include_jsx_component_props type_attributes ->
+        Some {props_record_path = p; fields}
+      | _ -> None
+    with _ -> None)
+  | _ -> None
+
+let print_component_name ppf (p : Path.t) =
+  match path_to_jsx_component_name p with
+  | Some component_name -> fprintf ppf "@{<info><%s />@} " component_name
+  | None -> ()
+
+let print_component_wrong_prop_error ppf (p : Path.t)
+    (_fields : Types.label_declaration list) name =
+  fprintf ppf "@[<v>";
+  fprintf ppf
+    "@[<2>The prop @{<error>%s@} does not belong to the JSX component " name;
+  print_component_name ppf p;
+  fprintf ppf "@]@,@,"
+
+let print_component_labels_missing_error ppf labels
+    (error_info : jsx_prop_error_info) =
+  fprintf ppf "@[<hov>The component ";
+  print_component_name ppf error_info.props_record_path;
+  fprintf ppf "is missing these required props:@\n";
+  labels |> List.iter (fun lbl -> fprintf ppf "@ %s" lbl);
+  fprintf ppf "@]"
+
+let get_jsx_component_error_info ~extract_concrete_typedecl opath env ty_record () =
+  match opath with
+  | Some (p, _) ->
+    get_jsx_component_props ~extract_concrete_typedecl env ty_record p
+  | None -> None

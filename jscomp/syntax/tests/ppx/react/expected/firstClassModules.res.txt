@@ -57,6 +57,7 @@ module Select = {
     type key
     type t
   }
+  @res.jsxComponentProps
   type props<'model, 'selected, 'onChange, 'items> = {
     model: 'model,
     selected: 'selected,
@@ -88,7 +89,7 @@ module External = {
     type key
     type t
   }
-  @live
+  @res.jsxComponentProps @live
   type props<'model, 'selected, 'onChange, 'items> = {
     model: 'model,
     selected: 'selected,

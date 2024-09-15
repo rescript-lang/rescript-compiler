@@ -1,6 +1,7 @@
 @@jsxConfig({version: 4, mode: "classic"})
 
 module Foo = {
+  @res.jsxComponentProps
   type props<'x, 'y> = {x: 'x, y: 'y}
 
   let make = ({x, y, _}: props<_, _>) => React.string(x ++ y)
@@ -12,6 +13,7 @@ module Foo = {
 }
 
 module HasChildren = {
+  @res.jsxComponentProps
   type props<'children> = {children: 'children}
 
   let make = ({children, _}: props<_>) => React.createElement(React.fragment, {children: children})
@@ -21,6 +23,7 @@ module HasChildren = {
     \"RemovedKeyProp$HasChildren"
   }
 }
+@res.jsxComponentProps
 type props = {}
 
 let make = (_: props) =>

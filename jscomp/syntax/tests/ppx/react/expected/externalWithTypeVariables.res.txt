@@ -16,7 +16,7 @@ module V3 = {
 @@jsxConfig({version: 4, mode: "classic"})
 
 module V4C = {
-  @live
+  @res.jsxComponentProps @live
   type props<'x, 'children> = {
     x: 'x,
     children: 'children,
@@ -29,7 +29,7 @@ module V4C = {
 @@jsxConfig({version: 4, mode: "automatic"})
 
 module V4C = {
-  @live
+  @res.jsxComponentProps @live
   type props<'x, 'children> = {
     x: 'x,
     children: 'children,

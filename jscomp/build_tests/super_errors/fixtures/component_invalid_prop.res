@@ -3,5 +3,7 @@ module Component = {
   @res.jsxComponentProps
   type props<'name> = {name: 'name}
 
-  let make = (): props<'name> => {}
+  let make = (): props<'name> => {
+    test: false,
+  }
 }

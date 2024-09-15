@@ -1,6 +1,7 @@
 @@jsxConfig({version: 4, mode: "classic"})
 
 module V4CA = {
+  @res.jsxComponentProps
   type props = {}
 
   let make = (_: props) => ReactDOM.createDOMElementVariadic("div", [])
@@ -12,7 +13,7 @@ module V4CA = {
 }
 
 module V4CB = {
-  @live
+  @res.jsxComponentProps @live
   type props = {}
 
   @module("c")
@@ -20,6 +21,7 @@ module V4CB = {
 }
 
 module V4C = {
+  @res.jsxComponentProps
   type props = {}
 
   let make = (_: props) =>
@@ -41,6 +43,7 @@ module V4C = {
 @@jsxConfig({version: 4, mode: "automatic"})
 
 module V4CA = {
+  @res.jsxComponentProps
   type props = {}
 
   let make = (_: props) => ReactDOM.jsx("div", {})
@@ -52,7 +55,7 @@ module V4CA = {
 }
 
 module V4CB = {
-  @live
+  @res.jsxComponentProps @live
   type props = {}
 
   @module("c")
@@ -60,6 +63,7 @@ module V4CB = {
 }
 
 module V4C = {
+  @res.jsxComponentProps
   type props = {}
 
   let make = (_: props) =>
