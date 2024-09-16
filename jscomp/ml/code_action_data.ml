@@ -3,7 +3,6 @@ type code_action_style = Regular | QuickFix
 type code_action = {
   style: code_action_style;
   type_: code_action_type;
-  loc: Location.t;
   title: string;
 }
 
@@ -45,7 +44,7 @@ let code_action_type_to_json = function
     Printf.sprintf "\"type\": \"wrapWith\", \"wrapLeft\": \"%s\", \"wrapRight\": \"%s\""
       (escape left) (escape right)
 
-let emit_code_actions_data ppf =
+let emit_code_actions_data loc ppf =
   match !code_action_data with
   | [] -> ()
   | code_actions ->
@@ -58,5 +57,5 @@ let emit_code_actions_data ppf =
              (match data.style with
              | Regular -> "regular"
              | QuickFix -> "quickfix")
-             (loc_to_json data.loc)
+             (loc_to_json loc)
              (code_action_type_to_json data.type_))
