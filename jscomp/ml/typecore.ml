@@ -633,9 +633,18 @@ let simple_conversions = [
   (("string", "int"), "Belt.Int.fromString");
 ]
 
-let print_simple_conversion ppf (actual, expected) =
+let print_simple_conversion loc ppf (actual, expected) =
   try (
     let converter = List.assoc (actual, expected) simple_conversions in
+    Code_action_data.add_code_action {
+      Code_action_data.style = QuickFix; 
+      type_ = WrapWith {
+        left = converter ^ "("; 
+        right = ")"
+      };
+      loc; 
+      title = Printf.sprintf "Convert %s to %s" actual expected
+    };
     fprintf ppf "@,@,@[<v 2>You can convert @{<info>%s@} to @{<info>%s@} with @{<info>%s@}.@]" actual expected converter
   ) with | Not_found -> ()
   
@@ -644,12 +653,12 @@ let print_simple_message ppf = function
   | ("int", "float") -> fprintf ppf "@ If this is a literal, try a number with a trailing dot (e.g. @{<info>20.@})."
   | _ -> ()
 
-let show_extra_help ppf _env trace = begin
+let show_extra_help (loc: Location.t) ppf _env trace = begin
   match bottom_aliases trace with
   | Some ({Types.desc = Tconstr (actual_path, actual_args, _)}, {desc = Tconstr (expected_path, expexted_args, _)}) -> begin
       match (actual_path, actual_args, expected_path, expexted_args) with
       | (Pident {name = actual_name}, [], Pident {name = expected_name}, []) -> begin
-          print_simple_conversion ppf (actual_name, expected_name);
+          print_simple_conversion loc ppf (actual_name, expected_name);
           print_simple_message ppf (actual_name, expected_name);
         end
       | _ -> ()
@@ -671,7 +680,7 @@ let rec collect_missing_arguments env type1 type2 = match type1 with
     collect_missing_arguments env typ type2
   | _ -> None
 
-let print_expr_type_clash ?type_clash_context env trace ppf = begin
+let print_expr_type_clash ?type_clash_context loc env trace ppf = begin
   (* this is the most frequent error. We should do whatever we can to provide
       specific guidance to this generic error before giving up *)
   let bottom_aliases_result = bottom_aliases trace in
@@ -723,7 +732,7 @@ let print_expr_type_clash ?type_clash_context env trace ppf = begin
       (function ppf ->
           error_expected_type_text ppf type_clash_context);
     print_extra_type_clash_help ppf trace type_clash_context;
-    show_extra_help ppf env trace;
+    show_extra_help loc ppf env trace;
 end
   
 let report_arity_mismatch ~arity_a ~arity_b ppf =
@@ -3762,7 +3771,7 @@ let type_expr ppf typ = (* print a type and avoid infinite loops *)
   Printtyp.reset_and_mark_loops typ;
   Printtyp.type_expr ppf typ
 
-let report_error env ppf = function
+let report_error loc env ppf = function
   | Polymorphic_label lid ->
       fprintf ppf "@[The record field %a is polymorphic.@ %s@]"
         longident lid "You cannot instantiate it in a pattern."
@@ -3826,7 +3835,7 @@ let report_error env ppf = function
   | Expr_type_clash (trace, type_clash_context) ->
     (* modified *)
     fprintf ppf "@[<v>";
-    print_expr_type_clash ?type_clash_context env trace ppf;
+    print_expr_type_clash ?type_clash_context loc env trace ppf;
     fprintf ppf "@]"
   | Apply_non_function typ ->
     (* modified *)
@@ -4045,14 +4054,14 @@ let report_error env ppf = function
 let super_report_error_no_wrap_printing_env = report_error
 
 
-let report_error env ppf err =
-  Printtyp.wrap_printing_env env (fun () -> report_error env ppf err)
+let report_error loc env ppf err =
+  Printtyp.wrap_printing_env env (fun () -> report_error loc env ppf err; Code_action_data.emit_code_actions_data ppf;)
 
 let () =
   Location.register_error_of_exn
     (function
       | Error (loc, env, err) ->
-        Some (Location.error_of_printer loc (report_error env) err)
+        Some (Location.error_of_printer loc (report_error loc env) err)
       | Error_forward err ->
         Some err
       | _ ->

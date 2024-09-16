@@ -273,6 +273,9 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-ast", unit_call(fun _ ->  Js_config.binary_ast := true; Js_config.syntax_only := true),
     "*internal* Generate binary .mli_ast and ml_ast and stop";
 
+    "-code-action-data", unit_call(fun _ ->  Js_config.code_action_data := true),
+    "*internal* Emit code action data";
+
     "-bs-syntax-only", set Js_config.syntax_only,
     "*internal* Only check syntax";
 
