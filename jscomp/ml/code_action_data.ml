@@ -48,14 +48,17 @@ let emit_code_actions_data loc ppf =
   match !code_action_data with
   | [] -> ()
   | code_actions ->
-    Format.fprintf ppf "@\n=== CODE ACTIONS ===@\n";
-    code_actions
-    |> List.iter (fun data ->
-           Format.fprintf ppf
-             "{\"title\": \"%s\", \"kind\": \"%s\" \"loc\": %s, %s}"
-             (escape data.title)
-             (match data.style with
-             | Regular -> "regular"
-             | QuickFix -> "quickfix")
-             (loc_to_json loc)
-             (code_action_type_to_json data.type_))
+    Format.fprintf ppf "@\n=== CODE ACTIONS ===@\n[";
+    Format.fprintf ppf "%s"
+      (code_actions
+      |> List.map (fun data ->
+            Format.sprintf
+              "{\"title\": \"%s\", \"kind\": \"%s\" \"loc\": %s, %s}"
+              (escape data.title)
+              (match data.style with
+              | Regular -> "regular"
+              | QuickFix -> "quickfix")
+              (loc_to_json loc)
+              (code_action_type_to_json data.type_))
+      |> String.concat ",");
+    Format.fprintf ppf "]"
