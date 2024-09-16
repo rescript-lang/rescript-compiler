@@ -296,3 +296,23 @@ let get_jsx_component_error_info ~extract_concrete_typedecl opath env ty_record 
   | Some (p, _) ->
     get_jsx_component_props ~extract_concrete_typedecl env ty_record p
   | None -> None
+
+let diff_type_exprs ppf env t1 t2 = 
+  try
+    Ctype.unify env t1 t2;
+  with
+    Ctype.Unify (trace) ->
+      let ctx = Ctype.get_unify_context () in
+      (match ctx with 
+      | Some (Debug s) -> fprintf ppf "DEBUG: %s @\n@\n" s 
+      | _ -> ());
+      let prefix = (fun ppf -> match ctx with 
+      | Some (FunctionArgument Nolabel) -> fprintf ppf "Unlabelled argument is" 
+      | Some (FunctionArgument (Labelled s | Optional s)) -> fprintf ppf "Argument @{<info>%s@} is" s
+      | Some (FunctionReturnType) -> fprintf ppf "Function returns type"
+      | _ -> fprintf ppf "Type") in
+      Printtyp.report_unification_error2 prefix ppf Env.empty trace
+        (fun ppf ->
+           fprintf ppf "This type")
+        (fun ppf ->
+           fprintf ppf "should be an instance of type");

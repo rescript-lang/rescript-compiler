@@ -52,6 +52,16 @@ open Btype
      policy can then be easily changed.
 *)
 
+type unify_context = FunctionArgument of arg_label| Debug of string | FunctionReturnType
+
+let unify_context = ref None
+
+let set_unify_context (s: unify_context) = unify_context := Some s
+
+let unset_unify_context () = unify_context := None
+
+let get_unify_context () = !unify_context
+
 (**** Errors ****)
 
 exception Unify of (type_expr * type_expr) list
@@ -2345,7 +2355,11 @@ and unify3 env t1 t1' t2 t2' =
         (Tarrow (l1, t1, u1, c1), Tarrow (l2, t2, u2, c2)) when Asttypes.same_arg_label l1  l2 ||
         (!umode = Pattern) &&
         not (is_optional l1 || is_optional l2) ->
-          unify  env t1 t2; unify env  u1 u2;
+          set_unify_context (FunctionArgument l1);
+          unify env t1 t2; 
+          set_unify_context (FunctionReturnType); 
+          unify env  u1 u2;
+          unset_unify_context ();
           begin match commu_repr c1, commu_repr c2 with
             Clink r, c2 -> set_commu r c2
           | c1, Clink r -> set_commu r c1

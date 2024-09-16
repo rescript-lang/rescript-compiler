@@ -521,7 +521,8 @@ let include_err ~env ppf = function
       fprintf ppf "The %s `%a' is required but not provided" kind ident id;
       show_loc "Expected declaration" ppf loc
   | Value_descriptions(id, d1, d2) ->
-      let curry_kind_1, curry_kind_2 = 
+      (* TODO: Still need to incorporate this check? *)
+      let _curry_kind_1, _curry_kind_2 = 
         match (Ctype.expand_head env d1.val_type,  Ctype.expand_head env d2.val_type ) with 
         | { desc = Tarrow _ }, 
             { desc = Tconstr (Pident {name = "function$"},_,_)} -> (" (curried)", " (uncurried)")
@@ -530,8 +531,11 @@ let include_err ~env ppf = function
         | _ -> ("", "")
       in
       fprintf ppf
-        "@[<hv 2>Values does not have the same type:@ %a%s@;<1 -2>is not included in@ %a%s@]"
-        (value_description id) d1 curry_kind_1 (value_description id) d2 curry_kind_2;
+        "@[<hv 2>Value @{<info>%s@} does not have the same type in the implementation and interface.@]"
+        (Ident.name id);
+      fprintf ppf "@\n";
+      Error_message_utils.diff_type_exprs ppf env d1.val_type d2.val_type;
+      fprintf ppf "@\n";
       show_locs ppf (d1.val_loc, d2.val_loc);
   | Type_declarations(id, d1, d2, errs) ->
       fprintf ppf "@[<v>@[<hv>The type of type @{<info>%s@} differs between interface and implementation.@\n@]%a@\n%a@]"

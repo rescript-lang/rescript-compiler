@@ -1,0 +1,22 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/interface_impl_mismatch_fn_return_type.res[0m:[2m7:5-10:1[0m
+
+   5 [2m│[0m   }
+   6 [2m│[0m   let make: int => string
+   [1;31m7[0m [2m│[0m } = [1;31m{[0m
+   [1;31m8[0m [2m│[0m [1;31m  type x = {name: string, age: int}[0m
+   [1;31m9[0m [2m│[0m [1;31m  let make = s => {name: "", age: s}[0m
+  [1;31m10[0m [2m│[0m [1;31m}[0m
+  11 [2m│[0m 
+
+  Signature mismatch:
+  ...
+  Value [1;33mmake[0m does not have the same type in the implementation and interface.
+  
+  Function returns type [1;31mx[0m in the implementation, but according to the interface it should be [1;33mstring[0m 
+  
+  [36m/.../fixtures/interface_impl_mismatch_fn_return_type.res[0m:[2m6:3-25[0m:
+    Interface
+  [36m/.../fixtures/interface_impl_mismatch_fn_return_type.res[0m:[2m9:7-10[0m:
+    Implementation

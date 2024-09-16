@@ -1222,6 +1222,15 @@ let rec trace fst txt ppf = function
        (trace false txt) rem
   | _ -> ()
 
+let rec trace2 prefix fst txt ppf = function
+| (t1, t1') :: (t2, t2') :: rem ->
+    if not fst then fprintf ppf "@,";
+    fprintf ppf "@[%t @{<error>%a@} %s @{<info>%a@}@] %a"
+      prefix
+      (type_expansion t1) t1' txt (type_expansion t2) t2'
+      (trace2 prefix false txt) rem
+| _ -> ()
+
 let rec filter_trace keep_last = function
   | (_, t1') :: (_, t2') :: [] when is_Tvar t1' || is_Tvar t2' ->
       []
@@ -1426,9 +1435,41 @@ let unification_error env unif tr txt1 ppf txt2 =
     with exn ->
       raise exn
 
+let unification_error2 prefix env unif tr (_txt1: (formatter -> unit)) ppf (_txt2: (formatter -> unit)) = 
+  reset ();
+  trace_same_names tr;
+  let tr = List.map (fun (t, t') -> (t, hide_variant_name t')) tr in
+  let mis = mismatch tr in
+  match tr with
+  | [] | _ :: [] -> assert false
+  | t1 :: t2 :: tr ->
+    try
+      let tr = filter_trace (mis = None) tr in
+      let t1, _t1' = may_prepare_expansion (tr = []) t1
+      and t2, _t2' = may_prepare_expansion (tr = []) t2 in
+      let tr = List.map prepare_expansion tr in
+      fprintf ppf
+        "@[<v>\
+          %a%t\
+          @]"
+        (trace2 prefix false "in the implementation, but according to the interface it should be") tr
+        (explanation unif mis);
+      if env <> Env.empty
+      then begin
+        warn_on_missing_def env ppf t1;
+        warn_on_missing_def env ppf t2
+      end;
+    with exn ->
+      raise exn
+
 let report_unification_error ppf env ?(unif=true)
     tr txt1 txt2 =
   wrap_printing_env env (fun () -> unification_error env unif tr txt1 ppf txt2)
+;;
+
+let report_unification_error2 prefix ppf env ?(unif=true)
+    tr (txt1: (formatter -> unit)) (txt2: (formatter -> unit)) =
+  wrap_printing_env env (fun () -> unification_error2 prefix env unif tr txt1 ppf txt2)
 ;;
 
 

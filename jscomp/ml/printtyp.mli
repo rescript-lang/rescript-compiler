@@ -73,6 +73,11 @@ val report_unification_error:
     (formatter -> unit) -> (formatter -> unit) ->
     unit
 
+val report_unification_error2:
+    (formatter -> unit) -> formatter -> Env.t -> ?unif:bool -> (type_expr * type_expr) list ->
+    (formatter -> unit) -> (formatter -> unit) ->
+    unit
+
 
 val super_report_unification_error:
     ?print_extra_info:(formatter -> type_expr -> type_expr -> unit) ->
