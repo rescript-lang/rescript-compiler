@@ -78,4 +78,12 @@ module Actions = struct
           type_ = ReplaceWith name;
           title = "Replace with `" ^ name ^ "`";
         }
+  let add_wrap_in_constructor name =
+    if !code_actions_enabled then
+      add_code_action
+        {
+          style = QuickFix;
+          type_ = WrapWith {left = name ^ "("; right = ")"};
+          title = "Wrap in `" ^ name ^ "()`";
+        }
 end

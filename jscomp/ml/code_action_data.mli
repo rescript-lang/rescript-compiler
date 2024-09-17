@@ -13,4 +13,5 @@ val emit_code_actions_data: Location.t -> Format.formatter -> unit
 
 module Actions : sig
   val add_replace_with: string -> unit
+  val add_wrap_in_constructor: string -> unit
 end
