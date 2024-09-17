@@ -3754,6 +3754,7 @@ let type_expression env sexp =
 (* Error report *)
 
 let spellcheck ppf unbound_name valid_names =
+  Code_action_data.Actions.add_replace_with unbound_name;
   Misc.did_you_mean ppf (fun () ->
     Misc.spellcheck valid_names unbound_name
   )

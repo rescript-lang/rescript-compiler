@@ -1,10 +1,12 @@
-type code_action_type = WrapWith of {left: string; right: string}
+type code_action_type = WrapWith of {left: string; right: string} | ReplaceWith of string
 type code_action_style = Regular | QuickFix
 type code_action = {
   style: code_action_style;
   type_: code_action_type;
   title: string;
 }
+
+let code_actions_enabled = ref true
 
 let code_action_data = ref []
 let add_code_action (data : code_action) =
@@ -43,6 +45,9 @@ let code_action_type_to_json = function
   | WrapWith {left; right} ->
     Printf.sprintf "\"type\": \"wrapWith\", \"wrapLeft\": \"%s\", \"wrapRight\": \"%s\""
       (escape left) (escape right)
+  | ReplaceWith text ->
+    Printf.sprintf "\"type\": \"replaceWith\", \"replaceWith\": \"%s\""
+      (escape text)
 
 let emit_code_actions_data loc ppf =
   match !code_action_data with
@@ -62,3 +67,15 @@ let emit_code_actions_data loc ppf =
               (code_action_type_to_json data.type_))
       |> String.concat ",");
     Format.fprintf ppf "]"
+
+
+module Actions = struct
+  let add_replace_with name =
+    if !code_actions_enabled then
+      add_code_action
+        {
+          style = QuickFix;
+          type_ = ReplaceWith name;
+          title = "Replace with `" ^ name ^ "`";
+        }
+end
