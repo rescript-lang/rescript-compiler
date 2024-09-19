@@ -19,6 +19,7 @@
 - Fix comment removed when function signature has `type` keyword. https://github.com/rescript-lang/rescript-compiler/pull/6997
 - Fix parse error on doc comment before "and" in type def. https://github.com/rescript-lang/rescript-compiler/pull/7001
 - Fix tuple coercion. https://github.com/rescript-lang/rescript-compiler/pull/7024
+- Deprecate JSX 3 https://github.com/rescript-lang/rescript-compiler/pull/7042
 
 # 11.1.3
 
