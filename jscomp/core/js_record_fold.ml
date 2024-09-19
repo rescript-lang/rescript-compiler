@@ -175,8 +175,9 @@ let expression_desc : 'a. ('a, expression_desc) fn =
       let st = _self.expression _self st _x0 in
       st
   | Number _ -> st
-  | Object _x0 ->
-      let st = property_map _self st _x0 in
+  | Object (_x0, _x1) ->
+      let st = option _self.expression _self st _x0 in
+      let st = property_map _self st _x1 in
       st
   | Undefined _ -> st
   | Null -> st

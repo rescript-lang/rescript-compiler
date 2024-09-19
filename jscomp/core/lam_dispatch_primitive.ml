@@ -224,7 +224,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   | "?int_of_string" (* what is the semantics?*)
   | "?int64_format" | "?int64_of_string" | "?format_int" ->
       call Js_runtime_modules.format
-  | "?obj_dup" -> call Js_runtime_modules.obj_runtime
   | "?obj_tag" -> (
       (* Note that in ocaml, [int] has tag [1000] and [string] has tag [252]
          also now we need do nullary check

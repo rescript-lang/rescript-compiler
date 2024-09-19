@@ -317,7 +317,7 @@ val seq : ?comment:string -> t -> t -> t
 
 val fuse_to_seq : t -> t list -> t
 
-val obj : ?comment:string -> J.property_map -> t
+val obj : ?comment:string -> ?dup:J.expression -> J.property_map -> t
 
 val true_ : t
 

@@ -251,7 +251,7 @@ let dummy_obj ?comment (info : Lam_tag_info.t) : t =
   match info with
   | Blk_record _ | Blk_module _ | Blk_constructor _ | Blk_record_inlined _
   | Blk_poly_var _ | Blk_extension | Blk_record_ext _ ->
-      { comment; expression_desc = Object [] }
+      { comment; expression_desc = Object (None, []) }
   | Blk_tuple | Blk_module_export _ ->
       { comment; expression_desc = Array ([], Mutable) }
   | Blk_some | Blk_some_not_nested | Blk_lazy_general -> assert false
@@ -563,8 +563,8 @@ let rec string_append ?comment (e : t) (el : t) : t =
       { (concat a b ~delim) with comment }
   | _, _ -> { comment; expression_desc = String_append (e, el) }
 
-let obj ?comment properties : t =
-  { expression_desc = Object properties; comment }
+let obj ?comment ?dup properties : t =
+  { expression_desc = Object (dup, properties); comment }
 
 let str_equal (txt0:string) (delim0:External_arg_spec.delim) txt1 delim1 =
   if delim0 = delim1 then

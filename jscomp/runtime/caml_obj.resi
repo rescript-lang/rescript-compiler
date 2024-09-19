@@ -24,8 +24,6 @@
 
 type t = Obj.t
 
-let obj_dup: Obj.t => Obj.t
-
 let update_dummy: (Obj.t, Obj.t) => unit
 
 let compare: (Obj.t, Obj.t) => int

@@ -48,7 +48,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
               (* more safe to check if arguments are constant *)
               (* non-observable side effect *)
               | "?sys_get_argv" (* should be fine *)
-              | "?string_repeat" | "?make_vect" | "?create_bytes" | "?obj_dup"
+              | "?string_repeat" | "?make_vect" | "?create_bytes"
               | "caml_array_dup" | "?nativeint_add" | "?nativeint_div"
               | "?nativeint_mod" | "?nativeint_lsr" | "?nativeint_mul" ),
               _ ) ->

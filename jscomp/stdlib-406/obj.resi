@@ -48,4 +48,4 @@ external field: (t, int) => t = "%obj_field"
     be propagated.
 */
 external set_field: (t, int, t) => unit = "%obj_set_field"
-external dup: t => t = "?obj_dup"
+external dup: t => t = "%obj_dup"
