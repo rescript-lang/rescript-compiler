@@ -82,9 +82,9 @@ let write_embeds ~extension_points ~module_filename ~output ast =
                    \  }" (escape extension_name) target_file_name
                    (escape contents)
                    (loc.Location.loc_start.pos_lnum |> string_of_int)
-                   (loc.loc_start.pos_cnum |> string_of_int)
+                   ((loc.loc_start.pos_cnum - loc.loc_start.pos_bol) |> string_of_int)
                    (loc.loc_end.pos_lnum |> string_of_int)
-                   (loc.loc_end.pos_cnum |> string_of_int))
+                   ((loc.loc_end.pos_cnum - loc.loc_end.pos_bol) |> string_of_int))
           |> String.concat ",\n")
         ^ "\n]"
       in
