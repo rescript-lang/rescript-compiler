@@ -159,7 +159,7 @@ and expression_desc =
      last step since "|0" can potentially be optimized
   *)
   | Number of number
-  | Object of property_map
+  | Object of expression option * property_map
   | Undefined of {is_unit: bool}
   | Null
   | Await of expression

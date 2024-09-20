@@ -35,6 +35,8 @@ val filter : 'a array -> ('a -> bool) -> 'a array
 
 val filter_map : 'a array -> ('a -> 'b option) -> 'b array
 
+val filter_mapi : 'a array -> (int -> 'a -> 'b option) -> 'b array
+
 val range : int -> int -> int array
 
 val map2i : (int -> 'a -> 'b -> 'c) -> 'a array -> 'b array -> 'c array

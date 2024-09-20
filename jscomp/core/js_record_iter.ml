@@ -132,7 +132,9 @@ let expression_desc : expression_desc fn =
       _self.expression _self _x2
   | Caml_block_tag (_x0, _tag) -> _self.expression _self _x0
   | Number _ -> ()
-  | Object _x0 -> property_map _self _x0
+  | Object (_x0, _x1) ->
+      option _self.expression _self _x0;
+      property_map _self _x1
   | Undefined _ -> ()
   | Null -> ()
   | Await _x0 -> _self.expression _self _x0

@@ -45,47 +45,6 @@ module O = {
   @get_index external get_value: (Obj.t, key) => Obj.t = ""
 }
 
-/**
-   Since now we change it back to use
-   Array representation
-   this function is higly dependent
-   on how objects are encoded in buckle.
-
-   There are potentially some issues with wrong implementation of
-   `obj_dup`, for example, people call `Obj.dup` for a record,
-   and new record, since currently, `new record` will generate a
-   `slice` function (which assume the record is an array), and the
-   output is no longer an array. (it might be  something like { 0 : x , 1 : y} )
-
-   {[
-     let u : record = Obj.dup x in
-     let h = {u with x = 3}
-   ]}
-
-   ==>
-
-   {[
-     var u = obj_dup (x)
-       var new_record = u.slice ()
-
-   ]}
-   `obj_dup` is a superset of `array_dup`
-*/
-let obj_dup: Obj.t => Obj.t = %raw(`function(x){
-  if(Array.isArray(x)){
-    var len = x.length  
-    var v = new Array(len)
-    for(var i = 0 ; i < len ; ++i){
-      v[i] = x[i]
-    }
-    if(x.TAG !== undefined){
-      v.TAG = x.TAG // TODO this can be removed eventually
-    }  
-    return v 
-  } 
-  return Object.assign({},x)    
-}`)
-
 /** 
    For the empty dummy object, whether it's 
    [[]] or [{}] depends on how 

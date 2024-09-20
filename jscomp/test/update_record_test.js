@@ -2,7 +2,6 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
 
 let suites = {
   contents: /* [] */0
@@ -32,7 +31,7 @@ function eq(loc, x, y) {
 }
 
 function f(x) {
-  let y = Caml_obj.obj_dup(x);
+  let y = {...x};
   return {
     a0: 1,
     a1: y.a1,

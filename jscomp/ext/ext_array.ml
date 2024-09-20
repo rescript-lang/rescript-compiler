@@ -80,6 +80,16 @@ let filter_map a (f : _ -> _ option) =
   in
   aux [] 0
 
+let filter_mapi a (f : _ -> _ -> _ option) =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len then reverse_of_list acc
+    else
+      let v = Array.unsafe_get a i in
+      match f i v with Some v -> aux (v :: acc) (i + 1) | None -> aux acc (i + 1)
+  in
+  aux [] 0
+
 let range from to_ =
   if from > to_ then invalid_arg "Ext_array.range"
   else Array.init (to_ - from + 1) (fun i -> i + from)

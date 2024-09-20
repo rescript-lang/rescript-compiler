@@ -18,7 +18,7 @@ function eq(loc, x, y) {
 }
 
 function f0(x) {
-  let newrecord = Caml_obj.obj_dup(x);
+  let newrecord = {...x};
   newrecord.x0 = 1;
   return newrecord;
 }
@@ -96,7 +96,7 @@ function f1(x) {
   if (typeof x !== "object") {
     return "A1";
   }
-  let newrecord = Caml_obj.obj_dup(x);
+  let newrecord = {...x};
   newrecord.x0 = 1;
   return newrecord;
 }
@@ -141,7 +141,7 @@ function f2(x) {
   if (x.TAG !== "A0") {
     return x;
   }
-  let newrecord = Caml_obj.obj_dup(x);
+  let newrecord = {...x};
   newrecord.x0 = 1;
   return newrecord;
 }
@@ -154,7 +154,7 @@ function f3(x) {
   if (x.RE_EXN_ID !== A0) {
     return x;
   }
-  let newrecord = Caml_obj.obj_dup(x);
+  let newrecord = {...x};
   newrecord.x0 = 1;
   return newrecord;
 }

@@ -109,7 +109,7 @@ let exn_block_as_obj ~(stack : bool) (el : J.expression list) (ext : J.tag_info)
     | _ -> assert false
   in
   Object
-    (if stack then
+    (None, if stack then
      Ext_list.mapi_append el
        (fun i e -> (Js_op.Lit (field_name i), e))
        [ (Js_op.Lit "Error", E.new_ (E.js_global "Error") []) ]
@@ -725,9 +725,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
         else E.runtime_call Js_runtime_modules.option "some" [ e ])
   | Caml_block (el, _, _, Blk_module fields) ->
       expression_desc cxt ~level f
-        (Object
+        (Object (None,
            (Ext_list.map_combine fields el (fun x ->
-                Js_op.Lit (Ext_ident.convert x))))
+                Js_op.Lit (Ext_ident.convert x)))))
   (*name convention of Record is slight different from modules*)
   | Caml_block (el, mutable_flag, _, Blk_record { fields; record_repr }) -> (
       if
@@ -738,7 +738,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
         match record_repr with
         | Record_regular ->
             expression_desc cxt ~level f
-              (Object (Ext_list.combine_array fields el (fun i -> Js_op.Lit i)))
+              (Object (None, Ext_list.combine_array fields el (fun i -> Js_op.Lit i)))
         | Record_optional ->
             let fields =
               Ext_list.array_list_filter_map fields el (fun f x ->
@@ -746,16 +746,16 @@ and expression_desc cxt ~(level : int) f x : cxt =
                   | Undefined _ -> None
                   | _ -> Some (Js_op.Lit f, x))
             in
-            expression_desc cxt ~level f (Object fields))
+            expression_desc cxt ~level f (Object (None, fields)))
   | Caml_block (el, _, _, Blk_poly_var _) -> (
       match el with
       | [ tag; value ] ->
           expression_desc cxt ~level f
-            (Object
+            (Object (None,
                [
                  (Js_op.Lit Literals.polyvar_hash, tag);
                  (Lit Literals.polyvar_value, value);
-               ])
+               ]))
       | _ -> assert false)
   | Caml_block (el, _, _, ((Blk_extension | Blk_record_ext _) as ext)) ->
       expression_desc cxt ~level f (exn_block_as_obj ~stack:false el ext)
@@ -793,7 +793,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
             | Some t -> E.tag_type t )
           :: tails
       in
-      expression_desc cxt ~level f (Object objs)
+      expression_desc cxt ~level f (Object (None, objs))
   | Caml_block (el, _, tag, Blk_constructor p) ->
       let not_is_cons = p.name <> Literals.cons in
       let tag_type = Ast_untagged_variants.process_tag_type p.attrs in
@@ -826,7 +826,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
         | [(_, e)] when untagged -> e.expression_desc
         | _ when untagged -> assert false (* should not happen *)
         (* TODO: put restriction on the variant definitions allowed, to make sure this never happens. *)
-        | _ -> J.Object objs in
+        | _ -> J.Object (None, objs) in
       expression_desc cxt ~level f exp
   | Caml_block
       ( _,
@@ -890,7 +890,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
         P.group f 1 (fun _ -> expression ~level:3 cxt f e2)
       in
       if level > 2 then P.paren_vgroup f 1 action else action ()
-  | Object lst ->
+  | Object (dup, lst) ->
       (* #1946 object literal is easy to be
          interpreted as block statement
          here we avoid parens in such case
@@ -899,11 +899,22 @@ and expression_desc cxt ~(level : int) f x : cxt =
          ]}
       *)
       P.cond_paren_group f (level > 1) (fun _ ->
-          if lst = [] then (
-            P.string f "{}";
-            cxt)
+          let dup_expression e =
+            expression ~level:1 cxt f { e with expression_desc = J.Spread e }
+          in
+          if lst = [] then
+            P.brace f (fun _ -> match dup with Some e -> dup_expression e | _ -> cxt)
           else
-            P.brace_vgroup f 1 (fun _ -> property_name_and_value_list cxt f lst))
+            P.brace_vgroup f 1 (fun _ ->
+              let cxt =
+                match dup with
+                | Some e ->
+                  let cxt = dup_expression e in
+                  comma_nl f;
+                  cxt
+                | _ -> cxt
+              in
+              property_name_and_value_list cxt f lst))
   | Await e ->
       P.cond_paren_group f (level > 13) (fun _ ->
           P.string f "await ";

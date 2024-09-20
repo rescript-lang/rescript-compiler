@@ -391,7 +391,10 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
           E.make_block E.zero_int_literal
             (Blk_constructor { name = "Other"; num_nonconst = 1; tag = 0; attrs = [] })
             [ E.str "BS" ] Immutable)
-  | Pduprecord -> Lam_dispatch_primitive.translate loc "?obj_dup" args
+  | Pduprecord -> (
+      match args with
+      | [ e1 ] -> E.obj ~dup:e1 []
+      | _ -> assert false)
   | Plazyforce
   (* FIXME: we don't inline lazy force or at least
      let buckle handle it

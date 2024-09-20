@@ -314,6 +314,7 @@ let primitives_table =
       (* Finish Triples for  ref data type *)
       ("%field0", Pfield (0, Fld_tuple));
       ("%field1", Pfield (1, Fld_tuple));
+      ("%obj_dup", Pduprecord);
       ("%obj_field", Parrayrefu);
       ("%obj_set_field", Parraysetu);
       ("%obj_is_int", Pisint);
