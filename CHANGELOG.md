@@ -10,6 +10,10 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 11.1.5 (Unreleased)
+
+- Deprecate JSX 3 https://github.com/rescript-lang/rescript-compiler/pull/7042
+
 # 11.1.4
 
 - Fix issue where long layout break added a trailing comma in partial application `...`. https://github.com/rescript-lang/rescript-compiler/pull/6949

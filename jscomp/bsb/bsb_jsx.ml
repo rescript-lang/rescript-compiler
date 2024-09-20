@@ -43,7 +43,13 @@ let from_map map =
            match m.?(Bsb_build_schemas.jsx_version) with
            | Some (Flo { loc; flo }) -> (
                match flo with
-               | "3" -> version := Some Jsx_v3
+               | "3" ->
+                  let loc_end =
+                    {loc with Lexing.pos_cnum = loc.Lexing.pos_cnum + 1}
+                  in
+                  let loc = {Warnings.loc_start = loc; loc_end; loc_ghost = false} in
+                  Location.deprecated loc "jsx 3 is deprecated, use jsx 4 instead";
+                  version := Some Jsx_v3
                | "4" -> version := Some Jsx_v4
                | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
                )
