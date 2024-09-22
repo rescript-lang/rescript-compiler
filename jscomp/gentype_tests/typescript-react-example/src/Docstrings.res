@@ -10,7 +10,7 @@ let flat = 34
   * @returns A signed message
   */
 @genType
-let signMessage = (. message, key) => message ++ string_of_int(key)
+let signMessage = (. message, key) => message ++ Belt.Int.toString(key)
 
 @genType let one = a => a + 0
 

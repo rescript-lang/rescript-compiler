@@ -3,7 +3,7 @@ type t<+'a>
 
 @ocaml.doc(" Redefine the [_] syntax, and disable the assignment [_] = _. ")
 module Array: {
-  let get: (t<'a>, int) => option<'a>
+  let get: (t<'a>, int) => 'a
 }
 
 @ocaml.doc(" Converting from/to normal arrays involves making a copy. ")
@@ -16,7 +16,7 @@ let length: t<'a> => int
 
 let size: t<'a> => int
 
-let get: (t<'a>, int) => option<'a>
+let get: (t<'a>, int) => 'a
 
 let getExn: (t<'a>, int) => 'a
 

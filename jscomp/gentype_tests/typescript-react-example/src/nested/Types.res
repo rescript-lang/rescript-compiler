@@ -4,7 +4,7 @@
 
 @genType let someIntList = list{1, 2, 3}
 
-@genType let map = List.map
+@genType let map = Belt.List.map
 
 @genType
 type typeWithVars<'x, 'y, 'z> =
@@ -125,12 +125,6 @@ type vector<'a> = ('a, 'a)
 @genType type date = Js.Date.t
 
 @genType let currentTime = Js.Date.make()
-
-@genType type i64A = Int64.t
-
-@genType type i64B = int64
-
-@genType let i64Const: i64B = 34L
 
 @genType let optFunction = Some(() => 3)
 

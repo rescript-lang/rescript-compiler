@@ -9,7 +9,7 @@ let make = (~vehicle) => {
   <div>
     <p>
       {React.string(
-        "Hooks example " ++ (vehicle.name ++ (" clicked " ++ (string_of_int(count) ++ " times"))),
+        "Hooks example " ++ (vehicle.name ++ (" clicked " ++ (Belt.Int.toString(count) ++ " times"))),
       )}
     </p>
     <button onClick={_ => setCount(_ => count + 1)}> {React.string("Click me")} </button>

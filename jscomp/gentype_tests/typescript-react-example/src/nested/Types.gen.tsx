@@ -7,6 +7,8 @@ import * as TypesJS from './Types.res.js';
 
 import type {Json_t as Js_Json_t} from '../../src/shims/Js.shim';
 
+import type {List_t as Belt_List_t} from '../../src/shims/Belt.shim';
+
 import type {M_t__ as TypeNameSanitize_M_t__} from '../../src/TypeNameSanitize.gen';
 
 import type {list} from '../../src/shims/RescriptPervasives.shim';
@@ -74,17 +76,13 @@ export type Vector<a> = vector<a>;
 
 export type date = Date;
 
-export type i64A = [number, number];
-
-export type i64B = [number, number];
-
 export type ObjectId_t = number;
 
 export type tPrimed = [TypeNameSanitize_t_, TypeNameSanitize_M_t__];
 
 export const someIntList: list<number> = TypesJS.someIntList as any;
 
-export const map: <T1,T2>(_1:((_1:T1) => T2), _2:list<T1>) => list<T2> = TypesJS.map as any;
+export const map: <T1,T2>(_1:Belt_List_t<T1>, _2:((_1:T1) => T2)) => Belt_List_t<T2> = TypesJS.map as any;
 
 export const swap: (tree:tree) => tree = TypesJS.swap as any;
 
@@ -113,7 +111,5 @@ export const setMatch: (x:marshalMutableField) => void = TypesJS.setMatch as any
 export const testInstantiateTypeParameter: (x:instantiateTypeParameter) => instantiateTypeParameter = TypesJS.testInstantiateTypeParameter as any;
 
 export const currentTime: Date = TypesJS.currentTime as any;
-
-export const i64Const: i64B = TypesJS.i64Const as any;
 
 export const optFunction: (undefined | (() => number)) = TypesJS.optFunction as any;

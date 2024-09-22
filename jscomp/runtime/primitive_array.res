@@ -1,19 +1,15 @@
-@get external length: array<'a> => int = "length"
-
-@get_index external get: (array<'a>, int) => 'a = ""
+let length = Primitive_array_extern.length
 
 let get = (xs, index) =>
   if index < 0 || index >= length(xs) {
     raise(Invalid_argument("index out of bounds"))
   } else {
-    xs->get(index)
+    xs->Primitive_array_extern.getUnsafe(index)
   }
-
-@set_index external set: (array<'a>, int, 'a) => unit = ""
 
 let set = (xs, index, newval) =>
   if index < 0 || index >= length(xs) {
     raise(Invalid_argument("index out of bounds"))
   } else {
-    xs->set(index, newval)
+    xs->Primitive_array_extern.setUnsafe(index, newval)
   }

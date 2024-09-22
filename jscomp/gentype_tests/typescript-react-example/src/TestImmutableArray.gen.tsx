@@ -5,4 +5,4 @@
 
 import * as TestImmutableArrayJS from './TestImmutableArray.res.js';
 
-export const testImmutableArrayGet: <T1>(arr:ReadonlyArray<T1>) => (undefined | T1) = TestImmutableArrayJS.testImmutableArrayGet as any;
+export const testImmutableArrayGet: <T1>(arr:T1[]) => T1 = TestImmutableArrayJS.testImmutableArrayGet as any;
