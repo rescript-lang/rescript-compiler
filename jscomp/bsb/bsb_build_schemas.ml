@@ -66,5 +66,3 @@ let suffix = "suffix"
 let gentypeconfig = "gentypeconfig"
 let language = "language"
 let ignored_dirs = "ignored-dirs"
-
-let uncurried = "uncurried"

@@ -89,7 +89,7 @@ type builtin = {
 let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     ~(has_postbuild : string option) ~(pp_file : string option)
     ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
-    ~(jsx : Bsb_jsx.t) ~(uncurried: bool)  ~(digest : string) ~(package_specs : Bsb_package_specs.t)
+    ~(jsx : Bsb_jsx.t) ~(digest : string) ~(package_specs : Bsb_package_specs.t)
     ~(namespace : string option) ~package_name ~warnings
     ~(ppx_files : Bsb_config_types.ppx list) ~bsc_flags ~(dpkg_incls : string)
     ~(lib_incls : string) ~(dev_incls : string) ~bs_dependencies
@@ -100,8 +100,6 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in
   let ns_flag = match namespace with None -> "" | Some n -> " -bs-ns " ^ n in
-  let add_uncurried_flag b =
-    if b then Ext_buffer.add_string buf " -uncurried" in
   let mk_ml_cmj_cmd ~(read_cmi : [ `yes | `is_cmi | `no ]) ~is_dev ~postbuild :
       string =
     Ext_buffer.clear buf;
@@ -120,7 +118,6 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     (match gentype_config with
     | false -> ()
     | true -> Ext_buffer.add_string buf " -bs-gentype");
-    add_uncurried_flag uncurried;
     if read_cmi <> `is_cmi then (
       Ext_buffer.add_string buf " -bs-package-name ";
       Ext_buffer.add_string buf (Ext_filename.maybe_quote package_name);
@@ -172,7 +169,6 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     | None -> ()
     | Some Classic -> Ext_buffer.add_string buf " -bs-jsx-mode classic"
     | Some Automatic -> Ext_buffer.add_string buf " -bs-jsx-mode automatic");
-    add_uncurried_flag uncurried;
 
     Ext_buffer.add_char_string buf ' ' bsc_flags;
     Ext_buffer.add_string buf " -absname -bs-ast -o $out $i";
