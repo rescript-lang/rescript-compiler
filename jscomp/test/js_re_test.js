@@ -37,9 +37,9 @@ let suites_1 = {
     "fromString",
     param => {
       let contentOf = (tag, xmlString) => {
-        let x = Primitive_option.null_to_opt(new RegExp("<" + (tag + (">(.*?)<\\/" + (tag + ">")))).exec(xmlString));
+        let x = Primitive_option.fromNull(new RegExp("<" + (tag + (">(.*?)<\\/" + (tag + ">")))).exec(xmlString));
         if (x !== undefined) {
-          return Primitive_option.nullable_to_opt(Primitive_array.get(Primitive_option.valFromOption(x), 1));
+          return Primitive_option.fromNullable(Primitive_array.get(Primitive_option.valFromOption(x), 1));
         }
         
       };

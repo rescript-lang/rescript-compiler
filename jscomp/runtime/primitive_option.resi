@@ -24,11 +24,11 @@
 
 type nested = {@as("BS_PRIVATE_NESTED_SOME_NONE") depth: int}
 
-let nullable_to_opt: Js.null_undefined<'a> => option<'a>
+let fromNullable: Js.null_undefined<'a> => option<'a>
 
-let undefined_to_opt: Js.undefined<'a> => option<'a>
+let fromUndefined: Js.undefined<'a> => option<'a>
 
-let null_to_opt: Js.null<'a> => option<'a>
+let fromNull: Js.null<'a> => option<'a>
 
 let valFromOption: Primitive_object_extern.t => Primitive_object_extern.t
 
@@ -36,13 +36,11 @@ let some: Primitive_object_extern.t => Primitive_object_extern.t
 
 let isNested: Primitive_object_extern.t => bool
 
-let option_get: option<Primitive_object_extern.t> => Caml_undefined_extern.t<
-  Primitive_object_extern.t,
->
+let toUndefined: option<Primitive_object_extern.t> => Js.undefined<Primitive_object_extern.t>
 
 type poly
 
-/** When it is None, return none
-    When it is (Some (`a 3)) return 3
+/** When it is None, return None
+    When it is Some (#a(3)) return 3
 */
-let option_unwrap: option<poly> => Primitive_object_extern.t
+let unwrapPolyVar: option<poly> => Primitive_object_extern.t

@@ -19,7 +19,6 @@ external __unsafe_cast: 'a => 'b = "%identity"
 /* Exceptions */
 
 external raise: exn => 'a = "%raise"
-external raise_notrace: exn => 'a = "%raise_notrace"
 
 let failwith = s => raise(Failure(s))
 let invalid_arg = s => raise(Invalid_argument(s))
@@ -108,13 +107,11 @@ external \"/.": (float, float) => float = "%divfloat"
 
 @val @scope("Math") external \"**": (float, float) => float = "pow"
 @val @scope("Math") external exp: float => float = "exp"
-external expm1: float => float = "?expm1_float"
 
 @val @scope("Math") external acos: float => float = "acos"
 @val @scope("Math") external asin: float => float = "asin"
 @val @scope("Math") external atan: float => float = "atan"
 @val @scope("Math") external atan2: (float, float) => float = "atan2"
-external hypot: (float, float) => float = "?hypot_float"
 
 @val @scope("Math") external cos: float => float = "cos"
 @val @scope("Math") external cosh: float => float = "cosh"
@@ -129,11 +126,6 @@ external hypot: (float, float) => float = "?hypot_float"
 @val @scope("Math") external ceil: float => float = "ceil"
 @val @scope("Math") external floor: float => float = "floor"
 @val @scope("Math") external abs_float: float => float = "abs"
-external copysign: (float, float) => float = "?copysign_float"
-external mod_float: (float, float) => float = "?fmod_float"
-external frexp: float => (float, int) = "?frexp_float"
-external ldexp: (float, int) => float = "?ldexp_float"
-external modf: float => (float, float) = "?modf_float"
 external float: int => float = "%floatofint"
 external float_of_int: int => float = "%floatofint"
 external truncate: float => int = "%intoffloat"

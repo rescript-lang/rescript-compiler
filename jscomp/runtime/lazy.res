@@ -1,3 +1,7 @@
+// FIXME:
+//   This exists for compatibility reason.
+//   Move this into Pervasives or Core
+
 type t<'a> = lazy_t<'a>
 
 exception Undefined = Primitive_lazy.Undefined

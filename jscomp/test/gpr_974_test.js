@@ -4,7 +4,7 @@
 let Primitive_object = require("../../lib/js/primitive_object.js");
 let Primitive_option = require("../../lib/js/primitive_option.js");
 
-if (!Primitive_object.equal(Primitive_option.nullable_to_opt(""), "")) {
+if (!Primitive_object.equal(Primitive_option.fromNullable(""), "")) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -16,7 +16,7 @@ if (!Primitive_object.equal(Primitive_option.nullable_to_opt(""), "")) {
   };
 }
 
-if (!Primitive_object.equal(Primitive_option.undefined_to_opt(""), "")) {
+if (!Primitive_object.equal(Primitive_option.fromUndefined(""), "")) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
@@ -28,7 +28,7 @@ if (!Primitive_object.equal(Primitive_option.undefined_to_opt(""), "")) {
   };
 }
 
-if (!Primitive_object.equal(Primitive_option.null_to_opt(""), "")) {
+if (!Primitive_object.equal(Primitive_option.fromNull(""), "")) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [

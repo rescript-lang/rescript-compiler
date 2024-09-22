@@ -51,7 +51,7 @@ function f_escaped_1(xs, i) {
 }
 
 function f_escaped_2(xs, i) {
-  console.log(Primitive_option.undefined_to_opt(xs[i]));
+  console.log(Primitive_option.fromUndefined(xs[i]));
 }
 
 function f_null(xs, i) {

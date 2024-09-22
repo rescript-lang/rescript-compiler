@@ -78,7 +78,7 @@ let get_default_undefined_from_optional (arg : J.expression) : J.expression =
         if Js_analyzer.is_okay_to_duplicate arg then
           (* FIXME: no need do such inlining*)
           E.econd (is_not_none arg) (val_from_option arg) E.undefined
-        else E.runtime_call Js_runtime_modules.option "option_get" [ arg ]
+        else E.runtime_call Js_runtime_modules.option "toUndefined" [ arg ]
 
 let option_unwrap (arg : J.expression) : J.expression =
   let desc = arg.expression_desc in
@@ -87,7 +87,7 @@ let option_unwrap (arg : J.expression) : J.expression =
     match desc with
     | Optional_block (x, _) -> E.poly_var_value_access x
     (* invariant: option encoding *)
-    | _ -> E.runtime_call Js_runtime_modules.option "option_unwrap" [ arg ]
+    | _ -> E.runtime_call Js_runtime_modules.option "unwrapPolyVar" [ arg ]
 
 let destruct_optional ~for_sure_none ~for_sure_some ~not_sure
     (arg : J.expression) =

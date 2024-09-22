@@ -10,19 +10,15 @@ function l(prim) {
 
 let C$p = Char;
 
-let prim = Char.chr(66);
+console.log(66);
 
-console.log(prim);
-
-let prim$1 = Char.chr(66);
-
-console.log(prim$1);
+console.log(66);
 
 let C3 = Char;
 
-let prim$2 = Char.chr(66);
+let prim = 66;
 
-console.log(prim$2);
+console.log(prim);
 
 let f = Belt_List.length;
 
@@ -36,9 +32,9 @@ function F(X) {
 
 let C4 = Char;
 
-let prim$3 = Char.chr(66);
+let prim$1 = 66;
 
-console.log(prim$3);
+console.log(prim$1);
 
 function G(X) {
   return X;
@@ -150,17 +146,17 @@ let M9 = {
   C$p: C$p$1
 };
 
-let prim$4 = Char.chr(66);
+let prim$2 = Char.chr(66);
 
-console.log(prim$4);
+console.log(prim$2);
 
 let M10 = {
   C$p: Char
 };
 
-let prim$5 = M10.C$p.chr(66);
+let prim$3 = M10.C$p.chr(66);
 
-console.log(prim$5);
+console.log(prim$3);
 
 let C;
 
@@ -209,4 +205,4 @@ exports.M7 = M7;
 exports.M8 = M8;
 exports.M9 = M9;
 exports.M10 = M10;
-/* prim Not a pure module */
+/*  Not a pure module */

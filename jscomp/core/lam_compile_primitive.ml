@@ -96,7 +96,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       | [ e ] -> (
           match e.expression_desc with
           | Var _ | Undefined _ | Null -> Js_of_lam_option.null_to_opt e
-          | _ -> E.runtime_call Js_runtime_modules.option "null_to_opt" args)
+          | _ -> E.runtime_call Js_runtime_modules.option "fromNull" args)
       | _ -> assert false)
   | Pundefined_to_opt -> (
       match args with
@@ -104,14 +104,14 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
           match e.expression_desc with
           | Var _ | Undefined _ | Null -> Js_of_lam_option.undef_to_opt e
           | _ ->
-              E.runtime_call Js_runtime_modules.option "undefined_to_opt" args)
+              E.runtime_call Js_runtime_modules.option "fromUndefined" args)
       | _ -> assert false)
   | Pnull_undefined_to_opt -> (
       match args with
       | [ e ] -> (
           match e.expression_desc with
           | Var _ | Undefined _ | Null -> Js_of_lam_option.null_undef_to_opt e
-          | _ -> E.runtime_call Js_runtime_modules.option "nullable_to_opt" args
+          | _ -> E.runtime_call Js_runtime_modules.option "fromNullable" args
           )
       | _ -> assert false)
   (* Compile %import: The module argument for dynamic import is represented as a path,
@@ -299,15 +299,9 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       | [ range; e ] -> E.is_out (E.offset e off) range
       | _ -> assert false)
   | Pstringlength -> E.string_length (Ext_list.singleton_exn args)
-  | Pstringrefs -> E.runtime_call Js_runtime_modules.string "get" args
-  (* For bytes and string, they both return [int] in ocaml
-      we need tell Pbyteref from Pstringref
-      1. Pbyteref -> a[i]
-      2. Pstringref -> a.charCodeAt (a[i] is wrong)
-  *)
-  | Pstringrefu -> (
+  | Pstringrefs | Pstringrefu -> (
       match args with
-      | [ e; e1 ] -> Js_of_lam_string.ref_string e e1
+      | [ e; e1 ] -> E.runtime_call Js_runtime_modules.string "getChar" args
       | _ -> assert false)
   (* polymorphic operations *)
   | Pobjcomp cmp -> (

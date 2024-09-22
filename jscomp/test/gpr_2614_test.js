@@ -41,7 +41,7 @@ let h2 = {
 
 function hh(x) {
   x["lo-x"] = "3";
-  return Primitive_option.undefined_to_opt(x["lo-x"]);
+  return Primitive_option.fromUndefined(x["lo-x"]);
 }
 
 function hh2(x) {

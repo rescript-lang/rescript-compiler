@@ -87,11 +87,11 @@ let XX = {
 
 let u = [$$String];
 
-Primitive_array.get(u, 0);
+let $$String$1 = Primitive_array.get(u, 0);
 
-let hh = "x".length;
+let hh = $$String$1.length("x");
 
 exports.XX = XX;
 exports.u = u;
 exports.hh = hh;
-/*  Not a pure module */
+/* String Not a pure module */

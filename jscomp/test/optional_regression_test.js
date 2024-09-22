@@ -36,11 +36,11 @@ let hh = {
   i: 0
 };
 
-eq("File \"optional_regression_test.res\", line 16, characters 3-10", Primitive_option.undefined_to_opt(hh.s), "");
+eq("File \"optional_regression_test.res\", line 16, characters 3-10", Primitive_option.fromUndefined(hh.s), "");
 
-eq("File \"optional_regression_test.res\", line 17, characters 3-10", Primitive_option.undefined_to_opt(hh.b), false);
+eq("File \"optional_regression_test.res\", line 17, characters 3-10", Primitive_option.fromUndefined(hh.b), false);
 
-eq("File \"optional_regression_test.res\", line 18, characters 3-10", Primitive_option.undefined_to_opt(hh.i), 0);
+eq("File \"optional_regression_test.res\", line 18, characters 3-10", Primitive_option.fromUndefined(hh.i), 0);
 
 console.log(hh);
 

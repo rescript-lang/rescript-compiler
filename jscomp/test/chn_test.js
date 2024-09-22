@@ -3,7 +3,6 @@
 
 let Mt = require("./mt.js");
 let Belt_List = require("../../lib/js/belt_List.js");
-let Primitive_string = require("../../lib/js/primitive_string.js");
 
 let suites = {
   contents: /* [] */0
@@ -184,9 +183,9 @@ eq("File \"chn_test.res\", line 70, characters 5-12", convert("\uD83D\uDE80\uD83
 
 eq("No inline string length", "\uD83D\uDE80\0".length, 3);
 
-eq("File \"chn_test.res\", line 77, characters 4-11", Primitive_string.get("\uD83D\uDE80\0", 0), 128640);
+eq("File \"chn_test.res\", line 77, characters 4-11", "\uD83D\uDE80\0".codePointAt(0), 128640);
 
-eq("File \"chn_test.res\", line 82, characters 5-12", Primitive_string.get("🚀", 0), 128640);
+eq("File \"chn_test.res\", line 82, characters 5-12", "🚀".codePointAt(0), 128640);
 
 eq("File \"chn_test.res\", line 87, characters 5-12", convert("\uD83D\uDE80"), {
   hd: 128640,

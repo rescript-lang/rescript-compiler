@@ -41,21 +41,21 @@ let some = (x: Obj.t): Obj.t =>
     x
   }
 
-let nullable_to_opt = (type t, x: Js.nullable<t>): option<t> =>
+let fromNullable = (type t, x: Js.nullable<t>): option<t> =>
   if Js.isNullable(x) {
     None
   } else {
     Obj.magic(some((Obj.magic(x): 'a)))
   }
 
-let undefined_to_opt = (type t, x: Js.undefined<t>): option<t> =>
+let fromUndefined = (type t, x: Js.undefined<t>): option<t> =>
   if Obj.magic(x) === Js.undefined {
     None
   } else {
     Obj.magic(some((Obj.magic(x): 'a)))
   }
 
-let null_to_opt = (type t, x: Js.null<t>): option<t> =>
+let fromNull = (type t, x: Js.null<t>): option<t> =>
   if Obj.magic(x) === Js.null {
     None
   } else {
@@ -79,20 +79,17 @@ let valFromOption = (x: Obj.t): Obj.t =>
     Obj.magic(x)
   }
 
-let option_get = (x: option<'a>) =>
+let toUndefined = (x: option<'a>) =>
   if x == None {
-    Caml_undefined_extern.empty
+    Js.undefined
   } else {
     Obj.magic(valFromOption(Obj.repr(x)))
   }
 
-type poly = {
-  @as("HASH") hash: int /* Literals.polyvar_hash */,
-  @as("VAL") value: Obj.t,
-}
+type poly = {@as("VAL") value: Obj.t}
 
 /** [input] is optional polymorphic variant */
-let option_unwrap = (x: option<poly>) =>
+let unwrapPolyVar = (x: option<poly>) =>
   switch x {
   | None => Obj.repr(x)
   | Some(x) => x.value

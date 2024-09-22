@@ -50,8 +50,6 @@ let hash = "Primitive_hash"
 
 let deriving = "Runtime_deriving"
 
-let astExtensions = "Runtime_ast_extensions"
-
 let exceptions = "Caml_exceptions"
 
 let curry = "Curry"

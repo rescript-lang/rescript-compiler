@@ -155,7 +155,7 @@ let suites_1 = {
                     param => ({
                       TAG: "Eq",
                       _0: 3,
-                      _1: Primitive_option.undefined_to_opt([
+                      _1: Primitive_option.fromUndefined([
                         1,
                         2,
                         3
@@ -168,7 +168,7 @@ let suites_1 = {
                       param => ({
                         TAG: "Eq",
                         _0: undefined,
-                        _1: Primitive_option.undefined_to_opt([].pop())
+                        _1: Primitive_option.fromUndefined([].pop())
                       })
                     ],
                     tl: {
@@ -220,7 +220,7 @@ let suites_1 = {
                               param => ({
                                 TAG: "Eq",
                                 _0: 1,
-                                _1: Primitive_option.undefined_to_opt([
+                                _1: Primitive_option.fromUndefined([
                                   1,
                                   2,
                                   3
@@ -233,7 +233,7 @@ let suites_1 = {
                                 param => ({
                                   TAG: "Eq",
                                   _0: undefined,
-                                  _1: Primitive_option.undefined_to_opt([].shift())
+                                  _1: Primitive_option.fromUndefined([].shift())
                                 })
                               ],
                               tl: {
@@ -694,7 +694,7 @@ let suites_1 = {
                                                                                       param => ({
                                                                                         TAG: "Eq",
                                                                                         _0: 2,
-                                                                                        _1: Primitive_option.undefined_to_opt([
+                                                                                        _1: Primitive_option.fromUndefined([
                                                                                           1,
                                                                                           2,
                                                                                           3,
@@ -708,7 +708,7 @@ let suites_1 = {
                                                                                         param => ({
                                                                                           TAG: "Eq",
                                                                                           _0: undefined,
-                                                                                          _1: Primitive_option.undefined_to_opt([
+                                                                                          _1: Primitive_option.fromUndefined([
                                                                                             1,
                                                                                             2,
                                                                                             3,
@@ -722,7 +722,7 @@ let suites_1 = {
                                                                                           param => ({
                                                                                             TAG: "Eq",
                                                                                             _0: 1,
-                                                                                            _1: Primitive_option.undefined_to_opt([
+                                                                                            _1: Primitive_option.fromUndefined([
                                                                                               1,
                                                                                               2,
                                                                                               3,
@@ -736,7 +736,7 @@ let suites_1 = {
                                                                                             param => ({
                                                                                               TAG: "Eq",
                                                                                               _0: undefined,
-                                                                                              _1: Primitive_option.undefined_to_opt([
+                                                                                              _1: Primitive_option.fromUndefined([
                                                                                                 1,
                                                                                                 2,
                                                                                                 3,

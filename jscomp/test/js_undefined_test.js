@@ -29,7 +29,7 @@ let suites_1 = {
       param => ({
         TAG: "Eq",
         _0: "something",
-        _1: Primitive_option.undefined_to_opt("something")
+        _1: Primitive_option.fromUndefined("something")
       })
     ],
     tl: {

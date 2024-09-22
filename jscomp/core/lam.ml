@@ -462,6 +462,7 @@ module Lift = struct
   let bool b = if b then true_ else false_
 
   let string s : t = Lconst (Const_string { s; unicode = false })
+
   let char b : t = Lconst (Const_char b)
 end
 

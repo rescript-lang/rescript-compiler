@@ -216,8 +216,6 @@ let primitives_table =
       ("%obj_set_field", Parraysetu);
 
       ("%raise", Praise Raise_regular);
-      ("%reraise", Praise Raise_reraise);
-      ("%raise_notrace", Praise Raise_notrace);
 
       (* bool primitives *)
       ("%sequand", Psequand);

@@ -3,7 +3,6 @@
 
 let Lazy = require("../../lib/js/lazy.js");
 let Primitive_array = require("../../lib/js/primitive_array.js");
-let Primitive_string = require("../../lib/js/primitive_string.js");
 
 function a4(prim) {
   return [
@@ -42,7 +41,7 @@ let v = [
 
 let xxx = "a";
 
-let a = Primitive_string.get(xxx, 0);
+let a = xxx.codePointAt(0);
 
 function u(b) {
   if (b) {

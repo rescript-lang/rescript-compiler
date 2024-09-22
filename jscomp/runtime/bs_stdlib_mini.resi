@@ -51,7 +51,7 @@ external \"*.": (float, float) => float = "%mulfloat"
 external \"/.": (float, float) => float = "%divfloat"
 
 module Obj: {
-  type t
+  type t /* FIXME: Primitive_object.t */
   external field: (t, int) => t = "%obj_field"
   external tag: t => int = "%obj_tag"
   external repr: 'a => t = "%identity"

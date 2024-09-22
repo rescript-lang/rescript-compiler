@@ -25,7 +25,7 @@
 /*** Extension to standard library [Pervavives] module, safe to open 
 */
 
-external reraise: exn => 'a = "%reraise"
+external reraise: exn => 'a = "%raise"
 
 let finally: ('a, 'a => 'c, 'a => 'b) => 'b
 

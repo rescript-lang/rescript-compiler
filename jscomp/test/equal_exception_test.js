@@ -4,13 +4,12 @@
 let Mt = require("./mt.js");
 let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Primitive_object = require("../../lib/js/primitive_object.js");
-let Primitive_string = require("../../lib/js/primitive_string.js");
 let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 let v = "gso";
 
 function is_equal() {
-  if (Primitive_string.get(v, 0) === /* 'g' */103) {
+  if (v.codePointAt(0) === /* 'g' */103) {
     return;
   }
   throw {

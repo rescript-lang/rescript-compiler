@@ -38,7 +38,7 @@ let suites_1 = {
         param => ({
           TAG: "Eq",
           _0: "foo",
-          _1: Primitive_option.nullable_to_opt("foo")
+          _1: Primitive_option.fromNullable("foo")
         })
       ],
       tl: {
@@ -47,7 +47,7 @@ let suites_1 = {
           param => ({
             TAG: "Eq",
             _0: "something",
-            _1: Primitive_option.nullable_to_opt("something")
+            _1: Primitive_option.fromNullable("something")
           })
         ],
         tl: {

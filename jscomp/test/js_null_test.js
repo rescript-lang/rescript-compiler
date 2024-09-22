@@ -29,7 +29,7 @@ let suites_1 = {
       param => ({
         TAG: "Eq",
         _0: "something",
-        _1: Primitive_option.null_to_opt("something")
+        _1: Primitive_option.fromNull("something")
       })
     ],
     tl: {

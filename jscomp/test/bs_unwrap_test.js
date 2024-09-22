@@ -44,14 +44,14 @@ let some_arg = {
   VAL: true
 };
 
-console.log(5, Primitive_option.option_unwrap(some_arg));
+console.log(5, Primitive_option.unwrapPolyVar(some_arg));
 
 console.log(6, undefined);
 
-console.log(7, Primitive_option.option_unwrap((console.log("trace"), undefined)));
+console.log(7, Primitive_option.unwrapPolyVar((console.log("trace"), undefined)));
 
 function dyn_log3(prim0, prim1, prim2) {
-  console.log(prim0.VAL, Primitive_option.option_unwrap(prim1));
+  console.log(prim0.VAL, Primitive_option.unwrapPolyVar(prim1));
 }
 
 dyn_log3({
@@ -81,11 +81,11 @@ function f(x) {
 }
 
 function ff0(x, p) {
-  console.log(Primitive_option.option_unwrap(x), p);
+  console.log(Primitive_option.unwrapPolyVar(x), p);
 }
 
 function ff1(x, p) {
-  console.log(Primitive_option.option_unwrap(x()), p);
+  console.log(Primitive_option.unwrapPolyVar(x()), p);
 }
 
 function test00() {

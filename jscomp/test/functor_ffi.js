@@ -4,14 +4,14 @@
 let Primitive_option = require("../../lib/js/primitive_option.js");
 
 function Make(S) {
-  let opt_get = (f, i) => Primitive_option.undefined_to_opt(f[i]);
+  let opt_get = (f, i) => Primitive_option.fromUndefined(f[i]);
   return {
     opt_get: opt_get
   };
 }
 
 function opt_get(f, i) {
-  return Primitive_option.undefined_to_opt(f[i]);
+  return Primitive_option.fromUndefined(f[i]);
 }
 
 let Int_arr = {
@@ -21,7 +21,7 @@ let Int_arr = {
 function f(v) {
   return [
     v[0],
-    Primitive_option.undefined_to_opt(v[1])
+    Primitive_option.fromUndefined(v[1])
   ];
 }
 

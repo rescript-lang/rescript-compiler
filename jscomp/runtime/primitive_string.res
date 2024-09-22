@@ -21,14 +21,13 @@ let max = (x: string, y: string): string =>
     y
   }
 
-// TODO: delete
-let get = (s, i) =>
+let getChar = (s, i) =>
   if i >= Primitive_string_extern.length(s) || i < 0 {
     raise(Invalid_argument("index out of bounds"))
   } else {
-    Primitive_string_extern.unsafe_get(s, i)
+    Primitive_string_extern.getChar(s, i)
   }
 
 // TODO: delete
 let make = (n, ch: char): string =>
-  Primitive_string_extern.of_char(ch)->Primitive_string_extern.repeat(n)
+  Primitive_string_extern.fromChar(ch)->Primitive_string_extern.repeat(n)

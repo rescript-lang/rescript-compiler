@@ -64,7 +64,7 @@ function bug_to_fix(f, x) {
 }
 
 function bug_to_fix2(f, x) {
-  return hey(Primitive_option.option_get(f(x)), 3);
+  return hey(Primitive_option.toUndefined(f(x)), 3);
 }
 
 let counter2 = {

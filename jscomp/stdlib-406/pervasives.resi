@@ -31,11 +31,6 @@ external __unsafe_cast: 'a => 'b = "%identity"
 /** Raise the given exception value */
 external raise: exn => 'a = "%raise"
 
-/** A faster version [raise] which does not record the backtrace.
-    @since 4.02.0
-*/
-external raise_notrace: exn => 'a = "%raise_notrace"
-
 /** Raise exception [Invalid_argument] with the given string. */
 let invalid_arg: string => 'a
 
@@ -382,12 +377,6 @@ external log: float => float = "log"
 @val @scope("Math") /** Base 10 logarithm. */
 external log10: float => float = "log10"
 
-/** [expm1 x] computes [exp x -. 1.0], giving numerically-accurate results
-    even if [x] is close to [0.0].
-    @since 3.12.0
-*/
-external expm1: float => float = "?expm1_float"
-
 @val
 @scope("Math")
 /** [log1p x] computes [log(1.0 +. x)] (natural logarithm),
@@ -428,13 +417,6 @@ external atan: float => float = "atan"
     Result is in radians and is between [-pi] and [pi]. */
 external atan2: (float, float) => float = "atan2"
 
-/** [hypot x y] returns [sqrt(x *. x + y *. y)], that is, the length
-  of the hypotenuse of a right-angled triangle with sides of length
-  [x] and [y], or, equivalently, the distance of the point [(x,y)]
-  to origin.
-  @since 4.00.0  */
-external hypot: (float, float) => float = "?hypot_float"
-
 @val @scope("Math") /** Hyperbolic cosine.  Argument is in radians. */
 external cosh: float => float = "cosh"
 
@@ -461,32 +443,6 @@ external floor: float => float = "floor"
 
 @val @scope("Math") /** [abs_float f] returns the absolute value of [f]. */
 external abs_float: float => float = "abs"
-
-/** [copysign x y] returns a float whose absolute value is that of [x]
-  and whose sign is that of [y].  If [x] is [nan], returns [nan].
-  If [y] is [nan], returns either [x] or [-. x], but it is not
-  specified which.
-  @since 4.00.0  */
-external copysign: (float, float) => float = "?copysign_float"
-
-/** [mod_float a b] returns the remainder of [a] with respect to
-   [b].  The returned value is [a -. n *. b], where [n]
-   is the quotient [a /. b] rounded towards zero to an integer. */
-external mod_float: (float, float) => float = "?fmod_float"
-
-/** [frexp f] returns the pair of the significant
-   and the exponent of [f].  When [f] is zero, the
-   significant [x] and the exponent [n] of [f] are equal to
-   zero.  When [f] is non-zero, they are defined by
-   [f = x *. 2 ** n] and [0.5 <= x < 1.0]. */
-external frexp: float => (float, int) = "?frexp_float"
-
-/** [ldexp x n] returns [x *. 2 ** n]. */
-external ldexp: (float, int) => float = "?ldexp_float"
-
-/** [modf f] returns the pair of the fractional and integral
-   part of [f]. */
-external modf: float => (float, float) = "?modf_float"
 
 /** Same as {!Pervasives.float_of_int}. */
 external float: int => float = "%floatofint"

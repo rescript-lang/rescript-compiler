@@ -212,7 +212,7 @@ let suites_1 = {
                                                   "na",
                                                   "na"
                                                 ],
-                                                _1: Primitive_option.null_to_opt("banana".match(/na+/g))
+                                                _1: Primitive_option.fromNull("banana".match(/na+/g))
                                               })
                                             ],
                                             tl: {
@@ -221,7 +221,7 @@ let suites_1 = {
                                                 param => ({
                                                   TAG: "Eq",
                                                   _0: undefined,
-                                                  _1: Primitive_option.null_to_opt("banana".match(/nanana+/g))
+                                                  _1: Primitive_option.fromNull("banana".match(/nanana+/g))
                                                 })
                                               ],
                                               tl: {
@@ -233,7 +233,7 @@ let suites_1 = {
                                                       "hello ",
                                                       undefined
                                                     ],
-                                                    _1: Belt_Option.map(Primitive_option.null_to_opt("hello word".match(/hello (world)?/)), prim => prim.slice())
+                                                    _1: Belt_Option.map(Primitive_option.fromNull("hello word".match(/hello (world)?/)), prim => prim.slice())
                                                   })
                                                 ],
                                                 tl: {
