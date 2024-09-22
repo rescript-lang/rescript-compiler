@@ -52,4 +52,4 @@ let exceptions = "Primitive_exceptions"
 
 let curry = "Primitive_curry"
 
-let deriving = "Runtime_deriving"
+let util = "Primitive_util"

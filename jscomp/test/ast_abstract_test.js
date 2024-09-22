@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Runtime_deriving = require("../../lib/js/runtime_deriving.js");
+let Primitive_util = require("../../lib/js/primitive_util.js");
 
 let suites = {
   contents: /* [] */0
@@ -62,7 +62,7 @@ function xToJs(param) {
 }
 
 function xFromJs(param) {
-  return Runtime_deriving.raiseWhenNotFound(_map[param]);
+  return Primitive_util.raiseWhenNotFound(_map[param]);
 }
 
 function idx(v) {
