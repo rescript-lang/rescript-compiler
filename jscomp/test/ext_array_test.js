@@ -3,7 +3,7 @@
 
 let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 function reverse_range(a, i, len) {
   if (len === 0) {
@@ -92,7 +92,7 @@ function filter_map(f, a) {
     if (v$1 !== undefined) {
       _i = i + 1 | 0;
       _acc = {
-        hd: Caml_option.valFromOption(v$1),
+        hd: Primitive_option.valFromOption(v$1),
         tl: acc
       };
       continue;
@@ -135,7 +135,7 @@ function tolist_aux(a, f, _i, _res) {
     let v = a[i];
     let v$1 = f(v);
     _res = v$1 !== undefined ? ({
-        hd: Caml_option.valFromOption(v$1),
+        hd: Primitive_option.valFromOption(v$1),
         tl: res
       }) : res;
     _i = i - 1 | 0;

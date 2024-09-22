@@ -1,3 +1,5 @@
+module Obj = Primitive_object_extern
+
 external import: 'a => promise<'a> = "%import"
 
 @@warning("-37") /* `Function` may be used in runtime */
@@ -54,7 +56,7 @@ let update_mod = (shape: shape, o: Obj.t, n: Obj.t): unit => {
 
     | Lazy
     | Class =>
-      Primitive_object.update_dummy(o, n)
+      Obj.update_dummy(o, n)
     | Module(comps) =>
       for i in 0 to array_length(comps) - 1 {
         let (shape, name) = array_unsafe_get(comps, i)

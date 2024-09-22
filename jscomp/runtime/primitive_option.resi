@@ -30,17 +30,19 @@ let undefined_to_opt: Js.undefined<'a> => option<'a>
 
 let null_to_opt: Js.null<'a> => option<'a>
 
-let valFromOption: Obj.t => Obj.t
+let valFromOption: Primitive_object_extern.t => Primitive_object_extern.t
 
-let some: Obj.t => Obj.t
+let some: Primitive_object_extern.t => Primitive_object_extern.t
 
-let isNested: Obj.t => bool
+let isNested: Primitive_object_extern.t => bool
 
-let option_get: option<Obj.t> => Caml_undefined_extern.t<Obj.t>
+let option_get: option<Primitive_object_extern.t> => Caml_undefined_extern.t<
+  Primitive_object_extern.t,
+>
 
 type poly
 
 /** When it is None, return none
     When it is (Some (`a 3)) return 3
 */
-let option_unwrap: option<poly> => Obj.t
+let option_unwrap: option<poly> => Primitive_object_extern.t

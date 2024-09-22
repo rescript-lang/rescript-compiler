@@ -44,6 +44,8 @@ let module_ = "Primitive_module"
 
 let lazy_ = "Primitive_lazy"
 
+let option = "Primitive_option"
+
 let deriving = "Runtime_deriving"
 
 let astExtensions = "Runtime_ast_extensions"
@@ -55,7 +57,5 @@ let hash_primitive = "Caml_hash_primitive"
 let hash = "Caml_hash"
 
 let curry = "Curry"
-
-let option = "Caml_option"
 
 let caml_js_exceptions = "Caml_js_exceptions"

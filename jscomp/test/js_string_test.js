@@ -3,7 +3,7 @@
 
 let Mt = require("./mt.js");
 let Belt_Option = require("../../lib/js/belt_Option.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites_0 = [
   "make",
@@ -212,7 +212,7 @@ let suites_1 = {
                                                   "na",
                                                   "na"
                                                 ],
-                                                _1: Caml_option.null_to_opt("banana".match(/na+/g))
+                                                _1: Primitive_option.null_to_opt("banana".match(/na+/g))
                                               })
                                             ],
                                             tl: {
@@ -221,7 +221,7 @@ let suites_1 = {
                                                 param => ({
                                                   TAG: "Eq",
                                                   _0: undefined,
-                                                  _1: Caml_option.null_to_opt("banana".match(/nanana+/g))
+                                                  _1: Primitive_option.null_to_opt("banana".match(/nanana+/g))
                                                 })
                                               ],
                                               tl: {
@@ -233,7 +233,7 @@ let suites_1 = {
                                                       "hello ",
                                                       undefined
                                                     ],
-                                                    _1: Belt_Option.map(Caml_option.null_to_opt("hello word".match(/hello (world)?/)), prim => prim.slice())
+                                                    _1: Belt_Option.map(Primitive_option.null_to_opt("hello word".match(/hello (world)?/)), prim => prim.slice())
                                                   })
                                                 ],
                                                 tl: {

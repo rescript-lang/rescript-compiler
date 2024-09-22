@@ -51,7 +51,6 @@ let primitive ppf (prim : Lam_primitive.t) =
   (* | Pcreate_exception s -> fprintf ppf "[exn-create]%S" s  *)
   | Pcreate_extension s -> fprintf ppf "[ext-create]%S" s
   | Pwrap_exn -> fprintf ppf "#exn"
-  | Pcaml_obj_length -> fprintf ppf "#obj_length"
   | Pinit_mod -> fprintf ppf "init_mod!"
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pjs_apply -> fprintf ppf "#apply"
@@ -103,6 +102,8 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pobjorder -> fprintf ppf "compare"
   | Pobjmin -> fprintf ppf "min"
   | Pobjmax -> fprintf ppf "max"
+  | Pobjtag -> fprintf ppf "tag"
+  | Pobjsize -> fprintf ppf "length"
   | Psequand -> fprintf ppf "&&"
   | Psequor -> fprintf ppf "||"
   | Pnot -> fprintf ppf "not"

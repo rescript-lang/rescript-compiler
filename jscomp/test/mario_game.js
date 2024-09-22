@@ -3,11 +3,11 @@
 
 let Belt_List = require("../../lib/js/belt_List.js");
 let Pervasives = require("../../lib/js/pervasives.js");
-let Caml_option = require("../../lib/js/caml_option.js");
 let Primitive_int = require("../../lib/js/primitive_int.js");
 let Primitive_bool = require("../../lib/js/primitive_bool.js");
 let Primitive_float = require("../../lib/js/primitive_float.js");
 let Primitive_object = require("../../lib/js/primitive_object.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 function self_init() {
   
@@ -849,7 +849,7 @@ function new_id() {
 }
 
 function make$2($staropt$star, $staropt$star$1, spawnable, context, param) {
-  let id = $staropt$star !== undefined ? Caml_option.valFromOption($staropt$star) : undefined;
+  let id = $staropt$star !== undefined ? Primitive_option.valFromOption($staropt$star) : undefined;
   let dir = $staropt$star$1 !== undefined ? $staropt$star$1 : "Left";
   let spr = make(spawnable, dir, context);
   let params = make_type$2(spawnable);

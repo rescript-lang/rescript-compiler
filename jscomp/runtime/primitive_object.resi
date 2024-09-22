@@ -22,13 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-type t = Obj.t
+type t = Primitive_object_extern.t
 
-let update_dummy: (Obj.t, Obj.t) => unit
+let update_dummy: (t, t) => unit
 
-let compare: (Obj.t, Obj.t) => int
+let compare: (t, t) => int
 
-type eq = (Obj.t, Obj.t) => bool
+type eq = (t, t) => bool
 let equal: eq
 let notequal: eq
 let greaterequal: eq

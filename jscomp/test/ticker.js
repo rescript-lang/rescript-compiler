@@ -5,9 +5,9 @@ let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Float = require("../../lib/js/belt_Float.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 let Belt_Option = require("../../lib/js/belt_Option.js");
-let Caml_option = require("../../lib/js/caml_option.js");
 let Primitive_int = require("../../lib/js/primitive_int.js");
 let Belt_MapString = require("../../lib/js/belt_MapString.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 function split(delim, s) {
   let len = s.length;
@@ -248,12 +248,12 @@ function process_input_line(ticker_map, all_tickers, line) {
                 Error: new Error()
               };
             }
-            let ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
+            let ticker_map$1 = ticker_map !== undefined ? Primitive_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
             let value = Belt_Option.getExn(Belt_Float.fromString(match$1.hd));
             process_quote(ticker_map$1, match.hd, value);
             return [
               all_tickers,
-              Caml_option.some(ticker_map$1)
+              Primitive_option.some(ticker_map$1)
             ];
           }
           throw {

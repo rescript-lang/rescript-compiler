@@ -2,7 +2,7 @@
 'use strict';
 
 let React = require("react");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 function safeMakeEvent(eventName) {
   if (typeof Event === "function") {
@@ -18,7 +18,7 @@ function path() {
   if (window === undefined) {
     return /* [] */0;
   }
-  let raw = Caml_option.valFromOption(window).location.pathname;
+  let raw = Primitive_option.valFromOption(window).location.pathname;
   switch (raw) {
     case "" :
     case "/" :
@@ -51,7 +51,7 @@ function hash() {
   if (window === undefined) {
     return "";
   }
-  let raw = Caml_option.valFromOption(window).location.hash;
+  let raw = Primitive_option.valFromOption(window).location.hash;
   switch (raw) {
     case "" :
     case "#" :
@@ -66,7 +66,7 @@ function search() {
   if (window === undefined) {
     return "";
   }
-  let raw = Caml_option.valFromOption(window).location.search;
+  let raw = Primitive_option.valFromOption(window).location.search;
   switch (raw) {
     case "" :
     case "?" :
@@ -80,8 +80,8 @@ function push(path) {
   let match = globalThis.history;
   let match$1 = globalThis.window;
   if (match !== undefined && match$1 !== undefined) {
-    Caml_option.valFromOption(match).pushState(null, "", path);
-    Caml_option.valFromOption(match$1).dispatchEvent(safeMakeEvent("popstate"));
+    Primitive_option.valFromOption(match).pushState(null, "", path);
+    Primitive_option.valFromOption(match$1).dispatchEvent(safeMakeEvent("popstate"));
     return;
   }
   
@@ -91,8 +91,8 @@ function replace(path) {
   let match = globalThis.history;
   let match$1 = globalThis.window;
   if (match !== undefined && match$1 !== undefined) {
-    Caml_option.valFromOption(match).replaceState(null, "", path);
-    Caml_option.valFromOption(match$1).dispatchEvent(safeMakeEvent("popstate"));
+    Primitive_option.valFromOption(match).replaceState(null, "", path);
+    Primitive_option.valFromOption(match$1).dispatchEvent(safeMakeEvent("popstate"));
     return;
   }
   
@@ -141,14 +141,14 @@ function watchUrl(callback) {
     return () => {};
   }
   let watcherID = () => callback(url());
-  Caml_option.valFromOption(window).addEventListener("popstate", watcherID);
+  Primitive_option.valFromOption(window).addEventListener("popstate", watcherID);
   return watcherID;
 }
 
 function unwatchUrl(watcherID) {
   let window = globalThis.window;
   if (window !== undefined) {
-    Caml_option.valFromOption(window).removeEventListener("popstate", watcherID);
+    Primitive_option.valFromOption(window).removeEventListener("popstate", watcherID);
     return;
   }
   

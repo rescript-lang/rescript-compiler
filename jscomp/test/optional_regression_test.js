@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites = {
   contents: /* [] */0
@@ -19,13 +19,13 @@ function eq(loc, x, y) {
 function make(s, b, i, param) {
   let tmp = {};
   if (s !== undefined) {
-    tmp.s = Caml_option.valFromOption(s);
+    tmp.s = Primitive_option.valFromOption(s);
   }
   if (b !== undefined) {
-    tmp.b = Caml_option.valFromOption(b);
+    tmp.b = Primitive_option.valFromOption(b);
   }
   if (i !== undefined) {
-    tmp.i = Caml_option.valFromOption(i);
+    tmp.i = Primitive_option.valFromOption(i);
   }
   return tmp;
 }
@@ -36,11 +36,11 @@ let hh = {
   i: 0
 };
 
-eq("File \"optional_regression_test.res\", line 16, characters 3-10", Caml_option.undefined_to_opt(hh.s), "");
+eq("File \"optional_regression_test.res\", line 16, characters 3-10", Primitive_option.undefined_to_opt(hh.s), "");
 
-eq("File \"optional_regression_test.res\", line 17, characters 3-10", Caml_option.undefined_to_opt(hh.b), false);
+eq("File \"optional_regression_test.res\", line 17, characters 3-10", Primitive_option.undefined_to_opt(hh.b), false);
 
-eq("File \"optional_regression_test.res\", line 18, characters 3-10", Caml_option.undefined_to_opt(hh.i), 0);
+eq("File \"optional_regression_test.res\", line 18, characters 3-10", Primitive_option.undefined_to_opt(hh.i), 0);
 
 console.log(hh);
 

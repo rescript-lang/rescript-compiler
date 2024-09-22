@@ -5,10 +5,10 @@ let Mt = require("./mt.js");
 let Belt_Map = require("../../lib/js/belt_Map.js");
 let Belt_Set = require("../../lib/js/belt_Set.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
-let Caml_option = require("../../lib/js/caml_option.js");
 let Belt_MapDict = require("../../lib/js/belt_MapDict.js");
 let Primitive_int = require("../../lib/js/primitive_int.js");
 let Array_data_util = require("./array_data_util.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites = {
   contents: /* [] */0
@@ -48,7 +48,7 @@ function emptyMap() {
 function mergeInter(s1, s2) {
   let m = Belt_Map.merge(s1, s2, (k, v1, v2) => {
     if (v1 !== undefined && v2 !== undefined) {
-      return Caml_option.some(undefined);
+      return Primitive_option.some(undefined);
     }
     
   });
@@ -58,7 +58,7 @@ function mergeInter(s1, s2) {
 function mergeUnion(s1, s2) {
   let m = Belt_Map.merge(s1, s2, (k, v1, v2) => {
     if (v1 !== undefined || v2 !== undefined) {
-      return Caml_option.some(undefined);
+      return Primitive_option.some(undefined);
     }
     
   });
@@ -68,7 +68,7 @@ function mergeUnion(s1, s2) {
 function mergeDiff(s1, s2) {
   let m = Belt_Map.merge(s1, s2, (k, v1, v2) => {
     if (v1 !== undefined && v2 === undefined) {
-      return Caml_option.some(undefined);
+      return Primitive_option.some(undefined);
     }
     
   });

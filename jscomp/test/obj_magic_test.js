@@ -12,7 +12,7 @@ let suites_0 = [
   param => ({
     TAG: "Eq",
     _0: false,
-    _1: "number" !== "number"
+    _1: is_block(3)
   })
 ];
 
@@ -22,10 +22,10 @@ let suites_1 = {
     param => ({
       TAG: "Eq",
       _0: true,
-      _1: typeof ({
+      _1: is_block({
         hd: 3,
         tl: /* [] */0
-      }) !== "number"
+      })
     })
   ],
   tl: {
@@ -34,7 +34,7 @@ let suites_1 = {
       param => ({
         TAG: "Eq",
         _0: true,
-        _1: "string" !== "number"
+        _1: is_block("x")
       })
     ],
     tl: {
@@ -43,7 +43,7 @@ let suites_1 = {
         param => ({
           TAG: "Eq",
           _0: false,
-          _1: "number" !== "number"
+          _1: is_block(3.0)
         })
       ],
       tl: /* [] */0

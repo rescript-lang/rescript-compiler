@@ -3,8 +3,8 @@
 
 let Js_dict = require("../../lib/js/js_dict.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
-let Caml_option = require("../../lib/js/caml_option.js");
 let Primitive_array = require("../../lib/js/primitive_array.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 function classify(x) {
   if (x === "A" && typeof x !== "number") {
@@ -317,11 +317,11 @@ function testHasNull(x) {
 }
 
 function testHasUndefined(x) {
-  return Caml_option.some(x);
+  return Primitive_option.some(x);
 }
 
 function untaggedWithOptionPayload(x) {
-  return Caml_option.some(x);
+  return Primitive_option.some(x);
 }
 
 function untaggedWithIntPayload(x) {
@@ -333,11 +333,11 @@ function untaggedInlineNoOptions(x) {
 }
 
 function untaggedInlineUnaryWihtExplicitOption(x) {
-  return Caml_option.some(x);
+  return Primitive_option.some(x);
 }
 
 function untaggedInlineUnaryWihtImplicitOption(x) {
-  return Caml_option.some(x);
+  return Primitive_option.some(x);
 }
 
 function untaggedInlineMultinaryOption(x) {

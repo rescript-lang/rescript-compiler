@@ -52,11 +52,6 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   (******************************************************************************)
   (************************* customized primitives ******************************)
   (******************************************************************************)
-  | "?obj_tag" -> (
-      (* Note that in ocaml, [int] has tag [1000] and [string] has tag [252]
-         also now we need do nullary check
-      *)
-      match args with [ e ] -> E.tag e | _ -> assert false)
   | "?hash_mix_string" | "?hash_mix_int" | "?hash_final_mix" ->
       call Js_runtime_modules.hash_primitive
   | "?hash" -> call Js_runtime_modules.hash

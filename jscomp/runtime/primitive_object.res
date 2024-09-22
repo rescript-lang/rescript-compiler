@@ -24,12 +24,18 @@
 
 external array_unsafe_get: (array<'a>, int) => 'a = "%array_unsafe_get"
 
-type t = Obj.t
+type t = Primitive_object_extern.t
+
+let repr = Primitive_object_extern.repr
+let magic = Primitive_object_extern.magic
+let tag = Primitive_object_extern.tag
+let field = Primitive_object_extern.field
+let size = Primitive_object_extern.size
 
 module O = {
   @val external isArray: 'a => bool = "Array.isArray"
   type key = string
-  let for_in: (Obj.t, key => unit) => unit = %raw(`function(o,foo){
+  let for_in: (t, key => unit) => unit = %raw(`function(o,foo){
         for (var x in o) { foo(x) }}
       `)
 
@@ -44,33 +50,10 @@ module O = {
   */
   external hasOwnProperty: (t, key) => bool = "call"
 
-  @get_index external get_value: (Obj.t, key) => Obj.t = ""
+  @get_index external get_value: (t, key) => t = ""
 }
 
-/** 
-   For the empty dummy object, whether it's 
-   [[]] or [{}] depends on how 
-   runtime encoding works, and will affect 
-   js polymorphic comparison(Js.(=)) (fine with caml polymoprhic comparison (Pervasives.equal))
-   In most cases, rec value comes from record/modules, 
-   whose tag is 0, we optimize that case
-*/
-let update_dummy: (_, _) => unit = %raw(`function(x,y){
-  var k  
-  if(Array.isArray(y)){
-    for(k = 0; k < y.length ; ++k){
-      x[k] = y[k]
-    }
-    if(y.TAG !== undefined){
-      x.TAG = y.TAG
-    }
-  } else {
-    for (var k in y){
-      x[k] = y[k]
-    }
-  }
-}
-`)
+let update_dummy = Primitive_object_extern.update_dummy
 
 /** TODO: investigate total
     [compare x y] returns [0] if [x] is equal to [y],
@@ -89,7 +72,7 @@ let update_dummy: (_, _) => unit = %raw(`function(x,y){
     The compare function can be used as the comparison function required by the [Set.Make] and [Map.Make] functors,
     as well as the [List.sort] and [Array.sort] functions.
 */
-let rec compare = (a: Obj.t, b: Obj.t): int =>
+let rec compare = (a: t, b: t): int =>
   if a === b {
     0
   } else {
@@ -102,11 +85,11 @@ let rec compare = (a: Obj.t, b: Obj.t): int =>
     /* [a] is of type string, b can not be None,
         [a] could be (Some (Some x)) in that case [b] could be [Some None] or [null]
          so [b] has to be of type string or null */
-    | ("string", "string") => Pervasives.compare((Obj.magic(a): string), Obj.magic(b))
+    | ("string", "string") => Pervasives.compare((magic(a): string), magic(b))
     | ("string", _) => /* [b] could be [Some None] or [null] */
       1
     | (_, "string") => -1
-    | ("boolean", "boolean") => Pervasives.compare((Obj.magic(a): bool), Obj.magic(b))
+    | ("boolean", "boolean") => Pervasives.compare((magic(a): bool), magic(b))
     | ("boolean", _) => 1
     | (_, "boolean") => -1
     | ("function", "function") => raise(Invalid_argument("compare: functional value"))
@@ -114,30 +97,30 @@ let rec compare = (a: Obj.t, b: Obj.t): int =>
     | (_, "function") => -1
     | ("bigint", "bigint")
     | ("number", "number") =>
-      Pervasives.compare((Obj.magic(a): float), (Obj.magic(b): float))
+      Pervasives.compare((magic(a): float), (magic(b): float))
     | ("number", _) =>
-      if b === Obj.repr(Js.null) || Caml_option.isNested(b) {
+      if b === repr(Js.null) || Primitive_option.isNested(b) {
         1
       } else {
         /* Some (Some ..) < x */
         -1
       } /* Integer < Block in OCaml runtime GPR #1195, except Some.. */
     | (_, "number") =>
-      if a === Obj.repr(Js.null) || Caml_option.isNested(a) {
+      if a === repr(Js.null) || Primitive_option.isNested(a) {
         -1
       } else {
         1
       }
     | _ =>
-      if a === Obj.repr(Js.null) {
+      if a === repr(Js.null) {
         /* [b] could not be null otherwise would equal */
-        if Caml_option.isNested(b) {
+        if Primitive_option.isNested(b) {
           1
         } else {
           -1
         }
-      } else if b === Obj.repr(Js.null) {
-        if Caml_option.isNested(a) {
+      } else if b === repr(Js.null) {
+        if Primitive_option.isNested(a) {
           -1
         } else {
           1
@@ -145,22 +128,22 @@ let rec compare = (a: Obj.t, b: Obj.t): int =>
       } else if (
         /* double_array_tag: 254
          */
-        Caml_option.isNested(a)
+        Primitive_option.isNested(a)
       ) {
-        if Caml_option.isNested(b) {
+        if Primitive_option.isNested(b) {
           aux_obj_compare(a, b)
         } else {
-          /* Some None < Some (Some None)) */
+          /* Some (None) < Some (Some (None)) */
 
           /* b could not be undefined/None */
-          /* Some None < Some .. */
+          /* Some (None) < Some (...) */
           -1
         }
       } else {
-        let tag_a = Obj.tag(a)
-        let tag_b = Obj.tag(b)
+        let tag_a = tag(a)
+        let tag_b = tag(b)
         if tag_a == 248 /* object/exception */ {
-          Pervasives.compare((Obj.magic(Obj.field(a, 1)): int), Obj.magic(Obj.field(b, 1)))
+          Pervasives.compare((magic(field(a, 1)): int), magic(field(b, 1)))
         } else if tag_a == 251 /* abstract_tag */ {
           raise(Invalid_argument("equal: abstract value"))
         } else if tag_a != tag_b {
@@ -170,11 +153,11 @@ let rec compare = (a: Obj.t, b: Obj.t): int =>
             1
           }
         } else {
-          let len_a = Obj.size(a)
-          let len_b = Obj.size(b)
+          let len_a = size(a)
+          let len_b = size(b)
           if len_a == len_b {
             if O.isArray(a) {
-              aux_same_length((Obj.magic(a): array<Obj.t>), (Obj.magic(b): array<Obj.t>), 0, len_a)
+              aux_same_length((magic(a): array<t>), (magic(b): array<t>), 0, len_a)
             } else if %raw(`a instanceof Date && b instanceof Date`) {
               %raw(`a - b`)
             } else {
@@ -182,16 +165,16 @@ let rec compare = (a: Obj.t, b: Obj.t): int =>
             }
           } else if len_a < len_b {
             /* at least one is not zero, so it is an array block */
-            aux_length_a_short((Obj.magic(a): array<Obj.t>), (Obj.magic(b): array<Obj.t>), 0, len_a)
+            aux_length_a_short((magic(a): array<t>), (magic(b): array<t>), 0, len_a)
           } else {
-            aux_length_b_short((Obj.magic(a): array<Obj.t>), (Obj.magic(b): array<Obj.t>), 0, len_b)
+            aux_length_b_short((magic(a): array<t>), (magic(b): array<t>), 0, len_b)
           }
         }
       }
     }
   }
 
-and aux_same_length = (a: array<Obj.t>, b: array<Obj.t>, i, same_length) =>
+and aux_same_length = (a: array<t>, b: array<t>, i, same_length) =>
   if i == same_length {
     0
   } else {
@@ -204,7 +187,7 @@ and aux_same_length = (a: array<Obj.t>, b: array<Obj.t>, i, same_length) =>
     }
   }
 
-and aux_length_a_short = (a: array<Obj.t>, b: array<Obj.t>, i, short_length) =>
+and aux_length_a_short = (a: array<t>, b: array<t>, i, short_length) =>
   if i == short_length {
     -1
   } else {
@@ -217,7 +200,7 @@ and aux_length_a_short = (a: array<Obj.t>, b: array<Obj.t>, i, short_length) =>
     }
   }
 
-and aux_length_b_short = (a: array<Obj.t>, b: array<Obj.t>, i, short_length) =>
+and aux_length_b_short = (a: array<t>, b: array<t>, i, short_length) =>
   if i == short_length {
     1
   } else {
@@ -230,7 +213,7 @@ and aux_length_b_short = (a: array<Obj.t>, b: array<Obj.t>, i, short_length) =>
     }
   }
 
-and aux_obj_compare = (a: Obj.t, b: Obj.t) => {
+and aux_obj_compare = (a: t, b: t) => {
   let min_key_lhs = ref(None)
   let min_key_rhs = ref(None)
   let do_key = ((a, b, min_key), key) =>
@@ -258,12 +241,12 @@ and aux_obj_compare = (a: Obj.t, b: Obj.t) => {
   res
 }
 
-type eq = (Obj.t, Obj.t) => bool
+type eq = (t, t) => bool
 
 /** It is easier to do equality check than comparision, since as long as its
     basic type is not the same, it will not equal 
 */
-let rec equal = (a: Obj.t, b: Obj.t): bool =>
+let rec equal = (a: t, b: t): bool =>
   /* front and formoest, we do not compare function values */
   if a === b {
     true
@@ -289,20 +272,20 @@ let rec equal = (a: Obj.t, b: Obj.t): bool =>
         false
       } else {
         /* [a] [b] could not be null, so it can not raise */
-        let tag_a = Obj.tag(a)
-        let tag_b = Obj.tag(b)
+        let tag_a = tag(a)
+        let tag_b = tag(b)
         if tag_a == 248 /* object/exception */ {
-          Obj.magic(Obj.field(a, 1)) === Obj.magic(Obj.field(b, 1))
+          magic(field(a, 1)) === magic(field(b, 1))
         } else if tag_a == 251 /* abstract_tag */ {
           raise(Invalid_argument("equal: abstract value"))
         } else if tag_a != tag_b {
           false
         } else {
-          let len_a = Obj.size(a)
-          let len_b = Obj.size(b)
+          let len_a = size(a)
+          let len_b = size(b)
           if len_a == len_b {
             if O.isArray(a) {
-              aux_equal_length((Obj.magic(a): array<Obj.t>), (Obj.magic(b): array<Obj.t>), 0, len_a)
+              aux_equal_length((magic(a): array<t>), (magic(b): array<t>), 0, len_a)
             } else if %raw(`a instanceof Date && b instanceof Date`) {
               !(Js.unsafe_gt(a, b) || Js.unsafe_lt(a, b))
             } else {
@@ -316,7 +299,7 @@ let rec equal = (a: Obj.t, b: Obj.t): bool =>
     }
   }
 
-and aux_equal_length = (a: array<Obj.t>, b: array<Obj.t>, i, same_length) =>
+and aux_equal_length = (a: array<t>, b: array<t>, i, same_length) =>
   if i == same_length {
     true
   } else {
@@ -324,7 +307,7 @@ and aux_equal_length = (a: array<Obj.t>, b: array<Obj.t>, i, same_length) =>
     aux_equal_length(a, b, i + 1, same_length)
   }
 
-and aux_obj_equal = (a: Obj.t, b: Obj.t) => {
+and aux_obj_equal = (a: t, b: t) => {
   let result = ref(true)
   let do_key_a = key =>
     if !O.hasOwnProperty(b, key) {
@@ -351,47 +334,47 @@ let canNumericCompare = (a, b) => isNumberOrBigInt(a) && isNumberOrBigInt(b)
 
 let notequal = (a, b) =>
   if canNumericCompare(a, b) {
-    (Obj.magic(a): float) != (Obj.magic(b): float)
+    (magic(a): float) != (magic(b): float)
   } else {
     !equal(a, b)
   }
 
 let greaterequal = (a, b) =>
   if canNumericCompare(a, b) {
-    (Obj.magic(a): float) >= (Obj.magic(b): float)
+    (magic(a): float) >= (magic(b): float)
   } else {
     compare(a, b) >= 0
   }
 
 let greaterthan = (a, b) =>
   if canNumericCompare(a, b) {
-    (Obj.magic(a): float) > (Obj.magic(b): float)
+    (magic(a): float) > (magic(b): float)
   } else {
     compare(a, b) > 0
   }
 
 let lessequal = (a, b) =>
   if canNumericCompare(a, b) {
-    (Obj.magic(a): float) <= (Obj.magic(b): float)
+    (magic(a): float) <= (magic(b): float)
   } else {
     compare(a, b) <= 0
   }
 
 let lessthan = (a, b) =>
   if canNumericCompare(a, b) {
-    (Obj.magic(a): float) < (Obj.magic(b): float)
+    (magic(a): float) < (magic(b): float)
   } else {
     compare(a, b) < 0
   }
 
-let min = (x: Obj.t, y) =>
+let min = (x: t, y) =>
   if compare(x, y) <= 0 {
     x
   } else {
     y
   }
 
-let max = (x: Obj.t, y) =>
+let max = (x: t, y) =>
   if compare(x, y) >= 0 {
     x
   } else {

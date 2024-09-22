@@ -22,10 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+module Obj = Primitive_object_extern
+
 type nested = {@as("BS_PRIVATE_NESTED_SOME_NONE") depth: int}
 
 /* INPUT: [x] should not be nullable */
-let isNested = (x: Obj.t): bool => Obj.repr((Obj.magic(x): nested).depth) !== Obj.repr(Js.undefined)
+let isNested = (x: Obj.t): bool => {
+  Obj.repr((Obj.magic(x): nested).depth) !== Obj.repr(Js.undefined)
+}
 
 let some = (x: Obj.t): Obj.t =>
   if Obj.magic(x) == None {

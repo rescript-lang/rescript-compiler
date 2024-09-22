@@ -127,6 +127,8 @@ let primitive ppf = function
   | Pobjorder -> fprintf ppf "compare"
   | Pobjmin -> fprintf ppf "min"
   | Pobjmax -> fprintf ppf "max"
+  | Pobjtag -> fprintf ppf "tag"
+  | Pobjsize -> fprintf ppf "length"
   | Psequand -> fprintf ppf "&&"
   | Psequor -> fprintf ppf "||"
   | Pnot -> fprintf ppf "not"

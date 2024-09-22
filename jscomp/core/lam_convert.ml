@@ -219,6 +219,8 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Pobjorder -> prim ~primitive:Pobjorder ~args loc
   | Pobjmin -> prim ~primitive:Pobjmin ~args loc
   | Pobjmax -> prim ~primitive:Pobjmax ~args loc
+  | Pobjtag -> prim ~primitive:Pobjtag ~args loc
+  | Pobjsize -> prim ~primitive:Pobjsize ~args loc
   | Psequand -> prim ~primitive:Psequand ~args loc
   | Psequor -> prim ~primitive:Psequor ~args loc
   | Pnot -> prim ~primitive:Pnot ~args loc
@@ -431,7 +433,6 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           | "#is_nullable" -> Pis_null_undefined
           | "#string_append" -> Pstringadd
           | "#wrap_exn" -> Pwrap_exn
-          | "#obj_length" -> Pcaml_obj_length
           | "#function_length" -> Pjs_function_length
           | "#unsafe_lt" -> Pjscomp Clt
           | "#unsafe_gt" -> Pjscomp Cgt

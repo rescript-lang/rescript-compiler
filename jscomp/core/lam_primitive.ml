@@ -62,6 +62,8 @@ type t =
   | Pobjorder
   | Pobjmin
   | Pobjmax
+  | Pobjtag
+  | Pobjsize
 
   (* Boolean primitives *)
   | Psequand
@@ -177,7 +179,6 @@ type t =
   | Pimport
   | Pjs_typeof
   | Pjs_function_length
-  | Pcaml_obj_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
   | Pcreate_extension of string
   | Pis_not_none (* no info about its type *)
@@ -206,6 +207,8 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Pobjorder
   | Pobjmin
   | Pobjmax
+  | Pobjtag
+  | Pobjsize
   (* bool primitives *)
   | Psequand
   | Psequor
@@ -293,7 +296,6 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Pinit_mod
   | Pupdate_mod
   | Pjs_function_length
-  | Pcaml_obj_length
   | Pduprecord
   | Pmakearray
   | Parraylength

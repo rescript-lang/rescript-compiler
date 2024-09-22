@@ -6,8 +6,8 @@ let Js_dict = require("../../lib/js/js_dict.js");
 let Js_json = require("../../lib/js/js_json.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
-let Caml_option = require("../../lib/js/caml_option.js");
 let Primitive_array = require("../../lib/js/primitive_array.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites = {
   contents: /* [] */0
@@ -230,7 +230,7 @@ test(false);
 
 function option_get(x) {
   if (x !== undefined) {
-    return Caml_option.valFromOption(x);
+    return Primitive_option.valFromOption(x);
   }
   throw {
     RE_EXN_ID: "Assert_failure",

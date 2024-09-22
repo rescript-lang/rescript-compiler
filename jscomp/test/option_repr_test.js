@@ -3,8 +3,8 @@
 
 let Mt = require("./mt.js");
 let Belt_List = require("../../lib/js/belt_List.js");
-let Caml_option = require("../../lib/js/caml_option.js");
 let Primitive_object = require("../../lib/js/primitive_object.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites = {
   contents: /* [] */0
@@ -73,9 +73,9 @@ function f6(a) {
   return true;
 }
 
-let f10 = Caml_option.some(Caml_option.some(Caml_option.some(Caml_option.some(undefined))));
+let f10 = Primitive_option.some(Primitive_option.some(Primitive_option.some(Primitive_option.some(undefined))));
 
-let f11 = Caml_option.some(f10);
+let f11 = Primitive_option.some(f10);
 
 let randomized = {
   contents: false
@@ -127,9 +127,9 @@ b("File \"option_repr_test.res\", line 94, characters 4-11", !Primitive_object.g
 
 b("File \"option_repr_test.res\", line 95, characters 4-11", Primitive_object.greaterthan(null, undefined));
 
-b("File \"option_repr_test.res\", line 96, characters 4-11", Primitive_object.lessthan(undefined, Caml_option.some(undefined)));
+b("File \"option_repr_test.res\", line 96, characters 4-11", Primitive_object.lessthan(undefined, Primitive_option.some(undefined)));
 
-b("File \"option_repr_test.res\", line 97, characters 4-11", Primitive_object.greaterthan(Caml_option.some(undefined), undefined));
+b("File \"option_repr_test.res\", line 97, characters 4-11", Primitive_object.greaterthan(Primitive_option.some(undefined), undefined));
 
 console.log(6, undefined);
 
@@ -169,7 +169,7 @@ function all_true(xs) {
   return Belt_List.every(xs, x => x);
 }
 
-let xs_0 = gtx(Caml_option.some(null), Caml_option.some(undefined));
+let xs_0 = gtx(Primitive_option.some(null), Primitive_option.some(undefined));
 
 let xs = {
   hd: xs_0,
@@ -178,22 +178,22 @@ let xs = {
 
 b("File \"option_repr_test.res\", line 125, characters 8-15", Belt_List.every(xs, x => x));
 
-let xs_0$1 = Primitive_object.lessthan(Caml_option.some(undefined), 3) && Primitive_object.greaterthan(3, Caml_option.some(undefined));
+let xs_0$1 = Primitive_object.lessthan(Primitive_option.some(undefined), 3) && Primitive_object.greaterthan(3, Primitive_option.some(undefined));
 
 let xs_1 = {
-  hd: Primitive_object.lessthan(Caml_option.some(undefined), Caml_option.some(Caml_option.some(undefined))) && Primitive_object.greaterthan(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(undefined)),
+  hd: Primitive_object.lessthan(Primitive_option.some(undefined), Primitive_option.some(Primitive_option.some(undefined))) && Primitive_object.greaterthan(Primitive_option.some(Primitive_option.some(undefined)), Primitive_option.some(undefined)),
   tl: {
-    hd: Primitive_object.lessthan(Caml_option.some(undefined), "3") && Primitive_object.greaterthan("3", Caml_option.some(undefined)),
+    hd: Primitive_object.lessthan(Primitive_option.some(undefined), "3") && Primitive_object.greaterthan("3", Primitive_option.some(undefined)),
     tl: {
-      hd: Primitive_object.lessthan(Caml_option.some(undefined), true) && Primitive_object.greaterthan(true, Caml_option.some(undefined)),
+      hd: Primitive_object.lessthan(Primitive_option.some(undefined), true) && Primitive_object.greaterthan(true, Primitive_option.some(undefined)),
       tl: {
-        hd: Primitive_object.lessthan(Caml_option.some(undefined), false) && Primitive_object.greaterthan(false, Caml_option.some(undefined)),
+        hd: Primitive_object.lessthan(Primitive_option.some(undefined), false) && Primitive_object.greaterthan(false, Primitive_option.some(undefined)),
         tl: {
           hd: Primitive_object.lessthan(false, true) && Primitive_object.greaterthan(true, false),
           tl: {
             hd: Primitive_object.lessthan(false, true) && Primitive_object.greaterthan(true, false),
             tl: {
-              hd: Primitive_object.lessthan(undefined, Caml_option.some(undefined)) && Primitive_object.greaterthan(Caml_option.some(undefined), undefined),
+              hd: Primitive_object.lessthan(undefined, Primitive_option.some(undefined)) && Primitive_object.greaterthan(Primitive_option.some(undefined), undefined),
               tl: {
                 hd: ltx(undefined, null),
                 tl: {
@@ -224,11 +224,11 @@ let xs_0$2 = true && true;
 let xs_1$1 = {
   hd: neqx(undefined, null),
   tl: {
-    hd: Primitive_object.equal(Caml_option.some(undefined), Caml_option.some(undefined)) && Primitive_object.equal(Caml_option.some(undefined), Caml_option.some(undefined)),
+    hd: Primitive_object.equal(Primitive_option.some(undefined), Primitive_option.some(undefined)) && Primitive_object.equal(Primitive_option.some(undefined), Primitive_option.some(undefined)),
     tl: {
-      hd: Primitive_object.equal(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))) && Primitive_object.equal(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))),
+      hd: Primitive_object.equal(Primitive_option.some(Primitive_option.some(undefined)), Primitive_option.some(Primitive_option.some(undefined))) && Primitive_object.equal(Primitive_option.some(Primitive_option.some(undefined)), Primitive_option.some(Primitive_option.some(undefined))),
       tl: {
-        hd: Primitive_object.notequal(Caml_option.some(Caml_option.some(Caml_option.some(undefined))), Caml_option.some(Caml_option.some(undefined))) && Primitive_object.notequal(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(Caml_option.some(undefined)))),
+        hd: Primitive_object.notequal(Primitive_option.some(Primitive_option.some(Primitive_option.some(undefined))), Primitive_option.some(Primitive_option.some(undefined))) && Primitive_object.notequal(Primitive_option.some(Primitive_option.some(undefined)), Primitive_option.some(Primitive_option.some(Primitive_option.some(undefined)))),
         tl: /* [] */0
       }
     }
@@ -259,9 +259,9 @@ Mt.from_pair_suites("Option_repr_test", suites.contents);
 
 let f7;
 
-let f8 = Caml_option.some(undefined);
+let f8 = Primitive_option.some(undefined);
 
-let f9 = Caml_option.some(Caml_option.some(undefined));
+let f9 = Primitive_option.some(Primitive_option.some(undefined));
 
 let N;
 

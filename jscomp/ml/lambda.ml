@@ -199,6 +199,8 @@ type primitive =
   | Pobjorder
   | Pobjmin
   | Pobjmax
+  | Pobjtag
+  | Pobjsize
   (* Boolean operations *)
   | Psequand | Psequor | Pnot
   | Pboolcomp of comparison

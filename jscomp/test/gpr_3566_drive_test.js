@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_option = require("../../lib/js/caml_option.js");
 let Gpr_3566_test = require("./gpr_3566_test.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites = {
   contents: /* [] */0
@@ -21,10 +21,10 @@ let H = Gpr_3566_test.Test({});
 
 eq("File \"gpr_3566_drive_test.res\", line 7, characters 12-19", H.b, true);
 
-let Caml_option$1 = {};
+let Caml_option = {};
 
 function f(x) {
-  return Caml_option.some(x);
+  return Primitive_option.some(x);
 }
 
 Mt.from_pair_suites("gpr_3566_drive_test.res", suites.contents);
@@ -33,6 +33,6 @@ exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
 exports.H = H;
-exports.Caml_option = Caml_option$1;
+exports.Caml_option = Caml_option;
 exports.f = f;
 /* H Not a pure module */

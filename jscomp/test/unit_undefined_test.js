@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites = {
   contents: /* [] */0
@@ -43,24 +43,24 @@ function fx() {
 }
 
 function u0(x) {
-  return Caml_option.some(x);
+  return Primitive_option.some(x);
 }
 
-let u1 = Caml_option.some(undefined);
+let u1 = Primitive_option.some(undefined);
 
 function u2(x) {
-  return Caml_option.some(x);
+  return Primitive_option.some(x);
 }
 
-let u3 = Caml_option.some(undefined);
+let u3 = Primitive_option.some(undefined);
 
-eq("File \"unit_undefined_test.res\", line 41, characters 3-10", Caml_option.some(), Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 41, characters 3-10", Primitive_option.some(), Primitive_option.some(undefined));
 
-eq("File \"unit_undefined_test.res\", line 42, characters 3-10", u1, Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 42, characters 3-10", u1, Primitive_option.some(undefined));
 
-eq("File \"unit_undefined_test.res\", line 43, characters 3-10", Caml_option.some(), Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 43, characters 3-10", Primitive_option.some(), Primitive_option.some(undefined));
 
-eq("File \"unit_undefined_test.res\", line 44, characters 3-10", u3, Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 44, characters 3-10", u3, Primitive_option.some(undefined));
 
 eq("File \"unit_undefined_test.res\", line 45, characters 3-10", undefined, undefined);
 

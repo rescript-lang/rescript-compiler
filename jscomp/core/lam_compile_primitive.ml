@@ -140,7 +140,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
           Location.raise_errorf ~loc
             "Invalid argument: Dynamic import must take a single module or module value as its argument.")
   | Pjs_function_length -> E.function_length (Ext_list.singleton_exn args)
-  | Pcaml_obj_length -> E.obj_length (Ext_list.singleton_exn args)
+  | Pobjsize -> E.obj_length (Ext_list.singleton_exn args)
   | Pis_null -> E.is_null (Ext_list.singleton_exn args)
   | Pis_undefined -> E.is_undef (Ext_list.singleton_exn args)
   | Pis_null_undefined -> E.is_null_undefined (Ext_list.singleton_exn args)
@@ -341,6 +341,11 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       match args with
       | [ a; b ] -> E.runtime_call Js_runtime_modules.object_ "max" args
       | _ -> assert false)
+  | Pobjtag -> (
+      (* Note that in ocaml, [int] has tag [1000] and [string] has tag [252]
+         also now we need do nullary check
+      *)
+      match args with [ e ] -> E.tag e | _ -> assert false)
   | Pboolorder -> (
       match args with
       | [ { expression_desc = Bool a }; { expression_desc = Bool b } ] ->

@@ -4,7 +4,7 @@
 let Mt = require("./mt.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let String_set = require("./string_set.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites = {
   contents: /* [] */0
@@ -37,7 +37,7 @@ let b = {
 
 function map(f, x) {
   if (x !== undefined) {
-    return Caml_option.some(f(Caml_option.valFromOption(x)));
+    return Primitive_option.some(f(Primitive_option.valFromOption(x)));
   }
   
 }

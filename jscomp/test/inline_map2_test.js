@@ -3,8 +3,8 @@
 
 let Mt = require("./mt.js");
 let Belt_List = require("../../lib/js/belt_List.js");
-let Caml_option = require("../../lib/js/caml_option.js");
 let Primitive_int = require("../../lib/js/primitive_int.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 let Primitive_string = require("../../lib/js/primitive_string.js");
 
 function Make(Ord) {
@@ -377,7 +377,7 @@ function Make(Ord) {
   };
   let concat_or_join = (t1, v, d, t2) => {
     if (d !== undefined) {
-      return join(t1, v, Caml_option.valFromOption(d), t2);
+      return join(t1, v, Primitive_option.valFromOption(d), t2);
     } else {
       return concat(t1, t2);
     }
@@ -398,7 +398,7 @@ function Make(Ord) {
     if (c === 0) {
       return [
         l,
-        Caml_option.some(d),
+        Primitive_option.some(d),
         r
       ];
     }
@@ -427,7 +427,7 @@ function Make(Ord) {
       let v1 = s1._1;
       if (s1._4 >= height(s2)) {
         let match = split(v1, s2);
-        return concat_or_join(merge(f, s1._0, match[0]), v1, f(v1, Caml_option.some(s1._2), match[1]), merge(f, s1._3, match[2]));
+        return concat_or_join(merge(f, s1._0, match[0]), v1, f(v1, Primitive_option.some(s1._2), match[1]), merge(f, s1._3, match[2]));
       }
       
     }
@@ -444,7 +444,7 @@ function Make(Ord) {
     }
     let v2 = s2._1;
     let match$1 = split(v2, s1);
-    return concat_or_join(merge(f, match$1[0], s2._0), v2, f(v2, match$1[1], Caml_option.some(s2._2)), merge(f, match$1[2], s2._3));
+    return concat_or_join(merge(f, match$1[0], s2._0), v2, f(v2, match$1[1], Primitive_option.some(s2._2)), merge(f, match$1[2], s2._3));
   };
   let filter = (p, x) => {
     if (typeof x !== "object") {
@@ -1021,7 +1021,7 @@ function concat(t1, t2) {
 
 function concat_or_join(t1, v, d, t2) {
   if (d !== undefined) {
-    return join(t1, v, Caml_option.valFromOption(d), t2);
+    return join(t1, v, Primitive_option.valFromOption(d), t2);
   } else {
     return concat(t1, t2);
   }
@@ -1043,7 +1043,7 @@ function split(x, x_) {
   if (c === 0) {
     return [
       l,
-      Caml_option.some(d),
+      Primitive_option.some(d),
       r
     ];
   }
@@ -1073,7 +1073,7 @@ function merge(f, s1, s2) {
     let v1 = s1._1;
     if (s1._4 >= height(s2)) {
       let match = split(v1, s2);
-      return concat_or_join(merge(f, s1._0, match[0]), v1, f(v1, Caml_option.some(s1._2), match[1]), merge(f, s1._3, match[2]));
+      return concat_or_join(merge(f, s1._0, match[0]), v1, f(v1, Primitive_option.some(s1._2), match[1]), merge(f, s1._3, match[2]));
     }
     
   }
@@ -1090,7 +1090,7 @@ function merge(f, s1, s2) {
   }
   let v2 = s2._1;
   let match$1 = split(v2, s1);
-  return concat_or_join(merge(f, match$1[0], s2._0), v2, f(v2, match$1[1], Caml_option.some(s2._2)), merge(f, match$1[2], s2._3));
+  return concat_or_join(merge(f, match$1[0], s2._0), v2, f(v2, match$1[1], Primitive_option.some(s2._2)), merge(f, match$1[2], s2._3));
 }
 
 function filter(p, x) {
@@ -1703,7 +1703,7 @@ function concat$1(t1, t2) {
 
 function concat_or_join$1(t1, v, d, t2) {
   if (d !== undefined) {
-    return join$1(t1, v, Caml_option.valFromOption(d), t2);
+    return join$1(t1, v, Primitive_option.valFromOption(d), t2);
   } else {
     return concat$1(t1, t2);
   }
@@ -1725,7 +1725,7 @@ function split$1(x, x_) {
   if (c === 0) {
     return [
       l,
-      Caml_option.some(d),
+      Primitive_option.some(d),
       r
     ];
   }
@@ -1755,7 +1755,7 @@ function merge$1(f, s1, s2) {
     let v1 = s1._1;
     if (s1._4 >= height$1(s2)) {
       let match = split$1(v1, s2);
-      return concat_or_join$1(merge$1(f, s1._0, match[0]), v1, f(v1, Caml_option.some(s1._2), match[1]), merge$1(f, s1._3, match[2]));
+      return concat_or_join$1(merge$1(f, s1._0, match[0]), v1, f(v1, Primitive_option.some(s1._2), match[1]), merge$1(f, s1._3, match[2]));
     }
     
   }
@@ -1772,7 +1772,7 @@ function merge$1(f, s1, s2) {
   }
   let v2 = s2._1;
   let match$1 = split$1(v2, s1);
-  return concat_or_join$1(merge$1(f, match$1[0], s2._0), v2, f(v2, match$1[1], Caml_option.some(s2._2)), merge$1(f, match$1[2], s2._3));
+  return concat_or_join$1(merge$1(f, match$1[0], s2._0), v2, f(v2, match$1[1], Primitive_option.some(s2._2)), merge$1(f, match$1[2], s2._3));
 }
 
 function filter$1(p, x) {

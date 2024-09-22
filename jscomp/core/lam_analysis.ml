@@ -56,8 +56,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* NOP The compiler already [t option] is the same as t *)
       | Pduprecord
       (* generic primitives *)
-      | Pobjcomp _
-      | Pobjorder | Pobjmin | Pobjmax
+      | Pobjcomp _ | Pobjorder | Pobjmin | Pobjmax | Pobjtag | Pobjsize
       (* bool primitives *)
       | Psequand | Psequor | Pnot
       | Pboolcomp _ | Pboolorder | Pboolmin | Pboolmax
@@ -86,7 +85,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pisout _
       (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
       (* Compile time constants *)
-      | Poffsetint _ | Pstringadd | Pjs_function_length | Pcaml_obj_length
+      | Poffsetint _ | Pstringadd | Pjs_function_length
       | Pwrap_exn
       | Praw_js_code
           {

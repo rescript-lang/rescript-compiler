@@ -52,6 +52,8 @@ type t =
   | Pobjorder
   | Pobjmin
   | Pobjmax
+  | Pobjtag
+  | Pobjsize
 
   (* bool primitives *)
   | Psequand
@@ -163,7 +165,6 @@ type t =
   | Pimport
   | Pjs_typeof
   | Pjs_function_length
-  | Pcaml_obj_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
   | Pcreate_extension of string
   | Pis_not_none

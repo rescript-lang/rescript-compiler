@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites = {
   contents: /* [] */0
@@ -88,7 +88,7 @@ function f9(x) {
   if (x === null) {
     return;
   } else {
-    return Caml_option.some(x);
+    return Primitive_option.some(x);
   }
 }
 
@@ -173,7 +173,7 @@ function f9$1(x) {
   if (x === undefined) {
     return;
   } else {
-    return Caml_option.some(x);
+    return Primitive_option.some(x);
   }
 }
 
@@ -256,7 +256,7 @@ function f9$2(x) {
   if (x == null) {
     return;
   } else {
-    return Caml_option.some(x);
+    return Primitive_option.some(x);
   }
 }
 
