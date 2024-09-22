@@ -30,7 +30,7 @@ external lsr: (int, int) => int = "%lsrint"
 external lxor: (int, int) => int = "%xorint"
 external asr: (int, int) => int = "%asrint"
 type ref<'a> = {mutable contents: 'a}
-external ref: 'a => ref<'a> = "%makemutable"
+external ref: 'a => ref<'a> = "%makeref"
 
 external \"||": (bool, bool) => bool = "%sequor"
 external \"&&": (bool, bool) => bool = "%sequand"

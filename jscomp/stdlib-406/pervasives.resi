@@ -556,17 +556,17 @@ type int32 = int
 type ref<'a> = {mutable contents: 'a}
 
 /** Return a fresh reference containing the given value. */
-external ref: 'a => ref<'a> = "%makemutable"
+external ref: 'a => ref<'a> = "%makeref"
 
 /** [!r] returns the current contents of reference [r].
    Equivalent to [fun r -> r.contents].
    Unary operator at precedence level 11/11.*/
-external \"!": ref<'a> => 'a = "%bs_ref_field0"
+external \"!": ref<'a> => 'a = "%refget"
 
 /** [r := a] stores the value of [a] in reference [r].
    Equivalent to [fun r v -> r.contents <- v].
    Right-associative operator at precedence level 1/11. */
-external \":=": (ref<'a>, 'a) => unit = "%bs_ref_setfield0"
+external \":=": (ref<'a>, 'a) => unit = "%refset"
 
 /** Increment the integer contained in the given reference.
    Equivalent to [fun r -> r := succ !r]. */

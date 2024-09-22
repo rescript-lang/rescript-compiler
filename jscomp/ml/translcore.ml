@@ -199,9 +199,9 @@ let primitives_table =
       ("%loc_MODULE", Ploc Loc_MODULE);
 
       (* BEGIN Triples for  ref data type *)
-      ("%bs_ref_setfield0", Psetfield (0, Lambda.ref_field_set_info));
-      ("%bs_ref_field0", Pfield (0, Lambda.ref_field_info));
-      ("%makemutable", Pmakeblock Lambda.ref_tag_info);
+      ("%makeref", Pmakeblock Lambda.ref_tag_info);
+      ("%refset", Psetfield (0, Lambda.ref_field_set_info));
+      ("%refget", Pfield (0, Lambda.ref_field_info));
 
       ("%incr", Poffsetref 1);
       ("%decr", Poffsetref (-1));

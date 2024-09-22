@@ -173,7 +173,7 @@ let build_unguarded_env : Ident.t list -> Env.env =
 let is_ref : Types.value_description -> bool = function
   | {
       Types.val_kind =
-        Types.Val_prim { Primitive.prim_name = "%makemutable"; prim_arity = 1 };
+        Types.Val_prim { Primitive.prim_name = "%makeref"; prim_arity = 1 };
     } ->
       true
   | _ -> false
