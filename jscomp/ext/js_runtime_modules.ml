@@ -50,6 +50,6 @@ let hash = "Primitive_hash"
 
 let exceptions = "Primitive_exceptions"
 
-let deriving = "Runtime_deriving"
+let curry = "Primitive_curry"
 
-let curry = "Curry"
+let deriving = "Runtime_deriving"

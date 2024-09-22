@@ -84,7 +84,6 @@ clean-gentype:
 
 clean:
 	dune clean
-	cargo clean --manifest-path rewatch/Cargo.toml && rm -f rewatch/rewatch
 	./scripts/ninja.js clean && rm -f ninja/ninja
 
 clean-all: clean clean-gentype
