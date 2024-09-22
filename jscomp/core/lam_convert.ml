@@ -387,7 +387,6 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
       (args : Lambda.lambda list) loc ~dynamic_import : Lam.t =
     let prim_name = a_prim.prim_name in
     match External_ffi_types.from_string a_prim.prim_native_name with
-    | Ffi_normal -> assert false
     | Ffi_obj_create labels ->
         let args = Ext_list.map args convert_aux in
         prim ~primitive:(Pjs_object_create labels) ~args loc
@@ -400,6 +399,10 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         let args = Ext_list.map args convert_aux in
         Lam.handle_bs_non_obj_ffi arg_types result_type ffi args loc prim_name ~dynamic_import
     | Ffi_inline_const i -> Lam.const i
+    | Ffi_normal -> Location.raise_errorf ~loc
+        "@{<error>Error:@} internal error, using unrecognized \
+        primitive %s"
+        prim_name
 
   and convert_aux ?(dynamic_import = false) (lam : Lambda.lambda) : Lam.t =
     match lam with
