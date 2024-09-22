@@ -352,6 +352,11 @@ let primitives_table =
       ("%curry_apply7", Pcurry_apply 7);
       ("%curry_apply8", Pcurry_apply 8);
       ("%makemutablelist", Pmakelist Mutable);
+      ("%unsafe_to_method", Pjs_fn_method);
+
+      (* Compiler internals, never expose to ReScript files *)
+      ("#raw_expr", Pjs_raw_expr);
+      ("#raw_stmt", Pjs_raw_stmt);
     |]
 
 let find_primitive prim_name = Hashtbl.find primitives_table prim_name
@@ -769,19 +774,17 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
       let loc = expr.exp_loc in
       let lambda = transl_exp expr in
       let arity = Ast_uncurried.uncurried_type_get_arity ~env:e.exp_env e.exp_type in
-      let arity_s = arity |> string_of_int in
-      let name = match (Ctype.expand_head expr.exp_env expr.exp_type).desc with
-      | Tarrow (Nolabel, t, _, _) -> (
-        match (Ctype.expand_head expr.exp_env t).desc with
-        | Tconstr (Pident {name= "unit"}, [], _) -> "#fn_mk_unit"
-        | _ -> "#fn_mk"
-      )
-      | _ -> "#fn_mk" in
       let prim =
-        Primitive.make ~name ~alloc:true ~native_name:arity_s ~arity:1
+        match (Ctype.expand_head expr.exp_env expr.exp_type).desc with
+        | Tarrow (Nolabel, t, _, _) -> (
+          match (Ctype.expand_head expr.exp_env t).desc with
+          | Tconstr (Pident {name= "unit"}, [], _) -> Pjs_fn_make_unit
+          | _ -> Pjs_fn_make arity
+        )
+        | _ -> Pjs_fn_make arity
       in
       Lprim
-        ( Pccall prim
+        ( prim
           (* could be replaced with Opaque in the future except arity 0*),
           [ lambda ],
           loc )
@@ -1103,13 +1106,10 @@ and transl_record loc env fields repres opt_init_expr =
       let lambda = transl_exp expr in
       if lbl_name.[0] = 'I' then
         let arity_s = String.sub lbl_name 1 (String.length lbl_name - 1) in
-        let prim =
-          Primitive.make ~name:"#fn_mk" ~alloc:true ~native_name:arity_s
-            ~arity:1
-        in
+        let arity = Int32.of_string arity_s |> Int32.to_int in
         Lprim
-          ( Pccall prim
-            (* could be replaced with Opaque in the future except arity 0*),
+          ( Pjs_fn_make arity,
+            (* could be replaced with Opaque in the future except arity 0*)
             [ lambda ],
             loc )
       else lambda

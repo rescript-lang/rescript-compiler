@@ -227,6 +227,8 @@ type primitive =
   | Pawait
   (* modules *)
   | Pimport
+  | Pinit_mod
+  | Pupdate_mod
   (* hash *)
   | Phash
   | Phash_mixint
@@ -238,14 +240,26 @@ type primitive =
   | Pisout
   (* Test if the argument is null or undefined *)
   | Pisnullable
+  (* exn *)
   | Pcreate_extension of string
+  | Pextension_slot_eq
   | Pwrap_exn
-  | Pcurry_apply of int
   (* js *)
+  | Pcurry_apply of int
   | Pjscomp of comparison
   | Pundefined_to_opt
   | Pnull_to_opt
   | Pnullable_to_opt
+  | Pis_not_none
+  | Pval_from_option
+  | Pval_from_option_not_nest
+  | Pis_poly_var_block
+  | Pjs_raw_expr
+  | Pjs_raw_stmt
+  | Pjs_fn_make of int
+  | Pjs_fn_make_unit
+  | Pjs_fn_method
+  | Pjs_unsafe_downgrade
 
 and comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge

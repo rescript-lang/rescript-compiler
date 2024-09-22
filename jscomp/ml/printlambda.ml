@@ -236,9 +236,12 @@ let primitive ppf = function
   | Pisout -> fprintf ppf "isout"
   | Pisnullable -> fprintf ppf "isnullable"
   | Pcreate_extension s -> fprintf ppf "extension[%s]" s
+  | Pextension_slot_eq -> fprintf ppf "#extension_slot_eq"
   | Pwrap_exn -> fprintf ppf "wrap_exn"
   | Pawait -> fprintf ppf "await"
   | Pimport -> fprintf ppf "import"
+  | Pinit_mod -> fprintf ppf "#init_mod"
+  | Pupdate_mod -> fprintf ppf "#update_mod"
   | Phash -> fprintf ppf "hash"
   | Phash_mixint -> fprintf ppf "hash_mix_int"
   | Phash_mixstring -> fprintf ppf "hash_mix_string"
@@ -253,6 +256,16 @@ let primitive ppf = function
   | Pundefined_to_opt -> fprintf ppf "undefined_to_opt"
   | Pnull_to_opt -> fprintf ppf "null_to_opt"
   | Pnullable_to_opt -> fprintf ppf "nullable_to_opt"
+  | Pis_not_none -> fprintf ppf "#is_not_none"
+  | Pval_from_option -> fprintf ppf "#val_from_option"
+  | Pval_from_option_not_nest -> fprintf ppf "#val_from_option_not_nest"
+  | Pis_poly_var_block -> fprintf ppf "#is_poly_var_block"
+  | Pjs_raw_expr -> fprintf ppf "#raw_expr"
+  | Pjs_raw_stmt -> fprintf ppf "#raw_stmt"
+  | Pjs_fn_make arity -> fprintf ppf "#fn_mk(%d)" arity
+  | Pjs_fn_make_unit -> fprintf ppf "#fn_mk_unit"
+  | Pjs_fn_method -> fprintf ppf "#fn_method"
+  | Pjs_unsafe_downgrade -> fprintf ppf "#unsafe_downgrade"
 
 let function_attribute ppf { inline; is_a_functor; return_unit } =
   if is_a_functor then

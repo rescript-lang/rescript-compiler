@@ -1313,18 +1313,6 @@ let matcher_constr cstr = match cstr.cstr_arity with
     | Tpat_any -> Parmatch.omegas cstr.cstr_arity @ rem
     | _        -> raise NoMatch
 
-let is_not_none_bs_primitve : Lambda.primitive =
-  Pccall 
-    (Primitive.simple ~name:"#is_not_none" ~arity:1 ~alloc:false)
-
-let val_from_option_bs_primitive : Lambda.primitive =
-  Pccall 
-    (Primitive.simple ~name:"#val_from_option" ~arity:1 ~alloc:true)
-
-let val_from_unnest_option_bs_primitive : Lambda.primitive =
-  Pccall
-    (Primitive.simple ~name:"#val_from_unnest_option" ~arity:1 ~alloc:true)
-
 let make_constr_matching p def ctx = function
     [] -> fatal_error "Matching.make_constr_matching"
   | ((arg, _mut) :: argl) ->
@@ -1345,8 +1333,8 @@ let make_constr_matching p def ctx = function
                                    pat_type ; pat_env
                                  } ])
                   when Typeopt.type_cannot_contain_undefined pat_type pat_env
-                  -> val_from_unnest_option_bs_primitive
-                | _ -> val_from_option_bs_primitive in 
+                  -> Pval_from_option_not_nest
+                | _ -> Pval_from_option in 
               (Lprim (from_option, [arg], p.pat_loc), Alias) :: argl
             end
         | Cstr_constant _
@@ -1678,18 +1666,6 @@ let divide_array ctx pm =
 
 let strings_test_threshold = 8
 
-let prim_string_notequal =
-  Pccall(Primitive.simple
-           ~name:"caml_string_notequal"
-           ~arity:2
-           ~alloc:false)
-
-let prim_string_compare =
-  Pccall(Primitive.simple
-           ~name:"caml_string_compare"
-           ~arity:2
-           ~alloc:false)
-
 let bind_sw arg k = match arg with
 | Lvar _ -> k arg
 | _ ->
@@ -1713,7 +1689,7 @@ let make_string_test_sequence loc arg sw d =
         (fun (s,lam) k ->
           Lifthenelse
             (Lprim
-               (prim_string_notequal,
+               (Pstringcomp Cneq,
                 [arg; Lconst (Const_immstring s)], loc),
              k,lam))
         sw d)
@@ -1744,7 +1720,7 @@ let rec do_make_string_test_tree loc arg sw delta d =
     let lt,(s,act),gt = split len sw in
     bind_sw
       (Lprim
-         (prim_string_compare,
+         (Pstringcomp Ceq,
           [arg; Lconst (Const_immstring s)], loc))
       (fun r ->
         tree_way_test loc r
@@ -2276,8 +2252,6 @@ let get_extension_cases tag_lambda_list =
   split_rec tag_lambda_list
 
     
-let extension_slot_eq = 
-   Pccall (Primitive.simple ~name:"#extension_slot_eq" ~arity:2 ~alloc:false)
 let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
     (tag_lambda_list, total1, pats) =
   if cstr.cstr_consts < 0 then begin
@@ -2302,7 +2276,7 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
             List.fold_right
               (fun (path, act) rem ->
                   let ext = transl_extension_path ex_pat.pat_env path in
-                  Lifthenelse(Lprim(extension_slot_eq , [Lvar tag; ext], loc),
+                  Lifthenelse(Lprim(Pextension_slot_eq, [Lvar tag; ext], loc),
                               act, rem))
               extension_cases
               default
@@ -2336,7 +2310,7 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
                 case *)
               let arg = 
                 if Datarepr.constructor_has_optional_shape cstr then
-                  Lprim(is_not_none_bs_primitve , [arg], loc)
+                  Lprim(Pis_not_none, [arg], loc)
                 else arg
               in 
                 Lifthenelse(arg, act2, act1)
@@ -2432,7 +2406,7 @@ let combine_variant names loc row arg partial ctx def
   else
     num_constr := max_int;
   let test_int_or_block arg if_int if_block =
-    Lifthenelse(Lprim (Pccall(Primitive.simple ~name:"#is_poly_var_block" ~arity:1 ~alloc:false), [arg], loc), if_block, if_int) in
+    Lifthenelse(Lprim (Pis_poly_var_block, [arg], loc), if_block, if_int) in
   let sig_complete =  List.length tag_lambda_list = !num_constr
   and one_action = same_actions tag_lambda_list in (* reduandant work under bs context *)
   let fail, local_jumps =
