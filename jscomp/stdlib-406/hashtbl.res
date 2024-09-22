@@ -15,7 +15,7 @@
 
 /* Hash tables */
 
-@noalloc external seeded_hash_param: (int, int, int, 'a) => int = "?hash"
+@noalloc external seeded_hash_param: (int, int, int, 'a) => int = "%hash"
 /* external old_hash_param :
  int -> int -> 'a -> int = "caml_hash_univ_param" [@@noalloc] */
 

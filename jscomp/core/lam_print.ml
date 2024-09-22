@@ -206,6 +206,10 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pis_poly_var_block -> fprintf ppf "#is_poly_var_block"
   | Pisout i -> fprintf ppf "isout %d" i
   | Pawait -> fprintf ppf "await"
+  | Phash -> fprintf ppf "hash"
+  | Phash_mixint -> fprintf ppf "hash_mix_int"
+  | Phash_mixstring -> fprintf ppf "hash_mix_string"
+  | Phash_finalmix -> fprintf ppf "hash_final_mix"
 
 type print_kind = Alias | Strict | StrictOpt | Variable | Recursive
 

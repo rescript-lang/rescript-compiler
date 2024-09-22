@@ -496,6 +496,22 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       match args with
       | [ e1 ] -> E.obj ~dup:e1 []
       | _ -> assert false)
+  | Phash -> (
+    match args with
+    | [ e1; e2; e3; e4 ] -> E.runtime_call Js_runtime_modules.hash "hash" args
+    | _ -> assert false)
+  | Phash_mixint -> (
+    match args with
+    | [ e1; e2 ] -> E.runtime_call Js_runtime_modules.hash "hash_mix_int" args
+    | _ -> assert false)
+  | Phash_mixstring -> (
+    match args with
+    | [ e1; e2 ] -> E.runtime_call Js_runtime_modules.hash "hash_mix_string" args
+    | _ -> assert false)
+  | Phash_finalmix -> (
+    match args with
+    | [ e1 ] -> E.runtime_call Js_runtime_modules.hash "hash_final_mix" args
+    | _ -> assert false)
   | Plazyforce
   (* FIXME: we don't inline lazy force or at least
      let buckle handle it

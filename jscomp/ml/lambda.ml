@@ -244,11 +244,17 @@ type primitive =
   | Pawait
   (* module *)
   | Pimport
+  (* hash*)
+  | Phash
+  | Phash_mixint
+  | Phash_mixstring
+  | Phash_finalmix
   (* Test if the argument is a block or an immediate integer *)
   | Pisint
   (* Test if the (integer) argument is outside an interval *)
   | Pisout
   | Pcreate_extension of string
+
 and comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge
 

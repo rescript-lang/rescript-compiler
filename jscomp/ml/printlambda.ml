@@ -229,6 +229,10 @@ let primitive ppf = function
   | Pcreate_extension s -> fprintf ppf "extension[%s]" s
   | Pawait -> fprintf ppf "await"
   | Pimport -> fprintf ppf "import"
+  | Phash -> fprintf ppf "hash"
+  | Phash_mixint -> fprintf ppf "hash_mix_int"
+  | Phash_mixstring -> fprintf ppf "hash_mix_string"
+  | Phash_finalmix -> fprintf ppf "hash_final_mix"
 
 let function_attribute ppf { inline; is_a_functor; return_unit } =
   if is_a_functor then

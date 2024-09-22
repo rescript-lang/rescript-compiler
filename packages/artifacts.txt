@@ -68,8 +68,6 @@ lib/es6/belt_internalSetBuckets.js
 lib/es6/belt_internalSetInt.js
 lib/es6/belt_internalSetString.js
 lib/es6/caml_exceptions.js
-lib/es6/caml_hash.js
-lib/es6/caml_hash_primitive.js
 lib/es6/caml_js_exceptions.js
 lib/es6/caml_undefined_extern.js
 lib/es6/char.js
@@ -127,6 +125,7 @@ lib/es6/primitive_bigint.js
 lib/es6/primitive_bool.js
 lib/es6/primitive_dict.js
 lib/es6/primitive_float.js
+lib/es6/primitive_hash.js
 lib/es6/primitive_int.js
 lib/es6/primitive_lazy.js
 lib/es6/primitive_module.js
@@ -182,8 +181,6 @@ lib/js/belt_internalSetBuckets.js
 lib/js/belt_internalSetInt.js
 lib/js/belt_internalSetString.js
 lib/js/caml_exceptions.js
-lib/js/caml_hash.js
-lib/js/caml_hash_primitive.js
 lib/js/caml_js_exceptions.js
 lib/js/caml_undefined_extern.js
 lib/js/char.js
@@ -240,6 +237,7 @@ lib/js/primitive_bigint.js
 lib/js/primitive_bool.js
 lib/js/primitive_dict.js
 lib/js/primitive_float.js
+lib/js/primitive_hash.js
 lib/js/primitive_int.js
 lib/js/primitive_lazy.js
 lib/js/primitive_module.js

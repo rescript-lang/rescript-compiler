@@ -296,6 +296,10 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Pmakedict -> prim ~primitive:Pmakedict ~args loc
   | Pawait -> prim ~primitive:Pawait ~args loc
   | Pimport -> prim ~primitive:Pimport ~args loc
+  | Phash -> prim ~primitive:Phash ~args loc
+  | Phash_mixint -> prim ~primitive:Phash_mixint ~args loc
+  | Phash_mixstring -> prim ~primitive:Phash_mixstring ~args loc
+  | Phash_finalmix -> prim ~primitive:Phash_finalmix ~args loc
 
 (* Does not exist since we compile array in js backend unlike native backend *)
 

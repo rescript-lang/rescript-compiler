@@ -317,7 +317,13 @@ let primitives_table =
       (* module *)
       ("%import", Pimport);
 
-      (* etc, depreacted *)
+      (* hash *)
+      ("%hash", Phash);
+      ("%hash_mix_int", Phash_mixint);
+      ("%hash_mix_string", Phash_mixstring);
+      ("%hash_final_mix", Phash_finalmix);
+
+      (* etc *)
       ("%intoffloat", Pintoffloat);
       ("%floatofint", Pfloatofint);
     |]

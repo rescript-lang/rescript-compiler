@@ -25,6 +25,8 @@
 module Obj = Primitive_object_extern
 
 external int_of_float: float => int = "%intoffloat"
+@send external charCodeAt: (string, int) => int = "charCodeAt"
+@get external stringLength: string => int = "length"
 
 type rec cell<'a> = {
   content: 'a,
@@ -78,7 +80,57 @@ let unsafe_pop = (q: t<'a>) =>
     cell.content
   }
 
-let {hash_mix_int, hash_final_mix, hash_mix_string} = module(Caml_hash_primitive)
+let rotl32 = (x: int, n) => lor(lsl(x, n), lsr(x, 32 - n))
+
+let hash_mix_int = (h, d) => {
+  let d = ref(d)
+  d.contents = d.contents * 0xcc9e2d51
+  d.contents = rotl32(d.contents, 15)
+  d.contents = d.contents * 0x1b873593
+  let h = ref(lxor(h, d.contents))
+  h.contents = rotl32(h.contents, 13)
+  h.contents + lsl(h.contents, 2) + 0xe6546b64
+}
+
+let hash_final_mix = h => {
+  let h = ref(lxor(h, lsr(h, 16)))
+  h.contents = h.contents * 0x85ebca6b
+  h.contents = lxor(h.contents, lsr(h.contents, 13))
+  h.contents = h.contents * 0xc2b2ae35
+  lxor(h.contents, lsr(h.contents, 16))
+}
+
+let hash_mix_string = (h, s) => {
+  let len = stringLength(s)
+  let block = len / 4 - 1
+  let hash = ref(h)
+  for i in 0 to block {
+    let j = 4 * i
+    let w = lor(
+      lor(lor(s->charCodeAt(j), lsl(s->charCodeAt(j + 1), 8)), lsl(s->charCodeAt(j + 2), 16)),
+      lsl(s->charCodeAt(j + 3), 24),
+    )
+
+    hash.contents = hash_mix_int(hash.contents, w)
+  }
+  let modulo = land(len, 0b11)
+  if modulo != 0 {
+    let w = if modulo == 3 {
+      lor(
+        lor(lsl(s->charCodeAt(len - 1), 16), lsl(s->charCodeAt(len - 2), 8)),
+        s->charCodeAt(len - 3),
+      )
+    } else if modulo == 2 {
+      lor(lsl(s->charCodeAt(len - 1), 8), s->charCodeAt(len - 2))
+    } else {
+      s->charCodeAt(len - 1)
+    }
+
+    hash.contents = hash_mix_int(hash.contents, w)
+  }
+  hash.contents = lxor(hash.contents, len)
+  hash.contents
+}
 
 let hash = (count: int, _limit, seed: int, obj: Obj.t): int => {
   let s = ref(seed)

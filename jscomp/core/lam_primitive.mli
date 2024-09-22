@@ -172,5 +172,9 @@ type t =
   | Pval_from_option_not_nest
   | Psome
   | Psome_not_nest
+  | Phash
+  | Phash_mixstring
+  | Phash_mixint
+  | Phash_finalmix
 
 val eq_primitive_approx : t -> t -> bool

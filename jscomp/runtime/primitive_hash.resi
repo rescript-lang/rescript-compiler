@@ -25,3 +25,4 @@
 let hash_mix_int: (int, int) => int
 let hash_mix_string: (int, string) => int
 let hash_final_mix: int => int
+let hash: (int, 'a, int, Primitive_object.t) => int

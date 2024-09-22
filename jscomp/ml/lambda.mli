@@ -219,6 +219,11 @@ type primitive =
   | Pawait
   (* modules *)
   | Pimport
+  (* hash *)
+  | Phash
+  | Phash_mixint
+  | Phash_mixstring
+  | Phash_finalmix
   (* Test if the argument is a block or an immediate integer *)
   | Pisint
   (* Test if the (integer) argument is outside an interval *)

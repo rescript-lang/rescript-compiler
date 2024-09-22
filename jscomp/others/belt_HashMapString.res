@@ -15,9 +15,9 @@
 
 type key = string
 type seed = int
-external caml_hash_mix_string: (seed, string) => seed = "?hash_mix_string"
-external final_mix: seed => seed = "?hash_final_mix"
-let hash = (s: key) => final_mix(caml_hash_mix_string(0, s))
+external hash_mix_string: (seed, string) => seed = "%hash_mix_string"
+external hash_final_mix: seed => seed = "%hash_final_mix"
+let hash = (s: key) => hash_final_mix(hash_mix_string(0, s))
 
 module N = Belt_internalBuckets
 module C = Belt_internalBucketsType

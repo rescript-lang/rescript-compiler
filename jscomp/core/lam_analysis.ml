@@ -87,6 +87,10 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* Compile time constants *)
       | Poffsetint _ | Pstringadd | Pjs_function_length
       | Pwrap_exn
+      | Phash
+      | Phash_mixstring
+      | Phash_mixint
+      | Phash_finalmix
       | Praw_js_code
           {
             code_info =

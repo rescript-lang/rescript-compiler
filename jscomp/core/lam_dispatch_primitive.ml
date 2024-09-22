@@ -37,24 +37,7 @@ module E = Js_exp_make
 *)
 let translate loc (prim_name : string) (args : J.expression list) : J.expression
     =
-  let[@inline] call ?name m =
-    let name =
-      match name with
-      | None ->
-          if prim_name.[0] = '?' then
-            String.sub prim_name 1 (String.length prim_name - 1)
-          else prim_name
-      | Some x -> x
-    in
-    E.runtime_call m name args
-  in
   match prim_name with
-  (******************************************************************************)
-  (************************* customized primitives ******************************)
-  (******************************************************************************)
-  | "?hash_mix_string" | "?hash_mix_int" | "?hash_final_mix" ->
-      call Js_runtime_modules.hash_primitive
-  | "?hash" -> call Js_runtime_modules.hash
   | missing_impl ->
     let msg = Warnings.message (Bs_unimplemented_primitive missing_impl) in
     Location.raise_errorf ~loc "%s" msg

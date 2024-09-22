@@ -46,15 +46,13 @@ let lazy_ = "Primitive_lazy"
 
 let option = "Primitive_option"
 
+let hash = "Primitive_hash"
+
 let deriving = "Runtime_deriving"
 
 let astExtensions = "Runtime_ast_extensions"
 
 let exceptions = "Caml_exceptions"
-
-let hash_primitive = "Caml_hash_primitive"
-
-let hash = "Caml_hash"
 
 let curry = "Curry"
 

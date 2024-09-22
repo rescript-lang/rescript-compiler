@@ -186,6 +186,10 @@ type t =
   | Pval_from_option_not_nest
   | Psome
   | Psome_not_nest
+  | Phash
+  | Phash_mixstring
+  | Phash_mixint
+  | Phash_finalmix
 
 let eq_field_dbg_info (x : Lam_compat.field_dbg_info)
     (y : Lam_compat.field_dbg_info) =
@@ -303,12 +307,15 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Parraysetu
   | Parrayrefs
   | Parraysets
-
   | Pjs_fn_make_unit
   | Pvoid_run
   | Pfull_apply
-  | Pjs_fn_method ->
-    rhs = lhs
+  | Pjs_fn_method
+  | Phash
+  | Phash_mixstring
+  | Phash_mixint
+  | Phash_finalmix
+      -> rhs = lhs
   | Pcreate_extension a -> (
       match rhs with Pcreate_extension b -> a = (b : string) | _ -> false)
   | Pisout l -> ( match rhs with Pisout r -> l = r | _ -> false)
