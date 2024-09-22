@@ -244,7 +244,7 @@ type primitive =
   | Pawait
   (* module *)
   | Pimport
-  (* hash*)
+  (* hash *)
   | Phash
   | Phash_mixint
   | Phash_mixstring

@@ -163,8 +163,6 @@ type t =
   | Praw_js_code of Js_raw_info.t
   | Pjs_fn_make of int
   | Pjs_fn_make_unit
-  | Pvoid_run
-  | Pfull_apply
   (* we wrap it when do the conversion to prevent
      accendential optimization
      play safe first
@@ -308,8 +306,6 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Parrayrefs
   | Parraysets
   | Pjs_fn_make_unit
-  | Pvoid_run
-  | Pfull_apply
   | Pjs_fn_method
   | Phash
   | Phash_mixstring

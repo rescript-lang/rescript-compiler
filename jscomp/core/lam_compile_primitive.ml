@@ -145,10 +145,9 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Pis_undefined -> E.is_undef (Ext_list.singleton_exn args)
   | Pis_null_undefined -> E.is_null_undefined (Ext_list.singleton_exn args)
   | Pjs_typeof -> E.typeof (Ext_list.singleton_exn args)
-  | Pjs_unsafe_downgrade _ | Pdebugger | Pvoid_run | Pfull_apply | Pjs_fn_make _ | Pjs_fn_make_unit
+  | Pjs_unsafe_downgrade _ | Pdebugger | Pjs_fn_make _ | Pjs_fn_make_unit | Pjs_fn_method
     ->
       assert false (* already handled by {!Lam_compile} *)
-  | Pjs_fn_method -> assert false
   | Pstringadd -> (
       match args with [ a; b ] -> E.string_append a b | _ -> assert false)
   | Pinit_mod -> E.runtime_call Js_runtime_modules.module_ "init_mod" args

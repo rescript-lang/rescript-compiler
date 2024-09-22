@@ -58,8 +58,6 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pjs_unsafe_downgrade { name; setter } ->
       if setter then fprintf ppf "##%s#=" name else fprintf ppf "##%s" name
   | Pjs_function_length -> fprintf ppf "#function_length"
-  | Pvoid_run -> fprintf ppf "#run"
-  | Pfull_apply -> fprintf ppf "#full_apply"
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
   | Pjs_fn_make_unit -> fprintf ppf "js_fn_make_unit"
   | Pjs_fn_method -> fprintf ppf "js_fn_method"

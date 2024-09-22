@@ -64,49 +64,6 @@ let simplify_alias (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
         | Some (OptionalBlock (l, _)) -> l
         | _ -> if p = Pval_from_option_not_nest then lvar else x)
     | Lglobal_module _ -> lam
-    | Lprim { primitive = Pfull_apply; args = Lvar v :: ap_args as args; loc }
-      -> (
-        (* Inline uncurried application when safe *)
-        let normal () =
-          Lam.prim ~primitive:Pfull_apply ~args:(Ext_list.map args simpl) loc
-        in
-        let ap_args = Ext_list.map ap_args simpl in
-        match Hash_ident.find_opt meta.ident_tbl v with
-        | Some
-            (FunctionId
-              {
-                lambda =
-                  Some
-                    ( Lfunction
-                        ({ params; body; attr = { is_a_functor = false } } as m),
-                      rec_flag );
-              })
-          when Ext_list.same_length ap_args params
-               && Lam_analysis.lfunction_can_be_inlined m
-               && Lam_analysis.ok_to_inline_fun_when_app m ap_args -> (
-            let param_map =
-              Lam_closure.is_closed_with_map meta.export_idents params body
-            in
-            let is_export_id = Set_ident.mem meta.export_idents v in
-            match (is_export_id, param_map) with
-            | false, (_, param_map) | true, (true, param_map) -> (
-                match rec_flag with
-                | Lam_rec ->
-                    Lam_beta_reduce.propagate_beta_reduce_with_map meta
-                      param_map params body ap_args
-                | Lam_self_rec -> normal ()
-                | Lam_non_rec ->
-                    if
-                      Ext_list.exists ap_args (fun lam ->
-                          Lam_hit.hit_variable v lam)
-                      (*avoid nontermination, e.g, `g(g)`*)
-                    then normal ()
-                    else
-                      simpl
-                        (Lam_beta_reduce.propagate_beta_reduce_with_map meta
-                           param_map params body ap_args))
-            | _ -> normal ())
-        | _ -> normal ())
     | Lprim { primitive; args; loc } ->
         Lam.prim ~primitive ~args:(Ext_list.map args simpl) loc
     | Lifthenelse

@@ -445,7 +445,6 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           | "#unsafe_eq" -> Pjscomp Ceq
           | "#unsafe_neq" -> Pjscomp Cneq
           | "#typeof" -> Pjs_typeof
-          | "#run" -> Pvoid_run
           | "#fn_mk" ->
               Pjs_fn_make (Ext_pervasives.nat_of_string_exn p.prim_native_name)
           | "#fn_mk_unit" ->
