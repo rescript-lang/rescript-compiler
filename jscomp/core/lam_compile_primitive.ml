@@ -483,7 +483,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
     match args with
     | [e] -> {e with expression_desc = Await e}
     | _ -> assert false)
-  | Pccall prim -> Lam_dispatch_primitive.translate loc prim.prim_name args
+  | Pccall prim -> assert false
   (* Lam_compile_external_call.translate loc cxt prim args *)
   (* Test if the argument is a block or an immediate integer *)
   | Pjs_object_create _ -> assert false
