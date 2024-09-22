@@ -114,6 +114,8 @@ lib/es6/jsxDOMStyle.js
 lib/es6/jsxEvent.js
 lib/es6/jsxPPXReactSupport.js
 lib/es6/lazy.js
+lib/es6/list.js
+lib/es6/map.js
 lib/es6/obj.js
 lib/es6/package.json
 lib/es6/pervasives.js
@@ -137,6 +139,7 @@ lib/es6/primitive_promise.js
 lib/es6/primitive_string.js
 lib/es6/primitive_string_extern.js
 lib/es6/primitive_util.js
+lib/es6/set.js
 lib/es6/string.js
 lib/js/array.js
 lib/js/belt.js
@@ -228,6 +231,8 @@ lib/js/jsxDOMStyle.js
 lib/js/jsxEvent.js
 lib/js/jsxPPXReactSupport.js
 lib/js/lazy.js
+lib/js/list.js
+lib/js/map.js
 lib/js/obj.js
 lib/js/pervasives.js
 lib/js/primitive_array.js
@@ -250,6 +255,7 @@ lib/js/primitive_promise.js
 lib/js/primitive_string.js
 lib/js/primitive_string_extern.js
 lib/js/primitive_util.js
+lib/js/set.js
 lib/js/string.js
 lib/minisocket.js
 lib/ocaml/array.cmi
@@ -708,6 +714,14 @@ lib/ocaml/lazy.cmt
 lib/ocaml/lazy.cmti
 lib/ocaml/lazy.res
 lib/ocaml/lazy.resi
+lib/ocaml/list.cmi
+lib/ocaml/list.cmj
+lib/ocaml/list.cmt
+lib/ocaml/list.res
+lib/ocaml/map.cmi
+lib/ocaml/map.cmj
+lib/ocaml/map.cmt
+lib/ocaml/map.res
 lib/ocaml/obj.cmi
 lib/ocaml/obj.cmj
 lib/ocaml/obj.cmt
@@ -810,6 +824,10 @@ lib/ocaml/primitive_util.cmi
 lib/ocaml/primitive_util.cmj
 lib/ocaml/primitive_util.cmt
 lib/ocaml/primitive_util.res
+lib/ocaml/set.cmi
+lib/ocaml/set.cmj
+lib/ocaml/set.cmt
+lib/ocaml/set.res
 lib/ocaml/string.cmi
 lib/ocaml/string.cmj
 lib/ocaml/string.cmt
