@@ -37,13 +37,13 @@ type t<+'a> = Js.nullable<'a> =
 external return: 'a => t<'a> = "%identity"
 
 /** Returns `true` if the given value is null or undefined, `false` otherwise. */
-external isNullable: t<'a> => bool = "#is_nullable"
+external isNullable: t<'a> => bool = "%is_nullable"
 
 /** The null value of type `Js.null_undefined<'a>`. */
-external null: t<'a> = "#null"
+external null: t<'a> = "%null"
 
 /** The undefined value of type `Js.null_undefined<'a>`. */
-external undefined: t<'a> = "#undefined"
+external undefined: t<'a> = "%undefined"
 
 /**
 Maps the contained value using the given function.
@@ -89,6 +89,6 @@ Maps `Js.null_undefined<'a>` to `option<'a>`.
 `undefined` => `None`
 `null` => `None`
 */
-external toOption: t<'a> => option<'a> = "#nullable_to_opt"
+external toOption: t<'a> => option<'a> = "%nullable_to_opt"
 
-@deprecated("Use toOption instead") external to_opt: t<'a> => option<'a> = "#nullable_to_opt"
+@deprecated("Use toOption instead") external to_opt: t<'a> => option<'a> = "%nullable_to_opt"

@@ -41,7 +41,7 @@ let asJsExn: exn => option<t> = exn =>
 type error
 @new external makeError: string => error = "Error"
 
-external anyToExnInternal: 'a => exn = "#wrap_exn"
+external anyToExnInternal: 'a => exn = "%wrap_exn"
 
 let raiseError = str => raise((Obj.magic((makeError(str): error)): exn))
 

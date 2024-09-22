@@ -8,7 +8,7 @@
 // Types defined here but should not export:
 // - ref (make sure not exported in public others/*.mli)
 
-external \"^": (string, string) => string = "#string_append"
+external \"^": (string, string) => string = "%string_concat"
 external \"=": ('a, 'a) => bool = "%equal"
 external \"<>": ('a, 'a) => bool = "%notequal"
 external \"==": ('a, 'a) => bool = "%eq"

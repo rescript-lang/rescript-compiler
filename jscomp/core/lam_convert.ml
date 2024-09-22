@@ -158,11 +158,14 @@ let unit = Lam.unit
 let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   match p with
   | Pidentity -> Ext_list.singleton_exn args
+  | Pnull -> Lam.const Const_js_null
+  | Pundefined -> Lam.const (Const_js_undefined { is_unit = false })
   | Pccall _ -> assert false
   | Prevapply -> assert false
   | Pdirapply -> assert false
   | Ploc _ -> assert false (* already compiled away here*)
   | Pcreate_extension s -> prim ~primitive:(Pcreate_extension s) ~args loc
+  | Pwrap_exn -> prim ~primitive:Pwrap_exn ~args loc
   | Pignore ->
       (* Pignore means return unit, it is not an nop *)
       seq (Ext_list.singleton_exn args) unit
@@ -210,6 +213,14 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
                 ~primitive:(Pmakeblock (tag, lazy_block_info, Mutable))
                 ~args loc
           | _ -> assert false))
+  | Pfn_arity -> prim ~primitive:Pfn_arity ~args loc
+  | Pdebugger -> prim ~primitive:Pdebugger ~args loc
+  | Ptypeof -> prim ~primitive:Ptypeof ~args loc
+  | Pisnullable -> prim ~primitive:Pis_null_undefined ~args loc
+  | Pnull_to_opt -> prim ~primitive:Pnull_to_opt ~args loc
+  | Pnullable_to_opt -> prim ~primitive:Pnull_undefined_to_opt ~args loc
+  | Pundefined_to_opt -> prim ~primitive:Pundefined_to_opt ~args loc
+  | Pjscomp x -> prim ~primitive:(Pjscomp x) ~args loc
   | Pfield (id, info) -> prim ~primitive:(Pfield (id, info)) ~args loc
   | Psetfield (id, info) -> prim ~primitive:(Psetfield (id, info)) ~args loc
   | Pduprecord -> prim ~primitive:Pduprecord ~args loc
@@ -249,6 +260,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Pstringorder -> prim ~primitive:Pstringorder ~args loc
   | Pstringmin -> prim ~primitive:Pstringmin ~args loc
   | Pstringmax -> prim ~primitive:Pstringmax ~args loc
+  | Pstringadd -> prim ~primitive:Pstringadd ~args loc
   | Pabsfloat -> assert false
   | Pstringrefs -> prim ~primitive:Pstringrefs ~args loc
   | Pisint -> prim ~primitive:Pisint ~args loc
@@ -293,6 +305,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Parraysetu -> prim ~primitive:Parraysetu ~args loc
   | Parrayrefs -> prim ~primitive:Parrayrefs ~args loc
   | Parraysets -> prim ~primitive:Parraysets ~args loc
+  | Pmakelist _mutable_flag (*FIXME*) -> prim ~primitive:Pmakelist ~args loc
   | Pmakedict -> prim ~primitive:Pmakedict ~args loc
   | Pawait -> prim ~primitive:Pawait ~args loc
   | Pimport -> prim ~primitive:Pimport ~args loc
@@ -300,6 +313,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Phash_mixint -> prim ~primitive:Phash_mixint ~args loc
   | Phash_mixstring -> prim ~primitive:Phash_mixstring ~args loc
   | Phash_finalmix -> prim ~primitive:Phash_finalmix ~args loc
+  | Pcurry_apply _ -> prim ~primitive:Pjs_apply ~args loc
 
 (* Does not exist since we compile array in js backend unlike native backend *)
 
@@ -344,10 +358,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
     match External_ffi_types.from_string a_prim.prim_native_name with
     | Ffi_normal ->
         if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then
-          convert_js_primitive a_prim args loc
-        else
-          let args = Ext_list.map args convert_aux in
-          prim ~primitive:(Pccall { prim_name }) ~args loc
+          convert_internal_primitive a_prim args loc
+        else assert false
     | Ffi_obj_create labels ->
         let args = Ext_list.map args convert_aux in
         prim ~primitive:(Pjs_object_create labels) ~args loc
@@ -360,24 +372,24 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         let args = Ext_list.map args convert_aux in
         Lam.handle_bs_non_obj_ffi arg_types result_type ffi args loc prim_name ~dynamic_import
     | Ffi_inline_const i -> Lam.const i
-  and convert_js_primitive (p : Primitive.description)
+  and convert_internal_primitive (p : Primitive.description)
       (args : Lambda.lambda list) loc : Lam.t =
     let s = p.prim_name in
-    match () with
-    | _ when s = "#is_not_none" ->
+    match s with
+    | "#is_not_none" ->
         prim ~primitive:Pis_not_none ~args:(Ext_list.map args convert_aux) loc
-    | _ when s = "#val_from_unnest_option" ->
+    | "#val_from_unnest_option" ->
         let v = convert_aux (Ext_list.singleton_exn args) in
         prim ~primitive:Pval_from_option_not_nest ~args:[ v ] loc
-    | _ when s = "#val_from_option" ->
+    | "#val_from_option" ->
         prim ~primitive:Pval_from_option
           ~args:(Ext_list.map args convert_aux)
           loc
-    | _ when s = "#is_poly_var_block" ->
+    | "#is_poly_var_block" ->
         prim ~primitive:Pis_poly_var_block
           ~args:(Ext_list.map args convert_aux)
           loc
-    | _ when s = "#raw_expr" -> (
+    | "#raw_expr" -> (
         match args with
         | [ Lconst (Const_base (Const_string (code, _))) ] ->
             (* js parsing here *)
@@ -386,7 +398,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
               ~primitive:(Praw_js_code { code; code_info = Exp kind })
               ~args:[] loc
         | _ -> assert false)
-    | _ when s = "#raw_stmt" -> (
+    | "#raw_stmt" -> (
         match args with
         | [ Lconst (Const_base (Const_string (code, _))) ] ->
             let kind = Classify_function.classify_stmt code in
@@ -394,24 +406,19 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
               ~primitive:(Praw_js_code { code; code_info = Stmt kind })
               ~args:[] loc
         | _ -> assert false)
-    | _ when s = "#debugger" ->
-        (* ATT: Currently, the arity is one due to PPX *)
-        prim ~primitive:Pdebugger ~args:[] loc
-    | _ when s = "#null" -> Lam.const Const_js_null
-    | _ when s = "#undefined" -> Lam.const (Const_js_undefined {is_unit = false})
-    | _ when s = "#init_mod" -> (
+    | "#init_mod" -> (
         let args = Ext_list.map args convert_aux in
         match args with
         | [ _loc; Lconst (Const_block (0, _, [ Const_block (0, _, []) ])) ] ->
             Lam.unit
         | _ -> prim ~primitive:Pinit_mod ~args loc)
-    | _ when s = "#update_mod" -> (
+    | "#update_mod" -> (
         let args = Ext_list.map args convert_aux in
         match args with
         | [ Lconst (Const_block (0, _, [ Const_block (0, _, []) ])); _; _ ] ->
             Lam.unit
         | _ -> prim ~primitive:Pupdate_mod ~args loc)
-    | _ when s = "#extension_slot_eq" -> (
+    | "#extension_slot_eq" -> (
         match Ext_list.map args convert_aux with
         | [ lhs; rhs ] ->
             prim
@@ -419,46 +426,30 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
               ~args:[ lam_extension_id loc lhs; rhs ]
               loc
         | _ -> assert false)
-    | _ ->
-        let primitive : Lam_primitive.t =
-          match s with
-          | "#apply" -> Pjs_runtime_apply
-          | "#apply1" | "#apply2" | "#apply3" | "#apply4" | "#apply5"
-          | "#apply6" | "#apply7" | "#apply8" ->
-              Pjs_apply
-          | "#makemutablelist" ->
-              Pmakeblock
-                ( 0,
-                  Blk_constructor { name = "::"; num_nonconst = 1; tag = 0; attrs = [] },
-                  Mutable )
-          | "#undefined_to_opt" -> Pundefined_to_opt
-          | "#nullable_to_opt" -> Pnull_undefined_to_opt
-          | "#null_to_opt" -> Pnull_to_opt
-          | "#is_nullable" -> Pis_null_undefined
-          | "#string_append" -> Pstringadd
-          | "#wrap_exn" -> Pwrap_exn
-          | "#function_length" -> Pjs_function_length
-          | "#unsafe_lt" -> Pjscomp Clt
-          | "#unsafe_gt" -> Pjscomp Cgt
-          | "#unsafe_le" -> Pjscomp Cle
-          | "#unsafe_ge" -> Pjscomp Cge
-          | "#unsafe_eq" -> Pjscomp Ceq
-          | "#unsafe_neq" -> Pjscomp Cneq
-          | "#typeof" -> Pjs_typeof
-          | "#fn_mk" ->
-              Pjs_fn_make (Ext_pervasives.nat_of_string_exn p.prim_native_name)
-          | "#fn_mk_unit" ->
-              Pjs_fn_make_unit
-          | "#fn_method" -> Pjs_fn_method
-          | "#unsafe_downgrade" ->
-              Pjs_unsafe_downgrade { name = Ext_string.empty; setter = false }
-          | _ ->
-              Location.raise_errorf ~loc
-                "@{<error>Error:@} internal error, using unrecognized \
-                 primitive %s"
-                s
+    | "#fn_mk" ->
+        let args = Ext_list.map args convert_aux in
+        let primitive: Lam_primitive.t =
+          Pjs_fn_make (Ext_pervasives.nat_of_string_exn p.prim_native_name)
         in
-        prim ~primitive ~args:(Ext_list.map args convert_aux) loc
+        prim ~primitive ~args loc
+    | "#fn_mk_unit" ->
+        let args = Ext_list.map args convert_aux in
+        prim ~primitive:Pjs_fn_make_unit ~args loc
+    | "#fn_method" ->
+        let args = Ext_list.map args convert_aux in
+        prim ~primitive:Pjs_fn_method ~args loc
+    | "#unsafe_downgrade" ->
+        let args = Ext_list.map args convert_aux in
+        let primitive: Lam_primitive.t = 
+          Pjs_unsafe_downgrade { name = Ext_string.empty; setter = false }
+        in
+        prim ~primitive ~args loc
+    | _ ->
+        Location.raise_errorf ~loc
+          "@{<error>Error:@} internal error, using unrecognized \
+            primitive %s"
+          s
+
   and convert_aux ?(dynamic_import = false) (lam : Lambda.lambda) : Lam.t =
     match lam with
     | Lvar x -> Lam.var (Hash_ident.find_default alias_tbl x x)

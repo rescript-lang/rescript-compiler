@@ -170,7 +170,7 @@ let classify_float = (x: float): fpclass =>
 
 /* String and byte sequence operations -- more in modules String and Bytes */
 
-external \"^": (string, string) => string = "#string_append"
+external \"^": (string, string) => string = "%string_concat"
 
 /* Character operations -- more in module Char */
 

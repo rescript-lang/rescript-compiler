@@ -30,12 +30,12 @@ type t<+'a> = Js.nullable<'a> =
   | @as(null) Null
   | @as(undefined) Undefined
 
-external toOption: t<'a> => option<'a> = "#nullable_to_opt"
-external to_opt: t<'a> => option<'a> = "#nullable_to_opt"
+external toOption: t<'a> => option<'a> = "%nullable_to_opt"
+external to_opt: t<'a> => option<'a> = "%nullable_to_opt"
 external return: 'a => t<'a> = "%identity"
-external isNullable: t<'a> => bool = "#is_nullable"
-external null: t<'a> = "#null"
-external undefined: t<'a> = "#undefined"
+external isNullable: t<'a> => bool = "%is_nullable"
+external null: t<'a> = "%null"
+external undefined: t<'a> = "%undefined"
 
 let bind = (x, f) =>
   switch to_opt(x) {

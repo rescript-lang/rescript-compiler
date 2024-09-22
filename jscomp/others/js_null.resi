@@ -37,7 +37,7 @@ external return: 'a => t<'a> = "%identity"
 let test: t<'a> => bool
 
 /** The empty value, `null` */
-external empty: t<'a> = "#null"
+external empty: t<'a> = "%null"
 
 external getUnsafe: t<'a> => 'a = "%identity"
 let getExn: t<'a> => 'a
@@ -85,6 +85,6 @@ Maps `Js.null<'a>` to `option<'a>`.
 `a` => `Some(a)`
 `empty` => `None`
 */
-external toOption: t<'a> => option<'a> = "#null_to_opt"
+external toOption: t<'a> => option<'a> = "%null_to_opt"
 
-@deprecated("Use toOption instead") external to_opt: t<'a> => option<'a> = "#null_to_opt"
+@deprecated("Use toOption instead") external to_opt: t<'a> => option<'a> = "%null_to_opt"

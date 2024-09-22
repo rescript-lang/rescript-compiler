@@ -151,13 +151,18 @@ type pointer_info =
 type primitive =
   | Pidentity
   | Pignore
+  | Pdebugger
+  | Ptypeof
+  | Pnull
+  | Pundefined
+  | Pfn_arity
   | Prevapply
   | Pdirapply
   | Ploc of loc_kind
     (* Globals *)
   | Pgetglobal of Ident.t
   (* Operations on heap blocks *)
-  | Pmakeblock of tag_info 
+  | Pmakeblock of tag_info
   | Pfield of int * field_dbg_info
   | Psetfield of int * set_field_dbg_info
 
@@ -206,13 +211,16 @@ type primitive =
   | Pstringlength | Pstringrefu  | Pstringrefs
   | Pstringcomp of comparison
   | Pstringorder | Pstringmin | Pstringmax
+  | Pstringadd
   (* Array operations *)
-  | Pmakearray of  mutable_flag
+  | Pmakearray of mutable_flag
   | Parraylength 
   | Parrayrefu 
   | Parraysetu 
   | Parrayrefs 
   | Parraysets 
+  (* List primitives *)
+  | Pmakelist of Asttypes.mutable_flag
   (* dict primitives *)
   | Pmakedict
   (* promise *)
@@ -228,7 +236,17 @@ type primitive =
   | Pisint
   (* Test if the (integer) argument is outside an interval *)
   | Pisout
+  (* Test if the argument is null or undefined *)
+  | Pisnullable
   | Pcreate_extension of string
+  | Pwrap_exn
+  | Pcurry_apply of int
+  (* js *)
+  | Pjscomp of comparison
+  | Pundefined_to_opt
+  | Pnull_to_opt
+  | Pnullable_to_opt
+
 and comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge
 

@@ -291,7 +291,7 @@ let rec apply fn args (ap_info : ap_info) : t =
             {
               primitive =
                 ( Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt
-                | Pis_null | Pis_null_undefined | Pjs_typeof ) as wrap;
+                | Pis_null | Pis_null_undefined | Ptypeof ) as wrap;
               args =
                 [
                   Lprim ({ primitive = _; args = inner_args } as primitive_call);

@@ -548,7 +548,7 @@ let classify_float: float => fpclass
 */
 /** String concatenation.
     Right-associative operator at precedence level 5/11. */
-external \"^": (string, string) => string = "#string_append"
+external \"^": (string, string) => string = "%string_concat"
 
 /* {1 Character operations}
 

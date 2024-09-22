@@ -100,14 +100,14 @@ type undefined<+'a>
 
 type null_undefined<+'a> = nullable<'a>
 
-external toOption: nullable<'a> => option<'a> = "#nullable_to_opt"
-external undefinedToOption: undefined<'a> => option<'a> = "#undefined_to_opt"
-external nullToOption: null<'a> => option<'a> = "#null_to_opt"
-external isNullable: nullable<'a> => bool = "#is_nullable"
+external toOption: nullable<'a> => option<'a> = "%nullable_to_opt"
+external undefinedToOption: undefined<'a> => option<'a> = "%undefined_to_opt"
+external nullToOption: null<'a> => option<'a> = "%null_to_opt"
+external isNullable: nullable<'a> => bool = "%is_nullable"
 external import: 'a => promise<'a> = "%import"
 
 /** The same as {!test} except that it is more permissive on the types of input */
-external testAny: 'a => bool = "#is_nullable"
+external testAny: 'a => bool = "%is_nullable"
 
 /**
   The promise type, defined here for interoperation across packages.
@@ -117,18 +117,18 @@ type promise<+'a, +'e>
 /**
   The same as empty in `Js.Null`. Compiles to `null`.
 */
-external null: null<'a> = "#null"
+external null: null<'a> = "%null"
 
 /**
   The same as empty `Js.Undefined`. Compiles to `undefined`.
 */
-external undefined: undefined<'a> = "#undefined"
+external undefined: undefined<'a> = "%undefined"
 
 /**
 `typeof x` will be compiled as `typeof x` in JS. Please consider functions in
 `Js.Types` for a type safe way of reflection.
 */
-external typeof: 'a => string = "#typeof"
+external typeof: 'a => string = "%typeof"
 
 @val @scope("console") /** Equivalent to console.log any value. */
 external log: 'a => unit = "log"
@@ -152,25 +152,25 @@ external eqNullable: ('a, nullable<'a>) => bool = "%equal_nullable"
     It is marked as unsafe, since it is impossible
     to give a proper semantics for comparision which applies to any type
 */
-external unsafe_lt: ('a, 'a) => bool = "#unsafe_lt"
+external unsafe_lt: ('a, 'a) => bool = "%unsafe_lt"
 
 /**
    `unsafe_le(a, b)` will be compiled as `a <= b`.
    See also `Js.unsafe_lt`.
 */
-external unsafe_le: ('a, 'a) => bool = "#unsafe_le"
+external unsafe_le: ('a, 'a) => bool = "%unsafe_le"
 
 /**
    `unsafe_gt(a, b)` will be compiled as `a > b`.
     See also `Js.unsafe_lt`.
 */
-external unsafe_gt: ('a, 'a) => bool = "#unsafe_gt"
+external unsafe_gt: ('a, 'a) => bool = "%unsafe_gt"
 
 /**
    `unsafe_ge(a, b)` will be compiled as `a >= b`.
    See also `Js.unsafe_lt`.
 */
-external unsafe_ge: ('a, 'a) => bool = "#unsafe_ge"
+external unsafe_ge: ('a, 'a) => bool = "%unsafe_ge"
 
 /* ## Nested Modules */
 

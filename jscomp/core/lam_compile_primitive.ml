@@ -139,12 +139,12 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       | [] | _ ->
           Location.raise_errorf ~loc
             "Invalid argument: Dynamic import must take a single module or module value as its argument.")
-  | Pjs_function_length -> E.function_length (Ext_list.singleton_exn args)
+  | Pfn_arity -> E.function_length (Ext_list.singleton_exn args)
   | Pobjsize -> E.obj_length (Ext_list.singleton_exn args)
   | Pis_null -> E.is_null (Ext_list.singleton_exn args)
   | Pis_undefined -> E.is_undef (Ext_list.singleton_exn args)
   | Pis_null_undefined -> E.is_null_undefined (Ext_list.singleton_exn args)
-  | Pjs_typeof -> E.typeof (Ext_list.singleton_exn args)
+  | Ptypeof -> E.typeof (Ext_list.singleton_exn args)
   | Pjs_unsafe_downgrade _ | Pdebugger | Pjs_fn_make _ | Pjs_fn_make_unit | Pjs_fn_method
     ->
       assert false (* already handled by {!Lam_compile} *)
@@ -461,6 +461,12 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Parrayrefs -> E.runtime_call Js_runtime_modules.array "get" args
   | Parraysets -> E.runtime_call Js_runtime_modules.array "set" args
   | Pmakearray -> Js_of_lam_array.make_array Mutable args
+  | Pmakelist ->
+      Js_of_lam_block.make_block
+        (Js_op_util.of_lam_mutable_flag Mutable)
+        (Blk_constructor { name = "::"; num_nonconst = 1; tag = 0; attrs = [] })
+        (E.small_int 0)
+        args
   | Pmakedict -> (
     match args with
     | [{expression_desc = Array (items, _)}] ->

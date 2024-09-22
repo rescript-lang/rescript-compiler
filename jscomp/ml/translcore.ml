@@ -300,6 +300,7 @@ let primitives_table =
       ("%stringorder", Pstringorder);
       ("%stringmin", Pstringmin);
       ("%stringmax", Pstringmax);
+      ("%string_concat", Pstringadd);
 
       (* array primitives *)
       ("%array_length", Parraylength);
@@ -324,8 +325,33 @@ let primitives_table =
       ("%hash_final_mix", Phash_finalmix);
 
       (* etc *)
+      ("%typeof", Ptypeof);
+      ("%debugger", Pdebugger);
       ("%intoffloat", Pintoffloat);
       ("%floatofint", Pfloatofint);
+      ("%unsafe_eq", Pjscomp Ceq);
+      ("%unsafe_neq", Pjscomp Cneq);
+      ("%unsafe_lt", Pjscomp Clt);
+      ("%unsafe_le", Pjscomp Cle);
+      ("%unsafe_gt", Pjscomp Cgt);
+      ("%unsafe_ge", Pjscomp Cge);
+      ("%null", Pnull);
+      ("%undefined", Pundefined);
+      ("%is_nullable", Pisnullable);
+      ("%undefined_to_opt", Pundefined_to_opt);
+      ("%null_to_opt", Pnull_to_opt);
+      ("%nullable_to_opt", Pnullable_to_opt);
+      ("%function_arity", Pfn_arity);
+      ("%wrap_exn", Pwrap_exn);
+      ("%curry_apply1", Pcurry_apply 1);
+      ("%curry_apply2", Pcurry_apply 2);
+      ("%curry_apply3", Pcurry_apply 3);
+      ("%curry_apply4", Pcurry_apply 4);
+      ("%curry_apply5", Pcurry_apply 5);
+      ("%curry_apply6", Pcurry_apply 6);
+      ("%curry_apply7", Pcurry_apply 7);
+      ("%curry_apply8", Pcurry_apply 8);
+      ("%makemutablelist", Pmakelist Mutable);
     |]
 
 let find_primitive prim_name = Hashtbl.find primitives_table prim_name

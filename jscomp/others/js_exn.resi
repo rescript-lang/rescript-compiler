@@ -61,7 +61,7 @@ switch (Js.Exn.unsafeAnyToExn("test")) {
 }
 ```
 */
-external anyToExnInternal: 'a => exn = "#wrap_exn"
+external anyToExnInternal: 'a => exn = "%wrap_exn"
 
 /** Raise Js exception Error object with stacktrace */
 let raiseError: string => 'a

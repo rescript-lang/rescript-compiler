@@ -105,6 +105,11 @@ let print_taginfo ppf = function
 let primitive ppf = function
   | Pidentity -> fprintf ppf "id"
   | Pignore -> fprintf ppf "ignore"
+  | Pdebugger -> fprintf ppf "debugger"
+  | Ptypeof -> fprintf ppf "typeof"
+  | Pnull -> fprintf ppf "null"
+  | Pundefined -> fprintf ppf "undefined"
+  | Pfn_arity -> fprintf ppf "fn.length"
   | Prevapply -> fprintf ppf "revapply"
   | Pdirapply -> fprintf ppf "dirapply"
   | Ploc kind -> fprintf ppf "%s" (string_of_loc_kind kind)
@@ -216,6 +221,7 @@ let primitive ppf = function
   | Pstringorder -> fprintf ppf "compare"
   | Pstringmin -> fprintf ppf "min"
   | Pstringmax -> fprintf ppf "max"
+  | Pstringadd -> fprintf ppf "string.concat"
   | Parraylength  -> fprintf ppf "array.length" 
   | Pmakearray Mutable -> fprintf ppf "makearray" 
   | Pmakearray Immutable -> fprintf ppf "makearray_imm" 
@@ -223,16 +229,30 @@ let primitive ppf = function
   | Parraysetu -> fprintf ppf "array.unsafe_set" 
   | Parrayrefs -> fprintf ppf "array.get" 
   | Parraysets -> fprintf ppf "array.set" 
+  | Pmakelist Mutable -> fprintf ppf "makelist"
+  | Pmakelist Immutable -> fprintf ppf "makelist_imm"
   | Pmakedict -> fprintf ppf "makedict"
   | Pisint -> fprintf ppf "isint"
   | Pisout -> fprintf ppf "isout"
+  | Pisnullable -> fprintf ppf "isnullable"
   | Pcreate_extension s -> fprintf ppf "extension[%s]" s
+  | Pwrap_exn -> fprintf ppf "wrap_exn"
   | Pawait -> fprintf ppf "await"
   | Pimport -> fprintf ppf "import"
   | Phash -> fprintf ppf "hash"
   | Phash_mixint -> fprintf ppf "hash_mix_int"
   | Phash_mixstring -> fprintf ppf "hash_mix_string"
   | Phash_finalmix -> fprintf ppf "hash_final_mix"
+  | Pcurry_apply i -> fprintf ppf "apply[%d]" i
+  | Pjscomp(Ceq) -> fprintf ppf "=="
+  | Pjscomp(Cneq) -> fprintf ppf "!="
+  | Pjscomp(Clt) -> fprintf ppf "<"
+  | Pjscomp(Cle) -> fprintf ppf "<="
+  | Pjscomp(Cgt) -> fprintf ppf ">"
+  | Pjscomp(Cge) -> fprintf ppf ">="
+  | Pundefined_to_opt -> fprintf ppf "undefined_to_opt"
+  | Pnull_to_opt -> fprintf ppf "null_to_opt"
+  | Pnullable_to_opt -> fprintf ppf "nullable_to_opt"
 
 let function_attribute ppf { inline; is_a_functor; return_unit } =
   if is_a_functor then

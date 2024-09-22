@@ -57,13 +57,13 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pjs_runtime_apply -> fprintf ppf "#runtime_apply"
   | Pjs_unsafe_downgrade { name; setter } ->
       if setter then fprintf ppf "##%s#=" name else fprintf ppf "##%s" name
-  | Pjs_function_length -> fprintf ppf "#function_length"
+  | Pfn_arity -> fprintf ppf "fn.length"
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
   | Pjs_fn_make_unit -> fprintf ppf "js_fn_make_unit"
   | Pjs_fn_method -> fprintf ppf "js_fn_method"
   | Pdebugger -> fprintf ppf "debugger"
   | Praw_js_code _ -> fprintf ppf "[raw]"
-  | Pjs_typeof -> fprintf ppf "[typeof]"
+  | Ptypeof -> fprintf ppf "typeof"
   | Pnull_to_opt -> fprintf ppf "[null->opt]"
   | Pundefined_to_opt -> fprintf ppf "[undefined->opt]"
   | Pnull_undefined_to_opt -> fprintf ppf "[null/undefined->opt]"
@@ -195,6 +195,7 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pstringmax -> fprintf ppf "max"
   | Parraylength -> fprintf ppf "array.length"
   | Pmakearray -> fprintf ppf "makearray"
+  | Pmakelist -> fprintf ppf "makelist"
   | Pmakedict -> fprintf ppf "makedict"
   | Parrayrefu -> fprintf ppf "array.unsafe_get"
   | Parraysetu -> fprintf ppf "array.unsafe_set"

@@ -45,7 +45,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
           match args with
           | [ _; Lconst cst ] -> not_zero_constant cst
           | _ -> false)
-      | Pcreate_extension _ | Pjs_typeof | Pis_null | Pis_not_none | Psome
+      | Pcreate_extension _ | Ptypeof | Pis_null | Pis_not_none | Psome
       | Psome_not_nest | Pis_undefined | Pis_null_undefined | Pnull_to_opt
       | Pundefined_to_opt | Pnull_undefined_to_opt | Pjs_fn_make _ | Pjs_fn_make_unit
       | Pjs_object_create _ | Pimport
@@ -77,6 +77,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pstringcomp _ | Pstringorder | Pstringmin | Pstringmax
       (* array primitives *)
       | Pmakearray | Parraylength | Parrayrefu | Parrayrefs
+      (* list primitives *)
+      | Pmakelist
       (* dict primitives *)
       | Pmakedict
       (* Test if the argument is a block or an immediate integer *)
@@ -85,7 +87,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pisout _
       (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
       (* Compile time constants *)
-      | Poffsetint _ | Pstringadd | Pjs_function_length
+      | Poffsetint _ | Pstringadd | Pfn_arity
       | Pwrap_exn
       | Phash
       | Phash_mixstring

@@ -144,6 +144,9 @@ type t =
   | Parrayrefs
   | Parraysets
 
+  (* List primitives *)
+  | Pmakelist
+
   (* dict primitives *)
   | Pmakedict
 
@@ -175,8 +178,8 @@ type t =
   | Pis_undefined
   | Pis_null_undefined
   | Pimport
-  | Pjs_typeof
-  | Pjs_function_length
+  | Ptypeof
+  | Pfn_arity
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
   | Pcreate_extension of string
   | Pis_not_none (* no info about its type *)
@@ -272,6 +275,8 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Pstringorder
   | Pstringmin
   | Pstringmax
+  (* List primitives *)
+  | Pmakelist
   (* dict primitives *)
   | Pmakedict
   (* promise *)
@@ -291,13 +296,13 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Pis_undefined
   | Pis_null_undefined
   | Pimport
-  | Pjs_typeof
+  | Ptypeof
+  | Pfn_arity
   | Plazyforce
   | Pis_poly_var_block
   | Pdebugger
   | Pinit_mod
   | Pupdate_mod
-  | Pjs_function_length
   | Pduprecord
   | Pmakearray
   | Parraylength
