@@ -40,7 +40,6 @@ and ident_list = ident_create "list"
 and ident_option = ident_create "option"
 and ident_result = ident_create "result"
 and ident_dict = ident_create "dict"
-and ident_int64 = ident_create "int64"
 and ident_bigint = ident_create "bigint"
 and ident_lazy_t = ident_create "lazy_t"
 and ident_string = ident_create "string"
@@ -285,7 +284,6 @@ let common_initial_env add_type add_extension empty_env =
                          [newgenty (Ttuple[type_string; type_int; type_int])] (
   add_exception ident_undefined_recursive_module
                          [newgenty (Ttuple[type_string; type_int; type_int])] (
-  add_type ident_int64 decl_abstr (
   add_type ident_bigint decl_abstr (
 
   add_type ident_lazy_t decl_lazy_t (
@@ -304,7 +302,7 @@ let common_initial_env add_type add_extension empty_env =
   add_type ident_int decl_abstr_imm (
   add_type ident_extension_constructor decl_abstr (
     add_type ident_promise decl_promise (
-      empty_env)))))))))))))))))))))))))))
+      empty_env))))))))))))))))))))))))))
 
 let build_initial_env add_type add_exception empty_env =
   let common = common_initial_env add_type add_exception empty_env in
