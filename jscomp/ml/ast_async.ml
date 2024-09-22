@@ -6,7 +6,7 @@ let add_promise_type ?(loc = Location.none) ~async
   if async then
     let unsafe_async =
       Ast_helper.Exp.ident ~loc
-        {txt = Ldot (Lident Js_runtime_modules.promise, "unsafe_async"); loc}
+        {txt = Ldot (Lident Primitive_modules.promise, "unsafe_async"); loc}
     in
     Ast_helper.Exp.apply ~loc unsafe_async [(Nolabel, result)]
   else result

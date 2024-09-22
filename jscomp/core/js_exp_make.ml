@@ -1119,7 +1119,7 @@ let int32_div ~checked ?comment (e1 : t) (e2 : t) : t =
       | Number (Int { i = i0 }) -> int (Int32.div i0 i1)
       | _ -> to_int32 (float_div ?comment e1 e2))
   | _, _ ->
-      if checked then runtime_call Js_runtime_modules.int "div" [ e1; e2 ]
+      if checked then runtime_call Primitive_modules.int "div" [ e1; e2 ]
       else to_int32 (float_div ?comment e1 e2)
 
 let int32_mod ~checked ?comment e1 (e2 : t) : J.expression =
@@ -1127,7 +1127,7 @@ let int32_mod ~checked ?comment e1 (e2 : t) : J.expression =
   | Number (Int { i }) when i <> 0l ->
       { comment; expression_desc = Bin (Mod, e1, e2) }
   | _ ->
-      if checked then runtime_call Js_runtime_modules.int "mod_" [ e1; e2 ]
+      if checked then runtime_call Primitive_modules.int "mod_" [ e1; e2 ]
       else { comment; expression_desc = Bin (Mod, e1, e2) }
 
 let float_mul ?comment e1 e2 = bin ?comment Mul e1 e2
@@ -1231,13 +1231,13 @@ let bigint_comp (cmp : Lam_compat.comparison) ?comment (e0: t) (e1: t) =
 
 let bigint_div ~checked ?comment (e0: t) (e1: t) =
   if checked then
-    runtime_call Js_runtime_modules.bigint "div" [e0; e1]
+    runtime_call Primitive_modules.bigint "div" [e0; e1]
   else
     bigint_op ?comment Div e0 e1
 
 let bigint_mod ~checked ?comment (e0: t) (e1: t) =
   if checked then
-    runtime_call Js_runtime_modules.bigint "mod_" [e0; e1]
+    runtime_call Primitive_modules.bigint "mod_" [e0; e1]
   else
     bigint_op ?comment Mod e0 e1
 
@@ -1306,7 +1306,7 @@ let neq_null_undefined_boolean ?comment (a : t) (b : t) =
   | _ -> { expression_desc = Bin (NotEqEq, a, b); comment }
 
 let make_exception (s : string) =
-  pure_runtime_call Js_runtime_modules.exceptions Literals.create [ str s ]
+  pure_runtime_call Primitive_modules.exceptions Literals.create [ str s ]
 
 let rec variadic_args (args : t list) =
   match args with

@@ -130,7 +130,7 @@ let app2 = Ast_compatible.app2
 let ( ->~ ) a b = Ast_compatible.arrow a b
 
 let raise_when_not_found_ident =
-  Longident.Ldot (Lident Js_runtime_modules.util, "raiseWhenNotFound")
+  Longident.Ldot (Lident Primitive_modules.util, "raiseWhenNotFound")
 
 let raise_when_not_found x =
   app1 (Exp.ident {loc = noloc; txt = raise_when_not_found_ident}) x

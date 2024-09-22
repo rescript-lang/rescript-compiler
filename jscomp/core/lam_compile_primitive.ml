@@ -78,7 +78,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Pis_not_none -> Js_of_lam_option.is_not_none (Ext_list.singleton_exn args)
   | Pcreate_extension s -> E.make_exception s
   | Pwrap_exn ->
-      E.runtime_call Js_runtime_modules.exceptions
+      E.runtime_call Primitive_modules.exceptions
         "internalToException" args
   | Praw_js_code { code; code_info } -> E.raw_js_code code_info code
   (* FIXME: save one allocation
@@ -96,7 +96,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       | [ e ] -> (
           match e.expression_desc with
           | Var _ | Undefined _ | Null -> Js_of_lam_option.null_to_opt e
-          | _ -> E.runtime_call Js_runtime_modules.option "fromNull" args)
+          | _ -> E.runtime_call Primitive_modules.option "fromNull" args)
       | _ -> assert false)
   | Pundefined_to_opt -> (
       match args with
@@ -104,14 +104,14 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
           match e.expression_desc with
           | Var _ | Undefined _ | Null -> Js_of_lam_option.undef_to_opt e
           | _ ->
-              E.runtime_call Js_runtime_modules.option "fromUndefined" args)
+              E.runtime_call Primitive_modules.option "fromUndefined" args)
       | _ -> assert false)
   | Pnull_undefined_to_opt -> (
       match args with
       | [ e ] -> (
           match e.expression_desc with
           | Var _ | Undefined _ | Null -> Js_of_lam_option.null_undef_to_opt e
-          | _ -> E.runtime_call Js_runtime_modules.option "fromNullable" args
+          | _ -> E.runtime_call Primitive_modules.option "fromNullable" args
           )
       | _ -> assert false)
   (* Compile %import: The module argument for dynamic import is represented as a path,
@@ -150,8 +150,8 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       assert false (* already handled by {!Lam_compile} *)
   | Pstringadd -> (
       match args with [ a; b ] -> E.string_append a b | _ -> assert false)
-  | Pinit_mod -> E.runtime_call Js_runtime_modules.module_ "init_mod" args
-  | Pupdate_mod -> E.runtime_call Js_runtime_modules.module_ "update_mod" args
+  | Pinit_mod -> E.runtime_call Primitive_modules.module_ "init_mod" args
+  | Pupdate_mod -> E.runtime_call Primitive_modules.module_ "update_mod" args
   | Psome -> (
       let arg = Ext_list.singleton_exn args in
       match arg.expression_desc with
@@ -301,7 +301,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Pstringlength -> E.string_length (Ext_list.singleton_exn args)
   | Pstringrefs | Pstringrefu -> (
       match args with
-      | [ e; e1 ] -> E.runtime_call Js_runtime_modules.string "getChar" args
+      | [ e; e1 ] -> E.runtime_call Primitive_modules.string "getChar" args
       | _ -> assert false)
   (* polymorphic operations *)
   | Pobjcomp cmp -> (
@@ -316,23 +316,23 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
         E.neq_null_undefined_boolean e1 e2
       | [ e1; e2 ] ->
         Location.prerr_warning loc Warnings.Bs_polymorphic_comparison;
-        E.runtime_call Js_runtime_modules.object_
+        E.runtime_call Primitive_modules.object_
             (Lam_compile_util.runtime_of_comp cmp) args
       | _ -> assert false)
   | Pobjorder -> (
       Location.prerr_warning loc Warnings.Bs_polymorphic_comparison;
       match args with
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.object_ "compare" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.object_ "compare" args
       | _ -> assert false)
   | Pobjmin -> (
       Location.prerr_warning loc Warnings.Bs_polymorphic_comparison;
       match args with
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.object_ "min" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.object_ "min" args
       | _ -> assert false)
   | Pobjmax -> (
       Location.prerr_warning loc Warnings.Bs_polymorphic_comparison;
       match args with
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.object_ "max" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.object_ "max" args
       | _ -> assert false)
   | Pobjtag -> (
       (* Note that in ocaml, [int] has tag [1000] and [string] has tag [252]
@@ -344,7 +344,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       | [ { expression_desc = Bool a }; { expression_desc = Bool b } ] ->
           let c = compare (a : bool) b in
           E.int (if c = 0 then 0l else if c > 0 then 1l else -1l)
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.bool "compare" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.bool "compare" args
       | _ -> assert false)
   | Pboolmin -> (
       match args with
@@ -353,88 +353,88 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
             Js_analyzer.is_okay_to_duplicate a
             && Js_analyzer.is_okay_to_duplicate b
           then E.econd (E.js_comp Clt a b) a b
-          else E.runtime_call Js_runtime_modules.bool "min" args
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.bool "min" args
+          else E.runtime_call Primitive_modules.bool "min" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.bool "min" args
       | _ -> assert false)
   | Pboolmax -> (
       match args with
       | [ { expression_desc = Bool _ } as a; { expression_desc = Bool _ } as b ]
         when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
             E.econd (E.js_comp Cgt a b) a b
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.bool "max" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.bool "max" args
       | _ -> assert false)
   | Pintorder -> (
       match args with
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.int "compare" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.int "compare" args
       | _ -> assert false)
   | Pintmin -> (
       match args with
       | [ { expression_desc = Number (Int _) } as a; { expression_desc = Number (Int _) } as b ]
         when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
             E.econd (E.js_comp Clt a b) a b
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.int "min" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.int "min" args
       | _ -> assert false)
   | Pintmax -> (
       match args with
       | [ { expression_desc = Number (Int _) } as a; { expression_desc = Number (Int _) } as b ]
         when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
             E.econd (E.js_comp Cgt a b) a b
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.int "max" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.int "max" args
       | _ -> assert false)
   | Pfloatorder -> (
       match args with
       | [ a; b ] as args ->
-        E.runtime_call Js_runtime_modules.float "compare" args
+        E.runtime_call Primitive_modules.float "compare" args
       | _ -> assert false)
   | Pfloatmin -> (
       match args with
       | [ { expression_desc = Number (Float _) } as a; { expression_desc = Number (Float _) } as b ]
         when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
             E.econd (E.js_comp Clt a b) a b
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.float "min" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.float "min" args
       | _ -> assert false)
   | Pfloatmax -> (
       match args with
       | [ { expression_desc = Number (Float _) } as a; { expression_desc = Number (Float _) } as b ]
         when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
             E.econd (E.js_comp Cgt a b) a b
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.float "max" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.float "max" args
       | _ -> assert false)
   | Pbigintorder -> (
       match args with
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.bigint "compare" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.bigint "compare" args
       | _ -> assert false)
   | Pbigintmin -> (
       match args with
       | [ { expression_desc = Number (BigInt _) } as a; { expression_desc = Number (BigInt _) } as b ]
         when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
             E.econd (E.js_comp Clt a b) a b
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.bigint "min" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.bigint "min" args
       | _ -> assert false)
   | Pbigintmax -> (
       match args with
       | [ { expression_desc = Number (Float _) } as a; { expression_desc = Number (Float _) } as b ]
         when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
             E.econd (E.js_comp Cgt a b) a b
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.bigint "max" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.bigint "max" args
       | _ -> assert false)
   | Pstringorder -> (
       match args with
-      | [ a; b ] -> E.runtime_call Js_runtime_modules.string "compare" args
+      | [ a; b ] -> E.runtime_call Primitive_modules.string "compare" args
       | _ -> assert false)
   | Pstringmin -> (
       match args with
       | [ { expression_desc = Str _ } as a; { expression_desc = Str _ } as b ]
         when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
             E.econd (E.js_comp Clt a b) a b
-      | [a; b] -> E.runtime_call Js_runtime_modules.string "min" args
+      | [a; b] -> E.runtime_call Primitive_modules.string "min" args
       | _ -> assert false)
   | Pstringmax -> (
       match args with
       | [ { expression_desc = Str _ } as a; { expression_desc = Str _ } as b ]
         when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
             E.econd (E.js_comp Cgt a b) a b
-      | [a; b] -> E.runtime_call Js_runtime_modules.string "max" args
+      | [a; b] -> E.runtime_call Primitive_modules.string "max" args
       | _ -> assert false)
   (* only when Lapply -> expand = true*)
   | Praise -> assert false (* handled before here *)
@@ -452,8 +452,8 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       match args with
       | [ e; e1 ] -> Js_of_lam_array.ref_array e e1 (* Todo: Constant Folding *)
       | _ -> assert false)
-  | Parrayrefs -> E.runtime_call Js_runtime_modules.array "get" args
-  | Parraysets -> E.runtime_call Js_runtime_modules.array "set" args
+  | Parrayrefs -> E.runtime_call Primitive_modules.array "get" args
+  | Parraysets -> E.runtime_call Primitive_modules.array "set" args
   | Pmakearray -> Js_of_lam_array.make_array Mutable args
   | Pmakelist ->
       Js_of_lam_block.make_block
@@ -497,19 +497,19 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       | _ -> assert false)
   | Phash -> (
     match args with
-    | [ e1; e2; e3; e4 ] -> E.runtime_call Js_runtime_modules.hash "hash" args
+    | [ e1; e2; e3; e4 ] -> E.runtime_call Primitive_modules.hash "hash" args
     | _ -> assert false)
   | Phash_mixint -> (
     match args with
-    | [ e1; e2 ] -> E.runtime_call Js_runtime_modules.hash "hash_mix_int" args
+    | [ e1; e2 ] -> E.runtime_call Primitive_modules.hash "hash_mix_int" args
     | _ -> assert false)
   | Phash_mixstring -> (
     match args with
-    | [ e1; e2 ] -> E.runtime_call Js_runtime_modules.hash "hash_mix_string" args
+    | [ e1; e2 ] -> E.runtime_call Primitive_modules.hash "hash_mix_string" args
     | _ -> assert false)
   | Phash_finalmix -> (
     match args with
-    | [ e1 ] -> E.runtime_call Js_runtime_modules.hash "hash_final_mix" args
+    | [ e1 ] -> E.runtime_call Primitive_modules.hash "hash_final_mix" args
     | _ -> assert false)
   | Plazyforce
   (* FIXME: we don't inline lazy force or at least

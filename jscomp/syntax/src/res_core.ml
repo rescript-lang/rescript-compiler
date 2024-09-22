@@ -3967,7 +3967,7 @@ and parse_dict_expr ~start_pos p =
   Ast_helper.Exp.apply ~loc
     (Ast_helper.Exp.ident ~loc
        (Location.mkloc
-          (Longident.Ldot (Longident.Lident Js_runtime_modules.dict, "make"))
+          (Longident.Ldot (Longident.Lident Primitive_modules.dict, "make"))
           loc))
     [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc key_value_pairs)]
 
