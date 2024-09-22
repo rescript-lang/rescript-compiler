@@ -355,6 +355,12 @@ let primitives_table =
       (* Compiler internals, never expose to ReScript files *)
       ("#raw_expr", Pjs_raw_expr);
       ("#raw_stmt", Pjs_raw_stmt);
+
+      (* FIXME: Core compatibility *)
+      ("#null", Pundefined);
+      ("#undefined", Pundefined);
+      ("#is_nullable", Pisnullable);
+      ("#nullable_to_opt", Pnullable_to_opt);
     |]
 
 let find_primitive prim_name = Hashtbl.find primitives_table prim_name
