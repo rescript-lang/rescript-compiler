@@ -64,17 +64,6 @@ and translate (x : Lam_constant.t) : J.expression =
       Js_of_lam_block.make_block NA tag_info (E.small_int tag)
         (Ext_list.map xs translate)
   | Const_float_array ars ->
-      (* according to the compiler
-          const_float_array is immutable
-         {[ Lprim(Pccall prim_obj_dup, [master]) ]},
-          however, we can not translate
-         {[ prim_obj_dup(x) =>  x' ]}
-          since x' is now mutable, prim_obj_dup does a copy,
-
-          the compiler does this  is mainly to extract common data into data section,
-          we  deoptimized this in js backend? so it is actually mutable
-      *)
-      (* TODO-- *)
       Js_of_lam_array.make_array Mutable (Ext_list.map ars E.float)
 
 (* E.arr Mutable ~comment:"float array" *)

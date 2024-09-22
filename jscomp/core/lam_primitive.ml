@@ -45,7 +45,6 @@ type t =
   | Plazyforce
 
   (* External call *)
-  | Pccall of { prim_name : string }
   | Pjs_call of {
       prim_name : string;
       arg_types : External_arg_spec.params;
@@ -321,8 +320,6 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
       match rhs with Pcreate_extension b -> a = (b : string) | _ -> false)
   | Pisout l -> ( match rhs with Pisout r -> l = r | _ -> false)
   (* | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length *)
-  | Pccall { prim_name = n0 } -> (
-      match rhs with Pccall { prim_name = n1 } -> n0 = n1 | _ -> false)
   | Pfield (n0, info0) -> (
       match rhs with
       | Pfield (n1, info1) -> n0 = n1 && eq_field_dbg_info info0 info1

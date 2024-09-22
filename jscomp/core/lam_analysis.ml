@@ -40,7 +40,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       Ext_list.for_all args no_side_effects
       &&
       match primitive with
-      | Pccall _ -> true
       | Pmodint | Pdivint | Pdivbigint | Pmodbigint -> (
           match args with
           | [ _; Lconst cst ] -> not_zero_constant cst

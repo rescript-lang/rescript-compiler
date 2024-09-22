@@ -65,9 +65,6 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) : Lam_arity.t =
       match (Lam_compile_env.query_external_id_info ~dynamic_import id name).arity with
       | Submodule subs -> subs.(m) (* TODO: shall we store it as array?*)
       | Single _ -> Lam_arity.na)
-  (* TODO: all information except Pccall is complete, we could
-     get more arity information
-  *)
   | Lprim
       { primitive = Praw_js_code { code_info = Exp (Js_function { arity }) } }
     ->
