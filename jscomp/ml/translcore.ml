@@ -182,6 +182,28 @@ let comparisons_table =
           bigintcomp = Pbigintcomp Ceq;
           simplify_constant_constructor = false;
         } );
+
+      (* FIXME: Core compatibility *)
+      ( "%bs_min",
+        {
+          objcomp = Pobjmax;
+          intcomp = Pintmax;
+          boolcomp = Pboolmax;
+          floatcomp = Pboolmax;
+          stringcomp = Pstringmax;
+          bigintcomp = Pbigintmax;
+          simplify_constant_constructor = false;
+        } );
+      ( "%bs_max",
+        {
+          objcomp = Pobjmin;
+          intcomp = Pintmin;
+          boolcomp = Pboolmin;
+          floatcomp = Pfloatmin;
+          stringcomp = Pstringmin;
+          bigintcomp = Pbigintmin;
+          simplify_constant_constructor = false;
+        } );
     |]
 
 let primitives_table =
@@ -359,8 +381,12 @@ let primitives_table =
       (* FIXME: Core compatibility *)
       ("#null", Pundefined);
       ("#undefined", Pundefined);
+      ("#typeof", Ptypeof);
       ("#is_nullable", Pisnullable);
-      ("#nullable_to_opt", Pnullable_to_opt);
+      ("#null_to_opt", Pnullable_to_opt);
+      ("#nullable_to_opt", Pnull_to_opt);
+      ("#undefined_to_opt", Pundefined_to_opt);
+      ("#makemutablelist", Pmakelist Mutable);
     |]
 
 let find_primitive prim_name = Hashtbl.find primitives_table prim_name
