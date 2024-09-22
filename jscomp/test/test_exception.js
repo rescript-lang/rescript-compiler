@@ -2,9 +2,9 @@
 'use strict';
 
 let Test_common = require("./test_common.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
-let Local = /* @__PURE__ */Caml_exceptions.create("Test_exception.Local");
+let Local = /* @__PURE__ */Primitive_exceptions.create("Test_exception.Local");
 
 function f() {
   throw {
@@ -44,7 +44,7 @@ function xx() {
   };
 }
 
-let Nullary = /* @__PURE__ */Caml_exceptions.create("Test_exception.Nullary");
+let Nullary = /* @__PURE__ */Primitive_exceptions.create("Test_exception.Nullary");
 
 let a = {
   RE_EXN_ID: Nullary

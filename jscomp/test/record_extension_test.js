@@ -3,8 +3,7 @@
 
 let Mt = require("./mt.js");
 let Belt_Int = require("../../lib/js/belt_Int.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -18,11 +17,11 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-let Inline_record = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.Inline_record");
+let Inline_record = /* @__PURE__ */Primitive_exceptions.create("Record_extension_test.Inline_record");
 
-let SinglePayload = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.SinglePayload");
+let SinglePayload = /* @__PURE__ */Primitive_exceptions.create("Record_extension_test.SinglePayload");
 
-let TuplePayload = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.TuplePayload");
+let TuplePayload = /* @__PURE__ */Primitive_exceptions.create("Record_extension_test.TuplePayload");
 
 function f(x) {
   if (x.RE_EXN_ID === Inline_record) {
@@ -83,17 +82,17 @@ function f2_with(x) {
   }
 }
 
-let A = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.A");
+let A = /* @__PURE__ */Primitive_exceptions.create("Record_extension_test.A");
 
-let B = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.B");
+let B = /* @__PURE__ */Primitive_exceptions.create("Record_extension_test.B");
 
-let C = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.C");
+let C = /* @__PURE__ */Primitive_exceptions.create("Record_extension_test.C");
 
 function u(f) {
   try {
     return f();
   } catch (raw_x) {
-    let x = Caml_js_exceptions.internalToOCamlException(raw_x);
+    let x = Primitive_exceptions.internalToException(raw_x);
     if (x.RE_EXN_ID === A) {
       return x.name + x.x | 0;
     } else if (x.RE_EXN_ID === B) {

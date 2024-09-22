@@ -4,9 +4,8 @@
 let Belt_List = require("../../lib/js/belt_List.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 let Belt_SetString = require("../../lib/js/belt_SetString.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Primitive_object = require("../../lib/js/primitive_object.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let graph = {
   hd: [
@@ -442,7 +441,7 @@ if (!Primitive_object.equal(unsafe_topsort(grwork), {
   };
 }
 
-let Cycle = /* @__PURE__ */Caml_exceptions.create("Topsort_test.Cycle");
+let Cycle = /* @__PURE__ */Primitive_exceptions.create("Topsort_test.Cycle");
 
 function pathsort(graph) {
   let visited = {
@@ -537,7 +536,7 @@ try {
     Error: new Error()
   };
 } catch (raw_exn) {
-  let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+  let exn = Primitive_exceptions.internalToException(raw_exn);
   let exit = 0;
   if (exn.RE_EXN_ID === Cycle) {
     let match = exn._1;

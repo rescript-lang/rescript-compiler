@@ -2,15 +2,14 @@
 'use strict';
 
 let Pervasives = require("../../lib/js/pervasives.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 let Primitive_object = require("../../lib/js/primitive_object.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
-let Bad = /* @__PURE__ */Caml_exceptions.create("Test_seq.Bad");
+let Bad = /* @__PURE__ */Primitive_exceptions.create("Test_seq.Bad");
 
-let Help = /* @__PURE__ */Caml_exceptions.create("Test_seq.Help");
+let Help = /* @__PURE__ */Primitive_exceptions.create("Test_seq.Help");
 
-let Stop = /* @__PURE__ */Caml_exceptions.create("Test_seq.Stop");
+let Stop = /* @__PURE__ */Primitive_exceptions.create("Test_seq.Stop");
 
 function assoc3(x, _l) {
   while (true) {
@@ -56,7 +55,7 @@ function add_help(speclist) {
     assoc3("-help", speclist);
     add1 = /* [] */0;
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Primitive_exceptions.internalToException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       add1 = {
         hd: [
@@ -78,7 +77,7 @@ function add_help(speclist) {
     assoc3("--help", speclist);
     add2 = /* [] */0;
   } catch (raw_exn$1) {
-    let exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
+    let exn$1 = Primitive_exceptions.internalToException(raw_exn$1);
     if (exn$1.RE_EXN_ID === "Not_found") {
       add2 = {
         hd: [

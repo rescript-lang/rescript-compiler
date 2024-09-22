@@ -3,7 +3,7 @@
 
 let Belt_List = require("../../lib/js/belt_List.js");
 let Pervasives = require("../../lib/js/pervasives.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 function cons_enum(_s, _e) {
   while (true) {
@@ -194,9 +194,9 @@ function max_int_2(a, b) {
   }
 }
 
-let Height_invariant_broken = /* @__PURE__ */Caml_exceptions.create("Set_gen.Height_invariant_broken");
+let Height_invariant_broken = /* @__PURE__ */Primitive_exceptions.create("Set_gen.Height_invariant_broken");
 
-let Height_diff_borken = /* @__PURE__ */Caml_exceptions.create("Set_gen.Height_diff_borken");
+let Height_diff_borken = /* @__PURE__ */Primitive_exceptions.create("Set_gen.Height_diff_borken");
 
 function check_height_and_diff(x) {
   if (typeof x !== "object") {

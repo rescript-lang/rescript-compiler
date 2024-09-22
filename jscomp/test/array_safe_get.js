@@ -2,7 +2,7 @@
 'use strict';
 
 let Primitive_array = require("../../lib/js/primitive_array.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let x = [
   1,
@@ -14,7 +14,7 @@ let y;
 try {
   y = Primitive_array.get(x, 3);
 } catch (raw_msg) {
-  let msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
+  let msg = Primitive_exceptions.internalToException(raw_msg);
   if (msg.RE_EXN_ID === "Invalid_argument") {
     console.log(msg._1);
     y = 0;

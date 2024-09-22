@@ -48,10 +48,8 @@ let option = "Primitive_option"
 
 let hash = "Primitive_hash"
 
+let exceptions = "Primitive_exceptions"
+
 let deriving = "Runtime_deriving"
 
-let exceptions = "Caml_exceptions"
-
 let curry = "Curry"
-
-let caml_js_exceptions = "Caml_js_exceptions"

@@ -3,8 +3,7 @@
 
 let Mt = require("./mt.js");
 let Js_exn = require("../../lib/js/js_exn.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -56,7 +55,7 @@ try {
   e = JSON.parse(" {\"x\"}");
   exit = 1;
 } catch (raw_x) {
-  let x = Caml_js_exceptions.internalToOCamlException(raw_x);
+  let x = Primitive_exceptions.internalToException(raw_x);
   if (x.RE_EXN_ID === Js_exn.$$Error) {
     add_test("File \"js_exception_catch_test.res\", line 18, characters 37-44", () => ({
       TAG: "Ok",
@@ -74,18 +73,18 @@ if (exit === 1) {
   }));
 }
 
-let A = /* @__PURE__ */Caml_exceptions.create("Js_exception_catch_test.A");
+let A = /* @__PURE__ */Primitive_exceptions.create("Js_exception_catch_test.A");
 
-let B = /* @__PURE__ */Caml_exceptions.create("Js_exception_catch_test.B");
+let B = /* @__PURE__ */Primitive_exceptions.create("Js_exception_catch_test.B");
 
-let C = /* @__PURE__ */Caml_exceptions.create("Js_exception_catch_test.C");
+let C = /* @__PURE__ */Primitive_exceptions.create("Js_exception_catch_test.C");
 
 function test(f) {
   try {
     f();
     return "No_error";
   } catch (raw_e) {
-    let e = Caml_js_exceptions.internalToOCamlException(raw_e);
+    let e = Primitive_exceptions.internalToException(raw_e);
     if (e.RE_EXN_ID === "Not_found") {
       return "Not_found";
     } else if (e.RE_EXN_ID === "Invalid_argument") {

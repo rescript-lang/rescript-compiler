@@ -2,10 +2,9 @@
 'use strict';
 
 let Belt_List = require("../../lib/js/belt_List.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
-let Foo = /* @__PURE__ */Caml_exceptions.create("Gpr_1701_test.Foo");
+let Foo = /* @__PURE__ */Primitive_exceptions.create("Gpr_1701_test.Foo");
 
 function test(n) {
   if (n === 0) {
@@ -17,7 +16,7 @@ function test(n) {
   try {
     return test(n - 1 | 0);
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Primitive_exceptions.internalToException(raw_exn);
     if (exn.RE_EXN_ID === Foo) {
       return;
     }
@@ -35,7 +34,7 @@ function read_lines(inc) {
     try {
       l = input_line(inc);
     } catch (raw_exn) {
-      let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+      let exn = Primitive_exceptions.internalToException(raw_exn);
       if (exn.RE_EXN_ID === "End_of_file") {
         l = undefined;
       } else {
@@ -61,7 +60,7 @@ function read_lines2(inc) {
     try {
       l = input_line(inc);
     } catch (raw_exn) {
-      let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+      let exn = Primitive_exceptions.internalToException(raw_exn);
       if (exn.RE_EXN_ID === "End_of_file") {
         return Belt_List.reverse(acc);
       }
@@ -84,7 +83,7 @@ function read_lines3(inc) {
         tl: acc
       });
     } catch (raw_exn) {
-      let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+      let exn = Primitive_exceptions.internalToException(raw_exn);
       if (exn.RE_EXN_ID === "End_of_file") {
         return Belt_List.reverse(acc);
       }

@@ -2,7 +2,7 @@
 'use strict';
 
 let Belt_List = require("../../lib/js/belt_List.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 function raise(e) {
   throw e;
@@ -19,7 +19,7 @@ let Uncurried = {
   List: List
 };
 
-let E = /* @__PURE__ */Caml_exceptions.create("Uncurried_cast.E");
+let E = /* @__PURE__ */Primitive_exceptions.create("Uncurried_cast.E");
 
 function testRaise() {
   throw {

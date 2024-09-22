@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -36,7 +36,7 @@ try {
     Error: new Error()
   };
 } catch (raw_msg) {
-  let msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
+  let msg = Primitive_exceptions.internalToException(raw_msg);
   if (msg.RE_EXN_ID === "Failure") {
     y = msg._1;
   } else {
@@ -55,7 +55,7 @@ try {
     Error: new Error()
   };
 } catch (raw_msg$1) {
-  let msg$1 = Caml_js_exceptions.internalToOCamlException(raw_msg$1);
+  let msg$1 = Primitive_exceptions.internalToException(raw_msg$1);
   if (msg$1.RE_EXN_ID === "Failure") {
     x = msg$1._1;
   } else {

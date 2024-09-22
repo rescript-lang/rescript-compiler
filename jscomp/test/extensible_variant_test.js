@@ -2,17 +2,17 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
-let Str = /* @__PURE__ */Caml_exceptions.create("Extensible_variant_test.Str");
+let Str = /* @__PURE__ */Primitive_exceptions.create("Extensible_variant_test.Str");
 
-let Int = /* @__PURE__ */Caml_exceptions.create("Extensible_variant_test.N.Int");
+let Int = /* @__PURE__ */Primitive_exceptions.create("Extensible_variant_test.N.Int");
 
 let N = {
   Int: Int
 };
 
-let Int$1 = /* @__PURE__ */Caml_exceptions.create("Extensible_variant_test.Int");
+let Int$1 = /* @__PURE__ */Primitive_exceptions.create("Extensible_variant_test.Int");
 
 function to_int(x) {
   if (x.RE_EXN_ID === Str) {

@@ -3,14 +3,14 @@
 
 let Mt = require("./mt.js");
 let Primitive_object = require("../../lib/js/primitive_object.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let function_equal_test;
 
 try {
   function_equal_test = Primitive_object.equal(x => x + 1 | 0, x => x + 2 | 0);
 } catch (raw_exn) {
-  let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+  let exn = Primitive_exceptions.internalToException(raw_exn);
   function_equal_test = exn.RE_EXN_ID === "Invalid_argument" && exn._1 === "equal: functional value" ? true : false;
 }
 

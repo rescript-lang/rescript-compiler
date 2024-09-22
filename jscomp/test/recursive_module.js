@@ -4,7 +4,7 @@
 let Mt = require("./mt.js");
 let Lazy = require("../../lib/js/lazy.js");
 let Primitive_module = require("../../lib/js/primitive_module.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -95,7 +95,7 @@ let tmp;
 try {
   tmp = Lazy.force(Intb.a);
 } catch (raw_exn) {
-  let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+  let exn = Primitive_exceptions.internalToException(raw_exn);
   if (exn.RE_EXN_ID === Lazy.Undefined) {
     tmp = -1;
   } else {
@@ -166,7 +166,7 @@ try {
   Int3.u(3);
   tmp$1 = 3;
 } catch (raw_exn$1) {
-  let exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
+  let exn$1 = Primitive_exceptions.internalToException(raw_exn$1);
   if (exn$1.RE_EXN_ID === "Undefined_recursive_module") {
     tmp$1 = 4;
   } else {
