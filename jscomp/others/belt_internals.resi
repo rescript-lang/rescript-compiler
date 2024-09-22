@@ -56,7 +56,7 @@ module Obj: {
   external repr: 'a => t = "%identity"
   external obj: t => 'a = "%identity"
   external magic: 'a => 'b = "%identity"
-  external size: t => int = "%obj_length"
+  external size: t => int = "%obj_size"
 }
 
 module Pervasives: {
