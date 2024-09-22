@@ -48,7 +48,6 @@ type t =
   | Const_bigint of bool * string
   | Const_pointer of string
   | Const_block of int * Lambda.tag_info * t list
-  | Const_float_array of string list
   | Const_some of t
   (* eventually we can remove it, since we know
      [constant] is [undefined] or not

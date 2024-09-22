@@ -204,7 +204,6 @@ and size_constant x =
   | Const_some s -> size_constant s
   | Const_block (_, _, str) ->
       Ext_list.fold_left str 0 (fun acc x -> acc + size_constant x)
-  | Const_float_array xs -> List.length xs
 
 and size_lams acc (lams : Lam.t list) =
   Ext_list.fold_left lams acc (fun acc l -> acc + size l)

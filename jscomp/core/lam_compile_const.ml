@@ -63,8 +63,6 @@ and translate (x : Lam_constant.t) : J.expression =
   | Const_block (tag, tag_info, xs) ->
       Js_of_lam_block.make_block NA tag_info (E.small_int tag)
         (Ext_list.map xs translate)
-  | Const_float_array ars ->
-      Js_of_lam_array.make_array Mutable (Ext_list.map ars E.float)
 
 (* E.arr Mutable ~comment:"float array" *)
 (*   (Ext_list.map (fun x ->  E.float  x ) ars) *)
