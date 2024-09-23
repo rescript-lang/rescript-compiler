@@ -165,6 +165,15 @@ let print_extra_type_clash_help ppf trace type_clash_context =
       \  - Use a tuple, if your array is of fixed length. Tuples can mix types \
        freely, and compiles to a JavaScript array. Example of a tuple: `let \
        myTuple = (10, \"hello\", 15.5, true)"
+  | ( _,
+  [
+    ({Types.desc = Tconstr (_p1, _, _)}, _); ({desc = Tconstr (p2, _, _)}, _);
+  ] )
+    when Path.same Predef.path_unit p2 ->
+    fprintf ppf
+    "\n\n\
+    \  - Did you mean to assign this to a variable?\n\
+    \  - If you don't care about the result of this expression, you can assign it to @{<info>_@} via @{<info>let _ = ...@} or pipe it to @{<info>ignore@} via @{<info>expression->ignore@}\n\n"
   | _ -> ()
 
 let type_clash_context_from_function sexp sfunct =
