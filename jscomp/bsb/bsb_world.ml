@@ -27,7 +27,7 @@ let vendor_ninja = Bsb_global_paths.vendor_ninja
 
 let make_world_deps cwd (config : Bsb_config_types.t option)
     (ninja_args : string array) warn_as_error =
-  let package_specs, jsx, uncurried, pinned_dependencies =
+  let package_specs, jsx, pinned_dependencies =
     match config with
     | None ->
         (* When this running bsb does not read rescript.json,
@@ -36,7 +36,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
         *)
         Bsb_config_parse.deps_from_bsconfig ()
     | Some config ->
-        (config.package_specs, config.jsx, config.uncurried, config.pinned_dependencies)
+        (config.package_specs, config.jsx, config.pinned_dependencies)
   in
   let args =
     if Ext_array.is_empty ninja_args then [| vendor_ninja |]
@@ -67,8 +67,8 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
              let _config : _ option =
                Bsb_ninja_regen.regenerate_ninja
                  ~package_kind:
-                   (if is_pinned then Pinned_dependency { package_specs; jsx; uncurried }
-                   else Dependency { package_specs; jsx; uncurried })
+                   (if is_pinned then Pinned_dependency { package_specs; jsx }
+                   else Dependency { package_specs; jsx })
                  ~per_proj_dir:proj_dir ~forced:false
                  ~warn_legacy_config:false
                  ~warn_as_error:(if is_pinned then warn_as_error else None)

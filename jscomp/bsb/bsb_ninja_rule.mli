@@ -70,7 +70,6 @@ val make_custom_rules :
   pp_file:string option ->
   reason_react_jsx:Bsb_config_types.reason_react_jsx option ->
   jsx:Bsb_jsx.t ->
-  uncurried:bool ->
   digest:string ->
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->

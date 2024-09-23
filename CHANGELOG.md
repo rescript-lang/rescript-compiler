@@ -28,6 +28,10 @@
 - Improve error messages around JSX components. https://github.com/rescript-lang/rescript-compiler/pull/7038
 - Improve output of record copying. https://github.com/rescript-lang/rescript-compiler/pull/7043
 
+#### :house: Internal
+
+- Remove uncurried flag from bsb. https://github.com/rescript-lang/rescript-compiler/pull/7049
+
 # 12.0.0-alpha.3
 
 #### :bug: Bug fix

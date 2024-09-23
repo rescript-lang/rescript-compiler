@@ -89,14 +89,6 @@ let extract_gentype_config (map : json_map) : Bsb_config_types.gentype_config =
   | Some config ->
       Bsb_exception.config_error config "gentypeconfig expect an object"
 
-let extract_uncurried (map : json_map) : bool =
-  match map.?(Bsb_build_schemas.uncurried) with
-  | None -> true
-  | Some (True _) -> true
-  | Some (False _) -> false
-  | Some config ->
-      Bsb_exception.config_error config "uncurried expects one of: true, false."
-
 let extract_string (map : json_map) (field : string) cb =
   match map.?(field) with
   | None -> None
@@ -338,10 +330,6 @@ let interpret_json
             jsx;
             generators = extract_generators map;
             cut_generators;
-            uncurried =
-            (match package_kind with
-            | Toplevel -> extract_uncurried map
-            | Pinned_dependency x | Dependency x -> x.uncurried);
             filename;
           }
       | None ->
@@ -355,6 +343,5 @@ let deps_from_bsconfig () =
   | _, Obj { map } ->
       ( Bsb_package_specs.from_map ~cwd map,
         Bsb_jsx.from_map map,
-        extract_uncurried map,
         Bsb_build_util.extract_pinned_dependencies map )
   | _, _ -> assert false
