@@ -9,8 +9,6 @@ val arrow_type :
   * (Parsetree.attributes * Asttypes.arg_label * Parsetree.core_type) list
   * Parsetree.core_type
 
-val print_ct : Parsetree.core_type -> unit
-
 val functor_type :
   Parsetree.module_type ->
   (Parsetree.attributes * string Asttypes.loc * Parsetree.module_type option)
