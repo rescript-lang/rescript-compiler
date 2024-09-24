@@ -34,7 +34,7 @@ function add(suite) {
   };
 }
 
-let Int3 = Primitive_module.init_mod([
+let Int3 = Primitive_module.init([
   "recursive_module_test.res",
   15,
   4
@@ -46,7 +46,7 @@ let Int3 = Primitive_module.init_mod([
     ]]
 });
 
-Primitive_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Function",
@@ -54,7 +54,7 @@ Primitive_module.update_mod({
     ]]
 }, Int3, Int3);
 
-let M = Primitive_module.init_mod([
+let M = Primitive_module.init([
   "recursive_module_test.res",
   21,
   20
@@ -74,7 +74,7 @@ function fact(n) {
   }
 }
 
-Primitive_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Function",

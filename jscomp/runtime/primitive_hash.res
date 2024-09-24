@@ -22,12 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+module Float = Primitive_float_extern
 module Obj = Primitive_object_extern
 module Js = Primitive_js_extern
+module String = Primitive_string_extern
 
-external int_of_float: float => int = "%intoffloat"
 @send external charCodeAt: (string, int) => int = "charCodeAt"
-@get external stringLength: string => int = "length"
 
 type rec cell<'a> = {
   content: 'a,
@@ -102,7 +102,7 @@ let hash_final_mix = h => {
 }
 
 let hash_mix_string = (h, s) => {
-  let len = stringLength(s)
+  let len = String.length(s)
   let block = len / 4 - 1
   let hash = ref(h)
   for i in 0 to block {
@@ -136,7 +136,7 @@ let hash_mix_string = (h, s) => {
 let hash = (count: int, _limit, seed: int, obj: Obj.t): int => {
   let s = ref(seed)
   if Js.typeof(obj) == "number" {
-    let u = int_of_float(Obj.magic(obj))
+    let u = Float.toInt(Obj.magic(obj))
     s.contents = hash_mix_int(s.contents, u + u + 1)
     hash_final_mix(s.contents)
   } else if Js.typeof(obj) == "string" {
@@ -155,7 +155,7 @@ let hash = (count: int, _limit, seed: int, obj: Obj.t): int => {
     while !is_empty_queue(queue) && num.contents > 0 {
       let obj = unsafe_pop(queue)
       if Js.typeof(obj) == "number" {
-        let u = int_of_float(Obj.magic(obj))
+        let u = Float.toInt(Obj.magic(obj))
         s.contents = hash_mix_int(s.contents, u + u + 1)
         num.contents = num.contents - 1
       } else if Js.typeof(obj) == "string" {

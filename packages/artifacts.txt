@@ -129,8 +129,10 @@ lib/es6/primitive_curry.js
 lib/es6/primitive_dict.js
 lib/es6/primitive_exceptions.js
 lib/es6/primitive_float.js
+lib/es6/primitive_float_extern.js
 lib/es6/primitive_hash.js
 lib/es6/primitive_int.js
+lib/es6/primitive_int_extern.js
 lib/es6/primitive_js_extern.js
 lib/es6/primitive_lazy.js
 lib/es6/primitive_module.js
@@ -247,8 +249,10 @@ lib/js/primitive_curry.js
 lib/js/primitive_dict.js
 lib/js/primitive_exceptions.js
 lib/js/primitive_float.js
+lib/js/primitive_float_extern.js
 lib/js/primitive_hash.js
 lib/js/primitive_int.js
+lib/js/primitive_int_extern.js
 lib/js/primitive_js_extern.js
 lib/js/primitive_lazy.js
 lib/js/primitive_module.js
@@ -779,6 +783,10 @@ lib/ocaml/primitive_float.cmi
 lib/ocaml/primitive_float.cmj
 lib/ocaml/primitive_float.cmt
 lib/ocaml/primitive_float.res
+lib/ocaml/primitive_float_extern.cmi
+lib/ocaml/primitive_float_extern.cmj
+lib/ocaml/primitive_float_extern.cmt
+lib/ocaml/primitive_float_extern.res
 lib/ocaml/primitive_hash.cmi
 lib/ocaml/primitive_hash.cmj
 lib/ocaml/primitive_hash.cmt
@@ -789,6 +797,10 @@ lib/ocaml/primitive_int.cmi
 lib/ocaml/primitive_int.cmj
 lib/ocaml/primitive_int.cmt
 lib/ocaml/primitive_int.res
+lib/ocaml/primitive_int_extern.cmi
+lib/ocaml/primitive_int_extern.cmj
+lib/ocaml/primitive_int_extern.cmt
+lib/ocaml/primitive_int_extern.res
 lib/ocaml/primitive_js_extern.cmi
 lib/ocaml/primitive_js_extern.cmj
 lib/ocaml/primitive_js_extern.cmt

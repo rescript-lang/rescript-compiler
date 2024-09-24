@@ -13,7 +13,7 @@ function Make(X) {
   };
 }
 
-let B = Primitive_module.init_mod([
+let B = Primitive_module.init([
   "recursive_unbound_module_test.res",
   14,
   11
@@ -39,7 +39,7 @@ let M = {
   f: f
 };
 
-Primitive_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       {

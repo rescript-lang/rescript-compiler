@@ -3,7 +3,7 @@
 
 let Primitive_module = require("../../lib/js/primitive_module.js");
 
-let Point = Primitive_module.init_mod([
+let Point = Primitive_module.init([
   "gpr_1539_test.res",
   11,
   4
@@ -15,7 +15,7 @@ let Point = Primitive_module.init_mod([
     ]]
 });
 
-Primitive_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Function",

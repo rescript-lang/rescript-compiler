@@ -288,7 +288,7 @@ let rec equal = (a: t, b: t): bool =>
             if O.isArray(a) {
               aux_equal_length((magic(a): array<t>), (magic(b): array<t>), 0, len_a)
             } else if %raw(`a instanceof Date && b instanceof Date`) {
-              !(Js.unsafe_gt(a, b) || Js.unsafe_lt(a, b))
+              !(Js.gt(a, b) || Js.lt(a, b))
             } else {
               aux_obj_equal(a, b)
             }

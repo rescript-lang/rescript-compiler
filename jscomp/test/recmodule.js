@@ -58,7 +58,7 @@ let Infra = {
   MakeLayer: MakeLayer$2
 };
 
-let I = Primitive_module.init_mod([
+let I = Primitive_module.init([
   "recmodule.res",
   67,
   30
@@ -76,7 +76,7 @@ let I = Primitive_module.init_mod([
   ]
 });
 
-let A = Primitive_module.init_mod([
+let A = Primitive_module.init([
   "recmodule.res",
   68,
   25
@@ -94,7 +94,7 @@ let A = Primitive_module.init_mod([
   ]
 });
 
-let U = Primitive_module.init_mod([
+let U = Primitive_module.init([
   "recmodule.res",
   69,
   25
@@ -125,7 +125,7 @@ function routes() {
     ]];
 }
 
-Primitive_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [
     [
@@ -150,7 +150,7 @@ function handleGetLight(req) {
   return U.getLight(req.params.id);
 }
 
-Primitive_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [
     [
@@ -174,7 +174,7 @@ function getLight(id) {
   });
 }
 
-Primitive_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Function",

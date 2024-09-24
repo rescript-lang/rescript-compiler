@@ -7,24 +7,17 @@
 type t = string
 
 module B = {
-  module Bytes = Array
-
-  let get_unsafe = Primitive_array_extern.getUnsafe
-  let set_unsafe = Primitive_array_extern.setUnsafe
-
-  let map = Bytes.map
-  let mapi = Bytes.mapi
-  let sub = Bytes.sub
+  include Array
 
   let uppercase_ascii = bytes => map(Char.uppercase_ascii, bytes)
   let lowercase_ascii = bytes => map(Char.lowercase_ascii, bytes)
 
   let apply1 = (f, bytes) =>
-    if Bytes.length(bytes) == 0 {
+    if length(bytes) == 0 {
       bytes
     } else {
-      let r = Bytes.copy(bytes)
-      set_unsafe(r, 0, f(get_unsafe(bytes, 0)))
+      let r = copy(bytes)
+      unsafe_set(r, 0, f(unsafe_get(bytes, 0)))
       r
     }
   let capitalize_ascii = bytes => apply1(Char.uppercase_ascii, bytes)

@@ -22,7 +22,7 @@ let Xx = {
   f: (prim0, prim1) => hfiehi(prim0, prim1)
 };
 
-let Int3 = Primitive_module.init_mod([
+let Int3 = Primitive_module.init([
   "recursive_module.res",
   25,
   4
@@ -34,7 +34,7 @@ let Int3 = Primitive_module.init_mod([
     ]]
 });
 
-Primitive_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Function",
@@ -42,7 +42,7 @@ Primitive_module.update_mod({
     ]]
 }, Int3, Int3);
 
-let Inta = Primitive_module.init_mod([
+let Inta = Primitive_module.init([
   "recursive_module.res",
   29,
   4
@@ -54,7 +54,7 @@ let Inta = Primitive_module.init_mod([
     ]]
 });
 
-let Intb = Primitive_module.init_mod([
+let Intb = Primitive_module.init([
   "recursive_module.res",
   34,
   4
@@ -68,7 +68,7 @@ let Intb = Primitive_module.init_mod([
 
 let a = Lazy.from_fun(() => Lazy.force(Intb.a));
 
-Primitive_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Lazy",
@@ -80,7 +80,7 @@ Primitive_module.update_mod({
 
 let a$1 = Lazy.from_fun(() => Lazy.force(Inta.a) + 1 | 0);
 
-Primitive_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Lazy",
@@ -105,7 +105,7 @@ try {
 
 eq("File \"recursive_module.res\", line 39, characters 2-9", -1, tmp);
 
-let Inta$1 = Primitive_module.init_mod([
+let Inta$1 = Primitive_module.init([
   "recursive_module.res",
   49,
   6
@@ -117,7 +117,7 @@ let Inta$1 = Primitive_module.init_mod([
     ]]
 });
 
-let Intb$1 = Primitive_module.init_mod([
+let Intb$1 = Primitive_module.init([
   "recursive_module.res",
   54,
   6
@@ -131,7 +131,7 @@ let Intb$1 = Primitive_module.init_mod([
 
 let a$2 = Lazy.from_fun(() => Lazy.force(Intb$1.a) + 1 | 0);
 
-Primitive_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Lazy",
@@ -143,7 +143,7 @@ Primitive_module.update_mod({
 
 let a$3 = Lazy.from_fun(() => 2);
 
-Primitive_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Lazy",

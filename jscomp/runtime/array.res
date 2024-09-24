@@ -2,17 +2,19 @@
 //   This exists for compatibility reason.
 //   Move this into Pervasives or Core
 
-// Note: Array.get/set is implicitly used by `array[idx]` syntax
+// Caution: `Array.get` is implicitly used by `array[idx]` syntax
 external get: (array<'a>, int) => 'a = "%array_safe_get"
+
+// Caution: `Array.set` is implicitly used by `array[idx]` syntax
 external set: (array<'a>, int, 'a) => unit = "%array_safe_set"
 
 // Below is all deprecated and should be removed in v13
 
-let length = Primitive_array_extern.length
+external length: array<'a> => int = "%array_length"
 
-let unsafe_get = Primitive_array_extern.getUnsafe
+external unsafe_get: (array<'a>, int) => 'a = "%array_unsafe_get"
 
-let unsafe_set = Primitive_array_extern.setUnsafe
+external unsafe_set: (array<'a>, int, 'a) => unit = "%array_unsafe_set"
 
 let init: (int, int => 'a) => array<'a> = %raw(`(length, f) => Array.from({ length }, f)`)
 

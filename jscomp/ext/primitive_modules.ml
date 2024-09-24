@@ -53,3 +53,5 @@ let exceptions = "Primitive_exceptions"
 let curry = "Primitive_curry"
 
 let util = "Primitive_util"
+
+let pervasives = "Pervasives"

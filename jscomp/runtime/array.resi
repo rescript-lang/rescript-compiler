@@ -12,7 +12,7 @@ external set: (array<'a>, int, 'a) => unit = "%array_safe_set"
 
 /** Return the length (number of elements) of the given array. */
 @deprecated("Use Core instead. This will be removed in v13")
-let length: array<'a> => int
+external length: array<'a> => int = "%array_length"
 
 /** [Array.make n x] returns a fresh array of length [n],
    initialized with [x].
@@ -243,7 +243,7 @@ let stable_sort: (('a, 'a) => int, array<'a>) => unit
 let fast_sort: (('a, 'a) => int, array<'a>) => unit
 
 @deprecated("Use Core instead. This will be removed in v13")
-let unsafe_get: (array<'a>, int) => 'a
+external unsafe_get: (array<'a>, int) => 'a = "%array_unsafe_get"
 
 @deprecated("Use Core instead. This will be removed in v13")
-let unsafe_set: (array<'a>, int, 'a) => unit
+external unsafe_set: (array<'a>, int, 'a) => unit = "%array_unsafe_set"

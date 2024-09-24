@@ -18,7 +18,7 @@ module type Empty = {}
     spit out ("CamlinternalMod".[init_mod|update_mod] unless we intercept it 
     in the lambda layer
 */
-let init_mod = (loc: (string, int, int), shape: shape) => {
+let init = (loc: (string, int, int), shape: shape) => {
   let undef_module = _ => raise(Undefined_recursive_module(loc))
   let rec loop = (shape: shape, struct_: Obj.t, idx) =>
     switch shape {
@@ -44,7 +44,7 @@ let init_mod = (loc: (string, int, int), shape: shape) => {
 /* Note the [shape] passed between [init_mod] and [update_mod] is always the same 
    and we assume [module] is encoded as an array
 */
-let update_mod = (shape: shape, o: Obj.t, n: Obj.t): unit => {
+let update = (shape: shape, o: Obj.t, n: Obj.t): unit => {
   let rec aux = (shape: shape, o, n, parent, i) =>
     switch shape {
     | Function => Obj.setField(parent, i, n)

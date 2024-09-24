@@ -41,6 +41,8 @@ module Lid : sig
 
   val type_bigint : t
 
+  val pervasives : t
+
   val js_oo : t
 
   val js_meth_callback : t

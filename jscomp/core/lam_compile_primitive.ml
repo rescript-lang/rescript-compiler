@@ -150,8 +150,8 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       assert false (* already handled by {!Lam_compile} *)
   | Pstringadd -> (
       match args with [ a; b ] -> E.string_append a b | _ -> assert false)
-  | Pinit_mod -> E.runtime_call Primitive_modules.module_ "init_mod" args
-  | Pupdate_mod -> E.runtime_call Primitive_modules.module_ "update_mod" args
+  | Pinit_mod -> E.runtime_call Primitive_modules.module_ "init" args
+  | Pupdate_mod -> E.runtime_call Primitive_modules.module_ "update" args
   | Psome -> (
       let arg = Ext_list.singleton_exn args in
       match arg.expression_desc with
