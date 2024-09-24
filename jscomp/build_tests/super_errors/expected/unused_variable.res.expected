@@ -11,4 +11,4 @@
 
 Fix this by:
 - Prepending the variable name with `_` (like `_f`) to ignore that the variable is unused.
-- Use the variable somewhere.
+- Using the variable somewhere.
