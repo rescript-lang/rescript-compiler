@@ -1082,8 +1082,11 @@ let rec parse_pattern ?(alias = true) ?(or_ = true) p =
     | DotDotDot ->
       Parser.next p;
       let ident = parse_value_path p in
+      let var_name = ident.txt |> Longident.flatten |> String.concat "." in
       let loc = mk_loc start_pos ident.loc.loc_end in
-      Ast_helper.Pat.type_ ~loc ~attrs:(make_pat_variant_spread_attr :: attrs) ident
+      Ast_helper.Pat.var ~loc
+        ~attrs:(make_pat_variant_spread_attr :: attrs)
+        (Location.mkloc var_name ident.loc)
     | Hash -> (
       Parser.next p;
       if p.Parser.token == DotDotDot then (
