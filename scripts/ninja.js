@@ -16,10 +16,10 @@ var jsDir = path.join(__dirname, "..", "lib", "js");
 
 var runtimeFiles = fs.readdirSync(runtimeDir, "ascii");
 var runtimeMlFiles = runtimeFiles.filter(
-  x => !x.startsWith("pervasives") && x.endsWith(".res") && x !== "js.res",
+  x => !x.startsWith("pervasives") && x.endsWith(".res"),
 );
 var runtimeMliFiles = runtimeFiles.filter(
-  x => !x.startsWith("pervasives") && x.endsWith(".resi") && x !== "js.resi",
+  x => !x.startsWith("pervasives") && x.endsWith(".resi"),
 );
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles);
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))];
@@ -757,10 +757,6 @@ async function runtimeNinja(devmode = true) {
   /**
    * @type [string,string][]
    */
-  var bsc_builtin_overrides = [[bsc_flags, `$${bsc_flags} -nopervasives`]];
-  /**
-   * @type [string,string][]
-   */
   var templateRuntimeRules = `
 ${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -make-runtime -unsafe -w -3+50 -warn-error A
 ${ruleCC(ninjaCwd)}
@@ -773,16 +769,7 @@ ${ninjaQuickBuildList([
     "pervasives.res",
     "cc",
     ninjaCwd,
-    bsc_builtin_overrides,
-    [],
-    externalDeps,
-  ],
-  [
-    ["js.cmj", "js.cmi"],
-    "js.res",
-    "cc",
-    ninjaCwd,
-    bsc_builtin_overrides,
+    [[bsc_flags, `$${bsc_flags} -nopervasives`]],
     [],
     externalDeps,
   ],
@@ -793,7 +780,7 @@ ${ninjaQuickBuildList([
    */
   var depsMap = new Map();
   var allTargets = collectTarget([...runtimeMliFiles, ...runtimeMlFiles]);
-  var manualDeps = ["pervasives.cmj", "pervasives.cmi", "js.cmj", "js.cmi"];
+  var manualDeps = ["pervasives.cmj", "pervasives.cmi"];
   var allFileTargetsInRuntime = scanFileTargets(allTargets, manualDeps);
   allTargets.forEach((ext, mod) => {
     switch (ext) {
@@ -828,17 +815,11 @@ ${ninjaQuickBuildList([
 
 async function othersNinja(devmode = true) {
   var compilerTarget = pseudoTarget("$bsc");
-  var externalDeps = [
-    compilerTarget,
-    fileTarget("belt_internals.cmi"),
-    fileTarget("js.cmi"),
-  ];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var ninjaCwd = "others";
 
   var templateOthersRules = `
-bsc_primitive_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50 -warn-error A
-bsc_flags = $bsc_primitive_flags -open Belt_internals
+bsc_flags = ${commonBsFlags} -bs-cross-module-opt -make-runtime -unsafe -w +50 -warn-error A -I runtime
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuildList([
   [
@@ -846,27 +827,9 @@ ${ninjaQuickBuildList([
     "belt.res",
     "cc",
     ninjaCwd,
-    [["bsc_flags", "$bsc_primitive_flags"]],
     [],
-    [compilerTarget],
-  ],
-  [
-    ["js.cmj", "js.cmi"],
-    "js.res",
-    "cc",
-    ninjaCwd,
-    [["bsc_flags", "$bsc_primitive_flags"]],
     [],
-    [compilerTarget],
-  ],
-  [
-    ["belt_internals.cmi"],
-    "belt_internals.resi",
-    "cc",
-    ninjaCwd,
-    [["bsc_flags", "$bsc_primitive_flags"]],
-    [],
-    [compilerTarget],
+    [compilerTarget, runtimeTarget],
   ],
 ])}
 `;
@@ -876,14 +839,12 @@ ${ninjaQuickBuildList([
       x.startsWith("js") &&
       (x.endsWith(".res") || x.endsWith(".resi")) &&
       !x.includes(".pp") &&
-      !x.includes("#") &&
-      x !== "js.res",
+      !x.includes("#"),
   );
   var othersFiles = othersDirFiles.filter(
     x =>
       !x.startsWith("js") &&
       x !== "belt.res" &&
-      x !== "belt_internals.resi" &&
       (x.endsWith(".res") || x.endsWith(".resi")) &&
       !x.includes("#"),
   );
@@ -895,7 +856,10 @@ ${ninjaQuickBuildList([
     ocamlDepForBscAsync(jsPrefixSourceFiles, othersDir, jsDepsMap),
     ocamlDepForBscAsync(othersFiles, othersDir, depsMap),
   ]);
-  var jsOutput = generateNinja(jsDepsMap, jsTargets, ninjaCwd, externalDeps);
+  var jsOutput = generateNinja(jsDepsMap, jsTargets, ninjaCwd, [
+    compilerTarget,
+    runtimeTarget,
+  ]);
   jsOutput.push(phony(js_package, fileTargets(allJsTargets), ninjaCwd));
 
   // Note compiling belt.res still try to read
@@ -910,7 +874,11 @@ ${ninjaQuickBuildList([
     s.add(js_package);
   });
   var allOthersTarget = scanFileTargets(beltTargets, []);
-  var beltOutput = generateNinja(depsMap, beltTargets, ninjaCwd, externalDeps);
+  var beltOutput = generateNinja(depsMap, beltTargets, ninjaCwd, [
+    compilerTarget,
+    runtimeTarget,
+    fileTarget("js.cmi"),
+  ]);
   beltOutput.push(phony(othersTarget, fileTargets(allOthersTarget), ninjaCwd));
   writeFileAscii(
     path.join(othersDir, ninjaOutput),
@@ -989,6 +957,7 @@ ${ruleCC(ninjaCwd)}
   var targets = collectTarget(sources);
   var output = generateNinja(depsMap, targets, ninjaCwd, [
     runtimeTarget,
+    othersTarget,
     pseudoTarget("$bsc"),
   ]);
   output.push(

@@ -84,6 +84,7 @@ lib/es6/js_console.js
 lib/es6/js_date.js
 lib/es6/js_dict.js
 lib/es6/js_exn.js
+lib/es6/js_extern.js
 lib/es6/js_file.js
 lib/es6/js_float.js
 lib/es6/js_global.js
@@ -130,6 +131,7 @@ lib/es6/primitive_exceptions.js
 lib/es6/primitive_float.js
 lib/es6/primitive_hash.js
 lib/es6/primitive_int.js
+lib/es6/primitive_js_extern.js
 lib/es6/primitive_lazy.js
 lib/es6/primitive_module.js
 lib/es6/primitive_object.js
@@ -201,6 +203,7 @@ lib/js/js_console.js
 lib/js/js_date.js
 lib/js/js_dict.js
 lib/js/js_exn.js
+lib/js/js_extern.js
 lib/js/js_file.js
 lib/js/js_float.js
 lib/js/js_global.js
@@ -246,6 +249,7 @@ lib/js/primitive_exceptions.js
 lib/js/primitive_float.js
 lib/js/primitive_hash.js
 lib/js/primitive_int.js
+lib/js/primitive_js_extern.js
 lib/js/primitive_lazy.js
 lib/js/primitive_module.js
 lib/js/primitive_object.js
@@ -503,8 +507,6 @@ lib/ocaml/belt_internalSetInt.res
 lib/ocaml/belt_internalSetString.cmj
 lib/ocaml/belt_internalSetString.cmt
 lib/ocaml/belt_internalSetString.res
-lib/ocaml/belt_internals.cmti
-lib/ocaml/belt_internals.resi
 lib/ocaml/char.cmi
 lib/ocaml/char.cmj
 lib/ocaml/char.cmt
@@ -579,6 +581,10 @@ lib/ocaml/js_exn.cmt
 lib/ocaml/js_exn.cmti
 lib/ocaml/js_exn.res
 lib/ocaml/js_exn.resi
+lib/ocaml/js_extern.cmi
+lib/ocaml/js_extern.cmj
+lib/ocaml/js_extern.cmt
+lib/ocaml/js_extern.res
 lib/ocaml/js_file.cmi
 lib/ocaml/js_file.cmj
 lib/ocaml/js_file.cmt
@@ -783,6 +789,10 @@ lib/ocaml/primitive_int.cmi
 lib/ocaml/primitive_int.cmj
 lib/ocaml/primitive_int.cmt
 lib/ocaml/primitive_int.res
+lib/ocaml/primitive_js_extern.cmi
+lib/ocaml/primitive_js_extern.cmj
+lib/ocaml/primitive_js_extern.cmt
+lib/ocaml/primitive_js_extern.res
 lib/ocaml/primitive_lazy.cmi
 lib/ocaml/primitive_lazy.cmj
 lib/ocaml/primitive_lazy.cmt

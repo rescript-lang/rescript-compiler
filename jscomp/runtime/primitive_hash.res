@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 module Obj = Primitive_object_extern
+module Js = Primitive_js_extern
 
 external int_of_float: float => int = "%intoffloat"
 @send external charCodeAt: (string, int) => int = "charCodeAt"

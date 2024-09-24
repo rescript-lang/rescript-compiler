@@ -24,6 +24,7 @@
 
 module Array = Primitive_array_extern
 module Obj = Primitive_object_extern
+module Js = Primitive_js_extern
 
 @@uncurried
 

@@ -4,14 +4,13 @@
 
 type t = Primitive_object_extern.t
 
+let magic = Primitive_object_extern.magic
+
 @deprecated("Do not use directly. This will be removed in v13")
 let repr = Primitive_object_extern.repr
 
 @deprecated("Do not use directly. This will be removed in v13")
 let obj = Primitive_object_extern.obj
-
-@deprecated("Do not use directly. This will be removed in v13")
-let magic = Primitive_object_extern.magic
 
 @deprecated("Do not use directly. This will be removed in v13")
 let tag = Primitive_object_extern.tag

@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 module Obj = Primitive_object_extern
+module Js = Primitive_js_extern
 
 type nested = {@as("BS_PRIVATE_NESTED_SOME_NONE") depth: int}
 

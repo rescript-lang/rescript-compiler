@@ -25,7 +25,7 @@
 /*** Provides functionality for dealing with the `Js.undefined<'a>` type */
 
 /** Local alias for `Js.undefined<'a>` */
-type t<+'a> = Js.undefined<'a>
+type t<+'a> = Primitive_js_extern.undefined<'a>
 
 /** Constructs a value of `Js.undefined<'a>` containing a value of `'a`. */
 external return: 'a => t<'a> = "%identity"

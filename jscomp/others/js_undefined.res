@@ -24,7 +24,8 @@
 
 /*** Provides functionality for dealing with the `'a Js.undefined` type */
 
-type t<+'a> = Js.undefined<'a>
+type t<+'a> = Primitive_js_extern.undefined<'a>
+
 external to_opt: t<'a> => option<'a> = "%undefined_to_opt"
 external toOption: t<'a> => option<'a> = "%undefined_to_opt"
 external return: 'a => t<'a> = "%identity"

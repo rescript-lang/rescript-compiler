@@ -74,106 +74,6 @@ Js.log(Js.String.startsWith(\"Re\", \"ReScript\"))
 Prefer `Js.Array2` over `Js.Array`, `Js.String2` over `Js.String`, etc. The latters are old modules.
  */
 
-/** JS object type */
-type t<'a> = {..} as 'a
-
-/** JS global object reference */
-@val
-external globalThis: t<'a> = "globalThis"
-
-/**
-  Nullable value of this type can be either null or 'a. This type is equivalent to Js.Null.t.
-*/
-@unboxed
-type null<+'a> = Value('a) | @as(null) Null
-
-/**
-  A value of this type can be either undefined or 'a. This type is equivalent to Js.Undefined.t.
-*/
-type undefined<+'a>
-
-@unboxed type nullable<+'a> = Value('a) | @as(null) Null | @as(undefined) Undefined
-
-/***
-  A value of this type can be undefined, null or 'a. This type is equivalent to Js.Null_undefined.t.
-*/
-
-type null_undefined<+'a> = nullable<'a>
-
-external toOption: nullable<'a> => option<'a> = "%nullable_to_opt"
-external undefinedToOption: undefined<'a> => option<'a> = "%undefined_to_opt"
-external nullToOption: null<'a> => option<'a> = "%null_to_opt"
-external isNullable: nullable<'a> => bool = "%is_nullable"
-external import: 'a => promise<'a> = "%import"
-
-/** The same as {!test} except that it is more permissive on the types of input */
-external testAny: 'a => bool = "%is_nullable"
-
-/**
-  The promise type, defined here for interoperation across packages.
-*/
-type promise<+'a, +'e>
-
-/**
-  The same as empty in `Js.Null`. Compiles to `null`.
-*/
-external null: null<'a> = "%null"
-
-/**
-  The same as empty `Js.Undefined`. Compiles to `undefined`.
-*/
-external undefined: undefined<'a> = "%undefined"
-
-/**
-`typeof x` will be compiled as `typeof x` in JS. Please consider functions in
-`Js.Types` for a type safe way of reflection.
-*/
-external typeof: 'a => string = "%typeof"
-
-@val @scope("console") /** Equivalent to console.log any value. */
-external log: 'a => unit = "log"
-
-@val @scope("console") external log2: ('a, 'b) => unit = "log"
-@val @scope("console") external log3: ('a, 'b, 'c) => unit = "log"
-
-@val @scope("console") external log4: ('a, 'b, 'c, 'd) => unit = "log"
-
-@val @scope("console") @variadic /** A convenience function to console.log more than 4 arguments */
-external logMany: array<'a> => unit = "log"
-
-external eqNull: ('a, null<'a>) => bool = "%equal_null"
-external eqUndefined: ('a, undefined<'a>) => bool = "%equal_undefined"
-external eqNullable: ('a, nullable<'a>) => bool = "%equal_nullable"
-
-/* ## Operators */
-
-/**
-   `unsafe_lt(a, b)` will be compiled as `a < b`.
-    It is marked as unsafe, since it is impossible
-    to give a proper semantics for comparision which applies to any type
-*/
-external unsafe_lt: ('a, 'a) => bool = "%unsafe_lt"
-
-/**
-   `unsafe_le(a, b)` will be compiled as `a <= b`.
-   See also `Js.unsafe_lt`.
-*/
-external unsafe_le: ('a, 'a) => bool = "%unsafe_le"
-
-/**
-   `unsafe_gt(a, b)` will be compiled as `a > b`.
-    See also `Js.unsafe_lt`.
-*/
-external unsafe_gt: ('a, 'a) => bool = "%unsafe_gt"
-
-/**
-   `unsafe_ge(a, b)` will be compiled as `a >= b`.
-   See also `Js.unsafe_lt`.
-*/
-external unsafe_ge: ('a, 'a) => bool = "%unsafe_ge"
-
-/* ## Nested Modules */
-
 /** Provide utilities for `Js.null<'a>` */
 module Null = Js_null
 
@@ -271,3 +171,90 @@ module Map = Js_map
 
 /** Provides bindings for ES6 WeakMap */
 module WeakMap = Js_weakmap
+
+/** JS object type */
+type t<'a> = {..} as 'a
+
+/** JS global object reference */
+@val
+external globalThis: t<'a> = "globalThis"
+
+type null<+'a> = Js_null.t<'a>
+
+type undefined<+'a> = Js_undefined.t<'a>
+
+type nullable<+'a> = Js_null_undefined.t<'a>
+
+type null_undefined<+'a> = nullable<'a>
+
+external toOption: nullable<'a> => option<'a> = "%nullable_to_opt"
+external undefinedToOption: undefined<'a> => option<'a> = "%undefined_to_opt"
+external nullToOption: null<'a> => option<'a> = "%null_to_opt"
+external isNullable: nullable<'a> => bool = "%is_nullable"
+external import: 'a => promise<'a> = "%import"
+
+/** The same as {!test} except that it is more permissive on the types of input */
+external testAny: 'a => bool = "%is_nullable"
+
+/**
+  The promise type, defined here for interoperation across packages.
+*/
+type promise<+'a, +'e>
+
+/**
+  The same as empty in `Js.Null`. Compiles to `null`.
+*/
+external null: null<'a> = "%null"
+
+/**
+  The same as empty `Js.Undefined`. Compiles to `undefined`.
+*/
+external undefined: undefined<'a> = "%undefined"
+
+/**
+`typeof x` will be compiled as `typeof x` in JS. Please consider functions in
+`Js.Types` for a type safe way of reflection.
+*/
+external typeof: 'a => string = "%typeof"
+
+@val @scope("console") /** Equivalent to console.log any value. */
+external log: 'a => unit = "log"
+
+@val @scope("console") external log2: ('a, 'b) => unit = "log"
+@val @scope("console") external log3: ('a, 'b, 'c) => unit = "log"
+
+@val @scope("console") external log4: ('a, 'b, 'c, 'd) => unit = "log"
+
+@val @scope("console") @variadic /** A convenience function to console.log more than 4 arguments */
+external logMany: array<'a> => unit = "log"
+
+external eqNull: ('a, null<'a>) => bool = "%equal_null"
+external eqUndefined: ('a, undefined<'a>) => bool = "%equal_undefined"
+external eqNullable: ('a, nullable<'a>) => bool = "%equal_nullable"
+
+/* ## Operators */
+
+/**
+   `unsafe_lt(a, b)` will be compiled as `a < b`.
+    It is marked as unsafe, since it is impossible
+    to give a proper semantics for comparision which applies to any type
+*/
+external unsafe_lt: ('a, 'a) => bool = "%unsafe_lt"
+
+/**
+   `unsafe_le(a, b)` will be compiled as `a <= b`.
+   See also `Js.unsafe_lt`.
+*/
+external unsafe_le: ('a, 'a) => bool = "%unsafe_le"
+
+/**
+   `unsafe_gt(a, b)` will be compiled as `a > b`.
+    See also `Js.unsafe_lt`.
+*/
+external unsafe_gt: ('a, 'a) => bool = "%unsafe_gt"
+
+/**
+   `unsafe_ge(a, b)` will be compiled as `a >= b`.
+   See also `Js.unsafe_lt`.
+*/
+external unsafe_ge: ('a, 'a) => bool = "%unsafe_ge"

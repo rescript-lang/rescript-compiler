@@ -26,12 +26,7 @@
 Contains functionality for dealing with values that can be both `null` and `undefined`
 */
 
-/** Local alias for `Js.null_undefined<'a>`. */
-@unboxed
-type t<+'a> = Js.nullable<'a> =
-  | Value('a)
-  | @as(null) Null
-  | @as(undefined) Undefined
+type t<+'a> = Primitive_js_extern.nullable<'a>
 
 /** Constructs a value of `Js.null_undefined<'a>` containing a value of `'a`. */
 external return: 'a => t<'a> = "%identity"
