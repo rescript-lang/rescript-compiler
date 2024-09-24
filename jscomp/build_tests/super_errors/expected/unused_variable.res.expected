@@ -10,6 +10,6 @@
   unused variable f.
 
 Fix this by:
-- Deleting the variable if it's not used anymiore.
+- Deleting the variable if it's not used anymore.
 - Prepending the variable name with `_` (like `_f`) to ignore that the variable is unused.
 - Using the variable somewhere.
