@@ -379,7 +379,7 @@ let message = function
       "this pattern-matching is not exhaustive.\n\
        All clauses in this pattern-matching are guarded."
   | Unused_var v | Unused_var_strict v -> 
-    Format.sprintf "unused variable %s.\n\nFix this by:\n- Prepending the variable name with `_` (like `_%s`) to ignore that the variable is unused.\n- Use the variable somewhere." v v
+    Format.sprintf "unused variable %s.\n\nFix this by:\n- Prepending the variable name with `_` (like `_%s`) to ignore that the variable is unused.\n- Using the variable somewhere." v v
   | Wildcard_arg_to_constant_constr ->
       "wildcard pattern given as argument to a constant constructor"
   | Eol_in_string ->
