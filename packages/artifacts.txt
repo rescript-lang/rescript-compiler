@@ -755,7 +755,9 @@ lib/ocaml/primitive_char_extern.res
 lib/ocaml/primitive_curry.cmi
 lib/ocaml/primitive_curry.cmj
 lib/ocaml/primitive_curry.cmt
+lib/ocaml/primitive_curry.cmti
 lib/ocaml/primitive_curry.res
+lib/ocaml/primitive_curry.resi
 lib/ocaml/primitive_dict.cmi
 lib/ocaml/primitive_dict.cmj
 lib/ocaml/primitive_dict.cmt

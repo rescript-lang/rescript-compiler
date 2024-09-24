@@ -6,7 +6,8 @@ external magic: 'a => 'b = "%identity"
 
 external tag: t => int = "%obj_tag"
 external size: t => int = "%obj_size"
-external field: (t, int) => t = "%obj_field"
+external field: (t, 'a) => t = "%obj_field"
+external set_field: (t, 'a, t) => unit = "%obj_set_field"
 external dup: t => t = "%obj_dup"
 
 @scope("Object")

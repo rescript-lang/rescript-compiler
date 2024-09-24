@@ -22,20 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+module Array = Primitive_array_extern
 module Obj = Primitive_object_extern
 
 @@uncurried
 
-%%private(
-  @get external array_length: array<'a> => int = "length"
-  @send external array_slice: (array<'a>, int, int) => array<'a> = "slice"
-  @send external array_concat: (array<'a>, array<'a>) => array<'a> = "concat"
+external function_arity: 'a => int = "%function_arity"
 
-  external function_arity: 'a => int = "%function_arity"
-
-  @send external apply_args: ('a => 'b, Js.null<_>, array<_>) => 'b = "apply"
-  let apply_args = (f, args) => apply_args(f, Js.null, args)
-)
+@send external apply_args: ('a => 'b, Js.null<_>, array<_>) => 'b = "apply"
+let apply_args = (f, args) => apply_args(f, Js.null, args)
 
 /* Public */
 let rec app = (f, args) => {
@@ -45,33 +40,26 @@ let rec app = (f, args) => {
   } else {
     init_arity
   } /* arity fixing */
-  let len = array_length(args)
+  let len = Array.length(args)
   let d = arity - len
   if d == 0 {
     apply_args(f, args) /* f.apply (null,args) */
   } else if d < 0 {
     /* TODO: could avoid copy by tracking the index */
-    app(Obj.magic(apply_args(f, array_slice(args, 0, arity))), array_slice(args, arity, len))
+    app(Obj.magic(apply_args(f, Array.slice(args, 0, arity))), Array.slice(args, arity, len))
   } else {
-    Obj.magic(x => app(f, array_concat(args, [x])))
+    Obj.magic(x => app(f, Array.concat(args, [x])))
   }
 }
 
-/* Internal use */
 external apply1: ('a0 => 'a1, 'a0) => 'a1 = "%curry_apply1"
-/* Internal use */
 external apply2: (('a0, 'a1) => 'a2, 'a0, 'a1) => 'a2 = "%curry_apply2"
-/* Internal use */
 external apply3: (('a0, 'a1, 'a2) => 'a3, 'a0, 'a1, 'a2) => 'a3 = "%curry_apply3"
-/* Internal use */
 external apply4: (('a0, 'a1, 'a2, 'a3) => 'a4, 'a0, 'a1, 'a2, 'a3) => 'a4 = "%curry_apply4"
-/* Internal use */
 external apply5: (('a0, 'a1, 'a2, 'a3, 'a4) => 'a5, 'a0, 'a1, 'a2, 'a3, 'a4) => 'a5 =
   "%curry_apply5"
-/* Internal use */
 external apply6: (('a0, 'a1, 'a2, 'a3, 'a4, 'a5) => 'a6, 'a0, 'a1, 'a2, 'a3, 'a4, 'a5) => 'a6 =
   "%curry_apply6"
-/* Internal use */
 external apply7: (
   ('a0, 'a1, 'a2, 'a3, 'a4, 'a5, 'a6) => 'a7,
   'a0,
@@ -82,7 +70,6 @@ external apply7: (
   'a5,
   'a6,
 ) => 'a7 = "%curry_apply7"
-/* Internal use */
 external apply8: (
   ('a0, 'a1, 'a2, 'a3, 'a4, 'a5, 'a6, 'a7) => 'a8,
   'a0,
@@ -95,33 +82,30 @@ external apply8: (
   'a7,
 ) => 'a8 = "%curry_apply8"
 
-%%private(
-  let curry_1 = (o, a0, arity) =>
-    switch arity {
-    | 1 => apply1(Obj.magic(o), a0)
-    | 2 => param => apply2(Obj.magic(o), a0, param)
-    | 3 => Obj.magic((param, \"param$1") => apply3(Obj.magic(o), a0, param, \"param$1"))
-    | 4 =>
-      Obj.magic((param, \"param$1", \"param$2") =>
-        apply4(Obj.magic(o), a0, param, \"param$1", \"param$2")
-      )
-    | 5 =>
-      Obj.magic((param, \"param$1", \"param$2", \"param$3") =>
-        apply5(Obj.magic(o), a0, param, \"param$1", \"param$2", \"param$3")
-      )
-    | 6 =>
-      Obj.magic((param, \"param$1", \"param$2", \"param$3", \"param$4") =>
-        apply6(Obj.magic(o), a0, param, \"param$1", \"param$2", \"param$3", \"param$4")
-      )
-    | 7 =>
-      Obj.magic((param, \"param$1", \"param$2", \"param$3", \"param$4", \"param$5") =>
-        apply7(Obj.magic(o), a0, param, \"param$1", \"param$2", \"param$3", \"param$4", \"param$5")
-      )
-    | _ => Obj.magic(app(o, [a0]))
-    }
-)
+let curry_1 = (o, a0, arity) =>
+  switch arity {
+  | 1 => apply1(Obj.magic(o), a0)
+  | 2 => param => apply2(Obj.magic(o), a0, param)
+  | 3 => Obj.magic((param, \"param$1") => apply3(Obj.magic(o), a0, param, \"param$1"))
+  | 4 =>
+    Obj.magic((param, \"param$1", \"param$2") =>
+      apply4(Obj.magic(o), a0, param, \"param$1", \"param$2")
+    )
+  | 5 =>
+    Obj.magic((param, \"param$1", \"param$2", \"param$3") =>
+      apply5(Obj.magic(o), a0, param, \"param$1", \"param$2", \"param$3")
+    )
+  | 6 =>
+    Obj.magic((param, \"param$1", \"param$2", \"param$3", \"param$4") =>
+      apply6(Obj.magic(o), a0, param, \"param$1", \"param$2", \"param$3", \"param$4")
+    )
+  | 7 =>
+    Obj.magic((param, \"param$1", \"param$2", \"param$3", \"param$4", \"param$5") =>
+      apply7(Obj.magic(o), a0, param, \"param$1", \"param$2", \"param$3", \"param$4", \"param$5")
+    )
+  | _ => Obj.magic(app(o, [a0]))
+  }
 
-/* Public */
 let _1 = (o, a0) => {
   let arity = function_arity(o)
   if arity == 1 {
@@ -131,7 +115,6 @@ let _1 = (o, a0) => {
   }
 }
 
-/* Public */
 let __1 = o => {
   let arity = function_arity(o)
   if arity == 1 {
@@ -141,30 +124,27 @@ let __1 = o => {
   }
 }
 
-%%private(
-  let curry_2 = (o, a0, a1, arity) =>
-    switch arity {
-    | 1 => app(apply1(Obj.magic(o), a0), [a1])
-    | 2 => apply2(Obj.magic(o), a0, a1)
-    | 3 => param => apply3(Obj.magic(o), a0, a1, param)
-    | 4 => Obj.magic((param, \"param$1") => apply4(Obj.magic(o), a0, a1, param, \"param$1"))
-    | 5 =>
-      Obj.magic((param, \"param$1", \"param$2") =>
-        apply5(Obj.magic(o), a0, a1, param, \"param$1", \"param$2")
-      )
-    | 6 =>
-      Obj.magic((param, \"param$1", \"param$2", \"param$3") =>
-        apply6(Obj.magic(o), a0, a1, param, \"param$1", \"param$2", \"param$3")
-      )
-    | 7 =>
-      Obj.magic((param, \"param$1", \"param$2", \"param$3", \"param$4") =>
-        apply7(Obj.magic(o), a0, a1, param, \"param$1", \"param$2", \"param$3", \"param$4")
-      )
-    | _ => Obj.magic(app(o, [a0, a1]))
-    }
-)
+let curry_2 = (o, a0, a1, arity) =>
+  switch arity {
+  | 1 => app(apply1(Obj.magic(o), a0), [a1])
+  | 2 => apply2(Obj.magic(o), a0, a1)
+  | 3 => param => apply3(Obj.magic(o), a0, a1, param)
+  | 4 => Obj.magic((param, \"param$1") => apply4(Obj.magic(o), a0, a1, param, \"param$1"))
+  | 5 =>
+    Obj.magic((param, \"param$1", \"param$2") =>
+      apply5(Obj.magic(o), a0, a1, param, \"param$1", \"param$2")
+    )
+  | 6 =>
+    Obj.magic((param, \"param$1", \"param$2", \"param$3") =>
+      apply6(Obj.magic(o), a0, a1, param, \"param$1", \"param$2", \"param$3")
+    )
+  | 7 =>
+    Obj.magic((param, \"param$1", \"param$2", \"param$3", \"param$4") =>
+      apply7(Obj.magic(o), a0, a1, param, \"param$1", \"param$2", \"param$3", \"param$4")
+    )
+  | _ => Obj.magic(app(o, [a0, a1]))
+  }
 
-/* Public */
 let _2 = (o, a0, a1) => {
   let arity = function_arity(o)
   if arity == 2 {
@@ -174,7 +154,6 @@ let _2 = (o, a0, a1) => {
   }
 }
 
-/* Public */
 let __2 = o => {
   let arity = function_arity(o)
   if arity == 2 {
@@ -184,27 +163,24 @@ let __2 = o => {
   }
 }
 
-%%private(
-  let curry_3 = (o, a0, a1, a2, arity) =>
-    switch arity {
-    | 1 => app(apply1(Obj.magic(o), a0), [a1, a2])
-    | 2 => app(apply2(Obj.magic(o), a0, a1), [a2])
-    | 3 => apply3(Obj.magic(o), a0, a1, a2)
-    | 4 => param => apply4(Obj.magic(o), a0, a1, a2, param)
-    | 5 => Obj.magic((param, \"param$1") => apply5(Obj.magic(o), a0, a1, a2, param, \"param$1"))
-    | 6 =>
-      Obj.magic((param, \"param$1", \"param$2") =>
-        apply6(Obj.magic(o), a0, a1, a2, param, \"param$1", \"param$2")
-      )
-    | 7 =>
-      Obj.magic((param, \"param$1", \"param$2", \"param$3") =>
-        apply7(Obj.magic(o), a0, a1, a2, param, \"param$1", \"param$2", \"param$3")
-      )
-    | _ => Obj.magic(app(o, [a0, a1, a2]))
-    }
-)
+let curry_3 = (o, a0, a1, a2, arity) =>
+  switch arity {
+  | 1 => app(apply1(Obj.magic(o), a0), [a1, a2])
+  | 2 => app(apply2(Obj.magic(o), a0, a1), [a2])
+  | 3 => apply3(Obj.magic(o), a0, a1, a2)
+  | 4 => param => apply4(Obj.magic(o), a0, a1, a2, param)
+  | 5 => Obj.magic((param, \"param$1") => apply5(Obj.magic(o), a0, a1, a2, param, \"param$1"))
+  | 6 =>
+    Obj.magic((param, \"param$1", \"param$2") =>
+      apply6(Obj.magic(o), a0, a1, a2, param, \"param$1", \"param$2")
+    )
+  | 7 =>
+    Obj.magic((param, \"param$1", \"param$2", \"param$3") =>
+      apply7(Obj.magic(o), a0, a1, a2, param, \"param$1", \"param$2", \"param$3")
+    )
+  | _ => Obj.magic(app(o, [a0, a1, a2]))
+  }
 
-/* Public */
 let _3 = (o, a0, a1, a2) => {
   let arity = function_arity(o)
   if arity == 3 {
@@ -214,7 +190,6 @@ let _3 = (o, a0, a1, a2) => {
   }
 }
 
-/* Public */
 let __3 = o => {
   let arity = function_arity(o)
   if arity == 3 {
@@ -224,24 +199,21 @@ let __3 = o => {
   }
 }
 
-%%private(
-  let curry_4 = (o, a0, a1, a2, a3, arity) =>
-    switch arity {
-    | 1 => app(apply1(Obj.magic(o), a0), [a1, a2, a3])
-    | 2 => app(apply2(Obj.magic(o), a0, a1), [a2, a3])
-    | 3 => app(apply3(Obj.magic(o), a0, a1, a2), [a3])
-    | 4 => apply4(Obj.magic(o), a0, a1, a2, a3)
-    | 5 => param => apply5(Obj.magic(o), a0, a1, a2, a3, param)
-    | 6 => Obj.magic((param, \"param$1") => apply6(Obj.magic(o), a0, a1, a2, a3, param, \"param$1"))
-    | 7 =>
-      Obj.magic((param, \"param$1", \"param$2") =>
-        apply7(Obj.magic(o), a0, a1, a2, a3, param, \"param$1", \"param$2")
-      )
-    | _ => Obj.magic(app(o, [a0, a1, a2, a3]))
-    }
-)
+let curry_4 = (o, a0, a1, a2, a3, arity) =>
+  switch arity {
+  | 1 => app(apply1(Obj.magic(o), a0), [a1, a2, a3])
+  | 2 => app(apply2(Obj.magic(o), a0, a1), [a2, a3])
+  | 3 => app(apply3(Obj.magic(o), a0, a1, a2), [a3])
+  | 4 => apply4(Obj.magic(o), a0, a1, a2, a3)
+  | 5 => param => apply5(Obj.magic(o), a0, a1, a2, a3, param)
+  | 6 => Obj.magic((param, \"param$1") => apply6(Obj.magic(o), a0, a1, a2, a3, param, \"param$1"))
+  | 7 =>
+    Obj.magic((param, \"param$1", \"param$2") =>
+      apply7(Obj.magic(o), a0, a1, a2, a3, param, \"param$1", \"param$2")
+    )
+  | _ => Obj.magic(app(o, [a0, a1, a2, a3]))
+  }
 
-/* Public */
 let _4 = (o, a0, a1, a2, a3) => {
   let arity = function_arity(o)
   if arity == 4 {
@@ -251,7 +223,6 @@ let _4 = (o, a0, a1, a2, a3) => {
   }
 }
 
-/* Public */
 let __4 = o => {
   let arity = function_arity(o)
   if arity == 4 {
@@ -261,22 +232,19 @@ let __4 = o => {
   }
 }
 
-%%private(
-  let curry_5 = (o, a0, a1, a2, a3, a4, arity) =>
-    switch arity {
-    | 1 => app(apply1(Obj.magic(o), a0), [a1, a2, a3, a4])
-    | 2 => app(apply2(Obj.magic(o), a0, a1), [a2, a3, a4])
-    | 3 => app(apply3(Obj.magic(o), a0, a1, a2), [a3, a4])
-    | 4 => app(apply4(Obj.magic(o), a0, a1, a2, a3), [a4])
-    | 5 => apply5(Obj.magic(o), a0, a1, a2, a3, a4)
-    | 6 => param => apply6(Obj.magic(o), a0, a1, a2, a3, a4, param)
-    | 7 =>
-      Obj.magic((param, \"param$1") => apply7(Obj.magic(o), a0, a1, a2, a3, a4, param, \"param$1"))
-    | _ => Obj.magic(app(o, [a0, a1, a2, a3, a4]))
-    }
-)
+let curry_5 = (o, a0, a1, a2, a3, a4, arity) =>
+  switch arity {
+  | 1 => app(apply1(Obj.magic(o), a0), [a1, a2, a3, a4])
+  | 2 => app(apply2(Obj.magic(o), a0, a1), [a2, a3, a4])
+  | 3 => app(apply3(Obj.magic(o), a0, a1, a2), [a3, a4])
+  | 4 => app(apply4(Obj.magic(o), a0, a1, a2, a3), [a4])
+  | 5 => apply5(Obj.magic(o), a0, a1, a2, a3, a4)
+  | 6 => param => apply6(Obj.magic(o), a0, a1, a2, a3, a4, param)
+  | 7 =>
+    Obj.magic((param, \"param$1") => apply7(Obj.magic(o), a0, a1, a2, a3, a4, param, \"param$1"))
+  | _ => Obj.magic(app(o, [a0, a1, a2, a3, a4]))
+  }
 
-/* Public */
 let _5 = (o, a0, a1, a2, a3, a4) => {
   let arity = function_arity(o)
   if arity == 5 {
@@ -286,7 +254,6 @@ let _5 = (o, a0, a1, a2, a3, a4) => {
   }
 }
 
-/* Public */
 let __5 = o => {
   let arity = function_arity(o)
   if arity == 5 {
@@ -296,21 +263,18 @@ let __5 = o => {
   }
 }
 
-%%private(
-  let curry_6 = (o, a0, a1, a2, a3, a4, a5, arity) =>
-    switch arity {
-    | 1 => app(apply1(Obj.magic(o), a0), [a1, a2, a3, a4, a5])
-    | 2 => app(apply2(Obj.magic(o), a0, a1), [a2, a3, a4, a5])
-    | 3 => app(apply3(Obj.magic(o), a0, a1, a2), [a3, a4, a5])
-    | 4 => app(apply4(Obj.magic(o), a0, a1, a2, a3), [a4, a5])
-    | 5 => app(apply5(Obj.magic(o), a0, a1, a2, a3, a4), [a5])
-    | 6 => apply6(Obj.magic(o), a0, a1, a2, a3, a4, a5)
-    | 7 => param => apply7(Obj.magic(o), a0, a1, a2, a3, a4, a5, param)
-    | _ => Obj.magic(app(o, [a0, a1, a2, a3, a4, a5]))
-    }
-)
+let curry_6 = (o, a0, a1, a2, a3, a4, a5, arity) =>
+  switch arity {
+  | 1 => app(apply1(Obj.magic(o), a0), [a1, a2, a3, a4, a5])
+  | 2 => app(apply2(Obj.magic(o), a0, a1), [a2, a3, a4, a5])
+  | 3 => app(apply3(Obj.magic(o), a0, a1, a2), [a3, a4, a5])
+  | 4 => app(apply4(Obj.magic(o), a0, a1, a2, a3), [a4, a5])
+  | 5 => app(apply5(Obj.magic(o), a0, a1, a2, a3, a4), [a5])
+  | 6 => apply6(Obj.magic(o), a0, a1, a2, a3, a4, a5)
+  | 7 => param => apply7(Obj.magic(o), a0, a1, a2, a3, a4, a5, param)
+  | _ => Obj.magic(app(o, [a0, a1, a2, a3, a4, a5]))
+  }
 
-/* Public */
 let _6 = (o, a0, a1, a2, a3, a4, a5) => {
   let arity = function_arity(o)
   if arity == 6 {
@@ -320,7 +284,6 @@ let _6 = (o, a0, a1, a2, a3, a4, a5) => {
   }
 }
 
-/* Public */
 let __6 = o => {
   let arity = function_arity(o)
   if arity == 6 {
@@ -330,21 +293,18 @@ let __6 = o => {
   }
 }
 
-%%private(
-  let curry_7 = (o, a0, a1, a2, a3, a4, a5, a6, arity) =>
-    switch arity {
-    | 1 => app(apply1(Obj.magic(o), a0), [a1, a2, a3, a4, a5, a6])
-    | 2 => app(apply2(Obj.magic(o), a0, a1), [a2, a3, a4, a5, a6])
-    | 3 => app(apply3(Obj.magic(o), a0, a1, a2), [a3, a4, a5, a6])
-    | 4 => app(apply4(Obj.magic(o), a0, a1, a2, a3), [a4, a5, a6])
-    | 5 => app(apply5(Obj.magic(o), a0, a1, a2, a3, a4), [a5, a6])
-    | 6 => app(apply6(Obj.magic(o), a0, a1, a2, a3, a4, a5), [a6])
-    | 7 => apply7(Obj.magic(o), a0, a1, a2, a3, a4, a5, a6)
-    | _ => Obj.magic(app(o, [a0, a1, a2, a3, a4, a5, a6]))
-    }
-)
+let curry_7 = (o, a0, a1, a2, a3, a4, a5, a6, arity) =>
+  switch arity {
+  | 1 => app(apply1(Obj.magic(o), a0), [a1, a2, a3, a4, a5, a6])
+  | 2 => app(apply2(Obj.magic(o), a0, a1), [a2, a3, a4, a5, a6])
+  | 3 => app(apply3(Obj.magic(o), a0, a1, a2), [a3, a4, a5, a6])
+  | 4 => app(apply4(Obj.magic(o), a0, a1, a2, a3), [a4, a5, a6])
+  | 5 => app(apply5(Obj.magic(o), a0, a1, a2, a3, a4), [a5, a6])
+  | 6 => app(apply6(Obj.magic(o), a0, a1, a2, a3, a4, a5), [a6])
+  | 7 => apply7(Obj.magic(o), a0, a1, a2, a3, a4, a5, a6)
+  | _ => Obj.magic(app(o, [a0, a1, a2, a3, a4, a5, a6]))
+  }
 
-/* Public */
 let _7 = (o, a0, a1, a2, a3, a4, a5, a6) => {
   let arity = function_arity(o)
   if arity == 7 {
@@ -354,7 +314,6 @@ let _7 = (o, a0, a1, a2, a3, a4, a5, a6) => {
   }
 }
 
-/* Public */
 let __7 = o => {
   let arity = function_arity(o)
   if arity == 7 {
@@ -364,21 +323,18 @@ let __7 = o => {
   }
 }
 
-%%private(
-  let curry_8 = (o, a0, a1, a2, a3, a4, a5, a6, a7, arity) =>
-    switch arity {
-    | 1 => app(apply1(Obj.magic(o), a0), [a1, a2, a3, a4, a5, a6, a7])
-    | 2 => app(apply2(Obj.magic(o), a0, a1), [a2, a3, a4, a5, a6, a7])
-    | 3 => app(apply3(Obj.magic(o), a0, a1, a2), [a3, a4, a5, a6, a7])
-    | 4 => app(apply4(Obj.magic(o), a0, a1, a2, a3), [a4, a5, a6, a7])
-    | 5 => app(apply5(Obj.magic(o), a0, a1, a2, a3, a4), [a5, a6, a7])
-    | 6 => app(apply6(Obj.magic(o), a0, a1, a2, a3, a4, a5), [a6, a7])
-    | 7 => app(apply7(Obj.magic(o), a0, a1, a2, a3, a4, a5, a6), [a7])
-    | _ => Obj.magic(app(o, [a0, a1, a2, a3, a4, a5, a6, a7]))
-    }
-)
+let curry_8 = (o, a0, a1, a2, a3, a4, a5, a6, a7, arity) =>
+  switch arity {
+  | 1 => app(apply1(Obj.magic(o), a0), [a1, a2, a3, a4, a5, a6, a7])
+  | 2 => app(apply2(Obj.magic(o), a0, a1), [a2, a3, a4, a5, a6, a7])
+  | 3 => app(apply3(Obj.magic(o), a0, a1, a2), [a3, a4, a5, a6, a7])
+  | 4 => app(apply4(Obj.magic(o), a0, a1, a2, a3), [a4, a5, a6, a7])
+  | 5 => app(apply5(Obj.magic(o), a0, a1, a2, a3, a4), [a5, a6, a7])
+  | 6 => app(apply6(Obj.magic(o), a0, a1, a2, a3, a4, a5), [a6, a7])
+  | 7 => app(apply7(Obj.magic(o), a0, a1, a2, a3, a4, a5, a6), [a7])
+  | _ => Obj.magic(app(o, [a0, a1, a2, a3, a4, a5, a6, a7]))
+  }
 
-/* Public */
 let _8 = (o, a0, a1, a2, a3, a4, a5, a6, a7) => {
   let arity = function_arity(o)
   if arity == 8 {
@@ -388,7 +344,6 @@ let _8 = (o, a0, a1, a2, a3, a4, a5, a6, a7) => {
   }
 }
 
-/* Public */
 let __8 = o => {
   let arity = function_arity(o)
   if arity == 8 {
