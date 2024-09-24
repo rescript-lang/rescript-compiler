@@ -1,5 +1,3 @@
-open Belt
-
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 let eq = (loc, (x, y)) => {

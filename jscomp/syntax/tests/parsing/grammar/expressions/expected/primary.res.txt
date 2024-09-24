@@ -5,11 +5,11 @@ let x = p.Parser.token
 let x = (p.Lang.Parser.token).pos
 ;;lexbuf.lnum <- (lexbuf.lnum + 1)
 ;;(parser.lexbuf).lnum <- ((parser.lexbuf).lnum + 1)
-let x = Primitive_array.get arr 0
-let x = Primitive_array.get arr (x : int)
-let x = Primitive_array.get (Primitive_array.get arr 0) 1
-let x = Primitive_array.get (Primitive_array.get arr (x : int)) (y : int)
-;;Primitive_array.set arr 0 (a + b)
+let x = arr.(0)
+let x = arr.((x : int))
+let x = (arr.(0)).(1)
+let x = (arr.((x : int))).((y : int))
+;;arr.(0) <- (a + b)
 ;;f ()
 ;;(f ()) ()
 ;;f a

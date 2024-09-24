@@ -94,4 +94,4 @@ let hh = $$String$1.length("x");
 exports.XX = XX;
 exports.u = u;
 exports.hh = hh;
-/* String Not a pure module */
+/* hh Not a pure module */

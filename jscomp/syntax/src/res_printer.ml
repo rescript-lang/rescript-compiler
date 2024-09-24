@@ -4098,10 +4098,7 @@ and print_pexp_apply ~state expr cmt_tbl =
         Doc.rbrace;
       ]
   | Pexp_apply
-      ( {
-          pexp_desc =
-            Pexp_ident {txt = Longident.Ldot (Lident "Primitive_array", "get")};
-        },
+      ( {pexp_desc = Pexp_ident {txt = Longident.Ldot (Lident "Array", "get")}},
         [(Nolabel, parent_expr); (Nolabel, member_expr)] )
     when not (ParsetreeViewer.is_rewritten_underscore_apply_sugar parent_expr)
     ->
@@ -4141,10 +4138,7 @@ and print_pexp_apply ~state expr cmt_tbl =
            Doc.rbracket;
          ])
   | Pexp_apply
-      ( {
-          pexp_desc =
-            Pexp_ident {txt = Longident.Ldot (Lident "Primitive_array", "set")};
-        },
+      ( {pexp_desc = Pexp_ident {txt = Longident.Ldot (Lident "Array", "set")}},
         [(Nolabel, parent_expr); (Nolabel, member_expr); (Nolabel, target_expr)]
       ) ->
     let member =

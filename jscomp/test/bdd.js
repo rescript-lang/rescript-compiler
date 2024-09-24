@@ -403,7 +403,7 @@ function main() {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "bdd.res",
-      303,
+      302,
       2
     ],
     Error: new Error()

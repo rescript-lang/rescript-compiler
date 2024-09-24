@@ -144,15 +144,14 @@ let mkVar = x => mkNode(zero, x, one)
 
 let cacheSize = 1999
 
-open Belt
-let andslot1 = Array.make(cacheSize, 0)
-let andslot2 = Array.make(cacheSize, 0)
-let andslot3 = Array.make(cacheSize, zero)
-let xorslot1 = Array.make(cacheSize, 0)
-let xorslot2 = Array.make(cacheSize, 0)
-let xorslot3 = Array.make(cacheSize, zero)
-let notslot1 = Array.make(cacheSize, 0)
-let notslot2 = Array.make(cacheSize, one)
+let andslot1 = Belt.Array.make(cacheSize, 0)
+let andslot2 = Belt.Array.make(cacheSize, 0)
+let andslot3 = Belt.Array.make(cacheSize, zero)
+let xorslot1 = Belt.Array.make(cacheSize, 0)
+let xorslot2 = Belt.Array.make(cacheSize, 0)
+let xorslot3 = Belt.Array.make(cacheSize, zero)
+let notslot1 = Belt.Array.make(cacheSize, 0)
+let notslot2 = Belt.Array.make(cacheSize, one)
 let hash = (x, y) => mod(lsl(x, 1) + y, cacheSize)
 
 let rec not = n =>
@@ -255,7 +254,7 @@ let random = () => {
 }
 
 let random_vars = n => {
-  let vars = Array.make(n, false)
+  let vars = Belt.Array.make(n, false)
   for i in 0 to n - 1 {
     vars[i] = random()
   }
@@ -275,7 +274,7 @@ let test_hwb = (bdd, vars) => {
         eval bdd vars = false if n = 0
      where n is the number of "true" elements in vars. */
   let ntrue = ref(0)
-  for i in 0 to Array.length(vars) - 1 {
+  for i in 0 to Belt.Array.length(vars) - 1 {
     if vars[i] {
       incr(ntrue)
     }

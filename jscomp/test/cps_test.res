@@ -1,5 +1,3 @@
-open Belt
-
 let test = () => {
   let v = ref(0)
   let rec f = (n, acc) =>
@@ -18,23 +16,23 @@ let test = () => {
 let test_closure = () => {
   let n = 6
   let v = ref(0)
-  let arr = Array.make(n, x => x)
+  let arr = Belt.Array.make(n, x => x)
   for i in 0 to n - 1 {
     arr[i] = _ => i
   }
-  arr->Array.forEach(i => v := v.contents + i(0))
+  arr->Belt.Array.forEach(i => v := v.contents + i(0))
   v.contents
 }
 
 let test_closure2 = () => {
   let n = 6
   let v = ref(0)
-  let arr = Array.make(n, x => x)
+  let arr = Belt.Array.make(n, x => x)
   for i in 0 to n - 1 {
     let j = i + i
     arr[i] = _ => j
   }
-  arr->Array.forEach(i => v := v.contents + i(0))
+  arr->Belt.Array.forEach(i => v := v.contents + i(0))
   v.contents
 }
 
