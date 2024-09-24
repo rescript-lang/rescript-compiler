@@ -287,8 +287,13 @@ let print_component_name ppf (p : Path.t) =
 let print_component_wrong_prop_error ppf (p : Path.t)
     (_fields : Types.label_declaration list) name =
   fprintf ppf "@[<v>";
-  fprintf ppf
-    "@[<2>The prop @{<error>%s@} does not belong to the JSX component " name;
+  (match name with
+  | "children" ->
+    fprintf ppf
+      "@[<2>This JSX component does not accept child elements. It has no @{<error>children@} prop "
+  | _ ->
+    fprintf ppf
+      "@[<2>The prop @{<error>%s@} does not belong to the JSX component " name);
   print_component_name ppf p;
   fprintf ppf "@]@,@,"
 
