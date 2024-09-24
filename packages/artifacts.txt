@@ -261,7 +261,9 @@ lib/minisocket.js
 lib/ocaml/array.cmi
 lib/ocaml/array.cmj
 lib/ocaml/array.cmt
+lib/ocaml/array.cmti
 lib/ocaml/array.res
+lib/ocaml/array.resi
 lib/ocaml/belt.cmi
 lib/ocaml/belt.cmj
 lib/ocaml/belt.cmt
@@ -503,13 +505,12 @@ lib/ocaml/belt_internalSetString.cmt
 lib/ocaml/belt_internalSetString.res
 lib/ocaml/belt_internals.cmti
 lib/ocaml/belt_internals.resi
-lib/ocaml/bs_stdlib_mini.cmi
-lib/ocaml/bs_stdlib_mini.cmti
-lib/ocaml/bs_stdlib_mini.resi
 lib/ocaml/char.cmi
 lib/ocaml/char.cmj
 lib/ocaml/char.cmt
+lib/ocaml/char.cmti
 lib/ocaml/char.res
+lib/ocaml/char.resi
 lib/ocaml/dom.cmi
 lib/ocaml/dom.cmj
 lib/ocaml/dom.cmt
@@ -717,7 +718,9 @@ lib/ocaml/lazy.resi
 lib/ocaml/list.cmi
 lib/ocaml/list.cmj
 lib/ocaml/list.cmt
+lib/ocaml/list.cmti
 lib/ocaml/list.res
+lib/ocaml/list.resi
 lib/ocaml/map.cmi
 lib/ocaml/map.cmj
 lib/ocaml/map.cmt
@@ -729,9 +732,7 @@ lib/ocaml/obj.res
 lib/ocaml/pervasives.cmi
 lib/ocaml/pervasives.cmj
 lib/ocaml/pervasives.cmt
-lib/ocaml/pervasives.cmti
 lib/ocaml/pervasives.res
-lib/ocaml/pervasives.resi
 lib/ocaml/primitive_array.cmi
 lib/ocaml/primitive_array.cmj
 lib/ocaml/primitive_array.cmt
@@ -833,7 +834,9 @@ lib/ocaml/set.res
 lib/ocaml/string.cmi
 lib/ocaml/string.cmj
 lib/ocaml/string.cmt
+lib/ocaml/string.cmti
 lib/ocaml/string.res
+lib/ocaml/string.resi
 linux/bsb_helper.exe
 linux/bsc.exe
 linux/ninja.exe

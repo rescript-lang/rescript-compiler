@@ -29,7 +29,7 @@ type t = Primitive_object_extern.t
 let repr = Primitive_object_extern.repr
 let magic = Primitive_object_extern.magic
 let tag = Primitive_object_extern.tag
-let field = Primitive_object_extern.field
+let field = Primitive_object_extern.getField
 let size = Primitive_object_extern.size
 
 module O = {
@@ -53,7 +53,7 @@ module O = {
   @get_index external get_value: (t, key) => t = ""
 }
 
-let update_dummy = Primitive_object_extern.update_dummy
+let updateDummy = Primitive_object_extern.updateDummy
 
 /** TODO: investigate total
     [compare x y] returns [0] if [x] is equal to [y],

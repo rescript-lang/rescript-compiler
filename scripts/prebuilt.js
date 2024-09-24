@@ -64,7 +64,6 @@ function populateLibDir() {
   const runtime_dir = path.join(jscomp_dir, "runtime");
   const others_dir = path.join(jscomp_dir, "others");
   const ocaml_dir = path.join(lib_dir, "ocaml");
-  const stdlib_dir = path.join(jscomp_dir, "stdlib-406");
 
   if (!fs.existsSync(ocaml_dir)) {
     fs.mkdirSync(ocaml_dir);
@@ -90,10 +89,6 @@ function populateLibDir() {
       return !y.base.match(/Belt_internal/i);
     }
     return installed_suffixes.includes(y.ext) && !y.name.endsWith(".cppo");
-  });
-  installDirBy(stdlib_dir, ocaml_dir, file => {
-    var y = path.parse(file);
-    return installed_suffixes.includes(y.ext);
   });
 }
 

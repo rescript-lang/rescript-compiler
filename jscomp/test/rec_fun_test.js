@@ -40,7 +40,7 @@ function g() {
     }
     return i + 1 | 0;
   };
-  Primitive_object.update_dummy(v, {
+  Primitive_object.updateDummy(v, {
     contents: next
   });
   console.log(next(0, true).toString());
@@ -52,12 +52,12 @@ let x = {};
 
 let y = {};
 
-Primitive_object.update_dummy(x, {
+Primitive_object.updateDummy(x, {
   hd: 1,
   tl: y
 });
 
-Primitive_object.update_dummy(y, {
+Primitive_object.updateDummy(y, {
   hd: 2,
   tl: x
 });

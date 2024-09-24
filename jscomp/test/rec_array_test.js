@@ -7,11 +7,11 @@ let vicky = {};
 
 let teacher = {};
 
-Primitive_object.update_dummy(vicky, {
+Primitive_object.updateDummy(vicky, {
   taughtBy: teacher
 });
 
-Primitive_object.update_dummy(teacher, {
+Primitive_object.updateDummy(teacher, {
   students: [vicky]
 });
 

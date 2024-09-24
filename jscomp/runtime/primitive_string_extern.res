@@ -24,7 +24,9 @@
 
 external length: string => int = "%string_length"
 
-@send external getChar: (string, int) => char = "codePointAt"
+@send external getChar: (string, int) => option<char> = "codePointAt"
+
+@send external getCharUnsafe: (string, int) => char = "codePointAt"
 
 @scope("String")
 external fromChar: char => string = "fromCodePoint"

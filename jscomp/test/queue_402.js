@@ -75,7 +75,7 @@ function copy(q) {
   }
   let tail = q.tail;
   let tail$p = {};
-  Primitive_object.update_dummy(tail$p, {
+  Primitive_object.updateDummy(tail$p, {
     content: tail.content,
     next: tail$p
   });

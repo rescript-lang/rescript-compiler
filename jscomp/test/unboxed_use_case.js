@@ -31,7 +31,7 @@ console.log("x");
 
 let v0 = {};
 
-Primitive_object.update_dummy(v0, {
+Primitive_object.updateDummy(v0, {
   NAME: "A",
   VAL: v0
 });

@@ -31,11 +31,11 @@ let a = {};
 
 let b = {};
 
-Primitive_object.update_dummy(a, {
+Primitive_object.updateDummy(a, {
   b: b
 });
 
-Primitive_object.update_dummy(b, {
+Primitive_object.updateDummy(b, {
   a: a
 });
 

@@ -447,7 +447,7 @@ and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
                  [
                    S.exp
                      (E.runtime_call Primitive_modules.object_
-                        "update_dummy" [ E.var id; v ]);
+                        "updateDummy" [ E.var id; v ]);
                  ]),
             [ S.define_variable ~kind:Variable id (E.dummy_obj tag_info) ] )
       | _ -> assert false)

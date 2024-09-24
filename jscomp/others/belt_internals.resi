@@ -50,7 +50,7 @@ external \"/.": (float, float) => float = "%divfloat"
 
 module Obj: {
   type t
-  external field: (t, int) => t = "%obj_field"
+  external field: (t, int) => t = "%obj_get_field"
   external set_field: (t, int, t) => unit = "%obj_set_field"
   external tag: t => int = "%obj_tag"
   external repr: 'a => t = "%identity"

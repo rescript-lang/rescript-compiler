@@ -22,23 +22,23 @@ let init_mod = (loc: (string, int, int), shape: shape) => {
   let undef_module = _ => raise(Undefined_recursive_module(loc))
   let rec loop = (shape: shape, struct_: Obj.t, idx) =>
     switch shape {
-    | Function => Obj.set_field(struct_, idx, Obj.magic(undef_module))
-    | Lazy => Obj.set_field(struct_, idx, Obj.magic(undef_module))
-    | Class => Obj.set_field(struct_, idx, Obj.magic((undef_module, undef_module, undef_module, 0)))
+    | Function => Obj.setField(struct_, idx, Obj.magic(undef_module))
+    | Lazy => Obj.setField(struct_, idx, Obj.magic(undef_module))
+    | Class => Obj.setField(struct_, idx, Obj.magic((undef_module, undef_module, undef_module, 0)))
     | Module(comps) =>
       let v = Obj.repr(module({}: Empty))
-      Obj.set_field(struct_, idx, v)
+      Obj.setField(struct_, idx, v)
       let len = Array.length(comps)
       for i in 0 to len - 1 {
         let (shape, name) = Array.getUnsafe(comps, i)
         loop(shape, v, name)
       }
-    | Value(v) => Obj.set_field(struct_, idx, v)
+    | Value(v) => Obj.setField(struct_, idx, v)
     }
   let res = Obj.repr(module({}: Empty))
   let dummy_name = "dummy"
   loop(shape, res, dummy_name)
-  Obj.field(res, dummy_name)
+  Obj.getField(res, dummy_name)
 }
 
 /* Note the [shape] passed between [init_mod] and [update_mod] is always the same 
@@ -47,15 +47,15 @@ let init_mod = (loc: (string, int, int), shape: shape) => {
 let update_mod = (shape: shape, o: Obj.t, n: Obj.t): unit => {
   let rec aux = (shape: shape, o, n, parent, i) =>
     switch shape {
-    | Function => Obj.set_field(parent, i, n)
+    | Function => Obj.setField(parent, i, n)
 
     | Lazy
     | Class =>
-      Obj.update_dummy(o, n)
+      Obj.updateDummy(o, n)
     | Module(comps) =>
       for i in 0 to Array.length(comps) - 1 {
         let (shape, name) = Array.getUnsafe(comps, i)
-        aux(shape, Obj.field(o, name), Obj.field(n, name), o, name)
+        aux(shape, Obj.getField(o, name), Obj.getField(n, name), o, name)
       }
     | Value(_) => ()
     }
@@ -63,7 +63,7 @@ let update_mod = (shape: shape, o: Obj.t, n: Obj.t): unit => {
   | Module(comps) =>
     for i in 0 to Array.length(comps) - 1 {
       let (shape, name) = Array.getUnsafe(comps, i)
-      aux(shape, Obj.field(o, name), Obj.field(n, name), o, name)
+      aux(shape, Obj.getField(o, name), Obj.getField(n, name), o, name)
     }
   | _ => assert(false)
   }

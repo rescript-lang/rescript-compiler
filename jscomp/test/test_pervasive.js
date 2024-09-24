@@ -4,6 +4,36 @@
 let Belt_List = require("../../lib/js/belt_List.js");
 let Pervasives = require("../../lib/js/pervasives.js");
 
+let $at = Pervasives.Pervasives.$at;
+
+let Pervasives_failwith = Pervasives.Pervasives.failwith;
+
+let Pervasives_invalid_arg = Pervasives.Pervasives.invalid_arg;
+
+let Pervasives_Exit = Pervasives.Pervasives.Exit;
+
+let Pervasives_abs = Pervasives.Pervasives.abs;
+
+let Pervasives_lnot = Pervasives.Pervasives.lnot;
+
+let Pervasives_max_int = Pervasives.Pervasives.max_int;
+
+let Pervasives_min_int = Pervasives.Pervasives.min_int;
+
+let Pervasives_infinity = Pervasives.Pervasives.infinity;
+
+let Pervasives_neg_infinity = Pervasives.Pervasives.neg_infinity;
+
+let Pervasives_max_float = Pervasives.Pervasives.max_float;
+
+let Pervasives_min_float = Pervasives.Pervasives.min_float;
+
+let Pervasives_epsilon_float = Pervasives.Pervasives.epsilon_float;
+
+let Pervasives_classify_float = Pervasives.Pervasives.classify_float;
+
+let Pervasives_char_of_int = Pervasives.Pervasives.char_of_int;
+
 let Pervasives$1 = {
   length: Belt_List.length,
   size: Belt_List.size,
@@ -93,21 +123,21 @@ let Pervasives$1 = {
   setAssoc: Belt_List.setAssoc,
   sortU: Belt_List.sortU,
   sort: Belt_List.sort,
-  invalid_arg: Pervasives.invalid_arg,
-  failwith: Pervasives.failwith,
-  Exit: Pervasives.Exit,
-  abs: Pervasives.abs,
-  max_int: Pervasives.max_int,
-  min_int: Pervasives.min_int,
-  lnot: Pervasives.lnot,
-  infinity: Pervasives.infinity,
-  neg_infinity: Pervasives.neg_infinity,
-  max_float: Pervasives.max_float,
-  min_float: Pervasives.min_float,
-  epsilon_float: Pervasives.epsilon_float,
-  classify_float: Pervasives.classify_float,
-  char_of_int: Pervasives.char_of_int,
-  $at: Pervasives.$at
+  failwith: Pervasives_failwith,
+  invalid_arg: Pervasives_invalid_arg,
+  Exit: Pervasives_Exit,
+  abs: Pervasives_abs,
+  lnot: Pervasives_lnot,
+  max_int: Pervasives_max_int,
+  min_int: Pervasives_min_int,
+  infinity: Pervasives_infinity,
+  neg_infinity: Pervasives_neg_infinity,
+  max_float: Pervasives_max_float,
+  min_float: Pervasives_min_float,
+  epsilon_float: Pervasives_epsilon_float,
+  classify_float: Pervasives_classify_float,
+  char_of_int: Pervasives_char_of_int,
+  $at: $at
 };
 
 function a0(prim) {
@@ -186,7 +216,7 @@ function a18(prim0, prim1) {
   return Math.pow(prim0, prim1);
 }
 
-let f = Pervasives.$at;
+let f = $at;
 
 exports.Pervasives = Pervasives$1;
 exports.f = f;

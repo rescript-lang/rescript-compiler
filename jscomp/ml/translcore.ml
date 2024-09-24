@@ -234,7 +234,7 @@ let primitives_table =
       ("%obj_dup", Pduprecord);
       ("%obj_tag", Pobjtag);
       ("%obj_size", Pobjsize);
-      ("%obj_field", Parrayrefu);
+      ("%obj_get_field", Parrayrefu);
       ("%obj_set_field", Parraysetu);
 
       ("%raise", Praise Raise_regular);
@@ -387,6 +387,9 @@ let primitives_table =
       ("#nullable_to_opt", Pnull_to_opt);
       ("#undefined_to_opt", Pundefined_to_opt);
       ("#makemutablelist", Pmakelist Mutable);
+
+      (* FIXME: Deprecated *)
+      ("%obj_field", Parrayrefu);
     |]
 
 let find_primitive prim_name = Hashtbl.find primitives_table prim_name

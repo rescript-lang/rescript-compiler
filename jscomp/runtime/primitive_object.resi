@@ -24,7 +24,7 @@
 
 type t = Primitive_object_extern.t
 
-let update_dummy: (t, t) => unit
+let updateDummy: (t, t) => unit
 
 let compare: (t, t) => int
 

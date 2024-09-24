@@ -1,7 +1,7 @@
 @val("console.log") /** we should also allow js function call from an external js module 
     
 */
-external log: 'a => unit = "?ignore"
+external log: 'a => unit = "%ignore"
 
 let v = u => {
   log(u)
@@ -13,7 +13,7 @@ module type OrderedType = {
   let compare: (t, t) => int
 }
 
-@val("t") external test_f: module(OrderedType) => unit = "?update_dummy"
+@val("t") external test_f: module(OrderedType) => unit = "update_dummy"
 
 let v = u => test_f(module(Test_order))
 
