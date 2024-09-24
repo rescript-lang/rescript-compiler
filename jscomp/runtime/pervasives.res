@@ -8,6 +8,7 @@
 */
 module Pervasives = {
   /* Internal */
+  @deprecated("Do not use. This will be removed in v13")
   external __unsafe_cast: 'a => 'b = "%identity"
 
   /* Exceptions */
@@ -73,6 +74,7 @@ module Pervasives = {
   external \"/": (int, int) => int = "%divint"
   external mod: (int, int) => int = "%modint"
 
+  @deprecated("Use Core or Js instead. This will be removed in v13")
   let abs = x =>
     if x >= 0 {
       x
@@ -90,8 +92,12 @@ module Pervasives = {
   external lsr: (int, int) => int = "%lsrint"
   external asr: (int, int) => int = "%asrint"
 
+  @deprecated("Use Core or Js instead. This will be removed in v13")
   let max_int = lsr(-1, 1)
-  let min_int = max_int + 1
+
+  @deprecated("Use Core or Js instead. This will be removed in v13")
+  let min_int =
+    max_int + 1
 
   /* Floating-point operations */
 
@@ -102,39 +108,94 @@ module Pervasives = {
   external \"*.": (float, float) => float = "%mulfloat"
   external \"/.": (float, float) => float = "%divfloat"
 
-  @val @scope("Math") external \"**": (float, float) => float = "pow"
-  @val @scope("Math") external exp: float => float = "exp"
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external \"**": (float, float) => float = "pow"
 
-  @val @scope("Math") external acos: float => float = "acos"
-  @val @scope("Math") external asin: float => float = "asin"
-  @val @scope("Math") external atan: float => float = "atan"
-  @val @scope("Math") external atan2: (float, float) => float = "atan2"
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external exp: float => float = "exp"
 
-  @val @scope("Math") external cos: float => float = "cos"
-  @val @scope("Math") external cosh: float => float = "cosh"
-  @val @scope("Math") external log: float => float = "log"
-  @val @scope("Math") external log10: float => float = "log10"
-  @val @scope("Math") external log1p: float => float = "log1p"
-  @val @scope("Math") external sin: float => float = "sin"
-  @val @scope("Math") external sinh: float => float = "sinh"
-  @val @scope("Math") external sqrt: float => float = "sqrt"
-  @val @scope("Math") external tan: float => float = "tan"
-  @val @scope("Math") external tanh: float => float = "tanh"
-  @val @scope("Math") external ceil: float => float = "ceil"
-  @val @scope("Math") external floor: float => float = "floor"
-  @val @scope("Math") external abs_float: float => float = "abs"
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external acos: float => float = "acos"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external asin: float => float = "asin"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external atan: float => float = "atan"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external atan2: (float, float) => float = "atan2"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external cos: float => float = "cos"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external cosh: float => float = "cosh"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external log: float => float = "log"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external log10: float => float = "log10"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external log1p: float => float = "log1p"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external sin: float => float = "sin"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external sinh: float => float = "sinh"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external sqrt: float => float = "sqrt"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external tan: float => float = "tan"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external tanh: float => float = "tanh"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external ceil: float => float = "ceil"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external floor: float => float = "floor"
+
+  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  external abs_float: float => float = "abs"
+
+  @deprecated("Use Core instead. This will be removed in v13")
   external float: int => float = "%floatofint"
+
+  @deprecated("Use Core instead. This will be removed in v13")
   external float_of_int: int => float = "%floatofint"
+
+  @deprecated("Use Core instead. This will be removed in v13")
   external truncate: float => int = "%intoffloat"
+
+  @deprecated("Use Core instead. This will be removed in v13")
   external int_of_float: float => int = "%intoffloat"
 
+  @deprecated("Use Core instead. This will be removed in v13")
   let infinity = 0x1p2047
+
+  @deprecated("Use Core instead. This will be removed in v13")
   let neg_infinity = -0x1p2047
-  @val @scope("Number") external nan: float = "NaN"
+
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Number")
+  external nan: float = "NaN"
+
+  @deprecated("Use Core instead. This will be removed in v13")
   let max_float = 1.79769313486231571e+308 /* 0x1.ffff_ffff_ffff_fp+1023 */
+
+  @deprecated("Use Core instead. This will be removed in v13")
   let min_float = 2.22507385850720138e-308 /* 0x1p-1022 */
+
+  @deprecated("Use Core instead. This will be removed in v13")
   let epsilon_float = 2.22044604925031308e-16 /* 0x1p-52 */
 
+  @deprecated("Do not use. This will be removed in v13")
   type fpclass =
     | FP_normal
     | FP_subnormal
@@ -142,6 +203,7 @@ module Pervasives = {
     | FP_infinite
     | FP_nan
 
+  @deprecated("Do not use. This will be removed in v13")
   let classify_float = (x: float): fpclass =>
     if (%raw(`isFinite`): _ => _)(x) {
       if abs_float(x) >= /* 0x1p-1022 */ /* 2.22507385850720138e-308 */ min_float {
@@ -163,8 +225,13 @@ module Pervasives = {
 
   /* Character operations -- more in module Char */
 
+  @deprecated("Use Core instead. This will be removed in v13")
   external int_of_char: char => int = "%identity"
+
+  @deprecated("Use Core instead. This will be removed in v13")
   external unsafe_char_of_int: int => char = "%identity"
+
+  @deprecated("Use Core instead. This will be removed in v13")
   let char_of_int = n =>
     if n < 0 || n > 255 {
       invalid_arg("char_of_int")
@@ -192,6 +259,7 @@ module Pervasives = {
 
   /* List operations -- more in module List */
 
+  @deprecated("Use Core instead. This will be removed in v13")
   let rec \"@" = (l1, l2) =>
     switch l1 {
     | list{} => l2
