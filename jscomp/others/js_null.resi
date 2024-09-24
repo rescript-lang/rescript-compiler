@@ -24,7 +24,8 @@
 
 /*** Provides functionality for dealing with the `Js.null<'a>` type */
 
-type t<+'a> = Primitive_js_extern.null<'a>
+@unboxed
+type t<+'a> = Primitive_js_extern.null<'a> = Value('a) | @as(null) Null
 
 /** Constructs a value of `Js.null<'a>` containing a value of `'a`. */
 external return: 'a => t<'a> = "%identity"

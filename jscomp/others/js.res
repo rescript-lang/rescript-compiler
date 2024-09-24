@@ -179,11 +179,13 @@ type t<'a> = {..} as 'a
 @val
 external globalThis: t<'a> = "globalThis"
 
-type null<+'a> = Js_null.t<'a>
+@unboxed
+type null<+'a> = Js_null.t<'a> = Value('a) | @as(null) Null
 
 type undefined<+'a> = Js_undefined.t<'a>
 
-type nullable<+'a> = Js_null_undefined.t<'a>
+@unboxed
+type nullable<+'a> = Js_null_undefined.t<'a> = Value('a) | @as(null) Null | @as(undefined) Undefined
 
 type null_undefined<+'a> = nullable<'a>
 

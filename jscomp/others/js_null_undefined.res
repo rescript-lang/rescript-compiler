@@ -24,7 +24,9 @@
 
 /*** Contains functionality for dealing with values that can be both `null` and `undefined` */
 
-type t<+'a> = Primitive_js_extern.nullable<'a>
+@unboxed
+type t<+'a> = Primitive_js_extern.nullable<'a> =
+  Value('a) | @as(null) Null | @as(undefined) Undefined
 
 external toOption: t<'a> => option<'a> = "%nullable_to_opt"
 external to_opt: t<'a> => option<'a> = "%nullable_to_opt"

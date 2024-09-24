@@ -24,7 +24,8 @@
 
 /*** Provides functionality for dealing with the `'a Js.null` type */
 
-type t<+'a> = Primitive_js_extern.null<'a>
+@unboxed
+type t<+'a> = Primitive_js_extern.null<'a> = Value('a) | @as(null) Null
 
 external to_opt: t<'a> => option<'a> = "%null_to_opt"
 external toOption: t<'a> => option<'a> = "%null_to_opt"
