@@ -74,7 +74,7 @@ module Pervasives = {
   external \"/": (int, int) => int = "%divint"
   external mod: (int, int) => int = "%modint"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13")
+  @deprecated("Use Core instead. This will be removed in v13")
   let abs = x =>
     if x >= 0 {
       x
@@ -92,10 +92,10 @@ module Pervasives = {
   external lsr: (int, int) => int = "%lsrint"
   external asr: (int, int) => int = "%asrint"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13")
+  @deprecated("Use Core instead. This will be removed in v13")
   let max_int = lsr(-1, 1)
 
-  @deprecated("Use Core or Js instead. This will be removed in v13")
+  @deprecated("Use Core instead. This will be removed in v13")
   let min_int =
     max_int + 1
 
@@ -108,61 +108,61 @@ module Pervasives = {
   external \"*.": (float, float) => float = "%mulfloat"
   external \"/.": (float, float) => float = "%divfloat"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external \"**": (float, float) => float = "pow"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external exp: float => float = "exp"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external acos: float => float = "acos"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external asin: float => float = "asin"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external atan: float => float = "atan"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external atan2: (float, float) => float = "atan2"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external cos: float => float = "cos"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external cosh: float => float = "cosh"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external log: float => float = "log"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external log10: float => float = "log10"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external log1p: float => float = "log1p"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external sin: float => float = "sin"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external sinh: float => float = "sinh"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external sqrt: float => float = "sqrt"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external tan: float => float = "tan"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external tanh: float => float = "tanh"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external ceil: float => float = "ceil"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external floor: float => float = "floor"
 
-  @deprecated("Use Core or Js instead. This will be removed in v13") @val @scope("Math")
+  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
   external abs_float: float => float = "abs"
 
   @deprecated("Use Core instead. This will be removed in v13")
