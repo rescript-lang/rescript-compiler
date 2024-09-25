@@ -1996,10 +1996,6 @@ module Conv = struct
     let constrs = Hashtbl.create 7 in
     let labels = Hashtbl.create 7 in
     let rec loop pat =
-      print_endline ("here! " ^ (List.length pat.pat_attributes |> string_of_int)); 
-      (match Variant_coercion.get_res_variant_spread_source_attr pat.pat_attributes with
-      | Some s -> print_endline ("#found! " ^ s)
-      | None -> ());
       match pat.pat_desc with
         Tpat_or (_pa,_pb,_) 
           when Variant_coercion.get_res_variant_spread_source_attr pat.pat_attributes |> Option.is_some ->

@@ -611,63 +611,47 @@ let extract_type_from_pat_variant_spread env loc lid expected_ty =
     (path, decl, constructors, ty))
   | _ -> raise (Error (lid.loc, env, Not_a_variant_type lid.txt))
 
-let build_or_pat_for_variant_spread env loc lid expected_ty =
-  let path, _decl, constructors, ty = extract_type_from_pat_variant_spread env loc lid expected_ty in
-  let gloc = {loc with Location.loc_ghost = true} in
-  let variant_spread_source_attr = Variant_coercion.make_variant_spread_source_attr (Longident.flatten lid.txt |> String.concat ".") in
-  let pats =
-    constructors
-    |> List.map
-          (fun (c : Types.constructor_declaration) : Typedtree.pattern ->
-            let lid = Longident.Lident (Ident.name c.cd_id) in
-            {
-              pat_desc =
-                Tpat_construct
-                  ( {loc = c.cd_loc; txt = lid},
-                    Env.lookup_constructor ~loc:c.cd_loc lid env,
-                    match c.cd_args with
-                    | Cstr_tuple [] -> []
-                    | _ ->
-                      [
-                        {
-                          pat_desc = Tpat_any;
-                          pat_loc = Location.none;
-                          pat_env = env;
-                          pat_type = expected_ty;
-                          pat_extra = [];
-                          pat_attributes = [variant_spread_source_attr];
-                        };
-                      ] );
-              pat_loc = Location.none;
-              pat_extra = [];
-              pat_type = expected_ty;
-              pat_env = env;
-              pat_attributes = [variant_spread_source_attr];
-            }) 
-    |> List.rev
-  in
-  match pats with
-  | [] -> raise (Error (lid.loc, env, Not_a_variant_type lid.txt))
-  | pat :: pats ->
-    let r =
-      List.fold_left
-        (fun pat pat0 ->
-          {
-            Typedtree.pat_desc = Tpat_or (pat, pat0, None);
-            pat_extra = [];
-            pat_loc = gloc;
-            pat_env = env;
-            pat_type = expected_ty;
-            pat_attributes = [variant_spread_source_attr];
-          })
-        pat pats
+let build_ppat_or_for_variant_spread pat env expected_ty =
+  match pat with
+  | {ppat_desc = Ppat_var {txt; loc = var_loc}; ppat_attributes}
+    when Variant_coercion.has_res_pat_variant_spread_attribute ppat_attributes
+    ->
+    let _, _, constructors, ty =
+      extract_type_from_pat_variant_spread !env var_loc
+        (Location.mkloc (Longident.parse txt) var_loc)
+        expected_ty
     in
-    (path,
-      rp {
-        r with pat_loc = loc; 
-        pat_attributes = (variant_spread_source_attr :: pat.pat_attributes)
-      }, 
-      ty)
+    let synthetic_or_patterns =
+      constructors
+      |> List.map (fun (c : Types.constructor_declaration) ->
+              Ast_helper.Pat.mk ~loc:var_loc
+                (Ppat_construct
+                  ( Location.mkloc
+                      (Longident.Lident (Ident.name c.cd_id))
+                      var_loc,
+                    match c.cd_args with
+                    | Cstr_tuple [] -> None
+                    | _ -> Some (Ast_helper.Pat.any ()) )))
+      |> List.rev
+    in
+    let pat =
+      match synthetic_or_patterns with
+      | [] -> pat
+      | pat :: pats ->
+        List.fold_left (fun p1 p2 -> Ast_helper.Pat.or_ p1 p2) pat pats
+    in
+    Some (pat, ty)
+  | _ -> None
+
+let maybe_expand_variant_spread_in_pattern pattern env expected_ty =
+  match pattern.Parsetree.ppat_desc with
+  | Ppat_var _
+    when Variant_coercion.has_res_pat_variant_spread_attribute
+            pattern.ppat_attributes -> (
+    match build_ppat_or_for_variant_spread pattern env expected_ty with
+    | None -> assert false
+    | Some (pattern, _) -> pattern)
+  | _ -> pattern
 
 (* Type paths *)
 
@@ -1125,6 +1109,7 @@ let rec type_pat ~constrs ~labels ~no_existentials ~mode ~explode ~env
 
 and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
     sp expected_ty k =
+  let sp = maybe_expand_variant_spread_in_pattern sp env expected_ty in
   let mode' = if mode = Splitting_or then Normal else mode in
   let type_pat ?(constrs=constrs) ?(labels=labels) ?(mode=mode')
       ?(explode=explode) ?(env=env) =
@@ -1152,10 +1137,6 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
         type_pat ~constrs:(Some constrs) ~labels:(Some labels)
           ~explode sp expected_ty k
       else k' Tpat_any
-  | Ppat_var name when Variant_coercion.has_res_pat_variant_spread_attribute sp.ppat_attributes ->
-    (* Transforms Ppat_var into an or pattern for all the target variant constructors. *)
-    let (_path, pattern, _type) = build_or_pat_for_variant_spread !env loc (Location.mkloc (Longident.parse name.txt) name.loc) expected_ty in
-    pattern
   | Ppat_var name ->
       let id = (* PR#7330 *)
         if name.txt = "*extension*" then Ident.create name.txt else
@@ -1202,22 +1183,23 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
           }
       | _ -> assert false
       end
-    | Ppat_alias({ppat_desc=Ppat_var {txt; loc}; ppat_attributes}, name) when Variant_coercion.has_res_pat_variant_spread_attribute ppat_attributes ->
-      let (_path, p, ty) = build_or_pat_for_variant_spread !env loc (Location.mkloc (Longident.parse txt) loc) expected_ty in
-      assert (constrs = None);
-
-      let id = enter_variable ~is_as_variable:true loc name ty in
-      rp k {
-        pat_desc = Tpat_alias(p, id, name);
-        pat_loc = loc; pat_extra=[];
-        pat_type = expected_ty;
-        pat_attributes = sp.ppat_attributes;
-        pat_env = !env }
   | Ppat_alias(sq, name) ->
+      let as_type, sq =
+        match sq with
+        | {ppat_desc = Ppat_var _; ppat_attributes}
+          when Variant_coercion.has_res_pat_variant_spread_attribute ppat_attributes
+          -> (
+          match build_ppat_or_for_variant_spread sq env expected_ty with
+          | Some (p, ty) -> (Some ty, p)
+          | None -> (None, sq))
+        | _ -> (None, sq)
+      in
       assert (constrs = None);
       type_pat sq expected_ty (fun q ->
         begin_def ();
-        let ty_var = build_as_type !env q in
+        let ty_var = (match as_type with 
+        | Some ty -> ty 
+        | None -> build_as_type !env q) in
         end_def ();
         generalize ty_var;
         let id = enter_variable ~is_as_variable:true loc name ty_var in
