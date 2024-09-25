@@ -24,10 +24,10 @@ open Typedtree
 (* Utilities for building patterns   *)
 (*************************************)
 
-let make_pat ?(attrs = []) desc ty tenv =
+let make_pat desc ty tenv =
   {pat_desc = desc; pat_loc = Location.none; pat_extra = [];
    pat_type = ty ; pat_env = tenv;
-   pat_attributes = attrs;
+   pat_attributes = [];
   }
 
 let omega = make_pat Tpat_any Ctype.none Env.empty
@@ -948,7 +948,7 @@ let pat_of_constr ex_pat cstr =
    Tpat_construct (mknoloc (Longident.Lident "?pat_of_constr?"),
                    cstr, omegas cstr.cstr_arity)}
 
-let orify x y = make_pat ~attrs:x.pat_attributes (Tpat_or (x, y, None)) x.pat_type x.pat_env
+let orify x y = make_pat (Tpat_or (x, y, None)) x.pat_type x.pat_env
 
 let rec orify_many = function
 | [] -> assert false
@@ -1997,14 +1997,7 @@ module Conv = struct
     let labels = Hashtbl.create 7 in
     let rec loop pat =
       match pat.pat_desc with
-        Tpat_or (_pa,_pb,_) 
-          when Variant_coercion.get_res_variant_spread_source_attr pat.pat_attributes |> Option.is_some ->
-          print_endline "#found variant spread originated tpat_or";
-          let spread_from_variant = Variant_coercion.get_res_variant_spread_source_attr pat.pat_attributes |> Option.get in
-          Ast_helper.Pat.mk 
-            ~attrs:((Location.mknoloc "res.patVariantSpread", Parsetree.PStr []) :: pat.pat_attributes) 
-            (Ppat_var (Location.mknoloc spread_from_variant))
-      | Tpat_or (pa,pb,_) ->
+        Tpat_or (pa,pb,_) ->
           mkpat (Ppat_or (loop pa, loop pb))
       | Tpat_var (_, ({txt="*extension*"} as nm)) -> (* PR#7330 *)
           mkpat (Ppat_var nm)

@@ -208,16 +208,3 @@ let has_res_pat_variant_spread_attribute attrs =
   |> List.find_opt (fun (({txt}, _) : Parsetree.attribute) ->
           txt = "res.patVariantSpread")
   |> Option.is_some
-
-let make_variant_spread_source_attr source_type_name =
-  print_endline "making variant spread attr";
-  let loc = Location.none in
-  let txt = "res.variantSpreadSource" in
-  (Location.mknoloc txt, Parsetree.PStr [{pstr_loc=loc; pstr_desc=Pstr_eval ({pexp_loc=loc; pexp_attributes=[]; pexp_desc=Pexp_constant (Pconst_string (source_type_name, None))}, [])}])
-
-let get_res_variant_spread_source_attr attrs =
-  attrs
-  |> List.find_map (fun (({txt}, payload) : Parsetree.attribute) ->
-        if txt = "res.variantSpreadSource" then
-          Ast_payload.is_single_string payload |> Option.map (fun s -> fst s)
-        else None)
