@@ -102,6 +102,7 @@ type t =
   | Psubfloat
   | Pmulfloat
   | Pdivfloat
+  | Pmodfloat
   | Pfloatcomp of Lam_compat.comparison
   | Pfloatorder
   | Pfloatmin
@@ -246,6 +247,7 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Psubfloat
   | Pmulfloat
   | Pdivfloat
+  | Pmodfloat
   | Pfloatorder
   | Pfloatmin
   | Pfloatmax

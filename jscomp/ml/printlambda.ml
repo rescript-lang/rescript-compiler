@@ -179,6 +179,7 @@ let primitive ppf = function
   | Psubfloat -> fprintf ppf "-."
   | Pmulfloat -> fprintf ppf "*."
   | Pdivfloat -> fprintf ppf "/."
+  | Pmodfloat -> fprintf ppf "mod"
   | Pfloatcomp(Ceq) -> fprintf ppf "==."
   | Pfloatcomp(Cneq) -> fprintf ppf "!=."
   | Pfloatcomp(Clt) -> fprintf ppf "<."

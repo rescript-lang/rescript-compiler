@@ -92,6 +92,7 @@ type t =
   | Psubfloat
   | Pmulfloat
   | Pdivfloat
+  | Pmodfloat
   | Pfloatcomp of Lam_compat.comparison
   | Pfloatorder
   | Pfloatmin

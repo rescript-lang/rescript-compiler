@@ -204,6 +204,8 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       match args with [ e1; e2 ] -> E.bigint_op Mul e1 e2 | _ -> assert false)
   | Pdivfloat -> (
       match args with [ e1; e2 ] -> E.float_div e1 e2 | _ -> assert false)
+  | Pmodfloat -> (
+      match args with [ e1; e2 ] -> E.float_mod e1 e2 | _ -> assert false)
   | Pdivint -> (
       match args with
       | [ e1; e2 ] -> E.int32_div ~checked:!Js_config.check_div_by_zero e1 e2

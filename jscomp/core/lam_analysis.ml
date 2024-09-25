@@ -65,7 +65,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pintorder | Pintmin | Pintmax
       (* float primitives *)
       | Pintoffloat | Pfloatofint | Pnegfloat
-      | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+      | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat | Pmodfloat
       | Pfloatcomp _ | Pjscomp _ | Pfloatorder | Pfloatmin | Pfloatmax
       (* bigint primitives *)
       | Pnegbigint | Paddbigint | Psubbigint | Pmulbigint | Ppowbigint

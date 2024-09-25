@@ -280,6 +280,7 @@ let primitives_table =
       ("%subfloat", Psubfloat);
       ("%mulfloat", Pmulfloat);
       ("%divfloat", Pdivfloat);
+      ("%modfloat", Pmodfloat);
       ("%eqfloat", Pfloatcomp Ceq);
       ("%noteqfloat", Pfloatcomp Cneq);
       ("%ltfloat", Pfloatcomp Clt);

@@ -287,6 +287,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Psubfloat -> prim ~primitive:Psubfloat ~args loc
   | Pmulfloat -> prim ~primitive:Pmulfloat ~args loc
   | Pdivfloat -> prim ~primitive:Pdivfloat ~args loc
+  | Pmodfloat -> prim ~primitive:Pmodfloat ~args loc
   | Pfloatorder -> prim ~primitive:Pfloatorder ~args loc
   | Pfloatmin -> prim ~primitive:Pfloatmin ~args loc
   | Pfloatmax -> prim ~primitive:Pfloatmax ~args loc

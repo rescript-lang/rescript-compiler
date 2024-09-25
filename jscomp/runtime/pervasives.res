@@ -166,6 +166,9 @@ module Pervasives = {
   external abs_float: float => float = "abs"
 
   @deprecated("Use Core instead. This will be removed in v13")
+  external mod_float: float => float = "%modfloat"
+
+  @deprecated("Use Core instead. This will be removed in v13")
   external float: int => float = "%floatofint"
 
   @deprecated("Use Core instead. This will be removed in v13")
