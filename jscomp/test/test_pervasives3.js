@@ -34,6 +34,14 @@ let Pervasives_classify_float = Pervasives.Pervasives.classify_float;
 
 let Pervasives_char_of_int = Pervasives.Pervasives.char_of_int;
 
+let Pervasives_string_of_bool = Pervasives.Pervasives.string_of_bool;
+
+let Pervasives_bool_of_string = Pervasives.Pervasives.bool_of_string;
+
+let Pervasives_bool_of_string_opt = Pervasives.Pervasives.bool_of_string_opt;
+
+let Pervasives_int_of_string_opt = Pervasives.Pervasives.int_of_string_opt;
+
 let Pervasives$1 = {
   failwith: Pervasives_failwith,
   invalid_arg: Pervasives_invalid_arg,
@@ -49,6 +57,10 @@ let Pervasives$1 = {
   epsilon_float: Pervasives_epsilon_float,
   classify_float: Pervasives_classify_float,
   char_of_int: Pervasives_char_of_int,
+  string_of_bool: Pervasives_string_of_bool,
+  bool_of_string: Pervasives_bool_of_string,
+  bool_of_string_opt: Pervasives_bool_of_string_opt,
+  int_of_string_opt: Pervasives_int_of_string_opt,
   $at: $at,
   length: Belt_List.length,
   size: Belt_List.size,

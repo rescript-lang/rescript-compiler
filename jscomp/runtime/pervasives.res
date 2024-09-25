@@ -260,6 +260,47 @@ module Pervasives = {
   external incr: ref<int> => unit = "%incr"
   external decr: ref<int> => unit = "%decr"
 
+  /* String conversion functions */
+
+  @deprecated("Use Core instead. This will be removed in v13")
+  let string_of_bool = b =>
+    if b {
+      "true"
+    } else {
+      "false"
+    }
+
+  @deprecated("Use Core instead. This will be removed in v13")
+  let bool_of_string = param =>
+    switch param {
+    | "true" => true
+    | "false" => false
+    | _ => invalid_arg("bool_of_string")
+    }
+
+  @deprecated("Use Core instead. This will be removed in v13")
+  let bool_of_string_opt = param =>
+    switch param {
+    | "true" => Some(true)
+    | "false" => Some(false)
+    | _ => None
+    }
+
+  @deprecated("Use Core instead. This will be removed in v13")
+  external string_of_int: int => string = "String"
+
+  @deprecated("Use Core instead. This will be removed in v13") @scope("Number")
+  external int_of_string: string => int = "parseInt"
+
+  let int_of_string_opt = s =>
+    switch int_of_string(s) {
+    | n if n == %raw("NaN") => None
+    | n => Some(n)
+    }
+
+  @deprecated("Use Core instead. This will be removed in v13")
+  external string_get: (string, int) => char = "%string_safe_get"
+
   /* List operations -- more in module List */
 
   @deprecated("Use Core instead. This will be removed in v13")
