@@ -624,7 +624,7 @@ let build_ppat_or_for_variant_spread pat env expected_ty =
     let synthetic_or_patterns =
       constructors
       |> List.map (fun (c : Types.constructor_declaration) ->
-              Ast_helper.Pat.mk ~loc:var_loc
+              Ast_helper.Pat.mk ~attrs:[Variant_type_spread.mk_pat_from_variant_spread_attr ()] ~loc:var_loc
                 (Ppat_construct
                   ( Location.mkloc
                       (Longident.Lident (Ident.name c.cd_id))
