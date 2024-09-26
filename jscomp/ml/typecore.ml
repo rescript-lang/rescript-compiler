@@ -1182,7 +1182,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
       | _ -> assert false
       end
   | Ppat_alias(sq, name) ->
-      let as_type, sq =
+      let override_type_from_variant_spread, sq =
         match sq with
         | {ppat_desc = Ppat_type _; ppat_attributes}
           when Variant_coercion.has_res_pat_variant_spread_attribute ppat_attributes
@@ -1195,7 +1195,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
       assert (constrs = None);
       type_pat sq expected_ty (fun q ->
         begin_def ();
-        let ty_var = (match as_type with 
+        let ty_var = (match override_type_from_variant_spread with 
         | Some ty -> ty 
         | None -> build_as_type !env q) in
         end_def ();
@@ -4107,8 +4107,8 @@ let report_error env ppf = function
       args (if args = 0 then "" else "s") arity
   | Field_not_optional (name, typ) ->
     fprintf ppf
-    "Field @{<info>%s@} is not optional in type %a. Use without ?" name
-    type_expr typ
+      "Field @{<info>%s@} is not optional in type %a. Use without ?" name
+      type_expr typ
   | Type_params_not_supported lid ->
     fprintf ppf "The type %a@ has type parameters, but type parameters is not supported here." longident lid
 
