@@ -2203,10 +2203,6 @@ and print_pattern ~state (p : Parsetree.pattern) cmt_tbl =
   let pattern_without_attributes =
     match p.ppat_desc with
     | Ppat_any -> Doc.text "_"
-    | Ppat_var var
-      when ParsetreeViewer.has_res_pat_variant_spread_attribute
-             p.ppat_attributes ->
-      Doc.concat [Doc.text "..."; print_ident_like var.txt]
     | Ppat_var var -> print_ident_like var.txt
     | Ppat_constant c ->
       let template_literal =
@@ -2408,6 +2404,10 @@ and print_pattern ~state (p : Parsetree.pattern) cmt_tbl =
             ]
       in
       Doc.group (Doc.concat [variant_name; args_doc])
+    | Ppat_type ident
+      when ParsetreeViewer.has_res_pat_variant_spread_attribute
+             p.ppat_attributes ->
+      Doc.concat [Doc.text "..."; print_ident_path ident cmt_tbl]
     | Ppat_type ident ->
       Doc.concat [Doc.text "#..."; print_ident_path ident cmt_tbl]
     | Ppat_record (rows, open_flag) ->

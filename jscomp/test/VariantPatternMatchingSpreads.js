@@ -37,17 +37,17 @@ function lookup(b) {
   }
 }
 
-function lookup2(b) {
-  switch (b) {
+function lookup2(d) {
+  switch (d) {
     case "Four" :
-      console.log("four");
-      return;
     case "Five" :
-      console.log("five");
+      return doWithB(d);
+    case "Six" :
+    case "Seven" :
+      console.log("Got rest of d");
       return;
     default:
-      console.log("spread");
-      return;
+      return doWithA(d);
   }
 }
 
