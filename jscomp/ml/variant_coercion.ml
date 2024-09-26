@@ -203,6 +203,7 @@ let type_is_variant (typ: (Path.t * Path.t * Types.type_declaration) option) =
   match typ with 
   | Some (_, _, {type_kind = Type_variant _; _}) -> true 
   | _ -> false
+
 let has_res_pat_variant_spread_attribute attrs =
   attrs
   |> List.find_opt (fun (({txt}, _) : Parsetree.attribute) ->
