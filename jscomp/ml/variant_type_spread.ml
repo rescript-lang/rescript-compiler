@@ -1,6 +1,16 @@
 let mk_constructor_comes_from_spread_attr () : Parsetree.attribute =
   (Location.mknoloc "res.constructor_from_spread", PStr [])
 
+let mk_pat_from_variant_spread_attr () : Parsetree.attribute =
+  (Location.mknoloc "res.patFromVariantSpread", PStr [])
+
+let is_pat_from_variant_spread_attr pat =
+  pat.Typedtree.pat_attributes
+  |> List.exists (fun (a : Parsetree.attribute) ->
+         match a with
+         | {txt = "res.patFromVariantSpread"}, PStr [] -> true
+         | _ -> false)
+
 type variant_type_spread_error =
   | CouldNotFindType
   | HasTypeParams

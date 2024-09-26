@@ -74,6 +74,7 @@ type error =
   | Empty_record_literal
   | Uncurried_arity_mismatch of type_expr * int * int
   | Field_not_optional of string * type_expr
+  | Type_params_not_supported of Longident.t
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
@@ -595,6 +596,61 @@ let build_or_pat env loc lid =
           pat pats in
       (path, rp { r with pat_loc = loc },ty)
 
+let extract_type_from_pat_variant_spread env lid expected_ty =
+  let path, decl = Typetexp.find_type env lid.loc lid.txt in
+  match decl with
+  | {type_kind = Type_variant constructors; type_params} -> (
+    if List.length type_params > 0 then raise (Error (lid.loc, env, Type_params_not_supported lid.txt));
+    let ty = newgenty (Tconstr (path, [], ref Mnil)) in
+    (try 
+        Ctype.subtype env ty expected_ty () 
+      with 
+        Ctype.Subtype (tr1, tr2) -> 
+          raise(Error(lid.loc, env, Not_subtype(tr1, tr2)))
+      );
+    (path, decl, constructors, ty))
+  | _ -> raise (Error (lid.loc, env, Not_a_variant_type lid.txt))
+
+let build_ppat_or_for_variant_spread pat env expected_ty =
+  match pat with
+  | {ppat_desc = Ppat_type lident; ppat_attributes}
+    when Variant_coercion.has_res_pat_variant_spread_attribute ppat_attributes
+    ->
+    let _, _, constructors, ty =
+      extract_type_from_pat_variant_spread !env lident expected_ty
+    in
+    let synthetic_or_patterns =
+      constructors
+      |> List.map (fun (c : Types.constructor_declaration) ->
+              Ast_helper.Pat.mk ~attrs:[Variant_type_spread.mk_pat_from_variant_spread_attr ()] ~loc:lident.loc
+                (Ppat_construct
+                  ( Location.mkloc
+                      (Longident.Lident (Ident.name c.cd_id))
+                      lident.loc,
+                    match c.cd_args with
+                    | Cstr_tuple [] -> None
+                    | _ -> Some (Ast_helper.Pat.any ()) )))
+      |> List.rev
+    in
+    let pat =
+      match synthetic_or_patterns with
+      | [] -> pat
+      | pat :: pats ->
+        List.fold_left (fun p1 p2 -> Ast_helper.Pat.or_ p1 p2) pat pats
+    in
+    Some (pat, ty)
+  | _ -> None
+
+let maybe_expand_variant_spread_in_pattern pattern env expected_ty =
+  match pattern.Parsetree.ppat_desc with
+  | Ppat_type _
+    when Variant_coercion.has_res_pat_variant_spread_attribute
+            pattern.ppat_attributes -> (
+    match build_ppat_or_for_variant_spread pattern env expected_ty with
+    | None -> assert false (* TODO: Fix. *)
+    | Some (pattern, _) -> pattern)
+  | _ -> pattern
+
 (* Type paths *)
 
 let rec expand_path env p =
@@ -1051,6 +1107,7 @@ let rec type_pat ~constrs ~labels ~no_existentials ~mode ~explode ~env
 
 and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
     sp expected_ty k =
+  let sp = maybe_expand_variant_spread_in_pattern sp env expected_ty in
   let mode' = if mode = Splitting_or then Normal else mode in
   let type_pat ?(constrs=constrs) ?(labels=labels) ?(mode=mode')
       ?(explode=explode) ?(env=env) =
@@ -1125,10 +1182,22 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
       | _ -> assert false
       end
   | Ppat_alias(sq, name) ->
+      let override_type_from_variant_spread, sq =
+        match sq with
+        | {ppat_desc = Ppat_type _; ppat_attributes}
+          when Variant_coercion.has_res_pat_variant_spread_attribute ppat_attributes
+          -> (
+          match build_ppat_or_for_variant_spread sq env expected_ty with
+          | Some (p, ty) -> (Some ty, p)
+          | None -> (None, sq))
+        | _ -> (None, sq)
+      in
       assert (constrs = None);
       type_pat sq expected_ty (fun q ->
         begin_def ();
-        let ty_var = build_as_type !env q in
+        let ty_var = (match override_type_from_variant_spread with 
+        | Some ty -> ty 
+        | None -> build_as_type !env q) in
         end_def ();
         generalize ty_var;
         let id = enter_variable ~is_as_variable:true loc name ty_var in
@@ -4040,6 +4109,8 @@ let report_error env ppf = function
     fprintf ppf
       "Field @{<info>%s@} is not optional in type %a. Use without ?" name
       type_expr typ
+  | Type_params_not_supported lid ->
+    fprintf ppf "The type %a@ has type parameters, but type parameters is not supported here." longident lid
 
 
 let super_report_error_no_wrap_printing_env = report_error

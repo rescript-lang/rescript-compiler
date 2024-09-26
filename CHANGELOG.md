@@ -15,6 +15,7 @@
 #### :rocket: New Feature
 
 - Use FORCE_COLOR environmental variable to force colorized output https://github.com/rescript-lang/rescript-compiler/pull/7033
+- Allow spreads of variants in patterns (`| ...someVariant as v => `) when the variant spread is a subtype of the variant matched on. https://github.com/rescript-lang/rescript-compiler/pull/6721
 
 #### :bug: Bug fix
 
