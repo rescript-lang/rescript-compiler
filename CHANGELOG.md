@@ -20,6 +20,7 @@
 #### :bug: Bug fix
 
 - Fix tuple coercion. https://github.com/rescript-lang/rescript-compiler/pull/7024
+- Fix attribute printing. https://github.com/rescript-lang/rescript-compiler/pull/7025
 
 #### :nail_care: Polish
 
