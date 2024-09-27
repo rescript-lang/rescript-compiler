@@ -185,8 +185,6 @@ type immediate_or_pointer =
   | Immediate
   | Pointer
 
-
-
 type is_safe =
   | Safe
   | Unsafe
@@ -204,16 +202,13 @@ type primitive =
   | Pmakeblock of  tag_info 
   | Pfield of int * field_dbg_info
   | Psetfield of int *  set_field_dbg_info
-
-  
-
   | Pduprecord
   (* Force lazy values *)
   | Plazyforce
   (* External call *)
   | Pccall of Primitive.description
   (* Exceptions *)
-  | Praise of raise_kind
+  | Praise
   (* Boolean operations *)
   | Psequand | Psequor | Pnot
   (* Integer operations *)
@@ -278,11 +273,6 @@ and value_kind =
 and boxed_integer = Primitive.boxed_integer =
     Pbigint | Pint32 | Pint64
 
-
-and raise_kind =
-  | Raise_regular
-  | Raise_reraise
-  | Raise_notrace
 
 type pointer_info =
   | Pt_constructor of {name: string; const: int; non_const: int; attrs: Parsetree.attributes}
@@ -756,11 +746,6 @@ and negate_comparison = function
 | Ceq -> Cneq| Cneq -> Ceq
 | Clt -> Cge | Cle -> Cgt
 | Cgt -> Cle | Cge -> Clt
-
-let raise_kind = function
-  | Raise_regular -> "raise"
-  | Raise_reraise -> "reraise"
-  | Raise_notrace -> "raise_notrace"
 
 let lam_of_loc kind loc =
   let loc_start = loc.Location.loc_start in

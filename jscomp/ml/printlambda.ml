@@ -136,7 +136,7 @@ let primitive ppf = function
   | Pduprecord -> fprintf ppf "duprecord"
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
-  | Praise k -> fprintf ppf "%s" (Lambda.raise_kind k)
+  | Praise -> fprintf ppf "raise"
   | Psequand -> fprintf ppf "&&"
   | Psequor -> fprintf ppf "||"
   | Pnot -> fprintf ppf "not"
@@ -265,7 +265,7 @@ let name_of_primitive = function
   | Pduprecord  -> "Pduprecord"
   | Plazyforce -> "Plazyforce"
   | Pccall _ -> "Pccall"
-  | Praise _ -> "Praise"
+  | Praise -> "Praise"
   | Psequand -> "Psequand"
   | Psequor -> "Psequor"
   | Pnot -> "Pnot"
