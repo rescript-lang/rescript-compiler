@@ -43,14 +43,17 @@ let bad_module_format_message_exn ~loc format =
      of:  %s or %s"
     format Literals.esmodule Literals.commonjs
 
+let deprecated_option ~loc x message =
+  let loc_end =
+    {loc with Lexing.pos_cnum = loc.Lexing.pos_cnum + String.length x}
+  in
+  let loc = {Warnings.loc_start = loc; loc_end; loc_ghost = false} in
+  Location.deprecated loc message
+
 let supported_format (x : string) loc : Ext_module_system.t =
   let _ =
     if x = Literals.es6 || x = Literals.es6_global then
-      let loc_end =
-        {loc with Lexing.pos_cnum = loc.Lexing.pos_cnum + String.length x}
-      in
-      let loc = {Warnings.loc_start = loc; loc_end; loc_ghost = false} in
-      Location.deprecated loc
+      deprecated_option ~loc x 
         (Printf.sprintf "Option \"%s\" is deprecated. Use \"%s\" instead." x
            Literals.esmodule)
   in
@@ -198,8 +201,15 @@ type json_map = Ext_json_types.t Map_string.t
 let extract_js_suffix_exn (map : json_map) : string =
   match map.?(Bsb_build_schemas.suffix) with
   | None -> Literals.suffix_js
-  | Some (Str { str = suffix; _ }) when validate_js_suffix suffix -> suffix
-  | Some ((Str {str; _}) as config)  -> 
+  | Some (Str { str = suffix; loc }) when validate_js_suffix suffix ->
+    deprecated_option ~loc
+      Literals.suffix_js
+      (Printf.sprintf "Top-level suffix is deprecated. Move it into each package-specs.");
+    suffix
+  | Some ((Str {str; loc}) as config)  -> 
+    deprecated_option ~loc
+      Literals.suffix_js
+      (Printf.sprintf "Top-level suffix is deprecated. Move it into each package-specs.");
     Bsb_exception.config_error config
       ("invalid suffix \"" ^ str ^ "\". The suffix and may contain letters, digits, \"-\", \"_\" and \".\" and must end with .js, .mjs or .cjs.")
   | Some config ->

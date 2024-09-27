@@ -5,10 +5,6 @@
       "enum": ["esmodule", "commonjs", "es6", "es6-global"],
       "description": "es6 and es6-global are deprecated. Default: commonjs."
     },
-    "suffix-spec": {
-      "type": "string",
-      "description": "Suffix of generated js files. Default: .js. May contain letters, digits, \"-\", \"_\" and \".\" and must end with .js, .mjs or .cjs."
-    },
     "module-format-object": {
       "type": "object",
       "properties": {
@@ -20,7 +16,8 @@
           "description": "Default: false."
         },
         "suffix": {
-          "$ref": "#/definitions/suffix-spec"
+          "type": "string",
+          "description": "Suffix of generated js files. Default: .js. May contain letters, digits, \"-\", \"_\" and \".\" and must end with .js, .mjs or .cjs."
         }
       },
       "required": ["module"]
@@ -486,9 +483,6 @@
         "type": "string"
       },
       "description": "(Not needed usually) external include directories, which will be applied `-I` to all compilation units"
-    },
-    "suffix": {
-      "$ref": "#/definitions/suffix-spec"
     },
     "reanalyze": {
       "$ref": "#/definitions/reanalyze",
