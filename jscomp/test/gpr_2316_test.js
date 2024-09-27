@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -36,7 +36,7 @@ try {
     Error: new Error()
   };
 } catch (raw_msg) {
-  let msg = Caml_js_exceptions.internalToOCamlException(raw_msg);
+  let msg = Primitive_exceptions.internalToException(raw_msg);
   if (msg.RE_EXN_ID === "Failure") {
     y = msg._1;
   } else {
@@ -55,7 +55,7 @@ try {
     Error: new Error()
   };
 } catch (raw_msg$1) {
-  let msg$1 = Caml_js_exceptions.internalToOCamlException(raw_msg$1);
+  let msg$1 = Primitive_exceptions.internalToException(raw_msg$1);
   if (msg$1.RE_EXN_ID === "Failure") {
     x = msg$1._1;
   } else {
@@ -68,9 +68,9 @@ if (exit === 1) {
   x = undefined;
 }
 
-eq("File \"gpr_2316_test.res\", line 22, characters 5-12", y, "boo");
+eq("File \"gpr_2316_test.res\", line 25, characters 5-12", y, "boo");
 
-eq("File \"gpr_2316_test.res\", line 23, characters 5-12", x, "boo");
+eq("File \"gpr_2316_test.res\", line 26, characters 5-12", x, "boo");
 
 Mt.from_pair_suites("Gpr_2316_test", suites.contents);
 

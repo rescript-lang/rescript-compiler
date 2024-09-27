@@ -25,15 +25,13 @@
 /*** Provides functionality for dealing with the `'a Js.null` type */
 
 @unboxed
-type t<+'a> = Js.null<'a> =
-  | Value('a)
-  | @as(null) Null
+type t<+'a> = Primitive_js_extern.null<'a> = Value('a) | @as(null) Null
 
-external to_opt: t<'a> => option<'a> = "#null_to_opt"
-external toOption: t<'a> => option<'a> = "#null_to_opt"
+external to_opt: t<'a> => option<'a> = "%null_to_opt"
+external toOption: t<'a> => option<'a> = "%null_to_opt"
 external return: 'a => t<'a> = "%identity"
-let test: t<'a> => bool = x => x == Js.null
-external empty: t<'a> = "#null"
+let test: t<'a> => bool = x => x == Js_extern.null
+external empty: t<'a> = "%null"
 external getUnsafe: t<'a> => 'a = "%identity"
 
 let getExn = f =>

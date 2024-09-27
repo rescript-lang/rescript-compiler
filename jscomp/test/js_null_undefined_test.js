@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 let Js_null_undefined = require("../../lib/js/js_null_undefined.js");
 
 let suites_0 = [
@@ -38,7 +38,7 @@ let suites_1 = {
         param => ({
           TAG: "Eq",
           _0: "foo",
-          _1: Caml_option.nullable_to_opt("foo")
+          _1: Primitive_option.fromNullable("foo")
         })
       ],
       tl: {
@@ -47,7 +47,7 @@ let suites_1 = {
           param => ({
             TAG: "Eq",
             _0: "something",
-            _1: Caml_option.nullable_to_opt("something")
+            _1: Primitive_option.fromNullable("something")
           })
         ],
         tl: {

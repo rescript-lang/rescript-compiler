@@ -7,7 +7,7 @@ let neq = (loc, x, y) => {
   incr(test_id)
   suites :=
     list{
-      (loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Mt.Neq(x, y)),
+      (loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => Mt.Neq(x, y)),
       ...suites.contents,
     }
 }

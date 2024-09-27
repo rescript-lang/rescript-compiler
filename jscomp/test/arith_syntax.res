@@ -9,7 +9,7 @@ type rec expression =
 
 let rec str = e =>
   switch e {
-  | Numeral(f) => string_of_float(f)
+  | Numeral(f) => f->Js.Float.toString
   | Plus(a, b) => str(a) ++ ("+" ++ str(b))
   | Minus(a, b) => str(a) ++ ("-" ++ str(b))
   | Times(a, b) => str(a) ++ ("*" ++ str(b))

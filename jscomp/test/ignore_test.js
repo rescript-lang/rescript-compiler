@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -34,7 +34,7 @@ function ff(x) {
   console.log(x);
 }
 
-eq("File \"ignore_test.res\", line 13, characters 12-19", undefined, undefined);
+eq("File \"ignore_test.res\", line 16, characters 12-19", undefined, undefined);
 
 Mt.from_pair_suites("Ignore_test", suites.contents);
 

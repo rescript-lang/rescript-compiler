@@ -1,3 +1,5 @@
+open Belt
+
 let l = Js.log
 module C = Char
 
@@ -22,7 +24,7 @@ let f = x => {
 }
 let g = x => {
   module L = List
-  L.length(L.map(succ, x))
+  L.length(L.map(x, succ))
 }
 
 module F = (X: {}) => Char

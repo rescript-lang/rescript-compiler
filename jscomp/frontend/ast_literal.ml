@@ -49,20 +49,28 @@ module Lid = struct
 
   let type_bool : t = Lident "bool" (* use *predef* *)
 
+  let pervasives : t = Lident Primitive_modules.pervasives
+
+  (* FIXME: Use primitive module *)
   let js_oo : t = Lident "Js_OO"
 
+  (* FIXME: Use primitive module *)
   let js_meth_callback : t = Ldot (js_oo, "Callback")
 
-  let ignore_id : t = Ldot (Lident "Pervasives", "ignore")
+  let ignore_id : t = Ldot (pervasives, "ignore")
 
   let hidden_field n : t = Lident ("I" ^ n)
 
+  (* FIXME: Use primitive module *)
   let js_null : t = Ldot (Lident "Js", "null")
 
+  (* FIXME: Use primitive module *)
   let js_undefined : t = Ldot (Lident "Js", "undefined")
 
+  (* FIXME: Use primitive module *)
   let js_null_undefined : t = Ldot (Lident "Js", "null_undefined")
 
+  (* FIXME: Use primitive module *)
   let js_re_id : t = Ldot (Ldot (Lident "Js", "Re"), "t")
 end
 
@@ -135,10 +143,6 @@ let type_int ?loc () =
   | None -> No_loc.type_int
   | Some loc ->
     Ast_helper.Typ.mk ~loc (Ptyp_constr ({txt = Lid.type_int; loc}, []))
-
-let type_int64 =
-  Ast_helper.Typ.mk
-    (Ptyp_constr ({txt = Lident "int64"; loc = Location.none}, []))
 
 let type_float =
   Ast_helper.Typ.mk

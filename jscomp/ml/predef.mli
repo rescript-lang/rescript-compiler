@@ -20,7 +20,6 @@ open Types
 val type_int: type_expr
 val type_char: type_expr
 val type_string: type_expr
-val type_bytes: type_expr
 val type_float: type_expr
 val type_bool: type_expr
 val type_unit: type_expr
@@ -31,16 +30,13 @@ val type_option: type_expr -> type_expr
 val type_result: type_expr -> type_expr -> type_expr
 val type_dict: type_expr -> type_expr
 
-val type_int64: type_expr
 val type_bigint: type_expr
 val type_lazy_t: type_expr -> type_expr
 val type_extension_constructor:type_expr
-val type_floatarray:type_expr
 
 val path_int: Path.t
 val path_char: Path.t
 val path_string: Path.t
-val path_bytes: Path.t
 val path_float: Path.t
 val path_bool: Path.t
 val path_unit: Path.t
@@ -51,11 +47,9 @@ val path_option: Path.t
 val path_result: Path.t
 val path_dict: Path.t
 
-val path_int64: Path.t
 val path_bigint: Path.t
 val path_lazy_t: Path.t
 val path_extension_constructor: Path.t
-val path_floatarray: Path.t
 val path_promise: Path.t
 val path_uncurried: Path.t
 

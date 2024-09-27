@@ -3,7 +3,7 @@
 
 let Mt = require("./mt.js");
 let Js_dict = require("../../lib/js/js_dict.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites = {
   contents: /* [] */0
@@ -27,7 +27,7 @@ d["foo"] = undefined;
 
 let match = Js_dict.get(d, "foo");
 
-if (match !== undefined && Caml_option.valFromOption(match) === undefined) {
+if (match !== undefined && Primitive_option.valFromOption(match) === undefined) {
   b("File \"gpr_3154_test.res\", line 12, characters 20-27", true);
 } else {
   b("File \"gpr_3154_test.res\", line 13, characters 11-18", false);
@@ -37,7 +37,7 @@ let d0 = {};
 
 d0["foo"] = undefined;
 
-eq("File \"gpr_3154_test.res\", line 20, characters 5-12", Js_dict.get(d0, "foo"), Caml_option.some(undefined));
+eq("File \"gpr_3154_test.res\", line 20, characters 5-12", Js_dict.get(d0, "foo"), Primitive_option.some(undefined));
 
 Mt.from_pair_suites("Gpr_3154_test", suites.contents);
 

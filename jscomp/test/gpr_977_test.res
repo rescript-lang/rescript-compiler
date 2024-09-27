@@ -3,7 +3,10 @@ let test_id = ref(0)
 let eq = (loc, x, y) => {
   incr(test_id)
   suites :=
-    list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Mt.Eq(x, y)), ...suites.contents}
+    list{
+      (loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => Mt.Eq(x, y)),
+      ...suites.contents,
+    }
 }
 
 let f = x => {
@@ -13,25 +16,10 @@ let f = x => {
   -x
 }
 
-let int32_f = x => {
-  for i in 0 to 100 {
-    Js.log(".") /* prevent optimization */
-  }
-  Int32.neg(x)
-}
-
-/* let nint32_f x =
-  for i = 0 to 100 do 
-    Js.log "." ; (* prevent optimization*)
-  done;    
-  Nativeint.neg x */
-
 let min_32_int = -2147483648
 let u = f(min_32_int)
 
 let () = {
   eq(__LOC__, min_32_int, u)
-  eq(__LOC__, Int32.min_int, int32_f(Int32.min_int))
 }
-/* eq __LOC__ (nint32_f (-2147483648n)) (2147483648n) */
 let () = Mt.from_pair_suites(__MODULE__, suites.contents)

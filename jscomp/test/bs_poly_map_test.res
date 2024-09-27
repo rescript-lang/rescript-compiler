@@ -102,11 +102,10 @@ let () = {
 }
 
 let () = {
-  module Array = M
   let u0 = mapOfArray(randomRange(0, 100))
-  let u1 = u0[3] = 32
-  eq(__LOC__, u1[3], Some(32))
-  eq(__LOC__, u0[3], Some(3))
+  let u1 = M.set(u0, 3, 32)
+  eq(__LOC__, M.get(u1, 3), Some(32))
+  eq(__LOC__, M.get(u0, 3), Some(3))
 }
 
 let acc = (m, i) =>

@@ -108,8 +108,6 @@ val econd : ?comment:string -> t -> t -> t -> t
 
 val int : ?comment:string -> ?c:int -> int32 -> t
 
-val uint32 : ?comment:string -> int32 -> t
-
 val small_int : int -> t
 
 val bigint : ?comment:string -> bool -> string -> t
@@ -225,8 +223,6 @@ val is_array : t -> t
 
 val to_int32 : ?comment:string -> t -> t
 
-val to_uint32 : ?comment:string -> t -> t
-
 val unchecked_int32_add : ?comment:string -> t -> t -> t
 
 val int32_add : ?comment:string -> t -> t -> t
@@ -273,7 +269,7 @@ val int_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 
 val bool_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 
-val string_comp : Js_op.binop -> ?comment:string -> t -> t -> t
+val string_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 
 val float_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 

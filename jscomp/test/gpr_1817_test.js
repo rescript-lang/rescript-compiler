@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let suites = {
   contents: /* [] */0
@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -31,8 +31,8 @@ function f() {
   let x = new Date();
   let y = new Date();
   return [
-    Caml_obj.greaterthan(y, x),
-    Caml_obj.lessthan(y, x),
+    Primitive_object.greaterthan(y, x),
+    Primitive_object.lessthan(y, x),
     true
   ];
 }
@@ -47,7 +47,7 @@ let a0 = match[0];
 
 console.log(a0, a1);
 
-eq("File \"gpr_1817_test.res\", line 20, characters 3-10", a2, true);
+eq("File \"gpr_1817_test.res\", line 23, characters 3-10", a2, true);
 
 Mt.from_pair_suites("Gpr_1817_test", suites.contents);
 

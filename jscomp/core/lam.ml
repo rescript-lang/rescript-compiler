@@ -291,7 +291,7 @@ let rec apply fn args (ap_info : ap_info) : t =
             {
               primitive =
                 ( Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt
-                | Pis_null | Pis_null_undefined | Pjs_typeof ) as wrap;
+                | Pis_null | Pis_null_undefined | Ptypeof ) as wrap;
               args =
                 [
                   Lprim ({ primitive = _; args = inner_args } as primitive_call);
@@ -461,17 +461,8 @@ module Lift = struct
 
   let bool b = if b then true_ else false_
 
-  (* ATTENTION: [float, nativeint] constant propogaton is not done
-     yet , due to cross platform problem
-  *)
-  (* let float b  : t =
-     Lconst ((Const_float b)) *)
-
-  (* let nativeint b : t =
-     Lconst ((Const_nativeint b)) *)
-
-  let int64 b : t = Lconst (Const_int64 b)
   let string s : t = Lconst (Const_string { s; unicode = false })
+
   let char b : t = Lconst (Const_char b)
 end
 
@@ -492,14 +483,11 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc : t =
       (* | Pnegbint Pnativeint, ( (Const_nativeint i)) *)
       (*   ->   *)
       (*   Lift.nativeint (Nativeint.neg i) *)
-      | Pnegint64, Const_int64 a -> Lift.int64 (Int64.neg a)
       | Pnot, Const_js_true -> false_
       | Pnot, Const_js_false -> true_
       | _ -> default ())
   | [ Lconst a; Lconst b ] -> (
       match (prim, a, b) with
-      | Pint64comp cmp, Const_int64 a, Const_int64 b ->
-          Lift.bool (Lam_compat.cmp_int64 cmp a b)
       | Pintcomp cmp, Const_int a, Const_int b ->
           Lift.bool (Lam_compat.cmp_int32 cmp a.i b.i)
       | Pfloatcomp cmp, Const_float a, Const_float b ->
@@ -532,28 +520,6 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc : t =
           | Plsrint -> int_ (Int32.shift_right_logical aa (Int32.to_int bb))
           | Pasrint -> int_ (Int32.shift_right aa (Int32.to_int bb))
           | _ -> default ())
-      | ( ( Paddint64 | Psubint64 | Pmulint64 | Pdivint64 | Pmodint64
-          | Pandint64 | Porint64 | Pxorint64 ),
-          Const_int64 aa,
-          Const_int64 bb ) -> (
-          match prim with
-          | Paddint64 -> Lift.int64 (Int64.add aa bb)
-          | Psubint64 -> Lift.int64 (Int64.sub aa bb)
-          | Pmulint64 -> Lift.int64 (Int64.mul aa bb)
-          | Pdivint64 -> (
-              try Lift.int64 (Int64.div aa bb) with _ -> default ())
-          | Pmodint64 -> (
-              try Lift.int64 (Int64.rem aa bb) with _ -> default ())
-          | Pandint64 -> Lift.int64 (Int64.logand aa bb)
-          | Porint64 -> Lift.int64 (Int64.logor aa bb)
-          | Pxorint64 -> Lift.int64 (Int64.logxor aa bb)
-          | _ -> default ())
-      | Plslint64, Const_int64 aa, Const_int { i = b } ->
-          Lift.int64 (Int64.shift_left aa (Int32.to_int b))
-      | Plsrint64, Const_int64 aa, Const_int { i = b } ->
-          Lift.int64 (Int64.shift_right_logical aa (Int32.to_int b))
-      | Pasrint64, Const_int64 aa, Const_int { i = b } ->
-          Lift.int64 (Int64.shift_right aa (Int32.to_int b))
       | Psequand, Const_js_false, (Const_js_true | Const_js_false) -> false_
       | Psequand, Const_js_true, Const_js_true -> true_
       | Psequand, Const_js_true, Const_js_false -> false_
@@ -616,9 +582,13 @@ let has_boolean_type (x : t) =
   | Lprim
       {
         primitive =
-          ( Pnot | Psequand | Psequor | Pisout _ | Pintcomp _ | Pis_not_none
+          ( Pnot | Psequand | Psequor | Pisout _ | Pis_not_none
+          | Pobjcomp _
+          | Pboolcomp _
+          | Pintcomp _ 
           | Pfloatcomp _
-          | Pccall { prim_name = "caml_string_equal" | "caml_string_notequal" }
+          | Pbigintcomp _
+          | Pstringcomp _
             );
         loc;
       } ->
@@ -639,12 +609,10 @@ let rec eval_const_as_bool (v : Lam_constant.t) : bool =
   match v with
   | Const_int { i = x } -> x <> 0l
   | Const_char x -> x <> 0
-  | Const_int64 x -> x <> 0L
   | Const_js_false | Const_js_null | Const_module_alias | Const_js_undefined _ ->
       false
   | Const_js_true | Const_string _ | Const_pointer _ | Const_float _ | Const_bigint _
-  | Const_block _ | Const_float_array _ ->
-      true
+  | Const_block _ -> true
   | Const_some b -> eval_const_as_bool b
 
 let if_ (a : t) (b : t) (c : t) : t =

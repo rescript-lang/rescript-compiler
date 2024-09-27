@@ -24,6 +24,7 @@ let make = () => <div />
 and otherMake = () => <div />
 
 @ocaml.doc(" {b See} {!length} ")
-external size: array<'a> => int = "%array_length"
+@get external size: array<'a> => int = "length"
 
-@ocaml.doc(" {b See} {!length} ") external size: array<'a> => int = "%array_length"
+@ocaml.doc(" {b See} {!length} ")
+@get external size: array<'a> => int = "length"

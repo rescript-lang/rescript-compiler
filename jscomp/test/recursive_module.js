@@ -3,9 +3,8 @@
 
 let Mt = require("./mt.js");
 let Lazy = require("../../lib/js/lazy.js");
-let Caml_module = require("../../lib/js/caml_module.js");
-let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_module = require("../../lib/js/primitive_module.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -23,7 +22,7 @@ let Xx = {
   f: (prim0, prim1) => hfiehi(prim0, prim1)
 };
 
-let Int3 = Caml_module.init_mod([
+let Int3 = Primitive_module.init([
   "recursive_module.res",
   25,
   4
@@ -35,7 +34,7 @@ let Int3 = Caml_module.init_mod([
     ]]
 });
 
-Caml_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Function",
@@ -43,7 +42,7 @@ Caml_module.update_mod({
     ]]
 }, Int3, Int3);
 
-let Inta = Caml_module.init_mod([
+let Inta = Primitive_module.init([
   "recursive_module.res",
   29,
   4
@@ -55,7 +54,7 @@ let Inta = Caml_module.init_mod([
     ]]
 });
 
-let Intb = Caml_module.init_mod([
+let Intb = Primitive_module.init([
   "recursive_module.res",
   34,
   4
@@ -67,9 +66,9 @@ let Intb = Caml_module.init_mod([
     ]]
 });
 
-let a = CamlinternalLazy.from_fun(() => CamlinternalLazy.force(Intb.a));
+let a = Lazy.from_fun(() => Lazy.force(Intb.a));
 
-Caml_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Lazy",
@@ -79,9 +78,9 @@ Caml_module.update_mod({
   a: a
 });
 
-let a$1 = CamlinternalLazy.from_fun(() => CamlinternalLazy.force(Inta.a) + 1 | 0);
+let a$1 = Lazy.from_fun(() => Lazy.force(Inta.a) + 1 | 0);
 
-Caml_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Lazy",
@@ -94,9 +93,9 @@ Caml_module.update_mod({
 let tmp;
 
 try {
-  tmp = CamlinternalLazy.force(Intb.a);
+  tmp = Lazy.force(Intb.a);
 } catch (raw_exn) {
-  let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+  let exn = Primitive_exceptions.internalToException(raw_exn);
   if (exn.RE_EXN_ID === Lazy.Undefined) {
     tmp = -1;
   } else {
@@ -106,7 +105,7 @@ try {
 
 eq("File \"recursive_module.res\", line 39, characters 2-9", -1, tmp);
 
-let Inta$1 = Caml_module.init_mod([
+let Inta$1 = Primitive_module.init([
   "recursive_module.res",
   49,
   6
@@ -118,7 +117,7 @@ let Inta$1 = Caml_module.init_mod([
     ]]
 });
 
-let Intb$1 = Caml_module.init_mod([
+let Intb$1 = Primitive_module.init([
   "recursive_module.res",
   54,
   6
@@ -130,9 +129,9 @@ let Intb$1 = Caml_module.init_mod([
     ]]
 });
 
-let a$2 = CamlinternalLazy.from_fun(() => CamlinternalLazy.force(Intb$1.a) + 1 | 0);
+let a$2 = Lazy.from_fun(() => Lazy.force(Intb$1.a) + 1 | 0);
 
-Caml_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Lazy",
@@ -142,9 +141,9 @@ Caml_module.update_mod({
   a: a$2
 });
 
-let a$3 = CamlinternalLazy.from_fun(() => 2);
+let a$3 = Lazy.from_fun(() => 2);
 
-Caml_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Lazy",
@@ -159,7 +158,7 @@ let A = {
   Intb: Intb$1
 };
 
-eq("File \"recursive_module.res\", line 59, characters 3-10", CamlinternalLazy.force(Inta$1.a), 3);
+eq("File \"recursive_module.res\", line 59, characters 3-10", Lazy.force(Inta$1.a), 3);
 
 let tmp$1;
 
@@ -167,7 +166,7 @@ try {
   Int3.u(3);
   tmp$1 = 3;
 } catch (raw_exn$1) {
-  let exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
+  let exn$1 = Primitive_exceptions.internalToException(raw_exn$1);
   if (exn$1.RE_EXN_ID === "Undefined_recursive_module") {
     tmp$1 = 4;
   } else {

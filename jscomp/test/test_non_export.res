@@ -1,20 +1,28 @@
+module type OrderedType = {
+  type t
+  let compare: (t, t) => int
+}
+
+module Make = (U: OrderedType) => {
+  include U
+}
+
 include (
   {
-    module V = String
+    module V = Test_order
     module U = V
 
-    let u = U.make
-    let v = module(U: Set.OrderedType)
+    let v = module(U: OrderedType)
 
     let pack = h => {
-      module U = unpack(h: Set.OrderedType)
-      module V = Set.Make(U)
-      module(V: Set.S)
+      module U = unpack(h: OrderedType)
+      module V = Make(U)
+      module(V: OrderedType)
     }
 
     let g = pack(v)
-    let gg = pack(module(String))
-    module N = Set.Make(U)
-    module NN = Set.Make(String)
+    let gg = pack(module(Test_order))
+    module N = Make(U)
+    module NN = Make(Test_order)
   }: {}
 )

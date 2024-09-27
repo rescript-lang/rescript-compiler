@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_option = require("../../lib/js/caml_option.js");
 let Js_undefined = require("../../lib/js/js_undefined.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites_0 = [
   "toOption - empty",
@@ -29,7 +29,7 @@ let suites_1 = {
       param => ({
         TAG: "Eq",
         _0: "something",
-        _1: Caml_option.undefined_to_opt("something")
+        _1: Primitive_option.fromUndefined("something")
       })
     ],
     tl: {

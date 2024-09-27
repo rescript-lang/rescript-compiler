@@ -14,7 +14,10 @@ let test_id = ref(0)
 let eq = (loc, (x, y)) => {
   incr(test_id)
   suites :=
-    list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Mt.Eq(x, y)), ...suites.contents}
+    list{
+      (loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => Mt.Eq(x, y)),
+      ...suites.contents,
+    }
 }
 
 type rec kind<_> =
@@ -35,8 +38,8 @@ let same_type = (
 )
 
 let () = {
-  eq(__LOC__, (Array.length(Js_obj.keys(int_config)), 2))
-  eq(__LOC__, (Array.length(Js_obj.keys(string_config)), 2))
+  eq(__LOC__, (Belt.Array.length(Js_obj.keys(int_config)), 2))
+  eq(__LOC__, (Belt.Array.length(Js_obj.keys(string_config)), 2))
 }
 
 let u = ref(3)

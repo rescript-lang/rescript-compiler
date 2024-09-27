@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_int32 = require("../../lib/js/caml_int32.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
 
 function u() {
   let n;
@@ -11,7 +11,7 @@ function u() {
   } catch (exn) {
     return 42;
   }
-  return Caml_int32.div(3, 0);
+  return Primitive_int.div(3, 0);
 }
 
 Mt.from_pair_suites("Jsoo_400_test", {

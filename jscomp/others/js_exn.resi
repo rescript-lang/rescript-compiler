@@ -31,15 +31,12 @@ type t
 
 type exn += private Error(t)
 
-external asJsExn: exn => option<t> = "?as_js_exn"
+let asJsExn: exn => option<t>
 
 @get external stack: t => option<string> = "stack"
 @get external message: t => option<string> = "message"
 @get external name: t => option<string> = "name"
 @get external fileName: t => option<string> = "fileName"
-
-/** internal use only */
-external isCamlExceptionOrOpenVariant: 'a => bool = "?is_extension"
 
 /**
 `anyToExnInternal(obj)` will take any value `obj` and wrap it
@@ -64,7 +61,7 @@ switch (Js.Exn.unsafeAnyToExn("test")) {
 }
 ```
 */
-external anyToExnInternal: 'a => exn = "#wrap_exn"
+external anyToExnInternal: 'a => exn = "%wrap_exn"
 
 /** Raise Js exception Error object with stacktrace */
 let raiseError: string => 'a

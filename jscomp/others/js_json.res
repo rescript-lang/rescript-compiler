@@ -30,7 +30,7 @@ type rec t =
   | @as(null) Null
   | String(string)
   | Number(float)
-  | Object(Js.Dict.t<t>)
+  | Object(Js_dict.t<t>)
   | Array(array<t>)
 
 module Kind = {
@@ -54,7 +54,7 @@ type tagged_t =
   | JSONArray(array<t>)
 
 let classify = (x: t): tagged_t => {
-  let ty = Js.typeof(x)
+  let ty = Js_extern.typeof(x)
   if ty == "string" {
     JSONString(Obj.magic(x))
   } else if ty == "number" {
@@ -65,7 +65,7 @@ let classify = (x: t): tagged_t => {
     } else {
       JSONFalse
     }
-  } else if Obj.magic(x) === Js.null {
+  } else if Obj.magic(x) === Js_extern.null {
     JSONNull
   } else if Js_array2.isArray(x) {
     JSONArray(Obj.magic(x))
@@ -76,23 +76,24 @@ let classify = (x: t): tagged_t => {
 
 let test = (type a, x: 'a, v: Kind.t<a>): bool =>
   switch v {
-  | Kind.Number => Js.typeof(x) == "number"
-  | Kind.Boolean => Js.typeof(x) == "boolean"
-  | Kind.String => Js.typeof(x) == "string"
-  | Kind.Null => Obj.magic(x) === Js.null
+  | Kind.Number => Js_extern.typeof(x) == "number"
+  | Kind.Boolean => Js_extern.typeof(x) == "boolean"
+  | Kind.String => Js_extern.typeof(x) == "string"
+  | Kind.Null => Obj.magic(x) === Js_extern.null
   | Kind.Array => Js_array2.isArray(x)
-  | Kind.Object => Obj.magic(x) !== Js.null && (Js.typeof(x) == "object" && !Js_array2.isArray(x))
+  | Kind.Object =>
+    Obj.magic(x) !== Js_extern.null && (Js_extern.typeof(x) == "object" && !Js_array2.isArray(x))
   }
 
 let decodeString = json =>
-  if Js.typeof(json) == "string" {
+  if Js_extern.typeof(json) == "string" {
     Some((Obj.magic((json: t)): string))
   } else {
     None
   }
 
 let decodeNumber = json =>
-  if Js.typeof(json) == "number" {
+  if Js_extern.typeof(json) == "number" {
     Some((Obj.magic((json: t)): float))
   } else {
     None
@@ -100,9 +101,9 @@ let decodeNumber = json =>
 
 let decodeObject = json =>
   if (
-    Js.typeof(json) == "object" &&
+    Js_extern.typeof(json) == "object" &&
       (!Js_array2.isArray(json) &&
-      !((Obj.magic(json): Js.null<'a>) === Js.null))
+      !((Obj.magic(json): Js_null.t<'a>) === Js_extern.null))
   ) {
     Some((Obj.magic((json: t)): Js_dict.t<t>))
   } else {
@@ -117,15 +118,15 @@ let decodeArray = json =>
   }
 
 let decodeBoolean = (json: t) =>
-  if Js.typeof(json) == "boolean" {
+  if Js_extern.typeof(json) == "boolean" {
     Some((Obj.magic((json: t)): bool))
   } else {
     None
   }
 
-let decodeNull = (json): option<Js.null<_>> =>
-  if (Obj.magic(json): Js.null<'a>) === Js.null {
-    Some(Js.null)
+let decodeNull = (json): option<Js_null.t<_>> =>
+  if (Obj.magic(json): Js_null.t<'a>) === Js_extern.null {
+    Some(Js_extern.null)
   } else {
     None
   }

@@ -138,16 +138,6 @@ type t = Lambda.lambda
 
 (* Utilities for compiling "module rec" definitions *)
 
-let bs_init_mod (args : t list) loc : t =
-  Lprim
-    (Pccall (Primitive.simple ~name:"#init_mod" ~arity:2 ~alloc:true), args, loc)
-
-let bs_update_mod (args : t list) loc : t =
-  Lprim
-    ( Pccall (Primitive.simple ~name:"#update_mod" ~arity:3 ~alloc:true),
-      args,
-      loc )
-
 type loc = t
 
 type shape = t
@@ -164,7 +154,7 @@ let eval_rec_bindings_aux (bindings : binding list) (cont : t) : t =
           ( Strict,
             Pgenval,
             id,
-            bs_init_mod [ loc; shape ] Location.none,
+            Lprim (Pinit_mod, [ loc; shape ], Location.none),
             bind_inits rem acc )
   in
   let rec bind_strict args acc =
@@ -180,7 +170,7 @@ let eval_rec_bindings_aux (bindings : binding list) (cont : t) : t =
     | (_id, None, _rhs) :: rem -> patch_forwards rem
     | (id, Some (_loc, shape), rhs) :: rem ->
         Lsequence
-          ( bs_update_mod [ shape; Lvar id; rhs ] Location.none,
+          ( Lprim (Pupdate_mod, [ shape; Lvar id; rhs ], Location.none),
             patch_forwards rem )
   in
   bind_inits bindings (bind_strict bindings (patch_forwards bindings))

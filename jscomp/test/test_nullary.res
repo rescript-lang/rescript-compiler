@@ -1,1 +1,1 @@
-let f = _ => print_endline("hey")
+let f = _ => Js.log("hey")

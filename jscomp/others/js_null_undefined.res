@@ -25,17 +25,15 @@
 /*** Contains functionality for dealing with values that can be both `null` and `undefined` */
 
 @unboxed
-type t<+'a> = Js.nullable<'a> =
-  | Value('a)
-  | @as(null) Null
-  | @as(undefined) Undefined
+type t<+'a> = Primitive_js_extern.nullable<'a> =
+  Value('a) | @as(null) Null | @as(undefined) Undefined
 
-external toOption: t<'a> => option<'a> = "#nullable_to_opt"
-external to_opt: t<'a> => option<'a> = "#nullable_to_opt"
+external toOption: t<'a> => option<'a> = "%nullable_to_opt"
+external to_opt: t<'a> => option<'a> = "%nullable_to_opt"
 external return: 'a => t<'a> = "%identity"
-external isNullable: t<'a> => bool = "#is_nullable"
-external null: t<'a> = "#null"
-external undefined: t<'a> = "#undefined"
+external isNullable: t<'a> => bool = "%is_nullable"
+external null: t<'a> = "%null"
+external undefined: t<'a> = "%undefined"
 
 let bind = (x, f) =>
   switch to_opt(x) {

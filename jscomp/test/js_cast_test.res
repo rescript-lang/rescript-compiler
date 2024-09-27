@@ -4,7 +4,7 @@ let add_test = {
   let counter = ref(0)
   (loc, test) => {
     incr(counter)
-    let id = loc ++ (" id " ++ string_of_int(counter.contents))
+    let id = loc ++ (" id " ++ Js.Int.toString(counter.contents))
     suites := list{(id, test), ...suites.contents}
   }
 }

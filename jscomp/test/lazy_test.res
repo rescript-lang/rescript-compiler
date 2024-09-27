@@ -47,14 +47,14 @@ let forward_test = Lazy.from_fun(() => {
 
 let f005 = Lazy.from_fun(() => 1 + 2 + 3)
 
-let f006: lazy_t<unit => int> = Lazy.from_fun(() => {
+let f006: Lazy.t<unit => int> = Lazy.from_fun(() => {
   let x = 3
   _ => x
 })
 
 let f007 = Lazy.from_fun(() => raise(Not_found))
 let f008 = Lazy.from_fun(() => {
-  print_endline("hi")
+  Js.log("hi")
   raise(Not_found)
 })
 

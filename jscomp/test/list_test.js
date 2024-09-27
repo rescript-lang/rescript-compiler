@@ -2,16 +2,19 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
-let List = require("../../lib/js/list.js");
-let $$Array = require("../../lib/js/array.js");
+let Belt_List = require("../../lib/js/belt_List.js");
+let Belt_Array = require("../../lib/js/belt_Array.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
+
+let eq = Primitive_object.equal;
 
 let list_suites_0 = [
   "length",
   param => ({
     TAG: "Eq",
     _0: 1,
-    _1: List.length({
+    _1: Belt_List.length({
       hd: [
         0,
         1,
@@ -30,7 +33,7 @@ let list_suites_1 = {
     param => ({
       TAG: "Eq",
       _0: 5,
-      _1: List.length({
+      _1: Belt_List.length({
         hd: 0,
         tl: {
           hd: 1,
@@ -54,7 +57,7 @@ let list_suites_1 = {
       param => ({
         TAG: "Eq",
         _0: 30000,
-        _1: List.length($$Array.to_list($$Array.init(30000, param => 0)))
+        _1: Belt_List.length(Belt_List.fromArray(Belt_Array.init(30000, param => 0)))
       })
     ],
     tl: {
@@ -62,7 +65,7 @@ let list_suites_1 = {
         "sort",
         param => ({
           TAG: "Eq",
-          _0: List.sort(Caml.int_compare, {
+          _0: Belt_List.sort({
             hd: 4,
             tl: {
               hd: 1,
@@ -74,7 +77,7 @@ let list_suites_1 = {
                 }
               }
             }
-          }),
+          }, Primitive_int.compare),
           _1: {
             hd: 1,
             tl: {
@@ -92,11 +95,11 @@ let list_suites_1 = {
       ],
       tl: {
         hd: [
-          "File \"list_test.res\", line 20, characters 5-12",
+          "File \"list_test.res\", line 23, characters 5-12",
           param => ({
             TAG: "Eq",
             _0: true,
-            _1: List.mem(3, {
+            _1: Belt_List.has({
               hd: 1,
               tl: {
                 hd: 2,
@@ -105,16 +108,16 @@ let list_suites_1 = {
                   tl: /* [] */0
                 }
               }
-            })
+            }, 3, eq)
           })
         ],
         tl: {
           hd: [
-            "File \"list_test.res\", line 21, characters 5-12",
+            "File \"list_test.res\", line 24, characters 5-12",
             param => ({
               TAG: "Eq",
               _0: false,
-              _1: List.mem(4, {
+              _1: Belt_List.has({
                 hd: 1,
                 tl: {
                   hd: 2,
@@ -123,16 +126,16 @@ let list_suites_1 = {
                     tl: /* [] */0
                   }
                 }
-              })
+              }, 4, eq)
             })
           ],
           tl: {
             hd: [
-              "File \"list_test.res\", line 22, characters 5-12",
+              "File \"list_test.res\", line 25, characters 5-12",
               param => ({
                 TAG: "Eq",
                 _0: 9,
-                _1: List.assoc(4, {
+                _1: Belt_List.getAssoc({
                   hd: [
                     1,
                     2
@@ -144,7 +147,7 @@ let list_suites_1 = {
                     ],
                     tl: /* [] */0
                   }
-                })
+                }, 4, eq)
               })
             ],
             tl: /* [] */0

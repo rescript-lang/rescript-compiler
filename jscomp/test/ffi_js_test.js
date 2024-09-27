@@ -26,7 +26,7 @@ function eq(loc, param) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -47,7 +47,7 @@ let string_config = {
   low: "32"
 };
 
-eq("File \"ffi_js_test.res\", line 30, characters 12-19", [
+eq("File \"ffi_js_test.res\", line 33, characters 12-19", [
   6,
   $$higher_order(1)(2, 3)
 ]);
@@ -79,12 +79,12 @@ let same_type = [
   same_type_1
 ];
 
-eq("File \"ffi_js_test.res\", line 38, characters 5-12", [
+eq("File \"ffi_js_test.res\", line 41, characters 5-12", [
   Object.keys(int_config).length,
   2
 ]);
 
-eq("File \"ffi_js_test.res\", line 39, characters 5-12", [
+eq("File \"ffi_js_test.res\", line 42, characters 5-12", [
   Object.keys(string_config).length,
   2
 ]);
@@ -98,7 +98,7 @@ let side_effect_config = (u.contents = u.contents + 1 | 0, "Int", {
   low: 32
 });
 
-eq("File \"ffi_js_test.res\", line 53, characters 12-19", [
+eq("File \"ffi_js_test.res\", line 56, characters 12-19", [
   u.contents,
   4
 ]);

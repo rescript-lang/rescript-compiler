@@ -10,7 +10,7 @@ let v2: config2_expect = config2(~v=2, ())
 
 @val external on_exit: (@as("exit") _, int => string) => unit = "process.on"
 
-let () = on_exit(exit_code => string_of_int(exit_code))
+let () = on_exit(exit_code => Js.Int.toString(exit_code))
 
 @val external on_exit_int: (@as(1) _, int => unit) => unit = "process.on"
 
@@ -18,11 +18,11 @@ let () = on_exit_int(_ => ())
 
 @val external on_exit3: (int => string, @as("exit") _) => unit = "process.on"
 
-let () = on_exit3(i => string_of_int(i))
+let () = on_exit3(i => Js.Int.toString(i))
 
 @val external on_exit4: (int => string, @as(1) _) => unit = "process.on"
 
-let () = on_exit4(i => string_of_int(i))
+let () = on_exit4(i => Js.Int.toString(i))
 
 @val @variadic external on_exit_slice: (int, @as(3) _, @as("xxx") _, array<string>) => unit = "xx"
 
@@ -78,7 +78,7 @@ let f = (x: t) => {
 
 @val external process_on_exit: (@as("exit") _, int => unit) => unit = "process.on"
 
-let () = process_on_exit(exit_code => Js.log("error code: " ++ string_of_int(exit_code)))
+let () = process_on_exit(exit_code => Js.log2("error code: %d", exit_code))
 
 type process
 

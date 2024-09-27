@@ -18,7 +18,7 @@ function eq(loc, param) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -42,7 +42,7 @@ let pair = [
 
 console.log(pair);
 
-eq("File \"module_splice_test.res\", line 16, characters 5-12", pair);
+eq("File \"module_splice_test.res\", line 19, characters 5-12", pair);
 
 Mt.from_pair_suites("Module_splice_test", suites.contents);
 

@@ -2,59 +2,20 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Bytes = require("../../lib/js/bytes.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
-let Caml_bytes = require("../../lib/js/caml_bytes.js");
-let Caml_string = require("../../lib/js/caml_string.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let v = "gso";
 
 function is_equal() {
-  if (Caml_bytes.get(Bytes.make(3, /* 'a' */97), 0) !== /* 'a' */97) {
-    throw {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "equal_exception_test.res",
-        4,
-        2
-      ],
-      Error: new Error()
-    };
-  }
-  if (Bytes.make(3, /* 'a' */97)[0] !== /* 'a' */97) {
-    throw {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "equal_exception_test.res",
-        5,
-        2
-      ],
-      Error: new Error()
-    };
-  }
-  let u = Bytes.make(3, /* 'a' */97);
-  u[0] = /* 'b' */98;
-  if (u[0] !== /* 'b' */98) {
-    throw {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "equal_exception_test.res",
-        8,
-        2
-      ],
-      Error: new Error()
-    };
-  }
-  if (Caml_string.get(v, 0) === /* 'g' */103) {
+  if (v.codePointAt(0) === /* 'g' */103) {
     return;
   }
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "equal_exception_test.res",
-      9,
+      4,
       2
     ],
     Error: new Error()
@@ -68,7 +29,7 @@ function is_exception() {
       Error: new Error()
     };
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Primitive_exceptions.internalToException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       return;
     }
@@ -77,7 +38,7 @@ function is_exception() {
 }
 
 function is_normal_exception(_x) {
-  let A = /* @__PURE__ */Caml_exceptions.create("A");
+  let A = /* @__PURE__ */Primitive_exceptions.create("A");
   let v = {
     RE_EXN_ID: A,
     _1: 3
@@ -85,7 +46,7 @@ function is_normal_exception(_x) {
   try {
     throw v;
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Primitive_exceptions.internalToException(raw_exn);
     if (exn.RE_EXN_ID === A) {
       if (exn._1 === 3) {
         return;
@@ -97,7 +58,7 @@ function is_normal_exception(_x) {
 }
 
 function is_arbitrary_exception() {
-  let A = /* @__PURE__ */Caml_exceptions.create("A");
+  let A = /* @__PURE__ */Primitive_exceptions.create("A");
   try {
     throw {
       RE_EXN_ID: A,
@@ -146,16 +107,16 @@ function eq(x) {
   return x.RE_EXN_ID === "Not_found";
 }
 
-let Not_found = /* @__PURE__ */Caml_exceptions.create("Equal_exception_test.Not_found");
+let Not_found = /* @__PURE__ */Primitive_exceptions.create("Equal_exception_test.Not_found");
 
-if (Caml_obj.equal(e, {
+if (Primitive_object.equal(e, {
     RE_EXN_ID: Not_found
   }) !== false) {
   throw {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "equal_exception_test.res",
-      50,
+      45,
       0
     ],
     Error: new Error()
@@ -167,7 +128,7 @@ if (Not_found === "Not_found" !== false) {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "equal_exception_test.res",
-      51,
+      46,
       0
     ],
     Error: new Error()

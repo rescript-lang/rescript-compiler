@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -54,7 +54,7 @@ let v = new Make(1, 2, 3, 4);
 
 let u = v.sum();
 
-eq("File \"ffi_splice_test.res\", line 55, characters 12-19", u, 10);
+eq("File \"ffi_splice_test.res\", line 58, characters 12-19", u, 10);
 
 Mt.from_pair_suites("Ffi_splice_test", suites.contents);
 

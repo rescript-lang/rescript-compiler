@@ -153,7 +153,7 @@ let () = {
 
   for i in 0 to iter {
     if !mem(i, v.contents) {
-      print_endline("impossible")
+      Js.log("impossible")
     }
   }
   for i in 0 to iter {
@@ -161,6 +161,6 @@ let () = {
   }
   switch v.contents {
   | Empty => ()
-  | Node(_) => print_endline("impossible")
+  | Node(_) => Js.log("impossible")
   }
 }

@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites = {
   contents: /* [] */0
@@ -18,7 +18,7 @@ function eq(loc, param) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -39,7 +39,7 @@ let u = hey(undefined, 3);
 
 let z = hey(5, 3);
 
-eq("File \"optional_ffi_test.res\", line 21, characters 12-19", [
+eq("File \"optional_ffi_test.res\", line 24, characters 12-19", [
   [
     u,
     z
@@ -64,7 +64,7 @@ function bug_to_fix(f, x) {
 }
 
 function bug_to_fix2(f, x) {
-  return hey(Caml_option.option_get(f(x)), 3);
+  return hey(Primitive_option.toUndefined(f(x)), 3);
 }
 
 let counter2 = {
@@ -110,9 +110,9 @@ let pair2 = [
   pair2_1
 ];
 
-eq("File \"optional_ffi_test.res\", line 45, characters 5-12", pair);
+eq("File \"optional_ffi_test.res\", line 48, characters 5-12", pair);
 
-eq("File \"optional_ffi_test.res\", line 46, characters 5-12", pair2);
+eq("File \"optional_ffi_test.res\", line 49, characters 5-12", pair2);
 
 function heystr(x, y) {
     if (x === void 0) { x = "3"; }
@@ -127,7 +127,7 @@ let pair$1 = [
   pair_1$1
 ];
 
-eq("File \"optional_ffi_test.res\", line 61, characters 5-12", pair$1);
+eq("File \"optional_ffi_test.res\", line 64, characters 5-12", pair$1);
 
 Mt.from_pair_suites("Optional_ffi_test", suites.contents);
 

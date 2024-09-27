@@ -1,3 +1,5 @@
+open Belt
+
 exception Foo
 
 let rec test = n =>
@@ -20,7 +22,7 @@ let read_lines = inc => {
     | End_of_file => None
     } {
     | Some(l) => loop(list{l, ...acc})
-    | None => List.rev(acc)
+    | None => List.reverse(acc)
     }
 
   loop(list{})
@@ -30,7 +32,7 @@ let read_lines2 = inc => {
   let rec loop = acc =>
     switch input_line(inc) {
     | l => loop(list{l, ...acc})
-    | exception End_of_file => List.rev(acc)
+    | exception End_of_file => List.reverse(acc)
     }
 
   loop(list{})
@@ -42,7 +44,7 @@ let read_lines3 = inc => {
       let l = input_line(inc)
       loop(list{l, ...acc})
     } catch {
-    | End_of_file => List.rev(acc)
+    | End_of_file => List.reverse(acc)
     }
 
   loop(list{})

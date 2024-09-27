@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let List = require("../../lib/js/list.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 
 let suites = {
   contents: /* [] */0
@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -45,10 +45,10 @@ function f() {
   v.contents = v.contents + 1 | 0;
   v.contents = v.contents + 1 | 0;
   v.contents = v.contents + 1 | 0;
-  return List;
+  return Belt_List;
 }
 
-eq("File \"global_module_alias_test.res\", line 48, characters 12-19", List.length({
+eq("File \"global_module_alias_test.res\", line 53, characters 12-19", Belt_List.length({
   hd: 1,
   tl: {
     hd: 2,
@@ -80,12 +80,12 @@ v.contents = v.contents + 1 | 0;
 
 v.contents = v.contents + 1 | 0;
 
-let H = List;
+let H = Belt_List;
 
-eq("File \"global_module_alias_test.res\", line 52, characters 12-19", v.contents, 12);
+eq("File \"global_module_alias_test.res\", line 57, characters 12-19", v.contents, 12);
 
 function g() {
-  return List.length({
+  return Belt_List.length({
     hd: 1,
     tl: {
       hd: 2,
@@ -104,14 +104,14 @@ function xx() {
   v.contents = v.contents + 1 | 0;
   v.contents = v.contents + 1 | 0;
   v.contents = v.contents + 1 | 0;
-  return List;
+  return Belt_List;
 }
 
-eq("File \"global_module_alias_test.res\", line 80, characters 12-19", g(), 4);
+eq("File \"global_module_alias_test.res\", line 85, characters 12-19", g(), 4);
 
 let V = xx();
 
-eq("File \"global_module_alias_test.res\", line 84, characters 5-12", V.length({
+eq("File \"global_module_alias_test.res\", line 89, characters 5-12", V.length({
   hd: 1,
   tl: {
     hd: 2,
@@ -122,11 +122,11 @@ eq("File \"global_module_alias_test.res\", line 84, characters 5-12", V.length({
   }
 }), 3);
 
-eq("File \"global_module_alias_test.res\", line 85, characters 5-12", v.contents, 15);
+eq("File \"global_module_alias_test.res\", line 90, characters 5-12", v.contents, 15);
 
 let H$1 = f();
 
-eq("File \"global_module_alias_test.res\", line 87, characters 5-12", H$1.length({
+eq("File \"global_module_alias_test.res\", line 92, characters 5-12", H$1.length({
   hd: 1,
   tl: {
     hd: 2,
@@ -134,7 +134,7 @@ eq("File \"global_module_alias_test.res\", line 87, characters 5-12", H$1.length
   }
 }), 2);
 
-eq("File \"global_module_alias_test.res\", line 88, characters 5-12", v.contents, 21);
+eq("File \"global_module_alias_test.res\", line 93, characters 5-12", v.contents, 21);
 
 Mt.from_pair_suites("Global_module_alias_test", suites.contents);
 

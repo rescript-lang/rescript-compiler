@@ -5,7 +5,7 @@
 // hello
 'use strict';
 
-let List = require("../../lib/js/list.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 
 let x0 = null;
 
@@ -23,7 +23,7 @@ function f(x) {
   return x;
 }
 
-let hh = List.length;
+let hh = Belt_List.length;
 
 exports.x0 = x0;
 exports.x2 = x2;

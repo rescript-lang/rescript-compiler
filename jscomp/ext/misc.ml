@@ -138,9 +138,10 @@ let expand_directory alt s =
 
 (* Hashtable functions *)
 
-let create_hashtable size init =
+let create_hashtable init =
+  let size = Array.length init in
   let tbl = Hashtbl.create size in
-  List.iter (fun (key, data) -> Hashtbl.add tbl key data) init;
+  Array.iter (fun (key, data) -> Hashtbl.add tbl key data) init;
   tbl
 
 (* File copy *)

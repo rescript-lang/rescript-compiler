@@ -31,13 +31,11 @@ type record_representation =
 (* Inlined record under extension *)
 
 type t =
-  | Pbytes_to_string
   | Pmakeblock of int * Lam_tag_info.t * Asttypes.mutable_flag
   | Pfield of int * Lambda.field_dbg_info
   | Psetfield of int * Lambda.set_field_dbg_info
   | Pduprecord
   | Plazyforce
-  | Pccall of { prim_name : string }
   | Pjs_call of {
       (* Location.t *  [loc] is passed down *)
       prim_name : string;
@@ -47,9 +45,26 @@ type t =
     }
   | Pjs_object_create of External_arg_spec.obj_params
   | Praise
+
+  (* object primitives *)
+  | Pobjcomp of Lam_compat.comparison
+  | Pobjorder
+  | Pobjmin
+  | Pobjmax
+  | Pobjtag
+  | Pobjsize
+
+  (* bool primitives *)
   | Psequand
   | Psequor
   | Pnot
+  | Pboolcomp of Lam_compat.comparison
+  | Pboolorder
+  | Pboolmin
+  | Pboolmax
+
+  (* int primitives *)
+  | Pisint
   | Pnegint
   | Paddint
   | Psubint
@@ -64,6 +79,12 @@ type t =
   | Pasrint
   | Poffsetint of int
   | Poffsetref of int
+  | Pintcomp of Lam_compat.comparison
+  | Pintorder
+  | Pintmin
+  | Pintmax
+
+  (* float primitives *)
   | Pintoffloat
   | Pfloatofint
   | Pnegfloat
@@ -71,6 +92,13 @@ type t =
   | Psubfloat
   | Pmulfloat
   | Pdivfloat
+  | Pmodfloat
+  | Pfloatcomp of Lam_compat.comparison
+  | Pfloatorder
+  | Pfloatmin
+  | Pfloatmax
+
+  (* bigint primitives *)
   | Pnegbigint
   | Paddbigint
   | Psubbigint
@@ -83,52 +111,44 @@ type t =
   | Pxorbigint
   | Plslbigint
   | Pasrbigint
-  | Pintcomp of Lam_compat.comparison
-  | Pfloatcomp of Lam_compat.comparison
-  | Pjscomp of Lam_compat.comparison
-  | Pint64comp of Lam_compat.comparison
   | Pbigintcomp of Lam_compat.comparison
-  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
-  | Pjs_runtime_apply (* [f; [...]] *)
+  | Pbigintorder
+  | Pbigintmin
+  | Pbigintmax
+
+  (* string primitives *)
   | Pstringlength
   | Pstringrefu
   | Pstringrefs
   | Pstringadd
-  | Pbyteslength
-  | Pbytesrefu
-  | Pbytessetu
-  | Pbytesrefs
-  | Pbytessets
-  (* Array operations *)
+  | Pstringcomp of Lam_compat.comparison
+  | Pstringorder
+  | Pstringmin
+  | Pstringmax
+
+  (* Array primitives *)
   | Pmakearray
   | Parraylength
   | Parrayrefu
   | Parraysetu
   | Parrayrefs
   | Parraysets
-  (* Test if the argument is a block or an immediate integer *)
-  | Pisint
+
+  (* List primitives *)
+  | Pmakelist
+
+  (* dict primitives *)
+  | Pmakedict
+
+  (* promise *)
+  | Pawait
+
+  (* etc or deprecated *)
   | Pis_poly_var_block
-  (* Test if the (integer) argument is outside an interval *)
   | Pisout of int
-  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-  | Pint64ofint
-  | Pintofint64
-  | Pnegint64
-  | Paddint64
-  | Psubint64
-  | Pmulint64
-  | Pdivint64
-  | Pmodint64
-  | Pandint64
-  | Porint64
-  | Pxorint64
-  | Plslint64
-  | Plsrint64
-  | Pasrint64
-  (* Compile time constants *)
-  | Pctconst of Lam_compat.compile_time_constant
-  (* Integer to external pointer *)
+  | Pjscomp of Lam_compat.comparison
+  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
+  | Pjs_runtime_apply (* [f; [...]] *)
   | Pdebugger
   | Pjs_unsafe_downgrade of { name : string; setter : bool }
   | Pinit_mod
@@ -136,8 +156,6 @@ type t =
   | Praw_js_code of Js_raw_info.t
   | Pjs_fn_make of int
   | Pjs_fn_make_unit
-  | Pvoid_run
-  | Pfull_apply
   | Pjs_fn_method
   | Pundefined_to_opt
   | Pnull_to_opt
@@ -146,9 +164,8 @@ type t =
   | Pis_undefined
   | Pis_null_undefined
   | Pimport
-  | Pjs_typeof
-  | Pjs_function_length
-  | Pcaml_obj_length
+  | Ptypeof
+  | Pfn_arity
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
   | Pcreate_extension of string
   | Pis_not_none
@@ -156,5 +173,9 @@ type t =
   | Pval_from_option_not_nest
   | Psome
   | Psome_not_nest
+  | Phash
+  | Phash_mixstring
+  | Phash_mixint
+  | Phash_finalmix
 
 val eq_primitive_approx : t -> t -> bool

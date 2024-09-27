@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let suites = {
   contents: /* [] */0
@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -31,11 +31,11 @@ let a = {};
 
 let b = {};
 
-Caml_obj.update_dummy(a, {
+Primitive_object.updateDummy(a, {
   b: b
 });
 
-Caml_obj.update_dummy(b, {
+Primitive_object.updateDummy(b, {
   a: a
 });
 
@@ -43,7 +43,7 @@ function is_inifite(x) {
   return x.b.a === x;
 }
 
-eq("File \"gpr_1716_test.res\", line 16, characters 3-10", true, is_inifite(a));
+eq("File \"gpr_1716_test.res\", line 19, characters 3-10", true, is_inifite(a));
 
 Mt.from_pair_suites("Gpr_1716_test", suites.contents);
 

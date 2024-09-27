@@ -2,10 +2,10 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let suites = {
   contents: /* [] */0
@@ -31,7 +31,7 @@ function neq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Neq",
         _0: x,
@@ -93,7 +93,7 @@ function f(extra) {
   ], extra);
 }
 
-b("File \"bs_array_test.res\", line 38, characters 4-11", Caml_obj.equal([
+b("File \"bs_array_test.res\", line 38, characters 4-11", Primitive_object.equal([
   f(0),
   f(1)
 ], [
@@ -180,25 +180,25 @@ neq("File \"bs_array_test.res\", line 85, characters 6-13", u, v$5);
 
 eq("File \"bs_array_test.res\", line 87, characters 5-12", Belt_Array.reduce(u, 0, add), Belt_Array.reduce(v$5, 0, add));
 
-b("File \"bs_array_test.res\", line 92, characters 4-11", Caml_obj.equal(Belt_Array.range(0, 3), [
+b("File \"bs_array_test.res\", line 92, characters 4-11", Primitive_object.equal(Belt_Array.range(0, 3), [
   0,
   1,
   2,
   3
 ]));
 
-b("File \"bs_array_test.res\", line 93, characters 4-11", Caml_obj.equal(Belt_Array.range(3, 0), []));
+b("File \"bs_array_test.res\", line 93, characters 4-11", Primitive_object.equal(Belt_Array.range(3, 0), []));
 
-b("File \"bs_array_test.res\", line 94, characters 4-11", Caml_obj.equal(Belt_Array.range(3, 3), [3]));
+b("File \"bs_array_test.res\", line 94, characters 4-11", Primitive_object.equal(Belt_Array.range(3, 3), [3]));
 
-b("File \"bs_array_test.res\", line 96, characters 4-11", Caml_obj.equal(Belt_Array.rangeBy(0, 10, 3), [
+b("File \"bs_array_test.res\", line 96, characters 4-11", Primitive_object.equal(Belt_Array.rangeBy(0, 10, 3), [
   0,
   3,
   6,
   9
 ]));
 
-b("File \"bs_array_test.res\", line 97, characters 4-11", Caml_obj.equal(Belt_Array.rangeBy(0, 12, 3), [
+b("File \"bs_array_test.res\", line 97, characters 4-11", Primitive_object.equal(Belt_Array.rangeBy(0, 12, 3), [
   0,
   3,
   6,
@@ -206,15 +206,15 @@ b("File \"bs_array_test.res\", line 97, characters 4-11", Caml_obj.equal(Belt_Ar
   12
 ]));
 
-b("File \"bs_array_test.res\", line 98, characters 4-11", Caml_obj.equal(Belt_Array.rangeBy(33, 0, 1), []));
+b("File \"bs_array_test.res\", line 98, characters 4-11", Primitive_object.equal(Belt_Array.rangeBy(33, 0, 1), []));
 
-b("File \"bs_array_test.res\", line 99, characters 4-11", Caml_obj.equal(Belt_Array.rangeBy(33, 0, -1), []));
+b("File \"bs_array_test.res\", line 99, characters 4-11", Primitive_object.equal(Belt_Array.rangeBy(33, 0, -1), []));
 
-b("File \"bs_array_test.res\", line 100, characters 4-11", Caml_obj.equal(Belt_Array.rangeBy(3, 12, -1), []));
+b("File \"bs_array_test.res\", line 100, characters 4-11", Primitive_object.equal(Belt_Array.rangeBy(3, 12, -1), []));
 
-b("File \"bs_array_test.res\", line 101, characters 4-11", Caml_obj.equal(Belt_Array.rangeBy(3, 3, 0), []));
+b("File \"bs_array_test.res\", line 101, characters 4-11", Primitive_object.equal(Belt_Array.rangeBy(3, 3, 0), []));
 
-b("File \"bs_array_test.res\", line 102, characters 4-11", Caml_obj.equal(Belt_Array.rangeBy(3, 3, 1), [3]));
+b("File \"bs_array_test.res\", line 102, characters 4-11", Primitive_object.equal(Belt_Array.rangeBy(3, 3, 1), [3]));
 
 eq("File \"bs_array_test.res\", line 106, characters 5-12", Belt_Array.reduceReverse([], 100, (prim0, prim1) => prim0 - prim1 | 0), 100);
 
@@ -1312,7 +1312,7 @@ b("File \"bs_array_test.res\", line 349, characters 4-11", Belt_Array.cmp([
   1,
   2,
   3
-], Caml.int_compare) < 0);
+], Primitive_int.compare) < 0);
 
 b("File \"bs_array_test.res\", line 350, characters 4-11", Belt_Array.cmp([
   0,
@@ -1323,7 +1323,7 @@ b("File \"bs_array_test.res\", line 350, characters 4-11", Belt_Array.cmp([
   1,
   2,
   3
-], Caml.int_compare) > 0);
+], Primitive_int.compare) > 0);
 
 b("File \"bs_array_test.res\", line 351, characters 4-11", Belt_Array.cmp([
   1,
@@ -1333,7 +1333,7 @@ b("File \"bs_array_test.res\", line 351, characters 4-11", Belt_Array.cmp([
   0,
   1,
   2
-], Caml.int_compare) > 0);
+], Primitive_int.compare) > 0);
 
 b("File \"bs_array_test.res\", line 352, characters 4-11", Belt_Array.cmp([
   1,
@@ -1343,7 +1343,7 @@ b("File \"bs_array_test.res\", line 352, characters 4-11", Belt_Array.cmp([
   1,
   2,
   3
-], Caml.int_compare) === 0);
+], Primitive_int.compare) === 0);
 
 b("File \"bs_array_test.res\", line 353, characters 4-11", Belt_Array.cmp([
   1,
@@ -1353,7 +1353,7 @@ b("File \"bs_array_test.res\", line 353, characters 4-11", Belt_Array.cmp([
   1,
   2,
   3
-], Caml.int_compare) > 0);
+], Primitive_int.compare) > 0);
 
 eq("File \"bs_array_test.res\", line 357, characters 5-12", Belt_Array.getBy([
   1,

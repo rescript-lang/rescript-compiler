@@ -1,11 +1,13 @@
+open Belt
+
 let map = (f, a) => {
   let l = Array.length(a)
   if l == 0 {
     []
   } else {
-    let r = Array.make(l, f(Array.unsafe_get(a, 0)))
+    let r = Array.make(l, f(Array.getUnsafe(a, 0)))
     for i in 1 to l - 1 {
-      Array.unsafe_set(r, i, f(Array.unsafe_get(a, i)))
+      Array.setUnsafe(r, i, f(Array.getUnsafe(a, i)))
     }
     r
   }
@@ -24,7 +26,7 @@ let init = (l, f) =>
 
     let res = Array.make(l, f(0))
     for i in 1 to pred(l) {
-      Array.unsafe_set(res, i, f(i))
+      Array.setUnsafe(res, i, f(i))
     }
     res
   }
@@ -34,7 +36,7 @@ let init = (l, f) => init(l, x => f(x))
 let fold_left = (f, x, a) => {
   let r = ref(x)
   for i in 0 to Array.length(a) - 1 {
-    r := f(r.contents, Array.unsafe_get(a, i))
+    r := f(r.contents, Array.getUnsafe(a, i))
   }
   r.contents
 }
@@ -45,11 +47,7 @@ let f2 = () => {
   let arr = init(3_000_000, i => float_of_int(i))
   let b = map(i => i +. i -. 1., arr)
   let v = fold_left(\"+.", 0., b)
-  print_endline(string_of_float(v))
+  Js.log2("%f", v)
 }
 
 f2()
-
-/* local variables: */
-/* compile-command: "ocamlc bench.ml -o bench.byte  && js_of_ocaml --opt 3 bench.byte -o bench.1.js " */
-/* end: */

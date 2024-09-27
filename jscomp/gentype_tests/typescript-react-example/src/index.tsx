@@ -23,7 +23,7 @@ import * as TestPromise from "./TestPromise.gen";
 
 const consoleLog = console.log;
 
-const intList = Types.map(x => x + 1, Types.someIntList);
+const intList = Types.map(Types.someIntList, x => x + 1);
 
 const businesses = [
   {

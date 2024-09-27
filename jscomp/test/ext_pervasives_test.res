@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-external reraise: exn => 'a = "%reraise"
+external reraise: exn => 'a = "%raise"
 
 let finally = (v, action, f) =>
   switch f(v) {
@@ -33,42 +33,6 @@ let finally = (v, action, f) =>
     action(v)->ignore
     e
   }
-
-let is_pos_pow = n => {
-  module M = {
-    exception E
-  }
-  let rec aux = (c, n: Int32.t) =>
-    if n <= 0l {
-      -2
-    } else if n == 1l {
-      c
-    } else if Int32.logand(n, 1l) == 0l {
-      aux(c + 1, Int32.shift_right(n, 1))
-    } else {
-      raise(M.E)
-    }
-  try aux(0, n) catch {
-  | M.E => -1
-  }
-}
-
-let is_pos_pow_2 = n => {
-  exception E
-  let rec aux = (c, n: Int32.t) =>
-    if n <= 0l {
-      -2
-    } else if n == 1l {
-      c
-    } else if Int32.logand(n, 1l) == 0l {
-      aux(c + 1, Int32.shift_right(n, 1))
-    } else {
-      raise(E)
-    }
-  try aux(0, n) catch {
-  | E => -1
-  }
-}
 
 let hash_variant = s => {
   let accu = ref(0)

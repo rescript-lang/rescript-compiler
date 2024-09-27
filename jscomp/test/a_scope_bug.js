@@ -7,7 +7,7 @@ function odd(_z) {
     let z = _z;
     let even = Math.imul(z, z);
     let a = (even + 4 | 0) + even | 0;
-    console.log(String(a));
+    console.log(a.toString());
     _z = 32;
     continue;
   };

@@ -12,9 +12,6 @@ module StandardNotation = {
   }
   let hh = M.sum(1.0, 2.0)
 
-  external mod_float: (float, float) => float = "?fmod_float"
-  let mf = mod_float(3., 4.)
-
   @get_index external get: (array<string>, int) => option<'a> = ""
   let tg = arr => arr->get(0)
 

@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -23,7 +23,7 @@ function f0(x) {
   return newrecord;
 }
 
-let Small = /* @__PURE__ */Caml_exceptions.create("Large_record_duplication_test.Small");
+let Small = /* @__PURE__ */Primitive_exceptions.create("Large_record_duplication_test.Small");
 
 function f_small(x) {
   if (x.RE_EXN_ID === Small) {
@@ -51,7 +51,7 @@ eq("File \"large_record_duplication_test.res\", line 70, characters 3-10", f_sma
   y: ""
 });
 
-eq("File \"large_record_duplication_test.res\", line 72, characters 3-10", Caml_obj.equal(h, {
+eq("File \"large_record_duplication_test.res\", line 72, characters 3-10", Primitive_object.equal(h, {
   RE_EXN_ID: Small,
   x: 2,
   y: ""
@@ -148,7 +148,7 @@ function f2(x) {
 
 eq("File \"large_record_duplication_test.res\", line 208, characters 3-10", get_x0$1(f2(v2)), 1);
 
-let A0 = /* @__PURE__ */Caml_exceptions.create("Large_record_duplication_test.A0");
+let A0 = /* @__PURE__ */Primitive_exceptions.create("Large_record_duplication_test.A0");
 
 function f3(x) {
   if (x.RE_EXN_ID !== A0) {

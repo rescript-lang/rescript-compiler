@@ -19,7 +19,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -42,7 +42,7 @@ function f(x) {
   };
 }
 
-eq("File \"update_record_test.res\", line 28, characters 5-12", 1, f({
+eq("File \"update_record_test.res\", line 31, characters 5-12", 1, f({
   a0: 0,
   a1: 0,
   a2: 0,
@@ -65,9 +65,9 @@ function fff(x) {
 
 let val1 = fff(val0);
 
-eq("File \"update_record_test.res\", line 41, characters 5-12", 3, 3);
+eq("File \"update_record_test.res\", line 44, characters 5-12", 3, 3);
 
-eq("File \"update_record_test.res\", line 42, characters 5-12", val1["invalid_js_id'"], 5);
+eq("File \"update_record_test.res\", line 45, characters 5-12", val1["invalid_js_id'"], 5);
 
 Mt.from_pair_suites("Update_record_test", suites.contents);
 

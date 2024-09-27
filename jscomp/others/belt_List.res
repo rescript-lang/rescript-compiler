@@ -65,7 +65,7 @@ type t<'a> = list<'a>
 
 module A = Belt_Array
 
-external mutableCell: ('a, t<'a>) => t<'a> = "#makemutablelist"
+external mutableCell: ('a, t<'a>) => t<'a> = "%makemutablelist"
 
 /*
   `mutableCell x []` == `x`

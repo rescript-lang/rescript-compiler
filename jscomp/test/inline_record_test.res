@@ -13,8 +13,8 @@ let v1 = A1({more: list{1, 2}})
 
 let f = (x: t0) =>
   switch x {
-  | A0({lbl, more}) => List.fold_left(\"+", lbl, more)
-  | A1({more}) => List.fold_left(\"+", 0, more)
+  | A0({lbl, more}) => more->Belt.List.reduceReverse(lbl, \"+")
+  | A1({more}) => more->Belt.List.reduceReverse(0, \"+")
   }
 eq(__LOC__, f(v), 3)
 eq(__LOC__, f(v1), 3)

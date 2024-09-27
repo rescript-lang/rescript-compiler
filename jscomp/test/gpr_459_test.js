@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -38,9 +38,9 @@ let uu2 = {
 
 let hh = uu["_'x"];
 
-eq("File \"gpr_459_test.res\", line 23, characters 12-19", hh, 3);
+eq("File \"gpr_459_test.res\", line 26, characters 12-19", hh, 3);
 
-eq("File \"gpr_459_test.res\", line 25, characters 12-19", [
+eq("File \"gpr_459_test.res\", line 28, characters 12-19", [
   1,
   2,
   3

@@ -1,20 +1,18 @@
-/** luckily we have module alias 
-    so global module alias is fine
-*/
-include List
-module N = List
+open Belt
+
+module N = Belt.List
 let v = N.length
 
-module Make = (U: Set.OrderedType) => {
-  include U
-  let v = compare
+module type OrderedType = {
+  type t
+  let compare: (t, t) => int
 }
 
-/* var $$let=$$String; */
-module X = Make(String)
+module Make = (U: OrderedType) => {
+  let v = U.compare
+}
+
 module U = Make(Test_order)
-/* var X=Make([0,$$let[25]]); */
-include N
 
 /* Missing optimization
   alias to a number could also be removed, especially 0

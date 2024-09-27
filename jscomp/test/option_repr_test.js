@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
 let Belt_List = require("../../lib/js/belt_List.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites = {
   contents: /* [] */0
@@ -73,9 +73,9 @@ function f6(a) {
   return true;
 }
 
-let f10 = Caml_option.some(Caml_option.some(Caml_option.some(Caml_option.some(undefined))));
+let f10 = Primitive_option.some(Primitive_option.some(Primitive_option.some(Primitive_option.some(undefined))));
 
-let f11 = Caml_option.some(f10);
+let f11 = Primitive_option.some(f10);
 
 let randomized = {
   contents: false
@@ -109,7 +109,7 @@ let length_8_id = Belt_List.makeBy(8, x => x);
 let length_10_id = Belt_List.makeBy(10, x => x);
 
 function f13$1() {
-  return Caml_obj.equal(Belt_List.take(length_10_id, 8), {
+  return Primitive_object.equal(Belt_List.take(length_10_id, 8), {
     hd: 1,
     tl: {
       hd: 2,
@@ -121,45 +121,45 @@ function f13$1() {
   });
 }
 
-b("File \"option_repr_test.res\", line 93, characters 4-11", Caml_obj.lessthan(undefined, null));
+b("File \"option_repr_test.res\", line 93, characters 4-11", Primitive_object.lessthan(undefined, null));
 
-b("File \"option_repr_test.res\", line 94, characters 4-11", !Caml_obj.greaterthan(undefined, null));
+b("File \"option_repr_test.res\", line 94, characters 4-11", !Primitive_object.greaterthan(undefined, null));
 
-b("File \"option_repr_test.res\", line 95, characters 4-11", Caml_obj.greaterthan(null, undefined));
+b("File \"option_repr_test.res\", line 95, characters 4-11", Primitive_object.greaterthan(null, undefined));
 
-b("File \"option_repr_test.res\", line 96, characters 4-11", Caml_obj.lessthan(undefined, Caml_option.some(undefined)));
+b("File \"option_repr_test.res\", line 96, characters 4-11", Primitive_object.lessthan(undefined, Primitive_option.some(undefined)));
 
-b("File \"option_repr_test.res\", line 97, characters 4-11", Caml_obj.greaterthan(Caml_option.some(undefined), undefined));
+b("File \"option_repr_test.res\", line 97, characters 4-11", Primitive_object.greaterthan(Primitive_option.some(undefined), undefined));
 
 console.log(6, undefined);
 
 function ltx(a, b) {
-  if (Caml_obj.lessthan(a, b)) {
-    return Caml_obj.greaterthan(b, a);
+  if (Primitive_object.lessthan(a, b)) {
+    return Primitive_object.greaterthan(b, a);
   } else {
     return false;
   }
 }
 
 function gtx(a, b) {
-  if (Caml_obj.greaterthan(a, b)) {
-    return Caml_obj.lessthan(b, a);
+  if (Primitive_object.greaterthan(a, b)) {
+    return Primitive_object.lessthan(b, a);
   } else {
     return false;
   }
 }
 
 function eqx(a, b) {
-  if (Caml_obj.equal(a, b)) {
-    return Caml_obj.equal(b, a);
+  if (Primitive_object.equal(a, b)) {
+    return Primitive_object.equal(b, a);
   } else {
     return false;
   }
 }
 
 function neqx(a, b) {
-  if (Caml_obj.notequal(a, b)) {
-    return Caml_obj.notequal(b, a);
+  if (Primitive_object.notequal(a, b)) {
+    return Primitive_object.notequal(b, a);
   } else {
     return false;
   }
@@ -169,7 +169,7 @@ function all_true(xs) {
   return Belt_List.every(xs, x => x);
 }
 
-let xs_0 = gtx(Caml_option.some(null), Caml_option.some(undefined));
+let xs_0 = gtx(Primitive_option.some(null), Primitive_option.some(undefined));
 
 let xs = {
   hd: xs_0,
@@ -178,22 +178,22 @@ let xs = {
 
 b("File \"option_repr_test.res\", line 125, characters 8-15", Belt_List.every(xs, x => x));
 
-let xs_0$1 = ltx(Caml_option.some(undefined), 3);
+let xs_0$1 = Primitive_object.lessthan(Primitive_option.some(undefined), 3) && Primitive_object.greaterthan(3, Primitive_option.some(undefined));
 
 let xs_1 = {
-  hd: ltx(Caml_option.some(undefined), Caml_option.some(Caml_option.some(undefined))),
+  hd: Primitive_object.lessthan(Primitive_option.some(undefined), Primitive_option.some(Primitive_option.some(undefined))) && Primitive_object.greaterthan(Primitive_option.some(Primitive_option.some(undefined)), Primitive_option.some(undefined)),
   tl: {
-    hd: ltx(Caml_option.some(undefined), "3"),
+    hd: Primitive_object.lessthan(Primitive_option.some(undefined), "3") && Primitive_object.greaterthan("3", Primitive_option.some(undefined)),
     tl: {
-      hd: ltx(Caml_option.some(undefined), true),
+      hd: Primitive_object.lessthan(Primitive_option.some(undefined), true) && Primitive_object.greaterthan(true, Primitive_option.some(undefined)),
       tl: {
-        hd: ltx(Caml_option.some(undefined), false),
+        hd: Primitive_object.lessthan(Primitive_option.some(undefined), false) && Primitive_object.greaterthan(false, Primitive_option.some(undefined)),
         tl: {
-          hd: ltx(false, true),
+          hd: Primitive_object.lessthan(false, true) && Primitive_object.greaterthan(true, false),
           tl: {
-            hd: ltx(false, true),
+            hd: Primitive_object.lessthan(false, true) && Primitive_object.greaterthan(true, false),
             tl: {
-              hd: ltx(undefined, Caml_option.some(undefined)),
+              hd: Primitive_object.lessthan(undefined, Primitive_option.some(undefined)) && Primitive_object.greaterthan(Primitive_option.some(undefined), undefined),
               tl: {
                 hd: ltx(undefined, null),
                 tl: {
@@ -219,16 +219,16 @@ let xs$1 = {
 
 b("File \"option_repr_test.res\", line 128, characters 4-11", Belt_List.every(xs$1, x => x));
 
-let xs_0$2 = eqx(undefined, undefined);
+let xs_0$2 = true && true;
 
 let xs_1$1 = {
   hd: neqx(undefined, null),
   tl: {
-    hd: eqx(Caml_option.some(undefined), Caml_option.some(undefined)),
+    hd: Primitive_object.equal(Primitive_option.some(undefined), Primitive_option.some(undefined)) && Primitive_object.equal(Primitive_option.some(undefined), Primitive_option.some(undefined)),
     tl: {
-      hd: eqx(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))),
+      hd: Primitive_object.equal(Primitive_option.some(Primitive_option.some(undefined)), Primitive_option.some(Primitive_option.some(undefined))) && Primitive_object.equal(Primitive_option.some(Primitive_option.some(undefined)), Primitive_option.some(Primitive_option.some(undefined))),
       tl: {
-        hd: neqx(Caml_option.some(Caml_option.some(Caml_option.some(undefined))), Caml_option.some(Caml_option.some(undefined))),
+        hd: Primitive_object.notequal(Primitive_option.some(Primitive_option.some(Primitive_option.some(undefined))), Primitive_option.some(Primitive_option.some(undefined))) && Primitive_object.notequal(Primitive_option.some(Primitive_option.some(undefined)), Primitive_option.some(Primitive_option.some(Primitive_option.some(undefined)))),
         tl: /* [] */0
       }
     }
@@ -259,9 +259,9 @@ Mt.from_pair_suites("Option_repr_test", suites.contents);
 
 let f7;
 
-let f8 = Caml_option.some(undefined);
+let f8 = Primitive_option.some(undefined);
 
-let f9 = Caml_option.some(Caml_option.some(undefined));
+let f9 = Primitive_option.some(Primitive_option.some(undefined));
 
 let N;
 

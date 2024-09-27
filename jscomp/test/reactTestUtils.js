@@ -3,7 +3,7 @@
 
 let Belt_Array = require("../../lib/js/belt_Array.js");
 let Belt_Option = require("../../lib/js/belt_Option.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 let TestUtils = require("react-dom/test-utils");
 
 function act(func) {
@@ -66,7 +66,7 @@ let DOM = {
 function prepareContainer(container, param) {
   let containerElement = document.createElement("div");
   Belt_Option.map(document.body, body => body.appendChild(containerElement));
-  container.contents = Caml_option.some(containerElement);
+  container.contents = Primitive_option.some(containerElement);
 }
 
 function cleanupContainer(container, param) {

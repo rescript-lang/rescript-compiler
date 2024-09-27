@@ -25,7 +25,7 @@
 /*** Provides functionality for dealing with the `Js.undefined<'a>` type */
 
 /** Local alias for `Js.undefined<'a>` */
-type t<+'a> = Js.undefined<'a>
+type t<+'a> = Primitive_js_extern.undefined<'a>
 
 /** Constructs a value of `Js.undefined<'a>` containing a value of `'a`. */
 external return: 'a => t<'a> = "%identity"
@@ -42,7 +42,7 @@ Returns `true` if the given value is empty (undefined).
 let testAny: 'a => bool
 
 /** The empty value, `undefined` */
-external empty: t<'a> = "#undefined"
+external empty: t<'a> = "%undefined"
 
 external getUnsafe: t<'a> => 'a = "%identity"
 let getExn: t<'a> => 'a
@@ -90,6 +90,6 @@ Maps `Js.undefined<'a>` to `option<'a>`
 `a` => `Some(a)`
 `empty` => `None`
 */
-external toOption: t<'a> => option<'a> = "#undefined_to_opt"
+external toOption: t<'a> => option<'a> = "%undefined_to_opt"
 
-@deprecated("use toOption instead") external to_opt: t<'a> => option<'a> = "#undefined_to_opt"
+@deprecated("use toOption instead") external to_opt: t<'a> => option<'a> = "%undefined_to_opt"

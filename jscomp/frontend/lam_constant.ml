@@ -49,11 +49,9 @@ type t =
   | Const_char of int
   | Const_string of {s: string; unicode: bool}
   | Const_float of string
-  | Const_int64 of int64
   | Const_bigint of bool * string
   | Const_pointer of string
   | Const_block of int * Lambda.tag_info * t list
-  | Const_float_array of string list
   | Const_some of t
   | Const_module_alias
 (* eventually we can remove it, since we know
@@ -83,10 +81,6 @@ let rec eq_approx (x : t) (y : t) =
     match y with
     | Const_float iy -> ix = iy
     | _ -> false)
-  | Const_int64 ix -> (
-    match y with
-    | Const_int64 iy -> ix = iy
-    | _ -> false)
   | Const_bigint (sx, ix) -> (
     match y with
     | Const_bigint (sy, iy) -> sx = sy && ix = iy
@@ -99,10 +93,6 @@ let rec eq_approx (x : t) (y : t) =
     match y with
     | Const_block (iy, _, iys) ->
       ix = iy && Ext_list.for_all2_no_exn ixs iys eq_approx
-    | _ -> false)
-  | Const_float_array ixs -> (
-    match y with
-    | Const_float_array iys -> Ext_list.for_all2_no_exn ixs iys Ext_string.equal
     | _ -> false)
   | Const_some ix -> (
     match y with

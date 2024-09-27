@@ -14,7 +14,7 @@
        {n=n-1;
         acc=
         function()
-         {console.log(Pervasives.string_of_int(n));
+         {console.log(Pervasives.Js.Int.toString(n));
           return acc(/* () */0);};
         continue f_tailcall_0001;}};};
    
@@ -32,7 +32,7 @@
        {n=n-1;
         acc=
         function()
-         {console.log(Pervasives.string_of_int(n));
+         {console.log(Pervasives.Js.Int.toString(n));
           return acc(/* () */0);};
         continue f_tailcall_0001;}}(n,acc)) };};   
    ]}
@@ -54,7 +54,7 @@
             var acc1 = acc ;
             var n1 = n;
             return function() {
-                console.log(Pervasives.string_of_int(n1));
+                console.log(Pervasives.Js.Int.toString(n1));
                 return acc1(/* () */0);}
         }());
            n=n-1;
@@ -70,7 +70,7 @@ let rec f = (n, acc) =>
     acc()
   } else {
     f(n - 1, _ => {
-      print_endline(string_of_int(n))
+      n->Js.Int.toString->Js.log
       acc()
     })
   }
@@ -90,7 +90,7 @@ let rec f = (n, acc) =>
  */
 let test_closure = () => {
   let n = 6
-  let arr = Array.make(n, x => x)
+  let arr = Belt.Array.make(n, x => x)
   for i in 0 to n {
     arr[i] = _ => i
   }

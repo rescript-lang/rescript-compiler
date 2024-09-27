@@ -2,9 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_format = require("../../lib/js/caml_format.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Belt_Int = require("../../lib/js/belt_Int.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -18,36 +17,46 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-let Inline_record = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.Inline_record");
+let Inline_record = /* @__PURE__ */Primitive_exceptions.create("Record_extension_test.Inline_record");
 
-let SinglePayload = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.SinglePayload");
+let SinglePayload = /* @__PURE__ */Primitive_exceptions.create("Record_extension_test.SinglePayload");
 
-let TuplePayload = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.TuplePayload");
+let TuplePayload = /* @__PURE__ */Primitive_exceptions.create("Record_extension_test.TuplePayload");
 
 function f(x) {
   if (x.RE_EXN_ID === Inline_record) {
-    return x.x + Caml_format.int_of_string(x.y) | 0;
-  } else if (x.RE_EXN_ID === SinglePayload) {
-    return Caml_format.int_of_string(x._1);
-  } else if (x.RE_EXN_ID === TuplePayload) {
-    return x._1 + Caml_format.int_of_string(x._2) | 0;
-  } else {
+    let y = Belt_Int.fromString(x.y);
+    if (y !== undefined) {
+      return x.x + y | 0;
+    } else {
+      return;
+    }
+  }
+  if (x.RE_EXN_ID === SinglePayload) {
+    return Belt_Int.fromString(x._1);
+  }
+  if (x.RE_EXN_ID !== TuplePayload) {
     return;
   }
+  let v1 = Belt_Int.fromString(x._2);
+  if (v1 !== undefined) {
+    return x._1 + v1 | 0;
+  }
+  
 }
 
-eq("File \"record_extension_test.res\", line 20, characters 3-10", f({
+eq("File \"record_extension_test.res\", line 28, characters 3-10", f({
   RE_EXN_ID: Inline_record,
   x: 3,
   y: "4"
 }), 7);
 
-eq("File \"record_extension_test.res\", line 21, characters 3-10", f({
+eq("File \"record_extension_test.res\", line 29, characters 3-10", f({
   RE_EXN_ID: SinglePayload,
   _1: "1"
 }), 1);
 
-eq("File \"record_extension_test.res\", line 22, characters 3-10", f({
+eq("File \"record_extension_test.res\", line 30, characters 3-10", f({
   RE_EXN_ID: TuplePayload,
   _1: 1,
   _2: "2"
@@ -73,17 +82,17 @@ function f2_with(x) {
   }
 }
 
-let A = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.A");
+let A = /* @__PURE__ */Primitive_exceptions.create("Record_extension_test.A");
 
-let B = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.B");
+let B = /* @__PURE__ */Primitive_exceptions.create("Record_extension_test.B");
 
-let C = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.C");
+let C = /* @__PURE__ */Primitive_exceptions.create("Record_extension_test.C");
 
 function u(f) {
   try {
     return f();
   } catch (raw_x) {
-    let x = Caml_js_exceptions.internalToOCamlException(raw_x);
+    let x = Primitive_exceptions.internalToException(raw_x);
     if (x.RE_EXN_ID === A) {
       return x.name + x.x | 0;
     } else if (x.RE_EXN_ID === B) {
@@ -96,7 +105,7 @@ function u(f) {
   }
 }
 
-eq("File \"record_extension_test.res\", line 59, characters 3-10", u(() => {
+eq("File \"record_extension_test.res\", line 67, characters 3-10", u(() => {
   throw {
     RE_EXN_ID: A,
     name: 1,
@@ -105,7 +114,7 @@ eq("File \"record_extension_test.res\", line 59, characters 3-10", u(() => {
   };
 }), 2);
 
-eq("File \"record_extension_test.res\", line 60, characters 3-10", u(() => {
+eq("File \"record_extension_test.res\", line 68, characters 3-10", u(() => {
   throw {
     RE_EXN_ID: B,
     _1: 1,
@@ -114,7 +123,7 @@ eq("File \"record_extension_test.res\", line 60, characters 3-10", u(() => {
   };
 }), 3);
 
-eq("File \"record_extension_test.res\", line 61, characters 3-10", u(() => {
+eq("File \"record_extension_test.res\", line 69, characters 3-10", u(() => {
   throw {
     RE_EXN_ID: C,
     name: 4,
@@ -122,7 +131,7 @@ eq("File \"record_extension_test.res\", line 61, characters 3-10", u(() => {
   };
 }), 4);
 
-Mt.from_pair_suites("File \"record_extension_test.res\", line 63, characters 29-36", suites.contents);
+Mt.from_pair_suites("File \"record_extension_test.res\", line 71, characters 29-36", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

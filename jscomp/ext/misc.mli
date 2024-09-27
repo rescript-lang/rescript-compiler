@@ -62,7 +62,7 @@ val expand_directory: string -> string -> string
         (* [expand_directory alt file] eventually expands a [+] at the
            beginning of file into [alt] (an alternate root directory) *)
 
-val create_hashtable: int -> ('a * 'b) list -> ('a, 'b) Hashtbl.t
+val create_hashtable: ('a * 'b) array -> ('a, 'b) Hashtbl.t
         (* Create a hashtable of the given size and fills it with the
            given bindings. *)
 

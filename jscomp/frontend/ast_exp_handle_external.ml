@@ -67,7 +67,7 @@ let handle_external loc (x : string) : Parsetree.expression =
 let handle_debugger loc (payload : Ast_payload.t) =
   match payload with
   | PStr [] ->
-    Ast_external_mk.local_external_apply loc ~pval_prim:["#debugger"]
+    Ast_external_mk.local_external_apply loc ~pval_prim:["%debugger"]
       ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Ast_literal.type_unit ()))
       [Ast_literal.val_unit ~loc ()]
   | _ ->

@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites = {
   contents: /* [] */0
@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -88,7 +88,7 @@ function f9(x) {
   if (x === null) {
     return;
   } else {
-    return Caml_option.some(x);
+    return Primitive_option.some(x);
   }
 }
 
@@ -173,7 +173,7 @@ function f9$1(x) {
   if (x === undefined) {
     return;
   } else {
-    return Caml_option.some(x);
+    return Primitive_option.some(x);
   }
 }
 
@@ -256,7 +256,7 @@ function f9$2(x) {
   if (x == null) {
     return;
   } else {
-    return Caml_option.some(x);
+    return Primitive_option.some(x);
   }
 }
 
@@ -280,19 +280,19 @@ let Test_null_def = {
   f11: f11$2
 };
 
-eq("File \"test_zero_nullable.res\", line 244, characters 5-12", f1$2(0), 1);
+eq("File \"test_zero_nullable.res\", line 247, characters 5-12", f1$2(0), 1);
 
-eq("File \"test_zero_nullable.res\", line 245, characters 5-12", f1$2(null), 3);
+eq("File \"test_zero_nullable.res\", line 248, characters 5-12", f1$2(null), 3);
 
-eq("File \"test_zero_nullable.res\", line 246, characters 5-12", f1$2(undefined), 3);
+eq("File \"test_zero_nullable.res\", line 249, characters 5-12", f1$2(undefined), 3);
 
-eq("File \"test_zero_nullable.res\", line 248, characters 5-12", f1(0), 1);
+eq("File \"test_zero_nullable.res\", line 251, characters 5-12", f1(0), 1);
 
-eq("File \"test_zero_nullable.res\", line 249, characters 5-12", f1(null), 3);
+eq("File \"test_zero_nullable.res\", line 252, characters 5-12", f1(null), 3);
 
-eq("File \"test_zero_nullable.res\", line 251, characters 5-12", f1$1(0), 1);
+eq("File \"test_zero_nullable.res\", line 254, characters 5-12", f1$1(0), 1);
 
-eq("File \"test_zero_nullable.res\", line 252, characters 5-12", f1$1(undefined), 3);
+eq("File \"test_zero_nullable.res\", line 255, characters 5-12", f1$1(undefined), 3);
 
 Mt.from_pair_suites("Test_zero_nullable", suites.contents);
 

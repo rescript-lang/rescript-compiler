@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -104,33 +104,33 @@ function f12(x) {
   return x.____;
 }
 
-eq("File \"name_mangle_test.res\", line 94, characters 5-12", f0({_open:0}), 1);
+eq("File \"name_mangle_test.res\", line 97, characters 5-12", f0({_open:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 95, characters 5-12", f1({_in:0}), 1);
+eq("File \"name_mangle_test.res\", line 98, characters 5-12", f1({_in:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 96, characters 5-12", f2({_MAX_LENGTH:0}), 1);
+eq("File \"name_mangle_test.res\", line 99, characters 5-12", f2({_MAX_LENGTH:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 97, characters 5-12", f3({_Capital:0}), 1);
+eq("File \"name_mangle_test.res\", line 100, characters 5-12", f3({_Capital:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 98, characters 5-12", f4({_open__:0}), 1);
+eq("File \"name_mangle_test.res\", line 101, characters 5-12", f4({_open__:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 99, characters 5-12", f5({open__:0}), 1);
+eq("File \"name_mangle_test.res\", line 102, characters 5-12", f5({open__:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 100, characters 5-12", f6({ "_'x" :0}), 1);
+eq("File \"name_mangle_test.res\", line 103, characters 5-12", f6({ "_'x" :0}), 1);
 
-eq("File \"name_mangle_test.res\", line 101, characters 5-12", f7({_Capital__:0}), 1);
+eq("File \"name_mangle_test.res\", line 104, characters 5-12", f7({_Capital__:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 102, characters 5-12", f8({_MAX__:0}), 1);
+eq("File \"name_mangle_test.res\", line 105, characters 5-12", f8({_MAX__:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 103, characters 5-12", f9({__:0}), 1);
+eq("File \"name_mangle_test.res\", line 106, characters 5-12", f9({__:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 104, characters 5-12", f10({__x:0}), 1);
+eq("File \"name_mangle_test.res\", line 107, characters 5-12", f10({__x:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 105, characters 5-12", f11({___:0}), 1);
+eq("File \"name_mangle_test.res\", line 108, characters 5-12", f11({___:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 106, characters 5-12", f12({____:0}), 1);
+eq("File \"name_mangle_test.res\", line 109, characters 5-12", f12({____:0}), 1);
 
-Mt.from_pair_suites("File \"name_mangle_test.res\", line 109, characters 20-27", suites.contents);
+Mt.from_pair_suites("File \"name_mangle_test.res\", line 112, characters 20-27", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

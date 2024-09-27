@@ -4,7 +4,10 @@ let eq = (loc, x, y) => {
   Js.log((x, y))
   incr(test_id)
   suites :=
-    list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Mt.Eq(x, y)), ...suites.contents}
+    list{
+      (loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => Mt.Eq(x, y)),
+      ...suites.contents,
+    }
 }
 
 type t = {

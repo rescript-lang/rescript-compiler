@@ -2,8 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let $$Array = require("../../lib/js/array.js");
-let Caml_string = require("../../lib/js/caml_string.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 
 let suites = {
   contents: /* [] */0
@@ -17,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -33,7 +32,7 @@ console.log("你好，\n世界");
 console.log("\x3f\u003f\b\t\n\v\f\r\0\"'");
 
 function convert(s) {
-  return $$Array.to_list(Array.from(s, x => {
+  return Belt_List.fromArray(Array.from(s, x => {
     let x$1 = x.codePointAt(0);
     if (x$1 !== undefined) {
       return x$1;
@@ -42,7 +41,7 @@ function convert(s) {
       RE_EXN_ID: "Assert_failure",
       _1: [
         "chn_test.res",
-        18,
+        23,
         16
       ],
       Error: new Error()
@@ -50,9 +49,9 @@ function convert(s) {
   }));
 }
 
-eq("File \"chn_test.res\", line 26, characters 4-11", "你好，\n世界", "你好，\n世界");
+eq("File \"chn_test.res\", line 31, characters 4-11", "你好，\n世界", "你好，\n世界");
 
-eq("File \"chn_test.res\", line 32, characters 4-11", convert("汉字是世界上最美丽的character"), {
+eq("File \"chn_test.res\", line 37, characters 4-11", convert("汉字是世界上最美丽的character"), {
   hd: 27721,
   tl: {
     hd: 23383,
@@ -111,7 +110,7 @@ eq("File \"chn_test.res\", line 32, characters 4-11", convert("汉字是世界�
   }
 });
 
-eq("File \"chn_test.res\", line 56, characters 5-12", convert("\x3f\x3fa"), {
+eq("File \"chn_test.res\", line 61, characters 5-12", convert("\x3f\x3fa"), {
   hd: 63,
   tl: {
     hd: 63,
@@ -122,7 +121,7 @@ eq("File \"chn_test.res\", line 56, characters 5-12", convert("\x3f\x3fa"), {
   }
 });
 
-eq("File \"chn_test.res\", line 57, characters 5-12", convert("??a"), {
+eq("File \"chn_test.res\", line 62, characters 5-12", convert("??a"), {
   hd: 63,
   tl: {
     hd: 63,
@@ -133,7 +132,7 @@ eq("File \"chn_test.res\", line 57, characters 5-12", convert("??a"), {
   }
 });
 
-eq("File \"chn_test.res\", line 58, characters 5-12", convert("\u003f\x3fa"), {
+eq("File \"chn_test.res\", line 63, characters 5-12", convert("\u003f\x3fa"), {
   hd: 63,
   tl: {
     hd: 63,
@@ -144,7 +143,7 @@ eq("File \"chn_test.res\", line 58, characters 5-12", convert("\u003f\x3fa"), {
   }
 });
 
-eq("File \"chn_test.res\", line 59, characters 5-12", convert("🚀🚀a"), {
+eq("File \"chn_test.res\", line 64, characters 5-12", convert("🚀🚀a"), {
   hd: 128640,
   tl: {
     hd: 128640,
@@ -155,7 +154,7 @@ eq("File \"chn_test.res\", line 59, characters 5-12", convert("🚀🚀a"), {
   }
 });
 
-eq("File \"chn_test.res\", line 60, characters 5-12", convert("\uD83D\uDE80a"), {
+eq("File \"chn_test.res\", line 65, characters 5-12", convert("\uD83D\uDE80a"), {
   hd: 128640,
   tl: {
     hd: 97,
@@ -163,7 +162,7 @@ eq("File \"chn_test.res\", line 60, characters 5-12", convert("\uD83D\uDE80a"), 
   }
 });
 
-eq("File \"chn_test.res\", line 61, characters 5-12", convert("\uD83D\uDE80\x3f"), {
+eq("File \"chn_test.res\", line 66, characters 5-12", convert("\uD83D\uDE80\x3f"), {
   hd: 128640,
   tl: {
     hd: 63,
@@ -171,7 +170,7 @@ eq("File \"chn_test.res\", line 61, characters 5-12", convert("\uD83D\uDE80\x3f"
   }
 });
 
-eq("File \"chn_test.res\", line 65, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80a"), {
+eq("File \"chn_test.res\", line 70, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80a"), {
   hd: 128640,
   tl: {
     hd: 128640,
@@ -184,16 +183,16 @@ eq("File \"chn_test.res\", line 65, characters 5-12", convert("\uD83D\uDE80\uD83
 
 eq("No inline string length", "\uD83D\uDE80\0".length, 3);
 
-eq("File \"chn_test.res\", line 72, characters 4-11", Caml_string.get("\uD83D\uDE80\0", 0), 128640);
+eq("File \"chn_test.res\", line 77, characters 4-11", "\uD83D\uDE80\0".codePointAt(0), 128640);
 
-eq("File \"chn_test.res\", line 77, characters 5-12", Caml_string.get("🚀", 0), 128640);
+eq("File \"chn_test.res\", line 82, characters 5-12", "🚀".codePointAt(0), 128640);
 
-eq("File \"chn_test.res\", line 82, characters 5-12", convert("\uD83D\uDE80"), {
+eq("File \"chn_test.res\", line 87, characters 5-12", convert("\uD83D\uDE80"), {
   hd: 128640,
   tl: /* [] */0
 });
 
-eq("File \"chn_test.res\", line 83, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80"), {
+eq("File \"chn_test.res\", line 88, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80"), {
   hd: 128640,
   tl: {
     hd: 128640,
@@ -201,7 +200,7 @@ eq("File \"chn_test.res\", line 83, characters 5-12", convert("\uD83D\uDE80\uD83
   }
 });
 
-eq("File \"chn_test.res\", line 84, characters 5-12", convert(" \b\t\n\v\f\ra"), {
+eq("File \"chn_test.res\", line 89, characters 5-12", convert(" \b\t\n\v\f\ra"), {
   hd: 32,
   tl: {
     hd: 8,
@@ -227,7 +226,7 @@ eq("File \"chn_test.res\", line 84, characters 5-12", convert(" \b\t\n\v\f\ra"),
   }
 });
 
-eq("File \"chn_test.res\", line 90, characters 5-12", convert(" \b\t\n\v\f\r\"'\\\0a"), {
+eq("File \"chn_test.res\", line 95, characters 5-12", convert(" \b\t\n\v\f\r\"'\\\0a"), {
   hd: 32,
   tl: {
     hd: 8,

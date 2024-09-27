@@ -1,7 +1,7 @@
 let generic_basename = (is_dir_sep, current_dir_name, name) => {
   let rec find_end = n =>
     if n < 0 {
-      String.sub(name, 0, 1)
+      Js.String2.substrAtMost(name, ~from=0, ~length=1)
     } else if is_dir_sep(name, n) {
       find_end(n - 1)
     } else {
@@ -9,9 +9,9 @@ let generic_basename = (is_dir_sep, current_dir_name, name) => {
     }
   and find_beg = (n, p) =>
     if n < 0 {
-      String.sub(name, 0, p)
+      Js.String2.substrAtMost(name, ~from=0, ~length=p)
     } else if is_dir_sep(name, n) {
-      String.sub(name, n + 1, p - n - 1)
+      Js.String2.substrAtMost(name, ~from=n + 1, ~length=p - n - 1)
     } else {
       find_beg(n - 1, p)
     }
@@ -19,11 +19,11 @@ let generic_basename = (is_dir_sep, current_dir_name, name) => {
   if name == "" {
     current_dir_name
   } else {
-    find_end(String.length(name) - 1)
+    find_end(Js.String2.length(name) - 1)
   }
 }
 
-let basename = generic_basename((s, i) => String.get(s, i) == '/', Filename.current_dir_name, ...)
+let basename = generic_basename((s, i) => String.get(s, i) == '/', "", ...)
 
 let suites = {
   open Mt

@@ -36,7 +36,7 @@ type rec t =
   | @as(null) Null
   | String(string)
   | Number(float)
-  | Object(Js.Dict.t<t>)
+  | Object(Js_dict.t<t>)
   | Array(array<t>)
 
 module Kind: {

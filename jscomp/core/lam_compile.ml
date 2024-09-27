@@ -446,8 +446,8 @@ and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
               (Ext_list.append b
                  [
                    S.exp
-                     (E.runtime_call Js_runtime_modules.obj_runtime
-                        "update_dummy" [ E.var id; v ]);
+                     (E.runtime_call Primitive_modules.object_
+                        "updateDummy" [ E.var id; v ]);
                  ]),
             [ S.define_variable ~kind:Variable id (E.dummy_obj tag_info) ] )
       | _ -> assert false)
@@ -1582,24 +1582,6 @@ and compile_prim (prim_info : Lam.prim_info)
                 (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)))
   | { primitive = Pjs_unsafe_downgrade _; args } ->
       assert false
-  | { primitive = Pfull_apply | Pvoid_run; args; loc } -> (
-      (* 1. uncurried call should not do eta-conversion
-            since `fn.length` will broken
-         2. invariant: `external` declaration will guarantee
-         the function application is saturated
-         3. we need a location for Pccall in the call site
-      *)
-      match args with
-      | fn :: rest ->
-          compile_lambda lambda_cxt
-            (Lam.apply fn rest
-               {
-                 ap_loc = loc;
-                 ap_inlined = Default_inline;
-                 ap_status = App_uncurry;
-               })
-      (*FIXME: should pass info down: `f a [@bs][@inlined]`*)
-      | [] -> assert false)
   | { primitive = Pjs_fn_method; args = args_lambda } -> (
       match args_lambda with
       | [ Lfunction { params; body; attr = { return_unit } } ] ->

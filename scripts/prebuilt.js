@@ -64,17 +64,10 @@ function populateLibDir() {
   const runtime_dir = path.join(jscomp_dir, "runtime");
   const others_dir = path.join(jscomp_dir, "others");
   const ocaml_dir = path.join(lib_dir, "ocaml");
-  const stdlib_dir = path.join(jscomp_dir, "stdlib-406");
 
   if (!fs.existsSync(ocaml_dir)) {
     fs.mkdirSync(ocaml_dir);
   }
-
-  installDirBy(runtime_dir, ocaml_dir, function (file) {
-    var y = path.parse(file);
-    return y.name === "js";
-  });
-
   // for merlin or other IDE
   var installed_suffixes = [
     ".ml",
@@ -86,16 +79,16 @@ function populateLibDir() {
     ".cmt",
     ".cmti",
   ];
+  installDirBy(runtime_dir, ocaml_dir, function (file) {
+    var y = path.parse(file);
+    return installed_suffixes.includes(y.ext);
+  });
   installDirBy(others_dir, ocaml_dir, file => {
     var y = path.parse(file);
     if (y.ext === ".cmi") {
       return !y.base.match(/Belt_internal/i);
     }
     return installed_suffixes.includes(y.ext) && !y.name.endsWith(".cppo");
-  });
-  installDirBy(stdlib_dir, ocaml_dir, file => {
-    var y = path.parse(file);
-    return installed_suffixes.includes(y.ext);
   });
 }
 

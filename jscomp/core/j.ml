@@ -66,7 +66,7 @@ and vident = Id of ident | Qualified of module_id * string option
    pattern match we can ignore the first one for simplicity
    for example
    {[
-     Qualified (_, Runtime, Some "caml_int_compare")
+     Qualified (_, Runtime, Some "compare")
    ]}
 *)
 

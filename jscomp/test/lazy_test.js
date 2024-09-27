@@ -3,19 +3,18 @@
 
 let Mt = require("./mt.js");
 let Lazy = require("../../lib/js/lazy.js");
-let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 let u = {
   contents: 3
 };
 
-let v = CamlinternalLazy.from_fun(() => {
+let v = Lazy.from_fun(() => {
   u.contents = 32;
 });
 
 function lazy_test() {
   let h = u.contents;
-  CamlinternalLazy.force(v);
+  Lazy.force(v);
   let g = u.contents;
   return [
     h,
@@ -27,58 +26,54 @@ let u_v = {
   contents: 0
 };
 
-let u$1 = CamlinternalLazy.from_fun(() => {
+let u$1 = Lazy.from_fun(() => {
   u_v.contents = 2;
 });
 
-CamlinternalLazy.force(u$1);
+Lazy.force(u$1);
 
-let exotic = CamlinternalLazy.force;
+let exotic = Lazy.force;
 
-let l_from_fun = CamlinternalLazy.from_fun(() => 3);
+let l_from_fun = Lazy.from_fun(() => 3);
 
-function f() {
+let forward_test = Lazy.from_fun(() => {
   let u = 3;
   u = u + 1 | 0;
   return u;
-}
+});
 
-let forward_test = CamlinternalLazy.from_fun(() => f());
+let f005 = Lazy.from_fun(() => 6);
 
-let f005 = CamlinternalLazy.from_fun(() => 6);
+let f006 = Lazy.from_fun(() => (() => 3));
 
-let f006 = CamlinternalLazy.from_fun(() => (() => 3));
-
-let f007 = CamlinternalLazy.from_fun(() => {
+let f007 = Lazy.from_fun(() => {
   throw {
     RE_EXN_ID: "Not_found",
     Error: new Error()
   };
 });
 
-function f$1() {
+let f008 = Lazy.from_fun(() => {
   console.log("hi");
   throw {
     RE_EXN_ID: "Not_found",
     Error: new Error()
   };
-}
+});
 
-let f008 = CamlinternalLazy.from_fun(() => f$1());
+let a2 = Lazy.from_val;
 
-let a2 = CamlinternalLazy.from_val;
+let a3 = Lazy.from_val(3);
 
-let a3 = CamlinternalLazy.from_val(3);
+let a4 = Lazy.from_val(3);
 
-let a4 = CamlinternalLazy.from_val(3);
+let a5 = Lazy.from_val(undefined);
 
-let a5 = CamlinternalLazy.from_val(undefined);
+let a6 = Lazy.from_val();
 
-let a6 = CamlinternalLazy.from_val();
+let a7 = Lazy.force(a5);
 
-let a7 = CamlinternalLazy.force(a5);
-
-let a8 = CamlinternalLazy.force(a6);
+let a8 = Lazy.force(a6);
 
 Mt.from_pair_suites("Lazy_test", {
   hd: [
@@ -106,7 +101,7 @@ Mt.from_pair_suites("Lazy_test", {
         "lazy_from_fun",
         () => ({
           TAG: "Eq",
-          _0: CamlinternalLazy.force(l_from_fun),
+          _0: Lazy.force(l_from_fun),
           _1: 3
         })
       ],
@@ -115,7 +110,7 @@ Mt.from_pair_suites("Lazy_test", {
           "lazy_from_val",
           () => ({
             TAG: "Eq",
-            _0: CamlinternalLazy.force(CamlinternalLazy.from_val(3)),
+            _0: Lazy.force(Lazy.from_val(3)),
             _1: 3
           })
         ],
@@ -124,7 +119,7 @@ Mt.from_pair_suites("Lazy_test", {
             "lazy_from_val2",
             () => ({
               TAG: "Eq",
-              _0: CamlinternalLazy.force(CamlinternalLazy.force(CamlinternalLazy.from_val(CamlinternalLazy.from_fun(() => 3)))),
+              _0: Lazy.force(Lazy.force(Lazy.from_val(Lazy.from_fun(() => 3)))),
               _1: 3
             })
           ],
@@ -135,7 +130,7 @@ Mt.from_pair_suites("Lazy_test", {
                 debugger;
                 return {
                   TAG: "Eq",
-                  _0: CamlinternalLazy.force(CamlinternalLazy.force(CamlinternalLazy.from_val(forward_test))),
+                  _0: Lazy.force(Lazy.force(Lazy.from_val(forward_test))),
                   _1: 4
                 };
               }
@@ -172,7 +167,7 @@ Mt.from_pair_suites("Lazy_test", {
                       "File \"lazy_test.res\", line 98, characters 7-14",
                       () => ({
                         TAG: "Ok",
-                        _0: Lazy.is_val(CamlinternalLazy.from_val(3))
+                        _0: Lazy.is_val(Lazy.from_val(3))
                       })
                     ],
                     tl: {
@@ -180,7 +175,7 @@ Mt.from_pair_suites("Lazy_test", {
                         "File \"lazy_test.res\", line 99, characters 7-14",
                         () => ({
                           TAG: "Ok",
-                          _0: !Lazy.is_val(CamlinternalLazy.from_fun(() => {
+                          _0: !Lazy.is_val(Lazy.from_fun(() => {
                             throw {
                               RE_EXN_ID: "Not_found",
                               Error: new Error()

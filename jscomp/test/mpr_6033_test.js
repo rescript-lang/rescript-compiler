@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
+let Lazy = require("../../lib/js/lazy.js");
 
 let suites = {
   contents: /* [] */0
@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -28,16 +28,16 @@ function eq(loc, x, y) {
 }
 
 function f(x) {
-  return CamlinternalLazy.force(x) + "abc";
+  return Lazy.force(x) + "abc";
 }
 
-let x = CamlinternalLazy.from_fun(() => "def");
+let x = Lazy.from_fun(() => "def");
 
-CamlinternalLazy.force(x);
+Lazy.force(x);
 
-let u = CamlinternalLazy.force(x) + "abc";
+let u = Lazy.force(x) + "abc";
 
-eq("File \"mpr_6033_test.res\", line 20, characters 3-10", u, "defabc");
+eq("File \"mpr_6033_test.res\", line 23, characters 3-10", u, "defabc");
 
 Mt.from_pair_suites("Mpr_6033_test", suites.contents);
 

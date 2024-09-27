@@ -2,14 +2,14 @@
 'use strict';
 
 let Js_exn = require("../../lib/js/js_exn.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 function test_js_error() {
   let e;
   try {
     e = JSON.parse(" {\"x\" : }");
   } catch (raw_err) {
-    let err = Caml_js_exceptions.internalToOCamlException(raw_err);
+    let err = Primitive_exceptions.internalToException(raw_err);
     if (err.RE_EXN_ID === Js_exn.$$Error) {
       console.log(err._1.stack);
       return;
@@ -23,7 +23,7 @@ function test_js_error2() {
   try {
     return JSON.parse(" {\"x\" : }");
   } catch (raw_e) {
-    let e = Caml_js_exceptions.internalToOCamlException(raw_e);
+    let e = Primitive_exceptions.internalToException(raw_e);
     if (e.RE_EXN_ID === Js_exn.$$Error) {
       console.log(e._1.stack);
       throw e;
@@ -37,7 +37,7 @@ function example1() {
   try {
     v = JSON.parse(" {\"x\"  }");
   } catch (raw_err) {
-    let err = Caml_js_exceptions.internalToOCamlException(raw_err);
+    let err = Primitive_exceptions.internalToException(raw_err);
     if (err.RE_EXN_ID === Js_exn.$$Error) {
       console.log(err._1.stack);
       return;
@@ -51,7 +51,7 @@ function example2() {
   try {
     return JSON.parse(" {\"x\"}");
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Primitive_exceptions.internalToException(raw_exn);
     if (exn.RE_EXN_ID === Js_exn.$$Error) {
       return;
     }

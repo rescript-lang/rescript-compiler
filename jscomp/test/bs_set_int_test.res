@@ -7,6 +7,7 @@ let b = (loc, v) => Mt.bool_suites(~suites, ~test_id, loc, v)
 
 module N = Belt.Set.Int
 module I = Array_data_util
+module L = Belt.List
 module A = Belt.Array
 let \"=~" = (s, i) => {
   open N
@@ -27,12 +28,12 @@ let u = {
 let () = b(__LOC__, \"=~"(u, [3]))
 
 /* inclusive */
-let range = (i, j) => Array.init(j - i + 1, k => k + i)
+let range = (i, j) => A.init(j - i + 1, k => k + i)
 
-let revRange = (i, j) => Array.of_list(List.rev(Array.to_list(Array.init(j - i + 1, k => k + i))))
+let revRange = (i, j) => L.toArray(L.reverse(L.fromArray(A.init(j - i + 1, k => k + i))))
 
 let () = {
-  let v = ofA(Array.append(range(100, 1000), revRange(400, 1500)))
+  let v = ofA(A.concat(range(100, 1000), revRange(400, 1500)))
   b(__LOC__, \"=~"(v, range(100, 1500)))
   let (l, r) = N.partition(v, x => mod(x, 3) == 0)
   let (nl, nr) = {
@@ -151,7 +152,7 @@ let () = {
   let u = N.fromArray(v)
   N.checkInvariantInternal(u)
   let firstHalf = A.slice(v, ~offset=0, ~len=2_000)
-  let xx = Belt.Array.reduce(firstHalf, u, N.remove)
+  let xx = A.reduce(firstHalf, u, N.remove)
   N.checkInvariantInternal(u)
   b(
     __LOC__,

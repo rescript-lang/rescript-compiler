@@ -1,3 +1,5 @@
+open Belt
+
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 let eq = (loc, x, y) => Mt.eq_suites(~test_id, ~suites, loc, x, y)
@@ -26,7 +28,7 @@ let () = {
 let dynamic = arr => {
   let a = []
   a->push(1, arr)
-  eq(__LOC__, a, Array.concat(list{[1], arr}))
+  eq(__LOC__, a, Array.concatMany([[1], arr]))
 }
 
 dynamic([2, 3, 4])
@@ -46,7 +48,7 @@ let () = {
 
 let dynamicNew = arr => {
   let a = newArr(1, 2, arr)
-  eq(__LOC__, a, Array.concat(list{[1, 2], arr}))
+  eq(__LOC__, a, Array.concatMany([[1, 2], arr]))
 }
 
 dynamicNew([3, 4])
@@ -96,7 +98,7 @@ module Pipe = {
   let dynamic = arr => {
     let a = []
     a->push(1, arr)
-    eq(__LOC__, a, Array.concat(list{[1], arr}))
+    eq(__LOC__, a, Array.concatMany([[1], arr]))
   }
 
   dynamic([2, 3, 4])

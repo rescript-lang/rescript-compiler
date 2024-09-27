@@ -3,7 +3,7 @@
 type u = {mutable x: int}
 
 {x: 3}.x = {
-  print_endline("hi")
+  Js.log("hi")
   2
 }
 
@@ -12,7 +12,7 @@ let f = x => {x: x}.x = x + 1
 let f = x =>
   {
     x: {
-      print_endline("hi")
+      Js.log("hi")
       x
     },
   }.x = x + 1

@@ -3,14 +3,14 @@ module rec PA: {
 } = {
   /* let () = P.print 3 */
   let print = {
-    let iter = Array.iter(P.print, ...)
+    let iter = Belt.Array.forEach(_, P.print)
     a => iter(a)
   }
 }
 and P: {
   let print: int => unit
 } = {
-  let print = i => print_endline(string_of_int(i))
+  let print = i => Js.log2("%d", i)
 }
 
 let () = PA.print([1, 2])

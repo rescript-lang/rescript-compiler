@@ -24,7 +24,6 @@ let rec struct_const ppf (cst : Lam_constant.t) =
   | Const_char i -> fprintf ppf "%s" (Ext_util.string_of_int_as_char i)
   | Const_string { s } -> fprintf ppf "%S" s
   | Const_float f -> fprintf ppf "%s" f
-  | Const_int64 n -> fprintf ppf "%LiL" n
   | Const_bigint (sign, i) -> fprintf ppf "%sn" (Bigint_utils.to_string sign i)
   | Const_pointer name -> fprintf ppf "`%s" name
   | Const_some n -> fprintf ppf "[some-c]%a" struct_const n
@@ -34,10 +33,6 @@ let rec struct_const ppf (cst : Lam_constant.t) =
         List.iter (fun sc -> fprintf ppf "@ %a" struct_const sc) scl
       in
       fprintf ppf "@[<1>[%i:@ @[%a%a@]]@]" tag struct_const sc1 sconsts scl
-  | Const_float_array [] -> fprintf ppf "[| |]"
-  | Const_float_array (f1 :: fl) ->
-      let floats ppf fl = List.iter (fun f -> fprintf ppf "@ %s" f) fl in
-      fprintf ppf "@[<1>[|@[%s%a@]|]@]" f1 floats fl
 
 (* let string_of_loc_kind (loc : Lambda.loc_kind) =
    match loc with
@@ -52,23 +47,19 @@ let primitive ppf (prim : Lam_primitive.t) =
   (* | Pcreate_exception s -> fprintf ppf "[exn-create]%S" s  *)
   | Pcreate_extension s -> fprintf ppf "[ext-create]%S" s
   | Pwrap_exn -> fprintf ppf "#exn"
-  | Pcaml_obj_length -> fprintf ppf "#obj_length"
   | Pinit_mod -> fprintf ppf "init_mod!"
   | Pupdate_mod -> fprintf ppf "update_mod!"
-  | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pjs_apply -> fprintf ppf "#apply"
   | Pjs_runtime_apply -> fprintf ppf "#runtime_apply"
   | Pjs_unsafe_downgrade { name; setter } ->
       if setter then fprintf ppf "##%s#=" name else fprintf ppf "##%s" name
-  | Pjs_function_length -> fprintf ppf "#function_length"
-  | Pvoid_run -> fprintf ppf "#run"
-  | Pfull_apply -> fprintf ppf "#full_apply"
+  | Pfn_arity -> fprintf ppf "fn.length"
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
   | Pjs_fn_make_unit -> fprintf ppf "js_fn_make_unit"
   | Pjs_fn_method -> fprintf ppf "js_fn_method"
   | Pdebugger -> fprintf ppf "debugger"
   | Praw_js_code _ -> fprintf ppf "[raw]"
-  | Pjs_typeof -> fprintf ppf "[typeof]"
+  | Ptypeof -> fprintf ppf "typeof"
   | Pnull_to_opt -> fprintf ppf "[null->opt]"
   | Pundefined_to_opt -> fprintf ppf "[undefined->opt]"
   | Pnull_undefined_to_opt -> fprintf ppf "[null/undefined->opt]"
@@ -92,13 +83,32 @@ let primitive ppf (prim : Lam_primitive.t) =
       fprintf ppf "%s%i" instr n
   | Pduprecord -> fprintf ppf "duprecord"
   | Plazyforce -> fprintf ppf "force"
-  | Pccall p -> fprintf ppf "%s" p.prim_name
   | Pjs_call { prim_name } -> fprintf ppf "%s[js]" prim_name
   | Pjs_object_create _ -> fprintf ppf "[js.obj]"
   | Praise -> fprintf ppf "raise"
+  | Pobjcomp Ceq -> fprintf ppf "=="
+  | Pobjcomp Cneq -> fprintf ppf "!="
+  | Pobjcomp Clt -> fprintf ppf "<"
+  | Pobjcomp Cle -> fprintf ppf "<="
+  | Pobjcomp Cgt -> fprintf ppf ">"
+  | Pobjcomp Cge -> fprintf ppf ">="
+  | Pobjorder -> fprintf ppf "compare"
+  | Pobjmin -> fprintf ppf "min"
+  | Pobjmax -> fprintf ppf "max"
+  | Pobjtag -> fprintf ppf "tag"
+  | Pobjsize -> fprintf ppf "length"
   | Psequand -> fprintf ppf "&&"
   | Psequor -> fprintf ppf "||"
   | Pnot -> fprintf ppf "not"
+  | Pboolcomp Ceq -> fprintf ppf "=="
+  | Pboolcomp Cneq -> fprintf ppf "!="
+  | Pboolcomp Clt -> fprintf ppf "<"
+  | Pboolcomp Cle -> fprintf ppf "<="
+  | Pboolcomp Cgt -> fprintf ppf ">"
+  | Pboolcomp Cge -> fprintf ppf ">="
+  | Pboolorder -> fprintf ppf "compare"
+  | Pboolmin -> fprintf ppf "min"
+  | Pboolmax -> fprintf ppf "max"
   | Pnegint -> fprintf ppf "~"
   | Paddint -> fprintf ppf "+"
   | Pstringadd -> fprintf ppf "+*"
@@ -118,22 +128,28 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pintcomp Cle -> fprintf ppf "<="
   | Pintcomp Cgt -> fprintf ppf ">"
   | Pintcomp Cge -> fprintf ppf ">="
+  | Pintorder -> fprintf ppf "compare"
+  | Pintmin -> fprintf ppf "min"
+  | Pintmax -> fprintf ppf "max"
   | Poffsetint n -> fprintf ppf "%i+" n
   | Poffsetref n -> fprintf ppf "+:=%i" n
   | Pintoffloat -> fprintf ppf "int_of_float"
   | Pfloatofint -> fprintf ppf "float_of_int"
   | Pnegfloat -> fprintf ppf "~."
-  (* | Pabsfloat -> fprintf ppf "abs." *)
   | Paddfloat -> fprintf ppf "+."
   | Psubfloat -> fprintf ppf "-."
   | Pmulfloat -> fprintf ppf "*."
   | Pdivfloat -> fprintf ppf "/."
+  | Pmodfloat -> fprintf ppf "mod"
   | Pfloatcomp Ceq -> fprintf ppf "==."
   | Pfloatcomp Cneq -> fprintf ppf "!=."
   | Pfloatcomp Clt -> fprintf ppf "<."
   | Pfloatcomp Cle -> fprintf ppf "<=."
   | Pfloatcomp Cgt -> fprintf ppf ">."
   | Pfloatcomp Cge -> fprintf ppf ">=."
+  | Pfloatorder -> fprintf ppf "compare"
+  | Pfloatmin -> fprintf ppf "min"
+  | Pfloatmax -> fprintf ppf "max"
   | Pnegbigint -> fprintf ppf "~"
   | Paddbigint -> fprintf ppf "+"
   | Psubbigint -> fprintf ppf "-"
@@ -152,6 +168,9 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pbigintcomp Cle -> fprintf ppf "<="
   | Pbigintcomp Cgt -> fprintf ppf ">"
   | Pbigintcomp Cge -> fprintf ppf ">="
+  | Pbigintorder -> fprintf ppf "compare"
+  | Pbigintmin -> fprintf ppf "min"
+  | Pbigintmax -> fprintf ppf "max"
   | Pjscomp Ceq -> fprintf ppf "#=="
   | Pjscomp Cneq -> fprintf ppf "#!="
   | Pjscomp Clt -> fprintf ppf "#<"
@@ -161,50 +180,31 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pstringlength -> fprintf ppf "string.length"
   | Pstringrefu -> fprintf ppf "string.unsafe_get"
   | Pstringrefs -> fprintf ppf "string.get"
-  | Pbyteslength -> fprintf ppf "bytes.length"
-  | Pbytesrefu -> fprintf ppf "bytes.unsafe_get"
-  | Pbytessetu -> fprintf ppf "bytes.unsafe_set"
-  | Pbytesrefs -> fprintf ppf "bytes.get"
-  | Pbytessets -> fprintf ppf "bytes.set"
+  | Pstringcomp Ceq -> fprintf ppf "=="
+  | Pstringcomp Cneq -> fprintf ppf "!="
+  | Pstringcomp Clt -> fprintf ppf "<"
+  | Pstringcomp Cle -> fprintf ppf "<="
+  | Pstringcomp Cgt -> fprintf ppf ">"
+  | Pstringcomp Cge -> fprintf ppf ">="
+  | Pstringorder -> fprintf ppf "compare"
+  | Pstringmin -> fprintf ppf "min"
+  | Pstringmax -> fprintf ppf "max"
   | Parraylength -> fprintf ppf "array.length"
   | Pmakearray -> fprintf ppf "makearray"
+  | Pmakelist -> fprintf ppf "makelist"
+  | Pmakedict -> fprintf ppf "makedict"
   | Parrayrefu -> fprintf ppf "array.unsafe_get"
   | Parraysetu -> fprintf ppf "array.unsafe_set"
   | Parrayrefs -> fprintf ppf "array.get"
   | Parraysets -> fprintf ppf "array.set"
-  | Pctconst c ->
-      let const_name =
-        match c with
-        | Big_endian -> "big_endian"
-        | Ostype_unix -> "ostype_unix"
-        | Ostype_win32 -> "ostype_win32"
-        | Ostype -> "ostype"
-        | Backend_type -> "backend_type"
-      in
-      fprintf ppf "sys.constant_%s" const_name
   | Pisint -> fprintf ppf "isint"
   | Pis_poly_var_block -> fprintf ppf "#is_poly_var_block"
   | Pisout i -> fprintf ppf "isout %d" i
-  | Pint64ofint -> fprintf ppf "of_int"
-  | Pintofint64 -> fprintf ppf "to_int"
-  | Pnegint64 -> fprintf ppf "neg64"
-  | Paddint64 -> fprintf ppf "add64"
-  | Psubint64 -> fprintf ppf "sub64"
-  | Pmulint64 -> fprintf ppf "mul64"
-  | Pdivint64 -> fprintf ppf "div64"
-  | Pmodint64 -> fprintf ppf "mod64"
-  | Pandint64 -> fprintf ppf "and64"
-  | Porint64 -> fprintf ppf "or64"
-  | Pxorint64 -> fprintf ppf "xor64"
-  | Plslint64 -> fprintf ppf "lsl64"
-  | Plsrint64 -> fprintf ppf "lsr64"
-  | Pasrint64 -> fprintf ppf "asr64"
-  | Pint64comp Ceq -> fprintf ppf "=="
-  | Pint64comp Cneq -> fprintf ppf "!="
-  | Pint64comp Clt -> fprintf ppf "<"
-  | Pint64comp Cgt -> fprintf ppf ">"
-  | Pint64comp Cle -> fprintf ppf "<="
-  | Pint64comp Cge -> fprintf ppf ">="
+  | Pawait -> fprintf ppf "await"
+  | Phash -> fprintf ppf "hash"
+  | Phash_mixint -> fprintf ppf "hash_mix_int"
+  | Phash_mixstring -> fprintf ppf "hash_mix_string"
+  | Phash_finalmix -> fprintf ppf "hash_final_mix"
 
 type print_kind = Alias | Strict | StrictOpt | Variable | Recursive
 

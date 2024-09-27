@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -36,9 +36,9 @@ let u = {
   b: u_b
 };
 
-let A = /* @__PURE__ */Caml_exceptions.create("Record_debug_test.A");
+let A = /* @__PURE__ */Primitive_exceptions.create("Record_debug_test.A");
 
-let B = /* @__PURE__ */Caml_exceptions.create("Record_debug_test.B");
+let B = /* @__PURE__ */Primitive_exceptions.create("Record_debug_test.B");
 
 let v0 = {
   RE_EXN_ID: A,

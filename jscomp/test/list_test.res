@@ -1,5 +1,8 @@
+open Belt
+
 let list_suites = {
   open Mt
+  let eq = (a, b) => a == b
   list{
     ("length", _ => Eq(1, List.length(list{(0, 1, 2, 3, 4)})) /* This is tuple haha */),
     ("length2", _ => Eq(5, List.length(list{0, 1, 2, 3, 4})) /* This is tuple haha */),
@@ -7,19 +10,19 @@ let list_suites = {
       "long_length",
       _ => {
         let v = 30_000
-        Eq(v, List.length(Array.to_list(Array.init(v, _ => 0))))
+        Eq(v, List.length(List.fromArray(Array.init(v, _ => 0))))
       },
     ),
     (
       "sort",
       _ => Eq(
-        List.sort((x: int, y) => Pervasives.compare(x, y), list{4, 1, 2, 3}),
+        list{4, 1, 2, 3}->List.sort((x: int, y) => Pervasives.compare(x, y)),
         list{1, 2, 3, 4},
       ),
     ),
-    (__LOC__, _ => Eq(true, List.mem(3, list{1, 2, 3}))),
-    (__LOC__, _ => Eq(false, List.mem(4, list{1, 2, 3}))),
-    (__LOC__, _ => Eq(9, List.assoc(4, list{(1, 2), (4, 9)}))),
+    (__LOC__, _ => Eq(true, List.has(list{1, 2, 3}, 3, eq))),
+    (__LOC__, _ => Eq(false, List.has(list{1, 2, 3}, 4, eq))),
+    (__LOC__, _ => Eq(Some(9), List.getAssoc(list{(1, 2), (4, 9)}, 4, eq))),
   }
 }
 

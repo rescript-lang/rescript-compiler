@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let suites = {
   contents: /* [] */0
@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -40,10 +40,10 @@ function g() {
     }
     return i + 1 | 0;
   };
-  Caml_obj.update_dummy(v, {
+  Primitive_object.updateDummy(v, {
     contents: next
   });
-  console.log(String(next(0, true)));
+  console.log(next(0, true).toString());
 }
 
 g();
@@ -52,17 +52,17 @@ let x = {};
 
 let y = {};
 
-Caml_obj.update_dummy(x, {
+Primitive_object.updateDummy(x, {
   hd: 1,
   tl: y
 });
 
-Caml_obj.update_dummy(y, {
+Primitive_object.updateDummy(y, {
   hd: 2,
   tl: x
 });
 
-eq("File \"rec_fun_test.res\", line 29, characters 3-10", called.contents, 2);
+eq("File \"rec_fun_test.res\", line 32, characters 3-10", called.contents, 2);
 
 Mt.from_pair_suites("Rec_fun_test", suites.contents);
 

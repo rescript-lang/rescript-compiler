@@ -3,7 +3,7 @@
 import * as Belt_List from "rescript/lib/es6/belt_List.js";
 import * as Belt_Array from "rescript/lib/es6/belt_Array.js";
 import * as Belt_Option from "rescript/lib/es6/belt_Option.js";
-import * as Caml_option from "rescript/lib/es6/caml_option.js";
+import * as Primitive_option from "rescript/lib/es6/primitive_option.js";
 
 function computeArea(param) {
   return Math.imul(Math.imul(param.x, param.y), Belt_Option.mapWithDefault(param.z, 1, n => n));
@@ -63,7 +63,7 @@ function getPayloadRecordPlusOne(param) {
 }
 
 function findAddress2(business) {
-  return Belt_Option.mapWithDefault(Caml_option.nullable_to_opt(business.address2), /* [] */0, a => ({
+  return Belt_Option.mapWithDefault(Primitive_option.fromNullable(business.address2), /* [] */0, a => ({
     hd: a,
     tl: /* [] */0
   }));
@@ -80,7 +80,7 @@ let someBusiness2 = {
 };
 
 function computeArea3(o) {
-  return Math.imul(Math.imul(o.x, o.y), Belt_Option.mapWithDefault(Caml_option.nullable_to_opt(o.z), 1, n => n));
+  return Math.imul(Math.imul(o.x, o.y), Belt_Option.mapWithDefault(Primitive_option.fromNullable(o.z), 1, n => n));
 }
 
 function computeArea4(o) {

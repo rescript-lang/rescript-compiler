@@ -37,6 +37,6 @@ let f = () => {
   module Array = Int32Array
   let v = Array.create(32)
 
-  v[0] = 3
-  v[0]
+  Int32Array.set(v, 0, 3)
+  Int32Array.get(v, 0)
 }

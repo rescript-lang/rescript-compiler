@@ -189,31 +189,6 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
               Lam.const (Const_string { s = l_s^r_s; unicode = false })
           end
       end
-
-    | Lprim {primitive = (Pstringrefu|Pstringrefs) as primitive ; 
-             args = [l;r] ; loc 
-            } ->  (* TODO: introudce new constant *)
-      let l' = simplif l in 
-      let r' = simplif r in 
-      let opt_l =
-        match l' with 
-        | Lconst (Const_string { s = ls; unicode = false }) -> 
-          Some ls 
-        | Lvar i -> Hash_ident.find_opt string_table i 
-        | _ -> None in 
-      begin match opt_l with 
-        | None -> Lam.prim ~primitive ~args:[l';r'] loc 
-        | Some l_s -> 
-          match r with 
-          |Lconst((Const_int {i})) -> 
-            let i = Int32.to_int i in
-            if i < String.length l_s && i >= 0  then
-              Lam.const ((Const_char (Char.code l_s.[i])))
-            else 
-              Lam.prim ~primitive ~args:[l';r'] loc 
-          | _ -> 
-            Lam.prim ~primitive ~args:[l';r'] loc 
-      end    
     | Lglobal_module _ -> lam    
     | Lprim {primitive; args; loc} 
       -> Lam.prim ~primitive ~args:(Ext_list.map args simplif) loc

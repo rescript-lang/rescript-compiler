@@ -2,8 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -17,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -28,18 +27,18 @@ function eq(loc, x, y) {
   };
 }
 
-let A = /* @__PURE__ */Caml_exceptions.create("Exception_rebound_err_test.A");
+let A = /* @__PURE__ */Primitive_exceptions.create("Exception_rebound_err_test.A");
 
-let B = /* @__PURE__ */Caml_exceptions.create("Exception_rebound_err_test.B");
+let B = /* @__PURE__ */Primitive_exceptions.create("Exception_rebound_err_test.B");
 
-let C = /* @__PURE__ */Caml_exceptions.create("Exception_rebound_err_test.C");
+let C = /* @__PURE__ */Primitive_exceptions.create("Exception_rebound_err_test.C");
 
 function test_js_error4() {
   try {
     JSON.parse(" {\"x\"}");
     return 1;
   } catch (raw_e) {
-    let e = Caml_js_exceptions.internalToOCamlException(raw_e);
+    let e = Primitive_exceptions.internalToException(raw_e);
     if (e.RE_EXN_ID === "Not_found") {
       return 2;
     }
@@ -66,7 +65,7 @@ function f(g) {
   try {
     return g();
   } catch (raw_exn) {
-    let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+    let exn = Primitive_exceptions.internalToException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
       return 1;
     }
@@ -74,7 +73,7 @@ function f(g) {
   }
 }
 
-eq("File \"exception_rebound_err_test.res\", line 31, characters 3-10", test_js_error4(), 7);
+eq("File \"exception_rebound_err_test.res\", line 34, characters 3-10", test_js_error4(), 7);
 
 Mt.from_pair_suites("Exception_rebound_err_test", suites.contents);
 

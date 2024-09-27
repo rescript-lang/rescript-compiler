@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -46,12 +46,12 @@ function f(check) {
   }
 }
 
-eq("File \"gpr_904_test.res\", line 16, characters 12-19", f({
+eq("File \"gpr_904_test.res\", line 19, characters 12-19", f({
   x: true,
   y: false
 }), false);
 
-eq("File \"gpr_904_test.res\", line 18, characters 12-19", check_healty({
+eq("File \"gpr_904_test.res\", line 21, characters 12-19", check_healty({
   a: false,
   b: false,
   c: true

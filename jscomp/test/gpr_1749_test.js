@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -26,7 +26,7 @@ function eq(loc, x, y) {
   };
 }
 
-eq("File \"gpr_1749_test.res\", line 15, characters 3-10", 0, 0);
+eq("File \"gpr_1749_test.res\", line 18, characters 3-10", 0, 0);
 
 Mt.from_pair_suites("Gpr_1749_test", suites.contents);
 

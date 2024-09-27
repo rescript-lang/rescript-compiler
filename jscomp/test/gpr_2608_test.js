@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let List = require("../../lib/js/list.js");
+let Belt_List = require("../../lib/js/belt_List.js");
 
 let suites = {
   contents: /* [] */0
@@ -23,21 +23,21 @@ let oppHeroes = {
 
 let huntGrootCondition = false;
 
-if (List.length(/* [] */0) > 0) {
-  let x = List.filter(h => List.hd(/* [] */0) <= 1000, oppHeroes);
-  huntGrootCondition = List.length(x) === 0;
+if (Belt_List.length(/* [] */0) > 0) {
+  let x = Belt_List.filter(oppHeroes, h => Belt_List.headExn(/* [] */0) <= 1000);
+  huntGrootCondition = Belt_List.length(x) === 0;
 }
 
 let huntGrootCondition2 = true;
 
-if (List.length(/* [] */0) < 0) {
-  let x$1 = List.filter(h => List.hd(/* [] */0) <= 1000, oppHeroes);
-  huntGrootCondition2 = List.length(x$1) === 0;
+if (Belt_List.length(/* [] */0) < 0) {
+  let x$1 = Belt_List.filter(oppHeroes, h => Belt_List.headExn(/* [] */0) <= 1000);
+  huntGrootCondition2 = Belt_List.length(x$1) === 0;
 }
 
-eq("File \"gpr_2608_test.res\", line 21, characters 5-12", huntGrootCondition, false);
+eq("File \"gpr_2608_test.res\", line 23, characters 5-12", huntGrootCondition, false);
 
-eq("File \"gpr_2608_test.res\", line 22, characters 5-12", huntGrootCondition2, true);
+eq("File \"gpr_2608_test.res\", line 24, characters 5-12", huntGrootCondition2, true);
 
 Mt.from_pair_suites("Gpr_2608_test", suites.contents);
 

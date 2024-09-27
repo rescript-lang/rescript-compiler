@@ -207,7 +207,7 @@ let suites_1 = {
                               foo: "43",
                               bar: "86"
                             },
-                            _1: Js_dict.map(i => String(i), {
+                            _1: Js_dict.map(i => i.toString(), {
                               foo: 43,
                               bar: 86
                             })

@@ -1,5 +1,15 @@
 @@config({flags: ["-w", "a", "-bs-no-bin-annot"]})
 
+open Belt
+
+module Random = {
+  let self_init = () => ()
+
+  let int: int => int = %raw(`(max) => {
+    return ((Math.random() * 100) | 0) % max;
+  }`)
+}
+
 module Actors: {
   type dir_1d = Left | Right
   type dir_2d = North | South | East | West
@@ -1101,7 +1111,7 @@ module Object: {
   let update_player = (player, keys, context) => {
     let prev_jumping = player.jumping
     let prev_dir = player.dir and prev_vx = abs_float(player.vel.x)
-    List.iter(update_player_keys(player, ...), keys)
+    keys->List.forEach(update_player_keys(player, ...))
     let v = player.vel.x *. friction
     let vel_damped = if abs_float(v) < 0.1 {
       0.
@@ -1426,7 +1436,7 @@ module Draw: {
     let (dx, dy) = (posx, posy)
     let (dw, dh) = sprite.params.frame_size
     let sx = sx +. float_of_int(sprite.frame.contents) *. sw
-    /* print_endline (string_of_int !(sprite.frame)); */
+    /* Js.log(sprite.frame) */
     /* context##clearRect(0.,0.,sw, sh); */
     context["drawImage"](sprite.img, sx, sy, sw, sh, dx, dy, dw, dh)
   }
@@ -1450,8 +1460,8 @@ module Draw: {
 
   /* Displays the text for score and coins. */
   let hud = (canvas, score, coins) => {
-    let score_string = string_of_int(score)
-    let coin_string = string_of_int(coins)
+    let score_string = Js.Int.toString(score)
+    let coin_string = Js.Int.toString(coins)
     let canvas = Dom_html.canvasElementToJsObj(canvas)
     let context = Dom_html.canvasRenderingContext2DToJsObj(canvas["getContext"]("2d"))
     \"@@"(ignore, context["font"] = "10px 'Press Start 2P'")
@@ -1464,7 +1474,7 @@ module Draw: {
 
   /* Displays the fps. */
   let fps = (canvas, fps_val) => {
-    let fps_str = string_of_int(int_of_float(fps_val))
+    let fps_str = fps_val->Js.Float.toFixed
     let canvas = Dom_html.canvasElementToJsObj(canvas)
     let context = Dom_html.canvasRenderingContext2DToJsObj(canvas["getContext"]("2d"))
     \"@@"(ignore, context["fillText"](fps_str, 10., 18.))
@@ -1741,16 +1751,12 @@ module Director: {
   let obj_at_pos = (dir, pos: xy, collids: list<Object.collidable>): list<Object.collidable> =>
     switch dir {
     | Left =>
-      List.filter(
-        (col: Object.collidable) =>
-          get_obj(col).pos.y == pos.y && get_obj(col).pos.x == pos.x -. 16.,
-        collids,
+      collids->List.filter((col: Object.collidable) =>
+        get_obj(col).pos.y == pos.y && get_obj(col).pos.x == pos.x -. 16.
       )
     | _ =>
-      List.filter(
-        (col: Object.collidable) =>
-          get_obj(col).pos.y == pos.y && get_obj(col).pos.x == pos.x +. 16.,
-        collids,
+      collids->List.filter((col: Object.collidable) =>
+        get_obj(col).pos.y == pos.y && get_obj(col).pos.x == pos.x +. 16.
       )
     }
 
@@ -1886,12 +1892,10 @@ module Director: {
   /* Run the broad phase object filtering */
   let broad_phase = (collid, all_collids, state) => {
     let obj = get_obj(collid)
-    List.filter(
-      c =>
-        in_viewport(state.vpt, obj.pos) ||
-        (is_player(collid) ||
-        out_of_viewport_below(state.vpt, obj.pos.y)),
-      all_collids,
+    all_collids->List.filter(c =>
+      in_viewport(state.vpt, obj.pos) ||
+      (is_player(collid) ||
+      out_of_viewport_below(state.vpt, obj.pos.y))
     )
   }
 
@@ -1999,13 +2003,13 @@ module Director: {
   let translate_keys = () => {
     let k = pressed_keys
     let ctrls = list{(k.left, CLeft), (k.right, CRight), (k.up, CUp), (k.down, CDown)}
-    List.fold_left((a, x) =>
+    ctrls->List.reduceReverse(list{}, (a, x) =>
       if fst(x) {
         list{snd(x), ...a}
       } else {
         a
       }
-    , list{}, ctrls)
+    )
   }
 
   /* run_update is used to update all of the collidables at once. Primarily used
@@ -2096,8 +2100,8 @@ module Director: {
             ...state,
             vpt: Viewport.update(state.vpt, get_obj(player).pos),
           }
-          List.iter(obj => ignore(run_update_collid(state, obj, objs)), objs)
-          List.iter(part => run_update_particle(state, part), parts)
+          objs->List.forEach(obj => ignore(run_update_collid(state, obj, objs)))
+          parts->List.forEach(part => run_update_particle(state, part))
           Draw.fps(canvas, fps)
           Draw.hud(canvas, state.score, state.coins)
           \"@@"(
@@ -2600,7 +2604,7 @@ module Main = {
       Pg.generate(level_width, level_height, context),
       (level_width, level_height),
     )
-    print_endline("asd")
+    Js.log("asd")
     ()
   }
 
@@ -2617,7 +2621,7 @@ module Main = {
   let preload = _ => {
     let root_dir = "sprites/"
     let imgs = list{"blocks.png", "items.png", "enemies.png", "mario-small.png"}
-    List.map(img_src => {
+    imgs->List.map(img_src => {
       let img_src = root_dir ++ img_src
       let img = Html.createImg(Dom_html.document)
       Dom_html.imageElementToJsObj(img)["src"] = img_src
@@ -2632,7 +2636,7 @@ module Main = {
           true,
         ),
       )
-    }, imgs)
+    })
   }
 
   let _ = Dom_html.windowToJsObj(Dom_html.window)["onload"] = _ => {

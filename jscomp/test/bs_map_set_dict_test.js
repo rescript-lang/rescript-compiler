@@ -2,12 +2,12 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
 let Belt_Map = require("../../lib/js/belt_Map.js");
 let Belt_List = require("../../lib/js/belt_List.js");
 let Belt_Array = require("../../lib/js/belt_Array.js");
 let Belt_MapDict = require("../../lib/js/belt_MapDict.js");
 let Belt_SetDict = require("../../lib/js/belt_SetDict.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
 let Array_data_util = require("./array_data_util.js");
 
 let suites = {
@@ -27,15 +27,15 @@ function b(loc, v) {
 }
 
 let Icmp = {
-  cmp: Caml.int_compare
+  cmp: Primitive_int.compare
 };
 
 let Icmp2 = {
-  cmp: Caml.int_compare
+  cmp: Primitive_int.compare
 };
 
 let Ic3 = {
-  cmp: Caml.int_compare
+  cmp: Primitive_int.compare
 };
 
 let m0_cmp = Icmp.cmp;
@@ -53,7 +53,7 @@ let m00 = {
 };
 
 let I2 = {
-  cmp: (x, y) => Caml.int_compare(y, x)
+  cmp: (x, y) => Primitive_int.compare(y, x)
 };
 
 let m_cmp = Icmp2.cmp;

@@ -14,10 +14,10 @@ let N = {
   s: s
 };
 
-let v0 = "x".length;
+let v0 = s.length("x");
 
 function v(x) {
-  return x.length;
+  return s.length(x);
 }
 
 let suites_0 = [
@@ -53,4 +53,4 @@ exports.N = N;
 exports.v0 = v0;
 exports.v = v;
 exports.suites = suites;
-/*  Not a pure module */
+/* v0 Not a pure module */

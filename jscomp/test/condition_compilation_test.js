@@ -23,7 +23,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -34,9 +34,9 @@ function eq(loc, x, y) {
   };
 }
 
-eq("File \"condition_compilation_test.res\", line 60, characters 5-12", 3, 3);
+eq("File \"condition_compilation_test.res\", line 63, characters 5-12", 3, 3);
 
-eq("File \"condition_compilation_test.res\", line 61, characters 5-12", v.contents, 2);
+eq("File \"condition_compilation_test.res\", line 64, characters 5-12", v.contents, 2);
 
 Mt.from_pair_suites("Condition_compilation_test", suites.contents);
 

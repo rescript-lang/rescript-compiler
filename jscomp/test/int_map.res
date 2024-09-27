@@ -1,4 +1,7 @@
-include Map.Make({
+module IntCmp = Belt.Id.MakeComparable({
   type t = int
-  let compare = (x: int, y) => compare(x, y)
+  let cmp = (a, b) => Pervasives.compare(a, b)
 })
+
+let m = Belt.Map.make(~id=module(IntCmp))
+let m = m->Belt.Map.set(0, "test")

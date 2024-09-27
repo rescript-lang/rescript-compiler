@@ -64,21 +64,21 @@ type variantWithPayloads =
 let printVariantWithPayloads = x =>
   switch x {
   | A => Js.log2("printVariantWithPayloads", "A")
-  | B(x) => Js.log2("printVariantWithPayloads", "B(" ++ (string_of_int(x) ++ ")"))
+  | B(x) => Js.log2("printVariantWithPayloads", "B(" ++ (Belt.Int.toString(x) ++ ")"))
   | C(x, y) =>
     Js.log2(
       "printVariantWithPayloads",
-      "C(" ++ (string_of_int(x) ++ (", " ++ (string_of_int(y) ++ ")"))),
+      "C(" ++ (Belt.Int.toString(x) ++ (", " ++ (Belt.Int.toString(y) ++ ")"))),
     )
   | D((x, y)) =>
     Js.log2(
       "printVariantWithPayloads",
-      "D((" ++ (string_of_int(x) ++ (", " ++ (string_of_int(y) ++ "))"))),
+      "D((" ++ (Belt.Int.toString(x) ++ (", " ++ (Belt.Int.toString(y) ++ "))"))),
     )
   | E(x, s, y) =>
     Js.log2(
       "printVariantWithPayloads",
-      "E(" ++ (string_of_int(x) ++ (", " ++ (s ++ (", " ++ (string_of_int(y) ++ ")"))))),
+      "E(" ++ (Belt.Int.toString(x) ++ (", " ++ (s ++ (", " ++ (Belt.Int.toString(y) ++ ")"))))),
     )
   }
 

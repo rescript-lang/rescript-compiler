@@ -2,15 +2,15 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
-let Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let function_equal_test;
 
 try {
-  function_equal_test = Caml_obj.equal(x => x + 1 | 0, x => x + 2 | 0);
+  function_equal_test = Primitive_object.equal(x => x + 1 | 0, x => x + 2 | 0);
 } catch (raw_exn) {
-  let exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+  let exn = Primitive_exceptions.internalToException(raw_exn);
   function_equal_test = exn.RE_EXN_ID === "Invalid_argument" && exn._1 === "equal: functional value" ? true : false;
 }
 
@@ -21,7 +21,7 @@ let suites = {
       () => ({
         TAG: "Eq",
         _0: true,
-        _1: Caml_obj.lessthan(undefined, 1)
+        _1: Primitive_object.lessthan(undefined, 1)
       })
     ],
     tl: {
@@ -30,7 +30,7 @@ let suites = {
         () => ({
           TAG: "Eq",
           _0: true,
-          _1: Caml_obj.lessthan(1, 2)
+          _1: Primitive_object.lessthan(1, 2)
         })
       ],
       tl: {
@@ -39,7 +39,7 @@ let suites = {
           () => ({
             TAG: "Eq",
             _0: true,
-            _1: Caml_obj.greaterthan({
+            _1: Primitive_object.greaterthan({
               hd: 1,
               tl: /* [] */0
             }, /* [] */0)
@@ -51,7 +51,7 @@ let suites = {
             () => ({
               TAG: "Eq",
               _0: true,
-              _1: Caml_obj.equal({
+              _1: Primitive_object.equal({
                 hd: 1,
                 tl: {
                   hd: 2,
@@ -78,7 +78,7 @@ let suites = {
               () => ({
                 TAG: "Eq",
                 _0: true,
-                _1: Caml_obj.greaterthan({
+                _1: Primitive_object.greaterthan({
                   hd: 1,
                   tl: {
                     hd: 2,
@@ -105,7 +105,7 @@ let suites = {
                 () => ({
                   TAG: "Eq",
                   _0: true,
-                  _1: Caml_obj.greaterthan([
+                  _1: Primitive_object.greaterthan([
                     {
                       TAG: "A",
                       _0: 3
@@ -142,7 +142,7 @@ let suites = {
                   () => ({
                     TAG: "Eq",
                     _0: true,
-                    _1: Caml_obj.equal([
+                    _1: Primitive_object.equal([
                       {
                         TAG: "A",
                         _0: 3
@@ -188,7 +188,7 @@ let suites = {
                       () => ({
                         TAG: "Eq",
                         _0: true,
-                        _1: Caml_obj.lessthan(undefined, 1)
+                        _1: Primitive_object.lessthan(undefined, 1)
                       })
                     ],
                     tl: {
@@ -197,7 +197,7 @@ let suites = {
                         () => ({
                           TAG: "Eq",
                           _0: true,
-                          _1: Caml_obj.lessthan(undefined, [
+                          _1: Primitive_object.lessthan(undefined, [
                             1,
                             30
                           ])
@@ -209,7 +209,7 @@ let suites = {
                           () => ({
                             TAG: "Eq",
                             _0: true,
-                            _1: Caml_obj.greaterthan([
+                            _1: Primitive_object.greaterthan([
                               1,
                               30
                             ], undefined)
@@ -221,7 +221,7 @@ let suites = {
                             () => ({
                               TAG: "Eq",
                               _0: true,
-                              _1: Caml_obj.lessthan({
+                              _1: Primitive_object.lessthan({
                                 hd: 2,
                                 tl: {
                                   hd: 6,
@@ -287,7 +287,7 @@ let suites = {
                               () => ({
                                 TAG: "Eq",
                                 _0: true,
-                                _1: Caml_obj.lessthan({
+                                _1: Primitive_object.lessthan({
                                   hd: 1,
                                   tl: /* [] */0
                                 }, {
@@ -305,7 +305,7 @@ let suites = {
                                 () => ({
                                   TAG: "Eq",
                                   _0: true,
-                                  _1: Caml_obj.lessthan(/* [] */0, {
+                                  _1: Primitive_object.lessthan(/* [] */0, {
                                     hd: 409,
                                     tl: /* [] */0
                                   })
@@ -317,7 +317,7 @@ let suites = {
                                   () => ({
                                     TAG: "Eq",
                                     _0: true,
-                                    _1: Caml_obj.greaterthan({
+                                    _1: Primitive_object.greaterthan({
                                       hd: 2,
                                       tl: {
                                         hd: 6,
@@ -401,7 +401,7 @@ let suites = {
                                         () => ({
                                           TAG: "Eq",
                                           _0: false,
-                                          _1: Caml_obj.equal({
+                                          _1: Primitive_object.equal({
                                             hd: 2,
                                             tl: {
                                               hd: 6,
@@ -467,7 +467,7 @@ let suites = {
                                           () => ({
                                             TAG: "Eq",
                                             _0: false,
-                                            _1: Caml_obj.equal({
+                                            _1: Primitive_object.equal({
                                               hd: 2,
                                               tl: {
                                                 hd: 6,
@@ -532,7 +532,7 @@ let suites = {
                                             "cmp_id",
                                             () => ({
                                               TAG: "Eq",
-                                              _0: Caml_obj.compare({
+                                              _0: Primitive_object.compare({
                                                 x: 1,
                                                 y: 2
                                               }, {
@@ -547,7 +547,7 @@ let suites = {
                                               "cmp_val",
                                               () => ({
                                                 TAG: "Eq",
-                                                _0: Caml_obj.compare({
+                                                _0: Primitive_object.compare({
                                                   x: 1
                                                 }, {
                                                   x: 2
@@ -560,7 +560,7 @@ let suites = {
                                                 "cmp_val2",
                                                 () => ({
                                                   TAG: "Eq",
-                                                  _0: Caml_obj.compare({
+                                                  _0: Primitive_object.compare({
                                                     x: 2
                                                   }, {
                                                     x: 1
@@ -573,7 +573,7 @@ let suites = {
                                                   "cmp_empty",
                                                   () => ({
                                                     TAG: "Eq",
-                                                    _0: Caml_obj.compare({}, {}),
+                                                    _0: Primitive_object.compare({}, {}),
                                                     _1: 0
                                                   })
                                                 ],
@@ -582,7 +582,7 @@ let suites = {
                                                     "cmp_empty2",
                                                     () => ({
                                                       TAG: "Eq",
-                                                      _0: Caml_obj.compare({}, {x:1}),
+                                                      _0: Primitive_object.compare({}, {x:1}),
                                                       _1: -1
                                                     })
                                                   ],
@@ -591,7 +591,7 @@ let suites = {
                                                       "cmp_swap",
                                                       () => ({
                                                         TAG: "Eq",
-                                                        _0: Caml_obj.compare({
+                                                        _0: Primitive_object.compare({
                                                           x: 1,
                                                           y: 2
                                                         }, {
@@ -606,7 +606,7 @@ let suites = {
                                                         "cmp_size",
                                                         () => ({
                                                           TAG: "Eq",
-                                                          _0: Caml_obj.compare({x:1}, {x:1, y:2}),
+                                                          _0: Primitive_object.compare({x:1}, {x:1, y:2}),
                                                           _1: -1
                                                         })
                                                       ],
@@ -615,7 +615,7 @@ let suites = {
                                                           "cmp_size2",
                                                           () => ({
                                                             TAG: "Eq",
-                                                            _0: Caml_obj.compare({x:1, y:2}, {x:1}),
+                                                            _0: Primitive_object.compare({x:1, y:2}, {x:1}),
                                                             _1: 1
                                                           })
                                                         ],
@@ -624,7 +624,7 @@ let suites = {
                                                             "cmp_order",
                                                             () => ({
                                                               TAG: "Eq",
-                                                              _0: Caml_obj.compare({
+                                                              _0: Primitive_object.compare({
                                                                 x: 0,
                                                                 y: 1
                                                               }, {
@@ -639,7 +639,7 @@ let suites = {
                                                               "cmp_order2",
                                                               () => ({
                                                                 TAG: "Eq",
-                                                                _0: Caml_obj.compare({
+                                                                _0: Primitive_object.compare({
                                                                   x: 1,
                                                                   y: 0
                                                                 }, {
@@ -654,7 +654,7 @@ let suites = {
                                                                 "cmp_in_list",
                                                                 () => ({
                                                                   TAG: "Eq",
-                                                                  _0: Caml_obj.compare({
+                                                                  _0: Primitive_object.compare({
                                                                     hd: {
                                                                       x: 1
                                                                     },
@@ -673,7 +673,7 @@ let suites = {
                                                                   "cmp_in_list2",
                                                                   () => ({
                                                                     TAG: "Eq",
-                                                                    _0: Caml_obj.compare({
+                                                                    _0: Primitive_object.compare({
                                                                       hd: {
                                                                         x: 2
                                                                       },
@@ -692,7 +692,7 @@ let suites = {
                                                                     "cmp_with_list",
                                                                     () => ({
                                                                       TAG: "Eq",
-                                                                      _0: Caml_obj.compare({
+                                                                      _0: Primitive_object.compare({
                                                                         x: {
                                                                           hd: 0,
                                                                           tl: /* [] */0
@@ -711,7 +711,7 @@ let suites = {
                                                                       "cmp_with_list2",
                                                                       () => ({
                                                                         TAG: "Eq",
-                                                                        _0: Caml_obj.compare({
+                                                                        _0: Primitive_object.compare({
                                                                           x: {
                                                                             hd: 1,
                                                                             tl: /* [] */0
@@ -730,7 +730,7 @@ let suites = {
                                                                         "eq_id",
                                                                         () => ({
                                                                           TAG: "Ok",
-                                                                          _0: Caml_obj.equal({
+                                                                          _0: Primitive_object.equal({
                                                                             x: 1,
                                                                             y: 2
                                                                           }, {
@@ -744,7 +744,7 @@ let suites = {
                                                                           "eq_val",
                                                                           () => ({
                                                                             TAG: "Eq",
-                                                                            _0: Caml_obj.equal({
+                                                                            _0: Primitive_object.equal({
                                                                               x: 1
                                                                             }, {
                                                                               x: 2
@@ -757,7 +757,7 @@ let suites = {
                                                                             "eq_val2",
                                                                             () => ({
                                                                               TAG: "Eq",
-                                                                              _0: Caml_obj.equal({
+                                                                              _0: Primitive_object.equal({
                                                                                 x: 2
                                                                               }, {
                                                                                 x: 1
@@ -770,7 +770,7 @@ let suites = {
                                                                               "eq_empty",
                                                                               () => ({
                                                                                 TAG: "Eq",
-                                                                                _0: Caml_obj.equal({}, {}),
+                                                                                _0: Primitive_object.equal({}, {}),
                                                                                 _1: true
                                                                               })
                                                                             ],
@@ -779,7 +779,7 @@ let suites = {
                                                                                 "eq_empty2",
                                                                                 () => ({
                                                                                   TAG: "Eq",
-                                                                                  _0: Caml_obj.equal({}, {x:1}),
+                                                                                  _0: Primitive_object.equal({}, {x:1}),
                                                                                   _1: false
                                                                                 })
                                                                               ],
@@ -788,7 +788,7 @@ let suites = {
                                                                                   "eq_swap",
                                                                                   () => ({
                                                                                     TAG: "Ok",
-                                                                                    _0: Caml_obj.equal({
+                                                                                    _0: Primitive_object.equal({
                                                                                       x: 1,
                                                                                       y: 2
                                                                                     }, {
@@ -802,7 +802,7 @@ let suites = {
                                                                                     "eq_size",
                                                                                     () => ({
                                                                                       TAG: "Eq",
-                                                                                      _0: Caml_obj.equal({x:1}, {x:1, y:2}),
+                                                                                      _0: Primitive_object.equal({x:1}, {x:1, y:2}),
                                                                                       _1: false
                                                                                     })
                                                                                   ],
@@ -811,7 +811,7 @@ let suites = {
                                                                                       "eq_size2",
                                                                                       () => ({
                                                                                         TAG: "Eq",
-                                                                                        _0: Caml_obj.equal({x:1, y:2}, {x:1}),
+                                                                                        _0: Primitive_object.equal({x:1, y:2}, {x:1}),
                                                                                         _1: false
                                                                                       })
                                                                                     ],
@@ -820,7 +820,7 @@ let suites = {
                                                                                         "eq_in_list",
                                                                                         () => ({
                                                                                           TAG: "Eq",
-                                                                                          _0: Caml_obj.equal({
+                                                                                          _0: Primitive_object.equal({
                                                                                             hd: {
                                                                                               x: 1
                                                                                             },
@@ -839,7 +839,7 @@ let suites = {
                                                                                           "eq_in_list2",
                                                                                           () => ({
                                                                                             TAG: "Eq",
-                                                                                            _0: Caml_obj.equal({
+                                                                                            _0: Primitive_object.equal({
                                                                                               hd: {
                                                                                                 x: 2
                                                                                               },
@@ -858,7 +858,7 @@ let suites = {
                                                                                             "eq_with_list",
                                                                                             () => ({
                                                                                               TAG: "Eq",
-                                                                                              _0: Caml_obj.equal({
+                                                                                              _0: Primitive_object.equal({
                                                                                                 x: {
                                                                                                   hd: 0,
                                                                                                   tl: /* [] */0
@@ -877,7 +877,7 @@ let suites = {
                                                                                               "eq_with_list2",
                                                                                               () => ({
                                                                                                 TAG: "Eq",
-                                                                                                _0: Caml_obj.equal({
+                                                                                                _0: Primitive_object.equal({
                                                                                                   x: {
                                                                                                     hd: 0,
                                                                                                     tl: /* [] */0
@@ -896,7 +896,7 @@ let suites = {
                                                                                                 "eq_no_prototype",
                                                                                                 () => ({
                                                                                                   TAG: "Eq",
-                                                                                                  _0: Caml_obj.equal({x:1}, ((function(){let o = Object.create(null);o.x = 1;return o;})())),
+                                                                                                  _0: Primitive_object.equal({x:1}, ((function(){let o = Object.create(null);o.x = 1;return o;})())),
                                                                                                   _1: true
                                                                                                 })
                                                                                               ],
@@ -905,7 +905,7 @@ let suites = {
                                                                                                   "File \"caml_compare_test.res\", line 76, characters 5-12",
                                                                                                   () => ({
                                                                                                     TAG: "Eq",
-                                                                                                    _0: Caml_obj.compare(null, {
+                                                                                                    _0: Primitive_object.compare(null, {
                                                                                                       hd: 3,
                                                                                                       tl: /* [] */0
                                                                                                     }),
@@ -917,7 +917,7 @@ let suites = {
                                                                                                     "File \"caml_compare_test.res\", line 77, characters 5-12",
                                                                                                     () => ({
                                                                                                       TAG: "Eq",
-                                                                                                      _0: Caml_obj.compare({
+                                                                                                      _0: Primitive_object.compare({
                                                                                                         hd: 3,
                                                                                                         tl: /* [] */0
                                                                                                       }, null),
@@ -929,7 +929,7 @@ let suites = {
                                                                                                       "File \"caml_compare_test.res\", line 78, characters 5-12",
                                                                                                       () => ({
                                                                                                         TAG: "Eq",
-                                                                                                        _0: Caml_obj.compare(null, 0),
+                                                                                                        _0: Primitive_object.compare(null, 0),
                                                                                                         _1: -1
                                                                                                       })
                                                                                                     ],
@@ -938,7 +938,7 @@ let suites = {
                                                                                                         "File \"caml_compare_test.res\", line 79, characters 5-12",
                                                                                                         () => ({
                                                                                                           TAG: "Eq",
-                                                                                                          _0: Caml_obj.compare(0, null),
+                                                                                                          _0: Primitive_object.compare(0, null),
                                                                                                           _1: 1
                                                                                                         })
                                                                                                       ],
@@ -947,7 +947,7 @@ let suites = {
                                                                                                           "File \"caml_compare_test.res\", line 80, characters 5-12",
                                                                                                           () => ({
                                                                                                             TAG: "Eq",
-                                                                                                            _0: Caml_obj.compare(undefined, 0),
+                                                                                                            _0: Primitive_object.compare(undefined, 0),
                                                                                                             _1: -1
                                                                                                           })
                                                                                                         ],
@@ -956,7 +956,7 @@ let suites = {
                                                                                                             "File \"caml_compare_test.res\", line 81, characters 5-12",
                                                                                                             () => ({
                                                                                                               TAG: "Eq",
-                                                                                                              _0: Caml_obj.compare(0, undefined),
+                                                                                                              _0: Primitive_object.compare(0, undefined),
                                                                                                               _1: 1
                                                                                                             })
                                                                                                           ],
@@ -1023,21 +1023,21 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"caml_compare_test.res\", line 88, characters 3-10", true, Caml_obj.greaterthan(1, undefined));
+eq("File \"caml_compare_test.res\", line 88, characters 3-10", true, Primitive_object.greaterthan(1, undefined));
 
-eq("File \"caml_compare_test.res\", line 89, characters 3-10", true, Caml_obj.lessthan(/* [] */0, {
+eq("File \"caml_compare_test.res\", line 89, characters 3-10", true, Primitive_object.lessthan(/* [] */0, {
   hd: 1,
   tl: /* [] */0
 }));
 
-eq("File \"caml_compare_test.res\", line 90, characters 3-10", false, Caml_obj.greaterthan(undefined, 1));
+eq("File \"caml_compare_test.res\", line 90, characters 3-10", false, Primitive_object.greaterthan(undefined, 1));
 
-eq("File \"caml_compare_test.res\", line 91, characters 3-10", false, Caml_obj.greaterthan(undefined, [
+eq("File \"caml_compare_test.res\", line 91, characters 3-10", false, Primitive_object.greaterthan(undefined, [
   1,
   30
 ]));
 
-eq("File \"caml_compare_test.res\", line 92, characters 3-10", false, Caml_obj.lessthan([
+eq("File \"caml_compare_test.res\", line 92, characters 3-10", false, Primitive_object.lessthan([
   1,
   30
 ], undefined));

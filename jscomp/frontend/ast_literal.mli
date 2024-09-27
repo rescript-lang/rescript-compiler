@@ -41,6 +41,8 @@ module Lid : sig
 
   val type_bigint : t
 
+  val pervasives : t
+
   val js_oo : t
 
   val js_meth_callback : t
@@ -75,8 +77,6 @@ val type_string : core_type_lit
 val type_bool : core_type_lit
 
 val type_int : core_type_lit
-
-val type_int64 : Parsetree.core_type
 
 val type_float : Parsetree.core_type
 

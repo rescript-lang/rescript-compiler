@@ -16,11 +16,10 @@ var jsDir = path.join(__dirname, "..", "lib", "js");
 
 var runtimeFiles = fs.readdirSync(runtimeDir, "ascii");
 var runtimeMlFiles = runtimeFiles.filter(
-  x => !x.startsWith("bs_stdlib_mini") && x.endsWith(".res") && x !== "js.res",
+  x => !x.startsWith("pervasives") && x.endsWith(".res"),
 );
 var runtimeMliFiles = runtimeFiles.filter(
-  x =>
-    !x.startsWith("bs_stdlib_mini") && x.endsWith(".resi") && x !== "js.resi",
+  x => !x.startsWith("pervasives") && x.endsWith(".resi"),
 );
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles);
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))];
@@ -29,7 +28,6 @@ var commonBsFlags = `-no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-c
 var js_package = pseudoTarget("js_pkg");
 var runtimeTarget = pseudoTarget("runtime");
 var othersTarget = pseudoTarget("others");
-var stdlibTarget = pseudoTarget("$stdlib");
 var {
   absolutePath: my_target,
   bsc_exe,
@@ -57,7 +55,6 @@ exports.vendorNinjaPath = vendorNinjaPath;
  * build.ninja
  * runtime/build.ninja
  * others/build.ninja
- * $stdlib/build.ninja
  * test/build.ninja
  *
  * files generated for env config
@@ -66,7 +63,6 @@ exports.vendorNinjaPath = vendorNinjaPath;
  * compilerEnv.ninja (no snapshot since env can not provide snapshot)
  * runtime/env.ninja
  * others/env.ninja
- * $stdlib/env.ninja
  * test/env.ninja
  *
  * In release mode:
@@ -74,7 +70,6 @@ exports.vendorNinjaPath = vendorNinjaPath;
  * release.ninja
  * runtime/release.ninja
  * others/release.ninja
- * $stdlib/release.ninja
  *
  * Like that our snapshot is so robust that
  * we don't do snapshot in CI, we don't
@@ -758,26 +753,23 @@ async function runtimeNinja(devmode = true) {
   var compilerTarget = pseudoTarget("$bsc");
   var externalDeps = devmode ? [compilerTarget] : [];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
+  var bsc_flags = "bsc_flags";
+  /**
+   * @type [string,string][]
+   */
   var templateRuntimeRules = `
-bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime  -nopervasives  -unsafe -w +50 -warn-error A
-bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
+${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -make-runtime -unsafe -w -3+50 -warn-error A
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuildList([
+  // we make it still depends on external
+  // to enjoy free ride on dev config for compiler-deps
+
   [
-    "bs_stdlib_mini.cmi",
-    "bs_stdlib_mini.resi",
+    ["pervasives.cmj", "pervasives.cmi"],
+    "pervasives.res",
     "cc",
     ninjaCwd,
-    [["bsc_flags", "-nostdlib -nopervasives"]],
-    [],
-    externalDeps,
-  ],
-  [
-    ["js.cmj", "js.cmi"],
-    "js.res",
-    "cc",
-    ninjaCwd,
-    [["bsc_flags", "$bsc_no_open_flags"]],
+    [[bsc_flags, `$${bsc_flags} -nopervasives`]],
     [],
     externalDeps,
   ],
@@ -788,7 +780,7 @@ ${ninjaQuickBuildList([
    */
   var depsMap = new Map();
   var allTargets = collectTarget([...runtimeMliFiles, ...runtimeMlFiles]);
-  var manualDeps = ["bs_stdlib_mini.cmi", "js.cmj", "js.cmi"];
+  var manualDeps = ["pervasives.cmj", "pervasives.cmi"];
   var allFileTargetsInRuntime = scanFileTargets(allTargets, manualDeps);
   allTargets.forEach((ext, mod) => {
     switch (ext) {
@@ -823,17 +815,11 @@ ${ninjaQuickBuildList([
 
 async function othersNinja(devmode = true) {
   var compilerTarget = pseudoTarget("$bsc");
-  var externalDeps = [
-    compilerTarget,
-    fileTarget("belt_internals.cmi"),
-    fileTarget("js.cmi"),
-  ];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var ninjaCwd = "others";
 
   var templateOthersRules = `
-bsc_primitive_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50 -warn-error A
-bsc_flags = $bsc_primitive_flags -open Belt_internals
+bsc_flags = ${commonBsFlags} -bs-cross-module-opt -make-runtime -unsafe -w +50 -warn-error A -I runtime
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuildList([
   [
@@ -841,27 +827,9 @@ ${ninjaQuickBuildList([
     "belt.res",
     "cc",
     ninjaCwd,
-    [["bsc_flags", "$bsc_primitive_flags"]],
     [],
-    [compilerTarget],
-  ],
-  [
-    ["js.cmj", "js.cmi"],
-    "js.res",
-    "cc",
-    ninjaCwd,
-    [["bsc_flags", "$bsc_primitive_flags"]],
     [],
-    [compilerTarget],
-  ],
-  [
-    ["belt_internals.cmi"],
-    "belt_internals.resi",
-    "cc",
-    ninjaCwd,
-    [["bsc_flags", "$bsc_primitive_flags"]],
-    [],
-    [compilerTarget],
+    [compilerTarget, runtimeTarget],
   ],
 ])}
 `;
@@ -871,14 +839,12 @@ ${ninjaQuickBuildList([
       x.startsWith("js") &&
       (x.endsWith(".res") || x.endsWith(".resi")) &&
       !x.includes(".pp") &&
-      !x.includes("#") &&
-      x !== "js.res",
+      !x.includes("#"),
   );
   var othersFiles = othersDirFiles.filter(
     x =>
       !x.startsWith("js") &&
       x !== "belt.res" &&
-      x !== "belt_internals.resi" &&
       (x.endsWith(".res") || x.endsWith(".resi")) &&
       !x.includes("#"),
   );
@@ -890,7 +856,10 @@ ${ninjaQuickBuildList([
     ocamlDepForBscAsync(jsPrefixSourceFiles, othersDir, jsDepsMap),
     ocamlDepForBscAsync(othersFiles, othersDir, depsMap),
   ]);
-  var jsOutput = generateNinja(jsDepsMap, jsTargets, ninjaCwd, externalDeps);
+  var jsOutput = generateNinja(jsDepsMap, jsTargets, ninjaCwd, [
+    compilerTarget,
+    runtimeTarget,
+  ]);
   jsOutput.push(phony(js_package, fileTargets(allJsTargets), ninjaCwd));
 
   // Note compiling belt.res still try to read
@@ -905,7 +874,11 @@ ${ninjaQuickBuildList([
     s.add(js_package);
   });
   var allOthersTarget = scanFileTargets(beltTargets, []);
-  var beltOutput = generateNinja(depsMap, beltTargets, ninjaCwd, externalDeps);
+  var beltOutput = generateNinja(depsMap, beltTargets, ninjaCwd, [
+    compilerTarget,
+    runtimeTarget,
+    fileTarget("js.cmi"),
+  ]);
   beltOutput.push(phony(othersTarget, fileTargets(allOthersTarget), ninjaCwd));
   writeFileAscii(
     path.join(othersDir, ninjaOutput),
@@ -914,83 +887,6 @@ ${ninjaQuickBuildList([
       "\n" +
       beltOutput.join("\n") +
       "\n",
-  );
-}
-/**
- *
- * @param {boolean} devmode
- * generate build.ninja/release.ninja for stdlib-402
- */
-async function stdlibNinja(devmode = true) {
-  var stdlibVersion = "stdlib-406";
-  var ninjaCwd = stdlibVersion;
-  var stdlibDir = path.join(jscompDir, stdlibVersion);
-  var compilerTarget = pseudoTarget("$bsc");
-  var externalDeps = [compilerTarget, othersTarget];
-  var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
-  var bsc_flags = "bsc_flags";
-  /**
-   * @type [string,string][]
-   */
-  var bsc_builtin_overrides = [[bsc_flags, `$${bsc_flags} -nopervasives`]];
-  // It is interesting `-w -a` would generate not great code sometimes
-  // deprecations diabled due to string_of_float
-  var warnings = "-w -9-3-106 -warn-error A";
-  var templateStdlibRules = `
-${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -make-runtime ${warnings} -I others
-${ruleCC(ninjaCwd)}
-${ninjaQuickBuildList([
-  // we make it still depends on external
-  // to enjoy free ride on dev config for compiler-deps
-
-  [
-    "pervasives.cmj",
-    "pervasives.res",
-    "cc_cmi",
-    ninjaCwd,
-    bsc_builtin_overrides,
-    "pervasives.cmi",
-    externalDeps,
-  ],
-  [
-    "pervasives.cmi",
-    "pervasives.resi",
-    "cc",
-    ninjaCwd,
-    bsc_builtin_overrides,
-    [],
-    externalDeps,
-  ],
-])}
-`;
-  var stdlibDirFiles = fs.readdirSync(stdlibDir, "ascii");
-  var sources = stdlibDirFiles.filter(x => {
-    return (
-      !x.startsWith("pervasives.") &&
-      (x.endsWith(".res") || x.endsWith(".resi"))
-    );
-  });
-  let depsMap = new Map();
-  await ocamlDepForBscAsync(sources, stdlibDir, depsMap);
-  var targets = collectTarget(sources);
-  var allTargets = scanFileTargets(targets, []);
-  targets.forEach((ext, mod) => {
-    switch (ext) {
-      case "HAS_RESI":
-      case "HAS_BOTH_RES":
-        updateDepsKVByFile(mod + ".cmi", "pervasives.cmj", depsMap);
-        break;
-      case "HAS_RES":
-        updateDepsKVByFile(mod + ".cmj", "pervasives.cmj", depsMap);
-        break;
-    }
-  });
-  var output = generateNinja(depsMap, targets, ninjaCwd, externalDeps);
-  output.push(phony(stdlibTarget, fileTargets(allTargets), ninjaCwd));
-
-  writeFileAscii(
-    path.join(stdlibDir, ninjaOutput),
-    templateStdlibRules + output.join("\n") + "\n",
   );
 }
 
@@ -1047,7 +943,7 @@ async function testNinja() {
   var ninjaOutput = "build.ninja";
   var ninjaCwd = `test`;
   var templateTestRules = `
-bsc_flags = -bs-cross-module-opt -make-runtime-test -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104 -warn-error A  -I runtime -I $stdlib -I others
+bsc_flags = -bs-cross-module-opt -make-runtime-test -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104 -warn-error A  -I runtime -I others
 ${ruleCC(ninjaCwd)}
 `;
   var testDirFiles = fs.readdirSync(testDir, "ascii");
@@ -1061,7 +957,7 @@ ${ruleCC(ninjaCwd)}
   var targets = collectTarget(sources);
   var output = generateNinja(depsMap, targets, ninjaCwd, [
     runtimeTarget,
-    stdlibTarget,
+    othersTarget,
     pseudoTarget("$bsc"),
   ]);
   output.push(
@@ -1158,7 +1054,6 @@ function checkEffect() {
 
 function updateRelease() {
   runtimeNinja(false);
-  stdlibNinja(false);
   othersNinja(false);
 }
 
@@ -1166,14 +1061,12 @@ function updateDev() {
   writeFileAscii(
     path.join(jscompDir, "build.ninja"),
     `
-stdlib = stdlib-406
 ${BSC_COMPILER}
 ocamllex = ocamllex.opt
 subninja runtime/build.ninja
 subninja others/build.ninja
-subninja $stdlib/build.ninja
 subninja test/build.ninja
-o all: phony runtime others $stdlib test
+o all: phony runtime others test
 `,
   );
   writeFileAscii(
@@ -1187,7 +1080,6 @@ include body.ninja
   );
 
   runtimeNinja();
-  stdlibNinja(true);
   if (fs.existsSync(bsc_exe)) {
     testNinja();
   }

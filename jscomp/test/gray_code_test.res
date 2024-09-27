@@ -11,22 +11,6 @@ let gray_decode = n => {
   aux(n, lsr(n, 1))
 }
 
-let bool_string = (len, n) => {
-  let s = Bytes.make(len, '0')
-  let rec aux = (i, n) => {
-    if land(n, 1) == 1 {
-      Bytes.set(s, i, '1')
-    }
-    if i <= 0 {
-      s
-    } else {
-      aux(pred(i), lsr(n, 1))
-    }
-  }
-
-  aux(pred(len), n)
-}
-
 let next_power = v => {
   let v = v - 1
   let v = lor(lsr(v, 1), v)

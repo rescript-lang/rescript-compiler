@@ -2020,6 +2020,13 @@ and parse_bracket_access p expr start_pos =
       Parser.leave_breadcrumb p ExprArrayMutation;
       Parser.next p;
       let rhs_expr = parse_expr p in
+      (* FIXME: Do not implicitly rely on specific module name, even primitive one
+
+         This can be abused like
+           module Array = MyModule
+
+         Find better mechanism to support it
+      *)
       let array_set =
         Location.mkloc (Longident.Ldot (Lident "Array", "set")) array_loc
       in
@@ -3956,7 +3963,7 @@ and parse_dict_expr ~start_pos p =
   Ast_helper.Exp.apply ~loc
     (Ast_helper.Exp.ident ~loc
        (Location.mkloc
-          (Longident.Ldot (Longident.Lident "Runtime_dict", "unsafe_create"))
+          (Longident.Ldot (Longident.Lident Primitive_modules.dict, "make"))
           loc))
     [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc key_value_pairs)]
 

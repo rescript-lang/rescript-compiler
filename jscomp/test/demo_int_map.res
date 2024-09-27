@@ -1,16 +1,13 @@
-module IntMap = Map.Make({
-  type t = int
-  let compare = (x: int, y) => x - y
-})
+open Belt
 
 let test = () => {
-  let m = ref(IntMap.empty)
+  let m = ref(Map.Int.empty)
   let count = 1000_000
   for i in 0 to count {
-    m := IntMap.add(i, i, m.contents)
+    m := m.contents->Map.Int.set(i, i)
   }
   for i in 0 to count {
-    ignore(IntMap.find(i, m.contents))
+    m.contents->Map.Int.get(i)->ignore
   }
 }
 

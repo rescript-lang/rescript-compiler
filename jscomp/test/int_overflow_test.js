@@ -2,13 +2,11 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Int32 = require("../../lib/js/int32.js");
-let Caml_string = require("../../lib/js/caml_string.js");
 
 function hash_variant(s) {
   let accu = 0;
   for (let i = 0, i_finish = s.length; i < i_finish; ++i) {
-    accu = Math.imul(223, accu) + Caml_string.get(s, i) & 2147483647;
+    accu = Math.imul(223, accu) + s.codePointAt(i) & 2147483647;
   }
   if (accu > 1073741823) {
     return accu - -2147483648 | 0;
@@ -20,7 +18,7 @@ function hash_variant(s) {
 function hash_variant2(s) {
   let accu = 0;
   for (let i = 0, i_finish = s.length; i < i_finish; ++i) {
-    accu = Math.imul(223, accu) + Caml_string.get(s, i) | 0;
+    accu = Math.imul(223, accu) + s.codePointAt(i) | 0;
   }
   accu = accu & 2147483647;
   if (accu > 1073741823) {
@@ -44,7 +42,7 @@ Mt.from_pair_suites("Int_overflow_test", {
     () => ({
       TAG: "Eq",
       _0: true,
-      _1: (Int32.max_int + 1 | 0) === Int32.min_int
+      _1: true
     })
   ],
   tl: {
@@ -53,7 +51,7 @@ Mt.from_pair_suites("Int_overflow_test", {
       () => ({
         TAG: "Eq",
         _0: true,
-        _1: (Int32.min_int - Int32.one | 0) === Int32.max_int
+        _1: true
       })
     ],
     tl: {
@@ -62,7 +60,7 @@ Mt.from_pair_suites("Int_overflow_test", {
         () => ({
           TAG: "Eq",
           _0: 2147483646,
-          _1: (Int32.max_int + Int32.max_int | 0) + Int32.min_int | 0
+          _1: 2147483646
         })
       ],
       tl: {
@@ -71,7 +69,7 @@ Mt.from_pair_suites("Int_overflow_test", {
           () => ({
             TAG: "Eq",
             _0: -2,
-            _1: Int32.max_int + Int32.max_int | 0
+            _1: -2
           })
         ],
         tl: {
@@ -94,7 +92,7 @@ Mt.from_pair_suites("Int_overflow_test", {
             ],
             tl: {
               hd: [
-                "File \"int_overflow_test.res\", line 88, characters 5-12",
+                "File \"int_overflow_test.res\", line 72, characters 5-12",
                 () => ({
                   TAG: "Eq",
                   _0: hash_variant2("xxyyzzuuxxzzyy00112233"),
@@ -103,7 +101,7 @@ Mt.from_pair_suites("Int_overflow_test", {
               ],
               tl: {
                 hd: [
-                  "File \"int_overflow_test.res\", line 89, characters 5-12",
+                  "File \"int_overflow_test.res\", line 73, characters 5-12",
                   () => ({
                     TAG: "Eq",
                     _0: hash_variant2("xxyyzxzzyy"),
@@ -130,43 +128,23 @@ Mt.from_pair_suites("Int_overflow_test", {
                     ],
                     tl: {
                       hd: [
-                        "int_literal_flow3",
+                        "File \"int_overflow_test.res\", line 76, characters 5-12",
                         () => ({
                           TAG: "Eq",
-                          _0: -1,
-                          _1: -1
+                          _0: Number("3") | 0,
+                          _1: 3
                         })
                       ],
                       tl: {
                         hd: [
-                          "int32_mul",
+                          "File \"int_overflow_test.res\", line 78, characters 5-12",
                           () => ({
                             TAG: "Eq",
-                            _0: -33554431,
-                            _1: -33554431
+                            _0: Number("3.2") | 0,
+                            _1: 3
                           })
                         ],
-                        tl: {
-                          hd: [
-                            "File \"int_overflow_test.res\", line 94, characters 5-12",
-                            () => ({
-                              TAG: "Eq",
-                              _0: Number("3") | 0,
-                              _1: 3
-                            })
-                          ],
-                          tl: {
-                            hd: [
-                              "File \"int_overflow_test.res\", line 96, characters 5-12",
-                              () => ({
-                                TAG: "Eq",
-                                _0: Number("3.2") | 0,
-                                _1: 3
-                              })
-                            ],
-                            tl: /* [] */0
-                          }
-                        }
+                        tl: /* [] */0
                       }
                     }
                   }
@@ -180,6 +158,12 @@ Mt.from_pair_suites("Int_overflow_test", {
   }
 });
 
+let max_int = 2147483647;
+
+let min_int = -2147483648;
+
+exports.max_int = max_int;
+exports.min_int = min_int;
 exports.hash_variant = hash_variant;
 exports.hash_variant2 = hash_variant2;
 exports.fib = fib;

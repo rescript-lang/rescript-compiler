@@ -18,8 +18,6 @@ let M = {
 
 let hh = M.sum(1.0, 2.0);
 
-let mf = 3 % 4;
-
 function tg(arr) {
   return arr[0];
 }
@@ -57,7 +55,6 @@ let StandardNotation = {
   h: h,
   M: M,
   hh: hh,
-  mf: mf,
   tg: tg,
   tc: tc,
   te: te,

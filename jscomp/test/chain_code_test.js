@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -49,7 +49,7 @@ function f4(h, x, y) {
   ];
 }
 
-eq("File \"chain_code_test.res\", line 24, characters 12-19", 32, ({
+eq("File \"chain_code_test.res\", line 27, characters 12-19", 32, ({
   x: {
     y: {
       z: 32

@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -27,7 +27,7 @@ function eq(loc, x, y) {
   };
 }
 
-eq("File \"key_word_property_plus_test.res\", line 10, characters 2-9", [
+eq("File \"key_word_property_plus_test.res\", line 13, characters 2-9", [
   1,
   2,
   3,

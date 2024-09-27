@@ -22,16 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type boxed_integer = Lambda.boxed_integer = Pbigint | Pint32 | Pint64
-
 type comparison = Lambda.comparison = Ceq | Cneq | Clt | Cgt | Cle | Cge
-
-type compile_time_constant =
-  | Big_endian
-  | Ostype_unix
-  | Ostype_win32
-  | Ostype
-  | Backend_type
 
 type let_kind = Lambda.let_kind = Strict | Alias | StrictOpt | Variable
 
@@ -57,15 +48,8 @@ type set_field_dbg_info = Lambda.set_field_dbg_info =
 
 val cmp_int32 : comparison -> int32 -> int32 -> bool
 
-val cmp_int64 : comparison -> int64 -> int64 -> bool
-
 val cmp_float : comparison -> float -> float -> bool
 
 val cmp_int : comparison -> int -> int -> bool
 
 val eq_comparison : comparison -> comparison -> bool
-
-val eq_boxed_integer : boxed_integer -> boxed_integer -> bool
-
-val eq_compile_time_constant :
-  compile_time_constant -> compile_time_constant -> bool

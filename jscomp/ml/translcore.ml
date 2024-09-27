@@ -50,288 +50,205 @@ let transl_extension_constructor env path ext =
 (* Translation of primitives *)
 
 type specialized = {
-  gencomp : Lambda.primitive;
+  objcomp : Lambda.primitive;
   intcomp : Lambda.primitive;
   boolcomp : Lambda.primitive;
   floatcomp : Lambda.primitive;
   stringcomp : Lambda.primitive;
-  bytescomp : Lambda.primitive;
-  int64comp : Lambda.primitive;
   bigintcomp : Lambda.primitive;
   simplify_constant_constructor : bool;
 }
 
-let arity2 name : Lambda.primitive =
-  Lambda.Pccall (Primitive.simple ~name ~arity:2 ~alloc:true)
-
 let comparisons_table =
-  create_hashtable 11
-    [
+  create_hashtable
+    [|
       ( "%equal",
         {
-          gencomp =
-            Pccall (Primitive.simple ~name:"caml_equal" ~arity:2 ~alloc:true);
+          objcomp = Pobjcomp Ceq;
           intcomp = Pintcomp Ceq;
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_equal" ~arity:2 ~alloc:false);
+          boolcomp = Pboolcomp Ceq;
           floatcomp = Pfloatcomp Ceq;
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_equal" ~arity:2 ~alloc:false);
-          bytescomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bytes_equal" ~arity:2 ~alloc:false);
-          int64comp = Pbintcomp (Pint64, Ceq);
+          stringcomp = Pstringcomp Ceq;
           bigintcomp = Pbigintcomp Ceq;
           simplify_constant_constructor = true;
         } );
       ( "%notequal",
         {
-          gencomp =
-            Pccall (Primitive.simple ~name:"caml_notequal" ~arity:2 ~alloc:true);
+          objcomp = Pobjcomp Cneq;
           intcomp = Pintcomp Cneq;
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_notequal" ~arity:2 ~alloc:false);
+          boolcomp = Pboolcomp Cneq;
           floatcomp = Pfloatcomp Cneq;
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_notequal" ~arity:2
-                 ~alloc:false);
-          bytescomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bytes_notequal" ~arity:2
-                 ~alloc:false);
-          int64comp = Pbintcomp (Pint64, Cneq);
+          stringcomp = Pstringcomp Cneq;
           bigintcomp = Pbigintcomp Cneq;
           simplify_constant_constructor = true;
         } );
       ( "%lessthan",
         {
-          gencomp =
-            Pccall (Primitive.simple ~name:"caml_lessthan" ~arity:2 ~alloc:true);
+          objcomp = Pobjcomp Clt;
           intcomp = Pintcomp Clt;
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_lessthan" ~arity:2 ~alloc:false);
+          boolcomp = Pboolcomp Clt;
           floatcomp = Pfloatcomp Clt;
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_lessthan" ~arity:2
-                 ~alloc:false);
-          bytescomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bytes_lessthan" ~arity:2
-                 ~alloc:false);
-          int64comp = Pbintcomp (Pint64, Clt);
+          stringcomp = Pstringcomp Clt;
           bigintcomp = Pbigintcomp Clt;
           simplify_constant_constructor = false;
         } );
       ( "%greaterthan",
         {
-          gencomp =
-            Pccall
-              (Primitive.simple ~name:"caml_greaterthan" ~arity:2 ~alloc:true);
+          objcomp = Pobjcomp Cgt;
           intcomp = Pintcomp Cgt;
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_greaterthan" ~arity:2
-                 ~alloc:false);
+          boolcomp = Pboolcomp Cgt;
           floatcomp = Pfloatcomp Cgt;
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_greaterthan" ~arity:2
-                 ~alloc:false);
-          bytescomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bytes_greaterthan" ~arity:2
-                 ~alloc:false);
-          int64comp = Pbintcomp (Pint64, Cgt);
+          stringcomp = Pstringcomp Cgt;
           bigintcomp = Pbigintcomp Cgt;
           simplify_constant_constructor = false;
         } );
       ( "%lessequal",
         {
-          gencomp =
-            Pccall
-              (Primitive.simple ~name:"caml_lessequal" ~arity:2 ~alloc:true);
+          objcomp = Pobjcomp Cle;
           intcomp = Pintcomp Cle;
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_lessequal" ~arity:2
-                 ~alloc:false);
+          boolcomp = Pboolcomp Cle;
           floatcomp = Pfloatcomp Cle;
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_lessequal" ~arity:2
-                 ~alloc:false);
-          bytescomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bytes_lessequal" ~arity:2
-                 ~alloc:false);
-          int64comp = Pbintcomp (Pint64, Cle);
+          stringcomp = Pstringcomp Cle;
           bigintcomp = Pbigintcomp Cle;
           simplify_constant_constructor = false;
         } );
       ( "%greaterequal",
         {
-          gencomp =
-            Pccall
-              (Primitive.simple ~name:"caml_greaterequal" ~arity:2 ~alloc:true);
+          objcomp = Pobjcomp Cge;
           intcomp = Pintcomp Cge;
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_greaterequal" ~arity:2
-                 ~alloc:false);
+          boolcomp = Pboolcomp Cge;
           floatcomp = Pfloatcomp Cge;
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_greaterequal" ~arity:2
-                 ~alloc:false);
-          bytescomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bytes_greaterequal" ~arity:2
-                 ~alloc:false);
-          int64comp = Pbintcomp (Pint64, Cge);
+          stringcomp = Pstringcomp Cge;
           bigintcomp = Pbigintcomp Cge;
           simplify_constant_constructor = false;
         } );
       ( "%compare",
         {
-          gencomp =
-            Pccall (Primitive.simple ~name:"caml_compare" ~arity:2 ~alloc:true);
-          (* Not unboxed since the comparison is done directly on tagged int *)
-          intcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_int_compare" ~arity:2 ~alloc:false);
-          boolcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bool_compare" ~arity:2 ~alloc:false);
-          floatcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_float_compare" ~arity:2 ~alloc:false);
-          stringcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_string_compare" ~arity:2
-                 ~alloc:false);
-          bytescomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bytes_compare" ~arity:2 ~alloc:false);
-          int64comp =
-            Pccall
-              (Primitive.simple ~name:"caml_int64_compare" ~arity:2 ~alloc:false);
-          bigintcomp =
-            Pccall
-              (Primitive.simple ~name:"caml_bigint_compare" ~arity:2 ~alloc:false);
+          objcomp = Pobjorder;
+          intcomp = Pintorder;
+          boolcomp = Pboolorder;
+          floatcomp = Pfloatorder;
+          stringcomp = Pstringorder;
+          bigintcomp = Pbigintorder;
+          simplify_constant_constructor = false;
+        } );
+      ( "%max",
+        {
+          objcomp = Pobjmax;
+          intcomp = Pintmax;
+          boolcomp = Pboolmax;
+          floatcomp = Pboolmax;
+          stringcomp = Pstringmax;
+          bigintcomp = Pbigintmax;
+          simplify_constant_constructor = false;
+        } );
+      ( "%min",
+        {
+          objcomp = Pobjmin;
+          intcomp = Pintmin;
+          boolcomp = Pboolmin;
+          floatcomp = Pfloatmin;
+          stringcomp = Pstringmin;
+          bigintcomp = Pbigintmin;
+          simplify_constant_constructor = false;
+        } );
+      ( "%equal_null",
+        {
+          objcomp = Pobjcomp Ceq;
+          intcomp = Pintcomp Ceq;
+          boolcomp = Pboolcomp Ceq;
+          floatcomp = Pfloatcomp Ceq;
+          stringcomp = Pstringcomp Ceq;
+          bigintcomp = Pbigintcomp Ceq;
+          simplify_constant_constructor = false;
+        } );
+      ( "%equal_undefined",
+        {
+          objcomp = Pobjcomp Ceq;
+          intcomp = Pintcomp Ceq;
+          boolcomp = Pboolcomp Ceq;
+          floatcomp = Pfloatcomp Ceq;
+          stringcomp = Pstringcomp Ceq;
+          bigintcomp = Pbigintcomp Ceq;
+          simplify_constant_constructor = false;
+        } );
+      ( "%equal_nullable",
+        {
+          objcomp = Pobjcomp Ceq;
+          intcomp = Pintcomp Ceq;
+          boolcomp = Pboolcomp Ceq;
+          floatcomp = Pfloatcomp Ceq;
+          stringcomp = Pstringcomp Ceq;
+          bigintcomp = Pbigintcomp Ceq;
+          simplify_constant_constructor = false;
+        } );
+
+      (* FIXME: Core compatibility *)
+      ( "%bs_min",
+        {
+          objcomp = Pobjmax;
+          intcomp = Pintmax;
+          boolcomp = Pboolmax;
+          floatcomp = Pboolmax;
+          stringcomp = Pstringmax;
+          bigintcomp = Pbigintmax;
           simplify_constant_constructor = false;
         } );
       ( "%bs_max",
         {
-          gencomp = arity2 "caml_max";
-          bytescomp = arity2 "caml_max";
-          (* FIXME bytescomp*)
-          intcomp = arity2 "caml_int_max";
-          boolcomp = arity2 "caml_bool_max";
-          floatcomp = arity2 "caml_float_max";
-          stringcomp = arity2 "caml_string_max";
-          int64comp = arity2 "caml_int64_max";
-          bigintcomp = arity2 "caml_bigint_max";
+          objcomp = Pobjmin;
+          intcomp = Pintmin;
+          boolcomp = Pboolmin;
+          floatcomp = Pfloatmin;
+          stringcomp = Pstringmin;
+          bigintcomp = Pbigintmin;
           simplify_constant_constructor = false;
         } );
-      ( "%bs_min",
-        {
-          gencomp = arity2 "caml_min";
-          bytescomp = arity2 "caml_min";
-          intcomp = arity2 "caml_int_min";
-          boolcomp = arity2 "caml_bool_min";
-          floatcomp = arity2 "caml_float_min";
-          stringcomp = arity2 "caml_string_min";
-          int64comp = arity2 "caml_int64_min";
-          bigintcomp = arity2 "caml_bigint_min";
-          simplify_constant_constructor = false;
-        } );
-      ( "%bs_equal_null",
-        {
-          gencomp = arity2 "caml_equal_null";
-          bytescomp = arity2 "caml_equal_null";
-          (* FIXME*)
-          intcomp = arity2 "caml_int_equal_null";
-          boolcomp = arity2 "caml_bool_equal_null";
-          floatcomp = arity2 "caml_float_equal_null";
-          stringcomp = arity2 "caml_string_equal_null";
-          int64comp = arity2 "caml_int64_equal_null";
-          bigintcomp = arity2 "caml_bigint_equal_null";
-          simplify_constant_constructor = true;
-        } );
-      ( "%bs_equal_undefined",
-        {
-          gencomp = arity2 "caml_equal_undefined";
-          bytescomp = arity2 "caml_equal_undefined";
-          (* FIXME*)
-          intcomp = arity2 "caml_int_equal_undefined";
-          boolcomp = arity2 "caml_bool_equal_undefined";
-          floatcomp = arity2 "caml_float_equal_undefined";
-          stringcomp = arity2 "caml_string_equal_undefined";
-          int64comp = arity2 "caml_int64_equal_undefined";
-          bigintcomp = arity2 "caml_bigint_equal_undefined";
-          simplify_constant_constructor = true;
-        } );
-      ( "%bs_equal_nullable",
-        {
-          gencomp = arity2 "caml_equal_nullable";
-          bytescomp = arity2 "caml_equal_nullable";
-          (* FIXME *)
-          intcomp = arity2 "caml_int_equal_nullable";
-          boolcomp = arity2 "caml_bool_equal_nullable";
-          floatcomp = arity2 "caml_float_equal_nullable";
-          stringcomp = arity2 "caml_string_equal_nullable";
-          int64comp = arity2 "caml_int64_equal_nullable";
-          bigintcomp = arity2 "caml_bigint_equal_nullable";
-          simplify_constant_constructor = true;
-        } );
-    ]
+    |]
 
 let primitives_table =
-  create_hashtable 57
-    [
+  create_hashtable
+    [|
       ("%identity", Pidentity);
-      ("%bytes_to_string", Pbytes_to_string);
       ("%ignore", Pignore);
       ("%revapply", Prevapply);
       ("%apply", Pdirapply);
+
       ("%loc_LOC", Ploc Loc_LOC);
       ("%loc_FILE", Ploc Loc_FILE);
       ("%loc_LINE", Ploc Loc_LINE);
       ("%loc_POS", Ploc Loc_POS);
       ("%loc_MODULE", Ploc Loc_MODULE);
+
       (* BEGIN Triples for  ref data type *)
-      ("%bs_ref_setfield0", Psetfield (0, Lambda.ref_field_set_info));
-      ("%bs_ref_field0", Pfield (0, Lambda.ref_field_info));
-      ("%makemutable", Pmakeblock Lambda.ref_tag_info);
+      ("%makeref", Pmakeblock Lambda.ref_tag_info);
+      ("%refset", Psetfield (0, Lambda.ref_field_set_info));
+      ("%refget", Pfield (0, Lambda.ref_field_info));
+
       ("%incr", Poffsetref 1);
       ("%decr", Poffsetref (-1));
+
       (* Finish Triples for  ref data type *)
       ("%field0", Pfield (0, Fld_tuple));
       ("%field1", Pfield (1, Fld_tuple));
       ("%obj_dup", Pduprecord);
-      ("%obj_field", Parrayrefu);
+      ("%obj_tag", Pobjtag);
+      ("%obj_size", Pobjsize);
+      ("%obj_get_field", Parrayrefu);
       ("%obj_set_field", Parraysetu);
-      ("%obj_is_int", Pisint);
+
       ("%raise", Praise Raise_regular);
-      ("%reraise", Praise Raise_reraise);
-      ("%raise_notrace", Praise Raise_notrace);
+
+      (* bool primitives *)
       ("%sequand", Psequand);
       ("%sequor", Psequor);
       ("%boolnot", Pnot);
-      ("%big_endian", Pctconst Big_endian);
-      ("%backend_type", Pctconst Backend_type);
-      ("%word_size", Pctconst Word_size);
-      ("%int_size", Pctconst Int_size);
-      ("%max_wosize", Pctconst Max_wosize);
-      ("%ostype_unix", Pctconst Ostype_unix);
-      ("%ostype_win32", Pctconst Ostype_win32);
-      ("%ostype_cygwin", Pctconst Ostype_cygwin);
+      ("%boolorder", Pboolorder);
+      ("%boolmin", Pboolmin);
+      ("%boolmax", Pboolmax);
+
+      (* int primitives *)
+      ("%obj_is_int", Pisint);
       ("%negint", Pnegint);
       ("%succint", Poffsetint 1);
       ("%predint", Poffsetint (-1));
@@ -346,31 +263,35 @@ let primitives_table =
       ("%lslint", Plslint);
       ("%lsrint", Plsrint);
       ("%asrint", Pasrint);
-      ("%andbigint", Pandbigint);
-      ("%orbigint", Porbigint);
-      ("%xorbigint", Pxorbigint);
-      ("%lslbigint", Plslbigint);
-      ("%asrbigint", Pasrbigint);
       ("%eq", Pintcomp Ceq);
       ("%noteq", Pintcomp Cneq);
       ("%ltint", Pintcomp Clt);
       ("%leint", Pintcomp Cle);
       ("%gtint", Pintcomp Cgt);
       ("%geint", Pintcomp Cge);
-      ("%intoffloat", Pintoffloat);
-      ("%floatofint", Pfloatofint);
+      ("%intorder", Pintorder);
+      ("%intmin", Pintmin);
+      ("%intmax", Pintmax);
+
+      (* float primitives *)
       ("%negfloat", Pnegfloat);
       ("%absfloat", Pabsfloat);
       ("%addfloat", Paddfloat);
       ("%subfloat", Psubfloat);
       ("%mulfloat", Pmulfloat);
       ("%divfloat", Pdivfloat);
+      ("%modfloat", Pmodfloat);
       ("%eqfloat", Pfloatcomp Ceq);
       ("%noteqfloat", Pfloatcomp Cneq);
       ("%ltfloat", Pfloatcomp Clt);
       ("%lefloat", Pfloatcomp Cle);
       ("%gtfloat", Pfloatcomp Cgt);
       ("%gefloat", Pfloatcomp Cge);
+      ("%floatorder", Pfloatorder);
+      ("%floatmin", Pfloatmin);
+      ("%floatmax", Pfloatmax);
+
+      (* bigint primitives *)
       ("%negbigint", Pnegbigint);
       ("%addbigint", Paddbigint);
       ("%subbigint", Psubbigint);
@@ -384,51 +305,98 @@ let primitives_table =
       ("%lebigint", Pbigintcomp Cle);
       ("%gtbigint", Pbigintcomp Cgt);
       ("%gebigint", Pbigintcomp Cge);
+      ("%andbigint", Pandbigint);
+      ("%orbigint", Porbigint);
+      ("%xorbigint", Pxorbigint);
+      ("%lslbigint", Plslbigint);
+      ("%asrbigint", Pasrbigint);
+      ("%bigintorder", Pbigintorder);
+      ("%bigintmin", Pbigintmin);
+      ("%bigintmax", Pbigintmax);
+
+      (* string primitives *)
       ("%string_length", Pstringlength);
       ("%string_safe_get", Pstringrefs);
       ("%string_unsafe_get", Pstringrefu);
-      ("%bytes_length", Pbyteslength);
-      ("%bytes_safe_get", Pbytesrefs);
-      ("%bytes_safe_set", Pbytessets);
-      ("%bytes_unsafe_get", Pbytesrefu);
-      ("%bytes_unsafe_set", Pbytessetu);
+      ("%stringorder", Pstringorder);
+      ("%stringmin", Pstringmin);
+      ("%stringmax", Pstringmax);
+      ("%string_concat", Pstringadd);
+
+      (* array primitives *)
       ("%array_length", Parraylength);
       ("%array_safe_get", Parrayrefs);
       ("%array_safe_set", Parraysets);
       ("%array_unsafe_get", Parrayrefu);
       ("%array_unsafe_set", Parraysetu);
-      ("%floatarray_length", Parraylength);
-      ("%floatarray_safe_get", Parrayrefs);
-      ("%floatarray_safe_set", Parraysets);
-      ("%floatarray_unsafe_get", Parrayrefu);
-      ("%floatarray_unsafe_set", Parraysetu);
-      ("%lazy_force", Plazyforce);
-      ("%int64_of_int", Pbintofint Pint64);
-      ("%int64_to_int", Pintofbint Pint64);
-      ("%int64_neg", Pnegbint Pint64);
-      ("%int64_add", Paddbint Pint64);
-      ("%int64_sub", Psubbint Pint64);
-      ("%int64_mul", Pmulbint Pint64);
-      ("%int64_div", Pdivbint { size = Pint64; is_safe = Safe });
-      ("%int64_mod", Pmodbint { size = Pint64; is_safe = Safe });
-      ("%int64_and", Pandbint Pint64);
-      ("%int64_or", Porbint Pint64);
-      ("%int64_xor", Pxorbint Pint64);
-      ("%int64_lsl", Plslbint Pint64);
-      ("%int64_lsr", Plsrbint Pint64);
-      ("%int64_asr", Pasrbint Pint64);
-      ("%bigint_of_int32", Pcvtbint (Pint32, Pbigint));
-      ("%bigint_to_int32", Pcvtbint (Pbigint, Pint32));
-      ("%int64_of_int32", Pcvtbint (Pint32, Pint64));
-      ("%int64_to_int32", Pcvtbint (Pint64, Pint32));
-      ("%int64_of_bigint", Pcvtbint (Pbigint, Pint64));
-      ("%int64_to_bigint", Pcvtbint (Pint64, Pbigint));
-    ]
+
+      (* dict primitives *)
+      ("%makedict", Pmakedict);
+
+      (* promise *)
+      ("%await", Pawait);
+
+      (* module *)
+      ("%import", Pimport);
+
+      (* hash *)
+      ("%hash", Phash);
+      ("%hash_mix_int", Phash_mixint);
+      ("%hash_mix_string", Phash_mixstring);
+      ("%hash_final_mix", Phash_finalmix);
+
+      (* etc *)
+      ("%typeof", Ptypeof);
+      ("%debugger", Pdebugger);
+      ("%intoffloat", Pintoffloat);
+      ("%floatofint", Pfloatofint);
+      ("%unsafe_eq", Pjscomp Ceq);
+      ("%unsafe_neq", Pjscomp Cneq);
+      ("%unsafe_lt", Pjscomp Clt);
+      ("%unsafe_le", Pjscomp Cle);
+      ("%unsafe_gt", Pjscomp Cgt);
+      ("%unsafe_ge", Pjscomp Cge);
+      ("%null", Pnull);
+      ("%undefined", Pundefined);
+      ("%is_nullable", Pisnullable);
+      ("%undefined_to_opt", Pundefined_to_opt);
+      ("%null_to_opt", Pnull_to_opt);
+      ("%nullable_to_opt", Pnullable_to_opt);
+      ("%function_arity", Pfn_arity);
+      ("%wrap_exn", Pwrap_exn);
+      ("%curry_apply1", Pcurry_apply 1);
+      ("%curry_apply2", Pcurry_apply 2);
+      ("%curry_apply3", Pcurry_apply 3);
+      ("%curry_apply4", Pcurry_apply 4);
+      ("%curry_apply5", Pcurry_apply 5);
+      ("%curry_apply6", Pcurry_apply 6);
+      ("%curry_apply7", Pcurry_apply 7);
+      ("%curry_apply8", Pcurry_apply 8);
+      ("%makemutablelist", Pmakelist Mutable);
+      ("%unsafe_to_method", Pjs_fn_method);
+
+      (* Compiler internals, never expose to ReScript files *)
+      ("#raw_expr", Pjs_raw_expr);
+      ("#raw_stmt", Pjs_raw_stmt);
+
+      (* FIXME: Core compatibility *)
+      ("#null", Pundefined);
+      ("#undefined", Pundefined);
+      ("#typeof", Ptypeof);
+      ("#is_nullable", Pisnullable);
+      ("#null_to_opt", Pnullable_to_opt);
+      ("#nullable_to_opt", Pnull_to_opt);
+      ("#undefined_to_opt", Pundefined_to_opt);
+      ("#makemutablelist", Pmakelist Mutable);
+
+      (* FIXME: Deprecated *)
+      ("%obj_field", Parrayrefu);
+    |]
 
 let find_primitive prim_name = Hashtbl.find primitives_table prim_name
 
 let specialize_comparison
-    ({ gencomp; intcomp; floatcomp; stringcomp; bytescomp; int64comp; bigintcomp; boolcomp } :
+    ({ objcomp; intcomp; floatcomp; stringcomp; bigintcomp; boolcomp } :
       specialized) env ty =
   match () with
   | ()
@@ -438,11 +406,9 @@ let specialize_comparison
       intcomp
   | () when is_base_type env ty Predef.path_float -> floatcomp
   | () when is_base_type env ty Predef.path_string -> stringcomp
-  | () when is_base_type env ty Predef.path_bytes -> bytescomp
-  | () when is_base_type env ty Predef.path_int64 -> int64comp
   | () when is_base_type env ty Predef.path_bigint -> bigintcomp
   | () when is_base_type env ty Predef.path_bool -> boolcomp
-  | () -> gencomp
+  | () -> objcomp
 
 (* Specialize a primitive from available type information,
    raise Not_found if primitive is unknown  *)
@@ -452,7 +418,7 @@ let specialize_primitive p env ty (* ~has_constant_constructor *) =
     let table = Hashtbl.find comparisons_table p.prim_name in
     match is_function_type env ty with
     | Some (lhs, _rhs) -> specialize_comparison table env lhs
-    | None -> table.gencomp
+    | None -> table.objcomp
   with Not_found -> find_primitive p.prim_name
 
 (* Eta-expand a primitive *)
@@ -842,19 +808,17 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
       let loc = expr.exp_loc in
       let lambda = transl_exp expr in
       let arity = Ast_uncurried.uncurried_type_get_arity ~env:e.exp_env e.exp_type in
-      let arity_s = arity |> string_of_int in
-      let name = match (Ctype.expand_head expr.exp_env expr.exp_type).desc with
-      | Tarrow (Nolabel, t, _, _) -> (
-        match (Ctype.expand_head expr.exp_env t).desc with
-        | Tconstr (Pident {name= "unit"}, [], _) -> "#fn_mk_unit"
-        | _ -> "#fn_mk"
-      )
-      | _ -> "#fn_mk" in
       let prim =
-        Primitive.make ~name ~alloc:true ~native_name:arity_s ~arity:1
+        match (Ctype.expand_head expr.exp_env expr.exp_type).desc with
+        | Tarrow (Nolabel, t, _, _) -> (
+          match (Ctype.expand_head expr.exp_env t).desc with
+          | Tconstr (Pident {name= "unit"}, [], _) -> Pjs_fn_make_unit
+          | _ -> Pjs_fn_make arity
+        )
+        | _ -> Pjs_fn_make arity
       in
       Lprim
-        ( Pccall prim
+        ( prim
           (* could be replaced with Opaque in the future except arity 0*),
           [ lambda ],
           loc )
@@ -1176,13 +1140,10 @@ and transl_record loc env fields repres opt_init_expr =
       let lambda = transl_exp expr in
       if lbl_name.[0] = 'I' then
         let arity_s = String.sub lbl_name 1 (String.length lbl_name - 1) in
-        let prim =
-          Primitive.make ~name:"#fn_mk" ~alloc:true ~native_name:arity_s
-            ~arity:1
-        in
+        let arity = Int32.of_string arity_s |> Int32.to_int in
         Lprim
-          ( Pccall prim
-            (* could be replaced with Opaque in the future except arity 0*),
+          ( Pjs_fn_make arity,
+            (* could be replaced with Opaque in the future except arity 0*)
             [ lambda ],
             loc )
       else lambda

@@ -21,7 +21,7 @@ let renderToElementWithClassName = (reactElement, className) =>
       (className ++
       " found in the HTML."),
     )
-  | elements => render(reactElement, Array.unsafe_get(elements, 0))
+  | elements => render(reactElement, Belt.Array.getUnsafe(elements, 0))
   }
 
 let renderToElementWithId = (reactElement, id) =>
@@ -49,7 +49,7 @@ module Experimental = {
         (className ++
         " found in the HTML."),
       )
-    | elements => Ok(createRoot(Array.unsafe_get(elements, 0)))
+    | elements => Ok(createRoot(Belt.Array.getUnsafe(elements, 0)))
     }
 
   let createRootWithId = id =>
@@ -73,7 +73,7 @@ let hydrateToElementWithClassName = (reactElement, className) =>
       (className ++
       " found in the HTML."),
     )
-  | elements => hydrate(reactElement, Array.unsafe_get(elements, 0))
+  | elements => hydrate(reactElement, Belt.Array.getUnsafe(elements, 0))
   }
 
 let hydrateToElementWithId = (reactElement, id) =>

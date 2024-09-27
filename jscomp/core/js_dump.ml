@@ -74,7 +74,7 @@ module L = Js_dump_lit
 
 module Curry_gen = struct
   let pp_curry_dot f =
-    P.string f Js_runtime_modules.curry;
+    P.string f Primitive_modules.curry;
     P.string f L.dot
 
   let pp_optimize_curry (f : P.t) (len : int) =
@@ -642,7 +642,6 @@ and expression_desc cxt ~(level : int) f x : cxt =
         | Int { i; c = None } ->
             Int32.to_string i
             (* check , js convention with ocaml lexical convention *)
-        | Uint i -> Format.asprintf "%lu" i
         | BigInt {positive; value} -> Format.asprintf "%sn" (Bigint_utils.to_string positive value)
       in
       let need_paren =
@@ -651,8 +650,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
         else
           level = 15 (* Parenthesize as well when followed by a dot. *)
           && s.[0] <> 'I' (* Infinity *)
-          && s.[0] <> 'N'
-        (* NaN *)
+          && s.[0] <> 'N' (* NaN *)
       in
       let action _ = P.string f s in
       if need_paren then P.paren f action else action ();
@@ -722,7 +720,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
   | Optional_block (e, identity) ->
       expression ~level cxt f
         (if identity then e
-        else E.runtime_call Js_runtime_modules.option "some" [ e ])
+        else E.runtime_call Primitive_modules.option "some" [ e ])
   | Caml_block (el, _, _, Blk_module fields) ->
       expression_desc cxt ~level f
         (Object (None,

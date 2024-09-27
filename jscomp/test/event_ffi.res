@@ -59,7 +59,7 @@ let a3 = (x, y, z) => x + y + z
 /* let b44 () = Js.Internal.fn_mk4 (fun x y z d -> (x,y,z,d)) */
 /* polymoprhic restriction */
 
-let test_as: ('a => 'a, _ as 'b) => 'b = List.map
+let test_as: (_ as 'b, 'a => 'a) => 'b = Belt.List.map
 
 let xx: unit => _ => unit = () => _ => Js.log(3)
 

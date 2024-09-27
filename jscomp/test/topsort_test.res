@@ -1,3 +1,5 @@
+open Belt
+
 type graph = list<(string, string)>
 
 let graph: graph = list{
@@ -11,22 +13,23 @@ let graph: graph = list{
   ("e", "g"),
 }
 
-let nexts = (x: string, g: graph): list<string> => List.fold_left((acc, (a, b)) =>
+let nexts = (x: string, g: graph): list<string> =>
+  g->List.reduce(list{}, (acc, (a, b)) =>
     if a == x {
       list{b, ...acc}
     } else {
       acc
     }
-  , list{}, g)
+  )
 
 let rec dfs1 = (nodes, graph, visited) =>
   switch nodes {
-  | list{} => List.rev(visited)
+  | list{} => List.reverse(visited)
   | list{x, ...xs} =>
-    if List.mem(x, visited) {
+    if visited->List.has(x, \"==") {
       dfs1(xs, graph, visited)
     } else {
-      print_endline(x)
+      Js.log(x)
       dfs1(\"@"(nexts(x, graph), xs), graph, list{x, ...visited})
     }
   }
@@ -34,7 +37,7 @@ let rec dfs1 = (nodes, graph, visited) =>
 let () = {
   assert(dfs1(list{"a"}, graph, list{}) == list{"a", "d", "e", "g", "f", "c", "b"})
 
-  print_newline()
+  Js.log()
   assert(dfs1(list{"b"}, list{("f", "d"), ...graph}, list{}) == list{"b", "e", "g", "f", "d"})
 }
 
@@ -43,13 +46,13 @@ let rec dfs2 = (nodes, graph, visited) => {
     switch nodes {
     | list{} => visited
     | list{x, ...xs} =>
-      if List.mem(x, visited) {
+      if visited->List.has(x, \"==") {
         aux(xs, graph, visited)
       } else {
         aux(xs, graph, aux(nexts(x, graph), graph, list{x, ...visited}))
       }
     }
-  \"@@"(List.rev, aux(nodes, graph, visited))
+  aux(nodes, graph, visited)->List.reverse
 }
 
 let () = {
@@ -61,12 +64,12 @@ let () = {
 let dfs3 = (nodes, graph) => {
   let visited = ref(list{})
   let rec aux = (node, graph) =>
-    if \"@@"(not, List.mem(node, visited.contents)) {
+    if !List.has(visited.contents, node, \"==") {
       visited := list{node, ...visited.contents}
-      List.iter(x => aux(x, graph), nexts(node, graph))
+      nexts(node, graph)->List.forEach(x => aux(x, graph))
     }
-  List.iter(node => aux(node, graph), nodes)
-  List.rev(visited.contents)
+  nodes->List.forEach(node => aux(node, graph))
+  visited.contents->List.reverse
 }
 
 let () = {
@@ -90,9 +93,9 @@ let grwork = list{
 
 let unsafe_topsort = graph => {
   let visited = ref(list{})
-  let rec sort_nodes = nodes => List.iter(node => sort_node(node), nodes)
+  let rec sort_nodes = nodes => nodes->List.forEach(node => sort_node(node))
   and sort_node = node =>
-    if \"@@"(not, List.mem(node, visited.contents)) {
+    if !List.has(visited.contents, node, \"==") {
       /* This check does not prevent cycle ,
            but it is still necessary? yes! 
            since a node can have multiple parents
@@ -105,30 +108,30 @@ let unsafe_topsort = graph => {
  */
       visited := list{node, ...visited.contents}
     }
-  List.iter(((x, _)) => sort_node(x), graph)
+  graph->List.forEach(((x, _)) => sort_node(x))
   visited.contents
 }
 
 let () = assert(unsafe_topsort(grwork) == list{"wake", "shower", "dress", "eat", "washup", "go"})
 
-module String_set = Set.Make(String)
+module String_set = Belt.Set.String
 exception Cycle(list<string>)
 let pathsort = graph => {
   let visited = ref(list{})
   let empty_path = (String_set.empty, list{})
   let \"+>" = (node, (set, stack)) =>
-    if String_set.mem(node, set) {
+    if String_set.has(set, node) {
       raise(Cycle(list{node, ...stack}))
     } else {
-      (String_set.add(node, set), list{node, ...stack})
+      (String_set.add(set, node), list{node, ...stack})
     }
 
   /* let check node (set,stack) = 
       if String_set.mem node set then 
         raise (Cycle (node::stack))  in */
-  let rec sort_nodes = (path, nodes) => List.iter(node => sort_node(path, node), nodes)
+  let rec sort_nodes = (path, nodes) => nodes->List.forEach(node => sort_node(path, node))
   and sort_node = (path, node) =>
-    if \"@@"(not, List.mem(node, visited.contents)) {
+    if !List.has(visited.contents, node, \"==") {
       /* check node path ; */
       sort_nodes(\"+>"(node, path), nexts(node, graph))
       /* different from dfs, recorded after its 
@@ -137,14 +140,14 @@ let pathsort = graph => {
  */
       visited := list{node, ...visited.contents}
     }
-  List.iter(((x, _)) => sort_node(empty_path, x), graph)
+  graph->List.forEach(((x, _)) => sort_node(empty_path, x))
   visited.contents
 }
 
 let () = assert(pathsort(grwork) == list{"wake", "shower", "dress", "eat", "washup", "go"})
 
 let () = try {
-  \"@@"(ignore, pathsort(list{("go", "eat"), ...grwork}))
+  pathsort(list{("go", "eat"), ...grwork})->ignore
   assert(false)
 } catch {
 | Cycle(list{"go", "washup", "eat", "go"}) => ()

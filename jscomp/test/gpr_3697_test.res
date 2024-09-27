@@ -1,4 +1,4 @@
-type rec t<'a> = Fix(lazy_t<t<'a>>)
+type rec t<'a> = Fix(Lazy.t<t<'a>>)
 
 let rec fix = () => Fix(Lazy.from_fun(fix))
 

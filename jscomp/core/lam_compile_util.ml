@@ -30,3 +30,12 @@ let jsop_of_comp (cmp : Lam_compat.comparison) : Js_op.binop =
   | Cgt -> Gt
   | Cle -> Le
   | Cge -> Ge
+
+let runtime_of_comp (cmp : Lam_compat.comparison) : string =
+  match cmp with
+  | Ceq -> "equal"
+  | Cneq -> "notequal"
+  | Clt -> "lessthan"
+  | Cgt -> "greaterthan"
+  | Cle -> "lessequal"
+  | Cge -> "greaterequal"

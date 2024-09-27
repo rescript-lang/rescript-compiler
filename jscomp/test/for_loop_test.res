@@ -1,41 +1,41 @@
 let for_3 = x => {
   let v = ref(0)
-  let arr = Array.map(_ => _ => (), x)
-  for i in 0 to Array.length(x) - 1 {
+  let arr = x->Belt.Array.map(_ => _ => ())
+  for i in 0 to Belt.Array.length(x) - 1 {
     let j = i * 2
     arr[i] = _ => v := v.contents + j
   }
-  Array.iter(x => x(), arr)
+  arr->Belt.Array.forEach(x => x())
   v.contents
 }
 
 let for_4 = x => {
   let v = ref(0)
-  let arr = Array.map(_ => _ => (), x)
-  for i in 0 to Array.length(x) - 1 {
+  let arr = x->Belt.Array.map(_ => _ => ())
+  for i in 0 to Belt.Array.length(x) - 1 {
     let j = i * 2
     let k = 2 * j
     arr[i] = _ => v := v.contents + k
   }
-  Array.iter(x => x(), arr)
+  arr->Belt.Array.forEach(x => x())
   v.contents
 }
 
 let for_5 = (x, u) => {
   let v = ref(0)
-  let arr = Array.map(_ => _ => (), x)
-  for i in 0 to Array.length(x) - 1 {
+  let arr = x->Belt.Array.map(_ => _ => ())
+  for i in 0 to Belt.Array.length(x) - 1 {
     let _j = i * 2
     let k = 2 * u * u
     arr[i] = _ => v := v.contents + k
   }
-  Array.iter(x => x(), arr)
+  arr->Belt.Array.forEach(x => x())
   v.contents
 }
 
 let for_6 = (x, u) => {
   let v = ref(0)
-  let arr = Array.map(_ => _ => (), x)
+  let arr = x->Belt.Array.map(_ => _ => ())
   let v4 = ref(0)
   let v5 = ref(0)
   let inspect_3 = ref(-1)
@@ -44,7 +44,7 @@ let for_6 = (x, u) => {
     incr(v5)
     let v2 = ref(0)
     let v3 = u
-    for i in 0 to Array.length(x) - 1 {
+    for i in 0 to Belt.Array.length(x) - 1 {
       let _j = i * 2
       let k = 2 * u * u
       let h = 2 * v5.contents
@@ -54,7 +54,7 @@ let for_6 = (x, u) => {
     }
     inspect_3 := v2.contents
   }
-  Array.iter(x => x(), arr)
+  arr->Belt.Array.forEach(x => x())
   [v.contents, v4.contents, v5.contents, inspect_3.contents]
 }
 
@@ -62,13 +62,13 @@ let for_7 = () => {
   let i_len = 7
   let j_len = 3
   let v = ref(0)
-  let arr = Array.make(i_len * j_len, _ => ())
+  let arr = Belt.Array.make(i_len * j_len, _ => ())
   for i in 0 to i_len - 1 {
     for j in 0 to j_len - 1 {
       arr[i * j_len + j] = _ => v := v.contents + i + j
     }
   }
-  Array.iter(f => f(), arr)
+  arr->Belt.Array.forEach(f => f())
   v.contents
 }
 
@@ -76,7 +76,7 @@ let for_8 = () => {
   let i_len = 7
   let j_len = 3
   let v = ref(0)
-  let arr = Array.make(i_len * j_len, _ => ())
+  let arr = Belt.Array.make(i_len * j_len, _ => ())
   for i in 0 to i_len - 1 {
     let k = 2 * i
     for j in 0 to j_len - 1 {
@@ -84,22 +84,25 @@ let for_8 = () => {
       arr[i * j_len + j] = _ => v := v.contents + i + j + h + k
     }
   }
-  Array.iter(f => f(), arr)
+  arr->Belt.Array.forEach(f => f())
   v.contents
 }
 
 let for_9 = () => {
   let (collect, get) = {
     let v: ref<list<int>> = ref(list{})
-    (x => v := list{x, ...v.contents}, () => \"@@"(Array.of_list, List.rev(v.contents)))
+    (
+      x => v := list{x, ...v.contents},
+      () => \"@@"(Belt.List.toArray, Belt.List.reverse(v.contents)),
+    )
   }
 
   let i_len = 2
   let j_len = 2
   let vv = ref(0)
   let vv2 = ref(0)
-  let arr = Array.make(i_len * j_len, _ => ())
-  let arr2 = Array.make(i_len, _ => ())
+  let arr = Belt.Array.make(i_len * j_len, _ => ())
+  let arr2 = Belt.Array.make(i_len, _ => ())
   for i in 0 to i_len - 1 {
     let v = ref(0)
     /* incr v ; */
@@ -128,8 +131,8 @@ let for_9 = () => {
         v is changed
  */
   }
-  Array.iter(f => f(), arr)
-  Array.iter(f => f(), arr2)
+  arr->Belt.Array.forEach(f => f())
+  arr2->Belt.Array.forEach(f => f())
   [(vv.contents, get(), vv2.contents)]
 }
 
@@ -158,10 +161,10 @@ console.log(result,u)
 */
 
 let suites = list{
-  ("for_loop_test_3", _ => Mt.Eq(90, \"@@"(for_3, Array.make(10, 2)))),
-  ("for_loop_test_4", _ => Mt.Eq(180, \"@@"(for_4, Array.make(10, 2)))),
-  ("for_loop_test_5", _ => Mt.Eq(2420, for_5(Array.make(10, 2), 11))),
-  ("for_loop_test_6", _ => Mt.Eq([30, 1, 2, 3], for_6(Array.make(3, 0), 0))),
+  ("for_loop_test_3", _ => Mt.Eq(90, \"@@"(for_3, Belt.Array.make(10, 2)))),
+  ("for_loop_test_4", _ => Mt.Eq(180, \"@@"(for_4, Belt.Array.make(10, 2)))),
+  ("for_loop_test_5", _ => Mt.Eq(2420, for_5(Belt.Array.make(10, 2), 11))),
+  ("for_loop_test_6", _ => Mt.Eq([30, 1, 2, 3], for_6(Belt.Array.make(3, 0), 0))),
   ("for_loop_test_7", _ => Mt.Eq(84, for_7())),
   ("for_loop_test_8", _ => Mt.Eq(294, for_8())),
   ("for_loop_test_9", _ => Mt.Eq([(10, [1, 2, 2, 3], 5)], for_9())),

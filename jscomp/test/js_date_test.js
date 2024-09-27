@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 function date() {
   return new Date("1976-03-08T12:34:56.789+01:23");
@@ -971,7 +971,7 @@ let suites_1 = {
                                                                                                                                         let c = new Date("2013-03-01T01:10:01");
                                                                                                                                         return {
                                                                                                                                           TAG: "Ok",
-                                                                                                                                          _0: Caml_obj.equal(a, b) && Caml_obj.notequal(b, c) && Caml_obj.greaterthan(c, b)
+                                                                                                                                          _0: Primitive_object.equal(a, b) && Primitive_object.notequal(b, c) && Primitive_object.greaterthan(c, b)
                                                                                                                                         };
                                                                                                                                       }
                                                                                                                                     ],

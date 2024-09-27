@@ -2,8 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_array = require("../../lib/js/caml_array.js");
-let Pervasives = require("../../lib/js/pervasives.js");
+let Belt_Array = require("../../lib/js/belt_Array.js");
 
 function map(f, a) {
   let f$1 = x => f(x);
@@ -11,7 +10,7 @@ function map(f, a) {
   if (l === 0) {
     return [];
   }
-  let r = Caml_array.make(l, f$1(a[0]));
+  let r = Belt_Array.make(l, f$1(a[0]));
   for (let i = 1; i < l; ++i) {
     r[i] = f$1(a[i]);
   }
@@ -30,7 +29,7 @@ function init(l, f) {
       Error: new Error()
     };
   }
-  let res = Caml_array.make(l, f$1(0));
+  let res = Belt_Array.make(l, f$1(0));
   for (let i = 1; i < l; ++i) {
     res[i] = f$1(i);
   }
@@ -47,10 +46,10 @@ function fold_left(f, x, a) {
 }
 
 function f2() {
-  let arr = init(30000000, i => i);
-  let b = map(i => i + i - 1, arr);
-  let v = fold_left((prim0, prim1) => prim0 + prim1, 0, b);
-  console.log(Pervasives.string_of_float(v));
+  let arr = Belt_Array.init(30000000, i => i);
+  let b = Belt_Array.map(arr, i => i + i - 1);
+  let v = Belt_Array.reduceReverse(b, 0, (prim0, prim1) => prim0 + prim1);
+  console.log(v.toString());
 }
 
 f2();
@@ -67,7 +66,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -122,15 +121,15 @@ let c = g(0)(3, 4);
 
 let d = g(0)(3, 5);
 
-eq("File \"earger_curry_test.res\", line 142, characters 5-12", a, 10);
+eq("File \"earger_curry_test.res\", line 148, characters 5-12", a, 10);
 
-eq("File \"earger_curry_test.res\", line 143, characters 5-12", b, 11);
+eq("File \"earger_curry_test.res\", line 149, characters 5-12", b, 11);
 
-eq("File \"earger_curry_test.res\", line 144, characters 5-12", c, 10);
+eq("File \"earger_curry_test.res\", line 150, characters 5-12", c, 10);
 
-eq("File \"earger_curry_test.res\", line 145, characters 5-12", d, 11);
+eq("File \"earger_curry_test.res\", line 151, characters 5-12", d, 11);
 
-eq("File \"earger_curry_test.res\", line 146, characters 5-12", all_v.contents, {
+eq("File \"earger_curry_test.res\", line 152, characters 5-12", all_v.contents, {
   hd: 8,
   tl: {
     hd: 6,

@@ -31,7 +31,6 @@ let ident_create_predef_exn = wrap Ident.create_predef_exn
 
 let ident_int = ident_create "int"
 and ident_char = ident_create "char"
-and ident_bytes = ident_create "bytes"
 and ident_float = ident_create "float"
 and ident_bool = ident_create "bool"
 and ident_unit = ident_create "unit"
@@ -41,16 +40,11 @@ and ident_list = ident_create "list"
 and ident_option = ident_create "option"
 and ident_result = ident_create "result"
 and ident_dict = ident_create "dict"
-
-and ident_int64 = ident_create "int64"
 and ident_bigint = ident_create "bigint"
 and ident_lazy_t = ident_create "lazy_t"
 and ident_string = ident_create "string"
 and ident_extension_constructor = ident_create "extension_constructor"
-and ident_floatarray = ident_create "floatarray"
-
 and ident_unknown = ident_create "unknown"
-
 and ident_promise = ident_create "promise"
 and ident_uncurried = ident_create "function$"
 
@@ -59,23 +53,21 @@ type test =
   | For_sure_no 
   | NA
 
-let type_is_builtin_path_but_option (p : Path.t) : test  =
+let type_is_builtin_path_but_option (p : Path.t) : test =
   match p with
-  | Pident {stamp} ->
-      if 
-        stamp >= ident_int.stamp
-        && stamp  <= ident_floatarray.stamp    
-      then    
-        if  (stamp = ident_option.stamp)
-         || (stamp = ident_unit.stamp) then 
-          For_sure_no
-        else For_sure_yes
-      else NA 
+  | Pident {stamp}
+    when stamp = ident_option.stamp
+    -> For_sure_no
+  | Pident {stamp}
+    when stamp = ident_unit.stamp
+    -> For_sure_no
+  | Pident {stamp}
+    when stamp >= ident_int.stamp && stamp <= ident_uncurried.stamp
+    -> For_sure_yes
   | _ -> NA
 
 let path_int = Pident ident_int
 and path_char = Pident ident_char
-and path_bytes = Pident ident_bytes
 and path_float = Pident ident_float
 and path_bool = Pident ident_bool
 and path_unit = Pident ident_unit
@@ -85,23 +77,16 @@ and path_list = Pident ident_list
 and path_option = Pident ident_option
 and path_result = Pident ident_result
 and path_dict = Pident ident_dict
-
-
-and path_int64 = Pident ident_int64
 and path_bigint = Pident ident_bigint
 and path_lazy_t = Pident ident_lazy_t
 and path_string = Pident ident_string
-
 and path_unkonwn = Pident ident_unknown
 and path_extension_constructor = Pident ident_extension_constructor
-and path_floatarray = Pident ident_floatarray
-
 and path_promise = Pident ident_promise
 and path_uncurried = Pident ident_uncurried
 
 let type_int = newgenty (Tconstr(path_int, [], ref Mnil))
 and type_char = newgenty (Tconstr(path_char, [], ref Mnil))
-and type_bytes = newgenty (Tconstr(path_bytes, [], ref Mnil))
 and type_float = newgenty (Tconstr(path_float, [], ref Mnil))
 and type_bool = newgenty (Tconstr(path_bool, [], ref Mnil))
 and type_unit = newgenty (Tconstr(path_unit, [], ref Mnil))
@@ -112,7 +97,6 @@ and type_option t = newgenty (Tconstr(path_option, [t], ref Mnil))
 and type_result t1 t2 = newgenty (Tconstr(path_result, [t1; t2], ref Mnil))
 and type_dict t = newgenty (Tconstr(path_dict, [t], ref Mnil))
 
-and type_int64 = newgenty (Tconstr(path_int64, [], ref Mnil))
 and type_bigint = newgenty (Tconstr(path_bigint, [], ref Mnil))
 and type_lazy_t t = newgenty (Tconstr(path_lazy_t, [t], ref Mnil))
 and type_string = newgenty (Tconstr(path_string, [], ref Mnil))
@@ -120,7 +104,6 @@ and type_string = newgenty (Tconstr(path_string, [], ref Mnil))
 and type_unknown = newgenty (Tconstr(path_unkonwn, [], ref Mnil))
 and type_extension_constructor =
       newgenty (Tconstr(path_extension_constructor, [], ref Mnil))
-and type_floatarray = newgenty (Tconstr(path_floatarray, [], ref Mnil))
 
 let ident_match_failure = ident_create_predef_exn "Match_failure"
 
@@ -301,7 +284,6 @@ let common_initial_env add_type add_extension empty_env =
                          [newgenty (Ttuple[type_string; type_int; type_int])] (
   add_exception ident_undefined_recursive_module
                          [newgenty (Ttuple[type_string; type_int; type_int])] (
-  add_type ident_int64 decl_abstr (
   add_type ident_bigint decl_abstr (
 
   add_type ident_lazy_t decl_lazy_t (
@@ -319,18 +301,16 @@ let common_initial_env add_type add_extension empty_env =
   add_type ident_string decl_abstr (
   add_type ident_int decl_abstr_imm (
   add_type ident_extension_constructor decl_abstr (
-  add_type ident_floatarray decl_abstr (
     add_type ident_promise decl_promise (
-      empty_env))))))))))))))))))))))))))))
+      empty_env))))))))))))))))))))))))))
 
 let build_initial_env add_type add_exception empty_env =
   let common = common_initial_env add_type add_exception empty_env in
-  let res = add_type ident_bytes decl_abstr common in 
   let decl_type_char = 
         {decl_abstr with 
         type_manifest = Some type_int; 
         type_private = Private} in 
-    add_type ident_char decl_type_char res 
+    add_type ident_char decl_type_char common
   
   
 let builtin_values =

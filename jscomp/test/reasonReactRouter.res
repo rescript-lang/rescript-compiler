@@ -51,11 +51,12 @@ let safeMakeEvent = eventName =>
 /* This is copied from array.ml. We want to cut dependencies for ReasonReact so
  that it's friendlier to use in size-constrained codebases */
 let arrayToList = a => {
+  open Belt
   let rec tolist = (i, res) =>
     if i < 0 {
       res
     } else {
-      tolist(i - 1, list{Array.unsafe_get(a, i), ...res})
+      tolist(i - 1, list{Array.getUnsafe(a, i), ...res})
     }
   tolist(Array.length(a) - 1, list{})
 }

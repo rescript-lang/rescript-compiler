@@ -8,15 +8,15 @@
 
 @genType let uncurried0 = (. ()) => ""
 
-@genType let uncurried1 = (. x) => x |> string_of_int
+@genType let uncurried1 = (. x) => x->Belt.Int.toString
 
-@genType let uncurried2 = (. x, y) => (x |> string_of_int) ++ y
+@genType let uncurried2 = (. x, y) => (x->Belt.Int.toString) ++ y
 
-@genType let uncurried3 = (. x, y, z) => (x |> string_of_int) ++ (y ++ (z |> string_of_int))
+@genType let uncurried3 = (. x, y, z) => (x->Belt.Int.toString) ++ (y ++ (z->Belt.Int.toString))
 
-@genType let curried3 = (x, y, z) => (x |> string_of_int) ++ (y ++ (z |> string_of_int))
+@genType let curried3 = (x, y, z) => (x->Belt.Int.toString) ++ (y ++ (z->Belt.Int.toString))
 
-@genType let callback = cb => cb() |> string_of_int
+@genType let callback = cb => cb()->Belt.Int.toString
 
 type auth = {login: unit => string}
 type authU = {loginU: (. unit) => string}

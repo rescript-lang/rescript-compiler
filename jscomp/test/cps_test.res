@@ -16,23 +16,23 @@ let test = () => {
 let test_closure = () => {
   let n = 6
   let v = ref(0)
-  let arr = Array.make(n, x => x)
+  let arr = Belt.Array.make(n, x => x)
   for i in 0 to n - 1 {
     arr[i] = _ => i
   }
-  Array.iter(i => v := v.contents + i(0), arr)
+  arr->Belt.Array.forEach(i => v := v.contents + i(0))
   v.contents
 }
 
 let test_closure2 = () => {
   let n = 6
   let v = ref(0)
-  let arr = Array.make(n, x => x)
+  let arr = Belt.Array.make(n, x => x)
   for i in 0 to n - 1 {
     let j = i + i
     arr[i] = _ => j
   }
-  Array.iter(i => v := v.contents + i(0), arr)
+  arr->Belt.Array.forEach(i => v := v.contents + i(0))
   v.contents
 }
 

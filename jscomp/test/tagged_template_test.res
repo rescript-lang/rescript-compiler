@@ -19,9 +19,9 @@ let length = length`hello ${extraLength} what's the total length? Is it ${3}?`
 
 let foo = (strings, values) => {
   let res = ref("")
-  let valueCount = Array.length(values)
+  let valueCount = Belt.Array.length(values)
   for i in 0 to valueCount - 1 {
-    res := res.contents ++ strings[i] ++ string_of_int(values[i] * 10)
+    res := res.contents ++ strings[i] ++ Js.Int.toString(values[i] * 10)
   }
   res.contents ++ strings[valueCount]
 }

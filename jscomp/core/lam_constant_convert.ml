@@ -35,7 +35,7 @@ let rec convert_constant (const : Lambda.structured_constant) : Lam_constant.t =
       Const_string { s; unicode }
   | Const_base (Const_float i) -> Const_float i
   | Const_base (Const_int32 i) -> Const_int { i; comment = None }
-  | Const_base (Const_int64 i) -> Const_int64 i
+  | Const_base (Const_int64 _) -> assert false
   | Const_base (Const_bigint (sign, i)) -> Const_bigint (sign, i)
   | Const_pointer (0, Pt_constructor { name = "()"; const = 1; non_const = 0 })
     ->
@@ -60,7 +60,7 @@ let rec convert_constant (const : Lambda.structured_constant) : Lam_constant.t =
             Const_int
               { i = Ext_string.hash_number_as_i32_exn name; comment = None }
           else Const_pointer name)
-  | Const_float_array s -> Const_float_array s
+  | Const_float_array s -> assert false
   | Const_immstring s -> Const_string { s; unicode = false }
   | Const_block (t, xs) -> (
       let tag = Lambda.tag_of_tag_info t in

@@ -94,7 +94,7 @@ type u = [#0(int) | #1(string)]
 
 let f = (x: u) => {
   switch x {
-  | #0(x) => string_of_int(x)
+  | #0(x) => Js.Int.toString(x)
   | #1(x) => x
   }
 }

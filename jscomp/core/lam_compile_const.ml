@@ -55,25 +55,6 @@ and translate (x : Lam_constant.t) : J.expression =
   | Const_int { i; comment } ->
       E.int i ?comment:(Lam_constant.string_of_pointer_info comment)
   | Const_char i -> Js_of_lam_string.const_char i
-  (* E.float (Int32.to_string i) *)
-  | Const_int64 i ->
-      (*
-            TODO:
-       {[
-         Int64.to_string 0x7FFFFFFFFFFFFFFFL;;
-         - : string = "9223372036854775807"
-       ]}
-       {[
-         Int64.(to_float max_int);;
-         - : float = 9.22337203685477581e+18
-       ]}
-       Note we should compile it to Int64 as JS's 
-       speical representation -- 
-       it is not representatble in JS number
-    *)
-      (* E.float (Int64.to_string i) *)
-      Js_long.of_const i
-      (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
   | Const_bigint (sign, i) -> E.bigint sign i
   | Const_float f -> E.float f (* TODO: preserve float *)
   | Const_string { s; unicode = false } -> E.str s
@@ -82,19 +63,6 @@ and translate (x : Lam_constant.t) : J.expression =
   | Const_block (tag, tag_info, xs) ->
       Js_of_lam_block.make_block NA tag_info (E.small_int tag)
         (Ext_list.map xs translate)
-  | Const_float_array ars ->
-      (* according to the compiler
-          const_float_array is immutable
-         {[ Lprim(Pccall prim_obj_dup, [master]) ]},
-          however, we can not translate
-         {[ prim_obj_dup(x) =>  x' ]}
-          since x' is now mutable, prim_obj_dup does a copy,
-
-          the compiler does this  is mainly to extract common data into data section,
-          we  deoptimized this in js backend? so it is actually mutable
-      *)
-      (* TODO-- *)
-      Js_of_lam_array.make_array Mutable (Ext_list.map ars E.float)
 
 (* E.arr Mutable ~comment:"float array" *)
 (*   (Ext_list.map (fun x ->  E.float  x ) ars) *)

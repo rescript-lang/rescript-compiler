@@ -129,8 +129,8 @@ module Int8Array = {
   @send external filter: (t, elt => bool) => t = "filter"
   @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, elt => bool) => int = "findIndex"
   @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
@@ -250,8 +250,8 @@ module Uint8Array = {
   @send external filter: (t, elt => bool) => t = "filter"
   @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, elt => bool) => int = "findIndex"
   @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
@@ -371,8 +371,8 @@ module Uint8ClampedArray = {
   @send external filter: (t, elt => bool) => t = "filter"
   @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, elt => bool) => int = "findIndex"
   @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
@@ -492,8 +492,8 @@ module Int16Array = {
   @send external filter: (t, elt => bool) => t = "filter"
   @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, elt => bool) => int = "findIndex"
   @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
@@ -613,8 +613,8 @@ module Uint16Array = {
   @send external filter: (t, elt => bool) => t = "filter"
   @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, elt => bool) => int = "findIndex"
   @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
@@ -734,8 +734,8 @@ module Int32Array = {
   @send external filter: (t, elt => bool) => t = "filter"
   @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, elt => bool) => int = "findIndex"
   @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
@@ -855,8 +855,8 @@ module Uint32Array = {
   @send external filter: (t, elt => bool) => t = "filter"
   @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, elt => bool) => int = "findIndex"
   @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
@@ -979,8 +979,8 @@ module Float32Array = {
   @send external filter: (t, elt => bool) => t = "filter"
   @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, elt => bool) => int = "findIndex"
   @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"
@@ -1100,8 +1100,8 @@ module Float64Array = {
   @send external filter: (t, elt => bool) => t = "filter"
   @send external filteri: (t, (elt, int) => bool) => t = "filter"
 
-  @send external find: (t, elt => bool) => Js.undefined<elt> = "find"
-  @send external findi: (t, (elt, int) => bool) => Js.undefined<elt> = "find"
+  @send external find: (t, elt => bool) => Js_undefined.t<elt> = "find"
+  @send external findi: (t, (elt, int) => bool) => Js_undefined.t<elt> = "find"
 
   @send external findIndex: (t, elt => bool) => int = "findIndex"
   @send external findIndexi: (t, (elt, int) => bool) => int = "findIndex"

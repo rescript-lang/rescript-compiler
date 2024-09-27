@@ -27,7 +27,11 @@ type t = unknown
 @@warning("-38") /* unused extension constructor */
 exception Error = JsError
 
-external asJsExn: exn => option<t> = "?as_js_exn"
+let asJsExn: exn => option<t> = exn =>
+  switch Obj.magic(exn) {
+  | Error(t) => Some(t)
+  | _ => None
+  }
 
 @get external stack: t => option<string> = "stack"
 @get external message: t => option<string> = "message"
@@ -36,9 +40,8 @@ external asJsExn: exn => option<t> = "?as_js_exn"
 
 type error
 @new external makeError: string => error = "Error"
-external isCamlExceptionOrOpenVariant: 'a => bool = "?is_extension"
 
-external anyToExnInternal: 'a => exn = "#wrap_exn"
+external anyToExnInternal: 'a => exn = "%wrap_exn"
 
 let raiseError = str => raise((Obj.magic((makeError(str): error)): exn))
 

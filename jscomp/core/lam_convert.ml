@@ -158,13 +158,22 @@ let unit = Lam.unit
 let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   match p with
   | Pidentity -> Ext_list.singleton_exn args
+  | Pnull -> Lam.const Const_js_null
+  | Pundefined -> Lam.const (Const_js_undefined { is_unit = false })
   | Pccall _ -> assert false
   | Prevapply -> assert false
   | Pdirapply -> assert false
   | Ploc _ -> assert false (* already compiled away here*)
-  | Pbytes_to_string (* handled very early *) ->
-      prim ~primitive:Pbytes_to_string ~args loc
   | Pcreate_extension s -> prim ~primitive:(Pcreate_extension s) ~args loc
+  | Pextension_slot_eq -> (
+      match args with
+      | [ lhs; rhs ] ->
+          prim
+            ~primitive:(Pstringcomp Ceq)
+            ~args:[ lam_extension_id loc lhs; rhs ]
+            loc
+      | _ -> assert false)
+  | Pwrap_exn -> prim ~primitive:Pwrap_exn ~args loc
   | Pignore ->
       (* Pignore means return unit, it is not an nop *)
       seq (Ext_list.singleton_exn args) unit
@@ -212,14 +221,35 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
                 ~primitive:(Pmakeblock (tag, lazy_block_info, Mutable))
                 ~args loc
           | _ -> assert false))
+  | Pfn_arity -> prim ~primitive:Pfn_arity ~args loc
+  | Pdebugger -> prim ~primitive:Pdebugger ~args loc
+  | Ptypeof -> prim ~primitive:Ptypeof ~args loc
+  | Pisnullable -> prim ~primitive:Pis_null_undefined ~args loc
+  | Pnull_to_opt -> prim ~primitive:Pnull_to_opt ~args loc
+  | Pnullable_to_opt -> prim ~primitive:Pnull_undefined_to_opt ~args loc
+  | Pundefined_to_opt -> prim ~primitive:Pundefined_to_opt ~args loc
+  | Pis_not_none -> prim ~primitive:Pis_not_none ~args loc
+  | Pval_from_option -> prim ~primitive:Pval_from_option ~args loc
+  | Pval_from_option_not_nest -> prim ~primitive:Pval_from_option_not_nest ~args loc
+  | Pjscomp x -> prim ~primitive:(Pjscomp x) ~args loc
   | Pfield (id, info) -> prim ~primitive:(Pfield (id, info)) ~args loc
   | Psetfield (id, info) -> prim ~primitive:(Psetfield (id, info)) ~args loc
   | Pduprecord -> prim ~primitive:Pduprecord ~args loc
   | Plazyforce -> prim ~primitive:Plazyforce ~args loc
   | Praise _ -> prim ~primitive:Praise ~args loc
+  | Pobjcomp x -> prim ~primitive:(Pobjcomp x) ~args loc
+  | Pobjorder -> prim ~primitive:Pobjorder ~args loc
+  | Pobjmin -> prim ~primitive:Pobjmin ~args loc
+  | Pobjmax -> prim ~primitive:Pobjmax ~args loc
+  | Pobjtag -> prim ~primitive:Pobjtag ~args loc
+  | Pobjsize -> prim ~primitive:Pobjsize ~args loc
   | Psequand -> prim ~primitive:Psequand ~args loc
   | Psequor -> prim ~primitive:Psequor ~args loc
   | Pnot -> prim ~primitive:Pnot ~args loc
+  | Pboolcomp x -> prim ~primitive:(Pboolcomp x) ~args loc
+  | Pboolorder -> prim ~primitive:Pboolorder ~args loc
+  | Pboolmin -> prim ~primitive:Pboolmin ~args loc
+  | Pboolmax -> prim ~primitive:Pboolmax ~args loc
   | Pnegint -> prim ~primitive:Pnegint ~args loc
   | Paddint -> prim ~primitive:Paddint ~args loc
   | Psubint -> prim ~primitive:Psubint ~args loc
@@ -232,15 +262,18 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Plslint -> prim ~primitive:Plslint ~args loc
   | Plsrint -> prim ~primitive:Plsrint ~args loc
   | Pasrint -> prim ~primitive:Pasrint ~args loc
+  | Pintorder -> prim ~primitive:Pintorder ~args loc
+  | Pintmin -> prim ~primitive:Pintmin ~args loc
+  | Pintmax -> prim ~primitive:Pintmax ~args loc
   | Pstringlength -> prim ~primitive:Pstringlength ~args loc
   | Pstringrefu -> prim ~primitive:Pstringrefu ~args loc
+  | Pstringcomp x -> prim ~primitive:(Pstringcomp x) ~args loc
+  | Pstringorder -> prim ~primitive:Pstringorder ~args loc
+  | Pstringmin -> prim ~primitive:Pstringmin ~args loc
+  | Pstringmax -> prim ~primitive:Pstringmax ~args loc
+  | Pstringadd -> prim ~primitive:Pstringadd ~args loc
   | Pabsfloat -> assert false
   | Pstringrefs -> prim ~primitive:Pstringrefs ~args loc
-  | Pbyteslength -> prim ~primitive:Pbyteslength ~args loc
-  | Pbytesrefu -> prim ~primitive:Pbytesrefu ~args loc
-  | Pbytessetu -> prim ~primitive:Pbytessetu ~args loc
-  | Pbytesrefs -> prim ~primitive:Pbytesrefs ~args loc
-  | Pbytessets -> prim ~primitive:Pbytessets ~args loc
   | Pisint -> prim ~primitive:Pisint ~args loc
   | Pisout -> (
       match args with
@@ -254,6 +287,10 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Psubfloat -> prim ~primitive:Psubfloat ~args loc
   | Pmulfloat -> prim ~primitive:Pmulfloat ~args loc
   | Pdivfloat -> prim ~primitive:Pdivfloat ~args loc
+  | Pmodfloat -> prim ~primitive:Pmodfloat ~args loc
+  | Pfloatorder -> prim ~primitive:Pfloatorder ~args loc
+  | Pfloatmin -> prim ~primitive:Pfloatmin ~args loc
+  | Pfloatmax -> prim ~primitive:Pfloatmax ~args loc
   | Pnegbigint -> prim ~primitive:Pnegbigint ~args loc
   | Paddbigint -> prim ~primitive:Paddbigint ~args loc
   | Psubbigint -> prim ~primitive:Psubbigint ~args loc
@@ -267,6 +304,9 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Plslbigint -> prim ~primitive:Plslbigint ~args loc
   | Pasrbigint -> prim ~primitive:Pasrbigint ~args loc
   | Pbigintcomp x -> prim ~primitive:(Pbigintcomp x) ~args loc
+  | Pbigintorder -> prim ~primitive:Pbigintorder ~args loc
+  | Pbigintmin -> prim ~primitive:Pbigintorder ~args loc
+  | Pbigintmax -> prim ~primitive:Pbigintorder ~args loc
   | Pintcomp x -> prim ~primitive:(Pintcomp x) ~args loc
   | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args loc
   | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args loc
@@ -277,83 +317,36 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Parraysetu -> prim ~primitive:Parraysetu ~args loc
   | Parrayrefs -> prim ~primitive:Parrayrefs ~args loc
   | Parraysets -> prim ~primitive:Parraysets ~args loc
-  | Pbintofint x -> (
-      match x with
-      | Pint32 | Pbigint -> Ext_list.singleton_exn args
-      | Pint64 -> prim ~primitive:Pint64ofint ~args loc)
-  | Pintofbint x -> (
-      match x with
-      | Pint32 | Pbigint -> Ext_list.singleton_exn args
-      | Pint64 -> prim ~primitive:Pintofint64 ~args loc)
-  | Pnegbint x -> (
-      match x with
-      | Pbigint | Pint32 -> prim ~primitive:Pnegint ~args loc
-      | Pint64 -> prim ~primitive:Pnegint64 ~args loc)
-  | Paddbint x -> (
-      match x with
-      | Pbigint | Pint32 -> prim ~primitive:Paddint ~args loc
-      | Pint64 -> prim ~primitive:Paddint64 ~args loc)
-  | Psubbint x -> (
-      match x with
-      | Pbigint | Pint32 -> prim ~primitive:Psubint ~args loc
-      | Pint64 -> prim ~primitive:Psubint64 ~args loc)
-  | Pmulbint x -> (
-      match x with
-      | Pbigint | Pint32 -> prim ~primitive:Pmulint ~args loc
-      | Pint64 -> prim ~primitive:Pmulint64 ~args loc)
-  | Pdivbint { size = x; is_safe = _ } (*FIXME*) -> (
-      match x with
-      | Pbigint | Pint32 -> prim ~primitive:Pdivint ~args loc
-      | Pint64 -> prim ~primitive:Pdivint64 ~args loc)
-  | Pmodbint { size = x; is_safe = _ } (*FIXME*) -> (
-      match x with
-      | Pbigint | Pint32 -> prim ~primitive:Pmodint ~args loc
-      | Pint64 -> prim ~primitive:Pmodint64 ~args loc)
-  | Pandbint x -> (
-      match x with
-      | Pbigint | Pint32 -> prim ~primitive:Pandint ~args loc
-      | Pint64 -> prim ~primitive:Pandint64 ~args loc)
-  | Porbint x -> (
-      match x with
-      | Pbigint | Pint32 -> prim ~primitive:Porint ~args loc
-      | Pint64 -> prim ~primitive:Porint64 ~args loc)
-  | Pxorbint x -> (
-      match x with
-      | Pbigint | Pint32 -> prim ~primitive:Pxorint ~args loc
-      | Pint64 -> prim ~primitive:Pxorint64 ~args loc)
-  | Plslbint x -> (
-      match x with
-      | Pbigint | Pint32 -> prim ~primitive:Plslint ~args loc
-      | Pint64 -> prim ~primitive:Plslint64 ~args loc)
-  | Plsrbint x -> (
-      match x with
-      | Pbigint | Pint32 -> prim ~primitive:Plsrint ~args loc
-      | Pint64 -> prim ~primitive:Plsrint64 ~args loc)
-  | Pasrbint x -> (
-      match x with
-      | Pbigint | Pint32 -> prim ~primitive:Pasrint ~args loc
-      | Pint64 -> prim ~primitive:Pasrint64 ~args loc)
-  | Pctconst x -> (
-      match x with
-      | Word_size | Int_size ->
-          Lam.const (Const_int { i = 32l; comment = None })
-      | Max_wosize ->
-          Lam.const (Const_int { i = 2147483647l; comment = Some "Max_wosize" })
-      | Big_endian -> prim ~primitive:(Pctconst Big_endian) ~args loc
-      | Ostype_unix -> prim ~primitive:(Pctconst Ostype_unix) ~args loc
-      | Ostype_win32 -> prim ~primitive:(Pctconst Ostype_win32) ~args loc
-      | Ostype_cygwin -> Lam.false_
-      | Backend_type -> prim ~primitive:(Pctconst Backend_type) ~args loc)
-  | Pcvtbint (a, b) -> (
-      match (a, b) with
-      | (Pbigint | Pint32), (Pbigint | Pint32) | Pint64, Pint64 ->
-          Ext_list.singleton_exn args
-      | Pint64, (Pbigint | Pint32) -> prim ~primitive:Pintofint64 ~args loc
-      | (Pbigint | Pint32), Pint64 -> prim ~primitive:Pint64ofint ~args loc)
-  | Pbintcomp (a, b) -> (
-      match a with
-      | Pbigint | Pint32 -> prim ~primitive:(Pintcomp b) ~args loc
-      | Pint64 -> prim ~primitive:(Pint64comp b) ~args loc)
+  | Pmakelist _mutable_flag (*FIXME*) -> prim ~primitive:Pmakelist ~args loc
+  | Pmakedict -> prim ~primitive:Pmakedict ~args loc
+  | Pawait -> prim ~primitive:Pawait ~args loc
+  | Pimport -> prim ~primitive:Pimport ~args loc
+  | Pinit_mod -> (
+    match args with
+    | [ _loc; Lconst (Const_block (0, _, [ Const_block (0, _, []) ])) ] ->
+        Lam.unit
+    | _ -> prim ~primitive:Pinit_mod ~args loc)
+  | Pupdate_mod -> (
+    match args with
+    | [ Lconst (Const_block (0, _, [ Const_block (0, _, []) ])); _; _ ] ->
+        Lam.unit
+    | _ -> prim ~primitive:Pupdate_mod ~args loc)
+  | Phash -> prim ~primitive:Phash ~args loc
+  | Phash_mixint -> prim ~primitive:Phash_mixint ~args loc
+  | Phash_mixstring -> prim ~primitive:Phash_mixstring ~args loc
+  | Phash_finalmix -> prim ~primitive:Phash_finalmix ~args loc
+  | Pcurry_apply _ -> prim ~primitive:Pjs_apply ~args loc
+  | Pis_poly_var_block -> prim ~primitive:Pis_poly_var_block ~args loc
+  | Pjs_raw_expr -> assert false
+  | Pjs_raw_stmt -> assert false
+  | Pjs_fn_make arity -> prim ~primitive:(Pjs_fn_make arity) ~args loc
+  | Pjs_fn_make_unit -> prim ~primitive:Pjs_fn_make_unit ~args loc
+  | Pjs_fn_method -> prim ~primitive:Pjs_fn_method ~args loc
+  | Pjs_unsafe_downgrade ->
+      let primitive: Lam_primitive.t = 
+        Pjs_unsafe_downgrade { name = Ext_string.empty; setter = false }
+      in
+      prim ~primitive ~args loc
 
 (* Does not exist since we compile array in js backend unlike native backend *)
 
@@ -394,14 +387,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
   let rec convert_ccall (a_prim : Primitive.description)
       (args : Lambda.lambda list) loc ~dynamic_import : Lam.t =
     let prim_name = a_prim.prim_name in
-    let prim_name_len = String.length prim_name in
     match External_ffi_types.from_string a_prim.prim_native_name with
-    | Ffi_normal ->
-        if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then
-          convert_js_primitive a_prim args loc
-        else
-          let args = Ext_list.map args convert_aux in
-          prim ~primitive:(Pccall { prim_name }) ~args loc
     | Ffi_obj_create labels ->
         let args = Ext_list.map args convert_aux in
         prim ~primitive:(Pjs_object_create labels) ~args loc
@@ -414,112 +400,11 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         let args = Ext_list.map args convert_aux in
         Lam.handle_bs_non_obj_ffi arg_types result_type ffi args loc prim_name ~dynamic_import
     | Ffi_inline_const i -> Lam.const i
-  and convert_js_primitive (p : Primitive.description)
-      (args : Lambda.lambda list) loc : Lam.t =
-    let s = p.prim_name in
-    match () with
-    | _ when s = "#is_not_none" ->
-        prim ~primitive:Pis_not_none ~args:(Ext_list.map args convert_aux) loc
-    | _ when s = "#val_from_unnest_option" ->
-        let v = convert_aux (Ext_list.singleton_exn args) in
-        prim ~primitive:Pval_from_option_not_nest ~args:[ v ] loc
-    | _ when s = "#val_from_option" ->
-        prim ~primitive:Pval_from_option
-          ~args:(Ext_list.map args convert_aux)
-          loc
-    | _ when s = "#is_poly_var_block" ->
-        prim ~primitive:Pis_poly_var_block
-          ~args:(Ext_list.map args convert_aux)
-          loc
-    | _ when s = "#raw_expr" -> (
-        match args with
-        | [ Lconst (Const_base (Const_string (code, _))) ] ->
-            (* js parsing here *)
-            let kind = Classify_function.classify code in
-            prim
-              ~primitive:(Praw_js_code { code; code_info = Exp kind })
-              ~args:[] loc
-        | _ -> assert false)
-    | _ when s = "#raw_stmt" -> (
-        match args with
-        | [ Lconst (Const_base (Const_string (code, _))) ] ->
-            let kind = Classify_function.classify_stmt code in
-            prim
-              ~primitive:(Praw_js_code { code; code_info = Stmt kind })
-              ~args:[] loc
-        | _ -> assert false)
-    | _ when s = "#debugger" ->
-        (* ATT: Currently, the arity is one due to PPX *)
-        prim ~primitive:Pdebugger ~args:[] loc
-    | _ when s = "#null" -> Lam.const Const_js_null
-    | _ when s = "#os_type" ->
-        prim ~primitive:(Pctconst Ostype) ~args:[ unit ] loc
-    | _ when s = "#undefined" -> Lam.const (Const_js_undefined {is_unit = false})
-    | _ when s = "#init_mod" -> (
-        let args = Ext_list.map args convert_aux in
-        match args with
-        | [ _loc; Lconst (Const_block (0, _, [ Const_block (0, _, []) ])) ] ->
-            Lam.unit
-        | _ -> prim ~primitive:Pinit_mod ~args loc)
-    | _ when s = "#update_mod" -> (
-        let args = Ext_list.map args convert_aux in
-        match args with
-        | [ Lconst (Const_block (0, _, [ Const_block (0, _, []) ])); _; _ ] ->
-            Lam.unit
-        | _ -> prim ~primitive:Pupdate_mod ~args loc)
-    | _ when s = "#extension_slot_eq" -> (
-        match Ext_list.map args convert_aux with
-        | [ lhs; rhs ] ->
-            prim
-              ~primitive:(Pccall { prim_name = "caml_string_equal" })
-              ~args:[ lam_extension_id loc lhs; rhs ]
-              loc
-        | _ -> assert false)
-    | _ ->
-        let primitive : Lam_primitive.t =
-          match s with
-          | "#apply" -> Pjs_runtime_apply
-          | "#apply1" | "#apply2" | "#apply3" | "#apply4" | "#apply5"
-          | "#apply6" | "#apply7" | "#apply8" ->
-              Pjs_apply
-          | "#makemutablelist" ->
-              Pmakeblock
-                ( 0,
-                  Blk_constructor { name = "::"; num_nonconst = 1; tag = 0; attrs = [] },
-                  Mutable )
-          | "#undefined_to_opt" -> Pundefined_to_opt
-          | "#nullable_to_opt" -> Pnull_undefined_to_opt
-          | "#null_to_opt" -> Pnull_to_opt
-          | "#is_nullable" -> Pis_null_undefined
-          | "#import" ->Pimport
-          | "#string_append" -> Pstringadd
-          | "#wrap_exn" -> Pwrap_exn
-          | "#obj_length" -> Pcaml_obj_length
-          | "#function_length" -> Pjs_function_length
-          | "#unsafe_lt" -> Pjscomp Clt
-          | "#unsafe_gt" -> Pjscomp Cgt
-          | "#unsafe_le" -> Pjscomp Cle
-          | "#unsafe_ge" -> Pjscomp Cge
-          | "#unsafe_eq" -> Pjscomp Ceq
-          | "#unsafe_neq" -> Pjscomp Cneq
-          | "#typeof" -> Pjs_typeof
-          | "#run" -> Pvoid_run
-          | "#fn_mk" ->
-              Pjs_fn_make (Ext_pervasives.nat_of_string_exn p.prim_native_name)
-          | "#fn_mk_unit" ->
-              Pjs_fn_make_unit
-          | "#fn_method" -> Pjs_fn_method
-          | "#unsafe_downgrade" ->
-              Pjs_unsafe_downgrade { name = Ext_string.empty; setter = false }
-          | _ ->
-              Location.raise_errorf ~loc
-                "@{<error>Error:@} internal error, using unrecognized \
-                 primitive %s"
-                s
-        in
-        let dynamic_import = primitive = Pimport in
-        let args = Ext_list.map args (convert_aux ~dynamic_import) in
-        prim ~primitive ~args loc
+    | Ffi_normal -> Location.raise_errorf ~loc
+        "@{<error>Error:@} internal error, using unrecognized \
+        primitive %s"
+        prim_name
+
   and convert_aux ?(dynamic_import = false) (lam : Lambda.lambda) : Lam.t =
     match lam with
     | Lvar x -> Lam.var (Hash_ident.find_default alias_tbl x x)
@@ -573,6 +458,23 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
     | Lprim (Prevapply, _, _) -> assert false
     | Lprim (Pdirapply, _, _) -> assert false
     | Lprim (Pccall a, args, loc) -> convert_ccall a args loc ~dynamic_import
+    | Lprim (Pjs_raw_expr, args, loc) -> (
+        match args with
+        | [ Lconst (Const_base (Const_string (code, _))) ] ->
+            (* js parsing here *)
+            let kind = Classify_function.classify code in
+            prim
+              ~primitive:(Praw_js_code { code; code_info = Exp kind })
+              ~args:[] loc
+        | _ -> assert false)
+    | Lprim(Pjs_raw_stmt, args, loc) -> (
+        match args with
+        | [ Lconst (Const_base (Const_string (code, _))) ] ->
+            let kind = Classify_function.classify_stmt code in
+            prim
+              ~primitive:(Praw_js_code { code; code_info = Stmt kind })
+              ~args:[] loc
+        | _ -> assert false)
     | Lprim (Pgetglobal id, args, _) ->
         let args = Ext_list.map args convert_aux in
         if Ident.is_predef_exn id then
@@ -581,6 +483,9 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           may_depend may_depends (Lam_module_ident.of_ml ~dynamic_import id);
           assert (args = []);
           Lam.global_module ~dynamic_import id)
+    | Lprim (Pimport, args, loc) ->
+        let args = Ext_list.map args (convert_aux ~dynamic_import:true) in
+        lam_prim ~primitive:Pimport ~args loc
     | Lprim (primitive, args, loc) ->
         let args = Ext_list.map args (convert_aux ~dynamic_import) in
         lam_prim ~primitive ~args loc

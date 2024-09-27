@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_module = require("../../lib/js/caml_module.js");
+let Primitive_module = require("../../lib/js/primitive_module.js");
 
 let suites = {
   contents: /* [] */0
@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -34,9 +34,9 @@ function add(suite) {
   };
 }
 
-let Int3 = Caml_module.init_mod([
+let Int3 = Primitive_module.init([
   "recursive_module_test.res",
-  12,
+  15,
   4
 ], {
   TAG: "Module",
@@ -46,7 +46,7 @@ let Int3 = Caml_module.init_mod([
     ]]
 });
 
-Caml_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Function",
@@ -54,9 +54,9 @@ Caml_module.update_mod({
     ]]
 }, Int3, Int3);
 
-let M = Caml_module.init_mod([
+let M = Primitive_module.init([
   "recursive_module_test.res",
-  18,
+  21,
   20
 ], {
   TAG: "Module",
@@ -74,7 +74,7 @@ function fact(n) {
   }
 }
 
-Caml_module.update_mod({
+Primitive_module.update({
   TAG: "Module",
   _0: [[
       "Function",
@@ -91,10 +91,10 @@ let Fact = {
   fact: fact$1
 };
 
-eq("File \"recursive_module_test.res\", line 29, characters 12-19", 120, fact$1(5));
+eq("File \"recursive_module_test.res\", line 32, characters 12-19", 120, fact$1(5));
 
 add([
-  "File \"recursive_module_test.res\", line 31, characters 14-21",
+  "File \"recursive_module_test.res\", line 34, characters 14-21",
   () => ({
     TAG: "ThrowAny",
     _0: () => {

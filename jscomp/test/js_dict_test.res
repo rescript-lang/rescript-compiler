@@ -24,7 +24,7 @@ let suites = {
     ("fromList", _ => Eq([("x", 23), ("y", 46)], entries(fromList(list{("x", 23), ("y", 46)})))),
     ("fromArray - []", _ => Eq(empty(), fromArray([]))),
     ("fromArray", _ => Eq([("x", 23), ("y", 46)], entries(fromArray([("x", 23), ("y", 46)])))),
-    ("map", _ => Eq(Obj.magic({"foo": "43", "bar": "86"}), map(i => string_of_int(i), obj()))),
+    ("map", _ => Eq(Obj.magic({"foo": "43", "bar": "86"}), map(i => Js.Int.toString(i), obj()))),
   }
 }
 Mt.from_pair_suites(__MODULE__, suites)

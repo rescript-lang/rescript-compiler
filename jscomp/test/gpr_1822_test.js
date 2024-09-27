@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -35,7 +35,7 @@ let area;
 
 area = myShape.TAG === "Circle" ? 100 * 3.14 : Math.imul(10, myShape._1);
 
-eq("File \"gpr_1822_test.res\", line 20, characters 3-10", area, 314);
+eq("File \"gpr_1822_test.res\", line 23, characters 3-10", area, 314);
 
 Mt.from_pair_suites("Gpr_1822_test", suites.contents);
 

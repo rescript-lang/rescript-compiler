@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Runtime_deriving = require("../../lib/js/runtime_deriving.js");
+let Primitive_util = require("../../lib/js/primitive_util.js");
 
 let suites = {
   contents: /* [] */0
@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -62,11 +62,11 @@ function xToJs(param) {
 }
 
 function xFromJs(param) {
-  return Runtime_deriving.raiseWhenNotFound(_map[param]);
+  return Primitive_util.raiseWhenNotFound(_map[param]);
 }
 
 function idx(v) {
-  eq("File \"ast_abstract_test.res\", line 26, characters 18-25", xFromJs(v), v);
+  eq("File \"ast_abstract_test.res\", line 29, characters 18-25", xFromJs(v), v);
 }
 
 idx("a");

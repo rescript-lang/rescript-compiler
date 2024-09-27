@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let List = require("../../lib/js/list.js");
-let Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+let Belt_List = require("../../lib/js/belt_List.js");
+let Primitive_exceptions = require("../../lib/js/primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0
@@ -36,9 +36,9 @@ let v1 = {
 
 function f(x) {
   if (x.TAG === "A0") {
-    return List.fold_left((prim0, prim1) => prim0 + prim1 | 0, x.lbl, x.more);
+    return Belt_List.reduceReverse(x.more, x.lbl, (prim0, prim1) => prim0 + prim1 | 0);
   } else {
-    return List.fold_left((prim0, prim1) => prim0 + prim1 | 0, 0, x.more);
+    return Belt_List.reduceReverse(x.more, 0, (prim0, prim1) => prim0 + prim1 | 0);
   }
 }
 
@@ -50,7 +50,7 @@ console.log(f(v));
 
 console.log(f(v1));
 
-let A0 = /* @__PURE__ */Caml_exceptions.create("Inline_record_test.A0");
+let A0 = /* @__PURE__ */Primitive_exceptions.create("Inline_record_test.A0");
 
 let v3 = {
   RE_EXN_ID: A0,
@@ -137,7 +137,7 @@ tmp$2 = v5.z;
 
 eq("File \"inline_record_test.res\", line 80, characters 2-9", tmp$2, 22);
 
-let A4 = /* @__PURE__ */Caml_exceptions.create("Inline_record_test.A4");
+let A4 = /* @__PURE__ */Primitive_exceptions.create("Inline_record_test.A4");
 
 let v6 = {
   RE_EXN_ID: A4,

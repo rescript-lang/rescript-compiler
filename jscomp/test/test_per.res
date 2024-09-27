@@ -121,7 +121,7 @@ external ceil: float => float = "?ceil_float"
 external floor: float => float = "?floor_float"
 external abs_float: float => float = "%absfloat"
 external copysign: (float, float) => float = "?copysign_float"
-external mod_float: (float, float) => float = "?fmod_float"
+external mod_float: (float, float) => float = "%modfloat"
 external frexp: float => (float, int) = "?frexp_float"
 external ldexp: (float, int) => float = "?ldexp_float"
 external modf: float => (float, float) = "?modf_float"
@@ -129,13 +129,6 @@ external float: int => float = "%floatofint"
 external float_of_int: int => float = "%floatofint"
 external truncate: float => int = "%intoffloat"
 external int_of_float: float => int = "%intoffloat"
-external float_of_bits: int64 => float = "?int64_float_of_bits"
-let infinity = float_of_bits(0x7F_F0_00_00_00_00_00_00L)
-let neg_infinity = float_of_bits(0xFF_F0_00_00_00_00_00_00L)
-let nan = float_of_bits(0x7F_F0_00_00_00_00_00_01L)
-let max_float = float_of_bits(0x7F_EF_FF_FF_FF_FF_FF_FFL)
-let min_float = float_of_bits(0x00_10_00_00_00_00_00_00L)
-let epsilon_float = float_of_bits(0x3C_B0_00_00_00_00_00_00L)
 
 type fpclass =
   | FP_normal
@@ -145,23 +138,7 @@ type fpclass =
   | FP_nan
 external classify_float: float => fpclass = "?classify_float"
 
-/* String and byte sequence operations -- more in modules String and Bytes */
-
 external string_length: string => int = "%string_length"
-external bytes_length: bytes => int = "%string_length"
-external bytes_create: int => bytes = "?create_bytes"
-external string_blit: (string, int, bytes, int, int) => unit = "blit_string"
-external bytes_blit: (bytes, int, bytes, int, int) => unit = "blit_string"
-external bytes_unsafe_to_string: bytes => string = "%identity"
-external bytes_unsafe_of_string: string => bytes = "%identity"
-
-let \"^" = (s1, s2) => {
-  let l1 = string_length(s1) and l2 = string_length(s2)
-  let s = bytes_create(l1 + l2)
-  string_blit(s1, 0, s, 0, l1)
-  string_blit(s2, 0, s, l1, l2)
-  bytes_unsafe_to_string(s)
-}
 
 /* Character operations -- more in module Char */
 
@@ -186,8 +163,8 @@ external snd: (('a, 'b)) => 'b = "%field1"
 /* References */
 
 type ref<'a> = {mutable contents: 'a}
-external ref: 'a => ref<'a> = "%makemutable"
-external \"!": ref<'a> => 'a = "%bs_ref_field0"
-external \":=": (ref<'a>, 'a) => unit = "%bs_ref_setfield0"
+external ref: 'a => ref<'a> = "%makeref"
+external \"!": ref<'a> => 'a = "%refget"
+external \":=": (ref<'a>, 'a) => unit = "%refset"
 external incr: ref<int> => unit = "%incr"
 external decr: ref<int> => unit = "%decr"

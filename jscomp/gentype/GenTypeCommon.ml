@@ -195,7 +195,6 @@ let string_t = ident "string"
 let unit_t = ident "void"
 let weakmap_t (x, y) = ident ~type_args:[x; y] "WeakMap"
 let weakset_t x = ident ~type_args:[x] "WeakSet"
-let int64_t = Tuple [number_t; number_t]
 
 module NodeFilename = struct
   include Filename

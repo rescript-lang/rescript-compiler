@@ -40,7 +40,7 @@ type result
 An `array` of the match and captures, the first is the full match and the
 remaining are the substring captures.
 */
-external captures: result => array<Js.nullable<string>> = "%identity"
+external captures: result => array<Js_null_undefined.t<string>> = "%identity"
 
 @deprecated("Use Js.Re.captures instead")
 external matches: result => array<string> = "%identity"

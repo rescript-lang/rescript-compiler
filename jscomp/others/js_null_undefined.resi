@@ -26,24 +26,21 @@
 Contains functionality for dealing with values that can be both `null` and `undefined`
 */
 
-/** Local alias for `Js.null_undefined<'a>`. */
 @unboxed
-type t<+'a> = Js.nullable<'a> =
-  | Value('a)
-  | @as(null) Null
-  | @as(undefined) Undefined
+type t<+'a> = Primitive_js_extern.nullable<'a> =
+  Value('a) | @as(null) Null | @as(undefined) Undefined
 
 /** Constructs a value of `Js.null_undefined<'a>` containing a value of `'a`. */
 external return: 'a => t<'a> = "%identity"
 
 /** Returns `true` if the given value is null or undefined, `false` otherwise. */
-external isNullable: t<'a> => bool = "#is_nullable"
+external isNullable: t<'a> => bool = "%is_nullable"
 
 /** The null value of type `Js.null_undefined<'a>`. */
-external null: t<'a> = "#null"
+external null: t<'a> = "%null"
 
 /** The undefined value of type `Js.null_undefined<'a>`. */
-external undefined: t<'a> = "#undefined"
+external undefined: t<'a> = "%undefined"
 
 /**
 Maps the contained value using the given function.
@@ -89,6 +86,6 @@ Maps `Js.null_undefined<'a>` to `option<'a>`.
 `undefined` => `None`
 `null` => `None`
 */
-external toOption: t<'a> => option<'a> = "#nullable_to_opt"
+external toOption: t<'a> => option<'a> = "%nullable_to_opt"
 
-@deprecated("Use toOption instead") external to_opt: t<'a> => option<'a> = "#nullable_to_opt"
+@deprecated("Use toOption instead") external to_opt: t<'a> => option<'a> = "%nullable_to_opt"

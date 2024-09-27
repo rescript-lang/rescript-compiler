@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let List = require("../../lib/js/list.js");
-let Caml_obj = require("../../lib/js/caml_obj.js");
+let Belt_List = require("../../lib/js/belt_List.js");
+let Primitive_object = require("../../lib/js/primitive_object.js");
 
 let suites = {
   contents: /* [] */0
@@ -42,17 +42,17 @@ let N = {
   v1: v1
 };
 
-let Caml_obj$1 = {};
+let Caml_obj = {};
 
-let List$1 = {};
+let List = {};
 
 let V = {
-  List: List$1
+  List: List
 };
 
-let f = Caml_obj.equal;
+let f = Primitive_object.equal;
 
-eq("File \"block_alias_test.res\", line 27, characters 3-10", List.length({
+eq("File \"block_alias_test.res\", line 27, characters 3-10", Belt_List.length({
   hd: 1,
   tl: {
     hd: 2,
@@ -60,7 +60,7 @@ eq("File \"block_alias_test.res\", line 27, characters 3-10", List.length({
   }
 }), 2);
 
-b("File \"block_alias_test.res\", line 28, characters 2-9", Caml_obj.equal(v0, {
+b("File \"block_alias_test.res\", line 28, characters 2-9", Primitive_object.equal(v0, {
   TAG: "A",
   _0: 0,
   _1: 1
@@ -70,7 +70,7 @@ eq("File \"block_alias_test.res\", line 29, characters 3-10", v0, v1);
 
 Mt.from_pair_suites("Block_alias_test", suites.contents);
 
-let h = List.length;
+let h = Belt_List.length;
 
 exports.suites = suites;
 exports.test_id = test_id;
@@ -79,7 +79,7 @@ exports.b = b;
 exports.Block = Block;
 exports.v0 = v0;
 exports.N = N;
-exports.Caml_obj = Caml_obj$1;
+exports.Caml_obj = Caml_obj;
 exports.V = V;
 exports.f = f;
 exports.h = h;

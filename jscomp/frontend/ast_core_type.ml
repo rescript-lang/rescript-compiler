@@ -47,9 +47,7 @@ open Ast_helper
 
 let is_builtin_rank0_type txt =
   match txt with
-  | "int" | "char" | "bytes" | "float" | "bool" | "unit" | "exn" | "int64"
-  | "string" ->
-    true
+  | "int" | "char" | "float" | "bool" | "unit" | "exn" | "string" -> true
   | _ -> false
 
 let is_unit (ty : t) =

@@ -2,9 +2,10 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml = require("../../lib/js/caml.js");
-let List = require("../../lib/js/list.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Belt_List = require("../../lib/js/belt_List.js");
+let Primitive_int = require("../../lib/js/primitive_int.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
+let Primitive_string = require("../../lib/js/primitive_string.js");
 
 function Make(Ord) {
   let height = x => {
@@ -376,7 +377,7 @@ function Make(Ord) {
   };
   let concat_or_join = (t1, v, d, t2) => {
     if (d !== undefined) {
-      return join(t1, v, Caml_option.valFromOption(d), t2);
+      return join(t1, v, Primitive_option.valFromOption(d), t2);
     } else {
       return concat(t1, t2);
     }
@@ -397,7 +398,7 @@ function Make(Ord) {
     if (c === 0) {
       return [
         l,
-        Caml_option.some(d),
+        Primitive_option.some(d),
         r
       ];
     }
@@ -426,7 +427,7 @@ function Make(Ord) {
       let v1 = s1._1;
       if (s1._4 >= height(s2)) {
         let match = split(v1, s2);
-        return concat_or_join(merge(f, s1._0, match[0]), v1, f(v1, Caml_option.some(s1._2), match[1]), merge(f, s1._3, match[2]));
+        return concat_or_join(merge(f, s1._0, match[0]), v1, f(v1, Primitive_option.some(s1._2), match[1]), merge(f, s1._3, match[2]));
       }
       
     }
@@ -443,7 +444,7 @@ function Make(Ord) {
     }
     let v2 = s2._1;
     let match$1 = split(v2, s1);
-    return concat_or_join(merge(f, match$1[0], s2._0), v2, f(v2, match$1[1], Caml_option.some(s2._2)), merge(f, match$1[2], s2._3));
+    return concat_or_join(merge(f, match$1[0], s2._0), v2, f(v2, match$1[1], Primitive_option.some(s2._2)), merge(f, match$1[2], s2._3));
   };
   let filter = (p, x) => {
     if (typeof x !== "object") {
@@ -745,7 +746,7 @@ function add(x, data, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Caml.int_compare(x, v);
+  let c = Primitive_int.compare(x, v);
   if (c === 0) {
     return {
       TAG: "Node",
@@ -771,7 +772,7 @@ function find(x, _x_) {
         Error: new Error()
       };
     }
-    let c = Caml.int_compare(x, x_._1);
+    let c = Primitive_int.compare(x, x_._1);
     if (c === 0) {
       return x_._2;
     }
@@ -786,7 +787,7 @@ function mem(x, _x_) {
     if (typeof x_ !== "object") {
       return false;
     }
-    let c = Caml.int_compare(x, x_._1);
+    let c = Primitive_int.compare(x, x_._1);
     if (c === 0) {
       return true;
     }
@@ -861,7 +862,7 @@ function remove(x, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Caml.int_compare(x, v);
+  let c = Primitive_int.compare(x, v);
   if (c === 0) {
     if (typeof l !== "object") {
       return r;
@@ -1020,7 +1021,7 @@ function concat(t1, t2) {
 
 function concat_or_join(t1, v, d, t2) {
   if (d !== undefined) {
-    return join(t1, v, Caml_option.valFromOption(d), t2);
+    return join(t1, v, Primitive_option.valFromOption(d), t2);
   } else {
     return concat(t1, t2);
   }
@@ -1038,11 +1039,11 @@ function split(x, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Caml.int_compare(x, v);
+  let c = Primitive_int.compare(x, v);
   if (c === 0) {
     return [
       l,
-      Caml_option.some(d),
+      Primitive_option.some(d),
       r
     ];
   }
@@ -1072,7 +1073,7 @@ function merge(f, s1, s2) {
     let v1 = s1._1;
     if (s1._4 >= height(s2)) {
       let match = split(v1, s2);
-      return concat_or_join(merge(f, s1._0, match[0]), v1, f(v1, Caml_option.some(s1._2), match[1]), merge(f, s1._3, match[2]));
+      return concat_or_join(merge(f, s1._0, match[0]), v1, f(v1, Primitive_option.some(s1._2), match[1]), merge(f, s1._3, match[2]));
     }
     
   }
@@ -1089,7 +1090,7 @@ function merge(f, s1, s2) {
   }
   let v2 = s2._1;
   let match$1 = split(v2, s1);
-  return concat_or_join(merge(f, match$1[0], s2._0), v2, f(v2, match$1[1], Caml_option.some(s2._2)), merge(f, match$1[2], s2._3));
+  return concat_or_join(merge(f, match$1[0], s2._0), v2, f(v2, match$1[1], Primitive_option.some(s2._2)), merge(f, match$1[2], s2._3));
 }
 
 function filter(p, x) {
@@ -1172,7 +1173,7 @@ function compare(cmp, m1, m2) {
     if (typeof e2 !== "object") {
       return 1;
     }
-    let c = Caml.int_compare(e1._0, e2._0);
+    let c = Primitive_int.compare(e1._0, e2._0);
     if (c !== 0) {
       return c;
     }
@@ -1283,7 +1284,7 @@ let IntMap = {
   choose: min_binding
 };
 
-let m = List.fold_left((acc, param) => add(param[0], param[1], acc), "Empty", {
+let m = Belt_List.reduceReverse({
   hd: [
     10,
     /* 'a' */97
@@ -1307,7 +1308,7 @@ let m = List.fold_left((acc, param) => add(param[0], param[1], acc), "Empty", {
       }
     }
   }
-});
+}, "Empty", (acc, param) => add(param[0], param[1], acc));
 
 function height$1(x) {
   if (typeof x !== "object") {
@@ -1427,7 +1428,7 @@ function add$1(x, data, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Caml.string_compare(x, v);
+  let c = Primitive_string.compare(x, v);
   if (c === 0) {
     return {
       TAG: "Node",
@@ -1453,7 +1454,7 @@ function find$1(x, _x_) {
         Error: new Error()
       };
     }
-    let c = Caml.string_compare(x, x_._1);
+    let c = Primitive_string.compare(x, x_._1);
     if (c === 0) {
       return x_._2;
     }
@@ -1468,7 +1469,7 @@ function mem$1(x, _x_) {
     if (typeof x_ !== "object") {
       return false;
     }
-    let c = Caml.string_compare(x, x_._1);
+    let c = Primitive_string.compare(x, x_._1);
     if (c === 0) {
       return true;
     }
@@ -1543,7 +1544,7 @@ function remove$1(x, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Caml.string_compare(x, v);
+  let c = Primitive_string.compare(x, v);
   if (c === 0) {
     if (typeof l !== "object") {
       return r;
@@ -1702,7 +1703,7 @@ function concat$1(t1, t2) {
 
 function concat_or_join$1(t1, v, d, t2) {
   if (d !== undefined) {
-    return join$1(t1, v, Caml_option.valFromOption(d), t2);
+    return join$1(t1, v, Primitive_option.valFromOption(d), t2);
   } else {
     return concat$1(t1, t2);
   }
@@ -1720,11 +1721,11 @@ function split$1(x, x_) {
   let d = x_._2;
   let v = x_._1;
   let l = x_._0;
-  let c = Caml.string_compare(x, v);
+  let c = Primitive_string.compare(x, v);
   if (c === 0) {
     return [
       l,
-      Caml_option.some(d),
+      Primitive_option.some(d),
       r
     ];
   }
@@ -1754,7 +1755,7 @@ function merge$1(f, s1, s2) {
     let v1 = s1._1;
     if (s1._4 >= height$1(s2)) {
       let match = split$1(v1, s2);
-      return concat_or_join$1(merge$1(f, s1._0, match[0]), v1, f(v1, Caml_option.some(s1._2), match[1]), merge$1(f, s1._3, match[2]));
+      return concat_or_join$1(merge$1(f, s1._0, match[0]), v1, f(v1, Primitive_option.some(s1._2), match[1]), merge$1(f, s1._3, match[2]));
     }
     
   }
@@ -1771,7 +1772,7 @@ function merge$1(f, s1, s2) {
   }
   let v2 = s2._1;
   let match$1 = split$1(v2, s1);
-  return concat_or_join$1(merge$1(f, match$1[0], s2._0), v2, f(v2, match$1[1], Caml_option.some(s2._2)), merge$1(f, match$1[2], s2._3));
+  return concat_or_join$1(merge$1(f, match$1[0], s2._0), v2, f(v2, match$1[1], Primitive_option.some(s2._2)), merge$1(f, match$1[2], s2._3));
 }
 
 function filter$1(p, x) {
@@ -1854,7 +1855,7 @@ function compare$1(cmp, m1, m2) {
     if (typeof e2 !== "object") {
       return 1;
     }
-    let c = Caml.string_compare(e1._0, e2._0);
+    let c = Primitive_string.compare(e1._0, e2._0);
     if (c !== 0) {
       return c;
     }
@@ -1884,7 +1885,7 @@ function equal$1(cmp, m1, m2) {
     if (typeof e2 !== "object") {
       return false;
     }
-    if (Caml.string_compare(e1._0, e2._0) !== 0) {
+    if (e1._0 !== e2._0) {
       return false;
     }
     if (!cmp(e1._1, e2._1)) {
@@ -1965,7 +1966,7 @@ let SMap = {
   choose: min_binding$1
 };
 
-let s = List.fold_left((acc, param) => add$1(param[0], param[1], acc), "Empty", {
+let s = Belt_List.reduceReverse({
   hd: [
     "10",
     /* 'a' */97
@@ -1989,7 +1990,7 @@ let s = List.fold_left((acc, param) => add$1(param[0], param[1], acc), "Empty", 
       }
     }
   }
-});
+}, "Empty", (acc, param) => add$1(param[0], param[1], acc));
 
 Mt.from_pair_suites("Inline_map2_test", {
   hd: [

@@ -22,14 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type boxed_integer = Lambda.boxed_integer = Pbigint | Pint32 | Pint64
-
-let eq_boxed_integer (p : boxed_integer) (p1 : boxed_integer) =
-  match p with
-  | Pbigint -> p1 = Pbigint
-  | Pint32 -> p1 = Pint32
-  | Pint64 -> p1 = Pint64
-
 type comparison = Lambda.comparison = Ceq | Cneq | Clt | Cgt | Cle | Cge
 
 let eq_comparison (p : comparison) (p1 : comparison) =
@@ -42,15 +34,6 @@ let eq_comparison (p : comparison) (p1 : comparison) =
   | Cneq -> p1 = Cneq
 
 let cmp_int32 (cmp : comparison) (a : int32) b : bool =
-  match cmp with
-  | Ceq -> a = b
-  | Cneq -> a <> b
-  | Cgt -> a > b
-  | Cle -> a <= b
-  | Clt -> a < b
-  | Cge -> a >= b
-
-let cmp_int64 (cmp : comparison) (a : int64) b : bool =
   match cmp with
   | Ceq -> a = b
   | Cneq -> a <> b
@@ -76,18 +59,6 @@ let cmp_int (cmp : comparison) (a : int) b : bool =
   | Cle -> a <= b
   | Clt -> a < b
   | Cge -> a >= b
-
-type compile_time_constant =
-  | Big_endian
-  | Ostype_unix
-  | Ostype_win32
-  | Ostype
-  | Backend_type
-
-(** relies on the fact that [compile_time_constant] is enum type *)
-let eq_compile_time_constant (p : compile_time_constant)
-    (p1 : compile_time_constant) =
-  p = p1
 
 type let_kind = Lambda.let_kind = Strict | Alias | StrictOpt | Variable
 

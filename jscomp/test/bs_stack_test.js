@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_option = require("../../lib/js/caml_option.js");
 let Js_undefined = require("../../lib/js/js_undefined.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 let Belt_MutableQueue = require("../../lib/js/belt_MutableQueue.js");
 let Belt_MutableStack = require("../../lib/js/belt_MutableStack.js");
 
@@ -110,7 +110,7 @@ function n(l, r, a) {
   };
 }
 
-let test1 = n(Caml_option.some(n(Caml_option.some(n(undefined, undefined, 4)), Caml_option.some(n(undefined, undefined, 5)), 2)), Caml_option.some(n(undefined, undefined, 3)), 1);
+let test1 = n(Primitive_option.some(n(Primitive_option.some(n(undefined, undefined, 4)), Primitive_option.some(n(undefined, undefined, 5)), 2)), Primitive_option.some(n(undefined, undefined, 3)), 1);
 
 function pushAllLeft(st1, s1) {
   let current = st1;
@@ -121,9 +121,9 @@ function pushAllLeft(st1, s1) {
   };
 }
 
-let test2 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(undefined, undefined, 4)), undefined, 2)), undefined, 5)), undefined, 1)), undefined, 3);
+let test2 = n(Primitive_option.some(n(Primitive_option.some(n(Primitive_option.some(n(Primitive_option.some(n(undefined, undefined, 4)), undefined, 2)), undefined, 5)), undefined, 1)), undefined, 3);
 
-let test3 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(undefined, undefined, 4)), undefined, 2)), undefined, 5)), Caml_option.some(n(undefined, undefined, 3)), 1);
+let test3 = n(Primitive_option.some(n(Primitive_option.some(n(Primitive_option.some(n(undefined, undefined, 4)), undefined, 2)), undefined, 5)), Primitive_option.some(n(undefined, undefined, 3)), 1);
 
 eq("File \"bs_stack_test.res\", line 98, characters 3-10", inOrder(test1), [
   4,

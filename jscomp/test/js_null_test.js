@@ -3,7 +3,7 @@
 
 let Mt = require("./mt.js");
 let Js_null = require("../../lib/js/js_null.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites_0 = [
   "toOption - empty",
@@ -19,8 +19,8 @@ let suites_1 = {
     "toOption - 'a",
     param => ({
       TAG: "Eq",
-      _0: Caml_option.some(undefined),
-      _1: Caml_option.some()
+      _0: Primitive_option.some(undefined),
+      _1: Primitive_option.some()
     })
   ],
   tl: {
@@ -29,7 +29,7 @@ let suites_1 = {
       param => ({
         TAG: "Eq",
         _0: "something",
-        _1: Caml_option.null_to_opt("something")
+        _1: Primitive_option.fromNull("something")
       })
     ],
     tl: {

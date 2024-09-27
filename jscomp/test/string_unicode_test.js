@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   test_id.contents = test_id.contents + 1 | 0;
   suites.contents = {
     hd: [
-      loc + (" id " + String(test_id.contents)),
+      loc + (" id " + test_id.contents.toString()),
       () => ({
         TAG: "Eq",
         _0: x,
@@ -44,11 +44,11 @@ function f(x) {
   }
 }
 
-eq("File \"string_unicode_test.res\", line 23, characters 5-12", f(/* '{' */123), 0);
+eq("File \"string_unicode_test.res\", line 26, characters 5-12", f(/* '{' */123), 0);
 
-eq("File \"string_unicode_test.res\", line 24, characters 5-12", f(/* 'ō' */333), 2);
+eq("File \"string_unicode_test.res\", line 27, characters 5-12", f(/* 'ō' */333), 2);
 
-eq("File \"string_unicode_test.res\", line 25, characters 5-12", f(/* 'Ƽ' */444), 3);
+eq("File \"string_unicode_test.res\", line 28, characters 5-12", f(/* 'Ƽ' */444), 3);
 
 Mt.from_pair_suites("string_unicode_test.res", suites.contents);
 

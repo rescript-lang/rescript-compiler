@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let $$Array = require("../../lib/js/array.js");
-let Caml_array = require("../../lib/js/caml_array.js");
+let Belt_Array = require("../../lib/js/belt_Array.js");
+let Primitive_array = require("../../lib/js/primitive_array.js");
 
 function test() {
   let v = {
@@ -32,13 +32,13 @@ function test_closure() {
   let v = {
     contents: 0
   };
-  let arr = Caml_array.make(6, x => x);
+  let arr = Belt_Array.make(6, x => x);
   for (let i = 0; i <= 5; ++i) {
-    Caml_array.set(arr, i, param => i);
+    Primitive_array.set(arr, i, param => i);
   }
-  $$Array.iter(i => {
+  Belt_Array.forEach(arr, i => {
     v.contents = v.contents + i(0) | 0;
-  }, arr);
+  });
   return v.contents;
 }
 
@@ -46,14 +46,14 @@ function test_closure2() {
   let v = {
     contents: 0
   };
-  let arr = Caml_array.make(6, x => x);
+  let arr = Belt_Array.make(6, x => x);
   for (let i = 0; i <= 5; ++i) {
     let j = i + i | 0;
-    Caml_array.set(arr, i, param => j);
+    Primitive_array.set(arr, i, param => j);
   }
-  $$Array.iter(i => {
+  Belt_Array.forEach(arr, i => {
     v.contents = v.contents + i(0) | 0;
-  }, arr);
+  });
   return v.contents;
 }
 

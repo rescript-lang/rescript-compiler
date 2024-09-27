@@ -1,3 +1,5 @@
+open Belt
+
 let f = g => x => g(x)
 
 let map = (f, a) => {
@@ -5,9 +7,9 @@ let map = (f, a) => {
   if l == 0 {
     []
   } else {
-    let r = Array.make(l, f(Array.unsafe_get(a, 0)))
+    let r = Array.make(l, f(Array.getUnsafe(a, 0)))
     for i in 1 to l - 1 {
-      Array.unsafe_set(r, i, f(Array.unsafe_get(a, i)))
+      Array.setUnsafe(r, i, f(Array.getUnsafe(a, i)))
     }
     r
   }
@@ -26,7 +28,7 @@ let init = (l, f) =>
 
     let res = Array.make(l, f(0))
     for i in 1 to pred(l) {
-      Array.unsafe_set(res, i, f(i))
+      Array.setUnsafe(res, i, f(i))
     }
     res
   }
@@ -36,7 +38,7 @@ let init = (l, f) => init(l, x => f(x))
 let fold_left = (f, x, a) => {
   let r = ref(x)
   for i in 0 to Array.length(a) - 1 {
-    r := f(r.contents, Array.unsafe_get(a, i))
+    r := f(r.contents, Array.getUnsafe(a, i))
   }
   r.contents
 }
@@ -51,17 +53,18 @@ let f = {
   open Array
   () => {
     let arr = init(10000000, i => float_of_int(i))
-    let b = map(i => i +. i -. 1., arr)
-    let v = fold_left(\"+.", 0., b)
-    print_endline(string_of_float(v))
+    let b = arr->map(i => i +. i -. 1.)
+    let v = b->reduceReverse(0., \"+.")
+    v->Js.Float.toString->Js.log
   }
 }
 
 let f2 = () => {
+  open Array
   let arr = init(30_000_000, i => float_of_int(i))
-  let b = map(i => i +. i -. 1., arr)
-  let v = fold_left(\"+.", 0., b)
-  print_endline(string_of_float(v))
+  let b = arr->map(i => i +. i -. 1.)
+  let v = b->reduceReverse(0., \"+.")
+  v->Js.Float.toString->Js.log
 }
 
 /* let time label f = */
@@ -83,7 +86,10 @@ let test_id = ref(0)
 let eq = (loc, x, y) => {
   incr(test_id)
   suites :=
-    list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Mt.Eq(x, y)), ...suites.contents}
+    list{
+      (loc ++ (" id " ++ Js.Int.toString(test_id.contents)), _ => Mt.Eq(x, y)),
+      ...suites.contents,
+    }
 }
 
 let v = ref(0)

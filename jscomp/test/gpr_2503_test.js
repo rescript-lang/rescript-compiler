@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Caml_option = require("../../lib/js/caml_option.js");
+let Primitive_option = require("../../lib/js/primitive_option.js");
 
 let suites = {
   contents: /* [] */0
@@ -23,7 +23,7 @@ function b(loc, b$1) {
 function makeWrapper(foo, param) {
   let tmp = {};
   if (foo !== undefined) {
-    tmp.foo = Caml_option.valFromOption(foo);
+    tmp.foo = Primitive_option.valFromOption(foo);
   }
   console.log(tmp);
 }
@@ -40,7 +40,7 @@ function makeWrapper3(foo, param) {
   console.log(2);
   let tmp = {};
   if (foo !== undefined) {
-    tmp.foo = Caml_option.valFromOption(foo);
+    tmp.foo = Primitive_option.valFromOption(foo);
   }
   return tmp;
 }
@@ -52,7 +52,7 @@ function makeWrapper4(foo, param) {
       foo > 10 ? "b" : "a"
     );
   if (tmp$1 !== undefined) {
-    tmp.foo = Caml_option.valFromOption(tmp$1);
+    tmp.foo = Primitive_option.valFromOption(tmp$1);
   }
   return tmp;
 }

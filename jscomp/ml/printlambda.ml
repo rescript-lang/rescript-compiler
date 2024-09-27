@@ -46,10 +46,6 @@ let rec struct_const ppf = function
 
   | Const_false -> fprintf ppf "false"      
   | Const_true -> fprintf ppf "true"
-let boxed_integer_name = function
-  | Pbigint -> "bigint"
-  | Pint32 -> "int32"
-  | Pint64 -> "int64"
 
 let value_kind = function
   | Pgenval -> ""
@@ -59,20 +55,6 @@ let value_kind = function
   | Pintval -> "int"
   | Pfloatval -> "float"
   | Pboxedintval bi -> boxed_integer_name bi *)
-
-let print_boxed_integer_conversion ppf bi1 bi2 =
-  fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
-
-let boxed_integer_mark name = function
-  | Pbigint -> Printf.sprintf "BigInt.%s" name
-  | Pint32 -> Printf.sprintf "Int32.%s" name
-  | Pint64 -> Printf.sprintf "Int64.%s" name
-
-let print_boxed_integer name ppf bi =
-  fprintf ppf "%s" (boxed_integer_mark name bi);;
-
-
-
 
 let string_of_loc_kind = function
   | Loc_FILE -> "loc_FILE"
@@ -122,8 +104,12 @@ let print_taginfo ppf = function
 
 let primitive ppf = function
   | Pidentity -> fprintf ppf "id"
-  | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pignore -> fprintf ppf "ignore"
+  | Pdebugger -> fprintf ppf "debugger"
+  | Ptypeof -> fprintf ppf "typeof"
+  | Pnull -> fprintf ppf "null"
+  | Pundefined -> fprintf ppf "undefined"
+  | Pfn_arity -> fprintf ppf "fn.length"
   | Prevapply -> fprintf ppf "revapply"
   | Pdirapply -> fprintf ppf "dirapply"
   | Ploc kind -> fprintf ppf "%s" (string_of_loc_kind kind)
@@ -137,9 +123,29 @@ let primitive ppf = function
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
   | Praise k -> fprintf ppf "%s" (Lambda.raise_kind k)
+  | Pobjcomp(Ceq) -> fprintf ppf "=="
+  | Pobjcomp(Cneq) -> fprintf ppf "!="
+  | Pobjcomp(Clt) -> fprintf ppf "<"
+  | Pobjcomp(Cle) -> fprintf ppf "<="
+  | Pobjcomp(Cgt) -> fprintf ppf ">"
+  | Pobjcomp(Cge) -> fprintf ppf ">="
+  | Pobjorder -> fprintf ppf "compare"
+  | Pobjmin -> fprintf ppf "min"
+  | Pobjmax -> fprintf ppf "max"
+  | Pobjtag -> fprintf ppf "tag"
+  | Pobjsize -> fprintf ppf "length"
   | Psequand -> fprintf ppf "&&"
   | Psequor -> fprintf ppf "||"
   | Pnot -> fprintf ppf "not"
+  | Pboolcomp(Ceq) -> fprintf ppf "=="
+  | Pboolcomp(Cneq) -> fprintf ppf "!="
+  | Pboolcomp(Clt) -> fprintf ppf "<"
+  | Pboolcomp(Cle) -> fprintf ppf "<="
+  | Pboolcomp(Cgt) -> fprintf ppf ">"
+  | Pboolcomp(Cge) -> fprintf ppf ">="
+  | Pboolorder -> fprintf ppf "compare"
+  | Pboolmin -> fprintf ppf "min"
+  | Pboolmax -> fprintf ppf "max"
   | Pnegint -> fprintf ppf "~"
   | Paddint -> fprintf ppf "+"
   | Psubint -> fprintf ppf "-"
@@ -160,6 +166,9 @@ let primitive ppf = function
   | Pintcomp(Cle) -> fprintf ppf "<="
   | Pintcomp(Cgt) -> fprintf ppf ">"
   | Pintcomp(Cge) -> fprintf ppf ">="
+  | Pintorder -> fprintf ppf "compare"
+  | Pintmin -> fprintf ppf "min"
+  | Pintmax -> fprintf ppf "max"
   | Poffsetint n -> fprintf ppf "%i+" n
   | Poffsetref n -> fprintf ppf "+:=%i"n
   | Pintoffloat -> fprintf ppf "int_of_float"
@@ -170,12 +179,16 @@ let primitive ppf = function
   | Psubfloat -> fprintf ppf "-."
   | Pmulfloat -> fprintf ppf "*."
   | Pdivfloat -> fprintf ppf "/."
+  | Pmodfloat -> fprintf ppf "mod"
   | Pfloatcomp(Ceq) -> fprintf ppf "==."
   | Pfloatcomp(Cneq) -> fprintf ppf "!=."
   | Pfloatcomp(Clt) -> fprintf ppf "<."
   | Pfloatcomp(Cle) -> fprintf ppf "<=."
   | Pfloatcomp(Cgt) -> fprintf ppf ">."
   | Pfloatcomp(Cge) -> fprintf ppf ">=."
+  | Pfloatorder -> fprintf ppf "compare"
+  | Pfloatmin -> fprintf ppf "min"
+  | Pfloatmax -> fprintf ppf "max"
   | Pnegbigint -> fprintf ppf "~"
   | Paddbigint -> fprintf ppf "+"
   | Psubbigint -> fprintf ppf "-"
@@ -194,15 +207,22 @@ let primitive ppf = function
   | Pbigintcomp(Cle) -> fprintf ppf "<=,"
   | Pbigintcomp(Cgt) -> fprintf ppf ">,"
   | Pbigintcomp(Cge) -> fprintf ppf ">=,"
+  | Pbigintorder -> fprintf ppf "compare"
+  | Pbigintmin -> fprintf ppf "min"
+  | Pbigintmax -> fprintf ppf "max"
   | Pstringlength -> fprintf ppf "string.length"
   | Pstringrefu -> fprintf ppf "string.unsafe_get"
   | Pstringrefs -> fprintf ppf "string.get"
-  | Pbyteslength -> fprintf ppf "bytes.length"
-  | Pbytesrefu -> fprintf ppf "bytes.unsafe_get"
-  | Pbytessetu -> fprintf ppf "bytes.unsafe_set"
-  | Pbytesrefs -> fprintf ppf "bytes.get"
-  | Pbytessets -> fprintf ppf "bytes.set"
-
+  | Pstringcomp(Ceq) -> fprintf ppf "=="
+  | Pstringcomp(Cneq) -> fprintf ppf "!="
+  | Pstringcomp(Clt) -> fprintf ppf "<"
+  | Pstringcomp(Cle) -> fprintf ppf "<="
+  | Pstringcomp(Cgt) -> fprintf ppf ">"
+  | Pstringcomp(Cge) -> fprintf ppf ">="
+  | Pstringorder -> fprintf ppf "compare"
+  | Pstringmin -> fprintf ppf "min"
+  | Pstringmax -> fprintf ppf "max"
+  | Pstringadd -> fprintf ppf "string.concat"
   | Parraylength  -> fprintf ppf "array.length" 
   | Pmakearray Mutable -> fprintf ppf "makearray" 
   | Pmakearray Immutable -> fprintf ppf "makearray_imm" 
@@ -210,136 +230,43 @@ let primitive ppf = function
   | Parraysetu -> fprintf ppf "array.unsafe_set" 
   | Parrayrefs -> fprintf ppf "array.get" 
   | Parraysets -> fprintf ppf "array.set" 
-  | Pctconst c ->
-     let const_name = match c with
-       | Big_endian -> "big_endian"
-       | Word_size -> "word_size"
-       | Int_size -> "int_size"
-       | Max_wosize -> "max_wosize"
-       | Ostype_unix -> "ostype_unix"
-       | Ostype_win32 -> "ostype_win32"
-       | Ostype_cygwin -> "ostype_cygwin"
-       | Backend_type -> "backend_type" in
-     fprintf ppf "sys.constant_%s" const_name
+  | Pmakelist Mutable -> fprintf ppf "makelist"
+  | Pmakelist Immutable -> fprintf ppf "makelist_imm"
+  | Pmakedict -> fprintf ppf "makedict"
   | Pisint -> fprintf ppf "isint"
   | Pisout -> fprintf ppf "isout"
-  | Pbintofint bi -> print_boxed_integer "of_int" ppf bi
-  | Pintofbint bi -> print_boxed_integer "to_int" ppf bi
-  | Pcvtbint (bi1, bi2) -> print_boxed_integer_conversion ppf bi1 bi2
-  | Pnegbint bi -> print_boxed_integer "neg" ppf bi
-  | Paddbint bi -> print_boxed_integer "add" ppf bi
-  | Psubbint bi -> print_boxed_integer "sub" ppf bi
-  | Pmulbint bi -> print_boxed_integer "mul" ppf bi
-  | Pdivbint { size = bi; is_safe = Safe } ->
-      print_boxed_integer "div" ppf bi
-  | Pdivbint { size = bi; is_safe = Unsafe } ->
-      print_boxed_integer "div_unsafe" ppf bi
-  | Pmodbint { size = bi; is_safe = Safe } ->
-      print_boxed_integer "mod" ppf bi
-  | Pmodbint { size = bi; is_safe = Unsafe } ->
-      print_boxed_integer "mod_unsafe" ppf bi
-  | Pandbint bi -> print_boxed_integer "and" ppf bi
-  | Porbint bi -> print_boxed_integer "or" ppf bi
-  | Pxorbint bi -> print_boxed_integer "xor" ppf bi
-  | Plslbint bi -> print_boxed_integer "lsl" ppf bi
-  | Plsrbint bi -> print_boxed_integer "lsr" ppf bi
-  | Pasrbint bi -> print_boxed_integer "asr" ppf bi
-  | Pbintcomp(bi, Ceq) -> print_boxed_integer "==" ppf bi
-  | Pbintcomp(bi, Cneq) -> print_boxed_integer "!=" ppf bi
-  | Pbintcomp(bi, Clt) -> print_boxed_integer "<" ppf bi
-  | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi
-  | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
-  | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
-  | Pcreate_extension s -> fprintf ppf "extension[%s]" s   
-let name_of_primitive = function
-  | Pidentity -> "Pidentity"
-  | Pbytes_to_string -> "Pbytes_to_string"
-  | Pignore -> "Pignore"
-  | Prevapply -> "Prevapply"
-  | Pdirapply -> "Pdirapply"
-  | Ploc _ -> "Ploc"
-  | Pgetglobal _ -> "Pgetglobal"
-  | Pmakeblock _ -> "Pmakeblock"
-  | Pfield _ -> "Pfield"
-  | Psetfield _ -> "Psetfield"
-  | Pduprecord  -> "Pduprecord"
-  | Plazyforce -> "Plazyforce"
-  | Pccall _ -> "Pccall"
-  | Praise _ -> "Praise"
-  | Psequand -> "Psequand"
-  | Psequor -> "Psequor"
-  | Pnot -> "Pnot"
-  | Pnegint -> "Pnegint"
-  | Paddint -> "Paddint"
-  | Psubint -> "Psubint"
-  | Pmulint -> "Pmulint"
-  | Pdivint _ -> "Pdivint"
-  | Pmodint _ -> "Pmodint"
-  | Pandint -> "Pandint"
-  | Porint -> "Porint"
-  | Pxorint -> "Pxorint"
-  | Plslint -> "Plslint"
-  | Plsrint -> "Plsrint"
-  | Pasrint -> "Pasrint"
-  | Pintcomp _ -> "Pintcomp"
-  | Poffsetint _ -> "Poffsetint"
-  | Poffsetref _ -> "Poffsetref"
-  | Pintoffloat -> "Pintoffloat"
-  | Pfloatofint -> "Pfloatofint"
-  | Pnegfloat -> "Pnegfloat"
-  | Pabsfloat -> "Pabsfloat"
-  | Paddfloat -> "Paddfloat"
-  | Psubfloat -> "Psubfloat"
-  | Pmulfloat -> "Pmulfloat"
-  | Pdivfloat -> "Pdivfloat"
-  | Pfloatcomp _ -> "Pfloatcomp"
-  | Pnegbigint -> "Pnegbigint"
-  | Paddbigint -> "Paddbigint"
-  | Psubbigint -> "Psubbigint"
-  | Pmulbigint -> "Pmulbigint"
-  | Pdivbigint -> "Pdivbigint"
-  | Pmodbigint -> "Pmodbigint"
-  | Ppowbigint -> "Ppowbigint"
-  | Pandbigint -> "Pandbigint"
-  | Porbigint -> "Porbigint"
-  | Pxorbigint -> "Pxorbigint"
-  | Plslbigint -> "Plslbigint"
-  | Pasrbigint -> "Pasrbigint"
-  | Pbigintcomp _ -> "Pbigintcomp"
-  | Pstringlength -> "Pstringlength"
-  | Pstringrefu -> "Pstringrefu"
-  | Pstringrefs -> "Pstringrefs"
-  | Pbyteslength -> "Pbyteslength"
-  | Pbytesrefu -> "Pbytesrefu"
-  | Pbytessetu -> "Pbytessetu"
-  | Pbytesrefs -> "Pbytesrefs"
-  | Pbytessets -> "Pbytessets"
-  | Parraylength -> "Parraylength"
-  | Pmakearray _-> "Pmakearray"
-  | Parrayrefu -> "Parrayrefu"
-  | Parraysetu -> "Parraysetu"
-  | Parrayrefs -> "Parrayrefs"
-  | Parraysets -> "Parraysets"
-  | Pctconst _ -> "Pctconst"
-  | Pisint -> "Pisint"
-  | Pisout -> "Pisout"
-  | Pbintofint _ -> "Pbintofint"
-  | Pintofbint _ -> "Pintofbint"
-  | Pcvtbint _ -> "Pcvtbint"
-  | Pnegbint _ -> "Pnegbint"
-  | Paddbint _ -> "Paddbint"
-  | Psubbint _ -> "Psubbint"
-  | Pmulbint _ -> "Pmulbint"
-  | Pdivbint _ -> "Pdivbint"
-  | Pmodbint _ -> "Pmodbint"
-  | Pandbint _ -> "Pandbint"
-  | Porbint _ -> "Porbint"
-  | Pxorbint _ -> "Pxorbint"
-  | Plslbint _ -> "Plslbint"
-  | Plsrbint _ -> "Plsrbint"
-  | Pasrbint _ -> "Pasrbint"
-  | Pbintcomp _ -> "Pbintcomp"
-  | Pcreate_extension _ -> "Pcreate_extension"
+  | Pisnullable -> fprintf ppf "isnullable"
+  | Pcreate_extension s -> fprintf ppf "extension[%s]" s
+  | Pextension_slot_eq -> fprintf ppf "#extension_slot_eq"
+  | Pwrap_exn -> fprintf ppf "wrap_exn"
+  | Pawait -> fprintf ppf "await"
+  | Pimport -> fprintf ppf "import"
+  | Pinit_mod -> fprintf ppf "#init_mod"
+  | Pupdate_mod -> fprintf ppf "#update_mod"
+  | Phash -> fprintf ppf "hash"
+  | Phash_mixint -> fprintf ppf "hash_mix_int"
+  | Phash_mixstring -> fprintf ppf "hash_mix_string"
+  | Phash_finalmix -> fprintf ppf "hash_final_mix"
+  | Pcurry_apply i -> fprintf ppf "apply[%d]" i
+  | Pjscomp(Ceq) -> fprintf ppf "=="
+  | Pjscomp(Cneq) -> fprintf ppf "!="
+  | Pjscomp(Clt) -> fprintf ppf "<"
+  | Pjscomp(Cle) -> fprintf ppf "<="
+  | Pjscomp(Cgt) -> fprintf ppf ">"
+  | Pjscomp(Cge) -> fprintf ppf ">="
+  | Pundefined_to_opt -> fprintf ppf "undefined_to_opt"
+  | Pnull_to_opt -> fprintf ppf "null_to_opt"
+  | Pnullable_to_opt -> fprintf ppf "nullable_to_opt"
+  | Pis_not_none -> fprintf ppf "#is_not_none"
+  | Pval_from_option -> fprintf ppf "#val_from_option"
+  | Pval_from_option_not_nest -> fprintf ppf "#val_from_option_not_nest"
+  | Pis_poly_var_block -> fprintf ppf "#is_poly_var_block"
+  | Pjs_raw_expr -> fprintf ppf "#raw_expr"
+  | Pjs_raw_stmt -> fprintf ppf "#raw_stmt"
+  | Pjs_fn_make arity -> fprintf ppf "#fn_mk(%d)" arity
+  | Pjs_fn_make_unit -> fprintf ppf "#fn_mk_unit"
+  | Pjs_fn_method -> fprintf ppf "#fn_method"
+  | Pjs_unsafe_downgrade -> fprintf ppf "#unsafe_downgrade"
 
 let function_attribute ppf { inline; is_a_functor; return_unit } =
   if is_a_functor then

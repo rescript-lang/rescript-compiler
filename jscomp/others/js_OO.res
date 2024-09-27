@@ -24,7 +24,7 @@
 
 @@config({flags: ["-unboxed-types"]})
 
-external unsafe_to_method: 'a => 'a = "#fn_method"
+external unsafe_to_method: 'a => 'a = "%unsafe_to_method"
 
 module Callback = {
   type arity1<'a> = {@internal i1: 'a}

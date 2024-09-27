@@ -24,12 +24,13 @@
 
 /*** Provides functionality for dealing with the `'a Js.undefined` type */
 
-type t<+'a> = Js.undefined<'a>
-external to_opt: t<'a> => option<'a> = "#undefined_to_opt"
-external toOption: t<'a> => option<'a> = "#undefined_to_opt"
+type t<+'a> = Primitive_js_extern.undefined<'a>
+
+external to_opt: t<'a> => option<'a> = "%undefined_to_opt"
+external toOption: t<'a> => option<'a> = "%undefined_to_opt"
 external return: 'a => t<'a> = "%identity"
 
-external empty: t<'a> = "#undefined"
+external empty: t<'a> = "%undefined"
 let test: t<'a> => bool = x => x == empty
 let testAny: 'a => bool = x => Obj.magic(x) == empty
 external getUnsafe: t<'a> => 'a = "%identity"

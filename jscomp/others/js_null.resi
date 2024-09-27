@@ -24,10 +24,8 @@
 
 /*** Provides functionality for dealing with the `Js.null<'a>` type */
 
-@unboxed /** Local alias for `Js.null<'a>` */
-type t<+'a> = Js.null<'a> =
-  | Value('a)
-  | @as(null) Null
+@unboxed
+type t<+'a> = Primitive_js_extern.null<'a> = Value('a) | @as(null) Null
 
 /** Constructs a value of `Js.null<'a>` containing a value of `'a`. */
 external return: 'a => t<'a> = "%identity"
@@ -37,7 +35,7 @@ external return: 'a => t<'a> = "%identity"
 let test: t<'a> => bool
 
 /** The empty value, `null` */
-external empty: t<'a> = "#null"
+external empty: t<'a> = "%null"
 
 external getUnsafe: t<'a> => 'a = "%identity"
 let getExn: t<'a> => 'a
@@ -85,6 +83,6 @@ Maps `Js.null<'a>` to `option<'a>`.
 `a` => `Some(a)`
 `empty` => `None`
 */
-external toOption: t<'a> => option<'a> = "#null_to_opt"
+external toOption: t<'a> => option<'a> = "%null_to_opt"
 
-@deprecated("Use toOption instead") external to_opt: t<'a> => option<'a> = "#null_to_opt"
+@deprecated("Use toOption instead") external to_opt: t<'a> => option<'a> = "%null_to_opt"
