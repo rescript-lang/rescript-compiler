@@ -82,15 +82,18 @@ checkformat:
 clean-gentype:
 	make -C jscomp/gentype_tests/typescript-react-example clean
 
+clean-rewatch:
+	cargo clean --manifest-path rewatch/Cargo.toml && rm -f rewatch/rewatch
+
 clean:
 	dune clean
 	./scripts/ninja.js clean && rm -f ninja/ninja
 
-clean-all: clean clean-gentype
+clean-all: clean clean-gentype clean-rewatch 
 
 dev-container:
 	docker build -t rescript-dev-container docker
 
 .DEFAULT_GOAL := build
 
-.PHONY: build watch rewatch ninja bench dce test test-syntax test-syntax-roundtrip test-gentype test-all lib playground playground-cmijs playground-release artifacts format checkformat clean-gentype clean clean-all dev-container
+.PHONY: build watch rewatch ninja bench dce test test-syntax test-syntax-roundtrip test-gentype test-all lib playground playground-cmijs playground-release artifacts format checkformat clean-gentype clean-rewatch clean clean-all dev-container
