@@ -117,8 +117,7 @@ and oldNewSelf<'state, 'retainedProps, 'action> = {
 type rec jsComponentThis<'state, 'props, 'retainedProps, 'action> = {
   "state": totalState<'state, 'retainedProps, 'action>,
   "props": {"reasonProps": 'props},
-  "setState": @meth
-  (
+  "setState": @meth (
     (
       totalState<'state, 'retainedProps, 'action>,
       'props,
