@@ -148,6 +148,10 @@ type pointer_info =
   | Pt_shape_none
   | Pt_assertfalse
 
+type infix_info =
+  | Inf_custom of string * string
+  | Inf_invariant
+
 type primitive =
   | Pidentity
   | Pignore
@@ -174,6 +178,8 @@ type primitive =
   | Pccall of Primitive.description
   (* Exceptions *)
   | Praise of raise_kind
+  (* Infix *)
+  | Pinfix of infix_info
   (* object primitives *)
   | Pobjcomp of comparison
   | Pobjorder

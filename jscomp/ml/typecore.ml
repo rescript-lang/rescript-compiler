@@ -3137,6 +3137,35 @@ and is_automatic_curried_application env funct =
   | Tarrow _ -> true
   | _ -> false
 and type_application ?type_clash_context uncurried env funct (sargs : sargs) : targs * Types.type_expr * bool =
+  let is_generic_infix path =
+    match Path.name path with
+    | "Pervasives.+"
+    | "Pervasives.-" -> true
+    | _ -> false
+  in
+  match (funct.exp_desc, sargs) with
+  | (Texp_ident (path, _, _), [(Nolabel, lhs_expr); (Nolabel, rhs_expr)])
+    when is_generic_infix path -> (
+    let lhs = type_exp env lhs_expr in
+    let lhs_type = lhs.exp_type in
+    let rhs =
+      match (expand_head env lhs_type).desc with
+      | Tconstr (path, _, _) when Path.same path Predef.path_int ->
+        type_expect env rhs_expr Predef.type_int
+      | Tconstr (path, _, _) when Path.same path Predef.path_float ->
+        type_expect env rhs_expr Predef.type_float
+      | Tconstr (path, _, _) when Path.same path Predef.path_bigint ->
+        type_expect env rhs_expr Predef.type_bigint
+      | Tconstr (path, _, _) when Path.same path Predef.path_string ->
+        type_expect env rhs_expr Predef.type_string
+      | _ ->
+        unify env lhs_type Predef.type_int;
+        type_expect env rhs_expr Predef.type_int
+    in
+    let result_type = lhs_type in
+    let targs = [(Nolabel, Some lhs); (Nolabel, Some rhs)] in
+    targs, result_type, true)
+  | _ -> (
   (* funct.exp_type may be generic *)
   let result_type omitted ty_fun =
     List.fold_left
@@ -3319,7 +3348,7 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) : t
       let targs, ret_t = type_args ?type_clash_context max_arity [] [] ~ty_fun:ty (instance env ty) ~sargs in
       let fully_applied, ret_t =
         update_uncurried_arity funct.exp_type ~nargs:(List.length !ignored + List.length sargs) ret_t in
-      targs, ret_t, fully_applied
+      targs, ret_t, fully_applied)
 
 and type_construct env loc lid sarg ty_expected attrs =
   let opath =
