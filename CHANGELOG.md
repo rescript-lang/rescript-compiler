@@ -12,6 +12,10 @@
 
 # 12.0.0-alpha.4 (Unreleased)
 
+#### :boom: Breaking Change
+
+- OCaml compatibility in the stdlib and primitives are dropped/deprecated. https://github.com/rescript-lang/rescript-compiler/pull/6984
+
 #### :rocket: New Feature
 
 - Use FORCE_COLOR environmental variable to force colorized output https://github.com/rescript-lang/rescript-compiler/pull/7033
