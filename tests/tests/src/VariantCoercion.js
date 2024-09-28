@@ -82,6 +82,31 @@ let CoerceFromPolyvariantToVariant = {
   withUnboxedCatchAllP: "One"
 };
 
+function f1() {
+  return "b";
+}
+
+function f2() {
+  return "b";
+}
+
+for (let x$1 = 1; x$1 <= 2; ++x$1) {
+  console.log(x$1);
+}
+
+let y = "one".length;
+
+let z = 1.5 + 2.0 + 1.5;
+
+let CoerceVariantBinaryOp = {
+  x: 2,
+  v: 2,
+  f1: f1,
+  f2: f2,
+  y: y,
+  z: z
+};
+
 let a$2 = "Three";
 
 let b = "Three";
@@ -107,4 +132,5 @@ exports.CoerceFromIntToVariant = CoerceFromIntToVariant;
 exports.CoerceFromFloatToVariant = CoerceFromFloatToVariant;
 exports.CoerceFromBigintToVariant = CoerceFromBigintToVariant;
 exports.CoerceFromPolyvariantToVariant = CoerceFromPolyvariantToVariant;
-/* No side effect */
+exports.CoerceVariantBinaryOp = CoerceVariantBinaryOp;
+/*  Not a pure module */
