@@ -175,6 +175,8 @@ type immediate_or_pointer = Immediate | Pointer
 
 type is_safe = Safe | Unsafe
 
+type infix_info = Inf_custom of string * string | Inf_invariant
+
 type primitive =
   | Pidentity
   | Pignore
@@ -198,6 +200,8 @@ type primitive =
   | Pccall of Primitive.description
   (* Exceptions *)
   | Praise of raise_kind
+  (* Infix *)
+  | Pinfix of infix_info
   (* object operations *)
   | Pobjcomp of comparison
   | Pobjorder
