@@ -42,22 +42,26 @@ let rec convert_constant (const : Lambda.structured_constant) : Lam_constant.t =
   | Const_false -> Const_js_false
   | Const_true -> Const_js_true
   | Const_pointer (i, p) -> (
-    match p with
-    | Pt_module_alias -> Const_module_alias
-    | Pt_shape_none -> Lam_constant.lam_none
-    | Pt_assertfalse -> Const_int {i = Int32.of_int i; comment = Pt_assertfalse}
-    | Pt_constructor {name; const; non_const; attrs} ->
-      let tag_type = Ast_untagged_variants.process_tag_type attrs in
-      Const_int
-        {
-          i = Int32.of_int i;
-          comment =
-            Pt_constructor {cstr_name = {name; tag_type}; const; non_const};
-        }
-    | Pt_variant {name} ->
-      if Ext_string.is_valid_hash_number name then
-        Const_int {i = Ext_string.hash_number_as_i32_exn name; comment = None}
-      else Const_pointer name)
+      match p with
+      | Pt_module_alias -> Const_module_alias
+      | Pt_shape_none -> Lam_constant.lam_none
+      | Pt_assertfalse ->
+          Const_int { i = Int32.of_int i; comment = Pt_assertfalse }
+      | Pt_constructor { name; const; non_const; attrs } ->
+          let tag_type = Ast_untagged_variants.process_tag_type attrs in
+          let i = match tag_type with
+            | Some(Ast_untagged_variants.Int(v)) -> v
+            | _ -> i in
+          Const_int
+            {
+              i = Int32.of_int i;
+              comment = Pt_constructor { cstr_name={name; tag_type}; const; non_const };
+            }
+      | Pt_variant { name } ->
+          if Ext_string.is_valid_hash_number name then
+            Const_int
+              { i = Ext_string.hash_number_as_i32_exn name; comment = None }
+          else Const_pointer name)
   | Const_float_array s -> assert false
   | Const_immstring s -> Const_string {s; unicode = false}
   | Const_block (t, xs) -> (
