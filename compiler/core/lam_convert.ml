@@ -232,6 +232,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Pduprecord -> prim ~primitive:Pduprecord ~args loc
   | Plazyforce -> prim ~primitive:Plazyforce ~args loc
   | Praise _ -> prim ~primitive:Praise ~args loc
+  | Pinfix _ -> assert false
   | Pobjcomp x -> prim ~primitive:(Pobjcomp x) ~args loc
   | Pobjorder -> prim ~primitive:Pobjorder ~args loc
   | Pobjmin -> prim ~primitive:Pobjmin ~args loc
@@ -475,6 +476,16 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
     | Lprim (Pimport, args, loc) ->
       let args = Ext_list.map args (convert_aux ~dynamic_import:true) in
       lam_prim ~primitive:Pimport ~args loc
+    | Lprim (Pinfix (Inf_custom (mod_, op)), args, loc) ->
+      let fn = Lam.var (Ident.create_persistent op) in
+      let args = Ext_list.map args (convert_aux ~dynamic_import) in
+      let ap_info : Lam.ap_info =
+        {ap_loc = loc; ap_status = App_na; ap_inlined = Lambda.Default_inline}
+      in
+      Lam.apply fn args ap_info
+    | Lprim (Pinfix Inf_invariant, args, loc) ->
+      (* TODO : invariant *)
+      assert false
     | Lprim (primitive, args, loc) ->
       let args = Ext_list.map args (convert_aux ~dynamic_import) in
       lam_prim ~primitive ~args loc

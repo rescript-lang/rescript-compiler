@@ -50,157 +50,182 @@ let transl_extension_constructor env path ext =
 (* Translation of primitives *)
 
 type specialized = {
-  objcomp: Lambda.primitive;
-  intcomp: Lambda.primitive;
-  boolcomp: Lambda.primitive;
-  floatcomp: Lambda.primitive;
-  stringcomp: Lambda.primitive;
-  bigintcomp: Lambda.primitive;
+  obj: Lambda.primitive;
+  int: Lambda.primitive;
+  bool: Lambda.primitive;
+  float: Lambda.primitive;
+  string: Lambda.primitive;
+  bigint: Lambda.primitive;
   simplify_constant_constructor: bool;
 }
+
+let infix_table =
+  create_hashtable
+    [|
+      ( "%add",
+        {
+          obj = Paddint;
+          int = Paddint;
+          bool = Pinfix Inf_invariant;
+          float = Paddfloat;
+          string = Pstringadd;
+          bigint = Paddbigint;
+          simplify_constant_constructor = false;
+        } );
+      ( "%sub",
+        {
+          obj = Paddint;
+          int = Psubint;
+          bool = Pinfix Inf_invariant;
+          float = Psubfloat;
+          string = Pinfix Inf_invariant;
+          bigint = Psubbigint;
+          simplify_constant_constructor = false;
+        } );
+    |]
 
 let comparisons_table =
   create_hashtable
     [|
       ( "%equal",
         {
-          objcomp = Pobjcomp Ceq;
-          intcomp = Pintcomp Ceq;
-          boolcomp = Pboolcomp Ceq;
-          floatcomp = Pfloatcomp Ceq;
-          stringcomp = Pstringcomp Ceq;
-          bigintcomp = Pbigintcomp Ceq;
+          obj = Pobjcomp Ceq;
+          int = Pintcomp Ceq;
+          bool = Pboolcomp Ceq;
+          float = Pfloatcomp Ceq;
+          string = Pstringcomp Ceq;
+          bigint = Pbigintcomp Ceq;
           simplify_constant_constructor = true;
         } );
       ( "%notequal",
         {
-          objcomp = Pobjcomp Cneq;
-          intcomp = Pintcomp Cneq;
-          boolcomp = Pboolcomp Cneq;
-          floatcomp = Pfloatcomp Cneq;
-          stringcomp = Pstringcomp Cneq;
-          bigintcomp = Pbigintcomp Cneq;
+          obj = Pobjcomp Cneq;
+          int = Pintcomp Cneq;
+          bool = Pboolcomp Cneq;
+          float = Pfloatcomp Cneq;
+          string = Pstringcomp Cneq;
+          bigint = Pbigintcomp Cneq;
           simplify_constant_constructor = true;
         } );
       ( "%lessthan",
         {
-          objcomp = Pobjcomp Clt;
-          intcomp = Pintcomp Clt;
-          boolcomp = Pboolcomp Clt;
-          floatcomp = Pfloatcomp Clt;
-          stringcomp = Pstringcomp Clt;
-          bigintcomp = Pbigintcomp Clt;
+          obj = Pobjcomp Clt;
+          int = Pintcomp Clt;
+          bool = Pboolcomp Clt;
+          float = Pfloatcomp Clt;
+          string = Pstringcomp Clt;
+          bigint = Pbigintcomp Clt;
           simplify_constant_constructor = false;
         } );
       ( "%greaterthan",
         {
-          objcomp = Pobjcomp Cgt;
-          intcomp = Pintcomp Cgt;
-          boolcomp = Pboolcomp Cgt;
-          floatcomp = Pfloatcomp Cgt;
-          stringcomp = Pstringcomp Cgt;
-          bigintcomp = Pbigintcomp Cgt;
+          obj = Pobjcomp Cgt;
+          int = Pintcomp Cgt;
+          bool = Pboolcomp Cgt;
+          float = Pfloatcomp Cgt;
+          string = Pstringcomp Cgt;
+          bigint = Pbigintcomp Cgt;
           simplify_constant_constructor = false;
         } );
       ( "%lessequal",
         {
-          objcomp = Pobjcomp Cle;
-          intcomp = Pintcomp Cle;
-          boolcomp = Pboolcomp Cle;
-          floatcomp = Pfloatcomp Cle;
-          stringcomp = Pstringcomp Cle;
-          bigintcomp = Pbigintcomp Cle;
+          obj = Pobjcomp Cle;
+          int = Pintcomp Cle;
+          bool = Pboolcomp Cle;
+          float = Pfloatcomp Cle;
+          string = Pstringcomp Cle;
+          bigint = Pbigintcomp Cle;
           simplify_constant_constructor = false;
         } );
       ( "%greaterequal",
         {
-          objcomp = Pobjcomp Cge;
-          intcomp = Pintcomp Cge;
-          boolcomp = Pboolcomp Cge;
-          floatcomp = Pfloatcomp Cge;
-          stringcomp = Pstringcomp Cge;
-          bigintcomp = Pbigintcomp Cge;
+          obj = Pobjcomp Cge;
+          int = Pintcomp Cge;
+          bool = Pboolcomp Cge;
+          float = Pfloatcomp Cge;
+          string = Pstringcomp Cge;
+          bigint = Pbigintcomp Cge;
           simplify_constant_constructor = false;
         } );
       ( "%compare",
         {
-          objcomp = Pobjorder;
-          intcomp = Pintorder;
-          boolcomp = Pboolorder;
-          floatcomp = Pfloatorder;
-          stringcomp = Pstringorder;
-          bigintcomp = Pbigintorder;
+          obj = Pobjorder;
+          int = Pintorder;
+          bool = Pboolorder;
+          float = Pfloatorder;
+          string = Pstringorder;
+          bigint = Pbigintorder;
           simplify_constant_constructor = false;
         } );
       ( "%max",
         {
-          objcomp = Pobjmax;
-          intcomp = Pintmax;
-          boolcomp = Pboolmax;
-          floatcomp = Pboolmax;
-          stringcomp = Pstringmax;
-          bigintcomp = Pbigintmax;
+          obj = Pobjmax;
+          int = Pintmax;
+          bool = Pboolmax;
+          float = Pboolmax;
+          string = Pstringmax;
+          bigint = Pbigintmax;
           simplify_constant_constructor = false;
         } );
       ( "%min",
         {
-          objcomp = Pobjmin;
-          intcomp = Pintmin;
-          boolcomp = Pboolmin;
-          floatcomp = Pfloatmin;
-          stringcomp = Pstringmin;
-          bigintcomp = Pbigintmin;
+          obj = Pobjmin;
+          int = Pintmin;
+          bool = Pboolmin;
+          float = Pfloatmin;
+          string = Pstringmin;
+          bigint = Pbigintmin;
           simplify_constant_constructor = false;
         } );
       ( "%equal_null",
         {
-          objcomp = Pobjcomp Ceq;
-          intcomp = Pintcomp Ceq;
-          boolcomp = Pboolcomp Ceq;
-          floatcomp = Pfloatcomp Ceq;
-          stringcomp = Pstringcomp Ceq;
-          bigintcomp = Pbigintcomp Ceq;
+          obj = Pobjcomp Ceq;
+          int = Pintcomp Ceq;
+          bool = Pboolcomp Ceq;
+          float = Pfloatcomp Ceq;
+          string = Pstringcomp Ceq;
+          bigint = Pbigintcomp Ceq;
           simplify_constant_constructor = false;
         } );
       ( "%equal_undefined",
         {
-          objcomp = Pobjcomp Ceq;
-          intcomp = Pintcomp Ceq;
-          boolcomp = Pboolcomp Ceq;
-          floatcomp = Pfloatcomp Ceq;
-          stringcomp = Pstringcomp Ceq;
-          bigintcomp = Pbigintcomp Ceq;
+          obj = Pobjcomp Ceq;
+          int = Pintcomp Ceq;
+          bool = Pboolcomp Ceq;
+          float = Pfloatcomp Ceq;
+          string = Pstringcomp Ceq;
+          bigint = Pbigintcomp Ceq;
           simplify_constant_constructor = false;
         } );
       ( "%equal_nullable",
         {
-          objcomp = Pobjcomp Ceq;
-          intcomp = Pintcomp Ceq;
-          boolcomp = Pboolcomp Ceq;
-          floatcomp = Pfloatcomp Ceq;
-          stringcomp = Pstringcomp Ceq;
-          bigintcomp = Pbigintcomp Ceq;
+          obj = Pobjcomp Ceq;
+          int = Pintcomp Ceq;
+          bool = Pboolcomp Ceq;
+          float = Pfloatcomp Ceq;
+          string = Pstringcomp Ceq;
+          bigint = Pbigintcomp Ceq;
           simplify_constant_constructor = false;
         } );
       (* FIXME: Core compatibility *)
       ( "%bs_min",
         {
-          objcomp = Pobjmax;
-          intcomp = Pintmax;
-          boolcomp = Pboolmax;
-          floatcomp = Pboolmax;
-          stringcomp = Pstringmax;
-          bigintcomp = Pbigintmax;
+          obj = Pobjmax;
+          int = Pintmax;
+          bool = Pboolmax;
+          float = Pboolmax;
+          string = Pstringmax;
+          bigint = Pbigintmax;
           simplify_constant_constructor = false;
         } );
       ( "%bs_max",
         {
-          objcomp = Pobjmin;
-          intcomp = Pintmin;
-          boolcomp = Pboolmin;
-          floatcomp = Pfloatmin;
-          stringcomp = Pstringmin;
-          bigintcomp = Pbigintmin;
+          obj = Pobjmin;
+          int = Pintmin;
+          bool = Pboolmin;
+          float = Pfloatmin;
+          string = Pstringmin;
+          bigint = Pbigintmin;
           simplify_constant_constructor = false;
         } );
     |]
@@ -375,31 +400,36 @@ let primitives_table =
 
 let find_primitive prim_name = Hashtbl.find primitives_table prim_name
 
-let specialize_comparison
-    ({objcomp; intcomp; floatcomp; stringcomp; bigintcomp; boolcomp} :
-      specialized) env ty =
+let specialize_op ({obj; int; float; string; bigint; bool} : specialized) env ty
+    =
   match () with
   | ()
     when is_base_type env ty Predef.path_int
          || is_base_type env ty Predef.path_char
          || maybe_pointer_type env ty = Immediate ->
-    intcomp
-  | () when is_base_type env ty Predef.path_float -> floatcomp
-  | () when is_base_type env ty Predef.path_string -> stringcomp
-  | () when is_base_type env ty Predef.path_bigint -> bigintcomp
-  | () when is_base_type env ty Predef.path_bool -> boolcomp
-  | () -> objcomp
+    int
+  | () when is_base_type env ty Predef.path_float -> float
+  | () when is_base_type env ty Predef.path_string -> string
+  | () when is_base_type env ty Predef.path_bigint -> bigint
+  | () when is_base_type env ty Predef.path_bool -> bool
+  | () -> obj
 
 (* Specialize a primitive from available type information,
    raise Not_found if primitive is unknown *)
 
 let specialize_primitive p env ty (* ~has_constant_constructor *) =
   try
-    let table = Hashtbl.find comparisons_table p.prim_name in
+    let table = Hashtbl.find infix_table p.prim_name in
     match is_function_type env ty with
-    | Some (lhs, _rhs) -> specialize_comparison table env lhs
-    | None -> table.objcomp
-  with Not_found -> find_primitive p.prim_name
+    | Some (lhs, _rhs) -> specialize_op table env lhs
+    | None -> table.obj
+  with Not_found -> (
+    try
+      let table = Hashtbl.find comparisons_table p.prim_name in
+      match is_function_type env ty with
+      | Some (lhs, _rhs) -> specialize_op table env lhs
+      | None -> table.obj
+    with Not_found -> find_primitive p.prim_name)
 
 (* Eta-expand a primitive *)
 
@@ -463,7 +493,9 @@ let transl_primitive_application loc prim env ty args =
     | [arg1; _]
       when is_base_type env arg1.exp_type Predef.path_bool
            && Hashtbl.mem comparisons_table prim_name ->
-      (Hashtbl.find comparisons_table prim_name).boolcomp
+      (Hashtbl.find comparisons_table prim_name).bool
+    | [arg1; _] when Hashtbl.mem infix_table prim_name ->
+      specialize_op (Hashtbl.find infix_table prim_name) env arg1.exp_type
     | _ ->
       let has_constant_constructor =
         match args with
@@ -476,7 +508,7 @@ let transl_primitive_application loc prim env ty args =
       in
       if has_constant_constructor then
         match Hashtbl.find_opt comparisons_table prim_name with
-        | Some table when table.simplify_constant_constructor -> table.intcomp
+        | Some table when table.simplify_constant_constructor -> table.int
         | Some _ | None -> specialize_primitive prim env ty
         (* ~has_constant_constructor*)
       else specialize_primitive prim env ty
