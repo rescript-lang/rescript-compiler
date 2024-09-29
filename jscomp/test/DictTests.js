@@ -17,10 +17,24 @@ let intDict = {
   three: 3
 };
 
+function foo(dict) {
+  let match = dict.one;
+  if (match === 1) {
+    console.log("one");
+  } else {
+    console.log("not one");
+  }
+}
+
+let PatternMatching = {
+  foo: foo
+};
+
 let three = 3;
 
 exports.someString = someString;
 exports.createdDict = createdDict;
 exports.three = three;
 exports.intDict = intDict;
+exports.PatternMatching = PatternMatching;
 /* No side effect */

@@ -14,3 +14,11 @@ let intDict = dict{
   "two": 2,
   "three": three,
 }
+
+module PatternMatching = {
+  let foo = dict =>
+    switch dict {
+    | @res.dictPattern {one: 1} => Js.log("one")
+    | _ => Js.log("not one")
+    }
+}

@@ -1370,12 +1370,20 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
         | _            -> k None
       end
   | Ppat_record(lid_sp_list, closed) ->
-      let opath, record_ty =
+      let has_dict_pattern_attr = Dicts.has_dict_pattern_attribute sp.ppat_attributes in
+      let opath, record_ty = (
+      match (has_dict_pattern_attr, expected_ty.desc) with 
+      | (true, Tvar _) -> 
+        (* When this is a dict pattern and we don't have an actual expected type yet, 
+         infer the type as a dict with a new type variable. This let us hook into the 
+         existing inference mechanism for records in dict pattern matching too. *)
+        (Some (Predef.path_dict, Predef.path_dict), newgenty (Tconstr (Predef.path_dict, [newvar ()], ref Mnil)))
+      | _ ->
         try
           let (p0, p, _, _) = extract_concrete_record !env expected_ty in
           Some (p0, p), expected_ty
         with Not_found -> None, newvar ()
-      in
+      ) in
       let get_jsx_component_error_info = get_jsx_component_error_info ~extract_concrete_typedecl opath !env record_ty in
       let process_optional_label (ld, pat) =
         let exp_optional_attr = check_optional_attr !env ld pat.ppat_attributes pat.ppat_loc in
