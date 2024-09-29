@@ -112,6 +112,8 @@ and ident_failure = ident_create_predef_exn "Failure"
 and ident_ok = ident_create_predef_exn "Ok"
 and ident_error = ident_create_predef_exn "Error"
 
+and ident_anyOtherField = ident_create "anyOtherField"
+
 and ident_js_error = ident_create_predef_exn "JsError"
 and ident_not_found = ident_create_predef_exn "Not_found"
 
@@ -221,7 +223,16 @@ let common_initial_env add_type add_extension empty_env =
     {decl_abstr with
       type_params = [tvar];
       type_arity = 1;
-      type_variance = [Variance.full]}
+      type_variance = [Variance.full];
+      type_kind = 
+        Type_record ([
+          {ld_id = ident_anyOtherField;
+          ld_attributes = [(Location.mknoloc "res.optional", Parsetree.PStr [])];
+          ld_loc = Location.none;
+          ld_mutable = Immutable; (* TODO(dict-pattern-matching) Should probably be mutable? *) 
+          ld_type = newgenty (Tconstr (path_option, [tvar], ref Mnil));
+          }], Record_optional_labels [Ident.name ident_anyOtherField]);
+    }
   and decl_uncurried =
     let tvar1, tvar2 = newgenvar(), newgenvar() in
     {decl_abstr with
