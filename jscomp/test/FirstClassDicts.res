@@ -3,16 +3,14 @@ module CreateAndLookup = {
 
   let test_create: myDict = {name: "hello", something: 5}
 
-  let test_lookup = (d: myDict) : option<int> => d.something
+  let test_lookup = (d: myDict): option<int> => d.something
 }
-
 
 module Update = {
   type myDict = {name?: string, mutable anyOtherField?: int}
 
   let test_update = (d: myDict) => d.something = Some(10)
 }
-
 
 module PatternMatching = {
   type myDict = {name?: string, anyOtherField?: int}
