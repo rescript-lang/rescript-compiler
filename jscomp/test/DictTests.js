@@ -17,7 +17,16 @@ let intDict = {
   three: 3
 };
 
-function foo(dict) {
+function inferDictByPattern(dict) {
+  let match = dict.one;
+  if (match === 1) {
+    console.log("one");
+  } else {
+    console.log("not one");
+  }
+}
+
+function constrainedAsDict(dict) {
   let match = dict.one;
   if (match === 1) {
     console.log("one");
@@ -27,7 +36,8 @@ function foo(dict) {
 }
 
 let PatternMatching = {
-  foo: foo
+  inferDictByPattern: inferDictByPattern,
+  constrainedAsDict: constrainedAsDict
 };
 
 let three = 3;

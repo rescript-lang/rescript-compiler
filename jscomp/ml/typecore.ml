@@ -75,6 +75,7 @@ type error =
   | Uncurried_arity_mismatch of type_expr * int * int
   | Field_not_optional of string * type_expr
   | Type_params_not_supported of Longident.t
+  | Field_access_on_dict_type
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
@@ -3013,8 +3014,12 @@ and type_label_access env srecord lid =
   let ty_exp = record.exp_type in
   let opath =
     try
-      let (p0, p, _, _) = extract_concrete_record env ty_exp in
-      Some(p0, p)
+      match extract_concrete_typedecl env ty_exp with
+      | (p0, _, {type_attributes}) 
+        when Path.same p0 Predef.path_dict && Dicts.has_dict_attribute type_attributes -> 
+          raise(Error(lid.loc, env, Field_access_on_dict_type))
+      | (p0, p, {type_kind=Type_record _}) -> Some(p0, p)
+      | _ -> None
     with Not_found -> None
   in
   let labels = Typetexp.find_all_labels env lid.loc lid.txt in
@@ -4131,6 +4136,8 @@ let report_error env ppf = function
       type_expr typ
   | Type_params_not_supported lid ->
     fprintf ppf "The type %a@ has type parameters, but type parameters is not supported here." longident lid
+  | Field_access_on_dict_type ->
+    fprintf ppf "Direct field access on a dict is not supported. Use Dict.get instead."
 
 
 let super_report_error_no_wrap_printing_env = report_error

@@ -16,9 +16,19 @@ let intDict = dict{
 }
 
 module PatternMatching = {
-  let foo = dict =>
+  let inferDictByPattern = dict =>
     switch dict {
-    | @res.dictPattern {one: 1} => Js.log("one")
+    | @res.dictPattern {one: 1} =>
+      let _d: dict<int> = dict
+      Js.log("one")
+    | _ => Js.log("not one")
+    }
+
+  let constrainedAsDict = (dict: dict<int>) =>
+    switch dict {
+    | @res.dictPattern {one: 1} =>
+      let _d: dict<int> = dict
+      Js.log("one")
     | _ => Js.log("not one")
     }
 }
