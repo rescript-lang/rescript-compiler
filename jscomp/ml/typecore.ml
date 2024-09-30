@@ -1384,7 +1384,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
         | _            -> k None
       end
   | Ppat_record(lid_sp_list, closed) ->
-      let has_dict_pattern_attr = Dicts.has_dict_pattern_attribute sp.ppat_attributes in
+      let has_dict_pattern_attr = Dict_type_helpers.has_dict_pattern_attribute sp.ppat_attributes in
       let opath, record_ty = (
       match (has_dict_pattern_attr, expected_ty.desc) with 
       | (true, Tvar _) -> 
@@ -3029,7 +3029,11 @@ and type_label_access env srecord lid =
     try
       match extract_concrete_typedecl env ty_exp with
       | (p0, _, {type_attributes}) 
-        when Path.same p0 Predef.path_dict && Dicts.has_dict_attribute type_attributes -> 
+        when Path.same p0 Predef.path_dict && Dict_type_helpers.has_dict_attribute type_attributes -> 
+          (* Cover the case when trying to direct field access on a dict, e.g. `someDict.name`.
+            We need to disallow this because the fact that a dict is represented as a single field
+            record internally is just an implementation detail, and not intended to be exposed to
+            the user.*)
           raise(Error(lid.loc, env, Field_access_on_dict_type))
       | (p0, p, {type_kind=Type_record _}) -> Some(p0, p)
       | _ -> None
