@@ -1,4 +1,4 @@
-type fakeDict<'t> = {anyOtherField?: 't}
+type fakeDict<'t> = {dictValuesType?: 't}
 
 let foo = (fakeDict: fakeDict<'a>) => {
   switch fakeDict {

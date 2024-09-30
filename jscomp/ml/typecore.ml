@@ -811,12 +811,12 @@ end) = struct
         Longident.Lident s_ -> begin
           let s = 
             if List.exists (fun nd -> get_name nd = s_) descrs
-            || not (List.exists (fun nd -> get_name nd = "anyOtherField") descrs)
+            || not (List.exists (fun nd -> get_name nd = Dict_type_helpers.dict_magic_field_name) descrs)
             then s_
-            else "anyOtherField" in 
+            else Dict_type_helpers.dict_magic_field_name in 
           try
             let x = List.find (fun nd -> get_name nd = s) descrs in
-            if s = "anyOtherField"
+            if s = Dict_type_helpers.dict_magic_field_name
               then add_with_name x s_
               else x
           with Not_found ->
