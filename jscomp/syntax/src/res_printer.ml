@@ -2602,34 +2602,33 @@ and print_pattern_record_row ~state row cmt_tbl =
     print_comments doc cmt_tbl loc_for_comments
 
 and print_pattern_dict_row ~state
-    (row : Longident.t Location.loc * Parsetree.pattern) cmt_tbl =
-  match row with
-  | longident, pattern ->
-    let loc_for_comments =
-      {longident.loc with loc_end = pattern.ppat_loc.loc_end}
-    in
-    let rhs_doc =
-      let doc = print_pattern ~state pattern cmt_tbl in
-      let doc =
-        if Parens.pattern_record_row_rhs pattern then add_parens doc else doc
-      in
-      Doc.concat [print_optional_label pattern.ppat_attributes; doc]
-    in
-    let lbl_doc =
-      Doc.concat [Doc.text "\""; print_longident longident.txt; Doc.text "\""]
-    in
+    ((longident, pattern) : Longident.t Location.loc * Parsetree.pattern)
+    cmt_tbl =
+  let loc_for_comments =
+    {longident.loc with loc_end = pattern.ppat_loc.loc_end}
+  in
+  let rhs_doc =
+    let doc = print_pattern ~state pattern cmt_tbl in
     let doc =
-      Doc.group
-        (Doc.concat
-           [
-             lbl_doc;
-             Doc.text ":";
-             (if ParsetreeViewer.is_huggable_pattern pattern then
-                Doc.concat [Doc.space; rhs_doc]
-              else Doc.indent (Doc.concat [Doc.line; rhs_doc]));
-           ])
+      if Parens.pattern_record_row_rhs pattern then add_parens doc else doc
     in
-    print_comments doc cmt_tbl loc_for_comments
+    Doc.concat [print_optional_label pattern.ppat_attributes; doc]
+  in
+  let lbl_doc =
+    Doc.concat [Doc.text "\""; print_longident longident.txt; Doc.text "\""]
+  in
+  let doc =
+    Doc.group
+      (Doc.concat
+         [
+           lbl_doc;
+           Doc.text ":";
+           (if ParsetreeViewer.is_huggable_pattern pattern then
+              Doc.concat [Doc.space; rhs_doc]
+            else Doc.indent (Doc.concat [Doc.line; rhs_doc]));
+         ])
+  in
+  print_comments doc cmt_tbl loc_for_comments
 
 and print_expression_with_comments ~state expr cmt_tbl : Doc.t =
   let doc = print_expression ~state expr cmt_tbl in
