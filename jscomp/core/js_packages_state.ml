@@ -23,13 +23,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let packages_info = ref Js_packages_info.empty
+let make_runtime = ref false
 
 let set_package_name name =
   if Js_packages_info.is_empty !packages_info then
     packages_info := Js_packages_info.from_name name
-  else Bsc_args.bad_arg "duplicated flag for -bs-package-name"
+  else if not !make_runtime then Bsc_args.bad_arg "duplicated flag for -bs-package-name"
 
 let make_runtime () : unit =
+  make_runtime := true;
   packages_info := Js_packages_info.runtime_package_specs
 
 let make_runtime_test () : unit =
