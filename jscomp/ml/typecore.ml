@@ -804,9 +804,14 @@ end) = struct
   let lookup_from_type env tpath (lid : Longident.t loc) : Name.t =
     let descrs = get_descrs (Env.find_type_descrs tpath env) in
     Env.mark_type_used env (Path.last tpath) (Env.find_type tpath env);
-    (* TODO(dict-pattern-matching): also lookup the actual definition and check for @res.dict? *)
     let is_dict = Path.same tpath Predef.path_dict in
     if is_dict then (
+      (* [dict] Dicts are implented as a record with a single "magic" field. This magic field is 
+         used to track the dict value type, and any label lookup on the dict record type 
+         will give that single value type back. This is how we can piggy back on the record 
+         pattern matching mechanism.
+        
+        The code below handles directing any label lookup to the magic field. *)
       match lid.txt with
         Longident.Lident s_ -> begin
           let s = 
@@ -908,7 +913,11 @@ module Label = NameChoice (struct
   type t = label_description
   let type_kind = "record"
   let get_name lbl = lbl.lbl_name
+  
   let add_with_name lbl name =
+    (* [dict] This is used in dicts and shouldn't be used anywhere else. 
+       It adds a new field to an existing record type, to "fool" the pattern
+       matching into thinking the label exists. *)
     let l = 
       {lbl with
         lbl_name = name;
@@ -1387,9 +1396,10 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
       let has_dict_pattern_attr = Dict_type_helpers.has_dict_pattern_attribute sp.ppat_attributes in
       let opath, record_ty = (
       if has_dict_pattern_attr then (
-        (* When this is a dict pattern and we don't have an actual expected type yet, 
-         infer the type as a dict with a new type variable. This let us hook into the 
-         existing inference mechanism for records in dict pattern matching too. *)
+        (* [dict] If this is a dict pattern match we know we should force the record type
+            as the dict record type with a fresh type variable. This fixes so that dicts
+            can still be inferred properly from just pattern usage. Without this little 
+            tweak, the inference would not work properly. *)
         (Some (Predef.path_dict, Predef.path_dict), newgenty (Tconstr (Predef.path_dict, [newvar ()], ref Mnil)))
       ) else
         try
@@ -3029,10 +3039,10 @@ and type_label_access env srecord lid =
       match extract_concrete_typedecl env ty_exp with
       | (p0, _, {type_attributes}) 
         when Path.same p0 Predef.path_dict && Dict_type_helpers.has_dict_attribute type_attributes -> 
-          (* Cover the case when trying to direct field access on a dict, e.g. `someDict.name`.
+          (* [dict] Cover the case when trying to direct field access on a dict, e.g. `someDict.name`.
             We need to disallow this because the fact that a dict is represented as a single field
             record internally is just an implementation detail, and not intended to be exposed to
-            the user.*)
+            the user. *)
           raise(Error(lid.loc, env, Field_access_on_dict_type))
       | (p0, p, {type_kind=Type_record _}) -> Some(p0, p)
       | _ -> None
