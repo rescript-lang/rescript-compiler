@@ -51,8 +51,7 @@ reanalyze:
 	reanalyze.exe -set-exit-code -all-cmt _build/default/jscomp -suppress jscomp/syntax/testrunner -exclude-paths jscomp/outcome_printer,jscomp/ounit_tests,jscomp/ml,jscomp/js_parser,jscomp/frontend,jscomp/ext,jscomp/depends,jscomp/core,jscomp/common,jscomp/cmij,jscomp/bsb_helper,jscomp/bsb
 
 lib: build node_modules/.bin/semver
-	node scripts/ninja.js config
-	node scripts/ninja.js build
+	./scripts/buildRuntime.sh
 	./scripts/prebuilt.js
 
 artifacts: lib
@@ -86,8 +85,8 @@ clean-rewatch:
 	cargo clean --manifest-path rewatch/Cargo.toml && rm -f rewatch/rewatch
 
 clean:
+	(cd runtime && ../rescript clean)
 	dune clean
-	./scripts/ninja.js clean && rm -f ninja/ninja
 
 clean-all: clean clean-gentype clean-rewatch 
 
