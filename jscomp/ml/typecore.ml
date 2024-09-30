@@ -804,18 +804,31 @@ end) = struct
   let lookup_from_type env tpath (lid : Longident.t loc) : Name.t =
     let descrs = get_descrs (Env.find_type_descrs tpath env) in
     Env.mark_type_used env (Path.last tpath) (Env.find_type tpath env);
-    match lid.txt with
-      Longident.Lident s_ -> begin
-        let s = 
-          if List.exists (fun nd -> get_name nd = s_) descrs
-          || not (List.exists (fun nd -> get_name nd = "anyOtherField") descrs)
-          then s_
-          else "anyOtherField" in 
+    (* TODO(dict-pattern-matching): also lookup the actual definition and check for @res.dict? *)
+    let is_dict = Path.same tpath Predef.path_dict in
+    if is_dict then (
+      match lid.txt with
+        Longident.Lident s_ -> begin
+          let s = 
+            if List.exists (fun nd -> get_name nd = s_) descrs
+            || not (List.exists (fun nd -> get_name nd = "anyOtherField") descrs)
+            then s_
+            else "anyOtherField" in 
+          try
+            let x = List.find (fun nd -> get_name nd = s) descrs in
+            if s = "anyOtherField"
+              then add_with_name x s_
+              else x
+          with Not_found ->
+            let names = List.map get_name descrs in
+            raise (Error (lid.loc, env,
+                          Wrong_name ("", newvar (), type_kind, tpath, s, names)))
+        end
+    | _ -> raise Not_found) 
+    else match lid.txt with
+      Longident.Lident s -> begin
         try
-          let x = List.find (fun nd -> get_name nd = s) descrs in
-          if s = "anyOtherField"
-            then add_with_name x s_
-            else x
+          List.find (fun nd -> get_name nd = s) descrs
         with Not_found ->
           let names = List.map get_name descrs in
           raise (Error (lid.loc, env,
