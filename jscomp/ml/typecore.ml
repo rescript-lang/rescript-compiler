@@ -1386,13 +1386,12 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
   | Ppat_record(lid_sp_list, closed) ->
       let has_dict_pattern_attr = Dict_type_helpers.has_dict_pattern_attribute sp.ppat_attributes in
       let opath, record_ty = (
-      match (has_dict_pattern_attr, expected_ty.desc) with 
-      | (true, Tvar _) -> 
+      if has_dict_pattern_attr then (
         (* When this is a dict pattern and we don't have an actual expected type yet, 
          infer the type as a dict with a new type variable. This let us hook into the 
          existing inference mechanism for records in dict pattern matching too. *)
         (Some (Predef.path_dict, Predef.path_dict), newgenty (Tconstr (Predef.path_dict, [newvar ()], ref Mnil)))
-      | _ ->
+      ) else
         try
           let (p0, p, _, _) = extract_concrete_record !env expected_ty in
           Some (p0, p), expected_ty
