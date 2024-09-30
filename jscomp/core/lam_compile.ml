@@ -1625,6 +1625,60 @@ and compile_prim (prim_info : Lam.prim_info)
       Js_output.output_of_block_and_expression lambda_cxt.continuation
         (Ext_list.concat_append args_block block)
         exp
+  | { primitive = Pimport; args = [] | _ :: _ :: _; loc } -> 
+    Location.raise_errorf ~loc
+      "Missing argument: Dynamic import requires a module or \
+      module value that is a file as argument."
+  | { primitive = Pimport as primitive; args = [ mod_ ]; loc} ->
+      (match mod_ with
+      | Lglobal_module _ | Lvar _
+      | Lprim { primitive = Pfield _ | Pjs_call _ ; _ } ->
+        let args_block, args_expr =
+          let new_cxt =
+            { lambda_cxt with continuation = NeedValue Not_tail }
+          in
+          match compile_lambda new_cxt mod_ with
+          | { block; value = Some b; _ } -> ([ block ], b)
+          | { value = None; _ } -> assert false
+        in
+        let args_code : J.block = List.concat args_block in
+        let exp =
+          Lam_compile_primitive.translate output_prefix loc lambda_cxt primitive [args_expr]
+        in
+        Js_output.output_of_block_and_expression lambda_cxt.continuation args_code
+        exp
+      | Lfunction {
+          body =
+            ( (Lprim _ as body)
+            | Lsequence ((Lprim _ as body), Lconst Const_js_undefined _) );
+          _;
+        } ->
+        let body = match body with
+          | Lprim ({ primitive = Pjs_call prim_info; args; loc }) -> 
+            Lam.prim 
+              ~primitive:(Lam_primitive.Pjs_call { prim_info with dynamic_import = true }) 
+              ~args
+              loc
+          | _ -> body
+        in
+        let args_block, args_expr =
+          let new_cxt =
+            { lambda_cxt with continuation = NeedValue Not_tail }
+          in
+          match compile_lambda new_cxt body with
+          | { block; value = Some b; _ } -> ([ block ], b)
+          | { value = None; _ } -> assert false
+        in
+        let args_code : J.block = List.concat args_block in
+        let exp =
+          Lam_compile_primitive.translate output_prefix loc lambda_cxt primitive [args_expr]
+        in
+        Js_output.output_of_block_and_expression lambda_cxt.continuation args_code
+          exp
+      | _ ->
+        Location.raise_errorf ~loc
+          "Invalid argument: unsupported argument to dynamic import. If \
+            you believe this should be supported, please open an issue.")
   | { primitive; args; loc } ->
       let args_block, args_expr =
         if args = [] then ([], [])

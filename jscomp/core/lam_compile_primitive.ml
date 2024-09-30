@@ -38,6 +38,7 @@ let ensure_value_unit (st : Lam_compile_context.continuation) e : E.t =
 
 let module_of_expression = function
   | J.Var (J.Qualified (module_id, value)) -> [ (module_id, value) ]
+  | J.Call ({expression_desc = (J.Var (J.Qualified (module_id, value)))}, _, _) -> [ (module_id, value) ]
   | _ -> []
 
 let get_module_system () =
