@@ -17,6 +17,9 @@ function foo() {
   let first$2 = intDict.first;
   let second = first$2 !== undefined ? first$2 + 2 | 0 : 1;
   console.log(second);
+  let first$3 = stringDict.first;
+  let third = first$3 !== undefined ? first$3 + "2" : "hello";
+  console.log(third);
 }
 
 exports.stringDict = stringDict;

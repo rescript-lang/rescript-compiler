@@ -18,9 +18,10 @@ let intDict = dict{
 module PatternMatching = {
   let inferDictByPattern = dict =>
     switch dict {
-    | @res.dictPattern {one: 1} =>
-      let _d: dict<int> = dict
-      Js.log("one")
+    | @res.dictPattern {one: 1, three: 3, four: 4} =>
+      // Make sure that the dict is of correct type
+      dict->Js.Dict.set("five", 5)
+    | @res.dictPattern {two: 1} => Js.log("two")
     | _ => Js.log("not one")
     }
 
