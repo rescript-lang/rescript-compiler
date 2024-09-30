@@ -9,17 +9,17 @@ let intDict = dict{
 
 let foo = () => {
   let first = switch stringDict {
-  | @res.dictPattern {first} => first ++ "2"
+  | dict{"first": first} => first ++ "2"
   | _ => "hello"
   }
   Js.log(first)
   let second = switch intDict {
-  | @res.dictPattern {first} => first + 2
+  | dict{"first": first} => first + 2
   | _ => 1
   }
   Js.log(second)
   let third = switch stringDict {
-  | @res.dictPattern {first} => first ++ "2"
+  | dict{"first": first} => first ++ "2"
   | _ => "hello"
   }
   Js.log(third)

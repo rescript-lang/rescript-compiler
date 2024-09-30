@@ -1,0 +1,10 @@
+let someDict = Primitive_dict.make [|("one", {js|one|js})|]
+let (({ one = ((one)[@res.optional ]);_})[@res.dictPattern ]) = someDict
+let foo =
+  ((Function$
+      (fun () ->
+         match someDict with
+         | (({ one = {js|one|js};_})[@res.dictPattern ]) ->
+             Js.log {js|one|js}
+         | _ -> Js.log {js|not one|js}))
+  [@res.arity 1])
