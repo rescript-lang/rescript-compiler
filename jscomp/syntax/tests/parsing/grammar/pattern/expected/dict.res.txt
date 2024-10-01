@@ -1,10 +1,36 @@
-let someDict = Primitive_dict.make [|("one", {js|one|js})|]
-let (({ one = ((one)[@res.optional ]);_})[@res.dictPattern ]) = someDict
-let foo =
-  ((Function$
-      (fun () ->
-         match someDict with
-         | (({ one = {js|one|js};_})[@res.dictPattern ]) ->
-             Js.log {js|one|js}
-         | _ -> Js.log {js|not one|js}))
-  [@res.arity 1])
+
+  Syntax error!
+  tests/parsing/grammar/pattern/dict.res:28:12-16
+
+  26 │ let decodeUser = (json: json): option<user> => {
+  27 │   switch json {
+  28 │   | Object(dict{
+  29 │     "name": String(name), 
+  30 │     "age": ageJson
+
+  Did you forget a `)` here?
+
+
+  Syntax error!
+  tests/parsing/grammar/pattern/dict.res:31:6
+
+  29 ┆ "name": String(name), 
+  30 ┆ "age": ageJson
+  31 ┆ }) =>
+  32 ┆ Some({
+  33 ┆   name,
+
+  I'm not sure what to parse here when looking at ")".
+
+
+  Syntax error!
+  tests/parsing/grammar/pattern/dict.res:41:3
+
+  39 ┆     },
+  40 ┆   })
+  41 ┆ | _ =>
+  42 ┆   Js.log("Not an object.")
+  43 ┆   None
+
+  I'm not sure what to parse here when looking at "|".
+
