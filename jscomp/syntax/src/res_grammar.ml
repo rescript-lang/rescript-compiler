@@ -131,7 +131,7 @@ let is_signature_item_start = function
 
 let is_atomic_pattern_start = function
   | Token.Int _ | String _ | Codepoint _ | Backtick | Lparen | Lbracket | Lbrace
-  | Underscore | Lident _ | Uident _ | List | Exception | Percent ->
+  | Underscore | Lident _ | Uident _ | List | Dict | Exception | Percent ->
     true
   | _ -> false
 
@@ -170,8 +170,8 @@ let is_structure_item_start = function
 
 let is_pattern_start = function
   | Token.Int _ | Float _ | String _ | Codepoint _ | Backtick | True | False
-  | Minus | Plus | Lparen | Lbracket | Lbrace | List | Underscore | Lident _
-  | Uident _ | Hash | Exception | Percent | Module | At ->
+  | Minus | Plus | Lparen | Lbracket | Lbrace | List | Dict | Underscore
+  | Lident _ | Uident _ | Hash | Exception | Percent | Module | At ->
     true
   | _ -> false
 
