@@ -220,11 +220,14 @@ let common_initial_env add_type add_extension empty_env =
      type_variance = [Variance.covariant; Variance.covariant]}
   and decl_dict =
     let tvar = newgenvar() in
-    (* Dicts are implented as a as a single "magic" field record. This magic field
-       is then leveraged to be able to piggy back on the existing record pattern
-       matching mechanism. So, this definition is import for the dict pattern
-       matching functionality, but not something intended to be exposed to the
-       user. *) 
+    (* Dicts are implemented as a single "magic" field record. This magic field
+       is the medium through which we can piggy back on the existing record pattern
+       matching mechanism. We do this by letting the compiler route any label lookup
+       for the dict record type to the magic field, which has the type of the values
+       of the dict.
+
+       So, this definition is important for the dict pattern matching functionality, 
+       but not something intended to be exposed to the user. *) 
     {decl_abstr with
       type_attributes = [Dict_type_helpers.dict_attr];
       type_params = [tvar];

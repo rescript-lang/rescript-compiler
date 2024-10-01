@@ -806,7 +806,7 @@ end) = struct
     Env.mark_type_used env (Path.last tpath) (Env.find_type tpath env);
     let is_dict = Path.same tpath Predef.path_dict in
     if is_dict then (
-      (* [dict] Dicts are implented as a record with a single "magic" field. This magic field is 
+      (* [dict] Dicts are implemented as a record with a single "magic" field. This magic field is 
          used to track the dict value type, and any label lookup on the dict record type 
          will give that single value type back. This is how we can piggy back on the record 
          pattern matching mechanism.
