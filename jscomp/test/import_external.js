@@ -4,5 +4,8 @@
 
 let f8 = import("a").then(m => m.default);
 
+let f9 = import("b").then(m => m.default);
+
 exports.f8 = f8;
+exports.f9 = f9;
 /* f8 Not a pure module */
