@@ -910,7 +910,7 @@ let report_error env ppf = function
   | Unbound_label lid ->
     (* modified *)
     Format.fprintf ppf "@[<v>\
-                        @{<info>The record field %a can't be found.@}@,@,\
+                        @{<info>%a@} refers to a record field, but the record type it belongs to couldn't be found automatically.@,@,\
                         If it's defined in another module or file, bring it into scope by:@,\
                         @[- Prefixing it with said module name:@ @{<info>TheModule.%a@}@]@,\
                         @[- Or specifying its type:@ @{<info>let theValue: TheModule.theType = {%a: VALUE}@}@]\
