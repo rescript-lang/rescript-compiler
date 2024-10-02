@@ -42,6 +42,7 @@
 #### :house: Internal
 
 - Remove uncurried flag from bsb. https://github.com/rescript-lang/rescript-compiler/pull/7049
+- Build runtime/stdlib files with rescript/bsb instead of ninja.js. https://github.com/rescript-lang/rescript-compiler/pull/7063
 
 # 12.0.0-alpha.3
 

@@ -316,15 +316,13 @@ jobs:
         run: opam exec -- make test-syntax
 
       - name: Build runtime/stdlib
-        if: runner.os != 'Windows'
-        run: |
-          opam exec -- node ./scripts/ninja.js config
-          opam exec -- node ./scripts/ninja.js build
+        run: ./scripts/buildRuntime.sh
+        shell: bash
 
       - name: Check for changes in lib folder
         run: git diff --exit-code lib/js lib/es6
 
-      - name: Populate lib/ocaml
+      - name: Version Check
         run: ./scripts/prebuilt.js
 
       - name: Run tests
