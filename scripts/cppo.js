@@ -38,14 +38,7 @@ const { execFileSync } = require("child_process");
 ].forEach(([output, input, type]) => {
   execFileSync(
     "cppo",
-    [
-      "-n",
-      "-D",
-      type,
-      `jscomp/others_cppo/${input}`,
-      "-o",
-      `jscomp/others/${output}`,
-    ],
+    ["-n", "-D", type, `runtime/cppo/${input}`, "-o", `runtime/${output}`],
     { stdio: "inherit" },
   );
 });
