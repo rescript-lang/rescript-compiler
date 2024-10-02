@@ -11,6 +11,6 @@
   [1;33msomeUnknownField[0m refers to a record field, but no corresponding record type is in scope.
   
   If it's defined in another module or file, bring it into scope by:
-  - Prefixing it with said module name: [1;33mTheModule.someUnknownField[0m
-  - Or specifying its type:
+  - Prefixing the field name with the module name: [1;33mTheModule.someUnknownField[0m
+  - Or specifying the record type explicitly:
   [1;33mlet theValue: TheModule.theType = {someUnknownField: VALUE}[0m

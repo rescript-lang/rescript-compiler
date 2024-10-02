@@ -912,8 +912,8 @@ let report_error env ppf = function
     Format.fprintf ppf "@[<v>\
                         @{<info>%a@} refers to a record field, but no corresponding record type is in scope.@,@,\
                         If it's defined in another module or file, bring it into scope by:@,\
-                        @[- Prefixing it with said module name:@ @{<info>TheModule.%a@}@]@,\
-                        @[- Or specifying its type:@ @{<info>let theValue: TheModule.theType = {%a: VALUE}@}@]\
+                        @[- Prefixing the field name with the module name:@ @{<info>TheModule.%a@}@]@,\
+                        @[- Or specifying the record type explicitly:@ @{<info>let theValue: TheModule.theType = {%a: VALUE}@}@]\
                         @]"
       Printtyp.longident lid
       Printtyp.longident lid
