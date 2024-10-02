@@ -2,6 +2,7 @@
 
 var cp = require("child_process");
 var assert = require("assert");
+var os = require("os");
 var rescript_exe = require("#cli/bin_path").rescript_exe;
 
 var out = cp.spawnSync(rescript_exe, {
@@ -19,6 +20,6 @@ if (out.stdout !== "") {
       "Error: package weird not found or built ",
       "- Did you install it?",
       "",
-    ].join("\n"),
+    ].join(os.EOL),
   );
 }

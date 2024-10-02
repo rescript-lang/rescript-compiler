@@ -2,7 +2,7 @@
 const cp = require("child_process");
 const path = require("path");
 const fs = require("fs");
-var { rescript_exe } = require("#cli/bin_path");
+const { rescript_exe } = require("#cli/bin_path");
 
 const duneBinDir = require("./dune").duneBinDir;
 
@@ -50,9 +50,13 @@ async function runTests() {
   }
 
   if (ounitTest) {
-    cp.execSync(path.join(duneBinDir, "ounit_tests"), {
-      stdio: [0, 1, 2],
-    });
+    if (process.platform === "win32") {
+      console.log("Skipping OUnit tests on Windows");
+    } else {
+      cp.execSync(path.join(duneBinDir, "ounit_tests"), {
+        stdio: [0, 1, 2],
+      });
+    }
   }
 
   if (mochaTest) {

@@ -49,4 +49,12 @@ async function exec(command, args, options) {
   });
 }
 
+/**
+ * @param {string} s
+ */
+function normalizeNewlines(s) {
+  return s.replace(/\r\n/g, '\n');
+}
+
 exports.exec = exec;
+exports.normalizeNewlines = normalizeNewlines;

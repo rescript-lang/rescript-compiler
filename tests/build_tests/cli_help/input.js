@@ -1,7 +1,10 @@
 // @ts-check
 
 const assert = require("assert");
-const { exec } = require("../utils.js");
+const path = require("path");
+const { exec, normalizeNewlines } = require("../utils.js");
+
+const rescriptPath = path.join(__dirname, "..", "..", "..", "rescript")
 
 const cliHelp =
   "Usage: rescript <options> <subcommand>\n" +
@@ -61,184 +64,88 @@ const dumpHelp =
   "Usage: rescript dump <options> [target]\n" +
   "`rescript dump` dumps the information for the target\n";
 
+/**
+ * @param {string[]} params
+ * @param {{ stdout: string; stderr: string; status: number; }} expected
+ */
+async function runTest(params, expected) {
+  const out = await exec("node", [rescriptPath, ...params], {
+    cwd: __dirname,
+  });
+
+  assert.equal(normalizeNewlines(out.stdout), expected.stdout);
+  assert.equal(normalizeNewlines(out.stderr), expected.stderr);
+  assert.equal(out.status, expected.status);
+}
+  
 async function test() {
-  {
     // Shows build help with --help arg
-    const out = await exec(`../../../rescript`, ["build", "--help"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, buildHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  await runTest(["build", "--help"], { stdout: buildHelp, stderr: "", status: 0 });
 
-  {
-    const out = await exec(`../../../rescript`, ["build", "-w", "--help"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, buildHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  await runTest(["build", "-w", "--help"], { stdout: buildHelp, stderr: "", status: 0 });
 
-  {
-    const out = await exec(`../../../rescript`, ["-w", "--help"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, cliHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  await runTest(["-w", "--help"], { stdout: cliHelp, stderr: "", status: 0 });
 
-  {
-    // Shows cli help with --help arg even if there are invalid arguments after it
-    const out = await exec(`../../../rescript`, ["--help", "-w"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, cliHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  // Shows cli help with --help arg even if there are invalid arguments after it
+  await runTest(["--help", "-w"], { stdout: cliHelp, stderr: "", status: 0 });
 
-  {
-    // Shows build help with -h arg
-    const out = await exec(`../../../rescript`, ["build", "-h"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, buildHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  // Shows build help with -h arg
+  await runTest(["build", "-h"], { stdout: buildHelp, stderr: "", status: 0 });
 
-  {
-    // Exits with build help with unknown arg
-    const out = await exec(`../../../rescript`, ["build", "-foo"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, "");
-    assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
-    assert.equal(out.status, 2);
-  }
+  // Exits with build help with unknown arg
+  await runTest(["build", "-foo"], {
+    stdout: "",
+    stderr: 'Error: Unknown option "-foo".\n' + buildHelp,
+    status: 2,
+  });
 
-  {
-    // Shows cli help with --help arg
-    const out = await exec(`../../../rescript`, ["--help"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, cliHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  // Shows cli help with --help arg
+  await runTest(["--help"], { stdout: cliHelp, stderr: "", status: 0 });
 
-  {
-    // Shows cli help with -h arg
-    const out = await exec(`../../../rescript`, ["-h"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, cliHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  // Shows cli help with -h arg
+  await runTest(["-h"], { stdout: cliHelp, stderr: "", status: 0 });
 
-  {
-    // Shows cli help with -h arg
-    const out = await exec(`../../../rescript`, ["help"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, cliHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  // Shows cli help with -h arg
+  await runTest(["help"], { stdout: cliHelp, stderr: "", status: 0 });
 
-  {
-    // Exits with cli help with unknown command
-    const out = await exec(`../../../rescript`, ["built"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, "");
-    assert.equal(out.stderr, `Error: Unknown command "built".\n` + cliHelp);
-    assert.equal(out.status, 2);
-  }
+  // Exits with cli help with unknown command
+  await runTest(["built"], {
+    stdout: "",
+    stderr: `Error: Unknown command "built".\n` + cliHelp,
+    status: 2,
+  });
 
-  {
-    // Exits with build help with unknown args
-    const out = await exec(`../../../rescript`, ["-foo"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, "");
-    assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
-    assert.equal(out.status, 2);
-  }
+  // Exits with build help with unknown args
+  await runTest(["-foo"], {
+    stdout: "",
+    stderr: 'Error: Unknown option "-foo".\n' + buildHelp,
+    status: 2,
+  });
 
-  {
-    // Shows clean help with --help arg
-    const out = await exec(`../../../rescript`, ["clean", "--help"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, cleanHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  // Shows clean help with --help arg
+  await runTest(["clean", "--help"], { stdout: cleanHelp, stderr: "", status: 0 });
 
-  {
-    // Shows clean help with -h arg
-    const out = await exec(`../../../rescript`, ["clean", "-h"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, cleanHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  // Shows clean help with -h arg
+  await runTest(["clean", "-h"], { stdout: cleanHelp, stderr: "", status: 0 });
 
-  {
-    // Exits with clean help with unknown arg
-    const out = await exec(`../../../rescript`, ["clean", "-foo"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, "");
-    assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + cleanHelp);
-    assert.equal(out.status, 2);
-  }
+  // Exits with clean help with unknown arg
+  await runTest(["clean", "-foo"], {
+    stdout: "",
+    stderr: 'Error: Unknown option "-foo".\n' + cleanHelp,
+    status: 2,
+  });
 
-  {
-    // Shows format help with --help arg
-    const out = await exec(`../../../rescript`, ["format", "--help"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, formatHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  // Shows format help with --help arg
+  await runTest(["format", "--help"], { stdout: formatHelp, stderr: "", status: 0 });
 
-  {
-    // Shows format help with -h arg
-    const out = await exec(`../../../rescript`, ["format", "-h"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, formatHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  // Shows format help with -h arg
+  await runTest(["format", "-h"], { stdout: formatHelp, stderr: "", status: 0 });
 
-  {
-    // Shows dump help with --help arg
-    const out = await exec(`../../../rescript`, ["dump", "--help"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, dumpHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  // Shows dump help with --help arg
+  await runTest(["dump", "--help"], { stdout: dumpHelp, stderr: "", status: 0 });
 
-  {
-    // Shows dump help with -h arg
-    const out = await exec(`../../../rescript`, ["dump", "-h"], {
-      cwd: __dirname,
-    });
-    assert.equal(out.stdout, dumpHelp);
-    assert.equal(out.stderr, "");
-    assert.equal(out.status, 0);
-  }
+  // Shows dump help with -h arg
+  await runTest(["dump", "-h"], { stdout: dumpHelp, stderr: "", status: 0 });
 }
 
 void test();
