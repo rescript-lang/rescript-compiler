@@ -790,7 +790,7 @@ module NameChoice(Name : sig
   val get_type: t -> type_expr
   val get_descrs: Env.type_descriptions -> t list
 
-  val unsafe_do_not_use_add_with_name: t -> string -> t
+  val unsafe_do_not_use__add_with_name: t -> string -> t
   val unbound_name_error: Env.t -> Longident.t loc -> 'a
 
 end) = struct
@@ -807,21 +807,9 @@ end) = struct
     if Path.same tpath Predef.path_dict then (
       (* [dict] Handle directing any label lookup to the magic dict field. *)
       match lid.txt with
-        Longident.Lident s_ -> begin
-          let s = 
-            if List.exists (fun nd -> get_name nd = s_) descrs
-            || not (List.exists (fun nd -> get_name nd = Dict_type_helpers.dict_magic_field_name) descrs)
-            then s_
-            else Dict_type_helpers.dict_magic_field_name in 
-          try
-            let x = List.find (fun nd -> get_name nd = s) descrs in
-            if s = Dict_type_helpers.dict_magic_field_name
-              then unsafe_do_not_use_add_with_name x s_
-              else x
-          with Not_found ->
-            let names = List.map get_name descrs in
-            raise (Error (lid.loc, env,
-                          Wrong_name ("", newvar (), type_kind, tpath, s, names)))
+        Longident.Lident s -> begin
+          let x = List.find (fun nd -> get_name nd = Dict_type_helpers.dict_magic_field_name) descrs in
+          unsafe_do_not_use__add_with_name x s
         end
     | _ -> raise Not_found) 
     else match lid.txt with
@@ -908,7 +896,7 @@ module Label = NameChoice (struct
   let type_kind = "record"
   let get_name lbl = lbl.lbl_name
   
-  let unsafe_do_not_use_add_with_name lbl name =
+  let unsafe_do_not_use__add_with_name lbl name =
     (* [dict] This is used in dicts and shouldn't be used anywhere else. 
        It adds a new field to an existing record type, to "fool" the pattern
        matching into thinking the label exists. *)
@@ -1078,7 +1066,7 @@ module Constructor = NameChoice (struct
   let get_name cstr = cstr.cstr_name
   let get_type cstr = cstr.cstr_res
 
-  let unsafe_do_not_use_add_with_name _cstr _name = assert false
+  let unsafe_do_not_use__add_with_name _cstr _name = assert false
   let get_descrs = fst
   let unbound_name_error = Typetexp.unbound_constructor_error
 end)
