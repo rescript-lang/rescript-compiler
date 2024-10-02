@@ -229,7 +229,7 @@ let common_initial_env add_type add_extension empty_env =
        So, this definition is important for the dict pattern matching functionality, 
        but not something intended to be exposed to the user. *) 
     {decl_abstr with
-      type_attributes = [Dict_type_helpers.dict_attr];
+      type_attributes = [Dict_type_helpers.dict_attr; (Location.mknoloc "live", Parsetree.PStr [])];
       type_params = [tvar];
       type_arity = 1;
       type_variance = [Variance.full];
