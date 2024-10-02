@@ -8,7 +8,7 @@
   4 [2m│[0m   }
   5 [2m│[0m 
 
-  [1;33msomeUnknownField[0m refers to a record field, but the record type it belongs to couldn't be found automatically.
+  [1;33msomeUnknownField[0m refers to a record field, but no corresponding record type is in scope.
   
   If it's defined in another module or file, bring it into scope by:
   - Prefixing it with said module name: [1;33mTheModule.someUnknownField[0m
