@@ -105,6 +105,12 @@ let has_res_pat_variant_spread_attribute attrs =
       | _ -> false)
     attrs
 
+let has_dict_pattern_attribute attrs =
+  attrs
+  |> List.find_opt (fun (({txt}, _) : Parsetree.attribute) ->
+         txt = "res.dictPattern")
+  |> Option.is_some
+
 let collect_array_expressions expr =
   match expr.pexp_desc with
   | Pexp_array exprs -> (exprs, None)
@@ -228,7 +234,7 @@ let filter_parsing_attrs attrs =
               ( "res.arity" | "res.braces" | "ns.braces" | "res.iflet"
               | "res.namedArgLoc" | "res.optional" | "res.ternary" | "res.async"
               | "res.await" | "res.template" | "res.taggedTemplate"
-              | "res.patVariantSpread" );
+              | "res.patVariantSpread" | "res.dictPattern" );
           },
           _ ) ->
         false

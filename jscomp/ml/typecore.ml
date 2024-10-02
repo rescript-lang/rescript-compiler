@@ -75,6 +75,7 @@ type error =
   | Uncurried_arity_mismatch of type_expr * int * int
   | Field_not_optional of string * type_expr
   | Type_params_not_supported of Longident.t
+  | Field_access_on_dict_type
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
@@ -788,6 +789,8 @@ module NameChoice(Name : sig
   val get_name: t -> string
   val get_type: t -> type_expr
   val get_descrs: Env.type_descriptions -> t list
+
+  val unsafe_do_not_use__add_with_name: t -> string -> t
   val unbound_name_error: Env.t -> Longident.t loc -> 'a
 
 end) = struct
@@ -798,10 +801,18 @@ end) = struct
     | Tconstr(p, _, _) -> p
     | _ -> assert false
 
-  let lookup_from_type env tpath lid =
+  let lookup_from_type env tpath (lid : Longident.t loc) : Name.t =
     let descrs = get_descrs (Env.find_type_descrs tpath env) in
     Env.mark_type_used env (Path.last tpath) (Env.find_type tpath env);
-    match lid.txt with
+    if Path.same tpath Predef.path_dict then (
+      (* [dict] Handle directing any label lookup to the magic dict field. *)
+      match lid.txt with
+        Longident.Lident s -> begin
+          let x = List.find (fun nd -> get_name nd = Dict_type_helpers.dict_magic_field_name) descrs in
+          unsafe_do_not_use__add_with_name x s
+        end
+    | _ -> raise Not_found) 
+    else match lid.txt with
       Longident.Lident s -> begin
         try
           List.find (fun nd -> get_name nd = s) descrs
@@ -884,6 +895,20 @@ module Label = NameChoice (struct
   type t = label_description
   let type_kind = "record"
   let get_name lbl = lbl.lbl_name
+  
+  let unsafe_do_not_use__add_with_name lbl name =
+    (* [dict] This is used in dicts and shouldn't be used anywhere else. 
+       It adds a new field to an existing record type, to "fool" the pattern
+       matching into thinking the label exists. *)
+    let l = 
+      {lbl with
+        lbl_name = name;
+        lbl_pos = Array.length lbl.lbl_all;
+        lbl_repres = Record_optional_labels [name]} in
+    let lbl_all_list = Array.to_list lbl.lbl_all @ [l] in
+    let lbl_all = Array.of_list lbl_all_list in
+    Ext_array.iter lbl_all (fun lbl -> lbl.lbl_all <- lbl_all);
+    l
   let get_type lbl = lbl.lbl_res
   let get_descrs = snd
   let unbound_name_error = Typetexp.unbound_label_error
@@ -1040,6 +1065,8 @@ module Constructor = NameChoice (struct
   let type_kind = "variant"
   let get_name cstr = cstr.cstr_name
   let get_type cstr = cstr.cstr_res
+
+  let unsafe_do_not_use__add_with_name _cstr _name = assert false
   let get_descrs = fst
   let unbound_name_error = Typetexp.unbound_constructor_error
 end)
@@ -1348,12 +1375,17 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
         | _            -> k None
       end
   | Ppat_record(lid_sp_list, closed) ->
-      let opath, record_ty =
+      let has_dict_pattern_attr = Dict_type_helpers.has_dict_pattern_attribute sp.ppat_attributes in
+      let opath, record_ty = (
+      if has_dict_pattern_attr then (
+        (* [dict] Make sure dict patterns are inferred as actual dicts *)
+        (Some (Predef.path_dict, Predef.path_dict), newgenty (Tconstr (Predef.path_dict, [newvar ()], ref Mnil)))
+      ) else
         try
           let (p0, p, _, _) = extract_concrete_record !env expected_ty in
           Some (p0, p), expected_ty
         with Not_found -> None, newvar ()
-      in
+      ) in
       let get_jsx_component_error_info = get_jsx_component_error_info ~extract_concrete_typedecl opath !env record_ty in
       let process_optional_label (ld, pat) =
         let exp_optional_attr = check_optional_attr !env ld pat.ppat_attributes pat.ppat_loc in
@@ -2983,8 +3015,16 @@ and type_label_access env srecord lid =
   let ty_exp = record.exp_type in
   let opath =
     try
-      let (p0, p, _, _) = extract_concrete_record env ty_exp in
-      Some(p0, p)
+      match extract_concrete_typedecl env ty_exp with
+      | (p0, _, {type_attributes}) 
+        when Path.same p0 Predef.path_dict && Dict_type_helpers.has_dict_attribute type_attributes -> 
+          (* [dict] Cover the case when trying to direct field access on a dict, e.g. `someDict.name`.
+            We need to disallow this because the fact that a dict is represented as a single magic 
+            field record internally is just an implementation detail, and not intended to be exposed 
+            to the user. *)
+          raise(Error(lid.loc, env, Field_access_on_dict_type))
+      | (p0, p, {type_kind=Type_record _}) -> Some(p0, p)
+      | _ -> None
     with Not_found -> None
   in
   let labels = Typetexp.find_all_labels env lid.loc lid.txt in
@@ -4101,6 +4141,8 @@ let report_error env ppf = function
       type_expr typ
   | Type_params_not_supported lid ->
     fprintf ppf "The type %a@ has type parameters, but type parameters is not supported here." longident lid
+  | Field_access_on_dict_type ->
+    fprintf ppf "Direct field access on a dict is not supported. Use Dict.get instead."
 
 
 let super_report_error_no_wrap_printing_env = report_error

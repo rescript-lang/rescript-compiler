@@ -17,10 +17,47 @@ let intDict = {
   three: 3
 };
 
+function inferDictByPattern(dict) {
+  let match = dict.one;
+  if (match === 1) {
+    let match$1 = dict.three;
+    if (match$1 === 3) {
+      let match$2 = dict.four;
+      if (match$2 === 4) {
+        dict["five"] = 5;
+        return;
+      }
+      
+    }
+    
+  }
+  let match$3 = dict.two;
+  if (match$3 === 1) {
+    console.log("two");
+  } else {
+    console.log("not one");
+  }
+}
+
+function constrainedAsDict(dict) {
+  let match = dict.one;
+  if (match === 1) {
+    console.log("one");
+  } else {
+    console.log("not one");
+  }
+}
+
+let PatternMatching = {
+  inferDictByPattern: inferDictByPattern,
+  constrainedAsDict: constrainedAsDict
+};
+
 let three = 3;
 
 exports.someString = someString;
 exports.createdDict = createdDict;
 exports.three = three;
 exports.intDict = intDict;
+exports.PatternMatching = PatternMatching;
 /* No side effect */

@@ -1127,6 +1127,9 @@ let rec parse_pattern ?(alias = true) ?(or_ = true) p =
     | List ->
       Parser.next p;
       parse_list_pattern ~start_pos ~attrs p
+    | Dict ->
+      Parser.next p;
+      parse_dict_pattern ~start_pos ~attrs p
     | Module -> parse_module_pattern ~attrs p
     | Percent ->
       let extension = parse_extension p in
@@ -1396,6 +1399,29 @@ and parse_list_pattern ~start_pos ~attrs p =
     let patterns = patterns |> List.map filter_spread |> List.rev in
     let pat = make_list_pattern loc patterns None in
     {pat with ppat_loc = loc; ppat_attributes = attrs}
+
+and parse_dict_pattern_row p =
+  match p.Parser.token with
+  | String s ->
+    let loc = mk_loc p.start_pos p.end_pos in
+    Parser.next p;
+    let fieldName = Location.mkloc (Longident.Lident s) loc in
+    Parser.expect Colon p;
+    let optional = parse_optional_label p in
+    let pat = parse_pattern p in
+    Some (fieldName, make_pattern_optional ~optional pat)
+  | _ -> None
+
+and parse_dict_pattern ~start_pos ~attrs (p : Parser.t) =
+  let fields =
+    parse_comma_delimited_region p ~grammar:DictRows ~closing:Rbrace
+      ~f:parse_dict_pattern_row
+  in
+  Parser.expect Rbrace p;
+  let loc = mk_loc start_pos p.prev_end_pos in
+  Ast_helper.Pat.record ~loc
+    ~attrs:((Location.mknoloc "res.dictPattern", PStr []) :: attrs)
+    fields Open
 
 and parse_array_pattern ~attrs p =
   let start_pos = p.start_pos in

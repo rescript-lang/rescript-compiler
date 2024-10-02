@@ -112,6 +112,8 @@ and ident_failure = ident_create_predef_exn "Failure"
 and ident_ok = ident_create_predef_exn "Ok"
 and ident_error = ident_create_predef_exn "Error"
 
+and ident_dict_magic_field_name = ident_create Dict_type_helpers.dict_magic_field_name
+
 and ident_js_error = ident_create_predef_exn "JsError"
 and ident_not_found = ident_create_predef_exn "Not_found"
 
@@ -218,10 +220,28 @@ let common_initial_env add_type add_extension empty_env =
      type_variance = [Variance.covariant; Variance.covariant]}
   and decl_dict =
     let tvar = newgenvar() in
+    (* Dicts are implemented as a single "magic" field record. This magic field
+       is the medium through which we can piggy back on the existing record pattern
+       matching mechanism. We do this by letting the compiler route any label lookup
+       for the dict record type to the magic field, which has the type of the values
+       of the dict.
+
+       So, this definition is important for the dict pattern matching functionality, 
+       but not something intended to be exposed to the user. *) 
     {decl_abstr with
+      type_attributes = [Dict_type_helpers.dict_attr; (Location.mknoloc "live", Parsetree.PStr [])];
       type_params = [tvar];
       type_arity = 1;
-      type_variance = [Variance.full]}
+      type_variance = [Variance.full];
+      type_kind = Type_record ([{
+          ld_id = ident_dict_magic_field_name;
+          ld_attributes = [(Location.mknoloc "res.optional", Parsetree.PStr []); Dict_type_helpers.dict_magic_field_attr];
+          ld_loc = Location.none;
+          ld_mutable = Immutable;
+          ld_type = newgenty (Tconstr (path_option, [tvar], ref Mnil));
+        }], 
+        Record_optional_labels [Ident.name ident_dict_magic_field_name]);
+    }
   and decl_uncurried =
     let tvar1, tvar2 = newgenvar(), newgenvar() in
     {decl_abstr with
