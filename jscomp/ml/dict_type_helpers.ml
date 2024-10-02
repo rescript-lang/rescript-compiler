@@ -5,8 +5,9 @@
 
   ### How are they implemented?
   Dicts in ReScript are implemented as predefined record type, with a single (magic) field that holds 
-  the type of the dict's values. This field is called `dictValuesType`, and is just an implementation
-  detail - it's never actually exposed to the user, just used internally. 
+  the type of the dict's values. This field is called `dictValuesType`, and it represent every possible
+  key in the dict. It's just an implementation detail - it's never actually exposed to the user, just 
+  used internally. 
 
   The compiler will route any label lookup on the dict record type to the magic field, which creates a 
   record with unknown keys, but of a single type.

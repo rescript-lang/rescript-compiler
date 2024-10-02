@@ -790,7 +790,7 @@ module NameChoice(Name : sig
   val get_type: t -> type_expr
   val get_descrs: Env.type_descriptions -> t list
 
-  val add_with_name: t -> string -> t
+  val unsafe_do_not_use_add_with_name: t -> string -> t
   val unbound_name_error: Env.t -> Longident.t loc -> 'a
 
 end) = struct
@@ -804,14 +804,8 @@ end) = struct
   let lookup_from_type env tpath (lid : Longident.t loc) : Name.t =
     let descrs = get_descrs (Env.find_type_descrs tpath env) in
     Env.mark_type_used env (Path.last tpath) (Env.find_type tpath env);
-    let is_dict = Path.same tpath Predef.path_dict in
-    if is_dict then (
-      (* [dict] Dicts are implemented as a record with a single "magic" field. This magic field is 
-         used to track the dict value type, and any label lookup on the dict record type 
-         will give that single value type back. This is how we can piggy back on the record 
-         pattern matching mechanism.
-        
-        The code below handles directing any label lookup to the magic field. *)
+    if Path.same tpath Predef.path_dict then (
+      (* [dict] Handle directing any label lookup to the magic dict field. *)
       match lid.txt with
         Longident.Lident s_ -> begin
           let s = 
@@ -822,7 +816,7 @@ end) = struct
           try
             let x = List.find (fun nd -> get_name nd = s) descrs in
             if s = Dict_type_helpers.dict_magic_field_name
-              then add_with_name x s_
+              then unsafe_do_not_use_add_with_name x s_
               else x
           with Not_found ->
             let names = List.map get_name descrs in
@@ -914,7 +908,7 @@ module Label = NameChoice (struct
   let type_kind = "record"
   let get_name lbl = lbl.lbl_name
   
-  let add_with_name lbl name =
+  let unsafe_do_not_use_add_with_name lbl name =
     (* [dict] This is used in dicts and shouldn't be used anywhere else. 
        It adds a new field to an existing record type, to "fool" the pattern
        matching into thinking the label exists. *)
@@ -1084,7 +1078,7 @@ module Constructor = NameChoice (struct
   let get_name cstr = cstr.cstr_name
   let get_type cstr = cstr.cstr_res
 
-  let add_with_name _cstr _name = assert false
+  let unsafe_do_not_use_add_with_name _cstr _name = assert false
   let get_descrs = fst
   let unbound_name_error = Typetexp.unbound_constructor_error
 end)
@@ -1396,10 +1390,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
       let has_dict_pattern_attr = Dict_type_helpers.has_dict_pattern_attribute sp.ppat_attributes in
       let opath, record_ty = (
       if has_dict_pattern_attr then (
-        (* [dict] If this is a dict pattern match we know we should force the record type
-            as the dict record type with a fresh type variable. This fixes so that dicts
-            can still be inferred properly from just pattern usage. Without this little 
-            tweak, the inference would not work properly. *)
+        (* [dict] Make sure dict patterns are inferred as actual dicts *)
         (Some (Predef.path_dict, Predef.path_dict), newgenty (Tconstr (Predef.path_dict, [newvar ()], ref Mnil)))
       ) else
         try
@@ -3040,9 +3031,9 @@ and type_label_access env srecord lid =
       | (p0, _, {type_attributes}) 
         when Path.same p0 Predef.path_dict && Dict_type_helpers.has_dict_attribute type_attributes -> 
           (* [dict] Cover the case when trying to direct field access on a dict, e.g. `someDict.name`.
-            We need to disallow this because the fact that a dict is represented as a single field
-            record internally is just an implementation detail, and not intended to be exposed to
-            the user. *)
+            We need to disallow this because the fact that a dict is represented as a single magic 
+            field record internally is just an implementation detail, and not intended to be exposed 
+            to the user. *)
           raise(Error(lid.loc, env, Field_access_on_dict_type))
       | (p0, p, {type_kind=Type_record _}) -> Some(p0, p)
       | _ -> None

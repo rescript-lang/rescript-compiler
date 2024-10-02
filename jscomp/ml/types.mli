@@ -449,8 +449,7 @@ type label_description =
     lbl_arg: type_expr;                 (* Type of the argument *)
     lbl_mut: mutable_flag;              (* Is this a mutable field? *)
     lbl_pos: int;                       (* Position in block *)
-    mutable lbl_all: label_description array;   (* All the labels in this type *)
-    lbl_repres: record_representation;  (* Representation for this record *)
+    mutable lbl_all: label_description array;   (* All the labels in this type. This is mutable only because of a specific feature related to dicts, and should not be mutated elsewhere. *)    lbl_repres: record_representation;  (* Representation for this record *)
     lbl_private: private_flag;          (* Read-only field? *)
     lbl_loc: Location.t;
     lbl_attributes: Parsetree.attributes;
