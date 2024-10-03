@@ -3,4 +3,6 @@
 shopt -s extglob
 
 dune build @fmt --auto-promote
-./rescript format jscomp/@(others|runtime|test)/*.@(res|resi)
+
+files=$(find runtime tests/tests -type f \( -name "*.res" -o -name "*.resi" \))
+./rescript format $files

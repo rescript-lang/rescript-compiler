@@ -131,10 +131,6 @@ let bs_package_output = "-bs-package-output"
 
 [@@@warning "+9"]
 
-(* Assume input is valid
-    coordinate with command line flag
-    {[ -bs-package-output commonjs:lib/js/jscomp/test:.js ]}
-*)
 let package_flag ({ format; in_source; suffix } : Bsb_spec_set.spec) dir =
   Ext_string.inter2 bs_package_output
     (Ext_string.concat5 (string_of_format format) Ext_string.single_colon

@@ -66,11 +66,6 @@ let runtime_package_specs : t =
       ];
   }
 
-(**
-   populated by the command line
-*)
-let runtime_test_package_specs : t = { name = Pkg_runtime; module_systems = [] }
-
 let same_package_by_name (x : t) (y : t) =
   match x.name with
   | Pkg_empty -> y.name = Pkg_empty

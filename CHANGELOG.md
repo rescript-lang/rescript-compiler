@@ -43,6 +43,7 @@
 
 - Remove uncurried flag from bsb. https://github.com/rescript-lang/rescript-compiler/pull/7049
 - Build runtime/stdlib files with rescript/bsb instead of ninja.js. https://github.com/rescript-lang/rescript-compiler/pull/7063
+- Build tests with bsb and move them out of jscomp. https://github.com/rescript-lang/rescript-compiler/pull/7068
 
 # 12.0.0-alpha.3
 

@@ -30,7 +30,7 @@ node_modules/.bin/semver:
 	npm install
 
 test: lib
-	node scripts/ciTest.js -all
+	node scripts/test.js -all
 
 test-syntax:
 	bash ./scripts/test_syntax.sh
@@ -43,7 +43,7 @@ test-syntax-roundtrip:
 	bash ./scripts/testok.sh
 
 test-gentype:
-	make -C jscomp/gentype_tests/typescript-react-example clean test
+	make -C tests/gentype_tests/typescript-react-example clean test
 
 test-all: test test-gentype
 
@@ -79,7 +79,7 @@ checkformat:
 	bash scripts/format_check.sh
 
 clean-gentype:
-	make -C jscomp/gentype_tests/typescript-react-example clean
+	make -C tests/gentype_tests/typescript-react-example clean
 
 clean-rewatch:
 	cargo clean --manifest-path rewatch/Cargo.toml && rm -f rewatch/rewatch

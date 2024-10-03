@@ -17,7 +17,8 @@ case "$(uname -s)" in
     fi
 
     echo "Checking ReScript code formatting..."
-    if ./rescript format -check jscomp/@(others|runtime|test)/*.@(res|resi); then
+    files=$(find runtime tests/tests -type f \( -name "*.res" -o -name "*.resi" \))
+    if ./rescript format -check $files; then
       printf "${successGreen}✅ ReScript code formatting ok.${reset}\n"
     else
       printf "${warningYellow}⚠️ ReScript code formatting issues found.${reset}\n"

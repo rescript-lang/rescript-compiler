@@ -438,9 +438,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-runtime",string_call setup_runtime_path,     
     "*internal* Set the runtime directory";
     "-make-runtime", unit_call Js_packages_state.make_runtime,
-    "*internal* make runtime library";  
-    "-make-runtime-test", unit_call Js_packages_state.make_runtime_test,
-    "*internal* make runtime test library";  
+    "*internal* make runtime library";
 
   |]
 
