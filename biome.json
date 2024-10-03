@@ -21,9 +21,9 @@
     "lineWidth": 80,
     "attributePosition": "auto",
     "ignore": [
-      "jscomp/build_tests/**/lib/**",
-      "jscomp/build_tests/**/src/**",
-      "jscomp/test/**",
+      "tests/build_tests/**",
+      "tests/tests/**",
+      "tests/tests_esmodule/**",
       "lib/**",
       "ninja/**",
       "playground/**",

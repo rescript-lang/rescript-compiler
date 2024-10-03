@@ -82,7 +82,7 @@ var polyCode = n => {
 };
 var run = () => {
   fs.writeFileSync(
-    path.join(__dirname, "..", "jscomp", "test", "big_enum.ml"),
+    path.join(__dirname, "..", "tests", "tests", "big_enum.ml"),
     code(300),
     "utf8",
   );
@@ -90,7 +90,7 @@ var run = () => {
 
 var runPol = () => {
   fs.writeFileSync(
-    path.join(__dirname, "..", "jscomp", "test", "big_polyvar_test.ml"),
+    path.join(__dirname, "..", "tests", "tests", "big_polyvar_test.ml"),
     polyCode(300),
   );
 };

@@ -327,15 +327,15 @@ jobs:
 
       - name: Run tests
         if: runner.os != 'Windows'
-        run: node scripts/ciTest.js -all
+        run: node scripts/test.js -all
 
       - name: Run gentype tests
         if: runner.os != 'Windows'
-        run: make -C jscomp/gentype_tests/typescript-react-example clean test
+        run: make -C tests/gentype_tests/typescript-react-example clean test
 
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
-        run: node scripts/ciTest.js -mocha -theme -format
+        run: node scripts/test.js -mocha -theme -format
 
       - name: Build playground compiler
         if: matrix.build_playground

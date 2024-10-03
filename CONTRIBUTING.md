@@ -146,18 +146,18 @@ make test
 
 **Run Mocha tests only (for our runtime code):**
 
-This will run our `mocha` unit test suite defined in `jscomp/test`.
+This will run our `mocha` unit test suite defined in `tests/tests`.
 
 ```
-node scripts/ciTest.js -mocha
+node scripts/test.js -mocha
 ```
 
 **Run build system test (integration tests):**
 
-This will run the whole build system test suite defined in `jscomp/build_tests`.
+This will run the whole build system test suite defined in `tests/build_tests`.
 
 ```
-node scripts/ciTest.js -bsb
+node scripts/test.js -bsb
 ```
 
 **Run ounit tests:**
@@ -165,7 +165,7 @@ node scripts/ciTest.js -bsb
 This will run unit tests for compiler related modules. The tests can be found in `jscomp/ounit_tests`.
 
 ```
-node scripts/ciTest.js -ounit
+node scripts/test.js -ounit
 ```
 
 ## Contributing to the Runtime

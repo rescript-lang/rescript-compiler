@@ -101,13 +101,6 @@ let es6_program ~output_dir fmt f (x : J.deps_program) =
   let cxt = Js_dump.statements true cxt f x.program.block in
   Js_dump_import_export.es6_export cxt f x.program.exports
 
-(** Make sure github linguist happy
-    {[
-      require('Linguist')
-        Linguist::FileBlob.new('jscomp/test/test_u.js').generated?
-    ]}
-*)
-
 let pp_deps_program ~(output_prefix : string)
     (kind : Js_packages_info.module_system) (program : J.deps_program)
     (f : Ext_pp.t) =
