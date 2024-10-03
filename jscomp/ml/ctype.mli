@@ -18,6 +18,10 @@
 open Asttypes
 open Types
 
+type unify_context = FunctionArgument of arg_label| Debug of string | FunctionReturnType
+
+val get_unify_context: unit -> unify_context option
+
 exception Unify of (type_expr * type_expr) list
 exception Tags of label * label
 exception Subtype of

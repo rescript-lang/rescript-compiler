@@ -125,43 +125,52 @@ let type_manifest env ty1 params1 ty2 params2 priv2 =
 (* Inclusion between type declarations *)
 
 type type_mismatch =
-    Arity
+    Arity of {left_arity: int; right_arity: int}
   | Privacy
   | Kind
   | Constraint
   | Manifest
   | Variance
-  | Field_type of Ident.t
-  | Field_mutable of Ident.t
+  | Field_type of {field_name: Ident.t; left_field: Types.label_declaration; right_field: Types.label_declaration}
+  | Constructor_type of Ident.t
+  | Field_mutable of {field_name: Ident.t; left_is_mutable: bool}
   | Field_arity of Ident.t
   | Field_names of int * string * string
   | Field_missing of bool * Ident.t
   | Record_representation of record_representation * record_representation
   | Unboxed_representation of bool  (* true means second one is unboxed *)
   | Immediate
-  | Tag_name
+  | Tag_name of {left_value: string option; right_value: string option} 
   | Variant_representation of Ident.t
 
 let report_type_mismatch0 first second decl ppf err =
   let pr fmt = Format.fprintf ppf fmt in
   match err with
-    Arity -> pr "They have different arities"
+    Arity {left_arity; right_arity} -> pr "It has @{<error>%i@} type parameters in the implementation and @{<info>%i@} in the interface." left_arity right_arity
   | Privacy -> pr "A private type would be revealed"
   | Kind -> pr "Their kinds differ"
   | Constraint -> pr "Their constraints differ"
   | Manifest -> ()
   | Variance -> pr "Their variances do not agree"
-  | Field_type s ->
-      pr "The types for field %s are not equal" (Ident.name s)
-  | Field_mutable s ->
-      pr "The mutability of field %s is different" (Ident.name s)
+  | Constructor_type field_name ->
+      pr "The types for field %s are not equal" (Ident.name field_name)
+  | Field_type {field_name; left_field; right_field} ->
+      pr "Field @{<info>%s@} has type @{<error>%a@} in the implementation, but should have type @{<info>%a@} according to the interface" 
+      (Ident.name field_name)
+      Printtyp.type_expr left_field.ld_type
+      Printtyp.type_expr right_field.ld_type
+  | Field_mutable {field_name; left_is_mutable} ->
+      pr "Field @{<info>%s@} is @{<error>%s@} in the implementation, but @{<info>%s@} in the interface" 
+      (Ident.name field_name)
+      (if left_is_mutable then "mutable" else "immutable")
+      (if left_is_mutable then "immutable" else "mutable")
   | Field_arity s ->
       pr "The arities for field %s differ" (Ident.name s)
   | Field_names (n, name1, name2) ->
-      pr "Fields number %i have different names, %s and %s"
+      pr "Field number @{<info>%i@} is named @{<error>%s@} in the implementation but @{<info>%s@} in the interface. Fields must be ordered the same in interface and implementation."
         n name1 name2
   | Field_missing (b, s) ->
-      pr "The field %s is only present in %s %s"
+      pr "Field @{<info>%s@} is only present in %s %s"
         (Ident.name s) (if b then second else first) decl
   | Record_representation (rep1, rep2) ->
       let default () = pr "Their internal representations differ" in
@@ -181,11 +190,14 @@ let report_type_mismatch0 first second decl ppf err =
           default ()
       )
   | Unboxed_representation b ->
-      pr "Their internal representations differ:@ %s %s %s"
+      pr "Their internal representations differ: %s %s %s"
          (if b then second else first) decl
          "uses unboxed representation"
   | Immediate -> pr "%s is not an immediate type" first
-  | Tag_name -> pr "Their @tag annotations differ"
+  | Tag_name {left_value; right_value} -> 
+    pr "@{<info>@tag@} annotations differ. It is @{<error>%s@} in the implementation but @{<info>%s@} in the interface." 
+    (match left_value with None -> "not set" | Some s -> "\"" ^ s ^ "\"")
+    (match right_value with None -> "not set" | Some s -> "\"" ^ s ^ "\"")
   | Variant_representation s ->
     pr "The internal representations for case %s are not equal" (Ident.name s)
 
@@ -193,7 +205,7 @@ let report_type_mismatch first second decl ppf =
   List.iter
     (fun err ->
       if err = Manifest then () else
-      Format.fprintf ppf "@ %a." (report_type_mismatch0 first second decl) err)
+      Format.fprintf ppf "@ - %a" (report_type_mismatch0 first second decl) err)
 
 let rec compare_constructor_arguments ~loc env cstr params1 params2 arg1 arg2 =
   match arg1, arg2 with
@@ -202,10 +214,10 @@ let rec compare_constructor_arguments ~loc env cstr params1 params2 arg1 arg2 =
       else if
         (* Ctype.equal must be called on all arguments at once, cf. PR#7378 *)
         Ctype.equal env true (params1 @ arg1) (params2 @ arg2)
-      then [] else [Field_type cstr]
+      then [] else [Constructor_type cstr]
   | Types.Cstr_record l1, Types.Cstr_record l2 ->
       compare_records env ~loc params1 params2 0 l1 l2
-  | _ -> [Field_type cstr]
+  | _ -> [Constructor_type cstr]
 
 and compare_variants ~loc env params1 params2 n
     (cstrs1 : Types.constructor_declaration list)
@@ -230,9 +242,9 @@ and compare_variants ~loc env params1 params2 n
               if Ctype.equal env true [r1] [r2] then
                 compare_constructor_arguments ~loc env cd1.cd_id [r1] [r2]
                   cd1.cd_args cd2.cd_args
-              else [Field_type cd1.cd_id]
+              else [Constructor_type cd1.cd_id]
           | Some _, None | None, Some _ ->
-              [Field_type cd1.cd_id]
+              [Constructor_type cd1.cd_id]
           | _ ->
               compare_constructor_arguments ~loc env cd1.cd_id
                 params1 params2 cd1.cd_args cd2.cd_args
@@ -272,7 +284,7 @@ and compare_records ~loc env params1_ params2_ n_
     | ld1::rem1, ld2::rem2 ->
         if Ident.name ld1.ld_id <> Ident.name ld2.ld_id
         then [Field_names (n, ld1.ld_id.name, ld2.ld_id.name)]
-        else if ld1.ld_mutable <> ld2.ld_mutable then [Field_mutable ld1.ld_id] else begin
+        else if ld1.ld_mutable <> ld2.ld_mutable then [Field_mutable {field_name=ld1.ld_id; left_is_mutable = ld1.ld_mutable = Mutable}] else begin
           Builtin_attributes.check_deprecated_mutable_inclusion
             ~def:ld1.ld_loc
             ~use:ld2.ld_loc
@@ -295,7 +307,7 @@ and compare_records ~loc env params1_ params2_ n_
               (n+1)
               rem1 rem2
           else
-            [Field_type ld1.ld_id]
+            [Field_type {field_name=ld1.ld_id; left_field=ld1; right_field=ld2}]
       end in
   aux ~fast:true params1_ params2_ n_ labels1_ labels2_
 
@@ -307,7 +319,7 @@ let type_declarations ?(equality = false) ~loc env name decl1 id decl2 =
     loc
     decl1.type_attributes decl2.type_attributes
     name;
-  if decl1.type_arity <> decl2.type_arity then [Arity] else
+  if decl1.type_arity <> decl2.type_arity then [Arity {left_arity = decl1.type_arity; right_arity = decl2.type_arity}] else
   if not (private_flags decl1 decl2) then [Privacy] else
   let err = match (decl1.type_manifest, decl2.type_manifest) with
       (_, None) ->
@@ -341,7 +353,7 @@ let type_declarations ?(equality = false) ~loc env name decl1 id decl2 =
   let err =
     let tag1 = Ast_untagged_variants.process_tag_name decl1.type_attributes in
     let tag2 = Ast_untagged_variants.process_tag_name decl2.type_attributes in
-    if tag1 <> tag2 then [Tag_name] else err in
+    if tag1 <> tag2 then [Tag_name {left_value = tag1; right_value = tag2}] else err in
   if err <> [] then err else
   let err = match (decl1.type_kind, decl2.type_kind) with
       (_, Type_abstract) -> []
