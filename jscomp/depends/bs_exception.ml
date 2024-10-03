@@ -58,7 +58,7 @@ let report_error ppf = function
            Format.pp_print_string)
         str
   | Bs_duplicate_exports str ->
-      Format.fprintf ppf "%s are exported as twice" str
+      Format.fprintf ppf "%s is exported twice" str
   | Bs_duplicated_module (a, b) ->
       Format.fprintf ppf
         "The build system does not support two files with same names yet %s, %s"
