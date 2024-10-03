@@ -2,6 +2,7 @@
 const cp = require("child_process");
 const path = require("path");
 const fs = require("fs");
+var { rescript_exe } = require("#cli/bin_path");
 
 const duneBinDir = require("./dune").duneBinDir;
 
@@ -61,11 +62,11 @@ async function runTests() {
   }
 
   if (mochaTest || nodeTest) {
-    cp.execSync(`../../rescript`, {
+    cp.execSync(rescript_exe, {
       cwd: path.join(__dirname, "..", "tests/tests"),
       stdio: [0, 1, 2],
     });
-    cp.execSync(`../../rescript`, {
+    cp.execSync(rescript_exe, {
       cwd: path.join(__dirname, "..", "tests/tests_esmodule"),
       stdio: [0, 1, 2],
     });
