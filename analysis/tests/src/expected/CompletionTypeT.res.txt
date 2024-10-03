@@ -1,0 +1,112 @@
+Complete src/CompletionTypeT.res 4:26
+XXX Not found!
+Completable: Cpattern Value[date]
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Value[date]
+Path date
+[{
+    "label": "None",
+    "kind": 12,
+    "tags": [],
+    "detail": "Js.Date.t",
+    "documentation": null
+  }, {
+    "label": "Some(_)",
+    "kind": 12,
+    "tags": [],
+    "detail": "Js.Date.t",
+    "documentation": null,
+    "insertText": "Some(${1:_})",
+    "insertTextFormat": 2
+  }, {
+    "label": "Some(date)",
+    "kind": 4,
+    "tags": [],
+    "detail": "date",
+    "documentation": null,
+    "insertText": "Some(${0:date})",
+    "insertTextFormat": 2
+  }]
+
+Complete src/CompletionTypeT.res 7:27
+XXX Not found!
+Completable: Cexpression Type[withDate]->recordField(date)
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 1 pervasives
+ContextPath Type[withDate]
+Path withDate
+[{
+    "label": "Js.Date.makeWithYMD()",
+    "kind": 12,
+    "tags": [],
+    "detail": "(~year: float, ~month: float, ~date: float, unit) => t",
+    "documentation": null,
+    "insertText": "Js.Date.makeWithYMD($0)",
+    "insertTextFormat": 2
+  }, {
+    "label": "Js.Date.makeWithYMDHM()",
+    "kind": 12,
+    "tags": [],
+    "detail": "(\n  ~year: float,\n  ~month: float,\n  ~date: float,\n  ~hours: float,\n  ~minutes: float,\n  unit,\n) => t",
+    "documentation": null,
+    "insertText": "Js.Date.makeWithYMDHM($0)",
+    "insertTextFormat": 2
+  }, {
+    "label": "Js.Date.make()",
+    "kind": 12,
+    "tags": [],
+    "detail": "unit => t",
+    "documentation": null,
+    "insertText": "Js.Date.make($0)",
+    "insertTextFormat": 2
+  }, {
+    "label": "Js.Date.fromString()",
+    "kind": 12,
+    "tags": [],
+    "detail": "string => t",
+    "documentation": null,
+    "insertText": "Js.Date.fromString($0)",
+    "insertTextFormat": 2
+  }, {
+    "label": "Js.Date.fromFloat()",
+    "kind": 12,
+    "tags": [],
+    "detail": "float => t",
+    "documentation": null,
+    "insertText": "Js.Date.fromFloat($0)",
+    "insertTextFormat": 2
+  }, {
+    "label": "Js.Date.parse()",
+    "kind": 12,
+    "tags": [],
+    "detail": "string => t",
+    "documentation": null,
+    "insertText": "Js.Date.parse($0)",
+    "insertTextFormat": 2
+  }, {
+    "label": "Js.Date.makeWithYM()",
+    "kind": 12,
+    "tags": [],
+    "detail": "(~year: float, ~month: float, unit) => t",
+    "documentation": null,
+    "insertText": "Js.Date.makeWithYM($0)",
+    "insertTextFormat": 2
+  }, {
+    "label": "Js.Date.makeWithYMDHMS()",
+    "kind": 12,
+    "tags": [],
+    "detail": "(\n  ~year: float,\n  ~month: float,\n  ~date: float,\n  ~hours: float,\n  ~minutes: float,\n  ~seconds: float,\n  unit,\n) => t",
+    "documentation": null,
+    "insertText": "Js.Date.makeWithYMDHMS($0)",
+    "insertTextFormat": 2
+  }, {
+    "label": "Js.Date.makeWithYMDH()",
+    "kind": 12,
+    "tags": [],
+    "detail": "(\n  ~year: float,\n  ~month: float,\n  ~date: float,\n  ~hours: float,\n  unit,\n) => t",
+    "documentation": null,
+    "insertText": "Js.Date.makeWithYMDH($0)",
+    "insertTextFormat": 2
+  }]
+

@@ -1,0 +1,42 @@
+{
+	"name": "@rescript/tools",
+	"description": "ReScript Tools",
+	"version": "0.6.4",
+	"author": "ReScript Team",
+	"license": "MIT",
+	"bin": {
+		"rescript-tools": "npm/cli.js"
+	},
+	"keywords": [
+		"ReScript",
+		"Tools",
+		"Docgen"
+	],
+	"files": [
+		"npm/cli.js",
+		"npm/getBinaryPath.js",
+		"npm/*.res",
+		"npm/*.resi",
+		"binaries",
+		"rescript.json",
+		"README.md"
+	],
+	"engines": {
+		"node": "*"
+	},
+	"homepage": "https://github.com/rescript-lang/rescript-vscode/tools/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/rescript-lang/rescript-vscode",
+		"directory": "tools"
+	},
+	"bugs": {
+		"url": "https://github.com/rescript-lang/rescript-vscode/issues"
+	},
+	"scripts": {
+		"build": "rescript build"
+	},
+	"dependencies": {
+		"rescript": "^11.0.0-rc.7"
+	}
+}

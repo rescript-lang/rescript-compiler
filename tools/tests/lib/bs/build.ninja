@@ -1,0 +1,32 @@
+rescript = 1
+g_finger := /Users/christoph/projects/cca/rescript-compiler/tools/tests/node_modules/@rescript/react/lib/ocaml/install.stamp
+rule astj
+  command = /Users/christoph/projects/cca/rescript-compiler/tools/tests/node_modules/rescript/darwinarm64/bsc.exe  -bs-v 11.0.0 -uncurried  -absname -bs-ast -o $out $i
+o src/ModC.ast : astj ../../src/ModC.res
+rule deps
+  command = /Users/christoph/projects/cca/rescript-compiler/tools/tests/node_modules/rescript/darwinarm64/bsb_helper.exe -hash 1c1bd8acac7840bdfad06da493545c32 $in
+  restat = 1
+o src/ModC.d : deps src/ModC.ast src/ModC.iast
+o src/ModC.iast : astj ../../src/ModC.resi
+rule mi
+  command = /Users/christoph/projects/cca/rescript-compiler/tools/tests/node_modules/rescript/darwinarm64/bsc.exe -I src/expected -I src -I /Users/christoph/projects/cca/rescript-compiler/tools/tests/node_modules/@rescript/react/lib/ocaml   -uncurried -bs-v $g_finger $i
+  dyndep = 1
+  restat = 1
+o src/ModC.cmi : mi src/ModC.iast
+rule mj
+  command = /Users/christoph/projects/cca/rescript-compiler/tools/tests/node_modules/rescript/darwinarm64/bsc.exe -bs-read-cmi -I src/expected -I src -I /Users/christoph/projects/cca/rescript-compiler/tools/tests/node_modules/@rescript/react/lib/ocaml   -uncurried -bs-package-name docstrings-test -bs-package-output commonjs:$in_d:.res.js -bs-v $g_finger $i
+  dyndep = 1
+  restat = 1
+o src/ModC.cmj ../../src/ModC.res.js : mj src/ModC.ast src/ModC.cmi
+o src/DocExtraction2.ast : astj ../../src/DocExtraction2.res
+o src/DocExtraction2.d : deps src/DocExtraction2.ast src/DocExtraction2.iast
+o src/DocExtraction2.iast : astj ../../src/DocExtraction2.resi
+o src/DocExtraction2.cmi : mi src/DocExtraction2.iast
+o src/DocExtraction2.cmj ../../src/DocExtraction2.res.js : mj src/DocExtraction2.ast src/DocExtraction2.cmi
+o src/DocExtractionRes.ast : astj ../../src/DocExtractionRes.res
+o src/DocExtractionRes.d : deps src/DocExtractionRes.ast
+rule mij
+  command = /Users/christoph/projects/cca/rescript-compiler/tools/tests/node_modules/rescript/darwinarm64/bsc.exe -I src/expected -I src -I /Users/christoph/projects/cca/rescript-compiler/tools/tests/node_modules/@rescript/react/lib/ocaml   -uncurried -bs-package-name docstrings-test -bs-package-output commonjs:$in_d:.res.js -bs-v $g_finger $i
+  dyndep = 1
+  restat = 1
+o src/DocExtractionRes.cmj src/DocExtractionRes.cmi ../../src/DocExtractionRes.res.js : mij src/DocExtractionRes.ast

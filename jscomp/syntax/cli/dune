@@ -6,6 +6,7 @@
 (executable
  (name res_cli)
  (public_name res_parser)
+ (package rescript)
  (enabled_if
   (<> %{profile} browser))
  (flags

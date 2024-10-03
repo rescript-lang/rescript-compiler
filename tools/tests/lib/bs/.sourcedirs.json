@@ -1,0 +1,1 @@
+{ "dirs" : [ "src" , "src/expected" ] , "pkgs" : [ [ "@rescript/react" , "/Users/christoph/projects/cca/rescript-compiler/tools/tests/node_modules/@rescript/react" ] ] , "generated" : [] }

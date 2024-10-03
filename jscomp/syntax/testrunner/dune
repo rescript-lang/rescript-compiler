@@ -6,6 +6,7 @@
 (executable
  (name res_test)
  (public_name syntax_tests)
+ (package rescript)
  (enabled_if
   (<> %{profile} browser))
  (flags

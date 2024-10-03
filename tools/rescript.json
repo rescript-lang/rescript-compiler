@@ -1,0 +1,14 @@
+{
+  "name": "@rescript/tools",
+  "version": "0.6.4",
+  "sources": [
+    {
+      "dir": "npm"
+    }
+  ],
+  "suffix": ".bs.js",
+  "package-specs": {
+    "module": "commonjs",
+    "in-source": false
+  }
+}

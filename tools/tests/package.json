@@ -1,0 +1,18 @@
+{
+  "name": "docstrings-test",
+  "version": "0.0.0",
+  "scripts": {
+    "res:build": "rescript",
+    "res:clean": "rescript clean",
+    "res:dev": "rescript -w"
+  },
+  "keywords": [
+    "rescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@rescript/react": "^0.12.0-alpha.3",
+    "rescript": "^11.0.0"
+  }
+}
