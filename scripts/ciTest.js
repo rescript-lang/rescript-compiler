@@ -85,7 +85,7 @@ async function runTests() {
     for (const file of files) {
       const testDir = path.join(buildTestDir, file);
       if (file === "node_modules" || !fs.lstatSync(testDir).isDirectory()) {
-        break;
+        continue;
       }
       if (!fs.existsSync(path.join(testDir, "input.js"))) {
         console.warn(`input.js does not exist in ${testDir}`);
