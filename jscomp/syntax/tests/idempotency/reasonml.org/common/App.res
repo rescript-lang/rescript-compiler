@@ -27,10 +27,10 @@
   hljs.registerLanguage('text', text);
 `)
 
-type pageComponent = React.component<{.}>
-type pageProps = {.}
+type pageProps = {}
+type pageComponent = React.component<pageProps>
 
-type props = {"Component": pageComponent, "pageProps": pageProps}
+type props = {@as("Component") component: pageComponent, pageProps: pageProps}
 
 module Url = {
   type version =
@@ -116,17 +116,9 @@ module Url = {
   }
 }
 
-@obj
-external makeProps: (
-  ~component: pageComponent,
-  ~pageProps: pageProps,
-  ~key: string=?,
-  unit,
-) => props = ""
-
 let make = (props: props): React.element => {
-  let component = props["Component"]
-  let pageProps = props["pageProps"]
+  let component = props.component
+  let pageProps = props.pageProps
 
   let router = Next.Router.useRouter()
 

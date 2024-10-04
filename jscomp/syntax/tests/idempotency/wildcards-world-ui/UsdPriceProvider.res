@@ -8,13 +8,6 @@ let initialState = {usdPrice: None}
 module PriceProvider = {
   let context: React.Context.t<option<float>> = React.createContext(None)
   let make = React.Context.provider(context)
-
-  @ocaml.doc(" Tell bucklescript how to translate props into JS ")
-  let makeProps = (~value, ~children, ()) =>
-    {
-      "value": value,
-      "children": children,
-    }
 }
 
 @decco @deriving(accessors)

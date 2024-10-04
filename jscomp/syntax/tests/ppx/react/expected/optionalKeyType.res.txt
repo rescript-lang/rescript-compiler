@@ -1,33 +1,5 @@
 let key = None
 
-@@jsxConfig({version: 3})
-
-let _ = React.createElement(C.make, C.makeProps(~key="k", ()))
-let _ = React.createElement(C.make, C.makeProps(~key=?Some("k"), ()))
-let _ = React.createElement(C.make, C.makeProps(~key?, ()))
-let _ = ReactDOMRe.createDOMElementVariadic("div", ~props=ReactDOMRe.domProps(~key="k", ()), [])
-let _ = ReactDOMRe.createDOMElementVariadic(
-  "div",
-  ~props=ReactDOMRe.domProps(~key=?Some("k"), ()),
-  [],
-)
-let _ = ReactDOMRe.createDOMElementVariadic("div", ~props=ReactDOMRe.domProps(~key?, ()), [])
-let _ = ReactDOMRe.createDOMElementVariadic(
-  "div",
-  ~props=ReactDOMRe.domProps(~key="k", ()),
-  [ReactDOMRe.createDOMElementVariadic("br", []), ReactDOMRe.createDOMElementVariadic("br", [])],
-)
-let _ = ReactDOMRe.createDOMElementVariadic(
-  "div",
-  ~props=ReactDOMRe.domProps(~key=?Some("k"), ()),
-  [ReactDOMRe.createDOMElementVariadic("br", []), ReactDOMRe.createDOMElementVariadic("br", [])],
-)
-let _ = ReactDOMRe.createDOMElementVariadic(
-  "div",
-  ~props=ReactDOMRe.domProps(~key?, ()),
-  [ReactDOMRe.createDOMElementVariadic("br", []), ReactDOMRe.createDOMElementVariadic("br", [])],
-)
-
 @@jsxConfig({version: 4, mode: "classic"})
 
 let _ = JsxPPXReactSupport.createElementWithKey(~key="k", C.make, {})

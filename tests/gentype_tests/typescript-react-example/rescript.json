@@ -5,10 +5,10 @@
     "importPath": "relative",
     "shims": {
       "Js": "Js",
+      "Jsx": "Jsx",
+      "JsxEvent": "JsxEvent",
       "Belt": "Belt",
-      "ReactEvent": "ReactEvent",
-      "RescriptPervasives": "RescriptPervasives",
-      "ReasonReact": "ReactShim"
+      "RescriptPervasives": "RescriptPervasives"
     },
     "debug": {
       "all": false
@@ -17,7 +17,7 @@
   },
   "name": "sample-typescript-app",
   "bsc-flags": [],
-  "jsx": { "version": 3 },
+  "jsx": { "version": 4 },
   "bs-dependencies": ["@rescript/react"],
   "sources": [
     {

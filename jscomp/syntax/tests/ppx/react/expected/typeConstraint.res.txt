@@ -1,18 +1,3 @@
-@@jsxConfig({version: 3})
-
-module V3 = {
-  @obj external makeProps: (~key: string=?, unit) => {.} = ""
-
-  @react.component
-  let make:
-    type a. (~a: a, ~b: a, a) => React.element =
-    (~a, ~b, _) => ReactDOMRe.createDOMElementVariadic("div", [])
-  let make = {
-    let \"TypeConstraint$V3" = (\"Props": {.}) => make()
-    \"TypeConstraint$V3"
-  }
-}
-
 @@jsxConfig({version: 4, mode: "classic"})
 
 module V4C = {

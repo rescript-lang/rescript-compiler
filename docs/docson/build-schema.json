@@ -304,21 +304,12 @@
       },
       "description": "path to gentype, path resolution is similar to ReScript"
     },
-    "reason-specs": {
-      "type": "object",
-      "properties": {
-        "react-jsx": {
-          "$ref": "#/definitions/react-jsx-version",
-          "description": "Whether to apply the [RescriptReact](https://github.com/rescript-lang/rescript-react)-specific JSX PPX transformation."
-        }
-      }
-    },
     "jsx-specs": {
       "type": "object",
       "properties": {
         "version": {
           "type": "number",
-          "enum": [3, 4],
+          "enum": [4],
           "description": "Whether to apply the specific version of JSX PPX transformation"
         },
         "module": {
@@ -329,10 +320,6 @@
           "type": "string",
           "enum": ["classic", "automatic"],
           "description": "JSX transformation mode"
-        },
-        "v3-dependencies": {
-          "$ref": "#/definitions/dependencies",
-          "description": "Build the given dependencies in JSX V3 compatibility mode."
         }
       },
       "additionalProperties": false
@@ -422,10 +409,6 @@
       "type": "boolean",
       "description": "Configuration for the uncurried mode."
     },
-    "reason": {
-      "$ref": "#/definitions/reason-specs",
-      "description": "ReScript comes with [Reason](http://reasonml.github.io/) by default. Specific configurations here."
-    },
     "gentypeconfig": {
       "$ref": "#/definitions/gentype-specs",
       "description": "gentype config, see cristianoc/genType for more details"
@@ -458,7 +441,7 @@
     },
     "ppx-flags": {
       "$ref": "#/definitions/ppx-specs",
-      "description": "PPX macros to pass to compiler. The syntax is package_name/binary, for example: `reason/reactjs_jsx_ppx_3.native`. Currenly searches in `node_modules`"
+      "description": "PPX macros to pass to compiler. The syntax is package_name/binary, for example: `rescript-relay/ppx`. Currenly searches in `node_modules`"
     },
     "pp-flags": {
       "$ref": "#/definitions/pp-specs",

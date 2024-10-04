@@ -1,21 +1,3 @@
-@@jsxConfig({version: 3})
-
-module V3: {
-  module FancyInput: {
-    @react.component
-    let make: (
-      ~className: string=?,
-      ~children: React.element,
-      ~ref: ReactDOM.Ref.currentDomRef=?,
-    ) => React.element
-  }
-
-  module ForwardRef: {
-    @react.component
-    let make: (~ref: React.ref<Js.Nullable.t<inputRef>>=?) => React.element
-  }
-}
-
 @@jsxConfig({version: 4, mode: "classic"})
 
 module V4C: {

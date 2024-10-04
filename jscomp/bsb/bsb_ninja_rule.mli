@@ -68,7 +68,6 @@ val make_custom_rules :
   gentype_config:Bsb_config_types.gentype_config ->
   has_postbuild:string option ->
   pp_file:string option ->
-  reason_react_jsx:Bsb_config_types.reason_react_jsx option ->
   jsx:Bsb_jsx.t ->
   digest:string ->
   package_specs:Bsb_package_specs.t ->

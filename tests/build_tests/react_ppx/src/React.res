@@ -20,6 +20,20 @@ external cloneElement: (component<'props>, 'props) => element = "cloneElement"
 external createElementVariadic: (component<'props>, 'props, array<element>) => element =
   "createElement"
 
+@module("react/jsx-runtime")
+external jsx: (component<'props>, 'props) => element = "jsx"
+
+@module("react/jsx-runtime")
+external jsxKeyed: (component<'props>, 'props, ~key: string=?, @ignore unit) => element = "jsx"
+
+@module("react/jsx-runtime")
+external jsxs: (component<'props>, 'props) => element = "jsxs"
+
+@module("react/jsx-runtime")
+external jsxsKeyed: (component<'props>, 'props, ~key: string=?, @ignore unit) => element = "jsxs"
+
+type ref<'value> = {mutable current: 'value}
+
 module Ref = {
   type t<'value>
 
@@ -44,10 +58,15 @@ module Children = {
 }
 
 module Context = {
-  type t<'props>
+  type t<'context>
+
+  type props<'context> = {
+    value: 'context,
+    children: element,
+  }
 
   @get
-  external provider: t<'props> => component<{"value": 'props, "children": element}> = "Provider"
+  external provider: t<'context> => component<props<'context>> = "Provider"
 }
 
 @module("react")
@@ -67,29 +86,17 @@ external memoCustomCompareProps: (
 ) => component<'props> = "memo"
 
 module Fragment = {
-  @obj
-  external makeProps: (~children: element, ~key: 'key=?, unit) => {"children": element} = ""
+  type props = {key?: string, children: element}
+
   @module("react")
-  external make: component<{
-    "children": element,
-  }> = "Fragment"
+  external make: component<props> = "Fragment"
 }
 
 module Suspense = {
-  @obj
-  external makeProps: (
-    ~children: element=?,
-    ~fallback: element=?,
-    ~maxDuration: int=?,
-    ~key: 'key=?,
-    unit,
-  ) => {"children": option<element>, "fallback": option<element>, "maxDuration": option<int>} = ""
+  type props = {key?: string, children?: element, fallback?: element}
+
   @module("react")
-  external make: component<{
-    "children": option<element>,
-    "fallback": option<element>,
-    "maxDuration": option<int>,
-  }> = "Suspense"
+  external make: component<props> = "Suspense"
 }
 
 /* HOOKS */

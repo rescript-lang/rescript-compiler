@@ -72,12 +72,6 @@ let process_config_attribute attribute config =
   if is_jsx_config_attr attribute then update_config config (snd attribute)
 
 let get_mapper ~config =
-  let ( expr3,
-        module_binding3,
-        transform_signature_item3,
-        transform_structure_item3 ) =
-    Reactjs_jsx_v3.jsx_mapper ~config
-  in
   let ( expr4,
         module_binding4,
         transform_signature_item4,
@@ -87,13 +81,11 @@ let get_mapper ~config =
 
   let expr mapper e =
     match config.version with
-    | 3 -> expr3 mapper e
     | 4 -> expr4 mapper e
     | _ -> default_mapper.expr mapper e
   in
   let module_binding mapper mb =
     match config.version with
-    | 3 -> module_binding3 mapper mb
     | 4 -> module_binding4 mapper mb
     | _ -> default_mapper.module_binding mapper mb
   in
@@ -122,9 +114,7 @@ let get_mapper ~config =
           | Psig_attribute attr -> process_config_attribute attr config
           | _ -> ());
           let item = default_mapper.signature_item mapper item in
-          if config.version = 3 then transform_signature_item3 item
-          else if config.version = 4 then transform_signature_item4 item
-          else [item])
+          if config.version = 4 then transform_signature_item4 item else [item])
         items
       |> List.flatten
     in
@@ -141,9 +131,7 @@ let get_mapper ~config =
           | Pstr_attribute attr -> process_config_attribute attr config
           | _ -> ());
           let item = default_mapper.structure_item mapper item in
-          if config.version = 3 then transform_structure_item3 item
-          else if config.version = 4 then transform_structure_item4 item
-          else [item])
+          if config.version = 4 then transform_structure_item4 item else [item])
         items
       |> List.flatten
     in

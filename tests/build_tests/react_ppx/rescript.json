@@ -1,7 +1,7 @@
 {
   "name": "react-ppx-tests",
-  "reason": {
-    "react-jsx": 3
+  "jsx": {
+    "version": 4
   },
   "sources": {
     "dir": "src",

@@ -5,11 +5,6 @@
   flags : [|"-dsource"|]
 }];
 */
-@react.component
-let rec make = (~foo, ()) => React.createElement(make, makeProps(~foo, ()))
-
-@@jsxConfig({version:4})
-
 module Rec = {
   @react.component
   let rec make = (~b) => {

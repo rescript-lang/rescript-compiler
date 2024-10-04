@@ -88,7 +88,6 @@ type builtin = {
 
 let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     ~(has_postbuild : string option) ~(pp_file : string option)
-    ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
     ~(jsx : Bsb_jsx.t) ~(digest : string) ~(package_specs : Bsb_package_specs.t)
     ~(namespace : string option) ~package_name ~warnings
     ~(ppx_files : Bsb_config_types.ppx list) ~bsc_flags ~(dpkg_incls : string)
@@ -156,11 +155,9 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     | None -> ()
     | Some flag ->
         Ext_buffer.add_char_string buf ' ' (Bsb_build_util.pp_flag flag));
-    (match (reason_react_jsx, jsx.version) with
-    | _, Some Jsx_v3 -> Ext_buffer.add_string buf " -bs-jsx 3"
-    | _, Some Jsx_v4 -> Ext_buffer.add_string buf " -bs-jsx 4"
-    | Some Jsx_v3, None -> Ext_buffer.add_string buf " -bs-jsx 3"
-    | None, None -> ());
+    (match (jsx.version) with
+    | Some Jsx_v4 -> Ext_buffer.add_string buf " -bs-jsx 4"
+    | None -> ());
     (match jsx.module_ with
     | None -> ()
     | Some React -> Ext_buffer.add_string buf " -bs-jsx-module react"

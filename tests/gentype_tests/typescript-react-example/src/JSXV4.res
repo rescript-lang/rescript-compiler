@@ -1,15 +1,5 @@
-@@jsxConfig({version: 4})
-
 @genType
 module CompV4 = {
-  @react.component
-  let make = (~x, ~y) => React.string(x ++ y)
-}
-
-@@jsxConfig({version: 3})
-
-@genType
-module CompV3 = {
   @react.component
   let make = (~x, ~y) => React.string(x ++ y)
 }
@@ -20,9 +10,13 @@ type person = {
   age: int,
 }
 
-@genType type renderMe<'a> = React.component<{"randomString": string, "poly": 'a}>
+@genType
+type props2<'a> = {
+  randomString: string,
+  poly: 'a,
+}
 
-@@jsxConfig({version: 4})
+@genType type renderMe<'a> = React.component<props2<'a>>
 
 @genType.import("./hookExample") @react.component
 external make: (

@@ -28,8 +28,6 @@ type dependency = {
 }
 
 type dependencies = dependency list
-type reason_react_jsx = Jsx_v3
-(* string option  *)
 
 type gentype_config = bool
 type command = string
@@ -56,7 +54,6 @@ type t = {
   package_specs : Bsb_package_specs.t;
   file_groups : Bsb_file_groups.t;
   files_to_install : Bsb_db.module_info Queue.t;
-  reason_react_jsx : reason_react_jsx option;
   jsx: Bsb_jsx.t;
   (* whether apply PPX transform or not*)
   generators : command Map_string.t;

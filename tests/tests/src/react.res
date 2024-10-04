@@ -16,37 +16,41 @@ type component<'props> = componentLike<'props, element>
 external createElement: (component<'props>, 'props) => element = "createElement"
 
 @module("react")
-external cloneElement: (element, 'props) => element = "cloneElement"
+external cloneElement: (component<'props>, 'props) => element = "cloneElement"
 
 @variadic @module("react")
 external createElementVariadic: (component<'props>, 'props, array<element>) => element =
   "createElement"
 
+@module("react/jsx-runtime")
+external jsx: (component<'props>, 'props) => element = "jsx"
+
+@module("react/jsx-runtime")
+external jsxKeyed: (component<'props>, 'props, ~key: string=?, @ignore unit) => element = "jsx"
+
+@module("react/jsx-runtime")
+external jsxs: (component<'props>, 'props) => element = "jsxs"
+
+@module("react/jsx-runtime")
+external jsxsKeyed: (component<'props>, 'props, ~key: string=?, @ignore unit) => element = "jsxs"
+
 type ref<'value> = {mutable current: 'value}
 
 module Ref = {
-  @deprecated("Please use the type React.ref instead")
-  type t<'value> = ref<'value>
+  type t<'value>
 
-  @deprecated("Please directly read from ref.current instead") @get
-  external current: ref<'value> => 'value = "current"
-
-  @deprecated("Please directly assign to ref.current instead") @set
-  external setCurrent: (ref<'value>, 'value) => unit = "current"
+  @get external current: t<'value> => 'value = "current"
+  @set external setCurrent: (t<'value>, 'value) => unit = "current"
 }
 
 @module("react")
-external createRef: unit => ref<Js.nullable<'a>> = "createRef"
+external createRef: unit => Ref.t<Js.nullable<'a>> = "createRef"
 
 module Children = {
   @module("react") @scope("Children") @val
   external map: (element, element => element) => element = "map"
   @module("react") @scope("Children") @val
-  external mapWithIndex: (element, (element, int) => element) => element = "map"
-  @module("react") @scope("Children") @val
   external forEach: (element, element => unit) => unit = "forEach"
-  @module("react") @scope("Children") @val
-  external forEachWithIndex: (element, (element, int) => unit) => unit = "forEach"
   @module("react") @scope("Children") @val
   external count: element => int = "count"
   @module("react") @scope("Children") @val
@@ -56,17 +60,22 @@ module Children = {
 }
 
 module Context = {
-  type t<'props>
+  type t<'context>
+
+  type props<'context> = {
+    value: 'context,
+    children: element,
+  }
 
   @get
-  external provider: t<'props> => component<{"value": 'props, "children": element}> = "Provider"
+  external provider: t<'context> => component<props<'context>> = "Provider"
 }
 
 @module("react")
 external createContext: 'a => Context.t<'a> = "createContext"
 
 @module("react")
-external forwardRef: (('props, Js.Nullable.t<ref<'a>>) => element) => component<'props> =
+external forwardRef: (('props, Js.Nullable.t<Ref.t<'a>>) => element) => component<'props> =
   "forwardRef"
 
 @module("react")
@@ -79,57 +88,19 @@ external memoCustomCompareProps: (
 ) => component<'props> = "memo"
 
 module Fragment = {
-  @obj
-  external makeProps: (~children: element, ~key: 'key=?, unit) => {"children": element} = ""
-  @module("react")
-  external make: component<{
-    "children": element,
-  }> = "Fragment"
-}
+  type props = {key?: string, children: element}
 
-module StrictMode = {
-  @obj
-  external makeProps: (~children: element, ~key: 'key=?, unit) => {"children": element} = ""
   @module("react")
-  external make: component<{
-    "children": element,
-  }> = "StrictMode"
+  external make: component<props> = "Fragment"
 }
 
 module Suspense = {
-  @obj
-  external makeProps: (
-    ~children: element=?,
-    ~fallback: element=?,
-    ~key: 'key=?,
-    unit,
-  ) => {"children": option<element>, "fallback": option<element>} = ""
-  @module("react")
-  external make: component<{
-    "children": option<element>,
-    "fallback": option<element>,
-  }> = "Suspense"
-}
-
-/* Experimental React.SuspenseList */
-module SuspenseList = {
-  type revealOrder
-  type tail
-  @obj
-  external makeProps: (
-    ~children: element=?,
-    ~revealOrder: [#forwards | #backwards | #together]=?,
-    ~tail: [#collapsed | #hidden]=?,
-    unit,
-  ) => {"children": option<element>, "revealOrder": option<revealOrder>, "tail": option<tail>} = ""
+  type props = {key?: string, children?: element, fallback?: element}
 
   @module("react")
-  external make: component<{
-    "children": option<element>,
-    "revealOrder": option<revealOrder>,
-    "tail": option<tail>,
-  }> = "SuspenseList"
+  external make: component<props> = "Suspense"
 }
+
 /* HOOKS */
 
 /*
@@ -248,65 +219,57 @@ external useCallback7: (
 @module("react")
 external useContext: Context.t<'any> => 'any = "useContext"
 
-@module("react") external useRef: 'value => ref<'value> = "useRef"
+@module("react") external useRef: 'value => Ref.t<'value> = "useRef"
 
 @module("react")
 external useImperativeHandle0: (
-  Js.Nullable.t<ref<'value>>,
+  Js.Nullable.t<Ref.t<'value>>,
   unit => 'value,
   @as(json`[]`) _,
 ) => unit = "useImperativeHandle"
 
 @module("react")
-external useImperativeHandle1: (Js.Nullable.t<ref<'value>>, unit => 'value, array<'a>) => unit =
+external useImperativeHandle1: (Js.Nullable.t<Ref.t<'value>>, unit => 'value, array<'a>) => unit =
   "useImperativeHandle"
 
 @module("react")
-external useImperativeHandle2: (Js.Nullable.t<ref<'value>>, unit => 'value, ('a, 'b)) => unit =
+external useImperativeHandle2: (Js.Nullable.t<Ref.t<'value>>, unit => 'value, ('a, 'b)) => unit =
   "useImperativeHandle"
 
 @module("react")
-external useImperativeHandle3: (Js.Nullable.t<ref<'value>>, unit => 'value, ('a, 'b, 'c)) => unit =
-  "useImperativeHandle"
+external useImperativeHandle3: (
+  Js.Nullable.t<Ref.t<'value>>,
+  unit => 'value,
+  ('a, 'b, 'c),
+) => unit = "useImperativeHandle"
 
 @module("react")
 external useImperativeHandle4: (
-  Js.Nullable.t<ref<'value>>,
+  Js.Nullable.t<Ref.t<'value>>,
   unit => 'value,
   ('a, 'b, 'c, 'd),
 ) => unit = "useImperativeHandle"
 
 @module("react")
 external useImperativeHandle5: (
-  Js.Nullable.t<ref<'value>>,
+  Js.Nullable.t<Ref.t<'value>>,
   unit => 'value,
   ('a, 'b, 'c, 'd, 'e),
 ) => unit = "useImperativeHandle"
 
 @module("react")
 external useImperativeHandle6: (
-  Js.Nullable.t<ref<'value>>,
+  Js.Nullable.t<Ref.t<'value>>,
   unit => 'value,
   ('a, 'b, 'c, 'd, 'e, 'f),
 ) => unit = "useImperativeHandle"
 
 @module("react")
 external useImperativeHandle7: (
-  Js.Nullable.t<ref<'value>>,
+  Js.Nullable.t<Ref.t<'value>>,
   unit => 'value,
   ('a, 'b, 'c, 'd, 'e, 'f, 'g),
 ) => unit = "useImperativeHandle"
 
-type transitionConfig = {timeoutMs: int}
-
-@module("react")
-external useTransition: (
-  ~config: transitionConfig=?,
-  unit,
-) => (callback<callback<unit, unit>, unit>, bool) = "useTransition"
-
 @set
 external setDisplayName: (component<'props>, string) => unit = "displayName"
-
-@get @return(nullable)
-external displayName: component<'props> => option<string> = "displayName"

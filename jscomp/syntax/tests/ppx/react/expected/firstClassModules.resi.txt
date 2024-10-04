@@ -1,36 +1,3 @@
-@@jsxConfig({version: 3})
-
-module Select: {
-  module type T = {
-    type key
-    type t
-  }
-
-  @obj
-  external makeProps: (
-    ~model: module(T with type t = 'a and type key = 'key),
-    ~selected: option<'key>,
-    ~onChange: option<'key> => unit,
-    ~items: array<'a>,
-    ~key: string=?,
-    unit,
-  ) => {
-    "model": module(T with type t = 'a and type key = 'key),
-    "selected": option<'key>,
-    "onChange": option<'key> => unit,
-    "items": array<'a>,
-  } = ""
-  let make: React.componentLike<
-    {
-      "model": module(T with type t = 'a and type key = 'key),
-      "selected": option<'key>,
-      "onChange": option<'key> => unit,
-      "items": array<'a>,
-    },
-    React.element,
-  >
-}
-
 @@jsxConfig({version: 4, mode: "classic"})
 
 module Select: {

@@ -55,3 +55,7 @@ export abstract class Wheel_t {
 }
 
 export type inputFocusEvent = React.FocusEvent<HTMLInputElement>;
+
+export abstract class Mouse_t {
+  protected opaque: unknown;
+}

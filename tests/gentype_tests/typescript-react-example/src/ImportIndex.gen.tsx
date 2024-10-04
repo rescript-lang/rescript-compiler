@@ -11,4 +11,6 @@ export const defaultTypeChecked: React.ComponentType<{ readonly method?: "push" 
 // Export '$$default' early to allow circular import from the '.bs.js' file.
 export const $$default: unknown = defaultTypeChecked as React.ComponentType<{ readonly method?: "push" | "replace" }> as any;
 
+export type props<method> = { readonly method?: method };
+
 export default $$default;

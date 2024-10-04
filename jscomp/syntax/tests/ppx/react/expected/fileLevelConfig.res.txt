@@ -1,20 +1,3 @@
-@@jsxConfig({version: 3})
-
-module V3 = {
-  @obj external makeProps: (~msg: 'msg, ~key: string=?, unit) => {"msg": 'msg} = ""
-
-  @react.component
-  let make =
-    @warning("-16")
-    (~msg) => {
-      ReactDOMRe.createDOMElementVariadic("div", [{msg->React.string}])
-    }
-  let make = {
-    let \"FileLevelConfig$V3" = (\"Props": {"msg": 'msg}) => make(~msg=\"Props"["msg"])
-    \"FileLevelConfig$V3"
-  }
-}
-
 @@jsxConfig({version: 4, mode: "classic"})
 
 module V4C = {

@@ -26,11 +26,6 @@ external gtag: option<(. string, string, {"page_path": string}) => unit> = "gtag
 
 module TooltipConfigContextProvider = {
   type tooltipModifiers = array<{"name": string, "options": {"offset": array<int>}}>
-  let makeProps = (~value, ~children, ()) =>
-    {
-      "value": value,
-      "children": children,
-    }
   let make = React.Context.provider(
     (
       ReactAtmosphere.Tooltip.configContext: React.Context.t<

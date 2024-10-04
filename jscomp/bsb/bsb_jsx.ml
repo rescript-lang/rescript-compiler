@@ -1,4 +1,4 @@
-type version = Jsx_v3 | Jsx_v4
+type version = Jsx_v4
 type module_ = React | Generic of {moduleName: string}
 type mode = Classic | Automatic
 type dependencies = string list
@@ -7,13 +7,11 @@ type t = {
   version : version option;
   module_ : module_ option;
   mode : mode option;
-  v3_dependencies : dependencies;
 }
 
 let encode_no_nl jsx =
   (match jsx.version with
   | None -> ""
-  | Some Jsx_v3 -> "3"
   | Some Jsx_v4 -> "4")
   ^ (match jsx.module_ with None -> "" | Some React -> "React" | Some Generic {moduleName} -> moduleName)
   ^
@@ -35,7 +33,6 @@ let from_map map =
   let version : version option ref = ref None in
   let module_ : module_ option ref = ref None in
   let mode : mode option ref = ref None in
-  let v3_dependencies : dependencies ref = ref [] in
   map
   |? ( Bsb_build_schemas.jsx,
        `Obj
@@ -43,7 +40,6 @@ let from_map map =
            match m.?(Bsb_build_schemas.jsx_version) with
            | Some (Flo { loc; flo }) -> (
                match flo with
-               | "3" -> version := Some Jsx_v3
                | "4" -> version := Some Jsx_v4
                | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
                )
@@ -76,20 +72,9 @@ let from_map map =
                Bsb_exception.config_error x
                  "Unexpected input (expect classic or automatic) for jsx mode"
            | None -> ()) )
-  |? ( Bsb_build_schemas.jsx,
-       `Obj
-         (fun m ->
-           match m.?(Bsb_build_schemas.jsx_v3_dependencies) with
-           | Some (Arr { content }) ->
-            v3_dependencies := get_list_string content
-           | Some x ->
-               Bsb_exception.config_error x
-                 "Unexpected input for jsx v3-dependencies"
-           | None -> ()) )
   |> ignore;
   {
     version = !version;
     module_ = !module_;
     mode = !mode;
-    v3_dependencies = !v3_dependencies;
   }

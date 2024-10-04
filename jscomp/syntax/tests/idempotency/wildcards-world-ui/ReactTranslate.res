@@ -49,12 +49,6 @@ module TranslationContext = {
     setTranslationModeCrypto: _ => (),
   })
 
-  let makeProps = (~value, ~children, ()) =>
-    {
-      "value": value,
-      "children": children,
-    }
-
   let make = React.Context.provider(translationContext)
 }
 let useTranslationModeContext = () => React.useContext(TranslationContext.translationContext)
