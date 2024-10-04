@@ -2,10 +2,10 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Belt_Id = require("rescript/lib/js/belt_Id.js");
 let Belt_Map = require("rescript/lib/js/belt_Map.js");
 let Belt_Set = require("rescript/lib/js/belt_Set.js");
 let Belt_Array = require("rescript/lib/js/belt_Array.js");
-let Belt_MapDict = require("rescript/lib/js/belt_MapDict.js");
 let Primitive_int = require("rescript/lib/js/primitive_int.js");
 let Array_data_util = require("./array_data_util.js");
 let Primitive_option = require("rescript/lib/js/primitive_option.js");
@@ -26,9 +26,7 @@ function b(loc, v) {
   Mt.bool_suites(test_id, suites, loc, v);
 }
 
-let Icmp = {
-  cmp: Primitive_int.compare
-};
+let Icmp = Belt_Id.comparable(Primitive_int.compare);
 
 function mapOfArray(x) {
   return Belt_Map.fromArray(x, Icmp);
@@ -39,40 +37,34 @@ function setOfArray(x) {
 }
 
 function emptyMap() {
-  return {
-    cmp: Icmp.cmp,
-    data: undefined
-  };
+  return Belt_Map.make(Icmp);
 }
 
 function mergeInter(s1, s2) {
-  let m = Belt_Map.merge(s1, s2, (k, v1, v2) => {
+  return Belt_Set.fromArray(Belt_Map.keysToArray(Belt_Map.merge(s1, s2, (k, v1, v2) => {
     if (v1 !== undefined && v2 !== undefined) {
       return Primitive_option.some(undefined);
     }
     
-  });
-  return Belt_Set.fromArray(Belt_MapDict.keysToArray(m.data), Icmp);
+  })), Icmp);
 }
 
 function mergeUnion(s1, s2) {
-  let m = Belt_Map.merge(s1, s2, (k, v1, v2) => {
+  return Belt_Set.fromArray(Belt_Map.keysToArray(Belt_Map.merge(s1, s2, (k, v1, v2) => {
     if (v1 !== undefined || v2 !== undefined) {
       return Primitive_option.some(undefined);
     }
     
-  });
-  return Belt_Set.fromArray(Belt_MapDict.keysToArray(m.data), Icmp);
+  })), Icmp);
 }
 
 function mergeDiff(s1, s2) {
-  let m = Belt_Map.merge(s1, s2, (k, v1, v2) => {
+  return Belt_Set.fromArray(Belt_Map.keysToArray(Belt_Map.merge(s1, s2, (k, v1, v2) => {
     if (v1 !== undefined && v2 === undefined) {
       return Primitive_option.some(undefined);
     }
     
-  });
-  return Belt_Set.fromArray(Belt_MapDict.keysToArray(m.data), Icmp);
+  })), Icmp);
 }
 
 function randomRange(i, j) {
@@ -149,14 +141,14 @@ let a7 = Belt_Map.removeMany(a0, [
   6
 ]);
 
-eq("File \"bs_poly_map_test.res\", line 99, characters 5-12", Belt_MapDict.keysToArray(a7.data), [
+eq("File \"bs_poly_map_test.res\", line 99, characters 5-12", Belt_Map.keysToArray(a7), [
   9,
   10
 ]);
 
 let a8 = Belt_Map.removeMany(a7, Array_data_util.randomRange(0, 100));
 
-b("File \"bs_poly_map_test.res\", line 101, characters 4-11", Belt_MapDict.isEmpty(a8.data));
+b("File \"bs_poly_map_test.res\", line 101, characters 4-11", Belt_Map.isEmpty(a8));
 
 let u0$1 = Belt_Map.fromArray(randomRange(0, 100), Icmp);
 
@@ -176,12 +168,7 @@ function acc(m, is) {
   }));
 }
 
-let m_cmp = Icmp.cmp;
-
-let m = {
-  cmp: m_cmp,
-  data: undefined
-};
+let m = Belt_Map.make(Icmp);
 
 let m1 = acc(m, Belt_Array.concat(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));
 
@@ -190,12 +177,7 @@ b("File \"bs_poly_map_test.res\", line 125, characters 4-11", Belt_Map.eq(m1, Be
   i >= 10 && i <= 20 ? 2 : 1
 ]), Icmp), (x, y) => x === y));
 
-let v0_cmp = Icmp.cmp;
-
-let v0 = {
-  cmp: v0_cmp,
-  data: undefined
-};
+let v0 = Belt_Map.make(Icmp);
 
 let v1 = Belt_Map.mergeMany(v0, Belt_Array.map(Array_data_util.randomRange(0, 10000), x => [
   x,
@@ -239,25 +221,15 @@ let match$4 = Belt_Map.get(v4, -10);
 
 b("File \"bs_poly_map_test.res\", line 174, characters 4-11", match$4 !== undefined ? match$4 === 0 : false);
 
-let map = Belt_Map.remove({
-  cmp: Icmp.cmp,
-  data: undefined
-}, 0);
+b("File \"bs_poly_map_test.res\", line 180, characters 4-11", Belt_Map.isEmpty(Belt_Map.remove(Belt_Map.make(Icmp), 0)));
 
-b("File \"bs_poly_map_test.res\", line 180, characters 4-11", Belt_MapDict.isEmpty(map.data));
-
-let map$1 = Belt_Map.removeMany({
-  cmp: Icmp.cmp,
-  data: undefined
-}, [0]);
-
-b("File \"bs_poly_map_test.res\", line 181, characters 4-11", Belt_MapDict.isEmpty(map$1.data));
+b("File \"bs_poly_map_test.res\", line 181, characters 4-11", Belt_Map.isEmpty(Belt_Map.removeMany(Belt_Map.make(Icmp), [0])));
 
 b("File \"bs_poly_map_test.res\", line 183, characters 4-11", pres !== undefined ? pres === 5000 : false);
 
-b("File \"bs_poly_map_test.res\", line 189, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[0].data), Belt_Array.makeBy(5000, i => i), (prim0, prim1) => prim0 === prim1));
+b("File \"bs_poly_map_test.res\", line 189, characters 4-11", Belt_Array.eq(Belt_Map.keysToArray(match$1[0]), Belt_Array.makeBy(5000, i => i), (prim0, prim1) => prim0 === prim1));
 
-b("File \"bs_poly_map_test.res\", line 190, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[1].data), Belt_Array.makeBy(5000, i => 5001 + i | 0), (prim0, prim1) => prim0 === prim1));
+b("File \"bs_poly_map_test.res\", line 190, characters 4-11", Belt_Array.eq(Belt_Map.keysToArray(match$1[1]), Belt_Array.makeBy(5000, i => 5001 + i | 0), (prim0, prim1) => prim0 === prim1));
 
 let v7 = Belt_Map.remove(v3, 5000);
 
@@ -267,9 +239,9 @@ let match$6 = match$5[0];
 
 b("File \"bs_poly_map_test.res\", line 195, characters 4-11", match$5[1] === undefined);
 
-b("File \"bs_poly_map_test.res\", line 201, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[0].data), Belt_Array.makeBy(5000, i => i), (prim0, prim1) => prim0 === prim1));
+b("File \"bs_poly_map_test.res\", line 201, characters 4-11", Belt_Array.eq(Belt_Map.keysToArray(match$6[0]), Belt_Array.makeBy(5000, i => i), (prim0, prim1) => prim0 === prim1));
 
-b("File \"bs_poly_map_test.res\", line 202, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[1].data), Belt_Array.makeBy(5000, i => 5001 + i | 0), (prim0, prim1) => prim0 === prim1));
+b("File \"bs_poly_map_test.res\", line 202, characters 4-11", Belt_Array.eq(Belt_Map.keysToArray(match$6[1]), Belt_Array.makeBy(5000, i => 5001 + i | 0), (prim0, prim1) => prim0 === prim1));
 
 Mt.from_pair_suites("Bs_poly_map_test", suites.contents);
 
@@ -298,4 +270,4 @@ exports.mergeUnion = mergeUnion;
 exports.mergeDiff = mergeDiff;
 exports.randomRange = randomRange;
 exports.acc = acc;
-/* u0 Not a pure module */
+/* Icmp Not a pure module */

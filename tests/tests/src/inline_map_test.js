@@ -3,6 +3,7 @@
 
 let Mt = require("./mt.js");
 let Belt_List = require("rescript/lib/js/belt_List.js");
+let Pervasives = require("rescript/lib/js/pervasives.js");
 let Primitive_int = require("rescript/lib/js/primitive_int.js");
 
 function height(x) {
@@ -33,11 +34,7 @@ function bal(l, x, d, r) {
   hr = typeof r !== "object" ? 0 : r._4;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal",
-        Error: new Error()
-      };
+      return Pervasives.invalid_arg("Map.bal");
     }
     let lr = l._3;
     let ld = l._2;
@@ -45,15 +42,11 @@ function bal(l, x, d, r) {
     let ll = l._0;
     if (height(ll) >= height(lr)) {
       return create(ll, lv, ld, create(lr, x, d, r));
-    }
-    if (typeof lr === "object") {
+    } else if (typeof lr !== "object") {
+      return Pervasives.invalid_arg("Map.bal");
+    } else {
       return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
     }
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.bal",
-      Error: new Error()
-    };
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -66,11 +59,7 @@ function bal(l, x, d, r) {
     };
   }
   if (typeof r !== "object") {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.bal",
-      Error: new Error()
-    };
+    return Pervasives.invalid_arg("Map.bal");
   }
   let rr = r._3;
   let rd = r._2;
@@ -78,15 +67,11 @@ function bal(l, x, d, r) {
   let rl = r._0;
   if (height(rr) >= height(rl)) {
     return create(create(l, x, d, rl), rv, rd, rr);
-  }
-  if (typeof rl === "object") {
+  } else if (typeof rl !== "object") {
+    return Pervasives.invalid_arg("Map.bal");
+  } else {
     return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
   }
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "Map.bal",
-    Error: new Error()
-  };
 }
 
 function add(x, data, x_) {

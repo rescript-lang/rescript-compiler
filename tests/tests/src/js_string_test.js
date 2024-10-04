@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Js_string = require("rescript/lib/js/js_string.js");
 let Belt_Option = require("rescript/lib/js/belt_Option.js");
 let Primitive_option = require("rescript/lib/js/primitive_option.js");
 
@@ -419,7 +420,7 @@ let suites_1 = {
                                                                                     ":",
                                                                                     "c"
                                                                                   ],
-                                                                                  _1: "a#b#:c".split(/(#)(:)?/)
+                                                                                  _1: Js_string.splitByRe(/(#)(:)?/, "a#b#:c")
                                                                                 })
                                                                               ],
                                                                               tl: {
@@ -432,7 +433,7 @@ let suites_1 = {
                                                                                       "#",
                                                                                       undefined
                                                                                     ],
-                                                                                    _1: "a#b#:c".split(/(#)(:)?/, 3)
+                                                                                    _1: Js_string.splitByReAtMost(/(#)(:)?/, 3, "a#b#:c")
                                                                                   })
                                                                                 ],
                                                                                 tl: {

@@ -2,6 +2,7 @@
 'use strict';
 
 let React = require("react");
+let Js_string = require("rescript/lib/js/js_string.js");
 let Primitive_option = require("rescript/lib/js/primitive_option.js");
 
 function safeMakeEvent(eventName) {
@@ -24,10 +25,10 @@ function path() {
     case "/" :
       return /* [] */0;
     default:
-      let raw$1 = raw.slice(1);
+      let raw$1 = Js_string.sliceToEnd(1, raw);
       let match = raw$1[raw$1.length - 1 | 0];
-      let raw$2 = match === "/" ? raw$1.slice(0, -1) : raw$1;
-      let a = raw$2.split("/");
+      let raw$2 = match === "/" ? Js_string.slice(0, -1, raw$1) : raw$1;
+      let a = Js_string.split("/", raw$2);
       let _i = a.length - 1 | 0;
       let _res = /* [] */0;
       while (true) {
@@ -57,7 +58,7 @@ function hash() {
     case "#" :
       return "";
     default:
-      return raw.slice(1);
+      return Js_string.sliceToEnd(1, raw);
   }
 }
 
@@ -72,7 +73,7 @@ function search() {
     case "?" :
       return "";
     default:
-      return raw.slice(1);
+      return Js_string.sliceToEnd(1, raw);
   }
 }
 

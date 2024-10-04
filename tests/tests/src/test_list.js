@@ -24,51 +24,37 @@ function length(l) {
 function hd(x) {
   if (x) {
     return x.hd;
+  } else {
+    return Pervasives.failwith("hd");
   }
-  throw {
-    RE_EXN_ID: "Failure",
-    _1: "hd",
-    Error: new Error()
-  };
 }
 
 function tl(x) {
   if (x) {
     return x.tl;
+  } else {
+    return Pervasives.failwith("tl");
   }
-  throw {
-    RE_EXN_ID: "Failure",
-    _1: "tl",
-    Error: new Error()
-  };
 }
 
 function nth(l, n) {
   if (n < 0) {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "List.nth",
-      Error: new Error()
-    };
+    return Pervasives.invalid_arg("List.nth");
   }
   let _l = l;
   let _n = n;
   while (true) {
     let n$1 = _n;
     let l$1 = _l;
-    if (l$1) {
-      if (n$1 === 0) {
-        return l$1.hd;
-      }
-      _n = n$1 - 1 | 0;
-      _l = l$1.tl;
-      continue;
+    if (!l$1) {
+      return Pervasives.failwith("nth");
     }
-    throw {
-      RE_EXN_ID: "Failure",
-      _1: "nth",
-      Error: new Error()
-    };
+    if (n$1 === 0) {
+      return l$1.hd;
+    }
+    _n = n$1 - 1 | 0;
+    _l = l$1.tl;
+    continue;
   };
 }
 
@@ -194,27 +180,20 @@ function fold_right(f, l, accu) {
 }
 
 function map2(f, l1, l2) {
-  if (l1) {
+  if (!l1) {
     if (l2) {
-      let r = f(l1.hd, l2.hd);
-      return {
-        hd: r,
-        tl: map2(f, l1.tl, l2.tl)
-      };
+      return Pervasives.invalid_arg("List.map2");
+    } else {
+      return /* [] */0;
     }
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "List.map2",
-      Error: new Error()
-    };
   }
   if (!l2) {
-    return /* [] */0;
+    return Pervasives.invalid_arg("List.map2");
   }
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "List.map2",
-    Error: new Error()
+  let r = f(l1.hd, l2.hd);
+  return {
+    hd: r,
+    tl: map2(f, l1.tl, l2.tl)
   };
 }
 
@@ -226,30 +205,23 @@ function rev_map2(f, l1, l2) {
     let l2$1 = _l2;
     let l1$1 = _l1;
     let accu = _accu;
-    if (l1$1) {
+    if (!l1$1) {
       if (l2$1) {
-        _l2 = l2$1.tl;
-        _l1 = l1$1.tl;
-        _accu = {
-          hd: f(l1$1.hd, l2$1.hd),
-          tl: accu
-        };
-        continue;
+        return Pervasives.invalid_arg("List.rev_map2");
+      } else {
+        return accu;
       }
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.rev_map2",
-        Error: new Error()
-      };
     }
-    if (l2$1) {
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.rev_map2",
-        Error: new Error()
-      };
+    if (!l2$1) {
+      return Pervasives.invalid_arg("List.rev_map2");
     }
-    return accu;
+    _l2 = l2$1.tl;
+    _l1 = l1$1.tl;
+    _accu = {
+      hd: f(l1$1.hd, l2$1.hd),
+      tl: accu
+    };
+    continue;
   };
 }
 
@@ -257,27 +229,20 @@ function iter2(f, _l1, _l2) {
   while (true) {
     let l2 = _l2;
     let l1 = _l1;
-    if (l1) {
+    if (!l1) {
       if (l2) {
-        f(l1.hd, l2.hd);
-        _l2 = l2.tl;
-        _l1 = l1.tl;
-        continue;
+        return Pervasives.invalid_arg("List.iter2");
+      } else {
+        return;
       }
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.iter2",
-        Error: new Error()
-      };
     }
     if (!l2) {
-      return;
+      return Pervasives.invalid_arg("List.iter2");
     }
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "List.iter2",
-      Error: new Error()
-    };
+    f(l1.hd, l2.hd);
+    _l2 = l2.tl;
+    _l1 = l1.tl;
+    continue;
   };
 }
 
@@ -286,27 +251,20 @@ function fold_left2(f, _accu, _l1, _l2) {
     let l2 = _l2;
     let l1 = _l1;
     let accu = _accu;
-    if (l1) {
+    if (!l1) {
       if (l2) {
-        _l2 = l2.tl;
-        _l1 = l1.tl;
-        _accu = f(accu, l1.hd, l2.hd);
-        continue;
+        return Pervasives.invalid_arg("List.fold_left2");
+      } else {
+        return accu;
       }
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.fold_left2",
-        Error: new Error()
-      };
     }
-    if (l2) {
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.fold_left2",
-        Error: new Error()
-      };
+    if (!l2) {
+      return Pervasives.invalid_arg("List.fold_left2");
     }
-    return accu;
+    _l2 = l2.tl;
+    _l1 = l1.tl;
+    _accu = f(accu, l1.hd, l2.hd);
+    continue;
   };
 }
 
@@ -314,21 +272,14 @@ function fold_right2(f, l1, l2, accu) {
   if (l1) {
     if (l2) {
       return f(l1.hd, l2.hd, fold_right2(f, l1.tl, l2.tl, accu));
+    } else {
+      return Pervasives.invalid_arg("List.fold_right2");
     }
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "List.fold_right2",
-      Error: new Error()
-    };
+  } else if (l2) {
+    return Pervasives.invalid_arg("List.fold_right2");
+  } else {
+    return accu;
   }
-  if (l2) {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "List.fold_right2",
-      Error: new Error()
-    };
-  }
-  return accu;
 }
 
 function for_all(p, _x) {
@@ -363,29 +314,22 @@ function for_all2(p, _l1, _l2) {
   while (true) {
     let l2 = _l2;
     let l1 = _l1;
-    if (l1) {
+    if (!l1) {
       if (l2) {
-        if (!p(l1.hd, l2.hd)) {
-          return false;
-        }
-        _l2 = l2.tl;
-        _l1 = l1.tl;
-        continue;
+        return Pervasives.invalid_arg("List.for_all2");
+      } else {
+        return true;
       }
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.for_all2",
-        Error: new Error()
-      };
     }
     if (!l2) {
-      return true;
+      return Pervasives.invalid_arg("List.for_all2");
     }
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "List.for_all2",
-      Error: new Error()
-    };
+    if (!p(l1.hd, l2.hd)) {
+      return false;
+    }
+    _l2 = l2.tl;
+    _l1 = l1.tl;
+    continue;
   };
 }
 
@@ -393,29 +337,22 @@ function exists2(p, _l1, _l2) {
   while (true) {
     let l2 = _l2;
     let l1 = _l1;
-    if (l1) {
+    if (!l1) {
       if (l2) {
-        if (p(l1.hd, l2.hd)) {
-          return true;
-        }
-        _l2 = l2.tl;
-        _l1 = l1.tl;
-        continue;
+        return Pervasives.invalid_arg("List.exists2");
+      } else {
+        return false;
       }
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "List.exists2",
-        Error: new Error()
-      };
     }
     if (!l2) {
-      return false;
+      return Pervasives.invalid_arg("List.exists2");
     }
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "List.exists2",
-      Error: new Error()
-    };
+    if (p(l1.hd, l2.hd)) {
+      return true;
+    }
+    _l2 = l2.tl;
+    _l1 = l1.tl;
+    continue;
   };
 }
 
@@ -651,21 +588,14 @@ function combine(l1, l2) {
         ],
         tl: combine(l1.tl, l2.tl)
       };
+    } else {
+      return Pervasives.invalid_arg("List.combine");
     }
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "List.combine",
-      Error: new Error()
-    };
-  }
-  if (!l2) {
+  } else if (l2) {
+    return Pervasives.invalid_arg("List.combine");
+  } else {
     return /* [] */0;
   }
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "List.combine",
-    Error: new Error()
-  };
 }
 
 function merge(cmp, l1, l2) {

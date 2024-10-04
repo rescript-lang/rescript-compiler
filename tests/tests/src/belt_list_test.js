@@ -1791,13 +1791,7 @@ Mocha.describe("Belt_list_test", () => {
       }
     }, (x, y) => x === y), false);
   });
-  Mocha.test("add", () => Test_utils.eq("File \"belt_list_test.res\", line 307, characters 7-14", {
-    hd: 2,
-    tl: {
-      hd: 3,
-      tl: /* [] */0
-    }
-  }, {
+  Mocha.test("add", () => Test_utils.eq("File \"belt_list_test.res\", line 307, characters 7-14", Belt_List.add(Belt_List.add(/* [] */0, 3), 2), {
     hd: 2,
     tl: {
       hd: 3,

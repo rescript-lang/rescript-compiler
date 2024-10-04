@@ -18,7 +18,7 @@ let a = b - 1 | 0;
 
 console.log("hello, res");
 
-Belt_List.length({
+Belt_List.add(/* [] */0, Belt_List.length({
   hd: 1,
   tl: {
     hd: 2,
@@ -27,7 +27,7 @@ Belt_List.length({
       tl: /* [] */0
     }
   }
-});
+}));
 
 console.log(3);
 

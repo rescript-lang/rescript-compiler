@@ -317,11 +317,7 @@ function internal_bal(l, v, r) {
 
 function remove_min_elt(x) {
   if (typeof x !== "object") {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Set.remove_min_elt",
-      Error: new Error()
-    };
+    return Pervasives.invalid_arg("Set.remove_min_elt");
   }
   let l = x._0;
   if (typeof l !== "object") {

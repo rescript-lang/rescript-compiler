@@ -2,6 +2,7 @@
 'use strict';
 
 let React = require("react");
+let Js_array = require("rescript/lib/js/js_array.js");
 let ReactDom = require("react-dom");
 
 function renderToElementWithClassName(reactElement, className) {
@@ -81,10 +82,10 @@ function hydrateToElementWithId(reactElement, id) {
 let Ref = {};
 
 function createElementVariadic(domClassName, props, children) {
-  let variadicArguments = [
+  let variadicArguments = Js_array.concat(children, [
     domClassName,
     props
-  ].concat(children);
+  ]);
   return React.createElement.apply(null, variadicArguments);
 }
 

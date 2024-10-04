@@ -2,7 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Belt_Id = require("rescript/lib/js/belt_Id.js");
 let Belt_Map = require("rescript/lib/js/belt_Map.js");
+let Belt_Set = require("rescript/lib/js/belt_Set.js");
 let Belt_List = require("rescript/lib/js/belt_List.js");
 let Belt_Array = require("rescript/lib/js/belt_Array.js");
 let Belt_MapDict = require("rescript/lib/js/belt_MapDict.js");
@@ -26,51 +28,23 @@ function b(loc, v) {
   Mt.bool_suites(test_id, suites, loc, v);
 }
 
-let Icmp = {
-  cmp: Primitive_int.compare
-};
+let Icmp = Belt_Id.comparable(Primitive_int.compare);
 
-let Icmp2 = {
-  cmp: Primitive_int.compare
-};
+let Icmp2 = Belt_Id.comparable(Primitive_int.compare);
 
-let Ic3 = {
-  cmp: Primitive_int.compare
-};
+let Ic3 = Belt_Id.comparable(Primitive_int.compare);
 
-let m0_cmp = Icmp.cmp;
+let m0 = Belt_Map.make(Icmp);
 
-let m0 = {
-  cmp: m0_cmp,
-  data: undefined
-};
+let m00 = Belt_Set.make(Ic3);
 
-let m00_cmp = Ic3.cmp;
+let I2 = Belt_Id.comparable((x, y) => Primitive_int.compare(y, x));
 
-let m00 = {
-  cmp: m00_cmp,
-  data: undefined
-};
+let m = Belt_Map.make(Icmp2);
 
-let I2 = {
-  cmp: (x, y) => Primitive_int.compare(y, x)
-};
+let m2 = Belt_Map.make(I2);
 
-let m_cmp = Icmp2.cmp;
-
-let m = {
-  cmp: m_cmp,
-  data: undefined
-};
-
-let m2_cmp = I2.cmp;
-
-let m2 = {
-  cmp: m2_cmp,
-  data: undefined
-};
-
-let data;
+let data = Belt_Map.getData(m);
 
 Belt_Map.getId(m2);
 
@@ -80,32 +54,29 @@ for (let i = 0; i <= 100000; ++i) {
   data = Belt_MapDict.set(data, i, i, m_dict.cmp);
 }
 
-let data$1 = data;
-
-let newm_cmp = m_dict.cmp;
-
-let newm = {
-  cmp: newm_cmp,
-  data: data$1
-};
+let newm = Belt_Map.packIdData(m_dict, data);
 
 console.log(newm);
 
 let m11 = Belt_MapDict.set(undefined, 1, 1, Icmp.cmp);
 
+Belt_Map.make(Icmp);
+
 console.log(m11);
+
+let v = Belt_Set.make(Icmp2);
 
 let m_dict$1 = Belt_Map.getId(m);
 
 let cmp = m_dict$1.cmp;
 
-let data$2;
+let data$1 = Belt_Set.getData(v);
 
 for (let i$1 = 0; i$1 <= 100000; ++i$1) {
-  data$2 = Belt_SetDict.add(data$2, i$1, cmp);
+  data$1 = Belt_SetDict.add(data$1, i$1, cmp);
 }
 
-console.log(data$2);
+console.log(data$1);
 
 function f(none) {
   return Belt_Map.fromArray(none, Icmp);
@@ -122,7 +93,7 @@ let u0 = Belt_Map.fromArray(Belt_Array.map(Array_data_util.randomRange(0, 39), x
 
 let u1 = Belt_Map.set(u0, 39, 120);
 
-b("File \"bs_map_set_dict_test.res\", line 72, characters 4-11", Belt_Array.every2(Belt_MapDict.toArray(u0.data), Belt_Array.map(Array_data_util.range(0, 39), x => [
+b("File \"bs_map_set_dict_test.res\", line 72, characters 4-11", Belt_Array.every2(Belt_Map.toArray(u0), Belt_Array.map(Array_data_util.range(0, 39), x => [
   x,
   x
 ]), (param, param$1) => {
@@ -133,7 +104,7 @@ b("File \"bs_map_set_dict_test.res\", line 72, characters 4-11", Belt_Array.ever
   }
 }));
 
-b("File \"bs_map_set_dict_test.res\", line 79, characters 4-11", Belt_List.every2(Belt_MapDict.toList(u0.data), Belt_List.fromArray(Belt_Array.map(Array_data_util.range(0, 39), x => [
+b("File \"bs_map_set_dict_test.res\", line 79, characters 4-11", Belt_List.every2(Belt_Map.toList(u0), Belt_List.fromArray(Belt_Array.map(Array_data_util.range(0, 39), x => [
   x,
   x
 ])), (param, param$1) => {
@@ -156,7 +127,7 @@ let u = Belt_Map.fromArray(Belt_Array.makeByAndShuffle(10000, x => [
 eq("File \"bs_map_set_dict_test.res\", line 90, characters 5-12", Belt_Array.makeBy(10000, x => [
   x,
   x
-]), Belt_MapDict.toArray(u.data));
+]), Belt_Map.toArray(u));
 
 Mt.from_pair_suites("Bs_map_set_dict_test", suites.contents);
 
@@ -204,4 +175,4 @@ exports.ISet = ISet;
 exports.S0 = S0;
 exports.f = f;
 exports.$eq$tilde = $eq$tilde;
-/*  Not a pure module */
+/* Icmp Not a pure module */

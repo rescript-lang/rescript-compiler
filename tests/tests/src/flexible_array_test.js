@@ -2,6 +2,7 @@
 'use strict';
 
 let Belt_Array = require("rescript/lib/js/belt_Array.js");
+let Pervasives = require("rescript/lib/js/pervasives.js");
 let Primitive_array = require("rescript/lib/js/primitive_array.js");
 let Primitive_object = require("rescript/lib/js/primitive_object.js");
 
@@ -163,12 +164,9 @@ function length(param) {
 function get(param, i) {
   if (i >= 0 && i < param[1]) {
     return sub(param[0], i + 1 | 0);
+  } else {
+    return Pervasives.invalid_arg("Array.get");
   }
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "Array.get",
-    Error: new Error()
-  };
 }
 
 function set(param, i, v) {
@@ -178,12 +176,9 @@ function set(param, i, v) {
       update(param[0], i + 1 | 0, v),
       k
     ];
+  } else {
+    return Pervasives.invalid_arg("Array.set");
   }
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "Array.set",
-    Error: new Error()
-  };
 }
 
 function push_front(param, v) {
@@ -200,12 +195,9 @@ function pop_front(param) {
       lorem(param[0]),
       k - 1 | 0
     ];
+  } else {
+    return Pervasives.invalid_arg("Array.pop_front");
   }
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "Array.pop_front",
-    Error: new Error()
-  };
 }
 
 function push_back(param, v) {
@@ -223,12 +215,9 @@ function pop_back(param) {
       $$delete(param[0], k),
       k - 1 | 0
     ];
+  } else {
+    return Pervasives.invalid_arg("Array.pop_back");
   }
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "Array.pop_back",
-    Error: new Error()
-  };
 }
 
 function filter_from(i, p, s) {

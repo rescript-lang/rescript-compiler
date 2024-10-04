@@ -241,7 +241,7 @@ function find(x, _tree) {
 
 function of_list(l) {
   if (!l) {
-    return "Empty";
+    return Set_gen.empty;
   }
   let match = l.tl;
   let x0 = l.hd;
@@ -272,7 +272,7 @@ function of_list(l) {
 }
 
 function of_array(l) {
-  return Belt_Array.reduceReverse(l, "Empty", (acc, x) => add(x, acc));
+  return Belt_Array.reduceReverse(l, Set_gen.empty, (acc, x) => add(x, acc));
 }
 
 function invariant(t) {
@@ -280,7 +280,7 @@ function invariant(t) {
   return Set_gen.is_ordered(compare_elt, t);
 }
 
-let empty = "Empty";
+let empty = Set_gen.empty;
 
 let is_empty = Set_gen.is_empty;
 

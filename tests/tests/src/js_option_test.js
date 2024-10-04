@@ -13,7 +13,7 @@ let option_suites_0 = [
   param => ({
     TAG: "Eq",
     _0: true,
-    _1: true
+    _1: Js_option.isSome(1)
   })
 ];
 
@@ -23,7 +23,7 @@ let option_suites_1 = {
     param => ({
       TAG: "Eq",
       _0: false,
-      _1: false
+      _1: Js_option.isSome(undefined)
     })
   ],
   tl: {
@@ -32,7 +32,7 @@ let option_suites_1 = {
       param => ({
         TAG: "Eq",
         _0: false,
-        _1: false
+        _1: Js_option.isNone(1)
       })
     ],
     tl: {
@@ -41,7 +41,7 @@ let option_suites_1 = {
         param => ({
           TAG: "Eq",
           _0: true,
-          _1: true
+          _1: Js_option.isNone(undefined)
         })
       ],
       tl: {

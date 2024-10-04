@@ -3,6 +3,7 @@
 
 let Mt = require("./mt.js");
 let Belt_List = require("rescript/lib/js/belt_List.js");
+let Pervasives = require("rescript/lib/js/pervasives.js");
 let Primitive_int = require("rescript/lib/js/primitive_int.js");
 let Primitive_option = require("rescript/lib/js/primitive_option.js");
 let Primitive_string = require("rescript/lib/js/primitive_string.js");
@@ -42,11 +43,7 @@ function Make(Ord) {
     hr = typeof r !== "object" ? 0 : r._4;
     if (hl > (hr + 2 | 0)) {
       if (typeof l !== "object") {
-        throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Map.bal",
-          Error: new Error()
-        };
+        return Pervasives.invalid_arg("Map.bal");
       }
       let lr = l._3;
       let ld = l._2;
@@ -54,15 +51,11 @@ function Make(Ord) {
       let ll = l._0;
       if (height(ll) >= height(lr)) {
         return create(ll, lv, ld, create(lr, x, d, r));
-      }
-      if (typeof lr === "object") {
+      } else if (typeof lr !== "object") {
+        return Pervasives.invalid_arg("Map.bal");
+      } else {
         return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
       }
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal",
-        Error: new Error()
-      };
     }
     if (hr <= (hl + 2 | 0)) {
       return {
@@ -75,11 +68,7 @@ function Make(Ord) {
       };
     }
     if (typeof r !== "object") {
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal",
-        Error: new Error()
-      };
+      return Pervasives.invalid_arg("Map.bal");
     }
     let rr = r._3;
     let rd = r._2;
@@ -87,15 +76,11 @@ function Make(Ord) {
     let rl = r._0;
     if (height(rr) >= height(rl)) {
       return create(create(l, x, d, rl), rv, rd, rr);
-    }
-    if (typeof rl === "object") {
+    } else if (typeof rl !== "object") {
+      return Pervasives.invalid_arg("Map.bal");
+    } else {
       return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
     }
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.bal",
-      Error: new Error()
-    };
   };
   let is_empty = x => {
     if (typeof x !== "object") {
@@ -208,11 +193,7 @@ function Make(Ord) {
   };
   let remove_min_binding = x => {
     if (typeof x !== "object") {
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.remove_min_elt",
-        Error: new Error()
-      };
+      return Pervasives.invalid_arg("Map.remove_min_elt");
     }
     let l = x._0;
     if (typeof l !== "object") {
@@ -667,11 +648,7 @@ function bal(l, x, d, r) {
   hr = typeof r !== "object" ? 0 : r._4;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal",
-        Error: new Error()
-      };
+      return Pervasives.invalid_arg("Map.bal");
     }
     let lr = l._3;
     let ld = l._2;
@@ -679,15 +656,11 @@ function bal(l, x, d, r) {
     let ll = l._0;
     if (height(ll) >= height(lr)) {
       return create(ll, lv, ld, create(lr, x, d, r));
-    }
-    if (typeof lr === "object") {
+    } else if (typeof lr !== "object") {
+      return Pervasives.invalid_arg("Map.bal");
+    } else {
       return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
     }
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.bal",
-      Error: new Error()
-    };
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -700,11 +673,7 @@ function bal(l, x, d, r) {
     };
   }
   if (typeof r !== "object") {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.bal",
-      Error: new Error()
-    };
+    return Pervasives.invalid_arg("Map.bal");
   }
   let rr = r._3;
   let rd = r._2;
@@ -712,15 +681,11 @@ function bal(l, x, d, r) {
   let rl = r._0;
   if (height(rr) >= height(rl)) {
     return create(create(l, x, d, rl), rv, rd, rr);
-  }
-  if (typeof rl === "object") {
+  } else if (typeof rl !== "object") {
+    return Pervasives.invalid_arg("Map.bal");
+  } else {
     return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
   }
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "Map.bal",
-    Error: new Error()
-  };
 }
 
 function is_empty(x) {
@@ -840,11 +805,7 @@ function max_binding(_x) {
 
 function remove_min_binding(x) {
   if (typeof x !== "object") {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.remove_min_elt",
-      Error: new Error()
-    };
+    return Pervasives.invalid_arg("Map.remove_min_elt");
   }
   let l = x._0;
   if (typeof l !== "object") {
@@ -1349,11 +1310,7 @@ function bal$1(l, x, d, r) {
   hr = typeof r !== "object" ? 0 : r._4;
   if (hl > (hr + 2 | 0)) {
     if (typeof l !== "object") {
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.bal",
-        Error: new Error()
-      };
+      return Pervasives.invalid_arg("Map.bal");
     }
     let lr = l._3;
     let ld = l._2;
@@ -1361,15 +1318,11 @@ function bal$1(l, x, d, r) {
     let ll = l._0;
     if (height$1(ll) >= height$1(lr)) {
       return create$1(ll, lv, ld, create$1(lr, x, d, r));
-    }
-    if (typeof lr === "object") {
+    } else if (typeof lr !== "object") {
+      return Pervasives.invalid_arg("Map.bal");
+    } else {
       return create$1(create$1(ll, lv, ld, lr._0), lr._1, lr._2, create$1(lr._3, x, d, r));
     }
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.bal",
-      Error: new Error()
-    };
   }
   if (hr <= (hl + 2 | 0)) {
     return {
@@ -1382,11 +1335,7 @@ function bal$1(l, x, d, r) {
     };
   }
   if (typeof r !== "object") {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.bal",
-      Error: new Error()
-    };
+    return Pervasives.invalid_arg("Map.bal");
   }
   let rr = r._3;
   let rd = r._2;
@@ -1394,15 +1343,11 @@ function bal$1(l, x, d, r) {
   let rl = r._0;
   if (height$1(rr) >= height$1(rl)) {
     return create$1(create$1(l, x, d, rl), rv, rd, rr);
-  }
-  if (typeof rl === "object") {
+  } else if (typeof rl !== "object") {
+    return Pervasives.invalid_arg("Map.bal");
+  } else {
     return create$1(create$1(l, x, d, rl._0), rl._1, rl._2, create$1(rl._3, rv, rd, rr));
   }
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "Map.bal",
-    Error: new Error()
-  };
 }
 
 function is_empty$1(x) {
@@ -1522,11 +1467,7 @@ function max_binding$1(_x) {
 
 function remove_min_binding$1(x) {
   if (typeof x !== "object") {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Map.remove_min_elt",
-      Error: new Error()
-    };
+    return Pervasives.invalid_arg("Map.remove_min_elt");
   }
   let l = x._0;
   if (typeof l !== "object") {

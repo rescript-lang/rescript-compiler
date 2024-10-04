@@ -2,6 +2,7 @@
 'use strict';
 
 let Belt_List = require("rescript/lib/js/belt_List.js");
+let Pervasives = require("rescript/lib/js/pervasives.js");
 
 function Make(Ord) {
   let height = x => {
@@ -31,26 +32,18 @@ function Make(Ord) {
     hr = typeof r !== "object" ? 0 : r._3;
     if (hl > (hr + 2 | 0)) {
       if (typeof l !== "object") {
-        throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Set.bal",
-          Error: new Error()
-        };
+        return Pervasives.invalid_arg("Set.bal");
       }
       let lr = l._2;
       let lv = l._1;
       let ll = l._0;
       if (height(ll) >= height(lr)) {
         return create(ll, lv, create(lr, v, r));
-      }
-      if (typeof lr === "object") {
+      } else if (typeof lr !== "object") {
+        return Pervasives.invalid_arg("Set.bal");
+      } else {
         return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
       }
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal",
-        Error: new Error()
-      };
     }
     if (hr <= (hl + 2 | 0)) {
       return {
@@ -62,26 +55,18 @@ function Make(Ord) {
       };
     }
     if (typeof r !== "object") {
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.bal",
-        Error: new Error()
-      };
+      return Pervasives.invalid_arg("Set.bal");
     }
     let rr = r._2;
     let rv = r._1;
     let rl = r._0;
     if (height(rr) >= height(rl)) {
       return create(create(l, v, rl), rv, rr);
-    }
-    if (typeof rl === "object") {
+    } else if (typeof rl !== "object") {
+      return Pervasives.invalid_arg("Set.bal");
+    } else {
       return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
     }
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Set.bal",
-      Error: new Error()
-    };
   };
   let add = (x, x_) => {
     if (typeof x_ !== "object") {
@@ -179,11 +164,7 @@ function Make(Ord) {
   };
   let remove_min_elt = x => {
     if (typeof x !== "object") {
-      throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.remove_min_elt",
-        Error: new Error()
-      };
+      return Pervasives.invalid_arg("Set.remove_min_elt");
     }
     let l = x._0;
     if (typeof l !== "object") {

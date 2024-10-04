@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Pervasives = require("rescript/lib/js/pervasives.js");
 let Primitive_exceptions = require("rescript/lib/js/primitive_exceptions.js");
 
 let suites = {
@@ -30,11 +31,8 @@ function eq(loc, x, y) {
 let y;
 
 try {
-  throw {
-    RE_EXN_ID: "Failure",
-    _1: "boo",
-    Error: new Error()
-  };
+  Pervasives.failwith("boo");
+  y = undefined;
 } catch (raw_msg) {
   let msg = Primitive_exceptions.internalToException(raw_msg);
   if (msg.RE_EXN_ID === "Failure") {
@@ -48,12 +46,11 @@ let x;
 
 let exit = 0;
 
+let e;
+
 try {
-  throw {
-    RE_EXN_ID: "Failure",
-    _1: "boo",
-    Error: new Error()
-  };
+  e = Pervasives.failwith("boo");
+  exit = 1;
 } catch (raw_msg$1) {
   let msg$1 = Primitive_exceptions.internalToException(raw_msg$1);
   if (msg$1.RE_EXN_ID === "Failure") {
