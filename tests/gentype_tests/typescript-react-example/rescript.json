@@ -8,9 +8,7 @@
       "Jsx": "Jsx",
       "JsxEvent": "JsxEvent",
       "Belt": "Belt",
-      "ReactEvent": "ReactEvent",
-      "RescriptPervasives": "RescriptPervasives",
-      "ReasonReact": "ReactShim"
+      "RescriptPervasives": "RescriptPervasives"
     },
     "debug": {
       "all": false

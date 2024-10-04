@@ -1,4 +1,4 @@
-@genType.import("./shims/ReactEvent.shim")
+@genType.import("./shims/JsxEvent.shim")
 type inputFocusEvent = ReactEvent.Focus.t
 
 @genType.import("./MyInput") @react.component
