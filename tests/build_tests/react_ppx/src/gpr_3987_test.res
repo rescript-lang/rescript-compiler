@@ -24,10 +24,9 @@ let makeContainer = text => {
 
 /* This uncurried prop definition compiles */
 module Gpr3987ReproOk = {
-  let makeProps = (~value: string, ~onChange: (. string, int) => unit, ()) =>
-    {"value": value, "onChange": onChange}
+  type props = {value: string, onChange: (. string, int) => unit}
 
-  let make = (_props: {"value": string, "onChange": (. string, int) => unit}) => React.null
+  let make = (_props: props) => React.null
 }
 
 let _ = <Gpr3987ReproOk value="test" onChange={(. _, _) => ()} />

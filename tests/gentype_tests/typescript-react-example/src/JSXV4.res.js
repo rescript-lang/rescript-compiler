@@ -10,19 +10,10 @@ let CompV4 = {
   make: JSXV4$CompV4
 };
 
-function JSXV4$CompV3(Props) {
-  return Props.x + Props.y;
-}
-
-let CompV3 = {
-  make: JSXV4$CompV3
-};
-
 let make = JSXV4Gen.make;
 
 export {
   CompV4,
-  CompV3,
   make,
 }
 /* make Not a pure module */

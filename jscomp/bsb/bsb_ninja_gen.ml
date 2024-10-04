@@ -148,7 +148,6 @@ let output_ninja_and_namespace_map ~per_proj_dir ~package_kind
        package_specs;
        file_groups = { files = bs_file_groups };
        files_to_install;
-       reason_react_jsx;
        jsx;
        generators;
        namespace;
@@ -195,8 +194,8 @@ let output_ninja_and_namespace_map ~per_proj_dir ~package_kind
   in
   let rules : Bsb_ninja_rule.builtin =
     Bsb_ninja_rule.make_custom_rules ~gentype_config
-      ~has_postbuild:js_post_build_cmd ~pp_file
-      ~reason_react_jsx ~jsx ~package_specs ~namespace ~digest ~package_name
+      ~has_postbuild:js_post_build_cmd ~pp_file ~jsx
+      ~package_specs ~namespace ~digest ~package_name
       ~warnings ~ppx_files ~bsc_flags ~dpkg_incls (* dev dependencies *)
       ~lib_incls (* its own libs *)
       ~dev_incls (* its own devs *)

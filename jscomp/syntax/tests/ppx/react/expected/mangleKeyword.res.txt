@@ -1,39 +1,3 @@
-@@jsxConfig({version: 3})
-
-module C3A0 = {
-  @obj
-  external makeProps: (
-    ~_open: 'T_open,
-    ~_type: string,
-    ~key: string=?,
-    unit,
-  ) => {"_open": 'T_open, "_type": string} = ""
-
-  @react.component
-  let make =
-    @warning("-16")
-    (@as("open") ~_open) => @warning("-16") (@as("type") ~_type: string) => React.string(_open)
-  let make = {
-    let \"MangleKeyword$C3A0" = (\"Props": {"_open": 'T_open, "_type": string}) =>
-      make(~_type=\"Props"["_type"], ~_open=\"Props"["_open"])
-    \"MangleKeyword$C3A0"
-  }
-}
-module C3A1 = {
-  @obj
-  external makeProps: (
-    ~_open: string,
-    ~_type: string,
-    ~key: string=?,
-    unit,
-  ) => {"_open": string, "_type": string} = ""
-  external make: @as("open")
-  React.componentLike<{"_open": string, "_type": string}, React.element> = "default"
-}
-
-let c3a0 = React.createElement(C3A0.make, C3A0.makeProps(~_open="x", ~_type="t", ()))
-let c3a1 = React.createElement(C3A1.make, C3A1.makeProps(~_open="x", ~_type="t", ()))
-
 @@jsxConfig({version: 4, mode: "classic"})
 
 module C4C0 = {

@@ -1,19 +1,3 @@
-@@jsxConfig({version: 3})
-
-module C3A0 = {
-  @react.component
-  let make =
-    (@as("open") ~_open, @as("type") ~_type: string) => React.string(_open)
-}
-module C3A1 = {
-  @react.component
-  external make: (@as("open") ~_open: string, @as("type") ~_type: string) => React.element =
-    "default"
-}
-
-let c3a0 = <C3A0 _open="x" _type="t" />
-let c3a1 = <C3A1 _open="x" _type="t" />
-
 @@jsxConfig({version: 4, mode: "classic"})
 
 module C4C0 = {

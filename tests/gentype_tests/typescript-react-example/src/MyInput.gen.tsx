@@ -15,4 +15,6 @@ import type {inputFocusEvent as $$inputFocusEvent} from './shims/ReactEvent.shim
 
 export type inputFocusEvent = $$inputFocusEvent;
 
+export type props<onFocus> = { readonly onFocus?: onFocus };
+
 export default $$default;

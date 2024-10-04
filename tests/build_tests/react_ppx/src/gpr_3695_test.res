@@ -8,4 +8,4 @@ module Test = {
   external make: (~className: string=?) => React.element = "Foo"
 }
 
-let test = (~className) => Test.make(Test.makeProps(~className, ()))
+let test = (~className) => Test.make({className})

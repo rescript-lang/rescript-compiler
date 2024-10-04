@@ -3,10 +3,12 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as React from 'react';
-
 import * as OnClick2JS from './OnClick2.res.js';
 
-export type Props = { readonly onClick: (_1:MouseEvent) => void };
+import type {Mouse_t as JsxEvent_Mouse_t} from '../src/shims/JsxEvent.shim';
 
-export const make: React.ComponentType<{ readonly onClick: (_1:MouseEvent) => void }> = OnClick2JS.make as any;
+import type {element as Jsx_element} from '../src/shims/Jsx.shim';
+
+export type props<onClick> = { readonly onClick: onClick };
+
+export const make: (_1:props<((_1:JsxEvent_Mouse_t) => void)>) => Jsx_element = OnClick2JS.make as any;

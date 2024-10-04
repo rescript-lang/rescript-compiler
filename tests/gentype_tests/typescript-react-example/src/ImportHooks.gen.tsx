@@ -32,3 +32,10 @@ export const foo: unknown = fooTypeChecked as (person:person) => string as any;
 export type person = { readonly name: string; readonly age: number };
 
 export type renderMe<a> = React.ComponentType<{ readonly randomString: string; readonly poly: a }>;
+
+export type props<actions,person,children,renderMe> = {
+  readonly actions?: actions; 
+  readonly person: person; 
+  readonly children: children; 
+  readonly renderMe: renderMe
+};

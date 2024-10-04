@@ -3,10 +3,8 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as React from 'react';
-
 import * as ExportWithRenameJS from './ExportWithRename.res.js';
 
-export type Props = { readonly s: string };
+export type props<s> = { readonly s: s };
 
 export const Renamed: React.ComponentType<{ readonly s: string }> = ExportWithRenameJS.make as any;

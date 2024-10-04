@@ -3,65 +3,86 @@
 import * as Obj from "rescript/lib/es6/obj.js";
 import * as React from "react";
 import * as ImportHooks from "./ImportHooks.res.js";
+import * as Primitive_option from "rescript/lib/es6/primitive_option.js";
 import * as ImportHookDefault from "./ImportHookDefault.res.js";
+import * as JsxRuntime from "react/jsx-runtime";
 
-function Hooks(Props) {
-  let vehicle = Props.vehicle;
+function Hooks(props) {
   let match = React.useState(() => 0);
   let setCount = match[1];
   let count = match[0];
-  return React.createElement("div", undefined, React.createElement("p", undefined, "Hooks example " + (vehicle.name + (" clicked " + (String(count) + " times")))), React.createElement("button", {
-    onClick: param => setCount(param => count + 1 | 0)
-  }, "Click me"), React.createElement(ImportHooks.make, {
-    person: {
-      name: "Mary",
-      age: 71
-    },
-    children: null,
-    renderMe: x => x.randomString
-  }, "child1", "child2"), React.createElement(ImportHookDefault.make, {
-    person: {
-      name: "DefaultImport",
-      age: 42
-    },
-    children: null,
-    renderMe: x => x.randomString
-  }, "child1", "child2"));
+  return JsxRuntime.jsxs("div", {
+    children: [
+      JsxRuntime.jsx("p", {
+        children: "Hooks example " + (props.vehicle.name + (" clicked " + (String(count) + " times")))
+      }),
+      JsxRuntime.jsx("button", {
+        children: "Click me",
+        onClick: param => setCount(param => count + 1 | 0)
+      }),
+      JsxRuntime.jsxs(ImportHooks.make, {
+        person: {
+          name: "Mary",
+          age: 71
+        },
+        children: [
+          "child1",
+          "child2"
+        ],
+        renderMe: x => x.randomString
+      }),
+      JsxRuntime.jsxs(ImportHookDefault.make, {
+        person: {
+          name: "DefaultImport",
+          age: 42
+        },
+        children: [
+          "child1",
+          "child2"
+        ],
+        renderMe: x => x.randomString
+      })
+    ]
+  });
 }
 
-function Hooks$Another$anotherComponent(Props) {
-  let vehicle = Props.vehicle;
-  let callback = Props.callback;
-  callback();
-  return React.createElement("div", undefined, "Another Hook " + vehicle.name);
+function Hooks$Another$anotherComponent(props) {
+  props.callback();
+  return JsxRuntime.jsx("div", {
+    children: "Another Hook " + props.vehicle.name
+  });
 }
 
 let Another = {
   anotherComponent: Hooks$Another$anotherComponent
 };
 
-function Hooks$Inner(Props) {
-  let vehicle = Props.vehicle;
-  return React.createElement("div", undefined, "Another Hook " + vehicle.name);
+function Hooks$Inner(props) {
+  return JsxRuntime.jsx("div", {
+    children: "Another Hook " + props.vehicle.name
+  });
 }
 
-function Hooks$Inner$Another$anotherComponent(Props) {
-  let vehicle = Props.vehicle;
-  return React.createElement("div", undefined, "Another Hook " + vehicle.name);
+function Hooks$Inner$Another$anotherComponent(props) {
+  return JsxRuntime.jsx("div", {
+    children: "Another Hook " + props.vehicle.name
+  });
 }
 
 let Another$1 = {
   anotherComponent: Hooks$Inner$Another$anotherComponent
 };
 
-function Hooks$Inner$Inner2(Props) {
-  let vehicle = Props.vehicle;
-  return React.createElement("div", undefined, "Another Hook " + vehicle.name);
+function Hooks$Inner$Inner2(props) {
+  return JsxRuntime.jsx("div", {
+    children: "Another Hook " + props.vehicle.name
+  });
 }
 
-function Hooks$Inner$Inner2$Another$anotherComponent(Props) {
-  let vehicle = Props.vehicle;
-  return React.createElement("div", undefined, "Another Hook " + vehicle.name);
+function Hooks$Inner$Inner2$Another$anotherComponent(props) {
+  return JsxRuntime.jsx("div", {
+    children: "Another Hook " + props.vehicle.name
+  });
 }
 
 let Another$2 = {
@@ -79,8 +100,10 @@ let Inner = {
   Inner2: Inner2
 };
 
-function Hooks$NoProps(Props) {
-  return React.createElement("div", undefined, null);
+function Hooks$NoProps(props) {
+  return JsxRuntime.jsx("div", {
+    children: null
+  });
 }
 
 let NoProps = {
@@ -92,68 +115,65 @@ function functionWithRenamedArgs(_to, _Type, cb) {
   return _to.name + _Type.name;
 }
 
-function Hooks$WithRename$componentWithRenamedArgs(Props) {
-  let _to = Props._to;
-  let _Type = Props._Type;
-  let cb = Props.cb;
-  cb(_to);
-  return _to.name + _Type.name;
+function Hooks$WithRename$componentWithRenamedArgs(props) {
+  let _to = props._to;
+  props.cb(_to);
+  return _to.name + props._Type.name;
 }
 
 let WithRename = {
   componentWithRenamedArgs: Hooks$WithRename$componentWithRenamedArgs
 };
 
-function makeWithRef(vehicle) {
+function makeWithRef(param) {
+  let vehicle = param.vehicle;
   return ref => {
     if (ref == null) {
       return null;
     } else {
-      return React.createElement("button", {
-        ref: ref
-      }, vehicle.name);
+      return JsxRuntime.jsx("button", {
+        children: vehicle.name,
+        ref: Primitive_option.some(ref)
+      });
     }
   };
 }
 
-function Hooks$WithRef$makeWithRef(Props) {
-  return makeWithRef(Props.vehicle);
-}
+let Hooks$WithRef$makeWithRef = makeWithRef;
 
 let WithRef = {
   makeWithRef: Hooks$WithRef$makeWithRef
 };
 
-let testForwardRef = React.forwardRef((x, y) => makeWithRef(x.vehicle)(y));
+let testForwardRef = React.forwardRef((x, y) => makeWithRef(x)(y));
 
-let input = React.forwardRef((r, ref) => React.createElement("div", {
-  ref: Obj.magic(ref)
-}, r.x));
+let input = React.forwardRef((r, ref) => JsxRuntime.jsx("div", {
+  children: r.x,
+  ref: Primitive_option.some(Obj.magic(ref))
+}));
 
 let ForwardRef = {
   input: input
 };
 
-function Hooks$Poly$polymorphicComponent(Props) {
-  let param = Props.p;
-  return param[0].name;
+function Hooks$Poly$polymorphicComponent(props) {
+  return props.p[0].name;
 }
 
 let Poly = {
   polymorphicComponent: Hooks$Poly$polymorphicComponent
 };
 
-function Hooks$Fun$functionReturningReactElement(Props) {
-  return Props.name;
+function Hooks$Fun$functionReturningReactElement(props) {
+  return props.name;
 }
 
 let Fun = {
   functionReturningReactElement: Hooks$Fun$functionReturningReactElement
 };
 
-function Hooks$RenderPropRequiresConversion(Props) {
-  let renderVehicle = Props.renderVehicle;
-  return renderVehicle({
+function Hooks$RenderPropRequiresConversion(props) {
+  return props.renderVehicle({
     vehicle: {
       name: "Car"
     },
@@ -165,19 +185,23 @@ let RenderPropRequiresConversion = {
   make: Hooks$RenderPropRequiresConversion
 };
 
-function Hooks$WithChildren$aComponentWithChildren(Props) {
-  let vehicle = Props.vehicle;
-  let children = Props.children;
-  return React.createElement("div", undefined, "Another Hook " + vehicle.name, React.createElement("div", undefined, children));
+function Hooks$WithChildren$aComponentWithChildren(props) {
+  return JsxRuntime.jsxs("div", {
+    children: [
+      "Another Hook " + props.vehicle.name,
+      JsxRuntime.jsx("div", {
+        children: props.children
+      })
+    ]
+  });
 }
 
 let WithChildren = {
   aComponentWithChildren: Hooks$WithChildren$aComponentWithChildren
 };
 
-function Hooks$DD(Props) {
-  let name = Props.name;
-  return name;
+function Hooks$DD(props) {
+  return props.name;
 }
 
 let DD = {

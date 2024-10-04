@@ -103,26 +103,6 @@ let extract_boolean (map : json_map) (field : string) (default : bool) : bool =
   | Some config ->
       Bsb_exception.config_error config (field ^ " expect a boolean")
 
-let extract_reason_react_jsx (map : json_map) =
-  let default : Bsb_config_types.reason_react_jsx option ref = ref None in
-  map
-  |? ( Bsb_build_schemas.reason,
-       `Obj
-         (fun m ->
-           match m.?(Bsb_build_schemas.react_jsx) with
-           | Some (Flo { loc; flo }) -> (
-               match flo with
-               | "3" -> default := Some Jsx_v3
-               | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
-               )
-           | Some x ->
-               Bsb_exception.config_error x
-                 "Unexpected input (expect a version number) for jsx, note \
-                  boolean is no longer allowed"
-           | None -> ()) )
-  |> ignore;
-  !default
-
 let extract_warning (map : json_map) =
   match map.?(Bsb_build_schemas.warnings) with
   | None -> Bsb_warning.use_default
@@ -262,7 +242,6 @@ let interpret_json
                    ~desc:Bsb_build_schemas.pp_flags p)
                   .path)
       in
-      let reason_react_jsx = extract_reason_react_jsx map in
       let bs_dependencies =
         extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies
       in
@@ -287,15 +266,6 @@ let interpret_json
           in
           let bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags in
           let jsx = Bsb_jsx.from_map map in
-          let jsx, bsc_flags =
-            match package_kind with
-            | Pinned_dependency x | Dependency x ->
-                if List.mem package_name x.jsx.v3_dependencies then
-                  ( { jsx with version = Some Jsx_v3 },
-                    "-open ReactV3" :: bsc_flags )
-                else (x.jsx, bsc_flags)
-            | _ -> (jsx, bsc_flags)
-          in
           {
             pinned_dependencies;
             gentype_config;
@@ -326,7 +296,6 @@ let interpret_json
               | Pinned_dependency x | Dependency x -> x.package_specs);
             file_groups = groups;
             files_to_install = Queue.create ();
-            reason_react_jsx;
             jsx;
             generators = extract_generators map;
             cut_generators;

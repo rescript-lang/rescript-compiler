@@ -151,8 +151,7 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
         param_translation1.dependencies @ param_translation2.dependencies;
       type_ = variant;
     }
-  | ( (["React"; "callback"] | ["ReactV3"; "React"; "callback"]),
-      [from_translation; to_translation] ) ->
+  | ["React"; "callback"], [from_translation; to_translation] ->
     {
       dependencies = from_translation.dependencies @ to_translation.dependencies;
       type_ =
@@ -163,8 +162,7 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
             type_vars = [];
           };
     }
-  | ( (["React"; "componentLike"] | ["ReactV3"; "React"; "componentLike"]),
-      [props_translation; ret_translation] ) ->
+  | ["React"; "componentLike"], [props_translation; ret_translation] ->
     {
       dependencies =
         props_translation.dependencies @ ret_translation.dependencies;
@@ -176,8 +174,7 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
             type_vars = [];
           };
     }
-  | ( (["React"; "component"] | ["ReactV3"; "React"; "component"]),
-      [props_translation] ) ->
+  | ["React"; "component"], [props_translation] ->
     {
       dependencies = props_translation.dependencies;
       type_ =
@@ -188,17 +185,12 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
             type_vars = [];
           };
     }
-  | ( (["React"; "Context"; "t"] | ["ReactV3"; "React"; "Context"; "t"]),
-      [param_translation] ) ->
+  | ["React"; "Context"; "t"], [param_translation] ->
     {
       dependencies = param_translation.dependencies;
       type_ = EmitType.type_react_context ~type_:param_translation.type_;
     }
-  | ( ( ["React"; "Ref"; "t"]
-      | ["React"; "ref"]
-      | ["ReactV3"; "React"; "Ref"; "t"]
-      | ["ReactV3"; "React"; "ref"] ),
-      [param_translation] ) ->
+  | (["React"; "Ref"; "t"] | ["React"; "ref"]), [param_translation] ->
     {
       dependencies = param_translation.dependencies;
       type_ = EmitType.type_react_ref ~type_:param_translation.type_;
@@ -214,7 +206,6 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
   | ["ReactEvent"; "Mouse"; "t"], [] ->
     {dependencies = []; type_ = EmitType.type_react_event_mouse_t}
   | ( ( ["React"; "element"]
-      | ["ReactV3"; "React"; "element"]
       | ["ReasonReact"; "reactElement"]
       | ["Pervasives"; "Jsx"; "element"] ),
       [] ) ->

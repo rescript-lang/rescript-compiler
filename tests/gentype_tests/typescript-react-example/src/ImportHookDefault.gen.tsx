@@ -39,4 +39,16 @@ import type {renderMe as ImportHooks_renderMe} from './ImportHooks.gen';
 
 export type person = { readonly name: string; readonly age: number };
 
+export type props<person,children,renderMe> = {
+  readonly person: person; 
+  readonly children: children; 
+  readonly renderMe: renderMe
+};
+
+export type MM_props<person,children,renderMe> = {
+  readonly person: person; 
+  readonly children: children; 
+  readonly renderMe: renderMe
+};
+
 export default $$default;
