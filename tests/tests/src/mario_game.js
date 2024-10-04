@@ -1497,11 +1497,7 @@ function game_win(ctx) {
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("You win!", 180, 128);
-  throw {
-    RE_EXN_ID: "Failure",
-    _1: "Game over.",
-    Error: new Error()
-  };
+  return Pervasives.failwith("Game over.");
 }
 
 function game_loss(ctx) {
@@ -1511,11 +1507,7 @@ function game_loss(ctx) {
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
   ctx.fillText("GAME OVER. You lose!", 60, 128);
-  throw {
-    RE_EXN_ID: "Failure",
-    _1: "Game over.",
-    Error: new Error()
-  };
+  return Pervasives.failwith("Game over.");
 }
 
 let Draw = {
@@ -2475,11 +2467,7 @@ function choose_enemy_typ(typ) {
     case 2 :
       return "Goomba";
     default:
-      throw {
-        RE_EXN_ID: "Failure",
-        _1: "Shouldn't reach here",
-        Error: new Error()
-      };
+      return Pervasives.failwith("Shouldn't reach here");
   }
 }
 
@@ -2499,11 +2487,7 @@ function choose_sblock_typ(typ) {
     case 4 :
       return "Ground";
     default:
-      throw {
-        RE_EXN_ID: "Failure",
-        _1: "Shouldn't reach here",
-        Error: new Error()
-      };
+      return Pervasives.failwith("Shouldn't reach here");
   }
 }
 
@@ -3014,11 +2998,7 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
         tl: /* [] */0
       };
     default:
-      throw {
-        RE_EXN_ID: "Failure",
-        _1: "Shouldn't reach here",
-        Error: new Error()
-      };
+      return Pervasives.failwith("Shouldn't reach here");
   }
 }
 
@@ -3281,17 +3261,7 @@ let loadCount = {
 function load(param) {
   let canvas_id = "canvas";
   let el = document.getElementById(canvas_id);
-  let canvas;
-  if (el !== null) {
-    canvas = el;
-  } else {
-    console.log("cant find canvas " + canvas_id);
-    throw {
-      RE_EXN_ID: "Failure",
-      _1: "fail",
-      Error: new Error()
-    };
-  }
+  let canvas = el !== null ? el : (console.log("cant find canvas " + canvas_id), Pervasives.failwith("fail"));
   let context = canvas.getContext("2d");
   document.addEventListener("keydown", keydown, true);
   document.addEventListener("keyup", keyup, true);

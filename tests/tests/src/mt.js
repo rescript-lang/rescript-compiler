@@ -5,6 +5,7 @@ let Path = require("path");
 let Assert = require("assert");
 let Process = require("process");
 let Belt_List = require("rescript/lib/js/belt_List.js");
+let Js_promise = require("rescript/lib/js/js_promise.js");
 
 function assert_fail(msg) {
   Assert.fail(undefined, undefined, msg, "");
@@ -221,10 +222,10 @@ function old_from_promise_suites_donotuse(name, suites) {
     if (is_mocha()) {
       describe(name, () => Belt_List.forEach(suites, param => {
         let code = param[1];
-        it(param[0], () => code.then(x => {
+        it(param[0], () => Js_promise.then_(x => {
           handleCode(x);
           return val_unit;
-        }));
+        }, code));
       }));
     } else {
       console.log("promise suites");

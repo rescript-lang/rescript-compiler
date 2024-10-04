@@ -3,6 +3,7 @@
 
 let Belt_List = require("rescript/lib/js/belt_List.js");
 let Belt_Array = require("rescript/lib/js/belt_Array.js");
+let Pervasives = require("rescript/lib/js/pervasives.js");
 let Primitive_option = require("rescript/lib/js/primitive_option.js");
 
 function reverse_range(a, i, len) {
@@ -104,25 +105,19 @@ function filter_map(f, a) {
 
 function range(from, to_) {
   if (from > to_) {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Ext_array_test.range",
-      Error: new Error()
-    };
+    return Pervasives.invalid_arg("Ext_array_test.range");
+  } else {
+    return Belt_Array.init((to_ - from | 0) + 1 | 0, i => i + from | 0);
   }
-  return Belt_Array.init((to_ - from | 0) + 1 | 0, i => i + from | 0);
 }
 
 function map2i(f, a, b) {
   let len = a.length;
   if (len !== b.length) {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Ext_array_test.map2i",
-      Error: new Error()
-    };
+    return Pervasives.invalid_arg("Ext_array_test.map2i");
+  } else {
+    return Belt_Array.mapWithIndex(a, (i, a) => f(i, a, b[i]));
   }
-  return Belt_Array.mapWithIndex(a, (i, a) => f(i, a, b[i]));
 }
 
 function tolist_aux(a, f, _i, _res) {

@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-let H = {};
+let H = Inline_const.N1({});
 
 let f = "hello";
 
@@ -64,4 +64,4 @@ exports.f4 = f4;
 exports.f5 = f5;
 exports.f6 = f6;
 exports.f7 = f7;
-/*  Not a pure module */
+/* H Not a pure module */

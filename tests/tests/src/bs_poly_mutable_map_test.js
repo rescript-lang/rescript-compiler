@@ -2,12 +2,12 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Belt_Id = require("rescript/lib/js/belt_Id.js");
 let Belt_Set = require("rescript/lib/js/belt_Set.js");
 let Belt_Array = require("rescript/lib/js/belt_Array.js");
 let Primitive_int = require("rescript/lib/js/primitive_int.js");
 let Array_data_util = require("./array_data_util.js");
 let Belt_MutableMap = require("rescript/lib/js/belt_MutableMap.js");
-let Belt_internalAVLtree = require("rescript/lib/js/belt_internalAVLtree.js");
 
 let suites = {
   contents: /* [] */0
@@ -25,9 +25,7 @@ function b(loc, v) {
   Mt.bool_suites(test_id, suites, loc, v);
 }
 
-let Icmp = {
-  cmp: Primitive_int.compare
-};
+let Icmp = Belt_Id.comparable(Primitive_int.compare);
 
 function f(x) {
   return Belt_MutableMap.fromArray(x, Icmp);
@@ -64,7 +62,7 @@ Belt_MutableMap.removeMany(a0, [
   6
 ]);
 
-eq("File \"bs_poly_mutable_map_test.res\", line 29, characters 5-12", Belt_internalAVLtree.keysToArray(a0.data), [
+eq("File \"bs_poly_mutable_map_test.res\", line 29, characters 5-12", Belt_MutableMap.keysToArray(a0), [
   9,
   10
 ]);
@@ -81,7 +79,7 @@ Belt_MutableMap.removeMany(a0$1, Belt_Array.map(randomRange(0, 1998), prim => pr
 
 Belt_MutableMap.removeMany(a0$1, Belt_Array.map(randomRange(2002, 11000), prim => prim[0]));
 
-eq("File \"bs_poly_mutable_map_test.res\", line 39, characters 5-12", Belt_internalAVLtree.toArray(a0$1.data), [
+eq("File \"bs_poly_mutable_map_test.res\", line 39, characters 5-12", Belt_MutableMap.toArray(a0$1), [
   [
     1999,
     1999
@@ -118,4 +116,4 @@ exports.I = I;
 exports.f = f;
 exports.ff = ff;
 exports.randomRange = randomRange;
-/* a0 Not a pure module */
+/* Icmp Not a pure module */

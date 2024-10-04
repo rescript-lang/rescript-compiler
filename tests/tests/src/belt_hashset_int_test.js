@@ -8,7 +8,6 @@ let Belt_SetInt = require("rescript/lib/js/belt_SetInt.js");
 let Array_data_util = require("./array_data_util.js");
 let Belt_HashSetInt = require("rescript/lib/js/belt_HashSetInt.js");
 let Belt_SortArrayInt = require("rescript/lib/js/belt_SortArrayInt.js");
-let Belt_internalBucketsType = require("rescript/lib/js/belt_internalBucketsType.js");
 
 function add(x, y) {
   return x + y | 0;
@@ -28,7 +27,7 @@ Mocha.describe("Belt_hashset_int_test", () => {
   Mocha.test("fromArray", () => {
     let u = Belt_Array.concat(Array_data_util.randomRange(30, 100), Array_data_util.randomRange(40, 120));
     let v = Belt_HashSetInt.fromArray(u);
-    Test_utils.eq("File \"belt_hashset_int_test.res\", line 22, characters 7-14", v.size, 91);
+    Test_utils.eq("File \"belt_hashset_int_test.res\", line 22, characters 7-14", Belt_HashSetInt.size(v), 91);
     let xs = Belt_SetInt.toArray(Belt_SetInt.fromArray(Belt_HashSetInt.toArray(v)));
     Test_utils.eq("File \"belt_hashset_int_test.res\", line 24, characters 7-14", xs, Array_data_util.range(30, 120));
     Test_utils.eq("File \"belt_hashset_int_test.res\", line 26, characters 7-14", Belt_HashSetInt.reduce(v, 0, add), 6825);
@@ -36,17 +35,17 @@ Mocha.describe("Belt_hashset_int_test", () => {
   });
   Mocha.test("mergeMany", () => {
     let u = Belt_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
-    let v = Belt_internalBucketsType.make(undefined, undefined, 40);
+    let v = Belt_HashSetInt.make(40);
     Belt_HashSetInt.mergeMany(v, u);
-    Test_utils.eq("File \"belt_hashset_int_test.res\", line 34, characters 7-14", v.size, 100001);
+    Test_utils.eq("File \"belt_hashset_int_test.res\", line 34, characters 7-14", Belt_HashSetInt.size(v), 100001);
     for (let i = 0; i <= 1000; ++i) {
       Belt_HashSetInt.remove(v, i);
     }
-    Test_utils.eq("File \"belt_hashset_int_test.res\", line 38, characters 7-14", v.size, 99000);
+    Test_utils.eq("File \"belt_hashset_int_test.res\", line 38, characters 7-14", Belt_HashSetInt.size(v), 99000);
     for (let i$1 = 0; i$1 <= 2000; ++i$1) {
       Belt_HashSetInt.remove(v, i$1);
     }
-    Test_utils.eq("File \"belt_hashset_int_test.res\", line 42, characters 7-14", v.size, 98000);
+    Test_utils.eq("File \"belt_hashset_int_test.res\", line 42, characters 7-14", Belt_HashSetInt.size(v), 98000);
   });
   Mocha.test("stableSortInPlace", () => {
     let u0 = Belt_HashSetInt.fromArray(Array_data_util.randomRange(0, 100000));

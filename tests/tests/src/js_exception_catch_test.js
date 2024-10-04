@@ -3,6 +3,7 @@
 
 let Mt = require("./mt.js");
 let Js_exn = require("rescript/lib/js/js_exn.js");
+let Pervasives = require("rescript/lib/js/pervasives.js");
 let Primitive_exceptions = require("rescript/lib/js/primitive_exceptions.js");
 
 let suites = {
@@ -124,21 +125,9 @@ eq("File \"js_exception_catch_test.res\", line 45, characters 5-12", test(() => 
   };
 }), "Not_found");
 
-eq("File \"js_exception_catch_test.res\", line 46, characters 5-12", test(() => {
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "x",
-    Error: new Error()
-  };
-}), "Invalid_argument");
+eq("File \"js_exception_catch_test.res\", line 46, characters 5-12", test(() => Pervasives.invalid_arg("x")), "Invalid_argument");
 
-eq("File \"js_exception_catch_test.res\", line 47, characters 5-12", test(() => {
-  throw {
-    RE_EXN_ID: "Invalid_argument",
-    _1: "",
-    Error: new Error()
-  };
-}), "Invalid_any");
+eq("File \"js_exception_catch_test.res\", line 47, characters 5-12", test(() => Pervasives.invalid_arg("")), "Invalid_any");
 
 eq("File \"js_exception_catch_test.res\", line 48, characters 5-12", test(() => {
   throw {
@@ -181,17 +170,9 @@ eq("File \"js_exception_catch_test.res\", line 52, characters 5-12", test(() => 
   };
 }), "C_any");
 
-eq("File \"js_exception_catch_test.res\", line 53, characters 5-12", test(() => {
-  throw new Error("x");
-}), "Js_error");
+eq("File \"js_exception_catch_test.res\", line 53, characters 5-12", test(() => Js_exn.raiseError("x")), "Js_error");
 
-eq("File \"js_exception_catch_test.res\", line 54, characters 5-12", test(() => {
-  throw {
-    RE_EXN_ID: "Failure",
-    _1: "x",
-    Error: new Error()
-  };
-}), "Any");
+eq("File \"js_exception_catch_test.res\", line 54, characters 5-12", test(() => Pervasives.failwith("x")), "Any");
 
 Mt.from_pair_suites("Js_exception_catch_test", suites.contents);
 

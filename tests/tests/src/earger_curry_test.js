@@ -3,6 +3,7 @@
 
 let Mt = require("./mt.js");
 let Belt_Array = require("rescript/lib/js/belt_Array.js");
+let Pervasives = require("rescript/lib/js/pervasives.js");
 
 function map(f, a) {
   let f$1 = x => f(x);
@@ -23,11 +24,7 @@ function init(l, f) {
     return [];
   }
   if (l < 0) {
-    throw {
-      RE_EXN_ID: "Invalid_argument",
-      _1: "Array.init",
-      Error: new Error()
-    };
+    return Pervasives.invalid_arg("Array.init");
   }
   let res = Belt_Array.make(l, f$1(0));
   for (let i = 1; i < l; ++i) {

@@ -16,9 +16,7 @@ console.log(66);
 
 let C3 = Char;
 
-let prim = 66;
-
-console.log(prim);
+console.log(66);
 
 let f = Belt_List.length;
 
@@ -32,9 +30,7 @@ function F(X) {
 
 let C4 = Char;
 
-let prim$1 = 66;
-
-console.log(prim$1);
+console.log(66);
 
 function G(X) {
   return X;
@@ -141,22 +137,28 @@ let M8 = {
   C$p: C$p$1
 };
 
+let M9_C = {
+  chr: prim => prim
+};
+
 let M9 = {
-  C: Char,
+  C: M9_C,
   C$p: C$p$1
 };
 
-let prim$2 = Char.chr(66);
+let prim = M9_C.chr(66);
 
-console.log(prim$2);
+console.log(prim);
 
 let M10 = {
-  C$p: Char
+  C$p: {
+    chr: prim => prim
+  }
 };
 
-let prim$3 = M10.C$p.chr(66);
+let prim$1 = M10.C$p.chr(66);
 
-console.log(prim$3);
+console.log(prim$1);
 
 let C;
 

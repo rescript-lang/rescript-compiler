@@ -2,12 +2,13 @@
 'use strict';
 
 let React = require("react");
+let Js_array = require("rescript/lib/js/js_array.js");
 
 function createDomElement(s, props, children) {
-  let vararg = [
+  let vararg = Js_array.concat(children, [
     s,
     props
-  ].concat(children);
+  ]);
   return React.createElement.apply(null, vararg);
 }
 
@@ -97,10 +98,10 @@ function wrapJsForReason(reactClass, props, children) {
       ref: extra$1,
       key: extra
     });
-    let varargs = [
+    let varargs = Js_array.concat(children, [
       reactClass,
       props$1
-    ].concat(children);
+    ]);
     return React.createElement.apply(null, varargs);
   };
   return {

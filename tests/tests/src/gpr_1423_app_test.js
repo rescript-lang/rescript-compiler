@@ -2,6 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
+let Gpr_1423_nav = require("./gpr_1423_nav.js");
 
 let suites = {
   contents: /* [] */0
@@ -30,13 +31,13 @@ function foo(f) {
   console.log(f("a1", undefined));
 }
 
-foo((none, extra) => none + "a2");
+foo((none, extra) => Gpr_1423_nav.busted(none, "a2", extra));
 
 function foo2(f) {
   return f("a1", undefined);
 }
 
-eq("File \"gpr_1423_app_test.res\", line 18, characters 12-19", "a1a2", "a1a2");
+eq("File \"gpr_1423_app_test.res\", line 18, characters 12-19", Gpr_1423_nav.busted("a1", "a2", undefined), "a1a2");
 
 Mt.from_pair_suites("Gpr_1423_app_test", suites.contents);
 
