@@ -2,6 +2,8 @@ type element
 
 @val external null: element = "null"
 
+external float: float => element = "%identity"
+external int: int => element = "%identity"
 external string: string => element = "%identity"
 
 external array: array<element> => element = "%identity"
@@ -20,6 +22,20 @@ external cloneElement: (component<'props>, 'props) => element = "cloneElement"
 external createElementVariadic: (component<'props>, 'props, array<element>) => element =
   "createElement"
 
+@module("react/jsx-runtime")
+external jsx: (component<'props>, 'props) => element = "jsx"
+
+@module("react/jsx-runtime")
+external jsxKeyed: (component<'props>, 'props, ~key: string=?, @ignore unit) => element = "jsx"
+
+@module("react/jsx-runtime")
+external jsxs: (component<'props>, 'props) => element = "jsxs"
+
+@module("react/jsx-runtime")
+external jsxsKeyed: (component<'props>, 'props, ~key: string=?, @ignore unit) => element = "jsxs"
+
+type ref<'value> = {mutable current: 'value}
+
 module Ref = {
   type t<'value>
 
@@ -27,7 +43,8 @@ module Ref = {
   @set external setCurrent: (t<'value>, 'value) => unit = "current"
 }
 
-@module("react") external createRef: unit => Ref.t<Js.nullable<'a>> = "createRef"
+@module("react")
+external createRef: unit => Ref.t<Js.nullable<'a>> = "createRef"
 
 module Children = {
   @module("react") @scope("Children") @val
@@ -43,13 +60,19 @@ module Children = {
 }
 
 module Context = {
-  type t<'props>
+  type t<'context>
+
+  type props<'context> = {
+    value: 'context,
+    children: element,
+  }
 
   @get
-  external provider: t<'props> => component<{"value": 'props, "children": element}> = "Provider"
+  external provider: t<'context> => component<props<'context>> = "Provider"
 }
 
-@module("react") external createContext: 'a => Context.t<'a> = "createContext"
+@module("react")
+external createContext: 'a => Context.t<'a> = "createContext"
 
 @module("react")
 external forwardRef: (('props, Js.Nullable.t<Ref.t<'a>>) => element) => component<'props> =
@@ -65,29 +88,17 @@ external memoCustomCompareProps: (
 ) => component<'props> = "memo"
 
 module Fragment = {
-  @obj
-  external makeProps: (~children: element, ~key: 'key=?, unit) => {"children": element} = ""
+  type props = {key?: string, children: element}
+
   @module("react")
-  external make: component<{
-    "children": element,
-  }> = "Fragment"
+  external make: component<props> = "Fragment"
 }
 
 module Suspense = {
-  @obj
-  external makeProps: (
-    ~children: element=?,
-    ~fallback: element=?,
-    ~maxDuration: int=?,
-    ~key: 'key=?,
-    unit,
-  ) => {"children": option<element>, "fallback": option<element>, "maxDuration": option<int>} = ""
+  type props = {key?: string, children?: element, fallback?: element}
+
   @module("react")
-  external make: component<{
-    "children": option<element>,
-    "fallback": option<element>,
-    "maxDuration": option<int>,
-  }> = "Suspense"
+  external make: component<props> = "Suspense"
 }
 
 /* HOOKS */
@@ -228,7 +239,8 @@ external useCallback7: (
   ('a, 'b, 'c, 'd, 'e, 'f, 'g),
 ) => callback<'input, 'output> = "useCallback"
 
-@module("react") external useContext: Context.t<'any> => 'any = "useContext"
+@module("react")
+external useContext: Context.t<'any> => 'any = "useContext"
 
 @module("react") external useRef: 'value => Ref.t<'value> = "useRef"
 

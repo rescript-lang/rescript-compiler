@@ -10,15 +10,6 @@ module Make = (Config: Config) => {
 
   module ContextProvider = {
     let make = React.Context.provider(storeContext)
-    let makeProps = (
-      ~value: option<Reductive.Store.t<Config.action, Config.state>>,
-      ~children,
-      (),
-    ) =>
-      {
-        "value": value,
-        "children": children,
-      }
   }
 
   module Provider = {

@@ -32,6 +32,8 @@ external jsxs: (component<'props>, 'props) => element = "jsxs"
 @module("react/jsx-runtime")
 external jsxsKeyed: (component<'props>, 'props, ~key: string=?, @ignore unit) => element = "jsxs"
 
+type ref<'value> = {mutable current: 'value}
+
 module Ref = {
   type t<'value>
 

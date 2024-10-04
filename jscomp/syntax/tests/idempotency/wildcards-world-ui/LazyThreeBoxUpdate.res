@@ -8,7 +8,7 @@ let unsafePlaceholder: module(T) = %raw(`{}`)
 
 module UnsafePlaceholder = unpack(unsafePlaceholder)
 
-let makeProps = UnsafePlaceholder.makeProps
+type props = UnsafePlaceholder.props
 
 let make = ReLoadable.lazy_(() =>
   ReLoadable.\"import"(UnsafePlaceholder.make, "./ThreeBoxUpdate.bs.js")
