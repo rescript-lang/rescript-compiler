@@ -1,9 +1,9 @@
-open Node_test
-open Node_test_util
+open Mocha
+open Test_utils
 
 module F = Belt.Float
 
-describe("Belt.Float", () => {
+describe(__MODULE__, () => {
   test("fromInt", () => {
     eq(__LOC__, F.fromInt(1), 1.0)
     eq(__LOC__, F.fromInt(-1), -1.0)

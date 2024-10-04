@@ -1,5 +1,5 @@
-open Node_test
-open Node_test_util
+open Mocha
+open Test_utils
 
 module I = Array_data_util
 module R = Belt.Range
@@ -33,7 +33,7 @@ let diffs = (xs, ys) => {
   o
 }
 
-describe("Belt.SortArray", () => {
+describe(__MODULE__, () => {
   test("union", () => {
     eq(__LOC__, unions(I.range(1, 10), I.range(3, 13)), I.range(1, 13))
     eq(__LOC__, unions(I.range(1, 10), I.range(9, 13)), I.range(1, 13))

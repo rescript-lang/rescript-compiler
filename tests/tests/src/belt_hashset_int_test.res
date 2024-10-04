@@ -1,5 +1,5 @@
-open Node_test
-open Node_test_util
+open Mocha
+open Test_utils
 
 module N = Belt.HashSet.Int
 module S = Belt.Set.Int
@@ -15,7 +15,7 @@ let sum2 = h => {
   v.contents
 }
 
-describe("Belt.HashSet.Int", () => {
+describe(__MODULE__, () => {
   test("fromArray", () => {
     let u = A.concat(I.randomRange(30, 100), I.randomRange(40, 120))
     let v = N.fromArray(u)

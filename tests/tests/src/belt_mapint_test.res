@@ -1,11 +1,11 @@
 @@config({flags: ["-bs-no-cross-module-opt"]})
 
-open Node_test
-open Node_test_util
+open Mocha
+open Test_utils
 
 module M = Belt.Map.Int
 
-describe("Belt.Map.Int", () => {
+describe(__MODULE__, () => {
   test("set", () => {
     let m = ref(M.empty)
     let count = 100_0000 - 1

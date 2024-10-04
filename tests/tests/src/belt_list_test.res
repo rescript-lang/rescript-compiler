@@ -1,5 +1,5 @@
-open Node_test
-open Node_test_util
+open Mocha
+open Test_utils
 
 module N = Belt.List
 module A = Belt.Array
@@ -16,7 +16,7 @@ let sum2 = (xs, ys) => {
   v.contents
 }
 
-describe("Belt.List", () => {
+describe(__MODULE__, () => {
   test("makeBy", () => {
     let u = N.makeBy(5, i => i * i)
 
