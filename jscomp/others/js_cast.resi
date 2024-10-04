@@ -37,6 +37,8 @@ If for any reason, the runtime representation changes, those function
 will be modified accordingly.
 */
 
+@@deprecated("This module is not supported anymore and will be removed in the next major version.")
+
 /**
 `intOfBool(b)` returns `1` for when `b` is `true` and `0` when `b` is `false`
 */
