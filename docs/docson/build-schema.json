@@ -309,7 +309,7 @@
       "properties": {
         "version": {
           "type": "number",
-          "enum": [3, 4],
+          "enum": [4],
           "description": "Whether to apply the specific version of JSX PPX transformation"
         },
         "module": {
