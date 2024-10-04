@@ -3,10 +3,9 @@
 
 let React = require("react");
 
-function make(Props) {
-  let foo = Props.foo;
+function make(props) {
   return React.createElement(make, {
-    foo: foo
+    foo: props.foo
   });
 }
 
