@@ -1,5 +1,5 @@
-open Node_test
-open Node_test_util
+open Mocha
+open Test_utils
 
 module N = Belt.HashMap
 module S = Belt.Map.Int
@@ -13,7 +13,7 @@ let cmp = (x: int, y) => compare(x, y)
 module Y = unpack(Belt.Id.hashable(~eq=intEq, ~hash=intHash))
 let empty: N.t<int, int, _> = N.make(~id=module(Y), ~hintSize=30)
 
-describe("Belt.HashMap", () => {
+describe(__MODULE__, () => {
   test("fromArray", () => {
     let u = A.concat(I.randomRange(30, 100), I.randomRange(40, 120))
     let v = A.zip(u, u)

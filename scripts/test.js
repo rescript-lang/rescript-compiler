@@ -22,10 +22,6 @@ if (process.argv.includes("-mocha")) {
   mochaTest = true;
 }
 
-if (process.argv.includes("-node")) {
-  nodeTest = true;
-}
-
 if (process.argv.includes("-bsb")) {
   bsbTest = true;
 }
@@ -61,26 +57,18 @@ async function runTests() {
     });
   }
 
-  if (mochaTest || nodeTest) {
+  if (mochaTest) {
     cp.execSync(rescript_exe, {
       cwd: path.join(__dirname, "..", "tests/tests"),
       stdio: [0, 1, 2],
     });
+
     cp.execSync(rescript_exe, {
       cwd: path.join(__dirname, "..", "tests/tests_esmodule"),
       stdio: [0, 1, 2],
     });
-  }
 
-  if (mochaTest) {
     cp.execSync(`npx mocha -t 10000 tests/tests/**/*_test.js`, {
-      cwd: path.join(__dirname, ".."),
-      stdio: [0, 1, 2],
-    });
-  }
-
-  if (nodeTest) {
-    cp.execSync(`node --test tests/tests/**/*_ntest.js`, {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2],
     });
