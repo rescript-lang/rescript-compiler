@@ -176,7 +176,7 @@ The goal is to implement the runtime **purely in OCaml**. This includes removing
 
 Each new PR should include appropriate testing.
 
-Currently all tests are located in the `jscomp/test` directory and you should either add / update test files according to your changes to the compiler.
+Currently all tests are located in the `tests/tests` directory and you should either add / update test files according to your changes to the compiler.
 
 There are currently two formats for test files:
 
@@ -187,8 +187,8 @@ Below we will discuss on how to write, build and run these test files.
 
 ### 1) Write a Mocha Test File
 
-- Create a file `jscomp/test/feature_abc_test.res`. Make sure to end the file name with `_test.res`.
-- Inside the file, add a mocha test suite. The mocha bindings are defined in `jscomp/test/mt.res`. To get you started, here is a simple scaffold for a test suite with multiple test cases:
+- Create a file `tests/tests/src/feature_abc_test.res`. Make sure to end the file name with `_test.res`.
+- Inside the file, add a mocha test suite. The mocha bindings are defined in `tests/tests/src/mt.res`. To get you started, here is a simple scaffold for a test suite with multiple test cases:
 
   ```rescript
   let suites: Mt.pair_suites = list{
@@ -201,16 +201,15 @@ Below we will discuss on how to write, build and run these test files.
   Mt.from_pair_suites(__MODULE__, suites)
   ```
 
-- Build the test files: `node scripts/ninja.js clean && node scripts/ninja.js build`.
-- Run the tests: `npx mocha jscomp/test/**/*test.js`.
+- Build the test files and run the tests: `node scripts/test.js -mocha`.
 
 ### 2) Write a Plain `.res` Test File
 
 This is usually the file you want to create to test certain compile behavior without running the JS code formally as a test, i.e., when you just want to check that the ReScript code compiles and produces the expected JS code.
 
-- Create your test file `jscomp/test/my_file_test.res`. Make sure to end the file name with `_test.res`.
-- Build the `.js` artifact: `node scripts/ninja.js config && node scripts/ninja.js build`.
-- Verify the output, check in the `jscomp/test/my_file_test.res` and `jscomp/test/my_file_test.js` to version control. The checked in `.js` file is essential for verifying regressions later on.
+- Create your test file `tests/tests/src/my_file_test.res`. Make sure to end the file name with `_test.res`.
+- Build the `.js` artifact: `node scripts/test.js -mocha`.
+- Verify the output, check in the `tests/tests/src/my_file_test.res` and `tests/tests/src/my_file_test.js` to version control. The checked in `.js` file is essential for verifying regressions later on.
 - Eventually check in other relevant files changed during the rebuild (depends on your compiler changes).
 
 ## Contribute to the ReScript Playground Bundle
