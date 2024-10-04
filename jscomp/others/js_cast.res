@@ -22,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+@@deprecated("This module is not supported anymore and will be removed in the next major version.")
+
 external intOfBool: bool => int = "%identity"
 
 external floatOfInt: int => float = "%identity"
