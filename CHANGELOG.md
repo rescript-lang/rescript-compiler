@@ -16,6 +16,7 @@
 
 - OCaml compatibility in the stdlib and primitives are dropped/deprecated. https://github.com/rescript-lang/rescript-compiler/pull/6984
 - Remove the JSX v3. https://github.com/rescript-lang/rescript-compiler/pull/7072
+- Remove js_cast.res. https://github.com/rescript-lang/rescript-compiler/pull/7075
 
 #### :rocket: New Feature
 

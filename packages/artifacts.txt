@@ -79,7 +79,6 @@ lib/es6/js_array.js
 lib/es6/js_array2.js
 lib/es6/js_bigint.js
 lib/es6/js_blob.js
-lib/es6/js_cast.js
 lib/es6/js_console.js
 lib/es6/js_date.js
 lib/es6/js_dict.js
@@ -200,7 +199,6 @@ lib/js/js_array.js
 lib/js/js_array2.js
 lib/js/js_bigint.js
 lib/js/js_blob.js
-lib/js/js_cast.js
 lib/js/js_console.js
 lib/js/js_date.js
 lib/js/js_dict.js
@@ -559,12 +557,6 @@ lib/ocaml/js_blob.cmi
 lib/ocaml/js_blob.cmj
 lib/ocaml/js_blob.cmt
 lib/ocaml/js_blob.res
-lib/ocaml/js_cast.cmi
-lib/ocaml/js_cast.cmj
-lib/ocaml/js_cast.cmt
-lib/ocaml/js_cast.cmti
-lib/ocaml/js_cast.res
-lib/ocaml/js_cast.resi
 lib/ocaml/js_console.cmi
 lib/ocaml/js_console.cmj
 lib/ocaml/js_console.cmt
