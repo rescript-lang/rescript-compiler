@@ -41,9 +41,9 @@ ReScript imported one file from [jsoo](https://github.com/ocsigen/js_of_ocaml)
 
 This file was imported but changed significantly in iterations later.
 
-- [`jscomp/test`](jscomp/test)
+- [`tests/tests`](tests/tests)
 
-`jscomp/test` is based on [`ocaml/testsuite`](ocaml/testsuite).
+`tests/tests` is based on [`ocaml/testsuite`](ocaml/testsuite).
 
 ReScript unit test builds on parts of [OUnit](http://ounit.forge.ocamlcore.org/)
 
