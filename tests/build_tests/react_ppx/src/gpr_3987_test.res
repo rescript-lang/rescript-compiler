@@ -24,27 +24,27 @@ let makeContainer = text => {
 
 /* This uncurried prop definition compiles */
 module Gpr3987ReproOk = {
-  type props = {value: string, onChange: (. string, int) => unit}
+  type props = {value: string, onChange: (string, int) => unit}
 
   let make = (_props: props) => React.null
 }
 
-let _ = <Gpr3987ReproOk value="test" onChange={(. _, _) => ()} />
+let _ = <Gpr3987ReproOk value="test" onChange={(_, _) => ()} />
 
 /* Extracted type for the uncurried prop compiles as well */
 module Gpr3987ReproOk2 = {
-  type onChange = (. string, int) => unit
+  type onChange = (string, int) => unit
 
   @react.component
   let make = (~value as _, ~onChange as _: onChange) => React.null
 }
 
-let _ = <Gpr3987ReproOk2 value="test" onChange={(. _, _) => ()} />
+let _ = <Gpr3987ReproOk2 value="test" onChange={(_, _) => ()} />
 
 /* Inline uncurried prop type causes an error */
 module Gpr3987ReproError = {
   @react.component
-  let make = (~value as _: string, ~onChange as _: (. string, int) => unit) => React.null
+  let make = (~value as _: string, ~onChange as _: (string, int) => unit) => React.null
 }
 
-let _ = <Gpr3987ReproError value="test" onChange={(. _, _) => ()} />
+let _ = <Gpr3987ReproError value="test" onChange={(_, _) => ()} />

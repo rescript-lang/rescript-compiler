@@ -13,5 +13,5 @@ let vi = A({nonopt: ?3, opt: ?None})
 
 let fi = a =>
   switch a {
-  | A ({nonopt: ?_, opt: ?_}) => true
+  | A({nonopt: ?_, opt: ?_}) => true
   }

@@ -6,4 +6,3 @@ module InnerModule: {
   type t = string
   let make = t => t ++ "..."
 }
-

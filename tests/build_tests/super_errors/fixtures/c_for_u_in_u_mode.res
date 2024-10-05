@@ -3,5 +3,5 @@
 module Foo: {
   let add: (int, int) => int
 } = {
-  let add = (. a, b) => a + b
+  let add = (a, b) => a + b
 }

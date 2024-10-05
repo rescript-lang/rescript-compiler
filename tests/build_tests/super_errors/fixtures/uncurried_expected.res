@@ -1,2 +1,2 @@
-let apply = (f) => f(. 1)
-let z = apply(x => x+1)
+let apply = f => f(1)
+let z = apply(x => x + 1)

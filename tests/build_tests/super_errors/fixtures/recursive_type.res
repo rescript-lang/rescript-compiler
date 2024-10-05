@@ -8,7 +8,6 @@ type sexp = tt
 
 /* {2 Serialization (encoding)} */
 
-
 let rec expr_starting_with = (c, k, t) =>
   switch c {
   | '(' => expr_list(list{}, k, t)

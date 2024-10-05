@@ -52,7 +52,7 @@ type simpleVariant =
 
 @genType
 type variantWithPayloads =
-  |  A
+  | A
   | B(int)
   | C(int, int)
   | D((int, int))
