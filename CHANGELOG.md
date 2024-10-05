@@ -31,6 +31,7 @@
 - Fix attribute printing. https://github.com/rescript-lang/rescript-compiler/pull/7025
 - Fix "rescript format" with many files. https://github.com/rescript-lang/rescript-compiler/pull/7081
 - Fix bigint max, min https://github.com/rescript-lang/rescript-compiler/pull/7088
+- Fix parsing issue with nested variant pattern type spreads. https://github.com/rescript-lang/rescript-compiler/pull/7080
 
 #### :nail_care: Polish
 
