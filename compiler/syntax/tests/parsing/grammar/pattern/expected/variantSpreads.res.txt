@@ -1,0 +1,24 @@
+
+  Syntax error!
+  tests/parsing/grammar/pattern/variantSpreads.res:37:10-12
+
+  35 │ let lookupOpt = (b: option<b>) =>
+  36 │   switch b {
+  37 │   | Some(...a as a) => doWithA(a)
+  38 │   | Some(Four) => Js.log("four")
+  39 │   | Some(Five) => Js.log("five")
+
+  Did you forget a `)` here?
+
+
+  Syntax error!
+  tests/parsing/grammar/pattern/variantSpreads.res:37:10-12
+
+  35 │ let lookupOpt = (b: option<b>) =>
+  36 │   switch b {
+  37 │   | Some(...a as a) => doWithA(a)
+  38 │   | Some(Four) => Js.log("four")
+  39 │   | Some(Five) => Js.log("five")
+
+  Did you forget a `}` here?
+
