@@ -3,6 +3,7 @@
 var cp = require("child_process");
 var assert = require("assert");
 var { rescript_exe } = require("#cli/bin_path");
+var { normalizeNewlines } = require("../utils.js");
 
 var out = cp.spawnSync(rescript_exe, {
   cwd: __dirname,
@@ -10,7 +11,7 @@ var out = cp.spawnSync(rescript_exe, {
 });
 
 assert.equal(
-  out.stdout.slice(out.stdout.indexOf("Main.res:3:3-14")),
+  normalizeNewlines(out.stdout.slice(out.stdout.indexOf("Main.res:3:3-14"))),
   `Main.res:3:3-14
 
   1 │ @unboxed

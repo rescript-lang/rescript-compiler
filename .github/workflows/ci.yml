@@ -326,16 +326,11 @@ jobs:
         run: ./scripts/prebuilt.js
 
       - name: Run tests
-        if: runner.os != 'Windows'
         run: node scripts/test.js -all
 
       - name: Run gentype tests
         if: runner.os != 'Windows'
         run: make -C tests/gentype_tests/typescript-react-example clean test
-
-      - name: Run tests (Windows)
-        if: runner.os == 'Windows'
-        run: node scripts/test.js -mocha -theme -format
 
       - name: Build playground compiler
         if: matrix.build_playground

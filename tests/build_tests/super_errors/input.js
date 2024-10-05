@@ -3,6 +3,7 @@ const path = require("path");
 const child_process = require("child_process");
 
 const { bsc_exe: bsc } = require("#cli/bin_path");
+const { normalizeNewlines } = require("../utils.js");
 
 const expectedDir = path.join(__dirname, "expected");
 
@@ -15,13 +16,14 @@ const prefix = `${bsc} -w +A -bs-jsx 4 -bs-jsx-mode automatic`;
 
 const updateTests = process.argv[2] === "update";
 
+
 function postProcessErrorOutput(output) {
   output = output.trimRight();
   output = output.replace(
-    /\/[^ ]+?tests\/build_tests\/super_errors\//g,
-    "/.../",
+    /(?:[A-Z]:)?[\\/][^ ]+?tests[\\/]build_tests[\\/]super_errors[\\/]([^:]+)/g,
+    (_match, path, _offset, _string) => "/.../" + path.replace("\\", "/"),
   );
-  return output;
+  return normalizeNewlines(output);
 }
 
 let doneTasksCount = 0;
@@ -30,7 +32,6 @@ let atLeastOneTaskFailed = false;
 fixtures.forEach(fileName => {
   const fullFilePath = path.join(__dirname, "fixtures", fileName);
   const command = `${prefix} -color always ${fullFilePath}`;
-  console.log(`running ${command}`);
   child_process.exec(command, (err, stdout, stderr) => {
     doneTasksCount++;
     // careful of:
