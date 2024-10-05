@@ -10,7 +10,6 @@ const { exec } = require("../tests/build_tests/utils.js");
 
 let ounitTest = false;
 let mochaTest = false;
-let nodeTest = false;
 let bsbTest = false;
 let formatTest = false;
 
@@ -33,7 +32,6 @@ if (process.argv.includes("-format")) {
 if (process.argv.includes("-all")) {
   ounitTest = true;
   mochaTest = true;
-  nodeTest = true;
   bsbTest = true;
   formatTest = true;
 }
