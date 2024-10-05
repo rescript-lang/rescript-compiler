@@ -9,7 +9,7 @@ reset='\033[0m'
 case "$(uname -s)" in
   Darwin|Linux)
     echo "Checking OCaml code formatting..."
-    if opam exec -- dune build @fmt; then
+    if dune build @fmt; then
       printf "${successGreen}✅ OCaml code formatting ok.${reset}\n"
     else
       printf "${warningYellow}⚠️ OCaml code formatting issues found.${reset}\n"
