@@ -54,3 +54,26 @@ let lookupOpt =
          | Some (Five) -> Js.log {js|five|js}
          | None -> Js.log {js|None|js}))
   [@res.arity 1])
+module Foo =
+  struct
+    type nonrec zz =
+      | First 
+      | Second 
+    type nonrec xx =
+      | ... of zz 
+      | Third 
+  end
+let doWithZ =
+  ((Function$
+      (fun (z : Foo.zz) ->
+         match z with
+         | First -> Js.log {js|First|js}
+         | Second -> Js.log {js|Second|js}))
+  [@res.arity 1])
+let lookup3 =
+  ((Function$
+      (fun (d : Foo.xx) ->
+         match d with
+         | ((#Foo.zz)[@res.patVariantSpread ]) as z -> Js.log z
+         | Third -> Js.log {js|Third|js}))
+  [@res.arity 1])

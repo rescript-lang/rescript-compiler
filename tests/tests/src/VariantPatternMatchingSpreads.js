@@ -69,9 +69,34 @@ function lookupOpt(b) {
   }
 }
 
+let Foo = {};
+
+function doWithZ(z) {
+  if (z === "First") {
+    console.log("First");
+    return;
+  }
+  console.log("Second");
+}
+
+function lookup3(d) {
+  switch (d) {
+    case "First" :
+    case "Second" :
+      console.log(d);
+      return;
+    case "Third" :
+      console.log("Third");
+      return;
+  }
+}
+
 exports.doWithA = doWithA;
 exports.doWithB = doWithB;
 exports.lookup = lookup;
 exports.lookup2 = lookup2;
 exports.lookupOpt = lookupOpt;
+exports.Foo = Foo;
+exports.doWithZ = doWithZ;
+exports.lookup3 = lookup3;
 /* No side effect */

@@ -39,3 +39,20 @@ let lookupOpt = (b: option<b>) =>
   | Some(Five) => Js.log("five")
   | None => Js.log("None")
   }
+
+module Foo = {
+  type zz = First | Second
+  type xx = | ...zz | Third
+}
+
+let doWithZ = (z: Foo.zz) =>
+  switch z {
+  | First => Js.log("First")
+  | Second => Js.log("Second")
+  }
+
+let lookup3 = (d: Foo.xx) =>
+  switch d {
+  | ...Foo.zz as z => Js.log(z)
+  | Third => Js.log("Third")
+  }
