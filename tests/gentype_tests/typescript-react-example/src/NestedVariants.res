@@ -77,4 +77,3 @@ let testInline = x =>
   | K(a, b) => K(b, a)
   | L(q) => L(q)
   }
-

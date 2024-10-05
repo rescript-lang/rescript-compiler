@@ -9,4 +9,3 @@ type withoutRenaming = [#type_ | #b]
 
 @genType
 let testWithoutRenaming = (x: withoutRenaming) => x
-

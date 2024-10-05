@@ -10,5 +10,5 @@ open Nested
 
 module Bar = {
   open Bar
-  let t : t = Obj.magic(42)
+  let t: t = Obj.magic(42)
 }

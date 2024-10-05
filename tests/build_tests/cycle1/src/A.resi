@@ -1,1 +1,1 @@
-let x : int
+let x: int

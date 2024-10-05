@@ -26,9 +26,7 @@ module M = {
   module type XXX = {
     type tt = string
   }
-  module EmptyInnerModule = {
-
-  }
+  module EmptyInnerModule = {}
   module InnerModule2 = {
     let k = 4242
   }

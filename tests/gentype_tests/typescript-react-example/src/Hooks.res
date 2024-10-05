@@ -9,7 +9,9 @@ let make = (~vehicle) => {
   <div>
     <p>
       {React.string(
-        "Hooks example " ++ (vehicle.name ++ (" clicked " ++ (Belt.Int.toString(count) ++ " times"))),
+        "Hooks example " ++
+        (vehicle.name ++
+        (" clicked " ++ (Belt.Int.toString(count) ++ " times"))),
       )}
     </p>
     <button onClick={_ => setCount(_ => count + 1)}> {React.string("Click me")} </button>
@@ -88,15 +90,13 @@ module WithRef = {
   }
 }
 
-@genType let testForwardRef = React.forwardRef( (x,y) => WithRef.makeWithRef(x)(y))
+@genType let testForwardRef = React.forwardRef((x, y) => WithRef.makeWithRef(x)(y))
 
 type r = {x: string}
 
 module ForwardRef = {
   @genType
-  let input = React.forwardRef((r, ref) =>
-    <div ref={Obj.magic(ref)}> {React.string(r.x)} </div>
-  )
+  let input = React.forwardRef((r, ref) => <div ref={Obj.magic(ref)}> {React.string(r.x)} </div>)
 }
 
 @genType type callback<'input, 'output> = 'input => 'output
