@@ -6,14 +6,15 @@
 
 /** Return the length (number of characters) of the given string. */
 @deprecated("Use Core instead. This will be removed in v13")
-let length: string => int
+external length: string => int = "%string_length"
 
 /** [String.get s n] returns the character at index [n] in string [s].
    You can also write [s.[n]] instead of [String.get s n].
 
    Raise [Invalid_argument] if [n] not a valid index in [s]. */
 @deprecated("Use Core instead. This will be removed in v13")
-let get: (string, int) => char
+@send
+external get: (string, int) => char = "codePointAt"
 
 /** [String.make n c] returns a fresh string of length [n],
    filled with the character [c]. */
@@ -245,5 +246,5 @@ external equal: (t, t) => bool = "%equal"
 let split_on_char: (char, string) => list<string>
 
 /* The following is for system use only. Do not call directly. */
-@deprecated("Use Core instead. This will be removed in v13")
-let unsafe_get: (string, int) => char
+@deprecated("Use Core instead. This will be removed in v13") @send
+external unsafe_get: (string, int) => char = "codePointAt"

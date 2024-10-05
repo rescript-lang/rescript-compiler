@@ -4,28 +4,28 @@
 
 type t = Primitive_object_extern.t
 
-let magic = Primitive_object_extern.magic
+external magic: 'a => 'b = "%identity"
 
 @deprecated("Do not use directly. This will be removed in v13")
-let repr = Primitive_object_extern.repr
+external repr: 'a => t = "%identity"
 
 @deprecated("Do not use directly. This will be removed in v13")
-let obj = Primitive_object_extern.obj
+external obj: t => 'a = "%identity"
 
 @deprecated("Do not use directly. This will be removed in v13")
-let tag = Primitive_object_extern.tag
+external tag: t => int = "%obj_tag"
 
 @deprecated("Do not use directly. This will be removed in v13")
-let size = Primitive_object_extern.size
+external size: t => int = "%obj_size"
 
 @deprecated("Do not use directly. This will be removed in v13")
-let field = Primitive_object_extern.getField
+external getField: (t, 'a) => t = "%obj_get_field"
 
 @deprecated("Do not use directly. This will be removed in v13")
-let set_field = Primitive_object_extern.setField
+external setField: (t, 'a, t) => unit = "%obj_set_field"
 
 @deprecated("Do not use directly. This will be removed in v13")
-let dup = Primitive_object_extern.dup
+external dup: t => t = "%obj_dup"
 
-@deprecated("Do not use directly. This will be removed in v13")
-let update_dummy = Primitive_object_extern.updateDummy
+@deprecated("Do not use directly. This will be removed in v13") @scope("Object")
+external updateDummy: (t, t) => unit = "assign"
