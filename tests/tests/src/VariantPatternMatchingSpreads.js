@@ -51,8 +51,27 @@ function lookup2(d) {
   }
 }
 
+function lookupOpt(b) {
+  if (b !== undefined) {
+    switch (b) {
+      case "Four" :
+        console.log("four");
+        return;
+      case "Five" :
+        console.log("five");
+        return;
+      default:
+        return doWithA(b);
+    }
+  } else {
+    console.log("None");
+    return;
+  }
+}
+
 exports.doWithA = doWithA;
 exports.doWithB = doWithB;
 exports.lookup = lookup;
 exports.lookup2 = lookup2;
+exports.lookupOpt = lookupOpt;
 /* No side effect */

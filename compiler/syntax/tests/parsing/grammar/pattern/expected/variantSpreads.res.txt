@@ -1,24 +1,56 @@
-
-  Syntax error!
-  tests/parsing/grammar/pattern/variantSpreads.res:37:10-12
-
-  35 │ let lookupOpt = (b: option<b>) =>
-  36 │   switch b {
-  37 │   | Some(...a as a) => doWithA(a)
-  38 │   | Some(Four) => Js.log("four")
-  39 │   | Some(Five) => Js.log("five")
-
-  Did you forget a `)` here?
-
-
-  Syntax error!
-  tests/parsing/grammar/pattern/variantSpreads.res:37:10-12
-
-  35 │ let lookupOpt = (b: option<b>) =>
-  36 │   switch b {
-  37 │   | Some(...a as a) => doWithA(a)
-  38 │   | Some(Four) => Js.log("four")
-  39 │   | Some(Five) => Js.log("five")
-
-  Did you forget a `}` here?
-
+type nonrec a =
+  | One 
+  | Two 
+  | Three 
+type nonrec b =
+  | ... of a 
+  | Four 
+  | Five 
+type nonrec c =
+  | Six 
+  | Seven 
+type nonrec d =
+  | ... of b 
+  | ... of c 
+let doWithA =
+  ((Function$
+      (fun (a : a) ->
+         ((match a with
+           | One -> Js.log {js|aaa|js}
+           | Two -> Js.log {js|twwwoooo|js}
+           | Three -> Js.log {js|threeeee|js})
+         [@res.braces ])))
+  [@res.arity 1])
+let doWithB =
+  ((Function$
+      (fun (b : b) ->
+         ((match b with
+           | One -> Js.log {js|aaa|js}
+           | _ -> Js.log {js|twwwoooo|js})
+         [@res.braces ])))
+  [@res.arity 1])
+let lookup =
+  ((Function$
+      (fun (b : b) ->
+         match b with
+         | ((#a)[@res.patVariantSpread ]) as a -> doWithA a
+         | Four -> Js.log {js|four|js}
+         | Five -> Js.log {js|five|js}))
+  [@res.arity 1])
+let lookup2 =
+  ((Function$
+      (fun (d : d) ->
+         match d with
+         | ((#a)[@res.patVariantSpread ]) as a -> doWithA a
+         | ((#b)[@res.patVariantSpread ]) as b -> doWithB b
+         | Six|Seven -> Js.log {js|Got rest of d|js}))
+  [@res.arity 1])
+let lookupOpt =
+  ((Function$
+      (fun (b : b option) ->
+         match b with
+         | Some (((#a)[@res.patVariantSpread ]) as a) -> doWithA a
+         | Some (Four) -> Js.log {js|four|js}
+         | Some (Five) -> Js.log {js|five|js}
+         | None -> Js.log {js|None|js}))
+  [@res.arity 1])
