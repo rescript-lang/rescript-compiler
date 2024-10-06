@@ -2,7 +2,7 @@
 "use strict";
 
 var child_process = require("child_process");
-var { bsc_exe } = require("./cli/bin_path");
+var { bsc_exe } = require("./bin_path");
 
 var delegate_args = process.argv.slice(2);
 
