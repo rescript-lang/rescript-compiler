@@ -36,9 +36,9 @@
     "node": ">=18"
   },
   "bin": {
-    "bsc": "bsc",
+    "bsc": "cli/bsc",
     "bstracing": "lib/bstracing",
-    "rescript": "rescript",
+    "rescript": "cli/rescript",
     "rewatch": "cli/rewatch"
   },
   "scripts": {
@@ -56,8 +56,6 @@
     "CHANGELOG.md",
     "CREDITS.md",
     "ninja.COPYING",
-    "bsc",
-    "rescript",
     "darwin",
     "darwinarm64",
     "linux",

@@ -4,7 +4,7 @@ const assert = require("assert");
 const path = require("path");
 const { exec, normalizeNewlines } = require("../utils.js");
 
-const rescriptPath = path.join(__dirname, "..", "..", "..", "rescript")
+const rescriptPath = path.join(__dirname, "..", "..", "..", "cli", "rescript")
 
 const cliHelp =
   "Usage: rescript <options> <subcommand>\n" +

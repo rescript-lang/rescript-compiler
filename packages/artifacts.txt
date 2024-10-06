@@ -4,8 +4,9 @@ COPYING.LESSER
 CREDITS.md
 LICENSE
 README.md
-bsc
 cli/bin_path.js
+cli/bsc
+cli/rescript
 cli/rescript_arg.js
 cli/rescript_bsb.js
 cli/rescript_dump.js
@@ -863,7 +864,6 @@ linuxarm64/rescript.exe
 linuxarm64/rewatch.exe
 ninja.COPYING
 package.json
-rescript
 win32/bsb_helper.exe
 win32/bsc.exe
 win32/ninja.exe

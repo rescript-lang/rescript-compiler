@@ -5,7 +5,7 @@ const path = require("path");
 const child_process = require("child_process");
 const { normalizeNewlines } = require("../utils.js");
 
-const rescriptPath = path.join(__dirname, "..", "..", "..", "rescript")
+const rescriptPath = path.join(__dirname, "..", "..", "..", "cli", "rescript")
 
 // Shows compile time for `rescript build` command
 let out = child_process.spawnSync("node", [rescriptPath, "build"], {

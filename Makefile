@@ -85,7 +85,7 @@ clean-rewatch:
 	cargo clean --manifest-path rewatch/Cargo.toml && rm -f rewatch/rewatch
 
 clean:
-	(cd runtime && ../rescript clean)
+	(cd runtime && ../cli/rescript clean)
 	dune clean
 
 clean-all: clean clean-gentype clean-rewatch 

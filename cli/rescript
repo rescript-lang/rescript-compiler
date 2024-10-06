@@ -8,8 +8,8 @@
  * and its content are file/directories with regard to project root
  */
 
-var { bsc_exe, rescript_exe } = require("./cli/bin_path.js");
-var bsb = require("./cli/rescript_bsb.js");
+var { bsc_exe, rescript_exe } = require("./bin_path.js");
+var bsb = require("./rescript_bsb.js");
 
 var cwd = process.cwd();
 process.env.BSB_PROJECT_ROOT = cwd;
@@ -87,7 +87,7 @@ if (helpArgIndex !== -1 && (firstPositionalArgIndex === -1 || helpArgIndex <= fi
   console.log(helpMessage);
 
 } else if (argPatterns.version.includes(args[0])) {
-  console.log(require("./package.json").version);
+  console.log(require("../package.json").version);
 
 } else if (firstPositionalArgIndex !== -1) {
   const subcmd = args[firstPositionalArgIndex];
@@ -107,7 +107,7 @@ if (helpArgIndex !== -1 && (firstPositionalArgIndex === -1 || helpArgIndex <= fi
       break;
     }
     case "format": {
-      require("./cli/rescript_format.js").main(
+      require("./rescript_format.js").main(
         subcmdArgs,
         rescript_exe,
         bsc_exe
@@ -115,7 +115,7 @@ if (helpArgIndex !== -1 && (firstPositionalArgIndex === -1 || helpArgIndex <= fi
       break;
     }
     case "dump": {
-      require("./cli/rescript_dump.js").main(
+      require("./rescript_dump.js").main(
         subcmdArgs,
         rescript_exe,
         bsc_exe
