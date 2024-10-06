@@ -13,7 +13,7 @@ bench:
 	$(DUNE_BIN_DIR)/syntax_benchmarks
 
 dce:
-	reanalyze.exe -dce-cmt _build/default/jscomp
+	reanalyze.exe -dce-cmt _build/default/compiler
 
 rewatch:
 	cargo build --manifest-path rewatch/Cargo.toml
@@ -48,7 +48,7 @@ test-gentype:
 test-all: test test-gentype
 
 reanalyze:
-	reanalyze.exe -set-exit-code -all-cmt _build/default/jscomp -suppress jscomp/syntax/testrunner -exclude-paths jscomp/outcome_printer,jscomp/ounit_tests,jscomp/ml,jscomp/js_parser,jscomp/frontend,jscomp/ext,jscomp/depends,jscomp/core,jscomp/common,jscomp/cmij,jscomp/bsb_helper,jscomp/bsb
+	reanalyze.exe -set-exit-code -all-cmt _build/default/compiler -suppress compiler/syntax/testrunner -exclude-paths compiler/outcome_printer,compiler/ounit_tests,compiler/ml,compiler/js_parser,compiler/frontend,compiler/ext,compiler/depends,compiler/core,compiler/common,compiler/cmij,compiler/bsb_helper,compiler/bsb
 
 lib: build node_modules/.bin/semver
 	./scripts/buildRuntime.sh
@@ -60,7 +60,7 @@ artifacts: lib
 # Builds the core playground bundle (without the relevant cmijs files for the runtime)
 playground:
 	dune build --profile browser
-	cp ./_build/default/jscomp/jsoo/jsoo_playground_main.bc.js playground/compiler.js
+	cp ./_build/default/compiler/jsoo/jsoo_playground_main.bc.js playground/compiler.js
 
 # Creates all the relevant core and third party cmij files to side-load together with the playground bundle
 playground-cmijs: artifacts

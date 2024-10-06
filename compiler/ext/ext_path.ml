@@ -41,26 +41,6 @@ let split_by_sep_per_os : string -> string list =
       x
   else fun x -> Ext_string.split x '/'
 
-(** example
-    {[
-      "/bb/mbigc/mbig2899/bgit/rescript/jscomp/stdlib/external/pervasives.cmj"
-        "/bb/mbigc/mbig2899/bgit/rescript/jscomp/stdlib/ocaml_array.ml"
-    ]}
-
-    The other way
-    {[
-
-      "/bb/mbigc/mbig2899/bgit/rescript/jscomp/stdlib/ocaml_array.ml"
-        "/bb/mbigc/mbig2899/bgit/rescript/jscomp/stdlib/external/pervasives.cmj"
-    ]}
-    {[
-      "/bb/mbigc/mbig2899/bgit/rescript/jscomp/stdlib//ocaml_array.ml"
-    ]}
-    {[
-      /a/b
-      /c/d
-    ]}
-*)
 let node_relative_path ~from:(file_or_dir_2 : t) (file_or_dir_1 : t) =
   let relevant_dir1 =
     match file_or_dir_1 with Dir x -> x

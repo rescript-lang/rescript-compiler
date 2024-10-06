@@ -101,7 +101,7 @@ For discussions on ongoing development, see the [Development](https://forum.resc
 
 ReScript is licensed under LGPL version 3, with relaxed rules about creating and distributing combined work. See the [LICENSE](LICENSE) file for details.
 
-The ReScript parser (subdirectory `jscomp/syntax`) is licensed under the [MIT License](jscomp/syntax/LICENSE).
+The ReScript parser (subdirectory `compiler/syntax`) is licensed under the [MIT License](compiler/syntax/LICENSE).
 
 The `ninja` subdirectory contains the vendored [ninja](https://github.com/ninja-build/ninja) build system.
 Refer to its copyright and license notices for information about its licensing.

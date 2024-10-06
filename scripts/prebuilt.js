@@ -7,7 +7,7 @@ const assert = require("assert");
 
 const package_config = require(path.join(__dirname, "..", "package.json"));
 const bsVersion = fs.readFileSync(
-  path.join(__dirname, "..", "jscomp", "common", "bs_version.ml"),
+  path.join(__dirname, "..", "compiler", "common", "bs_version.ml"),
   "utf-8",
 );
 

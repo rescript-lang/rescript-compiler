@@ -131,7 +131,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2 # to be able to check for changes in subfolder jscomp/syntax later
+          fetch-depth: 2 # to be able to check for changes in subfolder compiler/syntax later
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -301,7 +301,7 @@ jobs:
         id: syntax-diff
         shell: bash
         run: |
-          if git diff --name-only --exit-code HEAD^ HEAD -- jscomp/syntax; then
+          if git diff --name-only --exit-code HEAD^ HEAD -- compiler/syntax; then
             echo "syntax_status=unchanged" >> $GITHUB_ENV
           else
             echo "syntax_status=changed" >> $GITHUB_ENV
@@ -337,7 +337,7 @@ jobs:
         run: |
           opam exec -- node packages/playground-bundling/scripts/generate_cmijs.js
           opam exec -- dune build --profile browser
-          cp ./_build/default/jscomp/jsoo/jsoo_playground_main.bc.js playground/compiler.js
+          cp ./_build/default/compiler/jsoo/jsoo_playground_main.bc.js playground/compiler.js
 
       - name: Test playground compiler
         if: matrix.build_playground
