@@ -171,7 +171,8 @@ let is_structure_item_start = function
 let is_pattern_start = function
   | Token.Int _ | Float _ | String _ | Codepoint _ | Backtick | True | False
   | Minus | Plus | Lparen | Lbracket | Lbrace | List | Dict | Underscore
-  | Lident _ | Uident _ | Hash | Exception | Percent | Module | At ->
+  | DotDotDot | Lident _ | Uident _ | Hash | Exception | Percent | Module | At
+    ->
     true
   | _ -> false
 

@@ -40,6 +40,7 @@ let lookupOpt = (b: option<b>) =>
   | None => Js.log("None")
   }
 
+
 module Foo = {
   type zz = First | Second
   type xx = | ...zz | Third
