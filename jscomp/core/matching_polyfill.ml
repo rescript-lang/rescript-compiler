@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let () = Ast_untagged_variants.extract_concrete_typedecl := Ctype.extract_concrete_typedecl
+let () = Runtime_representation.extract_concrete_typedecl := Ctype.extract_concrete_typedecl
 let () = Ast_untagged_variants.expand_head := Ctype.expand_head
 
 let names_from_construct_pattern (pat : Typedtree.pattern) =

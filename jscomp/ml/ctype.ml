@@ -3556,6 +3556,7 @@ let rec subtype_rec env trace t1 t2 cstrs =
     cstrs
   with Not_found ->
     TypePairs.add subtypes (t1, t2) ();
+    Runtime_representation.log t1 t2 env |> print_endline;
     match (t1.desc, t2.desc) with
       (Tvar _, _) | (_, Tvar _) ->
         (trace, t1, t2, !univar_pairs)::cstrs
