@@ -683,6 +683,14 @@ let simple_conversions = [
 let print_simple_conversion ppf (actual, expected) =
   try (
     let converter = List.assoc (actual, expected) simple_conversions in
+    Code_action_data.add_code_action {
+      Code_action_data.style = QuickFix; 
+      type_ = WrapWith {
+        left = converter ^ "("; 
+        right = ")"
+      };
+      title = Printf.sprintf "Convert %s to %s" actual expected
+    };
     fprintf ppf "@,@,@[<v 2>You can convert @{<info>%s@} to @{<info>%s@} with @{<info>%s@}.@]" actual expected converter
   ) with | Not_found -> ()
   
@@ -3845,6 +3853,7 @@ let type_expression env sexp =
 (* Error report *)
 
 let spellcheck ppf unbound_name valid_names =
+  Code_action_data.Actions.add_replace_with unbound_name;
   Misc.did_you_mean ppf (fun () ->
     Misc.spellcheck valid_names unbound_name
   )
@@ -4148,14 +4157,14 @@ let report_error env ppf = function
 let super_report_error_no_wrap_printing_env = report_error
 
 
-let report_error env ppf err =
-  Printtyp.wrap_printing_env env (fun () -> report_error env ppf err)
+let report_error loc env ppf err =
+  Printtyp.wrap_printing_env env (fun () -> report_error env ppf err; Code_action_data.emit_code_actions_data loc ppf;)
 
 let () =
   Location.register_error_of_exn
     (function
       | Error (loc, env, err) ->
-        Some (Location.error_of_printer loc (report_error env) err)
+        Some (Location.error_of_printer loc (report_error loc env) err)
       | Error_forward err ->
         Some err
       | _ ->

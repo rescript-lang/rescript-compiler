@@ -1,0 +1,16 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/replace_name.res[0m:[2m8:3-6[0m
+
+   6 [2m│[0m let x: x = {
+   7 [2m│[0m   name: "hello",
+   [1;31m8[0m [2m│[0m   [1;31magee[0m: 10,
+   9 [2m│[0m }
+  10 [2m│[0m 
+
+  The field [1;31magee[0m does not belong to type [1;33mx[0m
+  
+  This record expression is expected to have type [1;33mx[0m
+Hint: Did you mean age?
+=== CODE ACTIONS ===
+[{"title": "Replace with `agee`", "kind": "quickfix" "loc": {"start": {"line": 8, "col": 74},"end": {"line": 8, "col": 78}}, "type": "replaceWith", "replaceWith": "agee"}]

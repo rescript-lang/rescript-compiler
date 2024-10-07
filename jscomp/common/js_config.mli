@@ -112,3 +112,5 @@ val as_pp : bool ref
 val self_stack : string Stack.t
 
 val modules : bool ref
+
+val code_action_data : bool ref

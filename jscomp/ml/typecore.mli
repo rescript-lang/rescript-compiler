@@ -116,7 +116,7 @@ exception Error_forward of Location.error
 val super_report_error_no_wrap_printing_env: Env.t -> formatter -> error -> unit
 
 
-val report_error: Env.t -> formatter -> error -> unit
+val report_error: Location.t -> Env.t -> formatter -> error -> unit
  (* Deprecated.  Use Location.{error_of_exn, report_error}. *)
 
 (* Forward declaration, to be filled in by Typemod.type_module *)

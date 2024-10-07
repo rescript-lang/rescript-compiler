@@ -243,6 +243,7 @@ let print_contextual_unification_error ppf t1 t2 =
   | Tconstr (p1, _, _), Tconstr (p2, _, _)
     when Path.same p2 Predef.path_option
           && Path.same p1 Predef.path_option <> true ->
+    Code_action_data.Actions.add_wrap_in_constructor "Some";
     fprintf ppf
       "@,@\n\
         @[<v 0>The value you're pattern matching on here is wrapped in an \
