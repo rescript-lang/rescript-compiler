@@ -411,14 +411,14 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       match args with
       | [ { expression_desc = Number (BigInt _) } as a; { expression_desc = Number (BigInt _) } as b ]
         when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
-            E.econd (E.js_comp Clt a b) a b
+            E.econd (E.bigint_comp Clt a b) a b
       | [ a; b ] -> E.runtime_call Primitive_modules.bigint "min" args
       | _ -> assert false)
   | Pbigintmax -> (
       match args with
       | [ { expression_desc = Number (BigInt _) } as a; { expression_desc = Number (BigInt _) } as b ]
         when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
-            E.econd (E.js_comp Cgt a b) a b
+            E.econd (E.bigint_comp Cgt a b) a b
       | [ a; b ] -> E.runtime_call Primitive_modules.bigint "max" args
       | _ -> assert false)
   | Pstringorder -> (
