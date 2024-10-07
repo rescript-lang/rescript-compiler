@@ -416,7 +416,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       | _ -> assert false)
   | Pbigintmax -> (
       match args with
-      | [ { expression_desc = Number (Float _) } as a; { expression_desc = Number (Float _) } as b ]
+      | [ { expression_desc = Number (BigInt _) } as a; { expression_desc = Number (BigInt _) } as b ]
         when Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b ->
             E.econd (E.js_comp Cgt a b) a b
       | [ a; b ] -> E.runtime_call Primitive_modules.bigint "max" args
