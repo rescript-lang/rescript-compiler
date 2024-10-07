@@ -10,7 +10,7 @@ external code: char => int = "%identity"
    Raise [Invalid_argument "Char.chr"] if the argument is
    outside the range 0--255. */
 @deprecated("Use Core instead. This will be removed in v13")
-let chr: int => char
+external chr: int => char = "%identity"
 
 /** Return a string representing the given character,
     with special characters escaped following the lexical conventions

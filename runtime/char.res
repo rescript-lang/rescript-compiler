@@ -10,7 +10,7 @@ external code: t => int = "%identity"
 
 external unsafe_chr: int => t = "%identity"
 
-let chr = unsafe_chr
+external chr: int => t = "%identity"
 
 external bytes_create: int => array<char> = "Array"
 
