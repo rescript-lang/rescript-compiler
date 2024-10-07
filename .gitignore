@@ -58,7 +58,6 @@ tests/build_tests/*/lib/
 *.jsoo.js
 *.so
 tmp/
-jscomp/.lsp
 tracing*.json
 .nyc_output
 .vscode/launch.json

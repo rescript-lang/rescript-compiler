@@ -107,7 +107,7 @@ let oc_cmi buf namespace source =
      it can be errored out earlier
 
    #5368: It turns out there are many false positives on detecting self-cycles (see: `tests/build_tests/zerocycle`)
-          To properly solve this, we would need to `jscomp/ml/depend.ml` because
+          To properly solve this, we would need to `compiler/ml/depend.ml` because
             cmi and cmj is broken in the first place (same problem as in ocaml/ocaml#4618).
           So we will just ignore the self-cycles. Even if there is indeed a self-cycle, it should fail to compile anyway.
 *)

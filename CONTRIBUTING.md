@@ -162,7 +162,7 @@ node scripts/test.js -bsb
 
 **Run ounit tests:**
 
-This will run unit tests for compiler related modules. The tests can be found in `jscomp/ounit_tests`.
+This will run unit tests for compiler related modules. The tests can be found in `compiler/ounit_tests`.
 
 ```
 node scripts/test.js -ounit
@@ -170,9 +170,9 @@ node scripts/test.js -ounit
 
 ## Contributing to the Runtime
 
-The runtime implementation is written in OCaml with some raw JS code embedded (`jscomp/runtime` directory).
+The runtime implementation is written in ReScript with some raw JS code embedded (`runtime` directory).
 
-The goal is to implement the runtime **purely in OCaml**. This includes removing all existing occurrences of embedded raw JS code as well whenever possible, and you can help!
+The goal is to implement the runtime **purely in ReScript**. This includes removing all existing occurrences of embedded raw JS code as well whenever possible, and you can help!
 
 Each new PR should include appropriate testing.
 
@@ -226,7 +226,7 @@ opam install js_of_ocaml.4.0.0
 
 ### Building the Bundle
 
-The entry point of the JSOO bundle is located in `jscomp/jsoo/jsoo_playground_main.ml`, the compiler and its relevant runtime cmij files can be built via make:
+The entry point of the JSOO bundle is located in `compiler/jsoo/jsoo_playground_main.ml`, the compiler and its relevant runtime cmij files can be built via make:
 
 ```sh
 make playground
