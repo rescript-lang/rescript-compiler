@@ -30,11 +30,11 @@ module B = {
 
 let concat = (sep: string, xs: list<string>) => xs->Array.of_list->join(sep)
 
-let length = Primitive_string_extern.length
+external length: string => int = "%string_length"
 
-let get = Primitive_string_extern.getCharUnsafe
+@send external get: (string, int) => char = "codePointAt"
 
-let unsafe_get = Primitive_string_extern.getCharUnsafe
+@send external unsafe_get: (string, int) => char = "codePointAt"
 
 @scope("Array") external bos: string => array<string> = "from"
 let bos = str => B.map(str => str->unsafe_get(0), str->bos)

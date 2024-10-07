@@ -3,7 +3,6 @@
 
 let $$String = require("rescript/lib/js/string.js");
 let Belt_Array = require("rescript/lib/js/belt_Array.js");
-let Primitive_array = require("rescript/lib/js/primitive_array.js");
 
 function f(x) {
   return x;
@@ -87,11 +86,9 @@ let XX = {
 
 let u = [$$String];
 
-let $$String$1 = Primitive_array.get(u, 0);
-
-let hh = $$String$1.length("x");
+let hh = "x".length;
 
 exports.XX = XX;
 exports.u = u;
 exports.hh = hh;
-/* hh Not a pure module */
+/* No side effect */

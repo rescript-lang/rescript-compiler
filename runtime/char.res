@@ -14,7 +14,7 @@ let chr = unsafe_chr
 
 external bytes_create: int => array<char> = "Array"
 
-let bytes_unsafe_set = Primitive_array_extern.setUnsafe
+external bytes_unsafe_set: (array<'a>, int, 'a) => unit = "%array_unsafe_set"
 
 @scope("String") @variadic
 external unsafe_to_string: array<char> => string = "fromCodePoint"

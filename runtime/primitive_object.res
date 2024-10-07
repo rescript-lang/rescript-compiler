@@ -27,6 +27,8 @@ module Js = Primitive_js_extern
 
 type t = Primitive_object_extern.t
 
+// Note: this only works as intended as long as the runtime is compiled
+// with -bs-cross-module-opt.
 let repr = Primitive_object_extern.repr
 let magic = Primitive_object_extern.magic
 let tag = Primitive_object_extern.tag
