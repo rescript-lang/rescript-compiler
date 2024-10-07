@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/errors/other/spread.res:1:6-8
+  syntax_tests/parsing/errors/other/spread.res:1:6-8
 
   1 │ let [...arr, _] = [1, 2, 3]
   2 │ 
@@ -12,7 +12,7 @@ Solution: if it's to validate the first few elements, use a `when` clause + Arra
 
 
   Syntax error!
-  tests/parsing/errors/other/spread.res:3:21-23
+  syntax_tests/parsing/errors/other/spread.res:3:21-23
 
   1 │ let [...arr, _] = [1, 2, 3]
   2 │ 
@@ -25,7 +25,7 @@ Explanation: since records have a known, fixed shape, a spread like `{a, ...b}` 
 
 
   Syntax error!
-  tests/parsing/errors/other/spread.res:4:15-18
+  syntax_tests/parsing/errors/other/spread.res:4:15-18
 
   2 │ 
   3 │ let record = {...x, ...y}
@@ -39,7 +39,7 @@ Solution: you need to pull out each field you want explicitly.
 
 
   Syntax error!
-  tests/parsing/errors/other/spread.res:6:13-22
+  syntax_tests/parsing/errors/other/spread.res:6:13-22
 
   4 │ let {...x, ...y} = myRecord
   5 │ 
@@ -52,7 +52,7 @@ Explanation: a list spread at the tail is efficient, but a spread in the middle 
 
 
   Syntax error!
-  tests/parsing/errors/other/spread.res:9:20
+  syntax_tests/parsing/errors/other/spread.res:9:20
 
    7 │ 
    8 │ type t = {...a}

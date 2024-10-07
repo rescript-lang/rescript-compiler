@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/errors/typexpr/objectSpread.res:5:16-18
+  syntax_tests/parsing/errors/typexpr/objectSpread.res:5:16-18
 
   3 │ type u = private {...a, u: int}
   4 │ 
@@ -12,7 +12,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/typexpr/objectSpread.res:9:14
+  syntax_tests/parsing/errors/typexpr/objectSpread.res:9:14
 
    7 │ type u = {...a, "u": int, v: int}
    8 │ 

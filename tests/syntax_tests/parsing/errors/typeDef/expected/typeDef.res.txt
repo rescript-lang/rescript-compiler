@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/errors/typeDef/typeDef.res:1:15-2:3
+  syntax_tests/parsing/errors/typeDef/typeDef.res:1:15-2:3
 
   1 │ type rec stack
   2 │   | Empty
@@ -11,7 +11,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/typeDef/typeDef.res:5:6-12
+  syntax_tests/parsing/errors/typeDef/typeDef.res:5:6-12
 
   3 │ 
   4 │ // name cannot contain module access paths
@@ -23,7 +23,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/typeDef/typeDef.res:11:1-4
+  syntax_tests/parsing/errors/typeDef/typeDef.res:11:1-4
 
    9 │ 
   10 │ // missing type
@@ -35,7 +35,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/typeDef/typeDef.res:14:1
+  syntax_tests/parsing/errors/typeDef/typeDef.res:14:1
 
   12 │ 
   13 │ // prevent last error
@@ -47,7 +47,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/typeDef/typeDef.res:17:6-7
+  syntax_tests/parsing/errors/typeDef/typeDef.res:17:6-7
 
   15 │ 
   16 │ // The name must start with a lowercase
@@ -59,7 +59,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/typeDef/typeDef.res:19:8-9
+  syntax_tests/parsing/errors/typeDef/typeDef.res:19:8-9
 
   17 │ type T1 = D1
   18 │ 
@@ -71,7 +71,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/typeDef/typeDef.res:21:12-13
+  syntax_tests/parsing/errors/typeDef/typeDef.res:21:12-13
 
   19 │ type M.T2 += D2
   20 │ 
@@ -83,7 +83,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/typeDef/typeDef.res:23:6-7
+  syntax_tests/parsing/errors/typeDef/typeDef.res:23:6-7
 
   21 │ type M1.M2.T3 += D3
   22 │ 
@@ -95,7 +95,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/typeDef/typeDef.res:23:15
+  syntax_tests/parsing/errors/typeDef/typeDef.res:23:15
 
   21 │ type M1.M2.T3 += D3
   22 │ 
@@ -107,7 +107,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/typeDef/typeDef.res:25:6-7
+  syntax_tests/parsing/errors/typeDef/typeDef.res:25:6-7
 
   23 │ type T3 += Tid: Tid.t<t>
   24 │ 
@@ -119,7 +119,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/typeDef/typeDef.res:27:12-13
+  syntax_tests/parsing/errors/typeDef/typeDef.res:27:12-13
 
   25 │ type T4<_> = D4
   26 │ 
@@ -131,7 +131,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/typeDef/typeDef.res:29:8
+  syntax_tests/parsing/errors/typeDef/typeDef.res:29:8
 
   27 │ type M1.M2.T5<_> += D5
   28 │ 

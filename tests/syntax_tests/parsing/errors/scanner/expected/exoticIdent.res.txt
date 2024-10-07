@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/errors/scanner/exoticIdent.res:1:6-8
+  syntax_tests/parsing/errors/scanner/exoticIdent.res:1:6-8
 
   1 │ type \""
   2 │ 
@@ -10,7 +10,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/scanner/exoticIdent.res:3:6-8
+  syntax_tests/parsing/errors/scanner/exoticIdent.res:3:6-8
 
   1 │ type \""
   2 │ 
@@ -22,7 +22,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/scanner/exoticIdent.res:5:5-7
+  syntax_tests/parsing/errors/scanner/exoticIdent.res:5:5-7
 
   3 │ type \"" = int
   4 │ 
@@ -34,7 +34,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/scanner/exoticIdent.res:5:8-7:3
+  syntax_tests/parsing/errors/scanner/exoticIdent.res:5:8-7:3
 
   3 │ type \"" = int
   4 │ 
@@ -48,7 +48,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/scanner/exoticIdent.res:7:5-7
+  syntax_tests/parsing/errors/scanner/exoticIdent.res:7:5-7
 
   5 │ let \""
   6 │ 
@@ -60,7 +60,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/scanner/exoticIdent.res:8:1
+  syntax_tests/parsing/errors/scanner/exoticIdent.res:8:1
 
    6 │ 
    7 │ let \"a
@@ -72,7 +72,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/scanner/exoticIdent.res:9:2-10:0
+  syntax_tests/parsing/errors/scanner/exoticIdent.res:9:2-10:0
 
    7 │ let \"a
    8 │ b
@@ -83,7 +83,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/scanner/exoticIdent.res:9:2-10:0
+  syntax_tests/parsing/errors/scanner/exoticIdent.res:9:2-10:0
 
    7 │ let \"a
    8 │ b

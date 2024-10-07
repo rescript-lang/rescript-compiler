@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/infiniteLoops/templateEof.res:1:3-6
+  syntax_tests/parsing/infiniteLoops/templateEof.res:1:3-6
 
   1 │ et foo = x =>
   2 │   switch x {
@@ -10,7 +10,7 @@
 
 
   Syntax error!
-  tests/parsing/infiniteLoops/templateEof.res:3:5-7
+  syntax_tests/parsing/infiniteLoops/templateEof.res:3:5-7
 
   1 │ et foo = x =>
   2 │   switch x {

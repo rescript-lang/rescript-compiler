@@ -23,29 +23,29 @@ function maybeWait {
   [[ $((taskCount % 20)) = 0 ]] && wait
 }
 
-pushd compiler/syntax
+pushd tests
 
 rm -rf temp
 mkdir temp
 
 # parsing
-find tests/parsing/{errors,infiniteLoops,recovery} -name "*.res" -o -name "*.resi" >temp/files.txt
+find syntax_tests/parsing/{errors,infiniteLoops,recovery} -name "*.res" -o -name "*.resi" >temp/files.txt
 while read file; do
   $DUNE_BIN_DIR/res_parser -recover -print ml $file &> $(exp $file) & maybeWait
 done <temp/files.txt
-find tests/parsing/{grammar,other} -name "*.res" -o -name "*.resi" >temp/files.txt
+find syntax_tests/parsing/{grammar,other} -name "*.res" -o -name "*.resi" >temp/files.txt
 while read file; do
   $DUNE_BIN_DIR/res_parser -print ml $file &> $(exp $file) & maybeWait
 done <temp/files.txt
 
 # printing
-find tests/{printer,conversion} -name "*.res" -o -name "*.resi" -o -name "*.ml" -o -name "*.mli" >temp/files.txt
+find syntax_tests/{printer,conversion} -name "*.res" -o -name "*.resi" -o -name "*.ml" -o -name "*.mli" >temp/files.txt
 while read file; do
   $DUNE_BIN_DIR/res_parser $file &> $(exp $file) & maybeWait
 done <temp/files.txt
 
 # printing with ppx
-find tests/ppx/react -name "*.res" -o -name "*.resi" >temp/files.txt
+find syntax_tests/ppx/react -name "*.res" -o -name "*.resi" >temp/files.txt
 while read file; do
   $DUNE_BIN_DIR/res_parser -jsx-version 4 -jsx-mode "automatic" $file &> $(exp $file) & maybeWait
 done <temp/files.txt
@@ -61,7 +61,7 @@ diff=$(cat temp/diff.txt)
 if [[ $diff = "" ]]; then
   printf "${successGreen}✅ No unstaged tests difference.${reset}\n"
 else
-  printf "${warningYellow}⚠️ There are unstaged differences in tests/! Did you break a test?\n${diff}\n${reset}"
+  printf "${warningYellow}⚠️ There are unstaged differences in syntax_tests/! Did you break a test?\n${diff}\n${reset}"
   rm -r temp/
   exit 1
 fi
@@ -72,7 +72,7 @@ if [[ $ROUNDTRIP_TEST = 1 ]]; then
   roundtripTestsResult="temp/result.txt"
   touch $roundtripTestsResult
 
-  find tests/{idempotency,printer} -name "*.res" -o -name "*.resi" >temp/files.txt
+  find syntax_tests/{idempotency,printer} -name "*.res" -o -name "*.resi" >temp/files.txt
   while read file; do {
     mkdir -p temp/$(dirname $file)
     sexpAst1=temp/$file.sexp

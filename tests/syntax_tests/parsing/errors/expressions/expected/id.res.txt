@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/errors/expressions/id.res:1:5
+  syntax_tests/parsing/errors/expressions/id.res:1:5
 
   1 │ n.R.
 

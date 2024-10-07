@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/errors/other/hashIdent.res:1:10-12
+  syntax_tests/parsing/errors/other/hashIdent.res:1:10-12
 
   1 │ let x = #10s
   2 │ 
@@ -10,7 +10,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/other/hashIdent.res:3:20-22
+  syntax_tests/parsing/errors/other/hashIdent.res:3:20-22
 
   1 │ let x = #10s
   2 │ 
@@ -22,7 +22,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/other/hashIdent.res:6:4-6
+  syntax_tests/parsing/errors/other/hashIdent.res:6:4-6
 
   4 │ 
   5 │ switch x {

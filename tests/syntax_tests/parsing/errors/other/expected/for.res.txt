@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/errors/other/for.res:1:6-2:0
+  syntax_tests/parsing/errors/other/for.res:1:6-2:0
 
   1 │ for x
   2 │ 

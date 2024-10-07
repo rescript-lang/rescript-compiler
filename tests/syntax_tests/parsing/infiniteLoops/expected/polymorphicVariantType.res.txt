@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/infiniteLoops/polymorphicVariantType.res:1:14
+  syntax_tests/parsing/infiniteLoops/polymorphicVariantType.res:1:14
 
   1 │ type x = [<y>
 

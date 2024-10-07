@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/errors/typeDef/recordMutable.res:2:16-3:1
+  syntax_tests/parsing/errors/typeDef/recordMutable.res:2:16-3:1
 
   1 │ type d = {
   2 │   foo: string, mutable

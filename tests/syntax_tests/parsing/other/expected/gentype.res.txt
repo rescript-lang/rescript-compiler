@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/other/gentype.res:1:12-2:8
+  syntax_tests/parsing/other/gentype.res:1:12-2:8
 
   1 │ module M: {
   2 │   export type t = int
@@ -11,7 +11,7 @@
 
 
   Syntax error!
-  tests/parsing/other/gentype.res:2:9-13
+  syntax_tests/parsing/other/gentype.res:2:9-13
 
   1 │ module M: {
   2 │   export type t = int

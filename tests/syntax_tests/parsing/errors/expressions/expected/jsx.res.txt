@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/errors/expressions/jsx.res:2:20
+  syntax_tests/parsing/errors/expressions/jsx.res:2:20
 
   1 │ let x = <di-v />
   2 │ let x = <Unclosed >;
@@ -11,7 +11,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/expressions/jsx.res:3:9-28
+  syntax_tests/parsing/errors/expressions/jsx.res:3:9-28
 
   1 │ let x = <di-v />
   2 │ let x = <Unclosed >;
@@ -23,7 +23,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/expressions/jsx.res:4:9-34
+  syntax_tests/parsing/errors/expressions/jsx.res:4:9-34
 
   2 │ let x = <Unclosed >;
   3 │ let x = <Foo.Bar></Free.Will>;
@@ -35,7 +35,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/expressions/jsx.res:5:9-27
+  syntax_tests/parsing/errors/expressions/jsx.res:5:9-27
 
   3 │ let x = <Foo.Bar></Free.Will>;
   4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
@@ -47,7 +47,7 @@
 
 
   Syntax error!
-  tests/parsing/errors/expressions/jsx.res:6:17
+  syntax_tests/parsing/errors/expressions/jsx.res:6:17
 
   4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
   5 │ let x = <Foo.bar> </Foo.baz>

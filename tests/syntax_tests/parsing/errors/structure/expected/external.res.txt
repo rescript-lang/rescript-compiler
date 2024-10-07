@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/errors/structure/external.res:2:51
+  syntax_tests/parsing/errors/structure/external.res:2:51
 
   1 │ // missing JS value name
   2 │ external setTimeout: (unit => unit, int) => float =

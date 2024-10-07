@@ -1,6 +1,6 @@
 
   Syntax error!
-  tests/parsing/errors/typeDef/keywordOnly.res:1:5
+  syntax_tests/parsing/errors/typeDef/keywordOnly.res:1:5
 
   1 │ type
 
