@@ -30,6 +30,7 @@
 - Fix tuple coercion. https://github.com/rescript-lang/rescript-compiler/pull/7024
 - Fix attribute printing. https://github.com/rescript-lang/rescript-compiler/pull/7025
 - Fix "rescript format" with many files. https://github.com/rescript-lang/rescript-compiler/pull/7081
+- Fix bigint max, min https://github.com/rescript-lang/rescript-compiler/pull/7088
 
 #### :nail_care: Polish
 

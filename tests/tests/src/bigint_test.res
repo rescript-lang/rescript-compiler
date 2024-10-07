@@ -164,6 +164,8 @@ let () = {
   eq(__LOC__, bigint_asr(9n, -1n), 18n)
   eq(__LOC__, bigint_asr(-9n, 1n), -5n)
   eq(__LOC__, bigint_asr(-9n, -1n), -18n)
+  eq(__LOC__, max(9n, 1n), 9n)
+  eq(__LOC__, min(9n, 1n), 1n)
 }
 
 let () = Mt.from_pair_suites(__MODULE__, suites.contents)

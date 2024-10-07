@@ -148,6 +148,10 @@ eq("File \"bigint_test.res\", line 165, characters 5-12", (-9n >> 1n), -5n);
 
 eq("File \"bigint_test.res\", line 166, characters 5-12", (-9n >> -1n), -18n);
 
+eq("File \"bigint_test.res\", line 167, characters 5-12", 9n > 1n ? 9n : 1n, 9n);
+
+eq("File \"bigint_test.res\", line 168, characters 5-12", 9n < 1n ? 9n : 1n, 1n);
+
 Mt.from_pair_suites("Bigint_test", suites.contents);
 
 exports.test_id = test_id;

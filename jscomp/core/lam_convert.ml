@@ -305,8 +305,8 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Pasrbigint -> prim ~primitive:Pasrbigint ~args loc
   | Pbigintcomp x -> prim ~primitive:(Pbigintcomp x) ~args loc
   | Pbigintorder -> prim ~primitive:Pbigintorder ~args loc
-  | Pbigintmin -> prim ~primitive:Pbigintorder ~args loc
-  | Pbigintmax -> prim ~primitive:Pbigintorder ~args loc
+  | Pbigintmin -> prim ~primitive:Pbigintmin ~args loc
+  | Pbigintmax -> prim ~primitive:Pbigintmax ~args loc
   | Pintcomp x -> prim ~primitive:(Pintcomp x) ~args loc
   | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args loc
   | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args loc
