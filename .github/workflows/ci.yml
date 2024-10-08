@@ -130,8 +130,6 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2 # to be able to check for changes in subfolder compiler/syntax later
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -297,22 +295,12 @@ jobs:
         if: steps.ninja-build-cache.outputs.cache-hit != 'true'
         run: node ./scripts/copyExes.js -ninja
 
-      - name: "Check if syntax subfolder has changed"
-        id: syntax-diff
-        shell: bash
-        run: |
-          if git diff --name-only --exit-code HEAD^ HEAD -- compiler/syntax; then
-            echo "syntax_status=unchanged" >> $GITHUB_ENV
-          else
-            echo "syntax_status=changed" >> $GITHUB_ENV
-          fi
-
       - name: "Syntax: Run roundtrip tests"
-        if: ${{ env.syntax_status == 'changed' && runner.os != 'Windows' }}
+        if: ${{ runner.os != 'Windows' }}
         run: opam exec -- make test-syntax-roundtrip
 
       - name: "Syntax: Run tests (Windows)"
-        if: ${{ env.syntax_status == 'changed' && runner.os == 'Windows' }}
+        if: ${{ runner.os == 'Windows' }}
         run: opam exec -- make test-syntax
 
       - name: Build runtime/stdlib

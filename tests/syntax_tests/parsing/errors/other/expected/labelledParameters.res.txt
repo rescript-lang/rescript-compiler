@@ -1,0 +1,42 @@
+
+  Syntax error!
+  syntax_tests/parsing/errors/other/labelledParameters.res:1:13-14
+
+  1 │ let f = (x, y=2, z) => x + y + z
+  2 │ 
+  3 │ let g = (~?x, ~y=2, ~z) => x + y + z
+
+  A labeled parameter starts with a `~`. Did you mean: `~y`?
+
+
+  Syntax error!
+  syntax_tests/parsing/errors/other/labelledParameters.res:3:11
+
+  1 │ let f = (x, y=2, z) => x + y + z
+  2 │ 
+  3 │ let g = (~?x, ~y=2, ~z) => x + y + z
+  4 │ 
+  5 │ type f = (x: int, y: int) => int
+
+  I'm expecting a lowercase name like `user or `age`
+
+
+  Syntax error!
+  syntax_tests/parsing/errors/other/labelledParameters.res:5:11
+
+  3 │ let g = (~?x, ~y=2, ~z) => x + y + z
+  4 │ 
+  5 │ type f = (x: int, y: int) => int
+  6 │ 
+
+  A labeled parameter starts with a `~`. Did you mean: `~x`?
+
+let f = ((Function$ (fun x -> fun ?(y= 2) -> fun z -> (x + y) + z))
+  [@res.arity 3])
+let g =
+  ((Function$
+      (fun ~x:((x)[@res.namedArgLoc ]) ->
+         fun ?y:(((y)[@res.namedArgLoc ])= 2) ->
+           fun ~z:((z)[@res.namedArgLoc ]) -> (x + y) + z))
+  [@res.arity 3])
+type nonrec f = (x:int -> y:int -> int, [ `Has_arity2 ]) function$

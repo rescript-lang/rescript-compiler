@@ -1,0 +1,19 @@
+
+  Syntax error!
+  syntax_tests/parsing/errors/expressions/implementation.res:7:1
+
+  5 │   }
+  6 │ }
+  7 │ }
+  8 │ module LicenseList = {
+  9 │ 
+
+  I'm not sure what to parse here when looking at "}".
+
+module InstallerDownload =
+  struct
+    let make =
+      ((Function$ (fun () -> ((div ~children:[] ())[@res.braces ][@JSX ])))
+      [@res.arity 1])[@@react.component ]
+  end
+module LicenseList = struct  end
