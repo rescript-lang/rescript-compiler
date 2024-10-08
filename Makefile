@@ -1,6 +1,6 @@
 SHELL = /bin/bash
 
-DUNE_BIN_DIR = ./_build/install/default/bin
+DUNE_BIN_DIR = ./compiler/_build/install/default/bin
 
 build: ninja rewatch
 	dune build --root compiler
