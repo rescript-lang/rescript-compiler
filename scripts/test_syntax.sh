@@ -8,9 +8,7 @@
 scriptDir=`dirname $0`
 # macOS 12 does not have the realpath utility,
 # so let's use this workaround instead.
-DUNE_BIN_DIR=`cd "$scriptDir/../_build/install/default/bin"; pwd -P`
-
-$DUNE_BIN_DIR/syntax_tests
+DUNE_BIN_DIR=`cd "$scriptDir/../compiler/_build/install/default/bin"; pwd -P`
 
 function exp {
   echo "$(dirname $1)/expected/$(basename $1).txt"
