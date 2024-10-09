@@ -188,8 +188,7 @@ jobs:
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
         run: |
           opam install . --deps-only
-          opam install ocamlformat=$(grep "version" .ocamlformat | awk -F"= " '{print $2}')
-
+          opam install ocamlformat=0.26.2
 
       - name: Cache OPAM environment
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
