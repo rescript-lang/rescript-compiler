@@ -19,7 +19,7 @@
  (synopsis "ReScript compiler")
  (depends
   (ocaml
-   (>= 4.10))
+   (>= 5.2.0))
   (ocamlformat
    (and
     :with-dev-setup
@@ -27,7 +27,7 @@
   (ocaml-lsp-server
    (and
     :with-dev-setup
-    (= 1.18.0~5.2preview)))
+    (= 1.19.0)))
   (cppo
    (= 1.6.9))
   (js_of_ocaml
