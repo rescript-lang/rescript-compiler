@@ -49,7 +49,8 @@ val runtime_var_dot : ?comment:string -> string -> string -> t
 
 (* val runtime_var_vid : string -> string -> J.vident *)
 
-val ml_var_dot : ?comment:string -> ?dynamic_import:bool -> Ident.t -> string -> t
+val ml_var_dot :
+  ?comment:string -> ?dynamic_import:bool -> Ident.t -> string -> t
 (** [ml_var_dot ocaml_module name]
 *)
 
@@ -65,7 +66,12 @@ val external_var_field :
     Used in FFI
 *)
 
-val external_var : ?import_attributes:External_ffi_types.import_attributes -> ?comment:string -> external_name:string -> Ident.t -> t
+val external_var :
+  ?import_attributes:External_ffi_types.import_attributes ->
+  ?comment:string ->
+  external_name:string ->
+  Ident.t ->
+  t
 
 val ml_module_as_var : ?comment:string -> ?dynamic_import:bool -> Ident.t -> t
 
@@ -83,7 +89,7 @@ val pure_runtime_call :
 
 val runtime_ref : string -> string -> t
 
-val str : ?delim: J.delim -> ?comment: string -> string -> t
+val str : ?delim:J.delim -> ?comment:string -> string -> t
 
 val ocaml_fun :
   ?comment:string ->
@@ -209,9 +215,13 @@ val neq_null_undefined_boolean : ?comment:string -> t -> t -> t
 
 val is_type_number : ?comment:string -> t -> t
 
-val is_int_tag : ?has_null_undefined_other:(bool * bool * bool) -> t -> t
+val is_int_tag : ?has_null_undefined_other:bool * bool * bool -> t -> t
 
-val is_a_literal_case : literal_cases:Ast_untagged_variants.tag_type list -> block_cases:Ast_untagged_variants.block_type list -> t -> t
+val is_a_literal_case :
+  literal_cases:Ast_untagged_variants.tag_type list ->
+  block_cases:Ast_untagged_variants.block_type list ->
+  t ->
+  t
 
 val is_type_string : ?comment:string -> t -> t
 
@@ -273,7 +283,7 @@ val string_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 
 val float_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 
-val bigint_op : ?comment: string -> Js_op.binop -> t -> t -> t
+val bigint_op : ?comment:string -> Js_op.binop -> t -> t -> t
 
 val bigint_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 

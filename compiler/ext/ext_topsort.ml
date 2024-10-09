@@ -22,12 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type edges = { id : int; deps : Vec_int.t }
+type edges = {id: int; deps: Vec_int.t}
 
 module Edge_vec = Vec.Make (struct
   type t = edges
 
-  let null = { id = 0; deps = Vec_int.empty () }
+  let null = {id = 0; deps = Vec_int.empty ()}
 end)
 
 type t = Edge_vec.t

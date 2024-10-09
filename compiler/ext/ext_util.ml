@@ -34,7 +34,7 @@ let rec power_2_above x n =
   else power_2_above (x * 2) n
 
 let stats_to_string
-    ({ num_bindings; num_buckets; max_bucket_length; bucket_histogram } :
+    ({num_bindings; num_buckets; max_bucket_length; bucket_histogram} :
       Hashtbl.statistics) =
   Printf.sprintf "bindings: %d,buckets: %d, longest: %d, hist:[%s]" num_bindings
     num_buckets max_bucket_length
@@ -53,9 +53,9 @@ let string_of_int_as_char (i : int) : string =
       | '\r' -> "\\r"
       | '\b' -> "\\b"
       | ' ' .. '~' as c ->
-          let s = (Bytes.create [@doesNotRaise]) 1 in
-          Bytes.unsafe_set s 0 c;
-          Bytes.unsafe_to_string s
+        let s = (Bytes.create [@doesNotRaise]) 1 in
+        Bytes.unsafe_set s 0 c;
+        Bytes.unsafe_to_string s
       | _ -> Ext_utf8.encode_codepoint i
     in
     Printf.sprintf "\'%s\'" str

@@ -26,7 +26,8 @@ type ident = Ident.t
 
 type record_representation =
   | Record_regular
-  | Record_inlined of { tag : int; name : string; num_nonconsts : int } (* Inlined record *)
+  | Record_inlined of {tag: int; name: string; num_nonconsts: int}
+    (* Inlined record *)
   | Record_extension
 (* Inlined record under extension *)
 
@@ -38,14 +39,13 @@ type t =
   | Plazyforce
   | Pjs_call of {
       (* Location.t *  [loc] is passed down *)
-      prim_name : string;
-      arg_types : External_arg_spec.params;
-      ffi : External_ffi_types.external_spec;
+      prim_name: string;
+      arg_types: External_arg_spec.params;
+      ffi: External_ffi_types.external_spec;
       dynamic_import: bool;
     }
   | Pjs_object_create of External_arg_spec.obj_params
   | Praise
-
   (* object primitives *)
   | Pobjcomp of Lam_compat.comparison
   | Pobjorder
@@ -53,7 +53,6 @@ type t =
   | Pobjmax
   | Pobjtag
   | Pobjsize
-
   (* bool primitives *)
   | Psequand
   | Psequor
@@ -62,7 +61,6 @@ type t =
   | Pboolorder
   | Pboolmin
   | Pboolmax
-
   (* int primitives *)
   | Pisint
   | Pnegint
@@ -83,7 +81,6 @@ type t =
   | Pintorder
   | Pintmin
   | Pintmax
-
   (* float primitives *)
   | Pintoffloat
   | Pfloatofint
@@ -97,7 +94,6 @@ type t =
   | Pfloatorder
   | Pfloatmin
   | Pfloatmax
-
   (* bigint primitives *)
   | Pnegbigint
   | Paddbigint
@@ -115,7 +111,6 @@ type t =
   | Pbigintorder
   | Pbigintmin
   | Pbigintmax
-
   (* string primitives *)
   | Pstringlength
   | Pstringrefu
@@ -125,7 +120,6 @@ type t =
   | Pstringorder
   | Pstringmin
   | Pstringmax
-
   (* Array primitives *)
   | Pmakearray
   | Parraylength
@@ -133,16 +127,12 @@ type t =
   | Parraysetu
   | Parrayrefs
   | Parraysets
-
   (* List primitives *)
   | Pmakelist
-
   (* dict primitives *)
   | Pmakedict
-
   (* promise *)
   | Pawait
-
   (* etc or deprecated *)
   | Pis_poly_var_block
   | Pisout of int
@@ -150,7 +140,7 @@ type t =
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
   | Pdebugger
-  | Pjs_unsafe_downgrade of { name : string; setter : bool }
+  | Pjs_unsafe_downgrade of {name: string; setter: bool}
   | Pinit_mod
   | Pupdate_mod
   | Praw_js_code of Js_raw_info.t
@@ -166,7 +156,8 @@ type t =
   | Pimport
   | Ptypeof
   | Pfn_arity
-  | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
+  | Pwrap_exn
+    (* convert either JS exception or OCaml exception into OCaml format *)
   | Pcreate_extension of string
   | Pis_not_none
   | Pval_from_option

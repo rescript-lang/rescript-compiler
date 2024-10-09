@@ -27,38 +27,39 @@ let cstr_non_const = 2
 
 let init_shape modl =
   let add_name x id =
-    Const_block
-      (Blk_tuple, [ x; Const_base (Const_string (Ident.name id, None)) ])
+    Const_block (Blk_tuple, [x; Const_base (Const_string (Ident.name id, None))])
   in
   let module_tag_info : Lambda.tag_info =
-    Blk_constructor { name="Module"; num_nonconst = 2; tag = 0; attrs = [] }
+    Blk_constructor {name = "Module"; num_nonconst = 2; tag = 0; attrs = []}
   in
   let value_tag_info : Lambda.tag_info =
-    Blk_constructor { name = "value"; num_nonconst = 2; tag = 1; attrs = [] }
+    Blk_constructor {name = "value"; num_nonconst = 2; tag = 1; attrs = []}
   in
   let rec init_shape_mod env mty =
     match Mtype.scrape env mty with
     | Mty_ident _ -> raise Not_found
     | Mty_alias _ ->
-        Const_block (value_tag_info, [ Const_pointer (0, Pt_module_alias) ])
+      Const_block (value_tag_info, [Const_pointer (0, Pt_module_alias)])
     | Mty_signature sg ->
-        Const_block
-          ( module_tag_info,
-            [ Const_block (Blk_tuple, init_shape_struct env sg) ] )
+      Const_block
+        (module_tag_info, [Const_block (Blk_tuple, init_shape_struct env sg)])
     | Mty_functor _ -> raise Not_found
   (* can we do better? *)
   and init_shape_struct env sg =
     match sg with
     | [] -> []
-    | Sig_value (id, { val_kind = Val_reg; val_type = ty }) :: rem ->
-        let is_function t =
-          Ast_uncurried_utils.type_is_uncurried_fun t || match t.desc with
-          | Tarrow _ -> true
-          | _ -> false in
-        let init_v =
-          match Ctype.expand_head env ty with
-          | t when is_function t ->
-            Const_pointer
+    | Sig_value (id, {val_kind = Val_reg; val_type = ty}) :: rem ->
+      let is_function t =
+        Ast_uncurried_utils.type_is_uncurried_fun t
+        ||
+        match t.desc with
+        | Tarrow _ -> true
+        | _ -> false
+      in
+      let init_v =
+        match Ctype.expand_head env ty with
+        | t when is_function t ->
+          Const_pointer
             ( 0,
               Pt_constructor
                 {
@@ -67,32 +68,30 @@ let init_shape modl =
                   non_const = cstr_non_const;
                   attrs = [];
                 } )
-          | { desc = Tconstr (p, _, _) } when Path.same p Predef.path_lazy_t ->
-              Const_pointer
-                ( 1,
-                  Pt_constructor
-                    {
-                      name = "Lazy";
-                      const = cstr_const;
-                      non_const = cstr_non_const;
-                      attrs = [];
-                    } )
-          | _ -> raise Not_found
-        in
-        add_name init_v id :: init_shape_struct env rem
-    | Sig_value (_, { val_kind = Val_prim _ }) :: rem ->
-        init_shape_struct env rem
+        | {desc = Tconstr (p, _, _)} when Path.same p Predef.path_lazy_t ->
+          Const_pointer
+            ( 1,
+              Pt_constructor
+                {
+                  name = "Lazy";
+                  const = cstr_const;
+                  non_const = cstr_non_const;
+                  attrs = [];
+                } )
+        | _ -> raise Not_found
+      in
+      add_name init_v id :: init_shape_struct env rem
+    | Sig_value (_, {val_kind = Val_prim _}) :: rem -> init_shape_struct env rem
     | Sig_type (id, tdecl, _) :: rem ->
-        init_shape_struct (Env.add_type ~check:false id tdecl env) rem
+      init_shape_struct (Env.add_type ~check:false id tdecl env) rem
     | Sig_typext _ :: _ -> raise Not_found
     | Sig_module (id, md, _) :: rem ->
-        add_name (init_shape_mod env md.md_type) id
-        ::
-        init_shape_struct
-          (Env.add_module_declaration ~check:false id md env)
-          rem
+      add_name (init_shape_mod env md.md_type) id
+      :: init_shape_struct
+           (Env.add_module_declaration ~check:false id md env)
+           rem
     | Sig_modtype (id, minfo) :: rem ->
-        init_shape_struct (Env.add_modtype id minfo env) rem
+      init_shape_struct (Env.add_modtype id minfo env) rem
     | Sig_class _ :: _ -> assert false
     | Sig_class_type _ :: rem -> init_shape_struct env rem
   in
@@ -118,13 +117,13 @@ let reorder_rec_bindings bindings =
     | Defined -> ()
     | Inprogress -> raise (Error (loc.(i), Circular_dependency id.(i)))
     | Undefined ->
-        if init.(i) = None then (
-          status.(i) <- Inprogress;
-          for j = 0 to num_bindings - 1 do
-            if IdentSet.mem id.(j) fv.(i) then emit_binding j
-          done);
-        res := (id.(i), init.(i), rhs.(i)) :: !res;
-        status.(i) <- Defined
+      if init.(i) = None then (
+        status.(i) <- Inprogress;
+        for j = 0 to num_bindings - 1 do
+          if IdentSet.mem id.(j) fv.(i) then emit_binding j
+        done);
+      res := (id.(i), init.(i), rhs.(i)) :: !res;
+      status.(i) <- Defined
   in
   for i = 0 to num_bindings - 1 do
     match status.(i) with
@@ -150,18 +149,18 @@ let eval_rec_bindings_aux (bindings : binding list) (cont : t) : t =
     | [] -> acc
     | (_id, None, _rhs) :: rem -> bind_inits rem acc
     | (id, Some (loc, shape), _rhs) :: rem ->
-        Lambda.Llet
-          ( Strict,
-            Pgenval,
-            id,
-            Lprim (Pinit_mod, [ loc; shape ], Location.none),
-            bind_inits rem acc )
+      Lambda.Llet
+        ( Strict,
+          Pgenval,
+          id,
+          Lprim (Pinit_mod, [loc; shape], Location.none),
+          bind_inits rem acc )
   in
   let rec bind_strict args acc =
     match args with
     | [] -> acc
     | (id, None, rhs) :: rem ->
-        Lambda.Llet (Strict, Pgenval, id, rhs, bind_strict rem acc)
+      Lambda.Llet (Strict, Pgenval, id, rhs, bind_strict rem acc)
     | (_id, Some _, _rhs) :: rem -> bind_strict rem acc
   in
   let rec patch_forwards args =
@@ -169,9 +168,9 @@ let eval_rec_bindings_aux (bindings : binding list) (cont : t) : t =
     | [] -> cont
     | (_id, None, _rhs) :: rem -> patch_forwards rem
     | (id, Some (_loc, shape), rhs) :: rem ->
-        Lsequence
-          ( Lprim (Pupdate_mod, [ shape; Lvar id; rhs ], Location.none),
-            patch_forwards rem )
+      Lsequence
+        ( Lprim (Pupdate_mod, [shape; Lvar id; rhs], Location.none),
+          patch_forwards rem )
   in
   bind_inits bindings (bind_strict bindings (patch_forwards bindings))
 
@@ -182,27 +181,27 @@ let eval_rec_bindings_aux (bindings : binding list) (cont : t) : t =
 let rec is_function_or_const_block (lam : Lambda.lambda) acc =
   match lam with
   | Lprim (Pmakeblock _, args, _) ->
-      Ext_list.for_all args (fun x ->
-          match x with
-          | Lvar id -> Set_ident.mem acc id
-          | Lfunction _ | Lconst _ -> true
-          | _ -> false)
+    Ext_list.for_all args (fun x ->
+        match x with
+        | Lvar id -> Set_ident.mem acc id
+        | Lfunction _ | Lconst _ -> true
+        | _ -> false)
   | Llet (_, _, id, Lfunction _, cont) ->
-      is_function_or_const_block cont (Set_ident.add acc id)
+    is_function_or_const_block cont (Set_ident.add acc id)
   | Lletrec (bindings, cont) -> (
-      let rec aux_bindings bindings acc =
-        match bindings with
-        | [] -> Some acc
-        | (id, Lambda.Lfunction _) :: rest ->
-            aux_bindings rest (Set_ident.add acc id)
-        | (_, _) :: _ -> None
-      in
-      match aux_bindings bindings acc with
-      | None -> false
-      | Some acc -> is_function_or_const_block cont acc)
+    let rec aux_bindings bindings acc =
+      match bindings with
+      | [] -> Some acc
+      | (id, Lambda.Lfunction _) :: rest ->
+        aux_bindings rest (Set_ident.add acc id)
+      | (_, _) :: _ -> None
+    in
+    match aux_bindings bindings acc with
+    | None -> false
+    | Some acc -> is_function_or_const_block cont acc)
   | Llet (_, _, _, Lconst _, cont) -> is_function_or_const_block cont acc
   | Llet (_, _, id1, Lvar id2, cont) when Set_ident.mem acc id2 ->
-      is_function_or_const_block cont (Set_ident.add acc id1)
+    is_function_or_const_block cont (Set_ident.add acc id1)
   | _ -> false
 
 let is_strict_or_all_functions (xs : binding list) =
@@ -214,14 +213,14 @@ let is_strict_or_all_functions (xs : binding list) =
 (* Without such optimizations:
 
    {[
-     module rec X : sig 
-       val f : int -> int   
-     end = struct 
+     module rec X : sig
+       val f : int -> int
+     end = struct
        let f x = x + 1
-     end   
-     and Y : sig 
-       val f : int -> int  
-     end = struct 
+     end
+     and Y : sig
+       val f : int -> int
+     end = struct
        let f x  = x + 2
      end
    ]}
@@ -252,17 +251,17 @@ let compile_recmodule compile_rhs bindings cont =
   eval_rec_bindings
     (reorder_rec_bindings
        (List.map
-          (fun { mb_id = id; mb_expr = modl; mb_loc = loc; _ } ->
+          (fun {mb_id = id; mb_expr = modl; mb_loc = loc; _} ->
             (id, modl.mod_loc, init_shape modl, compile_rhs id modl loc))
           bindings))
     cont
 
 let report_error ppf = function
   | Circular_dependency id ->
-      Format.fprintf ppf
-        "@[Cannot safely evaluate the definition@ of the recursively-defined \
-         module %a@]"
-        Printtyp.ident id
+    Format.fprintf ppf
+      "@[Cannot safely evaluate the definition@ of the recursively-defined \
+       module %a@]"
+      Printtyp.ident id
 
 let () =
   Location.register_error_of_exn (function

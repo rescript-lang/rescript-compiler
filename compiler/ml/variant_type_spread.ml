@@ -42,7 +42,8 @@ let map_constructors ~(sdecl : Parsetree.type_declaration) ~all_constructors env
     in
 
     match type_decl with
-    | {type_kind = Type_variant [] } -> raise (VariantTypeSpreadError (loc.loc, InvalidType))
+    | {type_kind = Type_variant []} ->
+      raise (VariantTypeSpreadError (loc.loc, InvalidType))
     | {type_kind = Type_variant cstrs; type_attributes; type_params} ->
       if List.length type_params > 0 then
         raise (VariantTypeSpreadError (loc.loc, HasTypeParams));

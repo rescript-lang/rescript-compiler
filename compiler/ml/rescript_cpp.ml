@@ -22,9 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type pp_error =
-  | Unterminated_if
-  | Unterminated_else
+type pp_error = Unterminated_if | Unterminated_else
 
 exception Pp_error of pp_error * Location.t
 
@@ -119,7 +117,6 @@ let define_key_value key v =
            try Dir_float (float_of_string v) with _ -> Dir_string v)));
     true)
   else false
-
 
 type dir_conditional = Dir_if_true | Dir_out
 

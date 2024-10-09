@@ -35,7 +35,7 @@ let lib_es6 = lib_lit // "es6"
 
 let lib_es6_global = lib_lit // "es6_global"
 
-let all_lib_artifacts = [ lib_js; lib_ocaml; lib_bs; lib_es6; lib_es6_global ]
+let all_lib_artifacts = [lib_js; lib_ocaml; lib_bs; lib_es6; lib_es6_global]
 
 let rev_lib_bs = ".." // ".."
 
@@ -46,7 +46,11 @@ let rev_lib_bs = ".." // ".."
 *)
 let lib_bs_prefix_of_format (x : Ext_module_system.t) =
   ".."
-  // match x with Commonjs -> "js" | Esmodule -> "es6" | Es6_global -> "es6_global"
+  //
+  match x with
+  | Commonjs -> "js"
+  | Esmodule -> "es6"
+  | Es6_global -> "es6_global"
 
 (* lib/js, lib/es6, lib/es6_global *)
 let top_prefix_of_format (x : Ext_module_system.t) =

@@ -30,17 +30,17 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
   let package_specs, jsx, pinned_dependencies =
     match config with
     | None ->
-        (* When this running bsb does not read rescript.json,
-           we will read such json file to know which [package-specs]
-           it wants
-        *)
-        Bsb_config_parse.deps_from_bsconfig ()
+      (* When this running bsb does not read rescript.json,
+         we will read such json file to know which [package-specs]
+         it wants
+      *)
+      Bsb_config_parse.deps_from_bsconfig ()
     | Some config ->
-        (config.package_specs, config.jsx, config.pinned_dependencies)
+      (config.package_specs, config.jsx, config.pinned_dependencies)
   in
   let args =
-    if Ext_array.is_empty ninja_args then [| vendor_ninja |]
-    else Array.append [| vendor_ninja |] ninja_args
+    if Ext_array.is_empty ninja_args then [|vendor_ninja|]
+    else Array.append [|vendor_ninja|] ninja_args
   in
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let queue = Bsb_build_util.walk_all_deps cwd ~pinned_dependencies in
@@ -56,45 +56,44 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
      );
      close_out oc ; *)
   queue
-  |> Queue.iter (fun ({ top; proj_dir; is_pinned } : Bsb_build_util.package_context) ->
+  |> Queue.iter
+       (fun ({top; proj_dir; is_pinned} : Bsb_build_util.package_context) ->
          match top with
          | Expect_none -> ()
          | Expect_name s ->
-             if is_pinned then print_endline ("Dependency pinned on " ^ s)
-             else print_endline ("Dependency on " ^ s);
-             let lib_bs_dir = proj_dir // lib_artifacts_dir in
-             Bsb_build_util.mkp lib_bs_dir;
-             let _config : _ option =
-               Bsb_ninja_regen.regenerate_ninja
-                 ~package_kind:
-                   (if is_pinned then Pinned_dependency { package_specs; jsx }
-                   else Dependency { package_specs; jsx })
-                 ~per_proj_dir:proj_dir ~forced:false
-                 ~warn_legacy_config:false
-                 ~warn_as_error:(if is_pinned then warn_as_error else None)
-             in
-             let command =
-               { Bsb_unix.cmd = vendor_ninja; cwd = lib_bs_dir; args }
-             in
-             let eid = Bsb_unix.run_command_execv command in
-             if eid <> 0 then Bsb_unix.command_fatal_error command eid;
-             (* When ninja is not regenerated, ninja will still do the build,
-                still need reinstall check
-                Note that we can check if ninja print "no work to do",
-                then don't need reinstall more
-             *)
-             Bsb_log.info "@{<info>Installation started@}@.";
-             let install_dir = proj_dir // "lib" // "ocaml" in
-             Bsb_build_util.mkp install_dir;
-             let install_command =
-               {
-                 Bsb_unix.cmd = vendor_ninja;
-                 cwd = install_dir;
-                 args =
-                   [| vendor_ninja; "-f"; ".." // "bs" // "install.ninja" |];
-               }
-             in
-             let eid = Bsb_unix.run_command_execv install_command in
-             if eid <> 0 then Bsb_unix.command_fatal_error install_command eid;
-             Bsb_log.info "@{<info>Installation finished@}@.");
+           if is_pinned then print_endline ("Dependency pinned on " ^ s)
+           else print_endline ("Dependency on " ^ s);
+           let lib_bs_dir = proj_dir // lib_artifacts_dir in
+           Bsb_build_util.mkp lib_bs_dir;
+           let _config : _ option =
+             Bsb_ninja_regen.regenerate_ninja
+               ~package_kind:
+                 (if is_pinned then Pinned_dependency {package_specs; jsx}
+                  else Dependency {package_specs; jsx})
+               ~per_proj_dir:proj_dir ~forced:false ~warn_legacy_config:false
+               ~warn_as_error:(if is_pinned then warn_as_error else None)
+           in
+           let command =
+             {Bsb_unix.cmd = vendor_ninja; cwd = lib_bs_dir; args}
+           in
+           let eid = Bsb_unix.run_command_execv command in
+           if eid <> 0 then Bsb_unix.command_fatal_error command eid;
+           (* When ninja is not regenerated, ninja will still do the build,
+              still need reinstall check
+              Note that we can check if ninja print "no work to do",
+              then don't need reinstall more
+           *)
+           Bsb_log.info "@{<info>Installation started@}@.";
+           let install_dir = proj_dir // "lib" // "ocaml" in
+           Bsb_build_util.mkp install_dir;
+           let install_command =
+             {
+               Bsb_unix.cmd = vendor_ninja;
+               cwd = install_dir;
+               args = [|vendor_ninja; "-f"; ".." // "bs" // "install.ninja"|];
+             }
+           in
+           let eid = Bsb_unix.run_command_execv install_command in
+           if eid <> 0 then Bsb_unix.command_fatal_error install_command eid;
+           Bsb_log.info "@{<info>Installation finished@}@.");
   print_endline "Dependency Finished"

@@ -35,8 +35,8 @@ let rev_lines_of_chann chan =
     match input_line chan with
     | line -> loop (line :: acc) chan
     | exception End_of_file ->
-        close_in chan;
-        acc
+      close_in chan;
+      acc
   in
   loop [] chan
 

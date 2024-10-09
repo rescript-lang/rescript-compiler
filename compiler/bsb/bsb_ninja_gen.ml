@@ -51,13 +51,13 @@ let emit_bsc_lib_includes (bs_dependencies : Bsb_config_types.dependencies)
   Bsb_build_util.include_dirs
     (all_includes
        (if namespace = None then source_dirs
-       else Filename.current_dir_name :: source_dirs
-         (*working dir is [lib/bs] we include this path to have namespace mapping*)))
+        else Filename.current_dir_name :: source_dirs
+          (*working dir is [lib/bs] we include this path to have namespace mapping*)))
 
 let output_static_resources (static_resources : string list) copy_rule oc =
   Ext_list.iter static_resources (fun output ->
-      Bsb_ninja_targets.output_build oc ~outputs:[ output ]
-        ~inputs:[ Bsb_config.proj_rel output ]
+      Bsb_ninja_targets.output_build oc ~outputs:[output]
+        ~inputs:[Bsb_config.proj_rel output]
         ~rule:copy_rule);
   if static_resources <> [] then
     Bsb_ninja_targets.phony oc ~order_only_deps:static_resources ~inputs:[]
@@ -86,15 +86,14 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
   let sb = ".." // ".." in
   o
     (if Ext_sys.is_windows_or_cygwin then
-     "rule cp\n\
-     \  command = cmd.exe /C copy /Y $i $out >NUL\n\
-      rule touch\n\
-     \ command = cmd.exe /C type nul >>$out & copy $out+,, >NUL\n"
-    else "rule cp\n  command = cp $i $out\nrule touch\n command = touch $out\n");
+       "rule cp\n\
+       \  command = cmd.exe /C copy /Y $i $out >NUL\n\
+        rule touch\n\
+       \ command = cmd.exe /C type nul >>$out & copy $out+,, >NUL\n"
+     else "rule cp\n  command = cp $i $out\nrule touch\n command = touch $out\n");
   let essentials = Ext_buffer.create 1_000 in
   files_to_install
-  |> Queue.iter
-       (fun ({ name_sans_extension; info } : Bsb_db.module_info) ->
+  |> Queue.iter (fun ({name_sans_extension; info} : Bsb_db.module_info) ->
          let base = Filename.basename name_sans_extension in
          let dest = Ext_namespace_encode.make ?ns:namespace base in
          let ns_origin =
@@ -116,20 +115,20 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
          | Intf -> assert false
          | Impl -> ()
          | Impl_intf ->
-             let suffix_intf = Literals.suffix_resi in
-             oo suffix_intf ~dest:base ~src:(sb // name_sans_extension);
-             oo Literals.suffix_cmti ~dest ~src);
+           let suffix_intf = Literals.suffix_resi in
+           oo suffix_intf ~dest:base ~src:(sb // name_sans_extension);
+           oo Literals.suffix_cmti ~dest ~src);
   (match namespace with
   | None -> ()
   | Some dest ->
-      let src = bs // dest in
-      oo Literals.suffix_cmi ~dest ~src;
-      oo Literals.suffix_cmj ~dest ~src;
-      oo Literals.suffix_cmt ~dest ~src;
-      Ext_buffer.add_string essentials dest;
-      Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';
-      Ext_buffer.add_string essentials dest;
-      Ext_buffer.add_string essentials Literals.suffix_cmj);
+    let src = bs // dest in
+    oo Literals.suffix_cmi ~dest ~src;
+    oo Literals.suffix_cmj ~dest ~src;
+    oo Literals.suffix_cmt ~dest ~src;
+    Ext_buffer.add_string essentials dest;
+    Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';
+    Ext_buffer.add_string essentials dest;
+    Ext_buffer.add_string essentials Literals.suffix_cmj);
   Ext_buffer.add_char essentials '\n';
   o "build install.stamp : touch ";
   Ext_buffer.output_buffer install_oc essentials;
@@ -146,7 +145,7 @@ let output_ninja_and_namespace_map ~per_proj_dir ~package_kind
        bs_dev_dependencies;
        js_post_build_cmd;
        package_specs;
-       file_groups = { files = bs_file_groups };
+       file_groups = {files = bs_file_groups};
        files_to_install;
        jsx;
        generators;
@@ -164,13 +163,11 @@ let output_ninja_and_namespace_map ~per_proj_dir ~package_kind
     Bsb_build_util.include_dirs_by bs_dev_dependencies (fun x ->
         x.package_install_path)
   in
-  let bs_groups : Bsb_db.t =
-    { lib = Map_string.empty; dev = Map_string.empty }
-  in
-  let source_dirs : string list Bsb_db.cat = { lib = []; dev = [] } in
+  let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
+  let source_dirs : string list Bsb_db.cat = {lib = []; dev = []} in
   let static_resources =
     Ext_list.fold_left bs_file_groups []
-      (fun (acc_resources : string list) { sources; dir; resources; is_dev } ->
+      (fun (acc_resources : string list) {sources; dir; resources; is_dev} ->
         if is_dev then (
           bs_groups.dev <- Bsb_db_util.merge bs_groups.dev sources;
           source_dirs.dev <- dir :: source_dirs.dev)
@@ -194,9 +191,9 @@ let output_ninja_and_namespace_map ~per_proj_dir ~package_kind
   in
   let rules : Bsb_ninja_rule.builtin =
     Bsb_ninja_rule.make_custom_rules ~gentype_config
-      ~has_postbuild:js_post_build_cmd ~pp_file ~jsx
-      ~package_specs ~namespace ~digest ~package_name
-      ~warnings ~ppx_files ~bsc_flags ~dpkg_incls (* dev dependencies *)
+      ~has_postbuild:js_post_build_cmd ~pp_file ~jsx ~package_specs ~namespace
+      ~digest ~package_name ~warnings ~ppx_files ~bsc_flags
+      ~dpkg_incls (* dev dependencies *)
       ~lib_incls (* its own libs *)
       ~dev_incls (* its own devs *)
       ~bs_dependencies ~bs_dev_dependencies generators
@@ -222,8 +219,8 @@ let output_ninja_and_namespace_map ~per_proj_dir ~package_kind
       let namespace_dir = per_proj_dir // lib_artifacts_dir in
       Bsb_namespace_map_gen.output ~dir:namespace_dir ns bs_file_groups;
       Bsb_ninja_targets.output_build oc
-        ~outputs:[ ns ^ Literals.suffix_cmi ]
-        ~inputs:[ ns ^ Literals.suffix_mlmap ]
+        ~outputs:[ns ^ Literals.suffix_cmi]
+        ~inputs:[ns ^ Literals.suffix_mlmap]
         ~rule:rules.build_package);
   close_out oc;
   output_installation_file cwd_lib_bs namespace files_to_install

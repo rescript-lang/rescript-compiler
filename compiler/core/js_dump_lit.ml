@@ -26,10 +26,10 @@ let await = "await"
 
 let function_ ~async ~arrow =
   match (async, arrow) with
-  | (true, true) -> "async "
-  | (false, true) -> ""
-  | (true, false) -> "async function "
-  | (false, false) -> "function "
+  | true, true -> "async "
+  | false, true -> ""
+  | true, false -> "async function "
+  | false, false -> "function "
 
 let arrow = "=>"
 

@@ -1,9 +1,6 @@
-
 let command cmdline =
-  if !Clflags.verbose then begin
+  if !Clflags.verbose then (
     prerr_string "+ ";
     prerr_string cmdline;
-    prerr_newline()
-  end;
+    prerr_newline ());
   Sys.command cmdline
-

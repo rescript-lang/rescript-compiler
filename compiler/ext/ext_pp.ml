@@ -31,11 +31,11 @@ end
 let indent_length = String.length L.indent_str
 
 type t = {
-  output_string : string -> unit;
-  output_char : char -> unit;
-  flush : unit -> unit;
-  mutable indent_level : int;
-  mutable last_new_line : bool;
+  output_string: string -> unit;
+  output_char: char -> unit;
+  flush: unit -> unit;
+  mutable indent_level: int;
+  mutable last_new_line: bool;
       (* only when we print newline, we print the indent *)
 }
 

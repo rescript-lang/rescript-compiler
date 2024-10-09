@@ -31,7 +31,7 @@ let ninja_clean proj_dir =
     let cwd = proj_dir // lib_artifacts_dir in
     if Sys.file_exists cwd then
       let eid =
-        Bsb_unix.run_command_execv { cmd; args = [| cmd; "-t"; "clean" |]; cwd }
+        Bsb_unix.run_command_execv {cmd; args = [|cmd; "-t"; "clean"|]; cwd}
       in
       if eid <> 0 then Bsb_log.warn "@{<warning>Failed@}@."
   with e -> Bsb_log.warn "@{<warning>Failed@}: %s @." (Printexc.to_string e)

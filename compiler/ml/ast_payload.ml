@@ -64,7 +64,10 @@ let is_single_int (x : t) : int option =
               ({pexp_desc = Pexp_constant (Pconst_integer (name, char)); _}, _);
           _;
         };
-      ] when (match char with Some n when n = 'n' -> false | _ -> true) ->
+      ]
+    when match char with
+         | Some n when n = 'n' -> false
+         | _ -> true ->
     Some (int_of_string name)
   | _ -> None
 
@@ -89,7 +92,8 @@ let is_single_bigint (x : t) : string option =
         {
           pstr_desc =
             Pstr_eval
-              ({pexp_desc = Pexp_constant (Pconst_integer (name, Some 'n')); _}, _);
+              ( {pexp_desc = Pexp_constant (Pconst_integer (name, Some 'n')); _},
+                _ );
           _;
         };
       ] ->
@@ -146,17 +150,17 @@ let raw_as_string_exp_exn ~(kind : Js_raw_info.raw_kind) ?is_function (x : t) :
           Parser_flow.parse_expression (Parser_env.init_env None str) false
         in
         (if kind = Raw_re then
-         match e with
-         | Literal {value = RegExp _} -> ()
-         | _ ->
-           Location.raise_errorf ~loc
-             "Syntax error: a valid JS regex literal expected");
+           match e with
+           | Literal {value = RegExp _} -> ()
+           | _ ->
+             Location.raise_errorf ~loc
+               "Syntax error: a valid JS regex literal expected");
         (match is_function with
-          | Some is_function -> (
-            match Classify_function.classify_exp prog with
-            | Js_function {arity; _} -> is_function := Some arity
-            | _ -> ())
-          | None -> ());
+        | Some is_function -> (
+          match Classify_function.classify_exp prog with
+          | Js_function {arity; _} -> is_function := Some arity
+          | _ -> ())
+        | None -> ());
         errors
       | Raw_program -> snd (Parser_flow.parse_program false None str));
     Some {e with pexp_desc = Pexp_constant (Pconst_string (str, None))}

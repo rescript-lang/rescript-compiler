@@ -30,9 +30,7 @@ module Pair : functor (A : Thing) (B : Thing) -> Thing with type t = A.t * B.t
 
 module type Set = sig
   module T : Set.OrderedType
-  include Set.S
-    with type elt = T.t
-     and type t = Set.Make (T).t
+  include Set.S with type elt = T.t and type t = Set.Make(T).t
 
   val output : out_channel -> t -> unit
   val print : Format.formatter -> t -> unit
@@ -43,24 +41,27 @@ end
 
 module type Map = sig
   module T : Map.OrderedType
-  include Map.S
-    with type key = T.t
-     and type 'a t = 'a Map.Make (T).t
+  include Map.S with type key = T.t and type 'a t = 'a Map.Make(T).t
 
   val filter_map : (key -> 'a -> 'b option) -> 'a t -> 'b t
   val of_list : (key * 'a) list -> 'a t
 
+  val disjoint_union :
+    ?eq:('a -> 'a -> bool) ->
+    ?print:(Format.formatter -> 'a -> unit) ->
+    'a t ->
+    'a t ->
+    'a t
   (** [disjoint_union m1 m2] contains all bindings from [m1] and
       [m2]. If some binding is present in both and the associated
       value is not equal, a Fatal_error is raised *)
-  val disjoint_union : ?eq:('a -> 'a -> bool) -> ?print:(Format.formatter -> 'a -> unit) -> 'a t -> 'a t -> 'a t
 
+  val union_right : 'a t -> 'a t -> 'a t
   (** [union_right m1 m2] contains all bindings from [m1] and [m2]. If
       some binding is present in both, the one from [m2] is taken *)
-  val union_right : 'a t -> 'a t -> 'a t
 
-  (** [union_left m1 m2 = union_right m2 m1] *)
   val union_left : 'a t -> 'a t -> 'a t
+  (** [union_left m1 m2 = union_right m2 m1] *)
 
   val union_merge : ('a -> 'a -> 'a) -> 'a t -> 'a t -> 'a t
   val rename : key t -> key -> key
@@ -80,9 +81,7 @@ module type Tbl = sig
     include Map.OrderedType with type t := t
     include Hashtbl.HashedType with type t := t
   end
-  include Hashtbl.S
-    with type key = T.t
-     and type 'a t = 'a Hashtbl.Make (T).t
+  include Hashtbl.S with type key = T.t and type 'a t = 'a Hashtbl.Make(T).t
 
   val to_list : 'a t -> (T.t * 'a) list
   val of_list : (T.t * 'a) list -> 'a t

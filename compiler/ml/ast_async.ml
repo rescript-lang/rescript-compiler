@@ -1,5 +1,5 @@
 let is_async : Parsetree.attribute -> bool =
-  fun ({txt}, _) -> txt = "async" || txt = "res.async"
+ fun ({txt}, _) -> txt = "async" || txt = "res.async"
 
 let add_promise_type ?(loc = Location.none) ~async
     (result : Parsetree.expression) =
@@ -13,18 +13,29 @@ let add_promise_type ?(loc = Location.none) ~async
 
 let add_async_attribute ~async (body : Parsetree.expression) =
   if async then
-   (   
-      match body.pexp_desc with
-      | Pexp_construct (x, Some e) when Ast_uncurried.expr_is_uncurried_fun body ->
-        {body with pexp_desc = Pexp_construct (x, Some {e  with pexp_attributes =
-        ({txt = "res.async"; loc = Location.none}, PStr []) :: e.pexp_attributes} )}
-      | _ ->
-        {
-          body with
-          pexp_attributes =
-            ({txt = "res.async"; loc = Location.none}, PStr [])
-            :: body.pexp_attributes;
-        })
+    match body.pexp_desc with
+    | Pexp_construct (x, Some e) when Ast_uncurried.expr_is_uncurried_fun body
+      ->
+      {
+        body with
+        pexp_desc =
+          Pexp_construct
+            ( x,
+              Some
+                {
+                  e with
+                  pexp_attributes =
+                    ({txt = "res.async"; loc = Location.none}, PStr [])
+                    :: e.pexp_attributes;
+                } );
+      }
+    | _ ->
+      {
+        body with
+        pexp_attributes =
+          ({txt = "res.async"; loc = Location.none}, PStr [])
+          :: body.pexp_attributes;
+      }
   else body
 
 let rec add_promise_to_result ~loc (e : Parsetree.expression) =

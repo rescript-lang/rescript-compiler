@@ -27,13 +27,12 @@ exception Error of error
 
 let report_error ppf = function
   | CannotRun cmd ->
-      Format.fprintf ppf
-        "Error while running external preprocessor@.Command line: %s@." cmd
+    Format.fprintf ppf
+      "Error while running external preprocessor@.Command line: %s@." cmd
   | WrongMagic cmd ->
-      Format.fprintf ppf
-        "External preprocessor does not produce a valid file@.Command line: \
-         %s@."
-        cmd
+    Format.fprintf ppf
+      "External preprocessor does not produce a valid file@.Command line: %s@."
+      cmd
 
 let () =
   Location.register_error_of_exn (function

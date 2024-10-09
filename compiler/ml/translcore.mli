@@ -16,7 +16,6 @@
 (* Translation from typed abstract syntax to lambda terms,
    for the core language *)
 
-
 val transl_exp : Typedtree.expression -> Lambda.lambda
 
 val transl_let :

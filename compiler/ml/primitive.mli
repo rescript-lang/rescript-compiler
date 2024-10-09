@@ -17,43 +17,31 @@
 
 type boxed_integer = Pbigint | Pint32 | Pint64
 
-type description = private
-  { prim_name: string;         (* Name of primitive  or C function *)
-    prim_arity: int;           (* Number of arguments *)
-    prim_alloc: bool;          (* Does it allocates or raise? *)
-    prim_native_name: string;  (* Name of C function for the nat. code gen. *)
-    prim_from_constructor: bool; (* Is it from a type constructor instead of a concrete function type? *)
-  }
+type description = private {
+  prim_name: string; (* Name of primitive  or C function *)
+  prim_arity: int; (* Number of arguments *)
+  prim_alloc: bool; (* Does it allocates or raise? *)
+  prim_native_name: string; (* Name of C function for the nat. code gen. *)
+  prim_from_constructor: bool;
+      (* Is it from a type constructor instead of a concrete function type? *)
+}
 
 (* Invariant [List.length d.prim_native_repr_args = d.prim_arity] *)
 
-val simple
-  :  name:string
-  -> arity:int
-  -> alloc:bool
-  -> description
+val simple : name:string -> arity:int -> alloc:bool -> description
 
-val make
-  :  name:string
-  -> alloc:bool
-  -> native_name:string
-  -> arity: int
-  -> description
+val make :
+  name:string -> alloc:bool -> native_name:string -> arity:int -> description
 
-val parse_declaration
-  :  Parsetree.value_description
-  -> arity: int
-  -> from_constructor: bool
-  -> description
+val parse_declaration :
+  Parsetree.value_description ->
+  arity:int ->
+  from_constructor:bool ->
+  description
 
-val print
-  :  description
-  -> Outcometree.out_val_decl
-  -> Outcometree.out_val_decl
+val print : description -> Outcometree.out_val_decl -> Outcometree.out_val_decl
 
-val native_name: description -> string
-val byte_name: description -> string
+val native_name : description -> string
+val byte_name : description -> string
 
-
-val coerce : 
-  (description -> description -> bool ) ref
+val coerce : (description -> description -> bool) ref

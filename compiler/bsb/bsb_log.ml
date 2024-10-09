@@ -62,7 +62,11 @@ let setup () =
 type level = Debug | Info | Warn | Error
 
 let int_of_level (x : level) =
-  match x with Debug -> 0 | Info -> 1 | Warn -> 2 | Error -> 3
+  match x with
+  | Debug -> 0
+  | Info -> 1
+  | Warn -> 2
+  | Error -> 3
 
 let log_level = ref Warn
 

@@ -1,5 +1,5 @@
 let is_await : Parsetree.attribute -> bool =
-  fun ({txt}, _) -> txt = "await" || txt = "res.await"
+ fun ({txt}, _) -> txt = "await" || txt = "res.await"
 
 let create_await_expression (e : Parsetree.expression) =
   let loc = {e.pexp_loc with loc_ghost = true} in
@@ -24,7 +24,8 @@ let create_await_module_expression ~module_type_lid (e : Parsetree.module_expr)
            (Exp.apply ~loc:e.pmod_loc
               (Exp.ident ~loc:e.pmod_loc
                  {
-                   txt = Longident.Ldot (Lident Primitive_modules.module_, "import");
+                   txt =
+                     Longident.Ldot (Lident Primitive_modules.module_, "import");
                    loc = e.pmod_loc;
                  })
               [

@@ -78,32 +78,32 @@ let rewrite kind ppxs ast =
         match fns with
         | [] -> assert false
         | fn_in :: _ -> apply_rewriter kind fn_in ppx :: fns)
-      ppxs [ fn_in ]
+      ppxs [fn_in]
   in
   match temp_files with
   | last_fn :: _ ->
-      let out = read_ast kind last_fn in
-      Ext_list.iter temp_files Misc.remove_file;
-      out
+    let out = read_ast kind last_fn in
+    Ext_list.iter temp_files Misc.remove_file;
+    out
   | _ -> assert false
 
 let apply_rewriters_str ?(restore = true) ~tool_name ast =
   match !Clflags.all_ppx with
   | [] -> ast
   | ppxs ->
-      ast
-      |> Ast_mapper.add_ppx_context_str ~tool_name
-      |> rewrite Ml ppxs
-      |> Ast_mapper.drop_ppx_context_str ~restore
+    ast
+    |> Ast_mapper.add_ppx_context_str ~tool_name
+    |> rewrite Ml ppxs
+    |> Ast_mapper.drop_ppx_context_str ~restore
 
 let apply_rewriters_sig ?(restore = true) ~tool_name ast =
   match !Clflags.all_ppx with
   | [] -> ast
   | ppxs ->
-      ast
-      |> Ast_mapper.add_ppx_context_sig ~tool_name
-      |> rewrite Mli ppxs
-      |> Ast_mapper.drop_ppx_context_sig ~restore
+    ast
+    |> Ast_mapper.add_ppx_context_sig ~tool_name
+    |> rewrite Mli ppxs
+    |> Ast_mapper.drop_ppx_context_sig ~restore
 
 let apply_rewriters ?restore ~tool_name (type a) (kind : a Ml_binary.kind)
     (ast : a) : a =

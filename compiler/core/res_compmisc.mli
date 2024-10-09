@@ -24,4 +24,4 @@
 
 val init_path : unit -> unit
 
-val initial_env : ?modulename : string -> unit -> Env.t
+val initial_env : ?modulename:string -> unit -> Env.t

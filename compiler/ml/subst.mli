@@ -31,37 +31,36 @@ type t
    well-formed (decreasing levels), even if the original one was not.
 *)
 
-val identity: t
+val identity : t
 
-val add_type: Ident.t -> Path.t -> t -> t
-val add_type_path: Path.t -> Path.t -> t -> t
-val add_type_function:
+val add_type : Ident.t -> Path.t -> t -> t
+val add_type_path : Path.t -> Path.t -> t -> t
+val add_type_function :
   Path.t -> params:type_expr list -> body:type_expr -> t -> t
-val add_module: Ident.t -> Path.t -> t -> t
-val add_module_path: Path.t -> Path.t -> t -> t
-val add_modtype: Ident.t -> module_type -> t -> t
-val for_saving: t -> t
-val reset_for_saving: unit -> unit
+val add_module : Ident.t -> Path.t -> t -> t
+val add_module_path : Path.t -> Path.t -> t -> t
+val add_modtype : Ident.t -> module_type -> t -> t
+val for_saving : t -> t
+val reset_for_saving : unit -> unit
 
-val module_path: t -> Path.t -> Path.t
-val type_path: t -> Path.t -> Path.t
+val module_path : t -> Path.t -> Path.t
+val type_path : t -> Path.t -> Path.t
 
-val type_expr: t -> type_expr -> type_expr
-val value_description: t -> value_description -> value_description
-val type_declaration: t -> type_declaration -> type_declaration
-val extension_constructor:
-        t -> extension_constructor -> extension_constructor
+val type_expr : t -> type_expr -> type_expr
+val value_description : t -> value_description -> value_description
+val type_declaration : t -> type_declaration -> type_declaration
+val extension_constructor : t -> extension_constructor -> extension_constructor
 
-val modtype: t -> module_type -> module_type
-val signature: t -> signature -> signature
-val modtype_declaration: t -> modtype_declaration -> modtype_declaration
-val module_declaration: t -> module_declaration -> module_declaration
+val modtype : t -> module_type -> module_type
+val signature : t -> signature -> signature
+val modtype_declaration : t -> modtype_declaration -> modtype_declaration
+val module_declaration : t -> module_declaration -> module_declaration
 val typexp : t -> Types.type_expr -> Types.type_expr
 
 (* Composition of substitutions:
      apply (compose s1 s2) x = apply s2 (apply s1 x) *)
-val compose: t -> t -> t
+val compose : t -> t -> t
 
 (* A forward reference to be filled in ctype.ml. *)
-val ctype_apply_env_empty:
+val ctype_apply_env_empty :
   (type_expr list -> type_expr -> type_expr list -> type_expr) ref

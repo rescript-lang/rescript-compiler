@@ -38,7 +38,7 @@ module Coll = Hash.Make (struct
   let hash = Hashtbl.hash
 end)
 
-type value = { stamp : int; hash_names_act : hash_names * lam }
+type value = {stamp: int; hash_names_act: hash_names * lam}
 
 let convert (xs : input) : output =
   let coll = Coll.create 63 in
@@ -47,13 +47,12 @@ let convert (xs : input) : output =
   |> List.iteri (fun i (hash, (name, act)) ->
          match Lambda.make_key act with
          | None ->
-             os :=
-               { stamp = i; hash_names_act = ([ (hash, name) ], act) } :: !os
+           os := {stamp = i; hash_names_act = ([(hash, name)], act)} :: !os
          | Some key ->
-             Coll.add_or_update coll key
-               ~update:(fun ({ hash_names_act = hash_names, act } as acc) ->
-                 { acc with hash_names_act = ((hash, name) :: hash_names, act) })
-               { hash_names_act = ([ (hash, name) ], act); stamp = i });
+           Coll.add_or_update coll key
+             ~update:(fun ({hash_names_act = hash_names, act} as acc) ->
+               {acc with hash_names_act = ((hash, name) :: hash_names, act)})
+             {hash_names_act = ([(hash, name)], act); stamp = i});
   let result = Coll.to_list coll (fun _ value -> value) @ !os in
   Ext_list.sort_via_arrayf result
     (fun x y -> compare x.stamp y.stamp)
@@ -62,23 +61,23 @@ let convert (xs : input) : output =
 let or_list (arg : lam) (hash_names : (int * string) list) =
   match hash_names with
   | (hash, name) :: rest ->
-      let init : lam =
-        Lprim
-          ( Pintcomp Ceq,
-            [ arg; Lconst (Const_pointer (hash, Pt_variant { name })) ],
-            Location.none )
-      in
-      Ext_list.fold_left rest init (fun acc (hash, name) ->
-          Lambda.Lprim
-            ( Psequor,
-              [
-                acc;
-                Lprim
-                  ( Pintcomp Ceq,
-                    [ arg; Lconst (Const_pointer (hash, Pt_variant { name })) ],
-                    Location.none );
-              ],
-              Location.none ))
+    let init : lam =
+      Lprim
+        ( Pintcomp Ceq,
+          [arg; Lconst (Const_pointer (hash, Pt_variant {name}))],
+          Location.none )
+    in
+    Ext_list.fold_left rest init (fun acc (hash, name) ->
+        Lambda.Lprim
+          ( Psequor,
+            [
+              acc;
+              Lprim
+                ( Pintcomp Ceq,
+                  [arg; Lconst (Const_pointer (hash, Pt_variant {name}))],
+                  Location.none );
+            ],
+            Location.none ))
   | _ -> assert false
 
 let make_test_sequence_variant_constant (fail : lam option) (arg : lam)
@@ -88,9 +87,9 @@ let make_test_sequence_variant_constant (fail : lam option) (arg : lam)
   in
   match (int_lambda_list, fail) with
   | (_, act) :: rest, None | rest, Some act ->
-      Ext_list.fold_right rest act (fun (hash_names, act1) acc ->
-          let predicate : lam = or_list arg hash_names in
-          Lifthenelse (predicate, act1, acc))
+    Ext_list.fold_right rest act (fun (hash_names, act1) acc ->
+        let predicate : lam = or_list arg hash_names in
+        Lifthenelse (predicate, act1, acc))
   | [], None -> assert false
 
 let call_switcher_variant_constant (_loc : Location.t) (fail : lam option)
@@ -99,17 +98,18 @@ let call_switcher_variant_constant (_loc : Location.t) (fail : lam option)
   let int_lambda_list = convert int_lambda_list in
   match (int_lambda_list, fail) with
   | (_, act) :: rest, None | rest, Some act ->
-      Ext_list.fold_right rest act (fun (hash_names, act1) acc ->
-          let predicate = or_list arg hash_names in
-          Lifthenelse (predicate, act1, acc))
+    Ext_list.fold_right rest act (fun (hash_names, act1) acc ->
+        let predicate = or_list arg hash_names in
+        Lifthenelse (predicate, act1, acc))
   | [], None -> assert false
 
 let call_switcher_variant_constr (loc : Location.t) (fail : lam option)
-    (arg : lam) int_lambda_list (names : Ast_untagged_variants.switch_names option) : lam =
+    (arg : lam) int_lambda_list
+    (names : Ast_untagged_variants.switch_names option) : lam =
   let v = Ident.create "variant" in
   Llet
     ( Alias,
       Pgenval,
       v,
-      Lprim (Pfield (0, Fld_poly_var_tag), [ arg ], loc),
+      Lprim (Pfield (0, Fld_poly_var_tag), [arg], loc),
       call_switcher_variant_constant loc fail (Lvar v) int_lambda_list names )

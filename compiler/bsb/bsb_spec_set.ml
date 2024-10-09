@@ -27,11 +27,11 @@
 (* TODO: sync up with {!Js_packages_info.module_system}  *)
 type format = Ext_module_system.t
 
-type spec = { format : format; in_source : bool; suffix : string }
+type spec = {format: format; in_source: bool; suffix: string}
 
 type t = spec list
 
-let cmp (s1 : spec) ({ format; in_source; suffix } : spec) =
+let cmp (s1 : spec) ({format; in_source; suffix} : spec) =
   let v = compare s1.format format in
   if v <> 0 then v
   else
@@ -42,39 +42,40 @@ let empty = []
 
 let rec insert lst piviot =
   match lst with
-  | [] -> [ piviot ]
+  | [] -> [piviot]
   | x :: xs ->
-      let v = cmp piviot x in
-      if v = 0 then lst
-      else if v < 0 then piviot :: lst
-      else x :: insert xs piviot
+    let v = cmp piviot x in
+    if v = 0 then lst
+    else if v < 0 then piviot :: lst
+    else x :: insert xs piviot
 
 let add spec specs =
   match specs with
-  | [] -> [ spec ]
-  | [ a ] ->
-      let v = cmp spec a in
-      if v < 0 then spec :: specs else if v = 0 then specs else [ a; spec ]
-  | [ a; b ] ->
-      let v = cmp spec a in
-      if v < 0 then spec :: specs
-      else if v = 0 then specs
-      else
-        let v1 = cmp spec b in
-        if v < 0 then [ a; spec; b ]
-        else if v1 = 0 then specs
-        else [ a; b; spec ]
+  | [] -> [spec]
+  | [a] ->
+    let v = cmp spec a in
+    if v < 0 then spec :: specs else if v = 0 then specs else [a; spec]
+  | [a; b] ->
+    let v = cmp spec a in
+    if v < 0 then spec :: specs
+    else if v = 0 then specs
+    else
+      let v1 = cmp spec b in
+      if v < 0 then [a; spec; b] else if v1 = 0 then specs else [a; b; spec]
   | _ :: _ :: _ :: _ ->
-      (* unlikely to happen *)
-      insert specs spec
+    (* unlikely to happen *)
+    insert specs spec
 
-let singleton x = [ x ]
+let singleton x = [x]
 
-let rec fold f t acc = match t with [] -> acc | x :: xs -> fold f xs (f x acc)
+let rec fold f t acc =
+  match t with
+  | [] -> acc
+  | x :: xs -> fold f xs (f x acc)
 
 let rec iter f t =
   match t with
   | [] -> ()
   | x :: xs ->
-      f x;
-      iter f xs
+    f x;
+    iter f xs

@@ -32,18 +32,18 @@
 type jbl_label = int
 
 type return_label = {
-  id : Ident.t;
-  params : Ident.t list;
-  immutable_mask : bool array;
-  mutable new_params : Ident.t Map_ident.t;
-  mutable triggered : bool;
+  id: Ident.t;
+  params: Ident.t list;
+  immutable_mask: bool array;
+  mutable new_params: Ident.t Map_ident.t;
+  mutable triggered: bool;
 }
 
-type value = { exit_id : Ident.t; bindings : Ident.t list; order_id : int }
+type value = {exit_id: Ident.t; bindings: Ident.t list; order_id: int}
 
 type let_kind = Lam_compat.let_kind
 
-type tail = { label : return_label option; in_staticcatch : bool }
+type tail = {label: return_label option; in_staticcatch: bool}
 
 type maybe_tail = Tail_in_try | Tail_with_name of tail
 
@@ -67,15 +67,11 @@ type jmp_table = value Map_int.t
 
 val continuation_is_return : continuation -> bool
 
-type t = {
-  continuation : continuation;
-  jmp_table : jmp_table;
-  meta : Lam_stats.t;
-}
+type t = {continuation: continuation; jmp_table: jmp_table; meta: Lam_stats.t}
 
 val empty_handler_map : jmp_table
 
-type handler = { label : jbl_label; handler : Lam.t; bindings : Ident.t list }
+type handler = {label: jbl_label; handler: Lam.t; bindings: Ident.t list}
 
 val no_static_raise_in_handler : handler -> bool
 

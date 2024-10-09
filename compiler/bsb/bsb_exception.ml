@@ -40,45 +40,47 @@ let package_not_found ~pkg ~json = error (Package_not_found (pkg, json))
 let print (fmt : Format.formatter) (x : error) =
   match x with
   | Conflict_module (modname, dir1, dir2) ->
-      Format.fprintf fmt
-        "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
-         File names must be unique per project" modname dir1 dir2
+    Format.fprintf fmt
+      "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
+       File names must be unique per project" modname dir1 dir2
   | Not_consistent modname ->
-      Format.fprintf fmt
-        "@{<error>Error:@} %s has implementation/interface in non-consistent \
-         syntax(reason/ocaml)"
-        modname
+    Format.fprintf fmt
+      "@{<error>Error:@} %s has implementation/interface in non-consistent \
+       syntax(reason/ocaml)"
+      modname
   | No_implementation modname ->
-      Format.fprintf fmt
-        "@{<error>Error:@} %s does not have implementation file" modname
+    Format.fprintf fmt "@{<error>Error:@} %s does not have implementation file"
+      modname
   | Package_not_found (name, json_opt) ->
-      let in_json =
-        match json_opt with None -> Ext_string.empty | Some x -> " in " ^ x
-      in
-      let name = Bsb_pkg_types.to_string name in
-      if Ext_string.equal name !Bs_version.package_name then
-        Format.fprintf fmt
-          "File \"bsconfig.json\", line 1\n\
-           @{<error>Error:@} package @{<error>%s@} is not found %s\n\
-           It's the basic, required package. If you have it installed globally,\n\
-           Please run `npm link rescript` to make it available" name in_json
-      else
-        Format.fprintf fmt
-          "File \"bsconfig.json\", line 1\n\
-           @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
-           - Did you install it?" name in_json
+    let in_json =
+      match json_opt with
+      | None -> Ext_string.empty
+      | Some x -> " in " ^ x
+    in
+    let name = Bsb_pkg_types.to_string name in
+    if Ext_string.equal name !Bs_version.package_name then
+      Format.fprintf fmt
+        "File \"bsconfig.json\", line 1\n\
+         @{<error>Error:@} package @{<error>%s@} is not found %s\n\
+         It's the basic, required package. If you have it installed globally,\n\
+         Please run `npm link rescript` to make it available" name in_json
+    else
+      Format.fprintf fmt
+        "File \"bsconfig.json\", line 1\n\
+         @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
+         - Did you install it?" name in_json
   | Json_config (pos, s) ->
-      Format.fprintf fmt
-        "File %S, line %d:\n\
-         @{<error>Error:@} %s \n\
-         For more details, please check out the schema at \
-         https://rescript-lang.org/docs/manual/latest/build-configuration-schema"
-        pos.pos_fname pos.pos_lnum s
+    Format.fprintf fmt
+      "File %S, line %d:\n\
+       @{<error>Error:@} %s \n\
+       For more details, please check out the schema at \
+       https://rescript-lang.org/docs/manual/latest/build-configuration-schema"
+      pos.pos_fname pos.pos_lnum s
   | Invalid_spec s ->
-      Format.fprintf fmt "@{<error>Error: Invalid bsconfig.json %s@}" s
+    Format.fprintf fmt "@{<error>Error: Invalid bsconfig.json %s@}" s
   | Invalid_json s ->
-      Format.fprintf fmt
-        "File %S, line 1\n@{<error>Error: Invalid json format@}" s
+    Format.fprintf fmt "File %S, line 1\n@{<error>Error: Invalid json format@}"
+      s
 
 let conflict_module modname dir1 dir2 =
   Error (Conflict_module (modname, dir1, dir2))
@@ -101,4 +103,6 @@ let invalid_json s = error (Invalid_json s)
 
 let () =
   Printexc.register_printer (fun x ->
-      match x with Error x -> Some (Format.asprintf "%a" print x) | _ -> None)
+      match x with
+      | Error x -> Some (Format.asprintf "%a" print x)
+      | _ -> None)

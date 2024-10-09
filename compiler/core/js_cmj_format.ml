@@ -28,8 +28,8 @@ type arity = Single of Lam_arity.t | Submodule of Lam_arity.t array
 
 (* TODO: add a magic number *)
 type cmj_value = {
-  arity : arity;
-  persistent_closed_lambda : Lam.t option;
+  arity: arity;
+  persistent_closed_lambda: Lam.t option;
       (** Either constant or closed functor *)
 }
 
@@ -38,18 +38,18 @@ type effect = string option
 let single_na = Single Lam_arity.na
 
 type keyed_cmj_value = {
-  name : string;
-  arity : arity;
-  persistent_closed_lambda : Lam.t option;
+  name: string;
+  arity: arity;
+  persistent_closed_lambda: Lam.t option;
 }
 
 type keyed_cmj_values = keyed_cmj_value array
 
 type t = {
-  values : keyed_cmj_values;
-  pure : bool;
-  package_spec : Js_packages_info.t;
-  case : Ext_js_file_kind.case;
+  values: keyed_cmj_values;
+  pure: bool;
+  package_spec: Js_packages_info.t;
+  case: Ext_js_file_kind.case;
 }
 
 let make ~(values : cmj_value Map_string.t) ~effect ~package_spec ~case : t =
@@ -107,7 +107,7 @@ let to_file name ~check_exists (v : t) =
 let key_comp (a : string) b = Map_string.compare_key a b.name
 
 let not_found key =
-  { name = key; arity = single_na; persistent_closed_lambda = None }
+  {name = key; arity = single_na; persistent_closed_lambda = None}
 
 let get_result mid_val =
   match mid_val.persistent_closed_lambda with
@@ -115,10 +115,10 @@ let get_result mid_val =
       (Lconst
         (Const_js_null | Const_js_undefined _ | Const_js_true | Const_js_false))
   | None ->
-      mid_val
+    mid_val
   | Some _ ->
-      if !Js_config.cross_module_inline then mid_val
-      else { mid_val with persistent_closed_lambda = None }
+    if !Js_config.cross_module_inline then mid_val
+    else {mid_val with persistent_closed_lambda = None}
 
 let rec binary_search_aux arr lo hi (key : string) =
   let mid = (lo + hi) / 2 in
@@ -159,8 +159,8 @@ let query_by_name (cmj_table : t) name : keyed_cmj_value =
 type path = string
 
 type cmj_load_info = {
-  cmj_table : t;
-  package_path : path;
+  cmj_table: t;
+  package_path: path;
       (*
     Note it is the package path we want 
     for ES6_global module spec

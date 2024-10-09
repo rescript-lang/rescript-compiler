@@ -19,7 +19,7 @@ module StringSet : Set.S with type elt = string
 module StringMap : Map.S with type key = string
 
 type map_tree = Node of StringSet.t * bound_map
-and  bound_map = map_tree StringMap.t
+and bound_map = map_tree StringMap.t
 val make_leaf : string -> map_tree
 val make_node : bound_map -> map_tree
 val weaken_map : StringSet.t -> map_tree -> map_tree
@@ -30,8 +30,6 @@ val free_structure_names : StringSet.t ref
 val pp_deps : string list ref
 
 val open_module : bound_map -> Longident.t -> bound_map
-
-
 
 val add_signature : bound_map -> Parsetree.signature -> unit
 

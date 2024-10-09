@@ -23,6 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let load_cmi ~unit_name : Env.Persistent_signature.t option =
-  match Config_util.find_opt (unit_name ^".cmi") with 
+  match Config_util.find_opt (unit_name ^ ".cmi") with
   | Some filename -> Some {filename; cmi = Cmi_format.read_cmi filename}
-  | None -> None 
+  | None -> None

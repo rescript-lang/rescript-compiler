@@ -21,7 +21,7 @@ open Types
 exception Dont_match
 
 type type_mismatch =
-    Arity
+  | Arity
   | Privacy
   | Kind
   | Constraint
@@ -38,24 +38,35 @@ type type_mismatch =
   | Tag_name
   | Variant_representation of Ident.t
 
-val value_descriptions:
-  loc:Location.t -> Env.t -> Ident.t ->
-  value_description -> value_description -> module_coercion    
-  
-val type_declarations:
+val value_descriptions :
+  loc:Location.t ->
+  Env.t ->
+  Ident.t ->
+  value_description ->
+  value_description ->
+  module_coercion
+
+val type_declarations :
   ?equality:bool ->
   loc:Location.t ->
-  Env.t -> string ->
-  type_declaration -> Ident.t -> type_declaration -> type_mismatch list
+  Env.t ->
+  string ->
+  type_declaration ->
+  Ident.t ->
+  type_declaration ->
+  type_mismatch list
 
-val extension_constructors:
+val extension_constructors :
   loc:Location.t ->
-  Env.t -> Ident.t ->
-  extension_constructor -> extension_constructor -> bool
+  Env.t ->
+  Ident.t ->
+  extension_constructor ->
+  extension_constructor ->
+  bool
 (*
 val class_types:
         Env.t -> class_type -> class_type -> bool
 *)
 
-val report_type_mismatch:
-    string -> string -> string -> Format.formatter -> type_mismatch list -> unit
+val report_type_mismatch :
+  string -> string -> string -> Format.formatter -> type_mismatch list -> unit

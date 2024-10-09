@@ -25,35 +25,35 @@
 type apply_status = App_na | App_infer_full | App_uncurry
 
 type ap_info = {
-  ap_loc : Location.t;
-  ap_inlined : Lambda.inline_attribute;
-  ap_status : apply_status;
+  ap_loc: Location.t;
+  ap_inlined: Lambda.inline_attribute;
+  ap_status: apply_status;
 }
 
 type ident = Ident.t
 
 type lambda_switch = {
-  sw_consts_full : bool;
-  sw_consts : (int * t) list;
-  sw_blocks_full : bool;
-  sw_blocks : (int * t) list;
-  sw_failaction : t option;
-  sw_names : Ast_untagged_variants.switch_names option;
+  sw_consts_full: bool;
+  sw_consts: (int * t) list;
+  sw_blocks_full: bool;
+  sw_blocks: (int * t) list;
+  sw_failaction: t option;
+  sw_names: Ast_untagged_variants.switch_names option;
 }
 
-and apply = private { ap_func : t; ap_args : t list; ap_info : ap_info }
+and apply = private {ap_func: t; ap_args: t list; ap_info: ap_info}
 
 and lfunction = {
-  arity : int;
-  params : ident list;
-  body : t;
-  attr : Lambda.function_attribute;
+  arity: int;
+  params: ident list;
+  body: t;
+  attr: Lambda.function_attribute;
 }
 
 and prim_info = private {
-  primitive : Lam_primitive.t;
-  args : t list;
-  loc : Location.t;
+  primitive: Lam_primitive.t;
+  args: t list;
+  loc: Location.t;
 }
 
 and t = private
@@ -91,7 +91,7 @@ val handle_bs_non_obj_ffi :
   t list ->
   Location.t ->
   string ->
-  dynamic_import: bool ->
+  dynamic_import:bool ->
   t
 
 (**************************************************************)

@@ -17,80 +17,83 @@
 
 open Asttypes
 
-type loc_kind =
-  | Loc_FILE
-  | Loc_LINE
-  | Loc_MODULE
-  | Loc_LOC
-  | Loc_POS
+type loc_kind = Loc_FILE | Loc_LINE | Loc_MODULE | Loc_LOC | Loc_POS
 
-type record_repr = 
-  | Record_regular 
-  | Record_optional
+type record_repr = Record_regular | Record_optional
 
-type tag_info = 
-  | Blk_constructor of { name : string ; num_nonconst : int; tag : int; attrs : Parsetree.attributes }
-  | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; optional_labels: string list; fields : string array; mutable_flag : mutable_flag; attrs : Parsetree.attributes }   
+type tag_info =
+  | Blk_constructor of {
+      name: string;
+      num_nonconst: int;
+      tag: int;
+      attrs: Parsetree.attributes;
+    }
+  | Blk_record_inlined of {
+      name: string;
+      num_nonconst: int;
+      tag: int;
+      optional_labels: string list;
+      fields: string array;
+      mutable_flag: mutable_flag;
+      attrs: Parsetree.attributes;
+    }
   | Blk_tuple
-  | Blk_poly_var of string 
-  | Blk_record of {fields : string array; mutable_flag : mutable_flag; record_repr : record_repr }
+  | Blk_poly_var of string
+  | Blk_record of {
+      fields: string array;
+      mutable_flag: mutable_flag;
+      record_repr: record_repr;
+    }
   | Blk_module of string list
-  | Blk_module_export of Ident.t list 
+  | Blk_module_export of Ident.t list
   | Blk_extension
     (* underlying is the same as tuple, immutable block
-      {[
-         exception A of int * int 
-      ]}
-      is translated into
-      {[
-        [A, x, y]
-      ]}
-
+       {[
+          exception A of int * int
+       ]}
+       is translated into
+       {[
+         [A, x, y]
+       ]}
     *)
-
   | Blk_some
-  | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
-  | Blk_record_ext of {fields : string array; mutable_flag : mutable_flag}
-  | Blk_lazy_general    
+  | Blk_some_not_nested
+    (* ['a option] where ['a] can not inhabit a non-like value *)
+  | Blk_record_ext of {fields: string array; mutable_flag: mutable_flag}
+  | Blk_lazy_general
 
-val find_name :
-  Parsetree.attribute -> Asttypes.label option
+val find_name : Parsetree.attribute -> Asttypes.label option
 
-val tag_of_tag_info : tag_info -> int 
-val mutable_flag_of_tag_info : tag_info -> mutable_flag 
-val blk_record :    
-  (Types.label_description* Typedtree.record_label_definition) array ->
-  mutable_flag -> 
-  record_repr -> 
+val tag_of_tag_info : tag_info -> int
+val mutable_flag_of_tag_info : tag_info -> mutable_flag
+val blk_record :
+  (Types.label_description * Typedtree.record_label_definition) array ->
+  mutable_flag ->
+  record_repr ->
   tag_info
-  
 
 val blk_record_ext :
-  (Types.label_description* Typedtree.record_label_definition) array ->
-  mutable_flag -> 
+  (Types.label_description * Typedtree.record_label_definition) array ->
+  mutable_flag ->
   tag_info
 
-
-val blk_record_inlined :   
-  (Types.label_description* Typedtree.record_label_definition) array ->
+val blk_record_inlined :
+  (Types.label_description * Typedtree.record_label_definition) array ->
   string ->
   int ->
   string list ->
   tag:int ->
   attrs:Parsetree.attributes ->
-  mutable_flag ->  
+  mutable_flag ->
   tag_info
-
-
-
 
 val ref_tag_info : tag_info
 
-type field_dbg_info = 
-  | Fld_record of {name : string; mutable_flag : Asttypes.mutable_flag}
-  | Fld_module of {name : string}     
-  | Fld_record_inline of {name : string}
-  | Fld_record_extension of {name : string}
+type field_dbg_info =
+  | Fld_record of {name: string; mutable_flag: Asttypes.mutable_flag}
+  | Fld_module of {name: string}
+  | Fld_record_inline of {name: string}
+  | Fld_record_extension of {name: string}
   | Fld_tuple
   | Fld_poly_var_tag
   | Fld_poly_var_content
@@ -98,51 +101,38 @@ type field_dbg_info =
   | Fld_variant
   | Fld_cons
   | Fld_array
-  
-val fld_record :
-  Types.label_description -> 
-  field_dbg_info
 
-val fld_record_inline :
-  Types.label_description -> 
-  field_dbg_info
+val fld_record : Types.label_description -> field_dbg_info
 
-val fld_record_extension :
-  Types.label_description -> 
-  field_dbg_info
+val fld_record_inline : Types.label_description -> field_dbg_info
 
-val ref_field_info : field_dbg_info   
+val fld_record_extension : Types.label_description -> field_dbg_info
 
+val ref_field_info : field_dbg_info
 
-
-type set_field_dbg_info = 
-  | Fld_record_set of string 
-  | Fld_record_inline_set of string  
+type set_field_dbg_info =
+  | Fld_record_set of string
+  | Fld_record_inline_set of string
   | Fld_record_extension_set of string
 
-val ref_field_set_info : set_field_dbg_info    
+val ref_field_set_info : set_field_dbg_info
 
-val fld_record_set : 
-  Types.label_description ->
-  set_field_dbg_info
+val fld_record_set : Types.label_description -> set_field_dbg_info
 
-val fld_record_inline_set : 
-  Types.label_description ->
-  set_field_dbg_info
+val fld_record_inline_set : Types.label_description -> set_field_dbg_info
 
-val fld_record_extension_set :
-  Types.label_description -> 
-  set_field_dbg_info
+val fld_record_extension_set : Types.label_description -> set_field_dbg_info
 
-type immediate_or_pointer =
-  | Immediate
-  | Pointer
-type is_safe =
-  | Safe
-  | Unsafe
+type immediate_or_pointer = Immediate | Pointer
+type is_safe = Safe | Unsafe
 
 type pointer_info =
-  | Pt_constructor of {name: string; const: int; non_const: int; attrs: Parsetree.attributes}
+  | Pt_constructor of {
+      name: string;
+      const: int;
+      non_const: int;
+      attrs: Parsetree.attributes;
+    }
   | Pt_variant of {name: string}
   | Pt_module_alias
   | Pt_shape_none
@@ -158,15 +148,12 @@ type primitive =
   | Pfn_arity
   | Prevapply
   | Pdirapply
-  | Ploc of loc_kind
-    (* Globals *)
+  | Ploc of loc_kind (* Globals *)
   | Pgetglobal of Ident.t
   (* Operations on heap blocks *)
   | Pmakeblock of tag_info
   | Pfield of int * field_dbg_info
   | Psetfield of int * set_field_dbg_info
-
-
   | Pduprecord
   (* Force lazy values *)
   | Plazyforce
@@ -182,43 +169,79 @@ type primitive =
   | Pobjtag
   | Pobjsize
   (* Boolean operations *)
-  | Psequand | Psequor | Pnot
+  | Psequand
+  | Psequor
+  | Pnot
   | Pboolcomp of comparison
-  | Pboolorder | Pboolmin | Pboolmax
+  | Pboolorder
+  | Pboolmin
+  | Pboolmax
   (* Integer operations *)
-  | Pnegint | Paddint | Psubint | Pmulint
-  | Pdivint of is_safe | Pmodint of is_safe
-  | Pandint | Porint | Pxorint
-  | Plslint | Plsrint | Pasrint
+  | Pnegint
+  | Paddint
+  | Psubint
+  | Pmulint
+  | Pdivint of is_safe
+  | Pmodint of is_safe
+  | Pandint
+  | Porint
+  | Pxorint
+  | Plslint
+  | Plsrint
+  | Pasrint
   | Pintcomp of comparison
-  | Pintorder | Pintmin | Pintmax
+  | Pintorder
+  | Pintmin
+  | Pintmax
   | Poffsetint of int
   | Poffsetref of int
   (* Float operations *)
-  | Pintoffloat | Pfloatofint
-  | Pnegfloat | Pabsfloat | Pmodfloat
-  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+  | Pintoffloat
+  | Pfloatofint
+  | Pnegfloat
+  | Pabsfloat
+  | Pmodfloat
+  | Paddfloat
+  | Psubfloat
+  | Pmulfloat
+  | Pdivfloat
   | Pfloatcomp of comparison
-  | Pfloatorder | Pfloatmin | Pfloatmax
+  | Pfloatorder
+  | Pfloatmin
+  | Pfloatmax
   (* BigInt operations *)
-  | Pnegbigint | Paddbigint | Psubbigint | Ppowbigint
-  | Pmulbigint | Pdivbigint | Pmodbigint
-  | Pandbigint | Porbigint | Pxorbigint
-  | Plslbigint | Pasrbigint
+  | Pnegbigint
+  | Paddbigint
+  | Psubbigint
+  | Ppowbigint
+  | Pmulbigint
+  | Pdivbigint
+  | Pmodbigint
+  | Pandbigint
+  | Porbigint
+  | Pxorbigint
+  | Plslbigint
+  | Pasrbigint
   | Pbigintcomp of comparison
-  | Pbigintorder | Pbigintmin | Pbigintmax
+  | Pbigintorder
+  | Pbigintmin
+  | Pbigintmax
   (* String operations *)
-  | Pstringlength | Pstringrefu  | Pstringrefs
+  | Pstringlength
+  | Pstringrefu
+  | Pstringrefs
   | Pstringcomp of comparison
-  | Pstringorder | Pstringmin | Pstringmax
+  | Pstringorder
+  | Pstringmin
+  | Pstringmax
   | Pstringadd
   (* Array operations *)
   | Pmakearray of mutable_flag
-  | Parraylength 
-  | Parrayrefu 
-  | Parraysetu 
-  | Parrayrefs 
-  | Parraysets 
+  | Parraylength
+  | Parrayrefu
+  | Parraysetu
+  | Parrayrefs
+  | Parraysets
   (* List primitives *)
   | Pmakelist of Asttypes.mutable_flag
   (* dict primitives *)
@@ -261,33 +284,25 @@ type primitive =
   | Pjs_fn_method
   | Pjs_unsafe_downgrade
 
-and comparison =
-    Ceq | Cneq | Clt | Cgt | Cle | Cge
+and comparison = Ceq | Cneq | Clt | Cgt | Cle | Cge
 
-and value_kind =
-    Pgenval 
+and value_kind = Pgenval
 
-and raise_kind =
-  | Raise_regular
-  | Raise_reraise
-  | Raise_notrace
+and raise_kind = Raise_regular | Raise_reraise | Raise_notrace
 
 type structured_constant =
-    Const_base of constant
+  | Const_base of constant
   | Const_pointer of int * pointer_info
-  | Const_block of  tag_info * structured_constant list
+  | Const_block of tag_info * structured_constant list
   | Const_float_array of string list
   | Const_immstring of string
   | Const_false
   | Const_true
-  
+
 type inline_attribute =
   | Always_inline (* [@inline] or [@inline always] *)
   | Never_inline (* [@inline never] *)
   | Default_inline (* no [@inline] attribute *)
-
-
-
 
 type let_kind = Strict | Alias | StrictOpt | Variable
 (* Meaning of kinds for let x = e in e':
@@ -299,23 +314,20 @@ type let_kind = Strict | Alias | StrictOpt | Variable
     StrictOpt: e does not have side-effects, but depend on the store;
       we can discard e if x does not appear in e'
     Variable: the variable x is assigned later in e'
- *)
-
-
-
+*)
 
 (* [true] means yes, [false] may mean unknown *)
 type function_attribute = {
-  inline : inline_attribute;
+  inline: inline_attribute;
   is_a_functor: bool;
-  return_unit : bool;
-  async : bool;
-  directive : string option;
-  one_unit_arg : bool;
+  return_unit: bool;
+  async: bool;
+  directive: string option;
+  one_unit_arg: bool;
 }
 
 type lambda =
-    Lvar of Ident.t
+  | Lvar of Ident.t
   | Lconst of structured_constant
   | Lapply of lambda_apply
   | Lfunction of lfunction
@@ -323,8 +335,8 @@ type lambda =
   | Lletrec of (Ident.t * lambda) list * lambda
   | Lprim of primitive * lambda list * Location.t
   | Lswitch of lambda * lambda_switch * Location.t
-(* switch on strings, clauses are sorted by string order,
-   strings are pairwise distinct *)
+  (* switch on strings, clauses are sorted by string order,
+     strings are pairwise distinct *)
   | Lstringswitch of
       lambda * (string * lambda) list * lambda option * Location.t
   | Lstaticraise of int * lambda list
@@ -335,31 +347,30 @@ type lambda =
   | Lwhile of lambda * lambda
   | Lfor of Ident.t * lambda * lambda * direction_flag * lambda
   | Lassign of Ident.t * lambda
-  | Lsend of string * lambda *  Location.t
+  | Lsend of string * lambda * Location.t
 
-and lfunction =
-  {
-    params: Ident.t list;
-    body: lambda;
-    attr: function_attribute; (* specified with [@inline] attribute *)
-    loc : Location.t; }
+and lfunction = {
+  params: Ident.t list;
+  body: lambda;
+  attr: function_attribute; (* specified with [@inline] attribute *)
+  loc: Location.t;
+}
 
-and lambda_apply =
-  { ap_func : lambda;
-    ap_args : lambda list;
-    ap_loc : Location.t;
-    ap_inlined : inline_attribute; (* specified with the [@inlined] attribute *)
-    }
+and lambda_apply = {
+  ap_func: lambda;
+  ap_args: lambda list;
+  ap_loc: Location.t;
+  ap_inlined: inline_attribute; (* specified with the [@inlined] attribute *)
+}
 
-and lambda_switch =
-  { sw_numconsts: int;                  (* Number of integer cases *)
-    sw_consts: (int * lambda) list;     (* Integer cases *)
-    sw_numblocks: int;                  (* Number of tag block cases *)
-    sw_blocks: (int * lambda) list;     (* Tag block cases *)
-    sw_failaction : lambda option;      (* Action to take if failure *)
-    sw_names: Ast_untagged_variants.switch_names option }
-
-
+and lambda_switch = {
+  sw_numconsts: int; (* Number of integer cases *)
+  sw_consts: (int * lambda) list; (* Integer cases *)
+  sw_numblocks: int; (* Number of tag block cases *)
+  sw_blocks: (int * lambda) list; (* Tag block cases *)
+  sw_failaction: lambda option; (* Action to take if failure *)
+  sw_names: Ast_untagged_variants.switch_names option;
+}
 
 (* Lambda code for the middle-end.
    * In the closure case the code is a sequence of assignments to a
@@ -374,29 +385,28 @@ and lambda_switch =
 *)
 
 (* Sharing key *)
-val make_key: lambda -> lambda option
+val make_key : lambda -> lambda option
 
-val const_unit: structured_constant
-val lambda_assert_false: lambda
-val lambda_unit: lambda
+val const_unit : structured_constant
+val lambda_assert_false : lambda
+val lambda_unit : lambda
 val lambda_module_alias : lambda
-val name_lambda: let_kind -> lambda -> (Ident.t -> lambda) -> lambda
-val name_lambda_list: lambda list -> (lambda list -> lambda) -> lambda
+val name_lambda : let_kind -> lambda -> (Ident.t -> lambda) -> lambda
+val name_lambda_list : lambda list -> (lambda list -> lambda) -> lambda
 
-val iter: (lambda -> unit) -> lambda -> unit
-module IdentSet: Set.S with type elt = Ident.t
-val free_variables: lambda -> IdentSet.t
+val iter : (lambda -> unit) -> lambda -> unit
+module IdentSet : Set.S with type elt = Ident.t
+val free_variables : lambda -> IdentSet.t
 
-val transl_normal_path: Path.t -> lambda   (* Path.t is already normal *)
+val transl_normal_path : Path.t -> lambda (* Path.t is already normal *)
 
-val transl_module_path: ?loc:Location.t -> Env.t -> Path.t -> lambda
-val transl_value_path: ?loc:Location.t -> Env.t -> Path.t -> lambda
-val transl_extension_path: ?loc:Location.t -> Env.t -> Path.t -> lambda
+val transl_module_path : ?loc:Location.t -> Env.t -> Path.t -> lambda
+val transl_value_path : ?loc:Location.t -> Env.t -> Path.t -> lambda
+val transl_extension_path : ?loc:Location.t -> Env.t -> Path.t -> lambda
 
+val make_sequence : ('a -> lambda) -> 'a list -> lambda
 
-val make_sequence: ('a -> lambda) -> 'a list -> lambda
-
-val subst_lambda: lambda Ident.tbl -> lambda -> lambda
+val subst_lambda : lambda Ident.tbl -> lambda -> lambda
 val map : (lambda -> lambda) -> lambda -> lambda
 val bind : let_kind -> Ident.t -> lambda -> lambda -> lambda
 
@@ -412,19 +422,18 @@ val default_function_attribute : function_attribute
 (* Get a new static failure ident *)
 val next_raise_count : unit -> int
 val next_negative_raise_count : unit -> int
-  (* Negative raise counts are used to compile 'match ... with
-     exception x -> ...'.  This disabled some simplifications
-     performed by the Simplif module that assume that static raises
-     are in tail position in their handler. *)
+(* Negative raise counts are used to compile 'match ... with
+   exception x -> ...'.  This disabled some simplifications
+   performed by the Simplif module that assume that static raises
+   are in tail position in their handler. *)
 
 val staticfail : lambda (* Anticipated static failure *)
 
 (* Check anticipated failure, substitute its final value *)
-val is_guarded: lambda -> bool
+val is_guarded : lambda -> bool
 val patch_guarded : lambda -> lambda -> lambda
 
-val raise_kind: raise_kind -> string
+val raise_kind : raise_kind -> string
 val lam_of_loc : loc_kind -> Location.t -> lambda
 
-
-val reset: unit -> unit
+val reset : unit -> unit

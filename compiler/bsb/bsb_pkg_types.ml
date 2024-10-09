@@ -29,7 +29,9 @@ type t = Global of string | Scope of string * scope
 and scope = string
 
 let to_string (x : t) =
-  match x with Global s -> s | Scope (s, scope) -> scope // s
+  match x with
+  | Global s -> s
+  | Scope (s, scope) -> scope // s
 
 let print fmt (x : t) =
   match x with

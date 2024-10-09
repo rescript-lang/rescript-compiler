@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type command = { cmd : string; cwd : string; args : string array }
+type command = {cmd: string; cwd: string; args: string array}
 
 let log cmd =
   Bsb_log.info "@{<info>Entering@} %s @." cmd.cwd;
@@ -36,17 +36,17 @@ let command_fatal_error cmd eid =
 let run_command_execv_unix cmd : int =
   match Unix.fork () with
   | 0 ->
-      log cmd;
-      Unix.chdir cmd.cwd;
-      Unix.execv cmd.cmd cmd.args
+    log cmd;
+    Unix.chdir cmd.cwd;
+    Unix.execv cmd.cmd cmd.args
   | pid -> (
-      match Unix.waitpid [] pid with
-      | _, process_status -> (
-          match process_status with
-          | Unix.WEXITED eid -> eid
-          | Unix.WSIGNALED _ | Unix.WSTOPPED _ ->
-              Bsb_log.error "@{<error>Interrupted:@} %s@." cmd.cmd;
-              2))
+    match Unix.waitpid [] pid with
+    | _, process_status -> (
+      match process_status with
+      | Unix.WEXITED eid -> eid
+      | Unix.WSIGNALED _ | Unix.WSTOPPED _ ->
+        Bsb_log.error "@{<error>Interrupted:@} %s@." cmd.cmd;
+        2))
 
 (** TODO: the args are not quoted, here 
     we are calling a very limited set of `bsb` commands, so that 
@@ -75,10 +75,10 @@ let run_command_execv =
 let rec remove_dir_recursive dir =
   match Sys.is_directory dir with
   | true ->
-      let files = Sys.readdir dir in
-      for i = 0 to Array.length files - 1 do
-        remove_dir_recursive (Filename.concat dir (Array.unsafe_get files i))
-      done;
-      Unix.rmdir dir
+    let files = Sys.readdir dir in
+    for i = 0 to Array.length files - 1 do
+      remove_dir_recursive (Filename.concat dir (Array.unsafe_get files i))
+    done;
+    Unix.rmdir dir
   | false -> Sys.remove dir
   | exception _ -> ()

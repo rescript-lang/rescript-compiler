@@ -27,15 +27,15 @@ let check_from_end al =
     match l with
     | [] -> false
     | e :: r ->
-        if e < 0 || e > 255 then false
-        else
-          let c = Char.chr e in
-          if c = '/' then true
-          else if Ext_list.exists seen (fun x -> x = c) then false
-            (* flag should not be repeated *)
-          else if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c = 'u' then
-            aux r (c :: seen)
-          else false
+      if e < 0 || e > 255 then false
+      else
+        let c = Char.chr e in
+        if c = '/' then true
+        else if Ext_list.exists seen (fun x -> x = c) then false
+          (* flag should not be repeated *)
+        else if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c = 'u' then
+          aux r (c :: seen)
+        else false
   in
   aux al []
 

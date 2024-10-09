@@ -22,6 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val setup_env : unit -> unit
 (** This function set up built in compile time variables used in 
     conditional compilation so that 
     {[
@@ -31,5 +32,3 @@
     ]}
     Is understood, also make sure the playground do the same initialization. 
 *)
-val setup_env : unit -> unit
-

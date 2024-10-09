@@ -25,19 +25,19 @@
 type public = Export_none | Export_all | Export_set of Set_string.t
 
 type build_generator = {
-  input : string list;
-  output : string list;
-  command : string;
+  input: string list;
+  output: string list;
+  command: string;
 }
 
 type file_group = {
-  dir : string;
-  sources : Bsb_db.map;
-  resources : string list;
-  public : public;
-  is_dev : bool;
+  dir: string;
+  sources: Bsb_db.map;
+  resources: string list;
+  public: public;
+  is_dev: bool;
   (* false means not in dev mode *)
-  generators : build_generator list;
+  generators: build_generator list;
       (* output of [generators] should be added to [sources],
          if it is [.ml,.mli,.res,.resi]
       *)
@@ -45,7 +45,7 @@ type file_group = {
 
 type file_groups = file_group list
 
-type t = private { files : file_groups; globbed_dirs : string list }
+type t = private {files: file_groups; globbed_dirs: string list}
 
 val empty : t
 

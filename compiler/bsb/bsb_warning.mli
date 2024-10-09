@@ -28,10 +28,9 @@ type warning_error =
   | Warn_error_true
   | Warn_error_number of string
 
-type t0 = { number : string option; error : warning_error }
+type t0 = {number: string option; error: warning_error}
 
 type nonrec t = t0 option
-
 
 val to_merlin_string : t -> string
 (** Extra work is need to make merlin happy *)

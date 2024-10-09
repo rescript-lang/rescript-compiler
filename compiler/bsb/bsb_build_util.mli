@@ -74,7 +74,7 @@ val get_list_string : Ext_json_types.t array -> string list
 
 type top = Expect_none | Expect_name of string
 
-type result = { path : string; checked : bool }
+type result = {path: string; checked: bool}
 
 (* [resolve_bsb_magic_file]
    returns a tuple (path,checked)
@@ -82,9 +82,9 @@ type result = { path : string; checked : bool }
 *)
 val resolve_bsb_magic_file : cwd:string -> desc:string -> string -> result
 
-type package_context = { proj_dir : string; top : top; is_pinned: bool }
+type package_context = {proj_dir: string; top: top; is_pinned: bool}
 
-val extract_pinned_dependencies: Ext_json_types.t Map_string.t -> Set_string.t
+val extract_pinned_dependencies : Ext_json_types.t Map_string.t -> Set_string.t
 
 val walk_all_deps :
   string -> pinned_dependencies:Set_string.t -> package_context Queue.t

@@ -15,26 +15,24 @@
 
 (* Access paths *)
 
-type t =
-    Pident of Ident.t
-  | Pdot of t * string * int
-  | Papply of t * t
+type t = Pident of Ident.t | Pdot of t * string * int | Papply of t * t
 
-val same: t -> t -> bool
-val compare: t -> t -> int
-val isfree: Ident.t -> t -> bool
-val binding_time: t -> int
-val flatten : t -> [ `Contains_apply | `Ok of Ident.t * string list ]
+val same : t -> t -> bool
+val compare : t -> t -> int
+val isfree : Ident.t -> t -> bool
+val binding_time : t -> int
+val flatten : t -> [`Contains_apply | `Ok of Ident.t * string list]
 
-val nopos: int
+val nopos : int
 
-val name: ?paren:(string -> bool) -> t -> string
-    (* [paren] tells whether a path suffix needs parentheses *)
-val head: t -> Ident.t
+val name : ?paren:(string -> bool) -> t -> string
+(* [paren] tells whether a path suffix needs parentheses *)
 
-val heads: t -> Ident.t list
+val head : t -> Ident.t
 
-val last: t -> string
+val heads : t -> Ident.t list
+
+val last : t -> string
 
 type typath =
   | Regular of t
@@ -42,5 +40,5 @@ type typath =
   | LocalExt of Ident.t
   | Cstr of t * string
 
-val constructor_typath: t -> typath
-val is_constructor_typath: t -> bool
+val constructor_typath : t -> typath
+val is_constructor_typath : t -> bool

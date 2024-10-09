@@ -26,7 +26,7 @@
 let loop_use = 100
 
 type stats = {
-  top : bool;
+  top: bool;
   (* all appearances are in the top,  substitution is fine
      whether it is pure or not
      {[
@@ -36,16 +36,18 @@ type stats = {
      since in ocaml, the application order is intentionally undefined,
      note if [times] is not one, this field does not make sense
   *)
-  times : int;
+  times: int;
 }
 
-let fresh_stats : stats = { top = true; times = 0 }
+let fresh_stats : stats = {top = true; times = 0}
 
-let sink_stats : stats = { top = false; times = loop_use }
+let sink_stats : stats = {top = false; times = loop_use}
 
 (* let stats top times = {top; times} *)
 let top_and_used_zero_or_one x =
-  match x with { top = true; times = 0 | 1 } -> true | _ -> false
+  match x with
+  | {top = true; times = 0 | 1} -> true
+  | _ -> false
 
 type position =
   | Begin (* top = true ; loop = false *)
@@ -55,8 +57,8 @@ type position =
 
 let update (v : stats) (pos : position) : stats =
   match pos with
-  | Begin -> { v with times = v.times + 1 }
-  | Not_begin -> { top = false; times = v.times + 1 }
+  | Begin -> {v with times = v.times + 1}
+  | Not_begin -> {top = false; times = v.times + 1}
   | Sink -> sink_stats
 
 let sink : position = Sink

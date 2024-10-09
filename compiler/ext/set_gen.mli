@@ -1,7 +1,7 @@
 type 'a t = private
   | Empty
   | Leaf of 'a
-  | Node of { l : 'a t; v : 'a; r : 'a t; h : int }
+  | Node of {l: 'a t; v: 'a; r: 'a t; h: int}
 
 val empty : 'a t
 

@@ -44,7 +44,9 @@ let node_paths : string list Lazy.t =
     a failure
 *)
 let check_dir dir =
-  match Sys.file_exists dir with true -> Some dir | false -> None
+  match Sys.file_exists dir with
+  | true -> Some dir
+  | false -> None
 
 let resolve_bs_package_aux ~cwd (pkg : t) =
   (* First try to resolve recursively from the current working directory  *)
@@ -83,18 +85,18 @@ let to_list cb = Coll.to_list cache cb
 let resolve_bs_package ~cwd (package : t) =
   match Coll.find_opt cache package with
   | None ->
-      let result = resolve_bs_package_aux ~cwd package in
-      Bsb_log.info "@{<info>Package@} %a -> %s@." Bsb_pkg_types.print package
-        result;
-      Coll.add cache package result;
-      result
+    let result = resolve_bs_package_aux ~cwd package in
+    Bsb_log.info "@{<info>Package@} %a -> %s@." Bsb_pkg_types.print package
+      result;
+    Coll.add cache package result;
+    result
   | Some x ->
-      let result = resolve_bs_package_aux ~cwd package in
-      if not (Bsb_real_path.is_same_paths_via_io result x) then
-        Bsb_log.warn
-          "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @."
-          Bsb_pkg_types.print package x result cwd;
-      x
+    let result = resolve_bs_package_aux ~cwd package in
+    if not (Bsb_real_path.is_same_paths_via_io result x) then
+      Bsb_log.warn
+        "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @."
+        Bsb_pkg_types.print package x result cwd;
+    x
 
 (** The package does not need to be a bspackage
     example:

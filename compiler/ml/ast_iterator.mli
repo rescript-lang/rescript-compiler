@@ -59,5 +59,5 @@ type iterator = {
     argument the iterator to be applied to children in the syntax
     tree. *)
 
-val default_iterator: iterator
+val default_iterator : iterator
 (** A default iterator, which implements a "do not do anything" mapping. *)

@@ -37,17 +37,22 @@ let split_by_sep_per_os : string -> string list =
   if Ext_sys.is_windows_or_cygwin then fun x ->
     (* on Windows, we can still accept -bs-package-output lib/js *)
     Ext_string.split_by
-      (fun x -> match x with '/' | '\\' -> true | _ -> false)
+      (fun x ->
+        match x with
+        | '/' | '\\' -> true
+        | _ -> false)
       x
   else fun x -> Ext_string.split x '/'
 
 let node_relative_path ~from:(file_or_dir_2 : t) (file_or_dir_1 : t) =
   let relevant_dir1 =
-    match file_or_dir_1 with Dir x -> x
+    match file_or_dir_1 with
+    | Dir x -> x
     (* | File file1 ->  Filename.dirname file1 *)
   in
   let relevant_dir2 =
-    match file_or_dir_2 with Dir x -> x
+    match file_or_dir_2 with
+    | Dir x -> x
     (* | File file2 -> Filename.dirname file2  *)
   in
   let dir1 = split_by_sep_per_os relevant_dir1 in
@@ -61,7 +66,7 @@ let node_relative_path ~from:(file_or_dir_2 : t) (file_or_dir_1 : t) =
   in
   match go dir1 dir2 with
   | x :: _ as ys when x = Literals.node_parent ->
-      String.concat Literals.node_sep ys
+    String.concat Literals.node_sep ys
   | ys -> String.concat Literals.node_sep @@ (Literals.node_current :: ys)
 
 let node_concat ~dir base = dir ^ Literals.node_sep ^ base
@@ -70,7 +75,7 @@ let node_rebase_file ~from ~to_ file =
   node_concat
     ~dir:
       (if from = to_ then Literals.node_current
-      else node_relative_path ~from:(Dir from) (Dir to_))
+       else node_relative_path ~from:(Dir from) (Dir to_))
     file
 
 (***
@@ -144,20 +149,20 @@ let rel_normalized_absolute_path ~from to_ =
     let rec go xss yss =
       match (xss, yss) with
       | x :: xs, y :: ys ->
-          if Ext_string.equal x y then go xs ys
-          else if x = Filename.current_dir_name then go xs yss
-          else if y = Filename.current_dir_name then go xss ys
-          else
-            let start =
-              Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ ->
-                  acc // Ext_string.parent_dir_lit)
-            in
-            Ext_list.fold_left yss start (fun acc v -> acc // v)
+        if Ext_string.equal x y then go xs ys
+        else if x = Filename.current_dir_name then go xs yss
+        else if y = Filename.current_dir_name then go xss ys
+        else
+          let start =
+            Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ ->
+                acc // Ext_string.parent_dir_lit)
+          in
+          Ext_list.fold_left yss start (fun acc v -> acc // v)
       | [], [] -> Ext_string.empty
       | [], y :: ys -> Ext_list.fold_left ys y (fun acc x -> acc // x)
       | _ :: xs, [] ->
-          Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ ->
-              acc // Ext_string.parent_dir_lit)
+        Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ ->
+            acc // Ext_string.parent_dir_lit)
     in
     let v = go paths1 paths2 in
 
@@ -191,16 +196,20 @@ let rel_normalized_absolute_path ~from to_ =
 
 (** See tests in {!Ounit_path_tests} *)
 let normalize_absolute_path x =
-  let drop_if_exist xs = match xs with [] -> [] | _ :: xs -> xs in
+  let drop_if_exist xs =
+    match xs with
+    | [] -> []
+    | _ :: xs -> xs
+  in
   let rec normalize_list acc paths =
     match paths with
     | [] -> acc
     | x :: xs ->
-        if Ext_string.equal x Ext_string.current_dir_lit then
-          normalize_list acc xs
-        else if Ext_string.equal x Ext_string.parent_dir_lit then
-          normalize_list (drop_if_exist acc) xs
-        else normalize_list (x :: acc) xs
+      if Ext_string.equal x Ext_string.current_dir_lit then
+        normalize_list acc xs
+      else if Ext_string.equal x Ext_string.parent_dir_lit then
+        normalize_list (drop_if_exist acc) xs
+      else normalize_list (x :: acc) xs
   in
   let root, paths = split_aux x in
   let rev_paths = normalize_list [] paths in
@@ -209,7 +218,9 @@ let normalize_absolute_path x =
     | [] -> Filename.concat root acc
     | last :: rest -> go (Filename.concat last acc) rest
   in
-  match rev_paths with [] -> root | last :: rest -> go last rest
+  match rev_paths with
+  | [] -> root
+  | last :: rest -> go last rest
 
 let absolute_path cwd s =
   let process s =
@@ -242,16 +253,20 @@ let check_suffix_case = Ext_string.ends_with
 
 (* Input must be absolute directory *)
 let rec find_root_filename ~cwd filenames =
-  let file_exists = Ext_list.exists filenames (fun filename ->
-    Sys.file_exists (Filename.concat cwd filename))
+  let file_exists =
+    Ext_list.exists filenames (fun filename ->
+        Sys.file_exists (Filename.concat cwd filename))
   in
   if file_exists then cwd
   else
     let cwd' = Filename.dirname cwd in
     if String.length cwd' < String.length cwd then
       find_root_filename ~cwd:cwd' filenames
-    else Ext_fmt.failwithf ~loc:__LOC__ "%s not found from %s" (List.hd filenames) cwd
+    else
+      Ext_fmt.failwithf ~loc:__LOC__ "%s not found from %s" (List.hd filenames)
+        cwd
 
-let find_config_dir cwd = find_root_filename ~cwd [Literals.rescript_json; Literals.bsconfig_json]
+let find_config_dir cwd =
+  find_root_filename ~cwd [Literals.rescript_json; Literals.bsconfig_json]
 
 let package_dir = lazy (find_config_dir (Lazy.force cwd))

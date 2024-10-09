@@ -59,11 +59,11 @@ let code_of_style = function
 (** TODO: add more styles later *)
 let style_of_tag s =
   match s with
-  | Format.String_tag "error" -> [ Bold; FG Red ]
-  | Format.String_tag "warning" -> [ Bold; FG Magenta ]
-  | Format.String_tag "info" -> [ Bold; FG Yellow ]
-  | Format.String_tag "dim" -> [ Dim ]
-  | Format.String_tag "filename" -> [ FG Cyan ]
+  | Format.String_tag "error" -> [Bold; FG Red]
+  | Format.String_tag "warning" -> [Bold; FG Magenta]
+  | Format.String_tag "info" -> [Bold; FG Yellow]
+  | Format.String_tag "dim" -> [Dim]
+  | Format.String_tag "filename" -> [FG Cyan]
   | _ -> []
 
 let ansi_of_tag s =

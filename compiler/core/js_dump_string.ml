@@ -76,18 +76,18 @@ let escape_to_buffer f (* ?(utf=false)*) s =
              ||
              let next = String.unsafe_get s (i + 1) in
              next < '0' || next > '9' ->
-          f +> "\\0"
+        f +> "\\0"
       | '\\' (* when not utf*) -> f +> "\\\\"
       | '\000' .. '\031' | '\127' ->
-          let c = Char.code c in
-          f +> "\\x";
-          f +> Array.unsafe_get array_conv (c lsr 4);
-          f +> Array.unsafe_get array_conv (c land 0xf)
+        let c = Char.code c in
+        f +> "\\x";
+        f +> Array.unsafe_get array_conv (c lsr 4);
+        f +> Array.unsafe_get array_conv (c land 0xf)
       | '\128' .. '\255' (* when not utf*) ->
-          let c = Char.code c in
-          f +> "\\x";
-          f +> Array.unsafe_get array_conv (c lsr 4);
-          f +> Array.unsafe_get array_conv (c land 0xf)
+        let c = Char.code c in
+        f +> "\\x";
+        f +> Array.unsafe_get array_conv (c lsr 4);
+        f +> Array.unsafe_get array_conv (c land 0xf)
       | '\"' -> f +> "\\\"" (* quote*)
       | _ -> f +> Array.unsafe_get array_str1 (Char.code c)
     done

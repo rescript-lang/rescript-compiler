@@ -50,7 +50,7 @@ and ident = Ident.t
     currently we always use quote
 *)
 
-and module_id = { id : ident; kind : Js_op.kind ; dynamic_import : bool }
+and module_id = {id: ident; kind: Js_op.kind; dynamic_import: bool}
 
 and required_modules = module_id list
 and vident = Id of ident | Qualified of module_id * string option
@@ -75,7 +75,7 @@ and for_ident = ident
 and for_direction = Js_op.direction_flag
 and property_map = (property_name * expression) list
 and length_object = Js_op.length_object
-and delim = External_arg_spec.delim = | DNone | DStarJ | DNoQuotes
+and delim = External_arg_spec.delim = DNone | DStarJ | DNoQuotes
 
 and expression_desc =
   | Length of expression * length_object
@@ -129,15 +129,15 @@ and expression_desc =
   | New of expression * expression list option (* TODO: option remove *)
   | Var of vident
   | Fun of {
-      is_method : bool;
-      params : ident list;
-      body : block;
-      env : Js_fun_env.t;
-      return_unit : bool;
-      async : bool;
-      directive : string option;
+      is_method: bool;
+      params: ident list;
+      body: block;
+      env: Js_fun_env.t;
+      return_unit: bool;
+      async: bool;
+      directive: string option;
     }
-  | Str of { delim : delim; txt : string }
+  | Str of {delim: delim; txt: string}
   (* A string is UTF-8 encoded, and may contain
      escape sequences.
   *)
@@ -151,7 +151,6 @@ and expression_desc =
   (* The third argument is [tag] , forth is [tag_info] *)
   (* | Caml_uninitialized_obj of expression * expression *)
   (* [tag] and [size] tailed  for [Obj.new_block] *)
-
   | Caml_block_tag of expression * string (* e.tag *)
   (* | Caml_block_set_length of expression * expression *)
   (* It will just fetch tag, to make it safe, when creating it,
@@ -240,10 +239,10 @@ and finish_ident_expression = expression
    ]}
 *)
 and case_clause = {
-  switch_body : block;
-  should_break : bool;
+  switch_body: block;
+  should_break: bool;
   (* true means break *)
-  comment : string option;
+  comment: string option;
 }
 
 and string_clause = Ast_untagged_variants.tag_type * case_clause
@@ -284,26 +283,26 @@ and statement_desc =
   | Try of block * (exception_ident * block) option * block option
   | Debugger
 
-and expression = { expression_desc : expression_desc; comment : string option }
-and statement = { statement_desc : statement_desc; comment : string option }
+and expression = {expression_desc: expression_desc; comment: string option}
+and statement = {statement_desc: statement_desc; comment: string option}
 
 and variable_declaration = {
-  ident : ident;
-  value : expression option;
-  property : property;
-  ident_info : ident_info;
+  ident: ident;
+  value: expression option;
+  property: property;
+  ident_info: ident_info;
 }
 
 (* TODO: For efficency: block should not be a list, it should be able to
    be concatenated in both ways
 *)
 and block = statement list
-and program = { block : block; exports : exports; export_set : Set_ident.t }
+and program = {block: block; exports: exports; export_set: Set_ident.t}
 
 and deps_program = {
-  program : program;
-  modules : required_modules;
-  side_effect : string option; (* None: no, Some reason  *)
+  program: program;
+  modules: required_modules;
+  side_effect: string option; (* None: no, Some reason  *)
 }
 [@@deriving
   {

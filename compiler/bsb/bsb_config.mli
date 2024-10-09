@@ -32,11 +32,9 @@ val lib_js : string
 
 val lib_bs : string
 
-val lib_es6 : string
-[@@ocaml.deprecated "will be removed in v12"]
+val lib_es6 : string [@@ocaml.deprecated "will be removed in v12"]
 
-val lib_es6_global : string
-[@@ocaml.deprecated "will be removed in v12"]
+val lib_es6_global : string [@@ocaml.deprecated "will be removed in v12"]
 
 val lib_ocaml : string
 

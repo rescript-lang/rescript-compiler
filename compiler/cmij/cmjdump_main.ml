@@ -27,45 +27,49 @@
 let f fmt = Printf.fprintf stdout fmt
 
 let pp_cmj_case (case : Ext_js_file_kind.case) : unit =
-  f "%s\n" ("case : " ^ match case with Little -> "little" | Upper -> "upper")
+  f "%s\n"
+    ("case : "
+    ^
+    match case with
+    | Little -> "little"
+    | Upper -> "upper")
 
 let pp_cmj
-    ({ values; pure; package_spec = npm_package_path; case } : Js_cmj_format.t)
-    =
+    ({values; pure; package_spec = npm_package_path; case} : Js_cmj_format.t) =
   f "package info: %s\n"
     (Format.asprintf "%a" Js_packages_info.dump_packages_info npm_package_path);
   pp_cmj_case case;
 
   f "effect: %s\n" (if pure then "pure" else "not pure");
-  Ext_array.iter values (fun { name; arity; persistent_closed_lambda } ->
+  Ext_array.iter values (fun {name; arity; persistent_closed_lambda} ->
       (match arity with
       | Single arity -> (
-          f "%s: %s\n" name (Format.asprintf "%a" Lam_arity.print arity);
-          match persistent_closed_lambda with
-          | None -> f "%s: not saved\n" name
-          | Some lam ->
-              f "%s: ======[start]\n" name;
-              f "%s\n" (Lam_print.lambda_to_string lam);
-              f "%s: ======[finish]\n" name)
+        f "%s: %s\n" name (Format.asprintf "%a" Lam_arity.print arity);
+        match persistent_closed_lambda with
+        | None -> f "%s: not saved\n" name
+        | Some lam ->
+          f "%s: ======[start]\n" name;
+          f "%s\n" (Lam_print.lambda_to_string lam);
+          f "%s: ======[finish]\n" name)
       | Submodule xs ->
-          (match persistent_closed_lambda with
-          | None -> f "%s: not saved\n" name
-          | Some lam ->
-              f "%s: ======[start]\n" name;
-              f "%s" (Lam_print.lambda_to_string lam);
-              f "%s: ======[finish]\n" name);
-          Array.iteri
-            (fun i arity ->
-              f "%s[%i] : %s \n" name i
-                (Format.asprintf "%a" Lam_arity.print arity))
-            xs);
+        (match persistent_closed_lambda with
+        | None -> f "%s: not saved\n" name
+        | Some lam ->
+          f "%s: ======[start]\n" name;
+          f "%s" (Lam_print.lambda_to_string lam);
+          f "%s: ======[finish]\n" name);
+        Array.iteri
+          (fun i arity ->
+            f "%s[%i] : %s \n" name i
+              (Format.asprintf "%a" Lam_arity.print arity))
+          xs);
       f "\n")
 
 let () =
   match Sys.argv with
-  | [| _; file |] ->
-      let cmj, digest = Js_cmj_format.from_file_with_digest file in
-      Format.fprintf Format.std_formatter "@[Digest: %s@]@."
-        (Digest.to_hex digest);
-      pp_cmj cmj
+  | [|_; file|] ->
+    let cmj, digest = Js_cmj_format.from_file_with_digest file in
+    Format.fprintf Format.std_formatter "@[Digest: %s@]@."
+      (Digest.to_hex digest);
+    pp_cmj cmj
   | _ -> failwith "expect one argument"

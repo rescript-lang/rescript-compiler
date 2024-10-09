@@ -25,21 +25,19 @@
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
 
-type 'a bucket =
-  | Empty
-  | Cons of { mutable key : 'a; mutable next : 'a bucket }
+type 'a bucket = Empty | Cons of {mutable key: 'a; mutable next: 'a bucket}
 
 type 'a t = {
-  mutable size : int;
+  mutable size: int;
   (* number of entries *)
-  mutable data : 'a bucket array;
+  mutable data: 'a bucket array;
   (* the buckets *)
-  initial_size : int; (* initial array size *)
+  initial_size: int; (* initial array size *)
 }
 
 let create initial_size =
   let s = Ext_util.power_2_above 16 initial_size in
-  { initial_size = s; size = 0; data = Array.make s Empty }
+  {initial_size = s; size = 0; data = Array.make s Empty}
 
 let clear h =
   h.size <- 0;
@@ -65,13 +63,13 @@ let resize indexfun h =
     (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
       | Empty -> ()
-      | Cons { key; next } as cell ->
-          let nidx = indexfun h key in
-          (match Array.unsafe_get ndata_tail nidx with
-          | Empty -> Array.unsafe_set ndata nidx cell
-          | Cons tail -> tail.next <- cell);
-          Array.unsafe_set ndata_tail nidx cell;
-          insert_bucket next
+      | Cons {key; next} as cell ->
+        let nidx = indexfun h key in
+        (match Array.unsafe_get ndata_tail nidx with
+        | Empty -> Array.unsafe_set ndata nidx cell
+        | Cons tail -> tail.next <- cell);
+        Array.unsafe_set ndata_tail nidx cell;
+        insert_bucket next
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
@@ -86,8 +84,8 @@ let iter h f =
   let rec do_bucket = function
     | Empty -> ()
     | Cons l ->
-        f l.key;
-        do_bucket l.next
+      f l.key;
+      do_bucket l.next
   in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
@@ -96,7 +94,9 @@ let iter h f =
 
 let fold h init f =
   let rec do_bucket b accu =
-    match b with Empty -> accu | Cons l -> do_bucket l.next (f l.key accu)
+    match b with
+    | Empty -> accu
+    | Cons l -> do_bucket l.next (f l.key accu)
   in
   let d = h.data in
   let accu = ref init in
@@ -111,28 +111,28 @@ let rec small_bucket_mem eq key lst =
   match lst with
   | Empty -> false
   | Cons lst -> (
+    eq key lst.key
+    ||
+    match lst.next with
+    | Empty -> false
+    | Cons lst -> (
       eq key lst.key
       ||
       match lst.next with
       | Empty -> false
-      | Cons lst -> (
-          eq key lst.key
-          ||
-          match lst.next with
-          | Empty -> false
-          | Cons lst -> eq key lst.key || small_bucket_mem eq key lst.next))
+      | Cons lst -> eq key lst.key || small_bucket_mem eq key lst.next))
 
 let rec remove_bucket (h : _ t) (i : int) key ~(prec : _ bucket)
     (buck : _ bucket) eq_key =
   match buck with
   | Empty -> ()
-  | Cons { key = k; next } ->
-      if eq_key k key then (
-        h.size <- h.size - 1;
-        match prec with
-        | Empty -> Array.unsafe_set h.data i next
-        | Cons c -> c.next <- next)
-      else remove_bucket h i key ~prec:buck next eq_key
+  | Cons {key = k; next} ->
+    if eq_key k key then (
+      h.size <- h.size - 1;
+      match prec with
+      | Empty -> Array.unsafe_set h.data i next
+      | Cons c -> c.next <- next)
+    else remove_bucket h i key ~prec:buck next eq_key
 
 module type S = sig
   type key

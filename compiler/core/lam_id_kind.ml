@@ -43,11 +43,11 @@ type t =
   | Constant of Lam_constant.t
   | Module of Ident.t  (** TODO: static module vs first class module *)
   | FunctionId of {
-      mutable arity : Lam_arity.t;
+      mutable arity: Lam_arity.t;
       (* TODO: This may contain some closure environment,
          check how it will interact with dead code elimination
       *)
-      lambda : (Lam.t * rec_flag) option;
+      lambda: (Lam.t * rec_flag) option;
     }
   | Exception
   | Parameter

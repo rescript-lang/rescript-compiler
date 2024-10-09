@@ -23,12 +23,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let setup_env () =
-  Env.Persistent_signature.load := Bs_cmi_load.load_cmi;    
-  Matching.make_test_sequence_variant_constant := Polyvar_pattern_match.make_test_sequence_variant_constant;
-  Matching.call_switcher_variant_constant := Polyvar_pattern_match.call_switcher_variant_constant;
-  Matching.call_switcher_variant_constr := Polyvar_pattern_match.call_switcher_variant_constr;
+  Env.Persistent_signature.load := Bs_cmi_load.load_cmi;
+  Matching.make_test_sequence_variant_constant :=
+    Polyvar_pattern_match.make_test_sequence_variant_constant;
+  Matching.call_switcher_variant_constant :=
+    Polyvar_pattern_match.call_switcher_variant_constant;
+  Matching.call_switcher_variant_constr :=
+    Polyvar_pattern_match.call_switcher_variant_constr;
   Ctype.variant_is_subtype := Matching_polyfill.variant_is_subtype;
-  Clflags.dump_location := false;  
+  Clflags.dump_location := false;
   Parmatch.print_res_pat := Pattern_printer.print_pattern;
   (* default true
      otherwise [bsc -I sc src/hello.ml ] will include current directory to search path
@@ -37,18 +40,18 @@ let setup_env () =
   Clflags.binary_annotations := true;
   (* Turn on [-no-alias-deps] by default -- double check *)
   Oprint.out_ident := Outcome_printer_ns.out_ident;
-  Builtin_attributes.check_bs_attributes_inclusion := Record_attributes_check.check_bs_attributes_inclusion;
+  Builtin_attributes.check_bs_attributes_inclusion :=
+    Record_attributes_check.check_bs_attributes_inclusion;
   Builtin_attributes.check_duplicated_labels :=
     Record_attributes_check.check_duplicated_labels;
-  Matching.names_from_construct_pattern := 
+  Matching.names_from_construct_pattern :=
     Matching_polyfill.names_from_construct_pattern;
-  
-    Rescript_cpp.replace_directive_bool "BS" true;
+
+  Rescript_cpp.replace_directive_bool "BS" true;
   Rescript_cpp.replace_directive_bool "JS" true;
   Printtyp.print_res_poly_identifier := Res_printer.polyvar_ident_to_string;
-  Rescript_cpp.replace_directive_string "BS_VERSION"  Bs_version.version
-  (*; Switch.cut := 100*) (* tweakable but not very useful *)
-  
+  Rescript_cpp.replace_directive_string "BS_VERSION" Bs_version.version
+(*; Switch.cut := 100*)
+(* tweakable but not very useful *)
 
-let () = 
-  at_exit (fun _ -> Format.pp_print_flush Format.err_formatter ())
+let () = at_exit (fun _ -> Format.pp_print_flush Format.err_formatter ())

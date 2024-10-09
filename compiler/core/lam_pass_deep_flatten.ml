@@ -28,10 +28,9 @@
 
 let rec eliminate_tuple (id : Ident.t) (lam : Lam.t) acc =
   match lam with
-  | Llet
-      (Alias, v, Lprim { primitive = Pfield (i, _); args = [ Lvar tuple ] }, e2)
+  | Llet (Alias, v, Lprim {primitive = Pfield (i, _); args = [Lvar tuple]}, e2)
     when Ident.same tuple id ->
-      eliminate_tuple id e2 (Map_int.add acc i v)
+    eliminate_tuple id e2 (Map_int.add acc i v)
   (* it is okay to have duplicates*)
   | _ -> if Lam_hit.hit_variable id lam then None else Some (acc, lam)
 (* [groups] are in reverse order *)
@@ -126,10 +125,10 @@ let deep_flatten (lam : Lam.t) : Lam.t =
              {
                primitive =
                  Pnull_to_opt | Pundefined_to_opt | Pnull_undefined_to_opt;
-               args = [ Lvar _ ];
+               args = [Lvar _];
              } as arg),
           body ) ->
-        flatten (Single (str, id, aux arg) :: acc) body
+      flatten (Single (str, id, aux arg) :: acc) body
     | Llet
         ( str,
           id,
@@ -138,82 +137,82 @@ let deep_flatten (lam : Lam.t) : Lam.t =
               primitive =
                 (Pnull_to_opt | Pundefined_to_opt | Pnull_undefined_to_opt) as
                 primitive;
-              args = [ arg ];
+              args = [arg];
             },
           body ) ->
-        let new_id = Ident.rename id in
-        flatten acc
-          (Lam.let_ str new_id arg
-             (Lam.let_ Alias id
-                (Lam.prim ~primitive ~args:[ Lam.var new_id ]
-                   Location.none (* FIXME*))
-                body))
+      let new_id = Ident.rename id in
+      flatten acc
+        (Lam.let_ str new_id arg
+           (Lam.let_ Alias id
+              (Lam.prim ~primitive
+                 ~args:[Lam.var new_id]
+                 Location.none (* FIXME*))
+              body))
     | Llet (str, id, arg, body) -> (
-        (*
+      (*
                          {[ let match = (a,b,c)
                            let d = (match/1)
                            let e = (match/2)
                                    ..
                          ]}
                       *)
-        let res, accux = flatten acc arg in
-        match (id.name, str, res) with
-        | ( ("match" | "include" | "param"),
-            (Alias | Strict | StrictOpt),
-            Lprim { primitive = Pmakeblock (_, _, Immutable); args } ) -> (
-            match eliminate_tuple id body Map_int.empty with
-            | Some (tuple_mapping, body) ->
-                flatten
-                  (Ext_list.fold_left_with_offset args accux 0 (fun arg acc i ->
-                       match Map_int.find_opt tuple_mapping i with
-                       | None -> Lam_group.nop_cons arg acc
-                       | Some key -> Lam_group.single str key arg :: acc))
-                  body
-            | None -> flatten (Single (str, id, res) :: accux) body)
-        | _ -> flatten (Single (str, id, res) :: accux) body)
+      let res, accux = flatten acc arg in
+      match (id.name, str, res) with
+      | ( ("match" | "include" | "param"),
+          (Alias | Strict | StrictOpt),
+          Lprim {primitive = Pmakeblock (_, _, Immutable); args} ) -> (
+        match eliminate_tuple id body Map_int.empty with
+        | Some (tuple_mapping, body) ->
+          flatten
+            (Ext_list.fold_left_with_offset args accux 0 (fun arg acc i ->
+                 match Map_int.find_opt tuple_mapping i with
+                 | None -> Lam_group.nop_cons arg acc
+                 | Some key -> Lam_group.single str key arg :: acc))
+            body
+        | None -> flatten (Single (str, id, res) :: accux) body)
+      | _ -> flatten (Single (str, id, res) :: accux) body)
     | Lletrec (bind_args, body) ->
-        flatten (Recursive (Ext_list.map_snd bind_args aux) :: acc) body
+      flatten (Recursive (Ext_list.map_snd bind_args aux) :: acc) body
     | Lsequence (l, r) ->
-        let res, l = flatten acc l in
-        flatten (Lam_group.nop_cons res l) r
+      let res, l = flatten acc l in
+      flatten (Lam_group.nop_cons res l) r
     | x -> (aux x, acc)
   and aux (lam : Lam.t) : Lam.t =
     match lam with
     | Llet _ ->
-        let res, groups = flatten [] lam in
-        lambda_of_groups res ~rev_bindings:groups
+      let res, groups = flatten [] lam in
+      lambda_of_groups res ~rev_bindings:groups
     | Lletrec (bind_args, body) ->
-        (* Attention: don't mess up with internal {let rec} *)
-        let rec iter bind_args groups set =
-          match bind_args with
-          | [] -> (List.rev groups, set)
-          | (id, arg) :: rest ->
-              iter rest ((id, aux arg) :: groups) (Set_ident.add set id)
-        in
-        let groups, collections = iter bind_args [] Set_ident.empty in
-        (* Try to extract some value definitions from recursive values as [wrap],
-           it will stop whenever it find it could not move forward
-           {[
-             let rec x =
-               let y = 1 in
-               let z = 2 in
-               ...
-           ]}
-        *)
-        let rev_bindings, rev_wrap, _ =
-          Ext_list.fold_left groups ([], [], false)
-            (fun (inner_recursive_bindings, wrap, stop) (id, lam) ->
-              if stop || Lam_hit.hit_variables collections lam then
-                ((id, lam) :: inner_recursive_bindings, wrap, true)
-              else
-                ( inner_recursive_bindings,
-                  Lam_group.Single (Strict, id, lam) :: wrap,
-                  false ))
-        in
-        lambda_of_groups
-          ~rev_bindings:
-            rev_wrap (* These bindings are extracted from [letrec] *)
-          (Lam.letrec (List.rev rev_bindings) (aux body))
+      (* Attention: don't mess up with internal {let rec} *)
+      let rec iter bind_args groups set =
+        match bind_args with
+        | [] -> (List.rev groups, set)
+        | (id, arg) :: rest ->
+          iter rest ((id, aux arg) :: groups) (Set_ident.add set id)
+      in
+      let groups, collections = iter bind_args [] Set_ident.empty in
+      (* Try to extract some value definitions from recursive values as [wrap],
+         it will stop whenever it find it could not move forward
+         {[
+           let rec x =
+             let y = 1 in
+             let z = 2 in
+             ...
+         ]}
+      *)
+      let rev_bindings, rev_wrap, _ =
+        Ext_list.fold_left groups ([], [], false)
+          (fun (inner_recursive_bindings, wrap, stop) (id, lam) ->
+            if stop || Lam_hit.hit_variables collections lam then
+              ((id, lam) :: inner_recursive_bindings, wrap, true)
+            else
+              ( inner_recursive_bindings,
+                Lam_group.Single (Strict, id, lam) :: wrap,
+                false ))
+      in
+      lambda_of_groups
+        ~rev_bindings:rev_wrap (* These bindings are extracted from [letrec] *)
+        (Lam.letrec (List.rev rev_bindings) (aux body))
     | Lsequence (l, r) -> Lam.seq (aux l) (aux r)
     | Lconst _ -> lam
     | Lvar _ -> lam
@@ -225,16 +224,16 @@ let deep_flatten (lam : Lam.t) : Lam.t =
     (*           can we switch to the tupled backend? *\) *)
     (*   when  List.length params = List.length args -> *)
     (*       aux (beta_reduce params body args) *)
-    | Lapply { ap_func = l1; ap_args = ll; ap_info } ->
-        Lam.apply (aux l1) (Ext_list.map ll aux) ap_info
+    | Lapply {ap_func = l1; ap_args = ll; ap_info} ->
+      Lam.apply (aux l1) (Ext_list.map ll aux) ap_info
     (* This kind of simple optimizations should be done each time
        and as early as possible *)
     | Lglobal_module _ -> lam
-    | Lprim { primitive; args; loc } ->
-        let args = Ext_list.map args aux in
-        Lam.prim ~primitive ~args loc
-    | Lfunction { arity; params; body; attr } ->
-        Lam.function_ ~arity ~params ~body:(aux body) ~attr
+    | Lprim {primitive; args; loc} ->
+      let args = Ext_list.map args aux in
+      Lam.prim ~primitive ~args loc
+    | Lfunction {arity; params; body; attr} ->
+      Lam.function_ ~arity ~params ~body:(aux body) ~attr
     | Lswitch
         ( l,
           {
@@ -245,28 +244,27 @@ let deep_flatten (lam : Lam.t) : Lam.t =
             sw_consts_full;
             sw_names;
           } ) ->
-        Lam.switch (aux l)
-          {
-            sw_consts = Ext_list.map_snd sw_consts aux;
-            sw_blocks = Ext_list.map_snd sw_blocks aux;
-            sw_consts_full;
-            sw_blocks_full;
-            sw_failaction = Ext_option.map sw_failaction aux;
-            sw_names;
-          }
+      Lam.switch (aux l)
+        {
+          sw_consts = Ext_list.map_snd sw_consts aux;
+          sw_blocks = Ext_list.map_snd sw_blocks aux;
+          sw_consts_full;
+          sw_blocks_full;
+          sw_failaction = Ext_option.map sw_failaction aux;
+          sw_names;
+        }
     | Lstringswitch (l, sw, d) ->
-        Lam.stringswitch (aux l) (Ext_list.map_snd sw aux)
-          (Ext_option.map d aux)
+      Lam.stringswitch (aux l) (Ext_list.map_snd sw aux) (Ext_option.map d aux)
     | Lstaticraise (i, ls) -> Lam.staticraise i (Ext_list.map ls aux)
     | Lstaticcatch (l1, ids, l2) -> Lam.staticcatch (aux l1) ids (aux l2)
     | Ltrywith (l1, v, l2) -> Lam.try_ (aux l1) v (aux l2)
     | Lifthenelse (l1, l2, l3) -> Lam.if_ (aux l1) (aux l2) (aux l3)
     | Lwhile (l1, l2) -> Lam.while_ (aux l1) (aux l2)
     | Lfor (flag, l1, l2, dir, l3) ->
-        Lam.for_ flag (aux l1) (aux l2) dir (aux l3)
+      Lam.for_ flag (aux l1) (aux l2) dir (aux l3)
     | Lassign (v, l) ->
-        (* Lalias-bound variables are never assigned, so don't increase
-           v's refaux *)
-        Lam.assign v (aux l)
+      (* Lalias-bound variables are never assigned, so don't increase
+         v's refaux *)
+      Lam.assign v (aux l)
   in
   aux lam

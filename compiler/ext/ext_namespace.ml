@@ -43,7 +43,9 @@ let try_split_module_name name =
 
 let js_name_of_modulename s (case : Ext_js_file_kind.case) suffix : string =
   let s =
-    match case with Little -> Ext_string.uncapitalize_ascii s | Upper -> s
+    match case with
+    | Little -> Ext_string.uncapitalize_ascii s
+    | Upper -> s
   in
   change_ext_ns_suffix s suffix
 
@@ -61,10 +63,10 @@ let is_valid_npm_package_name (s : string) =
   &&
   match String.unsafe_get s 0 with
   | 'a' .. 'z' | '@' ->
-      Ext_string.for_all_from s 1 (fun x ->
-          match x with
-          | 'a' .. 'z' | '0' .. '9' | '_' | '-' -> true
-          | _ -> false)
+    Ext_string.for_all_from s 1 (fun x ->
+        match x with
+        | 'a' .. 'z' | '0' .. '9' | '_' | '-' -> true
+        | _ -> false)
   | _ -> false
 
 let namespace_of_package_name (s : string) : string =
@@ -79,8 +81,8 @@ let namespace_of_package_name (s : string) : string =
       let ch = String.unsafe_get s off in
       match ch with
       | 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' ->
-          add capital ch;
-          aux false (off + 1) len
+        add capital ch;
+        aux false (off + 1) len
       | '/' | '-' -> aux true (off + 1) len
       | _ -> aux capital (off + 1) len
   in

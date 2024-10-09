@@ -28,18 +28,14 @@ module S = Js_stmt_make
 type finished = True | False | Dummy
 (* Have no idea, so that when [++] is applied, always use the other *)
 
-type t = {
-  block : J.block;
-  value : J.expression option;
-  output_finished : finished;
-}
+type t = {block: J.block; value: J.expression option; output_finished: finished}
 
 type continuation = Lam_compile_context.continuation
 
 let make ?value ?(output_finished = False) block =
-  { block; value; output_finished }
+  {block; value; output_finished}
 
-let dummy = { value = None; block = []; output_finished = Dummy }
+let dummy = {value = None; block = []; output_finished = Dummy}
 
 (** This can be merged with 
     {!output_of_block_and_expression} *)
@@ -47,22 +43,22 @@ let output_of_expression (continuation : continuation) (exp : J.expression)
     ~(no_effects : bool Lazy.t) =
   match continuation with
   | EffectCall Not_tail ->
-      if Lazy.force no_effects then dummy
-      else { block = []; value = Some exp; output_finished = False }
-  | Declare (kind, n) -> make [ S.define_variable ~kind n exp ]
-  | Assign n -> make [ S.assign n exp ]
+    if Lazy.force no_effects then dummy
+    else {block = []; value = Some exp; output_finished = False}
+  | Declare (kind, n) -> make [S.define_variable ~kind n exp]
+  | Assign n -> make [S.assign n exp]
   | EffectCall (Maybe_tail_is_return _) ->
-      make [ S.return_stmt exp ] ~output_finished:True
-  | NeedValue _ -> { block = []; value = Some exp; output_finished = False }
+    make [S.return_stmt exp] ~output_finished:True
+  | NeedValue _ -> {block = []; value = Some exp; output_finished = False}
 
 let output_of_block_and_expression (continuation : continuation)
     (block : J.block) exp : t =
   match continuation with
   | EffectCall Not_tail -> make block ~value:exp
   | EffectCall (Maybe_tail_is_return _) ->
-      make (Ext_list.append_one block (S.return_stmt exp)) ~output_finished:True
+    make (Ext_list.append_one block (S.return_stmt exp)) ~output_finished:True
   | Declare (kind, n) ->
-      make (Ext_list.append_one block (S.define_variable ~kind n exp))
+    make (Ext_list.append_one block (S.define_variable ~kind n exp))
   | Assign n -> make (Ext_list.append_one block (S.assign n exp))
   | NeedValue _ -> make block ~value:exp
 
@@ -70,7 +66,7 @@ let block_with_opt_expr block (x : J.expression option) : J.block =
   match x with
   | None -> block
   | Some x when Js_analyzer.no_side_effect_expression x -> block
-  | Some x -> block @ [ S.exp x ]
+  | Some x -> block @ [S.exp x]
 
 let opt_expr_with_block (x : J.expression option) block : J.block =
   match x with
@@ -80,25 +76,28 @@ let opt_expr_with_block (x : J.expression option) block : J.block =
 
 let rec unnest_block (block : J.block) : J.block =
   match block with
-  | [ { statement_desc = Block block } ] -> unnest_block block
+  | [{statement_desc = Block block}] -> unnest_block block
   | _ -> block
 
 let output_as_block (x : t) : J.block =
   match x with
-  | { block; value = opt; output_finished } ->
-      let block = unnest_block block in
-      if output_finished = True then block else block_with_opt_expr block opt
+  | {block; value = opt; output_finished} ->
+    let block = unnest_block block in
+    if output_finished = True then block else block_with_opt_expr block opt
 
 let to_break_block (x : t) : J.block * bool =
   let block = unnest_block x.block in
   match x with
-  | { output_finished = True; _ } -> (block, false)
+  | {output_finished = True; _} -> (block, false)
   (* value does not matter when [finished] is true
       TODO: check if it has side efects
   *)
-  | { value = None; output_finished } -> (
-      (block, match output_finished with True -> false | False | Dummy -> true))
-  | { value = Some _ as opt; _ } -> (block_with_opt_expr block opt, true)
+  | {value = None; output_finished} ->
+    ( block,
+      match output_finished with
+      | True -> false
+      | False | Dummy -> true )
+  | {value = Some _ as opt; _} -> (block_with_opt_expr block opt, true)
 
 (** TODO: make everything expression make inlining hard, and code not readable?
            1. readability dpends on how we print the expression
@@ -118,25 +117,25 @@ let to_break_block (x : t) : J.block * bool =
 let append_output (x : t) (y : t) : t =
   match (x, y) with
   (* ATTTENTION: should not optimize [opt_e2], it has to conform to [NeedValue]*)
-  | { output_finished = True; _ }, _ -> x
-  | _, { block = []; value = None; output_finished = Dummy } -> x
+  | {output_finished = True; _}, _ -> x
+  | _, {block = []; value = None; output_finished = Dummy} -> x
   (* finished = true --> value = E.undefined otherwise would throw*)
-  | { block = []; value = None; _ }, y -> y
-  | { block = []; value = Some _; _ }, { block = []; value = None; _ } -> x
-  | ( { block = []; value = Some e1; _ },
-      ({ block = []; value = Some e2; output_finished } as z) ) ->
-      if Js_analyzer.no_side_effect_expression e1 then z
-        (* It would optimize cases like [module aliases]
-            Bigarray, List
-        *)
-      else { block = []; value = Some (E.seq e1 e2); output_finished }
-        (* {block = [S.exp e1]; value =  Some e2(\* (E.seq e1 e2) *\); finished} *)
-  | ( { block = block1; value = opt_e1; _ },
-      { block = block2; value = opt_e2; output_finished } ) ->
-      let block1 = unnest_block block1 in
-      make
-        (block1 @ opt_expr_with_block opt_e1 @@ unnest_block block2)
-        ?value:opt_e2 ~output_finished
+  | {block = []; value = None; _}, y -> y
+  | {block = []; value = Some _; _}, {block = []; value = None; _} -> x
+  | ( {block = []; value = Some e1; _},
+      ({block = []; value = Some e2; output_finished} as z) ) ->
+    if Js_analyzer.no_side_effect_expression e1 then z
+      (* It would optimize cases like [module aliases]
+          Bigarray, List
+      *)
+    else {block = []; value = Some (E.seq e1 e2); output_finished}
+      (* {block = [S.exp e1]; value =  Some e2(\* (E.seq e1 e2) *\); finished} *)
+  | ( {block = block1; value = opt_e1; _},
+      {block = block2; value = opt_e2; output_finished} ) ->
+    let block1 = unnest_block block1 in
+    make
+      (block1 @ opt_expr_with_block opt_e1 @@ unnest_block block2)
+      ?value:opt_e2 ~output_finished
 
 (* Fold right is more efficient *)
 let concat (xs : t list) : t =

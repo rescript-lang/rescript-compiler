@@ -33,8 +33,7 @@ val try_split_module_name : string -> (string * string) option
 *)
 val change_ext_ns_suffix : string -> string -> string
 
-val js_name_of_modulename :
-  string -> Ext_js_file_kind.case -> string -> string
+val js_name_of_modulename : string -> Ext_js_file_kind.case -> string -> string
 (** [js_name_of_modulename ~little A-Ns]
 *)
 

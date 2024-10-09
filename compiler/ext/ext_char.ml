@@ -27,7 +27,9 @@
 *)
 
 let valid_hex x =
-  match x with '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' -> true | _ -> false
+  match x with
+  | '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' -> true
+  | _ -> false
 
 let is_lower_case c =
   (c >= 'a' && c <= 'z')

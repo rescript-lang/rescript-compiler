@@ -64,17 +64,17 @@ let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
         while !cur < doc_length do
           match String.index_from_opt doc !cur '\n' with
           | None ->
-              if !cur <> 0 then (
-                buf +> "\n";
-                buf +> String.make (!max_col + 4) ' ');
-              buf +> String.sub doc !cur (String.length doc - !cur);
-              cur := doc_length
+            if !cur <> 0 then (
+              buf +> "\n";
+              buf +> String.make (!max_col + 4) ' ');
+            buf +> String.sub doc !cur (String.length doc - !cur);
+            cur := doc_length
           | Some new_line_pos ->
-              if !cur <> 0 then (
-                buf +> "\n";
-                buf +> String.make (!max_col + 4) ' ');
-              buf +> String.sub doc !cur (new_line_pos - !cur);
-              cur := new_line_pos + 1
+            if !cur <> 0 then (
+              buf +> "\n";
+              buf +> String.make (!max_col + 4) ' ');
+            buf +> String.sub doc !cur (new_line_pos - !cur);
+            cur := new_line_pos + 1
         done;
         buf +> "\n"))
 
@@ -82,17 +82,17 @@ let stop_raise ~usage ~(error : error) (speclist : t) =
   let b = Ext_buffer.create 200 in
   (match error with
   | Unknown ("-help" | "--help" | "-h") ->
-      usage_b b ~usage speclist;
-      Ext_buffer.output_buffer stdout b;
-      exit 0
+    usage_b b ~usage speclist;
+    Ext_buffer.output_buffer stdout b;
+    exit 0
   | Unknown s ->
-      b +> "Unknown option \"";
-      b +> s;
-      b +> "\".\n"
+    b +> "Unknown option \"";
+    b +> s;
+    b +> "\".\n"
   | Missing s ->
-      b +> "Option \"";
-      b +> s;
-      b +> "\" needs an argument.\n");
+    b +> "Option \"";
+    b +> s;
+    b +> "\" needs an argument.\n");
   usage_b b ~usage speclist;
   bad_arg (Ext_buffer.contents b)
 
@@ -106,25 +106,25 @@ let parse_exn ~usage ~argv ?(start = 1) ?(finish = Array.length argv)
     if s <> "" && s.[0] = '-' then
       match Ext_spec.assoc3 speclist s with
       | Some action -> (
-          match action with
-          | Unit_dummy -> ()
-          | Unit r -> (
-              match r with
-              | Unit_set r -> r := true
-              | Unit_clear r -> r := false
-              | Unit_call f -> f ()
-              | Unit_lazy f -> Lazy.force f)
-          | String f -> (
-              if !current >= finish then
-                stop_raise ~usage ~error:(Missing s) speclist
-              else
-                let arg = argv.(!current) in
-                incr current;
-                match f with
-                | String_call f -> f arg
-                | String_set u -> u := arg
-                | String_optional_set s -> s := Some arg
-                | String_list_add s -> s := arg :: !s))
+        match action with
+        | Unit_dummy -> ()
+        | Unit r -> (
+          match r with
+          | Unit_set r -> r := true
+          | Unit_clear r -> r := false
+          | Unit_call f -> f ()
+          | Unit_lazy f -> Lazy.force f)
+        | String f -> (
+          if !current >= finish then
+            stop_raise ~usage ~error:(Missing s) speclist
+          else
+            let arg = argv.(!current) in
+            incr current;
+            match f with
+            | String_call f -> f arg
+            | String_set u -> u := arg
+            | String_optional_set s -> s := Some arg
+            | String_list_add s -> s := arg :: !s))
       | None -> stop_raise ~usage ~error:(Unknown s) speclist
     else rev_list := s :: !rev_list
   done;

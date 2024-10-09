@@ -32,22 +32,22 @@ val get_name : t -> out_channel -> string
 (***********************************************************)
 
 type builtin = {
-  build_ast_from_re : t;
+  build_ast_from_re: t;
   (* platform dependent, on Win32,
       invoking cmd.exe
   *)
-  copy_resources : t;
+  copy_resources: t;
   (* Rules below all need restat *)
-  build_bin_deps : t;
-  build_bin_deps_dev : t;
-  mj : t;
-  mj_dev : t;
-  mij : t;
-  mij_dev : t;
-  mi : t;
-  mi_dev : t;
-  build_package : t;
-  customs : t Map_string.t;
+  build_bin_deps: t;
+  build_bin_deps_dev: t;
+  mj: t;
+  mj_dev: t;
+  mij: t;
+  mij_dev: t;
+  mi: t;
+  mi_dev: t;
+  build_package: t;
+  customs: t Map_string.t;
 }
 (** A list of existing rules *)
 

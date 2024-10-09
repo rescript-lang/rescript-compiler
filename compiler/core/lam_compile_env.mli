@@ -27,7 +27,12 @@
 val reset : unit -> unit
 
 val add_js_module :
-  ?import_attributes:External_ffi_types.import_attributes -> External_ffi_types.module_bind_name -> string -> bool -> dynamic_import:bool -> Ident.t
+  ?import_attributes:External_ffi_types.import_attributes ->
+  External_ffi_types.module_bind_name ->
+  string ->
+  bool ->
+  dynamic_import:bool ->
+  Ident.t
 (** 
    [add_js_module hint_name module_name]
    Given a js module name and hint name, assign an id to it
@@ -59,7 +64,8 @@ val add_js_module :
    pay attention to for those modules are actually used or not
 *)
 
-val query_external_id_info : ?dynamic_import:bool -> Ident.t -> string -> Js_cmj_format.keyed_cmj_value
+val query_external_id_info :
+  ?dynamic_import:bool -> Ident.t -> string -> Js_cmj_format.keyed_cmj_value
 (**
    [query_external_id_info id pos env found]
    will raise if not found

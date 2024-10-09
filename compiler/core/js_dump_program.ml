@@ -31,12 +31,12 @@ let empty_explanation =
 
 let program_is_empty (x : J.program) =
   match x with
-  | { block = []; exports = []; export_set = _ } -> true
+  | {block = []; exports = []; export_set = _} -> true
   | _ -> false
 
 let deps_program_is_empty (x : J.deps_program) =
   match x with
-  | { modules = []; program; side_effect = None } -> program_is_empty program
+  | {modules = []; program; side_effect = None} -> program_is_empty program
   | _ -> false
 
 let rec extract_block_comments acc (x : J.block) =
@@ -46,16 +46,16 @@ let rec extract_block_comments acc (x : J.block) =
         Exp
           {
             expression_desc =
-              Raw_js_code { code; code_info = Stmt Js_stmt_comment };
+              Raw_js_code {code; code_info = Stmt Js_stmt_comment};
           };
     }
     :: rest ->
-      extract_block_comments (code :: acc) rest
+    extract_block_comments (code :: acc) rest
   | _ -> (acc, x)
 
 let extract_file_comments (x : J.deps_program) =
   let comments, new_block = extract_block_comments [] x.program.block in
-  (comments, { x with program = { x.program with block = new_block } })
+  (comments, {x with program = {x.program with block = new_block}})
 
 let program f cxt (x : J.program) =
   P.at_least_two_lines f;
@@ -66,7 +66,9 @@ let dump_program (x : J.program) oc =
   ignore (program (P.from_channel oc) Ext_pp_scope.empty x)
 
 let[@inline] is_default (x : Js_op.kind) =
-  match x with External { default } -> default | _ -> false
+  match x with
+  | External {default} -> default
+  | _ -> false
 
 let node_program ~output_dir f (x : J.deps_program) =
   P.string f L.strict_directive;
@@ -75,12 +77,13 @@ let node_program ~output_dir f (x : J.deps_program) =
     Js_dump_import_export.requires L.require Ext_pp_scope.empty f
       (* Not be emitted in require statements *)
       (Ext_list.filter_map x.modules (fun x ->
-        match x.dynamic_import with
-        | true -> None
-        | false -> 
-           Some ( x.id,
-             Js_name_of_module_id.string_of_module_id x ~output_dir Commonjs,
-             is_default x.kind )))
+           match x.dynamic_import with
+           | true -> None
+           | false ->
+             Some
+               ( x.id,
+                 Js_name_of_module_id.string_of_module_id x ~output_dir Commonjs,
+                 is_default x.kind )))
   in
   program f cxt x.program
 
@@ -89,13 +92,16 @@ let es6_program ~output_dir fmt f (x : J.deps_program) =
     Js_dump_import_export.imports Ext_pp_scope.empty f
       (* Not be emitted in import statements *)
       (Ext_list.filter_map x.modules (fun x ->
-        match x.dynamic_import with
-        | true -> None
-        | false -> 
-           Some ( x.id,
-             Js_name_of_module_id.string_of_module_id x ~output_dir fmt,
-             is_default x.kind,
-             (match x.kind with | External {import_attributes} -> import_attributes | _ -> None) )))
+           match x.dynamic_import with
+           | true -> None
+           | false ->
+             Some
+               ( x.id,
+                 Js_name_of_module_id.string_of_module_id x ~output_dir fmt,
+                 is_default x.kind,
+                 match x.kind with
+                 | External {import_attributes} -> import_attributes
+                 | _ -> None )))
   in
   let () = P.at_least_two_lines f in
   let cxt = Js_dump.statements true cxt f x.program.block in
@@ -104,10 +110,10 @@ let es6_program ~output_dir fmt f (x : J.deps_program) =
 let pp_deps_program ~(output_prefix : string)
     (kind : Js_packages_info.module_system) (program : J.deps_program)
     (f : Ext_pp.t) =
-
-  !Js_config.directives |> List.iter (fun prim ->
-    P.string f prim;
-    P.newline f);
+  !Js_config.directives
+  |> List.iter (fun prim ->
+         P.string f prim;
+         P.newline f);
   if not !Js_config.no_version_header then (
     P.string f Bs_version.header;
     P.newline f);

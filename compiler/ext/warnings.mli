@@ -14,9 +14,9 @@
 (**************************************************************************)
 
 type loc = {
-  loc_start : Lexing.position;
-  loc_end : Lexing.position;
-  loc_ghost : bool;
+  loc_start: Lexing.position;
+  loc_end: Lexing.position;
+  loc_ghost: bool;
 }
 
 type top_level_unit_help = FunctionCall | Other
@@ -78,7 +78,8 @@ type t =
   | Bs_unimplemented_primitive of string (* 106 *)
   | Bs_integer_literal_overflow (* 107 *)
   | Bs_uninterpreted_delimiters of string (* 108 *)
-  | Bs_toplevel_expression_unit of (string * top_level_unit_help) option (* 109 *)
+  | Bs_toplevel_expression_unit of
+      (string * top_level_unit_help) option (* 109 *)
   | Bs_todo of string option (* 110 *)
 
 val parse_options : bool -> string -> unit
@@ -90,13 +91,13 @@ val is_active : t -> bool
 val is_error : t -> bool
 
 type reporting_information = {
-  number : int;
-  message : string;
-  is_error : bool;
-  sub_locs : (loc * string) list;
+  number: int;
+  message: string;
+  is_error: bool;
+  sub_locs: (loc * string) list;
 }
 
-val report : t -> [ `Active of reporting_information | `Inactive ]
+val report : t -> [`Active of reporting_information | `Inactive]
 
 exception Errors
 

@@ -27,17 +27,13 @@ let bsbuild_cache = Literals.bsbuild_cache
 type group =
   | Dummy
   | Group of {
-      modules : string array;
-      dir_length : int;
-      dir_info_offset : int;
-      module_info_offset : int;
+      modules: string array;
+      dir_length: int;
+      dir_info_offset: int;
+      module_info_offset: int;
     }
 
-type t = {
-  lib : group;
-  dev : group;
-  content : string; (* string is whole content*)
-}
+type t = {lib: group; dev: group; content: string (* string is whole content*)}
 
 type cursor = int ref
 
@@ -46,7 +42,7 @@ let rec decode (x : string) : t =
   let (offset : cursor) = ref 0 in
   let lib = decode_single x offset in
   let dev = decode_single x offset in
-  { lib; dev; content = x }
+  {lib; dev; content = x}
 
 and decode_single (x : string) (offset : cursor) : group =
   let module_number = Ext_pervasives.parse_nat_of_string x offset in
@@ -57,7 +53,7 @@ and decode_single (x : string) (offset : cursor) : group =
     let module_info_offset = String.index_from x dir_info_offset '\n' + 1 in
     let dir_length = Char.code x.[module_info_offset] - 48 (* Char.code '0'*) in
     offset := module_info_offset + 1 + (dir_length * module_number) + 1;
-    Group { modules; dir_info_offset; module_info_offset; dir_length })
+    Group {modules; dir_info_offset; module_info_offset; dir_length})
   else Dummy
 
 and decode_modules (x : string) (offset : cursor) module_number : string array =
@@ -82,37 +78,36 @@ let read_build_cache ~dir : t =
   let all_content = Ext_io.load_file (Filename.concat dir bsbuild_cache) in
   decode all_content
 
-type module_info = { case : bool; (* which is Bsb_db.case*) dir_name : string }
+type module_info = {case: bool; (* which is Bsb_db.case*) dir_name: string}
 
-let find_opt ({ content = whole } as db : t) lib (key : string) :
+let find_opt ({content = whole} as db : t) lib (key : string) :
     module_info option =
   match if lib then db.lib else db.dev with
   | Dummy -> None
-  | Group ({ modules } as group) -> (
-      let i = Ext_string_array.find_sorted modules key in
-      match i with
-      | None -> None
-      | Some count ->
-          let encode_len = group.dir_length in
-          let index =
-            Ext_string.get_1_2_3_4 whole
-              ~off:(group.module_info_offset + 1 + (count * encode_len))
-              encode_len
-          in
-          let case = not (index mod 2 = 0) in
-          let ith = index lsr 1 in
-          let dir_name_start =
-            if ith = 0 then group.dir_info_offset
-            else Ext_string.index_count whole group.dir_info_offset '\t' ith + 1
-          in
-          let dir_name_finish = String.index_from whole dir_name_start '\t' in
-          Some
-            {
-              case;
-              dir_name =
-                String.sub whole dir_name_start
-                  (dir_name_finish - dir_name_start);
-            })
+  | Group ({modules} as group) -> (
+    let i = Ext_string_array.find_sorted modules key in
+    match i with
+    | None -> None
+    | Some count ->
+      let encode_len = group.dir_length in
+      let index =
+        Ext_string.get_1_2_3_4 whole
+          ~off:(group.module_info_offset + 1 + (count * encode_len))
+          encode_len
+      in
+      let case = not (index mod 2 = 0) in
+      let ith = index lsr 1 in
+      let dir_name_start =
+        if ith = 0 then group.dir_info_offset
+        else Ext_string.index_count whole group.dir_info_offset '\t' ith + 1
+      in
+      let dir_name_finish = String.index_from whole dir_name_start '\t' in
+      Some
+        {
+          case;
+          dir_name =
+            String.sub whole dir_name_start (dir_name_finish - dir_name_start);
+        })
 
 let find db dependent_module is_not_lib_dir =
   let opt = find_opt db true dependent_module in

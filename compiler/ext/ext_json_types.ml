@@ -24,13 +24,13 @@
 
 type loc = Lexing.position
 
-type json_str = { str : string; loc : loc }
+type json_str = {str: string; loc: loc}
 
-type json_flo = { flo : string; loc : loc }
+type json_flo = {flo: string; loc: loc}
 
-type json_array = { content : t array; loc_start : loc; loc_end : loc }
+type json_array = {content: t array; loc_start: loc; loc_end: loc}
 
-and json_map = { map : t Map_string.t; loc : loc }
+and json_map = {map: t Map_string.t; loc: loc}
 
 and t =
   | True of loc

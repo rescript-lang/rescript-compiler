@@ -30,7 +30,9 @@ let adjust (fv : stats Map_ident.t) (pos : position) (v : Ident.t) :
     stats Map_ident.t =
   Map_ident.adjust fv v (fun v ->
       let stat =
-        match v with None -> Lam_var_stats.fresh_stats | Some v -> v
+        match v with
+        | None -> Lam_var_stats.fresh_stats
+        | Some v -> v
       in
       Lam_var_stats.update stat pos)
 
@@ -67,77 +69,74 @@ let free_variables (export_idents : Set_ident.t) (params : stats Map_ident.t)
     match lam with
     | Lvar v -> used top v
     | Lconst _ -> ()
-    | Lapply { ap_func; ap_args; _ } ->
-        iter top ap_func;
-        let top = Lam_var_stats.new_position_after_lam ap_func top in
-        Ext_list.iter ap_args (fun lam -> iter top lam)
-    | Lprim { args; _ } ->
-        (* Check: can top be propoaged for all primitives *)
-        Ext_list.iter args (iter top)
+    | Lapply {ap_func; ap_args; _} ->
+      iter top ap_func;
+      let top = Lam_var_stats.new_position_after_lam ap_func top in
+      Ext_list.iter ap_args (fun lam -> iter top lam)
+    | Lprim {args; _} ->
+      (* Check: can top be propoaged for all primitives *)
+      Ext_list.iter args (iter top)
     | Lglobal_module _ -> ()
-    | Lfunction { params; body } ->
-        local_add_list params;
-        iter sink_pos body (* Do we need continue *)
+    | Lfunction {params; body} ->
+      local_add_list params;
+      iter sink_pos body (* Do we need continue *)
     | Llet (_, id, arg, body) ->
-        iter top arg;
-        local_add id;
-        iter sink_pos body
+      iter top arg;
+      local_add id;
+      iter sink_pos body
     | Lletrec (decl, body) ->
-        local_set :=
-          Ext_list.fold_left decl !local_set (fun acc (id, _) ->
-              Set_ident.add acc id);
-        Ext_list.iter decl (fun (_, exp) -> iter sink_pos exp);
-        iter sink_pos body
+      local_set :=
+        Ext_list.fold_left decl !local_set (fun acc (id, _) ->
+            Set_ident.add acc id);
+      Ext_list.iter decl (fun (_, exp) -> iter sink_pos exp);
+      iter sink_pos body
     | Lswitch
         ( arg,
-          {
-            sw_consts;
-            sw_blocks;
-            sw_failaction;
-            sw_consts_full;
-            sw_blocks_full;
-          } ) -> (
-        iter top arg;
-        let top = Lam_var_stats.new_position_after_lam arg top in
-        List.iter (fun (_, case) -> iter top case) sw_consts;
-        List.iter (fun (_, case) -> iter top case) sw_blocks;
-        match sw_failaction with
-        | None -> ()
-        | Some x ->
-            if sw_consts_full || sw_blocks_full then iter top x
-            else iter sink_pos x)
+          {sw_consts; sw_blocks; sw_failaction; sw_consts_full; sw_blocks_full}
+        ) -> (
+      iter top arg;
+      let top = Lam_var_stats.new_position_after_lam arg top in
+      List.iter (fun (_, case) -> iter top case) sw_consts;
+      List.iter (fun (_, case) -> iter top case) sw_blocks;
+      match sw_failaction with
+      | None -> ()
+      | Some x ->
+        if sw_consts_full || sw_blocks_full then iter top x else iter sink_pos x
+      )
     | Lstringswitch (arg, cases, default) -> (
-        iter top arg;
-        let top = Lam_var_stats.new_position_after_lam arg top in
-        List.iter (fun (_, act) -> iter top act) cases;
-        match default with None -> () | Some x -> iter top x)
+      iter top arg;
+      let top = Lam_var_stats.new_position_after_lam arg top in
+      List.iter (fun (_, act) -> iter top act) cases;
+      match default with
+      | None -> ()
+      | Some x -> iter top x)
     | Lstaticraise (_, args) -> List.iter (iter sink_pos) args
     | Lstaticcatch (e1, (_, vars), e2) ->
-        iter sink_pos e1;
-        local_add_list vars;
-        iter sink_pos e2
+      iter sink_pos e1;
+      local_add_list vars;
+      iter sink_pos e2
     | Ltrywith (e1, _exn, e2) ->
-        iter top e1;
-        iter sink_pos e2
+      iter top e1;
+      iter sink_pos e2
     | Lifthenelse (e1, e2, e3) ->
-        iter top e1;
-        let top = Lam_var_stats.new_position_after_lam e1 top in
-        iter top e2;
-        iter top e3
+      iter top e1;
+      let top = Lam_var_stats.new_position_after_lam e1 top in
+      iter top e2;
+      iter top e3
     | Lsequence (e1, e2) ->
-        iter top e1;
-        iter sink_pos e2
+      iter top e1;
+      iter sink_pos e2
     | Lwhile (e1, e2) ->
-        iter sink_pos e1;
-        iter sink_pos e2 (* in the loop, no substitution any way *)
+      iter sink_pos e1;
+      iter sink_pos e2 (* in the loop, no substitution any way *)
     | Lfor (v, e1, e2, _dir, e3) ->
-        local_add v;
-        iter sink_pos e1;
-        iter sink_pos e2;
-        iter sink_pos e3
+      local_add v;
+      iter sink_pos e1;
+      iter sink_pos e2;
+      iter sink_pos e3
     | Lassign (id, e) ->
-        used top id;
-        iter top e
+      used top id;
+      iter top e
   in
   iter Lam_var_stats.fresh_env lam;
   !fv

@@ -66,7 +66,7 @@ val check :
   package_kind:Bsb_package_kind.t ->
   per_proj_dir:string ->
   forced:bool ->
-  warn_as_error: string option ->
+  warn_as_error:string option ->
   file:string ->
   check_result
 (** check if [build.ninja] should be regenerated *)

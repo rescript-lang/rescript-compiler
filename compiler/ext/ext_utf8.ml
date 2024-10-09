@@ -74,13 +74,13 @@ let decode_utf8_string s =
     else
       match classify s.[i] with
       | Single c ->
-          add c;
-          decode_utf8_cont s (i + 1) s_len
+        add c;
+        decode_utf8_cont s (i + 1) s_len
       | Cont _ -> raise (Invalid_utf8 "Unexpected continuation byte")
       | Leading (n, c) ->
-          let c', i' = follow s n c i in
-          add c';
-          decode_utf8_cont s (i' + 1) s_len
+        let c', i' = follow s n c i in
+        add c';
+        decode_utf8_cont s (i' + 1) s_len
       | Invalid -> raise (Invalid_utf8 "Invalid byte")
   in
   decode_utf8_cont s 0 (String.length s);
@@ -128,4 +128,3 @@ let encode_codepoint c =
     Bytes.unsafe_set bytes 3
       (Char.unsafe_chr (0b1000_0000 lor (c land cont_mask)));
     Bytes.unsafe_to_string bytes
-
