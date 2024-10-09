@@ -1,13 +1,13 @@
 SHELL = /bin/bash
 
-DUNE_BIN_DIR = ./compiler/_build/install/default/bin
+DUNE_BIN_DIR = ./_build/install/default/bin
 
 build: ninja rewatch
-	dune build --root compiler
+	dune build
 	./scripts/copyExes.js -compiler
 
 watch:
-	dune build --root compiler -w
+	dune build -w
 
 bench:
 	$(DUNE_BIN_DIR)/syntax_benchmarks
@@ -59,8 +59,8 @@ artifacts: lib
 
 # Builds the core playground bundle (without the relevant cmijs files for the runtime)
 playground:
-	dune build --root compiler --profile browser
-	cp ./compiler/_build/default/jsoo/jsoo_playground_main.bc.js playground/compiler.js
+	dune build --profile browser
+	cp ./_build/default/compiler/jsoo/jsoo_playground_main.bc.js playground/compiler.js
 
 # Creates all the relevant core and third party cmij files to side-load together with the playground bundle
 playground-cmijs: artifacts

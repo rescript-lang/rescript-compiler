@@ -150,7 +150,7 @@ jobs:
       # matrix.ocaml_compiler may contain commas
       - name: Get OPAM cache key
         shell: bash
-        run: echo "opam_cache_key=opam-env-v3-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('compiler/dune-project') }}" | sed 's/,/-/g' >> $GITHUB_ENV
+        run: echo "opam_cache_key=opam-env-v3-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}" | sed 's/,/-/g' >> $GITHUB_ENV
 
       - name: Restore OPAM environment
         id: cache-opam-env
@@ -250,11 +250,11 @@ jobs:
           
       - name: Build compiler
         if: runner.os != 'Linux'
-        run: opam exec -- dune build --root compiler --display quiet --profile release
+        run: opam exec -- dune build --display quiet --profile release
 
       - name: Build compiler (Linux static)
         if: runner.os == 'Linux'
-        run: opam exec -- dune build --root compiler --display quiet --profile static
+        run: opam exec -- dune build --display quiet --profile static
 
       - name: Install npm packages
         run: npm ci --ignore-scripts
@@ -324,8 +324,8 @@ jobs:
         if: matrix.build_playground
         run: |
           opam exec -- node packages/playground-bundling/scripts/generate_cmijs.js
-          opam exec -- dune build --root compiler --profile browser
-          cp ./compiler/_build/default/jsoo/jsoo_playground_main.bc.js playground/compiler.js
+          opam exec -- dune build --profile browser
+          cp ./_build/default/compiler/jsoo/jsoo_playground_main.bc.js playground/compiler.js
 
       - name: Test playground compiler
         if: matrix.build_playground
