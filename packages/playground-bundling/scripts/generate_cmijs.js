@@ -21,11 +21,11 @@ const path = require("path");
 
 const resConfig = require("../rescript.json");
 
-const PROJECT_ROOT_DIR = path.join(__dirname, "..", "..", "..");
-const PLAYGROUND_DIR = path.join(PROJECT_ROOT_DIR, "playground");
+const RESCRIPT_COMPILER_ROOT_DIR = path.join(__dirname, "..", "..", "..");
+const PLAYGROUND_DIR = path.join(RESCRIPT_COMPILER_ROOT_DIR, "playground");
 
 // The playground-bundling root dir
-const PLAYGROUND_BUNDLING_DIR = path.join(__dirname, "..");
+const PROJECT_ROOT_DIR = path.join(__dirname, "..");
 
 // Final target output directory where all the cmijs will be stored
 const PACKAGES_DIR = path.join(PLAYGROUND_DIR, "packages");
@@ -36,7 +36,7 @@ if (!fs.existsSync(PACKAGES_DIR)) {
 }
 
 const config = {
-  cwd: PLAYGROUND_BUNDLING_DIR,
+  cwd: PROJECT_ROOT_DIR,
   encoding: "utf8",
   stdio: [0, 1, 2],
   shell: true,
@@ -49,7 +49,7 @@ function e(cmd) {
 }
 
 e(`npm install`);
-e(`npm link ${PROJECT_ROOT_DIR}`);
+e(`npm link ${RESCRIPT_COMPILER_ROOT_DIR}`);
 e(`npx rescript clean`);
 e(`npx rescript`);
 
@@ -59,7 +59,7 @@ const packages = resConfig["bs-dependencies"];
 // Otherwise we can't use them for compilation within the playground.
 function buildCompilerCmij() {
   const rescriptLibOcamlFolder = path.join(
-    PLAYGROUND_BUNDLING_DIR,
+    PROJECT_ROOT_DIR,
     "node_modules",
     "rescript",
     "lib",
@@ -82,14 +82,14 @@ function buildCompilerCmij() {
 function buildThirdPartyCmijs() {
   packages.forEach(function installLib(pkg) {
     const libOcamlFolder = path.join(
-      PLAYGROUND_BUNDLING_DIR,
+      PROJECT_ROOT_DIR,
       "node_modules",
       pkg,
       "lib",
       "ocaml",
     );
     const libEs6Folder = path.join(
-      PLAYGROUND_BUNDLING_DIR,
+      PROJECT_ROOT_DIR,
       "node_modules",
       pkg,
       "lib",
