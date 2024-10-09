@@ -19,7 +19,7 @@
  (synopsis "ReScript compiler")
  (depends
   (ocaml
-   (>= 5.2.0))
+   (>= 4.10))
   (ocamlformat
    (and
     :with-dev-setup
