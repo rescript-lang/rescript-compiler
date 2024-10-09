@@ -49,7 +49,7 @@ opam init
 opam switch create 5.2.0 # can also create local switch with opam switch create
 
 # Install dev dependencies from OPAM
-opam install . --deps-only --with-dev-setup -y
+opam install . --deps-only --with-test --with-dev-setup -y
 ```
 
 #### npm install

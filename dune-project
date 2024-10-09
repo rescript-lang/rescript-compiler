@@ -22,7 +22,7 @@
    (>= 4.10))
   (ocamlformat
    (and
-    :with-dev-setup
+    :with-test
     (= 0.26.2)))
   (ocaml-lsp-server
    (and
