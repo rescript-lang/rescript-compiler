@@ -6,6 +6,7 @@ compiler/core/js_pass_debug.ml
 compiler/core/lam_util.ml
 compiler/core/lam_compile_main.ml
 compiler/ext/bs_hash_stubs.ml
+compiler/ext/js_reserved_map.ml
 compiler/ext/ext_string.ml
 compiler/ext/ext_string.mli
 compiler/ext/ext_sys.ml
