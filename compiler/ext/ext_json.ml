@@ -44,18 +44,20 @@ let test ?(fail = fun () -> ()) key (cb : callback)
     (m : Ext_json_types.t Map_string.t) =
   (match (Map_string.find_exn m key, cb) with
   | exception Not_found -> (
-      match cb with `Not_found f -> f () | _ -> fail ())
+    match cb with
+    | `Not_found f -> f ()
+    | _ -> fail ())
   | True _, `Bool cb -> cb true
   | False _, `Bool cb -> cb false
-  | Flo { flo = s }, `Flo cb -> cb s
-  | Flo { flo = s; loc }, `Flo_loc cb -> cb s loc
-  | Obj { map = b }, `Obj cb -> cb b
-  | Arr { content }, `Arr cb -> cb content
-  | Arr { content; loc_start; loc_end }, `Arr_loc cb ->
-      cb content loc_start loc_end
+  | Flo {flo = s}, `Flo cb -> cb s
+  | Flo {flo = s; loc}, `Flo_loc cb -> cb s loc
+  | Obj {map = b}, `Obj cb -> cb b
+  | Arr {content}, `Arr cb -> cb content
+  | Arr {content; loc_start; loc_end}, `Arr_loc cb ->
+    cb content loc_start loc_end
   | Null _, `Null cb -> cb ()
-  | Str { str = s }, `Str cb -> cb s
-  | Str { str = s; loc }, `Str_loc cb -> cb s loc
+  | Str {str = s}, `Str cb -> cb s
+  | Str {str = s; loc}, `Str_loc cb -> cb s loc
   | any, `Id cb -> cb any
   | _, _ -> fail ());
   m

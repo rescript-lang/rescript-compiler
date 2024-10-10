@@ -51,11 +51,11 @@ let after_parsing_sig ppf outputprefix ast =
       output_deps_set !Location.input_name
         (Ast_extract.read_parse_and_extract Mli ast);
     (if !Js_config.binary_ast then
-     let sourcefile = !Location.input_name in
-     Binary_ast.write_ast Mli ~sourcefile
-       ~output:(outputprefix ^ Literals.suffix_iast)
-       (* to support relocate to another directory *)
-       ast);
+       let sourcefile = !Location.input_name in
+       Binary_ast.write_ast Mli ~sourcefile
+         ~output:(outputprefix ^ Literals.suffix_iast)
+         (* to support relocate to another directory *)
+         ast);
     if !Js_config.as_pp then (
       output_string stdout Config.ast_intf_magic_number;
       output_value stdout (!Location.input_name : string);
@@ -104,27 +104,27 @@ let interface_mliast ppf fname =
   |> after_parsing_sig ppf (Config_util.output_prefix fname)
 
 let all_module_alias (ast : Parsetree.structure) =
-  Ext_list.for_all ast (fun { pstr_desc } ->
+  Ext_list.for_all ast (fun {pstr_desc} ->
       match pstr_desc with
-      | Pstr_module { pmb_expr = { pmod_desc = Pmod_ident _ } } -> true
+      | Pstr_module {pmb_expr = {pmod_desc = Pmod_ident _}} -> true
       | Pstr_attribute _ -> true
       | Pstr_eval _ | Pstr_value _ | Pstr_primitive _ | Pstr_type _
       | Pstr_typext _ | Pstr_exception _ | Pstr_module _ | Pstr_recmodule _
       | Pstr_modtype _ | Pstr_open _ | Pstr_class _ | Pstr_class_type _
       | Pstr_include _ | Pstr_extension _ ->
-          false)
+        false)
 
 let no_export (rest : Parsetree.structure) : Parsetree.structure =
   match rest with
   | head :: _ ->
-      let loc = head.pstr_loc in
-      Ast_helper.
-        [
-          Str.include_ ~loc
-            (Incl.mk ~loc
-               (Mod.constraint_ ~loc (Mod.structure ~loc rest)
-                  (Mty.signature ~loc [])));
-        ]
+    let loc = head.pstr_loc in
+    Ast_helper.
+      [
+        Str.include_ ~loc
+          (Incl.mk ~loc
+             (Mod.constraint_ ~loc (Mod.structure ~loc rest)
+                (Mty.signature ~loc [])));
+      ]
   | _ -> rest
 
 let after_parsing_impl ppf outputprefix (ast : Parsetree.structure) =
@@ -137,10 +137,10 @@ let after_parsing_impl ppf outputprefix (ast : Parsetree.structure) =
       output_deps_set !Location.input_name
         (Ast_extract.read_parse_and_extract Ml ast);
     (if !Js_config.binary_ast then
-     let sourcefile = !Location.input_name in
-     Binary_ast.write_ast ~sourcefile Ml
-       ~output:(outputprefix ^ Literals.suffix_ast)
-       ast);
+       let sourcefile = !Location.input_name in
+       Binary_ast.write_ast ~sourcefile Ml
+         ~output:(outputprefix ^ Literals.suffix_ast)
+         ast);
     if !Js_config.as_pp then (
       output_string stdout Config.ast_impl_magic_number;
       output_value stdout (!Location.input_name : string);
@@ -160,16 +160,16 @@ let after_parsing_impl ppf outputprefix (ast : Parsetree.structure) =
       print_if ppf Clflags.dump_typedtree
         Printtyped.implementation_with_coercion typedtree_coercion;
       (if !Js_config.cmi_only then Warnings.check_fatal ()
-      else
-        let lambda, exports =
-          Translmod.transl_implementation modulename typedtree_coercion
-        in
-        let js_program =
-          print_if_pipe ppf Clflags.dump_rawlambda Printlambda.lambda lambda
-          |> Lam_compile_main.compile outputprefix exports
-        in
-        if not !Js_config.cmj_only then
-          Lam_compile_main.lambda_as_module js_program outputprefix);
+       else
+         let lambda, exports =
+           Translmod.transl_implementation modulename typedtree_coercion
+         in
+         let js_program =
+           print_if_pipe ppf Clflags.dump_rawlambda Printlambda.lambda lambda
+           |> Lam_compile_main.compile outputprefix exports
+         in
+         if not !Js_config.cmj_only then
+           Lam_compile_main.lambda_as_module js_program outputprefix);
       process_with_gentype (outputprefix ^ ".cmt"))
 
 let implementation ~parser ppf ?outputprefix fname =
@@ -198,8 +198,8 @@ let make_structure_item ~ns cunit : Parsetree.structure_item =
   let open Ast_helper in
   let loc = Location.none in
   Str.module_
-    (Mb.mk { txt = cunit; loc }
-       (Mod.ident { txt = Lident (Ext_namespace_encode.make ~ns cunit); loc }))
+    (Mb.mk {txt = cunit; loc}
+       (Mod.ident {txt = Lident (Ext_namespace_encode.make ~ns cunit); loc}))
 
 (** decoding [.mlmap]
     keep in sync {!Bsb_namespace_map_gen.output}

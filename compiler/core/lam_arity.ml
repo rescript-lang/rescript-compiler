@@ -36,10 +36,10 @@ let equal (x : t) y =
   match x with
   | Arity_na -> y = Arity_na
   | Arity_info (xs, a) -> (
-      match y with
-      | Arity_info (ys, b) ->
-          a = b && Ext_list.for_all2_no_exn xs ys (fun x y -> x = y)
-      | Arity_na -> false)
+    match y with
+    | Arity_info (ys, b) ->
+      a = b && Ext_list.for_all2_no_exn xs ys (fun x y -> x = y)
+    | Arity_na -> false)
 
 let pp = Format.fprintf
 
@@ -47,14 +47,14 @@ let print (fmt : Format.formatter) (x : t) =
   match x with
   | Arity_na -> pp fmt "?"
   | Arity_info (ls, tail) ->
-      pp fmt "@[";
-      pp fmt "[";
-      Format.pp_print_list
-        ~pp_sep:(fun fmt () -> pp fmt ",")
-        (fun fmt x -> Format.pp_print_int fmt x)
-        fmt ls;
-      if tail then pp fmt "@ *";
-      pp fmt "]@]"
+    pp fmt "@[";
+    pp fmt "[";
+    Format.pp_print_list
+      ~pp_sep:(fun fmt () -> pp fmt ",")
+      (fun fmt x -> Format.pp_print_int fmt x)
+      fmt ls;
+    if tail then pp fmt "@ *";
+    pp fmt "]@]"
 
 let print_arities_tbl (fmt : Format.formatter)
     (arities_tbl : (Ident.t, t ref) Hashtbl.t) =
@@ -64,7 +64,7 @@ let print_arities_tbl (fmt : Format.formatter)
 
 let merge (n : int) (x : t) : t =
   match x with
-  | Arity_na -> Arity_info ([ n ], false)
+  | Arity_na -> Arity_info ([n], false)
   | Arity_info (xs, tail) -> Arity_info (n :: xs, tail)
 
 let non_function_arity_info = Arity_info ([], false)
@@ -76,7 +76,9 @@ let na = Arity_na
 let info args b1 = Arity_info (args, b1)
 
 let first_arity_na (x : t) =
-  match x with Arity_na | Arity_info ([], _) -> true | _ -> false
+  match x with
+  | Arity_na | Arity_info ([], _) -> true
+  | _ -> false
 
 let get_first_arity (x : t) =
   match x with
@@ -84,7 +86,9 @@ let get_first_arity (x : t) =
   | Arity_info (x :: _, _) -> Some x
 
 let extract_arity (x : t) =
-  match x with Arity_na -> [] | Arity_info (xs, _) -> xs
+  match x with
+  | Arity_na -> []
+  | Arity_info (xs, _) -> xs
 
 (* let update_arity (x : t) xs =    *)
 

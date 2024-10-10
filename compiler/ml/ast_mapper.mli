@@ -57,12 +57,12 @@ type mapper = {
   attributes: mapper -> attribute list -> attribute list;
   case: mapper -> case -> case;
   cases: mapper -> case list -> case list;
-  constructor_declaration: mapper -> constructor_declaration
-                           -> constructor_declaration;
+  constructor_declaration:
+    mapper -> constructor_declaration -> constructor_declaration;
   expr: mapper -> expression -> expression;
   extension: mapper -> extension -> extension;
-  extension_constructor: mapper -> extension_constructor
-                         -> extension_constructor;
+  extension_constructor:
+    mapper -> extension_constructor -> extension_constructor;
   include_declaration: mapper -> include_declaration -> include_declaration;
   include_description: mapper -> include_description -> include_description;
   label_declaration: mapper -> label_declaration -> label_declaration;
@@ -71,8 +71,8 @@ type mapper = {
   module_declaration: mapper -> module_declaration -> module_declaration;
   module_expr: mapper -> module_expr -> module_expr;
   module_type: mapper -> module_type -> module_type;
-  module_type_declaration: mapper -> module_type_declaration
-                           -> module_type_declaration;
+  module_type_declaration:
+    mapper -> module_type_declaration -> module_type_declaration;
   open_description: mapper -> open_description -> open_description;
   pat: mapper -> pattern -> pattern;
   payload: mapper -> payload -> payload;
@@ -93,12 +93,12 @@ type mapper = {
     argument the mapper to be applied to children in the syntax
     tree. *)
 
-val default_mapper: mapper
+val default_mapper : mapper
 (** A default mapper, which implements a "deep identity" mapping. *)
 
 (** {1 Apply mappers to compilation units} *)
 
-val tool_name: unit -> string
+val tool_name : unit -> string
 (** Can be used within a ppx preprocessor to know which tool is
     calling it ["ocamlc"], ["ocamlopt"], ["ocamldoc"], ["ocamldep"],
     ["ocaml"], ...  Some global variables that reflect command-line
@@ -107,14 +107,13 @@ val tool_name: unit -> string
     {!Config.load_path}, {!Clflags.open_modules}, {!Clflags.for_package},
     {!Clflags.debug}. *)
 
-
-val apply: source:string -> target:string -> mapper -> unit
+val apply : source:string -> target:string -> mapper -> unit
 (** Apply a mapper (parametrized by the unit name) to a dumped
     parsetree found in the [source] file and put the result in the
     [target] file. The [structure] or [signature] field of the mapper
     is applied to the implementation or interface.  *)
 
-val run_main: (string list -> mapper) -> unit
+val run_main : (string list -> mapper) -> unit
 (** Entry point to call to implement a standalone -ppx rewriter from a
     mapper, parametrized by the command line arguments.  The current
     unit name can be obtained from {!Location.input_name}.  This
@@ -123,9 +122,9 @@ val run_main: (string list -> mapper) -> unit
 
 (** {1 Registration API} *)
 
-val register_function: (string -> (string list -> mapper) -> unit) ref
+val register_function : (string -> (string list -> mapper) -> unit) ref
 
-val register: string -> (string list -> mapper) -> unit
+val register : string -> (string list -> mapper) -> unit
 (** Apply the [register_function].  The default behavior is to run the
     mapper immediately, taking arguments from the process command
     line.  This is to support a scenario where a mapper is linked as a
@@ -142,42 +141,41 @@ val register: string -> (string list -> mapper) -> unit
     The first argument to [register] is a symbolic name to be used by
     the ppx driver.  *)
 
-
 (** {1 Convenience functions to write mappers} *)
 
-val map_opt: ('a -> 'b) -> 'a option -> 'b option
+val map_opt : ('a -> 'b) -> 'a option -> 'b option
 
-val extension_of_error: Location.error -> extension
+val extension_of_error : Location.error -> extension
 (** Encode an error into an 'ocaml.error' extension node which can be
     inserted in a generated Parsetree.  The compiler will be
     responsible for reporting the error. *)
 
-val attribute_of_warning: Location.t -> string -> attribute
+val attribute_of_warning : Location.t -> string -> attribute
 (** Encode a warning message into an 'ocaml.ppwarning' attribute which can be
     inserted in a generated Parsetree.  The compiler will be
     responsible for reporting the warning. *)
 
 (** {1 Helper functions to call external mappers} *)
 
-val add_ppx_context_str:
-    tool_name:string -> Parsetree.structure -> Parsetree.structure
+val add_ppx_context_str :
+  tool_name:string -> Parsetree.structure -> Parsetree.structure
 (** Extract information from the current environment and encode it
     into an attribute which is prepended to the list of structure
     items in order to pass the information to an external
     processor. *)
 
-val add_ppx_context_sig:
-    tool_name:string -> Parsetree.signature -> Parsetree.signature
+val add_ppx_context_sig :
+  tool_name:string -> Parsetree.signature -> Parsetree.signature
 (** Same as [add_ppx_context_str], but for signatures. *)
 
-val drop_ppx_context_str:
-    restore:bool -> Parsetree.structure -> Parsetree.structure
+val drop_ppx_context_str :
+  restore:bool -> Parsetree.structure -> Parsetree.structure
 (** Drop the ocaml.ppx.context attribute from a structure.  If
     [restore] is true, also restore the associated data in the current
     process. *)
 
-val drop_ppx_context_sig:
-    restore:bool -> Parsetree.signature -> Parsetree.signature
+val drop_ppx_context_sig :
+  restore:bool -> Parsetree.signature -> Parsetree.signature
 (** Same as [drop_ppx_context_str], but for signatures. *)
 
 (** {1 Cookies} *)
@@ -186,5 +184,5 @@ val drop_ppx_context_sig:
     a further invocation of itself, when called from the OCaml
     toplevel (or other tools that support cookies). *)
 
-val set_cookie: string -> Parsetree.expression -> unit
-val get_cookie: string -> Parsetree.expression option
+val set_cookie : string -> Parsetree.expression -> unit
+val get_cookie : string -> Parsetree.expression option

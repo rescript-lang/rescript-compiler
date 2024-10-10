@@ -26,21 +26,21 @@ let ( // ) = Ext_path.combine
 
 let handle_generators oc (group : Bsb_file_groups.file_group) custom_rules =
   let map_to_source_dir x = Bsb_config.proj_rel (group.dir // x) in
-  Ext_list.iter group.generators (fun { output; input; command } ->
+  Ext_list.iter group.generators (fun {output; input; command} ->
       (*TODO: add a loc for better error message *)
       match Map_string.find_opt custom_rules command with
       | None ->
-          Ext_fmt.failwithf ~loc:__LOC__ "custom rule %s used but  not defined"
-            command
+        Ext_fmt.failwithf ~loc:__LOC__ "custom rule %s used but  not defined"
+          command
       | Some rule ->
-          Bsb_ninja_targets.output_build oc
-            ~outputs:(Ext_list.map output map_to_source_dir)
-            ~inputs:(Ext_list.map input map_to_source_dir)
-            ~rule)
+        Bsb_ninja_targets.output_build oc
+          ~outputs:(Ext_list.map output map_to_source_dir)
+          ~inputs:(Ext_list.map input map_to_source_dir)
+          ~rule)
 
-type suffixes = { impl : string; intf : string }
+type suffixes = {impl: string; intf: string}
 
-let res_suffixes = { impl = Literals.suffix_res; intf = Literals.suffix_resi }
+let res_suffixes = {impl = Literals.suffix_res; intf = Literals.suffix_resi}
 
 let emit_module_build (rules : Bsb_ninja_rule.builtin)
     (package_specs : Bsb_package_specs.t) (is_dev : bool) oc namespace
@@ -67,22 +67,20 @@ let emit_module_build (rules : Bsb_ninja_rule.builtin)
       output_filename_sans_extension
   in
 
-  Bsb_ninja_targets.output_build oc ~outputs:[ output_ast ]
-    ~inputs:[ input_impl ] ~rule:ast_rule;
-  Bsb_ninja_targets.output_build oc ~outputs:[ output_d ]
-    ~inputs:
-      (if has_intf_file then [ output_ast; output_iast ] else [ output_ast ])
+  Bsb_ninja_targets.output_build oc ~outputs:[output_ast] ~inputs:[input_impl]
+    ~rule:ast_rule;
+  Bsb_ninja_targets.output_build oc ~outputs:[output_d]
+    ~inputs:(if has_intf_file then [output_ast; output_iast] else [output_ast])
     ~rule:(if is_dev then rules.build_bin_deps_dev else rules.build_bin_deps);
   if has_intf_file then (
     Bsb_ninja_targets.output_build oc
-      ~outputs:
-        [ output_iast ]
+      ~outputs:[output_iast]
         (* TODO: we can get rid of absloute path if we fixed the location to be
             [lib/bs], better for testing?
         *)
-      ~inputs:[ input_intf ] ~rule:ast_rule;
-    Bsb_ninja_targets.output_build oc ~outputs:[ output_cmi ]
-      ~inputs:[ output_iast ]
+      ~inputs:[input_intf] ~rule:ast_rule;
+    Bsb_ninja_targets.output_build oc ~outputs:[output_cmi]
+      ~inputs:[output_iast]
       ~rule:(if is_dev then rules.mi_dev else rules.mi));
   let rule =
     if has_intf_file then if is_dev then rules.mj_dev else rules.mj
@@ -92,9 +90,8 @@ let emit_module_build (rules : Bsb_ninja_rule.builtin)
   Bsb_ninja_targets.output_build oc
     ~outputs:
       (if has_intf_file then output_cmj :: output_js
-      else output_cmj :: output_cmi :: output_js)
-    ~inputs:
-      (if has_intf_file then [ output_ast; output_cmi ] else [ output_ast ])
+       else output_cmj :: output_cmi :: output_js)
+    ~inputs:(if has_intf_file then [output_ast; output_cmi] else [output_ast])
     ~rule
 
 let handle_files_per_dir oc ~(rules : Bsb_ninja_rule.builtin) ~package_specs

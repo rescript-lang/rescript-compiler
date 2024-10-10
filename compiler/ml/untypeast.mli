@@ -22,17 +22,16 @@ type mapper = {
   attributes: mapper -> Typedtree.attribute list -> attribute list;
   case: mapper -> Typedtree.case -> case;
   cases: mapper -> Typedtree.case list -> case list;
-  constructor_declaration: mapper -> Typedtree.constructor_declaration
-                           -> constructor_declaration;
+  constructor_declaration:
+    mapper -> Typedtree.constructor_declaration -> constructor_declaration;
   expr: mapper -> Typedtree.expression -> expression;
-  extension_constructor: mapper -> Typedtree.extension_constructor
-                         -> extension_constructor;
+  extension_constructor:
+    mapper -> Typedtree.extension_constructor -> extension_constructor;
   include_declaration:
     mapper -> Typedtree.include_declaration -> include_declaration;
   include_description:
     mapper -> Typedtree.include_description -> include_description;
-  label_declaration:
-    mapper -> Typedtree.label_declaration -> label_declaration;
+  label_declaration: mapper -> Typedtree.label_declaration -> label_declaration;
   location: mapper -> Location.t -> Location.t;
   module_binding: mapper -> Typedtree.module_binding -> module_binding;
   module_declaration:
@@ -57,8 +56,9 @@ type mapper = {
   value_binding: mapper -> Typedtree.value_binding -> value_binding;
   value_description: mapper -> Typedtree.value_description -> value_description;
   with_constraint:
-    mapper -> (Path.t * Longident.t Location.loc * Typedtree.with_constraint)
-    -> with_constraint;
+    mapper ->
+    Path.t * Longident.t Location.loc * Typedtree.with_constraint ->
+    with_constraint;
 }
 
 val default_mapper : mapper

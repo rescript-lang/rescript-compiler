@@ -29,15 +29,15 @@ let find_name = Lambda.find_name
 let find_name_with_loc (attr : Parsetree.attribute) : string Asttypes.loc option
     =
   match attr with
-  | ( { txt = "as"; loc },
+  | ( {txt = "as"; loc},
       PStr
         [
           {
             pstr_desc =
-              Pstr_eval ({ pexp_desc = Pexp_constant (Pconst_string (s, _)) }, _);
+              Pstr_eval ({pexp_desc = Pexp_constant (Pconst_string (s, _))}, _);
           };
         ] ) ->
-      Some { txt = s; loc }
+    Some {txt = s; loc}
   | _ -> None
 
 let check_bs_attributes_inclusion (attrs1 : Parsetree.attributes)
@@ -50,21 +50,20 @@ let rec check_duplicated_labels_aux (lbls : Parsetree.label_declaration list)
     (coll : Set_string.t) =
   match lbls with
   | [] -> None
-  | { pld_name = { txt } as pld_name; pld_attributes } :: rest -> (
-      if Set_string.mem coll txt && txt <> "..." then Some pld_name
-      else
-        let coll_with_lbl = Set_string.add coll txt in
-        match Ext_list.find_opt pld_attributes find_name_with_loc with
-        | None -> check_duplicated_labels_aux rest coll_with_lbl
-        | Some ({ txt = s } as l) ->
-            if
-              Set_string.mem coll s
-              (*use coll to make check a bit looser
-                allow cases like [ x : int [@as "x"]]
-              *)
-            then Some l
-            else
-              check_duplicated_labels_aux rest (Set_string.add coll_with_lbl s))
+  | {pld_name = {txt} as pld_name; pld_attributes} :: rest -> (
+    if Set_string.mem coll txt && txt <> "..." then Some pld_name
+    else
+      let coll_with_lbl = Set_string.add coll txt in
+      match Ext_list.find_opt pld_attributes find_name_with_loc with
+      | None -> check_duplicated_labels_aux rest coll_with_lbl
+      | Some ({txt = s} as l) ->
+        if
+          Set_string.mem coll s
+          (*use coll to make check a bit looser
+            allow cases like [ x : int [@as "x"]]
+          *)
+        then Some l
+        else check_duplicated_labels_aux rest (Set_string.add coll_with_lbl s))
 
 let check_duplicated_labels lbls =
   check_duplicated_labels_aux lbls Set_string.empty

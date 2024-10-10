@@ -24,7 +24,6 @@
 
 val at_bol : Lexing.lexbuf -> bool
 
-
 val eof_check : Lexing.lexbuf -> unit
 
 val init : unit -> unit

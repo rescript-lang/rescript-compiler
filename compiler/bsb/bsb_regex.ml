@@ -41,19 +41,19 @@ let global_substitute text ~reg:expr repl_fun =
       match Str.search_forward expr text startpos with
       | exception Not_found -> string_after text start :: accu
       | pos ->
-          let end_pos = Str.match_end () in
-          let matched = Str.matched_string text in
-          let groups =
-            let rec aux n acc =
-              match Str.matched_group n text with
-              | exception (Not_found | Invalid_argument _) -> acc
-              | v -> aux (succ n) (v :: acc)
-            in
-            aux 1 []
+        let end_pos = Str.match_end () in
+        let matched = Str.matched_string text in
+        let groups =
+          let rec aux n acc =
+            match Str.matched_group n text with
+            | exception (Not_found | Invalid_argument _) -> acc
+            | v -> aux (succ n) (v :: acc)
           in
-          let repl_text = repl_fun matched groups in
-          replace
-            (repl_text :: String.sub text start (pos - start) :: accu)
-            end_pos (end_pos = pos)
+          aux 1 []
+        in
+        let repl_text = repl_fun matched groups in
+        replace
+          (repl_text :: String.sub text start (pos - start) :: accu)
+          end_pos (end_pos = pos)
   in
   String.concat "" (List.rev (replace [] 0 false))

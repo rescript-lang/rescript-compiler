@@ -20,19 +20,19 @@ let rec struct_const ppf (cst : Lam_constant.t) =
   | Const_js_null -> fprintf ppf "#null"
   | Const_module_alias -> fprintf ppf "#alias"
   | Const_js_undefined _ -> fprintf ppf "#undefined"
-  | Const_int { i } -> fprintf ppf "%ld" i
+  | Const_int {i} -> fprintf ppf "%ld" i
   | Const_char i -> fprintf ppf "%s" (Ext_util.string_of_int_as_char i)
-  | Const_string { s } -> fprintf ppf "%S" s
+  | Const_string {s} -> fprintf ppf "%S" s
   | Const_float f -> fprintf ppf "%s" f
   | Const_bigint (sign, i) -> fprintf ppf "%sn" (Bigint_utils.to_string sign i)
   | Const_pointer name -> fprintf ppf "`%s" name
   | Const_some n -> fprintf ppf "[some-c]%a" struct_const n
   | Const_block (tag, _, []) -> fprintf ppf "[%i]" tag
   | Const_block (tag, _, sc1 :: scl) ->
-      let sconsts ppf scl =
-        List.iter (fun sc -> fprintf ppf "@ %a" struct_const sc) scl
-      in
-      fprintf ppf "@[<1>[%i:@ @[%a%a@]]@]" tag struct_const sc1 sconsts scl
+    let sconsts ppf scl =
+      List.iter (fun sc -> fprintf ppf "@ %a" struct_const sc) scl
+    in
+    fprintf ppf "@[<1>[%i:@ @[%a%a@]]@]" tag struct_const sc1 sconsts scl
 
 (* let string_of_loc_kind (loc : Lambda.loc_kind) =
    match loc with
@@ -51,8 +51,8 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pjs_apply -> fprintf ppf "#apply"
   | Pjs_runtime_apply -> fprintf ppf "#runtime_apply"
-  | Pjs_unsafe_downgrade { name; setter } ->
-      if setter then fprintf ppf "##%s#=" name else fprintf ppf "##%s" name
+  | Pjs_unsafe_downgrade {name; setter} ->
+    if setter then fprintf ppf "##%s#=" name else fprintf ppf "##%s" name
   | Pfn_arity -> fprintf ppf "fn.length"
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
   | Pjs_fn_make_unit -> fprintf ppf "js_fn_make_unit"
@@ -75,15 +75,15 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pmakeblock (tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
   | Pmakeblock (tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
   | Pfield (n, field_info) -> (
-      match Lam_compat.str_of_field_info field_info with
-      | None -> fprintf ppf "field %i" n
-      | Some s -> fprintf ppf "field %s/%i" s n)
+    match Lam_compat.str_of_field_info field_info with
+    | None -> fprintf ppf "field %i" n
+    | Some s -> fprintf ppf "field %s/%i" s n)
   | Psetfield (n, _) ->
-      let instr = "setfield " in
-      fprintf ppf "%s%i" instr n
+    let instr = "setfield " in
+    fprintf ppf "%s%i" instr n
   | Pduprecord -> fprintf ppf "duprecord"
   | Plazyforce -> fprintf ppf "force"
-  | Pjs_call { prim_name } -> fprintf ppf "%s[js]" prim_name
+  | Pjs_call {prim_name} -> fprintf ppf "%s[js]" prim_name
   | Pjs_object_create _ -> fprintf ppf "[js.obj]"
   | Praise -> fprintf ppf "raise"
   | Pobjcomp Ceq -> fprintf ppf "=="
@@ -225,11 +225,11 @@ let to_print_kind (k : Lam_compat.let_kind) : print_kind =
 let rec aux (acc : (print_kind * Ident.t * Lam.t) list) (lam : Lam.t) =
   match lam with
   | Llet (str3, id3, arg3, body3) ->
-      aux ((to_print_kind str3, id3, arg3) :: acc) body3
+    aux ((to_print_kind str3, id3, arg3) :: acc) body3
   | Lletrec (bind_args, body) ->
-      aux
-        (Ext_list.map_append bind_args acc (fun (id, l) -> (Recursive, id, l)))
-        body
+    aux
+      (Ext_list.map_append bind_args acc (fun (id, l) -> (Recursive, id, l)))
+      body
   | e -> (acc, e)
 
 (* type left_var =
@@ -244,9 +244,9 @@ let rec aux (acc : (print_kind * Ident.t * Lam.t) list) (lam : Lam.t) =
 
 let flatten (lam : Lam.t) : (print_kind * Ident.t * Lam.t) list * Lam.t =
   match lam with
-  | Llet (str, id, arg, body) -> aux [ (to_print_kind str, id, arg) ] body
+  | Llet (str, id, arg, body) -> aux [(to_print_kind str, id, arg)] body
   | Lletrec (bind_args, body) ->
-      aux (Ext_list.map bind_args (fun (id, l) -> (Recursive, id, l))) body
+    aux (Ext_list.map bind_args (fun (id, l) -> (Recursive, id, l))) body
   | _ -> assert false
 
 (* let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string =
@@ -280,121 +280,134 @@ let lambda ppf v =
   let rec lam ppf (l : Lam.t) =
     match l with
     | Lvar id -> Ident.print ppf id
-    | Lglobal_module (id, dynamic_import) -> fprintf ppf (if dynamic_import then "dynamic global %a" else "global %a") Ident.print id
+    | Lglobal_module (id, dynamic_import) ->
+      fprintf ppf
+        (if dynamic_import then "dynamic global %a" else "global %a")
+        Ident.print id
     | Lconst cst -> struct_const ppf cst
-    | Lapply { ap_func; ap_args; ap_info = { ap_inlined } } ->
-        let lams ppf args =
-          List.iter (fun l -> fprintf ppf "@ %a" lam l) args
-        in
-        fprintf ppf "@[<2>(apply%s@ %a%a)@]"
-          (match ap_inlined with Always_inline -> "%inlned" | _ -> "")
-          lam ap_func lams ap_args
-    | Lfunction { params; body; _ } ->
-        let pr_params ppf params =
-          List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
-          (* | Tupled -> *)
-          (*     fprintf ppf " ("; *)
-          (*     let first = ref true in *)
-          (*     List.iter *)
-          (*       (fun param -> *)
-          (*         if !first then first := false else fprintf ppf ",@ "; *)
-          (*         Ident.print ppf param) *)
-          (*       params; *)
-          (*     fprintf ppf ")"  *)
-        in
-        fprintf ppf "@[<2>(function%a@ %a)@]" pr_params params lam body
+    | Lapply {ap_func; ap_args; ap_info = {ap_inlined}} ->
+      let lams ppf args = List.iter (fun l -> fprintf ppf "@ %a" lam l) args in
+      fprintf ppf "@[<2>(apply%s@ %a%a)@]"
+        (match ap_inlined with
+        | Always_inline -> "%inlned"
+        | _ -> "")
+        lam ap_func lams ap_args
+    | Lfunction {params; body; _} ->
+      let pr_params ppf params =
+        List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
+        (* | Tupled -> *)
+        (*     fprintf ppf " ("; *)
+        (*     let first = ref true in *)
+        (*     List.iter *)
+        (*       (fun param -> *)
+        (*         if !first then first := false else fprintf ppf ",@ "; *)
+        (*         Ident.print ppf param) *)
+        (*       params; *)
+        (*     fprintf ppf ")"  *)
+      in
+      fprintf ppf "@[<2>(function%a@ %a)@]" pr_params params lam body
     | (Llet _ | Lletrec _) as x ->
-        let args, body = flatten x in
-        let bindings ppf id_arg_list =
-          let spc = ref false in
-          List.iter
-            (fun (k, id, l) ->
-              if !spc then fprintf ppf "@ " else spc := true;
-              fprintf ppf "@[<2>%a =%s@ %a@]" Ident.print id (kind k) lam l)
-            id_arg_list
-        in
-        fprintf ppf "@[<2>(let@ (@[<hv 1>%a@]" bindings (List.rev args);
-        fprintf ppf ")@ %a)@]" lam body
+      let args, body = flatten x in
+      let bindings ppf id_arg_list =
+        let spc = ref false in
+        List.iter
+          (fun (k, id, l) ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<2>%a =%s@ %a@]" Ident.print id (kind k) lam l)
+          id_arg_list
+      in
+      fprintf ppf "@[<2>(let@ (@[<hv 1>%a@]" bindings (List.rev args);
+      fprintf ppf ")@ %a)@]" lam body
     | Lprim
         {
-          primitive = Pfield (n, Fld_module { name = s });
-          args = [ Lglobal_module (id, dynamic_import) ];
+          primitive = Pfield (n, Fld_module {name = s});
+          args = [Lglobal_module (id, dynamic_import)];
           _;
         } ->
-        fprintf ppf (if dynamic_import then "dynamic %s.%s/%d" else "%s.%s/%d") id.name s n
-    | Lprim { primitive = prim; args = largs; _ } ->
-        let lams ppf largs =
-          List.iter (fun l -> fprintf ppf "@ %a" lam l) largs
-        in
-        fprintf ppf "@[<2>(%a%a)@]" primitive prim lams largs
+      fprintf ppf
+        (if dynamic_import then "dynamic %s.%s/%d" else "%s.%s/%d")
+        id.name s n
+    | Lprim {primitive = prim; args = largs; _} ->
+      let lams ppf largs =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs
+      in
+      fprintf ppf "@[<2>(%a%a)@]" primitive prim lams largs
     | Lswitch (larg, sw) ->
-        let switch ppf (sw : Lam.lambda_switch) =
-          let spc = ref false in
-          List.iter
-            (fun (n, l) ->
-              if !spc then fprintf ppf "@ " else spc := true;
-              fprintf ppf "@[<hv 1>case int %i %S:@ %a@]" n
-                (match sw.sw_names with None -> "" | Some x -> x.consts.(n).name)
-                lam l)
-            sw.sw_consts;
-          List.iter
-            (fun (n, l) ->
-              if !spc then fprintf ppf "@ " else spc := true;
-              fprintf ppf "@[<hv 1>case tag %i %S:@ %a@]" n
-                (match sw.sw_names with None -> "" | Some x -> x.blocks.(n).tag.name)
-                lam l)
-            sw.sw_blocks;
-          match sw.sw_failaction with
-          | None -> ()
-          | Some l ->
-              if !spc then fprintf ppf "@ " else spc := true;
-              fprintf ppf "@[<hv 1>default:@ %a@]" lam l
-        in
-        fprintf ppf "@[<1>(%s %a@ @[<v 0>%a@])@]"
-          (match sw.sw_failaction with None -> "switch*" | _ -> "switch")
-          lam larg switch sw
+      let switch ppf (sw : Lam.lambda_switch) =
+        let spc = ref false in
+        List.iter
+          (fun (n, l) ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<hv 1>case int %i %S:@ %a@]" n
+              (match sw.sw_names with
+              | None -> ""
+              | Some x -> x.consts.(n).name)
+              lam l)
+          sw.sw_consts;
+        List.iter
+          (fun (n, l) ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<hv 1>case tag %i %S:@ %a@]" n
+              (match sw.sw_names with
+              | None -> ""
+              | Some x -> x.blocks.(n).tag.name)
+              lam l)
+          sw.sw_blocks;
+        match sw.sw_failaction with
+        | None -> ()
+        | Some l ->
+          if !spc then fprintf ppf "@ " else spc := true;
+          fprintf ppf "@[<hv 1>default:@ %a@]" lam l
+      in
+      fprintf ppf "@[<1>(%s %a@ @[<v 0>%a@])@]"
+        (match sw.sw_failaction with
+        | None -> "switch*"
+        | _ -> "switch")
+        lam larg switch sw
     | Lstringswitch (arg, cases, default) ->
-        let switch ppf cases =
-          let spc = ref false in
-          List.iter
-            (fun (s, l) ->
-              if !spc then fprintf ppf "@ " else spc := true;
-              fprintf ppf "@[<hv 1>case \"%s\":@ %a@]" (String.escaped s) lam l)
-            cases;
-          match default with
-          | Some default ->
-              if !spc then fprintf ppf "@ " else spc := true;
-              fprintf ppf "@[<hv 1>default:@ %a@]" lam default
-          | None -> ()
-        in
-        fprintf ppf "@[<1>(stringswitch %a@ @[<v 0>%a@])@]" lam arg switch cases
+      let switch ppf cases =
+        let spc = ref false in
+        List.iter
+          (fun (s, l) ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<hv 1>case \"%s\":@ %a@]" (String.escaped s) lam l)
+          cases;
+        match default with
+        | Some default ->
+          if !spc then fprintf ppf "@ " else spc := true;
+          fprintf ppf "@[<hv 1>default:@ %a@]" lam default
+        | None -> ()
+      in
+      fprintf ppf "@[<1>(stringswitch %a@ @[<v 0>%a@])@]" lam arg switch cases
     | Lstaticraise (i, ls) ->
-        let lams ppf largs =
-          List.iter (fun l -> fprintf ppf "@ %a" lam l) largs
-        in
-        fprintf ppf "@[<2>(exit@ %d%a)@]" i lams ls
+      let lams ppf largs =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs
+      in
+      fprintf ppf "@[<2>(exit@ %d%a)@]" i lams ls
     | Lstaticcatch (lbody, (i, vars), lhandler) ->
-        fprintf ppf "@[<2>(catch@ %a@;<1 -1>with (%d%a)@ %a)@]" lam lbody i
-          (fun ppf vars ->
-            match vars with
-            | [] -> ()
-            | _ -> List.iter (fun x -> fprintf ppf " %a" Ident.print x) vars)
-          vars lam lhandler
+      fprintf ppf "@[<2>(catch@ %a@;<1 -1>with (%d%a)@ %a)@]" lam lbody i
+        (fun ppf vars ->
+          match vars with
+          | [] -> ()
+          | _ -> List.iter (fun x -> fprintf ppf " %a" Ident.print x) vars)
+        vars lam lhandler
     | Ltrywith (lbody, param, lhandler) ->
-        fprintf ppf "@[<2>(try@ %a@;<1 -1>with %a@ %a)@]" lam lbody Ident.print
-          param lam lhandler
+      fprintf ppf "@[<2>(try@ %a@;<1 -1>with %a@ %a)@]" lam lbody Ident.print
+        param lam lhandler
     | Lifthenelse (lcond, lif, lelse) ->
-        fprintf ppf "@[<2>(if@ %a@ %a@ %a)@]" lam lcond lam lif lam lelse
+      fprintf ppf "@[<2>(if@ %a@ %a@ %a)@]" lam lcond lam lif lam lelse
     | Lsequence (l1, l2) ->
-        fprintf ppf "@[<2>(seq@ %a@ %a)@]" lam l1 sequence l2
+      fprintf ppf "@[<2>(seq@ %a@ %a)@]" lam l1 sequence l2
     | Lwhile (lcond, lbody) ->
-        fprintf ppf "@[<2>(while@ %a@ %a)@]" lam lcond lam lbody
+      fprintf ppf "@[<2>(while@ %a@ %a)@]" lam lcond lam lbody
     | Lfor (param, lo, hi, dir, body) ->
-        fprintf ppf "@[<2>(for %a@ %a@ %s@ %a@ %a)@]" Ident.print param lam lo
-          (match dir with Upto -> "to" | Downto -> "downto")
-          lam hi lam body
+      fprintf ppf "@[<2>(for %a@ %a@ %s@ %a@ %a)@]" Ident.print param lam lo
+        (match dir with
+        | Upto -> "to"
+        | Downto -> "downto")
+        lam hi lam body
     | Lassign (id, expr) ->
-        fprintf ppf "@[<2>(assign@ %a@ %a)@]" Ident.print id lam expr
+      fprintf ppf "@[<2>(assign@ %a@ %a)@]" Ident.print id lam expr
   and sequence ppf = function
     | Lsequence (l1, l2) -> fprintf ppf "%a@ %a" sequence l1 sequence l2
     | l -> lam ppf l

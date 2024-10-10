@@ -22,20 +22,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let () = Ast_untagged_variants.extract_concrete_typedecl := Ctype.extract_concrete_typedecl
+let () =
+  Ast_untagged_variants.extract_concrete_typedecl :=
+    Ctype.extract_concrete_typedecl
 let () = Ast_untagged_variants.expand_head := Ctype.expand_head
 
 let names_from_construct_pattern (pat : Typedtree.pattern) =
   let rec resolve_path n (path : Path.t) =
     match Env.find_type path pat.pat_env with
-    | { type_kind = Type_variant cstrs; _ } -> Ast_untagged_variants.names_from_type_variant ~env:pat.pat_env cstrs
-    | { type_kind = Type_abstract; type_manifest = Some t; _ } -> (
-        match (Ctype.unalias t).desc with
-        | Tconstr (pathn, _, _) ->
-            resolve_path (n + 1) pathn
-        | _ -> None)
-    | { type_kind = Type_abstract; type_manifest = None; _ } -> None
-    | { type_kind = Type_record _ | Type_open (* Exceptions *); _ } -> None
+    | {type_kind = Type_variant cstrs; _} ->
+      Ast_untagged_variants.names_from_type_variant ~env:pat.pat_env cstrs
+    | {type_kind = Type_abstract; type_manifest = Some t; _} -> (
+      match (Ctype.unalias t).desc with
+      | Tconstr (pathn, _, _) -> resolve_path (n + 1) pathn
+      | _ -> None)
+    | {type_kind = Type_abstract; type_manifest = None; _} -> None
+    | {type_kind = Type_record _ | Type_open (* Exceptions *); _} -> None
   in
 
   match (Btype.repr pat.pat_type).desc with
@@ -54,16 +56,16 @@ let variant_is_subtype (env : Env.t) (row_desc : Types.row_desc)
    row_fixed = _;
    row_fields = (name, (Rabsent | Rpresent None)) :: rest;
   } ->
-      if Ext_string.is_valid_hash_number name then
-        Ext_list.for_all rest (function
-          | name, (Rabsent | Rpresent None) ->
-              Ext_string.is_valid_hash_number name
-          | _ -> false)
-        && Typeopt.is_base_type env ty Predef.path_int
-      else
-        Ext_list.for_all rest (function
-          | name, (Rabsent | Rpresent None) ->
-              not (Ext_string.is_valid_hash_number name)
-          | _ -> false)
-        && Typeopt.is_base_type env ty Predef.path_string
+    if Ext_string.is_valid_hash_number name then
+      Ext_list.for_all rest (function
+        | name, (Rabsent | Rpresent None) ->
+          Ext_string.is_valid_hash_number name
+        | _ -> false)
+      && Typeopt.is_base_type env ty Predef.path_int
+    else
+      Ext_list.for_all rest (function
+        | name, (Rabsent | Rpresent None) ->
+          not (Ext_string.is_valid_hash_number name)
+        | _ -> false)
+      && Typeopt.is_base_type env ty Predef.path_string
   | _ -> false

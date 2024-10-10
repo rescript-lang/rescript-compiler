@@ -33,12 +33,12 @@ let es_module = ("__esModule", "true")
 let rev_iter_inter lst f inter =
   match lst with
   | [] -> ()
-  | [ a ] -> f a
+  | [a] -> f a
   | a :: rest ->
-      Ext_list.rev_iter rest (fun x ->
-          f x;
-          inter ());
-      f a
+    Ext_list.rev_iter rest (fun x ->
+        f x;
+        inter ());
+    f a
 
 (* Print exports in Google module format, CommonJS format *)
 let exports cxt f (idents : Ident.t list) =
@@ -73,16 +73,15 @@ let es6_export cxt f (idents : Ident.t list) =
   P.at_least_two_lines f;
   match idents with
   | [] -> cxt
-  | _ -> 
+  | _ ->
     let outer_cxt, reversed_list =
-    Ext_list.fold_left idents (cxt, []) (fun (cxt, acc) id ->
-        let id_name = id.name in
-        let s = Ext_ident.convert id_name in
-        let str, cxt = Ext_pp_scope.str_of_ident cxt id in
-        ( cxt,
-          if id_name = default_export then
-            (default_export, str) :: acc
-          else (s, str) :: acc ))
+      Ext_list.fold_left idents (cxt, []) (fun (cxt, acc) id ->
+          let id_name = id.name in
+          let s = Ext_ident.convert id_name in
+          let str, cxt = Ext_pp_scope.str_of_ident cxt id in
+          ( cxt,
+            if id_name = default_export then (default_export, str) :: acc
+            else (s, str) :: acc ))
     in
     P.string f L.export;
     P.space f;
@@ -99,7 +98,6 @@ let es6_export cxt f (idents : Ident.t list) =
                 P.string f L.comma))
           (fun _ -> P.newline f));
     outer_cxt
-  
 
 (** Node or Google module style imports *)
 let requires require_lit cxt f (modules : (Ident.t * string * bool) list) =
@@ -124,32 +122,33 @@ let requires require_lit cxt f (modules : (Ident.t * string * bool) list) =
       P.newline f);
   outer_cxt
 
-let dump_import_attributes f (import_attributes : External_ffi_types.import_attributes option) = 
-  match import_attributes with 
-  | None -> () 
-  | Some import_attributes -> 
+let dump_import_attributes f
+    (import_attributes : External_ffi_types.import_attributes option) =
+  match import_attributes with
+  | None -> ()
+  | Some import_attributes ->
     P.space f;
     P.string f "with";
     P.space f;
     let total = Hashtbl.length import_attributes in
     let idx = ref 1 in
-    P.brace_group f 0 (
-      fun _ -> 
-        import_attributes |> Hashtbl.iter(fun key value ->
-          Js_dump_string.pp_string f key;
-          P.string f L.colon_space;
-          Js_dump_string.pp_string f value;
-          let should_add_comma = !idx < total in
-          if should_add_comma then (
-            P.string f L.comma;
-            P.space f
-          );
-          idx := !idx + 1;
-        )
-    )
+    P.brace_group f 0 (fun _ ->
+        import_attributes
+        |> Hashtbl.iter (fun key value ->
+               Js_dump_string.pp_string f key;
+               P.string f L.colon_space;
+               Js_dump_string.pp_string f value;
+               let should_add_comma = !idx < total in
+               if should_add_comma then (
+                 P.string f L.comma;
+                 P.space f);
+               idx := !idx + 1))
 
 (** ES6 module style imports *)
-let imports cxt f (modules : (Ident.t * string * bool * External_ffi_types.import_attributes option) list) =
+let imports cxt f
+    (modules :
+      (Ident.t * string * bool * External_ffi_types.import_attributes option)
+      list) =
   (* the context used to print the following program *)
   let outer_cxt, reversed_list =
     Ext_list.fold_left modules (cxt, []) (fun (cxt, acc) (id, s, b, i) ->

@@ -36,18 +36,18 @@ let () =
       match s with
       | "-hash" -> incr current
       | "-bs-ns" ->
-          let ns = argv.(!current) in
-          namespace := Some ns;
-          incr current
+        let ns = argv.(!current) in
+        namespace := Some ns;
+        incr current
       | "-g" -> dev_group := true
       | s ->
-          prerr_endline ("unknown options: " ^ s);
-          prerr_endline "available options: -hash [hash]; -bs-ns [ns]; -g";
-          exit 2)
+        prerr_endline ("unknown options: " ^ s);
+        prerr_endline "available options: -hash [hash]; -bs-ns [ns]; -g";
+        exit 2)
     else rev_list := s :: !rev_list
   done;
   match !rev_list with
-  | [ x ] -> Bsb_helper_depfile_gen.emit_d !dev_group !namespace x ""
-  | [ y; x ] (* reverse order *) ->
-      Bsb_helper_depfile_gen.emit_d !dev_group !namespace x y
+  | [x] -> Bsb_helper_depfile_gen.emit_d !dev_group !namespace x ""
+  | [y; x] (* reverse order *) ->
+    Bsb_helper_depfile_gen.emit_d !dev_group !namespace x y
   | _ -> ()

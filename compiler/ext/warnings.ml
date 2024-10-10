@@ -21,9 +21,9 @@
 *)
 
 type loc = {
-  loc_start : Lexing.position;
-  loc_end : Lexing.position;
-  loc_ghost : bool;
+  loc_start: Lexing.position;
+  loc_end: Lexing.position;
+  loc_ghost: bool;
 }
 
 type top_level_unit_help = FunctionCall | Other
@@ -85,7 +85,8 @@ type t =
   | Bs_unimplemented_primitive of string (* 106 *)
   | Bs_integer_literal_overflow (* 107 *)
   | Bs_uninterpreted_delimiters of string (* 108 *)
-  | Bs_toplevel_expression_unit of (string * top_level_unit_help) option (* 109 *)
+  | Bs_toplevel_expression_unit of
+      (string * top_level_unit_help) option (* 109 *)
   | Bs_todo of string option (* 110 *)
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
@@ -165,33 +166,33 @@ let letter_all =
 let letter = function
   | 'a' -> letter_all
   | 'b' -> []
-  | 'c' -> [ 1; 2 ]
-  | 'd' -> [ 3 ]
-  | 'e' -> [ 4 ]
-  | 'f' -> [ 5 ]
+  | 'c' -> [1; 2]
+  | 'd' -> [3]
+  | 'e' -> [4]
+  | 'f' -> [5]
   | 'g' -> []
   | 'h' -> []
   | 'i' -> []
   | 'j' -> []
-  | 'k' -> [ 32; 33; 34; 35; 36; 37; 38; 39 ]
-  | 'l' -> [ 6 ]
-  | 'm' -> [ 7 ]
+  | 'k' -> [32; 33; 34; 35; 36; 37; 38; 39]
+  | 'l' -> [6]
+  | 'm' -> [7]
   | 'n' -> []
   | 'o' -> []
-  | 'p' -> [ 8 ]
+  | 'p' -> [8]
   | 'q' -> []
-  | 'r' -> [ 9 ]
-  | 's' -> [ 10 ]
+  | 'r' -> [9]
+  | 's' -> [10]
   | 't' -> []
-  | 'u' -> [ 11; 12 ]
-  | 'v' -> [ 13 ]
+  | 'u' -> [11; 12]
+  | 'v' -> [13]
   | 'w' -> []
-  | 'x' -> [ 14; 15; 16; 17; 18; 19; 20; 21; 22; 23; 24; 30 ]
-  | 'y' -> [ 26 ]
-  | 'z' -> [ 27 ]
+  | 'x' -> [14; 15; 16; 17; 18; 19; 20; 21; 22; 23; 24; 30]
+  | 'y' -> [26]
+  | 'z' -> [27]
   | _ -> assert false
 
-type state = { active : bool array; error : bool array }
+type state = {active: bool array; error: bool array}
 
 let current =
   ref
@@ -202,7 +203,7 @@ let current =
 
 let disabled = ref false
 
-let without_warnings f = Misc.protect_refs [ Misc.R (disabled, true) ] f
+let without_warnings f = Misc.protect_refs [Misc.R (disabled, true)] f
 
 let backup () = !current
 
@@ -238,7 +239,7 @@ let parse_opt error active flags s =
     else
       match s.[i] with
       | '0' .. '9' ->
-          get_num ((10 * n) + Char.code s.[i] - Char.code '0') (i + 1)
+        get_num ((10 * n) + Char.code s.[i] - Char.code '0') (i + 1)
       | _ -> (i, n)
   in
   let get_range i =
@@ -254,11 +255,11 @@ let parse_opt error active flags s =
     else
       match s.[i] with
       | 'A' .. 'Z' ->
-          List.iter set (letter (Char.lowercase_ascii s.[i]));
-          loop (i + 1)
+        List.iter set (letter (Char.lowercase_ascii s.[i]));
+        loop (i + 1)
       | 'a' .. 'z' ->
-          List.iter clear (letter s.[i]);
-          loop (i + 1)
+        List.iter clear (letter s.[i]);
+        loop (i + 1)
       | '+' -> loop_letter_num set (i + 1)
       | '-' -> loop_letter_num clear (i + 1)
       | '@' -> loop_letter_num set_all (i + 1)
@@ -268,17 +269,17 @@ let parse_opt error active flags s =
     else
       match s.[i] with
       | '0' .. '9' ->
-          let i, n1, n2 = get_range i in
-          for n = n1 to Ext_pervasives.min_int n2 last_warning_number do
-            myset n
-          done;
-          loop i
+        let i, n1, n2 = get_range i in
+        for n = n1 to Ext_pervasives.min_int n2 last_warning_number do
+          myset n
+        done;
+        loop i
       | 'A' .. 'Z' ->
-          List.iter myset (letter (Char.lowercase_ascii s.[i]));
-          loop (i + 1)
+        List.iter myset (letter (Char.lowercase_ascii s.[i]));
+        loop (i + 1)
       | 'a' .. 'z' ->
-          List.iter myset (letter s.[i]);
-          loop (i + 1)
+        List.iter myset (letter s.[i]);
+        loop (i + 1)
       | _ -> error ()
   in
   loop 0
@@ -287,7 +288,7 @@ let parse_options errflag s =
   let error = Array.copy !current.error in
   let active = Array.copy !current.active in
   parse_opt error active (if errflag then error else active) s;
-  current := { error; active }
+  current := {error; active}
 
 let reset () =
   parse_options false Bsc_warnings.defaults_w;
@@ -299,223 +300,239 @@ let message = function
   | Comment_start -> "this is the start of a comment."
   | Comment_not_end -> "this is not the end of a comment."
   | Deprecated (s, _, _) ->
-      (* Reduce \r\n to \n:
-           - Prevents any \r characters being printed on Unix when processing
-             Windows sources
-           - Prevents \r\r\n being generated on Windows, which affects the
-             testsuite
-      *)
-      "deprecated: " ^ Misc.normalise_eol s
+    (* Reduce \r\n to \n:
+         - Prevents any \r characters being printed on Unix when processing
+           Windows sources
+         - Prevents \r\r\n being generated on Windows, which affects the
+           testsuite
+    *)
+    "deprecated: " ^ Misc.normalise_eol s
   | Fragile_match "" -> "this pattern-matching is fragile."
   | Fragile_match s ->
-      "this pattern-matching is fragile.\n\
-       It will remain exhaustive when constructors are added to type " ^ s ^ "."
+    "this pattern-matching is fragile.\n\
+     It will remain exhaustive when constructors are added to type " ^ s ^ "."
   | Partial_application ->
-      "this function application is partial,\nmaybe some arguments are missing."
-  | Method_override [ lab ] -> "the method " ^ lab ^ " is overridden."
+    "this function application is partial,\nmaybe some arguments are missing."
+  | Method_override [lab] -> "the method " ^ lab ^ " is overridden."
   | Method_override (cname :: slist) ->
-      String.concat " "
-        ("the following methods are overridden by the class" :: cname :: ":\n "
-       :: slist)
+    String.concat " "
+      ("the following methods are overridden by the class" :: cname :: ":\n "
+     :: slist)
   | Method_override [] -> assert false
   | Partial_match "" ->
-      "You forgot to handle a possible case here, though we don't have more \
-       information on the value."
+    "You forgot to handle a possible case here, though we don't have more \
+     information on the value."
   | Partial_match s ->
-      "You forgot to handle a possible case here, for example: \n  " ^ s
+    "You forgot to handle a possible case here, for example: \n  " ^ s
   | Non_closed_record_pattern s ->
-      "the following labels are not bound in this record pattern: " ^ s
-      ^ "\nEither bind these labels explicitly or add ', _' to the pattern."
+    "the following labels are not bound in this record pattern: " ^ s
+    ^ "\nEither bind these labels explicitly or add ', _' to the pattern."
   | Statement_type ->
-      "This expression returns a value, but you're not doing anything with it. \
-       If this is on purpose, wrap it with `ignore`."
+    "This expression returns a value, but you're not doing anything with it. \
+     If this is on purpose, wrap it with `ignore`."
   | Unused_match -> "this match case is unused."
   | Unused_pat -> "this sub-pattern is unused."
-  | Instance_variable_override [ lab ] ->
-      "the instance variable " ^ lab ^ " is overridden.\n"
-      ^ "The behaviour changed in ocaml 3.10 (previous behaviour was hiding.)"
+  | Instance_variable_override [lab] ->
+    "the instance variable " ^ lab ^ " is overridden.\n"
+    ^ "The behaviour changed in ocaml 3.10 (previous behaviour was hiding.)"
   | Instance_variable_override (cname :: slist) ->
-      String.concat " "
-        ("the following instance variables are overridden by the class" :: cname
-       :: ":\n " :: slist)
-      ^ "\nThe behaviour changed in ocaml 3.10 (previous behaviour was hiding.)"
+    String.concat " "
+      ("the following instance variables are overridden by the class" :: cname
+     :: ":\n " :: slist)
+    ^ "\nThe behaviour changed in ocaml 3.10 (previous behaviour was hiding.)"
   | Instance_variable_override [] -> assert false
   | Illegal_backslash -> "illegal backslash escape in string."
   | Implicit_public_methods l ->
-      "the following private methods were made public implicitly:\n "
-      ^ String.concat " " l ^ "."
+    "the following private methods were made public implicitly:\n "
+    ^ String.concat " " l ^ "."
   | Unerasable_optional_argument ->
-      String.concat ""
-        [
-          "This optional parameter in final position will, in practice, not be \
-           optional.\n";
-          "  Reorder the parameters so that at least one non-optional one is \
-           in final position or, if all parameters are optional, insert a \
-           final ().\n\n";
-          "  Explanation: If the final parameter is optional, it'd be unclear \
-           whether a function application that omits it should be considered \
-           fully applied, or partially applied. Imagine writing `let title = \
-           display(\"hello!\")`, only to realize `title` isn't your desired \
-           result, but a curried call that takes a final optional argument, \
-           e.g. `~showDate`.\n\n";
-          "  Formal rule: an optional argument is considered intentionally \
-           omitted when the 1st positional (i.e. neither labeled nor optional) \
-           argument defined after it is passed in.";
-        ]
+    String.concat ""
+      [
+        "This optional parameter in final position will, in practice, not be \
+         optional.\n";
+        "  Reorder the parameters so that at least one non-optional one is in \
+         final position or, if all parameters are optional, insert a final \
+         ().\n\n";
+        "  Explanation: If the final parameter is optional, it'd be unclear \
+         whether a function application that omits it should be considered \
+         fully applied, or partially applied. Imagine writing `let title = \
+         display(\"hello!\")`, only to realize `title` isn't your desired \
+         result, but a curried call that takes a final optional argument, e.g. \
+         `~showDate`.\n\n";
+        "  Formal rule: an optional argument is considered intentionally \
+         omitted when the 1st positional (i.e. neither labeled nor optional) \
+         argument defined after it is passed in.";
+      ]
   | Unused_argument -> "this argument will not be used by the function."
   | Nonreturning_statement ->
-      "this statement never returns (or has an unsound type.)"
+    "this statement never returns (or has an unsound type.)"
   | Preprocessor s -> s
-  | Useless_record_with -> (
-      "All the fields are already explicitly listed in this record. You \
-        can remove the `...` spread.")
+  | Useless_record_with ->
+    "All the fields are already explicitly listed in this record. You can \
+     remove the `...` spread."
   | Bad_module_name modname ->
-      "This file's name is potentially invalid. The build systems \
-       conventionally turn a file name into a module name by upper-casing the \
-       first letter. " ^ modname ^ " isn't a valid module name.\n"
-      ^ "Note: some build systems might e.g. turn kebab-case into CamelCase \
-         module, which is why this isn't a hard error."
+    "This file's name is potentially invalid. The build systems conventionally \
+     turn a file name into a module name by upper-casing the first letter. "
+    ^ modname ^ " isn't a valid module name.\n"
+    ^ "Note: some build systems might e.g. turn kebab-case into CamelCase \
+       module, which is why this isn't a hard error."
   | All_clauses_guarded ->
-      "this pattern-matching is not exhaustive.\n\
-       All clauses in this pattern-matching are guarded."
-  | Unused_var v | Unused_var_strict v -> 
-    Format.sprintf "unused variable %s.\n\nFix this by:\n- Deleting the variable if it's not used anymore.\n- Prepending the variable name with `_` (like `_%s`) to ignore that the variable is unused.\n- Using the variable somewhere." v v
+    "this pattern-matching is not exhaustive.\n\
+     All clauses in this pattern-matching are guarded."
+  | Unused_var v | Unused_var_strict v ->
+    Format.sprintf
+      "unused variable %s.\n\n\
+       Fix this by:\n\
+       - Deleting the variable if it's not used anymore.\n\
+       - Prepending the variable name with `_` (like `_%s`) to ignore that the \
+       variable is unused.\n\
+       - Using the variable somewhere." v v
   | Wildcard_arg_to_constant_constr ->
-      "wildcard pattern given as argument to a constant constructor"
+    "wildcard pattern given as argument to a constant constructor"
   | Eol_in_string ->
-      "unescaped end-of-line in a string constant (non-portable code)"
+    "unescaped end-of-line in a string constant (non-portable code)"
   | Duplicate_definitions (kind, cname, tc1, tc2) ->
-      Printf.sprintf "the %s %s is defined in both types %s and %s." kind cname
-        tc1 tc2
+    Printf.sprintf "the %s %s is defined in both types %s and %s." kind cname
+      tc1 tc2
   | Unused_value_declaration v -> "unused value " ^ v ^ "."
   | Unused_open s -> "unused open " ^ s ^ "."
   | Unused_type_declaration s -> "unused type " ^ s ^ "."
   | Unused_for_index s -> "unused for-loop index " ^ s ^ "."
   | Unused_constructor (s, false, false) -> "unused constructor " ^ s ^ "."
   | Unused_constructor (s, true, _) ->
-      "constructor " ^ s
+    "constructor " ^ s
+    ^ " is never used to build values.\n\
+       (However, this constructor appears in patterns.)"
+  | Unused_constructor (s, false, true) ->
+    "constructor " ^ s
+    ^ " is never used to build values.\nIts type is exported as a private type."
+  | Unused_extension (s, is_exception, cu_pattern, cu_privatize) -> (
+    let kind = if is_exception then "exception" else "extension constructor" in
+    let name = kind ^ " " ^ s in
+    match (cu_pattern, cu_privatize) with
+    | false, false -> "unused " ^ name
+    | true, _ ->
+      name
       ^ " is never used to build values.\n\
          (However, this constructor appears in patterns.)"
-  | Unused_constructor (s, false, true) ->
-      "constructor " ^ s
+    | false, true ->
+      name
       ^ " is never used to build values.\n\
-         Its type is exported as a private type."
-  | Unused_extension (s, is_exception, cu_pattern, cu_privatize) -> (
-      let kind =
-        if is_exception then "exception" else "extension constructor"
-      in
-      let name = kind ^ " " ^ s in
-      match (cu_pattern, cu_privatize) with
-      | false, false -> "unused " ^ name
-      | true, _ ->
-          name
-          ^ " is never used to build values.\n\
-             (However, this constructor appears in patterns.)"
-      | false, true ->
-          name
-          ^ " is never used to build values.\n\
-             It is exported or rebound as a private extension.")
+         It is exported or rebound as a private extension.")
   | Unused_rec_flag -> "unused rec flag."
-  | Ambiguous_name ([ s ], tl, false) ->
-      s ^ " belongs to several types: " ^ String.concat " " tl
-      ^ "\nThe first one was selected. Please disambiguate if this is wrong."
+  | Ambiguous_name ([s], tl, false) ->
+    s ^ " belongs to several types: " ^ String.concat " " tl
+    ^ "\nThe first one was selected. Please disambiguate if this is wrong."
   | Ambiguous_name (_, _, false) -> assert false
   | Ambiguous_name (_slist, tl, true) ->
-      "these field labels belong to several types: " ^ String.concat " " tl
-      ^ "\nThe first one was selected. Please disambiguate if this is wrong."
+    "these field labels belong to several types: " ^ String.concat " " tl
+    ^ "\nThe first one was selected. Please disambiguate if this is wrong."
   | Nonoptional_label s -> "the label " ^ s ^ " is not optional."
   | Open_shadow_identifier (kind, s) ->
-      Printf.sprintf
-        "this open statement shadows the %s identifier %s (which is later used)"
-        kind s
+    Printf.sprintf
+      "this open statement shadows the %s identifier %s (which is later used)"
+      kind s
   | Open_shadow_label_constructor (kind, s) ->
-      Printf.sprintf
-        "this open statement shadows the %s %s (which is later used)" kind s
+    Printf.sprintf "this open statement shadows the %s %s (which is later used)"
+      kind s
   | Attribute_payload (a, s) ->
-      Printf.sprintf "illegal payload for attribute '%s'.\n%s" a s
+    Printf.sprintf "illegal payload for attribute '%s'.\n%s" a s
   | Eliminated_optional_arguments sl ->
-      Printf.sprintf "implicit elimination of optional argument%s %s"
-        (if List.length sl = 1 then "" else "s")
-        (String.concat ", " sl)
+    Printf.sprintf "implicit elimination of optional argument%s %s"
+      (if List.length sl = 1 then "" else "s")
+      (String.concat ", " sl)
   | No_cmi_file (name, None) ->
-      "no cmi file was found in path for module " ^ name
+    "no cmi file was found in path for module " ^ name
   | No_cmi_file (name, Some msg) ->
-      Printf.sprintf "no valid cmi file was found in path for module %s. %s"
-        name msg
+    Printf.sprintf "no valid cmi file was found in path for module %s. %s" name
+      msg
   | Bad_docstring unattached ->
-      if unattached then "unattached documentation comment (ignored)"
-      else "ambiguous documentation comment"
+    if unattached then "unattached documentation comment (ignored)"
+    else "ambiguous documentation comment"
   | Fragile_literal_pattern ->
-      Printf.sprintf
-        "Code should not depend on the actual values of\n\
-         this constructor's arguments. They are only for information\n\
-         and may change in future versions. (See manual section 8.5)"
+    Printf.sprintf
+      "Code should not depend on the actual values of\n\
+       this constructor's arguments. They are only for information\n\
+       and may change in future versions. (See manual section 8.5)"
   | Unreachable_case ->
-      "this match case is unreachable.\n\
-       Consider replacing it with a refutation case '<pat> -> .'"
+    "this match case is unreachable.\n\
+     Consider replacing it with a refutation case '<pat> -> .'"
   | Misplaced_attribute attr_name ->
-      Printf.sprintf "the %S attribute cannot appear in this context" attr_name
+    Printf.sprintf "the %S attribute cannot appear in this context" attr_name
   | Duplicated_attribute attr_name ->
-      Printf.sprintf
-        "the %S attribute is used more than once on this expression" attr_name
+    Printf.sprintf "the %S attribute is used more than once on this expression"
+      attr_name
   | Ambiguous_pattern vars ->
-      let msg =
-        let vars = List.sort String.compare vars in
-        match vars with
-        | [] -> assert false
-        | [ x ] -> "variable " ^ x
-        | _ :: _ -> "variables " ^ String.concat "," vars
-      in
-      Printf.sprintf
-        "Ambiguous or-pattern variables under guard;\n\
-         %s may match different arguments. (See manual section 8.5)" msg
+    let msg =
+      let vars = List.sort String.compare vars in
+      match vars with
+      | [] -> assert false
+      | [x] -> "variable " ^ x
+      | _ :: _ -> "variables " ^ String.concat "," vars
+    in
+    Printf.sprintf
+      "Ambiguous or-pattern variables under guard;\n\
+       %s may match different arguments. (See manual section 8.5)" msg
   | Unused_module s -> "unused module " ^ s ^ "."
   | Constraint_on_gadt ->
-      "Type constraints do not apply to GADT cases of variant types."
+    "Type constraints do not apply to GADT cases of variant types."
   | Bs_unused_attribute s ->
-      "Unused attribute: @" ^ s
-      ^ "\n\
-         This attribute has no effect here.\n\
-         For example, some attributes are only meaningful in externals.\n"
+    "Unused attribute: @" ^ s
+    ^ "\n\
+       This attribute has no effect here.\n\
+       For example, some attributes are only meaningful in externals.\n"
   | Bs_polymorphic_comparison ->
-      "Polymorphic comparison introduced (maybe unsafe)"
+    "Polymorphic comparison introduced (maybe unsafe)"
   | Bs_ffi_warning s -> "FFI warning: " ^ s
   | Bs_derive_warning s -> "@deriving warning: " ^ s
   | Bs_fragile_external s ->
-      s
-      ^ " : using an empty string as a shorthand to infer the external's name \
-         from the value's name is dangerous when refactoring, and therefore \
-         deprecated"
+    s
+    ^ " : using an empty string as a shorthand to infer the external's name \
+       from the value's name is dangerous when refactoring, and therefore \
+       deprecated"
   | Bs_unimplemented_primitive s -> "Unimplemented primitive used: " ^ s
   | Bs_integer_literal_overflow ->
-      "Integer literal exceeds the range of representable integers of type int"
+    "Integer literal exceeds the range of representable integers of type int"
   | Bs_uninterpreted_delimiters s -> "Uninterpreted delimiters " ^ s
   | Bs_toplevel_expression_unit help ->
-      Printf.sprintf "This%sis at the top level and is expected to return `unit`. But it's returning %s.\n\n  In ReScript, anything at the top level must evaluate to `unit`. You can fix this by assigning the expression to a value, or piping it into the `ignore` function.%s" 
-        (match help with 
-        | Some (_, FunctionCall) -> " function call " 
-        | _ -> " ") 
-
-        (match help with 
-        | Some (return_type, _) -> Printf.sprintf "`%s`" return_type 
-        | None -> "something that is not `unit`")
-
-        (match help with 
-        | Some (_, help_typ) ->
-          let help_text = (match help_typ with 
-          | FunctionCall -> "yourFunctionCall()" 
-          | Other -> "yourExpression") in
-          Printf.sprintf "\n\n  Possible solutions:\n  - Assigning to a value that is then ignored: `let _ = %s`\n  - Piping into the built-in ignore function to ignore the result: `%s->ignore`" help_text help_text
-        | _ -> "") 
-    | Bs_todo maybe_text -> (
-      match maybe_text with 
-      | None -> "Todo found." 
-      | Some todo -> "Todo found: " ^ todo
-    ) ^ "\n\n  This code is not implemented yet and will crash at runtime. Make sure you implement this before running the code."
+    Printf.sprintf
+      "This%sis at the top level and is expected to return `unit`. But it's \
+       returning %s.\n\n\
+      \  In ReScript, anything at the top level must evaluate to `unit`. You \
+       can fix this by assigning the expression to a value, or piping it into \
+       the `ignore` function.%s"
+      (match help with
+      | Some (_, FunctionCall) -> " function call "
+      | _ -> " ")
+      (match help with
+      | Some (return_type, _) -> Printf.sprintf "`%s`" return_type
+      | None -> "something that is not `unit`")
+      (match help with
+      | Some (_, help_typ) ->
+        let help_text =
+          match help_typ with
+          | FunctionCall -> "yourFunctionCall()"
+          | Other -> "yourExpression"
+        in
+        Printf.sprintf
+          "\n\n\
+          \  Possible solutions:\n\
+          \  - Assigning to a value that is then ignored: `let _ = %s`\n\
+          \  - Piping into the built-in ignore function to ignore the result: \
+           `%s->ignore`"
+          help_text help_text
+      | _ -> "")
+  | Bs_todo maybe_text ->
+    (match maybe_text with
+    | None -> "Todo found."
+    | Some todo -> "Todo found: " ^ todo)
+    ^ "\n\n\
+      \  This code is not implemented yet and will crash at runtime. Make sure \
+       you implement this before running the code."
 
 let sub_locs = function
   | Deprecated (_, def, use) ->
-      [ (def, "Definition"); (use, "Expected signature") ]
+    [(def, "Definition"); (use, "Expected signature")]
   | _ -> []
 
 let has_warnings = ref false
@@ -523,25 +540,25 @@ let has_warnings = ref false
 let nerrors = ref 0
 
 type reporting_information = {
-  number : int;
-  message : string;
-  is_error : bool;
-  sub_locs : (loc * string) list;
+  number: int;
+  message: string;
+  is_error: bool;
+  sub_locs: (loc * string) list;
 }
 
 let report w =
   match is_active w with
   | false -> `Inactive
   | true ->
-      has_warnings := true;
-      if is_error w then incr nerrors;
-      `Active
-        {
-          number = number w;
-          message = message w;
-          is_error = is_error w;
-          sub_locs = sub_locs w;
-        }
+    has_warnings := true;
+    if is_error w then incr nerrors;
+    `Active
+      {
+        number = number w;
+        message = message w;
+        is_error = is_error w;
+        sub_locs = sub_locs w;
+      }
 
 exception Errors
 
@@ -653,10 +670,10 @@ let help_warnings () =
     let c = Char.chr i in
     match letter c with
     | [] -> ()
-    | [ n ] ->
-        Printf.printf "  %c Alias for warning %i.\n" (Char.uppercase_ascii c) n
+    | [n] ->
+      Printf.printf "  %c Alias for warning %i.\n" (Char.uppercase_ascii c) n
     | l ->
-        Printf.printf "  %c warnings %s.\n" (Char.uppercase_ascii c)
-          (String.concat ", " (List.map string_of_int l))
+      Printf.printf "  %c warnings %s.\n" (Char.uppercase_ascii c)
+        (String.concat ", " (List.map string_of_int l))
   done;
   exit 0

@@ -30,13 +30,14 @@ let ( // ) = Ext_path.combine
     return None if we dont need regenerate
     otherwise return Some info
 *)
-let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir ~warn_legacy_config ~warn_as_error
-    : Bsb_config_types.t option =
+let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir
+    ~warn_legacy_config ~warn_as_error : Bsb_config_types.t option =
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let lib_bs_dir = per_proj_dir // lib_artifacts_dir in
   let output_deps = lib_bs_dir // bsdeps in
   let check_result =
-    Bsb_ninja_check.check ~package_kind ~per_proj_dir ~forced ~warn_as_error ~file:output_deps
+    Bsb_ninja_check.check ~package_kind ~per_proj_dir ~forced ~warn_as_error
+      ~file:output_deps
   in
   let config_filename, config_json =
     Bsb_config_load.load_json ~per_proj_dir ~warn_legacy_config
@@ -45,57 +46,57 @@ let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir 
   | Good -> None (* Fast path, no need regenerate ninja *)
   | Bsb_forced | Bsb_bsc_version_mismatch | Bsb_package_kind_inconsistent
   | Bsb_file_corrupted | Bsb_file_not_exist | Bsb_source_directory_changed
-  | Bsb_regenerate_required
-  | Other _ ->
-      Bsb_log.info "@{<info>BSB check@} build spec : %a @."
-        Bsb_ninja_check.pp_check_result check_result;
-      if check_result = Bsb_bsc_version_mismatch then (
-        Bsb_log.warn
-          "@{<info>Different compiler version@}: clean current repo@.";
-        Bsb_clean.clean_bs_deps per_proj_dir;
-        Bsb_clean.clean_self per_proj_dir);
+  | Bsb_regenerate_required | Other _ ->
+    Bsb_log.info "@{<info>BSB check@} build spec : %a @."
+      Bsb_ninja_check.pp_check_result check_result;
+    if check_result = Bsb_bsc_version_mismatch then (
+      Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
+      Bsb_clean.clean_bs_deps per_proj_dir;
+      Bsb_clean.clean_self per_proj_dir);
 
-      let config : Bsb_config_types.t =
-        Bsb_config_parse.interpret_json
-          ~filename:config_filename ~json:config_json ~package_kind ~per_proj_dir
-      in
+    let config : Bsb_config_types.t =
+      Bsb_config_parse.interpret_json ~filename:config_filename
+        ~json:config_json ~package_kind ~per_proj_dir
+    in
 
-      let warning = match config.warning with
+    let warning =
+      match config.warning with
       | None -> (
-          match warn_as_error with
-          | Some e -> Some {Bsb_warning.number = Some e; error = Warn_error_number e}
-          | None -> None)
-      | Some {error} as t ->
-          match (warn_as_error, error) with
-          | (Some error_str, Warn_error_false) ->
-              Some {number = Some error_str; error = Warn_error_number error_str}
-          | (Some error_str, Warn_error_number prev) ->
-              let new_error = prev ^ error_str in
-              Some {number = Some new_error; error = Warn_error_number new_error}
-          | _ -> t
-      in
+        match warn_as_error with
+        | Some e ->
+          Some {Bsb_warning.number = Some e; error = Warn_error_number e}
+        | None -> None)
+      | Some {error} as t -> (
+        match (warn_as_error, error) with
+        | Some error_str, Warn_error_false ->
+          Some {number = Some error_str; error = Warn_error_number error_str}
+        | Some error_str, Warn_error_number prev ->
+          let new_error = prev ^ error_str in
+          Some {number = Some new_error; error = Warn_error_number new_error}
+        | _ -> t)
+    in
 
-      let config = {config with warning = warning} in
-      (* create directory, lib/bs, lib/js, lib/es6 etc *)
-      Bsb_build_util.mkp lib_bs_dir;
-      Bsb_package_specs.list_dirs_by config.package_specs (fun x ->
-          let dir = per_proj_dir // x in
-          (*Unix.EEXIST error*)
-          if not (Sys.file_exists dir) then Unix.mkdir dir 0o777);
-      (match package_kind with
-      | Toplevel ->
-          Bsb_watcher_gen.generate_sourcedirs_meta
-            ~name:(lib_bs_dir // Literals.sourcedirs_meta)
-            config.file_groups
-      | Pinned_dependency _ (* FIXME: seems need to be watched *) | Dependency _
-        ->
-          ());
+    let config = {config with warning} in
+    (* create directory, lib/bs, lib/js, lib/es6 etc *)
+    Bsb_build_util.mkp lib_bs_dir;
+    Bsb_package_specs.list_dirs_by config.package_specs (fun x ->
+        let dir = per_proj_dir // x in
+        (*Unix.EEXIST error*)
+        if not (Sys.file_exists dir) then Unix.mkdir dir 0o777);
+    (match package_kind with
+    | Toplevel ->
+      Bsb_watcher_gen.generate_sourcedirs_meta
+        ~name:(lib_bs_dir // Literals.sourcedirs_meta)
+        config.file_groups
+    | Pinned_dependency _ (* FIXME: seems need to be watched *) | Dependency _
+      ->
+      ());
 
-      Bsb_ninja_gen.output_ninja_and_namespace_map ~per_proj_dir ~package_kind
-        config;
-      (* PR2184: we still need record empty dir
-          since it may add files in the future *)
-      Bsb_ninja_check.record ~package_kind ~per_proj_dir ~config ~warn_as_error
-        ~file:output_deps
-        (config.filename :: config.file_groups.globbed_dirs);
-      Some config
+    Bsb_ninja_gen.output_ninja_and_namespace_map ~per_proj_dir ~package_kind
+      config;
+    (* PR2184: we still need record empty dir
+        since it may add files in the future *)
+    Bsb_ninja_check.record ~package_kind ~per_proj_dir ~config ~warn_as_error
+      ~file:output_deps
+      (config.filename :: config.file_groups.globbed_dirs);
+    Some config

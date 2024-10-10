@@ -28,7 +28,8 @@ let make_runtime = ref false
 let set_package_name name =
   if Js_packages_info.is_empty !packages_info then
     packages_info := Js_packages_info.from_name name
-  else if not !make_runtime then Bsc_args.bad_arg "duplicated flag for -bs-package-name"
+  else if not !make_runtime then
+    Bsc_args.bad_arg "duplicated flag for -bs-package-name"
 
 let make_runtime () : unit =
   make_runtime := true;

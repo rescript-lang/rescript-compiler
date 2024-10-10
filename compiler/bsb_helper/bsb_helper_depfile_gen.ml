@@ -112,8 +112,8 @@ let oc_cmi buf namespace source =
           So we will just ignore the self-cycles. Even if there is indeed a self-cycle, it should fail to compile anyway.
 *)
 let oc_deps (ast_file : string) (is_dev : bool) (db : Bsb_db_decode.t)
-    (namespace : string option) (buf : Ext_buffer.t) (kind : [ `impl | `intf ])
-    : unit =
+    (namespace : string option) (buf : Ext_buffer.t) (kind : [`impl | `intf]) :
+    unit =
   (* TODO: move namespace upper, it is better to resolve ealier *)
   let cur_module_name = Ext_filename.module_name ast_file in
   let at_most_once : unit lazy_t =
@@ -127,10 +127,10 @@ let oc_deps (ast_file : string) (is_dev : bool) (db : Bsb_db_decode.t)
   (match namespace with
   | None -> ()
   | Some ns ->
-      Lazy.force at_most_once;
-      Ext_buffer.add_char buf ' ';
-      Ext_buffer.add_string buf ns;
-      Ext_buffer.add_string buf Literals.suffix_cmi (* always cmi *));
+    Lazy.force at_most_once;
+    Ext_buffer.add_char buf ' ';
+    Ext_buffer.add_string buf ns;
+    Ext_buffer.add_string buf Literals.suffix_cmi (* always cmi *));
   (* TODO: moved into static files*)
   let s = extract_dep_raw_string ast_file in
   let offset = ref 1 in
@@ -139,25 +139,25 @@ let oc_deps (ast_file : string) (is_dev : bool) (db : Bsb_db_decode.t)
     let next_tab = String.index_from s !offset magic_sep_char in
     let dependent_module = String.sub s !offset (next_tab - !offset) in
     (if dependent_module = cur_module_name then
-     (*prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
-       exit 2*)
-     (* #5368 ignore self dependencies *) ()
-    else
-      match Bsb_db_decode.find db dependent_module is_dev with
-      | None -> ()
-      | Some { dir_name; case } ->
-          Lazy.force at_most_once;
-          let source =
-            Filename.concat dir_name
-              (if case then dependent_module
+       (*prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
+         exit 2*)
+       (* #5368 ignore self dependencies *) ()
+     else
+       match Bsb_db_decode.find db dependent_module is_dev with
+       | None -> ()
+       | Some {dir_name; case} ->
+         Lazy.force at_most_once;
+         let source =
+           Filename.concat dir_name
+             (if case then dependent_module
               else Ext_string.uncapitalize_ascii dependent_module)
-          in
-          Ext_buffer.add_char buf ' ';
-          if kind = `impl then (
-            output_file buf source namespace;
-            Ext_buffer.add_string buf Literals.suffix_cmj);
-          (* #3260 cmj changes does not imply cmi change anymore *)
-          oc_cmi buf namespace source);
+         in
+         Ext_buffer.add_char buf ' ';
+         if kind = `impl then (
+           output_file buf source namespace;
+           Ext_buffer.add_string buf Literals.suffix_cmj);
+         (* #3260 cmj changes does not imply cmi change anymore *)
+         oc_cmi buf namespace source);
     offset := next_tab + 1
   done;
   if Lazy.is_val at_most_once then Ext_buffer.add_char buf '\n'

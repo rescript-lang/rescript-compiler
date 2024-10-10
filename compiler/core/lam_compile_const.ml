@@ -37,7 +37,9 @@ let rec nested_some_none n none =
 let rec translate_some (x : Lam_constant.t) : J.expression =
   let depth = is_some_none_aux x 0 in
   if depth < 0 then E.optional_not_nest_block (translate x)
-  else nested_some_none depth (E.optional_block (translate (Const_js_undefined {is_unit = false})))
+  else
+    nested_some_none depth
+      (E.optional_block (translate (Const_js_undefined {is_unit = false})))
 
 and translate (x : Lam_constant.t) : J.expression =
   match x with
@@ -48,21 +50,23 @@ and translate (x : Lam_constant.t) : J.expression =
   | Const_js_null -> E.nil
   | Const_js_undefined {is_unit = true} -> E.unit
   | Const_js_undefined {is_unit = false} -> E.undefined
-  | Const_int { i; comment = Pt_constructor {cstr_name={name; tag_type=None}}} when name <> "[]" ->
-      E.str name
-  | Const_int { i; comment = Pt_constructor {cstr_name={tag_type = Some t}}}  ->
-      E.tag_type t
-  | Const_int { i; comment } ->
-      E.int i ?comment:(Lam_constant.string_of_pointer_info comment)
+  | Const_int
+      {i; comment = Pt_constructor {cstr_name = {name; tag_type = None}}}
+    when name <> "[]" ->
+    E.str name
+  | Const_int {i; comment = Pt_constructor {cstr_name = {tag_type = Some t}}} ->
+    E.tag_type t
+  | Const_int {i; comment} ->
+    E.int i ?comment:(Lam_constant.string_of_pointer_info comment)
   | Const_char i -> Js_of_lam_string.const_char i
   | Const_bigint (sign, i) -> E.bigint sign i
   | Const_float f -> E.float f (* TODO: preserve float *)
-  | Const_string { s; unicode = false } -> E.str s
-  | Const_string { s; unicode = true } -> E.str ~delim:DStarJ s
+  | Const_string {s; unicode = false} -> E.str s
+  | Const_string {s; unicode = true} -> E.str ~delim:DStarJ s
   | Const_pointer name -> E.str name
   | Const_block (tag, tag_info, xs) ->
-      Js_of_lam_block.make_block NA tag_info (E.small_int tag)
-        (Ext_list.map xs translate)
+    Js_of_lam_block.make_block NA tag_info (E.small_int tag)
+      (Ext_list.map xs translate)
 
 (* E.arr Mutable ~comment:"float array" *)
 (*   (Ext_list.map (fun x ->  E.float  x ) ars) *)

@@ -28,8 +28,8 @@ let ( // ) = Ext_path.combine
 module Spec_set = Bsb_spec_set
 
 type t = {
-  modules : Spec_set.t;
-  runtime : string option;
+  modules: Spec_set.t;
+  runtime: string option;
       (* This has to be resolved as early as possible, since
          the path will be inherited in sub projects
       *)
@@ -86,58 +86,59 @@ let rec from_array suffix (arr : Ext_json_types.t array) : Spec_set.t =
 (* TODO: FIXME: better API without mutating *)
 and from_json_single suffix (x : Ext_json_types.t) : Bsb_spec_set.spec =
   match x with
-  | Str { str = format; loc } ->
-      { format = supported_format format loc; in_source = false; suffix }
-  | Obj { map; loc } -> (
-      match map.?("module") with
-      | Some (Str { str = format }) ->
-          let in_source =
-            match map.?(Bsb_build_schemas.in_source) with
-            | Some (True _) -> true
-            | Some _ | None -> false
-          in
-          let suffix =
-            match map.?(Bsb_build_schemas.suffix) with
-            | Some (Str { str = suffix; _ }) when validate_js_suffix suffix -> suffix
-            | Some (Str {str; loc}) ->
-              Bsb_exception.errorf ~loc
-                ("invalid suffix \"%s\". The suffix and may contain letters, digits, \"-\", \"_\" and \".\" and must end with .js, .mjs or .cjs.") str
-            | Some _ ->
-              Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
-                "expected a string extension like \".js\""
-            | None -> suffix
-          in
-          { format = supported_format format loc; in_source; suffix }
-      | Some _ ->
+  | Str {str = format; loc} ->
+    {format = supported_format format loc; in_source = false; suffix}
+  | Obj {map; loc} -> (
+    match map.?("module") with
+    | Some (Str {str = format}) ->
+      let in_source =
+        match map.?(Bsb_build_schemas.in_source) with
+        | Some (True _) -> true
+        | Some _ | None -> false
+      in
+      let suffix =
+        match map.?(Bsb_build_schemas.suffix) with
+        | Some (Str {str = suffix; _}) when validate_js_suffix suffix -> suffix
+        | Some (Str {str; loc}) ->
           Bsb_exception.errorf ~loc
-            "package-specs: when the configuration is an object, `module` \
-             field should be a string, not an array. If you want to pass \
-             multiple module specs, try turning package-specs into an array of \
-             objects (or strings) instead."
-      | None ->
-          Bsb_exception.errorf ~loc
-            "package-specs: when the configuration is an object, the `module` \
-             field is mandatory.")
+            "invalid suffix \"%s\". The suffix and may contain letters, \
+             digits, \"-\", \"_\" and \".\" and must end with .js, .mjs or \
+             .cjs."
+            str
+        | Some _ ->
+          Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
+            "expected a string extension like \".js\""
+        | None -> suffix
+      in
+      {format = supported_format format loc; in_source; suffix}
+    | Some _ ->
+      Bsb_exception.errorf ~loc
+        "package-specs: when the configuration is an object, `module` field \
+         should be a string, not an array. If you want to pass multiple module \
+         specs, try turning package-specs into an array of objects (or \
+         strings) instead."
+    | None ->
+      Bsb_exception.errorf ~loc
+        "package-specs: when the configuration is an object, the `module` \
+         field is mandatory.")
   | _ ->
-      Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
-        "package-specs: expected either a string or an object."
+    Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
+      "package-specs: expected either a string or an object."
 
 let from_json suffix (x : Ext_json_types.t) : Spec_set.t =
   match x with
-  | Arr { content; _ } -> from_array suffix content
+  | Arr {content; _} -> from_array suffix content
   | _ -> Spec_set.singleton (from_json_single suffix x)
 
 let bs_package_output = "-bs-package-output"
 
 [@@@warning "+9"]
 
-let package_flag ({ format; in_source; suffix } : Bsb_spec_set.spec) dir =
+let package_flag ({format; in_source; suffix} : Bsb_spec_set.spec) dir =
   Ext_string.inter2 bs_package_output
     (Ext_string.concat5 (string_of_format format) Ext_string.single_colon
-       (if in_source then dir
-       else Bsb_config.top_prefix_of_format format // dir)
-       Ext_string.single_colon
-      suffix)
+       (if in_source then dir else Bsb_config.top_prefix_of_format format // dir)
+       Ext_string.single_colon suffix)
 
 (* FIXME: we should adapt it *)
 let package_flag_of_package_specs (package_specs : t) ~(dirname : string) :
@@ -145,19 +146,18 @@ let package_flag_of_package_specs (package_specs : t) ~(dirname : string) :
   let res =
     match (package_specs.modules :> Bsb_spec_set.spec list) with
     | [] -> Ext_string.empty
-    | [ format ] ->
-        Ext_string.inter2 Ext_string.empty (package_flag format dirname)
-    | [ a; b ] ->
-        Ext_string.inter3 Ext_string.empty (package_flag a dirname)
-          (package_flag b dirname)
-    | [ a; b; c ] ->
-        Ext_string.inter4 Ext_string.empty (package_flag a dirname)
-          (package_flag b dirname) (package_flag c dirname)
+    | [format] ->
+      Ext_string.inter2 Ext_string.empty (package_flag format dirname)
+    | [a; b] ->
+      Ext_string.inter3 Ext_string.empty (package_flag a dirname)
+        (package_flag b dirname)
+    | [a; b; c] ->
+      Ext_string.inter4 Ext_string.empty (package_flag a dirname)
+        (package_flag b dirname) (package_flag c dirname)
     | _ ->
-        Spec_set.fold
-          (fun format acc ->
-            Ext_string.inter2 acc (package_flag format dirname))
-          package_specs.modules Ext_string.empty
+      Spec_set.fold
+        (fun format acc -> Ext_string.inter2 acc (package_flag format dirname))
+        package_specs.modules Ext_string.empty
   in
   match package_specs.runtime with
   | None -> res
@@ -165,7 +165,7 @@ let package_flag_of_package_specs (package_specs : t) ~(dirname : string) :
 
 let default_package_specs suffix =
   (* TODO: swap default to Esmodule in v12 *)
-  Spec_set.singleton { format = Commonjs; in_source = false; suffix }
+  Spec_set.singleton {format = Commonjs; in_source = false; suffix}
 
 (**
     [get_list_of_output_js specs "src/hi/hello"]
@@ -176,10 +176,11 @@ let get_list_of_output_js (package_specs : t)
   Spec_set.fold
     (fun (spec : Bsb_spec_set.spec) acc ->
       let basename =
-        Ext_namespace.change_ext_ns_suffix output_file_sans_extension spec.suffix
+        Ext_namespace.change_ext_ns_suffix output_file_sans_extension
+          spec.suffix
       in
       (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
-      else Bsb_config.lib_bs_prefix_of_format spec.format // basename)
+       else Bsb_config.lib_bs_prefix_of_format spec.format // basename)
       :: acc)
     package_specs.modules []
 
@@ -194,13 +195,14 @@ type json_map = Ext_json_types.t Map_string.t
 let extract_js_suffix_exn (map : json_map) : string =
   match map.?(Bsb_build_schemas.suffix) with
   | None -> Literals.suffix_js
-  | Some (Str { str = suffix; _ }) when validate_js_suffix suffix -> suffix
-  | Some ((Str {str; _}) as config)  -> 
+  | Some (Str {str = suffix; _}) when validate_js_suffix suffix -> suffix
+  | Some (Str {str; _} as config) ->
     Bsb_exception.config_error config
-      ("invalid suffix \"" ^ str ^ "\". The suffix and may contain letters, digits, \"-\", \"_\" and \".\" and must end with .js, .mjs or .cjs.")
+      ("invalid suffix \"" ^ str
+     ^ "\". The suffix and may contain letters, digits, \"-\", \"_\" and \".\" \
+        and must end with .js, .mjs or .cjs.")
   | Some config ->
-    Bsb_exception.config_error config
-      "expected a string extension like \".js\""
+    Bsb_exception.config_error config "expected a string extension like \".js\""
 
 let from_map ~(cwd : string) map =
   let suffix = extract_js_suffix_exn map in
@@ -212,10 +214,9 @@ let from_map ~(cwd : string) map =
   let runtime =
     match map.?(Bsb_build_schemas.external_stdlib) with
     | None -> None
-    | Some (Str { str; _ }) ->
-        Some
-          (Bsb_pkg.resolve_bs_package ~cwd
-             (Bsb_pkg_types.string_as_package str))
+    | Some (Str {str; _}) ->
+      Some
+        (Bsb_pkg.resolve_bs_package ~cwd (Bsb_pkg_types.string_as_package str))
     | _ -> assert false
   in
-  { runtime; modules }
+  {runtime; modules}

@@ -24,4 +24,4 @@
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
   = "caml_blit_string"
-  [@@noalloc]
+[@@noalloc]

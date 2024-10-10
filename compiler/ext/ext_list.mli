@@ -108,7 +108,7 @@ val filter_mapi : 'a list -> ('a -> int -> 'b option) -> 'b list
 
 val filter_map2 : 'a list -> 'b list -> ('a -> 'b -> 'c option) -> 'c list
 
-val length_compare : 'a list -> int -> [ `Gt | `Eq | `Lt ]
+val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt]
 
 val length_ge : 'a list -> int -> bool
 

@@ -35,8 +35,7 @@ val interface :
     it will be useful if we don't care about bytecode output(generating js only).
 *)
 
-val interface_mliast :
-  Format.formatter -> string -> unit
+val interface_mliast : Format.formatter -> string -> unit
 
 (* val after_parsing_impl :
    Format.formatter ->
@@ -56,7 +55,6 @@ val implementation :
   unit
 (** [implementation ppf sourcefile outprefix] compiles to JS directly *)
 
-val implementation_mlast :
-  Format.formatter -> string -> unit
+val implementation_mlast : Format.formatter -> string -> unit
 
 val implementation_map : Format.formatter -> string -> unit

@@ -50,7 +50,7 @@ let cmp_float (cmp : comparison) (a : float) b : bool =
   | Cle -> a <= b
   | Clt -> a < b
   | Cge -> a >= b
-  
+
 let cmp_int (cmp : comparison) (a : int) b : bool =
   match cmp with
   | Ceq -> a = b
@@ -63,10 +63,10 @@ let cmp_int (cmp : comparison) (a : int) b : bool =
 type let_kind = Lambda.let_kind = Strict | Alias | StrictOpt | Variable
 
 type field_dbg_info = Lambda.field_dbg_info =
-  | Fld_record of { name : string; mutable_flag : Asttypes.mutable_flag }
-  | Fld_module of { name : string }
-  | Fld_record_inline of { name : string }
-  | Fld_record_extension of { name : string }
+  | Fld_record of {name: string; mutable_flag: Asttypes.mutable_flag}
+  | Fld_module of {name: string}
+  | Fld_record_inline of {name: string}
+  | Fld_record_extension of {name: string}
   | Fld_tuple
   | Fld_poly_var_tag
   | Fld_poly_var_content
@@ -79,12 +79,12 @@ let str_of_field_info (x : field_dbg_info) : string option =
   match x with
   | Fld_array | Fld_extension | Fld_variant | Fld_cons | Fld_poly_var_tag
   | Fld_poly_var_content | Fld_tuple ->
-      None
-  | Fld_record { name; _ }
-  | Fld_module { name; _ }
-  | Fld_record_inline { name }
-  | Fld_record_extension { name } ->
-      Some name
+    None
+  | Fld_record {name; _}
+  | Fld_module {name; _}
+  | Fld_record_inline {name}
+  | Fld_record_extension {name} ->
+    Some name
 
 type set_field_dbg_info = Lambda.set_field_dbg_info =
   | Fld_record_set of string

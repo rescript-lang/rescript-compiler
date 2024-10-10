@@ -18,23 +18,19 @@
 
 type ('a, 'b) bucket =
   | Empty
-  | Cons of {
-      mutable key : 'a;
-      mutable data : 'b;
-      mutable next : ('a, 'b) bucket;
-    }
+  | Cons of {mutable key: 'a; mutable data: 'b; mutable next: ('a, 'b) bucket}
 
 type ('a, 'b) t = {
-  mutable size : int;
+  mutable size: int;
   (* number of entries *)
-  mutable data : ('a, 'b) bucket array;
+  mutable data: ('a, 'b) bucket array;
   (* the buckets *)
-  initial_size : int; (* initial array size *)
+  initial_size: int; (* initial array size *)
 }
 
 let create initial_size =
   let s = Ext_util.power_2_above 16 initial_size in
-  { initial_size = s; size = 0; data = Array.make s Empty }
+  {initial_size = s; size = 0; data = Array.make s Empty}
 
 let clear h =
   h.size <- 0;
@@ -60,13 +56,13 @@ let resize indexfun h =
     (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
       | Empty -> ()
-      | Cons { key; next } as cell ->
-          let nidx = indexfun h key in
-          (match Array.unsafe_get ndata_tail nidx with
-          | Empty -> Array.unsafe_set ndata nidx cell
-          | Cons tail -> tail.next <- cell);
-          Array.unsafe_set ndata_tail nidx cell;
-          insert_bucket next
+      | Cons {key; next} as cell ->
+        let nidx = indexfun h key in
+        (match Array.unsafe_get ndata_tail nidx with
+        | Empty -> Array.unsafe_set ndata nidx cell
+        | Cons tail -> tail.next <- cell);
+        Array.unsafe_set ndata_tail nidx cell;
+        insert_bucket next
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
@@ -81,8 +77,8 @@ let iter h f =
   let rec do_bucket = function
     | Empty -> ()
     | Cons l ->
-        f l.key l.data;
-        do_bucket l.next
+      f l.key l.data;
+      do_bucket l.next
   in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
@@ -108,89 +104,88 @@ let rec small_bucket_mem (lst : _ bucket) eq key =
   match lst with
   | Empty -> false
   | Cons lst -> (
+    eq key lst.key
+    ||
+    match lst.next with
+    | Empty -> false
+    | Cons lst -> (
       eq key lst.key
       ||
       match lst.next with
       | Empty -> false
-      | Cons lst -> (
-          eq key lst.key
-          ||
-          match lst.next with
-          | Empty -> false
-          | Cons lst -> eq key lst.key || small_bucket_mem lst.next eq key))
+      | Cons lst -> eq key lst.key || small_bucket_mem lst.next eq key))
 
 let rec small_bucket_opt eq key (lst : _ bucket) : _ option =
   match lst with
   | Empty -> None
   | Cons lst -> (
-      if eq key lst.key then Some lst.data
-      else
-        match lst.next with
-        | Empty -> None
-        | Cons lst -> (
+    if eq key lst.key then Some lst.data
+    else
+      match lst.next with
+      | Empty -> None
+      | Cons lst -> (
+        if eq key lst.key then Some lst.data
+        else
+          match lst.next with
+          | Empty -> None
+          | Cons lst ->
             if eq key lst.key then Some lst.data
-            else
-              match lst.next with
-              | Empty -> None
-              | Cons lst ->
-                  if eq key lst.key then Some lst.data
-                  else small_bucket_opt eq key lst.next))
+            else small_bucket_opt eq key lst.next))
 
 let rec small_bucket_key_opt eq key (lst : _ bucket) : _ option =
   match lst with
   | Empty -> None
-  | Cons { key = k; next } -> (
-      if eq key k then Some k
-      else
-        match next with
-        | Empty -> None
-        | Cons { key = k; next } -> (
-            if eq key k then Some k
-            else
-              match next with
-              | Empty -> None
-              | Cons { key = k; next } ->
-                  if eq key k then Some k else small_bucket_key_opt eq key next)
-      )
+  | Cons {key = k; next} -> (
+    if eq key k then Some k
+    else
+      match next with
+      | Empty -> None
+      | Cons {key = k; next} -> (
+        if eq key k then Some k
+        else
+          match next with
+          | Empty -> None
+          | Cons {key = k; next} ->
+            if eq key k then Some k else small_bucket_key_opt eq key next))
 
 let rec small_bucket_default eq key default (lst : _ bucket) =
   match lst with
   | Empty -> default
   | Cons lst -> (
-      if eq key lst.key then lst.data
-      else
-        match lst.next with
-        | Empty -> default
-        | Cons lst -> (
+    if eq key lst.key then lst.data
+    else
+      match lst.next with
+      | Empty -> default
+      | Cons lst -> (
+        if eq key lst.key then lst.data
+        else
+          match lst.next with
+          | Empty -> default
+          | Cons lst ->
             if eq key lst.key then lst.data
-            else
-              match lst.next with
-              | Empty -> default
-              | Cons lst ->
-                  if eq key lst.key then lst.data
-                  else small_bucket_default eq key default lst.next))
+            else small_bucket_default eq key default lst.next))
 
 let rec remove_bucket h (i : int) key ~(prec : _ bucket) (buck : _ bucket)
     eq_key =
   match buck with
   | Empty -> ()
-  | Cons { key = k; next } ->
-      if eq_key k key then (
-        h.size <- h.size - 1;
-        match prec with
-        | Empty -> Array.unsafe_set h.data i next
-        | Cons c -> c.next <- next)
-      else remove_bucket h i key ~prec:buck next eq_key
+  | Cons {key = k; next} ->
+    if eq_key k key then (
+      h.size <- h.size - 1;
+      match prec with
+      | Empty -> Array.unsafe_set h.data i next
+      | Cons c -> c.next <- next)
+    else remove_bucket h i key ~prec:buck next eq_key
 
 let rec replace_bucket key data (buck : _ bucket) eq_key =
   match buck with
   | Empty -> true
   | Cons slot ->
-      if eq_key slot.key key then (
-        slot.key <- key;
-        slot.data <- data;
-        false)
-      else replace_bucket key data slot.next eq_key
+    if eq_key slot.key key then (
+      slot.key <- key;
+      slot.data <- data;
+      false)
+    else replace_bucket key data slot.next eq_key
 
 module type S = sig
   type key

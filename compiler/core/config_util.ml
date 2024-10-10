@@ -27,11 +27,11 @@ let find_in_path_uncap path name =
   let rec try_dir = function
     | [] -> None
     | dir :: rem ->
-        let ufullname = Filename.concat dir uname in
-        if Sys.file_exists ufullname then Some ufullname
-        else
-          let fullname = Filename.concat dir name in
-          if Sys.file_exists fullname then Some fullname else try_dir rem
+      let ufullname = Filename.concat dir uname in
+      if Sys.file_exists ufullname then Some ufullname
+      else
+        let fullname = Filename.concat dir name in
+        if Sys.file_exists fullname then Some fullname else try_dir rem
   in
   try_dir path
 
@@ -41,7 +41,7 @@ let find_opt file = find_in_path_uncap !Config.load_path file
 let output_prefix name =
   match !Clflags.output_name with
   | None ->
-      Ext_namespace_encode.make
-        (Filename.remove_extension name)
-        ?ns:!Clflags.dont_record_crc_unit
+    Ext_namespace_encode.make
+      (Filename.remove_extension name)
+      ?ns:!Clflags.dont_record_crc_unit
   | Some oname -> Filename.remove_extension oname

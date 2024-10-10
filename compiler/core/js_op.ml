@@ -25,10 +25,11 @@
 (** Define some basic types used in JS IR *)
 
 type binop =
-  | Eq (* acutally assignment ..
-          TODO: move it into statement, so that all expressions
-          are side efffect free (except function calls)
-       *)
+  | Eq
+    (* acutally assignment ..
+       TODO: move it into statement, so that all expressions
+       are side efffect free (except function calls)
+    *)
   | Or
   | And
   | EqEqEq
@@ -115,7 +116,14 @@ type int_op =
 *)
 type level = Log | Info | Warn | Error
 
-type kind = Ml | Runtime | External of { name : string; default : bool; import_attributes : External_ffi_types.import_attributes option }
+type kind =
+  | Ml
+  | Runtime
+  | External of {
+      name: string;
+      default: bool;
+      import_attributes: External_ffi_types.import_attributes option;
+    }
 
 type property = Lam_compat.let_kind = Strict | Alias | StrictOpt | Variable
 
@@ -124,13 +132,13 @@ type property_name = Lit of string | Symbol_name
 type 'a access = Getter | Setter
 
 (* literal char *)
-type float_lit = { f : string } [@@unboxed]
+type float_lit = {f: string} [@@unboxed]
 
-type bigint_lit = { positive: bool; value: string }
+type bigint_lit = {positive: bool; value: string}
 
 type number =
   | Float of float_lit
-  | Int of { i : int32; c : int option }
+  | Int of {i: int32; c: int option}
   | BigInt of bigint_lit
 
 (* becareful when constant folding +/-,
@@ -168,7 +176,8 @@ type used_stats =
      pass, you can not do it in a single pass, however, some simple
      dead code can be detected in a single pass
   *)
-  | Once_pure (* used only once so that, if we do the inlining, it will be [Dead] *)
+  | Once_pure
+    (* used only once so that, if we do the inlining, it will be [Dead] *)
   | Used (**)
   | Scanning_pure
   | Scanning_non_pure
@@ -176,7 +185,7 @@ type used_stats =
 
 type ident_info = {
   (* mutable recursive_info : recursive_info; *)
-  mutable used_stats : used_stats;
+  mutable used_stats: used_stats;
 }
 
 type exports = Ident.t list

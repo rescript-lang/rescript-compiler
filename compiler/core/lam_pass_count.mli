@@ -12,8 +12,8 @@
 (* Adapted for Javascript backend : Hongbo Zhang,  *)
 
 type used_info = {
-  mutable times : int;
-  mutable captured : bool;
+  mutable times: int;
+  mutable captured: bool;
       (* captured in functon or loop,
          inline in such cases should be careful
          1. can not inline mutable values

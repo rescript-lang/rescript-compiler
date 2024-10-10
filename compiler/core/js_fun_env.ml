@@ -43,9 +43,9 @@ type immutable_mask =
   | Immutable_mask of bool array
 
 type t = {
-  mutable unbounded : Set_ident.t;
-  used_mask : bool array;
-  immutable_mask : immutable_mask;
+  mutable unbounded: Set_ident.t;
+  used_mask: bool array;
+  immutable_mask: immutable_mask;
 }
 (** Invariant: unused param has to be immutable *)
 
@@ -80,8 +80,7 @@ let get_mutable_params (params : Ident.t list) (x : t) =
   match x.immutable_mask with
   | All_immutable_and_no_tail_call -> []
   | Immutable_mask xs ->
-      Ext_list.filter_mapi params (fun p i ->
-          if not xs.(i) then Some p else None)
+    Ext_list.filter_mapi params (fun p i -> if not xs.(i) then Some p else None)
 
 let get_unbounded t = t.unbounded
 

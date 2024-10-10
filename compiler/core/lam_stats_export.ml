@@ -34,21 +34,21 @@ let values_of_export (meta : Lam_stats.t) (export_map : Lam.t Map_ident.t) :
   Ext_list.fold_left meta.exports Map_string.empty (fun acc x ->
       let arity : Js_cmj_format.arity =
         match Hash_ident.find_opt meta.ident_tbl x with
-        | Some (FunctionId { arity; _ }) -> Single arity
+        | Some (FunctionId {arity; _}) -> Single arity
         | Some (ImmutableBlock elems) ->
-            (* FIXME: field name for dumping*)
-            Submodule
-              (Ext_array.map elems (fun x ->
-                   match x with
-                   | NA -> Lam_arity.na
-                   | SimpleForm lam -> Lam_arity_analysis.get_arity meta lam))
+          (* FIXME: field name for dumping*)
+          Submodule
+            (Ext_array.map elems (fun x ->
+                 match x with
+                 | NA -> Lam_arity.na
+                 | SimpleForm lam -> Lam_arity_analysis.get_arity meta lam))
         | Some _ | None -> (
-            match Map_ident.find_opt export_map x with
-            | Some (Lprim { primitive = Pmakeblock (_, _, Immutable); args }) ->
-                Submodule
-                  (Ext_array.of_list_map args (fun lam ->
-                       Lam_arity_analysis.get_arity meta lam))
-            | Some _ | None -> single_na)
+          match Map_ident.find_opt export_map x with
+          | Some (Lprim {primitive = Pmakeblock (_, _, Immutable); args}) ->
+            Submodule
+              (Ext_array.of_list_map args (fun lam ->
+                   Lam_arity_analysis.get_arity meta lam))
+          | Some _ | None -> single_na)
       in
       let persistent_closed_lambda =
         let optlam = Map_ident.find_opt export_map x in
@@ -58,52 +58,52 @@ let values_of_export (meta : Lam_stats.t) (export_map : Lam.t Map_ident.t) :
               ( Const_js_null | Const_js_undefined _ | Const_js_true
               | Const_js_false ))
         | None ->
-            optlam
+          optlam
         | Some lambda ->
-            if not !Js_config.cross_module_inline then None
-            else if
-              Lam_analysis.safe_to_inline lambda
-              (* when inlning a non function, we have to be very careful,
-                 only truly immutable values can be inlined
+          if not !Js_config.cross_module_inline then None
+          else if
+            Lam_analysis.safe_to_inline lambda
+            (* when inlning a non function, we have to be very careful,
+               only truly immutable values can be inlined
+            *)
+          then
+            match lambda with
+            | Lfunction {attr = {inline = Always_inline}}
+            (* FIXME: is_closed lambda is too restrictive
+               It precludes ues cases
+               - inline forEach but not forEachU
+            *)
+            | Lfunction {attr = {is_a_functor = true}} ->
+              if Lam_closure.is_closed lambda (* TODO: seriealize more*) then
+                optlam
+              else None
+            | _ ->
+              let lam_size = Lam_analysis.size lambda in
+              (* TODO:
+                 1. global need re-assocate when do the beta reduction
+                 2. [lambda_exports] is not precise
               *)
-            then
-              match lambda with
-              | Lfunction { attr = { inline = Always_inline } }
-              (* FIXME: is_closed lambda is too restrictive
-                 It precludes ues cases
-                 - inline forEach but not forEachU
-              *)
-              | Lfunction { attr = { is_a_functor = true } } ->
-                  if Lam_closure.is_closed lambda (* TODO: seriealize more*)
-                  then optlam
-                  else None
-              | _ ->
-                  let lam_size = Lam_analysis.size lambda in
-                  (* TODO:
-                     1. global need re-assocate when do the beta reduction
-                     2. [lambda_exports] is not precise
-                  *)
-                  let free_variables =
-                    Lam_closure.free_variables Set_ident.empty Map_ident.empty
-                      lambda
-                  in
-                  if
-                    lam_size < Lam_analysis.small_inline_size
-                    && Map_ident.is_empty free_variables
-                  then (
-                    Ext_log.dwarn ~__POS__ "%s recorded for inlining @." x.name;
-                    optlam)
-                  else None
-            else None
+              let free_variables =
+                Lam_closure.free_variables Set_ident.empty Map_ident.empty
+                  lambda
+              in
+              if
+                lam_size < Lam_analysis.small_inline_size
+                && Map_ident.is_empty free_variables
+              then (
+                Ext_log.dwarn ~__POS__ "%s recorded for inlining @." x.name;
+                optlam)
+              else None
+          else None
       in
       match (arity, persistent_closed_lambda) with
       | Single Arity_na, (None | Some (Lconst Const_module_alias)) -> acc
       | Submodule [||], None -> acc
       | _ ->
-          let cmj_value : Js_cmj_format.cmj_value =
-            { arity; persistent_closed_lambda }
-          in
-          Map_string.add acc x.name cmj_value)
+        let cmj_value : Js_cmj_format.cmj_value =
+          {arity; persistent_closed_lambda}
+        in
+        Map_string.add acc x.name cmj_value)
 
 (* ATTENTION: all runtime modules, if it is not hard required,
    it should be okay to not reference it

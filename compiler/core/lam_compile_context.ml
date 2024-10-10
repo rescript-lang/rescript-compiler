@@ -26,20 +26,20 @@ type jbl_label = int
 
 module HandlerMap = Map_int
 
-type value = { exit_id : Ident.t; bindings : Ident.t list; order_id : int }
+type value = {exit_id: Ident.t; bindings: Ident.t list; order_id: int}
 
 (* delegate to the callee to generate expression
       Invariant: [output] should return a trailing expression
 *)
 type return_label = {
-  id : Ident.t;
-  params : Ident.t list;
-  immutable_mask : bool array;
-  mutable new_params : Ident.t Map_ident.t;
-  mutable triggered : bool;
+  id: Ident.t;
+  params: Ident.t list;
+  immutable_mask: bool array;
+  mutable new_params: Ident.t Map_ident.t;
+  mutable triggered: bool;
 }
 
-type tail = { label : return_label option; in_staticcatch : bool }
+type tail = {label: return_label option; in_staticcatch: bool}
 
 type maybe_tail = Tail_in_try | Tail_with_name of tail
 
@@ -68,18 +68,14 @@ type jmp_table = value HandlerMap.t
 let continuation_is_return (x : continuation) =
   match x with
   | EffectCall (Maybe_tail_is_return _) | NeedValue (Maybe_tail_is_return _) ->
-      true
+    true
   | EffectCall Not_tail | NeedValue Not_tail | Declare _ | Assign _ -> false
 
-type t = {
-  continuation : continuation;
-  jmp_table : jmp_table;
-  meta : Lam_stats.t;
-}
+type t = {continuation: continuation; jmp_table: jmp_table; meta: Lam_stats.t}
 
 let empty_handler_map = HandlerMap.empty
 
-type handler = { label : jbl_label; handler : Lam.t; bindings : Ident.t list }
+type handler = {label: jbl_label; handler: Lam.t; bindings: Ident.t list}
 
 let no_static_raise_in_handler (x : handler) : bool =
   not (Lam_exit_code.has_exit_code x.handler (fun _code -> true))
@@ -95,8 +91,8 @@ let add_jmps (m : jmp_table) (exit_id : Ident.t) (code_table : handler list) :
   let map, handlers =
     Ext_list.fold_left_with_offset code_table (m, [])
       (HandlerMap.cardinal m + 1)
-      (fun { label; handler; bindings } (acc, handlers) order_id ->
-        ( HandlerMap.add acc label { exit_id; bindings; order_id },
+      (fun {label; handler; bindings} (acc, handlers) order_id ->
+        ( HandlerMap.add acc label {exit_id; bindings; order_id},
           (order_id, handler) :: handlers ))
   in
   (map, List.rev handlers)
@@ -105,7 +101,7 @@ let add_pseudo_jmp (m : jmp_table)
     (exit_id : Ident.t) (* TODO not needed, remove it later *)
     (code_table : handler) : jmp_table * Lam.t =
   ( HandlerMap.add m code_table.label
-      { exit_id; bindings = code_table.bindings; order_id = -1 },
+      {exit_id; bindings = code_table.bindings; order_id = -1},
     code_table.handler )
 
 let find_exn cxt i = Map_int.find_exn cxt.jmp_table i

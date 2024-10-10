@@ -21,7 +21,13 @@
   (ocaml
    (>= 4.10))
   (ocamlformat
-   (= 0.26.2))
+   (and
+    :with-test
+    (= 0.26.2)))
+  (ocaml-lsp-server
+   (and
+    :with-dev-setup
+    (= 1.19.0)))
   (cppo
    (= 1.6.9))
   (js_of_ocaml

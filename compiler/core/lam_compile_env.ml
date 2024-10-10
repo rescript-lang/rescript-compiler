@@ -30,9 +30,9 @@ type env_value =
   *)
 
 type ident_info = Js_cmj_format.keyed_cmj_value = {
-  name : string;
-  arity : Js_cmj_format.arity;
-  persistent_closed_lambda : Lam.t option;
+  name: string;
+  arity: Js_cmj_format.arity;
+  persistent_closed_lambda: Lam.t option;
 }
 
 (*
@@ -59,8 +59,9 @@ let reset () =
     since when we print it in the end, it will 
     be escaped quite ugly
 *)
-let add_js_module ?import_attributes (hint_name : External_ffi_types.module_bind_name)
-    (module_name : string) default ~dynamic_import : Ident.t =
+let add_js_module ?import_attributes
+    (hint_name : External_ffi_types.module_bind_name) (module_name : string)
+    default ~dynamic_import : Ident.t =
   let id =
     Ident.create
       (match hint_name with
@@ -71,23 +72,28 @@ let add_js_module ?import_attributes (hint_name : External_ffi_types.module_bind
       | Phint_nothing -> Ext_modulename.js_id_name_of_hint_name module_name)
   in
   let lam_module_ident : J.module_id =
-    { id; kind = External { name = module_name; default; import_attributes }; dynamic_import }
+    {
+      id;
+      kind = External {name = module_name; default; import_attributes};
+      dynamic_import;
+    }
   in
   match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with
   | None ->
-      lam_module_ident +> External;
-      id
+    lam_module_ident +> External;
+    id
   | Some old_key -> old_key.id
 
-let query_external_id_info ?(dynamic_import = false) (module_id : Ident.t) (name : string) : ident_info =
+let query_external_id_info ?(dynamic_import = false) (module_id : Ident.t)
+    (name : string) : ident_info =
   let oid = Lam_module_ident.of_ml ~dynamic_import module_id in
   let cmj_table =
     match Lam_module_ident.Hash.find_opt cached_tbl oid with
     | None ->
-        let cmj_load_info = !Js_cmj_load.load_unit module_id.name in
-        oid +> Ml cmj_load_info;
-        cmj_load_info.cmj_table
-    | Some (Ml { cmj_table }) -> cmj_table
+      let cmj_load_info = !Js_cmj_load.load_unit module_id.name in
+      oid +> Ml cmj_load_info;
+      cmj_load_info.cmj_table
+    | Some (Ml {cmj_table}) -> cmj_table
     | Some External -> assert false
   in
   Js_cmj_format.query_by_name cmj_table name
@@ -102,14 +108,12 @@ let get_package_path_from_cmj (id : Lam_module_ident.t) :
        can not be External
     *)
     | None -> (
-        match id.kind with
-        | Runtime | External _ -> assert false
-        | Ml ->
-            let cmj_load_info =
-              !Js_cmj_load.load_unit (Lam_module_ident.name id)
-            in
-            id +> Ml cmj_load_info;
-            cmj_load_info)
+      match id.kind with
+      | Runtime | External _ -> assert false
+      | Ml ->
+        let cmj_load_info = !Js_cmj_load.load_unit (Lam_module_ident.name id) in
+        id +> Ml cmj_load_info;
+        cmj_load_info)
   in
   let cmj_table = cmj_load_info.cmj_table in
   (cmj_load_info.package_path, cmj_table.package_spec, cmj_table.case)
@@ -122,15 +126,15 @@ let is_pure_module (oid : Lam_module_ident.t) =
   | Runtime -> true
   | External _ -> false
   | Ml -> (
-      match Lam_module_ident.Hash.find_opt cached_tbl oid with
-      | None -> (
-          match !Js_cmj_load.load_unit (Lam_module_ident.name oid) with
-          | cmj_load_info ->
-              oid +> Ml cmj_load_info;
-              cmj_load_info.cmj_table.pure
-          | exception _ -> false)
-      | Some (Ml { cmj_table }) -> cmj_table.pure
-      | Some External -> false)
+    match Lam_module_ident.Hash.find_opt cached_tbl oid with
+    | None -> (
+      match !Js_cmj_load.load_unit (Lam_module_ident.name oid) with
+      | cmj_load_info ->
+        oid +> Ml cmj_load_info;
+        cmj_load_info.cmj_table.pure
+      | exception _ -> false)
+    | Some (Ml {cmj_table}) -> cmj_table.pure
+    | Some External -> false)
 
 let populate_required_modules extras
     (hard_dependencies : Lam_module_ident.Hash_set.t) =

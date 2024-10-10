@@ -25,21 +25,17 @@
 type group = private
   | Dummy
   | Group of {
-      modules : string array;
-      dir_length : int;
-      dir_info_offset : int;
-      module_info_offset : int;
+      modules: string array;
+      dir_length: int;
+      dir_info_offset: int;
+      module_info_offset: int;
     }
 
-type t = {
-  lib : group;
-  dev : group;
-  content : string; (* string is whole content*)
-}
+type t = {lib: group; dev: group; content: string (* string is whole content*)}
 
 val read_build_cache : dir:string -> t
 
-type module_info = { case : bool; (* Bsb_db.case*) dir_name : string }
+type module_info = {case: bool; (* Bsb_db.case*) dir_name: string}
 
 val find :
   t ->

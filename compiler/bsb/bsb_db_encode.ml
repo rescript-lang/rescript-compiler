@@ -61,7 +61,7 @@ let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =
   Ext_buffer.add_string_char buf (string_of_int len) '\n';
   if len <> 0 then (
     let mapping = Hash_string.create 50 in
-    Map_string.iter db (fun name { dir } ->
+    Map_string.iter db (fun name {dir} ->
         Ext_buffer.add_string_char buf name '\n';
         if not (Hash_string.mem mapping dir) then
           Hash_string.add mapping dir (Hash_string.length mapping));

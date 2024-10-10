@@ -34,7 +34,9 @@ let single (kind : Lam_compat.let_kind) id (body : Lam.t) =
   | _ -> Single (kind, id, body)
 
 let nop_cons (x : Lam.t) acc =
-  match x with Lvar _ | Lconst _ | Lfunction _ -> acc | _ -> Nop x :: acc
+  match x with
+  | Lvar _ | Lconst _ | Lfunction _ -> acc
+  | _ -> Nop x :: acc
 
 (* let pp = Format.fprintf *)
 
@@ -48,12 +50,12 @@ let str_of_kind (kind : Lam_compat.let_kind) =
 let pp_group fmt (x : t) =
   match x with
   | Single (kind, id, lam) ->
-      Format.fprintf fmt "@[let@ %a@ =%s@ @[<hv>%a@]@ @]" Ident.print id
-        (str_of_kind kind) Lam_print.lambda lam
+    Format.fprintf fmt "@[let@ %a@ =%s@ @[<hv>%a@]@ @]" Ident.print id
+      (str_of_kind kind) Lam_print.lambda lam
   | Recursive lst ->
-      List.iter
-        (fun (id, lam) ->
-          Format.fprintf fmt "@[let %a@ =r@ %a@ @]" Ident.print id
-            Lam_print.lambda lam)
-        lst
+    List.iter
+      (fun (id, lam) ->
+        Format.fprintf fmt "@[let %a@ =r@ %a@ @]" Ident.print id
+          Lam_print.lambda lam)
+      lst
   | Nop lam -> Lam_print.lambda fmt lam

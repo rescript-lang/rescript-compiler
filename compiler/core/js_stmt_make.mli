@@ -130,11 +130,7 @@ val assign : ?comment:string -> J.ident -> J.expression -> t
    J.ident ->
    t *)
 
-val while_ :
-  ?comment:string ->
-  J.expression ->
-  J.block ->
-  t
+val while_ : ?comment:string -> J.expression -> J.block -> t
 
 val for_ :
   ?comment:string ->

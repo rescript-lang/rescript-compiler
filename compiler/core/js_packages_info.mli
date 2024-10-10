@@ -28,11 +28,7 @@ val runtime_dir_of_module_system : module_system -> string
 
 val runtime_package_path : module_system -> string -> string
 
-type package_info = {
-  module_system : module_system;
-  path : string;
-  suffix : string;
-}
+type package_info = {module_system: module_system; path: string; suffix: string}
 
 type t
 
@@ -60,9 +56,9 @@ val add_npm_package_path : t -> string -> t
 *)
 
 type package_found_info = {
-  rel_path : string;
-  pkg_rel_path : string;
-  suffix : string;
+  rel_path: string;
+  pkg_rel_path: string;
+  suffix: string;
 }
 
 type info_query =

@@ -30,7 +30,9 @@
 *)
 let hit_mask (mask : Hash_set_ident_mask.t) (l : Lam.t) : bool =
   let rec hit_opt (x : Lam.t option) =
-    match x with None -> false | Some a -> hit a
+    match x with
+    | None -> false
+    | Some a -> hit a
   and hit_var (id : Ident.t) =
     Hash_set_ident_mask.mask_and_check_all_hit mask id
   and hit_list_snd : 'a. ('a * Lam.t) list -> bool =
@@ -42,19 +44,19 @@ let hit_mask (mask : Hash_set_ident_mask.t) (l : Lam.t) : bool =
     | Lassign (id, e) -> hit_var id || hit e
     | Lstaticcatch (e1, (_, _), e2) -> hit e1 || hit e2
     | Ltrywith (e1, _exn, e2) -> hit e1 || hit e2
-    | Lfunction { body; params = _ } -> hit body
+    | Lfunction {body; params = _} -> hit body
     | Llet (_str, _id, arg, body) -> hit arg || hit body
     | Lletrec (decl, body) -> hit body || hit_list_snd decl
     | Lfor (_v, e1, e2, _dir, e3) -> hit e1 || hit e2 || hit e3
     | Lconst _ -> false
-    | Lapply { ap_func; ap_args; _ } -> hit ap_func || hit_list ap_args
+    | Lapply {ap_func; ap_args; _} -> hit ap_func || hit_list ap_args
     | Lglobal_module _ (* playsafe *) -> false
-    | Lprim { args; _ } -> hit_list args
+    | Lprim {args; _} -> hit_list args
     | Lswitch (arg, sw) ->
-        hit arg || hit_list_snd sw.sw_consts || hit_list_snd sw.sw_blocks
-        || hit_opt sw.sw_failaction
+      hit arg || hit_list_snd sw.sw_consts || hit_list_snd sw.sw_blocks
+      || hit_opt sw.sw_failaction
     | Lstringswitch (arg, cases, default) ->
-        hit arg || hit_list_snd cases || hit_opt default
+      hit arg || hit_list_snd cases || hit_opt default
     | Lstaticraise (_, args) -> hit_list args
     | Lifthenelse (e1, e2, e3) -> hit e1 || hit e2 || hit e3
     | Lsequence (e1, e2) -> hit e1 || hit e2
@@ -85,7 +87,9 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Vec_int.t array =
   (domain, int_mapping, node_vec)
 
 let is_function_bind (_, (x : Lam.t)) =
-  match x with Lfunction _ -> true | _ -> false
+  match x with
+  | Lfunction _ -> true
+  | _ -> false
 
 let sort_single_binding_group (group : bindings) =
   if Ext_list.for_all group is_function_bind then group
@@ -102,53 +106,52 @@ let sort_single_binding_group (group : bindings) =
 (** TODO: even for a singleton recursive function, tell whehter it is recursive or not ? *)
 let scc_bindings (groups : bindings) : bindings list =
   match groups with
-  | [ _ ] -> [ sort_single_binding_group groups ]
+  | [_] -> [sort_single_binding_group groups]
   | _ ->
-      let domain, int_mapping, node_vec = preprocess_deps groups in
-      let clusters : Int_vec_vec.t = Ext_scc.graph node_vec in
-      if Int_vec_vec.length clusters <= 1 then
-        [ sort_single_binding_group groups ]
-      else
-        Int_vec_vec.fold_right
-          (fun (v : Vec_int.t) acc ->
-            let bindings =
-              Vec_int.map_into_list
-                (fun i ->
-                  let id = int_mapping.(i) in
-                  let lam = Ordered_hash_map_local_ident.find_value domain id in
-                  (id, lam))
-                v
-            in
-            sort_single_binding_group bindings :: acc)
-          clusters []
+    let domain, int_mapping, node_vec = preprocess_deps groups in
+    let clusters : Int_vec_vec.t = Ext_scc.graph node_vec in
+    if Int_vec_vec.length clusters <= 1 then [sort_single_binding_group groups]
+    else
+      Int_vec_vec.fold_right
+        (fun (v : Vec_int.t) acc ->
+          let bindings =
+            Vec_int.map_into_list
+              (fun i ->
+                let id = int_mapping.(i) in
+                let lam = Ordered_hash_map_local_ident.find_value domain id in
+                (id, lam))
+              v
+          in
+          sort_single_binding_group bindings :: acc)
+        clusters []
 
 (* single binding, it does not make sense to do scc,
    we can eliminate {[ let rec f x = x + x  ]}, but it happens rarely in real world
 *)
 let scc (groups : bindings) (lam : Lam.t) (body : Lam.t) =
   match groups with
-  | [ (id, bind) ] ->
-      if Lam_hit.hit_variable id bind then lam else Lam.let_ Strict id bind body
+  | [(id, bind)] ->
+    if Lam_hit.hit_variable id bind then lam else Lam.let_ Strict id bind body
   | _ ->
-      let domain, int_mapping, node_vec = preprocess_deps groups in
-      let clusters = Ext_scc.graph node_vec in
-      if Int_vec_vec.length clusters <= 1 then lam
-      else
-        Int_vec_vec.fold_right
-          (fun (v : Vec_int.t) acc ->
-            let bindings =
-              Vec_int.map_into_list
-                (fun i ->
-                  let id = int_mapping.(i) in
-                  let lam = Ordered_hash_map_local_ident.find_value domain id in
-                  (id, lam))
-                v
-            in
-            match bindings with
-            | [ (id, lam) ] ->
-                let base_key = Ordered_hash_map_local_ident.rank domain id in
-                if Int_vec_util.mem base_key node_vec.(base_key) then
-                  Lam.letrec bindings acc
-                else Lam.let_ Strict id lam acc
-            | _ -> Lam.letrec bindings acc)
-          clusters body
+    let domain, int_mapping, node_vec = preprocess_deps groups in
+    let clusters = Ext_scc.graph node_vec in
+    if Int_vec_vec.length clusters <= 1 then lam
+    else
+      Int_vec_vec.fold_right
+        (fun (v : Vec_int.t) acc ->
+          let bindings =
+            Vec_int.map_into_list
+              (fun i ->
+                let id = int_mapping.(i) in
+                let lam = Ordered_hash_map_local_ident.find_value domain id in
+                (id, lam))
+              v
+          in
+          match bindings with
+          | [(id, lam)] ->
+            let base_key = Ordered_hash_map_local_ident.rank domain id in
+            if Int_vec_util.mem base_key node_vec.(base_key) then
+              Lam.letrec bindings acc
+            else Lam.let_ Strict id lam acc
+          | _ -> Lam.letrec bindings acc)
+        clusters body

@@ -1,2 +1,1 @@
-
-val command: string -> int
+val command : string -> int

@@ -23,10 +23,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type t = Lexing.position = {
-  pos_fname : string;
-  pos_lnum : int;
-  pos_bol : int;
-  pos_cnum : int;
+  pos_fname: string;
+  pos_lnum: int;
+  pos_bol: int;
+  pos_cnum: int;
 }
 
 let offset (x : t) (y : t) =

@@ -23,4 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let make ?ns cunit =
-  match ns with None -> cunit | Some ns -> cunit ^ Literals.ns_sep ^ ns
+  match ns with
+  | None -> cunit
+  | Some ns -> cunit ^ Literals.ns_sep ^ ns

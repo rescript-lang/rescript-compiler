@@ -1,17 +1,11 @@
 module Instance = struct
-  type t = 
-    | Array
-    | Blob
-    | Date
-    | File
-    | Promise 
-    | RegExp
+  type t = Array | Blob | Date | File | Promise | RegExp
   let to_string = function
-      Array -> "Array" 
+    | Array -> "Array"
     | Blob -> "Blob"
     | Date -> "Date"
     | File -> "File"
-    | Promise -> "Promise" 
+    | Promise -> "Promise"
     | RegExp -> "RegExp"
 end
 
@@ -46,19 +40,24 @@ let report_error ppf =
   | InvalidUntaggedVariantDefinition untagged_variant ->
     fprintf ppf "This untagged variant definition is invalid: %s"
       (match untagged_variant with
-      | OnlyOneUnknown name -> "Case " ^ name ^ " has a payload that is not of one of the recognized shapes (object, array, etc). Then it must be the only case with payloads."
+      | OnlyOneUnknown name ->
+        "Case " ^ name
+        ^ " has a payload that is not of one of the recognized shapes (object, \
+           array, etc). Then it must be the only case with payloads."
       | AtMostOneObject -> "At most one case can be an object type."
-      | AtMostOneInstance Array -> "At most one case can be an array or tuple type."
-      | AtMostOneInstance i -> "At most one case can be a " ^ (Instance.to_string i) ^ " type."
+      | AtMostOneInstance Array ->
+        "At most one case can be an array or tuple type."
+      | AtMostOneInstance i ->
+        "At most one case can be a " ^ Instance.to_string i ^ " type."
       | AtMostOneFunction -> "At most one case can be a function type."
       | AtMostOneString -> "At most one case can be a string type."
       | AtMostOneBoolean -> "At most one case can be a boolean type."
       | AtMostOneNumber ->
         "At most one case can be a number type (int or float)."
-      | AtMostOneBigint ->
-        "At most one case can be a bigint type."
+      | AtMostOneBigint -> "At most one case can be a bigint type."
       | DuplicateLiteral s -> "Duplicate literal " ^ s ^ "."
-      | ConstructorMoreThanOneArg (name) -> "Constructor " ^ name ^ " has more than one argument.")
+      | ConstructorMoreThanOneArg name ->
+        "Constructor " ^ name ^ " has more than one argument.")
 
 (* Type of the runtime representation of an untagged block (case with payoad) *)
 type block_type =
@@ -103,11 +102,12 @@ let process_untagged (attrs : Parsetree.attributes) =
       | _ -> ());
   !st
 
-let extract_concrete_typedecl: (Env.t ->
-  Types.type_expr ->
-  Path.t * Path.t * Types.type_declaration) ref = ref (Obj.magic ())
+let extract_concrete_typedecl :
+    (Env.t -> Types.type_expr -> Path.t * Path.t * Types.type_declaration) ref =
+  ref (Obj.magic ())
 
-let expand_head: (Env.t -> Types.type_expr -> Types.type_expr) ref = ref (Obj.magic ())
+let expand_head : (Env.t -> Types.type_expr -> Types.type_expr) ref =
+  ref (Obj.magic ())
 
 let process_tag_type (attrs : Parsetree.attributes) =
   let st : tag_type option ref = ref None in
@@ -147,7 +147,9 @@ let () =
     | _ -> None)
 
 let report_constructor_more_than_one_arg ~loc ~name =
-  raise (Error (loc, InvalidUntaggedVariantDefinition (ConstructorMoreThanOneArg name)))
+  raise
+    (Error
+       (loc, InvalidUntaggedVariantDefinition (ConstructorMoreThanOneArg name)))
 
 let type_is_builtin_object (t : Types.type_expr) =
   match t.desc with
@@ -161,18 +163,17 @@ let type_to_instanceof_backed_obj (t : Types.type_expr) =
   match t.desc with
   | Tconstr (path, _, _) when Path.same path Predef.path_promise ->
     Some Instance.Promise
-  | Tconstr (path, _, _) when Path.same path Predef.path_array ->
-    Some Array
+  | Tconstr (path, _, _) when Path.same path Predef.path_array -> Some Array
   | Tconstr (path, _, _) -> (
     match Path.name path with
-    | "Js_date.t" -> Some(Date)
-    | "Js_re.t" -> Some(RegExp)
-    | "Js_file.t" -> Some(File)
-    | "Js_blob.t" -> Some(Blob)
+    | "Js_date.t" -> Some Date
+    | "Js_re.t" -> Some RegExp
+    | "Js_file.t" -> Some File
+    | "Js_blob.t" -> Some Blob
     | _ -> None)
   | _ -> None
 
-let get_block_type_from_typ ~env (t: Types.type_expr) : block_type option = 
+let get_block_type_from_typ ~env (t : Types.type_expr) : block_type option =
   let t = !expand_head env t in
   match t with
   | {desc = Tconstr (path, _, _)} when Path.same path Predef.path_string ->
@@ -184,17 +185,17 @@ let get_block_type_from_typ ~env (t: Types.type_expr) : block_type option =
   | {desc = Tconstr (path, _, _)} when Path.same path Predef.path_bigint ->
     Some BigintType
   | {desc = Tconstr (path, _, _)} when Path.same path Predef.path_bool ->
-      Some BooleanType
-  | ({desc = Tconstr _} as t) when Ast_uncurried_utils.type_is_uncurried_fun t ->
+    Some BooleanType
+  | {desc = Tconstr _} as t when Ast_uncurried_utils.type_is_uncurried_fun t ->
     Some FunctionType
   | {desc = Tarrow _} -> Some FunctionType
   | {desc = Tconstr (path, _, _)} when Path.same path Predef.path_string ->
     Some StringType
-  | ({desc = Tconstr _} as t) when type_is_builtin_object t ->
-    Some ObjectType
-  | ({desc = Tconstr _} as t) when type_to_instanceof_backed_obj t |> Option.is_some ->
-    (match type_to_instanceof_backed_obj t with 
-    | None -> None 
+  | {desc = Tconstr _} as t when type_is_builtin_object t -> Some ObjectType
+  | {desc = Tconstr _} as t
+    when type_to_instanceof_backed_obj t |> Option.is_some -> (
+    match type_to_instanceof_backed_obj t with
+    | None -> None
     | Some instance_type -> Some (InstanceType instance_type))
   | {desc = Ttuple _} -> Some (InstanceType Array)
   | _ -> None
@@ -203,7 +204,9 @@ let get_block_type ~env (cstr : Types.constructor_declaration) :
     block_type option =
   match (process_untagged cstr.cd_attributes, cstr.cd_args) with
   | false, _ -> None
-  | true, Cstr_tuple [t] when get_block_type_from_typ ~env t |> Option.is_some -> get_block_type_from_typ ~env t
+  | true, Cstr_tuple [t] when get_block_type_from_typ ~env t |> Option.is_some
+    ->
+    get_block_type_from_typ ~env t
   | true, Cstr_tuple [ty] -> (
     let default = Some UnknownType in
     match !extract_concrete_typedecl env ty with
@@ -266,12 +269,15 @@ let check_invariant ~is_untagged_def ~(consts : (Location.t * tag) list)
   in
   let invariant loc name =
     if !unknown_types <> 0 && List.length blocks <> 1 then
-      raise (Error (loc, InvalidUntaggedVariantDefinition (OnlyOneUnknown name)));
+      raise
+        (Error (loc, InvalidUntaggedVariantDefinition (OnlyOneUnknown name)));
     if !object_types > 1 then
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneObject));
-    Hashtbl.iter (fun i count ->
+    Hashtbl.iter
+      (fun i count ->
         if count > 1 then
-          raise (Error (loc, InvalidUntaggedVariantDefinition (AtMostOneInstance i))))
+          raise
+            (Error (loc, InvalidUntaggedVariantDefinition (AtMostOneInstance i))))
       instance_types;
     if !function_types > 1 then
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneFunction));
@@ -283,8 +289,11 @@ let check_invariant ~is_untagged_def ~(consts : (Location.t * tag) list)
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneBigint));
     if !boolean_types > 1 then
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneBoolean));
-    if !boolean_types > 0 && (StringSet.mem "true" !nonstring_literals || StringSet.mem "false" !nonstring_literals) then
-      raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneBoolean));
+    if
+      !boolean_types > 0
+      && (StringSet.mem "true" !nonstring_literals
+         || StringSet.mem "false" !nonstring_literals)
+    then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneBoolean));
     ()
   in
   Ext_list.rev_iter consts (fun (loc, literal) ->
@@ -295,28 +304,29 @@ let check_invariant ~is_untagged_def ~(consts : (Location.t * tag) list)
       | Some (BigInt i) -> add_nonstring_literal ~loc i
       | Some Null -> add_nonstring_literal ~loc "null"
       | Some Undefined -> add_nonstring_literal ~loc "undefined"
-      | Some (Bool b) -> add_nonstring_literal ~loc (if b then "true" else "false")
+      | Some (Bool b) ->
+        add_nonstring_literal ~loc (if b then "true" else "false")
       | Some (Untagged _) -> ()
       | None -> add_string_literal ~loc literal.name);
   if is_untagged_def then
     Ext_list.rev_iter blocks (fun (loc, block) ->
-      match block.block_type with
-      | Some block_type ->
-        (match block_type with
-        | UnknownType -> incr unknown_types;
-        | ObjectType -> incr object_types;
-        | (InstanceType i) ->
-          let count = Hashtbl.find_opt instance_types i |> Option.value ~default:0 in
-          Hashtbl.replace instance_types i (count + 1);
-        | FunctionType -> incr function_types;
-        | (IntType | FloatType) -> incr number_types;
-        | BigintType -> incr bigint_types;
-        | BooleanType -> incr boolean_types;
-        | StringType -> incr string_types;
-        );
-        invariant loc block.tag.name
-      | None -> ()
-    )
+        match block.block_type with
+        | Some block_type ->
+          (match block_type with
+          | UnknownType -> incr unknown_types
+          | ObjectType -> incr object_types
+          | InstanceType i ->
+            let count =
+              Hashtbl.find_opt instance_types i |> Option.value ~default:0
+            in
+            Hashtbl.replace instance_types i (count + 1)
+          | FunctionType -> incr function_types
+          | IntType | FloatType -> incr number_types
+          | BigintType -> incr bigint_types
+          | BooleanType -> incr boolean_types
+          | StringType -> incr string_types);
+          invariant loc block.tag.name
+        | None -> ())
 
 let names_from_type_variant ?(is_untagged_def = false) ~env
     (cstrs : Types.constructor_declaration list) =
@@ -474,17 +484,25 @@ module DynamicChecks = struct
       typeof e != object_
 
   let add_runtime_type_check ~tag_type ~(block_cases : block_type list) x y =
-    let instances = Ext_list.filter_map block_cases (function InstanceType i -> Some i | _ -> None) in
+    let instances =
+      Ext_list.filter_map block_cases (function
+        | InstanceType i -> Some i
+        | _ -> None)
+    in
     match tag_type with
-    | Untagged (IntType | StringType | FloatType | BigintType | BooleanType | FunctionType) ->
+    | Untagged
+        ( IntType | StringType | FloatType | BigintType | BooleanType
+        | FunctionType ) ->
       typeof y == x
     | Untagged ObjectType ->
       if instances <> [] then
-         let not_one_of_the_instances =
-          Ext_list.fold_right instances (typeof y == x) (fun i x -> x &&& not (is_instance i y))  in
-         not_one_of_the_instances
-      else
-        typeof y == x
+        let not_one_of_the_instances =
+          Ext_list.fold_right instances
+            (typeof y == x)
+            (fun i x -> x &&& not (is_instance i y))
+        in
+        not_one_of_the_instances
+      else typeof y == x
     | Untagged (InstanceType i) -> is_instance i y
     | Untagged UnknownType ->
       (* This should not happen because unknown must be the only non-literal case *)

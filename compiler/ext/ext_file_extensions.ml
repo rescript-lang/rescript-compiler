@@ -1,11 +1,4 @@
-type valid_input =
-  | Res
-  | Resi
-  | Intf_ast
-  | Impl_ast
-  | Mlmap
-  | Cmi
-  | Unknown
+type valid_input = Res | Resi | Intf_ast | Impl_ast | Mlmap | Cmi | Unknown
 
 (** This is per-file based, 
     when [ocamlc] [-c -o another_dir/xx.cmi] 

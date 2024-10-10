@@ -31,61 +31,61 @@ let pass_free_variables (l : Lam.t) : Set_ident.t =
     match l with
     | Lvar id -> fv := Set_ident.add !fv id
     | Lassign (id, e) ->
-        free e;
-        fv := Set_ident.add !fv id
+      free e;
+      fv := Set_ident.add !fv id
     | Lstaticcatch (e1, (_, vars), e2) ->
-        free e1;
-        free e2;
-        Ext_list.iter vars (fun id -> fv := Set_ident.remove !fv id)
+      free e1;
+      free e2;
+      Ext_list.iter vars (fun id -> fv := Set_ident.remove !fv id)
     | Ltrywith (e1, exn, e2) ->
-        free e1;
-        free e2;
-        fv := Set_ident.remove !fv exn
-    | Lfunction { body; params } ->
-        free body;
-        Ext_list.iter params (fun param -> fv := Set_ident.remove !fv param)
+      free e1;
+      free e2;
+      fv := Set_ident.remove !fv exn
+    | Lfunction {body; params} ->
+      free body;
+      Ext_list.iter params (fun param -> fv := Set_ident.remove !fv param)
     | Llet (_str, id, arg, body) ->
-        free arg;
-        free body;
-        fv := Set_ident.remove !fv id
+      free arg;
+      free body;
+      fv := Set_ident.remove !fv id
     | Lletrec (decl, body) ->
-        free body;
-        free_list_snd decl;
-        Ext_list.iter decl (fun (id, _exp) -> fv := Set_ident.remove !fv id)
+      free body;
+      free_list_snd decl;
+      Ext_list.iter decl (fun (id, _exp) -> fv := Set_ident.remove !fv id)
     | Lfor (v, e1, e2, _dir, e3) ->
-        free e1;
-        free e2;
-        free e3;
-        fv := Set_ident.remove !fv v
+      free e1;
+      free e2;
+      free e3;
+      fv := Set_ident.remove !fv v
     | Lconst _ -> ()
-    | Lapply { ap_func; ap_args; _ } ->
-        free ap_func;
-        free_list ap_args
+    | Lapply {ap_func; ap_args; _} ->
+      free ap_func;
+      free_list ap_args
     | Lglobal_module _ -> ()
     (* according to the existing semantics:
        [primitive] is not counted
     *)
-    | Lprim { args; _ } -> free_list args
+    | Lprim {args; _} -> free_list args
     | Lswitch (arg, sw) ->
-        free arg;
-        free_list_snd sw.sw_consts;
-        free_list_snd sw.sw_blocks;
-        Ext_option.iter sw.sw_failaction free
+      free arg;
+      free_list_snd sw.sw_consts;
+      free_list_snd sw.sw_blocks;
+      Ext_option.iter sw.sw_failaction free
     | Lstringswitch (arg, cases, default) ->
-        free arg;
-        free_list_snd cases;
-        Ext_option.iter default free
+      free arg;
+      free_list_snd cases;
+      Ext_option.iter default free
     | Lstaticraise (_, args) -> free_list args
     | Lifthenelse (e1, e2, e3) ->
-        free e1;
-        free e2;
-        free e3
+      free e1;
+      free e2;
+      free e3
     | Lsequence (e1, e2) ->
-        free e1;
-        free e2
+      free e1;
+      free e2
     | Lwhile (e1, e2) ->
-        free e1;
-        free e2
+      free e1;
+      free e2
   in
   free l;
   !fv

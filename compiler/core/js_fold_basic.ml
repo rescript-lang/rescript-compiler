@@ -36,8 +36,8 @@ let count_hard_dependencies hard_dependencies =
       (fun self x ->
         (match Js_block_runtime.check_additional_id x with
         | Some id ->
-            add_lam_module_ident hard_dependencies
-              (Lam_module_ident.of_runtime id)
+          add_lam_module_ident hard_dependencies
+            (Lam_module_ident.of_runtime id)
         | _ -> ());
         super.expression self x);
   }

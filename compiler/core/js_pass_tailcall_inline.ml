@@ -38,7 +38,7 @@ module S = Js_stmt_make
 let super = Js_record_map.super
 
 let substitue_variables (map : Ident.t Map_ident.t) =
-  { super with ident = (fun _ id -> Map_ident.find_default map id id) }
+  {super with ident = (fun _ id -> Map_ident.find_default map id id)}
 
 (* 1. recursive value ? let rec x = 1 :: x
     non-terminating
@@ -111,15 +111,14 @@ let subst (export_set : Set_ident.t) stats =
     statement =
       (fun self st ->
         match st.statement_desc with
-        | Variable { value = _; ident_info = { used_stats = Dead_pure } } ->
-            S.block []
+        | Variable {value = _; ident_info = {used_stats = Dead_pure}} ->
+          S.block []
         | Variable
-            { ident_info = { used_stats = Dead_non_pure }; value = Some v; _ }
-          ->
-            S.exp v
+            {ident_info = {used_stats = Dead_non_pure}; value = Some v; _} ->
+          S.exp v
         | _ -> super.statement self st);
     variable_declaration =
-      (fun self ({ ident; value = _; property = _; ident_info = _ } as v) ->
+      (fun self ({ident; value = _; property = _; ident_info = _} as v) ->
         (* TODO: replacement is a bit shaky, the problem is the lambda we stored is
            not consistent after we did some subsititution, and the dead code removal
            does rely on this (otherwise, when you do beta-reduction you have to regenerate names)
@@ -134,63 +133,71 @@ let subst (export_set : Set_ident.t) stats =
         | ({
              statement_desc =
                Variable
-                 ({ value = Some ({ expression_desc = Fun _; _ } as v) } as vd);
+                 ({value = Some ({expression_desc = Fun _; _} as v)} as vd);
              comment = _;
            } as st)
           :: rest -> (
-            let is_export = Set_ident.mem export_set vd.ident in
-            if is_export then self.statement self st :: self.block self rest
-            else
-              match Hash_ident.find_opt stats vd.ident with
-              (* TODO: could be improved as [mem] *)
-              | None ->
-                  if Js_analyzer.no_side_effect_expression v then
-                    S.exp v :: self.block self rest
-                  else self.block self rest
-              | Some _ -> self.statement self st :: self.block self rest)
+          let is_export = Set_ident.mem export_set vd.ident in
+          if is_export then self.statement self st :: self.block self rest
+          else
+            match Hash_ident.find_opt stats vd.ident with
+            (* TODO: could be improved as [mem] *)
+            | None ->
+              if Js_analyzer.no_side_effect_expression v then
+                S.exp v :: self.block self rest
+              else self.block self rest
+            | Some _ -> self.statement self st :: self.block self rest)
         | [
          ({
             statement_desc =
               Return
                 {
                   expression_desc =
-                    Call ({ expression_desc = Var (Id id) }, args, _info);
+                    Call ({expression_desc = Var (Id id)}, args, _info);
                 };
           } as st);
         ] -> (
-            match Hash_ident.find_opt stats id with
-            | Some
-                ({
-                   value =
-                     Some
-                       {
-                         expression_desc =
-                           Fun {is_method=false; params; body; env; async=false; directive=None};
-                         comment = _;
-                       };
-                   (*TODO: don't inline method tail call yet,
-                     [this] semantics are weird
-                   *)
-                   property = Alias | StrictOpt | Strict;
-                   ident_info = { used_stats = Once_pure };
-                   ident = _;
-                 } as v)
-              when Ext_list.same_length params args ->
-                Js_op_util.update_used_stats v.ident_info Dead_pure;
-                let no_tailcall = Js_fun_env.no_tailcall env in
-                let processed_blocks =
-                  self.block self body
-                  (* see #278 before changes*)
-                in
-                inline_call no_tailcall params args processed_blocks
-            (* Ext_list.fold_right2
-               params args  processed_blocks
-               (fun param arg acc ->
-                 S.define_variable ~kind:Variable param arg :: acc) *)
-            (* Mark a function as dead means it will never be scanned,
-               here we inline the function
-            *)
-            | None | Some _ -> [ self.statement self st ])
+          match Hash_ident.find_opt stats id with
+          | Some
+              ({
+                 value =
+                   Some
+                     {
+                       expression_desc =
+                         Fun
+                           {
+                             is_method = false;
+                             params;
+                             body;
+                             env;
+                             async = false;
+                             directive = None;
+                           };
+                       comment = _;
+                     };
+                 (*TODO: don't inline method tail call yet,
+                   [this] semantics are weird
+                 *)
+                 property = Alias | StrictOpt | Strict;
+                 ident_info = {used_stats = Once_pure};
+                 ident = _;
+               } as v)
+            when Ext_list.same_length params args ->
+            Js_op_util.update_used_stats v.ident_info Dead_pure;
+            let no_tailcall = Js_fun_env.no_tailcall env in
+            let processed_blocks =
+              self.block self body
+              (* see #278 before changes*)
+            in
+            inline_call no_tailcall params args processed_blocks
+          (* Ext_list.fold_right2
+             params args  processed_blocks
+             (fun param arg acc ->
+               S.define_variable ~kind:Variable param arg :: acc) *)
+          (* Mark a function as dead means it will never be scanned,
+             here we inline the function
+          *)
+          | None | Some _ -> [self.statement self st])
         | [
          {
            statement_desc =
@@ -200,7 +207,15 @@ let subst (export_set : Set_ident.t) stats =
                    Call
                      ( {
                          expression_desc =
-                           Fun {is_method=false; params; body; env; async=false; directive=None};
+                           Fun
+                             {
+                               is_method = false;
+                               params;
+                               body;
+                               env;
+                               async = false;
+                               directive = None;
+                             };
                        },
                        args,
                        _info );
@@ -208,12 +223,12 @@ let subst (export_set : Set_ident.t) stats =
          };
         ]
           when Ext_list.same_length params args ->
-            let no_tailcall = Js_fun_env.no_tailcall env in
-            let processed_blocks =
-              self.block self body
-              (* see #278 before changes*)
-            in
-            inline_call no_tailcall params args processed_blocks
+          let no_tailcall = Js_fun_env.no_tailcall env in
+          let processed_blocks =
+            self.block self body
+            (* see #278 before changes*)
+          in
+          inline_call no_tailcall params args processed_blocks
         | x :: xs -> self.statement self x :: self.block self xs
         | [] -> []);
   }

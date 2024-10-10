@@ -36,4 +36,7 @@ val requires :
   Ext_pp_scope.t
 
 val imports :
-  Ext_pp_scope.t -> Ext_pp.t -> (Ident.t * string * bool * External_ffi_types.import_attributes option) list -> Ext_pp_scope.t
+  Ext_pp_scope.t ->
+  Ext_pp.t ->
+  (Ident.t * string * bool * External_ffi_types.import_attributes option) list ->
+  Ext_pp_scope.t

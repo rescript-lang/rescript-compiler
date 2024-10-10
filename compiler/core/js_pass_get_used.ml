@@ -37,12 +37,12 @@ let post_process_stats my_export_set
         in
         match Hash_ident.find_opt stats ident with
         | None ->
-            Js_op_util.update_used_stats v.ident_info
-              (if pure then Dead_pure else Dead_non_pure)
+          Js_op_util.update_used_stats v.ident_info
+            (if pure then Dead_pure else Dead_non_pure)
         | Some num ->
-            if num = 1 then
-              Js_op_util.update_used_stats v.ident_info
-                (if pure then Once_pure else Used));
+          if num = 1 then
+            Js_op_util.update_used_stats v.ident_info
+              (if pure then Once_pure else Used));
   defined_idents
 
 (* Update ident info use cases, it is a non pure function,
@@ -58,9 +58,11 @@ let count_collects (* collect used status*) (stats : int Hash_ident.t)
   {
     super with
     variable_declaration =
-      (fun self ({ ident; value; property = _; ident_info = _ } as v) ->
+      (fun self ({ident; value; property = _; ident_info = _} as v) ->
         Hash_ident.add defined_idents ident v;
-        match value with None -> () | Some x -> self.expression self x);
+        match value with
+        | None -> ()
+        | Some x -> self.expression self x);
     ident = (fun _ id -> add_use stats id);
   }
 

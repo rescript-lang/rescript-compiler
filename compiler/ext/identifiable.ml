@@ -26,9 +26,7 @@ end
 
 module type Set = sig
   module T : Set.OrderedType
-  include Set.S
-    with type elt = T.t
-     and type t = Set.Make (T).t
+  include Set.S with type elt = T.t and type t = Set.Make(T).t
 
   val output : out_channel -> t -> unit
   val print : Format.formatter -> t -> unit
@@ -39,14 +37,17 @@ end
 
 module type Map = sig
   module T : Map.OrderedType
-  include Map.S
-    with type key = T.t
-     and type 'a t = 'a Map.Make (T).t
+  include Map.S with type key = T.t and type 'a t = 'a Map.Make(T).t
 
   val filter_map : (key -> 'a -> 'b option) -> 'a t -> 'b t
   val of_list : (key * 'a) list -> 'a t
 
-  val disjoint_union : ?eq:('a -> 'a -> bool) -> ?print:(Format.formatter -> 'a -> unit) -> 'a t -> 'a t -> 'a t
+  val disjoint_union :
+    ?eq:('a -> 'a -> bool) ->
+    ?print:(Format.formatter -> 'a -> unit) ->
+    'a t ->
+    'a t ->
+    'a t
 
   val union_right : 'a t -> 'a t -> 'a t
 
@@ -70,9 +71,7 @@ module type Tbl = sig
     include Map.OrderedType with type t := t
     include Hashtbl.HashedType with type t := t
   end
-  include Hashtbl.S
-    with type key = T.t
-     and type 'a t = 'a Hashtbl.Make (T).t
+  include Hashtbl.S with type key = T.t and type 'a t = 'a Hashtbl.Make(T).t
 
   val to_list : 'a t -> (T.t * 'a) list
   val of_list : (T.t * 'a) list -> 'a t
@@ -88,8 +87,7 @@ module Pair (A : Thing) (B : Thing) : Thing with type t = A.t * B.t = struct
 
   let compare (a1, b1) (a2, b2) =
     let c = A.compare a1 a2 in
-    if c <> 0 then c
-    else B.compare b1 b2
+    if c <> 0 then c else B.compare b1 b2
 
   let output oc (a, b) = Printf.fprintf oc " (%a, %a)" A.output a B.output b
   let hash (a, b) = Hashtbl.hash (A.hash a, B.hash b)
@@ -100,62 +98,62 @@ end
 module Make_map (T : Thing) = struct
   include Map.Make (T)
 
-  let filter_map f t  =
-    fold (fun id v map ->
+  let filter_map f t =
+    fold
+      (fun id v map ->
         match f id v with
         | None -> map
-        | Some r -> add id r map) t empty
+        | Some r -> add id r map)
+      t empty
 
-  let of_list l =
-    List.fold_left (fun map (id, v) -> add id v map) empty l
+  let of_list l = List.fold_left (fun map (id, v) -> add id v map) empty l
 
   let disjoint_union ?eq ?print m1 m2 =
-    union (fun id v1 v2 ->
-        let ok = match eq with
+    union
+      (fun id v1 v2 ->
+        let ok =
+          match eq with
           | None -> false
           | Some eq -> eq v1 v2
         in
         if not ok then
           let err =
             match print with
-            | None ->
-              Format.asprintf "Map.disjoint_union %a" T.print id
+            | None -> Format.asprintf "Map.disjoint_union %a" T.print id
             | Some print ->
-              Format.asprintf "Map.disjoint_union %a => %a <> %a"
-                T.print id print v1 print v2
+              Format.asprintf "Map.disjoint_union %a => %a <> %a" T.print id
+                print v1 print v2
           in
           Misc.fatal_error err
         else Some v1)
       m1 m2
 
   let union_right m1 m2 =
-    merge (fun _id x y -> match x, y with
+    merge
+      (fun _id x y ->
+        match (x, y) with
         | None, None -> None
-        | None, Some v
-        | Some v, None
-        | Some _, Some v -> Some v)
+        | None, Some v | Some v, None | Some _, Some v -> Some v)
       m1 m2
 
   let union_left m1 m2 = union_right m2 m1
 
   let union_merge f m1 m2 =
     let aux _ m1 m2 =
-      match m1, m2 with
+      match (m1, m2) with
       | None, m | m, None -> m
       | Some m1, Some m2 -> Some (f m1 m2)
     in
     merge aux m1 m2
 
-  let rename m v =
-    try find v m
-    with Not_found -> v
+  let rename m v = try find v m with Not_found -> v
 
-  let map_keys f m =
-    of_list (List.map (fun (k, v) -> f k, v) (bindings m))
+  let map_keys f m = of_list (List.map (fun (k, v) -> (f k, v)) (bindings m))
 
   let print f ppf s =
-    let elts ppf s = iter (fun id v ->
-        Format.fprintf ppf "@ (@[%a@ %a@])" T.print id f v) s in
+    let elts ppf s =
+      iter (fun id v -> Format.fprintf ppf "@ (@[%a@ %a@])" T.print id f v) s
+    in
     Format.fprintf ppf "@[<1>{@[%a@ @]}@]" elts s
 
   module T_set = Set.Make (T)
@@ -168,13 +166,12 @@ module Make_map (T : Thing) = struct
 
   let transpose_keys_and_data map = fold (fun k v m -> add v k m) map empty
   let transpose_keys_and_data_set map =
-    fold (fun k v m ->
+    fold
+      (fun k v m ->
         let set =
           match find v m with
-          | exception Not_found ->
-            T_set.singleton k
-          | set ->
-            T_set.add k set
+          | exception Not_found -> T_set.singleton k
+          | set -> T_set.add k set
         in
         add v set m)
       map empty
@@ -194,7 +191,8 @@ module Make_set (T : Thing) = struct
 
   let to_string s = Format.asprintf "%a" print s
 
-  let of_list l = match l with
+  let of_list l =
+    match l with
     | [] -> empty
     | [t] -> singleton t
     | t :: q -> List.fold_left (fun acc e -> add e acc) (singleton t) q
@@ -207,8 +205,7 @@ module Make_tbl (T : Thing) = struct
 
   module T_map = Make_map (T)
 
-  let to_list t =
-    fold (fun key datum elts -> (key, datum)::elts) t []
+  let to_list t = fold (fun key datum elts -> (key, datum) :: elts) t []
 
   let of_list elts =
     let t = create 42 in
@@ -222,15 +219,14 @@ module Make_tbl (T : Thing) = struct
     T_map.iter (fun k v -> add t k v) m;
     t
 
-  let memoize t f = fun key ->
-    try find t key with
-    | Not_found ->
+  let memoize t f key =
+    try find t key
+    with Not_found ->
       let r = f key in
       add t key r;
       r
 
-  let map t f =
-    of_map (T_map.map f (to_map t))
+  let map t f = of_map (T_map.map f (to_map t))
 end
 
 module type S = sig

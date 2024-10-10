@@ -25,7 +25,9 @@
 let good_hint_name module_name offset =
   let len = String.length module_name in
   len > offset
-  && (function 'a' .. 'z' | 'A' .. 'Z' -> true | _ -> false)
+  && (function
+       | 'a' .. 'z' | 'A' .. 'Z' -> true
+       | _ -> false)
        (String.unsafe_get module_name offset)
   && Ext_string.for_all_from module_name (offset + 1) (function
        | 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' -> true
@@ -37,11 +39,11 @@ let rec collect_start buf s off len =
     let next = succ off in
     match String.unsafe_get s off with
     | 'a' .. 'z' as c ->
-        Ext_buffer.add_char buf (Char.uppercase_ascii c);
-        collect_next buf s next len
+      Ext_buffer.add_char buf (Char.uppercase_ascii c);
+      collect_next buf s next len
     | 'A' .. 'Z' as c ->
-        Ext_buffer.add_char buf c;
-        collect_next buf s next len
+      Ext_buffer.add_char buf c;
+      collect_next buf s next len
     | _ -> collect_start buf s next len
 
 and collect_next buf s off len =
@@ -50,8 +52,8 @@ and collect_next buf s off len =
     let next = off + 1 in
     match String.unsafe_get s off with
     | ('a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_') as c ->
-        Ext_buffer.add_char buf c;
-        collect_next buf s next len
+      Ext_buffer.add_char buf c;
+      collect_next buf s next len
     | '.' | '-' -> collect_start buf s next len
     | _ -> collect_next buf s next len
 

@@ -42,11 +42,11 @@ let add_ident ~mangled:name (stamp : int) (cxt : t) : int * t =
   match Map_string.find_opt cxt name with
   | None -> (0, Map_string.add cxt name (Map_int.add Map_int.empty stamp 0))
   | Some imap -> (
-      match Map_int.find_opt imap stamp with
-      | None ->
-          let v = Map_int.cardinal imap in
-          (v, Map_string.add cxt name (Map_int.add imap stamp v))
-      | Some i -> (i, cxt))
+    match Map_int.find_opt imap stamp with
+    | None ->
+      let v = Map_int.cardinal imap in
+      (v, Map_string.add cxt name (Map_int.add imap stamp v))
+    | Some i -> (i, cxt))
 
 (**
    same as {!Js_dump.ident} except it generates a string instead of doing the printing
@@ -104,10 +104,10 @@ let merge (cxt : t) (set : Set_ident.t) =
    update twice,  once is enough
 *)
 let sub_scope (scope : t) (idents : Set_ident.t) : t =
-  Set_ident.fold idents empty (fun { name } acc ->
+  Set_ident.fold idents empty (fun {name} acc ->
       let mangled = Ext_ident.convert name in
       match Map_string.find_exn scope mangled with
       | exception Not_found -> assert false
       | imap ->
-          if Map_string.mem acc mangled then acc
-          else Map_string.add acc mangled imap)
+        if Map_string.mem acc mangled then acc
+        else Map_string.add acc mangled imap)

@@ -22,14 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = { id : int array; sz : int array; mutable components : int }
+type t = {id: int array; sz: int array; mutable components: int}
 
 let init n =
   let id = Array.make n 0 in
   for i = 0 to n - 1 do
     Array.unsafe_set id i i
   done;
-  { id; sz = Array.make n 1; components = n }
+  {id; sz = Array.make n 1; components = n}
 
 let rec find_aux id_store p =
   let parent = Array.unsafe_get id_store p in

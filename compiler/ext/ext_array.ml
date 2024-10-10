@@ -50,15 +50,15 @@ let reverse a =
 let reverse_of_list = function
   | [] -> [||]
   | hd :: tl ->
-      let len = List.length tl in
-      let a = Array.make (len + 1) hd in
-      let rec fill i = function
-        | [] -> a
-        | hd :: tl ->
-            Array.unsafe_set a i hd;
-            fill (i - 1) tl
-      in
-      fill (len - 1) tl
+    let len = List.length tl in
+    let a = Array.make (len + 1) hd in
+    let rec fill i = function
+      | [] -> a
+      | hd :: tl ->
+        Array.unsafe_set a i hd;
+        fill (i - 1) tl
+    in
+    fill (len - 1) tl
 
 let filter a f =
   let arr_len = Array.length a in
@@ -76,7 +76,9 @@ let filter_map a (f : _ -> _ option) =
     if i = arr_len then reverse_of_list acc
     else
       let v = Array.unsafe_get a i in
-      match f v with Some v -> aux (v :: acc) (i + 1) | None -> aux acc (i + 1)
+      match f v with
+      | Some v -> aux (v :: acc) (i + 1)
+      | None -> aux acc (i + 1)
   in
   aux [] 0
 
@@ -86,7 +88,9 @@ let filter_mapi a (f : _ -> _ -> _ option) =
     if i = arr_len then reverse_of_list acc
     else
       let v = Array.unsafe_get a i in
-      match f i v with Some v -> aux (v :: acc) (i + 1) | None -> aux acc (i + 1)
+      match f i v with
+      | Some v -> aux (v :: acc) (i + 1)
+      | None -> aux acc (i + 1)
   in
   aux [] 0
 
@@ -111,7 +115,9 @@ let rec tolist_aux a f i res =
   if i < 0 then res
   else
     tolist_aux a f (i - 1)
-      (match f a.!(i) with Some v -> v :: res | None -> res)
+      (match f a.!(i) with
+      | Some v -> v :: res
+      | None -> res)
 
 let to_list_map a f = tolist_aux a f (Array.length a - 1) []
 
@@ -120,50 +126,50 @@ let to_list_map_acc a acc f = tolist_aux a f (Array.length a - 1) acc
 let of_list_map a f =
   match a with
   | [] -> [||]
-  | [ a0 ] ->
-      let b0 = f a0 in
-      [| b0 |]
-  | [ a0; a1 ] ->
-      let b0 = f a0 in
-      let b1 = f a1 in
-      [| b0; b1 |]
-  | [ a0; a1; a2 ] ->
-      let b0 = f a0 in
-      let b1 = f a1 in
-      let b2 = f a2 in
-      [| b0; b1; b2 |]
-  | [ a0; a1; a2; a3 ] ->
-      let b0 = f a0 in
-      let b1 = f a1 in
-      let b2 = f a2 in
-      let b3 = f a3 in
-      [| b0; b1; b2; b3 |]
-  | [ a0; a1; a2; a3; a4 ] ->
-      let b0 = f a0 in
-      let b1 = f a1 in
-      let b2 = f a2 in
-      let b3 = f a3 in
-      let b4 = f a4 in
-      [| b0; b1; b2; b3; b4 |]
+  | [a0] ->
+    let b0 = f a0 in
+    [|b0|]
+  | [a0; a1] ->
+    let b0 = f a0 in
+    let b1 = f a1 in
+    [|b0; b1|]
+  | [a0; a1; a2] ->
+    let b0 = f a0 in
+    let b1 = f a1 in
+    let b2 = f a2 in
+    [|b0; b1; b2|]
+  | [a0; a1; a2; a3] ->
+    let b0 = f a0 in
+    let b1 = f a1 in
+    let b2 = f a2 in
+    let b3 = f a3 in
+    [|b0; b1; b2; b3|]
+  | [a0; a1; a2; a3; a4] ->
+    let b0 = f a0 in
+    let b1 = f a1 in
+    let b2 = f a2 in
+    let b3 = f a3 in
+    let b4 = f a4 in
+    [|b0; b1; b2; b3; b4|]
   | a0 :: a1 :: a2 :: a3 :: a4 :: tl ->
-      let b0 = f a0 in
-      let b1 = f a1 in
-      let b2 = f a2 in
-      let b3 = f a3 in
-      let b4 = f a4 in
-      let len = List.length tl + 5 in
-      let arr = Array.make len b0 in
-      Array.unsafe_set arr 1 b1;
-      Array.unsafe_set arr 2 b2;
-      Array.unsafe_set arr 3 b3;
-      Array.unsafe_set arr 4 b4;
-      let rec fill i = function
-        | [] -> arr
-        | hd :: tl ->
-            Array.unsafe_set arr i (f hd);
-            fill (i + 1) tl
-      in
-      fill 5 tl
+    let b0 = f a0 in
+    let b1 = f a1 in
+    let b2 = f a2 in
+    let b3 = f a3 in
+    let b4 = f a4 in
+    let len = List.length tl + 5 in
+    let arr = Array.make len b0 in
+    Array.unsafe_set arr 1 b1;
+    Array.unsafe_set arr 2 b2;
+    Array.unsafe_set arr 3 b3;
+    Array.unsafe_set arr 4 b4;
+    let rec fill i = function
+      | [] -> arr
+      | hd :: tl ->
+        Array.unsafe_set arr i (f hd);
+        fill (i + 1) tl
+    in
+    fill 5 tl
 
 (**
    {[

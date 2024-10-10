@@ -31,11 +31,7 @@
 type finished = True | False | Dummy
 (* Have no idea, so that when [++] is applied, always use the other *)
 
-type t = {
-  block : J.block;
-  value : J.expression option;
-  output_finished : finished;
-}
+type t = {block: J.block; value: J.expression option; output_finished: finished}
 
 (** When [finished] is true the block is already terminated,
     value does not make sense

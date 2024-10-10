@@ -28,7 +28,7 @@ type warning_error =
   | Warn_error_true
   | Warn_error_number of string
 
-type t0 = { number : string option; error : warning_error }
+type t0 = {number: string option; error: warning_error}
 
 type nonrec t = t0 option
 
@@ -49,8 +49,8 @@ let to_merlin_string x =
   ^
   let customize =
     match x with
-    | Some { number = None } | None -> Ext_string.empty
-    | Some { number = Some x } -> prepare_warning_concat ~beg:false x
+    | Some {number = None} | None -> Ext_string.empty
+    | Some {number = Some x} -> prepare_warning_concat ~beg:false x
   in
   if customize = "" then customize else customize ^ "-40-42-61"
 (* see #4406 to avoid user pass A
@@ -63,36 +63,36 @@ let from_map (m : Ext_json_types.t Map_string.t) =
   match (number_opt, error_opt) with
   | None, None -> None
   | _, _ ->
-      let error =
-        match error_opt with
-        | Some (True _) -> Warn_error_true
-        | Some (False _) -> Warn_error_false
-        | Some (Str { str }) -> Warn_error_number str
-        | Some x -> Bsb_exception.config_error x "expect true/false or string"
-        | None -> Warn_error_false
-        (* To make it less intrusive : warning error has to be enabled*)
-      in
-      let number =
-        match number_opt with
-        | Some (Str { str = number }) -> Some number
-        | None -> None
-        | Some x -> Bsb_exception.config_error x "expect a string"
-      in
-      Some { number; error }
+    let error =
+      match error_opt with
+      | Some (True _) -> Warn_error_true
+      | Some (False _) -> Warn_error_false
+      | Some (Str {str}) -> Warn_error_number str
+      | Some x -> Bsb_exception.config_error x "expect true/false or string"
+      | None -> Warn_error_false
+      (* To make it less intrusive : warning error has to be enabled*)
+    in
+    let number =
+      match number_opt with
+      | Some (Str {str = number}) -> Some number
+      | None -> None
+      | Some x -> Bsb_exception.config_error x "expect a string"
+    in
+    Some {number; error}
 
 let to_bsb_string ~(package_kind : Bsb_package_kind.t) warning =
   match package_kind with
   | Toplevel | Pinned_dependency _ -> (
-      match warning with
+    match warning with
+    | None -> Ext_string.empty
+    | Some warning -> (
+      (match warning.number with
       | None -> Ext_string.empty
-      | Some warning -> (
-          (match warning.number with
-          | None -> Ext_string.empty
-          | Some x -> prepare_warning_concat ~beg:true x)
-          ^
-          match warning.error with
-          | Warn_error_true -> " -warn-error A"
-          | Warn_error_number y -> " -warn-error " ^ y
-          | Warn_error_false -> Ext_string.empty))
+      | Some x -> prepare_warning_concat ~beg:true x)
+      ^
+      match warning.error with
+      | Warn_error_true -> " -warn-error A"
+      | Warn_error_number y -> " -warn-error " ^ y
+      | Warn_error_false -> Ext_string.empty))
   | Dependency _ -> " -w a"
 (* TODO: this is the current default behavior *)

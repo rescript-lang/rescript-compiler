@@ -39,13 +39,12 @@ let sanity_check (map : t) =
 (* invariant check:
    ml and mli should have the same case, same path
 *)
-let check (x : module_info) name_sans_extension case
-    (module_info : Bsb_db.info) =
+let check (x : module_info) name_sans_extension case (module_info : Bsb_db.info)
+    =
   let x_ml_info = x.info in
   if
     x.name_sans_extension <> name_sans_extension
-    || x.case <> case
-    || x_ml_info = module_info || x_ml_info = Impl_intf
+    || x.case <> case || x_ml_info = module_info || x_ml_info = Impl_intf
   then
     Bsb_exception.invalid_spec
       (Printf.sprintf
@@ -78,8 +77,7 @@ let add_basename ~(dir : string) (map : t) ?error_on_invalid_suffix basename : t
     let file_suffix = Ext_filename.get_extension_maybe basename in
     (match () with
     | _ when file_suffix = Literals.suffix_res -> ()
-    | _ when file_suffix = Literals.suffix_resi ->
-        info := Intf
+    | _ when file_suffix = Literals.suffix_resi -> info := Intf
     | _ -> invalid_suffix := true);
     let info = !info in
     let invalid_suffix = !invalid_suffix in
@@ -90,14 +88,14 @@ let add_basename ~(dir : string) (map : t) ?error_on_invalid_suffix basename : t
     else
       match Ext_filename.as_module ~basename:(Filename.basename basename) with
       | None ->
-          Bsb_log.warn warning_unused_file basename dir;
-          map
-      | Some { module_name; case } ->
-          let name_sans_extension =
-            Filename.concat dir (Ext_filename.chop_extension_maybe basename)
-          in
-          let dir = Filename.dirname name_sans_extension in
-          Map_string.adjust map module_name (fun opt_module_info ->
-              match opt_module_info with
-              | None -> { dir; name_sans_extension; info; case }
-              | Some x -> check x name_sans_extension case info)
+        Bsb_log.warn warning_unused_file basename dir;
+        map
+      | Some {module_name; case} ->
+        let name_sans_extension =
+          Filename.concat dir (Ext_filename.chop_extension_maybe basename)
+        in
+        let dir = Filename.dirname name_sans_extension in
+        Map_string.adjust map module_name (fun opt_module_info ->
+            match opt_module_info with
+            | None -> {dir; name_sans_extension; info; case}
+            | Some x -> check x name_sans_extension case info)

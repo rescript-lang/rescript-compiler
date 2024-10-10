@@ -166,14 +166,16 @@ let print_extra_type_clash_help ppf trace type_clash_context =
        freely, and compiles to a JavaScript array. Example of a tuple: `let \
        myTuple = (10, \"hello\", 15.5, true)"
   | ( _,
-  [
-    ({Types.desc = Tconstr (_p1, _, _)}, _); ({desc = Tconstr (p2, _, _)}, _);
-  ] )
+      [
+        ({Types.desc = Tconstr (_p1, _, _)}, _); ({desc = Tconstr (p2, _, _)}, _);
+      ] )
     when Path.same Predef.path_unit p2 ->
     fprintf ppf
-    "\n\n\
-    \  - Did you mean to assign this to a variable?\n\
-    \  - If you don't care about the result of this expression, you can assign it to @{<info>_@} via @{<info>let _ = ...@} or pipe it to @{<info>ignore@} via @{<info>expression->ignore@}\n\n"
+      "\n\n\
+      \  - Did you mean to assign this to a variable?\n\
+      \  - If you don't care about the result of this expression, you can \
+       assign it to @{<info>_@} via @{<info>let _ = ...@} or pipe it to \
+       @{<info>ignore@} via @{<info>expression->ignore@}\n\n"
   | _ -> ()
 
 let type_clash_context_from_function sexp sfunct =
@@ -216,7 +218,7 @@ let type_clash_context_maybe_option ty_expected ty_res =
   | ( {Types.desc = Tconstr (expected_path, _, _)},
       {Types.desc = Tconstr (type_path, _, _)} )
     when Path.same Predef.path_option type_path
-         && Path.same expected_path Predef.path_option = false 
+         && Path.same expected_path Predef.path_option = false
          && Path.same expected_path Predef.path_uncurried = false ->
     Some MaybeUnwrapOption
   | _ -> None
@@ -227,27 +229,28 @@ let type_clash_context_in_statement sexp =
   | _ -> None
 
 let print_contextual_unification_error ppf t1 t2 =
-  (* TODO: Maybe we should do the same for Null.t and Nullable.t as we do for options 
-    below, now that they also are more first class for values that might not exist? *)
-
+  (* TODO: Maybe we should do the same for Null.t and Nullable.t as we do for options
+     below, now that they also are more first class for values that might not exist? *)
   match (t1.Types.desc, t2.Types.desc) with
   | Tconstr (p1, _, _), Tconstr (p2, _, _)
     when Path.same p1 Predef.path_option
-          && Path.same p2 Predef.path_option <> true ->
+         && Path.same p2 Predef.path_option <> true ->
     fprintf ppf
-      "@,@\n\
-        @[<v 0>You're expecting the value you're pattern matching on to be an \
-        @{<info>option@}, but the value is actually not an option.@ Change your \
-        pattern match to work on the concrete value (remove @{<error>Some(_)@} \
-        or @{<error>None@} from the pattern) to make it work.@]"
+      "@,\
+       @\n\
+       @[<v 0>You're expecting the value you're pattern matching on to be an \
+       @{<info>option@}, but the value is actually not an option.@ Change your \
+       pattern match to work on the concrete value (remove @{<error>Some(_)@} \
+       or @{<error>None@} from the pattern) to make it work.@]"
   | Tconstr (p1, _, _), Tconstr (p2, _, _)
     when Path.same p2 Predef.path_option
-          && Path.same p1 Predef.path_option <> true ->
+         && Path.same p1 Predef.path_option <> true ->
     fprintf ppf
-      "@,@\n\
-        @[<v 0>The value you're pattern matching on here is wrapped in an \
-        @{<info>option@}, but you're trying to match on the actual value.@ Wrap \
-        the highlighted pattern in @{<info>Some()@} to make it work.@]"
+      "@,\
+       @\n\
+       @[<v 0>The value you're pattern matching on here is wrapped in an \
+       @{<info>option@}, but you're trying to match on the actual value.@ Wrap \
+       the highlighted pattern in @{<info>Some()@} to make it work.@]"
   | _ -> ()
 
 type jsx_prop_error_info = {
@@ -290,7 +293,8 @@ let print_component_wrong_prop_error ppf (p : Path.t)
   (match name with
   | "children" ->
     fprintf ppf
-      "@[<2>This JSX component does not accept child elements. It has no @{<error>children@} prop "
+      "@[<2>This JSX component does not accept child elements. It has no \
+       @{<error>children@} prop "
   | _ ->
     fprintf ppf
       "@[<2>The prop @{<error>%s@} does not belong to the JSX component " name);
@@ -305,7 +309,8 @@ let print_component_labels_missing_error ppf labels
   labels |> List.iter (fun lbl -> fprintf ppf "@ %s" lbl);
   fprintf ppf "@]"
 
-let get_jsx_component_error_info ~extract_concrete_typedecl opath env ty_record () =
+let get_jsx_component_error_info ~extract_concrete_typedecl opath env ty_record
+    () =
   match opath with
   | Some (p, _) ->
     get_jsx_component_props ~extract_concrete_typedecl env ty_record p

@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type command = { cmd : string; cwd : string; args : string array }
+type command = {cmd: string; cwd: string; args: string array}
 
 val command_fatal_error : command -> int -> unit
 

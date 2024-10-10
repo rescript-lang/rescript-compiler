@@ -23,9 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type t = {
-  mutable used : bool;
+  mutable used: bool;
   (* rule_name : string;  *)
-  name : out_channel -> string;
+  name: out_channel -> string;
 }
 
 let get_name (x : t) oc = x.name oc
@@ -43,9 +43,9 @@ let print_rule (oc : out_channel) ?description ?(restat : unit option)
   match description with
   | None -> ()
   | Some description ->
-      output_string oc "  description = ";
-      output_string oc description;
-      output_string oc "\n"
+    output_string oc "  description = ";
+    output_string oc description;
+    output_string oc "\n"
 
 (** allocate an unique name for such rule*)
 let define ~command ?dyndep ?restat rule_name : t =
@@ -67,23 +67,23 @@ let define ~command ?dyndep ?restat rule_name : t =
 type command = string
 
 type builtin = {
-  build_ast_from_re : t;
+  build_ast_from_re: t;
   (* build_ast_from_rei : t ; *)
   (* platform dependent, on Win32,
       invoking cmd.exe
   *)
-  copy_resources : t;
+  copy_resources: t;
   (* Rules below all need restat *)
-  build_bin_deps : t;
-  build_bin_deps_dev : t;
-  mj : t;
-  mj_dev : t;
-  mij : t;
-  mij_dev : t;
-  mi : t;
-  mi_dev : t;
-  build_package : t;
-  customs : t Map_string.t;
+  build_bin_deps: t;
+  build_bin_deps_dev: t;
+  mj: t;
+  mj_dev: t;
+  mij: t;
+  mij_dev: t;
+  mi: t;
+  mi_dev: t;
+  build_package: t;
+  customs: t Map_string.t;
 }
 
 let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
@@ -98,8 +98,12 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
   (* FIXME: We don't need set [-o ${out}] when building ast
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in
-  let ns_flag = match namespace with None -> "" | Some n -> " -bs-ns " ^ n in
-  let mk_ml_cmj_cmd ~(read_cmi : [ `yes | `is_cmi | `no ]) ~is_dev ~postbuild :
+  let ns_flag =
+    match namespace with
+    | None -> ""
+    | Some n -> " -bs-ns " ^ n
+  in
+  let mk_ml_cmj_cmd ~(read_cmi : [`yes | `is_cmi | `no]) ~is_dev ~postbuild :
       string =
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf bsc;
@@ -126,15 +130,15 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     (match (bs_dependencies, bs_dev_dependencies) with
     | [], [] -> ()
     | _, _ ->
-        Ext_buffer.add_string buf " -bs-v";
-        Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_finger);
+      Ext_buffer.add_string buf " -bs-v";
+      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_finger);
     Ext_buffer.add_string buf " $i";
     (match postbuild with
     | None -> ()
     | Some cmd ->
-        Ext_buffer.add_string buf " && ";
-        Ext_buffer.add_string buf cmd;
-        Ext_buffer.add_string buf " $out_last");
+      Ext_buffer.add_string buf " && ";
+      Ext_buffer.add_string buf cmd;
+      Ext_buffer.add_string buf " $out_last");
     Ext_buffer.contents buf
   in
   let mk_ast =
@@ -146,22 +150,23 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     (match ppx_files with
     | [] -> ()
     | _ ->
-        Ext_list.iter ppx_files (fun x ->
-            match string_of_float (Unix.stat x.name).st_mtime with
-            | exception _ -> ()
-            | st -> Ext_buffer.add_char_string buf ',' st);
-        Ext_buffer.add_char_string buf ' ' (Bsb_build_util.ppx_flags ppx_files));
+      Ext_list.iter ppx_files (fun x ->
+          match string_of_float (Unix.stat x.name).st_mtime with
+          | exception _ -> ()
+          | st -> Ext_buffer.add_char_string buf ',' st);
+      Ext_buffer.add_char_string buf ' ' (Bsb_build_util.ppx_flags ppx_files));
     (match pp_file with
     | None -> ()
     | Some flag ->
-        Ext_buffer.add_char_string buf ' ' (Bsb_build_util.pp_flag flag));
-    (match (jsx.version) with
+      Ext_buffer.add_char_string buf ' ' (Bsb_build_util.pp_flag flag));
+    (match jsx.version with
     | Some Jsx_v4 -> Ext_buffer.add_string buf " -bs-jsx 4"
     | None -> ());
     (match jsx.module_ with
     | None -> ()
     | Some React -> Ext_buffer.add_string buf " -bs-jsx-module react"
-    | Some Generic {moduleName} -> Ext_buffer.add_string buf (" -bs-jsx-module " ^ moduleName));
+    | Some (Generic {moduleName}) ->
+      Ext_buffer.add_string buf (" -bs-jsx-module " ^ moduleName));
     (match jsx.mode with
     | None -> ()
     | Some Classic -> Ext_buffer.add_string buf " -bs-jsx-mode classic"
@@ -177,7 +182,7 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     define
       ~command:
         (if Ext_sys.is_windows_or_cygwin then "cmd.exe /C copy /Y $i $out >NUL"
-        else "cp $i $out")
+         else "cp $i $out")
       "copy_resource"
   in
 

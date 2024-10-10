@@ -41,34 +41,32 @@ let error err = raise (Error err)
 
 let report_error ppf = function
   | Dependency_script_module_dependent_not s ->
-      Format.fprintf ppf
-        "%s is compiled in script mode while its dependent is not" s
+    Format.fprintf ppf
+      "%s is compiled in script mode while its dependent is not" s
   | Missing_ml_dependency s ->
-      Format.fprintf ppf "Missing dependency %s in search path" s
+    Format.fprintf ppf "Missing dependency %s in search path" s
   | Cmj_not_found s ->
-      Format.fprintf ppf
-        "%s not found, it means either the module does not exist or it is a \
-         namespace"
-        s
+    Format.fprintf ppf
+      "%s not found, it means either the module does not exist or it is a \
+       namespace"
+      s
   | Js_not_found s ->
-      Format.fprintf ppf "%s not found, needed in script mode " s
+    Format.fprintf ppf "%s not found, needed in script mode " s
   | Bs_cyclic_depends str ->
-      Format.fprintf ppf "Cyclic depends : @[%a@]"
-        (Format.pp_print_list ~pp_sep:Format.pp_print_space
-           Format.pp_print_string)
-        str
-  | Bs_duplicate_exports str ->
-      Format.fprintf ppf "%s is exported twice" str
+    Format.fprintf ppf "Cyclic depends : @[%a@]"
+      (Format.pp_print_list ~pp_sep:Format.pp_print_space Format.pp_print_string)
+      str
+  | Bs_duplicate_exports str -> Format.fprintf ppf "%s is exported twice" str
   | Bs_duplicated_module (a, b) ->
-      Format.fprintf ppf
-        "The build system does not support two files with same names yet %s, %s"
-        a b
+    Format.fprintf ppf
+      "The build system does not support two files with same names yet %s, %s" a
+      b
   | Bs_main_not_exist main -> Format.fprintf ppf "File %s not found " main
   | Bs_package_not_found package ->
-      Format.fprintf ppf
-        "Package %s not found or %s/lib/ocaml does not exist or please set \
-         npm_config_prefix correctly"
-        package package
+    Format.fprintf ppf
+      "Package %s not found or %s/lib/ocaml does not exist or please set \
+       npm_config_prefix correctly"
+      package package
   | Bs_invalid_path path -> Format.pp_print_string ppf ("Invalid path: " ^ path)
 
 let () =

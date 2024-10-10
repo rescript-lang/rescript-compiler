@@ -19,26 +19,32 @@ open Typedtree
 open Types
 open Format
 
-val modtypes:
-  loc:Location.t -> Env.t ->
-  module_type -> module_type -> module_coercion
+val modtypes :
+  loc:Location.t -> Env.t -> module_type -> module_type -> module_coercion
 
-val signatures: Env.t -> signature -> signature -> module_coercion
+val signatures : Env.t -> signature -> signature -> module_coercion
 
-val compunit:
-      Env.t -> string -> signature -> string -> signature -> module_coercion
+val compunit :
+  Env.t -> string -> signature -> string -> signature -> module_coercion
 
-val type_declarations:
-  loc:Location.t -> Env.t ->
-  Ident.t -> type_declaration -> type_declaration -> unit
+val type_declarations :
+  loc:Location.t ->
+  Env.t ->
+  Ident.t ->
+  type_declaration ->
+  type_declaration ->
+  unit
 
-val print_coercion: formatter -> module_coercion -> unit
+val print_coercion : formatter -> module_coercion -> unit
 
 type symptom =
-    Missing_field of Ident.t * Location.t * string (* kind *)
+  | Missing_field of Ident.t * Location.t * string (* kind *)
   | Value_descriptions of Ident.t * value_description * value_description
-  | Type_declarations of Ident.t * type_declaration
-        * type_declaration * Includecore.type_mismatch list
+  | Type_declarations of
+      Ident.t
+      * type_declaration
+      * type_declaration
+      * Includecore.type_mismatch list
   | Extension_constructors of
       Ident.t * extension_constructor * extension_constructor
   | Module_types of module_type * module_type
@@ -50,10 +56,13 @@ type symptom =
   | Invalid_module_alias of Path.t
 
 type pos =
-    Module of Ident.t | Modtype of Ident.t | Arg of Ident.t | Body of Ident.t
+  | Module of Ident.t
+  | Modtype of Ident.t
+  | Arg of Ident.t
+  | Body of Ident.t
 type error = pos list * Env.t * symptom
 
 exception Error of error list
 
-val report_error: formatter -> error list -> unit
-val expand_module_alias: Env.t -> pos list -> Path.t -> Types.module_type
+val report_error : formatter -> error list -> unit
+val expand_module_alias : Env.t -> pos list -> Path.t -> Types.module_type

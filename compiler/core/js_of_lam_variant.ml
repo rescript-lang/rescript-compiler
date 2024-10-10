@@ -33,22 +33,22 @@ let eval (arg : J.expression) (dispatches : (string * string) list) : E.t =
   else
     match arg.expression_desc with
     | Str {txt} ->
-        let s = Ext_list.assoc_by_string dispatches txt None in
-        E.str s
+      let s = Ext_list.assoc_by_string dispatches txt None in
+      E.str s
     | _ ->
-        E.of_block
-          [
-            S.string_switch arg
-              (Ext_list.map dispatches (fun (s, r) ->
-                   ( Ast_untagged_variants.String s,
-                     J.
-                       {
-                         switch_body = [ S.return_stmt (E.str r) ];
-                         should_break = false;
-                         (* FIXME: if true, still print break*)
-                         comment = None;
-                       } )));
-          ]
+      E.of_block
+        [
+          S.string_switch arg
+            (Ext_list.map dispatches (fun (s, r) ->
+                 ( Ast_untagged_variants.String s,
+                   J.
+                     {
+                       switch_body = [S.return_stmt (E.str r)];
+                       should_break = false;
+                       (* FIXME: if true, still print break*)
+                       comment = None;
+                     } )));
+        ]
 
 (* invariant: optional is not allowed in this case *)
 (* arg is a polyvar *)
@@ -63,38 +63,38 @@ let eval (arg : J.expression) (dispatches : (string * string) list) : E.t =
 let eval_as_event (arg : J.expression)
     (dispatches : (string * string) list option) =
   match arg.expression_desc with
-  | Caml_block ([ { expression_desc = Str {txt} }; cb ], _, _, Blk_poly_var _)
+  | Caml_block ([{expression_desc = Str {txt}}; cb], _, _, Blk_poly_var _)
     when Js_analyzer.no_side_effect_expression cb ->
-      let v =
-        match dispatches with
-        | Some dispatches -> Ext_list.assoc_by_string dispatches txt None
-        | None -> txt
-      in
-      Splice2 (E.str v, cb)
+    let v =
+      match dispatches with
+      | Some dispatches -> Ext_list.assoc_by_string dispatches txt None
+      | None -> txt
+    in
+    Splice2 (E.str v, cb)
   | _ ->
-      Splice2
-        ( (match dispatches with
-          | Some dispatches ->
-              E.of_block
-                [
-                  S.string_switch
-                    (E.poly_var_tag_access arg)
-                    (Ext_list.map dispatches (fun (s, r) ->
-                         ( Ast_untagged_variants.String s,
-                           J.
-                             {
-                               switch_body = [ S.return_stmt (E.str r) ];
-                               should_break = false;
-                               (* FIXME: if true, still print break*)
-                               comment = None;
-                             } )));
-                ]
-          | None -> E.poly_var_tag_access arg),
-          (* TODO: improve, one dispatch later,
-             the problem is that we can not create bindings
-             due to the
-          *)
-          E.poly_var_value_access arg )
+    Splice2
+      ( (match dispatches with
+        | Some dispatches ->
+          E.of_block
+            [
+              S.string_switch
+                (E.poly_var_tag_access arg)
+                (Ext_list.map dispatches (fun (s, r) ->
+                     ( Ast_untagged_variants.String s,
+                       J.
+                         {
+                           switch_body = [S.return_stmt (E.str r)];
+                           should_break = false;
+                           (* FIXME: if true, still print break*)
+                           comment = None;
+                         } )));
+            ]
+        | None -> E.poly_var_tag_access arg),
+        (* TODO: improve, one dispatch later,
+           the problem is that we can not create bindings
+           due to the
+        *)
+        E.poly_var_value_access arg )
 
 (* we need destruct [undefined] when input is optional *)
 let eval_as_int (arg : J.expression) (dispatches : (string * int) list) : E.t =
@@ -102,24 +102,23 @@ let eval_as_int (arg : J.expression) (dispatches : (string * int) list) : E.t =
   else
     match arg.expression_desc with
     | Str {txt} ->
-        E.int (Int32.of_int (Ext_list.assoc_by_string dispatches txt None))
+      E.int (Int32.of_int (Ext_list.assoc_by_string dispatches txt None))
     | _ ->
-        E.of_block
-          [
-            S.string_switch arg
-              (Ext_list.map dispatches (fun (s, r) ->
-                   ( Ast_untagged_variants.String s,
-                     J.
-                       {
-                         switch_body =
-                           [ S.return_stmt (E.int (Int32.of_int r)) ];
-                         should_break = false;
-                         (* FIXME: if true, still print break*)
-                         comment = None;
-                       } )));
-          ]
+      E.of_block
+        [
+          S.string_switch arg
+            (Ext_list.map dispatches (fun (s, r) ->
+                 ( Ast_untagged_variants.String s,
+                   J.
+                     {
+                       switch_body = [S.return_stmt (E.int (Int32.of_int r))];
+                       should_break = false;
+                       (* FIXME: if true, still print break*)
+                       comment = None;
+                     } )));
+        ]
 
 let eval_as_unwrap (arg : J.expression) : E.t =
   match arg.expression_desc with
-  | Caml_block ([ { expression_desc = Number _ }; cb ], _, _, _) -> cb
+  | Caml_block ([{expression_desc = Number _}; cb], _, _, _) -> cb
   | _ -> E.poly_var_value_access arg

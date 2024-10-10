@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type dep_payload = { package_specs : Bsb_package_specs.t; jsx : Bsb_jsx.t }
+type dep_payload = {package_specs: Bsb_package_specs.t; jsx: Bsb_jsx.t}
 
 type t =
   | Toplevel
@@ -36,12 +36,12 @@ let encode_no_nl (x : t) =
   match x with
   | Toplevel -> "0"
   | Dependency x ->
-      "1"
-      ^ Bsb_package_specs.package_flag_of_package_specs x.package_specs
-          ~dirname:"."
-      ^ Bsb_jsx.encode_no_nl x.jsx
+    "1"
+    ^ Bsb_package_specs.package_flag_of_package_specs x.package_specs
+        ~dirname:"."
+    ^ Bsb_jsx.encode_no_nl x.jsx
   | Pinned_dependency x ->
-      "2"
-      ^ Bsb_package_specs.package_flag_of_package_specs x.package_specs
-          ~dirname:"."
-      ^ Bsb_jsx.encode_no_nl x.jsx
+    "2"
+    ^ Bsb_package_specs.package_flag_of_package_specs x.package_specs
+        ~dirname:"."
+    ^ Bsb_jsx.encode_no_nl x.jsx

@@ -22,39 +22,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-
-
-
 (** A type for qualified identifiers in Lambda IR 
 *)
 
-
-type t = J.module_id = 
-  (*private*) {
-  id : Ident.t ; 
-  kind : Js_op.kind ;
-  dynamic_import : bool ;
+type t = J.module_id = {
+  (*private*) id: Ident.t;
+  kind: Js_op.kind;
+  dynamic_import: bool;
 }
 
-
-val id : t -> Ident.t 
+val id : t -> Ident.t
 
 val name : t -> string
 
-
-
 val of_ml : ?dynamic_import:bool -> Ident.t -> t
 
-
-
-val of_runtime : Ident.t -> t 
+val of_runtime : Ident.t -> t
 
 module Hash : Hash_gen.S with type key = t
 module Hash_set : Hash_set_gen.S with type key = t

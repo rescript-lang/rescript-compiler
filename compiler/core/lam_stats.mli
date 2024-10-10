@@ -30,9 +30,9 @@
 type ident_tbl = Lam_id_kind.t Hash_ident.t
 
 type t = {
-  export_idents : Set_ident.t;
-  exports : Ident.t list;
-  ident_tbl : ident_tbl;
+  export_idents: Set_ident.t;
+  exports: Ident.t list;
+  ident_tbl: ident_tbl;
       (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them
   *)

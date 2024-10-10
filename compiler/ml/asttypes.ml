@@ -16,7 +16,7 @@
 (** Auxiliary AST types used by parsetree and typedtree. *)
 
 type constant =
-    Const_int of int
+  | Const_int of int
   | Const_char of int
   | Const_string of string * string option
   | Const_float of string
@@ -42,32 +42,22 @@ type closed_flag = Closed | Open
 type label = string
 
 type arg_label =
-    Nolabel
+  | Nolabel
   | Labelled of string (*  label:T -> ... *)
   | Optional of string (* ?label:T -> ... *)
 
-type 'a loc = 'a Location.loc = {
-  txt : 'a;
-  loc : Location.t;
-}
+type 'a loc = 'a Location.loc = {txt: 'a; loc: Location.t}
 
+type variance = Covariant | Contravariant | Invariant
 
-type variance =
-  | Covariant
-  | Contravariant
-  | Invariant
-
-
-let same_arg_label (x : arg_label) y = 
-  match x with 
+let same_arg_label (x : arg_label) y =
+  match x with
   | Nolabel -> y = Nolabel
-  | Labelled s ->
-    begin match y with 
-    | Labelled s0 -> s = s0 
-    | _ -> false 
-    end 
-  | Optional s ->
-      begin match y with 
-      | Optional s0 -> s = s0
-      | _ -> false  
-      end  
+  | Labelled s -> (
+    match y with
+    | Labelled s0 -> s = s0
+    | _ -> false)
+  | Optional s -> (
+    match y with
+    | Optional s0 -> s = s0
+    | _ -> false)

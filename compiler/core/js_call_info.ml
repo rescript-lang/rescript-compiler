@@ -33,10 +33,10 @@ type call_info =
    {[ fun x y -> (f x y) === f ]} when [f] is an atom
 *)
 
-type t = { call_info : call_info; arity : arity }
+type t = {call_info: call_info; arity: arity}
 
-let dummy = { arity = NA; call_info = Call_na }
+let dummy = {arity = NA; call_info = Call_na}
 
-let builtin_runtime_call = { arity = Full; call_info = Call_builtin_runtime }
+let builtin_runtime_call = {arity = Full; call_info = Call_builtin_runtime}
 
-let ml_full_call = { arity = Full; call_info = Call_ml }
+let ml_full_call = {arity = Full; call_info = Call_ml}
