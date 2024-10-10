@@ -32,6 +32,7 @@
 - Fix "rescript format" with many files. https://github.com/rescript-lang/rescript-compiler/pull/7081
 - Fix bigint max, min https://github.com/rescript-lang/rescript-compiler/pull/7088
 - Fix parsing issue with nested variant pattern type spreads. https://github.com/rescript-lang/rescript-compiler/pull/7080
+- Fix JSX settings inheritance: only 'version' propagates to dependencies, preserving their 'mode' and 'module'. https://github.com/rescript-lang/rescript-compiler/pull/7094
 
 #### :nail_care: Polish
 
