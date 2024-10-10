@@ -48,6 +48,11 @@ let rec convert_constant (const : Lambda.structured_constant) : Lam_constant.t =
     | Pt_assertfalse -> Const_int {i = Int32.of_int i; comment = Pt_assertfalse}
     | Pt_constructor {name; const; non_const; attrs} ->
       let tag_type = Ast_untagged_variants.process_tag_type attrs in
+      let i =
+        match tag_type with
+        | Some (Ast_untagged_variants.Int v) -> v
+        | _ -> i
+      in
       Const_int
         {
           i = Int32.of_int i;

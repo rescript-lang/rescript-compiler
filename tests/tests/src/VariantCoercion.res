@@ -120,3 +120,33 @@ module CoerceFromPolyvariantToVariant = {
   let withUnboxedCatchAll: withUnboxedCatchAll = #One
   let withUnboxedCatchAllP = (withUnboxedCatchAll :> withUnboxedCatchAllP)
 }
+
+module CoerceVariantBinaryOp = {
+  type flag = | @as(0) A | @as(2) B
+
+  let x = 0->lor((B :> int))
+
+  let v = B
+  let f1 = () =>
+    switch v {
+    | A => "a"
+    | B => "b"
+    }
+  let f2 = () =>
+    switch (v :> int) {
+    | 2 => "b"
+    | _ => "a"
+    }
+
+  for x in 1 to (B :> int) {
+    Js.log(x)
+  }
+
+  type flagStr = | @as("one") One | @as("two") Two
+
+  let y = (One :> string)->String.length
+
+  type flagFloat = | @as(1.5) X | @as(2.0) Y
+
+  let z = (X :> float) +. (Y :> float) +. 1.5
+}
