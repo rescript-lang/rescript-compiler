@@ -1,0 +1,24 @@
+{
+  "name": "jsx-settings-inheritance",
+  "jsx": {
+    "version": 4,
+    "mode": "automatic"
+  },
+  "sources": {
+    "dir": "src",
+    "subdirs": true
+  },
+  "package-specs": [
+    {
+      "module": "commonjs",
+      "in-source": true
+    }
+  ],
+  "suffix": ".mjs",
+  "namespace": true,
+  "bs-dependencies": [
+    "@rescript/react",
+    "a",
+    "b"
+  ]
+}
