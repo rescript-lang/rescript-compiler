@@ -159,7 +159,7 @@ node scripts/test.js -bsb
 
 **Run ounit tests:**
 
-This will run unit tests for compiler related modules. The tests can be found in `compiler/ounit_tests`.
+This will run unit tests for compiler related modules. The tests can be found in `tests/ounit_tests`.
 
 ```
 node scripts/test.js -ounit
