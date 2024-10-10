@@ -1,6 +1,6 @@
 module IO = Res_io
 
-let data_dir = "tests/syntax_tests"
+let data_dir = "tests/syntax_tests/data"
 
 (* test printing of .res file*)
 let () =
