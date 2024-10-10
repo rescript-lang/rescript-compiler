@@ -261,6 +261,12 @@ let interpret_json ~(filename : string) ~(json : Ext_json_types.t)
       in
       let bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags in
       let jsx = Bsb_jsx.from_map map in
+      let jsx, bsc_flags =
+        match package_kind with
+        | Pinned_dependency x | Dependency x ->
+          ({jsx with version = x.jsx.version}, bsc_flags)
+        | Toplevel -> (jsx, bsc_flags)
+      in
       {
         pinned_dependencies;
         gentype_config;
