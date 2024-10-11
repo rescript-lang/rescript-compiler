@@ -223,6 +223,35 @@ let f = (/* c0 */ ~greeting /* c1 */, /* c2 */ ~from /* c3 */ as /* c4 */ hometo
 let multiply = (/* c-2 */ type t /* c-1 */,/* c0 */ m1 /* c1 */, /* c2 */ m2 /* c3 */) => () 
 let multiply = (/* c-4 */ type t /* c-3 */,/* c0 */ m1 /* c1 */, /* c-2 */ type s /* c-1 */, /* c2 */ m2 /* c3 */) => () 
 
+f(
+  // a
+  // b
+// c
+)
+
+f(
+  // a 
+  // b
+    // c
+  ()
+)
+
+let x = {
+  f(
+    // a 
+    // b
+      // c
+  )
+
+
+  f(
+    // a 
+    // b
+  // c
+    ()
+  )
+}
+
 f(()
   // c1
   => 1);

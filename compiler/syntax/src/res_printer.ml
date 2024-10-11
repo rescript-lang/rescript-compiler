@@ -4842,9 +4842,22 @@ and print_arguments_with_callback_in_last_position ~state args cmt_tbl =
 and print_arguments ~state ?(partial = false)
     (args : (Asttypes.arg_label * Parsetree.expression) list) cmt_tbl =
   match args with
-  | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, _)})]
-    ->
-    Doc.text "()"
+  | [
+   ( Nolabel,
+     {
+       pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, _);
+       pexp_loc = loc;
+     } );
+  ] ->
+    if has_leading_line_comment cmt_tbl loc then
+      let cmt = print_comments Doc.nil cmt_tbl loc in
+      Doc.concat
+        [
+          Doc.lparen;
+          Doc.indent (Doc.group (Doc.concat [Doc.soft_line; cmt]));
+          Doc.rparen;
+        ]
+    else Doc.text "()"
   | [(Nolabel, arg)] when ParsetreeViewer.is_huggable_expression arg ->
     let arg_doc =
       let doc = print_expression_with_comments ~state arg cmt_tbl in
