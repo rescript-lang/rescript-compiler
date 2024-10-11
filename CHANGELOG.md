@@ -14,6 +14,7 @@
 
 - Deprecate JSX 3 https://github.com/rescript-lang/rescript-compiler/pull/7042
 - Deprecate js_cast.res https://github.com/rescript-lang/rescript-compiler/pull/7074
+- Deprecate top-level `"suffix"` option in `rescript.json`. https://github.com/rescript-lang/rescript-compiler/pull/7056
 
 # 11.1.4
 
