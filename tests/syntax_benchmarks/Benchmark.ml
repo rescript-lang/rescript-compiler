@@ -182,14 +182,8 @@ end = struct
   type action = Parse | Print
   let string_of_action action =
     match action with
-    | Parse -> "parser"
-    | Print -> "printer"
-
-  (* TODO: we could at Reason here *)
-  type lang = Rescript
-  let string_of_lang lang =
-    match lang with
-    | Rescript -> "rescript"
+    | Parse -> "Parse"
+    | Print -> "Print"
 
   let parse_rescript src filename =
     let p = Parser.make src filename in
@@ -197,19 +191,20 @@ end = struct
     assert (p.diagnostics == []);
     structure
 
-  let benchmark filename lang action =
-    let src = IO.read_file filename in
-    let name =
-      filename ^ " " ^ string_of_lang lang ^ " " ^ string_of_action action
-    in
+  let data_dir = "tests/syntax_benchmarks/data"
+
+  let benchmark filename action =
+    let path = Filename.concat data_dir filename in
+    let src = IO.read_file path in
+    let name = string_of_action action ^ " " ^ filename in
     let benchmark_fn =
-      match (lang, action) with
-      | Rescript, Parse ->
+      match action with
+      | Parse ->
         fun _ ->
-          let _ = Sys.opaque_identity (parse_rescript src filename) in
+          let _ = Sys.opaque_identity (parse_rescript src path) in
           ()
-      | Rescript, Print ->
-        let p = Parser.make src filename in
+      | Print ->
+        let p = Parser.make src path in
         let ast = ResParser.parse_implementation p in
         fun _ ->
           let _ =
@@ -226,16 +221,13 @@ end = struct
     Benchmark.report b
 
   let run () =
-    let data_dir = "tests/syntax_benchmarks/data" in
-    benchmark (Filename.concat data_dir "RedBlackTree.res") Rescript Parse;
-    benchmark (Filename.concat data_dir "RedBlackTree.res") Rescript Print;
-    benchmark
-      (Filename.concat data_dir "RedBlackTreeNoComments.res")
-      Rescript Print;
-    benchmark (Filename.concat data_dir "Napkinscript.res") Rescript Parse;
-    benchmark (Filename.concat data_dir "Napkinscript.res") Rescript Print;
-    benchmark (Filename.concat data_dir "HeroGraphic.res") Rescript Parse;
-    benchmark (Filename.concat data_dir "HeroGraphic.res") Rescript Print
+    benchmark "RedBlackTree.res" Parse;
+    benchmark "RedBlackTree.res" Print;
+    benchmark "RedBlackTreeNoComments.res" Print;
+    benchmark "Napkinscript.res" Parse;
+    benchmark "Napkinscript.res" Print;
+    benchmark "HeroGraphic.res" Parse;
+    benchmark "HeroGraphic.res" Print
 end
 
 let () = Benchmarks.run ()
