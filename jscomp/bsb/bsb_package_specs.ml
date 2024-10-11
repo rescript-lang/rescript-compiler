@@ -199,17 +199,14 @@ let list_dirs_by (package_specs : t) (f : string -> unit) =
 type json_map = Ext_json_types.t Map_string.t
 
 let extract_js_suffix_exn (map : json_map) : string =
+  let deprecation = "The \"suffix\" option at the top level is deprecated. Move the \"suffix\" setting into each \"package-specs\" entry." in
   match map.?(Bsb_build_schemas.suffix) with
   | None -> Literals.suffix_js
   | Some (Str { str = suffix; loc }) when validate_js_suffix suffix ->
-    deprecated_option ~loc
-      Literals.suffix_js
-      (Printf.sprintf "Top-level suffix is deprecated. Move it into each package-specs.");
+    deprecated_option ~loc Literals.suffix_js deprecation;
     suffix
   | Some ((Str {str; loc}) as config)  -> 
-    deprecated_option ~loc
-      Literals.suffix_js
-      (Printf.sprintf "Top-level suffix is deprecated. Move it into each package-specs.");
+    deprecated_option ~loc Literals.suffix_js deprecation;
     Bsb_exception.config_error config
       ("invalid suffix \"" ^ str ^ "\". The suffix and may contain letters, digits, \"-\", \"_\" and \".\" and must end with .js, .mjs or .cjs.")
   | Some config ->
