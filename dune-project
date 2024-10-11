@@ -24,6 +24,10 @@
    (and
     :with-test
     (= 0.26.2)))
+  (yojson
+   (and
+    :with-test
+    (= 2.2.2)))
   (ocaml-lsp-server
    (and
     :with-dev-setup

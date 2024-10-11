@@ -79,7 +79,7 @@ module Benchmark : sig
 
   val make : name:string -> f:(t -> unit) -> unit -> t
   val launch : t -> unit
-  val report : t -> unit
+  val report : t -> Yojson.t list
 end = struct
   type t = {
     name: string;
@@ -98,23 +98,26 @@ end = struct
   }
 
   let report b =
-    print_endline (Format.sprintf "Benchmark: %s" b.name);
-    print_endline (Format.sprintf "Nbr of iterations: %d" b.n);
-    print_endline
-      (Format.sprintf "Benchmark ran during: %fms" (Time.print b.duration));
-    print_endline
-      (Format.sprintf "Avg time/op: %fms"
-         (Time.print b.duration /. float_of_int b.n));
-    print_endline
-      (Format.sprintf "Allocs/op: %d"
-         (int_of_float (b.net_allocs /. float_of_int b.n)));
-    print_endline
-      (Format.sprintf "B/op: %d"
-         (int_of_float (b.net_bytes /. float_of_int b.n)));
-
-    (* return (float64(r.Bytes) * float64(r.N) / 1e6) / r.T.Seconds() *)
-    print_newline ();
-    ()
+    [
+      `Assoc
+        [
+          ("name", `String (Format.sprintf "%s - avg. time" b.name));
+          ("unit", `String "ms");
+          ("value", `Float (Time.print b.duration /. float_of_int b.n));
+        ];
+      `Assoc
+        [
+          ("name", `String (Format.sprintf "%s - allocations" b.name));
+          ("unit", `String "");
+          ("value", `Int (int_of_float (b.net_allocs /. float_of_int b.n)));
+        ];
+      `Assoc
+        [
+          ("name", `String (Format.sprintf "%s - bytes allocated" b.name));
+          ("unit", `String "");
+          ("value", `Int (int_of_float (b.net_bytes /. float_of_int b.n)));
+        ];
+    ]
 
   let make ~name ~f () =
     {
@@ -221,13 +224,19 @@ end = struct
     Benchmark.report b
 
   let run () =
-    benchmark "RedBlackTree.res" Parse;
-    benchmark "RedBlackTree.res" Print;
-    benchmark "RedBlackTreeNoComments.res" Print;
-    benchmark "Napkinscript.res" Parse;
-    benchmark "Napkinscript.res" Print;
-    benchmark "HeroGraphic.res" Parse;
-    benchmark "HeroGraphic.res" Print
+    let results =
+      List.flatten
+        [
+          benchmark "RedBlackTree.res" Parse;
+          benchmark "RedBlackTree.res" Print;
+          benchmark "RedBlackTreeNoComments.res" Print;
+          benchmark "Napkinscript.res" Parse;
+          benchmark "Napkinscript.res" Print;
+          benchmark "HeroGraphic.res" Parse;
+          benchmark "HeroGraphic.res" Print;
+        ]
+    in
+    print_endline (Yojson.pretty_to_string (`List results))
 end
 
 let () = Benchmarks.run ()
