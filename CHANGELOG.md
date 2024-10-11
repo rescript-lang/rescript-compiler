@@ -56,6 +56,7 @@
 - Rename folder "jscomp" to "compiler". https://github.com/rescript-lang/rescript-compiler/pull/7086
 - Disable -bs-cross-module-opt for tests. https://github.com/rescript-lang/rescript-compiler/pull/7071
 - Move `ounit_tests` into the `tests` folder. https://github.com/rescript-lang/rescript-compiler/pull/7096
+- Move `syntax_tests` into the `tests` folder. https://github.com/rescript-lang/rescript-compiler/pull/7090 https://github.com/rescript-lang/rescript-compiler/pull/7097
 
 # 12.0.0-alpha.3
 
