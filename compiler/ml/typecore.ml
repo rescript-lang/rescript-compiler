@@ -2458,7 +2458,9 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
     in
     let type_clash_context = type_clash_context_from_function sexp sfunct in
     let args, ty_res, fully_applied =
-      type_application ?type_clash_context uncurried env funct sargs
+      match specialized_infix_type_application env funct sargs with
+      | Some application -> application
+      | None -> type_application ?type_clash_context uncurried env funct sargs
     in
     end_def ();
     unify_var env (newvar ()) funct.exp_type;
@@ -3561,8 +3563,8 @@ and is_automatic_curried_application env funct =
   | Tarrow _ -> true
   | _ -> false
 
-and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
-    targs * Types.type_expr * bool =
+and specialized_infix_type_application env funct (sargs : sargs) :
+    (targs * Types.type_expr * bool) option =
   let is_generic_infix path =
     match Path.name path with
     | "Pervasives.+" | "Pervasives.-" -> true
@@ -3589,237 +3591,237 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
     in
     let result_type = lhs_type in
     let targs = [(Nolabel, Some lhs); (Nolabel, Some rhs)] in
-    (targs, result_type, true)
-  | _ -> (
-    (* funct.exp_type may be generic *)
-    let result_type omitted ty_fun =
-      List.fold_left
-        (fun ty_fun (l, ty, lv) -> newty2 lv (Tarrow (l, ty, ty_fun, Cok)))
-        ty_fun omitted
-    in
-    let has_label l ty_fun =
-      let ls, tvar = list_labels env ty_fun in
-      tvar || List.mem l ls
-    in
-    let ignored = ref [] in
-    let has_uncurried_type t =
-      match (expand_head env t).desc with
-      | Tconstr (Pident {name = "function$"}, [t; t_arity], _) ->
-        let arity = Ast_uncurried.type_to_arity t_arity in
-        Some (arity, t)
-      | _ -> None
-    in
-    let force_uncurried_type funct =
-      match has_uncurried_type funct.exp_type with
-      | None -> (
-        let arity = List.length sargs in
-        let uncurried_typ =
-          Ast_uncurried.make_uncurried_type ~env ~arity (newvar ())
-        in
-        match (expand_head env funct.exp_type).desc with
-        | Tvar _ | Tarrow _ -> unify_exp env funct uncurried_typ
-        | _ ->
-          raise
-            (Error
-               ( funct.exp_loc,
-                 env,
-                 Apply_non_function (expand_head env funct.exp_type) )))
-      | Some _ -> ()
-    in
-    let extract_uncurried_type t =
-      match has_uncurried_type t with
-      | Some (arity, t1) ->
-        if List.length sargs > arity then
-          raise
-            (Error
-               ( funct.exp_loc,
-                 env,
-                 Uncurried_arity_mismatch (t, arity, List.length sargs) ));
-        (t1, arity)
-      | None -> (t, max_int)
-    in
-    let update_uncurried_arity ~nargs t new_t =
-      match has_uncurried_type t with
-      | Some (arity, _) ->
-        let newarity = arity - nargs in
-        let fully_applied = newarity <= 0 in
-        if uncurried && not fully_applied then
-          raise
-            (Error
-               ( funct.exp_loc,
-                 env,
-                 Uncurried_arity_mismatch (t, arity, List.length sargs) ));
-        let new_t =
-          if fully_applied then new_t
-          else Ast_uncurried.make_uncurried_type ~env ~arity:newarity new_t
-        in
-        (fully_applied, new_t)
-      | _ -> (false, new_t)
-    in
-    let rec type_unknown_args max_arity ~(args : lazy_args) omitted ty_fun
-        (syntax_args : sargs) : targs * _ =
-      match syntax_args with
-      | [] ->
-        let collect_args () =
-          ( List.map
-              (function
-                | l, None -> (l, None)
-                | l, Some f -> (l, Some (f ())))
-              (List.rev args),
-            instance env (result_type omitted ty_fun) )
-        in
-        if List.length args < max_arity && uncurried then
-          match (expand_head env ty_fun).desc with
-          | Tarrow (Optional l, t1, t2, _) ->
-            ignored := (Optional l, t1, ty_fun.level) :: !ignored;
-            let arg =
-              ( Optional l,
-                Some (fun () -> option_none (instance env t1) Location.none) )
-            in
-            type_unknown_args max_arity ~args:(arg :: args) omitted t2 []
-          | _ -> collect_args ()
-        else collect_args ()
-      | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})]
-        when uncurried && omitted = [] && args <> []
-             && List.length args = List.length !ignored ->
-        (* foo(. ) treated as empty application if all args are optional (hence ignored) *)
-        type_unknown_args max_arity ~args omitted ty_fun []
-      | (l1, sarg1) :: sargl ->
-        let ty1, ty2 =
-          let ty_fun = expand_head env ty_fun in
-          let arity_ok = List.length args < max_arity in
-          match ty_fun.desc with
-          | Tvar _ ->
-            let t1 = newvar () and t2 = newvar () in
-            if ty_fun.level >= t1.level && not_identity funct.exp_desc then
-              Location.prerr_warning sarg1.pexp_loc Warnings.Unused_argument;
-            unify env ty_fun (newty (Tarrow (l1, t1, t2, Clink (ref Cunknown))));
-            (t1, t2)
-          | Tarrow (l, t1, t2, _) when Asttypes.same_arg_label l l1 && arity_ok
-            ->
-            (t1, t2)
-          | td -> (
-            let ty_fun =
-              match td with
-              | Tarrow _ -> newty td
-              | _ -> ty_fun
-            in
-            let ty_res = result_type (omitted @ !ignored) ty_fun in
-            match ty_res.desc with
-            | Tarrow _ ->
-              if not arity_ok then
-                raise
-                  (Error
-                     ( sarg1.pexp_loc,
-                       env,
-                       Apply_wrong_label (l1, funct.exp_type) ))
-              else if not (has_label l1 ty_fun) then
-                raise
-                  (Error (sarg1.pexp_loc, env, Apply_wrong_label (l1, ty_res)))
-              else raise (Error (funct.exp_loc, env, Incoherent_label_order))
-            | _ ->
+    Some (targs, result_type, true)
+  | _ -> None
+
+and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
+    targs * Types.type_expr * bool =
+  (* funct.exp_type may be generic *)
+  let result_type omitted ty_fun =
+    List.fold_left
+      (fun ty_fun (l, ty, lv) -> newty2 lv (Tarrow (l, ty, ty_fun, Cok)))
+      ty_fun omitted
+  in
+  let has_label l ty_fun =
+    let ls, tvar = list_labels env ty_fun in
+    tvar || List.mem l ls
+  in
+  let ignored = ref [] in
+  let has_uncurried_type t =
+    match (expand_head env t).desc with
+    | Tconstr (Pident {name = "function$"}, [t; t_arity], _) ->
+      let arity = Ast_uncurried.type_to_arity t_arity in
+      Some (arity, t)
+    | _ -> None
+  in
+  let force_uncurried_type funct =
+    match has_uncurried_type funct.exp_type with
+    | None -> (
+      let arity = List.length sargs in
+      let uncurried_typ =
+        Ast_uncurried.make_uncurried_type ~env ~arity (newvar ())
+      in
+      match (expand_head env funct.exp_type).desc with
+      | Tvar _ | Tarrow _ -> unify_exp env funct uncurried_typ
+      | _ ->
+        raise
+          (Error
+             ( funct.exp_loc,
+               env,
+               Apply_non_function (expand_head env funct.exp_type) )))
+    | Some _ -> ()
+  in
+  let extract_uncurried_type t =
+    match has_uncurried_type t with
+    | Some (arity, t1) ->
+      if List.length sargs > arity then
+        raise
+          (Error
+             ( funct.exp_loc,
+               env,
+               Uncurried_arity_mismatch (t, arity, List.length sargs) ));
+      (t1, arity)
+    | None -> (t, max_int)
+  in
+  let update_uncurried_arity ~nargs t new_t =
+    match has_uncurried_type t with
+    | Some (arity, _) ->
+      let newarity = arity - nargs in
+      let fully_applied = newarity <= 0 in
+      if uncurried && not fully_applied then
+        raise
+          (Error
+             ( funct.exp_loc,
+               env,
+               Uncurried_arity_mismatch (t, arity, List.length sargs) ));
+      let new_t =
+        if fully_applied then new_t
+        else Ast_uncurried.make_uncurried_type ~env ~arity:newarity new_t
+      in
+      (fully_applied, new_t)
+    | _ -> (false, new_t)
+  in
+  let rec type_unknown_args max_arity ~(args : lazy_args) omitted ty_fun
+      (syntax_args : sargs) : targs * _ =
+    match syntax_args with
+    | [] ->
+      let collect_args () =
+        ( List.map
+            (function
+              | l, None -> (l, None)
+              | l, Some f -> (l, Some (f ())))
+            (List.rev args),
+          instance env (result_type omitted ty_fun) )
+      in
+      if List.length args < max_arity && uncurried then
+        match (expand_head env ty_fun).desc with
+        | Tarrow (Optional l, t1, t2, _) ->
+          ignored := (Optional l, t1, ty_fun.level) :: !ignored;
+          let arg =
+            ( Optional l,
+              Some (fun () -> option_none (instance env t1) Location.none) )
+          in
+          type_unknown_args max_arity ~args:(arg :: args) omitted t2 []
+        | _ -> collect_args ()
+      else collect_args ()
+    | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})]
+      when uncurried && omitted = [] && args <> []
+           && List.length args = List.length !ignored ->
+      (* foo(. ) treated as empty application if all args are optional (hence ignored) *)
+      type_unknown_args max_arity ~args omitted ty_fun []
+    | (l1, sarg1) :: sargl ->
+      let ty1, ty2 =
+        let ty_fun = expand_head env ty_fun in
+        let arity_ok = List.length args < max_arity in
+        match ty_fun.desc with
+        | Tvar _ ->
+          let t1 = newvar () and t2 = newvar () in
+          if ty_fun.level >= t1.level && not_identity funct.exp_desc then
+            Location.prerr_warning sarg1.pexp_loc Warnings.Unused_argument;
+          unify env ty_fun (newty (Tarrow (l1, t1, t2, Clink (ref Cunknown))));
+          (t1, t2)
+        | Tarrow (l, t1, t2, _) when Asttypes.same_arg_label l l1 && arity_ok ->
+          (t1, t2)
+        | td -> (
+          let ty_fun =
+            match td with
+            | Tarrow _ -> newty td
+            | _ -> ty_fun
+          in
+          let ty_res = result_type (omitted @ !ignored) ty_fun in
+          match ty_res.desc with
+          | Tarrow _ ->
+            if not arity_ok then
               raise
                 (Error
-                   ( funct.exp_loc,
-                     env,
-                     Apply_non_function (expand_head env funct.exp_type) )))
-        in
-        let optional = is_optional l1 in
-        let arg1 () =
-          let arg1 = type_expect env sarg1 ty1 in
-          if optional then unify_exp env arg1 (type_option (newvar ()));
-          arg1
-        in
-        type_unknown_args max_arity ~args:((l1, Some arg1) :: args) omitted ty2
-          sargl
-    in
-    let rec type_args ?type_clash_context max_arity args omitted ~ty_fun ty_fun0
-        ~(sargs : sargs) =
-      match (expand_head env ty_fun, expand_head env ty_fun0) with
-      | ( {desc = Tarrow (l, ty, ty_fun, com); level = lv},
-          {desc = Tarrow (_, ty0, ty_fun0, _)} )
-        when sargs <> [] && commu_repr com = Cok && List.length args < max_arity
-        ->
-        let name = label_name l and optional = is_optional l in
-        let sargs, omitted, arg =
-          match extract_label name sargs with
-          | None ->
-            if optional && (uncurried || label_assoc Nolabel sargs) then (
-              ignored := (l, ty, lv) :: !ignored;
-              ( sargs,
-                omitted,
-                Some (fun () -> option_none (instance env ty) Location.none) ))
-            else (sargs, (l, ty, lv) :: omitted, None)
-          | Some (l', sarg0, sargs) ->
-            if (not optional) && is_optional l' then
-              Location.prerr_warning sarg0.pexp_loc
-                (Warnings.Nonoptional_label (Printtyp.string_of_label l));
+                   (sarg1.pexp_loc, env, Apply_wrong_label (l1, funct.exp_type)))
+            else if not (has_label l1 ty_fun) then
+              raise
+                (Error (sarg1.pexp_loc, env, Apply_wrong_label (l1, ty_res)))
+            else raise (Error (funct.exp_loc, env, Incoherent_label_order))
+          | _ ->
+            raise
+              (Error
+                 ( funct.exp_loc,
+                   env,
+                   Apply_non_function (expand_head env funct.exp_type) )))
+      in
+      let optional = is_optional l1 in
+      let arg1 () =
+        let arg1 = type_expect env sarg1 ty1 in
+        if optional then unify_exp env arg1 (type_option (newvar ()));
+        arg1
+      in
+      type_unknown_args max_arity ~args:((l1, Some arg1) :: args) omitted ty2
+        sargl
+  in
+  let rec type_args ?type_clash_context max_arity args omitted ~ty_fun ty_fun0
+      ~(sargs : sargs) =
+    match (expand_head env ty_fun, expand_head env ty_fun0) with
+    | ( {desc = Tarrow (l, ty, ty_fun, com); level = lv},
+        {desc = Tarrow (_, ty0, ty_fun0, _)} )
+      when sargs <> [] && commu_repr com = Cok && List.length args < max_arity
+      ->
+      let name = label_name l and optional = is_optional l in
+      let sargs, omitted, arg =
+        match extract_label name sargs with
+        | None ->
+          if optional && (uncurried || label_assoc Nolabel sargs) then (
+            ignored := (l, ty, lv) :: !ignored;
             ( sargs,
               omitted,
-              Some
-                (if (not optional) || is_optional l' then fun () ->
-                   type_argument
-                     ?type_clash_context:
-                       (type_clash_context_for_function_argument
-                          type_clash_context sarg0)
-                     env sarg0 ty ty0
-                 else fun () ->
-                   option_some
-                     (type_argument ?type_clash_context env sarg0
-                        (extract_option_type env ty)
-                        (extract_option_type env ty0))) )
-        in
-        type_args ?type_clash_context max_arity ((l, arg) :: args) omitted
-          ~ty_fun ty_fun0 ~sargs
-      | _ ->
-        type_unknown_args max_arity ~args omitted ty_fun0
-          sargs (* This is the hot path for non-labeled function*)
-    in
-    let () =
-      let ls, tvar = list_labels env funct.exp_type in
-      if not tvar then
-        let labels = Ext_list.filter ls (fun l -> not (is_optional l)) in
-        if
-          Ext_list.same_length labels sargs
-          && List.for_all (fun (l, _) -> l = Nolabel) sargs
-          && List.exists (fun l -> l <> Nolabel) labels
-        then
-          raise
-            (Error
-               ( funct.exp_loc,
-                 env,
-                 Labels_omitted
-                   (List.map Printtyp.string_of_label
-                      (Ext_list.filter labels (fun x -> x <> Nolabel))) ))
-    in
-    match sargs with
-    (* Special case for ignore: avoid discarding warning *)
-    | [(Nolabel, sarg)] when is_ignore funct env ->
-      let ty_arg, ty_res =
-        filter_arrow env (instance env funct.exp_type) Nolabel
+              Some (fun () -> option_none (instance env ty) Location.none) ))
+          else (sargs, (l, ty, lv) :: omitted, None)
+        | Some (l', sarg0, sargs) ->
+          if (not optional) && is_optional l' then
+            Location.prerr_warning sarg0.pexp_loc
+              (Warnings.Nonoptional_label (Printtyp.string_of_label l));
+          ( sargs,
+            omitted,
+            Some
+              (if (not optional) || is_optional l' then fun () ->
+                 type_argument
+                   ?type_clash_context:
+                     (type_clash_context_for_function_argument
+                        type_clash_context sarg0)
+                   env sarg0 ty ty0
+               else fun () ->
+                 option_some
+                   (type_argument ?type_clash_context env sarg0
+                      (extract_option_type env ty)
+                      (extract_option_type env ty0))) )
       in
-      let exp = type_expect env sarg ty_arg in
-      (match (expand_head env exp.exp_type).desc with
-      | Tarrow _ ->
-        Location.prerr_warning exp.exp_loc Warnings.Partial_application
-      | Tvar _ ->
-        Delayed_checks.add_delayed_check (fun () ->
-            check_application_result env false exp)
-      | _ -> ());
-      ([(Nolabel, Some exp)], ty_res, false)
+      type_args ?type_clash_context max_arity ((l, arg) :: args) omitted ~ty_fun
+        ty_fun0 ~sargs
     | _ ->
-      if uncurried then force_uncurried_type funct;
-      let ty, max_arity = extract_uncurried_type funct.exp_type in
-      let targs, ret_t =
-        type_args ?type_clash_context max_arity [] [] ~ty_fun:ty
-          (instance env ty) ~sargs
-      in
-      let fully_applied, ret_t =
-        update_uncurried_arity funct.exp_type
-          ~nargs:(List.length !ignored + List.length sargs)
-          ret_t
-      in
-      (targs, ret_t, fully_applied))
+      type_unknown_args max_arity ~args omitted ty_fun0
+        sargs (* This is the hot path for non-labeled function*)
+  in
+  let () =
+    let ls, tvar = list_labels env funct.exp_type in
+    if not tvar then
+      let labels = Ext_list.filter ls (fun l -> not (is_optional l)) in
+      if
+        Ext_list.same_length labels sargs
+        && List.for_all (fun (l, _) -> l = Nolabel) sargs
+        && List.exists (fun l -> l <> Nolabel) labels
+      then
+        raise
+          (Error
+             ( funct.exp_loc,
+               env,
+               Labels_omitted
+                 (List.map Printtyp.string_of_label
+                    (Ext_list.filter labels (fun x -> x <> Nolabel))) ))
+  in
+  match sargs with
+  (* Special case for ignore: avoid discarding warning *)
+  | [(Nolabel, sarg)] when is_ignore funct env ->
+    let ty_arg, ty_res =
+      filter_arrow env (instance env funct.exp_type) Nolabel
+    in
+    let exp = type_expect env sarg ty_arg in
+    (match (expand_head env exp.exp_type).desc with
+    | Tarrow _ ->
+      Location.prerr_warning exp.exp_loc Warnings.Partial_application
+    | Tvar _ ->
+      Delayed_checks.add_delayed_check (fun () ->
+          check_application_result env false exp)
+    | _ -> ());
+    ([(Nolabel, Some exp)], ty_res, false)
+  | _ ->
+    if uncurried then force_uncurried_type funct;
+    let ty, max_arity = extract_uncurried_type funct.exp_type in
+    let targs, ret_t =
+      type_args ?type_clash_context max_arity [] [] ~ty_fun:ty (instance env ty)
+        ~sargs
+    in
+    let fully_applied, ret_t =
+      update_uncurried_arity funct.exp_type
+        ~nargs:(List.length !ignored + List.length sargs)
+        ret_t
+    in
+    (targs, ret_t, fully_applied)
 
 and type_construct env loc lid sarg ty_expected attrs =
   let opath =
