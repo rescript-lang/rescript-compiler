@@ -183,6 +183,7 @@ module Benchmarks : sig
   val run : unit -> unit
 end = struct
   type action = Parse | Print
+
   let string_of_action action =
     match action with
     | Parse -> "Parse"
@@ -196,7 +197,7 @@ end = struct
 
   let data_dir = "tests/syntax_benchmarks/data"
 
-  let benchmark filename action =
+  let benchmark (filename, action) =
     let path = Filename.concat data_dir filename in
     let src = IO.read_file path in
     let name = string_of_action action ^ " " ^ filename in
@@ -223,20 +224,25 @@ end = struct
     Benchmark.launch b;
     Benchmark.report b
 
+  let specs =
+    [
+      ("RedBlackTree.res", Parse);
+      ("RedBlackTree.res", Print);
+      ("RedBlackTreeNoComments.res", Print);
+      ("Napkinscript.res", Parse);
+      ("Napkinscript.res", Print);
+      ("HeroGraphic.res", Parse);
+      ("HeroGraphic.res", Print);
+    ]
+
   let run () =
-    let results =
-      List.flatten
-        [
-          benchmark "RedBlackTree.res" Parse;
-          benchmark "RedBlackTree.res" Print;
-          benchmark "RedBlackTreeNoComments.res" Print;
-          benchmark "Napkinscript.res" Parse;
-          benchmark "Napkinscript.res" Print;
-          benchmark "HeroGraphic.res" Parse;
-          benchmark "HeroGraphic.res" Print;
-        ]
-    in
-    print_endline (Yojson.pretty_to_string (`List results))
+    List.to_seq specs
+    |> Seq.flat_map (fun spec -> benchmark spec |> List.to_seq)
+    |> Seq.iteri (fun i json ->
+           print_endline (if i == 0 then "[" else ",");
+           print_string (Yojson.to_string json));
+    print_newline ();
+    print_endline "]"
 end
 
 let () = Benchmarks.run ()
