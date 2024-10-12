@@ -321,13 +321,28 @@ jobs:
         if: runner.os != 'Windows'
         run: make -C tests/gentype_tests/typescript-react-example clean test
 
-      - name: Build playground compiler
+      - name: Run syntax benchmarks
         if: matrix.benchmarks
-        run: |
-          opam exec -- node packages/playground-bundling/scripts/generate_cmijs.js
-          opam exec -- dune build --profile browser
-          cp ./_build/default/compiler/jsoo/jsoo_playground_main.bc.js playground/compiler.js
+        run: ./_build/install/default/bin/syntax_benchmarks | tee tests/benchmark-output.json
 
+      - name: Download previous benchmark data
+        if: matrix.benchmarks
+        uses: actions/cache@v4
+        with:
+          path: ./tests/benchmark-cache
+          key: syntax-benchmark-v1
+ 
+      - name: Store benchmark result
+        if: matrix.benchmarks
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: "customSmallerIsBetter"
+          output-file-path: tests/benchmark-output.json
+          external-data-json-path: ./tests/benchmark-cache/benchmark-data.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          alert-threshold: "150%"
+          comment-always: true
+          comment-on-alert: true
 
       - name: Build playground compiler
         if: matrix.build_playground
