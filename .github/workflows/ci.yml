@@ -82,6 +82,10 @@ jobs:
           path: ${{ env.artifact_dir_name }}
 
   build-compiler:
+    permissions:
+      # benchmark-action/github-action-benchmark
+      pull-requests: write
+
     strategy:
       fail-fast: false
       matrix:
