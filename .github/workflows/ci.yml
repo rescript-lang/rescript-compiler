@@ -340,7 +340,8 @@ jobs:
         if: matrix.benchmarks
         uses: benchmark-action/github-action-benchmark@v1
         with:
-          tool: "customSmallerIsBetter"
+          name: Syntax Benchmarks
+          tool: customSmallerIsBetter
           output-file-path: tests/benchmark-output.json
           external-data-json-path: ./tests/benchmark-cache/benchmark-data.json
           github-token: ${{ secrets.GITHUB_TOKEN }}

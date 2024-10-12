@@ -101,9 +101,10 @@ end = struct
     [
       `Assoc
         [
-          ("name", `String (Format.sprintf "%s - avg. time" b.name));
+          ( "name",
+            `String (Format.sprintf "%s - time (%d iterations)" b.name b.n) );
           ("unit", `String "ms");
-          ("value", `Float (Time.print b.duration /. float_of_int b.n));
+          ("value", `Float (Time.print b.duration));
         ];
       `Assoc
         [
