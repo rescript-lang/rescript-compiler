@@ -11,6 +11,10 @@ on:
   pull_request:
     branches: [master, 11.0_release]
 
+permissions:
+  # allow posting comments to pull request
+  pull-requests: write
+  
 concurrency:
   group: ci-${{ github.ref }}-1
   # Cancel previous builds for pull requests only.
