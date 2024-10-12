@@ -1,6 +1,6 @@
-assert false
+assert(false)
 
-assert truth
+assert(truth)
 
 let x = assert(true)
 let x = assert(12)
