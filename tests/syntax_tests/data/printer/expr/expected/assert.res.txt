@@ -8,15 +8,3 @@
 
   consecutive statements on a line must be separated by ';' or a newline
 
-
-  Syntax error!
-  syntax_tests/data/printer/expr/assert.res:13:18
-
-  11 │ let x = assert module(Foo)
-  12 │ let x = assert Rgb(1, 2, 3)
-  13 │ let x = assert [a, b, c]
-  14 │ let x = assert {x: 1, y: 3}
-  15 │ let x = assert (1, 2, 3)
-
-  Did you forget a `]` here?
-
