@@ -11,6 +11,10 @@ on:
   pull_request:
     branches: [master, 11.0_release]
 
+permissions:
+  # allow posting comments to pull request
+  pull-requests: write
+  
 concurrency:
   group: ci-${{ github.ref }}-1
   # Cancel previous builds for pull requests only.
@@ -90,8 +94,9 @@ jobs:
             ocaml_compiler: ocaml-variants.5.2.0+options,ocaml-option-static
             upload_binaries: true
             upload_libs: true
-            # Build the playground compiler on the fastest runner
+            # Build the playground compiler and run the benchmarks on the fastest runner
             build_playground: true
+            benchmarks: true
           - os: buildjet-2vcpu-ubuntu-2204-arm # ARM
             ocaml_compiler: ocaml-variants.5.2.0+options,ocaml-option-static
             upload_binaries: true
@@ -150,7 +155,7 @@ jobs:
       # matrix.ocaml_compiler may contain commas
       - name: Get OPAM cache key
         shell: bash
-        run: echo "opam_cache_key=opam-env-v3-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}" | sed 's/,/-/g' >> $GITHUB_ENV
+        run: echo "opam_cache_key=opam-env-v4-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}" | sed 's/,/-/g' >> $GITHUB_ENV
 
       - name: Restore OPAM environment
         id: cache-opam-env
@@ -319,6 +324,32 @@ jobs:
       - name: Run gentype tests
         if: runner.os != 'Windows'
         run: make -C tests/gentype_tests/typescript-react-example clean test
+
+      - name: Run syntax benchmarks
+        if: matrix.benchmarks
+        run: ./_build/install/default/bin/syntax_benchmarks | tee tests/benchmark-output.json
+
+      - name: Download previous benchmark data
+        if: matrix.benchmarks
+        uses: actions/cache@v4
+        with:
+          path: ./tests/benchmark-cache
+          key: syntax-benchmark-v1
+ 
+      - name: Store benchmark result
+        # Do not run for PRs created from other repos as those won't be able to write to the pull request
+        if: ${{ matrix.benchmarks && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.event.repository.full_name) }}
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Syntax Benchmarks
+          tool: customSmallerIsBetter
+          output-file-path: tests/benchmark-output.json
+          external-data-json-path: ./tests/benchmark-cache/benchmark-data.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          alert-threshold: "150%"
+          comment-always: true
+          comment-on-alert: true
+          summary-always: true
 
       - name: Build playground compiler
         if: matrix.build_playground

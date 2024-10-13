@@ -75,59 +75,31 @@ end = struct
 end
 
 module Benchmark : sig
-  type t
+  type test_result = {ms_per_run: float; allocs_per_run: int}
 
-  val make : name:string -> f:(t -> unit) -> unit -> t
-  val launch : t -> unit
-  val report : t -> unit
+  val run : (unit -> unit) -> num_iterations:int -> test_result
 end = struct
   type t = {
-    name: string;
     mutable start: Time.t;
-    mutable n: int; (* current iterations count *)
-    mutable duration: Time.t;
-    bench_func: t -> unit;
+    mutable n: int; (* current iteration count *)
+    mutable total_duration: Time.t;
+    bench_func: unit -> unit;
     mutable timer_on: bool;
-    (* mutable result: benchmarkResult; *)
-    (* The initial states *)
     mutable start_allocs: float;
-    mutable start_bytes: float;
-    (* The net total of this test after being run. *)
-    mutable net_allocs: float;
-    mutable net_bytes: float;
+    mutable total_allocs: float;
   }
 
-  let report b =
-    print_endline (Format.sprintf "Benchmark: %s" b.name);
-    print_endline (Format.sprintf "Nbr of iterations: %d" b.n);
-    print_endline
-      (Format.sprintf "Benchmark ran during: %fms" (Time.print b.duration));
-    print_endline
-      (Format.sprintf "Avg time/op: %fms"
-         (Time.print b.duration /. float_of_int b.n));
-    print_endline
-      (Format.sprintf "Allocs/op: %d"
-         (int_of_float (b.net_allocs /. float_of_int b.n)));
-    print_endline
-      (Format.sprintf "B/op: %d"
-         (int_of_float (b.net_bytes /. float_of_int b.n)));
+  type test_result = {ms_per_run: float; allocs_per_run: int}
 
-    (* return (float64(r.Bytes) * float64(r.N) / 1e6) / r.T.Seconds() *)
-    print_newline ();
-    ()
-
-  let make ~name ~f () =
+  let make f =
     {
-      name;
       start = Time.zero;
       n = 0;
       bench_func = f;
-      duration = Time.zero;
+      total_duration = Time.zero;
       timer_on = false;
       start_allocs = 0.;
-      start_bytes = 0.;
-      net_allocs = 0.;
-      net_bytes = 0.;
+      total_allocs = 0.;
     }
 
   (* total amount of memory allocated by the program since it started in words *)
@@ -139,7 +111,6 @@ end = struct
     if not b.timer_on then (
       let allocated_words = mallocs () in
       b.start_allocs <- allocated_words;
-      b.start_bytes <- allocated_words *. 8.;
       b.start <- Time.now ();
       b.timer_on <- true)
 
@@ -147,49 +118,44 @@ end = struct
     if b.timer_on then (
       let allocated_words = mallocs () in
       let diff = Time.diff b.start (Time.now ()) in
-      b.duration <- Time.add b.duration diff;
-      b.net_allocs <- b.net_allocs +. (allocated_words -. b.start_allocs);
-      b.net_bytes <- b.net_bytes +. ((allocated_words *. 8.) -. b.start_bytes);
+      b.total_duration <- Time.add b.total_duration diff;
+      b.total_allocs <- b.total_allocs +. (allocated_words -. b.start_allocs);
       b.timer_on <- false)
 
   let reset_timer b =
     if b.timer_on then (
       let allocated_words = mallocs () in
       b.start_allocs <- allocated_words;
-      b.net_allocs <- allocated_words *. 8.;
-      b.start <- Time.now ());
-    b.net_allocs <- 0.;
-    b.net_bytes <- 0.
+      b.start <- Time.now ())
 
   let run_iteration b n =
     Gc.full_major ();
     b.n <- n;
     reset_timer b;
     start_timer b;
-    b.bench_func b;
+    b.bench_func ();
     stop_timer b
 
-  let launch b =
-    (* 150 runs * all the benchmarks means around 1m of benchmark time *)
-    for n = 1 to 150 do
+  let run f ~num_iterations =
+    let b = make f in
+    for n = 1 to num_iterations do
       run_iteration b n
-    done
+    done;
+    {
+      ms_per_run = Time.print b.total_duration /. float_of_int b.n;
+      allocs_per_run = int_of_float (b.total_allocs /. float_of_int b.n);
+    }
 end
 
 module Benchmarks : sig
   val run : unit -> unit
 end = struct
   type action = Parse | Print
+
   let string_of_action action =
     match action with
-    | Parse -> "parser"
-    | Print -> "printer"
-
-  (* TODO: we could at Reason here *)
-  type lang = Rescript
-  let string_of_lang lang =
-    match lang with
-    | Rescript -> "rescript"
+    | Parse -> "Parse"
+    | Print -> "Print"
 
   let parse_rescript src filename =
     let p = Parser.make src filename in
@@ -197,21 +163,22 @@ end = struct
     assert (p.diagnostics == []);
     structure
 
-  let benchmark filename lang action =
-    let src = IO.read_file filename in
-    let name =
-      filename ^ " " ^ string_of_lang lang ^ " " ^ string_of_action action
-    in
+  let data_dir = "tests/syntax_benchmarks/data"
+  let num_iterations = 150
+
+  let benchmark (filename, action) =
+    let path = Filename.concat data_dir filename in
+    let src = IO.read_file path in
     let benchmark_fn =
-      match (lang, action) with
-      | Rescript, Parse ->
-        fun _ ->
-          let _ = Sys.opaque_identity (parse_rescript src filename) in
+      match action with
+      | Parse ->
+        fun () ->
+          let _ = Sys.opaque_identity (parse_rescript src path) in
           ()
-      | Rescript, Print ->
-        let p = Parser.make src filename in
+      | Print ->
+        let p = Parser.make src path in
         let ast = ResParser.parse_implementation p in
-        fun _ ->
+        fun () ->
           let _ =
             Sys.opaque_identity
               (let cmt_tbl = CommentTable.make () in
@@ -221,21 +188,45 @@ end = struct
           in
           ()
     in
-    let b = Benchmark.make ~name ~f:benchmark_fn () in
-    Benchmark.launch b;
-    Benchmark.report b
+    Benchmark.run benchmark_fn ~num_iterations
+
+  let specs =
+    [
+      ("RedBlackTree.res", Parse);
+      ("RedBlackTree.res", Print);
+      ("RedBlackTreeNoComments.res", Print);
+      ("Napkinscript.res", Parse);
+      ("Napkinscript.res", Print);
+      ("HeroGraphic.res", Parse);
+      ("HeroGraphic.res", Print);
+    ]
 
   let run () =
-    let data_dir = "tests/syntax_benchmarks/data" in
-    benchmark (Filename.concat data_dir "RedBlackTree.res") Rescript Parse;
-    benchmark (Filename.concat data_dir "RedBlackTree.res") Rescript Print;
-    benchmark
-      (Filename.concat data_dir "RedBlackTreeNoComments.res")
-      Rescript Print;
-    benchmark (Filename.concat data_dir "Napkinscript.res") Rescript Parse;
-    benchmark (Filename.concat data_dir "Napkinscript.res") Rescript Print;
-    benchmark (Filename.concat data_dir "HeroGraphic.res") Rescript Parse;
-    benchmark (Filename.concat data_dir "HeroGraphic.res") Rescript Print
+    List.to_seq specs
+    |> Seq.flat_map (fun spec ->
+           let filename, action = spec in
+           let test_name = string_of_action action ^ " " ^ filename in
+           let {Benchmark.ms_per_run; allocs_per_run} = benchmark spec in
+           [
+             `Assoc
+               [
+                 ("name", `String (Format.sprintf "%s - time/run" test_name));
+                 ("unit", `String "ms");
+                 ("value", `Float ms_per_run);
+               ];
+             `Assoc
+               [
+                 ("name", `String (Format.sprintf "%s - allocs/run" test_name));
+                 ("unit", `String "words");
+                 ("value", `Int allocs_per_run);
+               ];
+           ]
+           |> List.to_seq)
+    |> Seq.iteri (fun i json ->
+           print_endline (if i == 0 then "[" else ",");
+           print_string (Yojson.to_string json));
+    print_newline ();
+    print_endline "]"
 end
 
 let () = Benchmarks.run ()
