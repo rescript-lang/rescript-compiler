@@ -78,45 +78,33 @@ module Benchmark : sig
   type t
 
   val make : name:string -> f:(t -> unit) -> unit -> t
-  val launch : t -> unit
+  val launch : t -> num_iterations:int -> unit
   val report : t -> Yojson.t list
 end = struct
   type t = {
     name: string;
     mutable start: Time.t;
-    mutable n: int; (* current iterations count *)
-    mutable duration: Time.t;
+    mutable n: int; (* current iteration count *)
+    mutable total_duration: Time.t;
     bench_func: t -> unit;
     mutable timer_on: bool;
-    (* mutable result: benchmarkResult; *)
-    (* The initial states *)
     mutable start_allocs: float;
-    mutable start_bytes: float;
-    (* The net total of this test after being run. *)
-    mutable net_allocs: float;
-    mutable net_bytes: float;
+    mutable total_allocs: float;
   }
 
   let report b =
     [
       `Assoc
         [
-          ( "name",
-            `String (Format.sprintf "%s - time (%d iterations)" b.name b.n) );
+          ("name", `String (Format.sprintf "%s - time/run" b.name));
           ("unit", `String "ms");
-          ("value", `Float (Time.print b.duration));
+          ("value", `Float (Time.print b.total_duration /. float_of_int b.n));
         ];
       `Assoc
         [
-          ("name", `String (Format.sprintf "%s - allocations" b.name));
-          ("unit", `String "");
-          ("value", `Int (int_of_float (b.net_allocs /. float_of_int b.n)));
-        ];
-      `Assoc
-        [
-          ("name", `String (Format.sprintf "%s - bytes allocated" b.name));
-          ("unit", `String "");
-          ("value", `Int (int_of_float (b.net_bytes /. float_of_int b.n)));
+          ("name", `String (Format.sprintf "%s - allocs/run" b.name));
+          ("unit", `String "words");
+          ("value", `Int (int_of_float (b.total_allocs /. float_of_int b.n)));
         ];
     ]
 
@@ -126,12 +114,10 @@ end = struct
       start = Time.zero;
       n = 0;
       bench_func = f;
-      duration = Time.zero;
+      total_duration = Time.zero;
       timer_on = false;
       start_allocs = 0.;
-      start_bytes = 0.;
-      net_allocs = 0.;
-      net_bytes = 0.;
+      total_allocs = 0.;
     }
 
   (* total amount of memory allocated by the program since it started in words *)
@@ -143,7 +129,6 @@ end = struct
     if not b.timer_on then (
       let allocated_words = mallocs () in
       b.start_allocs <- allocated_words;
-      b.start_bytes <- allocated_words *. 8.;
       b.start <- Time.now ();
       b.timer_on <- true)
 
@@ -151,19 +136,15 @@ end = struct
     if b.timer_on then (
       let allocated_words = mallocs () in
       let diff = Time.diff b.start (Time.now ()) in
-      b.duration <- Time.add b.duration diff;
-      b.net_allocs <- b.net_allocs +. (allocated_words -. b.start_allocs);
-      b.net_bytes <- b.net_bytes +. ((allocated_words *. 8.) -. b.start_bytes);
+      b.total_duration <- Time.add b.total_duration diff;
+      b.total_allocs <- b.total_allocs +. (allocated_words -. b.start_allocs);
       b.timer_on <- false)
 
   let reset_timer b =
     if b.timer_on then (
       let allocated_words = mallocs () in
       b.start_allocs <- allocated_words;
-      b.net_allocs <- allocated_words *. 8.;
-      b.start <- Time.now ());
-    b.net_allocs <- 0.;
-    b.net_bytes <- 0.
+      b.start <- Time.now ())
 
   let run_iteration b n =
     Gc.full_major ();
@@ -173,9 +154,8 @@ end = struct
     b.bench_func b;
     stop_timer b
 
-  let launch b =
-    (* 150 runs * all the benchmarks means around 1m of benchmark time *)
-    for n = 1 to 150 do
+  let launch b ~num_iterations =
+    for n = 1 to num_iterations do
       run_iteration b n
     done
 end
@@ -197,6 +177,7 @@ end = struct
     structure
 
   let data_dir = "tests/syntax_benchmarks/data"
+  let num_iterations = 150
 
   let benchmark (filename, action) =
     let path = Filename.concat data_dir filename in
@@ -222,7 +203,7 @@ end = struct
           ()
     in
     let b = Benchmark.make ~name ~f:benchmark_fn () in
-    Benchmark.launch b;
+    Benchmark.launch b ~num_iterations;
     Benchmark.report b
 
   let specs =
