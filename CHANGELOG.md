@@ -46,6 +46,7 @@
 - Improve error messages around JSX components. https://github.com/rescript-lang/rescript-compiler/pull/7038
 - Improve output of record copying. https://github.com/rescript-lang/rescript-compiler/pull/7043
 - Provide additional context in error message when `unit` is expected. https://github.com/rescript-lang/rescript-compiler/pull/7045
+- Improve error message when passing an object where a record is expected. https://github.com/rescript-lang/rescript-compiler/pull/7101
 
 #### :house: Internal
 
