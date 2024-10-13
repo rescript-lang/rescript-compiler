@@ -349,6 +349,7 @@ jobs:
           alert-threshold: "150%"
           comment-always: true
           comment-on-alert: true
+          summary-always: true
 
       - name: Build playground compiler
         if: matrix.build_playground
