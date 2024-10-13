@@ -75,42 +75,24 @@ end = struct
 end
 
 module Benchmark : sig
-  type t
+  type test_result = {ms_per_run: float; allocs_per_run: int}
 
-  val make : name:string -> f:(t -> unit) -> unit -> t
-  val launch : t -> num_iterations:int -> unit
-  val report : t -> Yojson.t list
+  val run : (unit -> unit) -> num_iterations:int -> test_result
 end = struct
   type t = {
-    name: string;
     mutable start: Time.t;
     mutable n: int; (* current iteration count *)
     mutable total_duration: Time.t;
-    bench_func: t -> unit;
+    bench_func: unit -> unit;
     mutable timer_on: bool;
     mutable start_allocs: float;
     mutable total_allocs: float;
   }
 
-  let report b =
-    [
-      `Assoc
-        [
-          ("name", `String (Format.sprintf "%s - time/run" b.name));
-          ("unit", `String "ms");
-          ("value", `Float (Time.print b.total_duration /. float_of_int b.n));
-        ];
-      `Assoc
-        [
-          ("name", `String (Format.sprintf "%s - allocs/run" b.name));
-          ("unit", `String "words");
-          ("value", `Int (int_of_float (b.total_allocs /. float_of_int b.n)));
-        ];
-    ]
+  type test_result = {ms_per_run: float; allocs_per_run: int}
 
-  let make ~name ~f () =
+  let make f =
     {
-      name;
       start = Time.zero;
       n = 0;
       bench_func = f;
@@ -151,13 +133,18 @@ end = struct
     b.n <- n;
     reset_timer b;
     start_timer b;
-    b.bench_func b;
+    b.bench_func ();
     stop_timer b
 
-  let launch b ~num_iterations =
+  let run f ~num_iterations =
+    let b = make f in
     for n = 1 to num_iterations do
       run_iteration b n
-    done
+    done;
+    {
+      ms_per_run = Time.print b.total_duration /. float_of_int b.n;
+      allocs_per_run = int_of_float (b.total_allocs /. float_of_int b.n);
+    }
 end
 
 module Benchmarks : sig
@@ -182,17 +169,16 @@ end = struct
   let benchmark (filename, action) =
     let path = Filename.concat data_dir filename in
     let src = IO.read_file path in
-    let name = string_of_action action ^ " " ^ filename in
     let benchmark_fn =
       match action with
       | Parse ->
-        fun _ ->
+        fun () ->
           let _ = Sys.opaque_identity (parse_rescript src path) in
           ()
       | Print ->
         let p = Parser.make src path in
         let ast = ResParser.parse_implementation p in
-        fun _ ->
+        fun () ->
           let _ =
             Sys.opaque_identity
               (let cmt_tbl = CommentTable.make () in
@@ -202,9 +188,7 @@ end = struct
           in
           ()
     in
-    let b = Benchmark.make ~name ~f:benchmark_fn () in
-    Benchmark.launch b ~num_iterations;
-    Benchmark.report b
+    Benchmark.run benchmark_fn ~num_iterations
 
   let specs =
     [
@@ -219,7 +203,25 @@ end = struct
 
   let run () =
     List.to_seq specs
-    |> Seq.flat_map (fun spec -> benchmark spec |> List.to_seq)
+    |> Seq.flat_map (fun spec ->
+           let filename, action = spec in
+           let test_name = string_of_action action ^ " " ^ filename in
+           let {Benchmark.ms_per_run; allocs_per_run} = benchmark spec in
+           [
+             `Assoc
+               [
+                 ("name", `String (Format.sprintf "%s - time/run" test_name));
+                 ("unit", `String "ms");
+                 ("value", `Float ms_per_run);
+               ];
+             `Assoc
+               [
+                 ("name", `String (Format.sprintf "%s - allocs/run" test_name));
+                 ("unit", `String "words");
+                 ("value", `Int allocs_per_run);
+               ];
+           ]
+           |> List.to_seq)
     |> Seq.iteri (fun i json ->
            print_endline (if i == 0 then "[" else ",");
            print_string (Yojson.to_string json));
