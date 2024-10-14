@@ -1529,25 +1529,22 @@ let compile output_prefix =
       with
       | {block; value = Some v} ->
         let loc_start = prim_info.loc.loc_start in
-        let fname = loc_start.pos_fname in
-        let line = loc_start.pos_lnum in
-        let col = loc_start.pos_cnum - loc_start.pos_bol in
-
-        let else_ =
-          S.throw_stmt
-            (E.obj
-               [
-                 (Lit "RE_EXN_ID", E.str "Assertion_failure");
-                 ( Lit "_1",
-                   E.array Js_op.Immutable
-                     [
-                       E.str fname;
-                       E.int (Int32.of_int line);
-                       E.int (Int32.of_int col);
-                     ] );
-                 (Lit "Error", E.new_ (E.js_global "Error") []);
-               ])
+        let payload =
+          E.array Js_op.Immutable
+            [
+              E.str (loc_start.pos_fname |> Filename.basename);
+              E.int (Int32.of_int loc_start.pos_lnum);
+              E.int (Int32.of_int (loc_start.pos_cnum - loc_start.pos_bol));
+            ]
         in
+
+        let block_expr =
+          Js_exp_make.make_block payload Blk_extension
+            (E.str "Assert_failure" :: [payload])
+            Immutable
+        in
+
+        let else_ = S.throw_stmt block_expr in
 
         Js_output.make
           [S.if_ v block ~else_:[else_]]

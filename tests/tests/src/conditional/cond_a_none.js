@@ -12,5 +12,9 @@ throw {
   Error: new Error()
 };
 
+let A = {
+  u: u
+};
+
 exports.A = A;
 /* u Not a pure module */

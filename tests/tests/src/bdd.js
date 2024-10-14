@@ -396,18 +396,18 @@ function main() {
   for (let i = 1; i <= 100; ++i) {
     succeeded = succeeded && test_hwb(bdd, random_vars(22));
   }
-  if (succeeded) {
-    return;
+  if (!succeeded) {
+    throw {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "bdd.res",
+        302,
+        2
+      ],
+      Error: new Error()
+    };
   }
-  throw {
-    RE_EXN_ID: "Assert_failure",
-    _1: [
-      "bdd.res",
-      302,
-      2
-    ],
-    Error: new Error()
-  };
+  
 }
 
 main();
