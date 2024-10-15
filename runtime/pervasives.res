@@ -15,6 +15,8 @@ module Pervasives = {
 
   external raise: exn => 'a = "%raise"
 
+  external assert: bool => 'a = "%assert"
+
   @deprecated("Use custom exception instead")
   let failwith = s => raise(Failure(s))
 
