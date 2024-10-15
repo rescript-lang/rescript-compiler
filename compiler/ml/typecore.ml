@@ -2458,7 +2458,9 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
     in
     let type_clash_context = type_clash_context_from_function sexp sfunct in
     let args, ty_res, fully_applied =
-      type_application ?type_clash_context uncurried env funct sargs
+      match specialized_infix_type_application env funct sargs with
+      | Some application -> application
+      | None -> type_application ?type_clash_context uncurried env funct sargs
     in
     end_def ();
     unify_var env (newvar ()) funct.exp_type;
@@ -3560,6 +3562,37 @@ and is_automatic_curried_application env funct =
   match (expand_head env funct.exp_type).desc with
   | Tarrow _ -> true
   | _ -> false
+
+and specialized_infix_type_application env funct (sargs : sargs) :
+    (targs * Types.type_expr * bool) option =
+  let is_generic_infix path =
+    match Path.name path with
+    | "Pervasives.+" | "Pervasives.-" -> true
+    | _ -> false
+  in
+  match (funct.exp_desc, sargs) with
+  | Texp_ident (path, _, _), [(Nolabel, lhs_expr); (Nolabel, rhs_expr)]
+    when is_generic_infix path ->
+    let lhs = type_exp env lhs_expr in
+    let lhs_type = lhs.exp_type in
+    let rhs =
+      match (expand_head env lhs_type).desc with
+      | Tconstr (path, _, _) when Path.same path Predef.path_int ->
+        type_expect env rhs_expr Predef.type_int
+      | Tconstr (path, _, _) when Path.same path Predef.path_float ->
+        type_expect env rhs_expr Predef.type_float
+      | Tconstr (path, _, _) when Path.same path Predef.path_bigint ->
+        type_expect env rhs_expr Predef.type_bigint
+      | Tconstr (path, _, _) when Path.same path Predef.path_string ->
+        type_expect env rhs_expr Predef.type_string
+      | _ ->
+        unify env lhs_type Predef.type_int;
+        type_expect env rhs_expr Predef.type_int
+    in
+    let result_type = lhs_type in
+    let targs = [(Nolabel, Some lhs); (Nolabel, Some rhs)] in
+    Some (targs, result_type, true)
+  | _ -> None
 
 and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
     targs * Types.type_expr * bool =
