@@ -29,17 +29,43 @@ let find_name_space cmt =
   cmt |> Filename.basename |> (Filename.chop_extension [@doesNotRaise])
   |> keep_after_dash
 
-let get_output_file_relative ~config cmt =
-  (cmt |> handle_namespace) ^ ModuleExtension.ts_input_file_suffix ~config
+let remove_project_root_from_absolute_path ~(config : Config.t) source_path =
+  let i = String.length config.project_root + 1 in
+  let n = String.length source_path - i in
+  (String.sub source_path i n [@doesNotRaise])
 
-let get_output_file ~(config : Config.t) cmt =
-  Filename.concat config.project_root (get_output_file_relative ~config cmt)
+let get_output_file_relative ~config source_path =
+  if Filename.is_relative source_path then
+    (source_path |> handle_namespace)
+    ^ ModuleExtension.ts_input_file_suffix ~config
+  else
+    let relative_path =
+      remove_project_root_from_absolute_path ~config source_path
+    in
+    (relative_path |> handle_namespace)
+    ^ ModuleExtension.ts_input_file_suffix ~config
+
+let get_output_file ~(config : Config.t) sourcePath =
+  if Filename.is_relative sourcePath then
+    (* assuming a relative path from the project root *)
+    Filename.concat config.project_root
+      (get_output_file_relative ~config sourcePath)
+  else
+    (* we want to place the output beside the source file *)
+    let relative_path =
+      remove_project_root_from_absolute_path ~config sourcePath
+    in
+    Filename.concat config.project_root
+      (get_output_file_relative ~config relative_path)
 
 let get_module_name cmt =
   cmt |> handle_namespace |> Filename.basename |> ModuleName.from_string_unsafe
 
 let get_cmt_file cmt =
-  let path_cmt = Filename.concat (Sys.getcwd ()) cmt in
+  let path_cmt =
+    if Filename.is_relative cmt then Filename.concat (Sys.getcwd ()) cmt
+    else cmt
+  in
   let cmt_file =
     if Filename.check_suffix path_cmt ".cmt" then
       let path_cmt_lower_case =
