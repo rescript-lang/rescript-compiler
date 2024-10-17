@@ -90,6 +90,47 @@ let readCmt cmtFile =
     Log_.item "Try to clean and rebuild.\n\n";
     assert false
 
+let readInputCmt isInterface cmtFile =
+  let inputCMT = readCmt cmtFile in
+  let ignoreInterface = ref false in
+  let checkAnnotation ~loc:_ attributes =
+    if
+      attributes
+      |> Annotation.getAttributePayload Annotation.tagIsGenTypeIgnoreInterface
+      <> None
+    then ignoreInterface := true;
+    attributes
+    |> Annotation.getAttributePayload Annotation.tagIsOneOfTheGenTypeAnnotations
+    <> None
+  in
+  let hasGenTypeAnnotations =
+    inputCMT |> cmtCheckAnnotations ~checkAnnotation
+  in
+  if isInterface then
+    let cmtFileImpl =
+      (cmtFile |> (Filename.chop_extension [@doesNotRaise])) ^ ".cmt"
+    in
+    let inputCMTImpl = readCmt cmtFileImpl in
+    let hasGenTypeAnnotationsImpl =
+      inputCMTImpl
+      |> cmtCheckAnnotations ~checkAnnotation:(fun ~loc attributes ->
+             if attributes |> checkAnnotation ~loc then (
+               if not !ignoreInterface then (
+                 Log_.Color.setup ();
+                 Log_.info ~loc ~name:"Warning genType" (fun ppf () ->
+                     Format.fprintf ppf
+                       "Annotation is ignored as there's a .rei file"));
+               true)
+             else false)
+    in
+    ( (match !ignoreInterface with
+      | true -> inputCMTImpl
+      | false -> inputCMT),
+      match !ignoreInterface with
+      | true -> hasGenTypeAnnotationsImpl
+      | false -> hasGenTypeAnnotations )
+  else (inputCMT, hasGenTypeAnnotations)
+
 let processCmtFile cmt =
   let config = Paths.readConfig ~namespace:(cmt |> Paths.findNameSpace) in
   if !Debug.basic then Log_.item "Cmt %s\n" cmt;
@@ -104,49 +145,7 @@ let processCmtFile cmt =
         ~excludeFile:(fun fname ->
           fname = "React.res" || fname = "ReasonReact.res")
     in
-    let inputCMT, hasGenTypeAnnotations =
-      let inputCMT = readCmt cmtFile in
-      let ignoreInterface = ref false in
-      let checkAnnotation ~loc:_ attributes =
-        if
-          attributes
-          |> Annotation.getAttributePayload
-               Annotation.tagIsGenTypeIgnoreInterface
-          <> None
-        then ignoreInterface := true;
-        attributes
-        |> Annotation.getAttributePayload
-             Annotation.tagIsOneOfTheGenTypeAnnotations
-        <> None
-      in
-      let hasGenTypeAnnotations =
-        inputCMT |> cmtCheckAnnotations ~checkAnnotation
-      in
-      if isInterface then
-        let cmtFileImpl =
-          (cmtFile |> (Filename.chop_extension [@doesNotRaise])) ^ ".cmt"
-        in
-        let inputCMTImpl = readCmt cmtFileImpl in
-        let hasGenTypeAnnotationsImpl =
-          inputCMTImpl
-          |> cmtCheckAnnotations ~checkAnnotation:(fun ~loc attributes ->
-                 if attributes |> checkAnnotation ~loc then (
-                   if not !ignoreInterface then (
-                     Log_.Color.setup ();
-                     Log_.info ~loc ~name:"Warning genType" (fun ppf () ->
-                         Format.fprintf ppf
-                           "Annotation is ignored as there's a .rei file"));
-                   true)
-                 else false)
-        in
-        ( (match !ignoreInterface with
-          | true -> inputCMTImpl
-          | false -> inputCMT),
-          match !ignoreInterface with
-          | true -> hasGenTypeAnnotationsImpl
-          | false -> hasGenTypeAnnotations )
-      else (inputCMT, hasGenTypeAnnotations)
-    in
+    let inputCMT, hasGenTypeAnnotations = readInputCmt isInterface cmtFile in
     if hasGenTypeAnnotations then
       let sourceFile =
         match inputCMT.cmt_annots |> FindSourceFile.cmt with
