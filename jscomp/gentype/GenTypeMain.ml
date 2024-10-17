@@ -136,8 +136,6 @@ let processCmtFile cmt =
   if !Debug.basic then Log_.item "Cmt %s\n" cmt;
   let cmtFile = cmt |> Paths.getCmtFile in
   if cmtFile <> "" then
-    let outputFile = cmt |> Paths.getOutputFile ~config in
-    let outputFileRelative = cmt |> Paths.getOutputFileRelative ~config in
     let fileName = cmt |> Paths.getModuleName in
     let isInterface = Filename.check_suffix cmtFile ".cmti" in
     let inputCMT, hasGenTypeAnnotations = readInputCmt isInterface cmtFile in
@@ -150,6 +148,10 @@ let processCmtFile cmt =
         match isInterface with
         | true -> ".resi"
         | false -> ".res")
+    in
+    let outputFile = sourceFile |> Paths.getOutputFile ~config in
+    let outputFileRelative =
+      sourceFile |> Paths.getOutputFileRelative ~config
     in
     let resolver =
       ModuleResolver.createLazyResolver ~config ~extensions:[".res"; ".shim.ts"]
