@@ -239,6 +239,7 @@ let read_config ~get_config_file ~namespace =
       sources;
     }
   in
+  let default_config = {default with project_root; bsb_project_root} in
   match get_config_file ~project_root with
   | Some bs_config_file -> (
     try
@@ -247,7 +248,7 @@ let read_config ~get_config_file ~namespace =
       | Obj {map = bsconf} -> (
         match bsconf |> get_opt "gentypeconfig" with
         | Some (Obj {map = gtconf}) -> parse_config ~bsconf ~gtconf
-        | _ -> default)
-      | _ -> default
-    with _ -> default)
-  | None -> default
+        | _ -> default_config)
+      | _ -> default_config
+    with _ -> default_config)
+  | None -> default_config
