@@ -140,23 +140,23 @@ let processCmtFile cmt =
     let outputFileRelative = cmt |> Paths.getOutputFileRelative ~config in
     let fileName = cmt |> Paths.getModuleName in
     let isInterface = Filename.check_suffix cmtFile ".cmti" in
+    let inputCMT, hasGenTypeAnnotations = readInputCmt isInterface cmtFile in
+    let sourceFile =
+      match inputCMT.cmt_annots |> FindSourceFile.cmt with
+      | Some sourceFile -> sourceFile
+      | None -> (
+        (fileName |> ModuleName.toString)
+        ^
+        match isInterface with
+        | true -> ".resi"
+        | false -> ".res")
+    in
     let resolver =
       ModuleResolver.createLazyResolver ~config ~extensions:[".res"; ".shim.ts"]
         ~excludeFile:(fun fname ->
           fname = "React.res" || fname = "ReasonReact.res")
     in
-    let inputCMT, hasGenTypeAnnotations = readInputCmt isInterface cmtFile in
     if hasGenTypeAnnotations then
-      let sourceFile =
-        match inputCMT.cmt_annots |> FindSourceFile.cmt with
-        | Some sourceFile -> sourceFile
-        | None -> (
-          (fileName |> ModuleName.toString)
-          ^
-          match isInterface with
-          | true -> ".resi"
-          | false -> ".res")
-      in
       inputCMT
       |> translateCMT ~config ~outputFileRelative ~resolver
       |> emitTranslation ~config ~fileName ~outputFile ~outputFileRelative
