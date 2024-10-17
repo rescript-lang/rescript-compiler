@@ -138,8 +138,6 @@ let process_cmt_file cmt =
   if !Debug.basic then Log_.item "Cmt %s\n" cmt;
   let cmt_file = cmt |> Paths.get_cmt_file in
   if cmt_file <> "" then
-    let output_file = cmt |> Paths.get_output_file ~config in
-    let output_file_relative = cmt |> Paths.get_output_file_relative ~config in
     let file_name = cmt |> Paths.get_module_name in
     let is_interface = Filename.check_suffix cmt_file ".cmti" in
     let input_cmt, has_gentype_annotations =
@@ -154,6 +152,10 @@ let process_cmt_file cmt =
         match is_interface with
         | true -> ".resi"
         | false -> ".res")
+    in
+    let output_file = source_file |> Paths.get_output_file ~config in
+    let output_file_relative =
+      source_file |> Paths.get_output_file_relative ~config
     in
     let resolver =
       ModuleResolver.create_lazy_resolver ~config
