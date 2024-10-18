@@ -28,10 +28,14 @@ let findNameSpace cmt =
   cmt |> Filename.basename |> (Filename.chop_extension [@doesNotRaise])
   |> keepAfterDash
 
-let remove_project_root_from_absolute_path ~(config : Config.t) source_path =
-  let i = String.length config.projectRoot + 1 in
-  let n = String.length source_path - i in
-  (String.sub source_path i n [@doesNotRaise])
+let removePathPrefix ~prefix path =
+  let normalizedPrefix = Filename.concat prefix "" in
+  let prefixLen = String.length normalizedPrefix in
+  let pathLen = String.length path in
+  let isPrefix =
+    prefixLen <= pathLen && String.sub path 0 prefixLen = normalizedPrefix
+  in
+  if isPrefix then String.sub path prefixLen (pathLen - prefixLen) else path
 
 let appendSuffix ~config sourcePath =
   (sourcePath |> handleNamespace) ^ ModuleExtension.tsInputFileSuffix ~config
@@ -40,7 +44,7 @@ let getOutputFileRelative ~config sourcePath =
   if Filename.is_relative sourcePath then appendSuffix ~config sourcePath
   else
     let relative_path =
-      remove_project_root_from_absolute_path ~config sourcePath
+      removePathPrefix ~prefix:config.projectRoot sourcePath
     in
     appendSuffix ~config relative_path
 
@@ -54,7 +58,7 @@ let getOutputFile ~(config : Config.t) sourcePath =
   else
     (* for absolute paths we want to place the output beside the source file *)
     let relative_path =
-      remove_project_root_from_absolute_path ~config sourcePath
+      removePathPrefix ~prefix:config.projectRoot sourcePath
     in
     computeAbsoluteOutputFilePath ~config relative_path
 
