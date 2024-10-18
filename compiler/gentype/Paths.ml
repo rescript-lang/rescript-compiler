@@ -29,10 +29,14 @@ let find_name_space cmt =
   cmt |> Filename.basename |> (Filename.chop_extension [@doesNotRaise])
   |> keep_after_dash
 
-let remove_project_root_from_absolute_path ~(config : Config.t) source_path =
-  let i = String.length config.project_root + 1 in
-  let n = String.length source_path - i in
-  (String.sub source_path i n [@doesNotRaise])
+let remove_path_prefix ~prefix path =
+  let normalized_prefix = Filename.concat prefix "" in
+  let prefix_len = String.length normalized_prefix in
+  let path_len = String.length path in
+  let is_prefix =
+    prefix_len <= path_len && String.sub path 0 prefix_len = normalized_prefix
+  in
+  if is_prefix then String.sub path prefix_len (path_len - prefix_len) else path
 
 let append_suffix ~config source_path =
   (source_path |> handle_namespace)
@@ -42,7 +46,7 @@ let get_output_file_relative ~(config : Config.t) source_path =
   if Filename.is_relative source_path then append_suffix ~config source_path
   else
     let relative_path =
-      remove_project_root_from_absolute_path ~config source_path
+      remove_path_prefix ~prefix:config.project_root source_path
     in
     append_suffix ~config relative_path
 
@@ -56,7 +60,7 @@ let get_output_file ~(config : Config.t) sourcePath =
   else
     (* for absolute paths we want to place the output beside the source file *)
     let relative_path =
-      remove_project_root_from_absolute_path ~config sourcePath
+      remove_path_prefix ~prefix:config.project_root sourcePath
     in
     compute_absolute_output_file_path ~config relative_path
 
