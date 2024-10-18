@@ -34,29 +34,31 @@ let remove_project_root_from_absolute_path ~(config : Config.t) source_path =
   let n = String.length source_path - i in
   (String.sub source_path i n [@doesNotRaise])
 
-let get_output_file_relative ~config source_path =
-  if Filename.is_relative source_path then
-    (source_path |> handle_namespace)
-    ^ ModuleExtension.ts_input_file_suffix ~config
+let append_suffix ~config source_path =
+  (source_path |> handle_namespace)
+  ^ ModuleExtension.ts_input_file_suffix ~config
+
+let get_output_file_relative ~(config : Config.t) source_path =
+  if Filename.is_relative source_path then append_suffix ~config source_path
   else
     let relative_path =
       remove_project_root_from_absolute_path ~config source_path
     in
-    (relative_path |> handle_namespace)
-    ^ ModuleExtension.ts_input_file_suffix ~config
+    append_suffix ~config relative_path
+
+let compute_absolute_output_file_path ~(config : Config.t) path =
+  Filename.concat config.project_root (get_output_file_relative ~config path)
 
 let get_output_file ~(config : Config.t) sourcePath =
   if Filename.is_relative sourcePath then
     (* assuming a relative path from the project root *)
-    Filename.concat config.project_root
-      (get_output_file_relative ~config sourcePath)
+    compute_absolute_output_file_path ~config sourcePath
   else
-    (* we want to place the output beside the source file *)
+    (* for absolute paths we want to place the output beside the source file *)
     let relative_path =
       remove_project_root_from_absolute_path ~config sourcePath
     in
-    Filename.concat config.project_root
-      (get_output_file_relative ~config relative_path)
+    compute_absolute_output_file_path ~config relative_path
 
 let get_module_name cmt =
   cmt |> handle_namespace |> Filename.basename |> ModuleName.from_string_unsafe
