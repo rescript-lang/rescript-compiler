@@ -29,17 +29,49 @@ let find_name_space cmt =
   cmt |> Filename.basename |> (Filename.chop_extension [@doesNotRaise])
   |> keep_after_dash
 
-let get_output_file_relative ~config cmt =
-  (cmt |> handle_namespace) ^ ModuleExtension.ts_input_file_suffix ~config
+let remove_path_prefix ~prefix path =
+  let normalized_prefix = Filename.concat prefix "" in
+  let prefix_len = String.length normalized_prefix in
+  let path_len = String.length path in
+  let is_prefix =
+    prefix_len <= path_len && String.sub path 0 prefix_len = normalized_prefix
+  in
+  if is_prefix then String.sub path prefix_len (path_len - prefix_len) else path
 
-let get_output_file ~(config : Config.t) cmt =
-  Filename.concat config.project_root (get_output_file_relative ~config cmt)
+let append_suffix ~config source_path =
+  (source_path |> handle_namespace)
+  ^ ModuleExtension.ts_input_file_suffix ~config
+
+let get_output_file_relative ~(config : Config.t) source_path =
+  if Filename.is_relative source_path then append_suffix ~config source_path
+  else
+    let relative_path =
+      remove_path_prefix ~prefix:config.project_root source_path
+    in
+    append_suffix ~config relative_path
+
+let compute_absolute_output_file_path ~(config : Config.t) path =
+  Filename.concat config.project_root (get_output_file_relative ~config path)
+
+let get_output_file ~(config : Config.t) sourcePath =
+  if Filename.is_relative sourcePath then
+    (* assuming a relative path from the project root *)
+    compute_absolute_output_file_path ~config sourcePath
+  else
+    (* for absolute paths we want to place the output beside the source file *)
+    let relative_path =
+      remove_path_prefix ~prefix:config.project_root sourcePath
+    in
+    compute_absolute_output_file_path ~config relative_path
 
 let get_module_name cmt =
   cmt |> handle_namespace |> Filename.basename |> ModuleName.from_string_unsafe
 
 let get_cmt_file cmt =
-  let path_cmt = Filename.concat (Sys.getcwd ()) cmt in
+  let path_cmt =
+    if Filename.is_relative cmt then Filename.concat (Sys.getcwd ()) cmt
+    else cmt
+  in
   let cmt_file =
     if Filename.check_suffix path_cmt ".cmt" then
       let path_cmt_lower_case =
