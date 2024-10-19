@@ -49,7 +49,7 @@ type opaqueVariant =
   | A
   | B
 
-@genType let stringT: String.t = "a"
+@genType let stringT: string = "a"
 
 @genType let jsStringT: Js.String.t = "a"
 
