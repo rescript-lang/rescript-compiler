@@ -35,7 +35,7 @@
 - Fix JSX settings inheritance: only 'version' propagates to dependencies, preserving their 'mode' and 'module'. https://github.com/rescript-lang/rescript-compiler/pull/7094
 - Fix variant cast to int. https://github.com/rescript-lang/rescript-compiler/pull/7058
 - Fix comments formatted away in function without arguments. https://github.com/rescript-lang/rescript-compiler/pull/7095
-- Fix genType JSX component compilation. https://github.com/rescript-lang/rescript-compiler/pull/7103
+- Fix genType JSX component compilation. https://github.com/rescript-lang/rescript-compiler/pull/7107
 
 #### :nail_care: Polish
 
