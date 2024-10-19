@@ -207,7 +207,8 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
     {dependencies = []; type_ = EmitType.type_react_event_mouse_t}
   | ( ( ["React"; "element"]
       | ["ReasonReact"; "reactElement"]
-      | ["Pervasives"; "Jsx"; "element"] ),
+      | ["Pervasives"; "Jsx"; "element"]
+      | ["Jsx"; "element"] ),
       [] ) ->
     {dependencies = []; type_ = EmitType.type_react_element}
   | (["FB"; "option"] | ["option"]), [param_translation] ->
