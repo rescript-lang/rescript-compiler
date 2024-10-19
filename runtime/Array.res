@@ -3,6 +3,8 @@
 external getUnsafe: (array<'a>, int) => 'a = "%array_unsafe_get"
 external setUnsafe: (array<'a>, int, 'a) => unit = "%array_unsafe_set"
 
+external unsafe_get: (array<'a>, int) => 'a = "%array_unsafe_get"
+
 @val external fromIterator: Iterator.t<'a> => array<'a> = "Array.from"
 @val external fromArrayLike: Js.Array2.array_like<'a> => array<'a> = "Array.from"
 @val
