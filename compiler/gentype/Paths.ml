@@ -34,9 +34,12 @@ let remove_path_prefix ~prefix path =
   let prefix_len = String.length normalized_prefix in
   let path_len = String.length path in
   let is_prefix =
-    prefix_len <= path_len && String.sub path 0 prefix_len = normalized_prefix
+    prefix_len <= path_len
+    && (String.sub path 0 prefix_len [@doesNotRaise]) = normalized_prefix
   in
-  if is_prefix then String.sub path prefix_len (path_len - prefix_len) else path
+  if is_prefix then
+    String.sub path prefix_len (path_len - prefix_len) [@doesNotRaise]
+  else path
 
 let append_suffix ~config source_path =
   (source_path |> handle_namespace)
