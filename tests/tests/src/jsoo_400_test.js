@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Primitive_int = require("rescript/lib/js/primitive_int.js");
+let Primitive_int = require("rescript/lib/js/Primitive_int.js");
 
 function u() {
   let n;

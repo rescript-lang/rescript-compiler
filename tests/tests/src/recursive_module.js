@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Lazy = require("rescript/lib/js/lazy.js");
-let Primitive_module = require("rescript/lib/js/primitive_module.js");
-let Primitive_exceptions = require("rescript/lib/js/primitive_exceptions.js");
+let Lazy = require("rescript/lib/js/Lazy.js");
+let Primitive_module = require("rescript/lib/js/Primitive_module.js");
+let Primitive_exceptions = require("rescript/lib/js/Primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0

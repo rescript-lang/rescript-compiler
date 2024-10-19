@@ -2,7 +2,7 @@
 'use strict';
 
 let React = require("react");
-let Js_array = require("rescript/lib/js/js_array.js");
+let Js_array = require("rescript/lib/js/Js_array.js");
 
 function createDomElement(s, props, children) {
   let vararg = Js_array.concat(children, [

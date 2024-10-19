@@ -3,7 +3,7 @@
 
 let Mocha = require("mocha");
 let Test_utils = require("./test_utils.js");
-let Belt_MapInt = require("rescript/lib/js/belt_MapInt.js");
+let Belt_MapInt = require("rescript/lib/js/Belt_MapInt.js");
 
 Mocha.describe("Belt_mapint_test", () => {
   Mocha.test("set", () => {

@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Js_dict = require("rescript/lib/js/js_dict.js");
+let Js_dict = require("rescript/lib/js/Js_dict.js");
 
 function obj() {
   return {

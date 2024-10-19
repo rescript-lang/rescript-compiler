@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Primitive_module = require("rescript/lib/js/primitive_module.js");
+let Primitive_module = require("rescript/lib/js/Primitive_module.js");
 
 let A = Primitive_module.init([
   "rec_module_test.res",

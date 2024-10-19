@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Belt_MutableMapInt = require("rescript/lib/js/belt_MutableMapInt.js");
+let Belt_MutableMapInt = require("rescript/lib/js/Belt_MutableMapInt.js");
 
 let suites = {
   contents: /* [] */0

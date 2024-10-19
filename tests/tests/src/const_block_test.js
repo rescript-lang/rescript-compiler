@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Primitive_array = require("rescript/lib/js/primitive_array.js");
+let Primitive_array = require("rescript/lib/js/Primitive_array.js");
 
 let a = [
   0,

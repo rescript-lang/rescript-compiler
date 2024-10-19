@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
-let Pervasives = require("rescript/lib/js/pervasives.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
+let Pervasives = require("rescript/lib/js/Pervasives.js");
 
 function map(f, a) {
   let f$1 = x => f(x);

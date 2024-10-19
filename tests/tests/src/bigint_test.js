@@ -3,8 +3,8 @@
 
 let Mt = require("./mt.js");
 let Mt_global = require("./mt_global.js");
-let Primitive_bigint = require("rescript/lib/js/primitive_bigint.js");
-let Primitive_object = require("rescript/lib/js/primitive_object.js");
+let Primitive_bigint = require("rescript/lib/js/Primitive_bigint.js");
+let Primitive_object = require("rescript/lib/js/Primitive_object.js");
 
 let test_id = {
   contents: 0

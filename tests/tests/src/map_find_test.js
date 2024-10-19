@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Belt_List = require("rescript/lib/js/belt_List.js");
-let Belt_MapInt = require("rescript/lib/js/belt_MapInt.js");
-let Belt_MapString = require("rescript/lib/js/belt_MapString.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
+let Belt_MapInt = require("rescript/lib/js/Belt_MapInt.js");
+let Belt_MapString = require("rescript/lib/js/Belt_MapString.js");
 
 let m = Belt_List.reduceReverse({
   hd: [

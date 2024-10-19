@@ -2,8 +2,8 @@
 'use strict';
 
 let React = require("react");
-let Js_string = require("rescript/lib/js/js_string.js");
-let Primitive_option = require("rescript/lib/js/primitive_option.js");
+let Js_string = require("rescript/lib/js/Js_string.js");
+let Primitive_option = require("rescript/lib/js/Primitive_option.js");
 
 function safeMakeEvent(eventName) {
   if (typeof Event === "function") {

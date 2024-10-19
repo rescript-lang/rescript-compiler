@@ -2,9 +2,9 @@
 'use strict';
 
 let Set_gen = require("./set_gen.js");
-let Belt_List = require("rescript/lib/js/belt_List.js");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
-let Primitive_string = require("rescript/lib/js/primitive_string.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
+let Primitive_string = require("rescript/lib/js/Primitive_string.js");
 
 let compare_elt = Primitive_string.compare;
 

@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Pervasives = require("rescript/lib/js/pervasives.js");
-let Primitive_object = require("rescript/lib/js/primitive_object.js");
+let Pervasives = require("rescript/lib/js/Pervasives.js");
+let Primitive_object = require("rescript/lib/js/Primitive_object.js");
 
 function isLessThan(title, small, big) {
   return {

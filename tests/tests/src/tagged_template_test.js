@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Primitive_array = require("rescript/lib/js/primitive_array.js");
+let Primitive_array = require("rescript/lib/js/Primitive_array.js");
 let Tagged_template_libJs = require("./tagged_template_lib.js");
 
 function sql(prim0, prim1) {

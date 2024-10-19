@@ -5,7 +5,7 @@
 // hello
 'use strict';
 
-let Belt_List = require("rescript/lib/js/belt_List.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
 
 let x0 = null;
 

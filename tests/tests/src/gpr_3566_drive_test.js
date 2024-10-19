@@ -3,7 +3,7 @@
 
 let Mt = require("./mt.js");
 let Gpr_3566_test = require("./gpr_3566_test.js");
-let Primitive_option = require("rescript/lib/js/primitive_option.js");
+let Primitive_option = require("rescript/lib/js/Primitive_option.js");
 
 let suites = {
   contents: /* [] */0

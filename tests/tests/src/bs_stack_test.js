@@ -2,10 +2,10 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Js_undefined = require("rescript/lib/js/js_undefined.js");
-let Primitive_option = require("rescript/lib/js/primitive_option.js");
-let Belt_MutableQueue = require("rescript/lib/js/belt_MutableQueue.js");
-let Belt_MutableStack = require("rescript/lib/js/belt_MutableStack.js");
+let Js_undefined = require("rescript/lib/js/Js_undefined.js");
+let Primitive_option = require("rescript/lib/js/Primitive_option.js");
+let Belt_MutableQueue = require("rescript/lib/js/Belt_MutableQueue.js");
+let Belt_MutableStack = require("rescript/lib/js/Belt_MutableStack.js");
 
 let suites = {
   contents: /* [] */0

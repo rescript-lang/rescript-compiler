@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Belt_Int = require("rescript/lib/js/belt_Int.js");
-let Primitive_exceptions = require("rescript/lib/js/primitive_exceptions.js");
+let Belt_Int = require("rescript/lib/js/Belt_Int.js");
+let Primitive_exceptions = require("rescript/lib/js/Primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0

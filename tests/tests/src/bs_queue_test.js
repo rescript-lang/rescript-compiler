@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
-let Primitive_object = require("rescript/lib/js/primitive_object.js");
-let Belt_MutableQueue = require("rescript/lib/js/belt_MutableQueue.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
+let Primitive_object = require("rescript/lib/js/Primitive_object.js");
+let Belt_MutableQueue = require("rescript/lib/js/Belt_MutableQueue.js");
 
 let suites = {
   contents: /* [] */0

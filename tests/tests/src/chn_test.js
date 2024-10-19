@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Belt_List = require("rescript/lib/js/belt_List.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
 
 let suites = {
   contents: /* [] */0

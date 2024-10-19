@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Primitive_option = require("rescript/lib/js/primitive_option.js");
+let Primitive_option = require("rescript/lib/js/Primitive_option.js");
 
 let suites_0 = [
   "isArray_array",
