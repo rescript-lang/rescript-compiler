@@ -33,9 +33,12 @@ let removePathPrefix ~prefix path =
   let prefixLen = String.length normalizedPrefix in
   let pathLen = String.length path in
   let isPrefix =
-    prefixLen <= pathLen && String.sub path 0 prefixLen = normalizedPrefix
+    prefixLen <= pathLen
+    && (String.sub path 0 prefixLen [@doesNotRaise]) = normalizedPrefix
   in
-  if isPrefix then String.sub path prefixLen (pathLen - prefixLen) else path
+  if isPrefix then
+    String.sub path prefixLen (pathLen - prefixLen) [@doesNotRaise]
+  else path
 
 let appendSuffix ~config sourcePath =
   (sourcePath |> handleNamespace) ^ ModuleExtension.tsInputFileSuffix ~config
