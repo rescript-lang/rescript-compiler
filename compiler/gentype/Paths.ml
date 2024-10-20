@@ -46,26 +46,14 @@ let append_suffix ~config source_path =
   ^ ModuleExtension.ts_input_file_suffix ~config
 
 let get_output_file_relative ~(config : Config.t) source_path =
-  if Filename.is_relative source_path then append_suffix ~config source_path
-  else
-    let relative_path =
-      remove_path_prefix ~prefix:config.project_root source_path
-    in
-    append_suffix ~config relative_path
+  let relativePath =
+    remove_path_prefix ~prefix:config.project_root source_path
+  in
+  append_suffix ~config relativePath
 
-let compute_absolute_output_file_path ~(config : Config.t) path =
-  Filename.concat config.project_root (get_output_file_relative ~config path)
-
-let get_output_file ~(config : Config.t) sourcePath =
-  if Filename.is_relative sourcePath then
-    (* assuming a relative path from the project root *)
-    compute_absolute_output_file_path ~config sourcePath
-  else
-    (* for absolute paths we want to place the output beside the source file *)
-    let relative_path =
-      remove_path_prefix ~prefix:config.project_root sourcePath
-    in
-    compute_absolute_output_file_path ~config relative_path
+let get_output_file ~(config : Config.t) source_path =
+  let relative_output_path = get_output_file_relative ~config source_path in
+  Filename.concat config.project_root relative_output_path
 
 let get_module_name cmt =
   cmt |> handle_namespace |> Filename.basename |> ModuleName.from_string_unsafe
