@@ -12,6 +12,7 @@
 
 # 11.1.5 (Unreleased)
 
+- Handle absolute file paths in gentype https://github.com/rescript-lang/rescript-compiler/pull/7111
 - Deprecate JSX 3 https://github.com/rescript-lang/rescript-compiler/pull/7042
 - Deprecate js_cast.res https://github.com/rescript-lang/rescript-compiler/pull/7074
 - Deprecate top-level `"suffix"` option in `rescript.json`. https://github.com/rescript-lang/rescript-compiler/pull/7056
