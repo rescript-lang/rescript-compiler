@@ -43,27 +43,13 @@ let removePathPrefix ~prefix path =
 let appendSuffix ~config sourcePath =
   (sourcePath |> handleNamespace) ^ ModuleExtension.tsInputFileSuffix ~config
 
-let getOutputFileRelative ~config sourcePath =
-  if Filename.is_relative sourcePath then appendSuffix ~config sourcePath
-  else
-    let relative_path =
-      removePathPrefix ~prefix:config.projectRoot sourcePath
-    in
-    appendSuffix ~config relative_path
+let getOutputFileRelative ~(config : Config.t) path =
+  let relativePath = removePathPrefix ~prefix:config.projectRoot path in
+  appendSuffix ~config relativePath
 
-let computeAbsoluteOutputFilePath ~(config : Config.t) path =
-  Filename.concat config.projectRoot (getOutputFileRelative ~config path)
-
-let getOutputFile ~(config : Config.t) sourcePath =
-  if Filename.is_relative sourcePath then
-    (* assuming a relative path from the project root *)
-    computeAbsoluteOutputFilePath ~config sourcePath
-  else
-    (* for absolute paths we want to place the output beside the source file *)
-    let relative_path =
-      removePathPrefix ~prefix:config.projectRoot sourcePath
-    in
-    computeAbsoluteOutputFilePath ~config relative_path
+let getOutputFile ~(config : Config.t) absoluteSourcePath =
+  let relativeOutputPath = getOutputFileRelative ~config absoluteSourcePath in
+  Filename.concat config.projectRoot relativeOutputPath
 
 let getModuleName cmt =
   cmt |> handleNamespace |> Filename.basename |> ModuleName.fromStringUnsafe
