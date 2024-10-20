@@ -54,6 +54,8 @@ let abs = x =>
     -x
   }
 
+@val external ceil: float => float = "Math.ceil"
+
 let range = (start, end, ~options: rangeOptions={}) => {
   let isInverted = start > end
 
@@ -70,7 +72,7 @@ let range = (start, end, ~options: rangeOptions={}) => {
   } else {
     let range = isInverted ? start - end : end - start
     let range = options.inclusive === Some(true) ? range + 1 : range
-    ceil(float(range) /. float(abs(step)))->Float.toInt
+    ceil(Float.fromInt(range) /. Float.fromInt(abs(step)))->Float.toInt
   }
 
   Array.fromInitializer(~length, i => start + i * step)

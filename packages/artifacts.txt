@@ -87,7 +87,6 @@ lib/es6/Exn.js
 lib/es6/Float.js
 lib/es6/Float32Array.js
 lib/es6/Float64Array.js
-lib/es6/Global.js
 lib/es6/Int.js
 lib/es6/Int16Array.js
 lib/es6/Int32Array.js
@@ -181,7 +180,6 @@ lib/es6/Primitive_string_extern.js
 lib/es6/Primitive_util.js
 lib/es6/Promise.js
 lib/es6/RegExp.js
-lib/es6/RescriptCore.js
 lib/es6/Result.js
 lib/es6/Set.js
 lib/es6/String.js
@@ -257,7 +255,6 @@ lib/js/Exn.js
 lib/js/Float.js
 lib/js/Float32Array.js
 lib/js/Float64Array.js
-lib/js/Global.js
 lib/js/Int.js
 lib/js/Int16Array.js
 lib/js/Int32Array.js
@@ -351,7 +348,6 @@ lib/js/Primitive_string_extern.js
 lib/js/Primitive_util.js
 lib/js/Promise.js
 lib/js/RegExp.js
-lib/js/RescriptCore.js
 lib/js/Result.js
 lib/js/Set.js
 lib/js/String.js
@@ -707,12 +703,6 @@ lib/ocaml/Float64Array.cmi
 lib/ocaml/Float64Array.cmj
 lib/ocaml/Float64Array.cmt
 lib/ocaml/Float64Array.res
-lib/ocaml/Global.cmi
-lib/ocaml/Global.cmj
-lib/ocaml/Global.cmt
-lib/ocaml/Global.cmti
-lib/ocaml/Global.res
-lib/ocaml/Global.resi
 lib/ocaml/Int.cmi
 lib/ocaml/Int.cmj
 lib/ocaml/Int.cmt
@@ -1139,10 +1129,6 @@ lib/ocaml/RegExp.cmt
 lib/ocaml/RegExp.cmti
 lib/ocaml/RegExp.res
 lib/ocaml/RegExp.resi
-lib/ocaml/RescriptCore.cmi
-lib/ocaml/RescriptCore.cmj
-lib/ocaml/RescriptCore.cmt
-lib/ocaml/RescriptCore.res
 lib/ocaml/Result.cmi
 lib/ocaml/Result.cmj
 lib/ocaml/Result.cmt
