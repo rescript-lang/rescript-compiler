@@ -4,16 +4,16 @@
 
 let v = "ghos";
 
-let u_a = v.codePointAt(0);
+let u_a = v[0];
 
 function u_b() {
-  return v.codePointAt(-1);
+  return v[-1];
 }
 
-let u_c = "ghos".codePointAt(0);
+let u_c = "ghos"[0];
 
 function u_d() {
-  return "ghos".codePointAt(-1);
+  return "ghos"[-1];
 }
 
 exports.v = v;

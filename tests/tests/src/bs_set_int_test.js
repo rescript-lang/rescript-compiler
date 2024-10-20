@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Belt_List = require("rescript/lib/js/belt_List.js");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
-let Belt_SetInt = require("rescript/lib/js/belt_SetInt.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
+let Belt_SetInt = require("rescript/lib/js/Belt_SetInt.js");
 let Array_data_util = require("./array_data_util.js");
 
 let suites = {

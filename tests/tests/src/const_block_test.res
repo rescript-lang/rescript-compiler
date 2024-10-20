@@ -1,3 +1,5 @@
+module Array = Ocaml_Array
+
 let a = [0., 1., 2.]
 let b = [0, 1, 2]
 let c = [0, 1, 2, 3, 4, 5]

@@ -16,6 +16,7 @@ Happy hacking!
 
 - [NodeJS v18](https://nodejs.org/)
 - C compiler toolchain (usually installed with `xcode` on Mac)
+- Python <= 3.11 (required to build ninja)
 - Rust toolchain (required to build rewatch; follow the instructions at https://www.rust-lang.org/tools/install)
 - `opam` (OCaml Package Manager) v2.2.0
 - VSCode (+ [OCaml Platform Extension](https://marketplace.visualstudio.com/items?itemName=ocamllabs.ocaml-platform))

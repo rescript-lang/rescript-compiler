@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Primitive_exceptions = require("rescript/lib/js/primitive_exceptions.js");
+let Primitive_exceptions = require("rescript/lib/js/Primitive_exceptions.js");
 
 let Str = /* @__PURE__ */Primitive_exceptions.create("Extensible_variant_test.Str");
 

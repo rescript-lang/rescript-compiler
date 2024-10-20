@@ -3,7 +3,7 @@
 
 let U = require("U");
 let VV = require("VV");
-let Belt_List = require("rescript/lib/js/belt_List.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
 
 function f(x, y) {
   return x + y | 0;

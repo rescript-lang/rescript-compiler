@@ -2,13 +2,13 @@
 'use strict';
 
 let Mocha = require("mocha");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
-let Belt_Range = require("rescript/lib/js/belt_Range.js");
-let Pervasives = require("rescript/lib/js/pervasives.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
+let Belt_Range = require("rescript/lib/js/Belt_Range.js");
+let Pervasives = require("rescript/lib/js/Pervasives.js");
 let Test_utils = require("./test_utils.js");
-let Belt_SortArray = require("rescript/lib/js/belt_SortArray.js");
+let Belt_SortArray = require("rescript/lib/js/Belt_SortArray.js");
 let Array_data_util = require("./array_data_util.js");
-let Belt_SortArrayInt = require("rescript/lib/js/belt_SortArrayInt.js");
+let Belt_SortArrayInt = require("rescript/lib/js/Belt_SortArrayInt.js");
 
 function cmp(x, y) {
   return x - y | 0;

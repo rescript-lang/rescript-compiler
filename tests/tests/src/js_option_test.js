@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Js_option = require("rescript/lib/js/js_option.js");
+let Js_option = require("rescript/lib/js/Js_option.js");
 
 function simpleEq(a, b) {
   return a === b;

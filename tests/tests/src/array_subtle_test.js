@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Primitive_array = require("rescript/lib/js/primitive_array.js");
+let Primitive_array = require("rescript/lib/js/Primitive_array.js");
 
 let suites = {
   contents: /* [] */0
@@ -36,34 +36,34 @@ let v = [
   3
 ];
 
-eq("File \"array_subtle_test.res\", line 14, characters 12-19", [
+eq("File \"array_subtle_test.res\", line 16, characters 12-19", [
   4,
-  v.length
-]);
-
-eq("File \"array_subtle_test.res\", line 17, characters 5-12", [
-  5,
-  v.push(3)
-]);
-
-eq("File \"array_subtle_test.res\", line 18, characters 5-12", [
-  5,
   v.length
 ]);
 
 eq("File \"array_subtle_test.res\", line 19, characters 5-12", [
   5,
+  v.push(3)
+]);
+
+eq("File \"array_subtle_test.res\", line 20, characters 5-12", [
+  5,
   v.length
 ]);
 
-eq("File \"array_subtle_test.res\", line 23, characters 5-12", [
+eq("File \"array_subtle_test.res\", line 21, characters 5-12", [
+  5,
+  v.length
+]);
+
+eq("File \"array_subtle_test.res\", line 25, characters 5-12", [
   3,
   Primitive_array.get(v, 2)
 ]);
 
 Primitive_array.set(v, 2, 4);
 
-eq("File \"array_subtle_test.res\", line 25, characters 5-12", [
+eq("File \"array_subtle_test.res\", line 27, characters 5-12", [
   4,
   Primitive_array.get(v, 2)
 ]);
@@ -72,7 +72,7 @@ while (v.length > 0) {
   v.pop();
 };
 
-eq("File \"array_subtle_test.res\", line 32, characters 5-12", [
+eq("File \"array_subtle_test.res\", line 34, characters 5-12", [
   0,
   v.length
 ]);
@@ -111,23 +111,26 @@ function fff4(x) {
   }
 }
 
-eq("File \"array_subtle_test.res\", line 64, characters 3-10", [
+eq("File \"array_subtle_test.res\", line 66, characters 3-10", [
   fff3([]),
   1
 ]);
 
-eq("File \"array_subtle_test.res\", line 65, characters 3-10", [
+eq("File \"array_subtle_test.res\", line 67, characters 3-10", [
   fff4([]),
   2
 ]);
 
-eq("File \"array_subtle_test.res\", line 66, characters 3-10", [
+eq("File \"array_subtle_test.res\", line 68, characters 3-10", [
   fff4([1]),
   1
 ]);
 
 Mt.from_pair_suites("Array_subtle_test", suites.contents);
 
+let $$Array;
+
+exports.$$Array = $$Array;
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;

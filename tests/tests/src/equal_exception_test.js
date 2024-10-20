@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Primitive_object = require("rescript/lib/js/primitive_object.js");
-let Primitive_exceptions = require("rescript/lib/js/primitive_exceptions.js");
+let Primitive_object = require("rescript/lib/js/Primitive_object.js");
+let Primitive_exceptions = require("rescript/lib/js/Primitive_exceptions.js");
 
 let v = "gso";
 
@@ -19,7 +19,15 @@ function is_equal() {
       Error: new Error()
     };
   }
-  
+  throw {
+    RE_EXN_ID: "Assert_failure",
+    _1: [
+      "equal_exception_test.res",
+      6,
+      2
+    ],
+    Error: new Error()
+  };
 }
 
 function is_exception() {
@@ -116,7 +124,7 @@ if (Primitive_object.equal(e, {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "equal_exception_test.res",
-      45,
+      47,
       0
     ],
     Error: new Error()
@@ -128,7 +136,7 @@ if (Not_found === "Not_found" !== false) {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "equal_exception_test.res",
-      46,
+      48,
       0
     ],
     Error: new Error()
@@ -137,6 +145,9 @@ if (Not_found === "Not_found" !== false) {
 
 Mt.from_suites("exception", suites);
 
+let $$String;
+
+exports.$$String = $$String;
 exports.v = v;
 exports.is_equal = is_equal;
 exports.is_exception = is_exception;

@@ -4,8 +4,8 @@
 let Path = require("path");
 let Assert = require("assert");
 let Process = require("process");
-let Belt_List = require("rescript/lib/js/belt_List.js");
-let Js_promise = require("rescript/lib/js/js_promise.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
+let Js_promise = require("rescript/lib/js/Js_promise.js");
 
 function assert_fail(msg) {
   Assert.fail(undefined, undefined, msg, "");

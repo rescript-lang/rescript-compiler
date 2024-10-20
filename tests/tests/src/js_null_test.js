@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Js_null = require("rescript/lib/js/js_null.js");
-let Primitive_option = require("rescript/lib/js/primitive_option.js");
+let Js_null = require("rescript/lib/js/Js_null.js");
+let Primitive_option = require("rescript/lib/js/Primitive_option.js");
 
 let suites_0 = [
   "toOption - empty",

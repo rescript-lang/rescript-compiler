@@ -23,7 +23,8 @@
 - Use FORCE_COLOR environmental variable to force colorized output https://github.com/rescript-lang/rescript-compiler/pull/7033
 - Allow spreads of variants in patterns (`| ...someVariant as v => `) when the variant spread is a subtype of the variant matched on. https://github.com/rescript-lang/rescript-compiler/pull/6721
 - Fix the issue where dynamic imports are not working for function-defined externals. https://github.com/rescript-lang/rescript-compiler/pull/7060 
-- Allow pattern matching on dicts. `switch someDict { | dict{"one": 1} => Js.log("one is one") }` https://github.com/rescript-lang/rescript-compiler/pull/7059
+- Allow pattern matching on dicts. `switch someDict { | dict{"one": 1} => Js.log("one is one") }`. https://github.com/rescript-lang/rescript-compiler/pull/7059
+- "ReScript Core" standard library is now included in the `rescript` npm package. https://github.com/rescript-lang/rescript-compiler/pull/7108
 
 #### :bug: Bug fix
 
@@ -35,6 +36,7 @@
 - Fix JSX settings inheritance: only 'version' propagates to dependencies, preserving their 'mode' and 'module'. https://github.com/rescript-lang/rescript-compiler/pull/7094
 - Fix variant cast to int. https://github.com/rescript-lang/rescript-compiler/pull/7058
 - Fix comments formatted away in function without arguments. https://github.com/rescript-lang/rescript-compiler/pull/7095
+- Fix genType JSX component compilation. https://github.com/rescript-lang/rescript-compiler/pull/7107
 
 #### :nail_care: Polish
 
@@ -46,6 +48,7 @@
 - Improve error messages around JSX components. https://github.com/rescript-lang/rescript-compiler/pull/7038
 - Improve output of record copying. https://github.com/rescript-lang/rescript-compiler/pull/7043
 - Provide additional context in error message when `unit` is expected. https://github.com/rescript-lang/rescript-compiler/pull/7045
+- Improve error message when passing an object where a record is expected. https://github.com/rescript-lang/rescript-compiler/pull/7101
 
 #### :house: Internal
 
@@ -57,6 +60,7 @@
 - Disable -bs-cross-module-opt for tests. https://github.com/rescript-lang/rescript-compiler/pull/7071
 - Move `ounit_tests` into the `tests` folder. https://github.com/rescript-lang/rescript-compiler/pull/7096
 - Move `syntax_tests` into the `tests` folder. https://github.com/rescript-lang/rescript-compiler/pull/7090 https://github.com/rescript-lang/rescript-compiler/pull/7097
+- Capitalize runtime filenames. https://github.com/rescript-lang/rescript-compiler/pull/7110
 
 # 12.0.0-alpha.3
 

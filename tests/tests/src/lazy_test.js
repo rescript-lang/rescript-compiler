@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Lazy = require("rescript/lib/js/lazy.js");
+let Lazy = require("rescript/lib/js/Lazy.js");
 
 let u = {
   contents: 3

@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Primitive_array = require("rescript/lib/js/primitive_array.js");
-let Primitive_option = require("rescript/lib/js/primitive_option.js");
+let Primitive_array = require("rescript/lib/js/Primitive_array.js");
+let Primitive_option = require("rescript/lib/js/Primitive_option.js");
 
 let suites_0 = [
   "captures",
@@ -272,5 +272,8 @@ let suites = {
 
 Mt.from_pair_suites("Js_re_test", suites);
 
+let $$Array;
+
+exports.$$Array = $$Array;
 exports.suites = suites;
 /*  Not a pure module */

@@ -54,6 +54,9 @@ let suites = {
 
 Mt.from_pair_suites("Inline_regression_test", suites);
 
+let $$String;
+
+exports.$$String = $$String;
 exports.generic_basename = generic_basename;
 exports.basename = basename;
 exports.suites = suites;

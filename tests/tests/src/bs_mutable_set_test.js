@@ -2,12 +2,12 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Belt_List = require("rescript/lib/js/belt_List.js");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
-let Belt_Range = require("rescript/lib/js/belt_Range.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
+let Belt_Range = require("rescript/lib/js/Belt_Range.js");
 let Array_data_util = require("./array_data_util.js");
-let Primitive_array = require("rescript/lib/js/primitive_array.js");
-let Belt_MutableSetInt = require("rescript/lib/js/belt_MutableSetInt.js");
+let Primitive_array = require("rescript/lib/js/Primitive_array.js");
+let Belt_MutableSetInt = require("rescript/lib/js/Belt_MutableSetInt.js");
 
 let suites = {
   contents: /* [] */0
@@ -27,21 +27,21 @@ function b(loc, x) {
 
 let u = Belt_MutableSetInt.fromArray(Array_data_util.range(0, 30));
 
-b("File \"bs_mutable_set_test.res\", line 21, characters 8-15", Belt_MutableSetInt.removeCheck(u, 0));
+b("File \"bs_mutable_set_test.res\", line 22, characters 8-15", Belt_MutableSetInt.removeCheck(u, 0));
 
-b("File \"bs_mutable_set_test.res\", line 22, characters 8-15", !Belt_MutableSetInt.removeCheck(u, 0));
+b("File \"bs_mutable_set_test.res\", line 23, characters 8-15", !Belt_MutableSetInt.removeCheck(u, 0));
 
-b("File \"bs_mutable_set_test.res\", line 23, characters 8-15", Belt_MutableSetInt.removeCheck(u, 30));
+b("File \"bs_mutable_set_test.res\", line 24, characters 8-15", Belt_MutableSetInt.removeCheck(u, 30));
 
-b("File \"bs_mutable_set_test.res\", line 24, characters 8-15", Belt_MutableSetInt.removeCheck(u, 20));
+b("File \"bs_mutable_set_test.res\", line 25, characters 8-15", Belt_MutableSetInt.removeCheck(u, 20));
 
-eq("File \"bs_mutable_set_test.res\", line 25, characters 9-16", Belt_MutableSetInt.size(u), 28);
+eq("File \"bs_mutable_set_test.res\", line 26, characters 9-16", Belt_MutableSetInt.size(u), 28);
 
 let r = Array_data_util.randomRange(0, 30);
 
-b("File \"bs_mutable_set_test.res\", line 27, characters 8-15", 29 === Belt_MutableSetInt.maxUndefined(u));
+b("File \"bs_mutable_set_test.res\", line 28, characters 8-15", 29 === Belt_MutableSetInt.maxUndefined(u));
 
-b("File \"bs_mutable_set_test.res\", line 28, characters 8-15", 1 === Belt_MutableSetInt.minUndefined(u));
+b("File \"bs_mutable_set_test.res\", line 29, characters 8-15", 1 === Belt_MutableSetInt.minUndefined(u));
 
 Belt_MutableSetInt.add(u, 3);
 
@@ -49,7 +49,7 @@ for (let i = 0, i_finish = r.length; i < i_finish; ++i) {
   Belt_MutableSetInt.remove(u, r[i]);
 }
 
-b("File \"bs_mutable_set_test.res\", line 33, characters 8-15", Belt_MutableSetInt.isEmpty(u));
+b("File \"bs_mutable_set_test.res\", line 34, characters 8-15", Belt_MutableSetInt.isEmpty(u));
 
 Belt_MutableSetInt.add(u, 0);
 
@@ -59,47 +59,47 @@ Belt_MutableSetInt.add(u, 2);
 
 Belt_MutableSetInt.add(u, 0);
 
-eq("File \"bs_mutable_set_test.res\", line 38, characters 9-16", Belt_MutableSetInt.size(u), 3);
+eq("File \"bs_mutable_set_test.res\", line 39, characters 9-16", Belt_MutableSetInt.size(u), 3);
 
-b("File \"bs_mutable_set_test.res\", line 39, characters 8-15", !Belt_MutableSetInt.isEmpty(u));
+b("File \"bs_mutable_set_test.res\", line 40, characters 8-15", !Belt_MutableSetInt.isEmpty(u));
 
 for (let i$1 = 0; i$1 <= 3; ++i$1) {
   Belt_MutableSetInt.remove(u, i$1);
 }
 
-b("File \"bs_mutable_set_test.res\", line 43, characters 8-15", Belt_MutableSetInt.isEmpty(u));
+b("File \"bs_mutable_set_test.res\", line 44, characters 8-15", Belt_MutableSetInt.isEmpty(u));
 
 Belt_MutableSetInt.mergeMany(u, Array_data_util.randomRange(0, 20000));
 
 Belt_MutableSetInt.mergeMany(u, Array_data_util.randomRange(0, 200));
 
-eq("File \"bs_mutable_set_test.res\", line 46, characters 9-16", Belt_MutableSetInt.size(u), 20001);
+eq("File \"bs_mutable_set_test.res\", line 47, characters 9-16", Belt_MutableSetInt.size(u), 20001);
 
 Belt_MutableSetInt.removeMany(u, Array_data_util.randomRange(0, 200));
 
-eq("File \"bs_mutable_set_test.res\", line 48, characters 9-16", Belt_MutableSetInt.size(u), 19800);
+eq("File \"bs_mutable_set_test.res\", line 49, characters 9-16", Belt_MutableSetInt.size(u), 19800);
 
 Belt_MutableSetInt.removeMany(u, Array_data_util.randomRange(0, 1000));
 
-eq("File \"bs_mutable_set_test.res\", line 50, characters 9-16", Belt_MutableSetInt.size(u), 19000);
+eq("File \"bs_mutable_set_test.res\", line 51, characters 9-16", Belt_MutableSetInt.size(u), 19000);
 
 Belt_MutableSetInt.removeMany(u, Array_data_util.randomRange(0, 1000));
 
-eq("File \"bs_mutable_set_test.res\", line 52, characters 9-16", Belt_MutableSetInt.size(u), 19000);
+eq("File \"bs_mutable_set_test.res\", line 53, characters 9-16", Belt_MutableSetInt.size(u), 19000);
 
 Belt_MutableSetInt.removeMany(u, Array_data_util.randomRange(1000, 10000));
 
-eq("File \"bs_mutable_set_test.res\", line 54, characters 9-16", Belt_MutableSetInt.size(u), 10000);
+eq("File \"bs_mutable_set_test.res\", line 55, characters 9-16", Belt_MutableSetInt.size(u), 10000);
 
 Belt_MutableSetInt.removeMany(u, Array_data_util.randomRange(10000, 19999));
 
-eq("File \"bs_mutable_set_test.res\", line 56, characters 9-16", Belt_MutableSetInt.size(u), 1);
+eq("File \"bs_mutable_set_test.res\", line 57, characters 9-16", Belt_MutableSetInt.size(u), 1);
 
-b("File \"bs_mutable_set_test.res\", line 57, characters 8-15", Belt_MutableSetInt.has(u, 20000));
+b("File \"bs_mutable_set_test.res\", line 58, characters 8-15", Belt_MutableSetInt.has(u, 20000));
 
 Belt_MutableSetInt.removeMany(u, Array_data_util.randomRange(10000, 30000));
 
-b("File \"bs_mutable_set_test.res\", line 59, characters 8-15", Belt_MutableSetInt.isEmpty(u));
+b("File \"bs_mutable_set_test.res\", line 60, characters 8-15", Belt_MutableSetInt.isEmpty(u));
 
 let v = Belt_MutableSetInt.fromArray(Array_data_util.randomRange(1000, 2000));
 
@@ -113,9 +113,9 @@ let indeedRemoved = Belt_Array.reduce(bs, 0, (acc, x) => {
   }
 });
 
-eq("File \"bs_mutable_set_test.res\", line 72, characters 9-16", indeedRemoved, 500);
+eq("File \"bs_mutable_set_test.res\", line 73, characters 9-16", indeedRemoved, 500);
 
-eq("File \"bs_mutable_set_test.res\", line 73, characters 9-16", Belt_MutableSetInt.size(v), 501);
+eq("File \"bs_mutable_set_test.res\", line 74, characters 9-16", Belt_MutableSetInt.size(v), 501);
 
 let cs = Belt_Array.map(Array_data_util.randomRange(500, 2000), x => Belt_MutableSetInt.addCheck(v, x));
 
@@ -127,31 +127,31 @@ let indeedAded = Belt_Array.reduce(cs, 0, (acc, x) => {
   }
 });
 
-eq("File \"bs_mutable_set_test.res\", line 82, characters 9-16", indeedAded, 1000);
+eq("File \"bs_mutable_set_test.res\", line 83, characters 9-16", indeedAded, 1000);
 
-eq("File \"bs_mutable_set_test.res\", line 83, characters 9-16", Belt_MutableSetInt.size(v), 1501);
+eq("File \"bs_mutable_set_test.res\", line 84, characters 9-16", Belt_MutableSetInt.size(v), 1501);
 
-b("File \"bs_mutable_set_test.res\", line 84, characters 8-15", Belt_MutableSetInt.isEmpty(Belt_MutableSetInt.make()));
+b("File \"bs_mutable_set_test.res\", line 85, characters 8-15", Belt_MutableSetInt.isEmpty(Belt_MutableSetInt.make()));
 
-eq("File \"bs_mutable_set_test.res\", line 85, characters 9-16", Belt_MutableSetInt.minimum(v), 500);
+eq("File \"bs_mutable_set_test.res\", line 86, characters 9-16", Belt_MutableSetInt.minimum(v), 500);
 
-eq("File \"bs_mutable_set_test.res\", line 86, characters 9-16", Belt_MutableSetInt.maximum(v), 2000);
+eq("File \"bs_mutable_set_test.res\", line 87, characters 9-16", Belt_MutableSetInt.maximum(v), 2000);
 
-eq("File \"bs_mutable_set_test.res\", line 87, characters 9-16", Belt_MutableSetInt.minUndefined(v), 500);
+eq("File \"bs_mutable_set_test.res\", line 88, characters 9-16", Belt_MutableSetInt.minUndefined(v), 500);
 
-eq("File \"bs_mutable_set_test.res\", line 88, characters 9-16", Belt_MutableSetInt.maxUndefined(v), 2000);
+eq("File \"bs_mutable_set_test.res\", line 89, characters 9-16", Belt_MutableSetInt.maxUndefined(v), 2000);
 
-eq("File \"bs_mutable_set_test.res\", line 89, characters 9-16", Belt_MutableSetInt.reduce(v, 0, (x, y) => x + y | 0), 1876250);
+eq("File \"bs_mutable_set_test.res\", line 90, characters 9-16", Belt_MutableSetInt.reduce(v, 0, (x, y) => x + y | 0), 1876250);
 
-b("File \"bs_mutable_set_test.res\", line 90, characters 8-15", Belt_List.eq(Belt_MutableSetInt.toList(v), Belt_List.makeBy(1501, i => i + 500 | 0), (x, y) => x === y));
+b("File \"bs_mutable_set_test.res\", line 91, characters 8-15", Belt_List.eq(Belt_MutableSetInt.toList(v), Belt_List.makeBy(1501, i => i + 500 | 0), (x, y) => x === y));
 
-eq("File \"bs_mutable_set_test.res\", line 91, characters 9-16", Belt_MutableSetInt.toArray(v), Array_data_util.range(500, 2000));
+eq("File \"bs_mutable_set_test.res\", line 92, characters 9-16", Belt_MutableSetInt.toArray(v), Array_data_util.range(500, 2000));
 
 Belt_MutableSetInt.checkInvariantInternal(v);
 
-eq("File \"bs_mutable_set_test.res\", line 93, characters 9-16", Belt_MutableSetInt.get(v, 3), undefined);
+eq("File \"bs_mutable_set_test.res\", line 94, characters 9-16", Belt_MutableSetInt.get(v, 3), undefined);
 
-eq("File \"bs_mutable_set_test.res\", line 94, characters 9-16", Belt_MutableSetInt.get(v, 1200), 1200);
+eq("File \"bs_mutable_set_test.res\", line 95, characters 9-16", Belt_MutableSetInt.get(v, 1200), 1200);
 
 let match = Belt_MutableSetInt.split(v, 1000);
 
@@ -161,21 +161,21 @@ let bb = match$1[1];
 
 let aa = match$1[0];
 
-b("File \"bs_mutable_set_test.res\", line 96, characters 8-15", match[1]);
+b("File \"bs_mutable_set_test.res\", line 97, characters 8-15", match[1]);
 
-b("File \"bs_mutable_set_test.res\", line 97, characters 8-15", Belt_Array.eq(Belt_MutableSetInt.toArray(aa), Array_data_util.range(500, 999), (x, y) => x === y));
+b("File \"bs_mutable_set_test.res\", line 98, characters 8-15", Belt_Array.eq(Belt_MutableSetInt.toArray(aa), Array_data_util.range(500, 999), (x, y) => x === y));
 
-b("File \"bs_mutable_set_test.res\", line 98, characters 8-15", Belt_Array.eq(Belt_MutableSetInt.toArray(bb), Array_data_util.range(1001, 2000), (prim0, prim1) => prim0 === prim1));
+b("File \"bs_mutable_set_test.res\", line 99, characters 8-15", Belt_Array.eq(Belt_MutableSetInt.toArray(bb), Array_data_util.range(1001, 2000), (prim0, prim1) => prim0 === prim1));
 
-b("File \"bs_mutable_set_test.res\", line 99, characters 8-15", Belt_MutableSetInt.subset(aa, v));
+b("File \"bs_mutable_set_test.res\", line 100, characters 8-15", Belt_MutableSetInt.subset(aa, v));
 
-b("File \"bs_mutable_set_test.res\", line 100, characters 8-15", Belt_MutableSetInt.subset(bb, v));
+b("File \"bs_mutable_set_test.res\", line 101, characters 8-15", Belt_MutableSetInt.subset(bb, v));
 
-b("File \"bs_mutable_set_test.res\", line 101, characters 8-15", Belt_MutableSetInt.isEmpty(Belt_MutableSetInt.intersect(aa, bb)));
+b("File \"bs_mutable_set_test.res\", line 102, characters 8-15", Belt_MutableSetInt.isEmpty(Belt_MutableSetInt.intersect(aa, bb)));
 
 let c = Belt_MutableSetInt.removeCheck(v, 1000);
 
-b("File \"bs_mutable_set_test.res\", line 103, characters 8-15", c);
+b("File \"bs_mutable_set_test.res\", line 104, characters 8-15", c);
 
 let match$2 = Belt_MutableSetInt.split(v, 1000);
 
@@ -185,17 +185,17 @@ let bb$1 = match$3[1];
 
 let aa$1 = match$3[0];
 
-b("File \"bs_mutable_set_test.res\", line 105, characters 8-15", !match$2[1]);
+b("File \"bs_mutable_set_test.res\", line 106, characters 8-15", !match$2[1]);
 
-b("File \"bs_mutable_set_test.res\", line 106, characters 8-15", Belt_Array.eq(Belt_MutableSetInt.toArray(aa$1), Array_data_util.range(500, 999), (prim0, prim1) => prim0 === prim1));
+b("File \"bs_mutable_set_test.res\", line 107, characters 8-15", Belt_Array.eq(Belt_MutableSetInt.toArray(aa$1), Array_data_util.range(500, 999), (prim0, prim1) => prim0 === prim1));
 
-b("File \"bs_mutable_set_test.res\", line 107, characters 8-15", Belt_Array.eq(Belt_MutableSetInt.toArray(bb$1), Array_data_util.range(1001, 2000), (prim0, prim1) => prim0 === prim1));
+b("File \"bs_mutable_set_test.res\", line 108, characters 8-15", Belt_Array.eq(Belt_MutableSetInt.toArray(bb$1), Array_data_util.range(1001, 2000), (prim0, prim1) => prim0 === prim1));
 
-b("File \"bs_mutable_set_test.res\", line 108, characters 8-15", Belt_MutableSetInt.subset(aa$1, v));
+b("File \"bs_mutable_set_test.res\", line 109, characters 8-15", Belt_MutableSetInt.subset(aa$1, v));
 
-b("File \"bs_mutable_set_test.res\", line 109, characters 8-15", Belt_MutableSetInt.subset(bb$1, v));
+b("File \"bs_mutable_set_test.res\", line 110, characters 8-15", Belt_MutableSetInt.subset(bb$1, v));
 
-b("File \"bs_mutable_set_test.res\", line 110, characters 8-15", Belt_MutableSetInt.isEmpty(Belt_MutableSetInt.intersect(aa$1, bb$1)));
+b("File \"bs_mutable_set_test.res\", line 111, characters 8-15", Belt_MutableSetInt.isEmpty(Belt_MutableSetInt.intersect(aa$1, bb$1)));
 
 let aa$2 = Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 100));
 
@@ -203,19 +203,19 @@ let bb$2 = Belt_MutableSetInt.fromArray(Array_data_util.randomRange(40, 120));
 
 let cc = Belt_MutableSetInt.union(aa$2, bb$2);
 
-b("File \"bs_mutable_set_test.res\", line 120, characters 8-15", Belt_MutableSetInt.eq(cc, Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 120))));
+b("File \"bs_mutable_set_test.res\", line 121, characters 8-15", Belt_MutableSetInt.eq(cc, Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 120))));
 
-b("File \"bs_mutable_set_test.res\", line 123, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.union(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 40))));
+b("File \"bs_mutable_set_test.res\", line 124, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.union(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 40))));
 
 let dd = Belt_MutableSetInt.intersect(aa$2, bb$2);
 
-b("File \"bs_mutable_set_test.res\", line 127, characters 8-15", Belt_MutableSetInt.eq(dd, Belt_MutableSetInt.fromArray(Array_data_util.randomRange(40, 100))));
+b("File \"bs_mutable_set_test.res\", line 128, characters 8-15", Belt_MutableSetInt.eq(dd, Belt_MutableSetInt.fromArray(Array_data_util.randomRange(40, 100))));
 
-b("File \"bs_mutable_set_test.res\", line 129, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))), Belt_MutableSetInt.make()));
+b("File \"bs_mutable_set_test.res\", line 130, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))), Belt_MutableSetInt.make()));
 
-b("File \"bs_mutable_set_test.res\", line 136, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20))), Belt_MutableSetInt.make()));
+b("File \"bs_mutable_set_test.res\", line 137, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20))), Belt_MutableSetInt.make()));
 
-b("File \"bs_mutable_set_test.res\", line 142, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect(Belt_MutableSetInt.fromArray([
+b("File \"bs_mutable_set_test.res\", line 143, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect(Belt_MutableSetInt.fromArray([
   1,
   3,
   4,
@@ -234,15 +234,15 @@ b("File \"bs_mutable_set_test.res\", line 142, characters 8-15", Belt_MutableSet
   5
 ])));
 
-b("File \"bs_mutable_set_test.res\", line 143, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(aa$2, bb$2), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 39))));
+b("File \"bs_mutable_set_test.res\", line 144, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(aa$2, bb$2), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 39))));
 
-b("File \"bs_mutable_set_test.res\", line 144, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(bb$2, aa$2), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(101, 120))));
+b("File \"bs_mutable_set_test.res\", line 145, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(bb$2, aa$2), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(101, 120))));
 
-b("File \"bs_mutable_set_test.res\", line 146, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))));
+b("File \"bs_mutable_set_test.res\", line 147, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))));
 
-b("File \"bs_mutable_set_test.res\", line 153, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20))));
+b("File \"bs_mutable_set_test.res\", line 154, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20))));
 
-b("File \"bs_mutable_set_test.res\", line 161, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 40))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, -1))));
+b("File \"bs_mutable_set_test.res\", line 162, characters 8-15", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 40))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, -1))));
 
 let a0 = Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 1000));
 
@@ -256,9 +256,9 @@ let a4 = match$4[1];
 
 let a3 = match$4[0];
 
-b("File \"bs_mutable_set_test.res\", line 173, characters 8-15", Belt_MutableSetInt.eq(a1, a3));
+b("File \"bs_mutable_set_test.res\", line 174, characters 8-15", Belt_MutableSetInt.eq(a1, a3));
 
-b("File \"bs_mutable_set_test.res\", line 174, characters 8-15", Belt_MutableSetInt.eq(a2, a4));
+b("File \"bs_mutable_set_test.res\", line 175, characters 8-15", Belt_MutableSetInt.eq(a2, a4));
 
 Belt_List.forEach({
   hd: a0,
@@ -285,9 +285,9 @@ for (let i$2 = 0; i$2 <= 100000; ++i$2) {
 
 Belt_MutableSetInt.checkInvariantInternal(v$1);
 
-b("File \"bs_mutable_set_test.res\", line 188, characters 10-17", Belt_Range.every(0, 100000, i => Belt_MutableSetInt.has(v$1, i)));
+b("File \"bs_mutable_set_test.res\", line 189, characters 10-17", Belt_Range.every(0, 100000, i => Belt_MutableSetInt.has(v$1, i)));
 
-eq("File \"bs_mutable_set_test.res\", line 189, characters 5-12", Belt_MutableSetInt.size(v$1), 100001);
+eq("File \"bs_mutable_set_test.res\", line 190, characters 5-12", Belt_MutableSetInt.size(v$1), 100001);
 
 let u$1 = Belt_Array.concat(Array_data_util.randomRange(30, 100), Array_data_util.randomRange(40, 120));
 
@@ -295,15 +295,15 @@ let v$2 = Belt_MutableSetInt.make();
 
 Belt_MutableSetInt.mergeMany(v$2, u$1);
 
-eq("File \"bs_mutable_set_test.res\", line 196, characters 5-12", Belt_MutableSetInt.size(v$2), 91);
+eq("File \"bs_mutable_set_test.res\", line 197, characters 5-12", Belt_MutableSetInt.size(v$2), 91);
 
-eq("File \"bs_mutable_set_test.res\", line 197, characters 5-12", Belt_MutableSetInt.toArray(v$2), Array_data_util.range(30, 120));
+eq("File \"bs_mutable_set_test.res\", line 198, characters 5-12", Belt_MutableSetInt.toArray(v$2), Array_data_util.range(30, 120));
 
 let u$2 = Belt_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 
 let v$3 = Belt_MutableSetInt.fromArray(u$2);
 
-eq("File \"bs_mutable_set_test.res\", line 203, characters 5-12", Belt_MutableSetInt.size(v$3), 100001);
+eq("File \"bs_mutable_set_test.res\", line 204, characters 5-12", Belt_MutableSetInt.size(v$3), 100001);
 
 let u$3 = Array_data_util.randomRange(50000, 80000);
 
@@ -311,7 +311,7 @@ for (let i$3 = 0, i_finish$1 = u$3.length; i$3 < i_finish$1; ++i$3) {
   Belt_MutableSetInt.remove(v$3, i$3);
 }
 
-eq("File \"bs_mutable_set_test.res\", line 210, characters 5-12", Belt_MutableSetInt.size(v$3), 70000);
+eq("File \"bs_mutable_set_test.res\", line 211, characters 5-12", Belt_MutableSetInt.size(v$3), 70000);
 
 let vv = Array_data_util.randomRange(0, 100000);
 
@@ -319,9 +319,9 @@ for (let i$4 = 0, i_finish$2 = vv.length; i$4 < i_finish$2; ++i$4) {
   Belt_MutableSetInt.remove(v$3, Primitive_array.get(vv, i$4));
 }
 
-eq("File \"bs_mutable_set_test.res\", line 216, characters 5-12", Belt_MutableSetInt.size(v$3), 0);
+eq("File \"bs_mutable_set_test.res\", line 217, characters 5-12", Belt_MutableSetInt.size(v$3), 0);
 
-b("File \"bs_mutable_set_test.res\", line 217, characters 4-11", Belt_MutableSetInt.isEmpty(v$3));
+b("File \"bs_mutable_set_test.res\", line 218, characters 4-11", Belt_MutableSetInt.isEmpty(v$3));
 
 let v$4 = Belt_MutableSetInt.fromArray(Belt_Array.makeBy(30, i => i));
 
@@ -329,13 +329,13 @@ Belt_MutableSetInt.remove(v$4, 30);
 
 Belt_MutableSetInt.remove(v$4, 29);
 
-b("File \"bs_mutable_set_test.res\", line 224, characters 4-11", 28 === Belt_MutableSetInt.maxUndefined(v$4));
+b("File \"bs_mutable_set_test.res\", line 225, characters 4-11", 28 === Belt_MutableSetInt.maxUndefined(v$4));
 
 Belt_MutableSetInt.remove(v$4, 0);
 
-b("File \"bs_mutable_set_test.res\", line 226, characters 4-11", 1 === Belt_MutableSetInt.minUndefined(v$4));
+b("File \"bs_mutable_set_test.res\", line 227, characters 4-11", 1 === Belt_MutableSetInt.minUndefined(v$4));
 
-eq("File \"bs_mutable_set_test.res\", line 227, characters 5-12", Belt_MutableSetInt.size(v$4), 28);
+eq("File \"bs_mutable_set_test.res\", line 228, characters 5-12", Belt_MutableSetInt.size(v$4), 28);
 
 let vv$1 = Array_data_util.randomRange(1, 28);
 
@@ -343,7 +343,7 @@ for (let i$5 = 0, i_finish$3 = vv$1.length; i$5 < i_finish$3; ++i$5) {
   Belt_MutableSetInt.remove(v$4, Primitive_array.get(vv$1, i$5));
 }
 
-eq("File \"bs_mutable_set_test.res\", line 232, characters 5-12", Belt_MutableSetInt.size(v$4), 0);
+eq("File \"bs_mutable_set_test.res\", line 233, characters 5-12", Belt_MutableSetInt.size(v$4), 0);
 
 function id(loc, x) {
   let u = Belt_MutableSetInt.fromSortedArrayUnsafe(x);
@@ -351,34 +351,26 @@ function id(loc, x) {
   b(loc, Belt_Array.every2(Belt_MutableSetInt.toArray(u), x, (prim0, prim1) => prim0 === prim1));
 }
 
-id("File \"bs_mutable_set_test.res\", line 242, characters 5-12", []);
+id("File \"bs_mutable_set_test.res\", line 243, characters 5-12", []);
 
-id("File \"bs_mutable_set_test.res\", line 243, characters 5-12", [0]);
-
-id("File \"bs_mutable_set_test.res\", line 244, characters 5-12", [
-  0,
-  1
-]);
+id("File \"bs_mutable_set_test.res\", line 244, characters 5-12", [0]);
 
 id("File \"bs_mutable_set_test.res\", line 245, characters 5-12", [
   0,
-  1,
-  2
+  1
 ]);
 
 id("File \"bs_mutable_set_test.res\", line 246, characters 5-12", [
   0,
   1,
-  2,
-  3
+  2
 ]);
 
 id("File \"bs_mutable_set_test.res\", line 247, characters 5-12", [
   0,
   1,
   2,
-  3,
-  4
+  3
 ]);
 
 id("File \"bs_mutable_set_test.res\", line 248, characters 5-12", [
@@ -386,8 +378,7 @@ id("File \"bs_mutable_set_test.res\", line 248, characters 5-12", [
   1,
   2,
   3,
-  4,
-  5
+  4
 ]);
 
 id("File \"bs_mutable_set_test.res\", line 249, characters 5-12", [
@@ -396,10 +387,19 @@ id("File \"bs_mutable_set_test.res\", line 249, characters 5-12", [
   2,
   3,
   4,
-  6
+  5
 ]);
 
 id("File \"bs_mutable_set_test.res\", line 250, characters 5-12", [
+  0,
+  1,
+  2,
+  3,
+  4,
+  6
+]);
+
+id("File \"bs_mutable_set_test.res\", line 251, characters 5-12", [
   0,
   1,
   2,
@@ -409,7 +409,7 @@ id("File \"bs_mutable_set_test.res\", line 250, characters 5-12", [
   7
 ]);
 
-id("File \"bs_mutable_set_test.res\", line 251, characters 5-12", [
+id("File \"bs_mutable_set_test.res\", line 252, characters 5-12", [
   0,
   1,
   2,
@@ -420,7 +420,7 @@ id("File \"bs_mutable_set_test.res\", line 251, characters 5-12", [
   8
 ]);
 
-id("File \"bs_mutable_set_test.res\", line 252, characters 5-12", [
+id("File \"bs_mutable_set_test.res\", line 253, characters 5-12", [
   0,
   1,
   2,
@@ -432,7 +432,7 @@ id("File \"bs_mutable_set_test.res\", line 252, characters 5-12", [
   9
 ]);
 
-id("File \"bs_mutable_set_test.res\", line 253, characters 5-12", Array_data_util.range(0, 1000));
+id("File \"bs_mutable_set_test.res\", line 254, characters 5-12", Array_data_util.range(0, 1000));
 
 let v$5 = Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 1000));
 
@@ -446,15 +446,15 @@ for (let i$6 = 0; i$6 <= 200; ++i$6) {
   Belt_MutableSetInt.remove(v$5, i$6);
 }
 
-eq("File \"bs_mutable_set_test.res\", line 264, characters 5-12", Belt_MutableSetInt.size(copyV), 126);
+eq("File \"bs_mutable_set_test.res\", line 265, characters 5-12", Belt_MutableSetInt.size(copyV), 126);
 
-eq("File \"bs_mutable_set_test.res\", line 265, characters 5-12", Belt_MutableSetInt.toArray(copyV), Belt_Array.makeBy(126, i => (i << 3)));
+eq("File \"bs_mutable_set_test.res\", line 266, characters 5-12", Belt_MutableSetInt.toArray(copyV), Belt_Array.makeBy(126, i => (i << 3)));
 
-eq("File \"bs_mutable_set_test.res\", line 266, characters 5-12", Belt_MutableSetInt.size(v$5), 800);
+eq("File \"bs_mutable_set_test.res\", line 267, characters 5-12", Belt_MutableSetInt.size(v$5), 800);
 
-b("File \"bs_mutable_set_test.res\", line 267, characters 4-11", Belt_MutableSetInt.eq(copyV, match$5[0]));
+b("File \"bs_mutable_set_test.res\", line 268, characters 4-11", Belt_MutableSetInt.eq(copyV, match$5[0]));
 
-b("File \"bs_mutable_set_test.res\", line 268, characters 4-11", Belt_MutableSetInt.eq(cc$1, match$5[1]));
+b("File \"bs_mutable_set_test.res\", line 269, characters 4-11", Belt_MutableSetInt.eq(cc$1, match$5[1]));
 
 let v$6 = Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 1000));
 
@@ -462,9 +462,9 @@ let match$6 = Belt_MutableSetInt.split(v$6, 400);
 
 let match$7 = match$6[0];
 
-b("File \"bs_mutable_set_test.res\", line 274, characters 4-11", Belt_MutableSetInt.eq(match$7[0], Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 399))));
+b("File \"bs_mutable_set_test.res\", line 275, characters 4-11", Belt_MutableSetInt.eq(match$7[0], Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 399))));
 
-b("File \"bs_mutable_set_test.res\", line 275, characters 4-11", Belt_MutableSetInt.eq(match$7[1], Belt_MutableSetInt.fromArray(Array_data_util.randomRange(401, 1000))));
+b("File \"bs_mutable_set_test.res\", line 276, characters 4-11", Belt_MutableSetInt.eq(match$7[1], Belt_MutableSetInt.fromArray(Array_data_util.randomRange(401, 1000))));
 
 let d = Belt_MutableSetInt.fromArray(Belt_Array.map(Array_data_util.randomRange(0, 1000), x => (x << 1)));
 
@@ -472,9 +472,9 @@ let match$8 = Belt_MutableSetInt.split(d, 1001);
 
 let match$9 = match$8[0];
 
-b("File \"bs_mutable_set_test.res\", line 278, characters 4-11", Belt_MutableSetInt.eq(match$9[0], Belt_MutableSetInt.fromArray(Belt_Array.makeBy(501, x => (x << 1)))));
+b("File \"bs_mutable_set_test.res\", line 279, characters 4-11", Belt_MutableSetInt.eq(match$9[0], Belt_MutableSetInt.fromArray(Belt_Array.makeBy(501, x => (x << 1)))));
 
-b("File \"bs_mutable_set_test.res\", line 279, characters 4-11", Belt_MutableSetInt.eq(match$9[1], Belt_MutableSetInt.fromArray(Belt_Array.makeBy(500, x => 1002 + (x << 1) | 0))));
+b("File \"bs_mutable_set_test.res\", line 280, characters 4-11", Belt_MutableSetInt.eq(match$9[1], Belt_MutableSetInt.fromArray(Belt_Array.makeBy(500, x => 1002 + (x << 1) | 0))));
 
 let aa$3 = Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 100));
 
@@ -482,19 +482,19 @@ let bb$3 = Belt_MutableSetInt.fromArray(Array_data_util.randomRange(40, 120));
 
 let cc$2 = Belt_MutableSetInt.union(aa$3, bb$3);
 
-b("File \"bs_mutable_set_test.res\", line 289, characters 4-11", Belt_MutableSetInt.eq(cc$2, Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 120))));
+b("File \"bs_mutable_set_test.res\", line 290, characters 4-11", Belt_MutableSetInt.eq(cc$2, Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 120))));
 
-b("File \"bs_mutable_set_test.res\", line 292, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.union(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 40))));
+b("File \"bs_mutable_set_test.res\", line 293, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.union(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 40))));
 
 let dd$1 = Belt_MutableSetInt.intersect(aa$3, bb$3);
 
-b("File \"bs_mutable_set_test.res\", line 296, characters 4-11", Belt_MutableSetInt.eq(dd$1, Belt_MutableSetInt.fromArray(Array_data_util.randomRange(40, 100))));
+b("File \"bs_mutable_set_test.res\", line 297, characters 4-11", Belt_MutableSetInt.eq(dd$1, Belt_MutableSetInt.fromArray(Array_data_util.randomRange(40, 100))));
 
-b("File \"bs_mutable_set_test.res\", line 298, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))), Belt_MutableSetInt.make()));
+b("File \"bs_mutable_set_test.res\", line 299, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))), Belt_MutableSetInt.make()));
 
-b("File \"bs_mutable_set_test.res\", line 302, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20))), Belt_MutableSetInt.make()));
+b("File \"bs_mutable_set_test.res\", line 303, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20))), Belt_MutableSetInt.make()));
 
-b("File \"bs_mutable_set_test.res\", line 305, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect(Belt_MutableSetInt.fromArray([
+b("File \"bs_mutable_set_test.res\", line 306, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect(Belt_MutableSetInt.fromArray([
   1,
   3,
   4,
@@ -513,19 +513,21 @@ b("File \"bs_mutable_set_test.res\", line 305, characters 4-11", Belt_MutableSet
   5
 ])));
 
-b("File \"bs_mutable_set_test.res\", line 306, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(aa$3, bb$3), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 39))));
+b("File \"bs_mutable_set_test.res\", line 307, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(aa$3, bb$3), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 39))));
 
-b("File \"bs_mutable_set_test.res\", line 307, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(bb$3, aa$3), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(101, 120))));
+b("File \"bs_mutable_set_test.res\", line 308, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(bb$3, aa$3), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(101, 120))));
 
-b("File \"bs_mutable_set_test.res\", line 309, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))));
+b("File \"bs_mutable_set_test.res\", line 310, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))));
 
-b("File \"bs_mutable_set_test.res\", line 316, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20))));
+b("File \"bs_mutable_set_test.res\", line 317, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(21, 40))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20))));
 
-b("File \"bs_mutable_set_test.res\", line 324, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 40))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, -1))));
+b("File \"bs_mutable_set_test.res\", line 325, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 20)), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, 40))), Belt_MutableSetInt.fromArray(Array_data_util.randomRange(0, -1))));
 
 Mt.from_pair_suites("Bs_mutable_set_test", suites.contents);
 
 let N;
+
+let $$Array;
 
 let I;
 
@@ -550,6 +552,7 @@ exports.test_id = test_id;
 exports.eq = eq;
 exports.b = b;
 exports.N = N;
+exports.$$Array = $$Array;
 exports.I = I;
 exports.R = R;
 exports.A = A;

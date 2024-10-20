@@ -2,8 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
-let Primitive_array = require("rescript/lib/js/primitive_array.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
 
 function test() {
   let v = {
@@ -34,7 +33,7 @@ function test_closure() {
   };
   let arr = Belt_Array.make(6, x => x);
   for (let i = 0; i <= 5; ++i) {
-    Primitive_array.set(arr, i, param => i);
+    arr[i] = param => i;
   }
   Belt_Array.forEach(arr, i => {
     v.contents = v.contents + i(0) | 0;
@@ -49,7 +48,7 @@ function test_closure2() {
   let arr = Belt_Array.make(6, x => x);
   for (let i = 0; i <= 5; ++i) {
     let j = i + i | 0;
-    Primitive_array.set(arr, i, param => j);
+    arr[i] = param => j;
   }
   Belt_Array.forEach(arr, i => {
     v.contents = v.contents + i(0) | 0;

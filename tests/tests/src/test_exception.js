@@ -2,7 +2,7 @@
 'use strict';
 
 let Test_common = require("./test_common.js");
-let Primitive_exceptions = require("rescript/lib/js/primitive_exceptions.js");
+let Primitive_exceptions = require("rescript/lib/js/Primitive_exceptions.js");
 
 let Local = /* @__PURE__ */Primitive_exceptions.create("Test_exception.Local");
 

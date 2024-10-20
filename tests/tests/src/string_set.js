@@ -2,9 +2,9 @@
 'use strict';
 
 let Set_gen = require("./set_gen.js");
-let Belt_List = require("rescript/lib/js/belt_List.js");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
-let Primitive_string = require("rescript/lib/js/primitive_string.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
+let Primitive_string = require("rescript/lib/js/Primitive_string.js");
 
 let compare_elt = Primitive_string.compare;
 
@@ -280,6 +280,8 @@ function invariant(t) {
   return Set_gen.is_ordered(compare_elt, t);
 }
 
+let $$String;
+
 let empty = Set_gen.empty;
 
 let is_empty = Set_gen.is_empty;
@@ -312,6 +314,7 @@ let of_sorted_list = Set_gen.of_sorted_list;
 
 let of_sorted_array = Set_gen.of_sorted_array;
 
+exports.$$String = $$String;
 exports.compare_elt = compare_elt;
 exports.empty = empty;
 exports.is_empty = is_empty;

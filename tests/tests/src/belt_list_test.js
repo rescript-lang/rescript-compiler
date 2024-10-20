@@ -2,11 +2,11 @@
 'use strict';
 
 let Mocha = require("mocha");
-let Belt_List = require("rescript/lib/js/belt_List.js");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
 let Test_utils = require("./test_utils.js");
-let Primitive_int = require("rescript/lib/js/primitive_int.js");
-let Primitive_object = require("rescript/lib/js/primitive_object.js");
+let Primitive_int = require("rescript/lib/js/Primitive_int.js");
+let Primitive_object = require("rescript/lib/js/Primitive_object.js");
 
 function sum(xs) {
   let v = {

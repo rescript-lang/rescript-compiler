@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Primitive_object = require("rescript/lib/js/primitive_object.js");
+let Primitive_object = require("rescript/lib/js/Primitive_object.js");
 
 function date() {
   return new Date("1976-03-08T12:34:56.789+01:23");

@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Js_string = require("rescript/lib/js/js_string.js");
-let Belt_Option = require("rescript/lib/js/belt_Option.js");
-let Primitive_option = require("rescript/lib/js/primitive_option.js");
+let Js_string = require("rescript/lib/js/Js_string.js");
+let Belt_Option = require("rescript/lib/js/Belt_Option.js");
+let Primitive_option = require("rescript/lib/js/Primitive_option.js");
 
 let suites_0 = [
   "make",

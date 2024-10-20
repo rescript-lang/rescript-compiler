@@ -37,7 +37,7 @@ CAMLprim value caml_mach_absolute_time(value unit) {
 #elif defined(__linux__)
   struct timespec now;
   clock_gettime(CLOCK_MONOTONIC, &now);
-  result = now.tv_sec * 1000 + now.tv_nsec / 1000000;
+  result = now.tv_sec * 1000000000 + now.tv_nsec;
 #endif
 
   return caml_copy_int64(result);

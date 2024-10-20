@@ -135,7 +135,7 @@ let process_cmt_file cmt =
                      Log_.Color.setup ();
                      Log_.info ~loc ~name:"Warning genType" (fun ppf () ->
                          Format.fprintf ppf
-                           "Annotation is ignored as there's a .rei file"));
+                           "Annotation is ignored as there's a .resi file"));
                    true)
                  else false)
         in

@@ -59,7 +59,7 @@ let get_runtime_module_path
       module_system  in
   let js_file =  
     Ext_namespace.js_name_of_modulename dep_module_id.id.name 
-      Little Literals.suffix_js in 
+      Upper Literals.suffix_js in 
   match current_info_query with        
   | Package_not_found -> assert false
   | Package_script -> 

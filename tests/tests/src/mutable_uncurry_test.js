@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Primitive_object = require("rescript/lib/js/primitive_object.js");
+let Primitive_object = require("rescript/lib/js/Primitive_object.js");
 
 let suites = {
   contents: /* [] */0

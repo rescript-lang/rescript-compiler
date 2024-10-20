@@ -9,7 +9,7 @@
     "-make-runtime",
     "-nostdlib",
     "-nopervasives",
-    "-open Pervasives",
+    "-open Pervasives_mini",
     "-no-keep-locs",
     "-no-alias-deps",
     "-bs-no-version-header",

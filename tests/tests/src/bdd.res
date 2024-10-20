@@ -15,6 +15,8 @@
 /* Translated to Caml by Xavier Leroy */
 /* Original code written in SML by ... */
 
+module Array = Ocaml_Array
+
 type rec bdd = One | Zero | Node(bdd, int, int, bdd)
 
 let rec eval = (bdd, vars) =>

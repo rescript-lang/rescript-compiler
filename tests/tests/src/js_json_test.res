@@ -1,5 +1,6 @@
 let suites: ref<Mt.pair_suites> = ref(list{})
 module J = Js.Json
+module Array = Ocaml_Array
 
 let add_test = {
   let counter = ref(0)

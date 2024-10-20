@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let $$String = require("rescript/lib/js/string.js");
+let $$String = require("rescript/lib/js/String.js");
 
 function u(v) {
   return v;
@@ -53,4 +53,4 @@ exports.N = N;
 exports.v0 = v0;
 exports.v = v;
 exports.suites = suites;
-/*  Not a pure module */
+/* v0 Not a pure module */

@@ -1,7 +1,7 @@
 {
   "name": "playground",
   "version": "0.1.0",
-  "bs-dependencies": ["@rescript/react", "@rescript/core"],
+  "bs-dependencies": ["@rescript/react"],
   "package-specs": {
     "module": "esmodule",
     "in-source": false

@@ -5,7 +5,7 @@ let List = require("List");
 let List$1 = require("reactV");
 let List$2 = require("reactX");
 let Local = require("./local");
-let Belt_List = require("rescript/lib/js/belt_List.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
 let WebpackConfigJs = require("../../../webpack.config.js");
 let WebpackMiddlewareConfigJs = require("../../../webpack.middleware.config.js");
 
