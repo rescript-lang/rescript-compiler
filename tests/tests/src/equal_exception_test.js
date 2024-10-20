@@ -13,21 +13,13 @@ function is_equal() {
       RE_EXN_ID: "Assert_failure",
       _1: [
         "equal_exception_test.res",
-        4,
+        6,
         2
       ],
       Error: new Error()
     };
   }
-  throw {
-    RE_EXN_ID: "Assert_failure",
-    _1: [
-      "equal_exception_test.res",
-      6,
-      2
-    ],
-    Error: new Error()
-  };
+  
 }
 
 function is_exception() {

@@ -401,21 +401,13 @@ function main() {
       RE_EXN_ID: "Assert_failure",
       _1: [
         "bdd.res",
-        302,
+        304,
         2
       ],
       Error: new Error()
     };
   }
-  throw {
-    RE_EXN_ID: "Assert_failure",
-    _1: [
-      "bdd.res",
-      304,
-      2
-    ],
-    Error: new Error()
-  };
+  
 }
 
 main();
