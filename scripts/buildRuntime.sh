@@ -2,6 +2,8 @@
 set -e
 shopt -s extglob
 
+(cd runtime && ../cli/rescript clean)
+
 rm -f lib/es6/*.js lib/js/*.js lib/ocaml/*
 mkdir -p lib/es6 lib/js lib/ocaml
 mkdir -p runtime/lib/es6 runtime/lib/js
