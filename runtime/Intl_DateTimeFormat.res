@@ -32,10 +32,10 @@ type fractionalSecondDigits = [#0 | #1 | #2 | #3]
 type options = {
   dateStyle?: dateStyle, // can be used with timeStyle, but not other options
   timeStyle?: timeStyle, // can be used with dateStyle, but not other options
-  calendar?: Intl__Common.calendar,
+  calendar?: Intl_Common.calendar,
   dayPeriod?: dayPeriod, // only has an effect if a 12-hour clock is used
-  numberingSystem?: Intl__Common.numberingSystem,
-  localeMatcher?: Intl__Common.localeMatcher,
+  numberingSystem?: Intl_Common.numberingSystem,
+  localeMatcher?: Intl_Common.localeMatcher,
   timeZone?: string,
   hour12?: bool,
   hourCycle?: hourCycle,
@@ -66,15 +66,15 @@ type resolvedOptions = {
   second?: second,
   fractionalSecondDigits?: fractionalSecondDigits,
   timeZoneName?: timeZoneName,
-  calendar: Intl__Common.calendar,
+  calendar: Intl_Common.calendar,
   hour12: bool,
   hourCycle: hourCycle,
   locale: string,
-  numberingSystem: Intl__Common.numberingSystem,
+  numberingSystem: Intl_Common.numberingSystem,
   timeZone: string,
 }
 
-type supportedLocalesOptions = {localeMatcher: Intl__Common.localeMatcher}
+type supportedLocalesOptions = {localeMatcher: Intl_Common.localeMatcher}
 
 type dateTimeComponent = [
   | #day

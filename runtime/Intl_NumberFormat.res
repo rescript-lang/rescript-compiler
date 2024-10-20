@@ -1,4 +1,4 @@
-module Grouping = Intl__NumberFormat__Grouping
+module Grouping = Intl_NumberFormat_Grouping
 
 type t
 
@@ -72,11 +72,11 @@ type trailingZeroDisplay = [#auto | #stripIfInteger | #lessPrecision]
 
 type options = {
   compactDisplay?: compactDisplay,
-  numberingSystem?: Intl__Common.numberingSystem,
+  numberingSystem?: Intl_Common.numberingSystem,
   currency?: currency,
   currencyDisplay?: currencyDisplay,
   currencySign?: currencySign,
-  localeMatcher?: Intl__Common.localeMatcher,
+  localeMatcher?: Intl_Common.localeMatcher,
   notation?: notation,
   signDisplay?: signDisplay,
   style?: style,
@@ -94,12 +94,12 @@ type options = {
   */
   trailingZeroDisplay?: trailingZeroDisplay,
   // use either this group
-  minimumIntegerDigits?: Intl__Common.oneTo21,
-  minimumFractionDigits?: Intl__Common.zeroTo20,
-  maximumFractionDigits?: Intl__Common.zeroTo20,
+  minimumIntegerDigits?: Intl_Common.oneTo21,
+  minimumFractionDigits?: Intl_Common.zeroTo20,
+  maximumFractionDigits?: Intl_Common.zeroTo20,
   // OR these
-  minimumSignificantDigits?: Intl__Common.oneTo21,
-  maximumSignificantDigits?: Intl__Common.oneTo21,
+  minimumSignificantDigits?: Intl_Common.oneTo21,
+  maximumSignificantDigits?: Intl_Common.oneTo21,
 }
 
 type resolvedOptions = {
@@ -116,22 +116,22 @@ type resolvedOptions = {
   roundingPriority?: roundingPriority, // not available in firefox v110
   roundingIncrement?: roundingIncrement, // not available in firefox v110
   // either this group
-  minimumIntegerDigits?: Intl__Common.oneTo21,
-  minimumFractionDigits?: Intl__Common.zeroTo20,
-  maximumFractionDigits?: Intl__Common.zeroTo20,
+  minimumIntegerDigits?: Intl_Common.oneTo21,
+  minimumFractionDigits?: Intl_Common.zeroTo20,
+  maximumFractionDigits?: Intl_Common.zeroTo20,
   // OR these
-  minimumSignificantDigits?: Intl__Common.oneTo21,
-  maximumSignificantDigits?: Intl__Common.oneTo21,
+  minimumSignificantDigits?: Intl_Common.oneTo21,
+  maximumSignificantDigits?: Intl_Common.oneTo21,
   // always present
   locale: string,
   notation: notation,
-  numberingSystem: Intl__Common.numberingSystem,
+  numberingSystem: Intl_Common.numberingSystem,
   signDisplay: signDisplay,
   style: style,
   useGrouping: Grouping.t,
 }
 
-type supportedLocalesOptions = {localeMatcher: Intl__Common.localeMatcher}
+type supportedLocalesOptions = {localeMatcher: Intl_Common.localeMatcher}
 
 type numberFormatPartType = [
   | #compact

@@ -2,11 +2,11 @@ type t
 
 type options = {
   baseName?: string,
-  calendar?: Intl__Common.calendar,
-  collation?: Intl__Common.collation,
+  calendar?: Intl_Common.calendar,
+  collation?: Intl_Common.collation,
   hourCycle?: [#h11 | #h12 | #h23 | #h24],
   caseFirst?: [#upper | #lower | #"false"],
-  numberingSystem?: Intl__Common.numberingSystem,
+  numberingSystem?: Intl_Common.numberingSystem,
   numeric?: bool,
   language?: string,
   script?: string,

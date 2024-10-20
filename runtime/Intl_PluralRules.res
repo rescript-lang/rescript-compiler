@@ -3,15 +3,15 @@ type t
 type localeType = [#cardinal | #ordinal]
 
 type options = {
-  localeMatcher?: Intl__Common.localeMatcher,
+  localeMatcher?: Intl_Common.localeMatcher,
   \"type"?: localeType,
   // use either this group
-  minimumIntegerDigits?: Intl__Common.oneTo21,
-  minimumFractionDigits?: Intl__Common.zeroTo20,
-  maximumFractionDigits?: Intl__Common.zeroTo20,
+  minimumIntegerDigits?: Intl_Common.oneTo21,
+  minimumFractionDigits?: Intl_Common.zeroTo20,
+  maximumFractionDigits?: Intl_Common.zeroTo20,
   // OR this group
-  minimumSignificantDigits?: Intl__Common.oneTo21,
-  maximumSignificantDigits?: Intl__Common.oneTo21,
+  minimumSignificantDigits?: Intl_Common.oneTo21,
+  maximumSignificantDigits?: Intl_Common.oneTo21,
 }
 
 type pluralCategories = [
@@ -28,15 +28,15 @@ type resolvedOptions = {
   pluralCategories: array<pluralCategories>,
   \"type": localeType,
   // either this group
-  minimumIntegerDigits?: Intl__Common.oneTo21,
-  minimumFractionDigits?: Intl__Common.zeroTo20,
-  maximumFractionDigits?: Intl__Common.zeroTo20,
+  minimumIntegerDigits?: Intl_Common.oneTo21,
+  minimumFractionDigits?: Intl_Common.zeroTo20,
+  maximumFractionDigits?: Intl_Common.zeroTo20,
   // OR this group
-  minimumSignificantDigits?: Intl__Common.oneTo21,
-  maximumSignificantDigits?: Intl__Common.oneTo21,
+  minimumSignificantDigits?: Intl_Common.oneTo21,
+  maximumSignificantDigits?: Intl_Common.oneTo21,
 }
 
-type supportedLocalesOptions = {localeMatcher: Intl__Common.localeMatcher}
+type supportedLocalesOptions = {localeMatcher: Intl_Common.localeMatcher}
 
 @new external make: (~locales: array<string>=?, ~options: options=?) => t = "Intl.PluralRules"
 
