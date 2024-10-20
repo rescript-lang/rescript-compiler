@@ -22,9 +22,10 @@
 
 - Use FORCE_COLOR environmental variable to force colorized output https://github.com/rescript-lang/rescript-compiler/pull/7033
 - Allow spreads of variants in patterns (`| ...someVariant as v => `) when the variant spread is a subtype of the variant matched on. https://github.com/rescript-lang/rescript-compiler/pull/6721
-- Fix the issue where dynamic imports are not working for function-defined externals. https://github.com/rescript-lang/rescript-compiler/pull/7060 
+- Fix the issue where dynamic imports are not working for function-defined externals. https://github.com/rescript-lang/rescript-compiler/pull/7060
 - Allow pattern matching on dicts. `switch someDict { | dict{"one": 1} => Js.log("one is one") }`. https://github.com/rescript-lang/rescript-compiler/pull/7059
 - "ReScript Core" standard library is now included in the `rescript` npm package. https://github.com/rescript-lang/rescript-compiler/pull/7108
+- Handle absolute filepaths in gentype. https://github.com/rescript-lang/rescript-compiler/pull/7104
 
 #### :bug: Bug fix
 
