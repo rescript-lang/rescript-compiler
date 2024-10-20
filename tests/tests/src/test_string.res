@@ -1,3 +1,5 @@
+module String = Ocaml_String
+
 let f = x =>
   switch x {
   | "aaaabb" => 0

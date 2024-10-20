@@ -1,3 +1,5 @@
+module Array = Ocaml_Array
+
 @unboxed
 type t = A | I(int) | S(string)
 @unboxed

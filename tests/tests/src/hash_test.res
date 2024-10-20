@@ -1,5 +1,7 @@
 open Belt
 
+module Hashtbl = Ocaml_Hashtbl
+
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 let eq = (f, x, y) => Mt_global.collect_eq(test_id, suites, f, x, y)

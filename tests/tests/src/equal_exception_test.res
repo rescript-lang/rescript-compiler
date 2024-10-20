@@ -1,3 +1,5 @@
+module String = Ocaml_String
+
 let v = "gso"
 
 let is_equal = () => {

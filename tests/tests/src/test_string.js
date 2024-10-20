@@ -13,7 +13,7 @@ function f(x) {
         RE_EXN_ID: "Assert_failure",
         _1: [
           "test_string.res",
-          5,
+          7,
           17
         ],
         Error: new Error()
@@ -39,6 +39,9 @@ function h(s) {
   return s.codePointAt(0) === /* 'a' */97;
 }
 
+let $$String;
+
+exports.$$String = $$String;
 exports.f = f;
 exports.a = a;
 exports.b = b;

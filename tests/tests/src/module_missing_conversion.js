@@ -88,7 +88,10 @@ let u = [$$String];
 
 let hh = "x".length;
 
+let $$Array;
+
+exports.$$Array = $$Array;
 exports.XX = XX;
 exports.u = u;
 exports.hh = hh;
-/* No side effect */
+/* hh Not a pure module */

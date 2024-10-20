@@ -2,7 +2,6 @@
 'use strict';
 
 let Belt_Array = require("rescript/lib/js/Belt_Array.js");
-let Primitive_array = require("rescript/lib/js/Primitive_array.js");
 
 let v = {
   contents: 0
@@ -11,9 +10,9 @@ let v = {
 function f() {
   let arr = Belt_Array.make(10, param => {});
   for (let i = 0; i <= 9; ++i) {
-    Primitive_array.set(arr, i, param => {
+    arr[i] = param => {
       v.contents = v.contents + i | 0;
-    });
+    };
   }
   return arr;
 }

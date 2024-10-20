@@ -72,7 +72,7 @@ function resize(newSize) {
             RE_EXN_ID: "Assert_failure",
             _1: [
               "bdd.res",
-              60,
+              62,
               13
             ],
             Error: new Error()
@@ -82,7 +82,7 @@ function resize(newSize) {
           RE_EXN_ID: "Assert_failure",
           _1: [
             "bdd.res",
-            60,
+            62,
             13
           ],
           Error: new Error()
@@ -148,7 +148,7 @@ function mkNode(low, v, high) {
             RE_EXN_ID: "Assert_failure",
             _1: [
               "bdd.res",
-              121,
+              123,
               15
             ],
             Error: new Error()
@@ -158,7 +158,7 @@ function mkNode(low, v, high) {
           RE_EXN_ID: "Assert_failure",
           _1: [
             "bdd.res",
-            121,
+            123,
             15
           ],
           Error: new Error()
@@ -403,7 +403,7 @@ function main() {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "bdd.res",
-      302,
+      304,
       2
     ],
     Error: new Error()
@@ -411,6 +411,8 @@ function main() {
 }
 
 main();
+
+let $$Array;
 
 let initSize_1 = 8191;
 
@@ -420,6 +422,7 @@ let one = "One";
 
 let cacheSize = 1999;
 
+exports.$$Array = $$Array;
 exports.$$eval = $$eval;
 exports.getId = getId;
 exports.initSize_1 = initSize_1;

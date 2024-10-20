@@ -4,6 +4,7 @@ let eq = (loc, x, y) => Mt.eq_suites(~test_id, ~suites, loc, x, y)
 let b = (loc, x) => Mt.bool_suites(~test_id, ~suites, loc, x)
 
 module N = Belt.MutableSet.Int
+module Array = Ocaml_Array
 
 module I = Array_data_util
 module R = Belt.Range

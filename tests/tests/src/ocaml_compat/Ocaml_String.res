@@ -4,6 +4,8 @@
 
 // Below is all deprecated and should be removed in v13
 
+module Array = Ocaml_Array
+
 type t = string
 
 module B = {

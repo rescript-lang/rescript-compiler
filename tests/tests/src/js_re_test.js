@@ -272,5 +272,8 @@ let suites = {
 
 Mt.from_pair_suites("Js_re_test", suites);
 
+let $$Array;
+
+exports.$$Array = $$Array;
 exports.suites = suites;
 /*  Not a pure module */

@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Hashtbl = require("rescript/lib/js/Hashtbl.js");
 let Mt_global = require("./mt_global.js");
 let Belt_Array = require("rescript/lib/js/Belt_Array.js");
+let Ocaml_Hashtbl = require("./ocaml_compat/Ocaml_Hashtbl.js");
 
 let suites = {
   contents: /* [] */0
@@ -60,19 +60,22 @@ function normalize(x) {
 }
 
 function caml_hash(x) {
-  return Hashtbl.hash(x) & 1073741823;
+  return Ocaml_Hashtbl.hash(x) & 1073741823;
 }
 
-eq("File \"hash_test.res\", line 46, characters 12-19", Belt_Array.map(test_strings, caml_hash), test_strings_hash_results);
+eq("File \"hash_test.res\", line 48, characters 12-19", Belt_Array.map(test_strings, caml_hash), test_strings_hash_results);
 
-eq("File \"hash_test.res\", line 48, characters 12-19", Hashtbl.hash(0) & 1073741823, 129913994);
+eq("File \"hash_test.res\", line 50, characters 12-19", Ocaml_Hashtbl.hash(0) & 1073741823, 129913994);
 
-eq("File \"hash_test.res\", line 50, characters 12-19", Hashtbl.hash("x") & 1073741823, 780510073);
+eq("File \"hash_test.res\", line 52, characters 12-19", Ocaml_Hashtbl.hash("x") & 1073741823, 780510073);
 
-eq("File \"hash_test.res\", line 52, characters 12-19", Hashtbl.hash("xy") & 1073741823, 194127723);
+eq("File \"hash_test.res\", line 54, characters 12-19", Ocaml_Hashtbl.hash("xy") & 1073741823, 194127723);
 
 Mt.from_pair_suites("Hash_test", suites.contents);
 
+let Hashtbl;
+
+exports.Hashtbl = Hashtbl;
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;

@@ -23,6 +23,9 @@ try {
   }
 }
 
+let $$Array;
+
+exports.$$Array = $$Array;
 exports.x = x;
 exports.y = y;
 /* y Not a pure module */

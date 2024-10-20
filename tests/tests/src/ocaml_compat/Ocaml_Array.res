@@ -2,6 +2,8 @@
 //   This exists for compatibility reason.
 //   Move this into Pervasives or Core
 
+module List = Ocaml_List
+
 // Caution: `Array.get` is implicitly used by `array[idx]` syntax
 external get: (array<'a>, int) => 'a = "%array_safe_get"
 
