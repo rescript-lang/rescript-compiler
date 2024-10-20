@@ -83,6 +83,7 @@ lib/es6/Dom.js
 lib/es6/Dom_storage.js
 lib/es6/Dom_storage2.js
 lib/es6/Error.js
+lib/es6/Exn.js
 lib/es6/Float.js
 lib/es6/Float32Array.js
 lib/es6/Float64Array.js
@@ -114,7 +115,6 @@ lib/es6/Js_blob.js
 lib/es6/Js_console.js
 lib/es6/Js_date.js
 lib/es6/Js_dict.js
-lib/es6/Js_exn.js
 lib/es6/Js_extern.js
 lib/es6/Js_file.js
 lib/es6/Js_float.js
@@ -253,6 +253,7 @@ lib/js/Dom.js
 lib/js/Dom_storage.js
 lib/js/Dom_storage2.js
 lib/js/Error.js
+lib/js/Exn.js
 lib/js/Float.js
 lib/js/Float32Array.js
 lib/js/Float64Array.js
@@ -284,7 +285,6 @@ lib/js/Js_blob.js
 lib/js/Js_console.js
 lib/js/Js_date.js
 lib/js/Js_dict.js
-lib/js/Js_exn.js
 lib/js/Js_extern.js
 lib/js/Js_file.js
 lib/js/Js_float.js
@@ -687,6 +687,12 @@ lib/ocaml/Error.cmt
 lib/ocaml/Error.cmti
 lib/ocaml/Error.res
 lib/ocaml/Error.resi
+lib/ocaml/Exn.cmi
+lib/ocaml/Exn.cmj
+lib/ocaml/Exn.cmt
+lib/ocaml/Exn.cmti
+lib/ocaml/Exn.res
+lib/ocaml/Exn.resi
 lib/ocaml/Float.cmi
 lib/ocaml/Float.cmj
 lib/ocaml/Float.cmt
@@ -823,12 +829,6 @@ lib/ocaml/Js_dict.cmt
 lib/ocaml/Js_dict.cmti
 lib/ocaml/Js_dict.res
 lib/ocaml/Js_dict.resi
-lib/ocaml/Js_exn.cmi
-lib/ocaml/Js_exn.cmj
-lib/ocaml/Js_exn.cmt
-lib/ocaml/Js_exn.cmti
-lib/ocaml/Js_exn.res
-lib/ocaml/Js_exn.resi
 lib/ocaml/Js_extern.cmi
 lib/ocaml/Js_extern.cmj
 lib/ocaml/Js_extern.cmt

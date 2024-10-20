@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Js_exn = require("rescript/lib/js/Js_exn.js");
+let Exn = require("rescript/lib/js/Exn.js");
 let Belt_List = require("rescript/lib/js/Belt_List.js");
 let Primitive_exceptions = require("rescript/lib/js/Primitive_exceptions.js");
 
@@ -90,7 +90,7 @@ try {
   a0 = (function (){throw 2} ());
 } catch (raw_x$3) {
   let x$3 = Primitive_exceptions.internalToException(raw_x$3);
-  if (x$3.RE_EXN_ID === A || x$3.RE_EXN_ID === Js_exn.$$Error) {
+  if (x$3.RE_EXN_ID === A || x$3.RE_EXN_ID === Exn.$$Error) {
     a0 = x$3._1;
   } else {
     throw {
@@ -145,7 +145,7 @@ let suites = {
       hd: [
         "File \"exception_raise_test.res\", line 123, characters 6-13",
         () => {
-          if (a1.RE_EXN_ID === Js_exn.$$Error) {
+          if (a1.RE_EXN_ID === Exn.$$Error) {
             return {
               TAG: "Eq",
               _0: a1._1,
@@ -180,7 +180,7 @@ try {
   ((()=>{throw 2})());
 } catch (raw_e$2) {
   let e = Primitive_exceptions.internalToException(raw_e$2);
-  eq("File \"exception_raise_test.res\", line 137, characters 10-17", Js_exn.asJsExn(e) !== undefined, true);
+  eq("File \"exception_raise_test.res\", line 137, characters 10-17", Exn.asJsExn(e) !== undefined, true);
 }
 
 try {
@@ -190,7 +190,7 @@ try {
   };
 } catch (raw_e$3) {
   let e$1 = Primitive_exceptions.internalToException(raw_e$3);
-  eq("File \"exception_raise_test.res\", line 141, characters 10-17", Js_exn.asJsExn(e$1) !== undefined, false);
+  eq("File \"exception_raise_test.res\", line 141, characters 10-17", Exn.asJsExn(e$1) !== undefined, false);
 }
 
 function fff0(x, g) {

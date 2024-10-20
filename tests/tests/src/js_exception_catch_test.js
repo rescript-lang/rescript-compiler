@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Js_exn = require("rescript/lib/js/Js_exn.js");
+let Exn = require("rescript/lib/js/Exn.js");
 let Pervasives = require("rescript/lib/js/Pervasives.js");
 let Primitive_exceptions = require("rescript/lib/js/Primitive_exceptions.js");
 
@@ -57,7 +57,7 @@ try {
   exit = 1;
 } catch (raw_x) {
   let x = Primitive_exceptions.internalToException(raw_x);
-  if (x.RE_EXN_ID === Js_exn.$$Error) {
+  if (x.RE_EXN_ID === Exn.$$Error) {
     add_test("File \"js_exception_catch_test.res\", line 18, characters 37-44", () => ({
       TAG: "Ok",
       _0: true
@@ -108,7 +108,7 @@ function test(f) {
       } else {
         return "C";
       }
-    } else if (e.RE_EXN_ID === Js_exn.$$Error) {
+    } else if (e.RE_EXN_ID === Exn.$$Error) {
       return "Js_error";
     } else {
       return "Any";
@@ -170,7 +170,7 @@ eq("File \"js_exception_catch_test.res\", line 52, characters 5-12", test(() => 
   };
 }), "C_any");
 
-eq("File \"js_exception_catch_test.res\", line 53, characters 5-12", test(() => Js_exn.raiseError("x")), "Js_error");
+eq("File \"js_exception_catch_test.res\", line 53, characters 5-12", test(() => Exn.raiseError("x")), "Js_error");
 
 eq("File \"js_exception_catch_test.res\", line 54, characters 5-12", test(() => Pervasives.failwith("x")), "Any");
 
