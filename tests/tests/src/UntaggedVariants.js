@@ -600,6 +600,8 @@ let MergeCases = {
   can_merge: can_merge
 };
 
+let $$Array;
+
 let i = 42;
 
 let i2 = 42.5;
@@ -613,6 +615,7 @@ let w = {
   y: ""
 };
 
+exports.$$Array = $$Array;
 exports.i = i;
 exports.i2 = i2;
 exports.s = s;

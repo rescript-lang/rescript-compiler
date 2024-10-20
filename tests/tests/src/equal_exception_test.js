@@ -15,7 +15,7 @@ function is_equal() {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "equal_exception_test.res",
-      4,
+      6,
       2
     ],
     Error: new Error()
@@ -116,7 +116,7 @@ if (Primitive_object.equal(e, {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "equal_exception_test.res",
-      45,
+      47,
       0
     ],
     Error: new Error()
@@ -128,7 +128,7 @@ if (Not_found === "Not_found" !== false) {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "equal_exception_test.res",
-      46,
+      48,
       0
     ],
     Error: new Error()
@@ -137,6 +137,9 @@ if (Not_found === "Not_found" !== false) {
 
 Mt.from_suites("exception", suites);
 
+let $$String;
+
+exports.$$String = $$String;
 exports.v = v;
 exports.is_equal = is_equal;
 exports.is_exception = is_exception;

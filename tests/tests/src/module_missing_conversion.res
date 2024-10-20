@@ -1,3 +1,5 @@
+module Array = Ocaml_Array
+
 module type S = module type of String
 
 module XX = {

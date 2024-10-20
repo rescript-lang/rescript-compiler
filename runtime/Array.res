@@ -1,383 +1,269 @@
-// FIXME:
-//   This exists for compatibility reason.
-//   Move this into Pervasives or Core
-
-// Caution: `Array.get` is implicitly used by `array[idx]` syntax
-external get: (array<'a>, int) => 'a = "%array_safe_get"
-
-// Caution: `Array.set` is implicitly used by `array[idx]` syntax
-external set: (array<'a>, int, 'a) => unit = "%array_safe_set"
-
-// Below is all deprecated and should be removed in v13
-
-external length: array<'a> => int = "%array_length"
+@new external makeUninitializedUnsafe: int => array<'a> = "Array"
+@set external truncateToLengthUnsafe: (array<'a>, int) => unit = "length"
+external getUnsafe: (array<'a>, int) => 'a = "%array_unsafe_get"
+external setUnsafe: (array<'a>, int, 'a) => unit = "%array_unsafe_set"
 
 external unsafe_get: (array<'a>, int) => 'a = "%array_unsafe_get"
 
-external unsafe_set: (array<'a>, int, 'a) => unit = "%array_unsafe_set"
+@val external fromIterator: Iterator.t<'a> => array<'a> = "Array.from"
+@val external fromArrayLike: Js.Array2.array_like<'a> => array<'a> = "Array.from"
+@val
+external fromArrayLikeWithMap: (Js.Array2.array_like<'a>, 'a => 'b) => array<'b> = "Array.from"
 
-let init: (int, int => 'a) => array<'a> = %raw(`(length, f) => Array.from({ length }, f)`)
+@send external fillAll: (array<'a>, 'a) => unit = "fill"
 
-let make = (len, x) => init(len, _ => x)
+@send external fillToEnd: (array<'a>, 'a, ~start: int) => unit = "fill"
 
-@send external slice: (array<'a>, int, int) => array<'a> = "slice"
-let unsafe_sub = (array, offset, length) => array->slice(offset, offset + length)
+@send external fill: (array<'a>, 'a, ~start: int, ~end: int) => unit = "fill"
+
+let make = (~length, x) =>
+  if length <= 0 {
+    []
+  } else {
+    let arr = makeUninitializedUnsafe(length)
+    arr->fillAll(x)
+    arr
+  }
+
+let fromInitializer = (~length, f) =>
+  if length <= 0 {
+    []
+  } else {
+    let arr = makeUninitializedUnsafe(length)
+    for i in 0 to length - 1 {
+      arr->setUnsafe(i, f(i))
+    }
+    arr
+  }
+
+@val external isArray: 'a => bool = "Array.isArray"
+
+@get external length: array<'a> => int = "length"
+
+let rec equalFromIndex = (a, b, i, eq, len) =>
+  if i === len {
+    true
+  } else if eq(a->getUnsafe(i), b->getUnsafe(i)) {
+    equalFromIndex(a, b, i + 1, eq, len)
+  } else {
+    false
+  }
+
+let equal = (a, b, eq) => {
+  let len = a->length
+  if len === b->length {
+    equalFromIndex(a, b, 0, eq, len)
+  } else {
+    false
+  }
+}
+
+let rec compareFromIndex = (a, b, i, cmp, len) =>
+  if i === len {
+    Ordering.equal
+  } else {
+    let c = cmp(a->getUnsafe(i), b->getUnsafe(i))
+    if c == Ordering.equal {
+      compareFromIndex(a, b, i + 1, cmp, len)
+    } else {
+      c
+    }
+  }
+
+let compare = (a, b, cmp) => {
+  let lenA = a->length
+  let lenB = b->length
+  lenA < lenB
+    ? Ordering.less
+    : lenA > lenB
+    ? Ordering.greater
+    : compareFromIndex(a, b, 0, cmp, lenA)
+}
+
+@send external copyAllWithin: (array<'a>, ~target: int) => array<'a> = "copyWithin"
+
+@send
+external copyWithinToEnd: (array<'a>, ~target: int, ~start: int) => array<'a> = "copyWithin"
+
+@send
+external copyWithin: (array<'a>, ~target: int, ~start: int, ~end: int) => array<'a> = "copyWithin"
+
+@send external pop: array<'a> => option<'a> = "pop"
+
+@send external push: (array<'a>, 'a) => unit = "push"
+
+@variadic @send external pushMany: (array<'a>, array<'a>) => unit = "push"
+
+@send external reverse: array<'a> => unit = "reverse"
+@send external toReversed: array<'a> => array<'a> = "toReversed"
+
+@send external shift: array<'a> => option<'a> = "shift"
+
+@variadic @send
+external splice: (array<'a>, ~start: int, ~remove: int, ~insert: array<'a>) => unit = "splice"
+@variadic @send
+external toSpliced: (array<'a>, ~start: int, ~remove: int, ~insert: array<'a>) => array<'a> =
+  "toSpliced"
+
+@send external with: (array<'a>, int, 'a) => array<'a> = "with"
+
+@send external unshift: (array<'a>, 'a) => unit = "unshift"
+
+@variadic @send external unshiftMany: (array<'a>, array<'a>) => unit = "unshift"
 
 @send external concat: (array<'a>, array<'a>) => array<'a> = "concat"
-@send external append_prim: (array<'a>, array<'a>) => array<'a> = "concat"
+@variadic @send external concatMany: (array<'a>, array<array<'a>>) => array<'a> = "concat"
 
-let concat = list => {
-  List.fold_left((arr1, arr2) => arr1->concat(arr2), [], list)
-}
+@send external flat: array<array<'a>> => array<'a> = "flat"
 
-let unsafe_blit = (srcArray, srcOffset, destArray, destOffset, len) => {
-  for i in 0 to len - 1 {
-    destArray->unsafe_set(destOffset + i, srcArray->unsafe_get(srcOffset + i))
+@send external includes: (array<'a>, 'a) => bool = "includes"
+
+@send external indexOf: (array<'a>, 'a) => int = "indexOf"
+let indexOfOpt = (arr, item) =>
+  switch arr->indexOf(item) {
+  | -1 => None
+  | index => Some(index)
   }
-}
+@send external indexOfFrom: (array<'a>, 'a, int) => int = "indexOf"
 
-let create_float = len => make(len, 0.0)
+@send external join: (array<string>, string) => string = "join"
 
-let make_matrix = (sx, sy, init) => {
-  let res = make(sx, [])
-  for x in 0 to pred(sx) {
-    unsafe_set(res, x, make(sy, init))
+@deprecated("Use `join` instead") @send
+external joinWith: (array<string>, string) => string = "join"
+
+@send external joinUnsafe: (array<'a>, string) => string = "join"
+
+@deprecated("Use `joinUnsafe` instead") @send
+external joinWithUnsafe: (array<'a>, string) => string = "join"
+
+@send external lastIndexOf: (array<'a>, 'a) => int = "lastIndexOf"
+let lastIndexOfOpt = (arr, item) =>
+  switch arr->lastIndexOf(item) {
+  | -1 => None
+  | index => Some(index)
   }
-  res
-}
+@send external lastIndexOfFrom: (array<'a>, 'a, int) => int = "lastIndexOf"
 
+@send external slice: (array<'a>, ~start: int, ~end: int) => array<'a> = "slice"
+@send external sliceToEnd: (array<'a>, ~start: int) => array<'a> = "slice"
 @send external copy: array<'a> => array<'a> = "slice"
 
-let append = (a1, a2) => {
-  let l1 = length(a1)
-  if l1 == 0 {
-    copy(a2)
-  } else if length(a2) == 0 {
-    unsafe_sub(a1, 0, l1)
-  } else {
-    append_prim(a1, a2)
+@send external sort: (array<'a>, ('a, 'a) => Ordering.t) => unit = "sort"
+@send external toSorted: (array<'a>, ('a, 'a) => Ordering.t) => array<'a> = "toSorted"
+
+@send external toString: array<'a> => string = "toString"
+@send external toLocaleString: array<'a> => string = "toLocaleString"
+
+@send external every: (array<'a>, 'a => bool) => bool = "every"
+@send external everyWithIndex: (array<'a>, ('a, int) => bool) => bool = "every"
+
+@send external filter: (array<'a>, 'a => bool) => array<'a> = "filter"
+@send external filterWithIndex: (array<'a>, ('a, int) => bool) => array<'a> = "filter"
+
+@send external find: (array<'a>, 'a => bool) => option<'a> = "find"
+@send external findWithIndex: (array<'a>, ('a, int) => bool) => option<'a> = "find"
+
+@send external findIndex: (array<'a>, 'a => bool) => int = "findIndex"
+@send external findIndexWithIndex: (array<'a>, ('a, int) => bool) => int = "findIndex"
+
+@send external forEach: (array<'a>, 'a => unit) => unit = "forEach"
+@send external forEachWithIndex: (array<'a>, ('a, int) => unit) => unit = "forEach"
+
+@send external map: (array<'a>, 'a => 'b) => array<'b> = "map"
+@send external mapWithIndex: (array<'a>, ('a, int) => 'b) => array<'b> = "map"
+
+@send external reduce: (array<'b>, ('a, 'b) => 'a, 'a) => 'a = "reduce"
+let reduce = (arr, init, f) => reduce(arr, f, init)
+@send external reduceWithIndex: (array<'b>, ('a, 'b, int) => 'a, 'a) => 'a = "reduce"
+let reduceWithIndex = (arr, init, f) => reduceWithIndex(arr, f, init)
+@send
+external reduceRight: (array<'b>, ('a, 'b) => 'a, 'a) => 'a = "reduceRight"
+let reduceRight = (arr, init, f) => reduceRight(arr, f, init)
+@send
+external reduceRightWithIndex: (array<'b>, ('a, 'b, int) => 'a, 'a) => 'a = "reduceRight"
+let reduceRightWithIndex = (arr, init, f) => reduceRightWithIndex(arr, f, init)
+
+@send external some: (array<'a>, 'a => bool) => bool = "some"
+@send external someWithIndex: (array<'a>, ('a, int) => bool) => bool = "some"
+
+@get_index external get: (array<'a>, int) => option<'a> = ""
+@set_index external set: (array<'a>, int, 'a) => unit = ""
+
+@get_index external getSymbol: (array<'a>, Symbol.t) => option<'b> = ""
+@get_index external getSymbolUnsafe: (array<'a>, Symbol.t) => 'b = ""
+@set_index external setSymbol: (array<'a>, Symbol.t, 'b) => unit = ""
+
+let findIndexOpt = (array: array<'a>, finder: 'a => bool): option<int> =>
+  switch findIndex(array, finder) {
+  | -1 => None
+  | index => Some(index)
+  }
+
+let swapUnsafe = (xs, i, j) => {
+  let tmp = getUnsafe(xs, i)
+  setUnsafe(xs, i, getUnsafe(xs, j))
+  setUnsafe(xs, j, tmp)
+}
+
+module M = {
+  @val external floor: float => float = "Math.floor"
+  @val external random: unit => float = "Math.random"
+  external fromFloat: float => int = "%intoffloat"
+  external toFloat: int => float = "%identity"
+
+  let random_int: (int, int) => int = (min, max) =>
+    floor(random() *. toFloat(max - min))->fromFloat + min
+}
+
+let shuffle = xs => {
+  let len = length(xs)
+  for i in 0 to len - 1 {
+    swapUnsafe(xs, i, M.random_int(i, len)) /* [i,len) */
   }
 }
 
-let sub = (a, ofs, len) =>
-  if ofs < 0 || (len < 0 || ofs > length(a) - len) {
-    invalid_arg("Array.sub")
-  } else {
-    unsafe_sub(a, ofs, len)
-  }
+let toShuffled = xs => {
+  let result = copy(xs)
+  shuffle(result)
+  result
+}
 
-let fill = (a, ofs, len, v) =>
-  if ofs < 0 || (len < 0 || ofs > length(a) - len) {
-    invalid_arg("Array.fill")
-  } else {
-    for i in ofs to ofs + len - 1 {
-      unsafe_set(a, i, v)
-    }
-  }
-
-let blit = (a1, ofs1, a2, ofs2, len) =>
-  if len < 0 || (ofs1 < 0 || (ofs1 > length(a1) - len || (ofs2 < 0 || ofs2 > length(a2) - len))) {
-    invalid_arg("Array.blit")
-  } else {
-    unsafe_blit(a1, ofs1, a2, ofs2, len)
-  }
-
-let iter = (f, a) =>
-  for i in 0 to length(a) - 1 {
-    f(unsafe_get(a, i))
-  }
-
-let iter2 = (f, a, b) =>
-  if length(a) != length(b) {
-    invalid_arg("Array.iter2: arrays must have the same length")
-  } else {
-    for i in 0 to length(a) - 1 {
-      f(unsafe_get(a, i), unsafe_get(b, i))
-    }
-  }
-
-let map = (f, a) => {
+let filterMap = (a, f) => {
   let l = length(a)
-  if l == 0 {
-    []
-  } else {
-    let r = make(l, f(unsafe_get(a, 0)))
-    for i in 1 to l - 1 {
-      unsafe_set(r, i, f(unsafe_get(a, i)))
+  let r = makeUninitializedUnsafe(l)
+  let j = ref(0)
+  for i in 0 to l - 1 {
+    let v = getUnsafe(a, i)
+    switch f(v) {
+    | None => ()
+    | Some(v) =>
+      setUnsafe(r, j.contents, v)
+      j.contents = j.contents + 1
     }
-    r
   }
+  truncateToLengthUnsafe(r, j.contents)
+  r
 }
 
-let map2 = (f, a, b) => {
-  let la = length(a)
-  let lb = length(b)
-  if la != lb {
-    invalid_arg("Array.map2: arrays must have the same length")
-  } else if la == 0 {
-    []
-  } else {
-    let r = make(la, f(unsafe_get(a, 0), unsafe_get(b, 0)))
-    for i in 1 to la - 1 {
-      unsafe_set(r, i, f(unsafe_get(a, i), unsafe_get(b, i)))
-    }
-    r
-  }
-}
+let keepSome = filterMap(_, x => x)
 
-let iteri = (f, a) =>
-  for i in 0 to length(a) - 1 {
-    f(i, unsafe_get(a, i))
-  }
+@send external flatMap: (array<'a>, 'a => array<'b>) => array<'b> = "flatMap"
+@send external flatMapWithIndex: (array<'a>, ('a, int) => array<'b>) => array<'b> = "flatMap"
 
-let mapi = (f, a) => {
-  let l = length(a)
-  if l == 0 {
-    []
-  } else {
-    let r = make(l, f(0, unsafe_get(a, 0)))
-    for i in 1 to l - 1 {
-      unsafe_set(r, i, f(i, unsafe_get(a, i)))
-    }
-    r
-  }
-}
-
-let to_list = a => {
-  let rec tolist = (i, res) =>
-    if i < 0 {
-      res
-    } else {
-      tolist(i - 1, list{unsafe_get(a, i), ...res})
-    }
-  tolist(length(a) - 1, list{})
-}
-
-/* Cannot use List.length here because the List module depends on Array. */
-let rec list_length = (accu, param) =>
-  switch param {
-  | list{} => accu
-  | list{_, ...t} => list_length(succ(accu), t)
-  }
-
-let of_list = param =>
-  switch param {
-  | list{} => []
-  | list{hd, ...tl} as l =>
-    let a = make(list_length(0, l), hd)
-    let rec fill = (i, param) =>
-      switch param {
-      | list{} => a
-      | list{hd, ...tl} =>
-        unsafe_set(a, i, hd)
-        fill(i + 1, tl)
-      }
-    fill(1, tl)
-  }
-
-let fold_left = (f, x, a) => {
-  let r = ref(x)
-  for i in 0 to length(a) - 1 {
-    r := f(r.contents, unsafe_get(a, i))
-  }
-  r.contents
-}
-
-let fold_right = (f, a, x) => {
-  let r = ref(x)
-  for i in length(a) - 1 downto 0 {
-    r := f(unsafe_get(a, i), r.contents)
-  }
-  r.contents
-}
-
-let exists = (p, a) => {
-  let n = length(a)
+let findMap = (arr, f) => {
   let rec loop = i =>
-    if i == n {
-      false
-    } else if p(unsafe_get(a, i)) {
-      true
+    if i == arr->length {
+      None
     } else {
-      loop(succ(i))
+      switch f(getUnsafe(arr, i)) {
+      | None => loop(i + 1)
+      | Some(_) as r => r
+      }
     }
+
   loop(0)
 }
 
-let for_all = (p, a) => {
-  let n = length(a)
-  let rec loop = i =>
-    if i == n {
-      true
-    } else if p(unsafe_get(a, i)) {
-      loop(succ(i))
-    } else {
-      false
-    }
-  loop(0)
-}
+@send external at: (array<'a>, int) => option<'a> = "at"
 
-let mem = (x, a) => {
-  let n = length(a)
-  let rec loop = i =>
-    if i == n {
-      false
-    } else if compare(unsafe_get(a, i), x) == 0 {
-      true
-    } else {
-      loop(succ(i))
-    }
-  loop(0)
-}
-
-let memq = (x, a) => {
-  let n = length(a)
-  let rec loop = i =>
-    if i == n {
-      false
-    } else if x === unsafe_get(a, i) {
-      true
-    } else {
-      loop(succ(i))
-    }
-  loop(0)
-}
-
-exception Bottom(int)
-let sort = (cmp, a) => {
-  let maxson = (l, i) => {
-    let i31 = i + i + i + 1
-    let x = ref(i31)
-    if i31 + 2 < l {
-      if cmp(get(a, i31), get(a, i31 + 1)) < 0 {
-        x := i31 + 1
-      }
-      if cmp(get(a, x.contents), get(a, i31 + 2)) < 0 {
-        x := i31 + 2
-      }
-      x.contents
-    } else if i31 + 1 < l && cmp(get(a, i31), get(a, i31 + 1)) < 0 {
-      i31 + 1
-    } else if i31 < l {
-      i31
-    } else {
-      raise(Bottom(i))
-    }
-  }
-
-  let rec trickledown = (l, i, e) => {
-    let j = maxson(l, i)
-    if cmp(get(a, j), e) > 0 {
-      set(a, i, get(a, j))
-      trickledown(l, j, e)
-    } else {
-      set(a, i, e)
-    }
-  }
-
-  let trickle = (l, i, e) =>
-    try trickledown(l, i, e) catch {
-    | Bottom(i) => set(a, i, e)
-    }
-  let rec bubbledown = (l, i) => {
-    let j = maxson(l, i)
-    set(a, i, get(a, j))
-    bubbledown(l, j)
-  }
-
-  let bubble = (l, i) =>
-    try bubbledown(l, i) catch {
-    | Bottom(i) => i
-    }
-  let rec trickleup = (i, e) => {
-    let father = (i - 1) / 3
-    assert(i != father)
-    if cmp(get(a, father), e) < 0 {
-      set(a, i, get(a, father))
-      if father > 0 {
-        trickleup(father, e)
-      } else {
-        set(a, 0, e)
-      }
-    } else {
-      set(a, i, e)
-    }
-  }
-
-  let l = length(a)
-  for i in (l + 1) / 3 - 1 downto 0 {
-    trickle(l, i, get(a, i))
-  }
-  for i in l - 1 downto 2 {
-    let e = get(a, i)
-    set(a, i, get(a, 0))
-    trickleup(bubble(i, 0), e)
-  }
-  if l > 1 {
-    let e = get(a, 1)
-    set(a, 1, get(a, 0))
-    set(a, 0, e)
-  }
-}
-
-let cutoff = 5
-let stable_sort = (cmp, a) => {
-  let merge = (src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs) => {
-    let src1r = src1ofs + src1len and src2r = src2ofs + src2len
-    let rec loop = (i1, s1, i2, s2, d) =>
-      if cmp(s1, s2) <= 0 {
-        set(dst, d, s1)
-        let i1 = i1 + 1
-        if i1 < src1r {
-          loop(i1, get(a, i1), i2, s2, d + 1)
-        } else {
-          blit(src2, i2, dst, d + 1, src2r - i2)
-        }
-      } else {
-        set(dst, d, s2)
-        let i2 = i2 + 1
-        if i2 < src2r {
-          loop(i1, s1, i2, get(src2, i2), d + 1)
-        } else {
-          blit(a, i1, dst, d + 1, src1r - i1)
-        }
-      }
-    loop(src1ofs, get(a, src1ofs), src2ofs, get(src2, src2ofs), dstofs)
-  }
-
-  let isortto = (srcofs, dst, dstofs, len) =>
-    for i in 0 to len - 1 {
-      let e = get(a, srcofs + i)
-      let j = ref(dstofs + i - 1)
-      while j.contents >= dstofs && cmp(get(dst, j.contents), e) > 0 {
-        set(dst, j.contents + 1, get(dst, j.contents))
-        decr(j)
-      }
-      set(dst, j.contents + 1, e)
-    }
-
-  let rec sortto = (srcofs, dst, dstofs, len) =>
-    if len <= cutoff {
-      isortto(srcofs, dst, dstofs, len)
-    } else {
-      let l1 = len / 2
-      let l2 = len - l1
-      sortto(srcofs + l1, dst, dstofs + l1, l2)
-      sortto(srcofs, a, srcofs + l2, l1)
-      merge(srcofs + l2, l1, dst, dstofs + l1, l2, dst, dstofs)
-    }
-
-  let l = length(a)
-  if l <= cutoff {
-    isortto(0, a, 0, l)
-  } else {
-    let l1 = l / 2
-    let l2 = l - l1
-    let t = make(l2, get(a, 0))
-    sortto(l1, t, 0, l2)
-    sortto(0, a, l2, l1)
-    merge(l2, l1, t, 0, l2, a, 0)
-  }
-}
-
-let fast_sort = stable_sort
+let last = a => a->get(a->length - 1)

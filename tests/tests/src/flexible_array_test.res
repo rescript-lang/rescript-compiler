@@ -1,3 +1,5 @@
+module Array = Ocaml_Array
+
 type rec tree<'a> =
   | Lf
   | Br('a, tree<'a>, tree<'a>)

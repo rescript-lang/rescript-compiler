@@ -99,8 +99,11 @@ Mt.from_pair_suites("tagged templates", {
   }
 });
 
+let $$Array;
+
 let extraLength = 10;
 
+exports.$$Array = $$Array;
 exports.Pg = Pg;
 exports.table = table;
 exports.id = id;

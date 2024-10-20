@@ -1,5 +1,7 @@
 @@warning("-107")
 
+module String = Ocaml_String
+
 let max_int = 2147483647 // 0x80000000
 let min_int = -2147483648 // 0x7FFFFFFF
 

@@ -6,313 +6,555 @@
    If the type exported here is also exported in modules from others,
    you will get a type not equivalent.
 */
-module Pervasives = {
-  /* Internal */
-  @deprecated("Do not use. This will be removed in v13")
-  external __unsafe_cast: 'a => 'b = "%identity"
+@deprecated("Do not use. This will be removed in v13")
+external /* Internal */
 
-  /* Exceptions */
+__unsafe_cast: 'a => 'b = "%identity"
 
-  external raise: exn => 'a = "%raise"
+/* Exceptions */
 
-  @deprecated("Use custom exception instead")
-  let failwith = s => raise(Failure(s))
+external raise: exn => 'a = "%raise"
 
-  @deprecated("Use custom exception instead")
-  let invalid_arg = s => raise(Invalid_argument(s))
+@deprecated("Use custom exception instead")
+let failwith = s => raise(Failure(s))
 
-  @deprecated("Use custom exception instead") exception Exit
+@deprecated("Use custom exception instead")
+let invalid_arg = s => raise(Invalid_argument(s))
 
-  /* Composition operators */
+@deprecated("Use custom exception instead") exception Exit
 
-  external \"|>": ('a, 'a => 'b) => 'b = "%revapply"
-  external \"@@": ('a => 'b, 'a) => 'b = "%apply"
+/* Composition operators */
 
-  /* Debugging */
+external \"|>": ('a, 'a => 'b) => 'b = "%revapply"
+external \"@@": ('a => 'b, 'a) => 'b = "%apply"
 
-  external __LOC__: string = "%loc_LOC"
-  external __FILE__: string = "%loc_FILE"
-  external __LINE__: int = "%loc_LINE"
-  external __MODULE__: string = "%loc_MODULE"
-  external __POS__: (string, int, int, int) = "%loc_POS"
+/* Debugging */
 
-  external __LOC_OF__: 'a => (string, 'a) = "%loc_LOC"
-  external __LINE_OF__: 'a => (int, 'a) = "%loc_LINE"
-  external __POS_OF__: 'a => ((string, int, int, int), 'a) = "%loc_POS"
+external __LOC__: string = "%loc_LOC"
+external __FILE__: string = "%loc_FILE"
+external __LINE__: int = "%loc_LINE"
+external __MODULE__: string = "%loc_MODULE"
+external __POS__: (string, int, int, int) = "%loc_POS"
 
-  /* Comparisons */
+external __LOC_OF__: 'a => (string, 'a) = "%loc_LOC"
+external __LINE_OF__: 'a => (int, 'a) = "%loc_LINE"
+external __POS_OF__: 'a => ((string, int, int, int), 'a) = "%loc_POS"
 
-  external \"=": ('a, 'a) => bool = "%equal"
-  external \"<>": ('a, 'a) => bool = "%notequal"
-  external \"<": ('a, 'a) => bool = "%lessthan"
-  external \">": ('a, 'a) => bool = "%greaterthan"
-  external \"<=": ('a, 'a) => bool = "%lessequal"
-  external \">=": ('a, 'a) => bool = "%greaterequal"
-  external compare: ('a, 'a) => int = "%compare"
-  external min: ('a, 'a) => 'a = "%min"
-  external max: ('a, 'a) => 'a = "%max"
-  external \"==": ('a, 'a) => bool = "%eq"
-  external \"!=": ('a, 'a) => bool = "%noteq"
+/* Comparisons */
 
-  /* Boolean operations */
+external \"=": ('a, 'a) => bool = "%equal"
+external \"<>": ('a, 'a) => bool = "%notequal"
+external \"<": ('a, 'a) => bool = "%lessthan"
+external \">": ('a, 'a) => bool = "%greaterthan"
+external \"<=": ('a, 'a) => bool = "%lessequal"
+external \">=": ('a, 'a) => bool = "%greaterequal"
+external compare: ('a, 'a) => int = "%compare"
+external min: ('a, 'a) => 'a = "%min"
+external max: ('a, 'a) => 'a = "%max"
+external \"==": ('a, 'a) => bool = "%eq"
+external \"!=": ('a, 'a) => bool = "%noteq"
 
-  external not: bool => bool = "%boolnot"
+/* Boolean operations */
 
-  external \"&&": (bool, bool) => bool = "%sequand"
+external not: bool => bool = "%boolnot"
 
-  external \"||": (bool, bool) => bool = "%sequor"
+external \"&&": (bool, bool) => bool = "%sequand"
 
-  /* Integer operations */
+external \"||": (bool, bool) => bool = "%sequor"
 
-  external \"~-": int => int = "%negint"
-  external \"~+": int => int = "%identity"
-  external succ: int => int = "%succint"
-  external pred: int => int = "%predint"
-  external \"+": (int, int) => int = "%addint"
-  external \"-": (int, int) => int = "%subint"
-  external \"*": (int, int) => int = "%mulint"
-  external \"/": (int, int) => int = "%divint"
-  external mod: (int, int) => int = "%modint"
+/* Integer operations */
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  let abs = x =>
-    if x >= 0 {
-      x
+external \"~-": int => int = "%negint"
+external \"~+": int => int = "%identity"
+external succ: int => int = "%succint"
+external pred: int => int = "%predint"
+external \"+": (int, int) => int = "%addint"
+external \"-": (int, int) => int = "%subint"
+external \"*": (int, int) => int = "%mulint"
+external \"/": (int, int) => int = "%divint"
+external mod: (int, int) => int = "%modint"
+
+@deprecated("Use Core instead. This will be removed in v13")
+let abs = x =>
+  if x >= 0 {
+    x
+  } else {
+    -x
+  }
+
+external land: (int, int) => int = "%andint"
+external lor: (int, int) => int = "%orint"
+external lxor: (int, int) => int = "%xorint"
+
+let lnot = x => lxor(x, -1)
+
+external lsl: (int, int) => int = "%lslint"
+external lsr: (int, int) => int = "%lsrint"
+external asr: (int, int) => int = "%asrint"
+
+@deprecated("Use Core instead. This will be removed in v13")
+let max_int = lsr(-1, 1)
+
+@deprecated("Use Core instead. This will be removed in v13")
+let min_int =
+  max_int + 1
+
+/* Floating-point operations */
+
+external \"~-.": float => float = "%negfloat"
+external \"~+.": float => float = "%identity"
+external \"+.": (float, float) => float = "%addfloat"
+external \"-.": (float, float) => float = "%subfloat"
+external \"*.": (float, float) => float = "%mulfloat"
+external \"/.": (float, float) => float = "%divfloat"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external \"**": (float, float) => float = "pow"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external exp: float => float = "exp"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external acos: float => float = "acos"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external asin: float => float = "asin"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external atan: float => float = "atan"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external atan2: (float, float) => float = "atan2"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external cos: float => float = "cos"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external cosh: float => float = "cosh"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external log: float => float = "log"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external log10: float => float = "log10"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external log1p: float => float = "log1p"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external sin: float => float = "sin"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external sinh: float => float = "sinh"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external sqrt: float => float = "sqrt"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external tan: float => float = "tan"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external tanh: float => float = "tanh"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external ceil: float => float = "ceil"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external floor: float => float = "floor"
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
+external abs_float: float => float = "abs"
+
+@deprecated("Use Core instead. This will be removed in v13")
+external mod_float: float => float = "%modfloat"
+
+@deprecated("Use Core instead. This will be removed in v13")
+external float: int => float = "%floatofint"
+
+@deprecated("Use Core instead. This will be removed in v13")
+external float_of_int: int => float = "%floatofint"
+
+@deprecated("Use Core instead. This will be removed in v13")
+external truncate: float => int = "%intoffloat"
+
+@deprecated("Use Core instead. This will be removed in v13")
+external int_of_float: float => int = "%intoffloat"
+
+@deprecated("Use Core instead. This will be removed in v13")
+let infinity = 0x1p2047
+
+@deprecated("Use Core instead. This will be removed in v13")
+let neg_infinity = -0x1p2047
+
+@deprecated("Use Core instead. This will be removed in v13") @val @scope("Number")
+external nan: float = "NaN"
+
+@deprecated("Use Core instead. This will be removed in v13")
+let max_float = 1.79769313486231571e+308 /* 0x1.ffff_ffff_ffff_fp+1023 */
+
+@deprecated("Use Core instead. This will be removed in v13")
+let min_float = 2.22507385850720138e-308 /* 0x1p-1022 */
+
+@deprecated("Use Core instead. This will be removed in v13")
+let epsilon_float = 2.22044604925031308e-16 /* 0x1p-52 */
+
+@deprecated("Do not use. This will be removed in v13")
+type fpclass =
+  | FP_normal
+  | FP_subnormal
+  | FP_zero
+  | FP_infinite
+  | FP_nan
+
+@deprecated("Do not use. This will be removed in v13")
+let classify_float = (x: float): fpclass =>
+  if (%raw(`isFinite`): _ => _)(x) {
+    if abs_float(x) >= /* 0x1p-1022 */ /* 2.22507385850720138e-308 */ min_float {
+      FP_normal
+    } else if x != 0. {
+      FP_subnormal
     } else {
-      -x
+      FP_zero
     }
+  } else if (%raw(`isNaN`): _ => _)(x) {
+    FP_nan
+  } else {
+    FP_infinite
+  }
 
-  external land: (int, int) => int = "%andint"
-  external lor: (int, int) => int = "%orint"
-  external lxor: (int, int) => int = "%xorint"
+/* String and byte sequence operations -- more in modules String and Bytes */
 
-  let lnot = x => lxor(x, -1)
+external \"^": (string, string) => string = "%string_concat"
 
-  external lsl: (int, int) => int = "%lslint"
-  external lsr: (int, int) => int = "%lsrint"
-  external asr: (int, int) => int = "%asrint"
+/* Character operations -- more in module Char */
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  let max_int = lsr(-1, 1)
+@deprecated("Use Core instead. This will be removed in v13")
+external int_of_char: char => int = "%identity"
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  let min_int =
-    max_int + 1
+@deprecated("Use Core instead. This will be removed in v13")
+external unsafe_char_of_int: int => char = "%identity"
 
-  /* Floating-point operations */
+@deprecated("Use Core instead. This will be removed in v13")
+let char_of_int = n =>
+  if n < 0 || n > 255 {
+    invalid_arg("char_of_int")
+  } else {
+    unsafe_char_of_int(n)
+  }
 
-  external \"~-.": float => float = "%negfloat"
-  external \"~+.": float => float = "%identity"
-  external \"+.": (float, float) => float = "%addfloat"
-  external \"-.": (float, float) => float = "%subfloat"
-  external \"*.": (float, float) => float = "%mulfloat"
-  external \"/.": (float, float) => float = "%divfloat"
+/* Unit operations */
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external \"**": (float, float) => float = "pow"
+external ignore: 'a => unit = "%ignore"
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external exp: float => float = "exp"
+/* Pair operations */
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external acos: float => float = "acos"
+external fst: (('a, 'b)) => 'a = "%field0"
+external snd: (('a, 'b)) => 'b = "%field1"
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external asin: float => float = "asin"
+/* References */
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external atan: float => float = "atan"
+type ref<'a> = {mutable contents: 'a}
+external ref: 'a => ref<'a> = "%makeref"
+external \"!": ref<'a> => 'a = "%refget"
+external \":=": (ref<'a>, 'a) => unit = "%refset"
+external incr: ref<int> => unit = "%incr"
+external decr: ref<int> => unit = "%decr"
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external atan2: (float, float) => float = "atan2"
+/* String conversion functions */
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external cos: float => float = "cos"
+@deprecated("Use Core instead. This will be removed in v13")
+let string_of_bool = b =>
+  if b {
+    "true"
+  } else {
+    "false"
+  }
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external cosh: float => float = "cosh"
+@deprecated("Use Core instead. This will be removed in v13")
+let bool_of_string = param =>
+  switch param {
+  | "true" => true
+  | "false" => false
+  | _ => invalid_arg("bool_of_string")
+  }
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external log: float => float = "log"
+@deprecated("Use Core instead. This will be removed in v13")
+let bool_of_string_opt = param =>
+  switch param {
+  | "true" => Some(true)
+  | "false" => Some(false)
+  | _ => None
+  }
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external log10: float => float = "log10"
+@deprecated("Use Core instead. This will be removed in v13")
+external string_of_int: int => string = "String"
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external log1p: float => float = "log1p"
+@deprecated("Use Core instead. This will be removed in v13") @scope("Number")
+external int_of_string: string => int = "parseInt"
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external sin: float => float = "sin"
+let int_of_string_opt = s =>
+  switch int_of_string(s) {
+  | n if n == %raw("NaN") => None
+  | n => Some(n)
+  }
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external sinh: float => float = "sinh"
+@deprecated("Use Core instead. This will be removed in v13")
+external string_get: (string, int) => char = "%string_safe_get"
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external sqrt: float => float = "sqrt"
+/* List operations -- more in module List */
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external tan: float => float = "tan"
+@deprecated("Use Core instead. This will be removed in v13")
+let rec \"@" = (l1, l2) =>
+  switch l1 {
+  | list{} => l2
+  | list{hd, ...tl} => list{hd, ...\"@"(tl, l2)}
+  }
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external tanh: float => float = "tanh"
+/* Miscellaneous */
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external ceil: float => float = "ceil"
+type int32 = int
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external floor: float => float = "floor"
+/***
+Bindings to functions available in the global JavaScript scope.
+*/
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Math")
-  external abs_float: float => float = "abs"
+/**
+An `id` representing a timeout started via `setTimeout`.
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  external mod_float: float => float = "%modfloat"
+See [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout) on MDN.
+*/
+type timeoutId = Js_global.timeoutId
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  external float: int => float = "%floatofint"
+/**
+`setTimeout(callback, durationInMilliseconds)` starts a timer that will execute `callback` after `durationInMilliseconds`.
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  external float_of_int: int => float = "%floatofint"
+See [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout) on MDN.
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  external truncate: float => int = "%intoffloat"
+## Examples
+```rescript
+// Log to the console after 2 seconds (2000 milliseconds).
+let timeoutId = setTimeout(() => {
+  Console.log("This prints in 2 seconds.")
+}, 2000)
+```
+*/
+@val
+external setTimeout: (unit => unit, int) => timeoutId = "setTimeout"
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  external int_of_float: float => int = "%intoffloat"
+/**
+`setTimeoutFloat(callback, durationInMilliseconds)` starts a timer that will execute `callback` after `durationInMilliseconds`.
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  let infinity = 0x1p2047
+The same as `setTimeout`, but allows you to pass a `float` instead of an `int` for the duration.
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  let neg_infinity = -0x1p2047
+See [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout) on MDN.
 
-  @deprecated("Use Core instead. This will be removed in v13") @val @scope("Number")
-  external nan: float = "NaN"
+## Examples
+```rescript
+// Log to the console after 2 seconds (2000 milliseconds).
+let timeoutId = setTimeoutFloat(() => {
+  Console.log("This prints in 2 seconds.")
+}, 2000.)
+```
+*/
+@val
+external setTimeoutFloat: (unit => unit, float) => timeoutId = "setTimeout"
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  let max_float = 1.79769313486231571e+308 /* 0x1.ffff_ffff_ffff_fp+1023 */
+/**
+`clearTimeout(timeoutId)` clears a scheduled timeout if it hasn't already executed.
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  let min_float = 2.22507385850720138e-308 /* 0x1p-1022 */
+See [`clearTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/clearTimeout) on MDN.
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  let epsilon_float = 2.22044604925031308e-16 /* 0x1p-52 */
+## Examples
+```rescript
+let timeoutId = setTimeout(() => {
+  Console.log("This prints in 2 seconds.")
+}, 2000)
 
-  @deprecated("Do not use. This will be removed in v13")
-  type fpclass =
-    | FP_normal
-    | FP_subnormal
-    | FP_zero
-    | FP_infinite
-    | FP_nan
+// Clearing the timeout right away, before 2 seconds has passed, means that the above callback logging to the console will never run.
+clearTimeout(timeoutId)
+```
+*/
+@val
+external clearTimeout: timeoutId => unit = "clearTimeout"
 
-  @deprecated("Do not use. This will be removed in v13")
-  let classify_float = (x: float): fpclass =>
-    if (%raw(`isFinite`): _ => _)(x) {
-      if abs_float(x) >= /* 0x1p-1022 */ /* 2.22507385850720138e-308 */ min_float {
-        FP_normal
-      } else if x != 0. {
-        FP_subnormal
-      } else {
-        FP_zero
-      }
-    } else if (%raw(`isNaN`): _ => _)(x) {
-      FP_nan
-    } else {
-      FP_infinite
-    }
+/**
+An `id` representing an interval started via `setInterval`.
 
-  /* String and byte sequence operations -- more in modules String and Bytes */
+See [`setInterval`](https://developer.mozilla.org/en-US/docs/Web/API/setInterval) on MDN.
+*/
+type intervalId = Js_global.intervalId
 
-  external \"^": (string, string) => string = "%string_concat"
+/**
+`setInterval(callback, intervalInMilliseconds)` starts an interval that will execute `callback` every `durationInMilliseconds` milliseconds.
 
-  /* Character operations -- more in module Char */
+See [`setInterval`](https://developer.mozilla.org/en-US/docs/Web/API/setInterval) on MDN.
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  external int_of_char: char => int = "%identity"
+## Examples
+```rescript
+// Log to the console ever 2 seconds (2000 milliseconds).
+let intervalId = setInterval(() => {
+  Console.log("This prints every 2 seconds.")
+}, 2000)
+```
+*/
+@val
+external setInterval: (unit => unit, int) => intervalId = "setInterval"
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  external unsafe_char_of_int: int => char = "%identity"
+/**
+`setIntervalFloat(callback, intervalInMilliseconds)` starts an interval that will execute `callback` every `durationInMilliseconds` milliseconds.
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  let char_of_int = n =>
-    if n < 0 || n > 255 {
-      invalid_arg("char_of_int")
-    } else {
-      unsafe_char_of_int(n)
-    }
+The same as `setInterval`, but allows you to pass a `float` instead of an `int` for the duration.
 
-  /* Unit operations */
+See [`setInterval`](https://developer.mozilla.org/en-US/docs/Web/API/setInterval) on MDN.
 
-  external ignore: 'a => unit = "%ignore"
+## Examples
+```rescript
+// Log to the console ever 2 seconds (2000 milliseconds).
+let intervalId = setIntervalFloat(() => {
+  Console.log("This prints every 2 seconds.")
+}, 2000.)
+```
+*/
+@val
+external setIntervalFloat: (unit => unit, float) => intervalId = "setInterval"
 
-  /* Pair operations */
+/**
+`clearInterval(intervalId)` clears a scheduled interval.
 
-  external fst: (('a, 'b)) => 'a = "%field0"
-  external snd: (('a, 'b)) => 'b = "%field1"
+See [`clearInterval`](https://developer.mozilla.org/en-US/docs/Web/API/clearInterval) on MDN.
 
-  /* References */
+## Examples
+```rescript
+let intervalId = setInterval(() => {
+  Console.log("This prints in 2 seconds.")
+}, 2000)
 
-  type ref<'a> = {mutable contents: 'a}
-  external ref: 'a => ref<'a> = "%makeref"
-  external \"!": ref<'a> => 'a = "%refget"
-  external \":=": (ref<'a>, 'a) => unit = "%refset"
-  external incr: ref<int> => unit = "%incr"
-  external decr: ref<int> => unit = "%decr"
+// Stop the interval after 10 seconds
+let timeoutId = setTimeout(() => {
+  clearInterval(intervalId)
+}, 10000)
+```
+*/
+@val
+external clearInterval: intervalId => unit = "clearInterval"
 
-  /* String conversion functions */
+/**
+Encodes a URI by replacing characters in the provided string that aren't valid in a URL.
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  let string_of_bool = b =>
-    if b {
-      "true"
-    } else {
-      "false"
-    }
+This is intended to operate on full URIs, so it encodes fewer characters than what `encodeURIComponent` does.
+If you're looking to encode just parts of a URI, like a query parameter, prefer `encodeURIComponent`.
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  let bool_of_string = param =>
-    switch param {
-    | "true" => true
-    | "false" => false
-    | _ => invalid_arg("bool_of_string")
-    }
+See [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI) on MDN.
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  let bool_of_string_opt = param =>
-    switch param {
-    | "true" => Some(true)
-    | "false" => Some(false)
-    | _ => None
-    }
+## Examples
+```rescript
+Console.log(encodeURI("https://rescript-lang.org?array=[someValue]"))
+// Logs "https://rescript-lang.org?array=%5BsomeValue%5D" to the console.
+```
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  external string_of_int: int => string = "String"
+*/
+@val
+external encodeURI: string => string = "encodeURI"
 
-  @deprecated("Use Core instead. This will be removed in v13") @scope("Number")
-  external int_of_string: string => int = "parseInt"
+/**
+Decodes a previously encoded URI back to a regular string.
 
-  let int_of_string_opt = s =>
-    switch int_of_string(s) {
-    | n if n == %raw("NaN") => None
-    | n => Some(n)
-    }
+This is intended to operate on full URIs, so it decodes fewer characters than what `decodeURIComponent` does.
+If you're looking to decode just parts of a URI, like a query parameter, prefer `decodeURIComponent`.
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  external string_get: (string, int) => char = "%string_safe_get"
+See [`decodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI) on MDN.
 
-  /* List operations -- more in module List */
+## Examples
+```rescript
+Console.log(decodeURI("https://rescript-lang.org?array=%5BsomeValue%5D"))
+// Logs "https://rescript-lang.org?array=[someValue]" to the console.
+```
+*/
+@val
+external decodeURI: string => string = "decodeURI"
 
-  @deprecated("Use Core instead. This will be removed in v13")
-  let rec \"@" = (l1, l2) =>
-    switch l1 {
-    | list{} => l2
-    | list{hd, ...tl} => list{hd, ...\"@"(tl, l2)}
-    }
+/**
+Encodes a string so it can be used as part of a URI.
 
-  /* Miscellaneous */
+See [`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) on MDN.
 
-  type int32 = int
+## Examples
+```rescript
+Console.log(encodeURIComponent("array=[someValue]"))
+// Logs "array%3D%5BsomeValue%5D" to the console.
+```
+*/
+@val
+external encodeURIComponent: string => string = "encodeURIComponent"
+
+/**
+Decodes a previously URI encoded string back to its original form.
+
+See [`decodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent) on MDN.
+
+## Examples
+```rescript
+Console.log(decodeURIComponent("array%3D%5BsomeValue%5D"))
+// Logs "array=[someValue]" to the console.
+```
+*/
+@val
+external decodeURIComponent: string => string = "decodeURIComponent"
+
+@val external window: Dom.window = "window"
+@val external document: Dom.document = "document"
+@val external globalThis: {..} = "globalThis"
+
+external null: Js.Nullable.t<'a> = "#null"
+external undefined: Js.Nullable.t<'a> = "#undefined"
+external typeof: 'a => Type.t = "#typeof"
+
+/**
+`import(value)` dynamically import a value or function from a ReScript
+module. The import call will return a `promise`, resolving to the dynamically loaded
+value.
+
+## Examples
+
+`Array.res` file:
+
+```rescript
+@send external indexOf: (array<'a>, 'a) => int = "indexOf"
+
+let indexOfOpt = (arr, item) =>
+  switch arr->indexOf(item) {
+  | -1 => None
+  | index => Some(index)
+  }
+```
+In other file you can import the `indexOfOpt` value defined in `Array.res`
+
+```rescript
+let main = async () => {
+  let indexOfOpt = await import(Array.indexOfOpt)
+  let index = indexOfOpt([1, 2], 2)
+  Console.log(index)
 }
+```
 
-include Pervasives
+Compiles to:
+
+```javascript
+async function main() {
+  var add = await import("./Array.mjs").then(function(m) {
+    return m.indexOfOpt;
+  });
+  var index = indexOfOpt([1, 2], 2);
+  console.log(index);
+}
+```
+*/
+external import: 'a => promise<'a> = "#import"
+
+type null<+'a> = Js.null<'a>
+
+type undefined<+'a> = Js.undefined<'a>
+
+type nullable<+'a> = Js.nullable<'a>
+
+let panic = Error.panic

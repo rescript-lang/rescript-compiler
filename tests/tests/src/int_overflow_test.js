@@ -92,7 +92,7 @@ Mt.from_pair_suites("Int_overflow_test", {
             ],
             tl: {
               hd: [
-                "File \"int_overflow_test.res\", line 72, characters 5-12",
+                "File \"int_overflow_test.res\", line 74, characters 5-12",
                 () => ({
                   TAG: "Eq",
                   _0: hash_variant2("xxyyzzuuxxzzyy00112233"),
@@ -101,7 +101,7 @@ Mt.from_pair_suites("Int_overflow_test", {
               ],
               tl: {
                 hd: [
-                  "File \"int_overflow_test.res\", line 73, characters 5-12",
+                  "File \"int_overflow_test.res\", line 75, characters 5-12",
                   () => ({
                     TAG: "Eq",
                     _0: hash_variant2("xxyyzxzzyy"),
@@ -128,7 +128,7 @@ Mt.from_pair_suites("Int_overflow_test", {
                     ],
                     tl: {
                       hd: [
-                        "File \"int_overflow_test.res\", line 76, characters 5-12",
+                        "File \"int_overflow_test.res\", line 78, characters 5-12",
                         () => ({
                           TAG: "Eq",
                           _0: Number("3") | 0,
@@ -137,7 +137,7 @@ Mt.from_pair_suites("Int_overflow_test", {
                       ],
                       tl: {
                         hd: [
-                          "File \"int_overflow_test.res\", line 78, characters 5-12",
+                          "File \"int_overflow_test.res\", line 80, characters 5-12",
                           () => ({
                             TAG: "Eq",
                             _0: Number("3.2") | 0,
@@ -158,10 +158,13 @@ Mt.from_pair_suites("Int_overflow_test", {
   }
 });
 
+let $$String;
+
 let max_int = 2147483647;
 
 let min_int = -2147483648;
 
+exports.$$String = $$String;
 exports.max_int = max_int;
 exports.min_int = min_int;
 exports.hash_variant = hash_variant;

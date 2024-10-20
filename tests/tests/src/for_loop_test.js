@@ -3,7 +3,6 @@
 
 let Belt_List = require("rescript/lib/js/Belt_List.js");
 let Belt_Array = require("rescript/lib/js/Belt_Array.js");
-let Primitive_array = require("rescript/lib/js/Primitive_array.js");
 
 function for_3(x) {
   let v = {
@@ -12,9 +11,9 @@ function for_3(x) {
   let arr = Belt_Array.map(x, param => (() => {}));
   for (let i = 0, i_finish = x.length; i < i_finish; ++i) {
     let j = (i << 1);
-    Primitive_array.set(arr, i, () => {
+    arr[i] = () => {
       v.contents = v.contents + j | 0;
-    });
+    };
   }
   Belt_Array.forEach(arr, x => x());
   return v.contents;
@@ -28,9 +27,9 @@ function for_4(x) {
   for (let i = 0, i_finish = x.length; i < i_finish; ++i) {
     let j = (i << 1);
     let k = (j << 1);
-    Primitive_array.set(arr, i, () => {
+    arr[i] = () => {
       v.contents = v.contents + k | 0;
-    });
+    };
   }
   Belt_Array.forEach(arr, x => x());
   return v.contents;
@@ -43,9 +42,9 @@ function for_5(x, u) {
   let arr = Belt_Array.map(x, param => (() => {}));
   for (let i = 0, i_finish = x.length; i < i_finish; ++i) {
     let k = Math.imul((u << 1), u);
-    Primitive_array.set(arr, i, () => {
+    arr[i] = () => {
       v.contents = v.contents + k | 0;
-    });
+    };
   }
   Belt_Array.forEach(arr, x => x());
   return v.contents;
@@ -73,9 +72,9 @@ function for_6(x, u) {
       let k = Math.imul((u << 1), u);
       let h = (v5.contents << 1);
       v2.contents = v2.contents + 1 | 0;
-      Primitive_array.set(arr, i, () => {
+      arr[i] = () => {
         v.contents = (((((v.contents + k | 0) + v2.contents | 0) + v4.contents | 0) + v5.contents | 0) + h | 0) + u | 0;
-      });
+      };
     }
     inspect_3 = v2.contents;
   }
@@ -95,9 +94,9 @@ function for_7() {
   let arr = Belt_Array.make(21, () => {});
   for (let i = 0; i <= 6; ++i) {
     for (let j = 0; j <= 2; ++j) {
-      Primitive_array.set(arr, Math.imul(i, 3) + j | 0, () => {
+      arr[Math.imul(i, 3) + j | 0] = () => {
         v.contents = (v.contents + i | 0) + j | 0;
-      });
+      };
     }
   }
   Belt_Array.forEach(arr, f => f());
@@ -113,9 +112,9 @@ function for_8() {
     let k = (i << 1);
     for (let j = 0; j <= 2; ++j) {
       let h = i + j | 0;
-      Primitive_array.set(arr, Math.imul(i, 3) + j | 0, () => {
+      arr[Math.imul(i, 3) + j | 0] = () => {
         v.contents = (((v.contents + i | 0) + j | 0) + h | 0) + k | 0;
-      });
+      };
     }
   }
   Belt_Array.forEach(arr, f => f());
@@ -148,13 +147,13 @@ function for_9() {
     for (let j = 0; j <= 1; ++j) {
       v$1.contents = v$1.contents + 1 | 0;
       collect(v$1.contents);
-      Primitive_array.set(arr, (i << 1) + j | 0, () => {
+      arr[(i << 1) + j | 0] = () => {
         vv.contents = vv.contents + v$1.contents | 0;
-      });
+      };
     }
-    Primitive_array.set(arr2, i, () => {
+    arr2[i] = () => {
       vv2.contents = vv2.contents + v$1.contents | 0;
-    });
+    };
   }
   Belt_Array.forEach(arr, f => f());
   Belt_Array.forEach(arr2, f => f());

@@ -2,7 +2,6 @@
 'use strict';
 
 let Lazy = require("rescript/lib/js/Lazy.js");
-let Primitive_array = require("rescript/lib/js/Primitive_array.js");
 
 function a4(prim) {
   return [
@@ -41,7 +40,7 @@ let v = [
 
 let xxx = "a";
 
-let a = xxx.codePointAt(0);
+let a = xxx[0];
 
 function u(b) {
   if (b) {
@@ -56,7 +55,7 @@ function f2(h, b, param) {
   return h(b ? 32 : 7);
 }
 
-Primitive_array.set(v, 1, 3.0);
+v[1] = 3.0;
 
 let unboxed_x = {
   u: 0,

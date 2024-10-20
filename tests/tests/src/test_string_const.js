@@ -19,6 +19,9 @@ try {
   }
 }
 
+let $$String;
+
+exports.$$String = $$String;
 exports.f = f;
 exports.hh = hh;
 /* f Not a pure module */

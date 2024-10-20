@@ -145,7 +145,7 @@ function lorem(tr) {
     RE_EXN_ID: "Assert_failure",
     _1: [
       "flexible_array_test.res",
-      80,
+      82,
       9
     ],
     Error: new Error()
@@ -303,7 +303,7 @@ if (!$eq$tilde(sort(u), [
     RE_EXN_ID: "Assert_failure",
     _1: [
       "flexible_array_test.res",
-      184,
+      186,
       2
     ],
     Error: new Error()
@@ -314,6 +314,9 @@ let v = Belt_Array.init(500, i => 500 - i | 0);
 
 $eq$tilde(sort(of_array(v)), Belt_Array.init(500, i => i + 1 | 0));
 
+let $$Array;
+
+exports.$$Array = $$Array;
 exports.sub = sub;
 exports.update = update;
 exports.$$delete = $$delete;

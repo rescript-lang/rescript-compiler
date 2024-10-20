@@ -1,3 +1,5 @@
+module Array = Ocaml_Array
+
 let suites = {
   open Mt
   list{

@@ -1,3 +1,5 @@
+module String = Ocaml_String
+
 let a0 = "hello "
 
 let a1 = a0

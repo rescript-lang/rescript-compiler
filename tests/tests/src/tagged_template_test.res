@@ -1,3 +1,5 @@
+module Array = Ocaml_Array
+
 module Pg = {
   @module("./tagged_template_lib.js") @taggedTemplate
   external sql: (array<string>, array<string>) => string = "sql"
