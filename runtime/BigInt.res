@@ -70,7 +70,7 @@ external toLocaleString: bigint => string = "toLocaleString"
 
 @val external toFloat: bigint => float = "Number"
 
-let toInt = t => t->toFloat->Core__Int.fromFloat
+let toInt = t => t->toFloat->Int.fromFloat
 
 external \"+": (bigint, bigint) => bigint = "%addbigint"
 external \"-": (bigint, bigint) => bigint = "%subbigint"

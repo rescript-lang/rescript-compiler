@@ -1,13 +1,13 @@
-module Common = Core__Intl__Common
-module Collator = Core__Intl__Collator
-module DateTimeFormat = Core__Intl__DateTimeFormat
-module ListFormat = Core__Intl__ListFormat
-module Locale = Core__Intl__Locale
-module NumberFormat = Core__Intl__NumberFormat
-module PluralRules = Core__Intl__PluralRules
-module RelativeTimeFormat = Core__Intl__RelativeTimeFormat
-module Segmenter = Core__Intl__Segmenter
-module Segments = Core__Intl__Segments
+module Common = Intl__Common
+module Collator = Intl__Collator
+module DateTimeFormat = Intl__DateTimeFormat
+module ListFormat = Intl__ListFormat
+module Locale = Intl__Locale
+module NumberFormat = Intl__NumberFormat
+module PluralRules = Intl__PluralRules
+module RelativeTimeFormat = Intl__RelativeTimeFormat
+module Segmenter = Intl__Segmenter
+module Segments = Intl__Segments
 
 /**
 @throws RangeError

@@ -69,17 +69,17 @@ module A = {
 
   let reduceReverseU = (a, x, f) => {
     let r = ref(x)
-    for i in Core__Array.length(a) - 1 downto 0 {
-      r.contents = f(r.contents, Core__Array.getUnsafe(a, i))
+    for i in Array.length(a) - 1 downto 0 {
+      r.contents = f(r.contents, Array.getUnsafe(a, i))
     }
     r.contents
   }
 
   let reduceReverse2U = (a, b, x, f) => {
     let r = ref(x)
-    let len = min(Core__Array.length(a), Core__Array.length(b))
+    let len = min(Array.length(a), Array.length(b))
     for i in len - 1 downto 0 {
-      r.contents = f(r.contents, Core__Array.getUnsafe(a, i), Core__Array.getUnsafe(b, i))
+      r.contents = f(r.contents, Array.getUnsafe(a, i), Array.getUnsafe(b, i))
     }
     r.contents
   }
@@ -467,7 +467,7 @@ let rec fillAux = (arr, i, x) =>
   switch x {
   | list{} => ()
   | list{h, ...t} =>
-    Core__Array.setUnsafe(arr, i, h)
+    Array.setUnsafe(arr, i, h)
     fillAux(arr, i + 1, t)
   }
 
@@ -475,10 +475,10 @@ let rec fromArrayAux = (a, i, res) =>
   if i < 0 {
     res
   } else {
-    fromArrayAux(a, i - 1, list{Core__Array.getUnsafe(a, i), ...res})
+    fromArrayAux(a, i - 1, list{Array.getUnsafe(a, i), ...res})
   }
 
-let fromArray = a => fromArrayAux(a, Core__Array.length(a) - 1, list{})
+let fromArray = a => fromArrayAux(a, Array.length(a) - 1, list{})
 
 let toArray = (x: t<_>) => {
   let len = length(x)
@@ -489,7 +489,7 @@ let toArray = (x: t<_>) => {
 
 let toShuffled = xs => {
   let v = toArray(xs)
-  Core__Array.shuffle(v)
+  Array.shuffle(v)
   fromArray(v)
 }
 
@@ -542,10 +542,10 @@ let concatMany = xs =>
   | [] => list{}
   | [x] => x
   | _ =>
-    let len = Core__Array.length(xs)
-    let v = ref(Core__Array.getUnsafe(xs, len - 1))
+    let len = Array.length(xs)
+    let v = ref(Array.getUnsafe(xs, len - 1))
     for i in len - 2 downto 0 {
-      v.contents = concat(Core__Array.getUnsafe(xs, i), v.contents)
+      v.contents = concat(Array.getUnsafe(xs, i), v.contents)
     }
     v.contents
   }
@@ -663,20 +663,20 @@ let rec every2 = (l1, l2, p) =>
 
 let rec compareLength = (l1, l2) =>
   switch (l1, l2) {
-  | (list{}, list{}) => Core__Ordering.equal
-  | (_, list{}) => Core__Ordering.greater
-  | (list{}, _) => Core__Ordering.less
+  | (list{}, list{}) => Ordering.equal
+  | (_, list{}) => Ordering.greater
+  | (list{}, _) => Ordering.less
   | (list{_, ...l1s}, list{_, ...l2s}) => compareLength(l1s, l2s)
   }
 
 let rec compare = (l1, l2, p) =>
   switch (l1, l2) {
-  | (list{}, list{}) => Core__Ordering.equal
-  | (_, list{}) => Core__Ordering.greater
-  | (list{}, _) => Core__Ordering.less
+  | (list{}, list{}) => Ordering.equal
+  | (_, list{}) => Ordering.greater
+  | (list{}, _) => Ordering.less
   | (list{a1, ...l1}, list{a2, ...l2}) =>
     let c = p(a1, a2)
-    if c == Core__Ordering.equal {
+    if c == Ordering.equal {
       compare(l1, l2, p)
     } else {
       c
@@ -761,7 +761,7 @@ let setAssoc = (xs, x, k, eq) =>
 
 let sort = (xs, cmp) => {
   let arr = toArray(xs)
-  Core__Array.sort(arr, cmp)
+  Array.sort(arr, cmp)
   fromArray(arr)
 }
 

@@ -1,6 +1,6 @@
 /** The `Uint32Array` typed array represents an array of 32-bit unsigned integers in platform byte order. See [Uint32Array on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array)
 */
-type t = Core__TypedArray.t<int>
+type t = TypedArray.t<int>
 
 module Constants = {
   /**`bytesPerElement` returns the element size. See [BYTES_PER_ELEMENT on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/BYTES_PER_ELEMENT)
@@ -19,22 +19,21 @@ external fromArray: array<int> => t = "Uint32Array"
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBuffer: Core__ArrayBuffer.t => t = "Uint32Array"
+external fromBuffer: ArrayBuffer.t => t = "Uint32Array"
 
 /** `fromBufferToEnd` creates a `Uint32Array` from an `ArrayBuffer.t`, starting at a particular offset and continuing through to the end. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array/Uint32Array)
 
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBufferToEnd: (Core__ArrayBuffer.t, ~byteOffset: int) => t = "Uint32Array"
+external fromBufferToEnd: (ArrayBuffer.t, ~byteOffset: int) => t = "Uint32Array"
 
 /** `fromBufferWithRange` creates a `Uint32Array` from an `ArrayBuffer.t`, starting at a particular offset and consuming `length` **bytes**. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array/Uint32Array)
 
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBufferWithRange: (Core__ArrayBuffer.t, ~byteOffset: int, ~length: int) => t =
-  "Uint32Array"
+external fromBufferWithRange: (ArrayBuffer.t, ~byteOffset: int, ~length: int) => t = "Uint32Array"
 
 /** `fromLength` creates a zero-initialized `Uint32Array` to hold the specified count of numbers; this is **not** a byte length. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array/Uint32Array)
 

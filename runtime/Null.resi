@@ -21,7 +21,7 @@ let nullValue = Null.make("Hello")
 let asNullable = nullValue->Null.asNullable // Nullable.t<string>
 ```
 */
-external asNullable: t<'a> => Core__Nullable.t<'a> = "%identity"
+external asNullable: t<'a> => Nullable.t<'a> = "%identity"
 
 /**
 The value `null`.
@@ -49,7 +49,7 @@ external make: 'a => t<'a> = "%identity"
 
 let equal: (t<'a>, t<'b>, ('a, 'b) => bool) => bool
 
-let compare: (t<'a>, t<'b>, ('a, 'b) => Core__Ordering.t) => Core__Ordering.t
+let compare: (t<'a>, t<'b>, ('a, 'b) => Ordering.t) => Ordering.t
 
 /**
 Converts a nullable value into an option, so it can be pattern matched on.

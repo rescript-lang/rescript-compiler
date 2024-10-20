@@ -2,7 +2,7 @@ type t<'k, 'v> = Js.Map.t<'k, 'v>
 
 @new external make: unit => t<'k, 'v> = "Map"
 @new external fromArray: array<('k, 'v)> => t<'k, 'v> = "Map"
-@new external fromIterator: Core__Iterator.t<('k, 'v)> => t<'k, 'v> = "Map"
+@new external fromIterator: Iterator.t<('k, 'v)> => t<'k, 'v> = "Map"
 
 @get external size: t<'k, 'v> => int = "size"
 
@@ -16,6 +16,6 @@ type t<'k, 'v> = Js.Map.t<'k, 'v>
 @send external set: (t<'k, 'v>, 'k, 'v) => unit = "set"
 @send external delete: (t<'k, 'v>, 'k) => bool = "delete"
 
-@send external keys: t<'k, 'v> => Core__Iterator.t<'k> = "keys"
-@send external values: t<'k, 'v> => Core__Iterator.t<'v> = "values"
-@send external entries: t<'k, 'v> => Core__Iterator.t<('k, 'v)> = "entries"
+@send external keys: t<'k, 'v> => Iterator.t<'k> = "keys"
+@send external values: t<'k, 'v> => Iterator.t<'v> = "values"
+@send external entries: t<'k, 'v> => Iterator.t<('k, 'v)> = "entries"

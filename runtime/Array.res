@@ -3,7 +3,7 @@
 external getUnsafe: (array<'a>, int) => 'a = "%array_unsafe_get"
 external setUnsafe: (array<'a>, int, 'a) => unit = "%array_unsafe_set"
 
-@val external fromIterator: Core__Iterator.t<'a> => array<'a> = "Array.from"
+@val external fromIterator: Iterator.t<'a> => array<'a> = "Array.from"
 @val external fromArrayLike: Js.Array2.array_like<'a> => array<'a> = "Array.from"
 @val
 external fromArrayLikeWithMap: (Js.Array2.array_like<'a>, 'a => 'b) => array<'b> = "Array.from"
@@ -58,10 +58,10 @@ let equal = (a, b, eq) => {
 
 let rec compareFromIndex = (a, b, i, cmp, len) =>
   if i === len {
-    Core__Ordering.equal
+    Ordering.equal
   } else {
     let c = cmp(a->getUnsafe(i), b->getUnsafe(i))
-    if c == Core__Ordering.equal {
+    if c == Ordering.equal {
       compareFromIndex(a, b, i + 1, cmp, len)
     } else {
       c
@@ -72,9 +72,9 @@ let compare = (a, b, cmp) => {
   let lenA = a->length
   let lenB = b->length
   lenA < lenB
-    ? Core__Ordering.less
+    ? Ordering.less
     : lenA > lenB
-    ? Core__Ordering.greater
+    ? Ordering.greater
     : compareFromIndex(a, b, 0, cmp, lenA)
 }
 
@@ -146,8 +146,8 @@ let lastIndexOfOpt = (arr, item) =>
 @send external sliceToEnd: (array<'a>, ~start: int) => array<'a> = "slice"
 @send external copy: array<'a> => array<'a> = "slice"
 
-@send external sort: (array<'a>, ('a, 'a) => Core__Ordering.t) => unit = "sort"
-@send external toSorted: (array<'a>, ('a, 'a) => Core__Ordering.t) => array<'a> = "toSorted"
+@send external sort: (array<'a>, ('a, 'a) => Ordering.t) => unit = "sort"
+@send external toSorted: (array<'a>, ('a, 'a) => Ordering.t) => array<'a> = "toSorted"
 
 @send external toString: array<'a> => string = "toString"
 @send external toLocaleString: array<'a> => string = "toLocaleString"
@@ -187,9 +187,9 @@ let reduceRightWithIndex = (arr, init, f) => reduceRightWithIndex(arr, f, init)
 @get_index external get: (array<'a>, int) => option<'a> = ""
 @set_index external set: (array<'a>, int, 'a) => unit = ""
 
-@get_index external getSymbol: (array<'a>, Core__Symbol.t) => option<'b> = ""
-@get_index external getSymbolUnsafe: (array<'a>, Core__Symbol.t) => 'b = ""
-@set_index external setSymbol: (array<'a>, Core__Symbol.t, 'b) => unit = ""
+@get_index external getSymbol: (array<'a>, Symbol.t) => option<'b> = ""
+@get_index external getSymbolUnsafe: (array<'a>, Symbol.t) => 'b = ""
+@set_index external setSymbol: (array<'a>, Symbol.t, 'b) => unit = ""
 
 let findIndexOpt = (array: array<'a>, finder: 'a => bool): option<int> =>
   switch findIndex(array, finder) {

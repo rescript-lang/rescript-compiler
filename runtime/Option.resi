@@ -252,4 +252,4 @@ Option.compare(Some(14), None, clockCompare) // 1.
 Option.compare(None, None, clockCompare) // 0.
 ```
 */
-let compare: (option<'a>, option<'b>, ('a, 'b) => Core__Ordering.t) => Core__Ordering.t
+let compare: (option<'a>, option<'b>, ('a, 'b) => Ordering.t) => Ordering.t

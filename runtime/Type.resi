@@ -58,7 +58,7 @@ module Classify: {
     | Number(float)
     | Object(object)
     | Function(function)
-    | Symbol(Core__Symbol.t)
+    | Symbol(Symbol.t)
     | BigInt(bigint)
 
   /**

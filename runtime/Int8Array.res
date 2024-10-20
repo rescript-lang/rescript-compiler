@@ -1,6 +1,6 @@
 /** The `Int8Array` typed array represents an array of twos-complement 8-bit signed integers. See [Int8Array on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array)
 */
-type t = Core__TypedArray.t<int>
+type t = TypedArray.t<int>
 
 module Constants = {
   /**`bytesPerElement` returns the element size. See [BYTES_PER_ELEMENT on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/BYTES_PER_ELEMENT)
@@ -19,22 +19,21 @@ external fromArray: array<int> => t = "Int8Array"
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBuffer: Core__ArrayBuffer.t => t = "Int8Array"
+external fromBuffer: ArrayBuffer.t => t = "Int8Array"
 
 /** `fromBufferToEnd` creates a `Int8Array` from an `ArrayBuffer.t`, starting at a particular offset and continuing through to the end. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array/Int8Array)
 
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBufferToEnd: (Core__ArrayBuffer.t, ~byteOffset: int) => t = "Int8Array"
+external fromBufferToEnd: (ArrayBuffer.t, ~byteOffset: int) => t = "Int8Array"
 
 /** `fromBufferWithRange` creates a `Int8Array` from an `ArrayBuffer.t`, starting at a particular offset and consuming `length` **bytes**. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array/Int8Array)
 
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBufferWithRange: (Core__ArrayBuffer.t, ~byteOffset: int, ~length: int) => t =
-  "Int8Array"
+external fromBufferWithRange: (ArrayBuffer.t, ~byteOffset: int, ~length: int) => t = "Int8Array"
 
 /** `fromLength` creates a zero-initialized `Int8Array` to hold the specified count of numbers; this is **not** a byte length. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array/Int8Array)
 

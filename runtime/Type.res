@@ -14,7 +14,7 @@ module Classify = {
     | Number(float)
     | Object(object)
     | Function(function)
-    | Symbol(Core__Symbol.t)
+    | Symbol(Symbol.t)
     | BigInt(bigint)
 
   @val external _internalClass: 'a => string = "Object.prototype.toString.call"
@@ -23,7 +23,7 @@ module Classify = {
   external _asFloat: 'a => float = "%identity"
   external _asObject: 'a => object = "%identity"
   external _asFunction: 'a => function = "%identity"
-  external _asSymbol: 'a => Core__Symbol.t = "%identity"
+  external _asSymbol: 'a => Symbol.t = "%identity"
   external _asBigInt: 'a => bigint = "%identity"
 
   let classify = value => {

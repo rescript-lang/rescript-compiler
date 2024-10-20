@@ -82,7 +82,7 @@ external make: 'a => t<'a> = "%identity"
 
 let equal: (t<'a>, t<'b>, ('a, 'b) => bool) => bool
 
-let compare: (t<'a>, t<'b>, ('a, 'b) => Core__Ordering.t) => Core__Ordering.t
+let compare: (t<'a>, t<'b>, ('a, 'b) => Ordering.t) => Ordering.t
 
 /**
 Converts a nullable value into an option, so it can be pattern matched on.

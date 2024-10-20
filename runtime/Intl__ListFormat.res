@@ -12,7 +12,7 @@ type style = [
 ]
 
 type options = {
-  localeMatcher?: Core__Intl__Common.localeMatcher,
+  localeMatcher?: Intl__Common.localeMatcher,
   \"type"?: listType,
   style?: style,
 }
@@ -33,7 +33,7 @@ type resolvedOptions = {
   \"type": listType,
 }
 
-type supportedLocalesOptions = {localeMatcher: Core__Intl__Common.localeMatcher}
+type supportedLocalesOptions = {localeMatcher: Intl__Common.localeMatcher}
 
 @new external make: (~locales: array<string>=?, ~options: options=?) => t = "Intl.ListFormat"
 

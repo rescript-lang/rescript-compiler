@@ -4,7 +4,7 @@ type rec t = Js.Json.t =
   | @as(null) Null
   | String(string)
   | Number(float)
-  | Object(Core__Dict.t<t>)
+  | Object(Dict.t<t>)
   | Array(array<t>)
 
 @unboxed
@@ -47,7 +47,7 @@ module Classify = {
     | Null
     | String(string)
     | Number(float)
-    | Object(Core__Dict.t<t>)
+    | Object(Dict.t<t>)
     | Array(array<t>)
 
   @val external _internalClass: 'a => string = "Object.prototype.toString.call"
@@ -55,7 +55,7 @@ module Classify = {
   external _asString: 'a => string = "%identity"
   external _asFloat: 'a => float = "%identity"
   external _asArray: 'a => array<Js.Json.t> = "%identity"
-  external _asDict: 'a => Core__Dict.t<Js.Json.t> = "%identity"
+  external _asDict: 'a => Dict.t<Js.Json.t> = "%identity"
 
   let classify = value => {
     switch _internalClass(value) {
@@ -75,27 +75,20 @@ module Encode = {
   external string: string => t = "%identity"
   external int: int => t = "%identity"
   external float: float => t = "%identity"
-  external object: Core__Dict.t<t> => t = "%identity"
+  external object: Dict.t<t> => t = "%identity"
   external array: array<t> => t = "%identity"
 }
 
 module Decode = {
-  let bool = (json: t) =>
-    Core__Type.typeof(json) === #boolean ? Some((Obj.magic(json): bool)) : None
-  let null = (json: t) => Obj.magic(json) === Core__Null.null ? Some(Core__Null.null) : None
-  let string = (json: t) =>
-    Core__Type.typeof(json) === #string ? Some((Obj.magic(json): string)) : None
-  let float = (json: t) =>
-    Core__Type.typeof(json) === #number ? Some((Obj.magic(json): float)) : None
+  let bool = (json: t) => Type.typeof(json) === #boolean ? Some((Obj.magic(json): bool)) : None
+  let null = (json: t) => Obj.magic(json) === Null.null ? Some(Null.null) : None
+  let string = (json: t) => Type.typeof(json) === #string ? Some((Obj.magic(json): string)) : None
+  let float = (json: t) => Type.typeof(json) === #number ? Some((Obj.magic(json): float)) : None
   let object = (json: t) =>
-    if (
-      Core__Type.typeof(json) === #object &&
-      !Core__Array.isArray(json) &&
-      !(Obj.magic(json) === Core__Null.null)
-    ) {
-      Some((Obj.magic(json): Core__Dict.t<t>))
+    if Type.typeof(json) === #object && !Array.isArray(json) && !(Obj.magic(json) === Null.null) {
+      Some((Obj.magic(json): Dict.t<t>))
     } else {
       None
     }
-  let array = (json: t) => Core__Array.isArray(json) ? Some((Obj.magic(json): array<t>)) : None
+  let array = (json: t) => Array.isArray(json) ? Some((Obj.magic(json): array<t>)) : None
 }

@@ -56,8 +56,7 @@ module Int = {
   @variadic @val external maxMany: array<int> => int = "Math.max"
   @val external pow: (int, ~exp: int) => int = "Math.pow"
   @val external sign: int => int = "Math.sign"
-  let floor: float => int = f => f->floor->Core__Float.toInt
-  let ceil: float => int = f => f->ceil->Core__Float.toInt
-  let random: (int, int) => int = (min, max) =>
-    floor(random() *. Core__Int.toFloat(max - min)) + min
+  let floor: float => int = f => f->floor->Float.toInt
+  let ceil: float => int = f => f->ceil->Float.toInt
+  let random: (int, int) => int = (min, max) => floor(random() *. Int.toFloat(max - min)) + min
 }

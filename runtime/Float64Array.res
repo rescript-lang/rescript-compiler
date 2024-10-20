@@ -1,6 +1,6 @@
 /** The `Float64Array` typed array represents an array of 64-bit floating point numbers in platform byte order. See [Float64Array on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array)
 */
-type t = Core__TypedArray.t<float>
+type t = TypedArray.t<float>
 
 module Constants = {
   /**`bytesPerElement` returns the element size. See [BYTES_PER_ELEMENT on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/BYTES_PER_ELEMENT)
@@ -19,22 +19,21 @@ external fromArray: array<float> => t = "Float64Array"
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBuffer: Core__ArrayBuffer.t => t = "Float64Array"
+external fromBuffer: ArrayBuffer.t => t = "Float64Array"
 
 /** `fromBufferToEnd` creates a `Float64Array` from an `ArrayBuffer.t`, starting at a particular offset and continuing through to the end. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array/Float64Array)
 
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBufferToEnd: (Core__ArrayBuffer.t, ~byteOffset: int) => t = "Float64Array"
+external fromBufferToEnd: (ArrayBuffer.t, ~byteOffset: int) => t = "Float64Array"
 
 /** `fromBufferWithRange` creates a `Float64Array` from an `ArrayBuffer.t`, starting at a particular offset and consuming `length` **bytes**. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array/Float64Array)
 
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBufferWithRange: (Core__ArrayBuffer.t, ~byteOffset: int, ~length: int) => t =
-  "Float64Array"
+external fromBufferWithRange: (ArrayBuffer.t, ~byteOffset: int, ~length: int) => t = "Float64Array"
 
 /** `fromLength` creates a zero-initialized `Float64Array` to hold the specified count of numbers; this is **not** a byte length. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array/Float64Array)
 

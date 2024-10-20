@@ -208,7 +208,7 @@ Result.compare(Error("x"), Ok(57), mod10cmp) == (-1.)
 Result.compare(Error("x"), Error("y"), mod10cmp) == 0.
 ```
 */
-let compare: (result<'a, 'c>, result<'b, 'd>, ('a, 'b) => Core__Ordering.t) => Core__Ordering.t
+let compare: (result<'a, 'c>, result<'b, 'd>, ('a, 'b) => Ordering.t) => Ordering.t
 
 /**
 `forEach(res, f)` runs the provided function `f` on the `Ok` value. If `res` is `Error`, nothing happens.

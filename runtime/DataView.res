@@ -1,12 +1,11 @@
 type t
 
-@new external fromBuffer: Core__ArrayBuffer.t => t = "DataView"
-@new external fromBufferToEnd: (Core__ArrayBuffer.t, ~byteOffset: int) => t = "DataView"
+@new external fromBuffer: ArrayBuffer.t => t = "DataView"
+@new external fromBufferToEnd: (ArrayBuffer.t, ~byteOffset: int) => t = "DataView"
 @new
-external fromBufferWithRange: (Core__ArrayBuffer.t, ~byteOffset: int, ~length: int) => t =
-  "DataView"
+external fromBufferWithRange: (ArrayBuffer.t, ~byteOffset: int, ~length: int) => t = "DataView"
 
-@get external buffer: t => Core__ArrayBuffer.t = "buffer"
+@get external buffer: t => ArrayBuffer.t = "buffer"
 @get external byteLength: t => int = "byteLength"
 @get external byteOffset: t => int = "byteOffset"
 

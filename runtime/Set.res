@@ -2,7 +2,7 @@ type t<'a> = Js.Set.t<'a>
 
 @new external make: unit => t<'a> = "Set"
 @new external fromArray: array<'a> => t<'a> = "Set"
-@new external fromIterator: Core__Iterator.t<'a> => t<'a> = "Set"
+@new external fromIterator: Iterator.t<'a> => t<'a> = "Set"
 
 @get external size: t<'a> => int = "size"
 
@@ -14,7 +14,7 @@ type t<'a> = Js.Set.t<'a>
 
 @send external forEach: (t<'a>, 'a => unit) => unit = "forEach"
 
-@send external values: t<'a> => Core__Iterator.t<'a> = "values"
+@send external values: t<'a> => Iterator.t<'a> = "values"
 
 @send external difference: (t<'a>, t<'a>) => t<'a> = "difference"
 @send external intersection: (t<'a>, t<'a>) => t<'a> = "intersection"

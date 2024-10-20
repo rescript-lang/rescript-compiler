@@ -123,9 +123,9 @@ x->Object.getSymbol(fruit) // Some("banana")
 ```
 */
 @get_index
-external getSymbol: ({..}, Core__Symbol.t) => option<'a> = ""
+external getSymbol: ({..}, Symbol.t) => option<'a> = ""
 
-@get_index external getSymbolUnsafe: ({..}, Core__Symbol.t) => 'a = ""
+@get_index external getSymbolUnsafe: ({..}, Symbol.t) => 'a = ""
 
 /**
 `set(name, value)` assigns a value to the named object property, overwriting the previous value if any. See [Working with Objects on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects#objects_and_properties)
@@ -141,7 +141,7 @@ external getSymbol: ({..}, Core__Symbol.t) => option<'a> = ""
 @set_index
 external set: ({..}, string, 'a) => unit = ""
 
-@set_index external setSymbol: ({..}, Core__Symbol.t, 'a) => unit = ""
+@set_index external setSymbol: ({..}, Symbol.t, 'a) => unit = ""
 
 /**
 `keysToArray` returns an array of an object's own enumerable string-keyed property names. See [ECMAScript Language Specification](https://tc39.es/ecma262/multipage/fundamental-objects.html#sec-object.keys) 

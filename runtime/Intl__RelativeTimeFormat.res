@@ -5,12 +5,12 @@ type style = [#long | #short | #narrow]
 type timeUnit = [#year | #quarter | #month | #week | #day | #hour | #minute | #second]
 
 type options = {
-  localeMatcher?: Core__Intl__Common.localeMatcher,
+  localeMatcher?: Intl__Common.localeMatcher,
   numeric?: numeric,
   style?: style,
 }
 
-type supportedLocalesOptions = {localeMatcher: Core__Intl__Common.localeMatcher}
+type supportedLocalesOptions = {localeMatcher: Intl__Common.localeMatcher}
 
 type resolvedOptions = {
   locale: string,

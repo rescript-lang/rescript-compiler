@@ -1,6 +1,6 @@
 /** The `Int16Array` typed array represents an array of twos-complement 16-bit signed integers in platform byte order. See [Int16Array on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array)
 */
-type t = Core__TypedArray.t<int>
+type t = TypedArray.t<int>
 
 module Constants = {
   /**`bytesPerElement` returns the element size. See [BYTES_PER_ELEMENT on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/BYTES_PER_ELEMENT)
@@ -19,22 +19,21 @@ external fromArray: array<int> => t = "Int16Array"
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBuffer: Core__ArrayBuffer.t => t = "Int16Array"
+external fromBuffer: ArrayBuffer.t => t = "Int16Array"
 
 /** `fromBufferToEnd` creates a `Int16Array` from an `ArrayBuffer.t`, starting at a particular offset and continuing through to the end. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array/Int16Array)
 
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBufferToEnd: (Core__ArrayBuffer.t, ~byteOffset: int) => t = "Int16Array"
+external fromBufferToEnd: (ArrayBuffer.t, ~byteOffset: int) => t = "Int16Array"
 
 /** `fromBufferWithRange` creates a `Int16Array` from an `ArrayBuffer.t`, starting at a particular offset and consuming `length` **bytes**. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array/Int16Array)
 
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBufferWithRange: (Core__ArrayBuffer.t, ~byteOffset: int, ~length: int) => t =
-  "Int16Array"
+external fromBufferWithRange: (ArrayBuffer.t, ~byteOffset: int, ~length: int) => t = "Int16Array"
 
 /** `fromLength` creates a zero-initialized `Int16Array` to hold the specified count of numbers; this is **not** a byte length. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array/Int16Array)
 

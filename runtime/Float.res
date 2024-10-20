@@ -9,7 +9,7 @@ module Constants = {
 
 external equal: (float, float) => bool = "%equal"
 
-external compare: (float, float) => Core__Ordering.t = "%compare"
+external compare: (float, float) => Ordering.t = "%compare"
 
 @val external isNaN: float => bool = "isNaN"
 @val external isFinite: float => bool = "isFinite"

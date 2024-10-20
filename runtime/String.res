@@ -8,7 +8,7 @@
 
 external equal: (string, string) => bool = "%equal"
 
-external compare: (string, string) => Core__Ordering.t = "%compare"
+external compare: (string, string) => Ordering.t = "%compare"
 
 @get external length: string => int = "length"
 @get_index external get: (string, int) => option<string> = ""
@@ -44,7 +44,7 @@ let lastIndexOfOpt = (s, search) =>
 @send external lastIndexOfFrom: (string, string, int) => int = "lastIndexOf"
 
 @return(nullable) @send
-external match: (string, Core__RegExp.t) => option<Core__RegExp.Result.t> = "match"
+external match: (string, RegExp.t) => option<RegExp.Result.t> = "match"
 
 type normalizeForm = [#NFC | #NFD | #NFKC | #NFKD]
 @send external normalize: string => string = "normalize"
@@ -53,35 +53,35 @@ type normalizeForm = [#NFC | #NFD | #NFKC | #NFKD]
 @send external repeat: (string, int) => string = "repeat"
 
 @send external replace: (string, string, string) => string = "replace"
-@send external replaceRegExp: (string, Core__RegExp.t, string) => string = "replace"
+@send external replaceRegExp: (string, RegExp.t, string) => string = "replace"
 @send external replaceAll: (string, string, string) => string = "replaceAll"
-@send external replaceAllRegExp: (string, Core__RegExp.t, string) => string = "replaceAll"
+@send external replaceAllRegExp: (string, RegExp.t, string) => string = "replaceAll"
 
 @send
 external unsafeReplaceRegExpBy0: (
   string,
-  Core__RegExp.t,
+  RegExp.t,
   (~match: string, ~offset: int, ~input: string) => string,
 ) => string = "replace"
 
 @send
 external unsafeReplaceRegExpBy1: (
   string,
-  Core__RegExp.t,
+  RegExp.t,
   (~match: string, ~group1: string, ~offset: int, ~input: string) => string,
 ) => string = "replace"
 
 @send
 external unsafeReplaceRegExpBy2: (
   string,
-  Core__RegExp.t,
+  RegExp.t,
   (~match: string, ~group1: string, ~group2: string, ~offset: int, ~input: string) => string,
 ) => string = "replace"
 
 @send
 external unsafeReplaceRegExpBy3: (
   string,
-  Core__RegExp.t,
+  RegExp.t,
   (
     ~match: string,
     ~group1: string,
@@ -92,7 +92,7 @@ external unsafeReplaceRegExpBy3: (
   ) => string,
 ) => string = "replace"
 
-@send external search: (string, Core__RegExp.t) => int = "search"
+@send external search: (string, RegExp.t) => int = "search"
 let searchOpt = (s, re) =>
   switch search(s, re) {
   | -1 => None
@@ -104,10 +104,9 @@ let searchOpt = (s, re) =>
 
 @send external split: (string, string) => array<string> = "split"
 @send external splitAtMost: (string, string, ~limit: int) => array<string> = "split"
-@send external splitByRegExp: (string, Core__RegExp.t) => array<option<string>> = "split"
+@send external splitByRegExp: (string, RegExp.t) => array<option<string>> = "split"
 @send
-external splitByRegExpAtMost: (string, Core__RegExp.t, ~limit: int) => array<option<string>> =
-  "split"
+external splitByRegExpAtMost: (string, RegExp.t, ~limit: int) => array<option<string>> = "split"
 
 @send external startsWith: (string, string) => bool = "startsWith"
 @send external startsWithFrom: (string, string, int) => bool = "startsWith"
@@ -127,8 +126,8 @@ external splitByRegExpAtMost: (string, Core__RegExp.t, ~limit: int) => array<opt
 @send external padStart: (string, int, string) => string = "padStart"
 @send external padEnd: (string, int, string) => string = "padEnd"
 
-@get_index external getSymbol: (string, Core__Symbol.t) => option<'a> = ""
-@get_index external getSymbolUnsafe: (string, Core__Symbol.t) => 'a = ""
-@set_index external setSymbol: (string, Core__Symbol.t, 'a) => unit = ""
+@get_index external getSymbol: (string, Symbol.t) => option<'a> = ""
+@get_index external getSymbolUnsafe: (string, Symbol.t) => 'a = ""
+@set_index external setSymbol: (string, Symbol.t, 'a) => unit = ""
 
 @send external localeCompare: (string, string) => float = "localeCompare"

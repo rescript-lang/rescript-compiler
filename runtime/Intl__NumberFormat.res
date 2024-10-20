@@ -1,4 +1,4 @@
-module Grouping = Core__Intl__NumberFormat__Grouping
+module Grouping = Intl__NumberFormat__Grouping
 
 type t
 
@@ -72,11 +72,11 @@ type trailingZeroDisplay = [#auto | #stripIfInteger | #lessPrecision]
 
 type options = {
   compactDisplay?: compactDisplay,
-  numberingSystem?: Core__Intl__Common.numberingSystem,
+  numberingSystem?: Intl__Common.numberingSystem,
   currency?: currency,
   currencyDisplay?: currencyDisplay,
   currencySign?: currencySign,
-  localeMatcher?: Core__Intl__Common.localeMatcher,
+  localeMatcher?: Intl__Common.localeMatcher,
   notation?: notation,
   signDisplay?: signDisplay,
   style?: style,
@@ -94,12 +94,12 @@ type options = {
   */
   trailingZeroDisplay?: trailingZeroDisplay,
   // use either this group
-  minimumIntegerDigits?: Core__Intl__Common.oneTo21,
-  minimumFractionDigits?: Core__Intl__Common.zeroTo20,
-  maximumFractionDigits?: Core__Intl__Common.zeroTo20,
+  minimumIntegerDigits?: Intl__Common.oneTo21,
+  minimumFractionDigits?: Intl__Common.zeroTo20,
+  maximumFractionDigits?: Intl__Common.zeroTo20,
   // OR these
-  minimumSignificantDigits?: Core__Intl__Common.oneTo21,
-  maximumSignificantDigits?: Core__Intl__Common.oneTo21,
+  minimumSignificantDigits?: Intl__Common.oneTo21,
+  maximumSignificantDigits?: Intl__Common.oneTo21,
 }
 
 type resolvedOptions = {
@@ -116,22 +116,22 @@ type resolvedOptions = {
   roundingPriority?: roundingPriority, // not available in firefox v110
   roundingIncrement?: roundingIncrement, // not available in firefox v110
   // either this group
-  minimumIntegerDigits?: Core__Intl__Common.oneTo21,
-  minimumFractionDigits?: Core__Intl__Common.zeroTo20,
-  maximumFractionDigits?: Core__Intl__Common.zeroTo20,
+  minimumIntegerDigits?: Intl__Common.oneTo21,
+  minimumFractionDigits?: Intl__Common.zeroTo20,
+  maximumFractionDigits?: Intl__Common.zeroTo20,
   // OR these
-  minimumSignificantDigits?: Core__Intl__Common.oneTo21,
-  maximumSignificantDigits?: Core__Intl__Common.oneTo21,
+  minimumSignificantDigits?: Intl__Common.oneTo21,
+  maximumSignificantDigits?: Intl__Common.oneTo21,
   // always present
   locale: string,
   notation: notation,
-  numberingSystem: Core__Intl__Common.numberingSystem,
+  numberingSystem: Intl__Common.numberingSystem,
   signDisplay: signDisplay,
   style: style,
   useGrouping: Grouping.t,
 }
 
-type supportedLocalesOptions = {localeMatcher: Core__Intl__Common.localeMatcher}
+type supportedLocalesOptions = {localeMatcher: Intl__Common.localeMatcher}
 
 type numberFormatPartType = [
   | #compact

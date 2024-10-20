@@ -5,7 +5,7 @@ module Constants = {
 
 external equal: (int, int) => bool = "%equal"
 
-external compare: (int, int) => Core__Ordering.t = "%compare"
+external compare: (int, int) => Ordering.t = "%compare"
 
 @send external toExponential: (int, ~digits: int=?) => string = "toExponential"
 @deprecated("Use `toExponential` instead") @send
@@ -29,11 +29,11 @@ external fromFloat: float => int = "%intoffloat"
 
 let fromString = (x, ~radix=?) => {
   let maybeInt = switch radix {
-  | Some(radix) => Core__Float.parseInt(x, ~radix)
-  | None => Core__Float.parseInt(x)
+  | Some(radix) => Float.parseInt(x, ~radix)
+  | None => Float.parseInt(x)
   }
 
-  if Core__Float.isNaN(maybeInt) {
+  if Float.isNaN(maybeInt) {
     None
   } else if maybeInt > Constants.maxValue->toFloat || maybeInt < Constants.minValue->toFloat {
     None
@@ -59,8 +59,7 @@ let range = (start, end, ~options: rangeOptions={}) => {
 
   let step = switch options.step {
   | None => isInverted ? -1 : 1
-  | Some(0) if start !== end =>
-    Core__Error.raise(Core__Error.RangeError.make("Incorrect range arguments"))
+  | Some(0) if start !== end => Error.raise(Error.RangeError.make("Incorrect range arguments"))
   | Some(n) => n
   }
 
@@ -71,10 +70,10 @@ let range = (start, end, ~options: rangeOptions={}) => {
   } else {
     let range = isInverted ? start - end : end - start
     let range = options.inclusive === Some(true) ? range + 1 : range
-    ceil(float(range) /. float(abs(step)))->Core__Float.toInt
+    ceil(float(range) /. float(abs(step)))->Float.toInt
   }
 
-  Core__Array.fromInitializer(~length, i => start + i * step)
+  Array.fromInitializer(~length, i => start + i * step)
 }
 
 @deprecated("Use `range` instead") @send

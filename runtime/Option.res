@@ -38,7 +38,7 @@ let getExn = (x, ~message=?) =>
   switch x {
   | Some(x) => x
   | None =>
-    Core__Error.panic(
+    Error.panic(
       switch message {
       | None => "Option.getExn called for None value"
       | Some(message) => message
@@ -100,7 +100,7 @@ let equal = (a, b, eq) =>
 let compare = (a, b, cmp) =>
   switch (a, b) {
   | (Some(a), Some(b)) => cmp(a, b)
-  | (None, Some(_)) => Core__Ordering.less
-  | (Some(_), None) => Core__Ordering.greater
-  | (None, None) => Core__Ordering.equal
+  | (None, Some(_)) => Ordering.less
+  | (Some(_), None) => Ordering.greater
+  | (None, None) => Ordering.equal
   }

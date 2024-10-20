@@ -11,7 +11,7 @@ type rec t = Js.Json.t =
   | @as(null) Null
   | String(string)
   | Number(float)
-  | Object(Core__Dict.t<t>)
+  | Object(Dict.t<t>)
   | Array(array<t>)
 
 @unboxed
@@ -578,7 +578,7 @@ module Classify: {
     | Null
     | String(string)
     | Number(float)
-    | Object(Core__Dict.t<t>)
+    | Object(Dict.t<t>)
     | Array(array<t>)
 
   /**
@@ -660,7 +660,7 @@ module Encode: {
   JSON.Encode.object(dict)
   ```
   */
-  external object: Core__Dict.t<t> => t = "%identity"
+  external object: Dict.t<t> => t = "%identity"
 
   /**
   Returns an array as a JSON object.
@@ -702,7 +702,7 @@ module Decode: {
   // None
   ```
   */
-  let null: t => option<Core__Null.t<'a>>
+  let null: t => option<Null.t<'a>>
 
   /**
   Decodes a single JSON value. If the value is a string, it will return `Some(string)` - otherwise it will return `None`.
@@ -744,7 +744,7 @@ module Decode: {
   // None
   ```
   */
-  let object: t => option<Core__Dict.t<t>>
+  let object: t => option<Dict.t<t>>
 
   /**
   Decodes a single JSON value. If the value is an array, it will return `Some(array)` - otherwise it will return `None`.

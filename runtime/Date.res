@@ -88,7 +88,7 @@ module UTC = {
 
 let equal = (a, b) => a->getTime === b->getTime
 
-let compare = (a, b) => Core__Float.compare(a->getTime, b->getTime)
+let compare = (a, b) => Float.compare(a->getTime, b->getTime)
 
 // Locale
 @send external getFullYear: t => int = "getFullYear"

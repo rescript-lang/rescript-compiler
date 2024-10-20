@@ -1,6 +1,6 @@
 /** The `BigUint64Array` typed array represents an array of 64-bit unsigned integers in platform byte order. See [BigUint64Array on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigUint64Array)
 */
-type t = Core__TypedArray.t<bigint>
+type t = TypedArray.t<bigint>
 
 module Constants = {
   /**`bytesPerElement` returns the element size. See [BYTES_PER_ELEMENT on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/BYTES_PER_ELEMENT)
@@ -19,21 +19,21 @@ external fromArray: array<bigint> => t = "BigUint64Array"
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBuffer: Core__ArrayBuffer.t => t = "BigUint64Array"
+external fromBuffer: ArrayBuffer.t => t = "BigUint64Array"
 
 /** `fromBufferToEnd` creates a `BigUint64Array` from an `ArrayBuffer.t`, starting at a particular offset and continuing through to the end. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigUint64Array/BigUint64Array)
 
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBufferToEnd: (Core__ArrayBuffer.t, ~byteOffset: int) => t = "BigUint64Array"
+external fromBufferToEnd: (ArrayBuffer.t, ~byteOffset: int) => t = "BigUint64Array"
 
 /** `fromBufferWithRange` creates a `BigUint64Array` from an `ArrayBuffer.t`, starting at a particular offset and consuming `length` **bytes**. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigUint64Array/BigUint64Array)
 
 **Note:** This is a potentially unsafe operation. Ensure the buffer is large enough and only accessed within its bounds. 
 */
 @new
-external fromBufferWithRange: (Core__ArrayBuffer.t, ~byteOffset: int, ~length: int) => t =
+external fromBufferWithRange: (ArrayBuffer.t, ~byteOffset: int, ~length: int) => t =
   "BigUint64Array"
 
 /** `fromLength` creates a zero-initialized `BigUint64Array` to hold the specified count of numbers; this is **not** a byte length. See [TypedArray constructor on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigUint64Array/BigUint64Array)

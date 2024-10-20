@@ -629,7 +629,7 @@ List.compareLength(list{1, 2, 3}, list{4, 5, 6}) // 0.
 List.compareLength(list{1, 2, 3, 4}, list{5, 6}) // 1.
 ```
 */
-let compareLength: (t<'a>, t<'a>) => Core__Ordering.t
+let compareLength: (t<'a>, t<'a>) => Ordering.t
 
 /**
 `compare(list1, list2, f)` compare elements one by one `f`. `f` returns a negative
@@ -656,7 +656,7 @@ List.compare(list{1, 3, 5}, list{1, 3, 5}, (a, b) => Int.compare(a, b)) // 0.
 for Array, we compare the length first and, only if the lengths are equal, elements one by one.
 For lists, we just compare elements one by one.
 */
-let compare: (t<'a>, t<'a>, ('a, 'a) => Core__Ordering.t) => Core__Ordering.t
+let compare: (t<'a>, t<'a>, ('a, 'a) => Ordering.t) => Ordering.t
 
 /**
 `equal(list1, list2, f)` check equality of `list2` and `list2` using `f` for
@@ -873,4 +873,4 @@ let setAssoc: (t<('a, 'c)>, 'a, 'c, ('a, 'a) => bool) => t<('a, 'c)>
 List.sort(list{5, 4, 9, 3, 7}, Int.compare) // list{3, 4, 5, 7, 9}
 ```
 */
-let sort: (t<'a>, ('a, 'a) => Core__Ordering.t) => t<'a>
+let sort: (t<'a>, ('a, 'a) => Ordering.t) => t<'a>

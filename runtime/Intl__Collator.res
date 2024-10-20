@@ -5,7 +5,7 @@ type sensitivity = [#base | #accent | #case | #variant]
 type caseFirst = [#upper | #lower | #"false"]
 
 type options = {
-  localeMatcher?: Core__Intl__Common.localeMatcher,
+  localeMatcher?: Intl__Common.localeMatcher,
   usage?: usage,
   sensitivity?: sensitivity,
   ignorePunctuation?: bool,
@@ -18,12 +18,12 @@ type resolvedOptions = {
   usage: usage,
   sensitivity: sensitivity,
   ignorePunctuation: bool,
-  collation: [Core__Intl__Common.collation | #default],
+  collation: [Intl__Common.collation | #default],
   numeric?: bool,
   caseFirst?: caseFirst,
 }
 
-type supportedLocalesOptions = {localeMatcher: Core__Intl__Common.localeMatcher}
+type supportedLocalesOptions = {localeMatcher: Intl__Common.localeMatcher}
 
 @new external make: (~locales: array<string>=?, ~options: options=?) => t = "Intl.Collator"
 

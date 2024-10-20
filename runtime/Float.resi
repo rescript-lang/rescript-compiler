@@ -111,7 +111,7 @@ module Constants: {
 
 external equal: (float, float) => bool = "%equal"
 
-external compare: (float, float) => Core__Ordering.t = "%compare"
+external compare: (float, float) => Ordering.t = "%compare"
 
 /**
 `isNaN(v)` tests if the given `v` is `NaN`.

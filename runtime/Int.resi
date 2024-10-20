@@ -58,7 +58,7 @@ module Constants: {
 
 external equal: (int, int) => bool = "%equal"
 
-external compare: (int, int) => Core__Ordering.t = "%compare"
+external compare: (int, int) => Ordering.t = "%compare"
 
 /**
 `toExponential(n, ~digits=?)` return a `string` representing the given value in

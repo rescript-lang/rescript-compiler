@@ -3,7 +3,7 @@ type t<'a>
 @get_index external get: (t<'a>, int) => option<'a> = ""
 @set_index external set: (t<'a>, int, 'a) => unit = ""
 
-@get external buffer: t<'a> => Core__ArrayBuffer.t = "buffer"
+@get external buffer: t<'a> => ArrayBuffer.t = "buffer"
 @get external byteLength: t<'a> => int = "byteLength"
 @get external byteOffset: t<'a> => int = "byteOffset"
 
@@ -24,8 +24,8 @@ external copyWithin: (t<'a>, ~target: int, ~start: int, ~end: int) => array<'a> 
 @send external reverse: t<'a> => unit = "reverse"
 @send external toReversed: t<'a> => t<'a> = "toReversed"
 
-@send external sort: (t<'a>, ('a, 'a) => Core__Ordering.t) => unit = "sort"
-@send external toSorted: (t<'a>, ('a, 'a) => Core__Ordering.t) => t<'a> = "toSorted"
+@send external sort: (t<'a>, ('a, 'a) => Ordering.t) => unit = "sort"
+@send external toSorted: (t<'a>, ('a, 'a) => Ordering.t) => t<'a> = "toSorted"
 
 @send external with: (t<'a>, int, 'a) => t<'a> = "with"
 

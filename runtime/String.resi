@@ -120,7 +120,7 @@ external fromCodePointMany: array<int> => string = "String.fromCodePoint"
 
 external equal: (string, string) => bool = "%equal"
 
-external compare: (string, string) => Core__Ordering.t = "%compare"
+external compare: (string, string) => Ordering.t = "%compare"
 
 /**
 `length(str)` returns the length of the given `string`.
@@ -439,7 +439,7 @@ String.match("The large container.", %re("/b[aeiou]g/")) == None
 */
 @return(nullable)
 @send
-external match: (string, Core__RegExp.t) => option<Core__RegExp.Result.t> = "match"
+external match: (string, RegExp.t) => option<RegExp.Result.t> = "match"
 
 /**
 `normalize(str)` returns the normalized Unicode string using Normalization Form
@@ -540,7 +540,7 @@ String.replaceRegExp("Juan Fulano", %re("/(\w+) (\w+)/"), "$2, $1") == "Fulano, 
 ```
 */
 @send
-external replaceRegExp: (string, Core__RegExp.t, string) => string = "replace"
+external replaceRegExp: (string, RegExp.t, string) => string = "replace"
 
 /**
 `replaceAll(str, substr, newSubstr)` returns a new `string` which is
@@ -573,7 +573,7 @@ String.replaceAllRegExp("aabbcc", %re("/b/g"), ".") == "aa..cc"
 ```
 */
 @send
-external replaceAllRegExp: (string, Core__RegExp.t, string) => string = "replaceAll"
+external replaceAllRegExp: (string, RegExp.t, string) => string = "replaceAll"
 
 /**
 `unsafeReplaceRegExpBy0(str, regex, f)` returns a new `string` with some or all
@@ -595,7 +595,7 @@ String.unsafeReplaceRegExpBy0(str, re, matchFn) == "bEAUtIfUl vOwEls"
 @send
 external unsafeReplaceRegExpBy0: (
   string,
-  Core__RegExp.t,
+  RegExp.t,
   (~match: string, ~offset: int, ~input: string) => string,
 ) => string = "replace"
 
@@ -618,7 +618,7 @@ String.unsafeReplaceRegExpBy1(str, re, matchFn) == "Jony is 41"
 @send
 external unsafeReplaceRegExpBy1: (
   string,
-  Core__RegExp.t,
+  RegExp.t,
   (~match: string, ~group1: string, ~offset: int, ~input: string) => string,
 ) => string = "replace"
 
@@ -644,7 +644,7 @@ String.unsafeReplaceRegExpBy2(str, re, matchFn) == "42"
 @send
 external unsafeReplaceRegExpBy2: (
   string,
-  Core__RegExp.t,
+  RegExp.t,
   (~match: string, ~group1: string, ~group2: string, ~offset: int, ~input: string) => string,
 ) => string = "replace"
 
@@ -656,7 +656,7 @@ See [`String.replace`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/R
 @send
 external unsafeReplaceRegExpBy3: (
   string,
-  Core__RegExp.t,
+  RegExp.t,
   (
     ~match: string,
     ~group1: string,
@@ -680,7 +680,7 @@ String.search("no numbers", %re("/\d+/")) == -1
 ```
 */
 @send
-external search: (string, Core__RegExp.t) => int = "search"
+external search: (string, RegExp.t) => int = "search"
 
 /**
 `searchOpt(str, regexp)`. Like `search`, but return an `option<int>`.
@@ -692,7 +692,7 @@ String.searchOpt("testing 1 2 3", %re("/\d+/")) == Some(8)
 String.searchOpt("no numbers", %re("/\d+/")) == None
 ```
 */
-let searchOpt: (string, Core__RegExp.t) => option<int>
+let searchOpt: (string, RegExp.t) => option<int>
 
 /**
 `slice(str, ~start, ~end)` returns the substring of `str` starting at
@@ -780,7 +780,7 @@ String.splitByRegExp("Jan,Feb,Mar", %re("/,/")) == [Some("Jan"), Some("Feb"), So
 ```
 */
 @send
-external splitByRegExp: (string, Core__RegExp.t) => array<option<string>> = "split"
+external splitByRegExp: (string, RegExp.t) => array<option<string>> = "split"
 
 /**
 `splitByRegExpAtMost(str, regexp, ~limit)` splits the given `str` at every
@@ -800,8 +800,7 @@ String.splitByRegExpAtMost("Hello World. How are you doing?", %re("/ /"), ~limit
 ```
 */
 @send
-external splitByRegExpAtMost: (string, Core__RegExp.t, ~limit: int) => array<option<string>> =
-  "split"
+external splitByRegExpAtMost: (string, RegExp.t, ~limit: int) => array<option<string>> = "split"
 
 /**
 `startsWith(str, substr)` returns `true` if the `str` starts with `substr`,
@@ -1003,9 +1002,9 @@ String.padEnd("abc", 1, "") == "abc"
 external padEnd: (string, int, string) => string = "padEnd"
 
 // TODO: add docs
-@get_index external getSymbol: (string, Core__Symbol.t) => option<'a> = ""
-@get_index external getSymbolUnsafe: (string, Core__Symbol.t) => 'a = ""
-@set_index external setSymbol: (string, Core__Symbol.t, 'a) => unit = ""
+@get_index external getSymbol: (string, Symbol.t) => option<'a> = ""
+@get_index external getSymbolUnsafe: (string, Symbol.t) => 'a = ""
+@set_index external setSymbol: (string, Symbol.t, 'a) => unit = ""
 
 /**
 `localeCompare(referenceStr, compareStr)` returns a float than indicatings

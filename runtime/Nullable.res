@@ -20,9 +20,9 @@ let fromOption: option<'a> => t<'a> = option =>
   | None => undefined
   }
 
-let equal = (a, b, eq) => Core__Option.equal(a->toOption, b->toOption, eq)
+let equal = (a, b, eq) => Option.equal(a->toOption, b->toOption, eq)
 
-let compare = (a, b, cmp) => Core__Option.compare(a->toOption, b->toOption, cmp)
+let compare = (a, b, cmp) => Option.compare(a->toOption, b->toOption, cmp)
 
 let getOr = (value, default) =>
   switch value->toOption {

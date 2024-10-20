@@ -3,7 +3,7 @@ type t<'a> = Js.Null.t<'a> =
   | Value('a)
   | @as(null) Null
 
-external asNullable: t<'a> => Core__Nullable.t<'a> = "%identity"
+external asNullable: t<'a> => Nullable.t<'a> = "%identity"
 
 external null: t<'a> = "#null"
 
@@ -17,9 +17,9 @@ let fromOption: option<'a> => t<'a> = option =>
   | None => null
   }
 
-let equal = (a, b, eq) => Core__Option.equal(a->toOption, b->toOption, eq)
+let equal = (a, b, eq) => Option.equal(a->toOption, b->toOption, eq)
 
-let compare = (a, b, cmp) => Core__Option.compare(a->toOption, b->toOption, cmp)
+let compare = (a, b, cmp) => Option.compare(a->toOption, b->toOption, cmp)
 
 let getOr = (value, default) =>
   switch value->toOption {

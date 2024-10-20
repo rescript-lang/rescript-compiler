@@ -103,7 +103,7 @@ let dict = Dict.fromIterator(someIterator) // Dict.t<int>
 ```
 */
 @val
-external fromIterator: Core__Iterator.t<(string, 'a)> => t<'a> = "Object.fromEntries"
+external fromIterator: Iterator.t<(string, 'a)> => t<'a> = "Object.fromEntries"
 
 /**
 `toArray(dictionary)` returns an array of all the key/value pairs of the dictionary.

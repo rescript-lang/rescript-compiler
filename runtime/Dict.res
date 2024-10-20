@@ -12,7 +12,7 @@ let delete = (dict, string) => {
 @obj external make: unit => t<'a> = ""
 
 @val external fromArray: array<(string, 'a)> => t<'a> = "Object.fromEntries"
-@val external fromIterator: Core__Iterator.t<(string, 'a)> => t<'a> = "Object.fromEntries"
+@val external fromIterator: Iterator.t<(string, 'a)> => t<'a> = "Object.fromEntries"
 
 @val external toArray: t<'a> => array<(string, 'a)> = "Object.entries"
 
@@ -25,11 +25,11 @@ let delete = (dict, string) => {
 @val external copy: (@as(json`{}`) _, t<'a>) => t<'a> = "Object.assign"
 
 let forEach = (dict, f) => {
-  dict->valuesToArray->Core__Array.forEach(value => f(value))
+  dict->valuesToArray->Array.forEach(value => f(value))
 }
 
 let forEachWithKey = (dict, f) => {
-  dict->toArray->Core__Array.forEach(((key, value)) => f(value, key))
+  dict->toArray->Array.forEach(((key, value)) => f(value, key))
 }
 
 let mapValues = (dict, f) => {

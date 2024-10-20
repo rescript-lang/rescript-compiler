@@ -64,7 +64,7 @@ let map = Map.fromIterator(someIterator) // Map.t<string, int>
 ```
 */
 @new
-external fromIterator: Core__Iterator.t<('k, 'v)> => t<'k, 'v> = "Map"
+external fromIterator: Iterator.t<('k, 'v)> => t<'k, 'v> = "Map"
 
 /**
 Returns the size, the number of key/value pairs, of the map.
@@ -217,7 +217,7 @@ Console.log(map->Map.keys->Iterator.toArray)
 ```
 */
 @send
-external keys: t<'k, 'v> => Core__Iterator.t<'k> = "keys"
+external keys: t<'k, 'v> => Iterator.t<'k> = "keys"
 
 /**
 Returns an iterator that holds all values of the map.
@@ -239,7 +239,7 @@ Console.log(map->Map.values->Iterator.toArray)
 ```
 */
 @send
-external values: t<'k, 'v> => Core__Iterator.t<'v> = "values"
+external values: t<'k, 'v> => Iterator.t<'v> = "values"
 
 /**
 Returns an iterator that holds all entries of the map.
@@ -262,4 +262,4 @@ Console.log(map->Map.entries->Iterator.toArray)
 ```
 */
 @send
-external entries: t<'k, 'v> => Core__Iterator.t<('k, 'v)> = "entries"
+external entries: t<'k, 'v> => Iterator.t<('k, 'v)> = "entries"

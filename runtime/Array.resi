@@ -10,7 +10,7 @@
   ```
  */
 @val
-external fromIterator: Core__Iterator.t<'a> => array<'a> = "Array.from"
+external fromIterator: Iterator.t<'a> => array<'a> = "Array.from"
 
 // TODO: Docs
 @val external fromArrayLike: Js.Array2.array_like<'a> => array<'a> = "Array.from"
@@ -43,7 +43,7 @@ let fromInitializer: (~length: int, int => 'a) => array<'a>
 
 let equal: (array<'a>, array<'a>, ('a, 'a) => bool) => bool
 
-let compare: (array<'a>, array<'a>, ('a, 'a) => Core__Ordering.t) => Core__Ordering.t
+let compare: (array<'a>, array<'a>, ('a, 'a) => Ordering.t) => Ordering.t
 
 @val external isArray: 'a => bool = "Array.isArray"
 
@@ -233,7 +233,7 @@ Console.log(someArray) // [3, 2, 1]. Original unchanged
 ```
 */
 @send
-external toSorted: (array<'a>, ('a, 'a) => Core__Ordering.t) => array<'a> = "toSorted"
+external toSorted: (array<'a>, ('a, 'a) => Ordering.t) => array<'a> = "toSorted"
 
 /**
 `sort(array, comparator)` sorts `array` in-place using the `comparator` function.
@@ -251,7 +251,7 @@ Console.log(someArray) // [1, 2, 3]
 ```
 */
 @send
-external sort: (array<'a>, ('a, 'a) => Core__Ordering.t) => unit = "sort"
+external sort: (array<'a>, ('a, 'a) => Ordering.t) => unit = "sort"
 
 @variadic @send
 external splice: (array<'a>, ~start: int, ~remove: int, ~insert: array<'a>) => unit = "splice"
@@ -840,9 +840,9 @@ Console.log(array[1]) // "Hello"
 */
 @set_index
 external set: (array<'a>, int, 'a) => unit = ""
-@get_index external getSymbol: (array<'a>, Core__Symbol.t) => option<'b> = ""
-@get_index external getSymbolUnsafe: (array<'a>, Core__Symbol.t) => 'b = ""
-@set_index external setSymbol: (array<'a>, Core__Symbol.t, 'b) => unit = ""
+@get_index external getSymbol: (array<'a>, Symbol.t) => option<'b> = ""
+@get_index external getSymbolUnsafe: (array<'a>, Symbol.t) => 'b = ""
+@set_index external setSymbol: (array<'a>, Symbol.t, 'b) => unit = ""
 
 /**
 `getUnsafe(array, index)` returns the element at `index` of `array`.

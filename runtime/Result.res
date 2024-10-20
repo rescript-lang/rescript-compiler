@@ -79,9 +79,9 @@ let equal = (a, b, f) =>
 let compare = (a, b, f) =>
   switch (a, b) {
   | (Ok(a), Ok(b)) => f(a, b)
-  | (Error(_), Ok(_)) => Core__Ordering.less
-  | (Ok(_), Error(_)) => Core__Ordering.greater
-  | (Error(_), Error(_)) => Core__Ordering.equal
+  | (Error(_), Ok(_)) => Ordering.less
+  | (Ok(_), Error(_)) => Ordering.greater
+  | (Error(_), Error(_)) => Ordering.equal
   }
 
 let forEach = (r, f) =>

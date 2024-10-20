@@ -63,7 +63,7 @@ let set = Set.fromIterator(someIterator) // Set.t<int>
 ```
 */
 @new
-external fromIterator: Core__Iterator.t<'a> => t<'a> = "Set"
+external fromIterator: Iterator.t<'a> => t<'a> = "Set"
 
 /**
 Returns the size, the number of unique values, of the set.
@@ -196,7 +196,7 @@ Console.log(set->Set.values->Iterator.toArray)
 ```
 */
 @send
-external values: t<'a> => Core__Iterator.t<'a> = "values"
+external values: t<'a> => Iterator.t<'a> = "values"
 
 /** 
 Returns a new set with the values of the set that are not in the other set.

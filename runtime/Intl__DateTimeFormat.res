@@ -32,10 +32,10 @@ type fractionalSecondDigits = [#0 | #1 | #2 | #3]
 type options = {
   dateStyle?: dateStyle, // can be used with timeStyle, but not other options
   timeStyle?: timeStyle, // can be used with dateStyle, but not other options
-  calendar?: Core__Intl__Common.calendar,
+  calendar?: Intl__Common.calendar,
   dayPeriod?: dayPeriod, // only has an effect if a 12-hour clock is used
-  numberingSystem?: Core__Intl__Common.numberingSystem,
-  localeMatcher?: Core__Intl__Common.localeMatcher,
+  numberingSystem?: Intl__Common.numberingSystem,
+  localeMatcher?: Intl__Common.localeMatcher,
   timeZone?: string,
   hour12?: bool,
   hourCycle?: hourCycle,
@@ -66,15 +66,15 @@ type resolvedOptions = {
   second?: second,
   fractionalSecondDigits?: fractionalSecondDigits,
   timeZoneName?: timeZoneName,
-  calendar: Core__Intl__Common.calendar,
+  calendar: Intl__Common.calendar,
   hour12: bool,
   hourCycle: hourCycle,
   locale: string,
-  numberingSystem: Core__Intl__Common.numberingSystem,
+  numberingSystem: Intl__Common.numberingSystem,
   timeZone: string,
 }
 
-type supportedLocalesOptions = {localeMatcher: Core__Intl__Common.localeMatcher}
+type supportedLocalesOptions = {localeMatcher: Intl__Common.localeMatcher}
 
 type dateTimeComponent = [
   | #day
@@ -113,17 +113,13 @@ external supportedLocalesOf: (array<string>, ~options: supportedLocalesOptions=?
 
 @send external resolvedOptions: t => resolvedOptions = "resolvedOptions"
 
-@send external format: (t, Core__Date.t) => string = "format"
+@send external format: (t, Date.t) => string = "format"
 @send
-external formatToParts: (t, Core__Date.t) => array<dateTimePart> = "formatToParts"
+external formatToParts: (t, Date.t) => array<dateTimePart> = "formatToParts"
 
 @send
-external formatRange: (t, ~startDate: Core__Date.t, ~endDate: Core__Date.t) => string =
-  "formatRange"
+external formatRange: (t, ~startDate: Date.t, ~endDate: Date.t) => string = "formatRange"
 
 @send
-external formatRangeToParts: (
-  t,
-  ~startDate: Core__Date.t,
-  ~endDate: Core__Date.t,
-) => array<dateTimeRangePart> = "formatRangeToParts"
+external formatRangeToParts: (t, ~startDate: Date.t, ~endDate: Date.t) => array<dateTimeRangePart> =
+  "formatRangeToParts"
