@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Js_math = require("rescript/lib/js/js_math.js");
+let Js_math = require("rescript/lib/js/Js_math.js");
 
 let suites_0 = [
   "_E",

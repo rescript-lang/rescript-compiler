@@ -2,14 +2,14 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Belt_Id = require("rescript/lib/js/belt_Id.js");
-let Belt_Map = require("rescript/lib/js/belt_Map.js");
-let Belt_Set = require("rescript/lib/js/belt_Set.js");
-let Belt_List = require("rescript/lib/js/belt_List.js");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
-let Belt_MapDict = require("rescript/lib/js/belt_MapDict.js");
-let Belt_SetDict = require("rescript/lib/js/belt_SetDict.js");
-let Primitive_int = require("rescript/lib/js/primitive_int.js");
+let Belt_Id = require("rescript/lib/js/Belt_Id.js");
+let Belt_Map = require("rescript/lib/js/Belt_Map.js");
+let Belt_Set = require("rescript/lib/js/Belt_Set.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
+let Belt_MapDict = require("rescript/lib/js/Belt_MapDict.js");
+let Belt_SetDict = require("rescript/lib/js/Belt_SetDict.js");
+let Primitive_int = require("rescript/lib/js/Primitive_int.js");
 let Array_data_util = require("./array_data_util.js");
 
 let suites = {

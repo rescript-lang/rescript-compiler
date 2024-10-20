@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Js_exn = require("rescript/lib/js/js_exn.js");
-let Belt_List = require("rescript/lib/js/belt_List.js");
-let Primitive_exceptions = require("rescript/lib/js/primitive_exceptions.js");
+let Js_exn = require("rescript/lib/js/Js_exn.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
+let Primitive_exceptions = require("rescript/lib/js/Primitive_exceptions.js");
 
 let Local = /* @__PURE__ */Primitive_exceptions.create("Exception_raise_test.Local");
 

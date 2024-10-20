@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Js_types = require("rescript/lib/js/js_types.js");
+let Js_types = require("rescript/lib/js/Js_types.js");
 
 function string_or_number(x) {
   let ty = Js_types.classify(x);

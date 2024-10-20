@@ -2,7 +2,7 @@
 'use strict';
 
 let Mocha = require("mocha");
-let Belt_Float = require("rescript/lib/js/belt_Float.js");
+let Belt_Float = require("rescript/lib/js/Belt_Float.js");
 let Test_utils = require("./test_utils.js");
 
 Mocha.describe("Belt_float_test", () => {

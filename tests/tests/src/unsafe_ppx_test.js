@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Pervasives = require("rescript/lib/js/pervasives.js");
+let Pervasives = require("rescript/lib/js/Pervasives.js");
 let Ffi_js_test = require("./ffi_js_test.js");
 
 let x = "\\x01\\x02\\x03";

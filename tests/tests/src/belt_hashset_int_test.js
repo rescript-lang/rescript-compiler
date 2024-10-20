@@ -2,12 +2,12 @@
 'use strict';
 
 let Mocha = require("mocha");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
 let Test_utils = require("./test_utils.js");
-let Belt_SetInt = require("rescript/lib/js/belt_SetInt.js");
+let Belt_SetInt = require("rescript/lib/js/Belt_SetInt.js");
 let Array_data_util = require("./array_data_util.js");
-let Belt_HashSetInt = require("rescript/lib/js/belt_HashSetInt.js");
-let Belt_SortArrayInt = require("rescript/lib/js/belt_SortArrayInt.js");
+let Belt_HashSetInt = require("rescript/lib/js/Belt_HashSetInt.js");
+let Belt_SortArrayInt = require("rescript/lib/js/Belt_SortArrayInt.js");
 
 function add(x, y) {
   return x + y | 0;

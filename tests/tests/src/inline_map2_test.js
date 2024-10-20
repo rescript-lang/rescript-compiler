@@ -2,11 +2,11 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Belt_List = require("rescript/lib/js/belt_List.js");
-let Pervasives = require("rescript/lib/js/pervasives.js");
-let Primitive_int = require("rescript/lib/js/primitive_int.js");
-let Primitive_option = require("rescript/lib/js/primitive_option.js");
-let Primitive_string = require("rescript/lib/js/primitive_string.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
+let Pervasives = require("rescript/lib/js/Pervasives.js");
+let Primitive_int = require("rescript/lib/js/Primitive_int.js");
+let Primitive_option = require("rescript/lib/js/Primitive_option.js");
+let Primitive_string = require("rescript/lib/js/Primitive_string.js");
 
 function Make(Ord) {
   let height = x => {

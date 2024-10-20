@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let $$String = require("rescript/lib/js/string.js");
+let $$String = require("rescript/lib/js/String.js");
 
 function u(v) {
   return v;

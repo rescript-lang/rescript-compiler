@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Hashtbl = require("rescript/lib/js/hashtbl.js");
+let Hashtbl = require("rescript/lib/js/Hashtbl.js");
 let Mt_global = require("./mt_global.js");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
 
 let suites = {
   contents: /* [] */0

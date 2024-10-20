@@ -2,9 +2,9 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Js_exn = require("rescript/lib/js/js_exn.js");
-let Pervasives = require("rescript/lib/js/pervasives.js");
-let Primitive_exceptions = require("rescript/lib/js/primitive_exceptions.js");
+let Js_exn = require("rescript/lib/js/Js_exn.js");
+let Pervasives = require("rescript/lib/js/Pervasives.js");
+let Primitive_exceptions = require("rescript/lib/js/Primitive_exceptions.js");
 
 let suites = {
   contents: /* [] */0

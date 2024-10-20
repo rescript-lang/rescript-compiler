@@ -2,8 +2,8 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
-let Primitive_array = require("rescript/lib/js/primitive_array.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
+let Primitive_array = require("rescript/lib/js/Primitive_array.js");
 
 function test() {
   let v = {

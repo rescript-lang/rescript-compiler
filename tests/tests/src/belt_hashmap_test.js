@@ -2,13 +2,13 @@
 'use strict';
 
 let Mocha = require("mocha");
-let Belt_Id = require("rescript/lib/js/belt_Id.js");
-let Hashtbl = require("rescript/lib/js/hashtbl.js");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
+let Belt_Id = require("rescript/lib/js/Belt_Id.js");
+let Hashtbl = require("rescript/lib/js/Hashtbl.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
 let Test_utils = require("./test_utils.js");
-let Belt_HashMap = require("rescript/lib/js/belt_HashMap.js");
-let Primitive_int = require("rescript/lib/js/primitive_int.js");
-let Belt_SortArray = require("rescript/lib/js/belt_SortArray.js");
+let Belt_HashMap = require("rescript/lib/js/Belt_HashMap.js");
+let Primitive_int = require("rescript/lib/js/Primitive_int.js");
+let Belt_SortArray = require("rescript/lib/js/Belt_SortArray.js");
 let Array_data_util = require("./array_data_util.js");
 
 function intEq(x, y) {

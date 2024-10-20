@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Primitive_bool = require("rescript/lib/js/primitive_bool.js");
+let Primitive_bool = require("rescript/lib/js/Primitive_bool.js");
 
 let suites = {
   contents: /* [] */0

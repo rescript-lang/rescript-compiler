@@ -2,7 +2,7 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Pervasives = require("rescript/lib/js/pervasives.js");
+let Pervasives = require("rescript/lib/js/Pervasives.js");
 
 let suites = {
   contents: /* [] */0

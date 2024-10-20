@@ -2,12 +2,12 @@
 'use strict';
 
 let Mt = require("./mt.js");
-let Belt_List = require("rescript/lib/js/belt_List.js");
-let Belt_Array = require("rescript/lib/js/belt_Array.js");
-let Belt_Range = require("rescript/lib/js/belt_Range.js");
+let Belt_List = require("rescript/lib/js/Belt_List.js");
+let Belt_Array = require("rescript/lib/js/Belt_Array.js");
+let Belt_Range = require("rescript/lib/js/Belt_Range.js");
 let Array_data_util = require("./array_data_util.js");
-let Primitive_array = require("rescript/lib/js/primitive_array.js");
-let Belt_MutableSetInt = require("rescript/lib/js/belt_MutableSetInt.js");
+let Primitive_array = require("rescript/lib/js/Primitive_array.js");
+let Belt_MutableSetInt = require("rescript/lib/js/Belt_MutableSetInt.js");
 
 let suites = {
   contents: /* [] */0
