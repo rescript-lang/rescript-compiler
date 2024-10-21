@@ -7,8 +7,6 @@ include Intl__PluralRulesTest
 include Intl__RelativeTimeFormatTest
 include Intl__SegmenterTest
 
-open RescriptCore
-
 Console.log("---")
 Console.log("Intl")
 

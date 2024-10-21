@@ -1,5 +1,3 @@
-open RescriptCore
-
 Console.log("---")
 Console.log("Intl.RelativeTimeFormat")
 

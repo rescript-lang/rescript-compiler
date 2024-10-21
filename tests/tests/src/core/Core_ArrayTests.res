@@ -1,5 +1,3 @@
-open RescriptCore
-
 let eq = (a, b) => a == b
 
 Test.run(__POS_OF__("make"), Array.make(~length=6, 7), eq, [7, 7, 7, 7, 7, 7])

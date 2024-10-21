@@ -1,5 +1,3 @@
-open RescriptCore
-
 let eq = (a, b) => a == b
 
 let catch = f =>

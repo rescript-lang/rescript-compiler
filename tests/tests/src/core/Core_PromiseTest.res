@@ -1,5 +1,3 @@
-open RescriptCore
-
 exception TestError(string)
 
 let fail = msg => {

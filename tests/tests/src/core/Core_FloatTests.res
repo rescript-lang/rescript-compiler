@@ -1,5 +1,3 @@
-open RescriptCore
-
 let eq = (a, b) => a == b
 
 Test.run(__POS_OF__("clamp"), Float.clamp(4.2), eq, 4.2)

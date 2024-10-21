@@ -1,5 +1,3 @@
-open RescriptCore
-
 let shouldHandleNullableValues = () => {
   let tNull: Nullable.t<string> = %raw("null")
   let tUndefined: Nullable.t<string> = %raw("undefined")

@@ -1,5 +1,3 @@
-open RescriptCore
-
 include IntlTests
 
 Console.info("")

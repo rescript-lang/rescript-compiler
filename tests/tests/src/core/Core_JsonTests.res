@@ -1,5 +1,3 @@
-open RescriptCore
-
 let decodeJsonTest = () => {
   let json: JSON.t = %raw(`{"someProp":{"otherProp": null, "thirdProp": [true, false]}}`)
 

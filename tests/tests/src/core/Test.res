@@ -1,6 +1,5 @@
 // Test "framework"
 
-
 @scope("process") @val external exit: int => unit = "exit"
 @scope("Error") @val external captureStackTrace: {..} => unit = "captureStackTrace"
 @module("@babel/code-frame") @val
