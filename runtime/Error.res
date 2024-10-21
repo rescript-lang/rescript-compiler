@@ -1,6 +1,10 @@
 type t = Js.Exn.t
 
-external fromException: exn => option<t> = "?as_js_exn"
+let fromException: exn => option<t> = exn =>
+  switch Obj.magic(exn) {
+  | Error(t) => Some(t)
+  | _ => None
+  }
 external toException: t => exn = "%identity"
 
 @get external stack: t => option<string> = "stack"
