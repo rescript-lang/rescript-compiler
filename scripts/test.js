@@ -65,12 +65,7 @@ async function runTests() {
       stdio: [0, 1, 2],
     });
 
-    cp.execSync(rescript_exe, {
-      cwd: path.join(__dirname, "..", "tests/tests_esmodule"),
-      stdio: [0, 1, 2],
-    });
-
-    cp.execSync(`npx mocha -t 10000 tests/tests/**/*_test.js`, {
+    cp.execSync(`npx mocha -t 10000 tests/tests/**/*_test.mjs`, {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2],
     });
