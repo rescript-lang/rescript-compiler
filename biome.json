@@ -23,7 +23,6 @@
     "ignore": [
       "tests/build_tests/**",
       "tests/tests/**",
-      "tests/tests_esmodule/**",
       "lib/**",
       "ninja/**",
       "playground/**",
