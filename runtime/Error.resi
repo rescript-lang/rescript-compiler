@@ -7,7 +7,7 @@ See [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/
 /** Represents a JavaScript exception. */
 type t = Js.Exn.t
 
-external fromException: exn => option<t> = "?as_js_exn"
+let fromException: exn => option<t>
 
 /**
 Turns an `Error.t` into an `exn`.

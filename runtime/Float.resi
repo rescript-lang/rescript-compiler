@@ -440,7 +440,7 @@ external fromInt: int => float = "%identity"
 Float.mod(7.0, 4.0) == 3.0
 ```
 */
-external mod: (float, float) => float = "?fmod_float"
+external mod: (float, float) => float = "%modfloat"
 
 /**
 `clamp(~min=?, ~max=?, value)` returns `value`, optionally bounded by `min` and `max`.
