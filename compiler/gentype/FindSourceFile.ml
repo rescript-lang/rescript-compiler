@@ -14,8 +14,17 @@ let rec implementation items =
     | false -> Some str_loc.loc_start.pos_fname)
   | [] -> None
 
+let transform_to_absolute_path (path : string option) =
+  let transform path =
+    if Filename.is_relative path then Filename.concat (Sys.getcwd ()) path
+    else path
+  in
+  Option.map transform path
+
 let cmt cmt_annots =
   match cmt_annots with
-  | Cmt_format.Interface signature -> interface signature.sig_items
-  | Implementation structure -> implementation structure.str_items
+  | Cmt_format.Interface signature ->
+    transform_to_absolute_path (interface signature.sig_items)
+  | Implementation structure ->
+    transform_to_absolute_path (implementation structure.str_items)
   | _ -> None
