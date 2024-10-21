@@ -28,17 +28,37 @@ let findNameSpace cmt =
   cmt |> Filename.basename |> (Filename.chop_extension [@doesNotRaise])
   |> keepAfterDash
 
-let getOutputFileRelative ~config cmt =
-  (cmt |> handleNamespace) ^ ModuleExtension.tsInputFileSuffix ~config
+let removePathPrefix ~prefix path =
+  let normalizedPrefix = Filename.concat prefix "" in
+  let prefixLen = String.length normalizedPrefix in
+  let pathLen = String.length path in
+  let isPrefix =
+    prefixLen <= pathLen
+    && (String.sub path 0 prefixLen [@doesNotRaise]) = normalizedPrefix
+  in
+  if isPrefix then
+    String.sub path prefixLen (pathLen - prefixLen) [@doesNotRaise]
+  else path
 
-let getOutputFile ~(config : Config.t) cmt =
-  Filename.concat config.projectRoot (getOutputFileRelative ~config cmt)
+let appendSuffix ~config sourcePath =
+  (sourcePath |> handleNamespace) ^ ModuleExtension.tsInputFileSuffix ~config
+
+let getOutputFileRelative ~(config : Config.t) path =
+  let relativePath = removePathPrefix ~prefix:config.projectRoot path in
+  appendSuffix ~config relativePath
+
+let getOutputFile ~(config : Config.t) absoluteSourcePath =
+  let relativeOutputPath = getOutputFileRelative ~config absoluteSourcePath in
+  Filename.concat config.projectRoot relativeOutputPath
 
 let getModuleName cmt =
   cmt |> handleNamespace |> Filename.basename |> ModuleName.fromStringUnsafe
 
 let getCmtFile cmt =
-  let pathCmt = Filename.concat (Sys.getcwd ()) cmt in
+  let pathCmt =
+    if Filename.is_relative cmt then Filename.concat (Sys.getcwd ()) cmt
+    else cmt
+  in
   let cmtFile =
     if Filename.check_suffix pathCmt ".cmt" then
       let pathCmtLowerCase =
