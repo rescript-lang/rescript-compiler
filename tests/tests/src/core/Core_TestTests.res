@@ -15,12 +15,7 @@ Test.run(__POS_OF__("print bool"), Test.print(true), eq, "true")
 Test.run(__POS_OF__("print object"), Test.print({"x": 42}), eq, `{ x: 42 }`)
 Test.run(__POS_OF__("print array"), Test.print([1, 2, 3]), eq, "[ 1, 2, 3 ]")
 Test.run(__POS_OF__("print symbol"), Test.print(Symbol.make("foo")), eq, "Symbol(foo)")
-Test.run(
-  __POS_OF__("print function"),
-  Test.print(() => 42),
-  eq,
-  "function () {\n          return 42;\n        }",
-)
+Test.run(__POS_OF__("print function"), Test.print(() => 42), eq, "() => 42")
 Test.run(__POS_OF__("print es6 function"), Test.print(%raw("() => 42")), eq, "() => 42")
 Test.run(
   __POS_OF__("print bigint"),

@@ -139,17 +139,17 @@ Test.run([
 Test.run([
   [
     "Core_TestTests.res",
-    19,
-    13,
-    29
+    18,
+    20,
+    36
   ],
   "print function"
-], Test.print(() => 42), eq, "function () {\n          return 42;\n        }");
+], Test.print(() => 42), eq, "() => 42");
 
 Test.run([
   [
     "Core_TestTests.res",
-    24,
+    19,
     20,
     40
   ],
@@ -159,7 +159,7 @@ Test.run([
 Test.run([
   [
     "Core_TestTests.res",
-    26,
+    21,
     13,
     27
   ],
@@ -169,7 +169,7 @@ Test.run([
 Test.run([
   [
     "Core_TestTests.res",
-    31,
+    26,
     20,
     31
   ],
