@@ -65,7 +65,17 @@ async function runTests() {
       stdio: [0, 1, 2],
     });
 
-    cp.execSync(`npx mocha -t 10000 tests/tests/**/*_test.mjs`, {
+    cp.execSync("npx mocha -t 10000 tests/tests/**/*_test.mjs", {
+      cwd: path.join(__dirname, ".."),
+      stdio: [0, 1, 2],
+    });
+
+    cp.execSync("node tests/tests/src/core/Core_TestSuite.mjs", {
+      cwd: path.join(__dirname, ".."),
+      stdio: [0, 1, 2],
+    });
+
+    cp.execSync("node tests/tests/src/core/Core_TempTests.mjs", {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2],
     });
