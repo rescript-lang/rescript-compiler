@@ -317,6 +317,9 @@ jobs:
       - name: Run tests
         run: node scripts/test.js -all
 
+      - name: Check for diffs in tests folder
+        run: git diff --ignore-cr-at-eol --exit-code tests
+
       - name: Run gentype tests
         if: runner.os != 'Windows'
         run: make -C tests/gentype_tests/typescript-react-example clean test
