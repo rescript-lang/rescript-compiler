@@ -8,51 +8,51 @@ console.log("Intl.ListFormat");
 new Intl.ListFormat();
 
 new Intl.ListFormat([
-      "en-US",
-      "en-GB"
-    ]);
+  "en-US",
+  "en-GB"
+]);
 
-var _formatter = new Intl.ListFormat([
-      "en-US",
-      "en-GB"
-    ], {
-      type: "conjunction",
-      style: "long"
-    });
-
-Intl.ListFormat.supportedLocalesOf([
-      "en-US",
-      "en-GB"
-    ]);
+let _formatter = new Intl.ListFormat([
+  "en-US",
+  "en-GB"
+], {
+  type: "conjunction",
+  style: "long"
+});
 
 Intl.ListFormat.supportedLocalesOf([
-      "en-US",
-      "en-GB"
-    ], {
-      localeMatcher: "lookup"
-    });
+  "en-US",
+  "en-GB"
+]);
 
-var formatter = new Intl.ListFormat(undefined, {
-      type: "conjunction",
-      style: "long"
-    });
+Intl.ListFormat.supportedLocalesOf([
+  "en-US",
+  "en-GB"
+], {
+  localeMatcher: "lookup"
+});
+
+let formatter = new Intl.ListFormat(undefined, {
+  type: "conjunction",
+  style: "long"
+});
 
 console.log(formatter.resolvedOptions());
 
 console.log(formatter.format([
-          "one",
-          "two",
-          "three"
-        ]));
+  "one",
+  "two",
+  "three"
+]));
 
 console.log(formatter.formatToParts([
-          "one",
-          "two",
-          "three"
-        ]));
+  "one",
+  "two",
+  "three"
+]));
 
 export {
-  _formatter ,
-  formatter ,
+  _formatter,
+  formatter,
 }
 /*  Not a pure module */

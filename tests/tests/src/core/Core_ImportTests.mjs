@@ -3,21 +3,19 @@
 import * as Test from "./Test.mjs";
 
 async function main() {
-  var eq = await import("./IntTests.mjs").then(function (m) {
-        return m.eq;
-      });
+  let eq = await import("./Core_IntTests.mjs").then(m => m.eq);
   return Test.run([
-              [
-                "ImportTests.res",
-                5,
-                22,
-                55
-              ],
-              "dynamic import - Int tests - eq"
-            ], 1, eq, 1);
+    [
+      "Core_ImportTests.res",
+      3,
+      22,
+      55
+    ],
+    "dynamic import - Int tests - eq"
+  ], 1, eq, 1);
 }
 
 export {
-  main ,
+  main,
 }
 /* Test Not a pure module */

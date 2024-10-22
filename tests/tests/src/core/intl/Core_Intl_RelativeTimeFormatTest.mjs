@@ -6,33 +6,33 @@ console.log("---");
 console.log("Intl.RelativeTimeFormat");
 
 Intl.RelativeTimeFormat.supportedLocalesOf([
-      "en-US",
-      "en-GB"
-    ]);
+  "en-US",
+  "en-GB"
+]);
 
 Intl.RelativeTimeFormat.supportedLocalesOf([
-      "en-US",
-      "en-GB"
-    ], {
-      localeMatcher: "lookup"
-    });
+  "en-US",
+  "en-GB"
+], {
+  localeMatcher: "lookup"
+});
 
 new Intl.RelativeTimeFormat();
 
 new Intl.RelativeTimeFormat([
-      "en-US",
-      "en-GB"
-    ]);
+  "en-US",
+  "en-GB"
+]);
 
-var _formatter = new Intl.RelativeTimeFormat(undefined, {
-      numeric: "always",
-      style: "narrow"
-    });
+let _formatter = new Intl.RelativeTimeFormat(undefined, {
+  numeric: "always",
+  style: "narrow"
+});
 
-var formatter = new Intl.RelativeTimeFormat(["en-US"], {
-      numeric: "always",
-      style: "narrow"
-    });
+let formatter = new Intl.RelativeTimeFormat(["en-US"], {
+  numeric: "always",
+  style: "narrow"
+});
 
 console.log(formatter.resolvedOptions());
 
@@ -41,7 +41,7 @@ console.log(formatter.format(3, "hour"));
 console.log(formatter.formatToParts(3, "hour"));
 
 export {
-  _formatter ,
-  formatter ,
+  _formatter,
+  formatter,
 }
 /*  Not a pure module */

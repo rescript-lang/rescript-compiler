@@ -6,35 +6,35 @@ console.log("---");
 console.log("Intl.Segmenter");
 
 Intl.Segmenter.supportedLocalesOf([
-      "en-US",
-      "en-GB"
-    ]);
+  "en-US",
+  "en-GB"
+]);
 
 Intl.Segmenter.supportedLocalesOf([
-      "en-US",
-      "en-GB"
-    ], {
-      localeMatcher: "lookup"
-    });
+  "en-US",
+  "en-GB"
+], {
+  localeMatcher: "lookup"
+});
 
 new Intl.Segmenter();
 
 new Intl.Segmenter([
-      "en-US",
-      "en-GB"
-    ]);
+  "en-US",
+  "en-GB"
+]);
 
-var _formatter = new Intl.Segmenter(undefined, {
-      granularity: "word"
-    });
+let _formatter = new Intl.Segmenter(undefined, {
+  granularity: "word"
+});
 
-var formatter = new Intl.Segmenter(["en-US"], {
-      granularity: "word"
-    });
+let formatter = new Intl.Segmenter(["en-US"], {
+  granularity: "word"
+});
 
 console.log(formatter.resolvedOptions());
 
-var segments = formatter.segment("This is a sentence with several words");
+let segments = formatter.segment("This is a sentence with several words");
 
 console.log(segments);
 
@@ -43,8 +43,8 @@ console.log(segments.containing());
 console.log(segments.containing(1));
 
 export {
-  _formatter ,
-  formatter ,
-  segments ,
+  _formatter,
+  formatter,
+  segments,
 }
 /*  Not a pure module */

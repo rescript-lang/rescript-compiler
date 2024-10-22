@@ -5,15 +5,15 @@ console.log("---");
 
 console.log("Intl.Locale");
 
-var _locale = new Intl.Locale("en-US");
+let _locale = new Intl.Locale("en-US");
 
-var locale = new Intl.Locale("en-US", {
-      calendar: "hebrew",
-      collation: "compat",
-      hourCycle: "h24",
-      caseFirst: "upper",
-      numeric: true
-    });
+let locale = new Intl.Locale("en-US", {
+  calendar: "hebrew",
+  collation: "compat",
+  hourCycle: "h24",
+  caseFirst: "upper",
+  numeric: true
+});
 
 console.log(locale.baseName);
 
@@ -40,7 +40,7 @@ console.log(locale.maximize());
 console.log(locale.minimize());
 
 export {
-  _locale ,
-  locale ,
+  _locale,
+  locale,
 }
 /*  Not a pure module */

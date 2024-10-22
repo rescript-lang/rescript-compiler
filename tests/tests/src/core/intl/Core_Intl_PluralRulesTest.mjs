@@ -8,21 +8,21 @@ console.log("Intl.PluralRules");
 new Intl.PluralRules();
 
 new Intl.PluralRules([
-      "en-US",
-      "en-GB"
-    ]);
+  "en-US",
+  "en-GB"
+]);
 
-var _formatter = new Intl.PluralRules(undefined, {
-      type: "ordinal",
-      minimumSignificantDigits: 3,
-      maximumSignificantDigits: 5
-    });
+let _formatter = new Intl.PluralRules(undefined, {
+  type: "ordinal",
+  minimumSignificantDigits: 3,
+  maximumSignificantDigits: 5
+});
 
-var formatter = new Intl.PluralRules(["en-US"], {
-      type: "ordinal",
-      minimumSignificantDigits: 3,
-      maximumSignificantDigits: 5
-    });
+let formatter = new Intl.PluralRules(["en-US"], {
+  type: "ordinal",
+  minimumSignificantDigits: 3,
+  maximumSignificantDigits: 5
+});
 
 console.log(formatter.resolvedOptions());
 
@@ -31,7 +31,7 @@ console.log(formatter.select(2.0));
 console.log(formatter.select(2));
 
 export {
-  _formatter ,
-  formatter ,
+  _formatter,
+  formatter,
 }
 /*  Not a pure module */
