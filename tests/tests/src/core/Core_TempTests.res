@@ -1,4 +1,4 @@
-include IntlTests
+include Core_IntlTests
 
 Console.info("")
 Console.info("Array")
