@@ -10,17 +10,17 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 12.0.0-alpha.4 (Unreleased)
+# 12.0.0-alpha.4
 
 #### :boom: Breaking Change
 
 - OCaml compatibility in the stdlib and primitives are dropped/deprecated. https://github.com/rescript-lang/rescript-compiler/pull/6984
-- Remove the JSX v3. https://github.com/rescript-lang/rescript-compiler/pull/7072
+- Remove JSX v3. https://github.com/rescript-lang/rescript-compiler/pull/7072
 - Remove js_cast.res. https://github.com/rescript-lang/rescript-compiler/pull/7075
 
 #### :rocket: New Feature
 
-- Use FORCE_COLOR environmental variable to force colorized output https://github.com/rescript-lang/rescript-compiler/pull/7033
+- Use FORCE_COLOR environmental variable to force colorized output. https://github.com/rescript-lang/rescript-compiler/pull/7033
 - Allow spreads of variants in patterns (`| ...someVariant as v => `) when the variant spread is a subtype of the variant matched on. https://github.com/rescript-lang/rescript-compiler/pull/6721
 - Fix the issue where dynamic imports are not working for function-defined externals. https://github.com/rescript-lang/rescript-compiler/pull/7060
 - Allow pattern matching on dicts. `switch someDict { | dict{"one": 1} => Js.log("one is one") }`. https://github.com/rescript-lang/rescript-compiler/pull/7059
@@ -32,7 +32,7 @@
 - Fix tuple coercion. https://github.com/rescript-lang/rescript-compiler/pull/7024
 - Fix attribute printing. https://github.com/rescript-lang/rescript-compiler/pull/7025
 - Fix "rescript format" with many files. https://github.com/rescript-lang/rescript-compiler/pull/7081
-- Fix bigint max, min https://github.com/rescript-lang/rescript-compiler/pull/7088
+- Fix bigint max, min. https://github.com/rescript-lang/rescript-compiler/pull/7088
 - Fix parsing issue with nested variant pattern type spreads. https://github.com/rescript-lang/rescript-compiler/pull/7080
 - Fix JSX settings inheritance: only 'version' propagates to dependencies, preserving their 'mode' and 'module'. https://github.com/rescript-lang/rescript-compiler/pull/7094
 - Fix variant cast to int. https://github.com/rescript-lang/rescript-compiler/pull/7058
