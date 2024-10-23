@@ -388,53 +388,36 @@ let common_initial_env add_type add_extension empty_env =
         ext_is_exception = true;
       }
   in
-  add_exception ident_match_failure
-    [newgenty (Ttuple [type_string; type_int; type_int])]
-    (add_exception ident_invalid_argument [type_string]
-       (add_exception ident_js_error [type_unknown]
-          (add_exception ident_failure [type_string]
-             (add_exception ident_not_found []
-                (add_exception ident_end_of_file []
-                   (add_exception ident_division_by_zero []
-                      (add_exception ident_assert_failure
-                         [newgenty (Ttuple [type_string; type_int; type_int])]
-                         (add_exception ident_undefined_recursive_module
-                            [
-                              newgenty (Ttuple [type_string; type_int; type_int]);
-                            ]
-                            (add_type ident_bigint decl_abstr
-                               (add_type ident_lazy_t decl_lazy_t
-                                  (add_type ident_option decl_option
-                                     (add_type ident_result decl_result
-                                        (add_type ident_dict decl_dict
-                                           (add_type ident_list decl_list
-                                              (add_type ident_array decl_array
-                                                 (add_type ident_exn decl_exn
-                                                    (add_type ident_unit
-                                                       decl_unit
-                                                       (add_type ident_bool
-                                                          decl_bool
-                                                          (add_type ident_float
-                                                             decl_abstr
-                                                             (add_type
-                                                                ident_unknown
-                                                                decl_unknown
-                                                                (add_type
-                                                                   ident_uncurried
-                                                                   decl_uncurried
-                                                                   (add_type
-                                                                      ident_string
-                                                                      decl_abstr
-                                                                      (add_type
-                                                                         ident_int
-                                                                         decl_abstr_imm
-                                                                         (add_type
-                                                                            ident_extension_constructor
-                                                                            decl_abstr
-                                                                            (add_type
-                                                                               ident_promise
-                                                                               decl_promise
-                                                                               empty_env)))))))))))))))))))))))))
+  empty_env
+  |> add_type ident_bool decl_bool
+  |> add_type ident_int decl_abstr_imm
+  |> add_type ident_float decl_abstr
+  |> add_type ident_bigint decl_abstr
+  |> add_type ident_string decl_abstr
+  |> add_type ident_unit decl_unit
+  |> add_type ident_extension_constructor decl_abstr
+  |> add_type ident_exn decl_exn
+  |> add_type ident_uncurried decl_uncurried
+  |> add_type ident_option decl_option
+  |> add_type ident_result decl_result
+  |> add_type ident_lazy_t decl_lazy_t
+  |> add_type ident_promise decl_promise
+  |> add_type ident_array decl_array
+  |> add_type ident_list decl_list
+  |> add_type ident_dict decl_dict
+  |> add_type ident_unknown decl_unknown
+  |> add_exception ident_undefined_recursive_module
+       [newgenty (Ttuple [type_string; type_int; type_int])]
+  |> add_exception ident_assert_failure
+       [newgenty (Ttuple [type_string; type_int; type_int])]
+  |> add_exception ident_division_by_zero []
+  |> add_exception ident_end_of_file []
+  |> add_exception ident_not_found []
+  |> add_exception ident_failure [type_string]
+  |> add_exception ident_js_error [type_unknown]
+  |> add_exception ident_invalid_argument [type_string]
+  |> add_exception ident_match_failure
+       [newgenty (Ttuple [type_string; type_int; type_int])]
 
 let build_initial_env add_type add_exception empty_env =
   let common = common_initial_env add_type add_exception empty_env in
