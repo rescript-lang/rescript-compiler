@@ -345,8 +345,8 @@ jobs:
           output-file-path: tests/benchmark-output.json
           external-data-json-path: ./tests/benchmark-cache/benchmark-data.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          alert-threshold: "120%"
-          comment-always: true
+          alert-threshold: "105%"
+          comment-always: false
           comment-on-alert: true
 
       - name: Save benchmark data as new baseline
