@@ -1546,9 +1546,15 @@ let compile output_prefix =
 
         let else_ = S.throw_stmt block_expr in
 
-        Js_output.make
-          [S.if_ v block ~else_:[else_]]
-          ~value:E.undefined ~output_finished:False
+        let result =
+          Js_output.make
+            [S.if_ v block ~else_:[else_]]
+            ~value:E.undefined ~output_finished:False
+        in
+        let _a =
+          if !Clflags.no_assert_false then Js_output.make block else result
+        in
+        _a
       | {value = None} -> assert false)
     | {primitive = Praise; args = [e]; _} -> (
       match
