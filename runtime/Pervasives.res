@@ -168,7 +168,7 @@ external floor: float => float = "floor"
 external abs_float: float => float = "abs"
 
 @deprecated("Use Core instead. This will be removed in v13")
-external mod_float: float => float = "%modfloat"
+external mod_float: (float, float) => float = "%modfloat"
 
 @deprecated("Use Core instead. This will be removed in v13")
 external float: int => float = "%floatofint"
@@ -551,7 +551,7 @@ async function main() {
 }
 ```
 */
-external import: 'a => promise<'a> = "#import"
+external import: 'a => promise<'a> = "%import"
 
 type null<+'a> = Js.null<'a>
 

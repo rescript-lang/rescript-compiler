@@ -45,7 +45,7 @@ let fromString = i =>
 external toInt: float => int = "%intoffloat"
 external fromInt: int => float = "%identity"
 
-@unboxed @noalloc external mod: (float, float) => float = "?fmod_float"
+external mod: (float, float) => float = "%modfloat"
 
 let clamp = (~min=?, ~max=?, value): float => {
   let value = switch max {

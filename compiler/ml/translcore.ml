@@ -362,7 +362,7 @@ let primitives_table =
       ("#raw_expr", Pjs_raw_expr);
       ("#raw_stmt", Pjs_raw_stmt);
       (* FIXME: Core compatibility *)
-      ("#null", Pundefined);
+      ("#null", Pnull);
       ("#undefined", Pundefined);
       ("#typeof", Ptypeof);
       ("#is_nullable", Pisnullable);
