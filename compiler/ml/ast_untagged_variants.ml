@@ -458,12 +458,22 @@ module DynamicChecks = struct
           Ext_list.fold_right others is_literal_1 (fun literal_n acc ->
               is_literal_case literal_n ||| acc))
     in
-    match block_cases with
-    | [c] -> is_not_block_case c
-    | c1 :: (_ :: _ as rest) ->
-      is_not_block_case c1
-      &&& is_a_literal_case ~literal_cases ~block_cases:rest e
-    | [] -> assert false
+    let list_literal_cases = true in
+    if list_literal_cases then
+      let rec mk cases =
+        match cases with
+        | [case] -> is_literal_case case
+        | case :: rest -> is_literal_case case ||| mk rest
+        | [] -> assert false
+      in
+      mk literal_cases
+    else
+      match block_cases with
+      | [c] -> is_not_block_case c
+      | c1 :: (_ :: _ as rest) ->
+        is_not_block_case c1
+        &&& is_a_literal_case ~literal_cases ~block_cases:rest e
+      | [] -> assert false
 
   let is_int_tag ?(has_null_undefined_other = (false, false, false)) (e : _ t) :
       _ t =
