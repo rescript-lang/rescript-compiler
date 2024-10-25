@@ -9,7 +9,7 @@ function f(x) {
 }
 
 function ff(x) {
-  if (x === "G" || x === "F" || x === "E" || x === "D" || x === "C" || x === "B" || x === "A") {
+  if (typeof x !== "number") {
     return;
   }
   console.log("abc");

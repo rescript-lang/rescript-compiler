@@ -372,6 +372,14 @@ module DynamicChecks = struct
     | Not of 'a t
     | Expr of 'a
 
+  let rec size = function
+    | BinOp (_, x, y) -> 1 + size x + size y
+    | TagType _ -> 1
+    | TypeOf x -> 1 + size x
+    | IsInstanceOf (_, x) -> 1 + size x
+    | Not x -> 1 + size x
+    | Expr _ -> 1
+
   let bin op x y = BinOp (op, x, y)
   let tag_type t = TagType t
   let typeof x = TypeOf x
@@ -396,7 +404,7 @@ module DynamicChecks = struct
   let ( &&& ) x y = bin And x y
 
   let rec is_a_literal_case ~(literal_cases : tag_type list) ~block_cases
-      (e : _ t) =
+      ~list_literal_cases (e : _ t) =
     let literals_overlaps_with_string () =
       Ext_list.exists literal_cases (function
         | String _ -> true
@@ -458,7 +466,6 @@ module DynamicChecks = struct
           Ext_list.fold_right others is_literal_1 (fun literal_n acc ->
               is_literal_case literal_n ||| acc))
     in
-    let list_literal_cases = true in
     if list_literal_cases then
       let rec mk cases =
         match cases with
@@ -472,8 +479,20 @@ module DynamicChecks = struct
       | [c] -> is_not_block_case c
       | c1 :: (_ :: _ as rest) ->
         is_not_block_case c1
-        &&& is_a_literal_case ~literal_cases ~block_cases:rest e
+        &&& is_a_literal_case ~literal_cases ~block_cases:rest
+              ~list_literal_cases e
       | [] -> assert false
+
+  let is_a_literal_case ~literal_cases ~block_cases e =
+    let with_literal_cases =
+      is_a_literal_case ~literal_cases ~block_cases ~list_literal_cases:true e
+    in
+    let without_literal_cases =
+      is_a_literal_case ~literal_cases ~block_cases ~list_literal_cases:false e
+    in
+    if size with_literal_cases <= size without_literal_cases then
+      with_literal_cases
+    else without_literal_cases
 
   let is_int_tag ?(has_null_undefined_other = (false, false, false)) (e : _ t) :
       _ t =

@@ -24,7 +24,7 @@ function classify2(x) {
 }
 
 function cls(x) {
-  if (x === "Two" || x === "One") {
+  if (typeof x !== "object") {
     if (x === "One") {
       return "one";
     } else {
@@ -270,7 +270,7 @@ let OverlapNumber = {
 };
 
 function checkEnum$2(e) {
-  if (!(e === "Three" || e === "Two" || e === null)) {
+  if (!(e === null || typeof e !== "object")) {
     return "Object...";
   }
   switch (e) {
