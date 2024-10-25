@@ -6,7 +6,7 @@ import * as Primitive_array from "rescript/lib/es6/Primitive_array.js";
 import * as Primitive_option from "rescript/lib/es6/Primitive_option.js";
 
 function classify(x) {
-  if (x === "A" && typeof x !== "number") {
+  if (x === "A") {
     return "A";
   } else if (typeof x === "number") {
     return "An integer";
@@ -24,7 +24,7 @@ function classify2(x) {
 }
 
 function cls(x) {
-  if (typeof x !== "object") {
+  if (x === "Two" || x === "One") {
     if (x === "One") {
       return "one";
     } else {
@@ -40,13 +40,13 @@ let ListWithTuples = {};
 let ListWithObjects = {};
 
 function tuplesToObjects(l) {
-  if (Array.isArray(l)) {
+  if (l === undefined) {
+    return null;
+  } else {
     return {
       hd: l[0],
       tl: tuplesToObjects(l[1])
     };
-  } else {
-    return null;
   }
 }
 
@@ -68,7 +68,7 @@ console.log("l1", l1);
 console.log("l2", l2);
 
 function isTrue(x) {
-  if (typeof x !== "object") {
+  if (x === true) {
     return true;
   } else {
     return x.flag;
@@ -80,7 +80,7 @@ let Truthy = {
 };
 
 function classify$1(x) {
-  if (x === null || typeof x !== "object") {
+  if (x === undefined || x === null) {
     if (x === null) {
       return "null";
     } else {
@@ -96,7 +96,7 @@ let TwoObjects = {
 };
 
 function classify$2(x) {
-  if (x === "A" || x === "B") {
+  if (x === "B" || x === "A") {
     if (x === "A") {
       return "a";
     } else {
@@ -112,7 +112,7 @@ let Unknown = {
 };
 
 function classify$3(x) {
-  if (typeof x !== "object" && typeof x !== "number" && (x === "C" || x === "B" || x === "A" || x === "D")) {
+  if (x === "D" || x === "C" || x === "B" || x === "A") {
     switch (x) {
       case "A" :
         return "a";
@@ -173,7 +173,7 @@ let WithArray = {
 };
 
 function classify$6(x) {
-  if (!Array.isArray(x) && (x === null || typeof x !== "object") && typeof x !== "number" && typeof x !== "string") {
+  if (x === null || x === true || x === false) {
     switch (x) {
       case false :
         return "JSONFalse";
@@ -214,18 +214,18 @@ let Json = {
 };
 
 function check(s, y) {
-  if (!Array.isArray(s)) {
+  if (s === "B") {
     return 42;
   }
   let x = s[0];
-  if (!Array.isArray(x)) {
+  if (x === "B") {
     return 42;
   }
   let tmp = s[1];
-  if (Array.isArray(tmp) || x === y) {
-    return 42;
-  } else {
+  if (tmp === "B" && x !== y) {
     return 41;
+  } else {
+    return 42;
   }
 }
 
@@ -234,7 +234,7 @@ let TrickyNested = {
 };
 
 function checkEnum(e) {
-  if (!(e === "Two" || e === "One" || e === "Three")) {
+  if (!(e === "Three" || e === "Two" || e === "One")) {
     return "Something else..." + e;
   }
   switch (e) {
@@ -252,7 +252,7 @@ let OverlapString = {
 };
 
 function checkEnum$1(e) {
-  if (!(e === "Two" || e === 1.0 || e === "Three")) {
+  if (!(e === "Three" || e === "Two" || e === 1.0)) {
     return "Something else...";
   }
   switch (e) {
@@ -270,7 +270,7 @@ let OverlapNumber = {
 };
 
 function checkEnum$2(e) {
-  if (!(e === null || typeof e !== "object")) {
+  if (!(e === "Three" || e === "Two" || e === null)) {
     return "Object...";
   }
   switch (e) {
@@ -376,7 +376,7 @@ let TestFunctionCase = {
 let someJson = '[{"name": "Haan"}, {"name": "Mr"}, false]';
 
 function check$1(s) {
-  if (!Array.isArray(s) && (s === null || typeof s !== "object") && typeof s !== "number" && typeof s !== "string") {
+  if (s === null || s === true || s === false || s === undefined) {
     console.log("Nope...");
     return;
   }
@@ -386,11 +386,11 @@ function check$1(s) {
       return;
     }
     let match = s[0];
-    if (match === true) {
+    if ((match === null || match === true || match === false || match === undefined) && match === true) {
       let match$1 = s[1];
-      if (match$1 === false) {
+      if ((match$1 === null || match$1 === true || match$1 === false || match$1 === undefined) && match$1 === false) {
         let match$2 = s[2];
-        if (!Array.isArray(match$2) && (match$2 === null || typeof match$2 !== "object") && typeof match$2 !== "number" && typeof match$2 !== "string") {
+        if (match$2 === null || match$2 === true || match$2 === false || match$2 === undefined) {
           console.log("Nope...");
           return;
         }
@@ -400,13 +400,13 @@ function check$1(s) {
             return;
           }
           let match$3 = match$2[0];
-          if (!Array.isArray(match$3) && (match$3 === null || typeof match$3 !== "object") && typeof match$3 !== "number" && typeof match$3 !== "string") {
+          if (match$3 === null || match$3 === true || match$3 === false || match$3 === undefined) {
             console.log("Nope...");
             return;
           }
           if (typeof match$3 === "string" && match$3 === "My name is") {
             let match$4 = match$2[1];
-            if (!Array.isArray(match$4) && (match$4 === null || typeof match$4 !== "object") && typeof match$4 !== "number" && typeof match$4 !== "string") {
+            if (match$4 === null || match$4 === true || match$4 === false || match$4 === undefined) {
               console.log("Nope...");
               return;
             }
@@ -476,7 +476,7 @@ let PromiseSync = {
 };
 
 async function classify$10(a) {
-  if (typeof a !== "object" && !(a instanceof Promise) && (a === "test" || a === 12) && !Array.isArray(a)) {
+  if (a === 12 || a === "test") {
     if (a === "test") {
       console.log("testing");
       return;

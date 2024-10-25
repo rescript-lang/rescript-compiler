@@ -7,7 +7,7 @@ function shouldHandleNullableValues() {
   let tUndefined = undefined;
   let tValue = "hello";
   let tmp;
-  tmp = (tNull === null || tNull === undefined) && tNull === null ? true : false;
+  tmp = (tNull === undefined || tNull === null) && tNull === null ? true : false;
   Test.run([
     [
       "Core_NullableTests.res",
@@ -18,7 +18,7 @@ function shouldHandleNullableValues() {
     "Should handle null"
   ], tmp, (prim0, prim1) => prim0 === prim1, true);
   let tmp$1;
-  tmp$1 = (tUndefined === null || tUndefined === undefined) && tUndefined !== null ? true : false;
+  tmp$1 = (tUndefined === undefined || tUndefined === null) && tUndefined !== null ? true : false;
   Test.run([
     [
       "Core_NullableTests.res",
@@ -29,7 +29,7 @@ function shouldHandleNullableValues() {
     "Should handle undefined"
   ], tmp$1, (prim0, prim1) => prim0 === prim1, true);
   let tmp$2;
-  tmp$2 = tValue === null || tValue === undefined || tValue !== "hello" ? false : true;
+  tmp$2 = tValue === undefined || tValue === null || tValue !== "hello" ? false : true;
   Test.run([
     [
       "Core_NullableTests.res",
