@@ -80,7 +80,7 @@ let Truthy = {
 };
 
 function classify$1(x) {
-  if (x === undefined || x === null) {
+  if (x === null || x === undefined) {
     if (x === null) {
       return "null";
     } else {
@@ -96,7 +96,7 @@ let TwoObjects = {
 };
 
 function classify$2(x) {
-  if (x === "B" || x === "A") {
+  if (x === "A" || x === "B") {
     if (x === "A") {
       return "a";
     } else {
@@ -112,7 +112,7 @@ let Unknown = {
 };
 
 function classify$3(x) {
-  if (x === "D" || x === "C" || x === "B" || x === "A") {
+  if (x === "A" || x === "D" || x === "B" || x === "C") {
     switch (x) {
       case "A" :
         return "a";
@@ -173,7 +173,7 @@ let WithArray = {
 };
 
 function classify$6(x) {
-  if (x === null || x === true || x === false) {
+  if (x === false || x === null || x === true) {
     switch (x) {
       case false :
         return "JSONFalse";
@@ -234,7 +234,7 @@ let TrickyNested = {
 };
 
 function checkEnum(e) {
-  if (!(e === "Three" || e === "Two" || e === "One")) {
+  if (!(e === "One" || e === "Three" || e === "Two")) {
     return "Something else..." + e;
   }
   switch (e) {
@@ -252,7 +252,7 @@ let OverlapString = {
 };
 
 function checkEnum$1(e) {
-  if (!(e === "Three" || e === "Two" || e === 1.0)) {
+  if (!(e === 1.0 || e === "Three" || e === "Two")) {
     return "Something else...";
   }
   switch (e) {
@@ -376,7 +376,7 @@ let TestFunctionCase = {
 let someJson = '[{"name": "Haan"}, {"name": "Mr"}, false]';
 
 function check$1(s) {
-  if (s === null || s === true || s === false || s === undefined) {
+  if (s === undefined || s === null || s === false || s === true) {
     console.log("Nope...");
     return;
   }
@@ -390,7 +390,7 @@ function check$1(s) {
       let match$1 = s[1];
       if (match$1 === false) {
         let match$2 = s[2];
-        if (match$2 === null || match$2 === true || match$2 === false || match$2 === undefined) {
+        if (match$2 === undefined || match$2 === null || match$2 === false || match$2 === true) {
           console.log("Nope...");
           return;
         }
@@ -400,13 +400,13 @@ function check$1(s) {
             return;
           }
           let match$3 = match$2[0];
-          if (match$3 === null || match$3 === true || match$3 === false || match$3 === undefined) {
+          if (match$3 === undefined || match$3 === null || match$3 === false || match$3 === true) {
             console.log("Nope...");
             return;
           }
           if (typeof match$3 === "string" && match$3 === "My name is") {
             let match$4 = match$2[1];
-            if (match$4 === null || match$4 === true || match$4 === false || match$4 === undefined) {
+            if (match$4 === undefined || match$4 === null || match$4 === false || match$4 === true) {
               console.log("Nope...");
               return;
             }
@@ -476,7 +476,7 @@ let PromiseSync = {
 };
 
 async function classify$10(a) {
-  if (a === 12 || a === "test") {
+  if (a === "test" || a === 12) {
     if (a === "test") {
       console.log("testing");
       return;
