@@ -386,9 +386,9 @@ function check$1(s) {
       return;
     }
     let match = s[0];
-    if ((match === null || match === true || match === false || match === undefined) && match === true) {
+    if (match === true) {
       let match$1 = s[1];
-      if ((match$1 === null || match$1 === true || match$1 === false || match$1 === undefined) && match$1 === false) {
+      if (match$1 === false) {
         let match$2 = s[2];
         if (match$2 === null || match$2 === true || match$2 === false || match$2 === undefined) {
           console.log("Nope...");

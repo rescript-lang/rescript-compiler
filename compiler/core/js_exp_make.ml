@@ -673,6 +673,14 @@ let rec filter_bool (e : t) ~j ~b =
     match (filter_bool e1 ~j ~b, filter_bool e2 ~j ~b) with
     | None, _ | _, None -> None
     | Some e1, Some e2 -> Some {e with expression_desc = Bin (Or, e1, e2)})
+  | Bin (EqEqEq, {expression_desc = Var i}, {expression_desc = Bool b1})
+  | Bin (EqEqEq, {expression_desc = Bool b1}, {expression_desc = Var i})
+    when Js_op_util.same_vident i j ->
+    if b1 = b then None else Some e
+  | Bin (NotEqEq, {expression_desc = Var i}, {expression_desc = Bool b1})
+  | Bin (NotEqEq, {expression_desc = Bool b1}, {expression_desc = Var i})
+    when Js_op_util.same_vident i j ->
+    if b1 <> b then None else Some e
   | Bin
       ( NotEqEq,
         {expression_desc = Typeof {expression_desc = Var i}},
