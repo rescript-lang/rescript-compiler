@@ -468,7 +468,7 @@ module DynamicChecks = struct
     in
     if list_literal_cases then
       let rec mk cases =
-        match cases with
+        match List.rev cases with
         | [case] -> is_literal_case case
         | case :: rest -> is_literal_case case ||| mk rest
         | [] -> assert false

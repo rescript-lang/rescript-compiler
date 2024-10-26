@@ -224,9 +224,9 @@ function isUndefined$1(x) {
 }
 
 function plus$2(x, y) {
-  if (x === undefined || x === null) {
+  if (x === null || x === undefined) {
     return y;
-  } else if (y === undefined || y === null) {
+  } else if (y === null || y === undefined) {
     return x;
   } else {
     return x + y | 0;
@@ -234,7 +234,7 @@ function plus$2(x, y) {
 }
 
 function kind(x) {
-  if (x === undefined || x === null) {
+  if (x === null || x === undefined) {
     if (x === null) {
       return "null";
     } else {
@@ -274,7 +274,7 @@ function isWhyNot(x) {
 }
 
 function plus$3(x, y) {
-  if (x === "WhyNotAnotherOne" || x === undefined || x === null) {
+  if (x === null || x === "WhyNotAnotherOne" || x === undefined) {
     switch (x) {
       case null :
       case undefined :
@@ -282,13 +282,13 @@ function plus$3(x, y) {
       case "WhyNotAnotherOne" :
         break;
     }
-  } else if (!(y === "WhyNotAnotherOne" || y === undefined || y === null)) {
+  } else if (!(y === null || y === "WhyNotAnotherOne" || y === undefined)) {
     return {
       x: x.x + y.x,
       y: x.y + y.y
     };
   }
-  if (!(y === "WhyNotAnotherOne" || y === undefined || y === null)) {
+  if (!(y === null || y === "WhyNotAnotherOne" || y === undefined)) {
     return "WhyNotAnotherOne";
   }
   switch (y) {
@@ -301,7 +301,7 @@ function plus$3(x, y) {
 }
 
 function kind$1(x) {
-  if (!(x === "WhyNotAnotherOne" || x === undefined || x === null)) {
+  if (!(x === null || x === "WhyNotAnotherOne" || x === undefined)) {
     return "present";
   }
   switch (x) {
