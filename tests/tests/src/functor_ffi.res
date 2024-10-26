@@ -9,7 +9,7 @@ module Make = (
 
   @get_index external get: (t<elt>, int) => Js.undefined<elt> = ""
 
-  let opt_get = (f, i) => \"@@"(Js.Undefined.toOption, get(f, i))
+  let opt_get = (f, i) => Js.Undefined.toOption(get(f, i))
 }
 
 module Int_arr = Make({

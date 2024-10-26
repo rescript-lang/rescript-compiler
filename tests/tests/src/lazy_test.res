@@ -78,16 +78,13 @@ Mt.from_pair_suites(
       ("lazy_force", _ => Eq(u_v.contents, 2)),
       ("lazy_from_fun", _ => Eq(Lazy.force(l_from_fun), 3)),
       ("lazy_from_val", _ => Eq(Lazy.force(Lazy.from_val(3)), 3)),
-      (
-        "lazy_from_val2",
-        _ => Eq(\"@@"(Lazy.force, Lazy.force(Lazy.from_val(Lazy.from_fun(() => 3)))), 3),
-      ),
+      ("lazy_from_val2", _ => Eq(Lazy.force(Lazy.force(Lazy.from_val(Lazy.from_fun(() => 3)))), 3)),
       (
         "lazy_from_val3",
         _ => Eq(
           {
             %debugger
-            \"@@"(Lazy.force, Lazy.force(Lazy.from_val(forward_test)))
+            Lazy.force(Lazy.force(Lazy.from_val(forward_test)))
           },
           4,
         ),
@@ -96,7 +93,7 @@ Mt.from_pair_suites(
       (__FILE__, _ => Eq(a7, None)),
       (__FILE__, _ => Eq(a8, ())),
       (__LOC__, _ => Ok(Lazy.is_val(Lazy.from_val(3)))),
-      (__LOC__, _ => Ok(\"@@"(not, Lazy.is_val(Lazy.from_fun(() => raise(Not_found)))))),
+      (__LOC__, _ => Ok(!Lazy.is_val(Lazy.from_fun(() => raise(Not_found))))),
     }
   },
 )

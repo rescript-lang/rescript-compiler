@@ -44,4 +44,4 @@ let a = Sum(list{sym("a"), Val(Natural(2))})
 let b = sym("x")
 type st = {complex: bool}
 let empty = () => {complex: true}
-let _ = \"@@"(Js.log, compare(InSum, empty(), a, b))
+let _ = Js.log(compare(InSum, empty(), a, b))

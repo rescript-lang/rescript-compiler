@@ -33,7 +33,7 @@ module Test_null = {
   }
 
   let f5 = (h, x) => {
-    let u = \"@@"(Js.Null.toOption, h(32))
+    let u = Js.Null.toOption(h(32))
     switch u {
     | None =>
       let sum = (x, y) => x + y
@@ -45,7 +45,7 @@ module Test_null = {
   }
 
   let f4 = (h, x) => {
-    let u = \"@@"(Js.Null.toOption, h(32))
+    let u = Js.Null.toOption(h(32))
     let v = 32 + x
     switch u {
     | None =>
@@ -111,7 +111,7 @@ module Test_def = {
   }
 
   let f5 = (h, x) => {
-    let u = \"@@"(Js.Undefined.toOption, h(32))
+    let u = Js.Undefined.toOption(h(32))
     switch u {
     | None =>
       let sum = (x, y) => x + y
@@ -123,7 +123,7 @@ module Test_def = {
   }
 
   let f4 = (h, x) => {
-    let u = \"@@"(Js.Undefined.toOption, h(32))
+    let u = Js.Undefined.toOption(h(32))
     let v = 32 + x
     switch u {
     | None =>
@@ -189,7 +189,7 @@ module Test_null_def = {
   }
 
   let f5 = (h, x) => {
-    let u = \"@@"(toOption, h(32))
+    let u = toOption(h(32))
     switch u {
     | None =>
       let sum = (x, y) => x + y
@@ -201,7 +201,7 @@ module Test_null_def = {
   }
 
   let f4 = (h, x) => {
-    let u = \"@@"(toOption, h(32))
+    let u = toOption(h(32))
     let v = 32 + x
     switch u {
     | None =>
@@ -240,7 +240,7 @@ module Test_null_def = {
 
   let f10 = x => isNullable(x)
 
-  let f11 = \"@@"(isNullable, return(3))
+  let f11 = isNullable(return(3))
 }
 
 let () = {

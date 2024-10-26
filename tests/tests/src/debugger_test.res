@@ -4,18 +4,18 @@ let f = (x, y) => {
 }
 
 let g = () => {
-  \"@@"(ignore, f(1, 2))
+  ignore(f(1, 2))
   %debugger
-  \"@@"(ignore, f(1, 2))
+  ignore(f(1, 2))
   %debugger
   3
 }
 
 let exterme_g = () => {
-  \"@@"(ignore, f(1, 2))
+  ignore(f(1, 2))
   let v = %debugger
   Js.log(v)
-  \"@@"(ignore, f(1, 2))
+  ignore(f(1, 2))
   %debugger
   3
 }
