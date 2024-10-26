@@ -23,19 +23,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type error =
-  | Package_not_found of Bsb_pkg_types.t * string option (* json file *)
+  | Package_not_found of Bsb_pkg_types.t
   | Json_config of Ext_position.t * string
-  | Invalid_json of string
   | Invalid_spec of string
   | Conflict_module of string * string * string
   | No_implementation of string
-  | Not_consistent of string
 
 exception Error of error
 
 let error err = raise (Error err)
 
-let package_not_found ~pkg ~json = error (Package_not_found (pkg, json))
+let package_not_found ~pkg = error (Package_not_found pkg)
 
 let print (fmt : Format.formatter) (x : error) =
   match x with
@@ -43,32 +41,22 @@ let print (fmt : Format.formatter) (x : error) =
     Format.fprintf fmt
       "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
        File names must be unique per project" modname dir1 dir2
-  | Not_consistent modname ->
-    Format.fprintf fmt
-      "@{<error>Error:@} %s has implementation/interface in non-consistent \
-       syntax(reason/ocaml)"
-      modname
   | No_implementation modname ->
     Format.fprintf fmt "@{<error>Error:@} %s does not have implementation file"
       modname
-  | Package_not_found (name, json_opt) ->
-    let in_json =
-      match json_opt with
-      | None -> Ext_string.empty
-      | Some x -> " in " ^ x
-    in
+  | Package_not_found name ->
     let name = Bsb_pkg_types.to_string name in
     if Ext_string.equal name !Bs_version.package_name then
       Format.fprintf fmt
         "File \"bsconfig.json\", line 1\n\
-         @{<error>Error:@} package @{<error>%s@} is not found %s\n\
+         @{<error>Error:@} package @{<error>%s@} is not found\n\
          It's the basic, required package. If you have it installed globally,\n\
-         Please run `npm link rescript` to make it available" name in_json
+         Please run `npm link rescript` to make it available" name
     else
       Format.fprintf fmt
         "File \"bsconfig.json\", line 1\n\
-         @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
-         - Did you install it?" name in_json
+         @{<error>Error:@} package @{<error>%s@} not found or built\n\
+         - Did you install it?" name
   | Json_config (pos, s) ->
     Format.fprintf fmt
       "File %S, line %d:\n\
@@ -78,16 +66,11 @@ let print (fmt : Format.formatter) (x : error) =
       pos.pos_fname pos.pos_lnum s
   | Invalid_spec s ->
     Format.fprintf fmt "@{<error>Error: Invalid bsconfig.json %s@}" s
-  | Invalid_json s ->
-    Format.fprintf fmt "File %S, line 1\n@{<error>Error: Invalid json format@}"
-      s
 
 let conflict_module modname dir1 dir2 =
   Error (Conflict_module (modname, dir1, dir2))
 
 let no_implementation modname = error (No_implementation modname)
-
-let not_consistent modname = error (Not_consistent modname)
 
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc, s))) fmt
@@ -98,8 +81,6 @@ let config_error config fmt =
   error (Json_config (loc, fmt))
 
 let invalid_spec s = error (Invalid_spec s)
-
-let invalid_json s = error (Invalid_json s)
 
 let () =
   Printexc.register_printer (fun x ->

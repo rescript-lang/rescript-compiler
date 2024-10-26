@@ -17,7 +17,7 @@ if (out.stdout !== "") {
     out.stderr,
     [
       'File "bsconfig.json", line 1',
-      "Error: package weird not found or built ",
+      "Error: package weird not found or built",
       "- Did you install it?",
       "",
     ].join(os.EOL),
