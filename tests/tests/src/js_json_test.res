@@ -127,14 +127,14 @@ let () = {
   switch ty {
   | J.JSONObject(x) =>
     /* Test field 'a' */
-    let ta = J.classify(\"@@"(option_get, Js_dict.get(x, "a")))
+    let ta = J.classify(option_get(Js_dict.get(x, "a")))
     switch ta {
     | J.JSONString(a) =>
       if a != "test string" {
         false_(__LOC__)
       } else {
         /* Test field 'b' */
-        let ty = J.classify(\"@@"(option_get, Js_dict.get(x, "b")))
+        let ty = J.classify(option_get(Js_dict.get(x, "b")))
         switch ty {
         | J.JSONNumber(b) => add_test(__LOC__, _ => Mt.Approx(123.0, b))
         | _ => false_(__LOC__)
@@ -261,7 +261,7 @@ let () = {
     let ty = J.classify(x[1])
     switch ty {
     | J.JSONObject(a1) =>
-      let ty = \"@@"(J.classify, \"@@"(option_get, Js_dict.get(a1, "a")))
+      let ty = J.classify(option_get(Js_dict.get(a1, "a")))
       switch ty {
       | J.JSONString(aValue) => eq(__LOC__, aValue, "bbb")
       | _ => false_(__LOC__)
@@ -301,7 +301,7 @@ let () = {
   eq(__LOC__, J.decodeString(J.boolean(true)), None)
   eq(__LOC__, J.decodeString(J.array([])), None)
   eq(__LOC__, J.decodeString(J.null), None)
-  eq(__LOC__, J.decodeString(\"@@"(J.object_, Js.Dict.empty())), None)
+  eq(__LOC__, J.decodeString(J.object_(Js.Dict.empty())), None)
   eq(__LOC__, J.decodeString(J.number(1.23)), None)
 }
 
@@ -310,7 +310,7 @@ let () = {
   eq(__LOC__, J.decodeNumber(J.boolean(true)), None)
   eq(__LOC__, J.decodeNumber(J.array([])), None)
   eq(__LOC__, J.decodeNumber(J.null), None)
-  eq(__LOC__, J.decodeNumber(\"@@"(J.object_, Js.Dict.empty())), None)
+  eq(__LOC__, J.decodeNumber(J.object_(Js.Dict.empty())), None)
   eq(__LOC__, J.decodeNumber(J.number(1.23)), Some(1.23))
 }
 
@@ -319,7 +319,7 @@ let () = {
   eq(__LOC__, J.decodeObject(J.boolean(true)), None)
   eq(__LOC__, J.decodeObject(J.array([])), None)
   eq(__LOC__, J.decodeObject(J.null), None)
-  eq(__LOC__, J.decodeObject(\"@@"(J.object_, Js.Dict.empty())), Some(Js.Dict.empty()))
+  eq(__LOC__, J.decodeObject(J.object_(Js.Dict.empty())), Some(Js.Dict.empty()))
   eq(__LOC__, J.decodeObject(J.number(1.23)), None)
 }
 
@@ -328,7 +328,7 @@ let () = {
   eq(__LOC__, J.decodeArray(J.boolean(true)), None)
   eq(__LOC__, J.decodeArray(J.array([])), Some([]))
   eq(__LOC__, J.decodeArray(J.null), None)
-  eq(__LOC__, J.decodeArray(\"@@"(J.object_, Js.Dict.empty())), None)
+  eq(__LOC__, J.decodeArray(J.object_(Js.Dict.empty())), None)
   eq(__LOC__, J.decodeArray(J.number(1.23)), None)
 }
 
@@ -337,7 +337,7 @@ let () = {
   eq(__LOC__, J.decodeBoolean(J.boolean(true)), Some(true))
   eq(__LOC__, J.decodeBoolean(J.array([])), None)
   eq(__LOC__, J.decodeBoolean(J.null), None)
-  eq(__LOC__, J.decodeBoolean(\"@@"(J.object_, Js.Dict.empty())), None)
+  eq(__LOC__, J.decodeBoolean(J.object_(Js.Dict.empty())), None)
   eq(__LOC__, J.decodeBoolean(J.number(1.23)), None)
 }
 
@@ -346,7 +346,7 @@ let () = {
   eq(__LOC__, J.decodeNull(J.boolean(true)), None)
   eq(__LOC__, J.decodeNull(J.array([])), None)
   eq(__LOC__, J.decodeNull(J.null), Some(Js.null))
-  eq(__LOC__, J.decodeNull(\"@@"(J.object_, Js.Dict.empty())), None)
+  eq(__LOC__, J.decodeNull(J.object_(Js.Dict.empty())), None)
   eq(__LOC__, J.decodeNull(J.number(1.23)), None)
 }
 

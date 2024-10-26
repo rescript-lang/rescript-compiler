@@ -16,10 +16,10 @@ let suites = {
       "toExponentialWithPrecision - digits:20",
       _ => Eq("0.00000000000000000000e+0", toExponentialWithPrecision(0, ~digits=20)),
     ),
-    (__LOC__, _ => ThrowAny(() => \"@@"(ignore, toExponentialWithPrecision(0, ~digits=101)))),
+    (__LOC__, _ => ThrowAny(() => ignore(toExponentialWithPrecision(0, ~digits=101)))),
     (
       "toExponentialWithPrecision - digits:-1",
-      _ => ThrowAny(() => \"@@"(ignore, toExponentialWithPrecision(0, ~digits=-1))),
+      _ => ThrowAny(() => ignore(toExponentialWithPrecision(0, ~digits=-1))),
     ),
     ("toPrecision", _ => Eq("123456", toPrecision(123456))),
     (
@@ -34,10 +34,10 @@ let suites = {
       "toPrecisionWithPrecision - digits:20",
       _ => Eq("0.0000000000000000000", toPrecisionWithPrecision(0, ~digits=20)),
     ),
-    (__LOC__, _ => ThrowAny(() => \"@@"(ignore, toPrecisionWithPrecision(0, ~digits=101)))),
+    (__LOC__, _ => ThrowAny(() => ignore(toPrecisionWithPrecision(0, ~digits=101)))),
     (
       "toPrecisionWithPrecision - digits:-1",
-      _ => ThrowAny(() => \"@@"(ignore, toPrecisionWithPrecision(0, ~digits=-1))),
+      _ => ThrowAny(() => ignore(toPrecisionWithPrecision(0, ~digits=-1))),
     ),
     ("toString", _ => Eq("123", toString(123))),
     (
@@ -46,18 +46,9 @@ let suites = {
     ),
     ("toStringWithRadix - radix:16", _ => Eq("1e240", toStringWithRadix(123456, ~radix=16))),
     ("toStringWithRadix - radix:36", _ => Eq("2n9c", toStringWithRadix(123456, ~radix=36))),
-    (
-      "toStringWithRadix - radix:37",
-      _ => ThrowAny(() => \"@@"(ignore, toStringWithRadix(0, ~radix=37))),
-    ),
-    (
-      "toStringWithRadix - radix:1",
-      _ => ThrowAny(() => \"@@"(ignore, toStringWithRadix(0, ~radix=1))),
-    ),
-    (
-      "toStringWithRadix - radix:-1",
-      _ => ThrowAny(() => \"@@"(ignore, toStringWithRadix(0, ~radix=-1))),
-    ),
+    ("toStringWithRadix - radix:37", _ => ThrowAny(() => ignore(toStringWithRadix(0, ~radix=37)))),
+    ("toStringWithRadix - radix:1", _ => ThrowAny(() => ignore(toStringWithRadix(0, ~radix=1)))),
+    ("toStringWithRadix - radix:-1", _ => ThrowAny(() => ignore(toStringWithRadix(0, ~radix=-1)))),
   }
 }
 

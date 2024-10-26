@@ -15,7 +15,7 @@ and u = Hei
 and h = {d: d, h: list<h>, u_X: int}
 @deriving({accessors: accessors}) and e = {d: d}
 
-let v = \"@@"(d, {d: d_int(3)})
+let v = d({d: d_int(3)})
 
 let g = u_X
 

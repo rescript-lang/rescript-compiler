@@ -15,8 +15,7 @@ let setOfArray = x => N.fromArray(~id=module(Icmp), x)
 let emptyMap = () => M.make(~id=module(Icmp))
 
 let mergeInter = (s1, s2) =>
-  \"@@"(
-    setOfArray,
+  setOfArray(
     M.keysToArray(
       M.merge(s1, s2, (k, v1, v2) =>
         switch (v1, v2) {
@@ -28,10 +27,8 @@ let mergeInter = (s1, s2) =>
   )
 
 let mergeUnion = (s1, s2) =>
-  \"@@"(
-    setOfArray,
-    \"@@"(
-      M.keysToArray,
+  setOfArray(
+    M.keysToArray(
       M.merge(s1, s2, (k, v1, v2) =>
         switch (v1, v2) {
         | (None, None) => None
@@ -41,10 +38,8 @@ let mergeUnion = (s1, s2) =>
     ),
   )
 let mergeDiff = (s1, s2) =>
-  \"@@"(
-    setOfArray,
-    \"@@"(
-      M.keysToArray,
+  setOfArray(
+    M.keysToArray(
       M.merge(s1, s2, (k, v1, v2) =>
         switch (v1, v2) {
         | (Some(_), None) => Some()
