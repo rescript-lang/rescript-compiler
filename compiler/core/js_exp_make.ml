@@ -662,57 +662,126 @@ let bin ?comment (op : J.binop) (e0 : t) (e1 : t) : t =
      be careful for side effect
 *)
 
-type filter_const = Ctrue | Cnull | Cundefined
-let string_of_filter_const = function
-  | Ctrue -> "Ctrue"
-  | Cnull -> "Cnull"
-  | Cundefined -> "Cundefined"
-
 let string_of_expression = ref (fun _ -> "")
 let debug = false
 
-let rec filter_const (e : t) ~j ~eq ~const =
+let rec simplify_and (e1 : t) (e2 : t) : t option =
   if debug then
-    Printf.eprintf "filter_const e:%s eq:%b const:%s\n"
-      (!string_of_expression e) eq
-      (string_of_filter_const const);
-  match e.expression_desc with
-  | Bin (And, e1, e2) -> (
-    match (filter_const e1 ~j ~eq ~const, filter_const e2 ~j ~eq ~const) with
-    | None, None -> None
-    | Some e, None | None, Some e -> Some e
-    | Some e1, Some e2 -> Some {e with expression_desc = Bin (And, e1, e2)})
-  | Bin (Or, e1, e2) -> (
-    match (filter_const e1 ~j ~eq ~const, filter_const e2 ~j ~eq ~const) with
-    | None, _ | _, None -> None
-    | Some e1, Some e2 -> Some {e with expression_desc = Bin (Or, e1, e2)})
-  | Bin (EqEqEq, {expression_desc = Var i}, {expression_desc = Bool b1})
-  | Bin (EqEqEq, {expression_desc = Bool b1}, {expression_desc = Var i})
-    when Js_op_util.same_vident i j && const = Ctrue ->
-    if b1 = eq then None else Some e
-  | Bin (NotEqEq, {expression_desc = Var i}, {expression_desc = Bool b1})
-  | Bin (NotEqEq, {expression_desc = Bool b1}, {expression_desc = Var i})
-    when Js_op_util.same_vident i j && const = Ctrue ->
-    if b1 <> eq then None else Some e
-  | Bin
-      ( NotEqEq,
-        {expression_desc = Typeof {expression_desc = Var i}},
-        {expression_desc = Str {txt = "boolean" | "string"}} )
-    when Js_op_util.same_vident i j
-         && (const = Ctrue || const = Cnull || const = Cundefined) ->
-    None
-  | Js_not
-      {
-        expression_desc =
-          Call
-            ( {expression_desc = Str {txt = "Array.isArray"}},
-              [{expression_desc = Var i}],
-              _ );
-      }
-    when Js_op_util.same_vident i j
-         && (const = Ctrue || const = Cnull || const = Cundefined) ->
-    None
-  | _ -> Some e
+    Printf.eprintf "simplify_and %s %s\n" (!string_of_expression e1)
+      (!string_of_expression e2);
+
+  match (e1.expression_desc, e2.expression_desc) with
+  | Bool false, _ -> Some false_
+  | _, Bool false -> Some false_
+  | Bool true, _ -> Some e2
+  | _, Bool true -> Some e1
+  | Bin (And, a, b), _ -> (
+    let ao = simplify_and a e2 in
+    let bo = simplify_and b e2 in
+    if ao = None && bo = None then None
+    else
+      let a_ =
+        match ao with
+        | None -> a
+        | Some a_ -> a_
+      in
+      let b_ =
+        match bo with
+        | None -> b
+        | Some b_ -> b_
+      in
+      match simplify_and a_ b_ with
+      | None -> Some {expression_desc = Bin (And, a_, b_); comment = None}
+      | Some e -> Some e)
+  | Bin (Or, a, b), _ -> (
+    let ao = simplify_and a e2 in
+    let bo = simplify_and b e2 in
+    if ao = None && bo = None then None
+    else
+      let a_ =
+        match ao with
+        | None -> a
+        | Some a_ -> a_
+      in
+      let b_ =
+        match bo with
+        | None -> b
+        | Some b_ -> b_
+      in
+      match simplify_or a_ b_ with
+      | None -> Some {expression_desc = Bin (Or, a_, b_); comment = None}
+      | Some e -> Some e)
+  | ( Bin
+        ( ((EqEqEq | NotEqEq) as op1),
+          {expression_desc = Var i1},
+          {expression_desc = Bool b1} ),
+      Bin
+        ( ((EqEqEq | NotEqEq) as op2),
+          {expression_desc = Var i2},
+          {expression_desc = Bool b2} ) )
+    when Js_op_util.same_vident i1 i2 ->
+    let op_eq = op1 = op2 in
+    let consistent = if op_eq then b1 = b2 else b1 <> b2 in
+    if consistent then Some e1 else Some false_
+  | ( Bin
+        ( EqEqEq,
+          {expression_desc = Typeof {expression_desc = Var ia}},
+          {expression_desc = Str {txt = "boolean"}} ),
+      (Bin (EqEqEq, {expression_desc = Var ib}, {expression_desc = Bool _}) as b)
+    )
+  | ( (Bin (EqEqEq, {expression_desc = Var ib}, {expression_desc = Bool _}) as b),
+      Bin
+        ( EqEqEq,
+          {expression_desc = Typeof {expression_desc = Var ia}},
+          {expression_desc = Str {txt = "boolean"}} ) )
+    when Js_op_util.same_vident ia ib ->
+    Some {expression_desc = b; comment = None}
+  | ( Bin
+        ( EqEqEq,
+          {
+            expression_desc =
+              ( Typeof {expression_desc = Var ia}
+              | Call
+                  ( {expression_desc = Str {txt = "Array.isArray"}},
+                    [{expression_desc = Var ia}],
+                    _ ) );
+          },
+          {expression_desc = Str {txt = "boolean" | "string"}} ),
+      Bin
+        ( EqEqEq,
+          {expression_desc = Var ib},
+          {expression_desc = Bool _ | Null | Undefined _} ) )
+  | ( Bin
+        ( EqEqEq,
+          {expression_desc = Var ib},
+          {expression_desc = Bool _ | Null | Undefined _} ),
+      Bin
+        ( EqEqEq,
+          {
+            expression_desc =
+              ( Typeof {expression_desc = Var ia}
+              | Call
+                  ( {expression_desc = Str {txt = "Array.isArray"}},
+                    [{expression_desc = Var ia}],
+                    _ ) );
+          },
+          {expression_desc = Str {txt = "boolean" | "string"}} ) )
+    when Js_op_util.same_vident ia ib ->
+    (* Note: case boolean / Bool _ is handled above *)
+    Some false_
+  | _ -> None
+
+and simplify_or (e1 : t) (e2 : t) : t option =
+  if debug then
+    Printf.eprintf "simplify_or %s %s\n" (!string_of_expression e1)
+      (!string_of_expression e2);
+
+  match (e1.expression_desc, e2.expression_desc) with
+  | Bool true, _ -> Some true_
+  | _, Bool true -> Some true_
+  | Bool false, _ -> Some e2
+  | _, Bool false -> Some e1
+  | _ -> None
 
 let and_ ?comment (e1 : t) (e2 : t) : t =
   match (e1.expression_desc, e2.expression_desc) with
@@ -729,45 +798,10 @@ let and_ ?comment (e1 : t) (e2 : t) : t =
     )
     when Js_op_util.same_vident i j ->
     e2
-  | ( _,
-      Bin
-        ( ((EqEqEq | NotEqEq) as op),
-          {expression_desc = Var j},
-          {expression_desc = Bool b} ) ) -> (
-    match
-      filter_const e1 ~j ~eq:(if op = EqEqEq then b else not b) ~const:Ctrue
-    with
-    | None -> e2
-    | Some e1 -> {expression_desc = Bin (And, e1, e2); comment})
-  | ( Bin
-        ( ((EqEqEq | NotEqEq) as op),
-          {expression_desc = Var j},
-          {expression_desc = Bool b} ),
-      _ ) -> (
-    match
-      filter_const e2 ~j ~eq:(if op = EqEqEq then b else not b) ~const:Ctrue
-    with
-    | None -> e1
-    | Some e2 -> {expression_desc = Bin (And, e1, e2); comment})
-  | ( _,
-      Bin
-        ( ((EqEqEq | NotEqEq) as op),
-          {expression_desc = Var j},
-          {expression_desc = (Null | Undefined _) as c} ) ) -> (
-    let const = if c == Null then Cnull else Cundefined in
-    match filter_const e1 ~j ~eq:(op = EqEqEq) ~const with
-    | None -> e2
-    | Some e1 -> {expression_desc = Bin (And, e1, e2); comment})
-  | ( Bin
-        ( ((EqEqEq | NotEqEq) as op),
-          {expression_desc = Var j},
-          {expression_desc = (Null | Undefined _) as c} ),
-      _ ) -> (
-    let const = if c == Null then Cnull else Cundefined in
-    match filter_const e2 ~j ~eq:(op = EqEqEq) ~const with
-    | None -> e1
-    | Some e2 -> {expression_desc = Bin (And, e1, e2); comment})
-  | _, _ -> {expression_desc = Bin (And, e1, e2); comment}
+  | _, _ -> (
+    match simplify_and e1 e2 with
+    | Some e -> e
+    | None -> {expression_desc = Bin (And, e1, e2); comment})
 
 let or_ ?comment (e1 : t) (e2 : t) =
   match (e1.expression_desc, e2.expression_desc) with
@@ -778,25 +812,10 @@ let or_ ?comment (e1 : t) (e2 : t) =
   | Var i, Bin (Or, l, ({expression_desc = Var j; _} as r))
     when Js_op_util.same_vident i j ->
     {e2 with expression_desc = Bin (Or, r, l)}
-  | ( _,
-      Bin
-        ( ((EqEqEq | NotEqEq) as op),
-          {expression_desc = Var j},
-          {expression_desc = (Null | Undefined _) as c} ) ) -> (
-    let const = if c == Null then Cnull else Cundefined in
-    match filter_const e1 ~j ~eq:(op <> EqEqEq) ~const with
-    | None -> e2
-    | Some e1 -> {expression_desc = Bin (Or, e1, e2); comment})
-  | ( Bin
-        ( ((EqEqEq | NotEqEq) as op),
-          {expression_desc = Var j},
-          {expression_desc = (Null | Undefined _) as c} ),
-      _ ) -> (
-    let const = if c == Null then Cnull else Cundefined in
-    match filter_const e2 ~j ~eq:(op <> EqEqEq) ~const with
-    | None -> e1
-    | Some e2 -> {expression_desc = Bin (Or, e1, e2); comment})
-  | _, _ -> {expression_desc = Bin (Or, e1, e2); comment}
+  | _, _ -> (
+    match simplify_or e1 e2 with
+    | Some e -> e
+    | None -> {expression_desc = Bin (Or, e1, e2); comment})
 
 (* return a value of type boolean *)
 (* TODO:

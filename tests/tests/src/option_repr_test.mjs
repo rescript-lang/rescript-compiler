@@ -218,8 +218,6 @@ let xs$1 = {
 
 b("File \"option_repr_test.res\", line 127, characters 3-10", Belt_List.every(xs$1, x => x));
 
-let xs_0$2 = true && true;
-
 let xs_1$1 = {
   hd: neqx(undefined, null),
   tl: {
@@ -235,7 +233,7 @@ let xs_1$1 = {
 };
 
 let xs$2 = {
-  hd: xs_0$2,
+  hd: true,
   tl: xs_1$1
 };
 
