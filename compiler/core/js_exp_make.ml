@@ -662,31 +662,43 @@ let bin ?comment (op : J.binop) (e0 : t) (e1 : t) : t =
      be careful for side effect
 *)
 
-let rec filter_bool (e : t) ~j ~b =
+type filter_const = Ctrue | Cnull
+
+let rec filter_const (e : t) ~j ~b:eq ~const =
   match e.expression_desc with
   | Bin (And, e1, e2) -> (
-    match (filter_bool e1 ~j ~b, filter_bool e2 ~j ~b) with
+    match
+      (filter_const e1 ~j ~b:eq ~const, filter_const e2 ~j ~b:eq ~const)
+    with
     | None, None -> None
     | Some e, None | None, Some e -> Some e
     | Some e1, Some e2 -> Some {e with expression_desc = Bin (And, e1, e2)})
   | Bin (Or, e1, e2) -> (
-    match (filter_bool e1 ~j ~b, filter_bool e2 ~j ~b) with
+    match
+      (filter_const e1 ~j ~b:eq ~const, filter_const e2 ~j ~b:eq ~const)
+    with
     | None, _ | _, None -> None
     | Some e1, Some e2 -> Some {e with expression_desc = Bin (Or, e1, e2)})
   | Bin (EqEqEq, {expression_desc = Var i}, {expression_desc = Bool b1})
   | Bin (EqEqEq, {expression_desc = Bool b1}, {expression_desc = Var i})
-    when Js_op_util.same_vident i j ->
-    if b1 = b then None else Some e
+    when Js_op_util.same_vident i j && const = Ctrue ->
+    if b1 = eq then None else Some e
   | Bin (NotEqEq, {expression_desc = Var i}, {expression_desc = Bool b1})
   | Bin (NotEqEq, {expression_desc = Bool b1}, {expression_desc = Var i})
-    when Js_op_util.same_vident i j ->
-    if b1 <> b then None else Some e
+    when Js_op_util.same_vident i j && const = Ctrue ->
+    if b1 <> eq then None else Some e
   | Bin
       ( NotEqEq,
         {expression_desc = Typeof {expression_desc = Var i}},
-        {expression_desc = Str {txt}} )
-    when Js_op_util.same_vident i j ->
-    if txt <> "bool" then None else assert false
+        {expression_desc = Str {txt = "bool"}} )
+    when Js_op_util.same_vident i j && const = Ctrue ->
+    None
+  | Bin
+      ( NotEqEq,
+        {expression_desc = Typeof {expression_desc = Var i}},
+        {expression_desc = Str {txt = "string"}} )
+    when Js_op_util.same_vident i j && (const = Cnull || const = Ctrue) ->
+    None
   | Js_not
       {
         expression_desc =
@@ -695,7 +707,7 @@ let rec filter_bool (e : t) ~j ~b =
               [{expression_desc = Var i}],
               _ );
       }
-    when Js_op_util.same_vident i j ->
+    when Js_op_util.same_vident i j && (const = Ctrue || const = Cnull) ->
     None
   | _ -> Some e
 
@@ -714,8 +726,32 @@ let and_ ?comment (e1 : t) (e2 : t) : t =
     )
     when Js_op_util.same_vident i j ->
     e2
-  | _, Bin (EqEqEq, {expression_desc = Var j}, {expression_desc = Bool b}) -> (
-    match filter_bool e1 ~j ~b with
+  | ( _,
+      Bin
+        ( ((EqEqEq | NotEqEq) as op),
+          {expression_desc = Var j},
+          {expression_desc = Bool b} ) )
+  | ( Bin
+        ( ((EqEqEq | NotEqEq) as op),
+          {expression_desc = Var j},
+          {expression_desc = Bool b} ),
+      _ ) -> (
+    match
+      filter_const e1 ~j ~b:(if op = EqEqEq then b else not b) ~const:Ctrue
+    with
+    | None -> e2
+    | Some e1 -> {expression_desc = Bin (And, e1, e2); comment})
+  | ( _,
+      Bin
+        ( ((EqEqEq | NotEqEq) as op),
+          {expression_desc = Var j},
+          {expression_desc = Null} ) )
+  | ( Bin
+        ( ((EqEqEq | NotEqEq) as op),
+          {expression_desc = Var j},
+          {expression_desc = Null} ),
+      _ ) -> (
+    match filter_const e1 ~j ~b:(op = EqEqEq) ~const:Cnull with
     | None -> e2
     | Some e1 -> {expression_desc = Bin (And, e1, e2); comment})
   | _, _ -> {expression_desc = Bin (And, e1, e2); comment}
@@ -729,6 +765,22 @@ let or_ ?comment (e1 : t) (e2 : t) =
   | Var i, Bin (Or, l, ({expression_desc = Var j; _} as r))
     when Js_op_util.same_vident i j ->
     {e2 with expression_desc = Bin (Or, r, l)}
+  | ( _,
+      Bin
+        ( ((EqEqEq | NotEqEq) as op),
+          {expression_desc = Var j},
+          {expression_desc = Null} ) ) -> (
+    match filter_const e1 ~j ~b:(op <> EqEqEq) ~const:Cnull with
+    | None -> e2
+    | Some e1 -> {expression_desc = Bin (Or, e1, e2); comment})
+  | ( Bin
+        ( ((EqEqEq | NotEqEq) as op),
+          {expression_desc = Var j},
+          {expression_desc = Null} ),
+      _ ) -> (
+    match filter_const e2 ~j ~b:(op <> EqEqEq) ~const:Cnull with
+    | None -> e1
+    | Some e2 -> {expression_desc = Bin (Or, e1, e2); comment})
   | _, _ -> {expression_desc = Bin (Or, e1, e2); comment}
 
 (* return a value of type boolean *)
