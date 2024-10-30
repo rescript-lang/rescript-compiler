@@ -6,7 +6,7 @@ Compiles to a regular JavaScript object.*/
 /**
 Type representing a dictionary of value `'a`.
 */
-type t<'a> = Js.Dict.t<'a>
+type t<'a> = dict<'a>
 
 /**
 `getUnsafe(dict, key)` Returns the `value` at the provided `key`.
@@ -23,7 +23,7 @@ Console.log(value) // value1
 ```
 */
 @get_index
-external getUnsafe: (t<'a>, string) => 'a = ""
+external getUnsafe: (dict<'a>, string) => 'a = ""
 
 /**
 Returns the value at the provided key, if it exists. Returns an option.
@@ -39,7 +39,7 @@ switch dict->Dict.get("someKey") {
 ```
 */
 @get_index
-external get: (t<'a>, string) => option<'a> = ""
+external get: (dict<'a>, string) => option<'a> = ""
 
 /**
 `set(dictionary, key, value)` sets the value at the provided key to the provided value.
@@ -52,7 +52,7 @@ dict->Dict.set("someKey", "someValue")
 ```
 */
 @set_index
-external set: (t<'a>, string, 'a) => unit = ""
+external set: (dict<'a>, string, 'a) => unit = ""
 
 /**
 `delete(dictionary, key)` deletes the value at `key`, if it exists.
@@ -64,21 +64,21 @@ let dict = Dict.fromArray([("someKey", "someValue")])
 dict->Dict.delete("someKey")
 ```
 */
-let delete: (t<'a>, string) => unit
+let delete: (dict<'a>, string) => unit
 
 /**
 `make()` creates a new, empty dictionary.
 
 ## Examples
 ```rescript
-let dict1: Dict.t<int> = Dict.make() // You can annotate the type of the values of your dict yourself if you want
+let dict1: dict<int> = Dict.make() // You can annotate the type of the values of your dict yourself if you want
 
 let dict2 = Dict.make() // Or you can let ReScript infer it via usage.
 dict2->Dict.set("someKey", 12)
 ```
 */
 @obj
-external make: unit => t<'a> = ""
+external make: unit => dict<'a> = ""
 
 /**
 `fromArray(entries)` creates a new dictionary from the provided array of key/value pairs.
@@ -89,7 +89,7 @@ let dict = Dict.fromArray([("key1", "value1"), ("key2", "value2")])
 ```
 */
 @val
-external fromArray: array<(string, 'a)> => t<'a> = "Object.fromEntries"
+external fromArray: array<(string, 'a)> => dict<'a> = "Object.fromEntries"
 
 /**
 `fromIterator(entries)` creates a new dictionary from the provided iterator of key/value pairs.
@@ -99,11 +99,11 @@ external fromArray: array<(string, 'a)> => t<'a> = "Object.fromEntries"
 // Pretend we have an iterator of the correct shape
 @val external someIterator: Iterator.t<(string, int)> = "someIterator"
 
-let dict = Dict.fromIterator(someIterator) // Dict.t<int>
+let dict = Dict.fromIterator(someIterator) // dict<int>
 ```
 */
 @val
-external fromIterator: Iterator.t<(string, 'a)> => t<'a> = "Object.fromEntries"
+external fromIterator: Iterator.t<(string, 'a)> => dict<'a> = "Object.fromEntries"
 
 /**
 `toArray(dictionary)` returns an array of all the key/value pairs of the dictionary.
@@ -118,7 +118,7 @@ Console.log(asArray) // Logs `[["someKey", 1], ["someKey2", 2]]` to the console
 ```
 */
 @val
-external toArray: t<'a> => array<(string, 'a)> = "Object.entries"
+external toArray: dict<'a> => array<(string, 'a)> = "Object.entries"
 
 /**
 `keysToArray(dictionary)` returns an array of all the keys of the dictionary.
@@ -133,7 +133,7 @@ Console.log(keys) // Logs `["someKey", "someKey2"]` to the console
 ```
 */
 @val
-external keysToArray: t<'a> => array<string> = "Object.keys"
+external keysToArray: dict<'a> => array<string> = "Object.keys"
 
 /**
 `valuesToArray(dictionary)` returns an array of all the values of the dictionary.
@@ -148,7 +148,7 @@ Console.log(values) // Logs `[1, 2]` to the console
 ```
 */
 @val
-external valuesToArray: t<'a> => array<'a> = "Object.values"
+external valuesToArray: dict<'a> => array<'a> = "Object.values"
 
 /**
 `assign(dictionary1, dictionary2)` [shallowly](https://developer.mozilla.org/en-US/docs/Glossary/Shallow_copy) merges dictionary2 into dictionary1, and returns dictionary1.
@@ -172,7 +172,7 @@ Console.log(dict1->Dict.keysToArray) // Logs `["firstKey", "someKey", "someKey2"
 ```
 */
 @val
-external assign: (t<'a>, t<'a>) => t<'a> = "Object.assign"
+external assign: (dict<'a>, dict<'a>) => dict<'a> = "Object.assign"
 
 /**
 `copy(dictionary)` [shallowly copies](https://developer.mozilla.org/en-US/docs/Glossary/Shallow_copy) the provided dictionary to a new dictionary.
@@ -187,7 +187,7 @@ Console.log2(dict->Dict.keysToArray, dict2->Dict.keysToArray)
 ```
 */
 @val
-external copy: (@as(json`{}`) _, t<'a>) => t<'a> = "Object.assign"
+external copy: (@as(json`{}`) _, dict<'a>) => dict<'a> = "Object.assign"
 
 /**
 `forEach(dictionary, f)` iterates through all values of the dict.
@@ -203,7 +203,7 @@ dict->Dict.forEach(value => {
 })
 ```
 */
-let forEach: (t<'a>, 'a => unit) => unit
+let forEach: (dict<'a>, 'a => unit) => unit
 
 /**
 `forEachWithKey(dictionary, f)` iterates through all values of the dict, including the key for each value.
@@ -217,7 +217,7 @@ dict->Dict.forEachWithKey((value, key) => {
 })
 ```
 */
-let forEachWithKey: (t<'a>, ('a, string) => unit) => unit
+let forEachWithKey: (dict<'a>, ('a, string) => unit) => unit
 
 /**
 `mapValues(dictionary, f)` returns a new dictionary with the same keys, and `f` applied to each value in the original dictionary.
@@ -231,4 +231,4 @@ dict->Dict.mapValues(v => v + 10)->Dict.toArray // [("key1", 11), ("key2", 12)]
 dict->Dict.mapValues(v => Int.toString(v))->Dict.toArray // [("key1", "1"), ("key2", "2")]
 ```
 */
-let mapValues: (t<'a>, 'a => 'b) => t<'b>
+let mapValues: (dict<'a>, 'a => 'b) => dict<'b>

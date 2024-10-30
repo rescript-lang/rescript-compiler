@@ -24,7 +24,7 @@ let () = {
     let ty = J.classify(v)
     switch ty {
     | J.JSONObject(x) =>
-      /* compiler infer x : J.t Js.Dict.t */
+      /* compiler infer x : J.t dict */
       switch Js.Dict.get(x, "x") {
       | Some(v) =>
         let ty2 = J.classify(v)

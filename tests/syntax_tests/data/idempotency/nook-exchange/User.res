@@ -72,7 +72,7 @@ type t = {
   id: string,
   username: string,
   email: option<string>,
-  items: Js.Dict.t<item>,
+  items: dict<item>,
   profileText: string,
   enableCatalogCheckbox: bool,
   followeeIds: option<array<string>>,

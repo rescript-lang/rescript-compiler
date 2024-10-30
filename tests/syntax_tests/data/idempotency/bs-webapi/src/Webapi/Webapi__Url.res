@@ -2,7 +2,7 @@ module URLSearchParams = {
   type t
 
   @new external make: string => t = "URLSearchParams"
-  @new external makeWithDict: Js.Dict.t<string> => t = "URLSearchParams"
+  @new external makeWithDict: dict<string> => t = "URLSearchParams"
   @new external makeWithArray: array<(string, string)> => t = "URLSearchParams"
 }
 

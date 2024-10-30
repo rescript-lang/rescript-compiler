@@ -5,7 +5,7 @@ type param
 @scope("commands") @module("vscode") @variadic
 external executeCommands: (string, array<param>) => unit = "executeCommands"
 
-@scope("process") @val external env: Js.Dict.t<string> = "env"
+@scope("process") @val external env: dict<string> = "env"
 
 let f = (a, b, c) => {
   executeCommands("hi", [a, b, c])

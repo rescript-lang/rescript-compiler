@@ -3,5 +3,5 @@ module type CssImplementationIntf = {
   let injectRule: (. Js.Json.t) => unit
   let injectRaw: (. string) => unit
   let make: (. Js.Json.t) => string
-  let makeKeyFrames: (. Js.Dict.t<Js.Json.t>) => string
+  let makeKeyFrames: (. dict<Js.Json.t>) => string
 }

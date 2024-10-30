@@ -1,7 +1,7 @@
 module Link = Next.Link
 
 // Structure defined by `scripts/extract-indices.js`
-let indexData: Js.Dict.t<{
+let indexData: dict<{
   "moduleName": string,
   "headers": array<{
     "name": string,

@@ -10,7 +10,7 @@ module Map: {
   let set: (t<'key, 'value>, 'key, 'value) => unit
   let empty: unit => t<'key, 'value>
 } = {
-  type t<'key, 'value> = Js.Dict.t<'value> constraint 'key = string
+  type t<'key, 'value> = dict<'value> constraint 'key = string
   let keys = Js.Dict.keys
   let get = Js.Dict.unsafeGet
   let get_opt = Js.Dict.get

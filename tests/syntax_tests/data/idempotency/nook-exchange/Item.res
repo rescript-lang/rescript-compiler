@@ -243,7 +243,7 @@ let getCanonicalVariant = (~item, ~variant) =>
 type variantNames =
   | NameOneDimension(array<string>)
   | NameTwoDimensions((array<string>, array<string>))
-let variantNames: Js.Dict.t<variantNames> = variantsJson |> {
+let variantNames: dict<variantNames> = variantsJson |> {
   open Json.Decode
   dict(
     oneOf(list{
@@ -261,8 +261,8 @@ type translationItem = {
   variants: option<variantNames>,
 }
 type translations = {
-  items: Js.Dict.t<translationItem>,
-  materials: Js.Dict.t<string>,
+  items: dict<translationItem>,
+  materials: dict<string>,
 }
 let translations: ref<option<translations>> = ref(None)
 let setTranslations = json => {

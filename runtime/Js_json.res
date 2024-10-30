@@ -30,7 +30,7 @@ type rec t =
   | @as(null) Null
   | String(string)
   | Number(float)
-  | Object(Js_dict.t<t>)
+  | Object(dict<t>)
   | Array(array<t>)
 
 module Kind = {
@@ -38,7 +38,7 @@ module Kind = {
   type rec t<_> =
     | String: t<Js_string.t>
     | Number: t<float>
-    | Object: t<Js_dict.t<json>>
+    | Object: t<dict<json>>
     | Array: t<array<json>>
     | Boolean: t<bool>
     | Null: t<Js_types.null_val>
@@ -50,7 +50,7 @@ type tagged_t =
   | JSONNull
   | JSONString(string)
   | JSONNumber(float)
-  | JSONObject(Js_dict.t<t>)
+  | JSONObject(dict<t>)
   | JSONArray(array<t>)
 
 let classify = (x: t): tagged_t => {
@@ -105,7 +105,7 @@ let decodeObject = json =>
       (!Js_array2.isArray(json) &&
       !((Obj.magic(json): Js_null.t<'a>) === Js_extern.null))
   ) {
-    Some((Obj.magic((json: t)): Js_dict.t<t>))
+    Some((Obj.magic((json: t)): dict<t>))
   } else {
     None
   }
@@ -143,7 +143,7 @@ let decodeNull = (json): option<Js_null.t<_>> =>
 external string: string => t = "%identity"
 external number: float => t = "%identity"
 external boolean: bool => t = "%identity"
-external object_: Js_dict.t<t> => t = "%identity"
+external object_: dict<t> => t = "%identity"
 
 /* external array_ : t array -> t = "%identity" */
 
@@ -151,7 +151,7 @@ external array: array<t> => t = "%identity"
 external stringArray: array<string> => t = "%identity"
 external numberArray: array<float> => t = "%identity"
 external booleanArray: array<bool> => t = "%identity"
-external objectArray: array<Js_dict.t<t>> => t = "%identity"
+external objectArray: array<dict<t>> => t = "%identity"
 @val @scope("JSON") external stringify: t => string = "stringify"
 @val @scope("JSON") external stringifyWithSpace: (t, @as(json`null`) _, int) => string = "stringify"
 

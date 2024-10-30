@@ -72,6 +72,6 @@ type nonrec t =
       [ `Has_arity1 ]) function$)[@attrBeforeLblA ])
 type nonrec t = ((a:((int)[@res.namedArgLoc ]) -> unit)[@attr ])
 type nonrec 'a getInitialPropsFn =
-  (< query: string Js.Dict.t  ;req: 'a Js.t Js.Nullable.t   >  ->
+  (< query: string dict  ;req: 'a Js.t Js.Nullable.t   >  ->
      'a Js.t Js.Promise.t,
     [ `Has_arity1 ]) function$
