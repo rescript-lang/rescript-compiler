@@ -1,5 +1,5 @@
 @unboxed
-type t = | @as(null) Null | @as(undefined) Undefined | B(bool)
+type t = | @as(null) Null | @as(undefined) Undefined | B(bool) //| S(string)
 
 let check_null_typeof = x =>
   switch x {
