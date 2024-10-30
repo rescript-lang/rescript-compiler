@@ -10,7 +10,7 @@ function check_null_typeof(x) {
 }
 
 function check_undefined_typeof(x) {
-  if (typeof x !== "boolean" || x !== undefined) {
+  if (x !== undefined) {
     return 4;
   } else {
     return 3;

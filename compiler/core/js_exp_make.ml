@@ -662,10 +662,11 @@ let bin ?comment (op : J.binop) (e0 : t) (e1 : t) : t =
      be careful for side effect
 *)
 
-type filter_const = Ctrue | Cnull
+type filter_const = Ctrue | Cnull | Cundefined
 let string_of_filter_const = function
   | Ctrue -> "Ctrue"
   | Cnull -> "Cnull"
+  | Cundefined -> "Cundefined"
 
 let string_of_expression = ref (fun _ -> "")
 let debug = false
@@ -697,7 +698,8 @@ let rec filter_const (e : t) ~j ~eq ~const =
       ( NotEqEq,
         {expression_desc = Typeof {expression_desc = Var i}},
         {expression_desc = Str {txt = "boolean" | "string"}} )
-    when Js_op_util.same_vident i j && (const = Ctrue || const = Cnull) ->
+    when Js_op_util.same_vident i j
+         && (const = Ctrue || const = Cnull || const = Cundefined) ->
     None
   | Js_not
       {
@@ -707,7 +709,8 @@ let rec filter_const (e : t) ~j ~eq ~const =
               [{expression_desc = Var i}],
               _ );
       }
-    when Js_op_util.same_vident i j && (const = Ctrue || const = Cnull) ->
+    when Js_op_util.same_vident i j
+         && (const = Ctrue || const = Cnull || const = Cundefined) ->
     None
   | _ -> Some e
 
@@ -730,30 +733,40 @@ let and_ ?comment (e1 : t) (e2 : t) : t =
       Bin
         ( ((EqEqEq | NotEqEq) as op),
           {expression_desc = Var j},
-          {expression_desc = Bool b} ) )
+          {expression_desc = Bool b} ) ) -> (
+    match
+      filter_const e1 ~j ~eq:(if op = EqEqEq then b else not b) ~const:Ctrue
+    with
+    | None -> e2
+    | Some e1 -> {expression_desc = Bin (And, e1, e2); comment})
   | ( Bin
         ( ((EqEqEq | NotEqEq) as op),
           {expression_desc = Var j},
           {expression_desc = Bool b} ),
       _ ) -> (
     match
-      filter_const e1 ~j ~eq:(if op = EqEqEq then b else not b) ~const:Ctrue
+      filter_const e2 ~j ~eq:(if op = EqEqEq then b else not b) ~const:Ctrue
     with
-    | None -> e2
-    | Some e1 -> {expression_desc = Bin (And, e1, e2); comment})
+    | None -> e1
+    | Some e2 -> {expression_desc = Bin (And, e1, e2); comment})
   | ( _,
       Bin
         ( ((EqEqEq | NotEqEq) as op),
           {expression_desc = Var j},
-          {expression_desc = Null} ) )
+          {expression_desc = (Null | Undefined _) as c} ) ) -> (
+    let const = if c == Null then Cnull else Cundefined in
+    match filter_const e1 ~j ~eq:(op = EqEqEq) ~const with
+    | None -> e2
+    | Some e1 -> {expression_desc = Bin (And, e1, e2); comment})
   | ( Bin
         ( ((EqEqEq | NotEqEq) as op),
           {expression_desc = Var j},
-          {expression_desc = Null} ),
+          {expression_desc = (Null | Undefined _) as c} ),
       _ ) -> (
-    match filter_const e1 ~j ~eq:(op = EqEqEq) ~const:Cnull with
-    | None -> e2
-    | Some e1 -> {expression_desc = Bin (And, e1, e2); comment})
+    let const = if c == Null then Cnull else Cundefined in
+    match filter_const e2 ~j ~eq:(op = EqEqEq) ~const with
+    | None -> e1
+    | Some e2 -> {expression_desc = Bin (And, e1, e2); comment})
   | _, _ -> {expression_desc = Bin (And, e1, e2); comment}
 
 let or_ ?comment (e1 : t) (e2 : t) =
@@ -769,16 +782,18 @@ let or_ ?comment (e1 : t) (e2 : t) =
       Bin
         ( ((EqEqEq | NotEqEq) as op),
           {expression_desc = Var j},
-          {expression_desc = Null} ) ) -> (
-    match filter_const e1 ~j ~eq:(op <> EqEqEq) ~const:Cnull with
+          {expression_desc = (Null | Undefined _) as c} ) ) -> (
+    let const = if c == Null then Cnull else Cundefined in
+    match filter_const e1 ~j ~eq:(op <> EqEqEq) ~const with
     | None -> e2
     | Some e1 -> {expression_desc = Bin (Or, e1, e2); comment})
   | ( Bin
         ( ((EqEqEq | NotEqEq) as op),
           {expression_desc = Var j},
-          {expression_desc = Null} ),
+          {expression_desc = (Null | Undefined _) as c} ),
       _ ) -> (
-    match filter_const e2 ~j ~eq:(op <> EqEqEq) ~const:Cnull with
+    let const = if c == Null then Cnull else Cundefined in
+    match filter_const e2 ~j ~eq:(op <> EqEqEq) ~const with
     | None -> e1
     | Some e2 -> {expression_desc = Bin (Or, e1, e2); comment})
   | _, _ -> {expression_desc = Bin (Or, e1, e2); comment}
