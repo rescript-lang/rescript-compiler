@@ -673,6 +673,8 @@ let compile output_prefix =
               also if last statement is throw -- should we drop remaining
               statement?
     *)
+    Printf.eprintf "XXX switch_arg: %s\n\n"
+      (Lam_print.lambda_to_string switch_arg);
     let ({
            sw_consts_full;
            sw_consts;
@@ -713,40 +715,66 @@ let compile output_prefix =
         block
         @
         if sw_consts_full && sw_consts = [] then
+          let _ = Printf.eprintf "QQQ sw_consts_full\n\n" in
           compile_cases ~block_cases ~untagged ~cxt
             ~switch_exp:(if untagged then e else E.tag ~name:tag_name e)
             ~default:sw_blocks_default ~get_tag:get_block_tag sw_blocks
         else if sw_blocks_full && sw_blocks = [] then
+          let _ = Printf.eprintf "QQQ sw_blocks_full\n\n" in
           compile_cases ~cxt ~switch_exp:e ~block_cases ~default:sw_num_default
             ~get_tag:get_const_tag sw_consts
         else
+          let _ = Printf.eprintf "QQQ else\n\n" in
           (* [e] will be used twice  *)
           let dispatch e =
             let is_a_literal_case =
-              if block_cases <> [] then
-                E.is_a_literal_case
-                  ~literal_cases:(get_literal_cases sw_names)
-                  ~block_cases e
+              if untagged then (
+                let literal_case =
+                  E.is_a_literal_case
+                    ~literal_cases:(get_literal_cases sw_names)
+                    ~block_cases e
+                in
+                Printf.eprintf "LLL literal_case: %s\n\n"
+                  (Js_dump.string_of_expression literal_case);
+                literal_case)
               else
                 E.is_int_tag
                   ~has_null_undefined_other:(has_null_undefined_other sw_names)
                   e
             in
-            S.if_ is_a_literal_case
-              (compile_cases ~cxt ~switch_exp:e ~block_cases
-                 ~default:sw_num_default ~get_tag:get_const_tag sw_consts)
-              ~else_:
-                (compile_cases ~untagged ~cxt
-                   ~switch_exp:(if untagged then e else E.tag ~name:tag_name e)
-                   ~block_cases ~default:sw_blocks_default
-                   ~get_tag:get_block_tag sw_blocks)
+            let qconsts =
+              use_compile_literal_cases sw_consts ~get_tag:get_const_tag
+            in
+            let qblocks =
+              use_compile_literal_cases sw_blocks ~get_tag:get_block_tag
+            in
+            match (qconsts, qblocks) with
+            | Some consts_cases, Some blocks_cases when untagged ->
+              let untagged_cases = consts_cases @ blocks_cases in
+              let z =
+                compile_untagged_cases ~cxt ~switch_exp:e ~block_cases
+                  ~default:sw_num_default untagged_cases
+              in
+              z
+            | _ ->
+              [
+                S.if_ is_a_literal_case
+                  (compile_cases ~cxt ~switch_exp:e ~block_cases
+                     ~default:sw_num_default ~get_tag:get_const_tag sw_consts)
+                  ~else_:
+                    (compile_cases ~untagged ~cxt
+                       ~switch_exp:
+                         (if untagged then e else E.tag ~name:tag_name e)
+                       ~block_cases ~default:sw_blocks_default
+                       ~get_tag:get_block_tag sw_blocks);
+              ]
           in
           match e.expression_desc with
-          | J.Var _ -> [dispatch e]
+          | J.Var _ -> dispatch e
           | _ ->
             let v = Ext_ident.create_tmp () in
             (* Necessary avoid duplicated computation*)
-            [S.define_variable ~kind:Variable v e; dispatch (E.var v)])
+            [S.define_variable ~kind:Variable v e] @ dispatch (E.var v))
     in
     match lambda_cxt.continuation with
     (* Needs declare first *)
@@ -756,15 +784,19 @@ let compile output_prefix =
          when branches are minimial (less than 2)
       *)
       let v = Ext_ident.create_tmp () in
+      let res = compile_whole {lambda_cxt with continuation = Assign v} in
+      Printf.eprintf "XXX res 1: %s\n\n" (Js_dump.string_of_block res);
       Js_output.make
-        (S.declare_variable ~kind:Variable v
-        :: compile_whole {lambda_cxt with continuation = Assign v})
+        (S.declare_variable ~kind:Variable v :: res)
         ~value:(E.var v)
     | Declare (kind, id) ->
-      Js_output.make
-        (S.declare_variable ~kind id
-        :: compile_whole {lambda_cxt with continuation = Assign id})
-    | EffectCall _ | Assign _ -> Js_output.make (compile_whole lambda_cxt)
+      let res = compile_whole {lambda_cxt with continuation = Assign id} in
+      Printf.eprintf "XXX res 2: %s\n\n" (Js_dump.string_of_block res);
+      Js_output.make (S.declare_variable ~kind id :: res) ~value:(E.var id)
+    | EffectCall _ | Assign _ ->
+      let res = compile_whole lambda_cxt in
+      Printf.eprintf "XXX res 3: %s\n\n" (Js_dump.string_of_block res);
+      Js_output.make res
   and compile_string_cases ~cxt ~switch_exp ~default cases : initialization =
     cases
     |> compile_general_cases ~make_exp:E.tag_type
