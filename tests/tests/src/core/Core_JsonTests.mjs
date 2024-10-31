@@ -17,7 +17,7 @@ function decodeJsonTest() {
           decodedCorrectly = false;
         } else {
           let match$3 = match$1[1];
-          decodedCorrectly = match$3 === null || !(typeof match$3 === "boolean" && !match$3) ? false : true;
+          decodedCorrectly = match$3 === null ? false : typeof match$3 === "boolean" && !match$3;
         }
       } else {
         decodedCorrectly = false;

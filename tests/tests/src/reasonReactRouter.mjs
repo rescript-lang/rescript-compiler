@@ -108,11 +108,7 @@ function urlNotEqual(a, b) {
       let bList = _bList;
       let aList = _aList;
       if (!aList) {
-        if (bList) {
-          return true;
-        } else {
-          return false;
-        }
+        return bList;
       }
       if (!bList) {
         return true;

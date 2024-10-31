@@ -10,7 +10,7 @@ try {
   function_equal_test = Primitive_object.equal(x => x + 1 | 0, x => x + 2 | 0);
 } catch (raw_exn) {
   let exn = Primitive_exceptions.internalToException(raw_exn);
-  function_equal_test = exn.RE_EXN_ID === "Invalid_argument" && exn._1 === "equal: functional value" ? true : false;
+  function_equal_test = exn.RE_EXN_ID === "Invalid_argument" ? exn._1 === "equal: functional value" : false;
 }
 
 let suites = {

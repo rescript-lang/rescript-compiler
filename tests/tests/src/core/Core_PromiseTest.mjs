@@ -171,7 +171,7 @@ function testExnThrow() {
       Error: new Error()
     };
   }), e => {
-    let isTestErr = e.RE_EXN_ID === TestError && e._1 === "Thrown exn" ? true : false;
+    let isTestErr = e.RE_EXN_ID === TestError ? e._1 === "Thrown exn" : false;
     Test.run([
       [
         "Core_PromiseTest.res",

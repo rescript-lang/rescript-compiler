@@ -67,11 +67,7 @@ function max_elt(_x) {
 }
 
 function is_empty(x) {
-  if (typeof x !== "object") {
-    return true;
-  } else {
-    return false;
-  }
+  return typeof x !== "object";
 }
 
 function cardinal_aux(_acc, _x) {

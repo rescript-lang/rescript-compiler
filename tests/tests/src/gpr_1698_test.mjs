@@ -6,11 +6,7 @@ function is_number(_expr) {
     let expr = _expr;
     switch (expr.TAG) {
       case "Val" :
-        if (expr._0.TAG === "Natural") {
-          return true;
-        } else {
-          return false;
-        }
+        return expr._0.TAG === "Natural";
       case "Neg" :
         _expr = expr._0;
         continue;

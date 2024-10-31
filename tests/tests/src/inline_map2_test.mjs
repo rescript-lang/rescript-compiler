@@ -81,13 +81,7 @@ function Make(Ord) {
       return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
     }
   };
-  let is_empty = x => {
-    if (typeof x !== "object") {
-      return true;
-    } else {
-      return false;
-    }
-  };
+  let is_empty = x => typeof x !== "object";
   let add = (x, data, x_) => {
     if (typeof x_ !== "object") {
       return {
@@ -523,11 +517,7 @@ function Make(Ord) {
       let e2 = _e2;
       let e1 = _e1;
       if (typeof e1 !== "object") {
-        if (typeof e2 !== "object") {
-          return true;
-        } else {
-          return false;
-        }
+        return typeof e2 !== "object";
       }
       if (typeof e2 !== "object") {
         return false;
@@ -688,11 +678,7 @@ function bal(l, x, d, r) {
 }
 
 function is_empty(x) {
-  if (typeof x !== "object") {
-    return true;
-  } else {
-    return false;
-  }
+  return typeof x !== "object";
 }
 
 function add(x, data, x_) {
@@ -1154,11 +1140,7 @@ function equal(cmp, m1, m2) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
-      if (typeof e2 !== "object") {
-        return true;
-      } else {
-        return false;
-      }
+      return typeof e2 !== "object";
     }
     if (typeof e2 !== "object") {
       return false;
@@ -1350,11 +1332,7 @@ function bal$1(l, x, d, r) {
 }
 
 function is_empty$1(x) {
-  if (typeof x !== "object") {
-    return true;
-  } else {
-    return false;
-  }
+  return typeof x !== "object";
 }
 
 function add$1(x, data, x_) {
@@ -1816,11 +1794,7 @@ function equal$1(cmp, m1, m2) {
     let e2 = _e2;
     let e1 = _e1;
     if (typeof e1 !== "object") {
-      if (typeof e2 !== "object") {
-        return true;
-      } else {
-        return false;
-      }
+      return typeof e2 !== "object";
     }
     if (typeof e2 !== "object") {
       return false;

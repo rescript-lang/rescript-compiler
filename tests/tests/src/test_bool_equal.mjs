@@ -3,11 +3,7 @@
 
 function bool_equal(x, y) {
   if (x) {
-    if (y) {
-      return true;
-    } else {
-      return false;
-    }
+    return y;
   } else if (y) {
     return false;
   } else {
