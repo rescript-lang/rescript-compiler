@@ -40,6 +40,7 @@
 - Fix variant cast to int. https://github.com/rescript-lang/rescript-compiler/pull/7058
 - Fix comments formatted away in function without arguments. https://github.com/rescript-lang/rescript-compiler/pull/7095
 - Fix genType JSX component compilation. https://github.com/rescript-lang/rescript-compiler/pull/7107
+- Fix and clean up boolean and/or optimizations. https://github.com/rescript-lang/rescript-compiler/pull/7134
 
 #### :nail_care: Polish
 
