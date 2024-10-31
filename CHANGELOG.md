@@ -54,6 +54,8 @@
 - Provide additional context in error message when `unit` is expected. https://github.com/rescript-lang/rescript-compiler/pull/7045
 - Improve error message when passing an object where a record is expected. https://github.com/rescript-lang/rescript-compiler/pull/7101
 - Improve code generation or pattern matching of untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/7128
+- Improve negation handling in combination with and/or to simplify generated code (especially coming out of pattern matching). https://github.com/rescript-lang/rescript-compiler/pull/7138
+
 
 #### :house: Internal
 
