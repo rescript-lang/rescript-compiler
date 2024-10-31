@@ -711,10 +711,11 @@ let rec push_negation (e : t) : t option =
 
   Type check optimizations:
   - [(typeof x === "boolean") && (x === true/false)] -> [x === true/false]
-  - [(typeof x === "string") && (x === boolean/null/undefined)] -> [false]
+  - [(typeof x ==="boolean" | "string" | "number") && (x === boolean/null/undefined)] -> [false]
   - [(Array.isArray(x)) && (x === boolean/null/undefined)] -> [false]
 
-  - TODO: [(typeof x === "boolean") && (x !== null)] -> [typeof x === "boolean"]
+  - [(typeof x === "boolean") && (x !== true/false)] -> unchanged
+  - [(typeof x === "boolean" | "string" | "number") && (x !== boolean/null/undefined)] -> [typeof x === ...]
 
   Note: The function preserves the semantics of the original expression while
   attempting to reduce it to a simpler form. If no simplification is possible,
@@ -828,6 +829,39 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
           _ ) )
     when Js_op_util.same_vident ia ib ->
     Some false_
+  | ( Bin
+        ( EqEqEq,
+          {expression_desc = Typeof {expression_desc = Var ia}},
+          {expression_desc = Str {txt = "boolean"}} ),
+      Bin (NotEqEq, {expression_desc = Var ib}, {expression_desc = Bool _}) )
+  | ( Bin (NotEqEq, {expression_desc = Var ib}, {expression_desc = Bool _}),
+      Bin
+        ( EqEqEq,
+          {expression_desc = Typeof {expression_desc = Var ia}},
+          {expression_desc = Str {txt = "boolean"}} ) )
+    when Js_op_util.same_vident ia ib ->
+    None
+  | ( (Bin
+         ( EqEqEq,
+           {expression_desc = Typeof {expression_desc = Var ia}},
+           {expression_desc = Str {txt = "boolean" | "string" | "number"}} ) as
+       typeof),
+      Bin
+        ( NotEqEq,
+          {expression_desc = Var ib},
+          {expression_desc = Bool _ | Null | Undefined _} ) )
+  | ( Bin
+        ( NotEqEq,
+          {expression_desc = Var ib},
+          {expression_desc = Bool _ | Null | Undefined _} ),
+      (Bin
+         ( EqEqEq,
+           {expression_desc = Typeof {expression_desc = Var ia}},
+           {expression_desc = Str {txt = "boolean" | "string" | "number"}} ) as
+       typeof) )
+    when Js_op_util.same_vident ia ib ->
+    (* Note: case boolean / Bool _ is handled above *)
+    Some {expression_desc = typeof; comment = None}
   | _ -> None
 
 (**

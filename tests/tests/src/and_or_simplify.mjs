@@ -6,7 +6,7 @@ function check_null_eq_typeof(x) {
 }
 
 function check_null_neq_typeof(x) {
-  if (typeof x !== "boolean" || x === null) {
+  if (typeof x !== "boolean") {
     return 4;
   } else {
     return 3;
@@ -18,7 +18,7 @@ function check_undefined_eq_typeof(x) {
 }
 
 function check_undefined_neq_typeof(x) {
-  if (typeof x !== "boolean" || x === undefined) {
+  if (typeof x !== "boolean") {
     return 4;
   } else {
     return 3;
