@@ -3,27 +3,15 @@
 import * as Mt from "./mt.mjs";
 
 function f(x) {
-  if (x) {
-    return true;
-  } else {
-    return false;
-  }
+  return x;
 }
 
 function f2(x) {
-  if (x) {
-    return true;
-  } else {
-    return false;
-  }
+  return x;
 }
 
 function f4(x) {
-  if (x) {
-    return true;
-  } else {
-    return false;
-  }
+  return x;
 }
 
 let u = 1;

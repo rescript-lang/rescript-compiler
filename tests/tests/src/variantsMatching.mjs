@@ -96,11 +96,7 @@ function third(l) {
     return false;
   }
   let match$1 = match.tl;
-  if (match$1 && !(match$1.hd !== 3 || match$1.tl)) {
-    return true;
-  } else {
-    return false;
-  }
+  return match$1 && !(match$1.hd !== 3 || match$1.tl);
 }
 
 function third2(l) {
@@ -125,11 +121,7 @@ function third2(l) {
     return false;
   }
   let tmp = match$1._1;
-  if (typeof tmp !== "object") {
-    return true;
-  } else {
-    return false;
-  }
+  return typeof tmp !== "object";
 }
 
 function foo(x) {

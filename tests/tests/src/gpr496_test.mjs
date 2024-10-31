@@ -67,7 +67,7 @@ function ff(x, y) {
   return Primitive_bool.min(x, y());
 }
 
-eq("File \"gpr496_test.res\", line 40, characters 12-19", true < false ? true : false, false);
+eq("File \"gpr496_test.res\", line 40, characters 12-19", true < false, false);
 
 Mt.from_pair_suites("Gpr496_test", suites.contents);
 

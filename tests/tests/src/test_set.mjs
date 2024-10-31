@@ -224,13 +224,7 @@ function Make(Ord) {
       match$1[2]
     ];
   };
-  let is_empty = x => {
-    if (typeof x !== "object") {
-      return true;
-    } else {
-      return false;
-    }
-  };
+  let is_empty = x => typeof x !== "object";
   let mem = (x, _x_) => {
     while (true) {
       let x_ = _x_;
