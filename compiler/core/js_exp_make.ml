@@ -716,6 +716,7 @@ let rec push_negation (e : t) : t option =
 
   - [(typeof x === "boolean") && (x !== true/false)] -> unchanged
   - [(typeof x === "boolean" | "string" | "number") && (x !== boolean/null/undefined)] -> [typeof x === ...]
+  - [(Array.isArray(x)) && (x !== boolean/null/undefined)] -> [Array.isArray(x)]
 
   Note: The function preserves the semantics of the original expression while
   attempting to reduce it to a simpler form. If no simplification is possible,
@@ -862,6 +863,24 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
     when Js_op_util.same_vident ia ib ->
     (* Note: case boolean / Bool _ is handled above *)
     Some {expression_desc = typeof; comment = None}
+  | ( (Call
+         ( {expression_desc = Str {txt = "Array.isArray"}},
+           [{expression_desc = Var ia}],
+           _ ) as is_array),
+      Bin
+        ( NotEqEq,
+          {expression_desc = Var ib},
+          {expression_desc = Bool _ | Null | Undefined _} ) )
+  | ( Bin
+        ( NotEqEq,
+          {expression_desc = Var ib},
+          {expression_desc = Bool _ | Null | Undefined _} ),
+      (Call
+         ( {expression_desc = Str {txt = "Array.isArray"}},
+           [{expression_desc = Var ia}],
+           _ ) as is_array) )
+    when Js_op_util.same_vident ia ib ->
+    Some {expression_desc = is_array; comment = None}
   | _ -> None
 
 (**
