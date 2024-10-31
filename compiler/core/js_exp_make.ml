@@ -666,6 +666,36 @@ let string_of_expression = ref (fun _ -> "")
 let debug = false
 
 (**
+  [push_negation e] attempts to simplify a negated expression by pushing the negation
+  deeper into the expression tree. Returns [Some simplified] if simplification is possible,
+  [None] otherwise.
+
+  Simplification rules:
+  - [!(not e)] -> [e]
+  - [!true] -> [false]
+  - [!false] -> [true]
+  - [!(a === b)] -> [a !== b]
+  - [!(a !== b)] -> [a === b]
+  - [!(a && b)] -> [!a || !b]  (De Morgan's law)
+  - [!(a || b)] -> [!a && !b]  (De Morgan's law)
+*)
+let rec push_negation (e : t) : t option =
+  match e.expression_desc with
+  | Js_not e -> Some e
+  | Bool b -> Some (bool (not b))
+  | Bin (EqEqEq, a, b) -> Some {e with expression_desc = Bin (NotEqEq, a, b)}
+  | Bin (NotEqEq, a, b) -> Some {e with expression_desc = Bin (EqEqEq, a, b)}
+  | Bin (And, a, b) -> (
+    match (push_negation a, push_negation b) with
+    | Some a_, Some b_ -> Some {e with expression_desc = Bin (Or, a_, b_)}
+    | _ -> None)
+  | Bin (Or, a, b) -> (
+    match (push_negation a, push_negation b) with
+    | Some a_, Some b_ -> Some {e with expression_desc = Bin (And, a_, b_)}
+    | _ -> None)
+  | _ -> None
+
+(**
   [simplify_and e1 e2] attempts to simplify the boolean AND expression [e1 && e2].
   Returns [Some simplified] if simplification is possible, [None] otherwise.
 
@@ -802,6 +832,16 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
   - [e || true] -> [true]
   - [false || e] -> [e]
   - [e || false] -> [e]
+
+  Algebraic transformation strategy:
+  When basic rules don't apply, attempts to leverage [simplify_and] by:
+  1. Using the equivalence: [e1 || e2 ≡ !(!(e1) && !(e2))]
+  2. Applying [push_negation] to get [!(e1)] and [!(e2)]
+  3. Using [simplify_and] on these negated terms
+  4. If successful, applying [push_negation] again to get the final result
+
+  This transformation allows reuse of [simplify_and]'s more extensive optimizations
+  in the context of OR expressions.
 *)
 and simplify_or (e1 : t) (e2 : t) : t option =
   if debug then
@@ -813,7 +853,13 @@ and simplify_or (e1 : t) (e2 : t) : t option =
   | _, Bool true -> Some true_
   | Bool false, _ -> Some e2
   | _, Bool false -> Some e1
-  | _ -> None
+  | _ -> (
+    match (push_negation e1, push_negation e2) with
+    | Some e1_, Some e2_ -> (
+      match simplify_and e1_ e2_ with
+      | Some e -> push_negation e
+      | None -> None)
+    | _ -> None)
 
 let and_ ?comment (e1 : t) (e2 : t) : t =
   match (e1.expression_desc, e2.expression_desc) with

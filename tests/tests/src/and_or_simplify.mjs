@@ -2,11 +2,7 @@
 
 
 function check_null_eq_typeof(x) {
-  if (typeof x !== "boolean" || x !== null) {
-    return 4;
-  } else {
-    return 3;
-  }
+  return 4;
 }
 
 function check_null_neq_typeof(x) {
@@ -18,11 +14,7 @@ function check_null_neq_typeof(x) {
 }
 
 function check_undefined_eq_typeof(x) {
-  if (typeof x !== "boolean" || x !== undefined) {
-    return 4;
-  } else {
-    return 3;
-  }
+  return 4;
 }
 
 function check_undefined_neq_typeof(x) {
