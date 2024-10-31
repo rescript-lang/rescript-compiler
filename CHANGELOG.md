@@ -55,6 +55,7 @@
 - Improve error message when passing an object where a record is expected. https://github.com/rescript-lang/rescript-compiler/pull/7101
 - Improve code generation or pattern matching of untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/7128
 - Improve negation handling in combination with and/or to simplify generated code (especially coming out of pattern matching). https://github.com/rescript-lang/rescript-compiler/pull/7138
+- optimize JavaScript code generation by using x == null checks and improving type-based optimizations for string/number literals. https://github.com/rescript-lang/rescript-compiler/pull/7141
 
 
 #### :house: Internal
