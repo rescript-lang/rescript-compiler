@@ -17,34 +17,34 @@ open Asttypes
 open Typedtree
 
 type iterator = {
-  case : iterator -> case -> unit;
-  cases : iterator -> case list -> unit;
-  env : iterator -> Env.t -> unit;
-  expr : iterator -> expression -> unit;
-  extension_constructor : iterator -> extension_constructor -> unit;
-  module_binding : iterator -> module_binding -> unit;
-  module_coercion : iterator -> module_coercion -> unit;
-  module_declaration : iterator -> module_declaration -> unit;
-  module_expr : iterator -> module_expr -> unit;
-  module_type : iterator -> module_type -> unit;
-  module_type_declaration : iterator -> module_type_declaration -> unit;
-  package_type : iterator -> package_type -> unit;
-  pat : iterator -> pattern -> unit;
-  row_field : iterator -> row_field -> unit;
-  object_field : iterator -> object_field -> unit;
-  signature : iterator -> signature -> unit;
-  signature_item : iterator -> signature_item -> unit;
-  structure : iterator -> structure -> unit;
-  structure_item : iterator -> structure_item -> unit;
-  typ : iterator -> core_type -> unit;
-  type_declaration : iterator -> type_declaration -> unit;
-  type_declarations : iterator -> rec_flag * type_declaration list -> unit;
-  type_extension : iterator -> type_extension -> unit;
-  type_kind : iterator -> type_kind -> unit;
-  value_binding : iterator -> value_binding -> unit;
-  value_bindings : iterator -> rec_flag * value_binding list -> unit;
-  value_description : iterator -> value_description -> unit;
-  with_constraint : iterator -> with_constraint -> unit;
+  case: iterator -> case -> unit;
+  cases: iterator -> case list -> unit;
+  env: iterator -> Env.t -> unit;
+  expr: iterator -> expression -> unit;
+  extension_constructor: iterator -> extension_constructor -> unit;
+  module_binding: iterator -> module_binding -> unit;
+  module_coercion: iterator -> module_coercion -> unit;
+  module_declaration: iterator -> module_declaration -> unit;
+  module_expr: iterator -> module_expr -> unit;
+  module_type: iterator -> module_type -> unit;
+  module_type_declaration: iterator -> module_type_declaration -> unit;
+  package_type: iterator -> package_type -> unit;
+  pat: iterator -> pattern -> unit;
+  row_field: iterator -> row_field -> unit;
+  object_field: iterator -> object_field -> unit;
+  signature: iterator -> signature -> unit;
+  signature_item: iterator -> signature_item -> unit;
+  structure: iterator -> structure -> unit;
+  structure_item: iterator -> structure_item -> unit;
+  typ: iterator -> core_type -> unit;
+  type_declaration: iterator -> type_declaration -> unit;
+  type_declarations: iterator -> rec_flag * type_declaration list -> unit;
+  type_extension: iterator -> type_extension -> unit;
+  type_kind: iterator -> type_kind -> unit;
+  value_binding: iterator -> value_binding -> unit;
+  value_bindings: iterator -> rec_flag * value_binding list -> unit;
+  value_description: iterator -> value_description -> unit;
+  with_constraint: iterator -> with_constraint -> unit;
 }
 
 let structure sub {str_items; str_final_env; _} =
@@ -171,7 +171,9 @@ let expr sub {exp_extra; exp_desc; exp_env; _} =
   | Texp_variant (_, expo) -> Option.iter (sub.expr sub) expo
   | Texp_record {fields; extended_expression; _} ->
     Array.iter
-      (function _, Kept _ -> () | _, Overridden (_, exp) -> sub.expr sub exp)
+      (function
+        | _, Kept _ -> ()
+        | _, Overridden (_, exp) -> sub.expr sub exp)
       fields;
     Option.iter (sub.expr sub) extended_expression
   | Texp_field (exp, _, _) -> sub.expr sub exp
