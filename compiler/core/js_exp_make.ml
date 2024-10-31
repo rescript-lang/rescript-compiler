@@ -711,16 +711,20 @@ let rec push_negation (e : t) : t option =
 
   Type check optimizations:
   - [(typeof x === "boolean") && (x === true/false)] -> [x === true/false]
-  - [(typeof x ==="boolean" | "string" | "number") && (x === boolean/null/undefined)] -> [false]
-  - [(Array.isArray(x)) && (x === boolean/null/undefined)] -> [false]
+  - [(typeof x === "string") && (x === "abc")] -> [x === "abc"]
+  - [(typeof x === "number") && (x === 123)] -> [x === 123]
+  - [(typeof x === "boolean" | "string" | "number") && (x === boolean/null/undefined/123/"hello")] -> [false]
+  - [(Array.isArray(x)) && (x === boolean/null/undefined/123/"hello")] -> [false]
 
   - [(typeof x === "boolean") && (x !== true/false)] -> unchanged
-  - [(typeof x === "boolean" | "string" | "number") && (x !== boolean/null/undefined)] -> [typeof x === ...]
-  - [(Array.isArray(x)) && (x !== boolean/null/undefined)] -> [Array.isArray(x)]
+  - [(typeof x === "string") && (x !== "abc")] -> unchanged
+  - [(typeof x === "number") && (x !== 123)] -> unchanged
+  - [(typeof x === "boolean" | "string" | "number") && (x !== boolean/null/undefined/123/"hello")] -> [typeof x === ...]
+  - [(Array.isArray(x)) && (x !== boolean/null/undefined/123/"hello")] -> [Array.isArray(x)]
 
   Equality optimizations:
   - [e && e] -> [e]
-  - [(x === boolean/null/undefined) && (x === boolean/null/undefined)] -> [false] (when not equal)
+  - [(x === boolean/null/undefined/123/"hello") && (x === boolean/null/undefined/123/"hello")] -> [false] (when not equal)
 
   Note: The function preserves the semantics of the original expression while
   attempting to reduce it to a simpler form. If no simplification is possible,
@@ -781,21 +785,48 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
   | ( Bin
         ( EqEqEq,
           {expression_desc = Typeof {expression_desc = Var ia}},
+          {expression_desc = Str {txt = "string"}} ),
+      (Bin (EqEqEq, {expression_desc = Var ib}, {expression_desc = Str _}) as s)
+    )
+  | ( (Bin (EqEqEq, {expression_desc = Var ib}, {expression_desc = Str _}) as s),
+      Bin
+        ( EqEqEq,
+          {expression_desc = Typeof {expression_desc = Var ia}},
+          {expression_desc = Str {txt = "string"}} ) )
+    when Js_op_util.same_vident ia ib ->
+    Some {expression_desc = s; comment = None}
+  | ( Bin
+        ( EqEqEq,
+          {expression_desc = Typeof {expression_desc = Var ia}},
+          {expression_desc = Str {txt = "number"}} ),
+      (Bin (EqEqEq, {expression_desc = Var ib}, {expression_desc = Number _}) as
+       i) )
+  | ( (Bin (EqEqEq, {expression_desc = Var ib}, {expression_desc = Number _}) as
+       i),
+      Bin
+        ( EqEqEq,
+          {expression_desc = Typeof {expression_desc = Var ia}},
+          {expression_desc = Str {txt = "number"}} ) )
+    when Js_op_util.same_vident ia ib ->
+    Some {expression_desc = i; comment = None}
+  | ( Bin
+        ( EqEqEq,
+          {expression_desc = Typeof {expression_desc = Var ia}},
           {expression_desc = Str {txt = "boolean" | "string" | "number"}} ),
       Bin
         ( EqEqEq,
           {expression_desc = Var ib},
-          {expression_desc = Bool _ | Null | Undefined _} ) )
+          {expression_desc = Bool _ | Null | Undefined _ | Number _ | Str _} ) )
   | ( Bin
         ( EqEqEq,
           {expression_desc = Var ib},
-          {expression_desc = Bool _ | Null | Undefined _} ),
+          {expression_desc = Bool _ | Null | Undefined _ | Number _ | Str _} ),
       Bin
         ( EqEqEq,
           {expression_desc = Typeof {expression_desc = Var ia}},
           {expression_desc = Str {txt = "boolean" | "string" | "number"}} ) )
     when Js_op_util.same_vident ia ib ->
-    (* Note: case boolean / Bool _ is handled above *)
+    (* Note: cases boolean / Bool _, number / Number _, string / Str _ are handled above *)
     Some false_
   | ( Call
         ( {expression_desc = Str {txt = "Array.isArray"}},
@@ -804,11 +835,11 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
       Bin
         ( EqEqEq,
           {expression_desc = Var ib},
-          {expression_desc = Bool _ | Null | Undefined _} ) )
+          {expression_desc = Bool _ | Null | Undefined _ | Number _ | Str _} ) )
   | ( Bin
         ( EqEqEq,
           {expression_desc = Var ib},
-          {expression_desc = Bool _ | Null | Undefined _} ),
+          {expression_desc = Bool _ | Null | Undefined _ | Number _ | Str _} ),
       Call
         ( {expression_desc = Str {txt = "Array.isArray"}},
           [{expression_desc = Var ia}],
@@ -827,6 +858,30 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
           {expression_desc = Str {txt = "boolean"}} ) )
     when Js_op_util.same_vident ia ib ->
     None
+  | ( Bin
+        ( EqEqEq,
+          {expression_desc = Typeof {expression_desc = Var ia}},
+          {expression_desc = Str {txt = "string"}} ),
+      Bin (NotEqEq, {expression_desc = Var ib}, {expression_desc = Str _}) )
+  | ( Bin (NotEqEq, {expression_desc = Var ib}, {expression_desc = Str _}),
+      Bin
+        ( EqEqEq,
+          {expression_desc = Typeof {expression_desc = Var ia}},
+          {expression_desc = Str {txt = "string"}} ) )
+    when Js_op_util.same_vident ia ib ->
+    None
+  | ( Bin
+        ( EqEqEq,
+          {expression_desc = Typeof {expression_desc = Var ia}},
+          {expression_desc = Str {txt = "number"}} ),
+      Bin (NotEqEq, {expression_desc = Var ib}, {expression_desc = Number _}) )
+  | ( Bin (NotEqEq, {expression_desc = Var ib}, {expression_desc = Number _}),
+      Bin
+        ( EqEqEq,
+          {expression_desc = Typeof {expression_desc = Var ia}},
+          {expression_desc = Str {txt = "number"}} ) )
+    when Js_op_util.same_vident ia ib ->
+    None
   | ( (Bin
          ( EqEqEq,
            {expression_desc = Typeof {expression_desc = Var ia}},
@@ -835,7 +890,7 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
       Bin
         ( NotEqEq,
           {expression_desc = Var ib},
-          {expression_desc = Bool _ | Null | Undefined _} ) )
+          {expression_desc = Bool _ | Null | Undefined _ | Number _ | Str _} ) )
   | ( Bin
         ( NotEqEq,
           {expression_desc = Var ib},
@@ -846,7 +901,7 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
            {expression_desc = Str {txt = "boolean" | "string" | "number"}} ) as
        typeof) )
     when Js_op_util.same_vident ia ib ->
-    (* Note: case boolean / Bool _ is handled above *)
+    (* Note: cases boolean / Bool _, number / Number _, string / Str _ are handled above *)
     Some {expression_desc = typeof; comment = None}
   | ( (Call
          ( {expression_desc = Str {txt = "Array.isArray"}},
@@ -855,11 +910,11 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
       Bin
         ( NotEqEq,
           {expression_desc = Var ib},
-          {expression_desc = Bool _ | Null | Undefined _} ) )
+          {expression_desc = Bool _ | Null | Undefined _ | Number _ | Str _} ) )
   | ( Bin
         ( NotEqEq,
           {expression_desc = Var ib},
-          {expression_desc = Bool _ | Null | Undefined _} ),
+          {expression_desc = Bool _ | Null | Undefined _ | Number _ | Str _} ),
       (Call
          ( {expression_desc = Str {txt = "Array.isArray"}},
            [{expression_desc = Var ia}],
@@ -870,11 +925,11 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
   | ( Bin
         ( EqEqEq,
           {expression_desc = Var ia},
-          {expression_desc = Bool _ | Null | Undefined _} ),
+          {expression_desc = Bool _ | Null | Undefined _ | Number _ | Str _} ),
       Bin
         ( EqEqEq,
           {expression_desc = Var ib},
-          {expression_desc = Bool _ | Null | Undefined _} ) )
+          {expression_desc = Bool _ | Null | Undefined _ | Number _ | Str _} ) )
     when Js_op_util.same_vident ia ib ->
     (* Note: case x = y is handled above *)
     Some false_
