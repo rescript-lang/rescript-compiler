@@ -2573,7 +2573,7 @@ module Style = {
   @val
   external combine: (@as(json`{}`) _, style, style) => t = "Object.assign"
 
-  external _dictToStyle: Js.Dict.t<string> => style = "%identity"
+  external _dictToStyle: dict<string> => style = "%identity"
 
   let unsafeAddProp = (style, key, value) => {
     let dict = Js.Dict.empty()

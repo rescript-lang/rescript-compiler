@@ -1,7 +1,7 @@
 module Link = Next.Link
 
 // Structure defined by `scripts/extract-tocs.js`
-let tocData: Js.Dict.t<{
+let tocData: dict<{
   "title": string,
   "headers": array<{
     "name": string,

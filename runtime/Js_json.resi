@@ -36,7 +36,7 @@ type rec t =
   | @as(null) Null
   | String(string)
   | Number(float)
-  | Object(Js_dict.t<t>)
+  | Object(dict<t>)
   | Array(array<t>)
 
 module Kind: {
@@ -45,7 +45,7 @@ module Kind: {
   type rec t<_> =
     | String: t<Js_string.t>
     | Number: t<float>
-    | Object: t<Js_dict.t<json>>
+    | Object: t<dict<json>>
     | Array: t<array<json>>
     | Boolean: t<bool>
     | Null: t<Js_types.null_val>
@@ -57,7 +57,7 @@ type tagged_t =
   | JSONNull
   | JSONString(string)
   | JSONNumber(float)
-  | JSONObject(Js_dict.t<t>)
+  | JSONObject(dict<t>)
   | JSONArray(array<t>)
 
 /* ## Accessors */
@@ -82,7 +82,7 @@ let decodeNumber: t => option<float>
 /**
 `decodeObject(json)` returns `Some(o)` if `json` is an `object`, `None` otherwise.
 */
-let decodeObject: t => option<Js_dict.t<t>>
+let decodeObject: t => option<dict<t>>
 
 /**
 `decodeArray(json)` returns `Some(a)` if `json` is an `array`, `None` otherwise.
@@ -118,8 +118,8 @@ external number: float => t = "%identity"
 /** `boolean(b)` makes a JSON boolean of the `bool` `b`. */
 external boolean: bool => t = "%identity"
 
-/** `object_(dict)` makes a JSON object of the `Js.Dict.t` `dict`. */
-external object_: Js_dict.t<t> => t = "%identity"
+/** `object_(dict)` makes a JSON object of the `dict`. */
+external object_: dict<t> => t = "%identity"
 
 /** `array_(a)` makes a JSON array of the `Js.Json.t` array `a`. */
 external array: array<t> => t = "%identity"
@@ -140,7 +140,7 @@ external numberArray: array<float> => t = "%identity"
 external booleanArray: array<bool> => t = "%identity"
 
 /** `objectArray(a) makes a JSON array of the `JsDict.t` array `a`. */
-external objectArray: array<Js_dict.t<t>> => t = "%identity"
+external objectArray: array<dict<t>> => t = "%identity"
 
 /* ## String conversion */
 
@@ -178,7 +178,7 @@ let getIds = s => {
 
   switch Js.Json.classify(json) {
   | Js.Json.JSONObject(value) =>
-    /* In this branch, compiler infer value : Js.Json.t Js.Dict.t */
+    /* In this branch, compiler infer value : Js.Json.t dict */
     switch Js.Dict.get(value, "ids") {
     | Some(ids) =>
       switch Js.Json.classify(ids) {

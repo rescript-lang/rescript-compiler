@@ -40,7 +40,7 @@ type t = @attrBeforeLblA ((~a: int) =>  (@attrBeforeLblB ((~b: int) => (@attr fl
 type t = @attr ~a: int => unit
 
 type getInitialPropsFn<'a> = {
-  "query": Js.Dict.t<string>,
+  "query": dict<string>,
   "req": Js.Nullable.t<Js.t<'a>>,
 } => Js.Promise.t<Js.t<'a>>
 

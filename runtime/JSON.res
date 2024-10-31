@@ -4,7 +4,7 @@ type rec t = Js.Json.t =
   | @as(null) Null
   | String(string)
   | Number(float)
-  | Object(Dict.t<t>)
+  | Object(dict<t>)
   | Array(array<t>)
 
 @unboxed
@@ -47,7 +47,7 @@ module Classify = {
     | Null
     | String(string)
     | Number(float)
-    | Object(Dict.t<t>)
+    | Object(dict<t>)
     | Array(array<t>)
 
   @val external _internalClass: 'a => string = "Object.prototype.toString.call"
@@ -55,7 +55,7 @@ module Classify = {
   external _asString: 'a => string = "%identity"
   external _asFloat: 'a => float = "%identity"
   external _asArray: 'a => array<Js.Json.t> = "%identity"
-  external _asDict: 'a => Dict.t<Js.Json.t> = "%identity"
+  external _asDict: 'a => dict<Js.Json.t> = "%identity"
 
   let classify = value => {
     switch _internalClass(value) {
@@ -75,7 +75,7 @@ module Encode = {
   external string: string => t = "%identity"
   external int: int => t = "%identity"
   external float: float => t = "%identity"
-  external object: Dict.t<t> => t = "%identity"
+  external object: dict<t> => t = "%identity"
   external array: array<t> => t = "%identity"
 }
 
@@ -86,7 +86,7 @@ module Decode = {
   let float = (json: t) => Type.typeof(json) === #number ? Some((Obj.magic(json): float)) : None
   let object = (json: t) =>
     if Type.typeof(json) === #object && !Array.isArray(json) && !(Obj.magic(json) === Null.null) {
-      Some((Obj.magic(json): Dict.t<t>))
+      Some((Obj.magic(json): dict<t>))
     } else {
       None
     }

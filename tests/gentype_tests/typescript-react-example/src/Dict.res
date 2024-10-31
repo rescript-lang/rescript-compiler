@@ -1,1 +1,1 @@
-type t<'a> = Js.Dict.t<'a>
+type t<'a> = dict<'a>

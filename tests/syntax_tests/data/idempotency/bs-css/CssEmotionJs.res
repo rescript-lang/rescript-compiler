@@ -14,7 +14,7 @@ include Css_Js_Core.Make({
   external injectRaw: (. string) => unit = "injectGlobal"
 
   @module("emotion")
-  external makeKeyFrames: (. Js.Dict.t<Js.Json.t>) => string = "keyframes"
+  external makeKeyFrames: (. dict<Js.Json.t>) => string = "keyframes"
 })
 
 type cache

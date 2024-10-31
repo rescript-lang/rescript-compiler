@@ -1,28 +1,28 @@
-type t<'a> = Js.Dict.t<'a>
+type t<'a> = dict<'a>
 
-@get_index external getUnsafe: (t<'a>, string) => 'a = ""
-@get_index external get: (t<'a>, string) => option<'a> = ""
-@set_index external set: (t<'a>, string, 'a) => unit = ""
+@get_index external getUnsafe: (dict<'a>, string) => 'a = ""
+@get_index external get: (dict<'a>, string) => option<'a> = ""
+@set_index external set: (dict<'a>, string, 'a) => unit = ""
 @val external delete: 'a => unit = "delete"
 
 let delete = (dict, string) => {
   delete(get(dict, string))
 }
 
-@obj external make: unit => t<'a> = ""
+@obj external make: unit => dict<'a> = ""
 
-@val external fromArray: array<(string, 'a)> => t<'a> = "Object.fromEntries"
-@val external fromIterator: Iterator.t<(string, 'a)> => t<'a> = "Object.fromEntries"
+@val external fromArray: array<(string, 'a)> => dict<'a> = "Object.fromEntries"
+@val external fromIterator: Iterator.t<(string, 'a)> => dict<'a> = "Object.fromEntries"
 
-@val external toArray: t<'a> => array<(string, 'a)> = "Object.entries"
+@val external toArray: dict<'a> => array<(string, 'a)> = "Object.entries"
 
-@val external keysToArray: t<'a> => array<string> = "Object.keys"
+@val external keysToArray: dict<'a> => array<string> = "Object.keys"
 
-@val external valuesToArray: t<'a> => array<'a> = "Object.values"
+@val external valuesToArray: dict<'a> => array<'a> = "Object.values"
 
-@val external assign: (t<'a>, t<'a>) => t<'a> = "Object.assign"
+@val external assign: (dict<'a>, dict<'a>) => dict<'a> = "Object.assign"
 
-@val external copy: (@as(json`{}`) _, t<'a>) => t<'a> = "Object.assign"
+@val external copy: (@as(json`{}`) _, dict<'a>) => dict<'a> = "Object.assign"
 
 let forEach = (dict, f) => {
   dict->valuesToArray->Array.forEach(value => f(value))
