@@ -404,7 +404,7 @@ function check$1(s) {
             console.log("Nope...");
             return;
           }
-          if (typeof match$3 === "string" && match$3 === "My name is") {
+          if (match$3 === "My name is") {
             let match$4 = match$2[1];
             if (match$4 === undefined || match$4 === null || match$4 === false || match$4 === true) {
               console.log("Nope...");
