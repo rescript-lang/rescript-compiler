@@ -80,7 +80,7 @@ let Truthy = {
 };
 
 function classify$1(x) {
-  if (x === null || x === undefined) {
+  if (x == null) {
     if (x === null) {
       return "null";
     } else {

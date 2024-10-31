@@ -216,9 +216,9 @@ function isUndefined$1(x) {
 }
 
 function plus$2(x, y) {
-  if (x === null || x === undefined) {
+  if (x == null) {
     return y;
-  } else if (y === null || y === undefined) {
+  } else if (y == null) {
     return x;
   } else {
     return x + y | 0;
@@ -226,7 +226,7 @@ function plus$2(x, y) {
 }
 
 function kind(x) {
-  if (x === null || x === undefined) {
+  if (x == null) {
     if (x === null) {
       return "null";
     } else {
