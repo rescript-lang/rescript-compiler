@@ -23,6 +23,10 @@
     "ignore": [
       "tests/build_tests/**",
       "tests/tests/**",
+      "tools/tests/**",
+      "analysis/examples/**",
+      "analysis/tests/**",
+      "analysis/reanalyze/examples/**",
       "lib/**",
       "ninja/**",
       "playground/**",

@@ -9,7 +9,7 @@ function getBinaryPath() {
     "..",
     "binaries",
     platformArch,
-    "rescript-tools.exe"
+    "rescript-tools.exe",
   );
   return binPath;
 }
