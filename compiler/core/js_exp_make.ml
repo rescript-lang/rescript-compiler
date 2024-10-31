@@ -665,6 +665,28 @@ let bin ?comment (op : J.binop) (e0 : t) (e1 : t) : t =
 let string_of_expression = ref (fun _ -> "")
 let debug = false
 
+(**
+  [simplify_and e1 e2] attempts to simplify the boolean AND expression [e1 && e2].
+  Returns [Some simplified] if simplification is possible, [None] otherwise.
+
+  Basic simplification rules:
+  - [false && e] -> [false]
+  - [true && e] -> [e] 
+  - [e && false] -> [false]
+  - [e && true] -> [e]
+  - [(a && b) && e] -> If either [a && e] or [b && e] can be simplified, 
+                       creates new AND expression with simplified parts: [(a' && b')]
+  - [(a || b) && e] -> If either [a && e] or [b && e] can be simplified,
+                       creates new OR expression with simplified parts: [(a' || b')]
+
+  Type check optimizations:
+  - [(typeof x === "boolean") && (x === true/false)] -> [x === true/false]
+  - [(typeof x === "string" || Array.isArray(x)) && (x === boolean/null/undefined)] -> [false]
+
+  Note: The function preserves the semantics of the original expression while
+  attempting to reduce it to a simpler form. If no simplification is possible,
+  returns [None].
+*)
 let rec simplify_and (e1 : t) (e2 : t) : t option =
   if debug then
     Printf.eprintf "simplify_and %s %s\n" (!string_of_expression e1)
@@ -771,6 +793,16 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
     Some false_
   | _ -> None
 
+(**
+  [simplify_or e1 e2] attempts to simplify the boolean OR expression [e1 || e2].
+  Returns [Some simplified] if simplification is possible, [None] otherwise.
+
+  Basic simplification rules:
+  - [true || e] -> [true]
+  - [e || true] -> [true]
+  - [false || e] -> [e]
+  - [e || false] -> [e]
+*)
 and simplify_or (e1 : t) (e2 : t) : t option =
   if debug then
     Printf.eprintf "simplify_or %s %s\n" (!string_of_expression e1)
@@ -817,10 +849,6 @@ let or_ ?comment (e1 : t) (e2 : t) =
     | Some e -> e
     | None -> {expression_desc = Bin (Or, e1, e2); comment})
 
-(* return a value of type boolean *)
-(* TODO:
-     when comparison with Int
-     it is right that !(x > 3 ) -> x <= 3 *)
 let not (e : t) : t =
   match e.expression_desc with
   | Number (Int {i; _}) -> bool (i = 0l)
