@@ -711,7 +711,10 @@ let rec push_negation (e : t) : t option =
 
   Type check optimizations:
   - [(typeof x === "boolean") && (x === true/false)] -> [x === true/false]
-  - [(typeof x === "string" || Array.isArray(x)) && (x === boolean/null/undefined)] -> [false]
+  - [(typeof x === "string") && (x === boolean/null/undefined)] -> [false]
+  - [(Array.isArray(x)) && (x === boolean/null/undefined)] -> [false]
+
+  - TODO: [(typeof x === "boolean") && (x !== null)] -> [typeof x === "boolean"]
 
   Note: The function preserves the semantics of the original expression while
   attempting to reduce it to a simpler form. If no simplification is possible,
@@ -790,14 +793,7 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
     Some {expression_desc = b; comment = None}
   | ( Bin
         ( EqEqEq,
-          {
-            expression_desc =
-              ( Typeof {expression_desc = Var ia}
-              | Call
-                  ( {expression_desc = Str {txt = "Array.isArray"}},
-                    [{expression_desc = Var ia}],
-                    _ ) );
-          },
+          {expression_desc = Typeof {expression_desc = Var ia}},
           {expression_desc = Str {txt = "boolean" | "string"}} ),
       Bin
         ( EqEqEq,
@@ -809,17 +805,28 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
           {expression_desc = Bool _ | Null | Undefined _} ),
       Bin
         ( EqEqEq,
-          {
-            expression_desc =
-              ( Typeof {expression_desc = Var ia}
-              | Call
-                  ( {expression_desc = Str {txt = "Array.isArray"}},
-                    [{expression_desc = Var ia}],
-                    _ ) );
-          },
+          {expression_desc = Typeof {expression_desc = Var ia}},
           {expression_desc = Str {txt = "boolean" | "string"}} ) )
     when Js_op_util.same_vident ia ib ->
     (* Note: case boolean / Bool _ is handled above *)
+    Some false_
+  | ( Call
+        ( {expression_desc = Str {txt = "Array.isArray"}},
+          [{expression_desc = Var ia}],
+          _ ),
+      Bin
+        ( EqEqEq,
+          {expression_desc = Var ib},
+          {expression_desc = Bool _ | Null | Undefined _} ) )
+  | ( Bin
+        ( EqEqEq,
+          {expression_desc = Var ib},
+          {expression_desc = Bool _ | Null | Undefined _} ),
+      Call
+        ( {expression_desc = Str {txt = "Array.isArray"}},
+          [{expression_desc = Var ia}],
+          _ ) )
+    when Js_op_util.same_vident ia ib ->
     Some false_
   | _ -> None
 
