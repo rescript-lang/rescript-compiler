@@ -794,7 +794,7 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
   | ( Bin
         ( EqEqEq,
           {expression_desc = Typeof {expression_desc = Var ia}},
-          {expression_desc = Str {txt = "boolean" | "string"}} ),
+          {expression_desc = Str {txt = "boolean" | "string" | "number"}} ),
       Bin
         ( EqEqEq,
           {expression_desc = Var ib},
@@ -806,7 +806,7 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
       Bin
         ( EqEqEq,
           {expression_desc = Typeof {expression_desc = Var ia}},
-          {expression_desc = Str {txt = "boolean" | "string"}} ) )
+          {expression_desc = Str {txt = "boolean" | "string" | "number"}} ) )
     when Js_op_util.same_vident ia ib ->
     (* Note: case boolean / Bool _ is handled above *)
     Some false_
