@@ -881,6 +881,7 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
            _ ) as is_array) )
     when Js_op_util.same_vident ia ib ->
     Some {expression_desc = is_array; comment = None}
+  | x, y when x = y -> Some e1
   | _ -> None
 
 (**
