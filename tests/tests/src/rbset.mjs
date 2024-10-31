@@ -22,11 +22,7 @@ function blackify(x) {
 }
 
 function is_empty(x) {
-  if (typeof x !== "object") {
-    return true;
-  } else {
-    return false;
-  }
+  return typeof x !== "object";
 }
 
 function mem(x, _x_) {

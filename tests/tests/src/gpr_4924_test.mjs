@@ -19,8 +19,8 @@ function u(b) {
 }
 
 function u1(b) {
-  if (typeof b !== "object" && b === "A") {
-    return true;
+  if (typeof b !== "object") {
+    return b === "A";
   } else {
     return false;
   }
@@ -65,8 +65,8 @@ function u5(b) {
 }
 
 function u6(b) {
-  if (typeof b !== "object" && b === "A") {
-    return true;
+  if (typeof b !== "object") {
+    return b === "A";
   } else {
     return false;
   }
