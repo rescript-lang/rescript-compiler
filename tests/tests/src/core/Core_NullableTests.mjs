@@ -7,7 +7,7 @@ function shouldHandleNullableValues() {
   let tUndefined = undefined;
   let tValue = "hello";
   let tmp;
-  tmp = tNull === null || tNull === undefined ? true : false;
+  tmp = tNull === null ? true : false;
   Test.run([
     [
       "Core_NullableTests.res",
