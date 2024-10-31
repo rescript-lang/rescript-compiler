@@ -718,6 +718,10 @@ let rec push_negation (e : t) : t option =
   - [(typeof x === "boolean" | "string" | "number") && (x !== boolean/null/undefined)] -> [typeof x === ...]
   - [(Array.isArray(x)) && (x !== boolean/null/undefined)] -> [Array.isArray(x)]
 
+  Equality optimizations:
+  - [e && e] -> [e]
+  - [(x === boolean/null/undefined) && (x === boolean/null/undefined)] -> [false] (when not equal)
+
   Note: The function preserves the semantics of the original expression while
   attempting to reduce it to a simpler form. If no simplification is possible,
   returns [None].
@@ -726,7 +730,6 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
   if debug then
     Printf.eprintf "simplify_and %s %s\n" (!string_of_expression e1)
       (!string_of_expression e2);
-
   match (e1.expression_desc, e2.expression_desc) with
   | Bool false, _ -> Some false_
   | _, Bool false -> Some false_
@@ -735,39 +738,21 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
   | Bin (And, a, b), _ -> (
     let ao = simplify_and a e2 in
     let bo = simplify_and b e2 in
-    if ao = None && bo = None then None
-    else
-      let a_ =
-        match ao with
-        | None -> a
-        | Some a_ -> a_
-      in
-      let b_ =
-        match bo with
-        | None -> b
-        | Some b_ -> b_
-      in
+    match (ao, bo) with
+    | None, _ | _, None -> None
+    | Some a_, Some b_ -> (
       match simplify_and a_ b_ with
       | None -> Some {expression_desc = Bin (And, a_, b_); comment = None}
-      | Some e -> Some e)
+      | Some e -> Some e))
   | Bin (Or, a, b), _ -> (
     let ao = simplify_and a e2 in
     let bo = simplify_and b e2 in
-    if ao = None && bo = None then None
-    else
-      let a_ =
-        match ao with
-        | None -> a
-        | Some a_ -> a_
-      in
-      let b_ =
-        match bo with
-        | None -> b
-        | Some b_ -> b_
-      in
+    match (ao, bo) with
+    | None, _ | _, None -> None
+    | Some a_, Some b_ -> (
       match simplify_or a_ b_ with
       | None -> Some {expression_desc = Bin (Or, a_, b_); comment = None}
-      | Some e -> Some e)
+      | Some e -> Some e))
   | ( Bin
         ( ((EqEqEq | NotEqEq) as op1),
           {expression_desc = Var i1},
@@ -882,6 +867,17 @@ let rec simplify_and (e1 : t) (e2 : t) : t option =
     when Js_op_util.same_vident ia ib ->
     Some {expression_desc = is_array; comment = None}
   | x, y when x = y -> Some e1
+  | ( Bin
+        ( EqEqEq,
+          {expression_desc = Var ia},
+          {expression_desc = Bool _ | Null | Undefined _} ),
+      Bin
+        ( EqEqEq,
+          {expression_desc = Var ib},
+          {expression_desc = Bool _ | Null | Undefined _} ) )
+    when Js_op_util.same_vident ia ib ->
+    (* Note: case x = y is handled above *)
+    Some false_
   | _ -> None
 
 (**
