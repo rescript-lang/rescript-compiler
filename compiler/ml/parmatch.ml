@@ -524,7 +524,25 @@ let all_record_args lbls =
         (fun lbl -> (mknoloc (Longident.Lident "?temp?"), lbl, omega))
         lbl_all
     in
-    List.iter (fun ((_, lbl, _) as x) -> t.(lbl.lbl_pos) <- x) lbls;
+    List.iter
+      (fun ((id, lbl, pat) as x) ->
+        let lbl_is_optional () =
+          match lbl.lbl_repres with
+          | Record_optional_labels labels -> List.mem lbl.lbl_name labels
+          | _ -> false
+        in
+        let x =
+          match pat.pat_desc with
+          | Tpat_construct
+              ( {txt = Longident.Ldot (Longident.Lident "*predef*", "Some")},
+                _,
+                [({pat_desc = Tpat_constant _} as c)] )
+            when lbl_is_optional () ->
+            (id, lbl, c)
+          | _ -> x
+        in
+        t.(lbl.lbl_pos) <- x)
+      lbls;
     Array.to_list t
   | _ -> fatal_error "Parmatch.all_record_args"
 
