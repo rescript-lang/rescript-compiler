@@ -76,3 +76,7 @@ playground/compiler.js
 
 rewatch/target/
 rewatch/rewatch
+
+tools/**/*.res.js
+tools/tests/lib
+analysis/tests/lib
