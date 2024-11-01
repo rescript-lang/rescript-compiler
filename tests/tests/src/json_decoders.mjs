@@ -41,7 +41,7 @@ function decodeUser(json) {
   }
   let email = json.email;
   let tmp;
-  tmp = email !== undefined && !(email === null || typeof email !== "string") ? email : undefined;
+  tmp = typeof email === "string" ? email : undefined;
   return {
     id: match,
     name: match$1,
