@@ -1332,15 +1332,7 @@ let getOpens ~debug ~rawOpens ~package ~env =
       ^ " "
       ^ String.concat " "
           (resolvedOpens
-          |> List.map (fun (e : QueryEnv.t) ->
-                 let name = Uri.toString e.file.uri in
-
-                 (* Unify formatting between curried and uncurried *)
-                 if
-                   name = "pervasives.res" || name = "pervasives.resi"
-                   || name = "pervasivesU.res" || name = "pervasivesU.resi"
-                 then "pervasives"
-                 else name)));
+          |> List.map (fun (e : QueryEnv.t) -> Uri.toString e.file.uri)));
   (* Last open takes priority *)
   List.rev resolvedOpens
 
