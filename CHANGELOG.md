@@ -56,7 +56,7 @@
 - Improve code generation or pattern matching of untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/7128
 - Improve negation handling in combination with and/or to simplify generated code (especially coming out of pattern matching). https://github.com/rescript-lang/rescript-compiler/pull/7138
 - optimize JavaScript code generation by using x == null checks and improving type-based optimizations for string/number literals. https://github.com/rescript-lang/rescript-compiler/pull/7141
-- Improve pattern matching on optional fields. https://github.com/rescript-lang/rescript-compiler/pull/7143
+- Improve pattern matching on optional fields. https://github.com/rescript-lang/rescript-compiler/pull/7143 https://github.com/rescript-lang/rescript-compiler/pull/7144
 
 
 #### :house: Internal
