@@ -18,3 +18,9 @@ let decodeGroup = group => {
   | _ => ("e", "f")
   }
 }
+
+let decodeNull = x =>
+  switch x {
+  | dict{"field": Null} => "yes it's null"
+  | _ => "no"
+  }

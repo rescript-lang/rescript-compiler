@@ -29,7 +29,17 @@ function decodeGroup(group) {
   }
 }
 
+function decodeNull(x) {
+  let match = x.field;
+  if (match !== undefined && match === null) {
+    return "yes it's null";
+  } else {
+    return "no";
+  }
+}
+
 export {
   decodeGroup,
+  decodeNull,
 }
 /* No side effect */
