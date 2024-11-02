@@ -5,9 +5,9 @@
   },
   "private": true,
   "devDependencies": {
-    "@rescript/react": "0.12.0"
+    "@rescript/react": "0.13.0"
   },
   "dependencies": {
-    "rescript": "^11.1.0"
+    "rescript": "../.."
   }
 }

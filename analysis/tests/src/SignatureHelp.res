@@ -111,11 +111,7 @@ let _deepestTakesPrecedence = [12]->Js.Array2.map(v =>
 )
 
 /** Main docstring here. */
-let map = (arr, mapper) => {
-  Array.map(mapper, arr)
-}
-
-let _usesCorrectTypeInfo = [12]->map(v => v)
+let _usesCorrectTypeInfo = [12]->Array.map(v => v)
 //                                        ^she
 
 /** Type x... */
