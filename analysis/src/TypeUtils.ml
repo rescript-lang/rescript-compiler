@@ -505,8 +505,7 @@ let getBuiltinFromTypePath path =
     | _ -> None)
   | Pdot (Pdot (Pident m, "Re", _), "t", _) when Ident.name m = "Js" ->
     Some RegExp
-  | Pdot (Pident id, "result", _)
-    when Ident.name id = "Pervasives" || Ident.name id = "PervasivesU" ->
+  | Pdot (Pident id, "result", _) when Ident.name id = "Pervasives" ->
     Some Result
   | _ -> None
 

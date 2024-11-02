@@ -1320,14 +1320,8 @@ let getOpens ~debug ~rawOpens ~package ~env =
   if debug && packageOpens <> [] then
     Printf.printf "%s\n"
       ("Package opens "
-      ^ String.concat " "
-          (packageOpens
-          |> List.map (fun p ->
-                 p
-                 |> List.map (fun name ->
-                        (* Unify formatting between curried and uncurried *)
-                        if name = "PervasivesU" then "Pervasives" else name)
-                 |> pathToString)));
+      ^ String.concat " " (packageOpens |> List.map (fun p -> p |> pathToString))
+      );
   let resolvedOpens =
     resolveOpens ~env (List.rev (rawOpens @ packageOpens)) ~package
   in
