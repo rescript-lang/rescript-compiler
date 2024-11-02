@@ -930,13 +930,13 @@ Path Js.n
     "kind": 22,
     "tags": [],
     "detail": "type nullable",
-    "documentation": {"kind": "markdown", "value": "```rescript\ntype nullable<'a> = Value('a) | Null | Undefined\n```"}
+    "documentation": {"kind": "markdown", "value": "```rescript\n@unboxed\ntype nullable<'a> =\n  | Value('a)\n  | @as(null) Null\n  | @as(undefined) Undefined\n```"}
   }, {
     "label": "null",
     "kind": 22,
     "tags": [],
     "detail": "type null",
-    "documentation": {"kind": "markdown", "value": "\n  Nullable value of this type can be either null or 'a. This type is equivalent to Js.Null.t.\n\n\n```rescript\ntype null<'a> = Value('a) | Null\n```"}
+    "documentation": {"kind": "markdown", "value": "\n  Nullable value of this type can be either null or 'a. This type is equivalent to Js.Null.t.\n\n\n```rescript\n@unboxed type null<'a> = Value('a) | @as(null) Null\n```"}
   }]
 
 Complete src/Completion.res 174:20
