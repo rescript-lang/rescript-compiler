@@ -539,6 +539,31 @@ let all_record_args lbls =
                 [({pat_desc = Tpat_constant _} as c)] )
             when lbl_is_optional () ->
             (id, lbl, c)
+          | Tpat_construct
+              ( {txt = Longident.Ldot (Longident.Lident "*predef*", "Some")},
+                _,
+                [({pat_desc = Tpat_construct (_, cd, _)} as pat_construct)] )
+            when lbl_is_optional () -> (
+            let block_type =
+              match cd.cstr_res.desc with
+              | Tconstr (path, _, _) -> (
+                match Env.find_type path pat.pat_env with
+                | {type_kind = Type_variant cstrs} ->
+                  Ext_list.find_opt cstrs (fun cstr ->
+                      if cstr.cd_id.name = cd.cstr_name then
+                        Ast_untagged_variants.get_block_type ~env:pat.pat_env
+                          cstr
+                      else None)
+                | _ -> None)
+              | _ -> None
+            in
+            match block_type with
+            | Some
+                ( IntType | StringType | FloatType | BigintType | BooleanType
+                | InstanceType _ | FunctionType | ObjectType ) ->
+              (* These types cannot be undefined *)
+              (id, lbl, pat_construct)
+            | _ -> x)
           | _ -> x
         in
         t.(lbl.lbl_pos) <- x)
