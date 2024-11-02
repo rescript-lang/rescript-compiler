@@ -30,8 +30,8 @@ function decodeGroup(group) {
 }
 
 function decodeNull(x) {
-  let match = x.field;
-  if (match !== undefined && match === null) {
+  let tmp = x.field;
+  if (tmp === null) {
     return "yes it's null";
   } else {
     return "no";
