@@ -12,7 +12,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@rescript/react": "^0.12.0-alpha.3",
-    "rescript": "^11.0.0"
+    "@rescript/react": "^0.13.0",
+    "rescript": "../.."
   }
 }
