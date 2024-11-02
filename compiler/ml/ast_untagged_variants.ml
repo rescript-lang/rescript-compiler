@@ -97,6 +97,13 @@ let block_type_can_be_undefined = function
     false
   | UnknownType -> true
 
+let tag_can_be_undefined tag =
+  match tag.tag_type with
+  | None -> false
+  | Some (String _ | Int _ | Float _ | BigInt _ | Bool _ | Null) -> false
+  | Some (Untagged block_type) -> block_type_can_be_undefined block_type
+  | Some Undefined -> true
+
 let has_untagged (attrs : Parsetree.attributes) =
   Ext_list.exists attrs (function {txt}, _ -> txt = untagged)
 
