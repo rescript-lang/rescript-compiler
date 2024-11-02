@@ -91,6 +91,12 @@ type switch_names = {consts: tag array; blocks: block array}
 
 let untagged = "unboxed"
 
+let block_type_can_be_undefined = function
+  | IntType | StringType | FloatType | BigintType | BooleanType | InstanceType _
+  | FunctionType | ObjectType ->
+    false
+  | UnknownType -> true
+
 let has_untagged (attrs : Parsetree.attributes) =
   Ext_list.exists attrs (function {txt}, _ -> txt = untagged)
 
@@ -328,23 +334,35 @@ let check_invariant ~is_untagged_def ~(consts : (Location.t * tag) list)
           invariant loc block.tag.name
         | None -> ())
 
+let get_cstr_loc_tag (cstr : Types.constructor_declaration) =
+  ( cstr.cd_loc,
+    {
+      name = Ident.name cstr.cd_id;
+      tag_type = process_tag_type cstr.cd_attributes;
+    } )
+
+let constructor_declaration_from_constructor_description ~env
+    (cd : Types.constructor_description) : Types.constructor_declaration option
+    =
+  match cd.cstr_res.desc with
+  | Tconstr (path, _, _) -> (
+    match Env.find_type path env with
+    | {type_kind = Type_variant cstrs} ->
+      Ext_list.find_opt cstrs (fun cstr ->
+          if cstr.cd_id.name = cd.cstr_name then Some cstr else None)
+    | _ -> None)
+  | _ -> None
+
 let names_from_type_variant ?(is_untagged_def = false) ~env
     (cstrs : Types.constructor_declaration list) =
-  let get_cstr_name (cstr : Types.constructor_declaration) =
-    ( cstr.cd_loc,
-      {
-        name = Ident.name cstr.cd_id;
-        tag_type = process_tag_type cstr.cd_attributes;
-      } )
-  in
   let get_block (cstr : Types.constructor_declaration) : block =
-    let tag = snd (get_cstr_name cstr) in
+    let tag = snd (get_cstr_loc_tag cstr) in
     {tag; tag_name = get_tag_name cstr; block_type = get_block_type ~env cstr}
   in
   let consts, blocks =
     Ext_list.fold_left cstrs ([], []) (fun (consts, blocks) cstr ->
         if is_nullary_variant cstr.cd_args then
-          (get_cstr_name cstr :: consts, blocks)
+          (get_cstr_loc_tag cstr :: consts, blocks)
         else (consts, (cstr.cd_loc, get_block cstr) :: blocks))
   in
   check_invariant ~is_untagged_def ~consts ~blocks;

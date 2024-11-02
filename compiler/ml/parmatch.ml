@@ -544,26 +544,23 @@ let all_record_args lbls =
                 _,
                 [({pat_desc = Tpat_construct (_, cd, _)} as pat_construct)] )
             when lbl_is_optional () -> (
-            let block_type =
-              match cd.cstr_res.desc with
-              | Tconstr (path, _, _) -> (
-                match Env.find_type path pat.pat_env with
-                | {type_kind = Type_variant cstrs} ->
-                  Ext_list.find_opt cstrs (fun cstr ->
-                      if cstr.cd_id.name = cd.cstr_name then
-                        Ast_untagged_variants.get_block_type ~env:pat.pat_env
-                          cstr
-                      else None)
-                | _ -> None)
-              | _ -> None
+            let cdecl =
+              Ast_untagged_variants
+              .constructor_declaration_from_constructor_description
+                ~env:pat.pat_env cd
             in
-            match block_type with
-            | Some
-                ( IntType | StringType | FloatType | BigintType | BooleanType
-                | InstanceType _ | FunctionType | ObjectType ) ->
-              (* These types cannot be undefined *)
-              (id, lbl, pat_construct)
-            | _ -> x)
+            match cdecl with
+            | None -> x
+            | Some cstr -> (
+              match
+                Ast_untagged_variants.get_block_type ~env:pat.pat_env cstr
+              with
+              | Some block_type
+                when not
+                       (Ast_untagged_variants.block_type_can_be_undefined
+                          block_type) ->
+                (id, lbl, pat_construct)
+              | _ -> x))
           | _ -> x
         in
         t.(lbl.lbl_pos) <- x)
