@@ -2,7 +2,6 @@ Complete src/CompletionTypeT.res 4:26
 XXX Not found!
 Completable: Cpattern Value[date]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[date]
 Path date
 [{
@@ -33,7 +32,6 @@ Complete src/CompletionTypeT.res 7:27
 XXX Not found!
 Completable: Cexpression Type[withDate]->recordField(date)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Type[withDate]
 Path withDate
 [{

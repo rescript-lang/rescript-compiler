@@ -2,7 +2,6 @@ Complete src/CompletionAttributes.res 0:8
 Attribute id:modu:[0:3->0:8] label:modu
 Completable: Cdecorator(modu)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 [{
     "label": "module",
     "kind": 4,
@@ -17,7 +16,6 @@ Complete src/CompletionAttributes.res 3:12
 XXX Not found!
 Completable: CdecoratorPayload(module=)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 [{
     "label": "@rescript/react",
     "kind": 4,
@@ -42,7 +40,6 @@ Complete src/CompletionAttributes.res 6:7
 Attribute id:js:[6:3->6:7] label:@js
 Completable: Cdecorator(@js)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 [{
     "label": "jsxConfig",
     "kind": 4,
@@ -57,7 +54,6 @@ Complete src/CompletionAttributes.res 9:16
 XXX Not found!
 Completable: JsxConfig
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 [{
     "label": "version",
     "kind": 5,
@@ -82,7 +78,6 @@ Complete src/CompletionAttributes.res 12:17
 XXX Not found!
 Completable: JsxConfig
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 [{
     "label": "module_",
     "kind": 5,
@@ -101,7 +96,6 @@ Complete src/CompletionAttributes.res 15:25
 XXX Not found!
 Completable: JsxConfig
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 [{
     "label": "\"\"",
     "kind": 12,
@@ -117,7 +111,6 @@ Complete src/CompletionAttributes.res 18:29
 XXX Not found!
 Completable: JsxConfig
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 [{
     "label": "version",
     "kind": 5,
@@ -136,7 +129,6 @@ Complete src/CompletionAttributes.res 21:12
 XXX Not found!
 Completable: CdecoratorPayload(moduleWithImportAttributes)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 [{
     "label": "from",
     "kind": 5,
@@ -155,7 +147,6 @@ Complete src/CompletionAttributes.res 24:17
 XXX Not found!
 Completable: CdecoratorPayload(moduleWithImportAttributes)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 [{
     "label": "{}",
     "kind": 12,
@@ -171,7 +162,6 @@ Complete src/CompletionAttributes.res 27:19
 XXX Not found!
 Completable: CdecoratorPayload(moduleWithImportAttributes)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 [{
     "label": "type_",
     "kind": 5,
@@ -184,7 +174,6 @@ Complete src/CompletionAttributes.res 30:19
 XXX Not found!
 Completable: CdecoratorPayload(module=)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 [{
     "label": "@rescript/react",
     "kind": 4,
@@ -209,7 +198,6 @@ Complete src/CompletionAttributes.res 33:17
 XXX Not found!
 Completable: CdecoratorPayload(module=)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 [{
     "label": "@rescript/react",
     "kind": 4,
@@ -234,7 +222,6 @@ Complete src/CompletionAttributes.res 36:14
 posCursor:[36:14] posNoWhite:[36:13] Found expr:[36:12->36:14]
 Completable: CextensionNode(t)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 [{
     "label": "todo",
     "kind": 4,

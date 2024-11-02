@@ -2,7 +2,6 @@ Complete src/CompletionPipeSubmodules.res 12:20
 posCursor:[12:20] posNoWhite:[12:19] Found expr:[12:11->20:8]
 Completable: Cpath Value[A, B1, xx]->
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[A, B1, xx]->
 ContextPath Value[A, B1, xx]
 Path A.B1.xx
@@ -28,7 +27,6 @@ Complete src/CompletionPipeSubmodules.res 16:18
 posCursor:[16:18] posNoWhite:[16:17] Found expr:[16:11->20:8]
 Completable: Cpath Value[A, x].v->
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[A, x].v->
 ContextPath Value[A, x].v
 ContextPath Value[A, x]
@@ -55,7 +53,6 @@ Complete src/CompletionPipeSubmodules.res 38:20
 posCursor:[38:20] posNoWhite:[38:19] Found expr:[38:11->0:-1]
 Completable: Cpath Value[E, e].v.v->
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[E, e].v.v->
 ContextPath Value[E, e].v.v
 ContextPath Value[E, e].v
@@ -77,7 +74,6 @@ Complete src/CompletionPipeSubmodules.res 42:21
 posCursor:[42:21] posNoWhite:[42:20] Found expr:[42:11->0:-1]
 Completable: Cpath Value[E, e].v.v2->
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[E, e].v.v2->
 ContextPath Value[E, e].v.v2
 ContextPath Value[E, e].v

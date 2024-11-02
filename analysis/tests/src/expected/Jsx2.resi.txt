@@ -11,7 +11,6 @@ posCursor:[7:19] posNoWhite:[7:18] Found type:[7:12->7:19]
 Ptyp_constr React.e:[7:12->7:19]
 Completable: Cpath Type[React, e]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Type[React, e]
 Path React.e
 [{
@@ -27,7 +26,6 @@ posCursor:[10:18] posNoWhite:[10:17] Found type:[10:11->10:18]
 Ptyp_constr React.e:[10:11->10:18]
 Completable: Cpath Type[React, e]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Type[React, e]
 Path React.e
 [{

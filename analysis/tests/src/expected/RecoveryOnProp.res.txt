@@ -12,7 +12,6 @@ posCursor:[6:26] posNoWhite:[6:25] Found type:[6:23->8:5]
 Ptyp_constr Res:[6:23->8:5]
 Completable: Cpath Type[Res]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Type[Res]
 Path Res
 [{

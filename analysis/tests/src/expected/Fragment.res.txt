@@ -13,7 +13,6 @@ posCursor:[9:56] posNoWhite:[9:55] Found expr:__ghost__[9:10->9:67]
 Pexp_construct []:__ghost__[9:10->9:67] None
 Completable: Cexpression CTypeAtPos()=[]->variantPayload::::($1)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath CTypeAtPos()
 null
 

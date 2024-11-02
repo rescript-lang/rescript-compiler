@@ -2,7 +2,6 @@ Complete src/CompletionInferValues.res 15:43
 posCursor:[15:43] posNoWhite:[15:42] Found expr:[15:33->15:43]
 Completable: Cpath Value[aliased]->f
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[aliased]->f
 ContextPath Value[aliased]
 Path aliased
@@ -30,7 +29,6 @@ posCursor:[18:30] posNoWhite:[18:29] Found expr:[18:28->18:30]
 Pexp_field [18:28->18:29] _:[33:0->18:30]
 Completable: Cpath Value[x].""
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[x].""
 ContextPath Value[x]
 Path x
@@ -56,7 +54,6 @@ posCursor:[21:53] posNoWhite:[21:52] Found expr:[21:45->21:53]
 Pexp_field [21:45->21:52] _:[33:0->21:53]
 Completable: Cpath Value[aliased].""
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[aliased].""
 ContextPath Value[aliased]
 Path aliased
@@ -90,7 +87,6 @@ posCursor:[24:63] posNoWhite:[24:62] Found expr:[24:52->24:63]
 Pexp_field [24:52->24:62] _:[24:63->24:63]
 Completable: Cpath Value[someRecord].""
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[someRecord].""
 ContextPath Value[someRecord]
 Path someRecord
@@ -123,7 +119,6 @@ posCursor:[27:90] posNoWhite:[27:89] Found expr:[27:79->27:90]
 Pexp_field [27:79->27:89] _:[27:90->27:90]
 Completable: Cpath Value[someRecord].""
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[someRecord].""
 ContextPath Value[someRecord]
 Path someRecord
@@ -155,7 +150,6 @@ posCursor:[30:36] posNoWhite:[30:35] Found expr:[30:16->30:38]
 posCursor:[30:36] posNoWhite:[30:35] Found expr:[30:27->30:36]
 Completable: Cpath Value[event]->pr
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[event]->pr
 ContextPath Value[event]
 Path event
@@ -183,20 +177,19 @@ posCursor:[41:50] posNoWhite:[41:49] Found expr:[41:29->41:52]
 posCursor:[41:50] posNoWhite:[41:49] Found expr:[41:41->41:50]
 Completable: Cpath Value[event]->pr <<jsx>>
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[event]->pr <<jsx>>
 ContextPath Value[event]
 Path event
 ContextPath CArgument CJsxPropValue [div] onMouseEnter($0)
 ContextPath CJsxPropValue [div] onMouseEnter
 Path ReactDOM.domProps
-Path PervasivesU.JsxDOM.domProps
+Path JsxDOM.domProps
 CPPipe env:CompletionInferValues
-CPPipe type path:JsxEventU.Mouse.t
-CPPipe pathFromEnv:JsxEventU.Mouse found:false
-Path JsxEventU.Mouse.pr
+CPPipe type path:JsxEvent.Mouse.t
+CPPipe pathFromEnv:JsxEvent.Mouse found:false
+Path JsxEvent.Mouse.pr
 [{
-    "label": "JsxEventU.Mouse.preventDefault",
+    "label": "JsxEvent.Mouse.preventDefault",
     "kind": 12,
     "tags": [],
     "detail": "t => unit",
@@ -211,7 +204,6 @@ posCursor:[44:50] posNoWhite:[44:49] Found expr:[44:29->44:52]
 posCursor:[44:50] posNoWhite:[44:49] Found expr:[44:41->44:50]
 Completable: Cpath Value[event]->pr <<jsx>>
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[event]->pr <<jsx>>
 ContextPath Value[event]
 Path event
@@ -219,11 +211,11 @@ ContextPath CArgument CJsxPropValue [Div] onMouseEnter($0)
 ContextPath CJsxPropValue [Div] onMouseEnter
 Path Div.make
 CPPipe env:CompletionInferValues envFromCompletionItem:CompletionInferValues.Div
-CPPipe type path:PervasivesU.JsxEvent.Mouse.t
-CPPipe pathFromEnv:PervasivesU.JsxEvent.Mouse found:false
-Path PervasivesU.JsxEvent.Mouse.pr
+CPPipe type path:JsxEvent.Mouse.t
+CPPipe pathFromEnv:JsxEvent.Mouse found:false
+Path JsxEvent.Mouse.pr
 [{
-    "label": "PervasivesU.JsxEvent.Mouse.preventDefault",
+    "label": "JsxEvent.Mouse.preventDefault",
     "kind": 12,
     "tags": [],
     "detail": "t => unit",
@@ -239,14 +231,13 @@ posCursor:[47:87] posNoWhite:[47:86] Found expr:[47:41->47:87]
 posCursor:[47:87] posNoWhite:[47:86] Found expr:[47:81->47:87]
 Completable: Cpath Value[btn]->t <<jsx>>
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[btn]->t <<jsx>>
 ContextPath Value[btn]
 Path btn
 ContextPath Value[JsxEvent, Mouse, button](Nolabel)
 ContextPath Value[JsxEvent, Mouse, button]
 Path JsxEvent.Mouse.button
-CPPipe env:CompletionInferValues envFromCompletionItem:JsxEventU.Mouse
+CPPipe env:CompletionInferValues envFromCompletionItem:JsxEvent.Mouse
 Path Belt.Int.t
 [{
     "label": "Belt.Int.toString",
@@ -271,7 +262,6 @@ posCursor:[50:108] posNoWhite:[50:107] Found expr:[50:41->50:108]
 posCursor:[50:108] posNoWhite:[50:107] Found expr:[50:100->50:108]
 Completable: Cpath Value[btn]->spl <<jsx>>
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[btn]->spl <<jsx>>
 ContextPath Value[btn]
 Path btn
@@ -291,7 +281,7 @@ Path Js.String2.spl
     "kind": 12,
     "tags": [],
     "detail": "(t, Js_re.t) => array<option<t>>",
-    "documentation": {"kind": "markdown", "value": "\n`splitByRe(str, regex)` splits the given `str` at every occurrence of `regex`\nand returns an array of the resulting substrings.\n\nSee [`String.split`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)\non MDN.\n\n## Examples\n\n```rescript\nJs.String2.splitByRe(\"art; bed , cog ;dad\", %re(\"/\\s*[,;]\\s*TODO/\")) == [\n    Some(\"art\"),\n    Some(\"bed\"),\n    Some(\"cog\"),\n    Some(\"dad\"),\n  ]\n```\n"}
+    "documentation": {"kind": "markdown", "value": "\n`splitByRe(str, regex)` splits the given `str` at every occurrence of `regex`\nand returns an array of the resulting substrings.\n\nSee [`String.split`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)\non MDN.\n\n## Examples\n\n```rescript\nJs.String2.splitByRe(\"art; bed , cog ;dad\", /\\s*[,;]\\s*TODO/) == [\n    Some(\"art\"),\n    Some(\"bed\"),\n    Some(\"cog\"),\n    Some(\"dad\"),\n  ]\n```\n"}
   }, {
     "label": "Js.String2.split",
     "kind": 12,
@@ -303,7 +293,7 @@ Path Js.String2.spl
     "kind": 12,
     "tags": [],
     "detail": "(t, Js_re.t, ~limit: int) => array<option<t>>",
-    "documentation": {"kind": "markdown", "value": "\n`splitByReAtMost(str, regex, ~limit:n)` splits the given `str` at every\noccurrence of `regex` and returns an array of the first `n` resulting\nsubstrings. If `n` is negative or greater than the number of substrings, the\narray will contain all the substrings.\n\nSee [`String.split`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)\non MDN.\n\n## Examples\n\n```rescript\nJs.String2.splitByReAtMost(\"one: two: three: four\", %re(\"/\\s*:\\s*TODO/\"), ~limit=3) == [\n    Some(\"one\"),\n    Some(\"two\"),\n    Some(\"three\"),\n  ]\n\nJs.String2.splitByReAtMost(\"one: two: three: four\", %re(\"/\\s*:\\s*TODO/\"), ~limit=0) == []\n\nJs.String2.splitByReAtMost(\"one: two: three: four\", %re(\"/\\s*:\\s*TODO/\"), ~limit=8) == [\n    Some(\"one\"),\n    Some(\"two\"),\n    Some(\"three\"),\n    Some(\"four\"),\n  ]\n```\n"}
+    "documentation": {"kind": "markdown", "value": "\n`splitByReAtMost(str, regex, ~limit:n)` splits the given `str` at every\noccurrence of `regex` and returns an array of the first `n` resulting\nsubstrings. If `n` is negative or greater than the number of substrings, the\narray will contain all the substrings.\n\nSee [`String.split`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)\non MDN.\n\n## Examples\n\n```rescript\nJs.String2.splitByReAtMost(\"one: two: three: four\", /\\s*:\\s*TODO/, ~limit=3) == [\n    Some(\"one\"),\n    Some(\"two\"),\n    Some(\"three\"),\n  ]\n\nJs.String2.splitByReAtMost(\"one: two: three: four\", /\\s*:\\s*TODO/, ~limit=0) == []\n\nJs.String2.splitByReAtMost(\"one: two: three: four\", /\\s*:\\s*TODO/, ~limit=8) == [\n    Some(\"one\"),\n    Some(\"two\"),\n    Some(\"three\"),\n    Some(\"four\"),\n  ]\n```\n"}
   }]
 
 Complete src/CompletionInferValues.res 53:130
@@ -315,7 +305,6 @@ posCursor:[53:130] posNoWhite:[53:129] Found expr:[53:41->53:130]
 posCursor:[53:130] posNoWhite:[53:129] Found expr:[53:123->53:130]
 Completable: Cpath Value[btn]->ma <<jsx>>
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[btn]->ma <<jsx>>
 ContextPath Value[btn]
 Path btn
@@ -343,7 +332,6 @@ posCursor:[56:52] posNoWhite:[56:51] Found expr:[56:50->56:52]
 Pexp_field [56:50->56:51] _:[59:0->56:52]
 Completable: Cpath Value[x].""
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[x].""
 ContextPath Value[x]
 Path x
@@ -368,7 +356,6 @@ posCursor:[78:78] posNoWhite:[78:77] Found expr:[78:70->78:78]
 Pexp_field [78:70->78:77] _:[125:0->78:78]
 Completable: Cpath Value[srecord].""
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[srecord].""
 ContextPath Value[srecord]
 Path srecord
@@ -396,7 +383,6 @@ posCursor:[82:86] posNoWhite:[82:85] Found expr:[82:78->82:86]
 Pexp_field [82:78->82:85] _:[125:0->82:86]
 Completable: Cpath Value[aliased].""
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[aliased].""
 ContextPath Value[aliased]
 Path aliased
@@ -418,7 +404,6 @@ posCursor:[86:103] posNoWhite:[86:102] Found expr:[86:92->86:103]
 Pexp_field [86:92->86:102] _:[125:0->86:103]
 Completable: Cpath Value[someRecord].""
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[someRecord].""
 ContextPath Value[someRecord]
 Path someRecord
@@ -445,7 +430,6 @@ Complete src/CompletionInferValues.res 90:81
 posCursor:[90:81] posNoWhite:[90:80] Found expr:[90:69->90:81]
 Completable: Cpath Value[things]->slic
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[things]->slic
 ContextPath Value[things]
 Path things
@@ -474,7 +458,6 @@ Complete src/CompletionInferValues.res 94:82
 posCursor:[94:82] posNoWhite:[94:81] Found expr:[94:70->94:82]
 Completable: Cpath Value[someInt]->toS
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[someInt]->toS
 ContextPath Value[someInt]
 Path someInt
@@ -497,7 +480,6 @@ Complete src/CompletionInferValues.res 98:109
 posCursor:[98:109] posNoWhite:[98:108] Found expr:[98:97->98:109]
 Completable: Cpath Value[someInt]->toS
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[someInt]->toS
 ContextPath Value[someInt]
 Path someInt
@@ -524,7 +506,6 @@ posCursor:[102:102] posNoWhite:[102:101] Found expr:[102:57->102:102]
 posCursor:[102:102] posNoWhite:[102:101] Found expr:[102:90->102:102]
 Completable: Cpath Value[someInt]->toS
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[someInt]->toS
 ContextPath Value[someInt]
 Path someInt
@@ -550,7 +531,6 @@ Complete src/CompletionInferValues.res 106:88
 posCursor:[106:88] posNoWhite:[106:87] Found expr:[106:79->106:88]
 Completable: Cpath Value[str]->slic
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[str]->slic
 ContextPath Value[str]
 Path str
@@ -579,7 +559,6 @@ Complete src/CompletionInferValues.res 110:89
 posCursor:[110:89] posNoWhite:[110:88] Found expr:[110:80->110:89]
 Completable: Cpath Value[str]->slic
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[str]->slic
 ContextPath Value[str]
 Path str
@@ -608,7 +587,6 @@ Complete src/CompletionInferValues.res 114:80
 posCursor:[114:80] posNoWhite:[114:79] Found expr:[114:70->114:80]
 Completable: Cpath Value[name]->slic
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[name]->slic
 ContextPath Value[name]
 Path name
@@ -638,7 +616,6 @@ posCursor:[118:67] posNoWhite:[118:66] Found expr:[118:60->118:67]
 Pexp_field [118:60->118:65] s:[118:66->118:67]
 Completable: Cpath Value[inner].s
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[inner].s
 ContextPath Value[inner]
 Path inner
@@ -666,7 +643,6 @@ Complete src/CompletionInferValues.res 122:53
 posCursor:[122:53] posNoWhite:[122:52] Found expr:[122:46->122:53]
 Completable: Cpath Value[v]->toSt
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[v]->toSt
 ContextPath Value[v]
 Path v
@@ -692,7 +668,6 @@ posCursor:[130:26] posNoWhite:[130:25] Found pattern:[130:25->130:27]
 posCursor:[130:26] posNoWhite:[130:25] Found pattern:[130:25->130:27]
 Completable: Cpattern CArgument CArgument Value[fnWithRecordCallback]($0)($0)->recordBody
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath CArgument CArgument Value[fnWithRecordCallback]($0)($0)
 ContextPath CArgument Value[fnWithRecordCallback]($0)
 ContextPath Value[fnWithRecordCallback]
@@ -720,7 +695,6 @@ posCursor:[137:30] posNoWhite:[137:29] Found expr:[137:24->0:-1]
 posCursor:[137:30] posNoWhite:[137:29] Found expr:[137:24->0:-1]
 Completable: Cpath Value[root]->
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[root]->
 ContextPath Value[root]
 Path root
@@ -756,7 +730,6 @@ posCursor:[146:30] posNoWhite:[146:29] Found expr:[146:24->0:-1]
 posCursor:[146:30] posNoWhite:[146:29] Found expr:[146:24->0:-1]
 Completable: Cpath Value[root]->
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[root]->
 ContextPath Value[root]
 Path root
@@ -793,7 +766,6 @@ Complete src/CompletionInferValues.res 150:47
 XXX Not found!
 Completable: Cpattern Value[Belt, Int, toString](Nolabel)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[Belt, Int, toString](Nolabel)
 ContextPath Value[Belt, Int, toString]
 Path Belt.Int.toString
@@ -812,7 +784,6 @@ Complete src/CompletionInferValues.res 154:70
 XXX Not found!
 Completable: Cpattern Value[Js, String2, split](Nolabel, Nolabel)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[Js, String2, split](Nolabel, Nolabel)
 ContextPath Value[Js, String2, split]
 Path Js.String2.split
@@ -836,7 +807,6 @@ posCursor:[158:105] posNoWhite:[158:104] Found expr:[158:97->158:105]
 Pexp_field [158:97->158:104] _:[158:105->158:105]
 Completable: Cpath Value[support].""
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[support].""
 ContextPath Value[support]
 Path support
@@ -862,7 +832,6 @@ posCursor:[162:110] posNoWhite:[162:109] Found expr:[162:104->0:-1]
 posCursor:[162:110] posNoWhite:[162:109] Found expr:[162:104->0:-1]
 Completable: Cpath Value[root]->
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[root]->
 ContextPath Value[root]
 Path root
@@ -895,11 +864,9 @@ posCursor:[167:27] posNoWhite:[167:26] Found expr:[167:25->167:28]
 Pexp_ident res:[167:25->167:28]
 Completable: Cpath Value[res]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[res]
 Path res
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[res]
 Path res
 {"contents": {"kind": "markdown", "value": "```rescript\nint\n```"}}

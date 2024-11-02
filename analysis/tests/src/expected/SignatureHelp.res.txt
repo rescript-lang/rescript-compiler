@@ -5,7 +5,6 @@ posCursor:[16:19] posNoWhite:[16:18] Found expr:[16:11->16:19]
 Pexp_ident someFunc:[16:11->16:19]
 Completable: Cpath Value[someFunc]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[someFunc]
 Path someFunc
 argAtCursor: unlabelled<0>
@@ -28,7 +27,6 @@ posCursor:[19:19] posNoWhite:[19:18] Found expr:[19:11->19:19]
 Pexp_ident someFunc:[19:11->19:19]
 Completable: Cpath Value[someFunc]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[someFunc]
 Path someFunc
 argAtCursor: unlabelled<0>
@@ -51,7 +49,6 @@ posCursor:[22:19] posNoWhite:[22:18] Found expr:[22:11->22:19]
 Pexp_ident someFunc:[22:11->22:19]
 Completable: Cpath Value[someFunc]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[someFunc]
 Path someFunc
 argAtCursor: ~two
@@ -74,7 +71,6 @@ posCursor:[25:19] posNoWhite:[25:18] Found expr:[25:11->25:19]
 Pexp_ident someFunc:[25:11->25:19]
 Completable: Cpath Value[someFunc]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[someFunc]
 Path someFunc
 argAtCursor: ~two
@@ -97,7 +93,6 @@ posCursor:[28:19] posNoWhite:[28:18] Found expr:[28:11->28:19]
 Pexp_ident someFunc:[28:11->28:19]
 Completable: Cpath Value[someFunc]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[someFunc]
 Path someFunc
 argAtCursor: ~four
@@ -120,7 +115,6 @@ posCursor:[31:19] posNoWhite:[31:18] Found expr:[31:11->31:19]
 Pexp_ident someFunc:[31:11->31:19]
 Completable: Cpath Value[someFunc]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[someFunc]
 Path someFunc
 argAtCursor: ~four
@@ -143,7 +137,6 @@ posCursor:[34:20] posNoWhite:[34:19] Found expr:[34:11->34:20]
 Pexp_ident otherFunc:[34:11->34:20]
 Completable: Cpath Value[otherFunc]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[otherFunc]
 Path otherFunc
 argAtCursor: unlabelled<0>
@@ -165,7 +158,6 @@ posCursor:[37:20] posNoWhite:[37:19] Found expr:[37:11->37:20]
 Pexp_ident otherFunc:[37:11->37:20]
 Completable: Cpath Value[otherFunc]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[otherFunc]
 Path otherFunc
 argAtCursor: unlabelled<0>
@@ -187,7 +179,6 @@ posCursor:[40:20] posNoWhite:[40:19] Found expr:[40:11->40:20]
 Pexp_ident otherFunc:[40:11->40:20]
 Completable: Cpath Value[otherFunc]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[otherFunc]
 Path otherFunc
 argAtCursor: unlabelled<2>
@@ -209,7 +200,6 @@ posCursor:[43:29] posNoWhite:[43:28] Found expr:[43:11->43:29]
 Pexp_ident Completion.Lib.foo:[43:11->43:29]
 Completable: Cpath Value[Completion, Lib, foo]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[Completion, Lib, foo]
 Path Completion.Lib.foo
 argAtCursor: ~age
@@ -231,7 +221,6 @@ posCursor:[50:23] posNoWhite:[50:22] Found expr:[50:11->50:23]
 Pexp_ident iAmSoSpecial:[50:11->50:23]
 Completable: Cpath Value[iAmSoSpecial]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[iAmSoSpecial]
 Path iAmSoSpecial
 argAtCursor: unlabelled<0>
@@ -254,7 +243,6 @@ posCursor:[53:29] posNoWhite:[53:28] Found expr:[53:20->53:29]
 Pexp_ident otherFunc:[53:20->53:29]
 Completable: Cpath Value[otherFunc]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[otherFunc]
 Path otherFunc
 argAtCursor: unlabelled<1>
@@ -276,7 +264,6 @@ posCursor:[62:13] posNoWhite:[62:12] Found expr:[62:11->62:13]
 Pexp_ident fn:[62:11->62:13]
 Completable: Cpath Value[fn]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[fn]
 Path fn
 argAtCursor: unlabelled<1>
@@ -298,7 +285,6 @@ posCursor:[65:13] posNoWhite:[65:12] Found expr:[65:11->65:13]
 Pexp_ident fn:[65:11->65:13]
 Completable: Cpath Value[fn]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[fn]
 Path fn
 argAtCursor: unlabelled<1>
@@ -320,7 +306,6 @@ posCursor:[68:13] posNoWhite:[68:12] Found expr:[68:11->68:13]
 Pexp_ident fn:[68:11->68:13]
 Completable: Cpath Value[fn]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[fn]
 Path fn
 argAtCursor: unlabelled<2>
@@ -344,7 +329,6 @@ posCursor:[71:28] posNoWhite:[71:27] Found expr:[71:16->71:28]
 Pexp_ident iAmSoSpecial:[71:16->71:28]
 Completable: Cpath Value[iAmSoSpecial]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[iAmSoSpecial]
 Path iAmSoSpecial
 argAtCursor: unlabelled<0>
@@ -370,7 +354,6 @@ posCursor:[74:39] posNoWhite:[74:38] Found expr:[74:31->74:39]
 Pexp_ident someFunc:[74:31->74:39]
 Completable: Cpath Value[someFunc]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[someFunc]
 Path someFunc
 argAtCursor: unlabelled<0>
@@ -463,7 +446,7 @@ Signature help src/SignatureHelp.res 105:9
   "activeParameter": -1
 }
 
-Signature help src/SignatureHelp.res 117:42
+Signature help src/SignatureHelp.res 113:42
 argAtCursor: unlabelled<1>
 extracted params: 
 [array<int>, int => int]
@@ -477,7 +460,7 @@ extracted params:
   "activeParameter": 1
 }
 
-Signature help src/SignatureHelp.res 136:18
+Signature help src/SignatureHelp.res 132:18
 argAtCursor: unlabelled<0>
 extracted params: 
 [x, tt]
@@ -491,7 +474,7 @@ extracted params:
   "activeParameter": 0
 }
 
-Signature help src/SignatureHelp.res 139:22
+Signature help src/SignatureHelp.res 135:22
 argAtCursor: unlabelled<1>
 extracted params: 
 [x, tt]
@@ -505,7 +488,7 @@ extracted params:
   "activeParameter": 1
 }
 
-Signature help src/SignatureHelp.res 143:8
+Signature help src/SignatureHelp.res 139:8
 {
   "signatures": [{
     "label": "One({miss?: bool, hit?: bool, stuff?: string})",
@@ -516,7 +499,7 @@ Signature help src/SignatureHelp.res 143:8
   "activeParameter": 2
 }
 
-Signature help src/SignatureHelp.res 145:7
+Signature help src/SignatureHelp.res 141:7
 {
   "signatures": [{
     "label": "One({miss?: bool, hit?: bool, stuff?: string})",
@@ -527,7 +510,7 @@ Signature help src/SignatureHelp.res 145:7
   "activeParameter": 0
 }
 
-Signature help src/SignatureHelp.res 147:7
+Signature help src/SignatureHelp.res 143:7
 {
   "signatures": [{
     "label": "Two(mySpecialThing)",
@@ -538,7 +521,7 @@ Signature help src/SignatureHelp.res 147:7
   "activeParameter": 0
 }
 
-Signature help src/SignatureHelp.res 149:9
+Signature help src/SignatureHelp.res 145:9
 {
   "signatures": [{
     "label": "Three(mySpecialThing, array<option<string>>)",
@@ -549,7 +532,7 @@ Signature help src/SignatureHelp.res 149:9
   "activeParameter": 0
 }
 
-Signature help src/SignatureHelp.res 151:12
+Signature help src/SignatureHelp.res 147:12
 {
   "signatures": [{
     "label": "Three(mySpecialThing, array<option<string>>)",
@@ -560,7 +543,7 @@ Signature help src/SignatureHelp.res 151:12
   "activeParameter": 1
 }
 
-Signature help src/SignatureHelp.res 155:14
+Signature help src/SignatureHelp.res 151:14
 {
   "signatures": [{
     "label": "Ok(bool)",
@@ -571,7 +554,7 @@ Signature help src/SignatureHelp.res 155:14
   "activeParameter": 0
 }
 
-Signature help src/SignatureHelp.res 158:19
+Signature help src/SignatureHelp.res 154:19
 {
   "signatures": [{
     "label": "Error(string)",
@@ -582,7 +565,7 @@ Signature help src/SignatureHelp.res 158:19
   "activeParameter": 0
 }
 
-Signature help src/SignatureHelp.res 161:16
+Signature help src/SignatureHelp.res 157:16
 {
   "signatures": [{
     "label": "Some(bool)",
