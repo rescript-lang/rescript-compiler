@@ -5,19 +5,17 @@ import * as Test from "./Test.mjs";
 function decodeJsonTest() {
   let json = {"someProp":{"otherProp": null, "thirdProp": [true, false]}};
   let decodedCorrectly;
-  if (json === null || !(typeof json === "object" && !Array.isArray(json))) {
-    decodedCorrectly = false;
-  } else {
+  if (typeof json === "object" && !Array.isArray(json)) {
     let match = json["someProp"];
-    if (match !== undefined && !(match === null || !(typeof match === "object" && !Array.isArray(match)))) {
+    if (match !== undefined && typeof match === "object" && !Array.isArray(match)) {
       let match$1 = match["thirdProp"];
-      if (match$1 !== undefined && !(match$1 === null || !(Array.isArray(match$1) && match$1.length === 2))) {
+      if (match$1 !== undefined && Array.isArray(match$1) && match$1.length === 2) {
         let match$2 = match$1[0];
-        if (match$2 === null || !(typeof match$2 === "boolean" && match$2)) {
-          decodedCorrectly = false;
-        } else {
+        if (typeof match$2 === "boolean" && match$2) {
           let match$3 = match$1[1];
-          decodedCorrectly = match$3 === null ? false : typeof match$3 === "boolean" && !match$3;
+          decodedCorrectly = typeof match$3 === "boolean" && !match$3;
+        } else {
+          decodedCorrectly = false;
         }
       } else {
         decodedCorrectly = false;
@@ -25,6 +23,8 @@ function decodeJsonTest() {
     } else {
       decodedCorrectly = false;
     }
+  } else {
+    decodedCorrectly = false;
   }
   Test.run([
     [

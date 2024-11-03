@@ -4,12 +4,6 @@ import * as Primitive_option from "rescript/lib/es6/Primitive_option.js";
 
 function decodeGroup(group) {
   let id = group.id;
-  if (id == null) {
-    return [
-      "e",
-      "f"
-    ];
-  }
   if (typeof id !== "string") {
     return [
       "e",
@@ -17,15 +11,15 @@ function decodeGroup(group) {
     ];
   }
   let name = group.name;
-  if (typeof name !== "string") {
-    return [
-      "e",
-      "f"
-    ];
-  } else {
+  if (typeof name === "string") {
     return [
       id,
       name
+    ];
+  } else {
+    return [
+      "e",
+      "f"
     ];
   }
 }
