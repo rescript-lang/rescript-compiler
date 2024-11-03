@@ -6,10 +6,10 @@ function check_null_eq_typeof(x) {
 }
 
 function check_null_neq_typeof(x) {
-  if (typeof x !== "boolean") {
-    return 4;
-  } else {
+  if (typeof x === "boolean") {
     return 3;
+  } else {
+    return 4;
   }
 }
 
@@ -18,10 +18,10 @@ function check_undefined_eq_typeof(x) {
 }
 
 function check_undefined_neq_typeof(x) {
-  if (typeof x !== "boolean") {
-    return 4;
-  } else {
+  if (typeof x === "boolean") {
     return 3;
+  } else {
+    return 4;
   }
 }
 

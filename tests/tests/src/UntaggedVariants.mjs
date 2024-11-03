@@ -376,10 +376,6 @@ let TestFunctionCase = {
 let someJson = '[{"name": "Haan"}, {"name": "Mr"}, false]';
 
 function check$1(s) {
-  if (s === undefined || s === null || s === false || s === true) {
-    console.log("Nope...");
-    return;
-  }
   if (Array.isArray(s)) {
     if (s.length !== 3) {
       console.log("Nope...");
@@ -388,46 +384,40 @@ function check$1(s) {
     let match = s[0];
     if (match === true) {
       let match$1 = s[1];
-      if (match$1 === false) {
-        let match$2 = s[2];
-        if (match$2 === undefined || match$2 === null || match$2 === false || match$2 === true) {
-          console.log("Nope...");
-          return;
-        }
-        if (Array.isArray(match$2)) {
-          if (match$2.length !== 2) {
-            console.log("Nope...");
-            return;
-          }
-          let match$3 = match$2[0];
-          if (match$3 === undefined || match$3 === null || match$3 === false || match$3 === true) {
-            console.log("Nope...");
-            return;
-          }
-          if (match$3 === "My name is") {
-            let match$4 = match$2[1];
-            if (match$4 === undefined || match$4 === null || match$4 === false || match$4 === true) {
+      if (match$1 === undefined || match$1 === null || match$1 === false || match$1 === true) {
+        if (match$1 === false) {
+          let match$2 = s[2];
+          if (Array.isArray(match$2)) {
+            if (match$2.length !== 2) {
               console.log("Nope...");
               return;
             }
-            if (typeof match$4 === "number") {
-              if (match$4 !== 10) {
+            let match$3 = match$2[0];
+            if (typeof match$3 === "string") {
+              if (match$3 === "My name is") {
+                let match$4 = match$2[1];
+                if (typeof match$4 === "number") {
+                  if (match$4 !== 10) {
+                    console.log("Nope...");
+                  } else {
+                    console.log("yup");
+                  }
+                  return;
+                }
                 console.log("Nope...");
-              } else {
-                console.log("yup");
+                return;
               }
+              console.log("Nope...");
               return;
             }
             console.log("Nope...");
             return;
-          } else {
-            console.log("Nope...");
-            return;
           }
-        } else {
           console.log("Nope...");
           return;
         }
+        console.log("Nope...");
+        return;
       } else {
         console.log("Nope...");
         return;
