@@ -3,86 +3,50 @@
 import * as $$Array from "rescript/lib/es6/Array.js";
 
 function decodeUser(json) {
-  if (json === null) {
-    return;
-  }
   if (!(typeof json === "object" && !Array.isArray(json))) {
     return;
   }
-  let match = json.id;
-  if (match === undefined) {
+  let id = json.id;
+  if (typeof id !== "string") {
     return;
   }
-  if (match === null) {
+  let name = json.name;
+  if (typeof name !== "string") {
     return;
   }
-  if (typeof match !== "string") {
-    return;
-  }
-  let match$1 = json.name;
-  if (match$1 === undefined) {
-    return;
-  }
-  if (match$1 === null) {
-    return;
-  }
-  if (typeof match$1 !== "string") {
-    return;
-  }
-  let match$2 = json.age;
-  if (match$2 === undefined) {
-    return;
-  }
-  if (match$2 === null) {
-    return;
-  }
-  if (typeof match$2 !== "number") {
+  let age = json.age;
+  if (typeof age !== "number") {
     return;
   }
   let email = json.email;
   let tmp;
   tmp = typeof email === "string" ? email : undefined;
   return {
-    id: match,
-    name: match$1,
-    age: match$2 | 0,
+    id: id,
+    name: name,
+    age: age | 0,
     email: tmp
   };
 }
 
 function decodeGroup(json) {
-  if (json === null) {
-    return;
-  }
   if (!(typeof json === "object" && !Array.isArray(json))) {
     return;
   }
-  let match = json.id;
-  if (match === undefined) {
+  let id = json.id;
+  if (typeof id !== "string") {
     return;
   }
-  if (match === null) {
+  let name = json.name;
+  if (typeof name !== "string") {
     return;
   }
-  if (typeof match !== "string") {
-    return;
-  }
-  let match$1 = json.name;
-  if (match$1 === undefined) {
-    return;
-  }
-  if (match$1 === null) {
-    return;
-  }
-  if (typeof match$1 !== "string") {
-    return;
-  }
-  let match$2 = json.users;
-  if (match$2 !== undefined && !(match$2 === null || !Array.isArray(match$2))) {
+  let users = json.users;
+  if (Array.isArray(users)) {
     return {
-      id: match,
-      name: match$1,
-      users: $$Array.filterMap(match$2, decodeUser)
+      id: id,
+      name: name,
+      users: $$Array.filterMap(users, decodeUser)
     };
   }
   
