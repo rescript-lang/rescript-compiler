@@ -54,12 +54,6 @@ let v = JSON.parse(" { \"x\" : [1, 2, 3 ] } ");
 
 add_test("File \"js_json_test.res\", line 23, characters 11-18", () => {
   let ty = Js_json.classify(v);
-  if (typeof ty !== "object") {
-    return {
-      TAG: "Ok",
-      _0: false
-    };
-  }
   if (ty.TAG !== "JSONObject") {
     return {
       TAG: "Ok",
@@ -74,12 +68,6 @@ add_test("File \"js_json_test.res\", line 23, characters 11-18", () => {
     };
   }
   let ty2 = Js_json.classify(v$1);
-  if (typeof ty2 !== "object") {
-    return {
-      TAG: "Ok",
-      _0: false
-    };
-  }
   if (ty2.TAG !== "JSONArray") {
     return {
       TAG: "Ok",
@@ -88,17 +76,6 @@ add_test("File \"js_json_test.res\", line 23, characters 11-18", () => {
   }
   ty2._0.forEach(x => {
     let ty3 = Js_json.classify(x);
-    if (typeof ty3 !== "object") {
-      throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "js_json_test.res",
-          39,
-          21
-        ],
-        Error: new Error()
-      };
-    }
     if (ty3.TAG === "JSONNumber") {
       return;
     }
@@ -169,10 +146,10 @@ let ty$2 = Js_json.classify(json$2);
 
 let exit = 0;
 
-if (typeof ty$2 !== "object" || ty$2.TAG !== "JSONNumber") {
-  exit = 1;
-} else {
+if (ty$2.TAG === "JSONNumber") {
   eq("File \"js_json_test.res\", line 80, characters 26-33", ty$2._0, 1.23456789);
+} else {
+  exit = 1;
 }
 
 if (exit === 1) {
@@ -188,10 +165,10 @@ let ty$3 = Js_json.classify(json$3);
 
 let exit$1 = 0;
 
-if (typeof ty$3 !== "object" || ty$3.TAG !== "JSONNumber") {
-  exit$1 = 1;
-} else {
+if (ty$3.TAG === "JSONNumber") {
   eq("File \"js_json_test.res\", line 90, characters 26-33", ty$3._0 | 0, -1347440721);
+} else {
+  exit$1 = 1;
 }
 
 if (exit$1 === 1) {

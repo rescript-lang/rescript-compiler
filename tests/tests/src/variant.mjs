@@ -31,10 +31,10 @@ function fooA1(x) {
 }
 
 function fooC(x) {
-  if (typeof x !== "object" || x.TAG !== "C") {
-    return 42;
-  } else {
+  if (x.TAG === "C") {
     return x._0 + x._1 | 0;
+  } else {
+    return 42;
   }
 }
 

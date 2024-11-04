@@ -101,11 +101,11 @@ let json$1 = $$JSON.Classify.classify(json);
 
 let tmp;
 
-if (typeof json$1 !== "object" || json$1.TAG !== "Object") {
-  tmp = undefined;
-} else {
+if (json$1.TAG === "Object") {
   let value = $$JSON.Classify.classify(json$1._0["foo"]);
-  tmp = typeof value !== "object" || value.TAG !== "String" ? undefined : value._0;
+  tmp = value.TAG === "String" ? value._0 : undefined;
+} else {
+  tmp = undefined;
 }
 
 console.log(tmp);

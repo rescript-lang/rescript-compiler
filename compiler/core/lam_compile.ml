@@ -740,8 +740,7 @@ let compile output_prefix =
               | _ -> false
             in
             if
-              untagged
-              && List.length sw_consts = 0
+              List.length sw_consts = 0
               && eq_default sw_num_default sw_blocks_default
             then
               compile_cases ~untagged ~cxt
