@@ -57,6 +57,32 @@ let builtin x = Primitive_modules.pervasives ^ "." ^ x
 let entries =
   [|
     {
+      path = builtin "~+";
+      name = "%pos";
+      form = Unary;
+      specialization =
+        {
+          int = Pidentity;
+          bool = None;
+          float = Some Pidentity;
+          bigint = Some Pidentity;
+          string = None;
+        };
+    };
+    {
+      path = builtin "~-";
+      name = "%neg";
+      form = Unary;
+      specialization =
+        {
+          int = Pnegint;
+          bool = None;
+          float = Some Pnegfloat;
+          bigint = Some Pnegbigint;
+          string = None;
+        };
+    };
+    {
       path = builtin "+";
       name = "%add";
       form = Binary;
@@ -79,6 +105,45 @@ let entries =
           bool = None;
           float = Some Psubfloat;
           bigint = Some Psubbigint;
+          string = None;
+        };
+    };
+    {
+      path = builtin "*";
+      name = "%mul";
+      form = Binary;
+      specialization =
+        {
+          int = Pmulint;
+          bool = None;
+          float = Some Pmulfloat;
+          bigint = Some Pmulbigint;
+          string = None;
+        };
+    };
+    {
+      path = builtin "/";
+      name = "%div";
+      form = Binary;
+      specialization =
+        {
+          int = Pdivint Safe;
+          bool = None;
+          float = Some Pdivfloat;
+          bigint = Some Pdivbigint;
+          string = None;
+        };
+    };
+    {
+      path = builtin "mod";
+      name = "%mod";
+      form = Binary;
+      specialization =
+        {
+          int = Pmodint Safe;
+          bool = None;
+          float = Some Pmodfloat;
+          bigint = Some Pmodbigint;
           string = None;
         };
     };
