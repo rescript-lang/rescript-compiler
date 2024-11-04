@@ -24,6 +24,14 @@ open Misc
 
   Since these are simple ad-hoc translations for primitive applications, we cannot use the result type defined in other contexts.
   So falling back to int type is the simplest behavior that ensures backwards compatibility.
+
+  Actual implementations of translation are colocated into core modules
+
+  You can find it in:
+  - Type-level : ml/typecore.ml
+  - IR-level   : ml/translcore.ml
+
+  With function name "translate_unified_ops"
 *)
 
 type form = Unary | Binary
@@ -81,13 +89,3 @@ let index_by_path =
 
 let index_by_name =
   entries |> Array.map (fun entry -> (entry.name, entry)) |> create_hashtable
-
-(*
-  Actual implementations of translation are colocated into core modules
-
-  You can find it in:
-  - Type-level : ml/typecore.ml
-  - IR-level   : ml/translcore.ml
-
-  With function name "translate_unified_application"
-*)

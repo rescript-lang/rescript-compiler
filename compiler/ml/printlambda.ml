@@ -125,8 +125,6 @@ let primitive ppf = function
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
   | Praise k -> fprintf ppf "%s" (Lambda.raise_kind k)
-  | Pinfix (Inf_custom (mod_, op)) -> fprintf ppf "%s.%s" mod_ op
-  | Pinfix Inf_invariant -> fprintf ppf "invariant"
   | Pobjcomp Ceq -> fprintf ppf "=="
   | Pobjcomp Cneq -> fprintf ppf "!="
   | Pobjcomp Clt -> fprintf ppf "<"

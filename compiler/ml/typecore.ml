@@ -2458,7 +2458,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
     in
     let type_clash_context = type_clash_context_from_function sexp sfunct in
     let args, ty_res, fully_applied =
-      match translate_unified_application env funct sargs with
+      match translate_unified_ops env funct sargs with
       | Some (targs, result_type) -> (targs, result_type, true)
       | None -> type_application ?type_clash_context uncurried env funct sargs
     in
@@ -3563,7 +3563,7 @@ and is_automatic_curried_application env funct =
   | Tarrow _ -> true
   | _ -> false
 
-and translate_unified_application (env : Env.t) (funct : Typedtree.expression)
+and translate_unified_ops (env : Env.t) (funct : Typedtree.expression)
     (sargs : sargs) : (targs * Types.type_expr) option =
   match funct.exp_desc with
   | Texp_ident (path, _, _) -> (
