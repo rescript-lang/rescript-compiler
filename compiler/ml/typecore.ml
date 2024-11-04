@@ -2458,8 +2458,8 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
     in
     let type_clash_context = type_clash_context_from_function sexp sfunct in
     let args, ty_res, fully_applied =
-      match specialized_infix_type_application env funct sargs with
-      | Some application -> application
+      match translate_unified_application env funct sargs with
+      | Some (targs, result_type) -> (targs, result_type, true)
       | None -> type_application ?type_clash_context uncurried env funct sargs
     in
     end_def ();
@@ -3563,35 +3563,96 @@ and is_automatic_curried_application env funct =
   | Tarrow _ -> true
   | _ -> false
 
-and specialized_infix_type_application env funct (sargs : sargs) :
-    (targs * Types.type_expr * bool) option =
-  let is_generic_infix path =
-    match Path.name path with
-    | "Pervasives.+" | "Pervasives.-" -> true
-    | _ -> false
-  in
-  match (funct.exp_desc, sargs) with
-  | Texp_ident (path, _, _), [(Nolabel, lhs_expr); (Nolabel, rhs_expr)]
-    when is_generic_infix path ->
-    let lhs = type_exp env lhs_expr in
-    let lhs_type = lhs.exp_type in
-    let rhs =
-      match (expand_head env lhs_type).desc with
-      | Tconstr (path, _, _) when Path.same path Predef.path_int ->
-        type_expect env rhs_expr Predef.type_int
-      | Tconstr (path, _, _) when Path.same path Predef.path_float ->
-        type_expect env rhs_expr Predef.type_float
-      | Tconstr (path, _, _) when Path.same path Predef.path_bigint ->
-        type_expect env rhs_expr Predef.type_bigint
-      | Tconstr (path, _, _) when Path.same path Predef.path_string ->
-        type_expect env rhs_expr Predef.type_string
-      | _ ->
-        unify env lhs_type Predef.type_int;
-        type_expect env rhs_expr Predef.type_int
-    in
-    let result_type = lhs_type in
-    let targs = [(Nolabel, Some lhs); (Nolabel, Some rhs)] in
-    Some (targs, result_type, true)
+and translate_unified_application (env : Env.t) (funct : Typedtree.expression)
+    (sargs : sargs) : (targs * Types.type_expr) option =
+  match funct.exp_desc with
+  | Texp_ident (path, _, _) -> (
+    let entry = Hashtbl.find_opt Unified_ops.index_by_path (Path.name path) in
+    match (entry, sargs) with
+    | Some {form = Unary; specialization; _}, [(Nolabel, lhs_expr)] ->
+      let lhs = type_exp env lhs_expr in
+      let lhs_type = expand_head env lhs.exp_type in
+      let result_type =
+        match (lhs_type.desc, specialization) with
+        | Tconstr (path, _, _), _ when Path.same path Predef.path_int ->
+          Predef.type_int
+        | Tconstr (path, _, _), {bool = Some _}
+          when Path.same path Predef.path_bool ->
+          Predef.type_bool
+        | Tconstr (path, _, _), {float = Some _}
+          when Path.same path Predef.path_float ->
+          Predef.type_float
+        | Tconstr (path, _, _), {bigint = Some _}
+          when Path.same path Predef.path_bigint ->
+          Predef.type_bigint
+        | Tconstr (path, _, _), {string = Some _}
+          when Path.same path Predef.path_string ->
+          Predef.type_string
+        | _ ->
+          unify env lhs_type Predef.type_int;
+          Predef.type_int
+      in
+      let targs = [(Nolabel, Some lhs)] in
+      Some (targs, result_type)
+    | ( Some {form = Binary; specialization; _},
+        [(Nolabel, lhs_expr); (Nolabel, rhs_expr)] ) ->
+      let lhs = type_exp env lhs_expr in
+      let lhs_type = expand_head env lhs.exp_type in
+      let rhs = type_exp env rhs_expr in
+      let rhs_type = expand_head env rhs.exp_type in
+      let lhs, rhs, result_type =
+        (* rule 1. *)
+        match (lhs_type.desc, specialization) with
+        | Tconstr (path, _, _), _ when Path.same path Predef.path_int ->
+          let rhs = type_expect env rhs_expr Predef.type_int in
+          (lhs, rhs, Predef.type_int)
+        | Tconstr (path, _, _), {bool = Some _}
+          when Path.same path Predef.path_bool ->
+          let rhs = type_expect env rhs_expr Predef.type_bool in
+          (lhs, rhs, Predef.type_bool)
+        | Tconstr (path, _, _), {float = Some _}
+          when Path.same path Predef.path_float ->
+          let rhs = type_expect env rhs_expr Predef.type_float in
+          (lhs, rhs, Predef.type_float)
+        | Tconstr (path, _, _), {bigint = Some _}
+          when Path.same path Predef.path_bigint ->
+          let rhs = type_expect env rhs_expr Predef.type_bigint in
+          (lhs, rhs, Predef.type_bigint)
+        | Tconstr (path, _, _), {string = Some _}
+          when Path.same path Predef.path_string ->
+          let rhs = type_expect env rhs_expr Predef.type_string in
+          (lhs, rhs, Predef.type_string)
+        | _ -> (
+          (* rule 2. *)
+          match (rhs_type.desc, specialization) with
+          | Tconstr (path, _, _), _ when Path.same path Predef.path_int ->
+            let lhs = type_expect env lhs_expr Predef.type_int in
+            (lhs, rhs, Predef.type_int)
+          | Tconstr (path, _, _), {bool = Some _}
+            when Path.same path Predef.path_bool ->
+            let lhs = type_expect env lhs_expr Predef.type_bool in
+            (lhs, rhs, Predef.type_bool)
+          | Tconstr (path, _, _), {float = Some _}
+            when Path.same path Predef.path_float ->
+            let lhs = type_expect env lhs_expr Predef.type_float in
+            (lhs, rhs, Predef.type_float)
+          | Tconstr (path, _, _), {bigint = Some _}
+            when Path.same path Predef.path_bigint ->
+            let lhs = type_expect env lhs_expr Predef.type_bigint in
+            (lhs, rhs, Predef.type_bigint)
+          | Tconstr (path, _, _), {string = Some _}
+            when Path.same path Predef.path_string ->
+            let lhs = type_expect env lhs_expr Predef.type_string in
+            (lhs, rhs, Predef.type_string)
+          | _ ->
+            (* rule 3. *)
+            let lhs = type_expect env lhs_expr Predef.type_int in
+            let rhs = type_expect env rhs_expr Predef.type_int in
+            (lhs, rhs, Predef.type_int))
+      in
+      let targs = [(Nolabel, Some lhs); (Nolabel, Some rhs)] in
+      Some (targs, result_type)
+    | _ -> None)
   | _ -> None
 
 and type_application ?type_clash_context uncurried env funct (sargs : sargs) :

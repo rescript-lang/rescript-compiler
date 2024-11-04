@@ -49,6 +49,15 @@ let transl_extension_constructor env path ext =
 
 (* Translation of primitives *)
 
+(*
+type sargs = (Asttypes.arg_label * Parsetree.expression) list
+
+let translate_unified_application (env : Env.t) (prim : Primitive.description)
+    (sargs : sargs) : Lambda.primitive option =
+  (* TODO *)
+  None
+*)
+
 type specialized = {
   obj: Lambda.primitive;
   int: Lambda.primitive;
