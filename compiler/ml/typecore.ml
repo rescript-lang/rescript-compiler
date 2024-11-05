@@ -3563,6 +3563,9 @@ and is_automatic_curried_application env funct =
   | Tarrow _ -> true
   | _ -> false
 
+(** This is ad-hoc translation for unifying specific primitive operations
+     See [Unified_ops] module for detailed explanation.
+  *)
 and translate_unified_ops (env : Env.t) (funct : Typedtree.expression)
     (sargs : sargs) : (targs * Types.type_expr) option =
   match funct.exp_desc with
@@ -3601,7 +3604,7 @@ and translate_unified_ops (env : Env.t) (funct : Typedtree.expression)
       let rhs = type_exp env rhs_expr in
       let rhs_type = expand_head env rhs.exp_type in
       let lhs, rhs, result_type =
-        (* rule 1. *)
+        (* Rule 1. Try unifying to lhs *)
         match (lhs_type.desc, specialization) with
         | Tconstr (path, _, _), _ when Path.same path Predef.path_int ->
           let rhs = type_expect env rhs_expr Predef.type_int in
@@ -3623,7 +3626,7 @@ and translate_unified_ops (env : Env.t) (funct : Typedtree.expression)
           let rhs = type_expect env rhs_expr Predef.type_string in
           (lhs, rhs, Predef.type_string)
         | _ -> (
-          (* rule 2. *)
+          (* Rule 2. Try unifying to rhs *)
           match (rhs_type.desc, specialization) with
           | Tconstr (path, _, _), _ when Path.same path Predef.path_int ->
             let lhs = type_expect env lhs_expr Predef.type_int in
@@ -3645,7 +3648,7 @@ and translate_unified_ops (env : Env.t) (funct : Typedtree.expression)
             let lhs = type_expect env lhs_expr Predef.type_string in
             (lhs, rhs, Predef.type_string)
           | _ ->
-            (* rule 3. *)
+            (* Rule 2. Fallback to int *)
             let lhs = type_expect env lhs_expr Predef.type_int in
             let rhs = type_expect env rhs_expr Predef.type_int in
             (lhs, rhs, Predef.type_int))

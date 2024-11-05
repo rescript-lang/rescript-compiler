@@ -49,6 +49,9 @@ let transl_extension_constructor env path ext =
 
 (* Translation of primitives *)
 
+(** This is ad-hoc translation for unifying specific primitive operations
+     See [Unified_ops] module for detailed explanation.
+  *)
 let translate_unified_ops (prim : Primitive.description) (env : Env.t)
     (lhs_type : type_expr) : Lambda.primitive option =
   (* lhs_type is already unified in type-level *)

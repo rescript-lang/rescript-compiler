@@ -36,6 +36,7 @@ open Misc
 
 type form = Unary | Binary
 
+(* Note: unified op must support int type *)
 type specialization = {
   int: Lambda.primitive;
   bool: Lambda.primitive option;
