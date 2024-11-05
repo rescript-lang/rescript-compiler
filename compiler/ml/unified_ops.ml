@@ -59,7 +59,7 @@ let entries =
   [|
     {
       path = builtin "~+";
-      name = "%pos";
+      name = "%plus";
       form = Unary;
       specialization =
         {

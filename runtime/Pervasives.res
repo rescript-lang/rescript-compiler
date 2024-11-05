@@ -42,7 +42,7 @@ external __POS_OF__: 'a => ((string, int, int, int), 'a) = "%loc_POS"
 
 /* Unified operations */
 
-external \"~+": 'a => 'a = "%pos"
+external \"~+": 'a => 'a = "%plus"
 external \"~-": 'a => 'a = "%neg"
 
 external \"+": ('a, 'a) => 'a = "%add"
