@@ -3572,7 +3572,7 @@ and translate_unified_ops (env : Env.t) (funct : Typedtree.expression)
   | Texp_ident (path, _, _) -> (
     let entry = Hashtbl.find_opt Unified_ops.index_by_path (Path.name path) in
     match (entry, sargs) with
-    | Some {form = Unary; specialization; _}, [(Nolabel, lhs_expr)] ->
+    | Some {form = Unary; specialization; _}, [(lhs_label, lhs_expr)] ->
       let lhs = type_exp env lhs_expr in
       let lhs_type = expand_head env lhs.exp_type in
       let result_type =
@@ -3595,10 +3595,10 @@ and translate_unified_ops (env : Env.t) (funct : Typedtree.expression)
           unify env lhs_type Predef.type_int;
           Predef.type_int
       in
-      let targs = [(Nolabel, Some lhs)] in
+      let targs = [(lhs_label, Some lhs)] in
       Some (targs, result_type)
     | ( Some {form = Binary; specialization; _},
-        [(Nolabel, lhs_expr); (Nolabel, rhs_expr)] ) ->
+        [(lhs_label, lhs_expr); (rhs_label, rhs_expr)] ) ->
       let lhs = type_exp env lhs_expr in
       let lhs_type = expand_head env lhs.exp_type in
       let rhs = type_exp env rhs_expr in
@@ -3648,12 +3648,12 @@ and translate_unified_ops (env : Env.t) (funct : Typedtree.expression)
             let lhs = type_expect env lhs_expr Predef.type_string in
             (lhs, rhs, Predef.type_string)
           | _ ->
-            (* Rule 2. Fallback to int *)
+            (* Rule 3. Fallback to int *)
             let lhs = type_expect env lhs_expr Predef.type_int in
             let rhs = type_expect env rhs_expr Predef.type_int in
             (lhs, rhs, Predef.type_int))
       in
-      let targs = [(Nolabel, Some lhs); (Nolabel, Some rhs)] in
+      let targs = [(lhs_label, Some lhs); (rhs_label, Some rhs)] in
       Some (targs, result_type)
     | _ -> None)
   | _ -> None
