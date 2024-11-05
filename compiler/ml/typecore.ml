@@ -3572,7 +3572,7 @@ and translate_unified_ops (env : Env.t) (funct : Typedtree.expression)
   | Texp_ident (path, _, _) -> (
     let entry = Hashtbl.find_opt Unified_ops.index_by_path (Path.name path) in
     match (entry, sargs) with
-    | Some {form = Unary; specialization; _}, [(lhs_label, lhs_expr)] ->
+    | Some {form = Unary; specialization}, [(lhs_label, lhs_expr)] ->
       let lhs = type_exp env lhs_expr in
       let lhs_type = expand_head env lhs.exp_type in
       let result_type =
@@ -3597,7 +3597,7 @@ and translate_unified_ops (env : Env.t) (funct : Typedtree.expression)
       in
       let targs = [(lhs_label, Some lhs)] in
       Some (targs, result_type)
-    | ( Some {form = Binary; specialization; _},
+    | ( Some {form = Binary; specialization},
         [(lhs_label, lhs_expr); (rhs_label, rhs_expr)] ) ->
       let lhs = type_exp env lhs_expr in
       let lhs_type = expand_head env lhs.exp_type in
