@@ -61,7 +61,6 @@ let translate_unified_ops (prim : Primitive.description) (env : Env.t)
     match specialization with
     | {int}
       when is_base_type env lhs_type Predef.path_int
-           || is_base_type env lhs_type Predef.path_char
            || maybe_pointer_type env lhs_type = Immediate ->
       Some int
     | {float = Some float} when is_base_type env lhs_type Predef.path_float ->
