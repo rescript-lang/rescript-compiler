@@ -14,15 +14,21 @@ external __LINE_OF__: 'a => (int, 'a) = "%loc_LINE"
 external __POS_OF__: 'a => ((string, int, int, int), 'a) = "%loc_POS"
 
 /* Unified operations */
+/*
+  Note:
 
-external \"~+": 'a => 'a = "%plus"
-external \"~-": 'a => 'a = "%neg"
+  Unified operations only work on `Pervasives`.
+  That means we can't rely on it when building stdlib until we remove the `Pervasives_mini`.
+*/
 
-external \"+": ('a, 'a) => 'a = "%add"
-external \"-": ('a, 'a) => 'a = "%sub"
-external \"*": ('a, 'a) => 'a = "%mul"
-external \"/": ('a, 'a) => 'a = "%div"
-external mod: ('a, 'a) => 'a = "%mod"
+external \"~+": int => int = "%identity"
+external \"~-": int => int = "%negint"
+
+external \"+": (int, int) => int = "%addint"
+external \"-": (int, int) => int = "%subint"
+external \"*": (int, int) => int = "%mulint"
+external \"/": (int, int) => int = "%divint"
+external mod: (int, int) => int = "%modint"
 
 /* Comparisons */
 /* Note: Later comparisons will be converted to unified operations too */
