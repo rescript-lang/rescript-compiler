@@ -49,6 +49,33 @@ let transl_extension_constructor env path ext =
 
 (* Translation of primitives *)
 
+(** This is ad-hoc translation for unifying specific primitive operations
+     See [Unified_ops] module for detailed explanation.
+  *)
+let translate_unified_ops (prim : Primitive.description) (env : Env.t)
+    (lhs_type : type_expr) : Lambda.primitive option =
+  (* lhs_type is already unified in type-level *)
+  let entry = Hashtbl.find_opt Unified_ops.index_by_name prim.prim_name in
+  match entry with
+  | Some {specialization} -> (
+    match specialization with
+    | {int}
+      when is_base_type env lhs_type Predef.path_int
+           || maybe_pointer_type env lhs_type = Immediate ->
+      Some int
+    | {float = Some float} when is_base_type env lhs_type Predef.path_float ->
+      Some float
+    | {bigint = Some bigint} when is_base_type env lhs_type Predef.path_bigint
+      ->
+      Some bigint
+    | {string = Some string} when is_base_type env lhs_type Predef.path_string
+      ->
+      Some string
+    | {bool = Some bool} when is_base_type env lhs_type Predef.path_bool ->
+      Some bool
+    | {int} -> Some int)
+  | _ -> None
+
 type specialized = {
   objcomp: Lambda.primitive;
   intcomp: Lambda.primitive;
@@ -394,12 +421,21 @@ let specialize_comparison
    raise Not_found if primitive is unknown *)
 
 let specialize_primitive p env ty (* ~has_constant_constructor *) =
-  try
-    let table = Hashtbl.find comparisons_table p.prim_name in
-    match is_function_type env ty with
-    | Some (lhs, _rhs) -> specialize_comparison table env lhs
-    | None -> table.objcomp
-  with Not_found -> find_primitive p.prim_name
+  let fn_expr = is_function_type env ty in
+  let unified =
+    match fn_expr with
+    | Some (lhs, _) -> translate_unified_ops p env lhs
+    | None -> None
+  in
+  match unified with
+  | Some primitive -> primitive
+  | None -> (
+    try
+      let table = Hashtbl.find comparisons_table p.prim_name in
+      match fn_expr with
+      | Some (lhs, _rhs) -> specialize_comparison table env lhs
+      | None -> table.objcomp
+    with Not_found -> find_primitive p.prim_name)
 
 (* Eta-expand a primitive *)
 
@@ -458,32 +494,44 @@ let transl_primitive loc p env ty =
 
 let transl_primitive_application loc prim env ty args =
   let prim_name = prim.prim_name in
-  try
+  let unified =
     match args with
-    | [arg1; _]
-      when is_base_type env arg1.exp_type Predef.path_bool
-           && Hashtbl.mem comparisons_table prim_name ->
-      (Hashtbl.find comparisons_table prim_name).boolcomp
-    | _ ->
-      let has_constant_constructor =
-        match args with
-        | [_; {exp_desc = Texp_construct (_, {cstr_tag = Cstr_constant _}, _)}]
-        | [{exp_desc = Texp_construct (_, {cstr_tag = Cstr_constant _}, _)}; _]
-        | [_; {exp_desc = Texp_variant (_, None)}]
-        | [{exp_desc = Texp_variant (_, None)}; _] ->
-          true
-        | _ -> false
-      in
-      if has_constant_constructor then
-        match Hashtbl.find_opt comparisons_table prim_name with
-        | Some table when table.simplify_constant_constructor -> table.intcomp
-        | Some _ | None -> specialize_primitive prim env ty
-        (* ~has_constant_constructor*)
-      else specialize_primitive prim env ty
-  with Not_found ->
-    if String.length prim_name > 0 && prim_name.[0] = '%' then
-      raise (Error (loc, Unknown_builtin_primitive prim_name));
-    Pccall prim
+    | [arg1] | [arg1; _] -> translate_unified_ops prim env arg1.exp_type
+    | _ -> None
+  in
+  match unified with
+  | Some primitive -> primitive
+  | None -> (
+    try
+      match args with
+      | [arg1; _]
+        when is_base_type env arg1.exp_type Predef.path_bool
+             && Hashtbl.mem comparisons_table prim_name ->
+        (Hashtbl.find comparisons_table prim_name).boolcomp
+      | _ ->
+        let has_constant_constructor =
+          match args with
+          | [
+              _; {exp_desc = Texp_construct (_, {cstr_tag = Cstr_constant _}, _)};
+            ]
+          | [
+              {exp_desc = Texp_construct (_, {cstr_tag = Cstr_constant _}, _)}; _;
+            ]
+          | [_; {exp_desc = Texp_variant (_, None)}]
+          | [{exp_desc = Texp_variant (_, None)}; _] ->
+            true
+          | _ -> false
+        in
+        if has_constant_constructor then
+          match Hashtbl.find_opt comparisons_table prim_name with
+          | Some table when table.simplify_constant_constructor -> table.intcomp
+          | Some _ | None -> specialize_primitive prim env ty
+          (* ~has_constant_constructor*)
+        else specialize_primitive prim env ty
+    with Not_found ->
+      if String.length prim_name > 0 && prim_name.[0] = '%' then
+        raise (Error (loc, Unknown_builtin_primitive prim_name));
+      Pccall prim)
 
 (* To propagate structured constants *)
 
