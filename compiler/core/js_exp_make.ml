@@ -716,7 +716,9 @@ let rec push_negation (e : t) : t option =
   - [(typeof x === "boolean" | "string" | "number") && (x === boolean/null/undefined/123/"hello")] -> [false]
   - [(Array.isArray(x)) && (x === boolean/null/undefined/123/"hello")] -> [false]
 
-  - [(typeof x === "boolean") && (x !== true/false)] -> unchanged
+  - [(typeof x === "boolean") && (x)] -> [(x == true)]
+  - [(typeof x === "boolean") && (!x)] -> [(x == false)]
+  - [(typeof x === "boolean") && (x !== true/false)] -> [(x == false/true)]
   - [(typeof x === "string") && (x !== "abc")] -> unchanged
   - [(typeof x === "number") && (x !== 123)] -> unchanged
   - [(typeof x === "object") && (x !== null)] -> unchanged
@@ -861,14 +863,48 @@ let rec simplify_and ~n (e1 : t) (e2 : t) : t option =
           ( EqEqEq,
             {expression_desc = Typeof {expression_desc = Var ia}},
             {expression_desc = Str {txt = "boolean"}} ),
-        Bin (NotEqEq, {expression_desc = Var ib}, {expression_desc = Bool _}) )
-    | ( Bin (NotEqEq, {expression_desc = Var ib}, {expression_desc = Bool _}),
+        Var ib )
+    | ( Var ib,
         Bin
           ( EqEqEq,
             {expression_desc = Typeof {expression_desc = Var ia}},
             {expression_desc = Str {txt = "boolean"}} ) )
       when Js_op_util.same_vident ia ib ->
-      None
+      Some
+        {
+          expression_desc =
+            Bin (EqEqEq, {expression_desc = Var ib; comment = None}, true_);
+          comment = None;
+        }
+    | ( Bin
+          ( EqEqEq,
+            {expression_desc = Typeof {expression_desc = Var ia}},
+            {expression_desc = Str {txt = "boolean"}} ),
+        Js_not {expression_desc = Var ib} )
+    | ( Js_not {expression_desc = Var ib},
+        Bin
+          ( EqEqEq,
+            {expression_desc = Typeof {expression_desc = Var ia}},
+            {expression_desc = Str {txt = "boolean"}} ) )
+      when Js_op_util.same_vident ia ib ->
+      Some
+        {
+          expression_desc =
+            Bin (EqEqEq, {expression_desc = Var ib; comment = None}, false_);
+          comment = None;
+        }
+    | ( Bin
+          ( EqEqEq,
+            {expression_desc = Typeof {expression_desc = Var ia}},
+            {expression_desc = Str {txt = "boolean"}} ),
+        Bin (NotEqEq, {expression_desc = Var ib}, {expression_desc = Bool b}) )
+    | ( Bin (NotEqEq, {expression_desc = Var ib}, {expression_desc = Bool b}),
+        Bin
+          ( EqEqEq,
+            {expression_desc = Typeof {expression_desc = Var ia}},
+            {expression_desc = Str {txt = "boolean"}} ) )
+      when Js_op_util.same_vident ia ib ->
+      Some {expression_desc = Bool (not b); comment = None}
     | ( Bin
           ( EqEqEq,
             {expression_desc = Typeof {expression_desc = Var ia}},
