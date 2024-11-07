@@ -11,9 +11,9 @@ function decodeJsonTest() {
       let match$1 = match["thirdProp"];
       if (Array.isArray(match$1) && match$1.length === 2) {
         let match$2 = match$1[0];
-        if (typeof match$2 === "boolean" && match$2) {
+        if (match$2 === true) {
           let match$3 = match$1[1];
-          decodedCorrectly = typeof match$3 === "boolean" && !match$3;
+          decodedCorrectly = match$3 === false;
         } else {
           decodedCorrectly = false;
         }
