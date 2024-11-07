@@ -728,6 +728,8 @@ let rec push_negation (e : t) : t option =
   Equality optimizations:
   - [e && e] -> [e]
   - [(x === boolean/null/undefined/123/"hello") && (x === boolean/null/undefined/123/"hello")] -> [false] (when not equal)
+  - [(x === boolean/null/undefined/123/"hello") && (x !== boolean/null/undefined/123/"hello")] -> [false] (when equal)
+  - [(x === boolean/null/undefined/123/"hello") && (x !== boolean/null/undefined/123/"hello")] -> [(x === ...)] (when not equal)
 
   Note: The function preserves the semantics of the original expression while
   attempting to reduce it to a simpler form. If no simplification is possible,
@@ -763,6 +765,10 @@ let rec simplify_and ~n (e1 : t) (e2 : t) : t option =
       let ao = simplify_and ~n:(n + 1) a e2 in
       let bo = simplify_and ~n:(n + 1) b e2 in
       match (ao, bo) with
+      | Some {expression_desc = Bool false}, None ->
+        Some {expression_desc = Bin (And, b, e2); comment = None}
+      | None, Some {expression_desc = Bool false} ->
+        Some {expression_desc = Bin (And, a, e2); comment = None}
       | None, _ | _, None -> (
         match simplify_or ~n:(n + 1) a b with
         | None -> None
@@ -1005,6 +1011,18 @@ let rec simplify_and ~n (e1 : t) (e2 : t) : t option =
       when Js_op_util.same_vident ia ib ->
       (* Note: case x = y is handled above *)
       Some false_
+    | ( Bin
+          ( ((EqEqEq | NotEqEq) as op1),
+            {expression_desc = Var ia},
+            ({expression_desc = Bool _ | Null | Undefined _ | Number _ | Str _}
+             as v1) ),
+        Bin
+          ( ((EqEqEq | NotEqEq) as op2),
+            {expression_desc = Var ib},
+            ({expression_desc = Bool _ | Null | Undefined _ | Number _ | Str _}
+             as v2) ) )
+      when Js_op_util.same_vident ia ib && op1 != op2 ->
+      if v1 = v2 then Some false_ else if op1 = EqEqEq then Some e1 else Some e2
     | _ -> None
   in
   (if debug then
