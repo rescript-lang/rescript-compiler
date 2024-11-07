@@ -7,9 +7,9 @@ function decodeJsonTest() {
   let decodedCorrectly;
   if (typeof json === "object" && !Array.isArray(json)) {
     let match = json["someProp"];
-    if (match !== undefined && typeof match === "object" && !Array.isArray(match)) {
+    if (typeof match === "object" && !Array.isArray(match)) {
       let match$1 = match["thirdProp"];
-      if (match$1 !== undefined && Array.isArray(match$1) && match$1.length === 2) {
+      if (Array.isArray(match$1) && match$1.length === 2) {
         let match$2 = match$1[0];
         if (typeof match$2 === "boolean" && match$2) {
           let match$3 = match$1[1];
