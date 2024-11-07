@@ -752,8 +752,8 @@ let rec simplify_and ~n (e1 : t) (e2 : t) : t option =
         match simplify_and ~n:(n + 1) a b with
         | None -> None
         | Some e -> simplify_and_force ~n:(n + 1) e e2)
-      | Some a_, None -> simplify_and_force ~n:(n + 1) a_ e2
-      | None, Some b_ -> simplify_and_force ~n:(n + 1) e1 b_
+      | Some a_, None -> simplify_and_force ~n:(n + 1) a_ b
+      | None, Some b_ -> simplify_and_force ~n:(n + 1) a b_
       | Some a_, Some b_ -> simplify_and_force ~n:(n + 1) a_ b_)
     | _, Bin (And, a, b) ->
       simplify_and ~n:(n + 1)
@@ -763,7 +763,10 @@ let rec simplify_and ~n (e1 : t) (e2 : t) : t option =
       let ao = simplify_and ~n:(n + 1) a e2 in
       let bo = simplify_and ~n:(n + 1) b e2 in
       match (ao, bo) with
-      | None, _ | _, None -> None
+      | None, _ | _, None -> (
+        match simplify_or ~n:(n + 1) a b with
+        | None -> None
+        | Some e -> simplify_and_force ~n:(n + 1) e e2)
       | Some a_, Some b_ -> simplify_or_force ~n:(n + 1) a_ b_)
     | ( Bin
           ( ((EqEqEq | NotEqEq) as op1),
