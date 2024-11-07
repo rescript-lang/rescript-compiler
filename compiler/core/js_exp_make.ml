@@ -745,16 +745,16 @@ let rec simplify_and ~n (e1 : t) (e2 : t) : t option =
     | Bool true, _ -> Some e2
     | _, Bool true -> Some e1
     | Bin (And, a, b), _ -> (
-      match simplify_and ~n:(n + 1) a b with
-      | Some e -> simplify_and_force ~n:(n + 1) e e2
-      | None -> (
-        let ao = simplify_and ~n:(n + 1) a e2 in
-        let bo = simplify_and ~n:(n + 1) b e2 in
-        match (ao, bo) with
-        | None, None -> None
-        | Some a_, None -> simplify_and_force ~n:(n + 1) a_ e2
-        | None, Some b_ -> simplify_and_force ~n:(n + 1) e1 b_
-        | Some a_, Some b_ -> simplify_and_force ~n:(n + 1) a_ b_))
+      let ao = simplify_and ~n:(n + 1) a e2 in
+      let bo = simplify_and ~n:(n + 1) b e2 in
+      match (ao, bo) with
+      | None, None -> (
+        match simplify_and ~n:(n + 1) a b with
+        | None -> None
+        | Some e -> simplify_and_force ~n:(n + 1) e e2)
+      | Some a_, None -> simplify_and_force ~n:(n + 1) a_ e2
+      | None, Some b_ -> simplify_and_force ~n:(n + 1) e1 b_
+      | Some a_, Some b_ -> simplify_and_force ~n:(n + 1) a_ b_)
     | _, Bin (And, a, b) ->
       simplify_and ~n:(n + 1)
         {expression_desc = Bin (And, e1, a); comment = None}
