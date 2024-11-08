@@ -3,7 +3,7 @@
 import * as $$Array from "rescript/lib/es6/Array.js";
 
 function decodeUser(json) {
-  if (!(typeof json === "object" && !Array.isArray(json))) {
+  if (typeof json !== "object" || Array.isArray(json)) {
     return;
   }
   let id = json.id;
@@ -30,7 +30,7 @@ function decodeUser(json) {
 }
 
 function decodeGroup(json) {
-  if (!(typeof json === "object" && !Array.isArray(json))) {
+  if (typeof json !== "object" || Array.isArray(json)) {
     return;
   }
   let id = json.id;

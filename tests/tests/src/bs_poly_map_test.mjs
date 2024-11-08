@@ -210,7 +210,7 @@ let match$1 = match[0];
 
 let match$2 = Belt_Map.get(v3, 10);
 
-b("File \"bs_poly_map_test.res\", line 155, characters 4-11", match$2 !== undefined ? match$2 === 11 : false);
+b("File \"bs_poly_map_test.res\", line 155, characters 4-11", match$2 === 11);
 
 let match$3 = Belt_Map.get(v3, -10);
 
@@ -218,13 +218,13 @@ b("File \"bs_poly_map_test.res\", line 162, characters 4-11", match$3 === undefi
 
 let match$4 = Belt_Map.get(v4, -10);
 
-b("File \"bs_poly_map_test.res\", line 169, characters 4-11", match$4 !== undefined ? match$4 === 0 : false);
+b("File \"bs_poly_map_test.res\", line 169, characters 4-11", match$4 === 0);
 
 b("File \"bs_poly_map_test.res\", line 175, characters 4-11", Belt_Map.isEmpty(Belt_Map.remove(Belt_Map.make(Icmp), 0)));
 
 b("File \"bs_poly_map_test.res\", line 176, characters 4-11", Belt_Map.isEmpty(Belt_Map.removeMany(Belt_Map.make(Icmp), [0])));
 
-b("File \"bs_poly_map_test.res\", line 178, characters 4-11", pres !== undefined ? pres === 5000 : false);
+b("File \"bs_poly_map_test.res\", line 178, characters 4-11", pres === 5000);
 
 b("File \"bs_poly_map_test.res\", line 184, characters 4-11", Belt_Array.eq(Belt_Map.keysToArray(match$1[0]), Belt_Array.makeBy(5000, i => i), (prim0, prim1) => prim0 === prim1));
 

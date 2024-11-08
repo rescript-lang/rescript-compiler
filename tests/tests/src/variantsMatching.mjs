@@ -74,8 +74,8 @@ function st(state) {
 }
 
 function showToJs(x) {
-  if (typeof x !== "object" && x === "No") {
-    return false;
+  if (typeof x !== "object") {
+    return x !== "No";
   } else {
     return true;
   }
@@ -96,7 +96,11 @@ function third(l) {
     return false;
   }
   let match$1 = match.tl;
-  return match$1 && !(match$1.hd !== 3 || match$1.tl);
+  if (match$1 && match$1.hd === 3) {
+    return !match$1.tl;
+  } else {
+    return false;
+  }
 }
 
 function third2(l) {
@@ -274,13 +278,13 @@ function plus$3(x, y) {
       case "WhyNotAnotherOne" :
         break;
     }
-  } else if (!(y === null || y === "WhyNotAnotherOne" || y === undefined)) {
+  } else if (y !== null && y !== "WhyNotAnotherOne" && y !== undefined) {
     return {
       x: x.x + y.x,
       y: x.y + y.y
     };
   }
-  if (!(y === null || y === "WhyNotAnotherOne" || y === undefined)) {
+  if (y !== null && y !== "WhyNotAnotherOne" && y !== undefined) {
     return "WhyNotAnotherOne";
   }
   switch (y) {
@@ -293,7 +297,7 @@ function plus$3(x, y) {
 }
 
 function kind$1(x) {
-  if (!(x === null || x === "WhyNotAnotherOne" || x === undefined)) {
+  if (x !== null && x !== "WhyNotAnotherOne" && x !== undefined) {
     return "present";
   }
   switch (x) {
