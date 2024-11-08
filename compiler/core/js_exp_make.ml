@@ -743,7 +743,7 @@ let rec simplify_and ~n (e1 : t) (e2 : t) : t option =
   let res =
     match (e1.expression_desc, e2.expression_desc) with
     | Bool false, _ -> Some false_
-    | _, Bool false -> Some false_
+    | _, Bool false when no_side_effect e1 -> Some false_
     | Bool true, _ -> Some e2
     | _, Bool true -> Some e1
     | Bin (And, a, b), _ -> (
