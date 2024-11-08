@@ -702,7 +702,7 @@ let rec push_negation (e : t) : t option =
   Basic simplification rules:
   - [false && e] -> [false]
   - [true && e] -> [e] 
-  - [e && false] -> [false]
+  - [e && false] -> [false] If [e] has no side effects
   - [e && true] -> [e]
   - [(a && b) && e] -> If either [a && e] or [b && e] can be simplified, 
                        creates new AND expression with simplified parts: [(a' && b')]
