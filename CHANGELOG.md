@@ -63,6 +63,7 @@
 - Improve pattern matching on optional fields. https://github.com/rescript-lang/rescript-compiler/pull/7143 https://github.com/rescript-lang/rescript-compiler/pull/7144
 - Optimize compilation of switch statements for untagged variants when there are no literal cases. https://github.com/rescript-lang/rescript-compiler/pull/7135
 - Further improve boolean optimizations. https://github.com/rescript-lang/rescript-compiler/pull/7149
+- Simplify code generated forconditionals. https://github.com/rescript-lang/rescript-compiler/pull/7151
 
 
 #### :house: Internal
