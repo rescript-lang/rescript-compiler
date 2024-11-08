@@ -14,7 +14,8 @@
 
 #### :rocket: New Feature
 
-- Introduce "Unified operators" for arithmetic operators (`+`, `-`, `*`, `/`, `mod`). See https://github.com/rescript-lang/rescript-compiler/pull/7057
+- Introduce "Unified operators" for arithmetic operators (`+`, `-`, `*`, `/`, `mod`). https://github.com/rescript-lang/rescript-compiler/pull/7057
+- Add remainder (`%`, aka modulus) operator. https://github.com/rescript-lang/rescript-compiler/pull/7152
 
 # 12.0.0-alpha.4
 
