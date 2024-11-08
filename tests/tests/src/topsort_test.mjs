@@ -545,7 +545,7 @@ try {
         let match$2 = match$1.tl;
         if (match$2 && match$2.hd === "eat") {
           let match$3 = match$2.tl;
-          if (!(match$3 && match$3.hd === "go" && !match$3.tl)) {
+          if (!(match$3 && !(match$3.hd !== "go" || match$3.tl))) {
             exit = 1;
           }
           

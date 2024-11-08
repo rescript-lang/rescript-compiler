@@ -997,7 +997,7 @@ let rec simplify_and ~n (e1 : t) (e2 : t) : t option =
              _ ) as is_array) )
       when Js_op_util.same_vident ia ib ->
       Some {expression_desc = is_array; comment = None}
-    | x, y when x = y -> Some e1
+    | _ when Js_analyzer.eq_expression e1 e2 -> Some e1
     | ( Bin
           ( EqEqEq,
             {expression_desc = Var ia},
@@ -1022,7 +1022,9 @@ let rec simplify_and ~n (e1 : t) (e2 : t) : t option =
             ({expression_desc = Bool _ | Null | Undefined _ | Number _ | Str _}
              as v2) ) )
       when Js_op_util.same_vident ia ib && op1 != op2 ->
-      if v1 = v2 then Some false_ else if op1 = EqEqEq then Some e1 else Some e2
+      if Js_analyzer.eq_expression v1 v2 then Some false_
+      else if op1 = EqEqEq then Some e1
+      else Some e2
     | _ -> None
   in
   (if debug then
@@ -1138,7 +1140,10 @@ let not (e : t) : t =
   | Bin (Ge, a, b) -> {e with expression_desc = Bin (Lt, a, b)}
   | Bin (Le, a, b) -> {e with expression_desc = Bin (Gt, a, b)}
   | Bin (Gt, a, b) -> {e with expression_desc = Bin (Le, a, b)}
-  | _ -> {expression_desc = Js_not e; comment = None}
+  | _ -> (
+    match push_negation e with
+    | Some e_ -> e_
+    | None -> {expression_desc = Js_not e; comment = None})
 
 let not_empty_branch (x : t) =
   match x.expression_desc with
@@ -1146,6 +1151,11 @@ let not_empty_branch (x : t) =
   | _ -> true
 
 let rec econd ?comment (pred : t) (ifso : t) (ifnot : t) : t =
+  let default () =
+    if Js_analyzer.eq_expression ifso ifnot then
+      if no_side_effect pred then ifso else seq ?comment pred ifso
+    else {expression_desc = Cond (pred, ifso, ifnot); comment}
+  in
   match (pred.expression_desc, ifso.expression_desc, ifnot.expression_desc) with
   | Bool false, _, _ -> ifnot
   | Number (Int {i = 0l; _}), _, _ -> ifnot
@@ -1179,10 +1189,15 @@ let rec econd ?comment (pred : t) (ifso : t) (ifnot : t) : t =
       Seq (a, {expression_desc = Undefined _}),
       Seq (b, {expression_desc = Undefined _}) ) ->
     seq (econd ?comment pred a b) undefined
-  | _ ->
-    if Js_analyzer.eq_expression ifso ifnot then
-      if no_side_effect pred then ifso else seq ?comment pred ifso
-    else {expression_desc = Cond (pred, ifso, ifnot); comment}
+  | _, _, Bool false -> (
+    match simplify_and ~n:0 pred ifso with
+    | Some e -> e
+    | None -> default ())
+  | _, Bool false, _ -> (
+    match simplify_and ~n:0 (not pred) ifnot with
+    | Some e -> e
+    | None -> default ())
+  | _ -> default ()
 
 let rec float_equal ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with

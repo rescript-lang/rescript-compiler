@@ -234,7 +234,7 @@ let TrickyNested = {
 };
 
 function checkEnum(e) {
-  if (!(e === "One" || e === "Three" || e === "Two")) {
+  if (e !== "One" && e !== "Three" && e !== "Two") {
     return "Something else..." + e;
   }
   switch (e) {
@@ -252,7 +252,7 @@ let OverlapString = {
 };
 
 function checkEnum$1(e) {
-  if (!(e === 1.0 || e === "Three" || e === "Two")) {
+  if (e !== 1.0 && e !== "Three" && e !== "Two") {
     return "Something else...";
   }
   switch (e) {
@@ -270,7 +270,7 @@ let OverlapNumber = {
 };
 
 function checkEnum$2(e) {
-  if (!(e === null || typeof e !== "object")) {
+  if (e !== null && typeof e === "object") {
     return "Object...";
   }
   switch (e) {

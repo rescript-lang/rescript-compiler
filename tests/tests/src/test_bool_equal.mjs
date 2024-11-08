@@ -4,10 +4,8 @@
 function bool_equal(x, y) {
   if (x) {
     return y;
-  } else if (y) {
-    return false;
   } else {
-    return true;
+    return !y;
   }
 }
 

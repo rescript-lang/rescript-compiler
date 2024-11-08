@@ -52,7 +52,7 @@ function test_js_error4() {
       }
     } else if (e.RE_EXN_ID === B) {
       return 5;
-    } else if (e.RE_EXN_ID === C && !(e._1 !== 1 || e._2 !== 2)) {
+    } else if (e.RE_EXN_ID === C && e._1 === 1 && e._2 === 2) {
       return 6;
     } else {
       return 7;

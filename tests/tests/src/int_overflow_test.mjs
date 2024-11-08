@@ -28,10 +28,10 @@ function hash_variant2(s) {
 }
 
 function fib(x) {
-  if (x === 0 || x === 1) {
-    return 1;
-  } else {
+  if (x !== 0 && x !== 1) {
     return fib(x - 1 | 0) + fib(x - 2 | 0) | 0;
+  } else {
+    return 1;
   }
 }
 

@@ -363,10 +363,8 @@ function random_vars(n) {
 function bool_equal(a, b) {
   if (a) {
     return b;
-  } else if (b) {
-    return false;
   } else {
-    return true;
+    return !b;
   }
 }
 
