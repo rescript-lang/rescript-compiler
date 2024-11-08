@@ -51,6 +51,14 @@ function case2(a, b) {
   return a + "test" + b;
 }
 
+function even(n) {
+  return n % 2 === 0;
+}
+
+function odd(n) {
+  return n % 2 === 1;
+}
+
 let int = 3;
 
 export {
@@ -69,5 +77,7 @@ export {
   rhsstring,
   case1,
   case2,
+  even,
+  odd,
 }
 /* No side effect */
