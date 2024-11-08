@@ -62,6 +62,7 @@
 - optimize JavaScript code generation by using x == null checks and improving type-based optimizations for string/number literals. https://github.com/rescript-lang/rescript-compiler/pull/7141
 - Improve pattern matching on optional fields. https://github.com/rescript-lang/rescript-compiler/pull/7143 https://github.com/rescript-lang/rescript-compiler/pull/7144
 - Optimize compilation of switch statements for untagged variants when there are no literal cases. https://github.com/rescript-lang/rescript-compiler/pull/7135
+- Further improve boolean optimizations. https://github.com/rescript-lang/rescript-compiler/pull/7149
 
 
 #### :house: Internal
