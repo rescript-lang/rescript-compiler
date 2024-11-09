@@ -696,13 +696,13 @@ let rec push_negation (e : t) : t option =
   | _ -> None
 
 (**
-  [simplify_and e1 e2] attempts to simplify the boolean AND expression [e1 && e2].
+  [simplify_and_ e1 e2] attempts to simplify the boolean AND expression [e1 && e2].
   Returns [Some simplified] if simplification is possible, [None] otherwise.
 
   Basic simplification rules:
   - [false && e] -> [false]
   - [true && e] -> [e] 
-  - [e && false] -> [false] If [e] has no side effects
+  - [e && false] -> [false]
   - [e && true] -> [e]
   - [(a && b) && e] -> If either [a && e] or [b && e] can be simplified, 
                        creates new AND expression with simplified parts: [(a' && b')]
@@ -735,7 +735,7 @@ let rec push_negation (e : t) : t option =
   attempting to reduce it to a simpler form. If no simplification is possible,
   returns [None].
 *)
-let rec simplify_and ~n (e1 : t) (e2 : t) : t option =
+let rec simplify_and_ ~n (e1 : t) (e2 : t) : t option =
   if debug then
     Printf.eprintf "%s simplify_and %s %s\n"
       (String.make (n * 2) ' ')
@@ -743,34 +743,34 @@ let rec simplify_and ~n (e1 : t) (e2 : t) : t option =
   let res =
     match (e1.expression_desc, e2.expression_desc) with
     | Bool false, _ -> Some false_
-    | _, Bool false when no_side_effect e1 -> Some false_
+    | _, Bool false -> Some false_
     | Bool true, _ -> Some e2
     | _, Bool true -> Some e1
     | Bin (And, a, b), _ -> (
-      let ao = simplify_and ~n:(n + 1) a e2 in
-      let bo = simplify_and ~n:(n + 1) b e2 in
+      let ao = simplify_and_ ~n:(n + 1) a e2 in
+      let bo = simplify_and_ ~n:(n + 1) b e2 in
       match (ao, bo) with
       | None, None -> (
-        match simplify_and ~n:(n + 1) a b with
+        match simplify_and_ ~n:(n + 1) a b with
         | None -> None
         | Some e -> simplify_and_force ~n:(n + 1) e e2)
       | Some a_, None -> simplify_and_force ~n:(n + 1) a_ b
       | None, Some b_ -> simplify_and_force ~n:(n + 1) a b_
       | Some a_, Some b_ -> simplify_and_force ~n:(n + 1) a_ b_)
     | _, Bin (And, a, b) ->
-      simplify_and ~n:(n + 1)
+      simplify_and_ ~n:(n + 1)
         {expression_desc = Bin (And, e1, a); comment = None}
         b
     | Bin (Or, a, b), _ -> (
-      let ao = simplify_and ~n:(n + 1) a e2 in
-      let bo = simplify_and ~n:(n + 1) b e2 in
+      let ao = simplify_and_ ~n:(n + 1) a e2 in
+      let bo = simplify_and_ ~n:(n + 1) b e2 in
       match (ao, bo) with
       | Some {expression_desc = Bool false}, None ->
         Some {expression_desc = Bin (And, b, e2); comment = None}
       | None, Some {expression_desc = Bool false} ->
         Some {expression_desc = Bin (And, a, e2); comment = None}
       | None, _ | _, None -> (
-        match simplify_or ~n:(n + 1) a b with
+        match simplify_or_ ~n:(n + 1) a b with
         | None -> None
         | Some e -> simplify_and_force ~n:(n + 1) e e2)
       | Some a_, Some b_ -> simplify_or_force ~n:(n + 1) a_ b_)
@@ -1037,12 +1037,12 @@ let rec simplify_and ~n (e1 : t) (e2 : t) : t option =
   res
 
 and simplify_and_force ~n (e1 : t) (e2 : t) : t option =
-  match simplify_and ~n e1 e2 with
+  match simplify_and_ ~n e1 e2 with
   | None -> Some {expression_desc = Bin (And, e1, e2); comment = None}
   | x -> x
 
 (**
-  [simplify_or e1 e2] attempts to simplify the boolean OR expression [e1 || e2].
+  [simplify_or_ e1 e2] attempts to simplify the boolean OR expression [e1 || e2].
   Returns [Some simplified] if simplification is possible, [None] otherwise.
 
   Basic simplification rules:
@@ -1061,7 +1061,7 @@ and simplify_and_force ~n (e1 : t) (e2 : t) : t option =
   This transformation allows reuse of [simplify_and]'s more extensive optimizations
   in the context of OR expressions.
 *)
-and simplify_or ~n (e1 : t) (e2 : t) : t option =
+and simplify_or_ ~n (e1 : t) (e2 : t) : t option =
   if debug then
     Printf.eprintf "%ssimplify_or %s %s\n"
       (String.make (n * 2) ' ')
@@ -1076,7 +1076,7 @@ and simplify_or ~n (e1 : t) (e2 : t) : t option =
     | _ -> (
       match (push_negation e1, push_negation e2) with
       | Some e1_, Some e2_ -> (
-        match simplify_and ~n:(n + 1) e1_ e2_ with
+        match simplify_and_ ~n:(n + 1) e1_ e2_ with
         | Some e -> push_negation e
         | None -> None)
       | _ -> None)
@@ -1091,9 +1091,17 @@ and simplify_or ~n (e1 : t) (e2 : t) : t option =
   res
 
 and simplify_or_force ~n (e1 : t) (e2 : t) : t option =
-  match simplify_or ~n e1 e2 with
+  match simplify_or_ ~n e1 e2 with
   | None -> Some {expression_desc = Bin (Or, e1, e2); comment = None}
   | x -> x
+
+let simplify_and (e1 : t) (e2 : t) : t option =
+  if no_side_effect e1 && no_side_effect e2 then simplify_and_ ~n:0 e1 e2
+  else None
+
+let simplify_or (e1 : t) (e2 : t) : t option =
+  if no_side_effect e1 && no_side_effect e2 then simplify_or_ ~n:0 e1 e2
+  else None
 
 let and_ ?comment (e1 : t) (e2 : t) : t =
   match (e1.expression_desc, e2.expression_desc) with
@@ -1111,7 +1119,7 @@ let and_ ?comment (e1 : t) (e2 : t) : t =
     when Js_op_util.same_vident i j ->
     e2
   | _, _ -> (
-    match simplify_and ~n:0 e1 e2 with
+    match simplify_and e1 e2 with
     | Some e -> e
     | None -> {expression_desc = Bin (And, e1, e2); comment})
 
@@ -1125,7 +1133,7 @@ let or_ ?comment (e1 : t) (e2 : t) =
     when Js_op_util.same_vident i j ->
     {e2 with expression_desc = Bin (Or, r, l)}
   | _, _ -> (
-    match simplify_or ~n:0 e1 e2 with
+    match simplify_or e1 e2 with
     | Some e -> e
     | None -> {expression_desc = Bin (Or, e1, e2); comment})
 
@@ -1190,11 +1198,11 @@ let rec econd ?comment (pred : t) (ifso : t) (ifnot : t) : t =
       Seq (b, {expression_desc = Undefined _}) ) ->
     seq (econd ?comment pred a b) undefined
   | _, _, Bool false -> (
-    match simplify_and ~n:0 pred ifso with
+    match simplify_and pred ifso with
     | Some e -> e
     | None -> default ())
   | _, Bool false, _ -> (
-    match simplify_and ~n:0 (not pred) ifnot with
+    match simplify_and (not pred) ifnot with
     | Some e -> e
     | None -> default ())
   | _ -> default ()

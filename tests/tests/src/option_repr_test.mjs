@@ -221,9 +221,9 @@ b("File \"option_repr_test.res\", line 127, characters 3-10", Belt_List.every(xs
 let xs_1$1 = {
   hd: neqx(undefined, null),
   tl: {
-    hd: Primitive_object.equal(Primitive_option.some(undefined), Primitive_option.some(undefined)),
+    hd: Primitive_object.equal(Primitive_option.some(undefined), Primitive_option.some(undefined)) && Primitive_object.equal(Primitive_option.some(undefined), Primitive_option.some(undefined)),
     tl: {
-      hd: Primitive_object.equal(Primitive_option.some(Primitive_option.some(undefined)), Primitive_option.some(Primitive_option.some(undefined))),
+      hd: Primitive_object.equal(Primitive_option.some(Primitive_option.some(undefined)), Primitive_option.some(Primitive_option.some(undefined))) && Primitive_object.equal(Primitive_option.some(Primitive_option.some(undefined)), Primitive_option.some(Primitive_option.some(undefined))),
       tl: {
         hd: Primitive_object.notequal(Primitive_option.some(Primitive_option.some(Primitive_option.some(undefined))), Primitive_option.some(Primitive_option.some(undefined))) && Primitive_object.notequal(Primitive_option.some(Primitive_option.some(undefined)), Primitive_option.some(Primitive_option.some(Primitive_option.some(undefined)))),
         tl: /* [] */0
