@@ -136,6 +136,19 @@ let entries =
         };
     };
     {
+      path = builtin "%";
+      name = "%mod";
+      form = Binary;
+      specialization =
+        {
+          int = Pmodint Safe;
+          bool = None;
+          float = Some Pmodfloat;
+          bigint = Some Pmodbigint;
+          string = None;
+        };
+    };
+    {
       path = builtin "mod";
       name = "%mod";
       form = Binary;

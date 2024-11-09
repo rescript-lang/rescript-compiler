@@ -35,6 +35,7 @@ Mocha.describe("Belt_int_test", () => {
     Test_utils.eq("File \"belt_int_test.res\", line 40, characters 7-14", -1, -1);
     Test_utils.eq("File \"belt_int_test.res\", line 41, characters 7-14", 6, 6);
     Test_utils.eq("File \"belt_int_test.res\", line 42, characters 7-14", 0, 0);
+    Test_utils.eq("File \"belt_int_test.res\", line 43, characters 7-14", 0, 0);
   });
 });
 
