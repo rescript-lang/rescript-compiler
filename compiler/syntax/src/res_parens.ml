@@ -151,8 +151,6 @@ let sub_binary_expr_operand parent_operator child_operator =
   let open ParsetreeViewer in
   let prec_parent = operator_precedence parent_operator in
   let prec_child = operator_precedence child_operator in
-  Printf.eprintf "parent %s, %d; child %s, %d" parent_operator prec_parent
-    child_operator prec_child;
   prec_parent > prec_child
   || is_equality_operator parent_operator
      && is_equality_operator child_operator
