@@ -333,7 +333,7 @@ let MyNullableExtended = {
 function area(shape) {
   switch (shape.kind) {
     case 1 :
-      return Math.PI * (shape.radius ** 2);
+      return Math.PI * shape.radius ** 2;
     case "square" :
       return shape.sideLength ** 2;
     case "rectangle" :
