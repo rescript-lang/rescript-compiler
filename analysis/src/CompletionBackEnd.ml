@@ -1307,8 +1307,8 @@ let getOpens ~debug ~rawOpens ~package ~env =
       ^ string_of_int (List.length resolvedOpens)
       ^ " "
       ^ String.concat " "
-          (resolvedOpens
-          |> List.map (fun (e : QueryEnv.t) -> Uri.toString e.file.uri)));
+          (resolvedOpens |> List.map (fun (e : QueryEnv.t) -> e.file.moduleName))
+      );
   (* Last open takes priority *)
   List.rev resolvedOpens
 
