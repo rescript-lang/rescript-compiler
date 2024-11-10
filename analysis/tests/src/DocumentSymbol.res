@@ -8,7 +8,7 @@ module Dep: {
 }
 
 module Lib = {
-  let foo = (~age, ~name) => name ++ string_of_int(age)
+  let foo = (~age, ~name) => name ++ Int.toString(age)
   let next = (~number=0, ~year) => number + year
 }
 
@@ -25,7 +25,7 @@ let fa: ForAuto.t = 34
 module O = {
   module Comp = {
     @react.component
-    let make = (~first="", ~zoo=3, ~second) => React.string(first ++ second ++ string_of_int(zoo))
+    let make = (~first="", ~zoo=3, ~second) => React.string(first ++ second ++ Int.toString(zoo))
   }
 }
 

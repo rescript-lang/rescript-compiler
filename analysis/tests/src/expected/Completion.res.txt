@@ -1790,9 +1790,9 @@ Found type for function (~opt1: int=?, ~a: int, ~b: int, unit, unit, ~c: int) =>
     "documentation": null
   }]
 
-Complete src/Completion.res 323:17
-posCursor:[323:17] posNoWhite:[323:16] Found expr:[323:3->323:17]
-Pexp_apply ...[323:3->323:15] ()
+Complete src/Completion.res 326:17
+posCursor:[326:17] posNoWhite:[326:16] Found expr:[326:3->326:17]
+Pexp_apply ...[326:3->326:15] ()
 Completable: CnamedArg(Value[withCallback], "", [])
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -1814,9 +1814,9 @@ Found type for function (~b: int) => callback
     "documentation": null
   }]
 
-Complete src/Completion.res 326:21
-posCursor:[326:21] posNoWhite:[326:20] Found expr:[326:3->326:21]
-Pexp_apply ...[326:3->326:19] ()
+Complete src/Completion.res 329:21
+posCursor:[329:21] posNoWhite:[329:20] Found expr:[329:3->329:21]
+Pexp_apply ...[329:3->329:19] ()
 Completable: CnamedArg(Value[withCallback](~a), "", [])
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -1827,9 +1827,9 @@ Path withCallback
 Found type for function int
 []
 
-Complete src/Completion.res 329:21
-posCursor:[329:21] posNoWhite:[329:20] Found expr:[329:3->329:21]
-Pexp_apply ...[329:3->329:19] ()
+Complete src/Completion.res 332:21
+posCursor:[332:21] posNoWhite:[332:20] Found expr:[332:3->332:21]
+Pexp_apply ...[332:3->332:19] ()
 Completable: CnamedArg(Value[withCallback](~b), "", [])
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -1846,20 +1846,20 @@ Found type for function (~a: int) => int
     "documentation": null
   }]
 
-Complete src/Completion.res 336:26
-posCursor:[336:26] posNoWhite:[336:25] Found expr:[333:3->346:23]
-JSX <div:[333:3->333:6] onClick[334:4->334:11]=...[334:13->346:23]> _children:None
-posCursor:[336:26] posNoWhite:[336:25] Found expr:[334:13->346:23]
-posCursor:[336:26] posNoWhite:[336:25] Found expr:[334:13->338:6]
-posCursor:[336:26] posNoWhite:[336:25] Found expr:[334:13->338:6]
-posCursor:[336:26] posNoWhite:[336:25] Found expr:[335:6->338:5]
-posCursor:[336:26] posNoWhite:[336:25] Found expr:[336:16->338:5]
-posCursor:[336:26] posNoWhite:[336:25] Found pattern:[336:20->338:5]
-posCursor:[336:26] posNoWhite:[336:25] Found type:[336:23->338:5]
-Ptyp_constr Res:[336:23->338:5]
-posCursor:[336:26] posNoWhite:[336:25] Found pattern:[336:20->338:5]
-posCursor:[336:26] posNoWhite:[336:25] Found type:[336:23->338:5]
-Ptyp_constr Res:[336:23->338:5]
+Complete src/Completion.res 339:26
+posCursor:[339:26] posNoWhite:[339:25] Found expr:[336:3->349:23]
+JSX <div:[336:3->336:6] onClick[337:4->337:11]=...[337:13->349:23]> _children:None
+posCursor:[339:26] posNoWhite:[339:25] Found expr:[337:13->349:23]
+posCursor:[339:26] posNoWhite:[339:25] Found expr:[337:13->341:6]
+posCursor:[339:26] posNoWhite:[339:25] Found expr:[337:13->341:6]
+posCursor:[339:26] posNoWhite:[339:25] Found expr:[338:6->341:5]
+posCursor:[339:26] posNoWhite:[339:25] Found expr:[339:16->341:5]
+posCursor:[339:26] posNoWhite:[339:25] Found pattern:[339:20->341:5]
+posCursor:[339:26] posNoWhite:[339:25] Found type:[339:23->341:5]
+Ptyp_constr Res:[339:23->341:5]
+posCursor:[339:26] posNoWhite:[339:25] Found pattern:[339:20->341:5]
+posCursor:[339:26] posNoWhite:[339:25] Found type:[339:23->341:5]
+Ptyp_constr Res:[339:23->341:5]
 Completable: Cpath Type[Res]
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -1898,10 +1898,10 @@ Path Res
     }
   }]
 
-Complete src/Completion.res 343:57
-posCursor:[343:57] posNoWhite:[343:56] Found expr:[343:53->346:23]
-posCursor:[343:57] posNoWhite:[343:56] Found expr:[343:53->343:57]
-Pexp_ident this:[343:53->343:57]
+Complete src/Completion.res 346:57
+posCursor:[346:57] posNoWhite:[346:56] Found expr:[346:53->349:23]
+posCursor:[346:57] posNoWhite:[346:56] Found expr:[346:53->346:57]
+Pexp_ident this:[346:53->346:57]
 Completable: Cpath Value[this]
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -1916,15 +1916,15 @@ Path this
     "documentation": null
   }]
 
-Hover src/Completion.res 346:14
+Hover src/Completion.res 349:14
 {"contents": {"kind": "markdown", "value": "```rescript\nJsxDOM.domProps\n```\n\n---\n\n```\n \n```\n```rescript\ntype JsxDOM.domProps = {\n  key?: string,\n  children?: Jsx.element,\n  ref?: domRef,\n  ariaCurrent?: [\n    | #date\n    | #\"false\"\n    | #location\n    | #page\n    | #step\n    | #time\n    | #\"true\"\n  ],\n  ariaDetails?: string,\n  ariaDisabled?: bool,\n  ariaHidden?: bool,\n  ariaInvalid?: [#\"false\" | #grammar | #spelling | #\"true\"],\n  ariaKeyshortcuts?: string,\n  ariaLabel?: string,\n  ariaRoledescription?: string,\n  ariaAutocomplete?: [#both | #inline | #list | #none],\n  ariaChecked?: [#\"false\" | #mixed | #\"true\"],\n  ariaExpanded?: bool,\n  ariaHaspopup?: [\n    | #dialog\n    | #\"false\"\n    | #grid\n    | #listbox\n    | #menu\n    | #tree\n    | #\"true\"\n  ],\n  ariaLevel?: int,\n  ariaModal?: bool,\n  ariaMultiline?: bool,\n  ariaMultiselectable?: bool,\n  ariaOrientation?: [#horizontal | #undefined | #vertical],\n  ariaPlaceholder?: string,\n  ariaPressed?: [#\"false\" | #mixed | #\"true\"],\n  ariaReadonly?: bool,\n  ariaRequired?: bool,\n  ariaSelected?: bool,\n  ariaSort?: string,\n  ariaValuemax?: float,\n  ariaValuemin?: float,\n  ariaValuenow?: float,\n  ariaValuetext?: string,\n  ariaAtomic?: bool,\n  ariaBusy?: bool,\n  ariaLive?: [#assertive | #off | #polite | #rude],\n  ariaRelevant?: string,\n  ariaDropeffect?: [\n    | #copy\n    | #execute\n    | #link\n    | #move\n    | #none\n    | #popup\n  ],\n  ariaGrabbed?: bool,\n  ariaActivedescendant?: string,\n  ariaColcount?: int,\n  ariaColindex?: int,\n  ariaColspan?: int,\n  ariaControls?: string,\n  ariaDescribedby?: string,\n  ariaErrormessage?: string,\n  ariaFlowto?: string,\n  ariaLabelledby?: string,\n  ariaOwns?: string,\n  ariaPosinset?: int,\n  ariaRowcount?: int,\n  ariaRowindex?: int,\n  ariaRowspan?: int,\n  ariaSetsize?: int,\n  defaultChecked?: bool,\n  defaultValue?: string,\n  accessKey?: string,\n  capture?: [#environment | #user],\n  className?: string,\n  contentEditable?: bool,\n  contextMenu?: string,\n  dataTestId?: string,\n  dir?: string,\n  draggable?: bool,\n  hidden?: bool,\n  id?: string,\n  lang?: string,\n  role?: string,\n  style?: style,\n  spellCheck?: bool,\n  tabIndex?: int,\n  title?: string,\n  itemID?: string,\n  itemProp?: string,\n  itemRef?: string,\n  itemScope?: bool,\n  itemType?: string,\n  accept?: string,\n  acceptCharset?: string,\n  action?: string,\n  allowFullScreen?: bool,\n  alt?: string,\n  as_?: string,\n  async?: bool,\n  autoComplete?: string,\n  autoCapitalize?: string,\n  autoFocus?: bool,\n  autoPlay?: bool,\n  challenge?: string,\n  charSet?: string,\n  checked?: bool,\n  cite?: string,\n  crossOrigin?: string,\n  cols?: int,\n  colSpan?: int,\n  content?: string,\n  controls?: bool,\n  coords?: string,\n  data?: string,\n  dateTime?: string,\n  default?: bool,\n  defer?: bool,\n  disabled?: bool,\n  download?: string,\n  encType?: string,\n  form?: string,\n  formAction?: string,\n  formTarget?: string,\n  formMethod?: string,\n  headers?: string,\n  height?: string,\n  high?: int,\n  href?: string,\n  hrefLang?: string,\n  htmlFor?: string,\n  httpEquiv?: string,\n  icon?: string,\n  inputMode?: string,\n  integrity?: string,\n  keyType?: string,\n  kind?: string,\n  label?: string,\n  list?: string,\n  loading?: [#eager | #lazy],\n  loop?: bool,\n  low?: int,\n  manifest?: string,\n  max?: string,\n  maxLength?: int,\n  media?: string,\n  mediaGroup?: string,\n  method?: string,\n  min?: string,\n  minLength?: int,\n  multiple?: bool,\n  muted?: bool,\n  name?: string,\n  nonce?: string,\n  noValidate?: bool,\n  open_?: bool,\n  optimum?: int,\n  pattern?: string,\n  placeholder?: string,\n  playsInline?: bool,\n  poster?: string,\n  preload?: string,\n  radioGroup?: string,\n  readOnly?: bool,\n  rel?: string,\n  required?: bool,\n  reversed?: bool,\n  rows?: int,\n  rowSpan?: int,\n  sandbox?: string,\n  scope?: string,\n  scoped?: bool,\n  scrolling?: string,\n  selected?: bool,\n  shape?: string,\n  size?: int,\n  sizes?: string,\n  span?: int,\n  src?: string,\n  srcDoc?: string,\n  srcLang?: string,\n  srcSet?: string,\n  start?: int,\n  step?: float,\n  summary?: string,\n  target?: string,\n  type_?: string,\n  useMap?: string,\n  value?: string,\n  width?: string,\n  wrap?: string,\n  onCopy?: JsxEvent.Clipboard.t => unit,\n  onCut?: JsxEvent.Clipboard.t => unit,\n  onPaste?: JsxEvent.Clipboard.t => unit,\n  onCompositionEnd?: JsxEvent.Composition.t => unit,\n  onCompositionStart?: JsxEvent.Composition.t => unit,\n  onCompositionUpdate?: JsxEvent.Composition.t => unit,\n  onKeyDown?: JsxEvent.Keyboard.t => unit,\n  onKeyPress?: JsxEvent.Keyboard.t => unit,\n  onKeyUp?: JsxEvent.Keyboard.t => unit,\n  onFocus?: JsxEvent.Focus.t => unit,\n  onBlur?: JsxEvent.Focus.t => unit,\n  onBeforeInput?: JsxEvent.Form.t => unit,\n  onChange?: JsxEvent.Form.t => unit,\n  onInput?: JsxEvent.Form.t => unit,\n  onReset?: JsxEvent.Form.t => unit,\n  onSubmit?: JsxEvent.Form.t => unit,\n  onInvalid?: JsxEvent.Form.t => unit,\n  onClick?: JsxEvent.Mouse.t => unit,\n  onContextMenu?: JsxEvent.Mouse.t => unit,\n  onDoubleClick?: JsxEvent.Mouse.t => unit,\n  onDrag?: JsxEvent.Mouse.t => unit,\n  onDragEnd?: JsxEvent.Mouse.t => unit,\n  onDragEnter?: JsxEvent.Mouse.t => unit,\n  onDragExit?: JsxEvent.Mouse.t => unit,\n  onDragLeave?: JsxEvent.Mouse.t => unit,\n  onDragOver?: JsxEvent.Mouse.t => unit,\n  onDragStart?: JsxEvent.Mouse.t => unit,\n  onDrop?: JsxEvent.Mouse.t => unit,\n  onMouseDown?: JsxEvent.Mouse.t => unit,\n  onMouseEnter?: JsxEvent.Mouse.t => unit,\n  onMouseLeave?: JsxEvent.Mouse.t => unit,\n  onMouseMove?: JsxEvent.Mouse.t => unit,\n  onMouseOut?: JsxEvent.Mouse.t => unit,\n  onMouseOver?: JsxEvent.Mouse.t => unit,\n  onMouseUp?: JsxEvent.Mouse.t => unit,\n  onSelect?: JsxEvent.Selection.t => unit,\n  onTouchCancel?: JsxEvent.Touch.t => unit,\n  onTouchEnd?: JsxEvent.Touch.t => unit,\n  onTouchMove?: JsxEvent.Touch.t => unit,\n  onTouchStart?: JsxEvent.Touch.t => unit,\n  onPointerOver?: JsxEvent.Pointer.t => unit,\n  onPointerEnter?: JsxEvent.Pointer.t => unit,\n  onPointerDown?: JsxEvent.Pointer.t => unit,\n  onPointerMove?: JsxEvent.Pointer.t => unit,\n  onPointerUp?: JsxEvent.Pointer.t => unit,\n  onPointerCancel?: JsxEvent.Pointer.t => unit,\n  onPointerOut?: JsxEvent.Pointer.t => unit,\n  onPointerLeave?: JsxEvent.Pointer.t => unit,\n  onGotPointerCapture?: JsxEvent.Pointer.t => unit,\n  onLostPointerCapture?: JsxEvent.Pointer.t => unit,\n  onScroll?: JsxEvent.UI.t => unit,\n  onWheel?: JsxEvent.Wheel.t => unit,\n  onAbort?: JsxEvent.Media.t => unit,\n  onCanPlay?: JsxEvent.Media.t => unit,\n  onCanPlayThrough?: JsxEvent.Media.t => unit,\n  onDurationChange?: JsxEvent.Media.t => unit,\n  onEmptied?: JsxEvent.Media.t => unit,\n  onEncrypted?: JsxEvent.Media.t => unit,\n  onEnded?: JsxEvent.Media.t => unit,\n  onError?: JsxEvent.Media.t => unit,\n  onLoadedData?: JsxEvent.Media.t => unit,\n  onLoadedMetadata?: JsxEvent.Media.t => unit,\n  onLoadStart?: JsxEvent.Media.t => unit,\n  onPause?: JsxEvent.Media.t => unit,\n  onPlay?: JsxEvent.Media.t => unit,\n  onPlaying?: JsxEvent.Media.t => unit,\n  onProgress?: JsxEvent.Media.t => unit,\n  onRateChange?: JsxEvent.Media.t => unit,\n  onSeeked?: JsxEvent.Media.t => unit,\n  onSeeking?: JsxEvent.Media.t => unit,\n  onStalled?: JsxEvent.Media.t => unit,\n  onSuspend?: JsxEvent.Media.t => unit,\n  onTimeUpdate?: JsxEvent.Media.t => unit,\n  onVolumeChange?: JsxEvent.Media.t => unit,\n  onWaiting?: JsxEvent.Media.t => unit,\n  onLoad?: JsxEvent.Image.t => unit,\n  onAnimationStart?: JsxEvent.Animation.t => unit,\n  onAnimationEnd?: JsxEvent.Animation.t => unit,\n  onAnimationIteration?: JsxEvent.Animation.t => unit,\n  onTransitionEnd?: JsxEvent.Transition.t => unit,\n  accentHeight?: string,\n  accumulate?: string,\n  additive?: string,\n  alignmentBaseline?: string,\n  allowReorder?: string,\n  alphabetic?: string,\n  amplitude?: string,\n  arabicForm?: string,\n  ascent?: string,\n  attributeName?: string,\n  attributeType?: string,\n  autoReverse?: string,\n  azimuth?: string,\n  baseFrequency?: string,\n  baseProfile?: string,\n  baselineShift?: string,\n  bbox?: string,\n  begin?: string,\n  begin_?: string,\n  bias?: string,\n  by?: string,\n  calcMode?: string,\n  capHeight?: string,\n  clip?: string,\n  clipPath?: string,\n  clipPathUnits?: string,\n  clipRule?: string,\n  colorInterpolation?: string,\n  colorInterpolationFilters?: string,\n  colorProfile?: string,\n  colorRendering?: string,\n  contentScriptType?: string,\n  contentStyleType?: string,\n  cursor?: string,\n  cx?: string,\n  cy?: string,\n  d?: string,\n  decelerate?: string,\n  descent?: string,\n  diffuseConstant?: string,\n  direction?: string,\n  display?: string,\n  divisor?: string,\n  dominantBaseline?: string,\n  dur?: string,\n  dx?: string,\n  dy?: string,\n  edgeMode?: string,\n  elevation?: string,\n  enableBackground?: string,\n  end?: string,\n  end_?: string,\n  exponent?: string,\n  externalResourcesRequired?: string,\n  fill?: string,\n  fillOpacity?: string,\n  fillRule?: string,\n  filter?: string,\n  filterRes?: string,\n  filterUnits?: string,\n  floodColor?: string,\n  floodOpacity?: string,\n  focusable?: string,\n  fontFamily?: string,\n  fontSize?: string,\n  fontSizeAdjust?: string,\n  fontStretch?: string,\n  fontStyle?: string,\n  fontVariant?: string,\n  fontWeight?: string,\n  fomat?: string,\n  from?: string,\n  fx?: string,\n  fy?: string,\n  g1?: string,\n  g2?: string,\n  glyphName?: string,\n  glyphOrientationHorizontal?: string,\n  glyphOrientationVertical?: string,\n  glyphRef?: string,\n  gradientTransform?: string,\n  gradientUnits?: string,\n  hanging?: string,\n  horizAdvX?: string,\n  horizOriginX?: string,\n  ideographic?: string,\n  imageRendering?: string,\n  in_?: string,\n  in2?: string,\n  intercept?: string,\n  k?: string,\n  k1?: string,\n  k2?: string,\n  k3?: string,\n  k4?: string,\n  kernelMatrix?: string,\n  kernelUnitLength?: string,\n  kerning?: string,\n  keyPoints?: string,\n  keySplines?: string,\n  keyTimes?: string,\n  lengthAdjust?: string,\n  letterSpacing?: string,\n  lightingColor?: string,\n  limitingConeAngle?: string,\n  local?: string,\n  markerEnd?: string,\n  markerHeight?: string,\n  markerMid?: string,\n  markerStart?: string,\n  markerUnits?: string,\n  markerWidth?: string,\n  mask?: string,\n  maskContentUnits?: string,\n  maskUnits?: string,\n  mathematical?: string,\n  mode?: string,\n  numOctaves?: string,\n  offset?: string,\n  opacity?: string,\n  operator?: string,\n  order?: string,\n  orient?: string,\n  orientation?: string,\n  origin?: string,\n  overflow?: string,\n  overflowX?: string,\n  overflowY?: string,\n  overlinePosition?: string,\n  overlineThickness?: string,\n  paintOrder?: string,\n  panose1?: string,\n  pathLength?: string,\n  patternContentUnits?: string,\n  patternTransform?: string,\n  patternUnits?: string,\n  pointerEvents?: string,\n  points?: string,\n  pointsAtX?: string,\n  pointsAtY?: string,\n  pointsAtZ?: string,\n  preserveAlpha?: string,\n  preserveAspectRatio?: string,\n  primitiveUnits?: string,\n  r?: string,\n  radius?: string,\n  refX?: string,\n  refY?: string,\n  renderingIntent?: string,\n  repeatCount?: string,\n  repeatDur?: string,\n  requiredExtensions?: string,\n  requiredFeatures?: string,\n  restart?: string,\n  result?: string,\n  rotate?: string,\n  rx?: string,\n  ry?: string,\n  scale?: string,\n  seed?: string,\n  shapeRendering?: string,\n  slope?: string,\n  spacing?: string,\n  specularConstant?: string,\n  specularExponent?: string,\n  speed?: string,\n  spreadMethod?: string,\n  startOffset?: string,\n  stdDeviation?: string,\n  stemh?: string,\n  stemv?: string,\n  stitchTiles?: string,\n  stopColor?: string,\n  stopOpacity?: string,\n  strikethroughPosition?: string,\n  strikethroughThickness?: string,\n  string?: string,\n  stroke?: string,\n  strokeDasharray?: string,\n  strokeDashoffset?: string,\n  strokeLinecap?: string,\n  strokeLinejoin?: string,\n  strokeMiterlimit?: string,\n  strokeOpacity?: string,\n  strokeWidth?: string,\n  surfaceScale?: string,\n  systemLanguage?: string,\n  tableValues?: string,\n  targetX?: string,\n  targetY?: string,\n  textAnchor?: string,\n  textDecoration?: string,\n  textLength?: string,\n  textRendering?: string,\n  to?: string,\n  to_?: string,\n  transform?: string,\n  u1?: string,\n  u2?: string,\n  underlinePosition?: string,\n  underlineThickness?: string,\n  unicode?: string,\n  unicodeBidi?: string,\n  unicodeRange?: string,\n  unitsPerEm?: string,\n  vAlphabetic?: string,\n  vHanging?: string,\n  vIdeographic?: string,\n  vMathematical?: string,\n  values?: string,\n  vectorEffect?: string,\n  version?: string,\n  vertAdvX?: string,\n  vertAdvY?: string,\n  vertOriginX?: string,\n  vertOriginY?: string,\n  viewBox?: string,\n  viewTarget?: string,\n  visibility?: string,\n  widths?: string,\n  wordSpacing?: string,\n  writingMode?: string,\n  x?: string,\n  x1?: string,\n  x2?: string,\n  xChannelSelector?: string,\n  xHeight?: string,\n  xlinkActuate?: string,\n  xlinkArcrole?: string,\n  xlinkHref?: string,\n  xlinkRole?: string,\n  xlinkShow?: string,\n  xlinkTitle?: string,\n  xlinkType?: string,\n  xmlns?: string,\n  xmlnsXlink?: string,\n  xmlBase?: string,\n  xmlLang?: string,\n  xmlSpace?: string,\n  y?: string,\n  y1?: string,\n  y2?: string,\n  yChannelSelector?: string,\n  z?: string,\n  zoomAndPan?: string,\n  about?: string,\n  datatype?: string,\n  inlist?: string,\n  prefix?: string,\n  property?: string,\n  resource?: string,\n  typeof?: string,\n  vocab?: string,\n  dangerouslySetInnerHTML?: {\"__html\": string},\n  suppressContentEditableWarning?: bool,\n}\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxDOM.res%22%2C30%2C0%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype Jsx.element\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22Jsx.res%22%2C24%2C0%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype domRef\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxDOM.res%22%2C25%2C0%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype style = JsxDOMStyle.t\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxDOM.res%22%2C24%2C0%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Clipboard.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C95%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Composition.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C107%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Keyboard.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C118%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Focus.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C142%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Form.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C154%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Mouse.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C163%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Selection.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C244%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Touch.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C253%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Pointer.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C194%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.UI.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C278%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Wheel.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C291%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Media.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C305%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Image.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C314%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Animation.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C323%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Transition.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C336%2C2%5D)\n"}}
 
-Hover src/Completion.res 349:17
+Hover src/Completion.res 352:17
 Nothing at that position. Now trying to use completion.
-posCursor:[349:17] posNoWhite:[349:16] Found expr:[349:11->349:35]
-Pexp_send age[349:30->349:33] e:[349:11->349:28]
-posCursor:[349:17] posNoWhite:[349:16] Found expr:[349:11->349:28]
-Pexp_ident FAO.forAutoObject:[349:11->349:28]
+posCursor:[352:17] posNoWhite:[352:16] Found expr:[352:11->352:35]
+Pexp_send age[352:30->352:33] e:[352:11->352:28]
+posCursor:[352:17] posNoWhite:[352:16] Found expr:[352:11->352:28]
+Pexp_ident FAO.forAutoObject:[352:11->352:28]
 Completable: Cpath Value[FAO, forAutoObject]
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -1935,10 +1935,10 @@ Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
 {"contents": {"kind": "markdown", "value": "```rescript\n{\"age\": int, \"forAutoLabel\": FAR.forAutoRecord}\n```"}}
 
-Hover src/Completion.res 352:17
+Hover src/Completion.res 355:17
 Nothing at that position. Now trying to use completion.
-posCursor:[352:17] posNoWhite:[352:16] Found expr:[352:11->352:22]
-Pexp_apply ...[352:11->352:13] (~opt1352:15->352:19=...[352:20->352:21])
+posCursor:[355:17] posNoWhite:[355:16] Found expr:[355:11->355:22]
+Pexp_apply ...[355:11->355:13] (~opt1355:15->355:19=...[355:20->355:21])
 Completable: CnamedArg(Value[ff], opt1, [opt1])
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -1956,17 +1956,17 @@ Found type for function (
 ) => int
 {"contents": {"kind": "markdown", "value": "```rescript\noption<int>\n```"}}
 
-Complete src/Completion.res 355:23
-posCursor:[355:23] posNoWhite:[355:22] Found expr:[0:-1->355:23]
-posCursor:[355:23] posNoWhite:[355:22] Found expr:[355:12->355:23]
+Complete src/Completion.res 358:23
+posCursor:[358:23] posNoWhite:[358:22] Found expr:[0:-1->358:23]
+posCursor:[358:23] posNoWhite:[358:22] Found expr:[358:12->358:23]
 []
 
-Complete src/Completion.res 362:8
-posCursor:[362:8] posNoWhite:[362:7] Found expr:[360:8->365:3]
-posCursor:[362:8] posNoWhite:[362:7] Found expr:[360:8->365:3]
-posCursor:[362:8] posNoWhite:[362:7] Found pattern:[362:7->364:5]
-posCursor:[362:8] posNoWhite:[362:7] Found pattern:[362:7->362:8]
-Ppat_construct T:[362:7->362:8]
+Complete src/Completion.res 365:8
+posCursor:[365:8] posNoWhite:[365:7] Found expr:[363:8->368:3]
+posCursor:[365:8] posNoWhite:[365:7] Found expr:[363:8->368:3]
+posCursor:[365:8] posNoWhite:[365:7] Found pattern:[365:7->367:5]
+posCursor:[365:8] posNoWhite:[365:7] Found pattern:[365:7->365:8]
+Ppat_construct T:[365:7->365:8]
 Completable: Cpattern Value[x]=T
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2043,12 +2043,12 @@ Path T
     }
   }]
 
-Complete src/Completion.res 373:21
-posCursor:[373:21] posNoWhite:[373:20] Found expr:[371:8->376:3]
-posCursor:[373:21] posNoWhite:[373:20] Found expr:[371:8->376:3]
-posCursor:[373:21] posNoWhite:[373:20] Found pattern:[373:7->375:5]
-posCursor:[373:21] posNoWhite:[373:20] Found pattern:[373:7->373:21]
-Ppat_construct AndThatOther.T:[373:7->373:21]
+Complete src/Completion.res 376:21
+posCursor:[376:21] posNoWhite:[376:20] Found expr:[374:8->379:3]
+posCursor:[376:21] posNoWhite:[376:20] Found expr:[374:8->379:3]
+posCursor:[376:21] posNoWhite:[376:20] Found pattern:[376:7->378:5]
+posCursor:[376:21] posNoWhite:[376:20] Found pattern:[376:7->376:21]
+Ppat_construct AndThatOther.T:[376:7->376:21]
 Completable: Cpath Value[AndThatOther, T]
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2063,13 +2063,13 @@ Path AndThatOther.T
     "documentation": {"kind": "markdown", "value": "```rescript\nThatOther\n```\n\n```rescript\ntype v = And | ThatOther\n```"}
   }]
 
-Complete src/Completion.res 378:24
-posCursor:[378:24] posNoWhite:[378:23] Found expr:[378:12->378:26]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[378:12->378:24], ...[378:24->378:25])
-posCursor:[378:24] posNoWhite:[378:23] Found expr:[378:12->378:24]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[378:12->378:14], ...[378:16->378:24])
-posCursor:[378:24] posNoWhite:[378:23] Found expr:[378:16->378:24]
-Pexp_ident ForAuto.:[378:16->378:24]
+Complete src/Completion.res 381:24
+posCursor:[381:24] posNoWhite:[381:23] Found expr:[381:12->381:26]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[381:12->381:24], ...[381:24->381:25])
+posCursor:[381:24] posNoWhite:[381:23] Found expr:[381:12->381:24]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[381:12->381:14], ...[381:16->381:24])
+posCursor:[381:24] posNoWhite:[381:23] Found expr:[381:16->381:24]
+Pexp_ident ForAuto.:[381:16->381:24]
 Completable: Cpath Value[ForAuto, ""]
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2090,13 +2090,13 @@ Path ForAuto.
     "documentation": null
   }]
 
-Complete src/Completion.res 381:38
-posCursor:[381:38] posNoWhite:[381:37] Found expr:[381:12->381:41]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[381:12->381:39], ...[381:39->381:40])
-posCursor:[381:38] posNoWhite:[381:37] Found expr:[381:12->381:39]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[381:12->381:17], ...[381:19->381:39])
-posCursor:[381:38] posNoWhite:[381:37] Found expr:[381:19->381:39]
-Pexp_send [381:38->381:38] e:[381:19->381:36]
+Complete src/Completion.res 384:38
+posCursor:[384:38] posNoWhite:[384:37] Found expr:[384:12->384:41]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[384:12->384:39], ...[384:39->384:40])
+posCursor:[384:38] posNoWhite:[384:37] Found expr:[384:12->384:39]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[384:12->384:17], ...[384:19->384:39])
+posCursor:[384:38] posNoWhite:[384:37] Found expr:[384:19->384:39]
+Pexp_send [384:38->384:38] e:[384:19->384:36]
 Completable: Cpath Value[FAO, forAutoObject][""]
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2118,13 +2118,13 @@ Path FAO.forAutoObject
     "documentation": null
   }]
 
-Complete src/Completion.res 384:24
-posCursor:[384:24] posNoWhite:[384:23] Found expr:[384:11->384:26]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[384:11->384:24], ...[384:24->384:25])
-posCursor:[384:24] posNoWhite:[384:23] Found expr:[384:11->384:24]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[384:11->384:12], ...[384:14->384:24])
-posCursor:[384:24] posNoWhite:[384:23] Found expr:[384:14->384:24]
-Pexp_field [384:14->384:23] _:[384:24->384:24]
+Complete src/Completion.res 387:24
+posCursor:[387:24] posNoWhite:[387:23] Found expr:[387:11->387:26]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[387:11->387:24], ...[387:24->387:25])
+posCursor:[387:24] posNoWhite:[387:23] Found expr:[387:11->387:24]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[387:11->387:12], ...[387:14->387:24])
+posCursor:[387:24] posNoWhite:[387:23] Found expr:[387:14->387:24]
+Pexp_field [387:14->387:23] _:[387:24->387:24]
 Completable: Cpath Value[funRecord].""
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2146,12 +2146,12 @@ Path funRecord
     "documentation": {"kind": "markdown", "value": "```rescript\nstuff: string\n```\n\n```rescript\ntype funRecord = {\n  someFun: (~name: string) => unit,\n  stuff: string,\n}\n```"}
   }]
 
-Complete src/Completion.res 389:12
-posCursor:[389:12] posNoWhite:[389:11] Found expr:[387:8->392:1]
-posCursor:[389:12] posNoWhite:[389:11] Found expr:[387:8->392:1]
-posCursor:[389:12] posNoWhite:[389:11] Found expr:[388:2->391:4]
-posCursor:[389:12] posNoWhite:[389:11] Found expr:[389:6->391:4]
-posCursor:[389:12] posNoWhite:[389:11] Found expr:[389:6->389:12]
+Complete src/Completion.res 392:12
+posCursor:[392:12] posNoWhite:[392:11] Found expr:[390:8->395:1]
+posCursor:[392:12] posNoWhite:[392:11] Found expr:[390:8->395:1]
+posCursor:[392:12] posNoWhite:[392:11] Found expr:[391:2->394:4]
+posCursor:[392:12] posNoWhite:[392:11] Found expr:[392:6->394:4]
+posCursor:[392:12] posNoWhite:[392:11] Found expr:[392:6->392:12]
 Completable: Cpath array->ma
 Raw opens: 3 Js.place holder ... Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2174,13 +2174,13 @@ Path Js.Array2.ma
     "documentation": {"kind": "markdown", "value": "\nApplies the function (the second argument) to each item in the array, returning\na new array. The result array does not have to have elements of the same type\nas the input array. See\n[`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)\non MDN.\n\n## Examples\n\n```rescript\nJs.Array2.map([12, 4, 8], x => x * x) == [144, 16, 64]\nJs.Array2.map([\"animal\", \"vegetable\", \"mineral\"], Js.String.length) == [6, 9, 7]\n```\n"}
   }]
 
-Complete src/Completion.res 397:14
-posCursor:[397:14] posNoWhite:[397:13] Found expr:[396:14->397:20]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[396:14->397:16], ...[397:16->397:19])
-posCursor:[397:14] posNoWhite:[397:13] Found expr:[396:14->397:16]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[396:14->397:11], ...[397:13->397:16])
-posCursor:[397:14] posNoWhite:[397:13] Found expr:[397:13->397:16]
-Pexp_ident red:[397:13->397:16]
+Complete src/Completion.res 400:14
+posCursor:[400:14] posNoWhite:[400:13] Found expr:[399:14->400:20]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[399:14->400:16], ...[400:16->400:19])
+posCursor:[400:14] posNoWhite:[400:13] Found expr:[399:14->400:16]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[399:14->400:11], ...[400:13->400:16])
+posCursor:[400:14] posNoWhite:[400:13] Found expr:[400:13->400:16]
+Pexp_ident red:[400:13->400:16]
 Completable: Cpath Value[red]
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2195,13 +2195,13 @@ Path red
     "documentation": null
   }]
 
-Complete src/Completion.res 402:25
-posCursor:[402:25] posNoWhite:[402:24] Found expr:[400:14->402:31]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[400:14->402:27], ...[402:27->402:30])
-posCursor:[402:25] posNoWhite:[402:24] Found expr:[400:14->402:27]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[400:14->402:22], ...[402:24->402:27])
-posCursor:[402:25] posNoWhite:[402:24] Found expr:[402:24->402:27]
-Pexp_ident red:[402:24->402:27]
+Complete src/Completion.res 405:25
+posCursor:[405:25] posNoWhite:[405:24] Found expr:[403:14->405:31]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[403:14->405:27], ...[405:27->405:30])
+posCursor:[405:25] posNoWhite:[405:24] Found expr:[403:14->405:27]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[403:14->405:22], ...[405:24->405:27])
+posCursor:[405:25] posNoWhite:[405:24] Found expr:[405:24->405:27]
+Pexp_ident red:[405:24->405:27]
 Completable: Cpath Value[red]
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2216,14 +2216,14 @@ Path red
     "documentation": null
   }]
 
-Complete src/Completion.res 405:22
-posCursor:[405:22] posNoWhite:[405:21] Found expr:[405:11->467:0]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[405:11->423:17], ...[428:0->467:0])
-posCursor:[405:22] posNoWhite:[405:21] Found expr:[405:11->423:17]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[405:11->405:19], ...[405:21->423:17])
-posCursor:[405:22] posNoWhite:[405:21] Found expr:[405:21->423:17]
-posCursor:[405:22] posNoWhite:[405:21] Found expr:[405:21->405:22]
-Pexp_ident r:[405:21->405:22]
+Complete src/Completion.res 408:22
+posCursor:[408:22] posNoWhite:[408:21] Found expr:[408:11->469:0]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[408:11->426:17], ...[431:0->469:0])
+posCursor:[408:22] posNoWhite:[408:21] Found expr:[408:11->426:17]
+Pexp_apply ...__ghost__[0:-1->0:-1] (...[408:11->408:19], ...[408:21->426:17])
+posCursor:[408:22] posNoWhite:[408:21] Found expr:[408:21->426:17]
+posCursor:[408:22] posNoWhite:[408:21] Found expr:[408:21->408:22]
+Pexp_ident r:[408:21->408:22]
 Completable: Cpath Value[r]
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2250,41 +2250,13 @@ Path r
     "documentation": {"kind": "markdown", "value": "```rescript\ntype r = {x: int, y: string}\n```"}
   }]
 
-Complete src/Completion.res 409:21
-posCursor:[409:21] posNoWhite:[409:20] Found expr:[408:14->415:1]
-posCursor:[409:21] posNoWhite:[409:20] Found expr:[408:14->415:1]
-posCursor:[409:21] posNoWhite:[409:20] Found expr:[409:5->414:17]
-posCursor:[409:21] posNoWhite:[409:20] Found expr:[409:5->411:42]
-posCursor:[409:21] posNoWhite:[409:20] Found expr:[409:5->411:5]
-Pexp_ident SomeLocalModule.:[409:5->411:5]
-Completable: Cpath Value[SomeLocalModule, ""]
-Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
-Package opens Pervasives.JsxModules.place holder
-Resolved opens 2 Completion Completion
-ContextPath Value[SomeLocalModule, ""]
-Path SomeLocalModule.
-[{
-    "label": "bb",
-    "kind": 12,
-    "tags": [],
-    "detail": "int",
-    "documentation": null
-  }, {
-    "label": "aa",
-    "kind": 12,
-    "tags": [],
-    "detail": "int",
-    "documentation": null
-  }]
-
 Complete src/Completion.res 412:21
-posCursor:[412:21] posNoWhite:[412:20] Found expr:[408:14->415:1]
-posCursor:[412:21] posNoWhite:[412:20] Found expr:[408:14->415:1]
-posCursor:[412:21] posNoWhite:[412:20] Found expr:[411:2->414:17]
-posCursor:[412:21] posNoWhite:[412:20] Found expr:[412:5->414:17]
-Pexp_apply ...[412:5->414:8] (...[414:9->414:16])
-posCursor:[412:21] posNoWhite:[412:20] Found expr:[412:5->414:8]
-Pexp_ident SomeLocalModule.:[412:5->414:8]
+posCursor:[412:21] posNoWhite:[412:20] Found expr:[411:14->418:1]
+posCursor:[412:21] posNoWhite:[412:20] Found expr:[411:14->418:1]
+posCursor:[412:21] posNoWhite:[412:20] Found expr:[412:5->417:17]
+posCursor:[412:21] posNoWhite:[412:20] Found expr:[412:5->414:42]
+posCursor:[412:21] posNoWhite:[412:20] Found expr:[412:5->414:5]
+Pexp_ident SomeLocalModule.:[412:5->414:5]
 Completable: Cpath Value[SomeLocalModule, ""]
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2305,8 +2277,36 @@ Path SomeLocalModule.
     "documentation": null
   }]
 
-Complete src/Completion.res 417:17
-posCursor:[417:17] posNoWhite:[417:16] Found expr:[417:11->417:17]
+Complete src/Completion.res 415:21
+posCursor:[415:21] posNoWhite:[415:20] Found expr:[411:14->418:1]
+posCursor:[415:21] posNoWhite:[415:20] Found expr:[411:14->418:1]
+posCursor:[415:21] posNoWhite:[415:20] Found expr:[414:2->417:17]
+posCursor:[415:21] posNoWhite:[415:20] Found expr:[415:5->417:17]
+Pexp_apply ...[415:5->417:8] (...[417:9->417:16])
+posCursor:[415:21] posNoWhite:[415:20] Found expr:[415:5->417:8]
+Pexp_ident SomeLocalModule.:[415:5->417:8]
+Completable: Cpath Value[SomeLocalModule, ""]
+Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
+Package opens Pervasives.JsxModules.place holder
+Resolved opens 2 Completion Completion
+ContextPath Value[SomeLocalModule, ""]
+Path SomeLocalModule.
+[{
+    "label": "bb",
+    "kind": 12,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }, {
+    "label": "aa",
+    "kind": 12,
+    "tags": [],
+    "detail": "int",
+    "documentation": null
+  }]
+
+Complete src/Completion.res 420:17
+posCursor:[420:17] posNoWhite:[420:16] Found expr:[420:11->420:17]
 Completable: Cpath int->t
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2329,8 +2329,8 @@ Path Belt.Int.t
     "documentation": {"kind": "markdown", "value": "\nConverts a given `int` to a `float`.\n\n## Examples\n\n```rescript\nJs.log(Belt.Int.toFloat(1) === 1.0) /* true */\n```\n"}
   }]
 
-Complete src/Completion.res 420:19
-posCursor:[420:19] posNoWhite:[420:18] Found expr:[420:11->420:19]
+Complete src/Completion.res 423:19
+posCursor:[423:19] posNoWhite:[423:18] Found expr:[423:11->423:19]
 Completable: Cpath float->t
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2353,8 +2353,8 @@ Path Belt.Float.t
     "documentation": {"kind": "markdown", "value": "\nConverts a given `float` to a `string`. Uses the JavaScript `String` constructor under the hood.\n\n## Examples\n\n```rescript\nJs.log(Belt.Float.toString(1.0) === \"1.0\") /* true */\n```\n"}
   }]
 
-Complete src/Completion.res 425:8
-posCursor:[425:8] posNoWhite:[425:7] Found expr:[425:3->425:8]
+Complete src/Completion.res 428:8
+posCursor:[428:8] posNoWhite:[428:7] Found expr:[428:3->428:8]
 Completable: Cpath Value[ok]->g
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2378,9 +2378,9 @@ Path Belt.Result.g
     "documentation": {"kind": "markdown", "value": "\n`getWithDefault(res, defaultValue)`: If `res` is `Ok(n)`, returns `n`,\notherwise `default`\n\n## Examples\n\n```rescript\nBelt.Result.getWithDefault(Ok(42), 0) == 42\n\nBelt.Result.getWithDefault(Error(\"Invalid Data\"), 0) == 0\n```\n"}
   }]
 
-Complete src/Completion.res 443:15
-posCursor:[443:15] posNoWhite:[443:14] Found expr:[443:3->443:15]
-Pexp_field [443:3->443:12] so:[443:13->443:15]
+Complete src/Completion.res 446:15
+posCursor:[446:15] posNoWhite:[446:14] Found expr:[446:3->446:15]
+Pexp_field [446:3->446:12] so:[446:13->446:15]
 Completable: Cpath Value[rWithDepr].so
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2402,7 +2402,7 @@ Path rWithDepr
     "documentation": {"kind": "markdown", "value": "Deprecated: Use 'someInt'.\n\n```rescript\nsomeFloat: float\n```\n\n```rescript\ntype someRecordWithDeprecatedField = {\n  name: string,\n  someInt: int,\n  someFloat: float,\n}\n```"}
   }]
 
-Complete src/Completion.res 450:37
+Complete src/Completion.res 453:37
 XXX Not found!
 Completable: Cexpression Type[someVariantWithDeprecated]
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
@@ -2436,8 +2436,8 @@ Path someVariantWithDeprecated
     "insertTextFormat": 2
   }]
 
-Complete src/Completion.res 455:30
-posCursor:[455:30] posNoWhite:[455:29] Found expr:[455:11->455:30]
+Complete src/Completion.res 458:30
+posCursor:[458:30] posNoWhite:[458:29] Found expr:[458:11->458:30]
 Completable: Cpath Value[uncurried](Nolabel)->toS
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder
@@ -2456,7 +2456,7 @@ Path Belt.Int.toS
     "documentation": {"kind": "markdown", "value": "\nConverts a given `int` to a `string`. Uses the JavaScript `String` constructor under the hood.\n\n## Examples\n\n```rescript\nJs.log(Belt.Int.toString(1) === \"1\") /* true */\n```\n"}
   }]
 
-Complete src/Completion.res 462:30
+Complete src/Completion.res 463:30
 XXX Not found!
 Completable: Cexpression Type[withUncurried]->recordField(fn)
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
@@ -2475,9 +2475,9 @@ Path withUncurried
     "insertTextFormat": 2
   }]
 
-Complete src/Completion.res 465:26
-posCursor:[465:26] posNoWhite:[465:25] Found expr:[465:22->465:26]
-Pexp_ident FAR.:[465:22->465:26]
+Complete src/Completion.res 466:26
+posCursor:[466:26] posNoWhite:[466:25] Found expr:[466:22->466:26]
+Pexp_ident FAR.:[466:22->466:26]
 Completable: Cpath ValueOrField[FAR, ""]
 Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
 Package opens Pervasives.JsxModules.place holder

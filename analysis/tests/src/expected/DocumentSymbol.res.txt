@@ -28,8 +28,8 @@ DocumentSymbol src/DocumentSymbol.res
   {
     "name": "foo",
     "kind": 13,
-    "range": {"start": {"line": 10, "character": 2}, "end": {"line": 10, "character": 55}},
-    "selectionRange": {"start": {"line": 10, "character": 2}, "end": {"line": 10, "character": 55}}
+    "range": {"start": {"line": 10, "character": 2}, "end": {"line": 10, "character": 54}},
+    "selectionRange": {"start": {"line": 10, "character": 2}, "end": {"line": 10, "character": 54}}
   },
   {
     "name": "next",
@@ -90,8 +90,8 @@ DocumentSymbol src/DocumentSymbol.res
     {
       "name": "make",
       "kind": 13,
-      "range": {"start": {"line": 26, "character": 4}, "end": {"line": 27, "character": 98}},
-      "selectionRange": {"start": {"line": 26, "character": 4}, "end": {"line": 27, "character": 98}}
+      "range": {"start": {"line": 26, "character": 4}, "end": {"line": 27, "character": 97}},
+      "selectionRange": {"start": {"line": 26, "character": 4}, "end": {"line": 27, "character": 97}}
     }]
   }]
 },

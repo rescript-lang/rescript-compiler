@@ -17,7 +17,7 @@ module Dep: {
 //               ^com
 
 module Lib = {
-  let foo = (~age, ~name) => name ++ string_of_int(age)
+  let foo = (~age, ~name) => name ++ Int.toString(age)
   let next = (~number=0, ~year) => number + year
 }
 
@@ -51,7 +51,7 @@ let fa: ForAuto.t = 34
 module O = {
   module Comp = {
     @react.component
-    let make = (~first="", ~zoo=3, ~second) => React.string(first ++ second ++ string_of_int(zoo))
+    let make = (~first="", ~zoo=3, ~second) => React.string(first ++ second ++ Int.toString(zoo))
   }
 }
 
@@ -96,18 +96,18 @@ let nestedObj = {"x": {"y": {"name": "a", "age": 32}}}
 // nestedObj["x"]["y"]["
 //                      ^com
 
-let o: Objects.objT = assert false
+let o: Objects.objT = assert(false)
 // o["a
 //     ^com
 
 type nestedObjT = {"x": Objects.nestedObjT}
-let no: nestedObjT = assert false
+let no: nestedObjT = assert(false)
 // no["x"]["y"]["
 //               ^com
 
 type r = {x: int, y: string}
 type rAlias = r
-let r: rAlias = assert false
+let r: rAlias = assert(false)
 // r.
 //   ^com
 
@@ -136,7 +136,7 @@ let foo = {
     | 3 => a + b
     | _ => 42
     }
-  let z = assert false
+  let z = assert(false)
   let _ = z
   module Inner = {
     type z = int
@@ -154,7 +154,7 @@ exception MyOtherException
 
 type aa = {x: int, name: string}
 type bb = {aa: aa, w: int}
-let q: bb = assert false
+let q: bb = assert(false)
 // q.aa.
 //      ^com
 // q.aa.n
@@ -212,7 +212,7 @@ let _ = shadowed
 
 module FAR = {
   type forAutoRecord = {forAuto: ForAuto.t, something: option<int>}
-  let forAutoRecord: forAutoRecord = assert false
+  let forAutoRecord: forAutoRecord = assert(false)
 }
 
 module FAO = {
@@ -287,7 +287,7 @@ type funRecord = {
   stuff: string,
 }
 
-let funRecord: funRecord = assert false
+let funRecord: funRecord = assert(false)
 
 // let _ = funRecord.someFun(~ )
 //                            ^com
@@ -319,7 +319,10 @@ let ff = (~opt1=0, ~a, ~b, (), ~opt2=0, (), ~c) => a + b + c + opt1 + opt2
 
 type callback = (~a: int) => int
 
-let withCallback: (~b: int) => callback = (~b) => { (); (~a) => a + b }
+let withCallback: (~b: int) => callback = (~b) => {
+  ()
+  (~a) => a + b
+}
 
 // withCallback(~
 //               ^com
@@ -451,14 +454,12 @@ type someVariantWithDeprecated =
 // let v: someVariantWithDeprecated =
 //                                   ^com
 
-let uncurried = (. num) => num + 2
+let uncurried = num => num + 2
 
 // let _ = uncurried(. 1)->toS
 //                            ^com
 
-type withUncurried = {
-  fn: (. int) => unit
-}
+type withUncurried = {fn: int => unit}
 
 // let f: withUncurried = {fn: }
 //                            ^com

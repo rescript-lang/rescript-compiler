@@ -1,6 +1,6 @@
 let add = (x, y) => x + y
 
-let foo = (~age, ~name) => name ++ string_of_int(age)
+let foo = (~age, ~name) => name ++ Int.toString(age)
 
 let ff = (~opt1=0, ~a, ~b, (), ~opt2=0, (), ~c) => a + b + c + opt1 + opt2
 
