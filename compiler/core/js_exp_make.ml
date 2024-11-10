@@ -556,13 +556,6 @@ let string_length ?comment (e : t) : t =
   (* No optimization for {j||j}*)
   | _ -> {expression_desc = Length (e, String); comment}
 
-(* TODO: use [Buffer] instead? *)
-let bytes_length ?comment (e : t) : t =
-  match e.expression_desc with
-  | Array (l, _) when no_side_effect e ->
-    int ?comment (Int32.of_int (List.length l))
-  | _ -> {expression_desc = Length (e, Bytes); comment}
-
 let function_length ?comment (e : t) : t =
   match e.expression_desc with
   | Fun {is_method; params} ->
