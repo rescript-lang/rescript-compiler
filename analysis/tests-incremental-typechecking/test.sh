@@ -1,6 +1,6 @@
 for file in src/*.res; do
   output="$(dirname $file)/expected/$(basename $file).txt"
-  ../../rescript-editor-analysis.exe test $file &> $output
+  ../../_build/install/default/bin/rescript-editor-analysis test $file &> $output
   # CI. We use LF, and the CI OCaml fork prints CRLF. Convert.
   if [ "$RUNNER_OS" == "Windows" ]; then
     perl -pi -e 's/\r\n/\n/g' -- $output
