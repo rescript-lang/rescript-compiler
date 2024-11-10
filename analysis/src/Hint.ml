@@ -125,7 +125,12 @@ let codeLens ~path ~debug =
     (match vb with
     | {
      pvb_pat = {ppat_desc = Ppat_var _; ppat_loc};
-     pvb_expr = {pexp_desc = Pexp_fun _};
+     pvb_expr =
+       {
+         pexp_desc =
+           Pexp_construct
+             ({txt = Lident "Function$"}, Some {pexp_desc = Pexp_fun _});
+       };
     } ->
       push ppat_loc
     | _ -> ());

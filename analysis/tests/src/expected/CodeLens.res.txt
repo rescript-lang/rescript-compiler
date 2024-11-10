@@ -1,8 +1,7 @@
 Code Lens src/CodeLens.res
+miss, not a function
+Pexp_ident:Completion.ff
 [{
-        "range": {"start": {"line": 9, "character": 4}, "end": {"line": 9, "character": 8}},
-        "command": {"title": "{\"name\": string} => React.element", "command": ""}
-    }, {
         "range": {"start": {"line": 4, "character": 4}, "end": {"line": 4, "character": 6}},
         "command": {"title": "(~opt1: int=?, ~a: int, ~b: int, unit, ~opt2: int=?, unit, ~c: int) => int", "command": ""}
     }, {
