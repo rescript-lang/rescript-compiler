@@ -175,6 +175,16 @@ Path someFnTakingVariant
       "filePath": "src/CompletionFunctionArguments.res"
     }
   }, {
+    "label": "Object",
+    "kind": 9,
+    "tags": [],
+    "detail": "module Object",
+    "documentation": null,
+    "data": {
+      "modulePath": "Object",
+      "filePath": "src/CompletionFunctionArguments.res"
+    }
+  }, {
     "label": "Objects",
     "kind": 9,
     "tags": [],
@@ -182,6 +192,26 @@ Path someFnTakingVariant
     "documentation": null,
     "data": {
       "modulePath": "Objects",
+      "filePath": "src/CompletionFunctionArguments.res"
+    }
+  }, {
+    "label": "Option",
+    "kind": 9,
+    "tags": [],
+    "detail": "module Option",
+    "documentation": null,
+    "data": {
+      "modulePath": "Option",
+      "filePath": "src/CompletionFunctionArguments.res"
+    }
+  }, {
+    "label": "Ordering",
+    "kind": 9,
+    "tags": [],
+    "detail": "module Ordering",
+    "documentation": null,
+    "data": {
+      "modulePath": "Ordering",
       "filePath": "src/CompletionFunctionArguments.res"
     }
   }]
@@ -200,19 +230,8 @@ Path someFnTakingVariant
     "tags": [],
     "detail": "someVariant",
     "documentation": {"kind": "markdown", "value": "```rescript\ntype someVariant = One | Two | Three(int, string)\n```"},
-    "sortText": "A Some(_)",
     "insertText": "Some($0)",
     "insertTextFormat": 2
-  }, {
-    "label": "Sort",
-    "kind": 9,
-    "tags": [],
-    "detail": "module Sort",
-    "documentation": null,
-    "data": {
-      "modulePath": "Sort",
-      "filePath": "src/CompletionFunctionArguments.res"
-    }
   }]
 
 Complete src/CompletionFunctionArguments.res 60:44
@@ -249,6 +268,16 @@ Path someFnTakingVariant
       "filePath": "src/CompletionFunctionArguments.res"
     }
   }, {
+    "label": "Object",
+    "kind": 9,
+    "tags": [],
+    "detail": "module Object",
+    "documentation": null,
+    "data": {
+      "modulePath": "Object",
+      "filePath": "src/CompletionFunctionArguments.res"
+    }
+  }, {
     "label": "Objects",
     "kind": 9,
     "tags": [],
@@ -256,6 +285,26 @@ Path someFnTakingVariant
     "documentation": null,
     "data": {
       "modulePath": "Objects",
+      "filePath": "src/CompletionFunctionArguments.res"
+    }
+  }, {
+    "label": "Option",
+    "kind": 9,
+    "tags": [],
+    "detail": "module Option",
+    "documentation": null,
+    "data": {
+      "modulePath": "Option",
+      "filePath": "src/CompletionFunctionArguments.res"
+    }
+  }, {
+    "label": "Ordering",
+    "kind": 9,
+    "tags": [],
+    "detail": "module Ordering",
+    "documentation": null,
+    "data": {
+      "modulePath": "Ordering",
       "filePath": "src/CompletionFunctionArguments.res"
     }
   }]

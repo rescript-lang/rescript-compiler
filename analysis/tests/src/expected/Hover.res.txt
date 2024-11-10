@@ -22,19 +22,9 @@ Hover src/Hover.res 33:4
 {"contents": {"kind": "markdown", "value": "```rescript\nunit => int\n```\n---\nDoc comment for functionWithTypeAnnotation"}}
 
 Hover src/Hover.res 37:13
-getLocItem #5: heuristic for JSX and compiler combined:
-~x becomes Props#x
-heuristic for: [Props, x], give loc of `x`
-n1:Props n2:name
 {"contents": {"kind": "markdown", "value": "```rescript\nstring\n```"}}
 
 Hover src/Hover.res 42:15
-getLocItem #7: heuristic for JSX on type-annotated labeled (~arg:t):
-(~arg:t) becomes Props#arg
-Props has the location range of arg:t
-arg has the location range of arg
-heuristic for: [Props, arg], give loc of `arg`
-n1:Props n2:name
 {"contents": {"kind": "markdown", "value": "```rescript\nstring\n```"}}
 
 Hover src/Hover.res 46:10

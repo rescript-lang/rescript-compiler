@@ -22,8 +22,6 @@ References src/References.res 20:12
 ]
 
 References src/References.res 23:15
-getLocItem #4: heuristic for </Comp> within fragments: take make as makeProps does not work
-the type is not great but jump to definition works
 [
 {"uri": "ReferencesInner.res", "range": {"start": {"line": 1, "character": 28}, "end": {"line": 1, "character": 32}}},
 {"uri": "References.res", "range": {"start": {"line": 23, "character": 19}, "end": {"line": 23, "character": 23}}},

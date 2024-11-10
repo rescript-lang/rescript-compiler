@@ -454,7 +454,7 @@ extracted params:
   "signatures": [{
     "label": "(array<int>, int => int) => array<int>",
     "parameters": [{"label": [1, 11], "documentation": {"kind": "markdown", "value": ""}}, {"label": [13, 23], "documentation": {"kind": "markdown", "value": ""}}],
-    "documentation": {"kind": "markdown", "value": " Main docstring here. "}
+    "documentation": {"kind": "markdown", "value": "\n`map(array, fn)` returns a new array with all elements from `array`, each element transformed using the provided `fn`.\n\nSee [`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) on MDN.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\nlet mappedArray = array->Array.map(greeting => greeting ++ \" to you\")\n\nConsole.log(mappedArray) // [\"Hello to you\", \"Hi to you\", \"Good bye to you\"]\n```\n"}
   }],
   "activeSignature": 0,
   "activeParameter": 1
@@ -467,7 +467,7 @@ extracted params:
 {
   "signatures": [{
     "label": "(x, tt) => string",
-    "parameters": [{"label": [1, 2], "documentation": {"kind": "markdown", "value": "```rescript\ntype x = {age?: int, name?: string}\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22SignatureHelp.res%22%2C121%2C0%5D)"}}, {"label": [4, 6], "documentation": {"kind": "markdown", "value": "```rescript\ntype tt = One\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22SignatureHelp.res%22%2C127%2C0%5D)"}}],
+    "parameters": [{"label": [1, 2], "documentation": {"kind": "markdown", "value": "```rescript\ntype x = {age?: int, name?: string}\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22SignatureHelp.res%22%2C117%2C0%5D)"}}, {"label": [4, 6], "documentation": {"kind": "markdown", "value": "```rescript\ntype tt = One\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22SignatureHelp.res%22%2C123%2C0%5D)"}}],
     "documentation": {"kind": "markdown", "value": " Some stuff "}
   }],
   "activeSignature": 0,
@@ -481,7 +481,7 @@ extracted params:
 {
   "signatures": [{
     "label": "(x, tt) => string",
-    "parameters": [{"label": [1, 2], "documentation": {"kind": "markdown", "value": "```rescript\ntype x = {age?: int, name?: string}\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22SignatureHelp.res%22%2C121%2C0%5D)"}}, {"label": [4, 6], "documentation": {"kind": "markdown", "value": "```rescript\ntype tt = One\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22SignatureHelp.res%22%2C127%2C0%5D)"}}],
+    "parameters": [{"label": [1, 2], "documentation": {"kind": "markdown", "value": "```rescript\ntype x = {age?: int, name?: string}\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22SignatureHelp.res%22%2C117%2C0%5D)"}}, {"label": [4, 6], "documentation": {"kind": "markdown", "value": "```rescript\ntype tt = One\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22SignatureHelp.res%22%2C123%2C0%5D)"}}],
     "documentation": {"kind": "markdown", "value": " Some stuff "}
   }],
   "activeSignature": 0,

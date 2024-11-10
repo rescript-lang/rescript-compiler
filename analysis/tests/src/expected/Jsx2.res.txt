@@ -1,6 +1,4 @@
 Definition src/Jsx2.res 5:9
-getLocItem #4: heuristic for </Comp> within fragments: take make as makeProps does not work
-the type is not great but jump to definition works
 {"uri": "Jsx2.res", "range": {"start": {"line": 2, "character": 6}, "end": {"line": 2, "character": 10}}}
 
 Complete src/Jsx2.res 8:15
@@ -56,13 +54,13 @@ Path M
       "filePath": "src/Jsx2.res"
     }
   }, {
-    "label": "MapLabels",
+    "label": "Math",
     "kind": 9,
     "tags": [],
-    "detail": "module MapLabels",
+    "detail": "module Math",
     "documentation": null,
     "data": {
-      "modulePath": "MapLabels",
+      "modulePath": "Math",
       "filePath": "src/Jsx2.res"
     }
   }, {
@@ -73,16 +71,6 @@ Path M
     "documentation": null,
     "data": {
       "modulePath": "ModuleStuff",
-      "filePath": "src/Jsx2.res"
-    }
-  }, {
-    "label": "MoreLabels",
-    "kind": 9,
-    "tags": [],
-    "detail": "module MoreLabels",
-    "documentation": null,
-    "data": {
-      "modulePath": "MoreLabels",
       "filePath": "src/Jsx2.res"
     }
   }]
@@ -256,8 +244,6 @@ Path M.make
   }]
 
 Definition src/Jsx2.res 58:11
-getLocItem #4: heuristic for </Comp> within fragments: take make as makeProps does not work
-the type is not great but jump to definition works
 {"uri": "Component.res", "range": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 8}}}
 
 Complete src/Jsx2.res 68:10
