@@ -1,6 +1,5 @@
 Hover src/Div.res 0:10
-getLocItem #3: heuristic for <div>
-{"contents": {"kind": "markdown", "value": "```rescript\n(\n  string,\n  ~props: ReactDOM_V3.domProps=?,\n  array<React.element>,\n) => React.element\n```\n\n---\n\n```\n \n```\n```rescript\ntype ReactDOM_V3.domProps = Props.domProps\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22ReactDOM_V3.res%22%2C57%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype React.element = Jsx.element\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22React.res%22%2C0%2C0%5D)\n"}}
+{"contents": {"kind": "markdown", "value": "```rescript\nstring\n```"}}
 
 Complete src/Div.res 3:17
 posCursor:[3:17] posNoWhite:[3:16] Found expr:[3:4->3:17]

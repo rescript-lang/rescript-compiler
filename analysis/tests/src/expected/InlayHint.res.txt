@@ -36,8 +36,20 @@ Inlay Hint src/InlayHint.res 1:34
     "paddingLeft": true,
     "paddingRight": false
 }, {
+    "position": {"line": 10, "character": 10},
+    "label": ": (~xx: int) => int",
+    "kind": 1,
+    "paddingLeft": true,
+    "paddingRight": false
+}, {
     "position": {"line": 8, "character": 10},
     "label": ": int",
+    "kind": 1,
+    "paddingLeft": true,
+    "paddingRight": false
+}, {
+    "position": {"line": 6, "character": 7},
+    "label": ": (int, int) => int",
     "kind": 1,
     "paddingLeft": true,
     "paddingRight": false

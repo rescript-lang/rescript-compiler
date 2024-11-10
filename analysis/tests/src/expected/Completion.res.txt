@@ -26,9 +26,9 @@ Path MyList.m
   }, {
     "label": "mapReverse2U",
     "kind": 12,
-    "tags": [],
+    "tags": [1],
     "detail": "(t<'a>, t<'b>, ('a, 'b) => 'c) => t<'c>",
-    "documentation": {"kind": "markdown", "value": " Uncurried version of [mapReverse2](#mapReverse2). "}
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use `mapReverse2` instead\n\n Uncurried version of [mapReverse2](#mapReverse2). "}
   }, {
     "label": "map",
     "kind": 12,
@@ -38,21 +38,21 @@ Path MyList.m
   }, {
     "label": "mapWithIndexU",
     "kind": 12,
-    "tags": [],
+    "tags": [1],
     "detail": "(t<'a>, (int, 'a) => 'b) => t<'b>",
-    "documentation": {"kind": "markdown", "value": " Uncurried version of [mapWithIndex](#mapWithIndex). "}
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use `mapWithIndex` instead\n\n Uncurried version of [mapWithIndex](#mapWithIndex). "}
   }, {
     "label": "mapU",
     "kind": 12,
-    "tags": [],
+    "tags": [1],
     "detail": "(t<'a>, 'a => 'b) => t<'b>",
-    "documentation": {"kind": "markdown", "value": " Uncurried version of [map](#map). "}
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use `map` instead\n\n Uncurried version of [map](#map). "}
   }, {
     "label": "makeByU",
     "kind": 12,
-    "tags": [],
+    "tags": [1],
     "detail": "(int, int => 'a) => t<'a>",
-    "documentation": {"kind": "markdown", "value": " Uncurried version of [makeBy](#makeBy) "}
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use `makeBy` instead\n\n Uncurried version of [makeBy](#makeBy) "}
   }, {
     "label": "mapReverse2",
     "kind": 12,
@@ -68,9 +68,9 @@ Path MyList.m
   }, {
     "label": "mapReverseU",
     "kind": 12,
-    "tags": [],
+    "tags": [1],
     "detail": "(t<'a>, 'a => 'b) => t<'b>",
-    "documentation": {"kind": "markdown", "value": " Uncurried version of [mapReverse](#mapReverse). "}
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use `mapReverse` instead\n\n Uncurried version of [mapReverse](#mapReverse). "}
   }]
 
 Complete src/Completion.res 3:9
@@ -81,220 +81,502 @@ Package opens Pervasives.JsxModules.place holder
 ContextPath Value[Array, ""]
 Path Array.
 [{
-    "label": "fold_left",
+    "label": "splice",
     "kind": 12,
     "tags": [],
-    "detail": "(('a, 'b) => 'a, 'a, array<'b>) => 'a",
-    "documentation": {"kind": "markdown", "value": " [Array.fold_left f x a] computes\n   [f (... (f (f x a.(0)) a.(1)) ...) a.(n-1)],\n   where [n] is the length of the array [a]. "}
+    "detail": "(\n  array<'a>,\n  ~start: int,\n  ~remove: int,\n  ~insert: array<'a>,\n) => unit",
+    "documentation": null
   }, {
     "label": "concat",
     "kind": 12,
     "tags": [],
-    "detail": "list<array<'a>> => array<'a>",
-    "documentation": {"kind": "markdown", "value": " Same as {!Array.append}, but concatenates a list of arrays. "}
+    "detail": "(array<'a>, array<'a>) => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`concat(array1, array2)` concatenates the two arrays, creating a new array.\n\nSee [`Array.concat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat) on MDN.\n\n## Examples\n```rescript\nlet array1 = [\"hi\", \"hello\"]\nlet array2 = [\"yay\", \"wehoo\"]\n\nlet someArray = array1->Array.concat(array2)\n\nConsole.log(someArray) // [\"hi\", \"hello\", \"yay\", \"wehoo\"]\n```\n"}
   }, {
-    "label": "mapi",
+    "label": "filterMap",
     "kind": 12,
     "tags": [],
-    "detail": "((int, 'a) => 'b, array<'a>) => array<'b>",
-    "documentation": {"kind": "markdown", "value": " Same as {!Array.map}, but the\n   function is applied to the index of the element as first argument,\n   and the element itself as second argument. "}
+    "detail": "(array<'a>, 'a => option<'b>) => array<'b>",
+    "documentation": {"kind": "markdown", "value": "\n`filterMap(array, fn)`\n\nCalls `fn` for each element and returns a new array containing results of the `fn` calls which are not `None`.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\n\nConsole.log(\n  array->Array.filterMap(item =>\n    switch item {\n    | \"Hello\" => Some(item->String.length)\n    | _ => None\n    }\n  ),\n) // [5]\n```\n"}
   }, {
-    "label": "exists",
+    "label": "shift",
     "kind": 12,
     "tags": [],
-    "detail": "('a => bool, array<'a>) => bool",
-    "documentation": {"kind": "markdown", "value": " [Array.exists p [|a1; ...; an|]] checks if at least one element of\n    the array satisfies the predicate [p]. That is, it returns\n    [(p a1) || (p a2) || ... || (p an)].\n    @since 4.03.0 "}
+    "detail": "array<'a> => option<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`shift(array)` removes the first item in the array, and returns it.\n\nBeware this will *mutate* the array.\n\nSee [`Array.shift`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/shift) on MDN.\n\n## Examples\n```rescript\nlet someArray = [\"hi\", \"hello\"]\nlet lastItem = someArray->Array.shift // \"hi\"\n\nConsole.log(someArray) // [\"hello\"]. Notice first item is gone.\n```\n"}
   }, {
-    "label": "for_all",
+    "label": "findMap",
     "kind": 12,
     "tags": [],
-    "detail": "('a => bool, array<'a>) => bool",
-    "documentation": {"kind": "markdown", "value": " [Array.for_all p [|a1; ...; an|]] checks if all elements of the array\n   satisfy the predicate [p]. That is, it returns\n   [(p a1) && (p a2) && ... && (p an)].\n   @since 4.03.0 "}
+    "detail": "(array<'a>, 'a => option<'b>) => option<'b>",
+    "documentation": {"kind": "markdown", "value": "\n  `findMap(arr, fn)`\n\n  Calls `fn` for each element and returns the first value from `fn` that is `Some(_)`.\n  Otherwise returns `None`\n\n  ```res example\n  Array.findMap([1, 2, 3], n => mod(n, 2) == 0 ? Some(n - 2) : None) == Some(0) // true\n  ```\n"}
+  }, {
+    "label": "concatMany",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, array<array<'a>>) => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`concatMany(array1, arrays)` concatenates array1 with several other arrays, creating a new array.\n\nSee [`Array.concat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat) on MDN.\n\n## Examples\n```rescript\nlet array1 = [\"hi\", \"hello\"]\nlet array2 = [\"yay\"]\nlet array3 = [\"wehoo\"]\n\nlet someArray = array1->Array.concatMany([array2, array3])\n\nConsole.log(someArray) // [\"hi\", \"hello\", \"yay\", \"wehoo\"]\n```\n"}
+  }, {
+    "label": "joinWith",
+    "kind": 12,
+    "tags": [1],
+    "detail": "(array<string>, string) => string",
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use `join` instead\n\n\n`joinWith(array, separator)` produces a string where all items of `array` are printed, separated by `separator`. Array items must be strings, to join number or other arrays, use `joinWithUnsafe`. Under the hood this will run JavaScript's `toString` on all the array items.\n\n## Examples\n```rescript\nlet array = [\"One\", \"Two\", \"Three\"]\n\nConsole.log(array->Array.joinWith(\" -- \")) // One -- Two -- Three\n```\n"}
+  }, {
+    "label": "joinWithUnsafe",
+    "kind": 12,
+    "tags": [1],
+    "detail": "(array<'a>, string) => string",
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use `joinUnsafe` instead\n\n\n`joinWithUnsafe(array, separator)` produces a string where all items of `array` are printed, separated by `separator`. Under the hood this will run JavaScript's `toString` on all the array items.\n\n## Examples\n```rescript\nlet array = [1, 2, 3]\n\nConsole.log(array->Array.joinWithUnsafe(\" -- \")) // 1 -- 2 -- 3\n```\n"}
+  }, {
+    "label": "reduceRight",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'b, ('b, 'a) => 'b) => 'b",
+    "documentation": {"kind": "markdown", "value": "\n  `reduceRight(xs, init, fn)`\n\n  Works like `Array.reduce`; except that function `fn` is applied to each item of `xs` from the last back to the first.\n\n  ```res example\n  Array.reduceRight([\"a\", \"b\", \"c\", \"d\"], \"\", (a, b) => a ++ b) == \"dcba\"\n  ```\n"}
+  }, {
+    "label": "reduceRightWithIndex",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'b, ('b, 'a, int) => 'b) => 'b",
+    "documentation": {"kind": "markdown", "value": "\n  `reduceRightWithIndex(xs, init, fn)`\n\n  Like `reduceRight`, but with an additional index argument on the callback function.\n\n  ```res example\n  Array.reduceRightWithIndex([1, 2, 3, 4], 0, (acc, x, i) => acc + x + i) == 16\n  ```\n"}
+  }, {
+    "label": "toShuffled",
+    "kind": 12,
+    "tags": [],
+    "detail": "array<'a> => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`toShuffled(array)` returns a new array with all items in `array` in a random order.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\nlet shuffledArray = array->Array.toShuffled\n\nConsole.log(shuffledArray)\n```\n"}
+  }, {
+    "label": "getSymbol",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, Symbol.t) => option<'b>",
+    "documentation": null
+  }, {
+    "label": "getSymbolUnsafe",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, Symbol.t) => 'b",
+    "documentation": null
+  }, {
+    "label": "findIndexOpt",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a => bool) => option<int>",
+    "documentation": {"kind": "markdown", "value": "\n`findIndexOpt(array, checker)` returns the index of the first element of `array` where the provided `checker` function returns true.\n\nReturns `None` if no item matches.\n\nSee [`Array.findIndex`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex) on MDN.\n\n## Examples\n```rescript\ntype languages = ReScript | TypeScript | JavaScript\n\nlet array = [ReScript, TypeScript, JavaScript]\n\nswitch array->Array.findIndexOpt(item => item == ReScript) {\n| None => Console.log(\"Ahh, no ReScript...\")\n| Some(index) => Console.log(\"Yay, ReScript at index \" ++ Int.toString(index))\n}\n```\n"}
+  }, {
+    "label": "shuffle",
+    "kind": 12,
+    "tags": [],
+    "detail": "array<'a> => unit",
+    "documentation": {"kind": "markdown", "value": "\n`shuffle(array)` randomizes the position of all items in `array`.\n\nBeware this will *mutate* the array.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\narray->Array.shuffle\n\nConsole.log(array)\n```\n"}
   }, {
     "label": "copy",
     "kind": 12,
     "tags": [],
     "detail": "array<'a> => array<'a>",
-    "documentation": {"kind": "markdown", "value": " [Array.copy a] returns a copy of [a], that is, a fresh array\n   containing the same elements as [a]. "}
+    "documentation": {"kind": "markdown", "value": "\n`copy(array)` makes a copy of the array with the items in it, but does not make copies of the items themselves.\n\n## Examples\n```rescript\nlet myArray = [1, 2, 3]\nlet copyOfMyArray = myArray->Array.copy\n\nConsole.log(copyOfMyArray) // [1, 2, 3]\nConsole.log(myArray === copyOfMyArray) // false\n```\n"}
   }, {
-    "label": "iter2",
-    "kind": 12,
-    "tags": [],
-    "detail": "(('a, 'b) => unit, array<'a>, array<'b>) => unit",
-    "documentation": {"kind": "markdown", "value": " [Array.iter2 f a b] applies function [f] to all the elements of [a]\n   and [b].\n   Raise [Invalid_argument] if the arrays are not the same size.\n   @since 4.03.0 "}
-  }, {
-    "label": "to_list",
-    "kind": 12,
-    "tags": [],
-    "detail": "array<'a> => list<'a>",
-    "documentation": {"kind": "markdown", "value": " [Array.to_list a] returns the list of all the elements of [a]. "}
-  }, {
-    "label": "stable_sort",
-    "kind": 12,
-    "tags": [],
-    "detail": "(('a, 'a) => int, array<'a>) => unit",
-    "documentation": {"kind": "markdown", "value": " Same as {!Array.sort}, but the sorting algorithm is stable (i.e.\n   elements that compare equal are kept in their original order) and\n   not guaranteed to run in constant heap space.\n\n   The current implementation uses Merge Sort. It uses [n/2]\n   words of heap space, where [n] is the length of the array.\n   It is usually faster than the current implementation of {!Array.sort}.\n"}
-  }, {
-    "label": "iteri",
-    "kind": 12,
-    "tags": [],
-    "detail": "((int, 'a) => unit, array<'a>) => unit",
-    "documentation": {"kind": "markdown", "value": " Same as {!Array.iter}, but the\n   function is applied with the index of the element as first argument,\n   and the element itself as second argument. "}
-  }, {
-    "label": "memq",
-    "kind": 12,
-    "tags": [],
-    "detail": "('a, array<'a>) => bool",
-    "documentation": {"kind": "markdown", "value": " Same as {!Array.mem}, but uses physical equality instead of structural\n   equality to compare array elements.\n   @since 4.03.0 "}
-  }, {
-    "label": "map2",
-    "kind": 12,
-    "tags": [],
-    "detail": "(('a, 'b) => 'c, array<'a>, array<'b>) => array<'c>",
-    "documentation": {"kind": "markdown", "value": " [Array.map2 f a b] applies function [f] to all the elements of [a]\n   and [b], and builds an array with the results returned by [f]:\n   [[| f a.(0) b.(0); ...; f a.(Array.length a - 1) b.(Array.length b - 1)|]].\n   Raise [Invalid_argument] if the arrays are not the same size.\n   @since 4.03.0 "}
-  }, {
-    "label": "set",
+    "label": "setUnsafe",
     "kind": 12,
     "tags": [],
     "detail": "(array<'a>, int, 'a) => unit",
-    "documentation": {"kind": "markdown", "value": " [Array.set a n x] modifies array [a] in place, replacing\n   element number [n] with [x].\n   You can also write [a.(n) <- x] instead of [Array.set a n x].\n\n   Raise [Invalid_argument \"index out of bounds\"]\n   if [n] is outside the range 0 to [Array.length a - 1]. "}
+    "documentation": {"kind": "markdown", "value": "\n`setUnsafe(array, index, item)` sets the provided `item` at `index` of `array`.\n\nBeware this will *mutate* the array, and is *unsafe*.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\narray->Array.setUnsafe(1, \"Hello\")\n\nConsole.log(array[1]) // \"Hello\"\n```\n"}
+  }, {
+    "label": "findIndexWithIndex",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, ('a, int) => bool) => int",
+    "documentation": {"kind": "markdown", "value": "\n`findIndexWithIndex(array, checker)` returns the index of the first element of `array` where the provided `checker` function returns true.\n\nReturns `-1` if the item does not exist. Consider using `Array.findIndexOpt` if you want an option instead (where `-1` would be `None`).\n\nSee [`Array.findIndex`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex) on MDN.\n\n## Examples\n```rescript\ntype languages = ReScript | TypeScript | JavaScript\n\nlet array = [ReScript, JavaScript]\n\nlet isReScriptFirst = array->Array.findIndexWithIndex((item, index) => index === 0 && item == ReScript)\nlet isTypeScriptFirst = array->Array.findIndexWithIndex((item, index) => index === 0 && item == TypeScript)\n\nConsole.log(isReScriptFirst) // 0\nConsole.log(isTypeScriptFirst) // -1\n```\n"}
+  }, {
+    "label": "someWithIndex",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, ('a, int) => bool) => bool",
+    "documentation": {"kind": "markdown", "value": "\n`someWithIndex(array, checker)` returns true if running the provided `checker` function on any element in `array` returns true.\n\nSee [`Array.some`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some) on MDN.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\n\nConsole.log(array->Array.someWithIndex((greeting, index) => greeting === \"Hello\" && index === 0)) // true\n```\n"}
+  }, {
+    "label": "slice",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, ~start: int, ~end: int) => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`slice(array, ~start, ~end)` creates a new array of items copied from `array` from `start` until (but not including) `end`.\n\nSee [`Array.slice`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice) on MDN.\n\n## Examples\n```rescript\nlet myArray = [1, 2, 3, 4]\n\nConsole.log(myArray->Array.slice(~start=1, ~end=3)) // [2, 3]\n```\n"}
+  }, {
+    "label": "fillToEnd",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a, ~start: int) => unit",
+    "documentation": {"kind": "markdown", "value": "\n`fillToEnd(array, value, ~start)` fills `array` with `value` from the `start` index.\n\nBeware this will *mutate* the array.\n\nSee [`Array.fill`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill) on MDN.\n\n## Examples\n```rescript\nlet myArray = [1, 2, 3, 4]\nmyArray->Array.fillToEnd(9, ~start=1)\n\nConsole.log(myArray) // [1, 9, 9, 9]\n```\n"}
+  }, {
+    "label": "includes",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a) => bool",
+    "documentation": {"kind": "markdown", "value": "\n`includes(array, item)` checks whether `array` includes `item`, by doing a [strict check for equality](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality).\n\nSee [`Array.includes`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes) on MDN.\n\n## Examples\n```rescript\nConsole.log([1, 2]->Array.includes(1)) // true\nConsole.log([1, 2]->Array.includes(3)) // false\nConsole.log([{\"language\": \"ReScript\"}]->Array.includes({\"language\": \"ReScript\"})) // false, because of strict equality\n```\n"}
+  }, {
+    "label": "fromInitializer",
+    "kind": 12,
+    "tags": [],
+    "detail": "(~length: int, int => 'a) => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n  `fromInitializer(~length, f)`\n\n  Creates an array of length `length` initialized with the value returned from `f ` for each index.\n\n  ```res example\n  Array.fromInitializer(~length=3, i => i + 3) == [3, 4, 5]\n  ```\n"}
+  }, {
+    "label": "find",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a => bool) => option<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`find(array, checker)` returns the first element of `array` where the provided `checker` function returns true.\n\nSee [`Array.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find) on MDN.\n\n## Examples\n```rescript\ntype languages = ReScript | TypeScript | JavaScript\n\nlet array = [ReScript, TypeScript, JavaScript]\n\nswitch array->Array.find(item => item == ReScript) {\n| None => Console.log(\"No item...\")\n| Some(_) => Console.log(\"Yay, ReScript!\")\n}\n```\n"}
   }, {
     "label": "make",
     "kind": 12,
     "tags": [],
-    "detail": "(int, 'a) => array<'a>",
-    "documentation": {"kind": "markdown", "value": " [Array.make n x] returns a fresh array of length [n],\n   initialized with [x].\n   All the elements of this new array are initially\n   physically equal to [x] (in the sense of the [==] predicate).\n   Consequently, if [x] is mutable, it is shared among all elements\n   of the array, and modifying [x] through one of the array entries\n   will modify all other entries at the same time.\n\n   Raise [Invalid_argument] if [n < 0] or [n > Sys.max_array_length].\n   If the value of [x] is a floating-point number, then the maximum\n   size is only [Sys.max_array_length / 2]."}
+    "detail": "(~length: int, 'a) => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n  `make(~length, init)`\n\n  Creates an array of length `length` initialized with the value of `init`.\n\n  ```res example\n  Array.make(~length=3, #apple) == [#apple, #apple, #apple]\n  ```\n"}
   }, {
-    "label": "make_float",
-    "kind": 12,
-    "tags": [1],
-    "detail": "int => array<float>",
-    "documentation": {"kind": "markdown", "value": "Deprecated: Use Array.create_float instead.\n\n @deprecated [Array.make_float] is an alias for {!Array.create_float}. "}
-  }, {
-    "label": "fold_right",
+    "label": "lastIndexOfFrom",
     "kind": 12,
     "tags": [],
-    "detail": "(('b, 'a) => 'a, array<'b>, 'a) => 'a",
-    "documentation": {"kind": "markdown", "value": " [Array.fold_right f a x] computes\n   [f a.(0) (f a.(1) ( ... (f a.(n-1) x) ...))],\n   where [n] is the length of the array [a]. "}
+    "detail": "(array<'a>, 'a, int) => int",
+    "documentation": null
+  }, {
+    "label": "toLocaleString",
+    "kind": 12,
+    "tags": [],
+    "detail": "array<'a> => string",
+    "documentation": null
+  }, {
+    "label": "toSpliced",
+    "kind": 12,
+    "tags": [],
+    "detail": "(\n  array<'a>,\n  ~start: int,\n  ~remove: int,\n  ~insert: array<'a>,\n) => array<'a>",
+    "documentation": null
   }, {
     "label": "sort",
     "kind": 12,
     "tags": [],
-    "detail": "(('a, 'a) => int, array<'a>) => unit",
-    "documentation": {"kind": "markdown", "value": " Sort an array in increasing order according to a comparison\n   function.  The comparison function must return 0 if its arguments\n   compare as equal, a positive integer if the first is greater,\n   and a negative integer if the first is smaller (see below for a\n   complete specification).  For example, {!Pervasives.compare} is\n   a suitable comparison function, provided there are no floating-point\n   NaN values in the data.  After calling [Array.sort], the\n   array is sorted in place in increasing order.\n   [Array.sort] is guaranteed to run in constant heap space\n   and (at most) logarithmic stack space.\n\n   The current implementation uses Heap Sort.  It runs in constant\n   stack space.\n\n   Specification of the comparison function:\n   Let [a] be the array and [cmp] the comparison function.  The following\n   must be true for all x, y, z in a :\n-   [cmp x y] > 0 if and only if [cmp y x] < 0\n-   if [cmp x y] >= 0 and [cmp y z] >= 0 then [cmp x z] >= 0\n\n   When [Array.sort] returns, [a] contains the same elements as before,\n   reordered in such a way that for all i and j valid indices of [a] :\n-   [cmp a.(i) a.(j)] >= 0 if and only if i >= j\n"}
+    "detail": "(array<'a>, ('a, 'a) => Ordering.t) => unit",
+    "documentation": {"kind": "markdown", "value": "\n`sort(array, comparator)` sorts `array` in-place using the `comparator` function.\n\nBeware this will *mutate* the array.\n\nSee [`Array.sort`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort) on MDN.\n\n## Examples\n```rescript\nlet someArray = [3, 2, 1]\nsomeArray->Array.sort((a, b) => float(a - b))\n\nConsole.log(someArray) // [1, 2, 3]\n```\n"}
   }, {
     "label": "length",
     "kind": 12,
     "tags": [],
     "detail": "array<'a> => int",
-    "documentation": {"kind": "markdown", "value": " Return the length (number of elements) of the given array. "}
+    "documentation": {"kind": "markdown", "value": "\n`length(array)` returns the length of (i.e. number of items in) the array.\n\nSee [`Array.length`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length) on MDN.\n\n## Examples\n```rescript\nlet someArray = [\"hi\", \"hello\"]\n\nConsole.log(someArray->Array.length) // 2\n```\n"}
   }, {
-    "label": "sub",
+    "label": "every",
     "kind": 12,
     "tags": [],
-    "detail": "(array<'a>, int, int) => array<'a>",
-    "documentation": {"kind": "markdown", "value": " [Array.sub a start len] returns a fresh array of length [len],\n   containing the elements number [start] to [start + len - 1]\n   of array [a].\n\n   Raise [Invalid_argument \"Array.sub\"] if [start] and [len] do not\n   designate a valid subarray of [a]; that is, if\n   [start < 0], or [len < 0], or [start + len > Array.length a]. "}
+    "detail": "(array<'a>, 'a => bool) => bool",
+    "documentation": {"kind": "markdown", "value": "\n`every(array, predicate)` returns true if `predicate` returns true for all items in `array`.\n\nSee [`Array.every`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every) on MDN.\n\n## Examples\n```rescript\nlet array = [1, 2, 3, 4]\n\nConsole.log(array->Array.every(num => num <= 4)) // true\nConsole.log(array->Array.every(num => num === 1)) // false\n```\n"}
   }, {
-    "label": "of_list",
+    "label": "flat",
     "kind": 12,
     "tags": [],
-    "detail": "list<'a> => array<'a>",
-    "documentation": {"kind": "markdown", "value": " [Array.of_list l] returns a fresh array containing the elements\n   of [l]. "}
-  }, {
-    "label": "iter",
-    "kind": 12,
-    "tags": [],
-    "detail": "('a => unit, array<'a>) => unit",
-    "documentation": {"kind": "markdown", "value": " [Array.iter f a] applies function [f] in turn to all\n   the elements of [a].  It is equivalent to\n   [f a.(0); f a.(1); ...; f a.(Array.length a - 1); ()]. "}
+    "detail": "array<array<'a>> => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`flat(arrays)` concatenates an array of arrays into a single array.\n\nSee [`Array.flat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat) on MDN.\n\n## Examples\n```rescript\nConsole.log([[1], [2], [3, 4]]->Array.flat) // [1, 2, 3, 4]\n```\n"}
   }, {
     "label": "map",
     "kind": 12,
     "tags": [],
-    "detail": "('a => 'b, array<'a>) => array<'b>",
-    "documentation": {"kind": "markdown", "value": " [Array.map f a] applies function [f] to all the elements of [a],\n   and builds an array with the results returned by [f]:\n   [[| f a.(0); f a.(1); ...; f a.(Array.length a - 1) |]]. "}
+    "detail": "(array<'a>, 'a => 'b) => array<'b>",
+    "documentation": {"kind": "markdown", "value": "\n`map(array, fn)` returns a new array with all elements from `array`, each element transformed using the provided `fn`.\n\nSee [`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) on MDN.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\nlet mappedArray = array->Array.map(greeting => greeting ++ \" to you\")\n\nConsole.log(mappedArray) // [\"Hello to you\", \"Hi to you\", \"Good bye to you\"]\n```\n"}
   }, {
-    "label": "unsafe_get",
+    "label": "with",
     "kind": 12,
     "tags": [],
-    "detail": "(array<'a>, int) => 'a",
+    "detail": "(array<'a>, int, 'a) => array<'a>",
     "documentation": null
   }, {
-    "label": "make_matrix",
+    "label": "lastIndexOfOpt",
     "kind": 12,
     "tags": [],
-    "detail": "(int, int, 'a) => array<array<'a>>",
-    "documentation": {"kind": "markdown", "value": " [Array.make_matrix dimx dimy e] returns a two-dimensional array\n   (an array of arrays) with first dimension [dimx] and\n   second dimension [dimy]. All the elements of this new matrix\n   are initially physically equal to [e].\n   The element ([x,y]) of a matrix [m] is accessed\n   with the notation [m.(x).(y)].\n\n   Raise [Invalid_argument] if [dimx] or [dimy] is negative or\n   greater than {!Sys.max_array_length}.\n   If the value of [e] is a floating-point number, then the maximum\n   size is only [Sys.max_array_length / 2]. "}
-  }, {
-    "label": "mem",
-    "kind": 12,
-    "tags": [],
-    "detail": "('a, array<'a>) => bool",
-    "documentation": {"kind": "markdown", "value": " [mem a l] is true if and only if [a] is equal\n   to an element of [l].\n   @since 4.03.0 "}
-  }, {
-    "label": "get",
-    "kind": 12,
-    "tags": [],
-    "detail": "(array<'a>, int) => 'a",
-    "documentation": {"kind": "markdown", "value": " [Array.get a n] returns the element number [n] of array [a].\n   The first element has number 0.\n   The last element has number [Array.length a - 1].\n   You can also write [a.(n)] instead of [Array.get a n].\n\n   Raise [Invalid_argument \"index out of bounds\"]\n   if [n] is outside the range 0 to [(Array.length a - 1)]. "}
-  }, {
-    "label": "append",
-    "kind": 12,
-    "tags": [],
-    "detail": "(array<'a>, array<'a>) => array<'a>",
-    "documentation": {"kind": "markdown", "value": " [Array.append v1 v2] returns a fresh array containing the\n   concatenation of the arrays [v1] and [v2]. "}
-  }, {
-    "label": "unsafe_set",
-    "kind": 12,
-    "tags": [],
-    "detail": "(array<'a>, int, 'a) => unit",
+    "detail": "(array<'a>, 'a) => option<int>",
     "documentation": null
   }, {
-    "label": "create_matrix",
-    "kind": 12,
-    "tags": [1],
-    "detail": "(int, int, 'a) => array<array<'a>>",
-    "documentation": {"kind": "markdown", "value": "Deprecated: Use Array.make_matrix instead.\n\n @deprecated [Array.create_matrix] is an alias for {!Array.make_matrix}. "}
-  }, {
-    "label": "create_float",
+    "label": "toReversed",
     "kind": 12,
     "tags": [],
-    "detail": "int => array<float>",
-    "documentation": {"kind": "markdown", "value": " [Array.create_float n] returns a fresh float array of length [n],\n    with uninitialized data.\n    @since 4.03 "}
+    "detail": "array<'a> => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`toReversed(array)` creates a new array with all items from `array` in reversed order.\n\nSee [`Array.toReversed`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toReversed) on MDN.\n\n## Examples\n```rescript\nlet someArray = [\"hi\", \"hello\"]\nlet reversed = someArray->Array.toReversed\n\nConsole.log(reversed) // [\"hello\", \"h1\"]\nConsole.log(someArray) // [\"h1\", \"hello\"]. Original unchanged\n```\n"}
   }, {
-    "label": "create",
-    "kind": 12,
-    "tags": [1],
-    "detail": "(int, 'a) => array<'a>",
-    "documentation": {"kind": "markdown", "value": "Deprecated: Use Array.make instead.\n\n @deprecated [Array.create] is an alias for {!Array.make}. "}
-  }, {
-    "label": "init",
+    "label": "copyWithin",
     "kind": 12,
     "tags": [],
-    "detail": "(int, int => 'a) => array<'a>",
-    "documentation": {"kind": "markdown", "value": " [Array.init n f] returns a fresh array of length [n],\n   with element number [i] initialized to the result of [f i].\n   In other terms, [Array.init n f] tabulates the results of [f]\n   applied to the integers [0] to [n-1].\n\n   Raise [Invalid_argument] if [n < 0] or [n > Sys.max_array_length].\n   If the return type of [f] is [float], then the maximum\n   size is only [Sys.max_array_length / 2]."}
+    "detail": "(\n  array<'a>,\n  ~target: int,\n  ~start: int,\n  ~end: int,\n) => array<'a>",
+    "documentation": null
   }, {
-    "label": "fast_sort",
+    "label": "toString",
     "kind": 12,
     "tags": [],
-    "detail": "(('a, 'a) => int, array<'a>) => unit",
-    "documentation": {"kind": "markdown", "value": " Same as {!Array.sort} or {!Array.stable_sort}, whichever is faster\n    on typical input.\n"}
+    "detail": "array<'a> => string",
+    "documentation": {"kind": "markdown", "value": "\n`toString(array)` stringifies `array` by running `toString` on all of the array elements and joining them with \",\".\n\nSee [`Array.toString`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toString) on MDN.\n\n## Examples\n```rescript\nlet array = [1, 2, 3, 4]\n\nConsole.log(array->Array.toString) // \"1,2,3,4\"\n```\n"}
+  }, {
+    "label": "everyWithIndex",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, ('a, int) => bool) => bool",
+    "documentation": {"kind": "markdown", "value": "\n`everyWithIndex(array, checker)` returns true if all items in `array` returns true when running the provided `checker` function.\n\nSee [`Array.every`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every) on MDN.\n\n## Examples\n```rescript\nlet array = [1, 2, 3, 4]\n\nConsole.log(array->Array.everyWithIndex((num, index) => index < 2 && num <= 2)) // true\nConsole.log(array->Array.everyWithIndex((num, index) => index < 2 && num >= 2)) // false\n```\n"}
   }, {
     "label": "fill",
     "kind": 12,
     "tags": [],
-    "detail": "(array<'a>, int, int, 'a) => unit",
-    "documentation": {"kind": "markdown", "value": " [Array.fill a ofs len x] modifies the array [a] in place,\n   storing [x] in elements number [ofs] to [ofs + len - 1].\n\n   Raise [Invalid_argument \"Array.fill\"] if [ofs] and [len] do not\n   designate a valid subarray of [a]. "}
+    "detail": "(array<'a>, 'a, ~start: int, ~end: int) => unit",
+    "documentation": {"kind": "markdown", "value": "\n`fill(array, value, ~start, ~end)` fills `array` with `value` from `start` to `end`.\n\nBeware this will *mutate* the array.\n\nSee [`Array.fill`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill) on MDN.\n\n## Examples\n```rescript\nlet myArray = [1, 2, 3, 4]\nmyArray->Array.fill(9, ~start=1, ~end=2)\n\nConsole.log(myArray) // [1, 9, 9, 4]\n```\n"}
   }, {
-    "label": "blit",
+    "label": "findWithIndex",
     "kind": 12,
     "tags": [],
-    "detail": "(array<'a>, int, array<'a>, int, int) => unit",
-    "documentation": {"kind": "markdown", "value": " [Array.blit v1 o1 v2 o2 len] copies [len] elements\n   from array [v1], starting at element number [o1], to array [v2],\n   starting at element number [o2]. It works correctly even if\n   [v1] and [v2] are the same array, and the source and\n   destination chunks overlap.\n\n   Raise [Invalid_argument \"Array.blit\"] if [o1] and [len] do not\n   designate a valid subarray of [v1], or if [o2] and [len] do not\n   designate a valid subarray of [v2]. "}
+    "detail": "(array<'a>, ('a, int) => bool) => option<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`findWithIndex(array, checker)` returns the first element of `array` where the provided `checker` function returns true.\n\nSee [`Array.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find) on MDN.\n\n## Examples\n```rescript\ntype languages = ReScript | TypeScript | JavaScript\n\nlet array = [TypeScript, JavaScript, ReScript]\n\nswitch array->Array.findWithIndex((item, index) => index > 1 && item == ReScript) {\n| None => Console.log(\"No item...\")\n| Some(_) => Console.log(\"Yay, ReScript exists in a later position!\")\n}\n```\n"}
   }, {
-    "label": "Floatarray",
-    "kind": 9,
+    "label": "reverse",
+    "kind": 12,
     "tags": [],
-    "detail": "module Floatarray",
+    "detail": "array<'a> => unit",
+    "documentation": {"kind": "markdown", "value": "\n`reverse(array)` reverses the order of the items in `array`.\n\nBeware this will *mutate* the array.\n\nSee [`Array.reverse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reverse) on MDN.\n\n## Examples\n```rescript\nlet someArray = [\"hi\", \"hello\"]\nsomeArray->Array.reverse\n\nConsole.log(someArray) // [\"hello\", \"h1\"]\n```\n"}
+  }, {
+    "label": "getUnsafe",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, int) => 'a",
+    "documentation": {"kind": "markdown", "value": "\n`getUnsafe(array, index)` returns the element at `index` of `array`.\n\nThis is _unsafe_, meaning it will return `undefined` value if `index` does not exist in `array`.\n\nUse `Array.getUnsafe` only when you are sure the `index` exists (i.e. when using for-loop).\n\n## Examples\n```rescript\nlet array = [1, 2, 3]\nfor index in 0 to array->Array.length - 1 {\n  let value = array->Array.getUnsafe(index)\n  Console.log(value)\n}\n```\n"}
+  }, {
+    "label": "unshiftMany",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, array<'a>) => unit",
+    "documentation": {"kind": "markdown", "value": "\n`unshiftMany(array, itemsArray)` inserts many new items to the start of the array.\n\nBeware this will *mutate* the array.\n\nSee [`Array.push`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift) on MDN.\n\n## Examples\n```rescript\nlet someArray = [\"hi\", \"hello\"]\nsomeArray->Array.unshiftMany([\"yay\", \"wehoo\"])\n\nConsole.log(someArray) // [\"yay\", \"wehoo\", \"hi\", \"hello\"]\n```\n"}
+  }, {
+    "label": "lastIndexOf",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a) => int",
+    "documentation": null
+  }, {
+    "label": "filter",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a => bool) => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`filter(array, checker)` returns a new array containing all elements from `array` for which the provided `checker` function returns true.\n\nSee [`Array.filter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter) on MDN.\n\n## Examples\n```rescript\nlet array = [1, 2, 3, 4]\n\nConsole.log(array->Array.filter(num => num > 2)) // [3, 4]\n```\n"}
+  }, {
+    "label": "compare",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, array<'a>, ('a, 'a) => Ordering.t) => Ordering.t",
+    "documentation": null
+  }, {
+    "label": "join",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<string>, string) => string",
+    "documentation": {"kind": "markdown", "value": "\n`join(array, separator)` produces a string where all items of `array` are printed, separated by `separator`. Array items must be strings, to join number or other arrays, use `joinUnsafe`. Under the hood this will run JavaScript's `toString` on all the array items.\n\nSee [Array.join](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join)\n\n## Examples\n```rescript\nlet array = [\"One\", \"Two\", \"Three\"]\n\nConsole.log(array->Array.join(\" -- \")) // One -- Two -- Three\n```\n"}
+  }, {
+    "label": "last",
+    "kind": 12,
+    "tags": [],
+    "detail": "array<'a> => option<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`last(array)` returns the last element of `array`.\n\nReturns `None` if the array is empty.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\n\narray->Array.last == Some(\"Good bye\") // true\n[]->Array.last == None // true\n```\n"}
+  }, {
+    "label": "isArray",
+    "kind": 12,
+    "tags": [],
+    "detail": "'a => bool",
+    "documentation": null
+  }, {
+    "label": "indexOfOpt",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a) => option<int>",
+    "documentation": {"kind": "markdown", "value": "\n`indexOfOpt(array, item)` returns an option of the index of the provided `item` in `array`. Uses [strict check for equality](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality) when comparing items.\n\nSee [`Array.indexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf) on MDN.\n\n## Examples\n```rescript\nConsole.log([1, 2]->Array.indexOfOpt(2)) // Some(1)\nConsole.log([1, 2]->Array.indexOfOpt(3)) // None\nConsole.log([{\"language\": \"ReScript\"}]->Array.indexOfOpt({\"language\": \"ReScript\"})) // None, because of strict equality\n```\n"}
+  }, {
+    "label": "forEachWithIndex",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, ('a, int) => unit) => unit",
+    "documentation": {"kind": "markdown", "value": "\n`forEachWithIndex(array, fn)` runs the provided `fn` on every element of `array`.\n\nSee [`Array.forEach`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach) on MDN.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\n\narray->Array.forEachWithIndex((item, index) => {\n  Console.log(\"At item \" ++ Int.toString(index) ++ \": \" ++ item)\n})\n```\n"}
+  }, {
+    "label": "reduce",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'b, ('b, 'a) => 'b) => 'b",
+    "documentation": {"kind": "markdown", "value": "\n  `reduce(xs, init, fn)`\n\n  Applies `fn` to each element of `xs` from beginning to end. Function `fn` has two parameters: the item from the list and an “accumulator”; which starts with a value of `init`. `reduce` returns the final value of the accumulator.\n\n  ```res example\n  Array.reduce([2, 3, 4], 1, (a, b) => a + b) == 10\n\n  Array.reduce([\"a\", \"b\", \"c\", \"d\"], \"\", (a, b) => a ++ b) == \"abcd\"\n  ```\n"}
+  }, {
+    "label": "sliceToEnd",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, ~start: int) => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`sliceToEnd(array, start)` creates a new array from `array`, with all items from `array` starting from `start`.\n\nSee [`Array.slice`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice) on MDN.\n\n## Examples\n```rescript\nlet myArray = [1, 2, 3, 4]\n\nConsole.log(myArray->Array.sliceToEnd(~start=1)) // [2, 3, 4]\n```\n"}
+  }, {
+    "label": "fromArrayLikeWithMap",
+    "kind": 12,
+    "tags": [],
+    "detail": "(Js.Array2.array_like<'a>, 'a => 'b) => array<'b>",
+    "documentation": null
+  }, {
+    "label": "fillAll",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a) => unit",
+    "documentation": {"kind": "markdown", "value": "\n`fillAll(array, value)` fills the entire `array` with `value`.\n\nBeware this will *mutate* the array.\n\nSee [`Array.fill`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill) on MDN.\n\n## Examples\n```rescript\nlet myArray = [1, 2, 3, 4]\nmyArray->Array.fillAll(9)\n\nConsole.log(myArray) // [9, 9, 9, 9]\n```\n"}
+  }, {
+    "label": "set",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, int, 'a) => unit",
+    "documentation": {"kind": "markdown", "value": "\n`set(array, index, item)` sets the provided `item` at `index` of `array`.\n\nBeware this will *mutate* the array.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\narray->Array.set(1, \"Hello\")\n\nConsole.log(array[1]) // \"Hello\"\n```\n"}
+  }, {
+    "label": "filterWithIndex",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, ('a, int) => bool) => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`filterWithIndex(array, checker)` returns a new array containing all elements from `array` for which the provided `checker` function returns true.\n\nSee [`Array.filter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter) on MDN.\n\n## Examples\n```rescript\nlet array = [1, 2, 3, 4]\n\nConsole.log(array->Array.filterWithIndex((num, index) => index === 0 || num === 2)) // [1, 2]\n```\n"}
+  }, {
+    "label": "findIndex",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a => bool) => int",
+    "documentation": {"kind": "markdown", "value": "\n`findIndex(array, checker)` returns the index of the first element of `array` where the provided `checker` function returns true.\n\nReturns `-1` if the item does not exist. Consider using `Array.findIndexOpt` if you want an option instead (where `-1` would be `None`).\n\nSee [`Array.findIndex`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex) on MDN.\n\n## Examples\n```rescript\ntype languages = ReScript | TypeScript | JavaScript\n\nlet array = [ReScript, JavaScript]\n\nConsole.log(array->Array.findIndex(item => item == ReScript)) // 0\nConsole.log(array->Array.findIndex(item => item == TypeScript)) // -1\n```\n"}
+  }, {
+    "label": "setSymbol",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, Symbol.t, 'b) => unit",
+    "documentation": null
+  }, {
+    "label": "equal",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, array<'a>, ('a, 'a) => bool) => bool",
+    "documentation": null
+  }, {
+    "label": "joinUnsafe",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, string) => string",
+    "documentation": {"kind": "markdown", "value": "\n`joinUnsafe(array, separator)` produces a string where all items of `array` are printed, separated by `separator`. Under the hood this will run JavaScript's `toString` on all the array items.\n\nSee [Array.join](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join)\n\n## Examples\n```rescript\nlet array = [1, 2, 3]\n\nConsole.log(array->Array.joinUnsafe(\" -- \")) // 1 -- 2 -- 3\n```\n"}
+  }, {
+    "label": "mapWithIndex",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, ('a, int) => 'b) => array<'b>",
+    "documentation": {"kind": "markdown", "value": "\n`mapWithIndex(array, fn)` returns a new array with all elements from `array`, each element transformed using the provided `fn`.\n\nSee [`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) on MDN.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\nlet mappedArray =\n  array->Array.mapWithIndex((greeting, index) =>\n    greeting ++ \" at position \" ++ Int.toString(index)\n  )\n\nConsole.log(mappedArray) // [\"Hello at position 0\", \"Hi at position 1\", \"Good bye at position 2\"]\n```\n"}
+  }, {
+    "label": "flatMapWithIndex",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, ('a, int) => array<'b>) => array<'b>",
+    "documentation": {"kind": "markdown", "value": "\n`flatMapWithIndex(array, mapper)` returns a new array concatenating the arrays returned from running `mapper` on all items in `array`.\n\n## Examples\n```rescript\ntype language = ReScript | TypeScript | JavaScript\n\nlet array = [ReScript, TypeScript, JavaScript]\n\nConsole.log(\n  array->Array.flatMapWithIndex((item, index) =>\n    switch item {\n    | ReScript => [index]\n    | TypeScript => [index, index + 1]\n    | JavaScript => [index, index + 1, index + 2]\n    }\n  ),\n)\n// [0, 1, 2, 2, 3, 4]\n```\n"}
+  }, {
+    "label": "copyWithinToEnd",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, ~target: int, ~start: int) => array<'a>",
+    "documentation": null
+  }, {
+    "label": "unshift",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a) => unit",
+    "documentation": {"kind": "markdown", "value": "\n`unshift(array, item)` inserts a new item at the start of the array.\n\nBeware this will *mutate* the array.\n\nSee [`Array.unshift`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift) on MDN.\n\n## Examples\n```rescript\nlet someArray = [\"hi\", \"hello\"]\nsomeArray->Array.unshift(\"yay\")\n\nConsole.log(someArray) // [\"yay\", \"hi\", \"hello\"]\n```\n"}
+  }, {
+    "label": "indexOf",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a) => int",
+    "documentation": {"kind": "markdown", "value": "\n`indexOf(array, item)` returns the index of the provided `item` in `array`. Uses [strict check for equality](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality) when comparing items.\n\nReturns `-1` if the item doesn not exist. Check out `Array.indexOfOpt` for a version that returns `None` instead of `-1` if the item does not exist.\n\nSee [`Array.indexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf) on MDN.\n\n## Examples\n```rescript\nConsole.log([1, 2]->Array.indexOf(2)) // 1\nConsole.log([1, 2]->Array.indexOf(3)) // -1\nConsole.log([{\"language\": \"ReScript\"}]->Array.indexOf({\"language\": \"ReScript\"})) // -1, because of strict equality\n```\n"}
+  }, {
+    "label": "push",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a) => unit",
+    "documentation": {"kind": "markdown", "value": "\n`push(array, item)` appends `item` to the end of `array`.\n\nBeware this will *mutate* the array.\n\nSee [`Array.push`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push) on MDN.\n\n## Examples\n```rescript\nlet someArray = [\"hi\", \"hello\"]\nsomeArray->Array.push(\"yay\")\n\nConsole.log(someArray) // [\"hi\", \"hello\", \"yay\"]\n```\n"}
+  }, {
+    "label": "toSorted",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, ('a, 'a) => Ordering.t) => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`toSorted(array, comparator)` returns a new, sorted array from `array`, using the `comparator` function.\n\nSee [`Array.toSorted`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted) on MDN.\n\n## Examples\n```rescript\nlet someArray = [3, 2, 1]\nlet sorted = someArray->Array.toSorted(Int.compare)\n\nConsole.log(sorted) // [1, 2, 3]\nConsole.log(someArray) // [3, 2, 1]. Original unchanged\n```\n"}
+  }, {
+    "label": "reduceWithIndex",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'b, ('b, 'a, int) => 'b) => 'b",
+    "documentation": {"kind": "markdown", "value": "\n  `reduceWithIndex(x, init, fn)`\n\n  Applies `fn` to each element of `xs` from beginning to end. Function `fn` has three parameters: the item from the array and an “accumulator”, which starts with a value of `init` and the index of each element. `reduceWithIndex` returns the final value of the accumulator.\n\n  ```res example\n  Array.reduceWithIndex([1, 2, 3, 4], 0, (acc, x, i) => acc + x + i) == 16\n  ```\n"}
+  }, {
+    "label": "some",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a => bool) => bool",
+    "documentation": {"kind": "markdown", "value": "\n`some(array, predicate)` returns true if `predicate` returns true for any element in `array`.\n\nSee [`Array.some`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some) on MDN.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\n\nConsole.log(array->Array.some(greeting => greeting === \"Hello\")) // true\n```\n"}
+  }, {
+    "label": "unsafe_get",
+    "kind": 12,
+    "tags": [1],
+    "detail": "(array<'a>, int) => 'a",
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use getUnsafe instead. This will be removed in v13\n\n\n`unsafe_get(array, index)` returns the element at `index` of `array`.\n\nThis is _unsafe_, meaning it will return `undefined` value if `index` does not exist in `array`.\n\nUse `Array.unsafe_get` only when you are sure the `index` exists (i.e. when using for-loop).\n\n## Examples\n```rescript\nlet array = [1, 2, 3]\nfor index in 0 to array->Array.length - 1 {\n  let value = array->Array.unsafe_get(index)\n  Console.log(value)\n}\n```\n"}
+  }, {
+    "label": "copyAllWithin",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, ~target: int) => array<'a>",
+    "documentation": null
+  }, {
+    "label": "keepSome",
+    "kind": 12,
+    "tags": [],
+    "detail": "array<option<'a>> => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n  `keepSome(arr)`\n\n  Returns a new array containing `value` for all elements that are `Some(value)`\n  and ignoring every value that is `None`\n\n  ```res example\n  Array.keepSome([Some(1), None, Some(3)]) == [1, 3]\n  ```\n"}
+  }, {
+    "label": "at",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, int) => option<'a>",
+    "documentation": {"kind": "markdown", "value": "\n  `at(array, index)`\n\n  Get an element by its index. Negative indices count backwards from the last item.\n\n  ## Examples\n  ```rescript\n  [\"a\", \"b\", \"c\"]->Array.at(0) // Some(\"a\")\n  [\"a\", \"b\", \"c\"]->Array.at(2) // Some(\"c\")\n  [\"a\", \"b\", \"c\"]->Array.at(3) // None\n  [\"a\", \"b\", \"c\"]->Array.at(-1) // Some(\"c\")\n  [\"a\", \"b\", \"c\"]->Array.at(-3) // Some(\"a\")\n  [\"a\", \"b\", \"c\"]->Array.at(-4) // None\n  ```\n"}
+  }, {
+    "label": "pop",
+    "kind": 12,
+    "tags": [],
+    "detail": "array<'a> => option<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`pop(array)` removes the last item from `array` and returns it.\n\nBeware this will *mutate* the array.\n\nSee [`Array.pop`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop) on MDN.\n\n## Examples\n```rescript\nlet someArray = [\"hi\", \"hello\"]\nlet lastItem = someArray->Array.pop // \"hello\"\n\nConsole.log(someArray) // [\"hi\"]. Notice last item is gone.\n```\n"}
+  }, {
+    "label": "get",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, int) => option<'a>",
+    "documentation": {"kind": "markdown", "value": "\n`get(array, index)` returns the element at `index` of `array`.\n\nReturns `None` if the index does not exist in the array. Equivalent to doing `array[index]` in JavaScript.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\n\narray->Array.get(0) == Some(\"Hello\") // true\narray->Array.get(3) == None // true\n```\n"}
+  }, {
+    "label": "pushMany",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, array<'a>) => unit",
+    "documentation": {"kind": "markdown", "value": "\n`pushMany(array, itemsArray)` appends many new items to the end of the array.\n\nBeware this will *mutate* the array.\n\nSee [`Array.push`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push) on MDN.\n\n## Examples\n```rescript\nlet someArray = [\"hi\", \"hello\"]\nsomeArray->Array.pushMany([\"yay\", \"wehoo\"])\n\nConsole.log(someArray) // [\"hi\", \"hello\", \"yay\", \"wehoo\"]\n```\n"}
+  }, {
+    "label": "fromIterator",
+    "kind": 12,
+    "tags": [],
+    "detail": "Iterator.t<'a> => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n `fromIterator(iterator)`\n\n  Creates an array from the provided `iterator`\n\n  ```res example\n  let map = Map.fromArray([(\"foo\", 1), (\"bar\", 2)])\n\n  Array.fromIterator(map->Map.values) // [1, 2]\n  ```\n "}
+  }, {
+    "label": "forEach",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a => unit) => unit",
+    "documentation": {"kind": "markdown", "value": "\n`forEach(array, fn)` runs the provided `fn` on every element of `array`.\n\nSee [`Array.forEach`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach) on MDN.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\n\narray->Array.forEach(item => {\n  Console.log(item)\n})\n```\n"}
+  }, {
+    "label": "flatMap",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a => array<'b>) => array<'b>",
+    "documentation": {"kind": "markdown", "value": "\n`flatMap(array, mapper)` returns a new array concatenating the arrays returned from running `mapper` on all items in `array`.\n\n## Examples\n```rescript\ntype language = ReScript | TypeScript | JavaScript\n\nlet array = [ReScript, TypeScript, JavaScript]\n\nConsole.log(\n  array->Array.flatMap(item =>\n    switch item {\n    | ReScript => [1, 2, 3]\n    | TypeScript => [4, 5, 6]\n    | JavaScript => [7, 8, 9]\n    }\n  ),\n)\n// [1, 2, 3, 4, 5, 6, 7, 8, 9]\n```\n"}
+  }, {
+    "label": "fromArrayLike",
+    "kind": 12,
+    "tags": [],
+    "detail": "Js.Array2.array_like<'a> => array<'a>",
+    "documentation": null
+  }, {
+    "label": "indexOfFrom",
+    "kind": 12,
+    "tags": [],
+    "detail": "(array<'a>, 'a, int) => int",
     "documentation": null
   }]
 
@@ -303,57 +585,26 @@ posCursor:[5:10] posNoWhite:[5:9] Found expr:[5:3->5:10]
 Pexp_ident Array.m:[5:3->5:10]
 Completable: Cpath Value[Array, m]
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives
 ContextPath Value[Array, m]
 Path Array.m
 [{
-    "label": "mapi",
-    "kind": 12,
-    "tags": [],
-    "detail": "((int, 'a) => 'b, array<'a>) => array<'b>",
-    "documentation": {"kind": "markdown", "value": " Same as {!Array.map}, but the\n   function is applied to the index of the element as first argument,\n   and the element itself as second argument. "}
-  }, {
-    "label": "memq",
-    "kind": 12,
-    "tags": [],
-    "detail": "('a, array<'a>) => bool",
-    "documentation": {"kind": "markdown", "value": " Same as {!Array.mem}, but uses physical equality instead of structural\n   equality to compare array elements.\n   @since 4.03.0 "}
-  }, {
-    "label": "map2",
-    "kind": 12,
-    "tags": [],
-    "detail": "(('a, 'b) => 'c, array<'a>, array<'b>) => array<'c>",
-    "documentation": {"kind": "markdown", "value": " [Array.map2 f a b] applies function [f] to all the elements of [a]\n   and [b], and builds an array with the results returned by [f]:\n   [[| f a.(0) b.(0); ...; f a.(Array.length a - 1) b.(Array.length b - 1)|]].\n   Raise [Invalid_argument] if the arrays are not the same size.\n   @since 4.03.0 "}
-  }, {
     "label": "make",
     "kind": 12,
     "tags": [],
-    "detail": "(int, 'a) => array<'a>",
-    "documentation": {"kind": "markdown", "value": " [Array.make n x] returns a fresh array of length [n],\n   initialized with [x].\n   All the elements of this new array are initially\n   physically equal to [x] (in the sense of the [==] predicate).\n   Consequently, if [x] is mutable, it is shared among all elements\n   of the array, and modifying [x] through one of the array entries\n   will modify all other entries at the same time.\n\n   Raise [Invalid_argument] if [n < 0] or [n > Sys.max_array_length].\n   If the value of [x] is a floating-point number, then the maximum\n   size is only [Sys.max_array_length / 2]."}
-  }, {
-    "label": "make_float",
-    "kind": 12,
-    "tags": [1],
-    "detail": "int => array<float>",
-    "documentation": {"kind": "markdown", "value": "Deprecated: Use Array.create_float instead.\n\n @deprecated [Array.make_float] is an alias for {!Array.create_float}. "}
+    "detail": "(~length: int, 'a) => array<'a>",
+    "documentation": {"kind": "markdown", "value": "\n  `make(~length, init)`\n\n  Creates an array of length `length` initialized with the value of `init`.\n\n  ```res example\n  Array.make(~length=3, #apple) == [#apple, #apple, #apple]\n  ```\n"}
   }, {
     "label": "map",
     "kind": 12,
     "tags": [],
-    "detail": "('a => 'b, array<'a>) => array<'b>",
-    "documentation": {"kind": "markdown", "value": " [Array.map f a] applies function [f] to all the elements of [a],\n   and builds an array with the results returned by [f]:\n   [[| f a.(0); f a.(1); ...; f a.(Array.length a - 1) |]]. "}
+    "detail": "(array<'a>, 'a => 'b) => array<'b>",
+    "documentation": {"kind": "markdown", "value": "\n`map(array, fn)` returns a new array with all elements from `array`, each element transformed using the provided `fn`.\n\nSee [`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) on MDN.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\nlet mappedArray = array->Array.map(greeting => greeting ++ \" to you\")\n\nConsole.log(mappedArray) // [\"Hello to you\", \"Hi to you\", \"Good bye to you\"]\n```\n"}
   }, {
-    "label": "make_matrix",
+    "label": "mapWithIndex",
     "kind": 12,
     "tags": [],
-    "detail": "(int, int, 'a) => array<array<'a>>",
-    "documentation": {"kind": "markdown", "value": " [Array.make_matrix dimx dimy e] returns a two-dimensional array\n   (an array of arrays) with first dimension [dimx] and\n   second dimension [dimy]. All the elements of this new matrix\n   are initially physically equal to [e].\n   The element ([x,y]) of a matrix [m] is accessed\n   with the notation [m.(x).(y)].\n\n   Raise [Invalid_argument] if [dimx] or [dimy] is negative or\n   greater than {!Sys.max_array_length}.\n   If the value of [e] is a floating-point number, then the maximum\n   size is only [Sys.max_array_length / 2]. "}
-  }, {
-    "label": "mem",
-    "kind": 12,
-    "tags": [],
-    "detail": "('a, array<'a>) => bool",
-    "documentation": {"kind": "markdown", "value": " [mem a l] is true if and only if [a] is equal\n   to an element of [l].\n   @since 4.03.0 "}
+    "detail": "(array<'a>, ('a, int) => 'b) => array<'b>",
+    "documentation": {"kind": "markdown", "value": "\n`mapWithIndex(array, fn)` returns a new array with all elements from `array`, each element transformed using the provided `fn`.\n\nSee [`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) on MDN.\n\n## Examples\n```rescript\nlet array = [\"Hello\", \"Hi\", \"Good bye\"]\nlet mappedArray =\n  array->Array.mapWithIndex((greeting, index) =>\n    greeting ++ \" at position \" ++ Int.toString(index)\n  )\n\nConsole.log(mappedArray) // [\"Hello at position 0\", \"Hi at position 1\", \"Good bye at position 2\"]\n```\n"}
   }]
 
 Complete src/Completion.res 15:17
@@ -443,9 +694,9 @@ Path Belt.Option.e
 [{
     "label": "Belt.Option.eqU",
     "kind": 12,
-    "tags": [],
+    "tags": [1],
     "detail": "(option<'a>, option<'b>, ('a, 'b) => bool) => bool",
-    "documentation": {"kind": "markdown", "value": "\nUncurried version of `eq`\n"}
+    "documentation": {"kind": "markdown", "value": "Deprecated: Use `eq` instead\n\n\nUncurried version of `eq`\n"}
   }, {
     "label": "Belt.Option.eq",
     "kind": 12,
@@ -854,16 +1105,6 @@ Path Lis
       "modulePath": "List",
       "filePath": "src/Completion.res"
     }
-  }, {
-    "label": "ListLabels",
-    "kind": 9,
-    "tags": [],
-    "detail": "module ListLabels",
-    "documentation": null,
-    "data": {
-      "modulePath": "ListLabels",
-      "filePath": "src/Completion.res"
-    }
   }]
 
 Complete src/Completion.res 169:16
@@ -899,13 +1140,13 @@ Path Js.n
     "kind": 22,
     "tags": [],
     "detail": "type nullable",
-    "documentation": {"kind": "markdown", "value": "```rescript\n@unboxed\ntype nullable<'a> =\n  | Value('a)\n  | @as(null) Null\n  | @as(undefined) Undefined\n```"}
+    "documentation": {"kind": "markdown", "value": "```rescript\n@unboxed\ntype nullable<'a> = Js_null_undefined.t<'a> =\n  | Value('a)\n  | @as(null) Null\n  | @as(undefined) Undefined\n```"}
   }, {
     "label": "null",
     "kind": 22,
     "tags": [],
     "detail": "type null",
-    "documentation": {"kind": "markdown", "value": "\n  Nullable value of this type can be either null or 'a. This type is equivalent to Js.Null.t.\n\n\n```rescript\n@unboxed type null<'a> = Value('a) | @as(null) Null\n```"}
+    "documentation": {"kind": "markdown", "value": "```rescript\n@unboxed\ntype null<'a> = Js_null.t<'a> = Value('a) | @as(null) Null\n```"}
   }]
 
 Complete src/Completion.res 174:20
@@ -936,6 +1177,16 @@ Path As
     "tags": [],
     "detail": "Asterix",
     "documentation": {"kind": "markdown", "value": "```rescript\nAsterix\n```\n\n```rescript\ntype z = Allo | Asterix | Baba\n```"}
+  }, {
+    "label": "AsyncIterator",
+    "kind": 9,
+    "tags": [],
+    "detail": "module AsyncIterator",
+    "documentation": null,
+    "data": {
+      "modulePath": "AsyncIterator",
+      "filePath": "src/Completion.res"
+    }
   }]
 
 Complete src/Completion.res 182:17
@@ -1635,6 +1886,16 @@ Path Res
       "modulePath": "RescriptReactRouter",
       "filePath": "src/Completion.res"
     }
+  }, {
+    "label": "Result",
+    "kind": 9,
+    "tags": [],
+    "detail": "module Result",
+    "documentation": null,
+    "data": {
+      "modulePath": "Result",
+      "filePath": "src/Completion.res"
+    }
   }]
 
 Complete src/Completion.res 343:57
@@ -1656,16 +1917,7 @@ Path this
   }]
 
 Hover src/Completion.res 346:14
-Nothing at that position. Now trying to use completion.
-posCursor:[346:14] posNoWhite:[346:13] Found expr:[346:9->346:23]
-JSX <div:[346:9->346:12] name[346:13->346:17]=...[346:18->346:20]> _children:346:21
-Completable: Cjsx([div], name, [name])
-Raw opens: 2 Shadow.B.place holder ... Shadow.A.place holder
-Package opens Pervasives.JsxModules.place holder
-Resolved opens 3 pervasives Completion.res Completion.res
-Path ReactDOM.domProps
-Path PervasivesU.JsxDOM.domProps
-{"contents": {"kind": "markdown", "value": "```rescript\nstring\n```"}}
+{"contents": {"kind": "markdown", "value": "```rescript\nJsxDOM.domProps\n```\n\n---\n\n```\n \n```\n```rescript\ntype JsxDOM.domProps = {\n  key?: string,\n  children?: Jsx.element,\n  ref?: domRef,\n  ariaCurrent?: [\n    | #date\n    | #\"false\"\n    | #location\n    | #page\n    | #step\n    | #time\n    | #\"true\"\n  ],\n  ariaDetails?: string,\n  ariaDisabled?: bool,\n  ariaHidden?: bool,\n  ariaInvalid?: [#\"false\" | #grammar | #spelling | #\"true\"],\n  ariaKeyshortcuts?: string,\n  ariaLabel?: string,\n  ariaRoledescription?: string,\n  ariaAutocomplete?: [#both | #inline | #list | #none],\n  ariaChecked?: [#\"false\" | #mixed | #\"true\"],\n  ariaExpanded?: bool,\n  ariaHaspopup?: [\n    | #dialog\n    | #\"false\"\n    | #grid\n    | #listbox\n    | #menu\n    | #tree\n    | #\"true\"\n  ],\n  ariaLevel?: int,\n  ariaModal?: bool,\n  ariaMultiline?: bool,\n  ariaMultiselectable?: bool,\n  ariaOrientation?: [#horizontal | #undefined | #vertical],\n  ariaPlaceholder?: string,\n  ariaPressed?: [#\"false\" | #mixed | #\"true\"],\n  ariaReadonly?: bool,\n  ariaRequired?: bool,\n  ariaSelected?: bool,\n  ariaSort?: string,\n  ariaValuemax?: float,\n  ariaValuemin?: float,\n  ariaValuenow?: float,\n  ariaValuetext?: string,\n  ariaAtomic?: bool,\n  ariaBusy?: bool,\n  ariaLive?: [#assertive | #off | #polite | #rude],\n  ariaRelevant?: string,\n  ariaDropeffect?: [\n    | #copy\n    | #execute\n    | #link\n    | #move\n    | #none\n    | #popup\n  ],\n  ariaGrabbed?: bool,\n  ariaActivedescendant?: string,\n  ariaColcount?: int,\n  ariaColindex?: int,\n  ariaColspan?: int,\n  ariaControls?: string,\n  ariaDescribedby?: string,\n  ariaErrormessage?: string,\n  ariaFlowto?: string,\n  ariaLabelledby?: string,\n  ariaOwns?: string,\n  ariaPosinset?: int,\n  ariaRowcount?: int,\n  ariaRowindex?: int,\n  ariaRowspan?: int,\n  ariaSetsize?: int,\n  defaultChecked?: bool,\n  defaultValue?: string,\n  accessKey?: string,\n  capture?: [#environment | #user],\n  className?: string,\n  contentEditable?: bool,\n  contextMenu?: string,\n  dataTestId?: string,\n  dir?: string,\n  draggable?: bool,\n  hidden?: bool,\n  id?: string,\n  lang?: string,\n  role?: string,\n  style?: style,\n  spellCheck?: bool,\n  tabIndex?: int,\n  title?: string,\n  itemID?: string,\n  itemProp?: string,\n  itemRef?: string,\n  itemScope?: bool,\n  itemType?: string,\n  accept?: string,\n  acceptCharset?: string,\n  action?: string,\n  allowFullScreen?: bool,\n  alt?: string,\n  as_?: string,\n  async?: bool,\n  autoComplete?: string,\n  autoCapitalize?: string,\n  autoFocus?: bool,\n  autoPlay?: bool,\n  challenge?: string,\n  charSet?: string,\n  checked?: bool,\n  cite?: string,\n  crossOrigin?: string,\n  cols?: int,\n  colSpan?: int,\n  content?: string,\n  controls?: bool,\n  coords?: string,\n  data?: string,\n  dateTime?: string,\n  default?: bool,\n  defer?: bool,\n  disabled?: bool,\n  download?: string,\n  encType?: string,\n  form?: string,\n  formAction?: string,\n  formTarget?: string,\n  formMethod?: string,\n  headers?: string,\n  height?: string,\n  high?: int,\n  href?: string,\n  hrefLang?: string,\n  htmlFor?: string,\n  httpEquiv?: string,\n  icon?: string,\n  inputMode?: string,\n  integrity?: string,\n  keyType?: string,\n  kind?: string,\n  label?: string,\n  list?: string,\n  loading?: [#eager | #lazy],\n  loop?: bool,\n  low?: int,\n  manifest?: string,\n  max?: string,\n  maxLength?: int,\n  media?: string,\n  mediaGroup?: string,\n  method?: string,\n  min?: string,\n  minLength?: int,\n  multiple?: bool,\n  muted?: bool,\n  name?: string,\n  nonce?: string,\n  noValidate?: bool,\n  open_?: bool,\n  optimum?: int,\n  pattern?: string,\n  placeholder?: string,\n  playsInline?: bool,\n  poster?: string,\n  preload?: string,\n  radioGroup?: string,\n  readOnly?: bool,\n  rel?: string,\n  required?: bool,\n  reversed?: bool,\n  rows?: int,\n  rowSpan?: int,\n  sandbox?: string,\n  scope?: string,\n  scoped?: bool,\n  scrolling?: string,\n  selected?: bool,\n  shape?: string,\n  size?: int,\n  sizes?: string,\n  span?: int,\n  src?: string,\n  srcDoc?: string,\n  srcLang?: string,\n  srcSet?: string,\n  start?: int,\n  step?: float,\n  summary?: string,\n  target?: string,\n  type_?: string,\n  useMap?: string,\n  value?: string,\n  width?: string,\n  wrap?: string,\n  onCopy?: JsxEvent.Clipboard.t => unit,\n  onCut?: JsxEvent.Clipboard.t => unit,\n  onPaste?: JsxEvent.Clipboard.t => unit,\n  onCompositionEnd?: JsxEvent.Composition.t => unit,\n  onCompositionStart?: JsxEvent.Composition.t => unit,\n  onCompositionUpdate?: JsxEvent.Composition.t => unit,\n  onKeyDown?: JsxEvent.Keyboard.t => unit,\n  onKeyPress?: JsxEvent.Keyboard.t => unit,\n  onKeyUp?: JsxEvent.Keyboard.t => unit,\n  onFocus?: JsxEvent.Focus.t => unit,\n  onBlur?: JsxEvent.Focus.t => unit,\n  onBeforeInput?: JsxEvent.Form.t => unit,\n  onChange?: JsxEvent.Form.t => unit,\n  onInput?: JsxEvent.Form.t => unit,\n  onReset?: JsxEvent.Form.t => unit,\n  onSubmit?: JsxEvent.Form.t => unit,\n  onInvalid?: JsxEvent.Form.t => unit,\n  onClick?: JsxEvent.Mouse.t => unit,\n  onContextMenu?: JsxEvent.Mouse.t => unit,\n  onDoubleClick?: JsxEvent.Mouse.t => unit,\n  onDrag?: JsxEvent.Mouse.t => unit,\n  onDragEnd?: JsxEvent.Mouse.t => unit,\n  onDragEnter?: JsxEvent.Mouse.t => unit,\n  onDragExit?: JsxEvent.Mouse.t => unit,\n  onDragLeave?: JsxEvent.Mouse.t => unit,\n  onDragOver?: JsxEvent.Mouse.t => unit,\n  onDragStart?: JsxEvent.Mouse.t => unit,\n  onDrop?: JsxEvent.Mouse.t => unit,\n  onMouseDown?: JsxEvent.Mouse.t => unit,\n  onMouseEnter?: JsxEvent.Mouse.t => unit,\n  onMouseLeave?: JsxEvent.Mouse.t => unit,\n  onMouseMove?: JsxEvent.Mouse.t => unit,\n  onMouseOut?: JsxEvent.Mouse.t => unit,\n  onMouseOver?: JsxEvent.Mouse.t => unit,\n  onMouseUp?: JsxEvent.Mouse.t => unit,\n  onSelect?: JsxEvent.Selection.t => unit,\n  onTouchCancel?: JsxEvent.Touch.t => unit,\n  onTouchEnd?: JsxEvent.Touch.t => unit,\n  onTouchMove?: JsxEvent.Touch.t => unit,\n  onTouchStart?: JsxEvent.Touch.t => unit,\n  onPointerOver?: JsxEvent.Pointer.t => unit,\n  onPointerEnter?: JsxEvent.Pointer.t => unit,\n  onPointerDown?: JsxEvent.Pointer.t => unit,\n  onPointerMove?: JsxEvent.Pointer.t => unit,\n  onPointerUp?: JsxEvent.Pointer.t => unit,\n  onPointerCancel?: JsxEvent.Pointer.t => unit,\n  onPointerOut?: JsxEvent.Pointer.t => unit,\n  onPointerLeave?: JsxEvent.Pointer.t => unit,\n  onGotPointerCapture?: JsxEvent.Pointer.t => unit,\n  onLostPointerCapture?: JsxEvent.Pointer.t => unit,\n  onScroll?: JsxEvent.UI.t => unit,\n  onWheel?: JsxEvent.Wheel.t => unit,\n  onAbort?: JsxEvent.Media.t => unit,\n  onCanPlay?: JsxEvent.Media.t => unit,\n  onCanPlayThrough?: JsxEvent.Media.t => unit,\n  onDurationChange?: JsxEvent.Media.t => unit,\n  onEmptied?: JsxEvent.Media.t => unit,\n  onEncrypted?: JsxEvent.Media.t => unit,\n  onEnded?: JsxEvent.Media.t => unit,\n  onError?: JsxEvent.Media.t => unit,\n  onLoadedData?: JsxEvent.Media.t => unit,\n  onLoadedMetadata?: JsxEvent.Media.t => unit,\n  onLoadStart?: JsxEvent.Media.t => unit,\n  onPause?: JsxEvent.Media.t => unit,\n  onPlay?: JsxEvent.Media.t => unit,\n  onPlaying?: JsxEvent.Media.t => unit,\n  onProgress?: JsxEvent.Media.t => unit,\n  onRateChange?: JsxEvent.Media.t => unit,\n  onSeeked?: JsxEvent.Media.t => unit,\n  onSeeking?: JsxEvent.Media.t => unit,\n  onStalled?: JsxEvent.Media.t => unit,\n  onSuspend?: JsxEvent.Media.t => unit,\n  onTimeUpdate?: JsxEvent.Media.t => unit,\n  onVolumeChange?: JsxEvent.Media.t => unit,\n  onWaiting?: JsxEvent.Media.t => unit,\n  onLoad?: JsxEvent.Image.t => unit,\n  onAnimationStart?: JsxEvent.Animation.t => unit,\n  onAnimationEnd?: JsxEvent.Animation.t => unit,\n  onAnimationIteration?: JsxEvent.Animation.t => unit,\n  onTransitionEnd?: JsxEvent.Transition.t => unit,\n  accentHeight?: string,\n  accumulate?: string,\n  additive?: string,\n  alignmentBaseline?: string,\n  allowReorder?: string,\n  alphabetic?: string,\n  amplitude?: string,\n  arabicForm?: string,\n  ascent?: string,\n  attributeName?: string,\n  attributeType?: string,\n  autoReverse?: string,\n  azimuth?: string,\n  baseFrequency?: string,\n  baseProfile?: string,\n  baselineShift?: string,\n  bbox?: string,\n  begin?: string,\n  begin_?: string,\n  bias?: string,\n  by?: string,\n  calcMode?: string,\n  capHeight?: string,\n  clip?: string,\n  clipPath?: string,\n  clipPathUnits?: string,\n  clipRule?: string,\n  colorInterpolation?: string,\n  colorInterpolationFilters?: string,\n  colorProfile?: string,\n  colorRendering?: string,\n  contentScriptType?: string,\n  contentStyleType?: string,\n  cursor?: string,\n  cx?: string,\n  cy?: string,\n  d?: string,\n  decelerate?: string,\n  descent?: string,\n  diffuseConstant?: string,\n  direction?: string,\n  display?: string,\n  divisor?: string,\n  dominantBaseline?: string,\n  dur?: string,\n  dx?: string,\n  dy?: string,\n  edgeMode?: string,\n  elevation?: string,\n  enableBackground?: string,\n  end?: string,\n  end_?: string,\n  exponent?: string,\n  externalResourcesRequired?: string,\n  fill?: string,\n  fillOpacity?: string,\n  fillRule?: string,\n  filter?: string,\n  filterRes?: string,\n  filterUnits?: string,\n  floodColor?: string,\n  floodOpacity?: string,\n  focusable?: string,\n  fontFamily?: string,\n  fontSize?: string,\n  fontSizeAdjust?: string,\n  fontStretch?: string,\n  fontStyle?: string,\n  fontVariant?: string,\n  fontWeight?: string,\n  fomat?: string,\n  from?: string,\n  fx?: string,\n  fy?: string,\n  g1?: string,\n  g2?: string,\n  glyphName?: string,\n  glyphOrientationHorizontal?: string,\n  glyphOrientationVertical?: string,\n  glyphRef?: string,\n  gradientTransform?: string,\n  gradientUnits?: string,\n  hanging?: string,\n  horizAdvX?: string,\n  horizOriginX?: string,\n  ideographic?: string,\n  imageRendering?: string,\n  in_?: string,\n  in2?: string,\n  intercept?: string,\n  k?: string,\n  k1?: string,\n  k2?: string,\n  k3?: string,\n  k4?: string,\n  kernelMatrix?: string,\n  kernelUnitLength?: string,\n  kerning?: string,\n  keyPoints?: string,\n  keySplines?: string,\n  keyTimes?: string,\n  lengthAdjust?: string,\n  letterSpacing?: string,\n  lightingColor?: string,\n  limitingConeAngle?: string,\n  local?: string,\n  markerEnd?: string,\n  markerHeight?: string,\n  markerMid?: string,\n  markerStart?: string,\n  markerUnits?: string,\n  markerWidth?: string,\n  mask?: string,\n  maskContentUnits?: string,\n  maskUnits?: string,\n  mathematical?: string,\n  mode?: string,\n  numOctaves?: string,\n  offset?: string,\n  opacity?: string,\n  operator?: string,\n  order?: string,\n  orient?: string,\n  orientation?: string,\n  origin?: string,\n  overflow?: string,\n  overflowX?: string,\n  overflowY?: string,\n  overlinePosition?: string,\n  overlineThickness?: string,\n  paintOrder?: string,\n  panose1?: string,\n  pathLength?: string,\n  patternContentUnits?: string,\n  patternTransform?: string,\n  patternUnits?: string,\n  pointerEvents?: string,\n  points?: string,\n  pointsAtX?: string,\n  pointsAtY?: string,\n  pointsAtZ?: string,\n  preserveAlpha?: string,\n  preserveAspectRatio?: string,\n  primitiveUnits?: string,\n  r?: string,\n  radius?: string,\n  refX?: string,\n  refY?: string,\n  renderingIntent?: string,\n  repeatCount?: string,\n  repeatDur?: string,\n  requiredExtensions?: string,\n  requiredFeatures?: string,\n  restart?: string,\n  result?: string,\n  rotate?: string,\n  rx?: string,\n  ry?: string,\n  scale?: string,\n  seed?: string,\n  shapeRendering?: string,\n  slope?: string,\n  spacing?: string,\n  specularConstant?: string,\n  specularExponent?: string,\n  speed?: string,\n  spreadMethod?: string,\n  startOffset?: string,\n  stdDeviation?: string,\n  stemh?: string,\n  stemv?: string,\n  stitchTiles?: string,\n  stopColor?: string,\n  stopOpacity?: string,\n  strikethroughPosition?: string,\n  strikethroughThickness?: string,\n  string?: string,\n  stroke?: string,\n  strokeDasharray?: string,\n  strokeDashoffset?: string,\n  strokeLinecap?: string,\n  strokeLinejoin?: string,\n  strokeMiterlimit?: string,\n  strokeOpacity?: string,\n  strokeWidth?: string,\n  surfaceScale?: string,\n  systemLanguage?: string,\n  tableValues?: string,\n  targetX?: string,\n  targetY?: string,\n  textAnchor?: string,\n  textDecoration?: string,\n  textLength?: string,\n  textRendering?: string,\n  to?: string,\n  to_?: string,\n  transform?: string,\n  u1?: string,\n  u2?: string,\n  underlinePosition?: string,\n  underlineThickness?: string,\n  unicode?: string,\n  unicodeBidi?: string,\n  unicodeRange?: string,\n  unitsPerEm?: string,\n  vAlphabetic?: string,\n  vHanging?: string,\n  vIdeographic?: string,\n  vMathematical?: string,\n  values?: string,\n  vectorEffect?: string,\n  version?: string,\n  vertAdvX?: string,\n  vertAdvY?: string,\n  vertOriginX?: string,\n  vertOriginY?: string,\n  viewBox?: string,\n  viewTarget?: string,\n  visibility?: string,\n  widths?: string,\n  wordSpacing?: string,\n  writingMode?: string,\n  x?: string,\n  x1?: string,\n  x2?: string,\n  xChannelSelector?: string,\n  xHeight?: string,\n  xlinkActuate?: string,\n  xlinkArcrole?: string,\n  xlinkHref?: string,\n  xlinkRole?: string,\n  xlinkShow?: string,\n  xlinkTitle?: string,\n  xlinkType?: string,\n  xmlns?: string,\n  xmlnsXlink?: string,\n  xmlBase?: string,\n  xmlLang?: string,\n  xmlSpace?: string,\n  y?: string,\n  y1?: string,\n  y2?: string,\n  yChannelSelector?: string,\n  z?: string,\n  zoomAndPan?: string,\n  about?: string,\n  datatype?: string,\n  inlist?: string,\n  prefix?: string,\n  property?: string,\n  resource?: string,\n  typeof?: string,\n  vocab?: string,\n  dangerouslySetInnerHTML?: {\"__html\": string},\n  suppressContentEditableWarning?: bool,\n}\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxDOM.res%22%2C30%2C0%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype Jsx.element\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22Jsx.res%22%2C24%2C0%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype domRef\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxDOM.res%22%2C25%2C0%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype style = JsxDOMStyle.t\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxDOM.res%22%2C24%2C0%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Clipboard.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C95%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Composition.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C107%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Keyboard.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C118%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Focus.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C142%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Form.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C154%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Mouse.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C163%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Selection.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C244%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Touch.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C253%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Pointer.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C194%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.UI.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C278%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Wheel.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C291%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Media.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C305%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Image.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C314%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Animation.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C323%2C2%5D)\n\n\n---\n\n```\n \n```\n```rescript\ntype JsxEvent.Transition.t = synthetic<tag>\n```\nGo to: [Type definition](command:rescript-vscode.go_to_location?%5B%22JsxEvent.res%22%2C336%2C2%5D)\n"}}
 
 Hover src/Completion.res 349:17
 Nothing at that position. Now trying to use completion.
@@ -1750,6 +2002,16 @@ Path T
       "filePath": "src/Completion.res"
     }
   }, {
+    "label": "Type",
+    "kind": 9,
+    "tags": [],
+    "detail": "module Type",
+    "documentation": null,
+    "data": {
+      "modulePath": "Type",
+      "filePath": "src/Completion.res"
+    }
+  }, {
     "label": "TypeAtPosCompletion",
     "kind": 9,
     "tags": [],
@@ -1767,6 +2029,16 @@ Path T
     "documentation": null,
     "data": {
       "modulePath": "TypeDefinition",
+      "filePath": "src/Completion.res"
+    }
+  }, {
+    "label": "TypedArray",
+    "kind": 9,
+    "tags": [],
+    "detail": "module TypedArray",
+    "documentation": null,
+    "data": {
+      "modulePath": "TypedArray",
       "filePath": "src/Completion.res"
     }
   }]
