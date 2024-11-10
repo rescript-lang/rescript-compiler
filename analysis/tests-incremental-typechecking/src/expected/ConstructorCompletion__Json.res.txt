@@ -5,7 +5,7 @@ Json
 Array:[0:8->0:21] [0:21->0:23]
 Completable: Cexpression CTypeAtPos()->variantPayload::Array($0)
 Package opens Pervasives.JsxModules.place holder
-Resolved opens 1 pervasives.res
+Resolved opens 1 Pervasives
 ContextPath CTypeAtPos()
 [{
     "label": "[]",
