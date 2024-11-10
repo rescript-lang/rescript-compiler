@@ -322,7 +322,7 @@ jobs:
 
       - name: Run analysis/tools tests
         if: runner.os != 'Windows'
-        run: make -C analysis test && make -C tools/tests test
+        run: opam exec -- make -C analysis test && make -C tools/tests test
 
       - name: Run gentype tests
         if: runner.os != 'Windows'
