@@ -778,43 +778,21 @@ and getCompletionsForContextPath ~debug ~full ~opens ~rawOpens ~pos ~env ~exact
   match contextPath with
   | CPString ->
     if Debug.verbose () then print_endline "[ctx_path]--> CPString";
-    [
-      Completion.create "dummy" ~env
-        ~kind:
-          (Completion.Value
-             (Ctype.newconstr (Path.Pident (Ident.create "string")) []));
-    ]
+    [Completion.create "dummy" ~env ~kind:(Completion.Value Predef.type_string)]
   | CPBool ->
     if Debug.verbose () then print_endline "[ctx_path]--> CPBool";
-    [
-      Completion.create "dummy" ~env
-        ~kind:
-          (Completion.Value
-             (Ctype.newconstr (Path.Pident (Ident.create "bool")) []));
-    ]
+    [Completion.create "dummy" ~env ~kind:(Completion.Value Predef.type_bool)]
   | CPInt ->
     if Debug.verbose () then print_endline "[ctx_path]--> CPInt";
-    [
-      Completion.create "dummy" ~env
-        ~kind:
-          (Completion.Value
-             (Ctype.newconstr (Path.Pident (Ident.create "int")) []));
-    ]
+    [Completion.create "dummy" ~env ~kind:(Completion.Value Predef.type_int)]
   | CPFloat ->
     if Debug.verbose () then print_endline "[ctx_path]--> CPFloat";
-    [
-      Completion.create "dummy" ~env
-        ~kind:
-          (Completion.Value
-             (Ctype.newconstr (Path.Pident (Ident.create "float")) []));
-    ]
+    [Completion.create "dummy" ~env ~kind:(Completion.Value Predef.type_float)]
   | CPArray None ->
     if Debug.verbose () then print_endline "[ctx_path]--> CPArray (no payload)";
     [
       Completion.create "array" ~env
-        ~kind:
-          (Completion.Value
-             (Ctype.newconstr (Path.Pident (Ident.create "array")) []));
+        ~kind:(Completion.Value (Ctype.newconstr Predef.path_array []));
     ]
   | CPArray (Some cp) -> (
     if Debug.verbose () then
@@ -839,9 +817,7 @@ and getCompletionsForContextPath ~debug ~full ~opens ~rawOpens ~pos ~env ~exact
          what inner type it has. *)
       [
         Completion.create "dummy" ~env
-          ~kind:
-            (Completion.Value
-               (Ctype.newconstr (Path.Pident (Ident.create "array")) []));
+          ~kind:(Completion.Value (Ctype.newconstr Predef.path_array []));
       ])
   | CPOption cp -> (
     if Debug.verbose () then print_endline "[ctx_path]--> CPOption";
@@ -1722,9 +1698,7 @@ let rec completeTypedValue ?(typeArgContext : typeArgContext option) ~rawOpens
     if prefix = "" then
       [
         create "\"\"" ~includesSnippets:true ~insertText:"\"$0\"" ~sortText:"A"
-          ~kind:
-            (Value (Ctype.newconstr (Path.Pident (Ident.create "string")) []))
-          ~env;
+          ~kind:(Value Predef.type_string) ~env;
       ]
     else []
   | Tfunction {env; typ; args; returnType} when prefix = "" && mode = Expression
@@ -1912,7 +1886,7 @@ let rec processCompletable ~debug ~full ~scope ~env ~pos ~forHover completable =
         stamp = -1;
         fname = {loc = Location.none; txt = name};
         optional = true;
-        typ = Ctype.newconstr (Path.Pident (Ident.create primitive)) [];
+        typ = Ctype.newconstr primitive [];
         docstring = [];
         deprecated = None;
       }
@@ -1924,9 +1898,9 @@ let rec processCompletable ~debug ~full ~scope ~env ~pos ~forHover completable =
           definition = `NameOnly "jsxConfig";
           fields =
             [
-              mkField ~name:"version" ~primitive:"int";
-              mkField ~name:"module_" ~primitive:"string";
-              mkField ~name:"mode" ~primitive:"string";
+              mkField ~name:"version" ~primitive:Predef.path_int;
+              mkField ~name:"module_" ~primitive:Predef.path_string;
+              mkField ~name:"mode" ~primitive:Predef.path_string;
             ];
         }
     in
@@ -1942,7 +1916,7 @@ let rec processCompletable ~debug ~full ~scope ~env ~pos ~forHover completable =
         stamp = -1;
         fname = {loc = Location.none; txt = name};
         optional = true;
-        typ = Ctype.newconstr (Path.Pident (Ident.create primitive)) [];
+        typ = Ctype.newconstr primitive [];
         docstring = [];
         deprecated = None;
       }
@@ -1952,7 +1926,7 @@ let rec processCompletable ~debug ~full ~scope ~env ~pos ~forHover completable =
         {
           env;
           definition = `NameOnly "importAttributesConfig";
-          fields = [mkField ~name:"type_" ~primitive:"string"];
+          fields = [mkField ~name:"type_" ~primitive:Predef.path_string];
         }
     in
     let rootConfig : completionType =
@@ -1962,8 +1936,8 @@ let rec processCompletable ~debug ~full ~scope ~env ~pos ~forHover completable =
           definition = `NameOnly "moduleConfig";
           fields =
             [
-              mkField ~name:"from" ~primitive:"string";
-              mkField ~name:"with" ~primitive:"string";
+              mkField ~name:"from" ~primitive:Predef.path_string;
+              mkField ~name:"with" ~primitive:Predef.path_string;
             ];
         }
     in
