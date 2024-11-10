@@ -385,6 +385,12 @@ let extractDocs ~entryPointFile ~debug =
             items =
               structure.items
               |> List.filter_map (fun (item : Module.item) ->
+                     let item =
+                       {
+                         item with
+                         name = Ext_ident.unwrap_uppercase_exotic item.name;
+                       }
+                     in
                      let source = getSource ~rootPath item.loc in
                      match item.kind with
                      | Value typ ->
