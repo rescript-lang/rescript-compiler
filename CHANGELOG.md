@@ -16,6 +16,7 @@
 
 - Introduce "Unified operators" for arithmetic operators (`+`, `-`, `*`, `/`, `mod`). https://github.com/rescript-lang/rescript-compiler/pull/7057
 - Add remainder (`%`, aka modulus) operator. https://github.com/rescript-lang/rescript-compiler/pull/7152
+- Allow exponentiation (`**`) operator for `int` and `float`, using ES7 `**`. https://github.com/rescript-lang/rescript-compiler/pull/7153
 
 # 12.0.0-alpha.4
 
