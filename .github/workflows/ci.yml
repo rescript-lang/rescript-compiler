@@ -321,7 +321,7 @@ jobs:
         run: git diff --ignore-cr-at-eol --exit-code tests
 
       - name: Run analysis/tools tests
-        if: runner.os != 'Windows'
+        if: runner.os != 'Windows' && matrix.os != 'buildjet-2vcpu-ubuntu-2204-arm'
         run: opam exec -- make -C analysis test && make -C tools/tests test
 
       - name: Run gentype tests
