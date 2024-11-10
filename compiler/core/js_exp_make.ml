@@ -559,7 +559,8 @@ let string_length ?comment (e : t) : t =
 (* TODO: use [Buffer] instead? *)
 let bytes_length ?comment (e : t) : t =
   match e.expression_desc with
-  | Array (l, _) -> int ?comment (Int32.of_int (List.length l))
+  | Array (l, _) when no_side_effect e ->
+    int ?comment (Int32.of_int (List.length l))
   | _ -> {expression_desc = Length (e, Bytes); comment}
 
 let function_length ?comment (e : t) : t =
@@ -624,7 +625,8 @@ let rec triple_equal ?comment (e0 : t) (e1 : t) : t =
   | Undefined _, Optional_block _
   | Optional_block _, Undefined _
   | Null, Undefined _
-  | Undefined _, Null ->
+  | Undefined _, Null
+    when no_side_effect e0 && no_side_effect e1 ->
     false_
   | Null, Null | Undefined _, Undefined _ -> true_
   | _ -> {expression_desc = Bin (EqEqEq, e0, e1); comment}
@@ -1604,11 +1606,9 @@ let is_pos_pow n =
 
 let int32_mul ?comment (e1 : J.expression) (e2 : J.expression) : J.expression =
   match (e1, e2) with
-  | {expression_desc = Number (Int {i = 0l}); _}, x
-    when Js_analyzer.no_side_effect_expression x ->
+  | {expression_desc = Number (Int {i = 0l}); _}, x when no_side_effect x ->
     zero_int_literal
-  | x, {expression_desc = Number (Int {i = 0l}); _}
-    when Js_analyzer.no_side_effect_expression x ->
+  | x, {expression_desc = Number (Int {i = 0l}); _} when no_side_effect x ->
     zero_int_literal
   | ( {expression_desc = Number (Int {i = i0}); _},
       {expression_desc = Number (Int {i = i1}); _} ) ->
