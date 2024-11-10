@@ -79,4 +79,4 @@ rewatch/rewatch
 
 tools/**/*.res.js
 tools/tests/lib
-analysis/tests/lib
+analysis/tests*/lib
