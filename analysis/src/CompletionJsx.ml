@@ -812,6 +812,32 @@ type jsxProps = {
   childrenStart: (int * int) option;
 }
 
+(** 
+<div muted= />
+
+This is a special case for JSX props, where the above code is parsed 
+as <div muted=//, a regexp literal. We leverage that fact to trigger completion
+for the JSX prop value.
+
+This code is safe because we also check that the location of the expression is broken,
+which only happens when the expression is a parse error/not complete.
+*)
+let isRegexpJsxHeuristicExpr expr =
+  match expr.Parsetree.pexp_desc with
+  | Pexp_extension
+      ( {txt = "re"},
+        PStr
+          [
+            {
+              pstr_desc =
+                Pstr_eval
+                  ({pexp_desc = Pexp_constant (Pconst_string ("//", _))}, _);
+            };
+          ] )
+    when expr.pexp_loc |> Loc.end_ = (Location.none |> Loc.end_) ->
+    true
+  | _ -> false
+
 let findJsxPropsCompletable ~jsxProps ~endPos ~posBeforeCursor
     ~firstCharBeforeCursorNoWhite ~charAtCursor ~posAfterCompName =
   let allLabels =
@@ -891,9 +917,14 @@ let findJsxPropsCompletable ~jsxProps ~endPos ~posBeforeCursor
       else if prop.exp.pexp_loc |> Loc.end_ = (Location.none |> Loc.end_) then (
         if Debug.verbose () then
           print_endline "[jsx_props_completable]--> Loc is broken";
-        if CompletionExpressions.isExprHole prop.exp then (
+        if
+          CompletionExpressions.isExprHole prop.exp
+          || isRegexpJsxHeuristicExpr prop.exp
+        then (
           if Debug.verbose () then
-            print_endline "[jsx_props_completable]--> Expr was expr hole";
+            print_endline
+              "[jsx_props_completable]--> Expr was expr hole or regexp literal \
+               heuristic";
           Some
             (Cexpression
                {
