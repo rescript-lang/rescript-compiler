@@ -1394,13 +1394,15 @@ let rec int_comp (cmp : Lam_compat.comparison) ?comment (e0 : t) (e1 : t) =
           _ ),
       Number (Int {i = 0l}) ) ->
     int_comp cmp l r (* = 0 > 0 < 0 *)
-  | Ceq, Optional_block _, Undefined _ | Ceq, Undefined _, Optional_block _ ->
+  | (Ceq, Optional_block _, Undefined _ | Ceq, Undefined _, Optional_block _)
+    when no_side_effect e0 && no_side_effect e1 ->
     false_
   | Ceq, _, _ -> int_equal e0 e1
   | Cneq, Optional_block _, Undefined _
   | Cneq, Undefined _, Optional_block _
   | Cneq, Caml_block _, Number _
-  | Cneq, Number _, Caml_block _ ->
+  | Cneq, Number _, Caml_block _
+    when no_side_effect e0 && no_side_effect e1 ->
     true_
   | _ -> bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
@@ -1718,7 +1720,7 @@ let of_block ?comment ?e block : t =
 let is_null ?comment (x : t) = triple_equal ?comment x nil
 let is_undef ?comment x = triple_equal ?comment x undefined
 
-let for_sure_js_null_undefined (x : t) =
+let is_null_undefined_constant (x : t) =
   match x.expression_desc with
   | Null | Undefined _ -> true
   | _ -> false
@@ -1730,28 +1732,36 @@ let is_null_undefined ?comment (x : t) : t =
   | _ -> {comment; expression_desc = Is_null_or_undefined x}
 
 let eq_null_undefined_boolean ?comment (a : t) (b : t) =
+  (* [a == b] when either a or b is null or undefined *)
   match (a.expression_desc, b.expression_desc) with
   | ( (Null | Undefined _),
-      (Bool _ | Number _ | Typeof _ | Fun _ | Array _ | Caml_block _) ) ->
+      (Bool _ | Number _ | Typeof _ | Fun _ | Array _ | Caml_block _) )
+    when no_side_effect b ->
     false_
   | ( (Bool _ | Number _ | Typeof _ | Fun _ | Array _ | Caml_block _),
-      (Null | Undefined _) ) ->
+      (Null | Undefined _) )
+    when no_side_effect a ->
     false_
   | Null, Undefined _ | Undefined _, Null -> false_
   | Null, Null | Undefined _, Undefined _ -> true_
   | _ -> {expression_desc = Bin (EqEqEq, a, b); comment}
 
 let neq_null_undefined_boolean ?comment (a : t) (b : t) =
+  (* [a != b] when either a or b is null or undefined *)
   match (a.expression_desc, b.expression_desc) with
   | ( (Null | Undefined _),
-      (Bool _ | Number _ | Typeof _ | Fun _ | Array _ | Caml_block _) ) ->
+      (Bool _ | Number _ | Typeof _ | Fun _ | Array _ | Caml_block _) )
+    when no_side_effect b ->
     true_
   | ( (Bool _ | Number _ | Typeof _ | Fun _ | Array _ | Caml_block _),
-      (Null | Undefined _) ) ->
+      (Null | Undefined _) )
+    when no_side_effect a ->
     true_
   | Null, Null | Undefined _, Undefined _ -> false_
   | Null, Undefined _ | Undefined _, Null -> true_
-  | _ -> {expression_desc = Bin (NotEqEq, a, b); comment}
+  | _ ->
+    let _ = assert false in
+    {expression_desc = Bin (NotEqEq, a, b); comment}
 
 let make_exception (s : string) =
   pure_runtime_call Primitive_modules.exceptions Literals.create [str s]
