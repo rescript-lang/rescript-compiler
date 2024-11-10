@@ -143,8 +143,6 @@ val array_length : ?comment:string -> t -> t
 
 val string_length : ?comment:string -> t -> t
 
-val bytes_length : ?comment:string -> t -> t
-
 val function_length : ?comment:string -> t -> t
 
 val string_append : ?comment:string -> t -> t -> t
