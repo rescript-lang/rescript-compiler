@@ -1,4 +1,4 @@
-module Docgen = Tools_Docgen
+module Docgen = RescriptTools_Docgen
 
 /** Returns the full file system path to the `rescript-tools` binary for the current platform, side stepping the JS that wraps the CLI.
  
@@ -7,8 +7,8 @@ module Docgen = Tools_Docgen
  ## Examples
  ```rescript
  // Prints the current ReScript Tools version.
- let stringifiedJson = ChildProcess.execFileSync(RescriptTools.getBinaryPath(), ["-v"])
+ let stringifiedJson = ChildProcess.execFileSync(RescriptTools.binaryPath, ["-v"])
  ```
  */
-@module("./getBinaryPath.js")
-external getBinaryPath: unit => string = "getBinaryPath"
+@module("../../cli/bin_path.js")
+external binaryPath: string = "rescript_tools_exe"

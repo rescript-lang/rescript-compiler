@@ -185,6 +185,8 @@ lib/es6/Primitive_string_extern.js
 lib/es6/Primitive_util.js
 lib/es6/Promise.js
 lib/es6/RegExp.js
+lib/es6/RescriptTools.js
+lib/es6/RescriptTools_Docgen.js
 lib/es6/Result.js
 lib/es6/Set.js
 lib/es6/String.js
@@ -353,6 +355,8 @@ lib/js/Primitive_string_extern.js
 lib/js/Primitive_util.js
 lib/js/Promise.js
 lib/js/RegExp.js
+lib/js/RescriptTools.js
+lib/js/RescriptTools_Docgen.js
 lib/js/Result.js
 lib/js/Set.js
 lib/js/String.js
@@ -1134,6 +1138,16 @@ lib/ocaml/RegExp.cmt
 lib/ocaml/RegExp.cmti
 lib/ocaml/RegExp.res
 lib/ocaml/RegExp.resi
+lib/ocaml/RescriptTools.cmi
+lib/ocaml/RescriptTools.cmj
+lib/ocaml/RescriptTools.cmt
+lib/ocaml/RescriptTools.res
+lib/ocaml/RescriptTools_Docgen.cmi
+lib/ocaml/RescriptTools_Docgen.cmj
+lib/ocaml/RescriptTools_Docgen.cmt
+lib/ocaml/RescriptTools_Docgen.cmti
+lib/ocaml/RescriptTools_Docgen.res
+lib/ocaml/RescriptTools_Docgen.resi
 lib/ocaml/Result.cmi
 lib/ocaml/Result.cmj
 lib/ocaml/Result.cmt

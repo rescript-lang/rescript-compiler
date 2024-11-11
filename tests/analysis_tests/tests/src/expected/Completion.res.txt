@@ -1887,6 +1887,26 @@ Path Res
       "filePath": "src/Completion.res"
     }
   }, {
+    "label": "RescriptTools",
+    "kind": 9,
+    "tags": [],
+    "detail": "module RescriptTools",
+    "documentation": null,
+    "data": {
+      "modulePath": "RescriptTools",
+      "filePath": "src/Completion.res"
+    }
+  }, {
+    "label": "RescriptTools_Docgen",
+    "kind": 9,
+    "tags": [],
+    "detail": "module RescriptTools_Docgen",
+    "documentation": null,
+    "data": {
+      "modulePath": "RescriptTools_Docgen",
+      "filePath": "src/Completion.res"
+    }
+  }, {
     "label": "Result",
     "kind": 9,
     "tags": [],
