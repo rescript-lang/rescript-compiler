@@ -17,11 +17,12 @@
 - Introduce "Unified operators" for arithmetic operators (`+`, `-`, `*`, `/`, `mod`). https://github.com/rescript-lang/rescript-compiler/pull/7057
 - Add remainder (`%`, aka modulus) operator. https://github.com/rescript-lang/rescript-compiler/pull/7152
 
-
 #### :bug: Bug fix
+
 - Fix and clean up boolean and/or optimizations. https://github.com/rescript-lang/rescript-compiler/pull/7134 https://github.com/rescript-lang/rescript-compiler/pull/7151
 
 #### :nail_care: Polish
+
 - Improve code generation for pattern matching of untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/7128
 - Improve negation handling in combination with and/or to simplify generated code (especially coming out of pattern matching). https://github.com/rescript-lang/rescript-compiler/pull/7138
 - optimize JavaScript code generation by using x == null checks and improving type-based optimizations for string/number literals. https://github.com/rescript-lang/rescript-compiler/pull/7141
@@ -30,6 +31,9 @@
 - Further improve boolean optimizations. https://github.com/rescript-lang/rescript-compiler/pull/7149
 - Simplify code generated for conditionals. https://github.com/rescript-lang/rescript-compiler/pull/7151
 
+#### :house: Internal
+
+- Move rescript-editor-analysis and rescript-tools into compiler repo. https://github.com/rescript-lang/rescript-compiler/pull/7000
 
 # 12.0.0-alpha.4
 
@@ -61,6 +65,7 @@
 - Fix genType JSX component compilation. https://github.com/rescript-lang/rescript-compiler/pull/7107
 
 #### :nail_care: Polish
+
 - Add some context to error message for unused variables. https://github.com/rescript-lang/rescript-compiler/pull/7050
 - Improve error message when passing `children` prop to a component that doesn't accept it. https://github.com/rescript-lang/rescript-compiler/pull/7044
 - Improve error messages for pattern matching on option vs non-option, and vice versa. https://github.com/rescript-lang/rescript-compiler/pull/7035
@@ -70,7 +75,6 @@
 - Improve output of record copying. https://github.com/rescript-lang/rescript-compiler/pull/7043
 - Provide additional context in error message when `unit` is expected. https://github.com/rescript-lang/rescript-compiler/pull/7045
 - Improve error message when passing an object where a record is expected. https://github.com/rescript-lang/rescript-compiler/pull/7101
-
 
 #### :house: Internal
 
