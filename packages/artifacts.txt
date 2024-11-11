@@ -7,6 +7,7 @@ README.md
 cli/bin_path.js
 cli/bsc
 cli/rescript
+cli/rescript-tools
 cli/rescript_arg.js
 cli/rescript_bsb.js
 cli/rescript_dump.js
