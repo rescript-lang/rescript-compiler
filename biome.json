@@ -23,9 +23,9 @@
     "ignore": [
       "tests/build_tests/**",
       "tests/tests/**",
-      "tools/tests/**",
+      "tests/tools_tests/**",
+      "tests/analysis_tests/**",
       "analysis/examples/**",
-      "analysis/tests/**",
       "analysis/reanalyze/examples/**",
       "lib/**",
       "ninja/**",
