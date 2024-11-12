@@ -1816,9 +1816,6 @@ let rec processCompletable ~debug ~full ~scope ~env ~pos ~forHover completable =
     let keyLabels =
       if Utils.startsWith "key" prefix then [mkLabel ("key", "string")] else []
     in
-    (* We always try to look up completion from the actual domProps type first.
-       This works in JSXv4. For JSXv3, we have a backup hardcoded list of dom
-       labels we can use for completion. *)
     let pathToElementProps = TypeUtils.pathToElementProps package in
     if Debug.verbose () then
       Printf.printf
@@ -1852,12 +1849,7 @@ let rec processCompletable ~debug ~full ~scope ~env ~pos ~forHover completable =
         Printf.printf
           "[completing-lowercase-jsx] could not find element props to complete \
            from.\n";
-      (CompletionJsx.domLabels
-      |> List.filter (fun (name, _t) ->
-             Utils.startsWith name prefix
-             && (forHover || not (List.mem name identsSeen)))
-      |> List.map mkLabel)
-      @ keyLabels)
+      keyLabels)
   | Cjsx (componentPath, prefix, identsSeen) ->
     let labels =
       CompletionJsx.getJsxLabels ~componentPath ~findTypeOfValue ~package

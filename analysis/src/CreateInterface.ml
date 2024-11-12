@@ -99,52 +99,6 @@ end = struct
 end
 
 let printSignature ~extractor ~signature =
-  let objectPropsToFun objTyp ~rhs ~makePropsType =
-    let propsTbl = Hashtbl.create 1 in
-    (* Process the object type of the make function, and map field names to types. *)
-    let rec processObjType typ =
-      match typ.Types.desc with
-      | Tfield (name, kind, {desc = Tlink t | Tsubst t | Tpoly (t, [])}, obj) ->
-        processObjType {typ with desc = Tfield (name, kind, t, obj)}
-      | Tfield (name, _kind, t, obj) ->
-        Hashtbl.add propsTbl name t;
-        processObjType obj
-      | Tnil -> ()
-      | _ -> (* should not happen *) assert false
-    in
-
-    processObjType objTyp;
-
-    (* Traverse the type of the makeProps function, and fill the prop types
-       by using the corresponding field in the object type of the make function *)
-    let rec fillPropsTypes makePropsType ~rhs =
-      match makePropsType.Types.desc with
-      | Tarrow (((Labelled lbl | Optional lbl) as argLbl), _, retT, c) -> (
-        match Hashtbl.find_opt propsTbl lbl with
-        | Some propT ->
-          {
-            makePropsType with
-            desc = Tarrow (argLbl, propT, fillPropsTypes retT ~rhs, c);
-          }
-        | None -> fillPropsTypes retT ~rhs)
-      | _ -> rhs
-    in
-
-    match objTyp.Types.desc with
-    | Tnil ->
-      (* component with zero props *)
-      {
-        objTyp with
-        desc =
-          Tarrow
-            ( Nolabel,
-              Ctype.newconstr (Path.Pident (Ident.create "unit")) [],
-              rhs,
-              Cok );
-      }
-    | _ -> fillPropsTypes makePropsType ~rhs
-  in
-
   Printtyp.reset_names ();
   let sigItemToString (item : Outcometree.out_sig_item) =
     item |> Res_outcome_printer.print_out_sig_item_doc
@@ -164,34 +118,12 @@ let printSignature ~extractor ~signature =
 
   let buf = Buffer.create 10 in
 
-  let rec getComponentTypeV3 (typ : Types.type_expr) =
+  let rec getComponentType (typ : Types.type_expr) =
     let reactElement =
       Ctype.newconstr (Pdot (Pident (Ident.create "React"), "element", 0)) []
     in
     match typ.desc with
-    | Tconstr (Pident {name = "function$"}, [typ; _], _) ->
-      getComponentTypeV3 typ
-    | Tarrow (_, {desc = Tobject (tObj, _)}, retType, _) -> Some (tObj, retType)
-    | Tconstr
-        ( Pdot (Pident {name = "React"}, "component", _),
-          [{desc = Tobject (tObj, _)}],
-          _ ) ->
-      Some (tObj, reactElement)
-    | Tconstr
-        ( Pdot (Pident {name = "React"}, "componentLike", _),
-          [{desc = Tobject (tObj, _)}; retType],
-          _ ) ->
-      Some (tObj, retType)
-    | _ -> None
-  in
-
-  let rec getComponentTypeV4 (typ : Types.type_expr) =
-    let reactElement =
-      Ctype.newconstr (Pdot (Pident (Ident.create "React"), "element", 0)) []
-    in
-    match typ.desc with
-    | Tconstr (Pident {name = "function$"}, [typ; _], _) ->
-      getComponentTypeV4 typ
+    | Tconstr (Pident {name = "function$"}, [typ; _], _) -> getComponentType typ
     | Tarrow (_, {desc = Tconstr (Path.Pident propsId, typeArgs, _)}, retType, _)
       when Ident.name propsId = "props" ->
       Some (typeArgs, retType)
@@ -212,34 +144,6 @@ let printSignature ~extractor ~signature =
 
   let rec processSignature ~indent (signature : Types.signature) : unit =
     match signature with
-    | Sig_value
-        ( makePropsId (* makeProps *),
-          {val_loc = makePropsLoc; val_type = makePropsType} )
-      :: Sig_value (makeId (* make *), makeValueDesc)
-      :: rest
-      when Ident.name makePropsId = Ident.name makeId ^ "Props"
-           && ((* from implementation *) makePropsLoc.loc_ghost
-              || (* from interface *) makePropsLoc = makeValueDesc.val_loc)
-           && getComponentTypeV3 makeValueDesc.val_type <> None ->
-      (*
-        {"name": string} => retType  ~~>  (~name:string) => retType
-        React.component<{"name": string}>  ~~>  (~name:string) => React.element
-        React.componentLike<{"name": string}, retType>  ~~>  (~name:string) => retType
-      *)
-      let tObj, retType =
-        match getComponentTypeV3 makeValueDesc.val_type with
-        | None -> assert false
-        | Some (tObj, retType) -> (tObj, retType)
-      in
-      let funType = tObj |> objectPropsToFun ~rhs:retType ~makePropsType in
-      let newItemStr =
-        sigItemToString
-          (Printtyp.tree_of_value_description makeId
-             {makeValueDesc with val_type = funType})
-      in
-      Buffer.add_string buf (indent ^ "@react.component\n");
-      Buffer.add_string buf (indent ^ newItemStr ^ "\n");
-      processSignature ~indent rest
     | Sig_type
         ( propsId,
           {
@@ -250,14 +154,14 @@ let printSignature ~extractor ~signature =
       :: Sig_value (makeId (* make *), makeValueDesc)
       :: rest
       when Ident.name propsId = "props"
-           && getComponentTypeV4 makeValueDesc.val_type <> None ->
+           && getComponentType makeValueDesc.val_type <> None ->
       (* PPX V4 component declaration:
          type props = {...}
          let v = ...
       *)
       let newItemStr =
         let typeArgs, retType =
-          match getComponentTypeV4 makeValueDesc.val_type with
+          match getComponentType makeValueDesc.val_type with
           | Some x -> x
           | None -> assert false
         in
