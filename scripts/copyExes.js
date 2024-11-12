@@ -33,6 +33,8 @@ function copyExe(dir, exe) {
 
 if (process.argv.includes("-all") || process.argv.includes("-compiler")) {
   copyExe(duneBinDir, "rescript");
+  copyExe(duneBinDir, "rescript-editor-analysis");
+  copyExe(duneBinDir, "rescript-tools");
   copyExe(duneBinDir, "bsc");
   copyExe(duneBinDir, "bsb_helper");
 }

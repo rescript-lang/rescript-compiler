@@ -6,6 +6,7 @@
 (executable
  (name benchmark)
  (public_name syntax_benchmarks)
+ (package rescript)
  (enabled_if
   (and
    (<> %{profile} browser)
