@@ -89,4 +89,4 @@ type doc = {
 /**
 `decodeFromJson(json)` parse JSON generated from `restool doc` command
 */
-external decodeFromJson: Js.Json.t => doc = "%identity"
+external decodeFromJson: JSON.t => doc = "%identity"

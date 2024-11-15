@@ -85,4 +85,4 @@ type doc = {
   items: array<item>,
 }
 
-let decodeFromJson: Js.Json.t => doc
+let decodeFromJson: JSON.t => doc
