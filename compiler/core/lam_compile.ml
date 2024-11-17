@@ -1564,17 +1564,20 @@ let compile output_prefix =
             Immutable
         in
 
-        let else_ = S.throw_stmt block_expr in
+        let else_ =
+          if !Clflags.no_assert_false then S.exp E.undefined
+          else S.throw_stmt block_expr
+        in
 
         let result =
           Js_output.make
             [S.if_ v block ~else_:[else_]]
             ~value:E.undefined ~output_finished:False
         in
-        let _a =
-          if !Clflags.no_assert_false then Js_output.make block else result
-        in
-        _a
+        (* let _a = *)
+        (*   if !Clflags.no_assert_false then Js_output.make block else result *)
+        (* in *)
+        result
       | {value = None} -> assert false)
     | {primitive = Praise; args = [e]; _} -> (
       match
