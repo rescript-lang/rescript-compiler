@@ -17,10 +17,10 @@ let undefined0 = (x: Js.undefined<int>) => x
 let undefined1 = (x: Undefined.t<int>) => x
 
 @genType
-let dict0 = (x: Js.Dict.t<string>) => x
+let dict0 = (x: dict<string>) => x
 
 @genType
-let dict1 = (x: Dict.t<string>) => x
+let dict1 = (x: dict<string>) => x
 
 @genType
 let promise0 = (x: promise<string>) => x

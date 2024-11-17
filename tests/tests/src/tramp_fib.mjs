@@ -15,13 +15,13 @@ function eq(loc, x, y) {
 }
 
 function fib(n, k) {
-  if (n === 0 || n === 1) {
-    return k(1);
-  } else {
+  if (n !== 0 && n !== 1) {
     return {
       TAG: "Suspend",
       _0: () => fib(n - 1 | 0, v0 => fib(n - 2 | 0, v1 => k(v0 + v1 | 0)))
     };
+  } else {
+    return k(1);
   }
 }
 

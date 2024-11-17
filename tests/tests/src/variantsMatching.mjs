@@ -74,8 +74,8 @@ function st(state) {
 }
 
 function showToJs(x) {
-  if (typeof x !== "object" && x === "No") {
-    return false;
+  if (typeof x !== "object") {
+    return x !== "No";
   } else {
     return true;
   }
@@ -96,8 +96,8 @@ function third(l) {
     return false;
   }
   let match$1 = match.tl;
-  if (match$1 && !(match$1.hd !== 3 || match$1.tl)) {
-    return true;
+  if (match$1 && match$1.hd === 3) {
+    return !match$1.tl;
   } else {
     return false;
   }
@@ -125,11 +125,7 @@ function third2(l) {
     return false;
   }
   let tmp = match$1._1;
-  if (typeof tmp !== "object") {
-    return true;
-  } else {
-    return false;
-  }
+  return typeof tmp !== "object";
 }
 
 function foo(x) {
@@ -224,9 +220,9 @@ function isUndefined$1(x) {
 }
 
 function plus$2(x, y) {
-  if (x === null || x === undefined) {
+  if (x == null) {
     return y;
-  } else if (y === null || y === undefined) {
+  } else if (y == null) {
     return x;
   } else {
     return x + y | 0;
@@ -234,7 +230,7 @@ function plus$2(x, y) {
 }
 
 function kind(x) {
-  if (x === null || x === undefined) {
+  if (x == null) {
     if (x === null) {
       return "null";
     } else {
@@ -274,7 +270,7 @@ function isWhyNot(x) {
 }
 
 function plus$3(x, y) {
-  if (x === undefined || x === null || x === "WhyNotAnotherOne") {
+  if (x === null || x === "WhyNotAnotherOne" || x === undefined) {
     switch (x) {
       case null :
       case undefined :
@@ -282,13 +278,13 @@ function plus$3(x, y) {
       case "WhyNotAnotherOne" :
         break;
     }
-  } else if (!(y === undefined || y === null || y === "WhyNotAnotherOne")) {
+  } else if (y !== null && y !== "WhyNotAnotherOne" && y !== undefined) {
     return {
       x: x.x + y.x,
       y: x.y + y.y
     };
   }
-  if (!(y === undefined || y === null || y === "WhyNotAnotherOne")) {
+  if (y !== null && y !== "WhyNotAnotherOne" && y !== undefined) {
     return "WhyNotAnotherOne";
   }
   switch (y) {
@@ -301,7 +297,7 @@ function plus$3(x, y) {
 }
 
 function kind$1(x) {
-  if (!(x === undefined || x === null || x === "WhyNotAnotherOne")) {
+  if (x !== null && x !== "WhyNotAnotherOne" && x !== undefined) {
     return "present";
   }
   switch (x) {

@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "build": "rescript",
+    "clean": "rescript clean -with-deps"
+  },
+  "private": true,
+  "dependencies": {
+    "rescript": "11.1.0-rc.2"
+  }
+}

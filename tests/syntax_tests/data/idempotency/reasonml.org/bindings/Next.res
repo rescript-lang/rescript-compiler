@@ -1,4 +1,4 @@
-type getInitialPropsFn<'a> = {"query": Js.Dict.t<string>, "req": Js.Nullable.t<'a>} => Js.Promise.t<
+type getInitialPropsFn<'a> = {"query": dict<string>, "req": Js.Nullable.t<'a>} => Js.Promise.t<
   'a,
 >
 

@@ -126,44 +126,23 @@ include (
       )
       let dd = N.intersect(aa, bb)
       b(__LOC__, \"=~"(dd, f(I.randomRange(40, 100))))
-      b(
-        __LOC__,
-        \"=~"(
-          N.intersect(\"@@"(f, I.randomRange(0, 20)), \"@@"(f, I.randomRange(21, 40))),
-          empty(),
-        ),
-      )
-      b(
-        __LOC__,
-        \"=~"(
-          N.intersect(\"@@"(f, I.randomRange(21, 40)), \"@@"(f, I.randomRange(0, 20))),
-          empty(),
-        ),
-      )
+      b(__LOC__, \"=~"(N.intersect(f(I.randomRange(0, 20)), f(I.randomRange(21, 40))), empty()))
+      b(__LOC__, \"=~"(N.intersect(f(I.randomRange(21, 40)), f(I.randomRange(0, 20))), empty()))
       b(__LOC__, \"=~"(N.intersect(f([1, 3, 4, 5, 7, 9]), f([2, 4, 5, 6, 8, 10])), f([4, 5])))
       b(__LOC__, \"=~"(N.diff(aa, bb), f(I.randomRange(0, 39))))
       b(__LOC__, \"=~"(N.diff(bb, aa), f(I.randomRange(101, 120))))
       b(
         __LOC__,
-        \"=~"(
-          N.diff(\"@@"(f, I.randomRange(21, 40)), \"@@"(f, I.randomRange(0, 20))),
-          f(I.randomRange(21, 40)),
-        ),
+        \"=~"(N.diff(f(I.randomRange(21, 40)), f(I.randomRange(0, 20))), f(I.randomRange(21, 40))),
       )
       b(
         __LOC__,
-        \"=~"(
-          N.diff(\"@@"(f, I.randomRange(0, 20)), \"@@"(f, I.randomRange(21, 40))),
-          f(I.randomRange(0, 20)),
-        ),
+        \"=~"(N.diff(f(I.randomRange(0, 20)), f(I.randomRange(21, 40))), f(I.randomRange(0, 20))),
       )
 
       b(
         __LOC__,
-        \"=~"(
-          N.diff(\"@@"(f, I.randomRange(0, 20)), \"@@"(f, I.randomRange(0, 40))),
-          f(I.randomRange(0, -1)),
-        ),
+        \"=~"(N.diff(f(I.randomRange(0, 20)), f(I.randomRange(0, 40))), f(I.randomRange(0, -1))),
       )
     }
 
@@ -186,7 +165,7 @@ let () = {
     N.add(v, i)
   }
   N.checkInvariantInternal(v)
-  \"@@"(b(__LOC__, ...), R.every(0, 1_00_000, i => N.has(v, i)))
+  (b(__LOC__, ...))(R.every(0, 1_00_000, i => N.has(v, i)))
   eq(__LOC__, N.size(v), 1_00_001)
 }
 
@@ -295,38 +274,23 @@ let () = {
   )
   let dd = N.intersect(aa, bb)
   b(__LOC__, \"=~"(dd, f(I.randomRange(40, 100))))
-  b(
-    __LOC__,
-    \"=~"(N.intersect(\"@@"(f, I.randomRange(0, 20)), \"@@"(f, I.randomRange(21, 40))), N.make()),
-  )
-  b(
-    __LOC__,
-    \"=~"(N.intersect(\"@@"(f, I.randomRange(21, 40)), \"@@"(f, I.randomRange(0, 20))), N.make()),
-  )
+  b(__LOC__, \"=~"(N.intersect(f(I.randomRange(0, 20)), f(I.randomRange(21, 40))), N.make()))
+  b(__LOC__, \"=~"(N.intersect(f(I.randomRange(21, 40)), f(I.randomRange(0, 20))), N.make()))
   b(__LOC__, \"=~"(N.intersect(f([1, 3, 4, 5, 7, 9]), f([2, 4, 5, 6, 8, 10])), f([4, 5])))
   b(__LOC__, \"=~"(N.diff(aa, bb), f(I.randomRange(0, 39))))
   b(__LOC__, \"=~"(N.diff(bb, aa), f(I.randomRange(101, 120))))
   b(
     __LOC__,
-    \"=~"(
-      N.diff(\"@@"(f, I.randomRange(21, 40)), \"@@"(f, I.randomRange(0, 20))),
-      f(I.randomRange(21, 40)),
-    ),
+    \"=~"(N.diff(f(I.randomRange(21, 40)), f(I.randomRange(0, 20))), f(I.randomRange(21, 40))),
   )
   b(
     __LOC__,
-    \"=~"(
-      N.diff(\"@@"(f, I.randomRange(0, 20)), \"@@"(f, I.randomRange(21, 40))),
-      f(I.randomRange(0, 20)),
-    ),
+    \"=~"(N.diff(f(I.randomRange(0, 20)), f(I.randomRange(21, 40))), f(I.randomRange(0, 20))),
   )
 
   b(
     __LOC__,
-    \"=~"(
-      N.diff(\"@@"(f, I.randomRange(0, 20)), \"@@"(f, I.randomRange(0, 40))),
-      f(I.randomRange(0, -1)),
-    ),
+    \"=~"(N.diff(f(I.randomRange(0, 20)), f(I.randomRange(0, 40))), f(I.randomRange(0, -1))),
   )
 }
 

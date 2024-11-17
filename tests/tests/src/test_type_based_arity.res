@@ -17,7 +17,7 @@ module X: {
 
 let f2 = (g, x): X.t => g(x)
 
-let f3 = (g, x) => \"@@"(ignore, g(x))
+let f3 = (g, x) => ignore(g(x))
 
 let f4 = (g, x): ('a, 'b) => g(x)
 

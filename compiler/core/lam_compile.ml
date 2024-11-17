@@ -723,7 +723,7 @@ let compile output_prefix =
           (* [e] will be used twice  *)
           let dispatch e =
             let is_a_literal_case =
-              if block_cases <> [] then
+              if untagged then
                 E.is_a_literal_case
                   ~literal_cases:(get_literal_cases sw_names)
                   ~block_cases e
@@ -732,21 +732,41 @@ let compile output_prefix =
                   ~has_null_undefined_other:(has_null_undefined_other sw_names)
                   e
             in
-            S.if_ is_a_literal_case
-              (compile_cases ~cxt ~switch_exp:e ~block_cases
-                 ~default:sw_num_default ~get_tag:get_const_tag sw_consts)
-              ~else_:
-                (compile_cases ~untagged ~cxt
-                   ~switch_exp:(if untagged then e else E.tag ~name:tag_name e)
-                   ~block_cases ~default:sw_blocks_default
-                   ~get_tag:get_block_tag sw_blocks)
+            let eq_default d1 d2 =
+              match (d1, d2) with
+              | Default lam1, Default lam2 -> Lam.eq_approx lam1 lam2
+              | Complete, Complete -> true
+              | NonComplete, NonComplete -> true
+              | _ -> false
+            in
+            if
+              untagged
+              && List.length sw_consts = 0
+              && eq_default sw_num_default sw_blocks_default
+            then
+              compile_cases ~untagged ~cxt
+                ~switch_exp:(if untagged then e else E.tag ~name:tag_name e)
+                ~block_cases ~default:sw_blocks_default ~get_tag:get_block_tag
+                sw_blocks
+            else
+              [
+                S.if_ is_a_literal_case
+                  (compile_cases ~cxt ~switch_exp:e ~block_cases
+                     ~default:sw_num_default ~get_tag:get_const_tag sw_consts)
+                  ~else_:
+                    (compile_cases ~untagged ~cxt
+                       ~switch_exp:
+                         (if untagged then e else E.tag ~name:tag_name e)
+                       ~block_cases ~default:sw_blocks_default
+                       ~get_tag:get_block_tag sw_blocks);
+              ]
           in
           match e.expression_desc with
-          | J.Var _ -> [dispatch e]
+          | J.Var _ -> dispatch e
           | _ ->
             let v = Ext_ident.create_tmp () in
             (* Necessary avoid duplicated computation*)
-            [S.define_variable ~kind:Variable v e; dispatch (E.var v)])
+            S.define_variable ~kind:Variable v e :: dispatch (E.var v))
     in
     match lambda_cxt.continuation with
     (* Needs declare first *)

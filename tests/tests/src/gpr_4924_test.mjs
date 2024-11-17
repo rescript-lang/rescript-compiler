@@ -19,16 +19,16 @@ function u(b) {
 }
 
 function u1(b) {
-  if (typeof b !== "object" && b === "A") {
-    return true;
+  if (typeof b !== "object") {
+    return b === "A";
   } else {
     return false;
   }
 }
 
 function u2(b) {
-  if (typeof b !== "object" && b === "A") {
-    return false;
+  if (typeof b !== "object") {
+    return b !== "A";
   } else {
     return true;
   }
@@ -57,16 +57,16 @@ function u4(b) {
 }
 
 function u5(b) {
-  if (typeof b !== "object" && b === "A") {
-    return false;
+  if (typeof b !== "object") {
+    return b !== "A";
   } else {
     return true;
   }
 }
 
 function u6(b) {
-  if (typeof b !== "object" && b === "A") {
-    return true;
+  if (typeof b !== "object") {
+    return b === "A";
   } else {
     return false;
   }

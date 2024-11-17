@@ -109,9 +109,11 @@ let rec no_side_effect_expression_desc (x : J.expression_desc) =
     no_side_effect call_expr
     && Ext_list.for_all strings no_side_effect
     && Ext_list.for_all values no_side_effect
-  | Js_not _ | Cond _ | FlatCall _ | Call _ | New _ | Raw_js_code _
-  (* actually true? *) ->
-    false
+  | Js_not e -> no_side_effect e
+  | Cond (a, b, c) -> no_side_effect a && no_side_effect b && no_side_effect c
+  | Call ({expression_desc = Str {txt = "Array.isArray"}}, [e], _) ->
+    no_side_effect e
+  | FlatCall _ | Call _ | New _ | Raw_js_code _ (* actually true? *) -> false
   | Await _ -> false
   | Spread _ -> false
 

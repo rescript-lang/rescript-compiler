@@ -538,83 +538,14 @@ try {
   let exn = Primitive_exceptions.internalToException(raw_exn);
   if (exn.RE_EXN_ID === Cycle) {
     let match = exn._1;
-    if (match) {
-      if (match.hd === "go") {
-        let match$1 = match.tl;
-        if (match$1) {
-          if (match$1.hd === "washup") {
-            let match$2 = match$1.tl;
-            if (match$2) {
-              if (match$2.hd === "eat") {
-                let match$3 = match$2.tl;
-                if (match$3) {
-                  if (match$3.hd === "go") {
-                    if (match$3.tl) {
-                      throw {
-                        RE_EXN_ID: "Assert_failure",
-                        _1: [
-                          "topsort_test.res",
-                          154,
-                          7
-                        ],
-                        Error: new Error()
-                      };
-                    }
-                    
-                  } else {
-                    throw {
-                      RE_EXN_ID: "Assert_failure",
-                      _1: [
-                        "topsort_test.res",
-                        154,
-                        7
-                      ],
-                      Error: new Error()
-                    };
-                  }
-                } else {
-                  throw {
-                    RE_EXN_ID: "Assert_failure",
-                    _1: [
-                      "topsort_test.res",
-                      154,
-                      7
-                    ],
-                    Error: new Error()
-                  };
-                }
-              } else {
-                throw {
-                  RE_EXN_ID: "Assert_failure",
-                  _1: [
-                    "topsort_test.res",
-                    154,
-                    7
-                  ],
-                  Error: new Error()
-                };
-              }
-            } else {
-              throw {
-                RE_EXN_ID: "Assert_failure",
-                _1: [
-                  "topsort_test.res",
-                  154,
-                  7
-                ],
-                Error: new Error()
-              };
-            }
-          } else {
-            throw {
-              RE_EXN_ID: "Assert_failure",
-              _1: [
-                "topsort_test.res",
-                154,
-                7
-              ],
-              Error: new Error()
-            };
+    if (match && match.hd === "go") {
+      let match$1 = match.tl;
+      if (match$1 && match$1.hd === "washup") {
+        let match$2 = match$1.tl;
+        if (match$2 && match$2.hd === "eat") {
+          let match$3 = match$2.tl;
+          if (!(match$3 && !(match$3.hd !== "go" || match$3.tl))) {
+            exit = 1;
           }
         } else {
           throw {

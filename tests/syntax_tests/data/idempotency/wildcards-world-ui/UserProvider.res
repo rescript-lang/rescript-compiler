@@ -6,7 +6,7 @@ open Globals
 type threeBoxImageData = {
   @as("@type")
   imageType: string,
-  contentUrl: Js.Dict.t<string>,
+  contentUrl: dict<string>,
 }
 type threeBoxImage = array<threeBoxImageData>
 type threeBoxTwitterVerification = {
@@ -32,7 +32,7 @@ type threeBoxUserInfo = {
 type userVerification = {threeBox: threeBoxUserInfo}
 
 type userInfo = {
-  userInfo: Js.Dict.t<userVerification>,
+  userInfo: dict<userVerification>,
   update: (string, bool) => unit,
 }
 

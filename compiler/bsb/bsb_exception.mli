@@ -31,7 +31,7 @@ exception Error of error
 
 val print : Format.formatter -> error -> unit
 
-val package_not_found : pkg:Bsb_pkg_types.t -> json:string option -> 'a
+val package_not_found : pkg:Bsb_pkg_types.t -> 'a
 
 val conflict_module : string -> string -> string -> exn
 
@@ -41,8 +41,4 @@ val config_error : Ext_json_types.t -> string -> 'a
 
 val invalid_spec : string -> 'a
 
-val invalid_json : string -> 'a
-
 val no_implementation : string -> 'a
-
-val not_consistent : string -> 'a

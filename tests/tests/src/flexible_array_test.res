@@ -163,8 +163,8 @@ module Int_array: {
       s
     } else {
       let head = get(s, 0)
-      let larger = \"@@"(sort, filter_from(1, x => x > head, s))
-      let smaller = \"@@"(sort, filter_from(1, x => x <= head, s))
+      let larger = sort(filter_from(1, x => x > head, s))
+      let smaller = sort(filter_from(1, x => x <= head, s))
       append(smaller, push_front(larger, head))
     }
   }

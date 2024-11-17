@@ -39,6 +39,7 @@
     "bsc": "cli/bsc",
     "bstracing": "lib/bstracing",
     "rescript": "cli/rescript",
+    "rescript-tools": "cli/rescript-tools",
     "rewatch": "cli/rewatch"
   },
   "scripts": {

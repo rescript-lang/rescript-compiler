@@ -11,8 +11,8 @@ let test_id = {
 };
 
 function showToJs(x) {
-  if (typeof x !== "object" && x === "No") {
-    return false;
+  if (typeof x !== "object") {
+    return x !== "No";
   } else {
     return true;
   }

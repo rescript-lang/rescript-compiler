@@ -928,19 +928,11 @@ function get_obj(x) {
 }
 
 function is_player(x) {
-  if (x.TAG === "Player") {
-    return true;
-  } else {
-    return false;
-  }
+  return x.TAG === "Player";
 }
 
 function is_enemy(x) {
-  if (x.TAG === "Enemy") {
-    return true;
-  } else {
-    return false;
-  }
+  return x.TAG === "Enemy";
 }
 
 function equals(col1, col2) {
@@ -1262,7 +1254,7 @@ function col_bypass(c1, c2) {
       ctypes = c2.TAG === "Enemy" ? c1._2.invuln > 0 : false;
       break;
     case "Enemy" :
-      ctypes = c2.TAG === "Item" ? true : false;
+      ctypes = c2.TAG === "Item";
       break;
     case "Item" :
       switch (c2.TAG) {

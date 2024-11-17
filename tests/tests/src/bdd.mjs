@@ -7,11 +7,7 @@ function $$eval(_bdd, vars) {
   while (true) {
     let bdd = _bdd;
     if (typeof bdd !== "object") {
-      if (bdd === "One") {
-        return true;
-      } else {
-        return false;
-      }
+      return bdd === "One";
     }
     if (Primitive_array.get(vars, bdd._1)) {
       _bdd = bdd._3;
@@ -366,15 +362,9 @@ function random_vars(n) {
 
 function bool_equal(a, b) {
   if (a) {
-    if (b) {
-      return true;
-    } else {
-      return false;
-    }
-  } else if (b) {
-    return false;
+    return b;
   } else {
-    return true;
+    return !b;
   }
 }
 

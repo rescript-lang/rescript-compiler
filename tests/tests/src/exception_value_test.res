@@ -25,13 +25,13 @@ let test_not_found = (f, ()) =>
 let test_js_error2 = () =>
   try Js.Json.parseExn(` {"x" : }`) catch {
   | Js.Exn.Error(err) as e =>
-    \"@@"(Js.log, Js.Exn.stack(err))
+    Js.log(Js.Exn.stack(err))
     raise(e)
   }
 
 let test_js_error3 = () =>
   try {
-    \"@@"(ignore, Js.Json.parseExn(` {"x"}`))
+    ignore(Js.Json.parseExn(` {"x"}`))
     1
   } catch {
   | e => 0

@@ -524,7 +524,52 @@ let all_record_args lbls =
         (fun lbl -> (mknoloc (Longident.Lident "?temp?"), lbl, omega))
         lbl_all
     in
-    List.iter (fun ((_, lbl, _) as x) -> t.(lbl.lbl_pos) <- x) lbls;
+    List.iter
+      (fun ((id, lbl, pat) as x) ->
+        let lbl_is_optional () =
+          match lbl.lbl_repres with
+          | Record_optional_labels labels -> List.mem lbl.lbl_name labels
+          | _ -> false
+        in
+        let x =
+          match pat.pat_desc with
+          | Tpat_construct
+              ( {txt = Longident.Ldot (Longident.Lident "*predef*", "Some")},
+                _,
+                [({pat_desc = Tpat_constant _} as c)] )
+            when lbl_is_optional () ->
+            (id, lbl, c)
+          | Tpat_construct
+              ( {txt = Longident.Ldot (Longident.Lident "*predef*", "Some")},
+                _,
+                [({pat_desc = Tpat_construct (_, cd, _)} as pat_construct)] )
+            when lbl_is_optional () -> (
+            let cdecl =
+              Ast_untagged_variants
+              .constructor_declaration_from_constructor_description
+                ~env:pat.pat_env cd
+            in
+            match cdecl with
+            | None -> x
+            | Some cstr
+              when Ast_untagged_variants.is_nullary_variant cstr.cd_args ->
+              let _, tag = Ast_untagged_variants.get_cstr_loc_tag cstr in
+              if Ast_untagged_variants.tag_can_be_undefined tag then x
+              else (id, lbl, pat_construct)
+            | Some cstr -> (
+              match
+                Ast_untagged_variants.get_block_type ~env:pat.pat_env cstr
+              with
+              | Some block_type
+                when not
+                       (Ast_untagged_variants.block_type_can_be_undefined
+                          block_type) ->
+                (id, lbl, pat_construct)
+              | _ -> x))
+          | _ -> x
+        in
+        t.(lbl.lbl_pos) <- x)
+      lbls;
     Array.to_list t
   | _ -> fatal_error "Parmatch.all_record_args"
 

@@ -222,7 +222,7 @@ type arrows = (int, (float => unit) => unit, float) => unit
 let prepare_expansion: ((type_expr, type_expr)) => (type_expr, type_expr) = f
 
 type getInitialPropsFn<'a> = {
-  "query": Js.Dict.t<string>,
+  "query": dict<string>,
   "req": Js.Nullable.t<Js.t<'a>>,
 } => Js.Promise.t<Js.t<'a>>
 

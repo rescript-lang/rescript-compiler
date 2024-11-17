@@ -3,10 +3,10 @@
 
 function test(code) {
   if (code > 599 || code < 500) {
-    if (code === 201 || code === 200) {
-      return "good response";
-    } else {
+    if (code !== 201 && code !== 200) {
       return "the catch all";
+    } else {
+      return "good response";
     }
   } else if (code > 597 || code < 512) {
     return "bad response";

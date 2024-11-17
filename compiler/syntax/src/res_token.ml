@@ -105,7 +105,7 @@ let precedence = function
   | BangEqualEqual | LessEqual | GreaterEqual | BarGreater ->
     4
   | Plus | PlusDot | Minus | MinusDot | PlusPlus -> 5
-  | Asterisk | AsteriskDot | Forwardslash | ForwardslashDot -> 6
+  | Asterisk | AsteriskDot | Forwardslash | ForwardslashDot | Percent -> 6
   | Exponentiation -> 7
   | MinusGreater -> 8
   | Dot -> 9

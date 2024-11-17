@@ -1,8 +1,8 @@
 @val @scope("Object")
-external objectAssign: (Js.Dict.t<'a>, Js.Dict.t<'a>) => unit = "assign"
+external objectAssign: (dict<'a>, dict<'a>) => unit = "assign"
 
 @val @scope("Object") @variadic
-external objectAssignMany: array<Js.Dict.t<'a>> => unit = "assign"
+external objectAssignMany: array<dict<'a>> => unit = "assign"
 
 let cloneJsDict = dict => {
   let clone = Js.Dict.empty()
@@ -20,7 +20,7 @@ type any
 let _internalDeleteJsDictKey: (any, string) => unit = %raw(
   "function(dict, key) { delete dict[key]; }"
 )
-external convertToAny: Js.Dict.t<'a> => any = "%identity"
+external convertToAny: dict<'a> => any = "%identity"
 
 let deleteJsDictKey = (dict, key) => _internalDeleteJsDictKey(convertToAny(dict), key)
 

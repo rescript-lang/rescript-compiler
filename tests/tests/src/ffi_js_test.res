@@ -94,7 +94,7 @@ let ffff = x => {
   switch getGADTI3(x, Int, Str) {
   | (cc, dd) => Js.log((cc, dd))
   }
-  \"@@"(Js.log, getGADT(x, Int))
+  Js.log(getGADT(x, Int))
   switch getGADT2(x, Int, Str) {
   | (a: int, b: string) => Js.log2(a, b)
   }

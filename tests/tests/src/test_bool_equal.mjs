@@ -3,15 +3,9 @@
 
 function bool_equal(x, y) {
   if (x) {
-    if (y) {
-      return true;
-    } else {
-      return false;
-    }
-  } else if (y) {
-    return false;
+    return y;
   } else {
-    return true;
+    return !y;
   }
 }
 
