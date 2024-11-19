@@ -31,7 +31,7 @@ type signatureDetais = {
 type detail =
   | @as("record") Record({items: array<field>})
   | @as("variant") Variant({items: array<constructor>})
-  | @as("signature") Signature({details:signatureDetais})
+  | @as("signature") Signature({details: signatureDetais})
 
 type source = {
   filepath: string,
