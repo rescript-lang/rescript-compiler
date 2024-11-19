@@ -80,12 +80,15 @@ let js_keywords = STbl.of_array [|
   "void";
   "while";
   "with";
+
   (* The following are also reserved in strict context, including ESM *)
   "let";
   "static";
   "yield";
+
   (* `await` is reserved in async context, including ESM *)
   "await";
+
   (* Future reserved words *)
   "enum";
   "implements";
@@ -94,6 +97,18 @@ let js_keywords = STbl.of_array [|
   "private";
   "protected";
   "public";
+
+  (* Special identifiers
+
+     `arguments` and `eval` is not real *keywords*
+
+     However, they cannot be as identifiers in the strict mode,
+     and the compiler output is always in strict mode.
+
+     See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#identifiers_with_special_meanings
+   *)
+  "arguments";
+  "eval";
 |]
 
 let is_js_keyword s = STbl.mem js_keywords s
@@ -104,7 +119,7 @@ let is_js_keyword s = STbl.mem js_keywords s
 
     See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#identifiers_with_special_meanings
 
-    However, these names are actually used with no problems today. Preventing this can be annoying.
+    However, these names are actually used with no problems today. (Except `arguments` and `eval`)
  *)
 let js_special_words = STbl.of_array [|
   "arguments";
