@@ -20,6 +20,7 @@
 #### :bug: Bug fix
 
 - Fix and clean up boolean and/or optimizations. https://github.com/rescript-lang/rescript-compiler/pull/7134 https://github.com/rescript-lang/rescript-compiler/pull/7151
+- Fix identifiers with name `arguments` and `eval` to be mangled. https://github.com/rescript-lang/rescript/pull/7163
 
 #### :nail_care: Polish
 

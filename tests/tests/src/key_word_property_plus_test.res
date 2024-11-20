@@ -13,7 +13,7 @@ let () = eq(
   __LOC__,
   Js.Array2.reduce([1, 2, 3, 4], \"+", 0),
   {
-    open Global_mangles
+    open Ident_mangles
     __dirname + __filename + exports + require
   },
 )
