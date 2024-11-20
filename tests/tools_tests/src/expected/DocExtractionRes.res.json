@@ -84,10 +84,10 @@
     }
   }, 
   {
-    "id": "DocExtractionRes.\\\"SomeConstant\"",
+    "id": "DocExtractionRes.SomeConstant",
     "kind": "value",
-    "name": "\\\"SomeConstant\"",
-    "signature": "let \\\"SomeConstant\": int",
+    "name": "SomeConstant",
+    "signature": "let SomeConstant: int",
     "docstrings": ["exotic identifier"],
     "source": {
       "filepath": "src/DocExtractionRes.res",
