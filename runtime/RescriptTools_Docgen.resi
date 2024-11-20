@@ -22,7 +22,7 @@ type rec typeInSignature = {
   genericTypeParameters: array<typeInSignature>,
 }
 
-type signatureDetais = {
+type signatureDetails = {
   parameters: array<typeInSignature>,
   returnType: typeInSignature,
 }
