@@ -45,6 +45,18 @@
       "filepath": "src/DocExtractionRes.res",
       "line": 17,
       "col": 5
+    },
+    "detail": 
+    {
+      "kind": "signature",
+      "details": {
+      "parameters": [{
+          "path": "string"
+        }],
+      "returnType": {
+        "path": "t"
+      }
+    }
     }
   }, 
   {
@@ -57,6 +69,18 @@
       "filepath": "src/DocExtractionRes.res",
       "line": 23,
       "col": 5
+    },
+    "detail": 
+    {
+      "kind": "signature",
+      "details": {
+      "parameters": [{
+          "path": "t"
+        }],
+      "returnType": {
+        "path": "t"
+      }
+    }
     }
   }, 
   {
@@ -69,6 +93,15 @@
       "filepath": "src/DocExtractionRes.res",
       "line": 26,
       "col": 5
+    },
+    "detail": 
+    {
+      "kind": "signature",
+      "details": {
+      "returnType": {
+        "path": "int"
+      }
+    }
     }
   }, 
   {
@@ -184,6 +217,18 @@
         "filepath": "src/DocExtractionRes.res",
         "line": 49,
         "col": 7
+      },
+      "detail": 
+      {
+        "kind": "signature",
+        "details": {
+        "parameters": [{
+            "path": "SomeInnerModule.status"
+          }],
+        "returnType": {
+          "path": "bool"
+        }
+      }
       }
     }, 
     {
@@ -268,6 +313,18 @@
         "filepath": "src/DocExtractionRes.res",
         "line": 71,
         "col": 3
+      },
+      "detail": 
+      {
+        "kind": "signature",
+        "details": {
+        "parameters": [{
+            "path": "unit"
+          }],
+        "returnType": {
+          "path": "t"
+        }
+      }
       }
     }]
   }, 
@@ -304,6 +361,18 @@
         "filepath": "src/DocExtractionRes.res",
         "line": 109,
         "col": 3
+      },
+      "detail": 
+      {
+        "kind": "signature",
+        "details": {
+        "parameters": [{
+            "path": "t"
+          }],
+        "returnType": {
+          "path": "t"
+        }
+      }
       }
     }]
   }, 
@@ -341,6 +410,18 @@
         "filepath": "src/DocExtractionRes.res",
         "line": 128,
         "col": 7
+      },
+      "detail": 
+      {
+        "kind": "signature",
+        "details": {
+        "parameters": [{
+            "path": "int"
+          }],
+        "returnType": {
+          "path": "int"
+        }
+      }
       }
     }]
   }, 
@@ -365,6 +446,15 @@
         "filepath": "src/DocExtractionRes.res",
         "line": 132,
         "col": 3
+      },
+      "detail": 
+      {
+        "kind": "signature",
+        "details": {
+        "returnType": {
+          "path": "int"
+        }
+      }
       }
     }]
   }, 
@@ -390,6 +480,15 @@
         "filepath": "src/DocExtractionRes.res",
         "line": 136,
         "col": 7
+      },
+      "detail": 
+      {
+        "kind": "signature",
+        "details": {
+        "returnType": {
+          "path": "int"
+        }
+      }
       }
     }]
   }, 
@@ -426,6 +525,15 @@
           "filepath": "src/DocExtractionRes.res",
           "line": 141,
           "col": 9
+        },
+        "detail": 
+        {
+          "kind": "signature",
+          "details": {
+          "returnType": {
+            "path": "int"
+          }
+        }
         }
       }]
     }]

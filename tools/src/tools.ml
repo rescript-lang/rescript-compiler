@@ -18,11 +18,15 @@ type constructorDoc = {
   items: constructorPayload option;
 }
 
+type typeDoc = {path: string; genericParameters: typeDoc list}
+type valueSignature = {parameters: typeDoc list; returnType: typeDoc}
+
 type source = {filepath: string; line: int; col: int}
 
 type docItemDetail =
   | Record of {fieldDocs: fieldDoc list}
   | Variant of {constructorDocs: constructorDoc list}
+  | Signature of valueSignature
 
 type docItem =
   | Value of {
@@ -31,6 +35,7 @@ type docItem =
       signature: string;
       name: string;
       deprecated: string option;
+      detail: docItemDetail option;
       source: source;
     }
   | Type of {
@@ -104,6 +109,19 @@ let stringifyConstructorPayload ~indentation
             |> array) );
       ]
 
+let rec stringifyTypeDoc ~indentation (td : typeDoc) : string =
+  let open Protocol in
+  let ps =
+    match td.genericParameters with
+    | [] -> None
+    | ts ->
+      ts |> List.map (stringifyTypeDoc ~indentation:(indentation + 1))
+      |> fun ts -> Some (array ts)
+  in
+
+  stringifyObject ~indentation:(indentation + 1)
+    [("path", Some (wrapInQuotes td.path)); ("genericTypeParameters", ps)]
+
 let stringifyDetail ?(indentation = 0) (detail : docItemDetail) =
   let open Protocol in
   match detail with
@@ -147,6 +165,25 @@ let stringifyDetail ?(indentation = 0) (detail : docItemDetail) =
                      ])
             |> array) );
       ]
+  | Signature {parameters; returnType} ->
+    let ps =
+      match parameters with
+      | [] -> None
+      | ps ->
+        ps |> List.map (stringifyTypeDoc ~indentation:(indentation + 1))
+        |> fun ps -> Some (array ps)
+    in
+    stringifyObject ~startOnNewline:true ~indentation
+      [
+        ("kind", Some (wrapInQuotes "signature"));
+        ( "details",
+          Some
+            (stringifyObject ~startOnNewline:false ~indentation
+               [
+                 ("parameters", ps);
+                 ("returnType", Some (stringifyTypeDoc ~indentation returnType));
+               ]) );
+      ]
 
 let stringifySource ~indentation source =
   let open Protocol in
@@ -160,7 +197,7 @@ let stringifySource ~indentation source =
 let rec stringifyDocItem ?(indentation = 0) ~originalEnv (item : docItem) =
   let open Protocol in
   match item with
-  | Value {id; docstring; signature; name; deprecated; source} ->
+  | Value {id; docstring; signature; name; deprecated; source; detail} ->
     stringifyObject ~startOnNewline:true ~indentation
       [
         ("id", Some (wrapInQuotes id));
@@ -173,6 +210,11 @@ let rec stringifyDocItem ?(indentation = 0) ~originalEnv (item : docItem) =
         ("signature", Some (signature |> String.trim |> wrapInQuotes));
         ("docstrings", Some (stringifyDocstrings docstring));
         ("source", Some (stringifySource ~indentation:(indentation + 1) source));
+        ( "detail",
+          match detail with
+          | None -> None
+          | Some detail ->
+            Some (stringifyDetail ~indentation:(indentation + 1) detail) );
       ]
   | Type {id; docstring; signature; name; deprecated; detail; source} ->
     stringifyObject ~startOnNewline:true ~indentation
@@ -310,6 +352,60 @@ let typeDetail typ ~env ~full =
          })
   | _ -> None
 
+(* split a list into two parts all the items except the last one and the last item *)
+let splitLast l =
+  let rec splitLast' acc = function
+    | [] -> failwith "splitLast: empty list"
+    | [x] -> (List.rev acc, x)
+    | x :: xs -> splitLast' (x :: acc) xs
+  in
+  splitLast' [] l
+
+let path_to_string path =
+  let buf = Buffer.create 64 in
+  let rec aux = function
+    | Path.Pident id -> Buffer.add_string buf (Ident.name id)
+    | Path.Pdot (p, s, _) ->
+      aux p;
+      Buffer.add_char buf '.';
+      Buffer.add_string buf s
+    | Path.Papply (p1, p2) ->
+      aux p1;
+      Buffer.add_char buf '(';
+      aux p2;
+      Buffer.add_char buf ')'
+  in
+  aux path;
+  Buffer.contents buf
+
+let valueDetail (typ : Types.type_expr) =
+  let rec collectSignatureTypes (typ_desc : Types.type_desc) =
+    match typ_desc with
+    | Tlink t | Tsubst t | Tpoly (t, []) -> collectSignatureTypes t.desc
+    | Tconstr (Path.Pident {name = "function$"}, [t; _], _) ->
+      collectSignatureTypes t.desc
+    | Tconstr (path, ts, _) -> (
+      let p = path_to_string path in
+      match ts with
+      | [] -> [{path = p; genericParameters = []}]
+      | ts ->
+        let ts =
+          ts
+          |> List.concat_map (fun (t : Types.type_expr) ->
+                 collectSignatureTypes t.desc)
+        in
+        [{path = p; genericParameters = ts}])
+    | Tarrow (_, t1, t2, _) ->
+      collectSignatureTypes t1.desc @ collectSignatureTypes t2.desc
+    | Tvar None -> [{path = "_"; genericParameters = []}]
+    | _ -> []
+  in
+  match collectSignatureTypes typ.desc with
+  | [] -> None
+  | ts ->
+    let parameters, returnType = splitLast ts in
+    Some (Signature {parameters; returnType})
+
 let makeId modulePath ~identifier =
   identifier :: modulePath |> List.rev |> SharedTypes.ident
 
@@ -404,6 +500,7 @@ let extractDocs ~entryPointFile ~debug =
                                 ^ Shared.typeToString typ;
                               name = item.name;
                               deprecated = item.deprecated;
+                              detail = valueDetail typ;
                               source;
                             })
                      | Type (typ, _) ->

@@ -16,10 +16,22 @@ type constructor = {
   deprecated?: string,
   payload?: constructorPayload,
 }
+
+type rec typeInSignature = {
+  path: string,
+  genericTypeParameters: array<typeInSignature>,
+}
+
+type signatureDetails = {
+  parameters: array<typeInSignature>,
+  returnType: typeInSignature,
+}
+
 @tag("kind")
 type detail =
   | @as("record") Record({items: array<field>})
   | @as("variant") Variant({items: array<constructor>})
+  | @as("signature") Signature({details: signatureDetails})
 
 type source = {
   filepath: string,
@@ -37,6 +49,8 @@ type rec item =
       name: string,
       deprecated?: string,
       source: source,
+      /** Additional documentation of signature, if available. */
+      detail?: detail,
     })
   | @as("type")
   Type({
@@ -85,4 +99,4 @@ type doc = {
   items: array<item>,
 }
 
-let decodeFromJson: Js.Json.t => doc
+let decodeFromJson: JSON.t => doc

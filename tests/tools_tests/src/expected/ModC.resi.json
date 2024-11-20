@@ -29,6 +29,15 @@
         "filepath": "src/ModC.resi",
         "line": 5,
         "col": 3
+      },
+      "detail": 
+      {
+        "kind": "signature",
+        "details": {
+        "returnType": {
+          "path": "string"
+        }
+      }
       }
     }]
   }]

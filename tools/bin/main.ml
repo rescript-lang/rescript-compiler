@@ -14,7 +14,7 @@ Usage: rescript-tools [command]
 
 Commands:
 
-doc                   Generate documentation
+doc <file>            Generate documentation
 reanalyze             Reanalyze
 -v, --version         Print version
 -h, --help            Print help|}
