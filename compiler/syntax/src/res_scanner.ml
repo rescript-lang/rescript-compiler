@@ -209,7 +209,7 @@ let scan_identifier scanner =
 
 let scan_digits scanner ~base =
   if base <= 10 then
-    let rec loop scanner flag =
+    let rec loop scanner found_digits =
       match scanner.ch with
       | '0' .. '9' ->
         next scanner;
@@ -217,11 +217,11 @@ let scan_digits scanner ~base =
       | '_' ->
         next scanner;
         loop scanner false
-      | _ -> flag
+      | _ -> found_digits
     in
     loop scanner false
   else
-    let rec loop scanner flag =
+    let rec loop scanner found_digits =
       match scanner.ch with
       (* hex *)
       | '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ->
@@ -230,7 +230,7 @@ let scan_digits scanner ~base =
       | '_' ->
         next scanner;
         loop scanner false
-      | _ -> flag
+      | _ -> found_digits
     in
     loop scanner false
 
