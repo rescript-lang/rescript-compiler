@@ -28,7 +28,7 @@ The rescript-compiler git repo is very large because, prior to tooling improveme
 If you are only interested in the latest master commit, you can perform a shallow clone instead as follows:
 
 ```sh
-git clone --depth 1 https://github.com/rescript-lang/rescript-compiler.git
+git clone --depth 1 https://github.com/rescript-lang/rescript.git
 ```
 
 This will only consume less than 50MB.
