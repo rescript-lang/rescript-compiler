@@ -12,6 +12,9 @@
 
 # 12.0.0-alpha.6 (Unreleased)
 
+#### :bug: Bug fix
+- Fix bug where a ref assignment is moved ouside a conditional. https://github.com/rescript-lang/rescript/pull/7176
+
 # 12.0.0-alpha.5
 
 #### :rocket: New Feature
