@@ -396,6 +396,7 @@ let primitives_table =
       ("#nullable_to_opt", Pnull_to_opt);
       ("#undefined_to_opt", Pundefined_to_opt);
       ("#makemutablelist", Pmakelist Mutable);
+      ("#import", Pimport);
       (* FIXME: Deprecated *)
       ("%obj_field", Parrayrefu);
     |]
