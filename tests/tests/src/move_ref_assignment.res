@@ -1,20 +1,18 @@
 type t = {mutable c: int}
 
-let j = {c: 0}
+let j = {c: 1}
 let k = {c: 1}
 
-if j.c == 0 {
-  j.c = j.c + 2
-  Console.log("j.c")
-} else {
-  j.c = j.c + 2
-}
+let upd = () => k.c = 3
 
-if k.c == 0 {
+if k.c == 1 {
+  upd()
   j.c = j.c + 2
-  Console.log("k.c")
+  Console.log("correct")
 } else {
+  upd()
   j.c = j.c + 2
+  Console.log("incorrect")
 }
 
 let j = 0
