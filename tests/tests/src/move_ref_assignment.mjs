@@ -11,13 +11,13 @@ function upd() {
   k.c = 3;
 }
 
-upd();
-
-j = j + 2 | 0;
-
 if (k.c === 1) {
+  upd();
+  j = j + 2 | 0;
   console.log("correct");
 } else {
+  upd();
+  j = j + 2 | 0;
   console.log("incorrect");
 }
 
