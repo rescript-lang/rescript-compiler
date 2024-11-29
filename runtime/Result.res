@@ -96,7 +96,6 @@ let mapError = (r, f) =>
   | Error(e) => Error(f(e))
   }
 
-
 let all = results => {
   let acc = []
   let returnValue = ref(None)
