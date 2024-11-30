@@ -18,8 +18,11 @@
   <a href="https://github.com/rescript-lang/rescript-compiler/blob/HEAD/LICENSE">
     <img src="https://img.shields.io/badge/License-LGPL%20v3-blue.svg" alt="ReScript is released under the LGPL license." />
   </a>
-  <a href="https://twitter.com/intent/follow?screen_name=rescriptlang">
-    <img src="https://img.shields.io/twitter/follow/rescriptlang.svg?label=Follow%20@rescriptlang" alt="Follow @rescriptlang" />
+  <a href="https://x.com/intent/follow?screen_name=rescriptlang">
+    <img src="https://img.shields.io/badge/X-000000?style=flat&logo=x&logoColor=white" alt="Follow @rescriptlang on X" />
+  </a>
+  <a href="https://bsky.app/profile/rescript-lang.org">
+    <img src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff&style=flat" alt="Follow @rescriptlang on Bluesky" />
   </a>
 </p>
 
