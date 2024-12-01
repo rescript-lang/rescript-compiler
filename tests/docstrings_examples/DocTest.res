@@ -62,88 +62,7 @@ open Node
 
 module Docgen = RescriptTools.Docgen
 
-@val @scope(("import", "meta")) external url: string = "url"
-
-let dirname =
-  url
-  ->URL.fileURLToPath
-  ->Path.dirname
-
-let compilerDir = Path.join([dirname, "..", ".examples-tests"])
-
-let rescriptBin = Path.join([compilerDir, "node_modules", ".bin", "rescript"])
-
 let bscBin = Path.join(["cli", "bsc"])
-
-let rescriptCoreCompiled = Path.join([
-  compilerDir,
-  "node_modules",
-  "@rescript",
-  "core",
-  "lib",
-  "ocaml",
-])
-
-let makePackageJson = coreVersion =>
-  `{
-  "name": "test-compiler-examples",
-  "version": "1.0.0",
-  "dependencies": {
-    "@rescript/core": "file:rescript-core-${coreVersion}.tgz",
-    "rescript": "11.1.4"
-  }
-}
-`
-
-let rescriptJson = `{
-  "name": "dummy",
-  "sources": {
-    "dir": "dummy",
-    "subdirs": true
-  },
-  "bs-dependencies": [
-    "@rescript/core"
-  ],
-  "bsc-flags": [
-    "-open RescriptCore"
-  ]
-}`
-
-let prepareCompiler = () => {
-  let corePath = Path.join([compilerDir, ".."])
-
-  if !Fs.existsSync(compilerDir) {
-    Fs.mkdirSync(compilerDir)->ignore
-  }
-
-  ChildProcess.execFileSync("npm", ["pack", corePath], {cwd: compilerDir, stdio: "ignore"})->ignore
-
-  let currentCoreVersion = switch Path.join2(corePath, "package.json")
-  ->Fs.readFileSync
-  ->JSON.parseExn {
-  | Object(dict) =>
-    switch dict->Dict.getUnsafe("version") {
-    | String(s) => s
-    | _ => assert(false)
-    }
-  | _ => assert(false)
-  }
-
-  Path.join2(compilerDir, "package.json")->Fs.writeFileSync(makePackageJson(currentCoreVersion))
-  Path.join2(compilerDir, "rescript.json")->Fs.writeFileSync(rescriptJson)
-
-  let dummyFolder = Path.join2(compilerDir, "dummy")
-
-  if !Fs.existsSync(dummyFolder) {
-    Fs.mkdirSync(dummyFolder)->ignore
-  }
-
-  ChildProcess.execFileSync("npm", ["install"], {cwd: compilerDir})->ignore
-
-  ChildProcess.execFileSync(rescriptBin, ["build"], {cwd: compilerDir})->ignore
-}
-
-// prepareCompiler()
 
 type example = {
   id: string,
@@ -160,7 +79,7 @@ let testCode = async (~id, ~code) => {
 
   let () = await Fs.writeFile(tempFileName ++ ".res", code)
 
-  let args = [tempFileName ++ ".res", "-I", rescriptCoreCompiled, "-w", "-3-109"]
+  let args = [tempFileName ++ ".res", "-w", "-3-109"]
 
   let promise = await Promise.make((resolve, _reject) => {
     let spawn = ChildProcess.spawn(bscBin, args)

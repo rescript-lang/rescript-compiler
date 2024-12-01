@@ -2,7 +2,6 @@
 
 import * as Fs from "fs";
 import * as Os from "os";
-import * as Url from "url";
 import * as List from "rescript/lib/es6/List.js";
 import * as Path from "path";
 import * as $$Array from "rescript/lib/es6/Array.js";
@@ -37,75 +36,7 @@ let Node = {
   OS: OS
 };
 
-let dirname = Path.dirname(Url.fileURLToPath(import.meta.url));
-
-let compilerDir = Path.join(dirname, "..", ".examples-tests");
-
-let rescriptBin = Path.join(compilerDir, "node_modules", ".bin", "rescript");
-
 let bscBin = Path.join("cli", "bsc");
-
-let rescriptCoreCompiled = Path.join(compilerDir, "node_modules", "@rescript", "core", "lib", "ocaml");
-
-function makePackageJson(coreVersion) {
-  return "{\n  \"name\": \"test-compiler-examples\",\n  \"version\": \"1.0.0\",\n  \"dependencies\": {\n    \"@rescript/core\": \"file:rescript-core-" + coreVersion + ".tgz\",\n    \"rescript\": \"11.1.4\"\n  }\n}\n";
-}
-
-let rescriptJson = "{\n  \"name\": \"dummy\",\n  \"sources\": {\n    \"dir\": \"dummy\",\n    \"subdirs\": true\n  },\n  \"bs-dependencies\": [\n    \"@rescript/core\"\n  ],\n  \"bsc-flags\": [\n    \"-open RescriptCore\"\n  ]\n}";
-
-function prepareCompiler() {
-  let corePath = Path.join(compilerDir, "..");
-  if (!Fs.existsSync(compilerDir)) {
-    Fs.mkdirSync(compilerDir);
-  }
-  Child_process.execFileSync("npm", [
-    "pack",
-    corePath
-  ], {
-    stdio: "ignore",
-    cwd: compilerDir
-  });
-  let dict = JSON.parse(Fs.readFileSync(Path.join(corePath, "package.json")));
-  let currentCoreVersion;
-  if (typeof dict === "object" && !Array.isArray(dict)) {
-    let s = dict["version"];
-    if (typeof s === "string") {
-      currentCoreVersion = s;
-    } else {
-      throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "DocTest.res",
-          127,
-          11
-        ],
-        Error: new Error()
-      };
-    }
-  } else {
-    throw {
-      RE_EXN_ID: "Assert_failure",
-      _1: [
-        "DocTest.res",
-        129,
-        9
-      ],
-      Error: new Error()
-    };
-  }
-  Fs.writeFileSync(Path.join(compilerDir, "package.json"), makePackageJson(currentCoreVersion));
-  Fs.writeFileSync(Path.join(compilerDir, "rescript.json"), rescriptJson);
-  let dummyFolder = Path.join(compilerDir, "dummy");
-  if (!Fs.existsSync(dummyFolder)) {
-    Fs.mkdirSync(dummyFolder);
-  }
-  Child_process.execFileSync("npm", ["install"], {
-    cwd: compilerDir
-  });
-  Child_process.execFileSync(rescriptBin, ["build"], {
-    cwd: compilerDir
-  });
-}
 
 function createFileInTempDir(id) {
   return Path.join(Os.tmpdir(), id);
@@ -117,8 +48,6 @@ async function testCode(id, code) {
   await Promises.writeFile(tempFileName + ".res", code);
   let args = [
     tempFileName + ".res",
-    "-I",
-    rescriptCoreCompiled,
     "-w",
     "-3-109"
   ];
@@ -342,14 +271,7 @@ let Docgen;
 export {
   Node,
   Docgen,
-  dirname,
-  compilerDir,
-  rescriptBin,
   bscBin,
-  rescriptCoreCompiled,
-  makePackageJson,
-  rescriptJson,
-  prepareCompiler,
   createFileInTempDir,
   testCode,
   extractDocFromFile,
@@ -358,4 +280,4 @@ export {
   main,
   exitCode,
 }
-/* dirname Not a pure module */
+/* bscBin Not a pure module */
