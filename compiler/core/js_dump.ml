@@ -700,6 +700,16 @@ and expression_desc cxt ~(level : int) f x : cxt =
           | Float _ -> "- "
           | _ -> "-");
         expression ~level:13 cxt f e)
+  | Bin
+      ( Or,
+        {expression_desc = Bin (EqEqEq, e1, {expression_desc = Null})},
+        {expression_desc = Bin (EqEqEq, e2, {expression_desc = Undefined _})} )
+  | Bin
+      ( Or,
+        {expression_desc = Bin (EqEqEq, e1, {expression_desc = Undefined _})},
+        {expression_desc = Bin (EqEqEq, e2, {expression_desc = Null})} )
+    when e1 = e2 ->
+    expression_desc cxt ~level:(level : int) f (Is_null_or_undefined e1)
   | Bin (op, e1, e2) ->
     let out, lft, rght = Js_op_util.op_prec op in
     let need_paren =
@@ -1348,3 +1358,5 @@ let string_of_expression (e : J.expression) =
   let (_ : cxt) = expression ~level:0 Ext_pp_scope.empty f e in
   P.flush f ();
   Buffer.contents buffer
+
+let () = E.string_of_expression := string_of_expression

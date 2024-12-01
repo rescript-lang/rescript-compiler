@@ -49,7 +49,7 @@ type opaqueVariant =
   | A
   | B
 
-@genType let stringT: String.t = "a"
+@genType let stringT: string = "a"
 
 @genType let jsStringT: Js.String.t = "a"
 
@@ -60,7 +60,7 @@ type opaqueVariant =
 @gentype
 type genTypeMispelled = int
 
-@genType type dictString = Js.Dict.t<string>
+@genType type dictString = dict<string>
 
 @genType let jsonStringify = Js.Json.stringify
 

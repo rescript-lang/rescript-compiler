@@ -29,7 +29,7 @@ if [ ! -f "${NETRC_FILE}" ]; then
   echo "machine ${KEYCDN_SRV} login $KEYCDN_USER password $KEYCDN_PASSWORD" > "${NETRC_FILE}"
 fi
 
-PACKAGES=("compiler-builtins" "@rescript/react" "@rescript/core")
+PACKAGES=("compiler-builtins" "@rescript/react")
 
 echo "Uploading compiler.js file..."
 curl --ftp-create-dirs -T "${SCRIPT_DIR}/compiler.js" --ssl --netrc-file $NETRC_FILE ftp://${KEYCDN_SRV}/v${VERSION}/compiler.js

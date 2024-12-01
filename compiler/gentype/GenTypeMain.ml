@@ -90,74 +90,79 @@ let read_cmt cmt_file =
     Log_.item "Try to clean and rebuild.\n\n";
     assert false
 
+let read_input_cmt is_interface cmt_file =
+  let input_cmt = read_cmt cmt_file in
+  let ignore_interface = ref false in
+  let check_annotation ~loc:_ attributes =
+    if
+      attributes
+      |> Annotation.get_attribute_payload
+           Annotation.tag_is_gentype_ignore_interface
+      <> None
+    then ignore_interface := true;
+    attributes
+    |> Annotation.get_attribute_payload
+         Annotation.tag_is_one_of_the_gentype_annotations
+    <> None
+  in
+  let has_gentype_annotations =
+    input_cmt |> cmt_check_annotations ~check_annotation
+  in
+  if is_interface then
+    let cmt_file_impl =
+      (cmt_file |> (Filename.chop_extension [@doesNotRaise])) ^ ".cmt"
+    in
+    let input_cmt_impl = read_cmt cmt_file_impl in
+    let has_gentype_annotations_impl =
+      input_cmt_impl
+      |> cmt_check_annotations ~check_annotation:(fun ~loc attributes ->
+             if attributes |> check_annotation ~loc then (
+               if not !ignore_interface then (
+                 Log_.Color.setup ();
+                 Log_.info ~loc ~name:"Warning genType" (fun ppf () ->
+                     Format.fprintf ppf
+                       "Annotation is ignored as there's a .resi file"));
+               true)
+             else false)
+    in
+    ( (match !ignore_interface with
+      | true -> input_cmt_impl
+      | false -> input_cmt),
+      match !ignore_interface with
+      | true -> has_gentype_annotations_impl
+      | false -> has_gentype_annotations )
+  else (input_cmt, has_gentype_annotations)
+
 let process_cmt_file cmt =
   let config = Paths.read_config ~namespace:(cmt |> Paths.find_name_space) in
   if !Debug.basic then Log_.item "Cmt %s\n" cmt;
   let cmt_file = cmt |> Paths.get_cmt_file in
   if cmt_file <> "" then
-    let output_file = cmt |> Paths.get_output_file ~config in
-    let output_file_relative = cmt |> Paths.get_output_file_relative ~config in
     let file_name = cmt |> Paths.get_module_name in
     let is_interface = Filename.check_suffix cmt_file ".cmti" in
+    let input_cmt, has_gentype_annotations =
+      read_input_cmt is_interface cmt_file
+    in
+    let source_file =
+      match input_cmt.cmt_annots |> FindSourceFile.cmt with
+      | Some source_file -> source_file
+      | None -> (
+        (file_name |> ModuleName.to_string)
+        ^
+        match is_interface with
+        | true -> ".resi"
+        | false -> ".res")
+    in
+    let output_file = source_file |> Paths.get_output_file ~config in
+    let output_file_relative =
+      source_file |> Paths.get_output_file_relative ~config
+    in
     let resolver =
       ModuleResolver.create_lazy_resolver ~config
         ~extensions:[".res"; ".shim.ts"] ~exclude_file:(fun fname ->
           fname = "React.res" || fname = "ReasonReact.res")
     in
-    let input_cmt, has_gentype_annotations =
-      let input_cmt = read_cmt cmt_file in
-      let ignore_interface = ref false in
-      let check_annotation ~loc:_ attributes =
-        if
-          attributes
-          |> Annotation.get_attribute_payload
-               Annotation.tag_is_gentype_ignore_interface
-          <> None
-        then ignore_interface := true;
-        attributes
-        |> Annotation.get_attribute_payload
-             Annotation.tag_is_one_of_the_gentype_annotations
-        <> None
-      in
-      let has_gentype_annotations =
-        input_cmt |> cmt_check_annotations ~check_annotation
-      in
-      if is_interface then
-        let cmt_file_impl =
-          (cmt_file |> (Filename.chop_extension [@doesNotRaise])) ^ ".cmt"
-        in
-        let input_cmt_impl = read_cmt cmt_file_impl in
-        let has_gentype_annotations_impl =
-          input_cmt_impl
-          |> cmt_check_annotations ~check_annotation:(fun ~loc attributes ->
-                 if attributes |> check_annotation ~loc then (
-                   if not !ignore_interface then (
-                     Log_.Color.setup ();
-                     Log_.info ~loc ~name:"Warning genType" (fun ppf () ->
-                         Format.fprintf ppf
-                           "Annotation is ignored as there's a .rei file"));
-                   true)
-                 else false)
-        in
-        ( (match !ignore_interface with
-          | true -> input_cmt_impl
-          | false -> input_cmt),
-          match !ignore_interface with
-          | true -> has_gentype_annotations_impl
-          | false -> has_gentype_annotations )
-      else (input_cmt, has_gentype_annotations)
-    in
     if has_gentype_annotations then
-      let source_file =
-        match input_cmt.cmt_annots |> FindSourceFile.cmt with
-        | Some source_file -> source_file
-        | None -> (
-          (file_name |> ModuleName.to_string)
-          ^
-          match is_interface with
-          | true -> ".resi"
-          | false -> ".res")
-      in
       input_cmt
       |> translate_c_m_t ~config ~output_file_relative ~resolver
       |> emit_translation ~config ~file_name ~output_file ~output_file_relative

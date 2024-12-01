@@ -143,8 +143,6 @@ val array_length : ?comment:string -> t -> t
 
 val string_length : ?comment:string -> t -> t
 
-val bytes_length : ?comment:string -> t -> t
-
 val function_length : ?comment:string -> t -> t
 
 val string_append : ?comment:string -> t -> t -> t
@@ -365,10 +363,12 @@ val is_null : ?comment:string -> t -> t
 
 val is_undef : ?comment:string -> t -> t
 
-val for_sure_js_null_undefined : J.expression -> bool
+val is_null_undefined_constant : J.expression -> bool
 
 val is_null_undefined : ?comment:string -> t -> t
 
 val make_exception : string -> t
 
 val variadic_args : t list -> t list
+
+val string_of_expression : (t -> string) ref

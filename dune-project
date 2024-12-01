@@ -24,6 +24,10 @@
    (and
     :with-test
     (= 0.26.2)))
+  (yojson
+   (and
+    :with-test
+    (= 2.2.2)))
   (ocaml-lsp-server
    (and
     :with-dev-setup
@@ -36,4 +40,25 @@
    (= 2.2.7))
   (reanalyze
    (= 2.25.1))
+  dune))
+
+(package
+ (name analysis)
+ (synopsis "ReScript Analysis")
+ (depends
+  (ocaml
+   (>= 4.10))
+  (cppo
+   (= 1.6.9))
+  dune))
+
+(package
+ (name tools)
+ (synopsis "ReScript Tools")
+ (depends
+  (ocaml
+   (>= 4.10))
+  (cppo
+   (= 1.6.9))
+  analysis
   dune))

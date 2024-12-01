@@ -1,4 +1,5 @@
 open Belt
+module String = Ocaml_String
 
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)

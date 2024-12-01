@@ -1,0 +1,13 @@
+{
+  "name": "docstrings-test",
+  "sources": {
+    "dir": "src",
+    "subdirs": true
+  },
+  "package-specs": {
+    "module": "commonjs",
+    "in-source": true
+  },
+  "suffix": ".res.js",
+  "bs-dependencies": ["@rescript/react"]
+}

@@ -60,17 +60,27 @@ async function runTests() {
   }
 
   if (mochaTest) {
-    cp.execSync(rescript_exe, {
+    cp.execSync(`${rescript_exe} clean`, {
       cwd: path.join(__dirname, "..", "tests/tests"),
       stdio: [0, 1, 2],
     });
 
-    cp.execSync(rescript_exe, {
-      cwd: path.join(__dirname, "..", "tests/tests_esmodule"),
+    cp.execSync(`${rescript_exe} build`, {
+      cwd: path.join(__dirname, "..", "tests/tests"),
       stdio: [0, 1, 2],
     });
 
-    cp.execSync(`npx mocha -t 10000 tests/tests/**/*_test.js`, {
+    cp.execSync("npx mocha -t 10000 tests/tests/**/*_test.mjs", {
+      cwd: path.join(__dirname, ".."),
+      stdio: [0, 1, 2],
+    });
+
+    cp.execSync("node tests/tests/src/core/Core_TestSuite.mjs", {
+      cwd: path.join(__dirname, ".."),
+      stdio: [0, 1, 2],
+    });
+
+    cp.execSync("node tests/tests/src/core/Core_TempTests.mjs", {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2],
     });

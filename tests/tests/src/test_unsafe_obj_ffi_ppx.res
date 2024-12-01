@@ -3,7 +3,7 @@ let i = () => ()
 
 let h = (x): unit => {
   x["height"] = 3
-  \"@@"(i, x["width"] = 3)
+  i(x["width"] = 3)
 }
 
 let chain = x => x["element"]["length"] + x["element"]["length"]

@@ -65,7 +65,7 @@ let resolve_bs_package_aux ~cwd (pkg : t) =
               check_dir (dir // Bsb_pkg_types.to_string pkg))
         with
         | Some resolved_dir -> resolved_dir
-        | None -> Bsb_exception.package_not_found ~pkg ~json:None
+        | None -> Bsb_exception.package_not_found ~pkg
   in
   aux cwd
 
@@ -97,35 +97,3 @@ let resolve_bs_package ~cwd (package : t) =
         "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @."
         Bsb_pkg_types.print package x result cwd;
     x
-
-(** The package does not need to be a bspackage
-    example:
-    {[
-      resolve_npm_package_file ~cwd "reason/refmt";;
-      resolve_npm_package_file ~cwd "reason/refmt/xx/yy"
-    ]}
-    It also returns the path name
-    Note the input [sub_path] is already converted to physical meaning path according to OS
-*)
-(* let resolve_npm_package_file ~cwd sub_path = *)
-(*   let rec aux  cwd  =  *)
-(*     let abs_marker =  cwd // Literals.node_modules // sub_path in  *)
-(*     if Sys.file_exists abs_marker then Some abs_marker *)
-(*     else  *)
-(*       let cwd' = Filename.dirname cwd in  *)
-(*       if String.length cwd' < String.length cwd then   *)
-(*         aux cwd'  *)
-(*       else  *)
-(*         try  *)
-(*           let abs_marker =  *)
-(*             Sys.getenv "npm_config_prefix"  *)
-(*             // "lib" // Literals.node_modules // sub_path in *)
-(*           if Sys.file_exists abs_marker *)
-(*           then Some  abs_marker *)
-(*           else None *)
-(*             (\* Bs_exception.error (Bs_package_not_found name) *\) *)
-(*         with  *)
-(*           Not_found -> None *)
-(*           (\* Bs_exception.error (Bs_package_not_found name)           *\) *)
-(*   in *)
-(*   aux cwd *)

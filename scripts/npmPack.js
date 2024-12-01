@@ -68,6 +68,8 @@ function getFilesAddedByCI() {
     "bsc.exe",
     "ninja.exe",
     "rescript.exe",
+    "rescript-editor-analysis.exe",
+    "rescript-tools.exe",
     "rewatch.exe",
   ];
 

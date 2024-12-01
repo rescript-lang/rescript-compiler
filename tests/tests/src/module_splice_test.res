@@ -9,7 +9,7 @@ let eq = (loc, (x, y)) => {
     }
 }
 
-@module @variadic external joinClasses: array<int> => int = "./joinClasses"
+@module("./joinClasses.mjs") @variadic external joinClasses: array<int> => int = "default"
 
 let a = joinClasses([1, 2, 3])
 

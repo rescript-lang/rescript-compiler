@@ -1,3 +1,5 @@
+module Array = Ocaml_Array
+
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 let eq = (loc, (x, y)) => {
@@ -27,7 +29,7 @@ let () = {
 
 let () = {
   while Js.Array2.length(v) > 0 {
-    \"@@"(ignore, Js.Array2.pop(v))
+    ignore(Js.Array2.pop(v))
   }
   eq(__LOC__, (0, Js.Array2.length(v)))
 }
@@ -37,7 +39,7 @@ let f = v => {
   | Some(x) => Js.log("hi")
   | None => Js.log("hi2")
   }
-  Js.log(\"@@"(ignore, Js.Array2.pop(v)))
+  Js.log(ignore(Js.Array2.pop(v)))
 }
 
 let fff = x => Array.length(x) >= 0

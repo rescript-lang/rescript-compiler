@@ -1,5 +1,7 @@
 @@warning("-107")
 
+module String = Ocaml_String
+
 let max_int = 2147483647 // 0x80000000
 let min_int = -2147483648 // 0x7FFFFFFF
 
@@ -73,8 +75,8 @@ Mt.from_pair_suites(
     (__LOC__, _ => Eq(hash_variant2("xxyyzxzzyy"), -449896130)),
     ("int_literal_flow", _ => Eq(-1, 0xffffffff)),
     ("int_literal_flow2", _ => Eq(-1, 0xfffffffff)),
-    (__LOC__, _ => Eq(\"@@"(int_of_float, Js.Float.fromString("3")), 3)),
+    (__LOC__, _ => Eq(int_of_float(Js.Float.fromString("3")), 3)),
     /* FIXME */
-    (__LOC__, _ => Eq(\"@@"(int_of_float, Js.Float.fromString("3.2")), 3)),
+    (__LOC__, _ => Eq(int_of_float(Js.Float.fromString("3.2")), 3)),
   },
 )

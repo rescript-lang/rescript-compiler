@@ -11,7 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@rescript/core": "^1.5.2",
     "@rescript/react": "^0.13.0"
   }
 }

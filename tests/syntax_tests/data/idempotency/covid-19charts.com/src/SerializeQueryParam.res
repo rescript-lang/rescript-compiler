@@ -24,8 +24,8 @@ type locationFragments = {
 }
 
 @module("serialize-query-params")
-external updateInLocation: (Js.Dict.t<option<encoded>>, Window.location) => locationFragments =
+external updateInLocation: (dict<option<encoded>>, Window.location) => locationFragments =
   "updateInLocation"
 
 @module("serialize-query-params")
-external parse: string => Js.Dict.t<encoded> = "parse"
+external parse: string => dict<encoded> = "parse"

@@ -1,6 +1,7 @@
 open Mocha
 open Test_utils
 
+module Hashtbl = Ocaml_Hashtbl
 module N = Belt.HashMap
 module S = Belt.Map.Int
 module I = Array_data_util

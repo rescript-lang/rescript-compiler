@@ -1,3 +1,5 @@
+module String = Ocaml_String
+
 let generic_basename = (is_dir_sep, current_dir_name, name) => {
   let rec find_end = n =>
     if n < 0 {

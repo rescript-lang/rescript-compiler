@@ -90,8 +90,9 @@ jobs:
             ocaml_compiler: ocaml-variants.5.2.0+options,ocaml-option-static
             upload_binaries: true
             upload_libs: true
-            # Build the playground compiler on the fastest runner
+            # Build the playground compiler and run the benchmarks on the fastest runner
             build_playground: true
+            benchmarks: true
           - os: buildjet-2vcpu-ubuntu-2204-arm # ARM
             ocaml_compiler: ocaml-variants.5.2.0+options,ocaml-option-static
             upload_binaries: true
@@ -117,8 +118,8 @@ jobs:
 
     env:
       # setup-ocaml opam version cannot be configured
-      # we do track its version mannually
-      OPAM_VERSION: 2.2.0
+      # we do track its version manually
+      OPAM_VERSION: 2.3.0
       DUNE_PROFILE: release
 
     steps:
@@ -150,7 +151,7 @@ jobs:
       # matrix.ocaml_compiler may contain commas
       - name: Get OPAM cache key
         shell: bash
-        run: echo "opam_cache_key=opam-env-v3-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}" | sed 's/,/-/g' >> $GITHUB_ENV
+        run: echo "opam_cache_key=opam-env-v5-${{ matrix.os }}-${{ matrix.ocaml_compiler }}-${{ hashFiles('dune-project') }}" | sed 's/,/-/g' >> $GITHUB_ENV
 
       - name: Restore OPAM environment
         id: cache-opam-env
@@ -166,7 +167,7 @@ jobs:
           key: ${{ env.opam_cache_key }}
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
-        uses: ocaml/setup-ocaml@v3.0.7
+        uses: ocaml/setup-ocaml@v3.0.15
         if: steps.cache-opam-env.outputs.cache-hit != 'true'
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
@@ -316,10 +317,49 @@ jobs:
       - name: Run tests
         run: node scripts/test.js -all
 
+      - name: Check for diffs in tests folder
+        run: git diff --ignore-cr-at-eol --exit-code tests
+
+      - name: Run analysis / tools tests
+        if: runner.os != 'Windows' && matrix.os != 'buildjet-2vcpu-ubuntu-2204-arm'
+        run: opam exec -- make -C tests/analysis_tests test && make -C tests/tools_tests test
+
       - name: Run gentype tests
         if: runner.os != 'Windows'
         run: make -C tests/gentype_tests/typescript-react-example clean test
 
+      - name: Run syntax benchmarks
+        if: matrix.benchmarks
+        run: ./_build/install/default/bin/syntax_benchmarks | tee tests/benchmark-output.json
+
+      - name: Restore previous benchmark data
+        if: matrix.benchmarks
+        uses: actions/cache/restore@v4
+        with:
+          path: ./tests/benchmark-cache
+          key: syntax-benchmark-v1
+ 
+      - name: Create new benchmark data and comment on alert
+        # Do not run for PRs created from other repos as those won't be able to write to the pull request
+        if: ${{ matrix.benchmarks && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.event.repository.full_name) }}
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Syntax Benchmarks
+          tool: customSmallerIsBetter
+          output-file-path: tests/benchmark-output.json
+          external-data-json-path: ./tests/benchmark-cache/benchmark-data.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          alert-threshold: "105%"
+          comment-always: false
+          comment-on-alert: true
+
+      - name: Save benchmark data as new baseline
+        if: matrix.benchmarks && github.ref == 'refs/heads/master'
+        uses: actions/cache/save@v4
+        with:
+          path: ./tests/benchmark-cache
+          key: syntax-benchmark-v1
+     
       - name: Build playground compiler
         if: matrix.build_playground
         run: |

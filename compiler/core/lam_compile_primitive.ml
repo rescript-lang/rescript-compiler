@@ -373,13 +373,13 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
     match args with
     | [e1; e2]
       when cmp = Ceq
-           && (E.for_sure_js_null_undefined e1
-              || E.for_sure_js_null_undefined e2) ->
+           && (E.is_null_undefined_constant e1
+              || E.is_null_undefined_constant e2) ->
       E.eq_null_undefined_boolean e1 e2
     | [e1; e2]
       when cmp = Cneq
-           && (E.for_sure_js_null_undefined e1
-              || E.for_sure_js_null_undefined e2) ->
+           && (E.is_null_undefined_constant e1
+              || E.is_null_undefined_constant e2) ->
       E.neq_null_undefined_boolean e1 e2
     | [e1; e2] ->
       Location.prerr_warning loc Warnings.Bs_polymorphic_comparison;

@@ -20,10 +20,10 @@ let g = a => {
 }`)
 
   let regression2: (float, float) => float = %raw("Math.max")
-  \"@@"(ignore, regression(a, failwith))
-  \"@@"(ignore, regression2(3., 2.))
-  \"@@"(ignore, regression3(3., 2.))
-  \"@@"(ignore, regression4(3., x => x))
+  ignore(regression(a, failwith))
+  ignore(regression2(3., 2.))
+  ignore(regression3(3., 2.))
+  ignore(regression4(3., x => x))
 }
 
 let max2: (float, float) => float = %raw("Math.max")

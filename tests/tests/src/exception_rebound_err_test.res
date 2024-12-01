@@ -15,7 +15,7 @@ exception C(int, int)
 
 let test_js_error4 = () =>
   try {
-    \"@@"(ignore, Js.Json.parseExn(` {"x"}`))
+    ignore(Js.Json.parseExn(` {"x"}`))
     1
   } catch {
   | Not_found => 2

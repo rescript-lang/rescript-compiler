@@ -1,3 +1,5 @@
+module Array = Ocaml_Array
+
 @unboxed
 type t = A | I(int) | S(string)
 @unboxed
@@ -142,7 +144,7 @@ module Json = {
     | @as(null) Null
     | String(string)
     | Number(float)
-    | Object(Js.Dict.t<t>)
+    | Object(dict<t>)
     | Array(array<t>)
 
   type tagged_t =
@@ -151,7 +153,7 @@ module Json = {
     | JSONNull
     | JSONString(string)
     | JSONNumber(float)
-    | JSONObject(Js.Dict.t<t>)
+    | JSONObject(dict<t>)
     | JSONArray(array<t>)
 
   let classify = (x: t) =>
@@ -317,7 +319,7 @@ module ComplexPattern = {
     | @as(null) Null
     | String(string)
     | Number(float)
-    | Object(Js.Dict.t<t>)
+    | Object(dict<t>)
     | Array(array<t>)
 
   type tagged_t =
@@ -326,7 +328,7 @@ module ComplexPattern = {
     | JSONNull
     | JSONString(string)
     | JSONNumber(float)
-    | JSONObject(Js.Dict.t<t>)
+    | JSONObject(dict<t>)
     | JSONArray(array<t>)
 
   let someJson: t = %raw(`'[{"name": "Haan"}, {"name": "Mr"}, false]'`)->Obj.magic
@@ -415,7 +417,7 @@ module AllInstanceofTypes = {
 }
 
 module Aliased = {
-  type dict = Js.Dict.t<string>
+  type dict = dict<string>
   type fn = unit => option<string>
   @unboxed type t = Object(dict) | String(string) | Function(fn)
 

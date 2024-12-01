@@ -57,7 +57,15 @@ let error_expected_type_text ppf type_clash_context =
     fprintf ppf "But this function is expecting you to return:"
   | _ -> fprintf ppf "But it's expected to have type:"
 
-let print_extra_type_clash_help ppf trace type_clash_context =
+let is_record_type ~extract_concrete_typedecl ~env ty =
+  try
+    match extract_concrete_typedecl env ty with
+    | _, _, {Types.type_kind = Type_record _; _} -> true
+    | _ -> false
+  with _ -> false
+
+let print_extra_type_clash_help ~extract_concrete_typedecl ~env ppf trace
+    type_clash_context =
   match (type_clash_context, trace) with
   | Some (MathOperator {for_float; operator; is_constant}), _ -> (
     let operator_for_other_type =
@@ -176,6 +184,15 @@ let print_extra_type_clash_help ppf trace type_clash_context =
       \  - If you don't care about the result of this expression, you can \
        assign it to @{<info>_@} via @{<info>let _ = ...@} or pipe it to \
        @{<info>ignore@} via @{<info>expression->ignore@}\n\n"
+  | _, [({desc = Tobject _}, _); (({Types.desc = Tconstr _} as t1), _)]
+    when is_record_type ~extract_concrete_typedecl ~env t1 ->
+    fprintf ppf
+      "\n\n\
+      \  You're passing a @{<error>ReScript object@} where a @{<info>record@} \
+       is expected. \n\n\
+      \  - Did you mean to pass a record instead of an object? Objects are \
+       written with quoted keys, and records with unquoted keys. Remove the \
+       quotes from the object keys to pass it as a record instead of object. \n\n"
   | _ -> ()
 
 let type_clash_context_from_function sexp sfunct =
