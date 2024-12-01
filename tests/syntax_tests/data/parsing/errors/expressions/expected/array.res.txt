@@ -11,5 +11,5 @@
 let xs =
   x.map
     ((Function$
-        (fun key -> [|key;(((Array.get)[@res.syntaxSugar ]) predicates key)|]))
+        (fun key -> [|key;(((Array.get)[@res.arrayGet ]) predicates key)|]))
     [@res.arity 1])

@@ -34,5 +34,5 @@
                       [@res.braces ])))
       [@res.namedArgLoc ][@res.braces ][@res.arity 1]) ~children:[] ())
   [@JSX ])
-;;if ((Array.set)[@res.syntaxSugar ]) inclusions index (uid, url)
+;;if ((Array.set)[@res.arraySet ]) inclusions index (uid, url)
   then onChange inclusions
