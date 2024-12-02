@@ -16,6 +16,9 @@
 #### :bug: Bug fix
 - Fix bug where a ref assignment is moved ouside a conditional. https://github.com/rescript-lang/rescript/pull/7176
 
+#### :house: Internal
+- Use latest compiler for tests. https://github.com/rescript-lang/rescript/pull/7186
+
 # 12.0.0-alpha.5
 
 #### :rocket: New Feature
