@@ -95,7 +95,6 @@ and core_type_desc =
     (* < l1:T1; ...; ln:Tn >     (flag = Closed)
        < l1:T1; ...; ln:Tn; .. > (flag = Open)
     *)
-  | Ptyp_class of unit (* dummy AST node *)
   | Ptyp_alias of core_type * string (* T as 'a *)
   | Ptyp_variant of row_field list * closed_flag * label list option
     (* [ `A|`B ]         (flag = Closed; labels = None)
@@ -652,7 +651,6 @@ module Legacy = struct
     | Ptyp_constr (lid, tl) -> Ptyp_constr (lid, List.map core_type tl)
     | Ptyp_object (fields, closed) ->
       Ptyp_object (List.map object_field fields, closed)
-    | Ptyp_class () -> Ptyp_class ()
     | Ptyp_alias (t, lid) -> Ptyp_alias (core_type t, lid)
     | Ptyp_variant (row_fields, closed, labels) ->
       Ptyp_variant (List.map row_field row_fields, closed, labels)
