@@ -6,9 +6,11 @@ import * as List from "rescript/lib/es6/List.js";
 import * as Path from "path";
 import * as $$Array from "rescript/lib/es6/Array.js";
 import * as Belt_List from "rescript/lib/es6/Belt_List.js";
+import * as Nodeutil from "node:util";
 import * as Belt_Array from "rescript/lib/es6/Belt_Array.js";
 import * as Pervasives from "rescript/lib/es6/Pervasives.js";
 import * as Child_process from "child_process";
+import * as Primitive_option from "rescript/lib/es6/Primitive_option.js";
 import * as Promises from "node:fs/promises";
 import * as RescriptTools_Docgen from "rescript/lib/es6/RescriptTools_Docgen.js";
 
@@ -26,6 +28,8 @@ let ChildProcess = {};
 
 let OS = {};
 
+let Util = {};
+
 let Node = {
   Path: Path$1,
   URL: URL,
@@ -33,16 +37,58 @@ let Node = {
   Fs: Fs$1,
   Buffer: Buffer,
   ChildProcess: ChildProcess,
-  OS: OS
+  OS: OS,
+  Util: Util
 };
 
 let bscBin = Path.join("cli", "bsc");
+
+let options = Object.fromEntries([[
+    "ignore-runtime-tests",
+    {
+      type: "string"
+    }
+  ]]);
+
+let match = Nodeutil.parseArgs({
+  args: process.argv.slice(2),
+  options: options
+});
+
+let values = match.values;
+
+let v = values["ignore-runtime-tests"];
+
+let ignoreRuntimeTests = v !== undefined ? v.split(",").map(s => s.trim()) : [];
+
+async function run(command, args, options) {
+  return await new Promise((resolve, _reject) => {
+    let spawn = Child_process.spawn(command, args, options !== undefined ? Primitive_option.valFromOption(options) : undefined);
+    let stdout = [];
+    let stderr = [];
+    spawn.stdout.on("data", data => {
+      stdout.push(data);
+    });
+    spawn.stderr.on("data", data => {
+      stderr.push(data);
+    });
+    spawn.once("close", (code, _signal) => resolve({
+      stdout: stdout,
+      stderr: stderr,
+      code: code
+    }));
+  });
+}
+
+let SpawnAsync = {
+  run: run
+};
 
 function createFileInTempDir(id) {
   return Path.join(Os.tmpdir(), id);
 }
 
-async function testCode(id, code) {
+async function compileTest(id, code) {
   let id$1 = id.includes("/") ? id.replace("/", "slash_op") : id;
   let tempFileName = Path.join(Os.tmpdir(), id$1);
   await Promises.writeFile(tempFileName + ".res", code);
@@ -51,25 +97,71 @@ async function testCode(id, code) {
     "-w",
     "-3-109"
   ];
-  let promise = await new Promise((resolve, _reject) => {
-    let spawn = Child_process.spawn(bscBin, args);
-    let stderr = [];
-    spawn.stderr.on("data", data => {
-      stderr.push(data);
-    });
-    spawn.once("close", (_code, _signal) => resolve(stderr));
-  });
-  if (promise.length > 0) {
+  let match = await run(bscBin, args, undefined);
+  let stderr = match.stderr;
+  if (stderr.length > 0) {
     return {
       TAG: "Error",
-      _0: promise.map(e => e.toString()).join("")
+      _0: stderr.map(e => e.toString()).join("")
     };
   } else {
     return {
       TAG: "Ok",
-      _0: undefined
+      _0: match.stdout.map(e => e.toString()).join("")
     };
   }
+}
+
+async function runtimeTests(code) {
+  let match = await run("node", [
+    "-e",
+    code
+  ], {
+    cwd: process.cwd(),
+    timeout: 2000
+  });
+  let exitCode = match.code;
+  let stderr = match.stderr;
+  let stdout = match.stdout;
+  let std;
+  let exit = 0;
+  if (exitCode == null) {
+    exit = 1;
+  } else if (exitCode === 0.0 && stderr.length > 0) {
+    std = {
+      TAG: "Ok",
+      _0: stderr
+    };
+  } else if (exitCode === 0.0) {
+    std = {
+      TAG: "Ok",
+      _0: stdout
+    };
+  } else {
+    exit = 1;
+  }
+  if (exit === 1) {
+    std = {
+      TAG: "Error",
+      _0: stderr.length > 0 ? stderr : stdout
+    };
+  }
+  if (std.TAG === "Ok") {
+    return {
+      TAG: "Ok",
+      _0: std._0.map(e => e.toString()).join("")
+    };
+  } else {
+    return {
+      TAG: "Error",
+      _0: std._0.map(e => e.toString()).join("")
+    };
+  }
+}
+
+function indentOutputCode(code) {
+  let indent = " ".repeat(2);
+  return code.split("\n").map(s => indent + s).join("\n");
 }
 
 function extractDocFromFile(file) {
@@ -223,42 +315,106 @@ async function main() {
     let codes = getCodeBlocks(example);
     let results = await Promise.all(codes.map(async (code, int) => {
       let id$1 = id + "_" + int.toString();
-      return await testCode(id$1, code);
+      return [
+        code,
+        await compileTest(id$1, code)
+      ];
     }));
     return [
       example,
       results
     ];
   }));
-  let errors = Belt_Array.keepMap(results, param => {
-    let errors = Belt_Array.keepMap(param[1], result => {
+  let examples = results.map(param => {
+    let match = $$Array.reduce(param[1], [
+      [],
+      []
+    ], (acc, param) => {
+      let errors = acc[1];
+      let oks = acc[0];
+      let result = param[1];
       if (result.TAG === "Ok") {
-        return;
+        return [
+          Belt_Array.concatMany([
+            oks,
+            [[
+                param[0],
+                result._0
+              ]]
+          ]),
+          errors
+        ];
       } else {
-        return result._0;
+        return [
+          oks,
+          Belt_Array.concatMany([
+            errors,
+            [{
+                TAG: "ReScript",
+                error: result._0
+              }]
+          ])
+        ];
       }
     });
-    if (errors.length > 0) {
+    return [
+      param[0],
+      [
+        match[0],
+        match[1]
+      ]
+    ];
+  });
+  let exampleErrors = await Promise.all(examples.filter(param => !ignoreRuntimeTests.includes(param[0].id)).map(async param => {
+    let match = param[1];
+    let nodeTests = await Promise.all(match[0].map(async param => {
+      let js = param[1];
       return [
         param[0],
-        errors
+        js,
+        await runtimeTests(js)
       ];
-    }
-    
-  });
-  errors.forEach(param => {
-    let test = param[0];
+    }));
+    let runtimeErrors = Belt_Array.keepMap(nodeTests, param => {
+      let output = param[2];
+      if (output.TAG === "Ok") {
+        return;
+      } else {
+        return {
+          TAG: "Runtime",
+          rescript: param[0],
+          js: param[1],
+          error: output._0
+        };
+      }
+    });
+    return [
+      param[0],
+      runtimeErrors.concat(match[1])
+    ];
+  }));
+  exampleErrors.forEach(param => {
+    let example = param[0];
     let cyan = s => "\x1b[36m" + s + "\x1b[0m";
-    let other = test.kind;
+    let other = example.kind;
     let kind = other === "moduleAlias" ? "module alias" : other;
-    let errorMessage = param[1].map(e => e.split("\n").filter((param, i) => i !== 2).join("\n")).join("\n");
-    let message = "\x1B[1;31merror\x1B[0m: failed to compile examples from " + kind + " " + cyan(test.id) + "\n" + errorMessage;
-    process.stderr.write(message);
+    let errorMessage = param[1].map(err => {
+      if (err.TAG === "ReScript") {
+        let err$1 = err.error.split("\n").filter((param, i) => i !== 2).join("\n");
+        return "\x1B[1;31merror\x1B[0m: failed to compile examples from " + kind + " " + cyan(example.id) + "\n" + err$1;
+      }
+      let indent = " ".repeat(2);
+      return "\x1B[1;31mruntime error\x1B[0m: failed to run examples from " + kind + " " + cyan(example.id) + "\n\n" + indent + "\x1b[36mReScript\x1b[0m\n\n" + indentOutputCode(err.rescript) + "\n\n" + indent + "\x1b[36mCompiled Js\x1b[0m\n\n" + indentOutputCode(err.js) + "\n\n" + indent + "\x1B[1;31mstacktrace\x1B[0m\n\n" + indentOutputCode(err.error) + "\n";
+    });
+    errorMessage.forEach(e => {
+      process.stderr.write(e);
+    });
   });
-  if (errors.length === 0) {
-    return 0;
-  } else {
+  let someError = exampleErrors.some(param => param[1].length > 0);
+  if (someError) {
     return 1;
+  } else {
+    return 0;
   }
 }
 
@@ -272,8 +428,14 @@ export {
   Node,
   Docgen,
   bscBin,
+  options,
+  values,
+  ignoreRuntimeTests,
+  SpawnAsync,
   createFileInTempDir,
-  testCode,
+  compileTest,
+  runtimeTests,
+  indentOutputCode,
   extractDocFromFile,
   getExamples,
   getCodeBlocks,
