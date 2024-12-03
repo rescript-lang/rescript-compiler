@@ -84,4 +84,3 @@ let jsx_mode_of_string = function
 let customize_runtime : string option ref = ref None
 let as_pp = ref false
 let self_stack : string Stack.t = Stack.create ()
-let modules = ref false
