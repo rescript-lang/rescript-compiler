@@ -56,8 +56,6 @@ let js_stdout = ref true
 let all_module_aliases = ref false
 let no_stdlib = ref false
 let no_export = ref false
-let as_ppx = ref false
-
 let int_of_jsx_version = function
   | Jsx_v4 -> 4
 
