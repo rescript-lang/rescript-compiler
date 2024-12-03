@@ -400,7 +400,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     ( "-bs-no-bin-annot",
       clear Clflags.binary_annotations,
       "*internal* Disable binary annotations (by default on)" );
-    ("-modules", set Js_config.modules, "*internal* serve similar to ocamldep");
     ( "-short-paths",
       clear Clflags.real_paths,
       "*internal* Shorten paths in types" );
