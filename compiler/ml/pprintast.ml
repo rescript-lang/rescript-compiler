@@ -661,7 +661,6 @@ and expression ctxt f x =
     | Pexp_variant (l,Some eo) ->
         pp f "@[<2>`%s@;%a@]" l (simple_expr ctxt) eo
     | Pexp_extension e -> extension ctxt f e
-    | Pexp_unreachable -> pp f "."
     | _ -> expression1 ctxt f x
 
 and expression1 ctxt f x =

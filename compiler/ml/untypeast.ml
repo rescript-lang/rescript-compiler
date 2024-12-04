@@ -395,7 +395,6 @@ let expression sub exp =
     | Texp_assert exp -> Pexp_assert (sub.expr sub exp)
     | Texp_lazy exp -> Pexp_lazy (sub.expr sub exp)
     | Texp_pack mexpr -> Pexp_pack (sub.module_expr sub mexpr)
-    | Texp_unreachable -> Pexp_unreachable
     | Texp_extension_constructor (lid, _) ->
       Pexp_extension
         ( {txt = "ocaml.extension_constructor"; loc},

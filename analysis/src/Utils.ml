@@ -116,7 +116,6 @@ let identifyPexp pexp =
   | Pexp_pack _ -> "Pexp_pack"
   | Pexp_extension _ -> "Pexp_extension"
   | Pexp_open _ -> "Pexp_open"
-  | Pexp_unreachable -> "Pexp_unreachable"
 
 let identifyPpat pat =
   match pat with

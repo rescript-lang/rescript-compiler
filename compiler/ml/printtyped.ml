@@ -375,7 +375,6 @@ and expression i ppf x =
   | Texp_pack me ->
     line i ppf "Texp_pack";
     module_expr i ppf me
-  | Texp_unreachable -> line i ppf "Texp_unreachable"
   | Texp_extension_constructor (li, _) ->
     line i ppf "Texp_extension_constructor %a" fmt_longident li
 

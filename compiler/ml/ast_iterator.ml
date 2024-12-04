@@ -358,7 +358,6 @@ module E = struct
       iter_loc sub lid;
       sub.expr sub e
     | Pexp_extension x -> sub.extension sub x
-    | Pexp_unreachable -> ()
 end
 
 module P = struct

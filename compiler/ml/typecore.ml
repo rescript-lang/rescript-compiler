@@ -184,7 +184,6 @@ let iter_expression f e =
       expr e;
       module_expr me
     | Pexp_pack me -> module_expr me
-    | Pexp_unreachable -> ()
   and case {pc_lhs = _; pc_guard; pc_rhs} =
     may expr pc_guard;
     expr pc_rhs
@@ -3299,16 +3298,6 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
     | _ -> raise (Error (loc, env, Invalid_extension_constructor_payload)))
   | Pexp_extension ext ->
     raise (Error_forward (Builtin_attributes.error_of_extension ext))
-  | Pexp_unreachable ->
-    re
-      {
-        exp_desc = Texp_unreachable;
-        exp_loc = loc;
-        exp_extra = [];
-        exp_type = instance env ty_expected;
-        exp_attributes = sexp.pexp_attributes;
-        exp_env = env;
-      }
 
 and type_function ?in_function loc attrs env ty_expected l caselist =
   let loc_fun, ty_fun =
@@ -4014,7 +4003,6 @@ and type_cases ?root_type_clash_context ?in_function env ty_arg ty_res
   in
   let needs_exhaust_check =
     match caselist with
-    | [{pc_rhs = {pexp_desc = Pexp_unreachable}}] -> true
     | [{pc_lhs}] when is_var pc_lhs -> false
     | _ -> true
   in

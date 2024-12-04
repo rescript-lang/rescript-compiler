@@ -67,7 +67,6 @@ let rec exprNoSideEffects (expr : Typedtree.expression) =
   | Texp_override _ -> false
   | Texp_letexception (_ec, e) -> e |> exprNoSideEffects
   | Texp_pack _ -> false
-  | Texp_unreachable -> false
   | Texp_extension_constructor _ when true -> true
   | _ -> (* on ocaml 4.08: Texp_letop | Texp_open *) true
 
