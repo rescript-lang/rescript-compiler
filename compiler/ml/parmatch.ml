@@ -2212,7 +2212,7 @@ let check_unused pred casel =
                  (*Format.eprintf "%a@." pretty_val u;*)
                  let pattern, constrs, labels = Conv.conv u in
                  let pattern = {pattern with Parsetree.ppat_loc = q.pat_loc} in
-                 match pred false constrs labels pattern with
+                 match pred constrs labels pattern with
                  | None ->
                    Location.prerr_warning q.pat_loc Warnings.Unreachable_case;
                    Used
