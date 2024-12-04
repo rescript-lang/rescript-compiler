@@ -84,8 +84,7 @@ val check_partial_gadt :
   case list ->
   partial
 val check_unused :
-  (bool ->
-  (string, constructor_description) Hashtbl.t ->
+  ((string, constructor_description) Hashtbl.t ->
   (string, label_description) Hashtbl.t ->
   Parsetree.pattern ->
   pattern option) ->

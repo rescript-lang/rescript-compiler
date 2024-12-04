@@ -1750,14 +1750,9 @@ let check_partial ?(lev = get_current_level ()) env expected_ty loc cases =
 
 let check_unused ?(lev = get_current_level ()) env expected_ty cases =
   Parmatch.check_unused
-    (fun refute constrs labels spat ->
-      match
-        partial_pred ~lev ~mode:Split_or ~explode:5 env expected_ty constrs
-          labels spat
-      with
-      | Some pat when refute ->
-        raise (Error (spat.ppat_loc, env, Unrefuted_pattern pat))
-      | r -> r)
+    (fun constrs labels spat ->
+      partial_pred ~lev ~mode:Split_or ~explode:5 env expected_ty constrs labels
+        spat)
     cases
 
 let add_pattern_variables ?check ?check_as env =
