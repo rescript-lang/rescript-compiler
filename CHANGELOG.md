@@ -18,6 +18,7 @@
 
 #### :house: Internal
 - Use latest compiler for tests. https://github.com/rescript-lang/rescript/pull/7186
+- Added infra to modernise AST: theres' Parsetree, Parsetree0 (legacy), and conversion functions to keep compatibility with PPX. https://github.com/rescript-lang/rescript/pull/7185
 
 # 12.0.0-alpha.5
 
