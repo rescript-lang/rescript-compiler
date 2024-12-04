@@ -923,7 +923,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
     let targ = transl_exp arg in
     match lbl.lbl_repres with
     | Record_float_unused -> assert false
-    | Record_regular | Record_optional_labels _ ->
+    | Record_regular | Record_optional_labels ->
       Lprim (Pfield (lbl.lbl_pos, Lambda.fld_record lbl), [targ], e.exp_loc)
     | Record_inlined _ ->
       Lprim
@@ -938,7 +938,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
     let access =
       match lbl.lbl_repres with
       | Record_float_unused -> assert false
-      | Record_regular | Record_optional_labels _ ->
+      | Record_regular | Record_optional_labels ->
         Psetfield (lbl.lbl_pos, Lambda.fld_record_set lbl)
       | Record_inlined _ ->
         Psetfield (lbl.lbl_pos, Lambda.fld_record_inline_set lbl)
@@ -1171,7 +1171,7 @@ and transl_record loc env fields repres opt_init_expr =
       || size < 20
          &&
          match repres with
-         | Record_optional_labels _ -> false
+         | Record_optional_labels -> false
          | _ -> true
       (* TODO: More strategies
          3 + 2 * List.length lbl_expr_list >= size (density)
@@ -1188,7 +1188,7 @@ and transl_record loc env fields repres opt_init_expr =
               let access =
                 match repres with
                 | Record_float_unused -> assert false
-                | Record_regular | Record_optional_labels _ ->
+                | Record_regular | Record_optional_labels ->
                   Pfield (i, Lambda.fld_record lbl)
                 | Record_inlined _ -> Pfield (i, Lambda.fld_record_inline lbl)
                 | Record_unboxed _ -> assert false
@@ -1214,7 +1214,7 @@ and transl_record loc env fields repres opt_init_expr =
           | Record_regular ->
             Lconst
               (Const_block (Lambda.blk_record fields mut Record_regular, cl))
-          | Record_optional_labels _ ->
+          | Record_optional_labels ->
             Lconst
               (Const_block (Lambda.blk_record fields mut Record_optional, cl))
           | Record_inlined {tag; name; num_nonconsts; optional_labels; attrs} ->
@@ -1234,7 +1234,7 @@ and transl_record loc env fields repres opt_init_expr =
           | Record_regular ->
             Lprim
               (Pmakeblock (Lambda.blk_record fields mut Record_regular), ll, loc)
-          | Record_optional_labels _ ->
+          | Record_optional_labels ->
             Lprim
               ( Pmakeblock (Lambda.blk_record fields mut Record_optional),
                 ll,
@@ -1277,7 +1277,7 @@ and transl_record loc env fields repres opt_init_expr =
           let upd =
             match repres with
             | Record_float_unused -> assert false
-            | Record_regular | Record_optional_labels _ ->
+            | Record_regular | Record_optional_labels ->
               Psetfield (lbl.lbl_pos, Lambda.fld_record_set lbl)
             | Record_inlined _ ->
               Psetfield (lbl.lbl_pos, Lambda.fld_record_inline_set lbl)

@@ -285,7 +285,7 @@ and record_representation =
       attrs: Parsetree.attributes;
     }
   | Record_extension (* Inlined record under extension *)
-  | Record_optional_labels of string list (* List of optional labels *)
+  | Record_optional_labels
 
 and label_declaration = {
   ld_id: Ident.t;
@@ -423,6 +423,7 @@ type label_description = {
   lbl_res: type_expr; (* Type of the result *)
   lbl_arg: type_expr; (* Type of the argument *)
   lbl_mut: mutable_flag; (* Is this a mutable field? *)
+  lbl_optional: bool; (* Is this an optional field? *)
   lbl_pos: int; (* Position in block *)
   mutable lbl_all: label_description array;
   (* All the labels in this type. This is mutable only because of a specific feature related to dicts, and should not be mutated elsewhere. *)
