@@ -468,8 +468,7 @@ let default_mapper =
           ~mut:pld_mutable
           ~loc:(this.location this pld_loc)
           ~attrs:
-            (Parsetree0.add_optional_attr ~optional:pld_optional
-               (this.attributes this pld_attributes)));
+            (Parsetree0.add_optional_attr ~optional:pld_optional (this.attributes this pld_attributes)));
     cases = (fun this l -> List.map (this.case this) l);
     case =
       (fun this {pc_lhs; pc_guard; pc_rhs} ->
