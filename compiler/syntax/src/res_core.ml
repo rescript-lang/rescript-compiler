@@ -4613,7 +4613,7 @@ and parse_field_declaration p =
       Ast_helper.Typ.constr ~loc:name.loc {name with txt = Lident name.txt} []
   in
   let loc = mk_loc start_pos typ.ptyp_loc.loc_end in
-  (optional, Ast_helper.Type.field ~attrs ~loc ~mut name typ)
+  Ast_helper.Type.field ~attrs ~loc ~mut ~optional name typ
 
 and parse_field_declaration_region ?found_object_field p =
   let start_pos = p.Parser.start_pos in
@@ -4652,8 +4652,7 @@ and parse_field_declaration_region ?found_object_field p =
           []
     in
     let loc = mk_loc start_pos typ.ptyp_loc.loc_end in
-    let attrs = if optional then optional_attr :: attrs else attrs in
-    Some (Ast_helper.Type.field ~attrs ~loc ~mut name typ)
+    Some (Ast_helper.Type.field ~attrs ~loc ~mut ~optional name typ)
   | _ ->
     if attrs <> [] then
       Parser.err ~start_pos p
@@ -4828,10 +4827,7 @@ and parse_constr_decl_args p =
                   ~closing:Rbrace ~f:parse_field_declaration_region p
               | attrs ->
                 let first =
-                  let optional, field = parse_field_declaration p in
-                  let attrs =
-                    if optional then optional_attr :: attrs else attrs
-                  in
+                  let field = parse_field_declaration p in
                   {field with Parsetree.pld_attributes = attrs}
                 in
                 if p.token = Rbrace then [first]
@@ -5259,8 +5255,7 @@ and parse_record_or_object_decl p =
             ~closing:Rbrace ~f:parse_field_declaration_region p
         | attr :: _ as attrs ->
           let first =
-            let optional, field = parse_field_declaration p in
-            let attrs = if optional then optional_attr :: attrs else attrs in
+            let field = parse_field_declaration p in
             Parser.optional p Comma |> ignore;
             {
               field with

@@ -199,8 +199,8 @@ let constructor_declaration sub cd =
 let label_declaration sub ld =
   let loc = sub.location sub ld.ld_loc in
   let attrs = sub.attributes sub ld.ld_attributes in
-  Type.field ~loc ~attrs ~mut:ld.ld_mutable (map_loc sub ld.ld_name)
-    (sub.typ sub ld.ld_type)
+  Type.field ~loc ~attrs ~mut:ld.ld_mutable ~optional:ld.ld_optional
+    (map_loc sub ld.ld_name) (sub.typ sub ld.ld_type)
 
 let type_extension sub tyext =
   let attrs = sub.attributes sub tyext.tyext_attributes in

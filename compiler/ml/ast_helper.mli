@@ -241,6 +241,7 @@ module Type : sig
     ?loc:loc ->
     ?attrs:attrs ->
     ?mut:mutable_flag ->
+    ?optional:bool ->
     str ->
     core_type ->
     label_declaration

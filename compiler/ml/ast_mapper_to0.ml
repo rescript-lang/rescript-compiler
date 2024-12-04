@@ -455,11 +455,21 @@ let default_mapper =
           ~loc:(this.location this pcd_loc)
           ~attrs:(this.attributes this pcd_attributes));
     label_declaration =
-      (fun this {pld_name; pld_type; pld_loc; pld_mutable; pld_attributes} ->
+      (fun this
+           {
+             pld_name;
+             pld_type;
+             pld_loc;
+             pld_mutable;
+             pld_optional;
+             pld_attributes;
+           } ->
         Type.field (map_loc this pld_name) (this.typ this pld_type)
           ~mut:pld_mutable
           ~loc:(this.location this pld_loc)
-          ~attrs:(this.attributes this pld_attributes));
+          ~attrs:
+            (Parsetree0.add_optional_attr ~optional:pld_optional
+               (this.attributes this pld_attributes)));
     cases = (fun this l -> List.map (this.case this) l);
     case =
       (fun this {pc_lhs; pc_guard; pc_rhs} ->

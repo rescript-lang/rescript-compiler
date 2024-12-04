@@ -209,6 +209,10 @@ let mutable_flag f = function
   | Immutable -> ()
   | Mutable -> pp f "mutable@;"
 
+let optional_flag f = function
+  | false -> ()
+  | true -> pp f "?"
+
 (* trailing space added *)
 let rec_flag f rf =
   match rf with
@@ -1137,9 +1141,10 @@ and type_def_list ctxt f (rf, l) =
 
 and record_declaration ctxt f lbls =
   let type_record_field f pld =
-    pp f "@[<2>%a%s:@;%a@;%a@]"
+    pp f "@[<2>%a%s%a:@;%a@;%a@]"
       mutable_flag pld.pld_mutable
       pld.pld_name.txt
+      optional_flag pld.pld_optional
       (core_type ctxt) pld.pld_type
       (attributes ctxt) pld.pld_attributes
   in

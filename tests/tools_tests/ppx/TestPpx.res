@@ -12,3 +12,9 @@ module M = {
 open M
 
 let vv = v
+
+module OptionalFields = {
+  type opt = {x?: int, y: float}
+
+  let r = {y: 1.0}
+}

@@ -309,13 +309,10 @@ let common_initial_env add_type add_extension empty_env =
           ( [
               {
                 ld_id = ident_dict_magic_field_name;
-                ld_attributes =
-                  [
-                    (Location.mknoloc "res.optional", Parsetree.PStr []);
-                    Dict_type_helpers.dict_magic_field_attr;
-                  ];
+                ld_attributes = [Dict_type_helpers.dict_magic_field_attr];
                 ld_loc = Location.none;
                 ld_mutable = Immutable;
+                ld_optional = true;
                 ld_type = newgenty (Tconstr (path_option, [tvar], ref Mnil));
               };
             ],

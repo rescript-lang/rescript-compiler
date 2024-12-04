@@ -1578,7 +1578,7 @@ and print_label_declaration ~state (ld : Parsetree.label_declaration) cmt_tbl =
     in
     (print_comments doc cmt_tbl ld.pld_name.loc, is_dot)
   in
-  let optional = print_optional_label ld.pld_attributes in
+  let optional = if ld.pld_optional then Doc.text "?" else Doc.nil in
   Doc.group
     (Doc.concat
        [

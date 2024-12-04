@@ -162,6 +162,7 @@ and record_representation =
 and label_declaration = {
   ld_id: Ident.t;
   ld_mutable: mutable_flag;
+  ld_optional: bool;
   ld_type: type_expr;
   ld_loc: Location.t;
   ld_attributes: Parsetree.attributes;
