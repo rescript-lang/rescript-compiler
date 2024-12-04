@@ -153,7 +153,6 @@ and record_representation =
       tag: int;
       name: string;
       num_nonconsts: int;
-      optional_labels: string list;
       attrs: Parsetree.attributes;
     }
   | Record_extension (* Inlined record under extension *)
@@ -315,12 +314,10 @@ let same_record_representation x y =
     match y with
     | Record_optional_labels -> true
     | _ -> false)
-  | Record_inlined {tag; name; num_nonconsts; optional_labels} -> (
+  | Record_inlined {tag; name; num_nonconsts} -> (
     match y with
     | Record_inlined y ->
-      tag = y.tag && name = y.name
-      && num_nonconsts = y.num_nonconsts
-      && optional_labels = y.optional_labels
+      tag = y.tag && name = y.name && num_nonconsts = y.num_nonconsts
     | _ -> false)
   | Record_extension -> y = Record_extension
   | Record_unboxed x -> (

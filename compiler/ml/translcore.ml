@@ -1217,11 +1217,11 @@ and transl_record loc env fields repres opt_init_expr =
           | Record_optional_labels ->
             Lconst
               (Const_block (Lambda.blk_record fields mut Record_optional, cl))
-          | Record_inlined {tag; name; num_nonconsts; optional_labels; attrs} ->
+          | Record_inlined {tag; name; num_nonconsts; attrs} ->
             Lconst
               (Const_block
-                 ( Lambda.blk_record_inlined fields name num_nonconsts
-                     optional_labels ~tag ~attrs mut,
+                 ( Lambda.blk_record_inlined fields name num_nonconsts ~tag
+                     ~attrs mut,
                    cl ))
           | Record_unboxed _ ->
             Lconst
@@ -1240,11 +1240,11 @@ and transl_record loc env fields repres opt_init_expr =
                 ll,
                 loc )
           | Record_float_unused -> assert false
-          | Record_inlined {tag; name; num_nonconsts; optional_labels; attrs} ->
+          | Record_inlined {tag; name; num_nonconsts; attrs} ->
             Lprim
               ( Pmakeblock
-                  (Lambda.blk_record_inlined fields name num_nonconsts
-                     optional_labels ~tag ~attrs mut),
+                  (Lambda.blk_record_inlined fields name num_nonconsts ~tag
+                     ~attrs mut),
                 ll,
                 loc )
           | Record_unboxed _ -> (
