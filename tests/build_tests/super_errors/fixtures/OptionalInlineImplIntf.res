@@ -1,5 +1,5 @@
 module M: {
-  type t = {x?: int}
+  type t = A({x?: int})
 } = {
-  type t = {x: int}
+  type t = A({x: int})
 }
