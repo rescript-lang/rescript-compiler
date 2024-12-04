@@ -334,7 +334,6 @@ and expression i ppf x =
     line i ppf "Pexp_poly\n";
     expression i ppf e;
     option i core_type ppf cto
-  | Pexp_object () -> ()
   | Pexp_newtype (s, e) ->
     line i ppf "Pexp_newtype \"%s\"\n" s.txt;
     expression i ppf e

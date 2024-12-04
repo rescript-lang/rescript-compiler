@@ -3420,7 +3420,6 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
     | Pexp_setinstvar _ -> Doc.text "Pexp_setinstvar not implemented in printer"
     | Pexp_override _ -> Doc.text "Pexp_override not implemented in printer"
     | Pexp_poly _ -> Doc.text "Pexp_poly not implemented in printer"
-    | Pexp_object _ -> Doc.text "Pexp_object not implemented in printer"
   in
   let expr_with_await =
     if ParsetreeViewer.has_await_attribute e.pexp_attributes then

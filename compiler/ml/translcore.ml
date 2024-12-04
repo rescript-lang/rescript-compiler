@@ -986,7 +986,6 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
        optimize the translation just as Lazy.lazy_from_val would
        do *)
     Lprim (Pmakeblock Blk_lazy_general, [transl_exp e], e.exp_loc)
-  | Texp_object () -> assert false
   | Texp_unreachable -> raise (Error (e.exp_loc, Unreachable_reached))
 
 and transl_list expr_list = List.map transl_exp expr_list

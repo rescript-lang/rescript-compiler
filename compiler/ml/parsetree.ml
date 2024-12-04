@@ -300,7 +300,6 @@ and expression_desc =
 
        Can only be used as the expression under Cfk_concrete
        for methods (not values). *)
-  | Pexp_object of unit (* dummy AST node *)
   | Pexp_newtype of string loc * expression (* fun (type t) -> E *)
   | Pexp_pack of module_expr
     (* (module ME)

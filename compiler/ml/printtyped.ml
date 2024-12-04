@@ -372,7 +372,6 @@ and expression i ppf x =
   | Texp_lazy e ->
     line i ppf "Texp_lazy";
     expression i ppf e
-  | Texp_object () -> ()
   | Texp_pack me ->
     line i ppf "Texp_pack";
     module_expr i ppf me

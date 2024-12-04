@@ -198,8 +198,8 @@ let rec classify_expression : Typedtree.expression -> sd =
   | Texp_ident _ | Texp_for _ | Texp_constant _ | Texp_new _ | Texp_instvar _
   | Texp_tuple _ | Texp_array _ | Texp_construct _ | Texp_variant _
   | Texp_record _ | Texp_setfield _ | Texp_while _ | Texp_setinstvar _
-  | Texp_pack _ | Texp_object _ | Texp_function _ | Texp_lazy _
-  | Texp_unreachable | Texp_extension_constructor _ ->
+  | Texp_pack _ | Texp_function _ | Texp_lazy _ | Texp_unreachable
+  | Texp_extension_constructor _ ->
     Static
   | Texp_apply ({exp_desc = Texp_ident (_, _, vd)}, _) when is_ref vd -> Static
   | Texp_apply _ | Texp_match _ | Texp_ifthenelse _ | Texp_send _ | Texp_field _
@@ -289,7 +289,6 @@ let rec expression : Env.env -> Typedtree.expression -> Use.t =
   | Texp_letexception (_, e) -> expression env e
   | Texp_assert e -> Use.inspect (expression env e)
   | Texp_pack m -> modexp env m
-  | Texp_object () -> assert false
   | Texp_try (e, cases) ->
     (* This is more permissive than the old check. *)
     let case env {Typedtree.c_rhs} = expression env c_rhs in

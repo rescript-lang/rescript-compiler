@@ -6,10 +6,18 @@ console.log("ppx test");
 
 console.log("ppx test");
 
+let M = {
+  v: 10
+};
+
 let a = "A";
 
 let b = "B";
 
+let vv = 10;
+
 exports.a = a;
 exports.b = b;
+exports.M = M;
+exports.vv = vv;
 /*  Not a pure module */
