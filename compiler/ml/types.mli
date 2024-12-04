@@ -281,7 +281,6 @@ and record_representation =
       tag: int;
       name: string;
       num_nonconsts: int;
-      optional_labels: string list;
       attrs: Parsetree.attributes;
     }
   | Record_extension (* Inlined record under extension *)

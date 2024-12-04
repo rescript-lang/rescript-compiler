@@ -32,8 +32,7 @@ type tag_info =
       name: string;
       num_nonconst: int;
       tag: int;
-      optional_labels: string list;
-      fields: string array;
+      fields: (string * bool (* optional *)) array;
       mutable_flag: mutable_flag;
       attrs: Parsetree.attributes;
     }
@@ -81,7 +80,6 @@ val blk_record_inlined :
   (Types.label_description * Typedtree.record_label_definition) array ->
   string ->
   int ->
-  string list ->
   tag:int ->
   attrs:Parsetree.attributes ->
   mutable_flag ->

@@ -104,7 +104,7 @@ let print_taginfo ppf = function
   | Blk_lazy_general -> fprintf ppf "lazy_general"
   | Blk_module_export _ -> fprintf ppf "module/exports"
   | Blk_record_inlined {fields = ss} ->
-    fprintf ppf "[%s]" (String.concat ";" (Array.to_list ss))
+    fprintf ppf "[%s]" (String.concat ";" (List.map fst (Array.to_list ss)))
 
 let primitive ppf = function
   | Pidentity -> fprintf ppf "id"

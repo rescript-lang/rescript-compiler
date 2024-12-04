@@ -794,28 +794,23 @@ and expression_desc cxt ~(level : int) f x : cxt =
     let untagged = Ast_untagged_variants.process_untagged p.attrs in
     let objs =
       let tails =
-        Ext_list.combine_array_append p.fields el
-          (if !Js_config.debug then [(name_symbol, E.str p.name)] else [])
-          (fun i -> Js_op.Lit i)
+        Ext_list.combine_array p.fields el (fun (i, opt) -> (Js_op.Lit i, opt))
       in
-      let is_optional (pname : Js_op.property_name) =
-        match pname with
-        | Lit n -> Ext_list.mem_string p.optional_labels n
-        | Symbol_name -> false
-      in
+      (* let is_optional (pname : Js_op.property_name) =
+           match pname with
+           | Lit n -> Ext_list.mem_string p.optional_labels n
+           | Symbol_name -> false
+         in *)
       let tag_name =
         match Ast_untagged_variants.process_tag_name p.attrs with
         | None -> L.tag
         | Some s -> s
       in
       let tails =
-        match p.optional_labels with
-        | [] -> tails
-        | _ ->
-          Ext_list.filter_map tails (fun (f, x) ->
-              match x.expression_desc with
-              | Undefined _ when is_optional f -> None
-              | _ -> Some (f, x))
+        Ext_list.filter_map tails (fun ((f, optional), x) ->
+            match x.expression_desc with
+            | Undefined _ when optional -> None
+            | _ -> Some (f, x))
       in
       if untagged then tails
       else

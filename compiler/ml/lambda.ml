@@ -28,8 +28,7 @@ type tag_info =
       name: string;
       num_nonconst: int;
       tag: int;
-      optional_labels: string list;
-      fields: string array;
+      fields: (string * bool (* optional *)) array;
       mutable_flag: Asttypes.mutable_flag;
       attrs: Parsetree.attributes;
     }
@@ -104,16 +103,15 @@ let blk_record_ext fields mutable_flag =
   in
   Blk_record_ext {fields = all_labels_info; mutable_flag}
 
-let blk_record_inlined fields name num_nonconst optional_labels ~tag ~attrs
-    mutable_flag =
+let blk_record_inlined fields name num_nonconst ~tag ~attrs mutable_flag =
   let fields =
     Array.map
       (fun ((lbl : label), _) ->
-        Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name)
+        ( Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name,
+          lbl.lbl_optional ))
       fields
   in
-  Blk_record_inlined
-    {fields; name; num_nonconst; tag; mutable_flag; optional_labels; attrs}
+  Blk_record_inlined {fields; name; num_nonconst; tag; mutable_flag; attrs}
 
 let ref_tag_info : tag_info =
   Blk_record
