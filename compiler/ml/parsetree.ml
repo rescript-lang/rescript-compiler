@@ -310,8 +310,8 @@ and expression_desc =
     (* M.(E)
        let open M in E
        let! open M in E *)
-  | Pexp_extension of extension (* [%id] *)
-  | Pexp_unreachable
+  | Pexp_extension of extension
+(* [%id] *)
 (* . *)
 
 and case = {

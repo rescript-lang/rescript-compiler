@@ -297,7 +297,6 @@ end = struct
     | Texp_assert exp -> iter_expression exp
     | Texp_lazy exp -> iter_expression exp
     | Texp_pack mexpr -> iter_module_expr mexpr
-    | Texp_unreachable -> ()
     | Texp_extension_constructor _ -> ());
     Iter.leave_expression exp
 

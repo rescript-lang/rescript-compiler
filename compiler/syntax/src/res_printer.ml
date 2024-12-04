@@ -3190,7 +3190,6 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
       else if ParsetreeViewer.is_binary_expression e then
         print_binary_expression ~state e cmt_tbl
       else print_pexp_apply ~state e cmt_tbl
-    | Pexp_unreachable -> Doc.dot
     | Pexp_field (expr, longident_loc) ->
       let lhs =
         let doc = print_expression_with_comments ~state expr cmt_tbl in

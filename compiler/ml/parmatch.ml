@@ -2179,64 +2179,54 @@ let do_check_fragile_gadt = do_check_fragile_param exhaust_gadt
 (********************************)
 
 let check_unused pred casel =
-  if
-    Warnings.is_active Warnings.Unused_match
-    || List.exists (fun c -> c.c_rhs.exp_desc = Texp_unreachable) casel
-  then
+  if Warnings.is_active Warnings.Unused_match then
     let rec do_rec pref = function
       | [] -> ()
-      | {c_lhs = q; c_guard; c_rhs} :: rem ->
+      | {c_lhs = q; c_guard} :: rem ->
         let qs = [q] in
         (try
            let pss = get_mins le_pats (Ext_list.filter pref (compats qs)) in
            (* First look for redundant or partially redundant patterns *)
            let r = every_satisfiables (make_rows pss) (make_row qs) in
-           let refute = c_rhs.exp_desc = Texp_unreachable in
            (* Do not warn for unused [pat -> .] *)
-           if r = Unused && refute then ()
-           else
-             let r =
-               (* Do not refine if there are no other lines *)
-               let skip =
-                 r = Unused
-                 || ((not refute) && pref = [])
-                 || not (refute || Warnings.is_active Warnings.Unreachable_case)
-               in
-               if skip then r
-               else
-                 (* Then look for empty patterns *)
-                 let sfs = satisfiables pss qs in
-                 if sfs = [] then Unused
-                 else
-                   let sfs =
-                     List.map
-                       (function
-                         | [u] -> u
-                         | _ -> assert false)
-                       sfs
-                   in
-                   let u = orify_many sfs in
-                   (*Format.eprintf "%a@." pretty_val u;*)
-                   let pattern, constrs, labels = Conv.conv u in
-                   let pattern =
-                     {pattern with Parsetree.ppat_loc = q.pat_loc}
-                   in
-                   match pred refute constrs labels pattern with
-                   | None when not refute ->
-                     Location.prerr_warning q.pat_loc Warnings.Unreachable_case;
-                     Used
-                   | _ -> r
+           let r =
+             (* Do not refine if there are no other lines *)
+             let skip =
+               r = Unused || pref = []
+               || not (Warnings.is_active Warnings.Unreachable_case)
              in
-             match r with
-             | Unused -> Location.prerr_warning q.pat_loc Warnings.Unused_match
-             | Upartial ps ->
-               ps
-               |> List.filter (fun p ->
-                      not
-                        (Variant_type_spread.is_pat_from_variant_spread_attr p))
-               |> List.iter (fun p ->
-                      Location.prerr_warning p.pat_loc Warnings.Unused_pat)
-             | Used -> ()
+             if skip then r
+             else
+               (* Then look for empty patterns *)
+               let sfs = satisfiables pss qs in
+               if sfs = [] then Unused
+               else
+                 let sfs =
+                   List.map
+                     (function
+                       | [u] -> u
+                       | _ -> assert false)
+                     sfs
+                 in
+                 let u = orify_many sfs in
+                 (*Format.eprintf "%a@." pretty_val u;*)
+                 let pattern, constrs, labels = Conv.conv u in
+                 let pattern = {pattern with Parsetree.ppat_loc = q.pat_loc} in
+                 match pred false constrs labels pattern with
+                 | None ->
+                   Location.prerr_warning q.pat_loc Warnings.Unreachable_case;
+                   Used
+                 | _ -> r
+           in
+           match r with
+           | Unused -> Location.prerr_warning q.pat_loc Warnings.Unused_match
+           | Upartial ps ->
+             ps
+             |> List.filter (fun p ->
+                    not (Variant_type_spread.is_pat_from_variant_spread_attr p))
+             |> List.iter (fun p ->
+                    Location.prerr_warning p.pat_loc Warnings.Unused_pat)
+           | Used -> ()
          with Empty | Not_found | NoGuard -> assert false);
 
         if c_guard <> None then do_rec pref rem else do_rec ([q] :: pref) rem

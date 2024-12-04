@@ -717,7 +717,6 @@ module SexpAst = struct
           ]
       | Pexp_extension ext ->
         Sexp.list [Sexp.atom "Pexp_extension"; extension ext]
-      | Pexp_unreachable -> Sexp.atom "Pexp_unreachable"
     in
     Sexp.list [Sexp.atom "expression"; desc]
 
