@@ -145,12 +145,7 @@ let printSignature ~extractor ~signature =
   let rec processSignature ~indent (signature : Types.signature) : unit =
     match signature with
     | Sig_type
-        ( propsId,
-          {
-            type_params;
-            type_kind = Type_record (labelDecls, recordRepresentation);
-          },
-          _ )
+        (propsId, {type_params; type_kind = Type_record (labelDecls, _)}, _)
       :: Sig_value (makeId (* make *), makeValueDesc)
       :: rest
       when Ident.name propsId = "props"
@@ -174,13 +169,9 @@ let printSignature ~extractor ~signature =
                 labelDecl.ld_type
             in
             let lblName = labelDecl.ld_id |> Ident.name in
+            let _ = 10 in
             let lbl =
-              let optLbls =
-                match recordRepresentation with
-                | Record_optional_labels optLbls -> optLbls
-                | _ -> []
-              in
-              if List.mem lblName optLbls then Asttypes.Optional lblName
+              if labelDecl.ld_optional then Asttypes.Optional lblName
               else Labelled lblName
             in
             {retType with desc = Tarrow (lbl, propType, mkFunType rest, Cok)}

@@ -3721,8 +3721,8 @@ let rec subtype_rec env trace t1 t2 cstrs =
             (_, _, {type_kind = Type_record (fields2, repr2)}) ) ->
           let same_repr =
             match (repr1, repr2) with
-            | ( (Record_regular | Record_optional_labels _),
-                (Record_regular | Record_optional_labels _) ) ->
+            | ( (Record_regular | Record_optional_labels),
+                (Record_regular | Record_optional_labels) ) ->
               true (* handled in the fields checks *)
             | Record_unboxed b1, Record_unboxed b2 -> b1 = b2
             | Record_inlined _, Record_inlined _ -> repr1 = repr2
@@ -3731,7 +3731,7 @@ let rec subtype_rec env trace t1 t2 cstrs =
           in
           if same_repr then
             let violation, tl1, tl2 =
-              Record_coercion.check_record_fields ~repr1 ~repr2 fields1 fields2
+              Record_coercion.check_record_fields fields1 fields2
             in
             if violation then (trace, t1, t2, !univar_pairs) :: cstrs
             else subtype_list env trace tl1 tl2 cstrs

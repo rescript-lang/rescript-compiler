@@ -130,8 +130,7 @@ let record_representation i ppf =
   function
   | Record_regular -> line i ppf "Record_regular\n"
   | Record_float_unused -> assert false
-  | Record_optional_labels lbls ->
-    line i ppf "Record_optional_labels %s\n" (lbls |> String.concat ", ")
+  | Record_optional_labels -> line i ppf "Record_optional_labels\n"
   | Record_unboxed b -> line i ppf "Record_unboxed %b\n" b
   | Record_inlined {tag = i} -> line i ppf "Record_inlined %d\n" i
   | Record_extension -> line i ppf "Record_extension\n"

@@ -1530,7 +1530,7 @@ let make_record_matching loc all_labels def = function
         let access =
           match lbl.lbl_repres with
           | Record_float_unused -> assert false
-          | Record_regular | Record_optional_labels _ ->
+          | Record_regular | Record_optional_labels ->
             Lprim (Pfield (lbl.lbl_pos, Lambda.fld_record lbl), [arg], loc)
           | Record_inlined _ ->
             Lprim

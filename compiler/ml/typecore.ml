@@ -297,18 +297,7 @@ let extract_concrete_variant env ty =
   | p0, p, {type_kind = Type_open} -> (p0, p, [])
   | _ -> raise Not_found
 
-let has_optional_labels ld =
-  match ld.lbl_repres with
-  | Record_optional_labels _ -> true
-  | Record_inlined {optional_labels} -> optional_labels <> []
-  | _ -> false
-
-let label_is_optional ld =
-  match ld.lbl_repres with
-  | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
-  | Record_inlined {optional_labels} ->
-    Ext_list.mem_string optional_labels ld.lbl_name
-  | _ -> false
+let label_is_optional ld = ld.lbl_optional
 
 let check_optional_attr env ld attrs loc =
   let check_redundant () =
@@ -960,7 +949,7 @@ module Label = NameChoice (struct
         lbl with
         lbl_name = name;
         lbl_pos = Array.length lbl.lbl_all;
-        lbl_repres = Record_optional_labels [name];
+        lbl_repres = Record_optional_labels;
       }
     in
     let lbl_all_list = Array.to_list lbl.lbl_all @ [l] in
@@ -981,7 +970,8 @@ let disambiguate_label_by_ids closed ids labels =
   in
   let mandatory_labels_are_present num_ids lbl =
     (* check that all mandatory labels are present *)
-    if has_optional_labels lbl then (
+    let has_optional_labels = Ext_array.exists lbl.lbl_all label_is_optional in
+    if has_optional_labels then (
       let mandatory_lbls = ref 0 in
       Ext_array.iter lbl.lbl_all (fun l ->
           if not (label_is_optional l) then incr mandatory_lbls);
@@ -2645,15 +2635,8 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
           _ ) ->
         (label_descriptions, representation)
       | [], Some representation when lid_sexp_list = [] ->
-        let optional_labels =
-          match representation with
-          | Record_optional_labels optional_labels -> optional_labels
-          | Record_inlined {optional_labels} -> optional_labels
-          | _ -> []
-        in
         let filter_missing (ld : Types.label_declaration) =
-          let name = Ident.name ld.ld_id in
-          if List.mem name optional_labels then None else Some name
+          if ld.ld_optional then None else Some (Ident.name ld.ld_id)
         in
         let labels_missing = fields |> List.filter_map filter_missing in
         if labels_missing <> [] then
@@ -2668,7 +2651,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
                    } ));
         ([||], representation)
       | [], _ ->
-        if fields = [] && repr_opt <> None then ([||], Record_optional_labels [])
+        if fields = [] && repr_opt <> None then ([||], Record_optional_labels)
         else raise (Error (loc, env, Empty_record_literal))
     in
     let labels_missing = ref [] in
