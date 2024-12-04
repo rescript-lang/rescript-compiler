@@ -666,9 +666,7 @@ and expression ctxt f x =
 
 and expression1 ctxt f x =
   if x.pexp_attributes <> [] then expression ctxt f x
-  else match x.pexp_desc with
-    | Pexp_object () -> assert false
-    | _ -> expression2 ctxt f x
+  else expression2 ctxt f x
 (* used in [Pexp_apply] *)
 
 and expression2 ctxt f x =

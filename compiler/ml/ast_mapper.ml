@@ -333,7 +333,6 @@ module E = struct
     | Pexp_lazy e -> lazy_ ~loc ~attrs (sub.expr sub e)
     | Pexp_poly (e, t) ->
       poly ~loc ~attrs (sub.expr sub e) (map_opt (sub.typ sub) t)
-    | Pexp_object () -> assert false
     | Pexp_newtype (s, e) ->
       newtype ~loc ~attrs (map_loc sub s) (sub.expr sub e)
     | Pexp_pack me -> pack ~loc ~attrs (sub.module_expr sub me)

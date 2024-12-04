@@ -183,7 +183,6 @@ let iter_expression f e =
     | Pexp_letmodule (_, me, e) ->
       expr e;
       module_expr me
-    | Pexp_object _ -> assert false
     | Pexp_pack me -> module_expr me
     | Pexp_unreachable -> ()
   and case {pc_lhs = _; pc_guard; pc_rhs} =
@@ -1853,7 +1852,6 @@ let rec is_nonexpansive exp =
   | Texp_new _ -> assert false
   (* Note: nonexpansive only means no _observable_ side effects *)
   | Texp_lazy e -> is_nonexpansive e
-  | Texp_object () -> assert false
   | Texp_letmodule (_, _, mexp, e) ->
     is_nonexpansive_mod mexp && is_nonexpansive e
   | Texp_pack mexp -> is_nonexpansive_mod mexp
@@ -3156,7 +3154,6 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
         exp_attributes = sexp.pexp_attributes;
         exp_env = env;
       }
-  | Pexp_object _ -> assert false
   | Pexp_poly (sbody, sty) ->
     let ty, cty =
       match sty with

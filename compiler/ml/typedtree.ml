@@ -116,7 +116,6 @@ and expression_desc =
   | Texp_letexception of extension_constructor * expression
   | Texp_assert of expression
   | Texp_lazy of expression
-  | Texp_object of unit
   | Texp_pack of module_expr
   | Texp_unreachable
   | Texp_extension_constructor of Longident.t loc * Path.t

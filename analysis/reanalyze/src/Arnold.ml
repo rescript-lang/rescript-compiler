@@ -995,9 +995,6 @@ module Compile = struct
     | Texp_lazy _ ->
       notImplemented "Texp_lazy";
       assert false
-    | Texp_object _ ->
-      notImplemented "Texp_letmodule";
-      assert false
     | Texp_pack _ ->
       notImplemented "Texp_pack";
       assert false

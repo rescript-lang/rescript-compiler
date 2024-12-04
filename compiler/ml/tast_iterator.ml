@@ -210,7 +210,6 @@ let expr sub {exp_extra; exp_desc; exp_env; _} =
     sub.expr sub exp
   | Texp_assert exp -> sub.expr sub exp
   | Texp_lazy exp -> sub.expr sub exp
-  | Texp_object _ -> ()
   | Texp_pack mexpr -> sub.module_expr sub mexpr
   | Texp_unreachable -> ()
   | Texp_extension_constructor _ -> ()
