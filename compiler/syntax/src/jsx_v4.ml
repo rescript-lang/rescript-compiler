@@ -319,10 +319,10 @@ let make_label_decls named_type_list =
   named_type_list
   |> List.map (fun (is_optional, label, attrs, loc, interior_type) ->
          if label = "key" then
-           Type.field ~loc ~attrs:(optional_attrs @ attrs) {txt = label; loc}
+           Type.field ~loc ~attrs ~optional:true {txt = label; loc}
              interior_type
          else if is_optional then
-           Type.field ~loc ~attrs:(optional_attrs @ attrs) {txt = label; loc}
+           Type.field ~loc ~attrs ~optional:true {txt = label; loc}
              (Typ.var @@ safe_type_from_value @@ Labelled label)
          else
            Type.field ~loc ~attrs {txt = label; loc}

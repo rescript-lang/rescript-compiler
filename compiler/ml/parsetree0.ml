@@ -596,3 +596,17 @@ and module_binding = {
   pmb_loc: Location.t;
 }
 (* X = ME *)
+
+let optional_attr = (Location.mknoloc "res.optional", Parsetree.PStr [])
+let optional_attr0 = (Location.mknoloc "res.optional", PStr [])
+
+let add_optional_attr ~optional attrs =
+  if optional then optional_attr0 :: attrs else attrs
+
+let get_optional_attr attrs_ =
+  let remove_optional_attr attrs =
+    List.filter (fun a -> a <> optional_attr) attrs
+  in
+  let attrs = remove_optional_attr attrs_ in
+  let optional = List.length attrs <> List.length attrs_ in
+  (optional, attrs)

@@ -213,6 +213,7 @@ let transl_labels ?record_name env closed lbls =
       {
         pld_name = name;
         pld_mutable = mut;
+        pld_optional = optional;
         pld_type = arg;
         pld_loc = loc;
         pld_attributes = attrs;
@@ -224,6 +225,7 @@ let transl_labels ?record_name env closed lbls =
           ld_id = Ident.create name.txt;
           ld_name = name;
           ld_mutable = mut;
+          ld_optional = optional;
           ld_type = cty;
           ld_loc = loc;
           ld_attributes = attrs;
@@ -242,6 +244,7 @@ let transl_labels ?record_name env closed lbls =
         {
           Types.ld_id = ld.ld_id;
           ld_mutable = ld.ld_mutable;
+          ld_optional = ld.ld_optional;
           ld_type = ty;
           ld_loc = ld.ld_loc;
           ld_attributes = ld.ld_attributes;
@@ -365,9 +368,6 @@ let transl_declaration ~type_record_as_object env sdecl id =
          | [] -> ()
          | (_, _, loc) :: _ ->
            Location.prerr_warning loc Warnings.Constraint_on_gadt);
-      let has_optional attrs =
-        Ext_list.exists attrs (fun ({txt}, _) -> txt = "res.optional")
-      in
       let scstrs =
         Ext_list.map scstrs (fun ({pcd_args} as cstr) ->
             match pcd_args with
@@ -378,7 +378,7 @@ let transl_declaration ~type_record_as_object env sdecl id =
                 pcd_args =
                   Pcstr_record
                     (Ext_list.map lds (fun ld ->
-                         if has_optional ld.pld_attributes then
+                         if ld.pld_optional then
                            let typ = ld.pld_type in
                            let typ =
                              {
@@ -475,6 +475,7 @@ let transl_declaration ~type_record_as_object env sdecl id =
                                  ld_name =
                                    Location.mkloc (Ident.name l.ld_id) l.ld_loc;
                                  ld_mutable = l.ld_mutable;
+                                 ld_optional = l.ld_optional;
                                  ld_type =
                                    {
                                      ctyp_desc = Ttyp_any;
@@ -531,13 +532,9 @@ let transl_declaration ~type_record_as_object env sdecl id =
       Ast_untagged_variants.check_well_formed ~env ~is_untagged_def cstrs;
       (Ttype_variant tcstrs, Type_variant cstrs, sdecl)
     | Ptype_record lbls_ -> (
-      let has_optional attrs =
-        Ext_list.exists attrs (fun ({txt}, _) -> txt = "res.optional")
-      in
       let optional_labels =
         Ext_list.filter_map lbls_ (fun lbl ->
-            if has_optional lbl.pld_attributes then Some lbl.pld_name.txt
-            else None)
+            if lbl.pld_optional then Some lbl.pld_name.txt else None)
       in
       let lbls =
         if optional_labels = [] then lbls_
@@ -545,7 +542,7 @@ let transl_declaration ~type_record_as_object env sdecl id =
           Ext_list.map lbls_ (fun lbl ->
               let typ = lbl.pld_type in
               let typ =
-                if has_optional lbl.pld_attributes then
+                if lbl.pld_optional then
                   {
                     typ with
                     ptyp_desc =
@@ -575,6 +572,7 @@ let transl_declaration ~type_record_as_object env sdecl id =
               ld_id = l.ld_id;
               ld_name = {txt = Ident.name l.ld_id; loc = l.ld_loc};
               ld_mutable = l.ld_mutable;
+              ld_optional = l.ld_optional;
               ld_type =
                 {
                   ld_type with
@@ -634,8 +632,7 @@ let transl_declaration ~type_record_as_object env sdecl id =
         check_duplicates sdecl.ptype_loc lbls StringSet.empty;
         let optional_labels =
           Ext_list.filter_map lbls (fun lbl ->
-              if has_optional lbl.ld_attributes then Some lbl.ld_name.txt
-              else None)
+              if lbl.ld_optional then Some lbl.ld_name.txt else None)
         in
         ( Ttype_record lbls,
           Type_record

@@ -17,7 +17,7 @@ type json =
   | Array of t array [@@unboxed ]
 type nonrec user = {
   name: string ;
-  age: float [@res.optional ]}
+  age?: float }
 let decodeUser =
   ((Function$
       (fun (json : json) ->

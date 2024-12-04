@@ -10,6 +10,12 @@ let M = {
   v: 10
 };
 
+let OptionalFields = {
+  r: {
+    y: 1.0
+  }
+};
+
 let a = "A";
 
 let b = "B";
@@ -20,4 +26,5 @@ exports.a = a;
 exports.b = b;
 exports.M = M;
 exports.vv = vv;
+exports.OptionalFields = OptionalFields;
 /*  Not a pure module */
