@@ -392,7 +392,7 @@ let primitives_table =
       ("#undefined", Pundefined);
       ("#typeof", Ptypeof);
       ("#is_nullable", Pisnullable);
-      ("#null_to_opt", Pnullable_to_opt);
+      ("#null_to_opt", Pnull_to_opt);
       ("#nullable_to_opt", Pnullable_to_opt);
       ("#undefined_to_opt", Pundefined_to_opt);
       ("#makemutablelist", Pmakelist Mutable);
