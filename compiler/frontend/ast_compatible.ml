@@ -96,14 +96,14 @@ let apply_labels ?(loc = default_loc) ?(attrs = []) fn
 
 let label_arrow ?(loc = default_loc) ?(attrs = []) s a b : core_type =
   {
-    ptyp_desc = Ptyp_arrow (Asttypes.Labelled s, a, b);
+    ptyp_desc = Ptyp_arrow (Asttypes.Labelled s, a, b, None);
     ptyp_loc = loc;
     ptyp_attributes = attrs;
   }
 
 let opt_arrow ?(loc = default_loc) ?(attrs = []) s a b : core_type =
   {
-    ptyp_desc = Ptyp_arrow (Asttypes.Optional s, a, b);
+    ptyp_desc = Ptyp_arrow (Asttypes.Optional s, a, b, None);
     ptyp_loc = loc;
     ptyp_attributes = attrs;
   }

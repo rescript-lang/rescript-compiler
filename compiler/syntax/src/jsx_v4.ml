@@ -1319,13 +1319,13 @@ let transform_structure_item ~config item =
       let rec get_prop_types types
           ({ptyp_loc; ptyp_desc; ptyp_attributes} as full_type) =
         match ptyp_desc with
-        | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest))
+        | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest), _)
           when is_labelled name || is_optional name ->
           get_prop_types
             ((name, ptyp_attributes, ptyp_loc, type_) :: types)
             rest
-        | Ptyp_arrow (Nolabel, _type, rest) -> get_prop_types types rest
-        | Ptyp_arrow (name, type_, return_value)
+        | Ptyp_arrow (Nolabel, _type, rest, _) -> get_prop_types types rest
+        | Ptyp_arrow (name, type_, return_value, _)
           when is_labelled name || is_optional name ->
           ( return_value,
             (name, ptyp_attributes, return_value.ptyp_loc, type_) :: types )
@@ -1426,15 +1426,19 @@ let transform_signature_item ~config item =
         | Ptyp_arrow
             ( name,
               ({ptyp_attributes = attrs} as type_),
-              ({ptyp_desc = Ptyp_arrow _} as rest) )
+              ({ptyp_desc = Ptyp_arrow _} as rest),
+              _ )
           when is_optional name || is_labelled name ->
           get_prop_types ((name, attrs, ptyp_loc, type_) :: types) rest
         | Ptyp_arrow
-            (Nolabel, {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, _)}, rest)
-          ->
+            ( Nolabel,
+              {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, _)},
+              rest,
+              _ ) ->
           get_prop_types types rest
-        | Ptyp_arrow (Nolabel, _type, rest) -> get_prop_types types rest
-        | Ptyp_arrow (name, ({ptyp_attributes = attrs} as type_), return_value)
+        | Ptyp_arrow (Nolabel, _type, rest, _) -> get_prop_types types rest
+        | Ptyp_arrow
+            (name, ({ptyp_attributes = attrs} as type_), return_value, _)
           when is_optional name || is_labelled name ->
           (return_value, (name, attrs, return_value.ptyp_loc, type_) :: types)
         | _ -> (full_type, types)

@@ -108,7 +108,7 @@ let make_obj ~loc xs = Typ.object_ ~loc xs Closed
 *)
 let rec get_uncurry_arity_aux (ty : t) acc =
   match ty.ptyp_desc with
-  | Ptyp_arrow (_, _, new_ty) -> get_uncurry_arity_aux new_ty (succ acc)
+  | Ptyp_arrow (_, _, new_ty, _) -> get_uncurry_arity_aux new_ty (succ acc)
   | Ptyp_poly (_, ty) -> get_uncurry_arity_aux ty acc
   | _ -> acc
 
@@ -119,7 +119,7 @@ let rec get_uncurry_arity_aux (ty : t) acc =
 *)
 let get_uncurry_arity (ty : t) =
   match ty.ptyp_desc with
-  | Ptyp_arrow (_, _, rest) -> Some (get_uncurry_arity_aux rest 1)
+  | Ptyp_arrow (_, _, rest, _) -> Some (get_uncurry_arity_aux rest 1)
   | _ -> None
 
 let get_curry_arity (ty : t) =
@@ -139,7 +139,7 @@ type param_type = {
 let mk_fn_type (new_arg_types_ty : param_type list) (result : t) : t =
   Ext_list.fold_right new_arg_types_ty result (fun {label; ty; attr; loc} acc ->
       {
-        ptyp_desc = Ptyp_arrow (label, ty, acc);
+        ptyp_desc = Ptyp_arrow (label, ty, acc, None);
         ptyp_loc = loc;
         ptyp_attributes = attr;
       })
@@ -147,7 +147,7 @@ let mk_fn_type (new_arg_types_ty : param_type list) (result : t) : t =
 let list_of_arrow (ty : t) : t * param_type list =
   let rec aux (ty : t) acc =
     match ty.ptyp_desc with
-    | Ptyp_arrow (label, t1, t2) ->
+    | Ptyp_arrow (label, t1, t2, _) ->
       aux t2
         (({label; ty = t1; attr = ty.ptyp_attributes; loc = ty.ptyp_loc}
            : param_type)

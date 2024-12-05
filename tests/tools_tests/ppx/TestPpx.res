@@ -31,3 +31,7 @@ external useState: (unit => 'state) => string = "useState"
 let _ = useState(() => 0)
 
 let fpromise = async (promise, _x) => await promise
+module Uncurried = {
+  type f1 = int => string
+  type f2 = (int, int) => string
+}

@@ -149,7 +149,7 @@ let rec core_type i ppf x =
   match x.ctyp_desc with
   | Ttyp_any -> line i ppf "Ttyp_any\n"
   | Ttyp_var s -> line i ppf "Ttyp_var %s\n" s
-  | Ttyp_arrow (l, ct1, ct2) ->
+  | Ttyp_arrow (l, ct1, ct2, _) ->
     line i ppf "Ttyp_arrow\n";
     arg_label i ppf l;
     core_type i ppf ct1;

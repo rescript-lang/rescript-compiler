@@ -89,30 +89,34 @@ include
         ;;(t value) = {js||js}
         ;;{js|BS:6.0.1\x84\x95\xa6\xbe\0\0\0#\0\0\0\r\0\0\0&\0\0\0#\x91\xa0\xa0A\xa0$size@\xa0\xa0A\xa0$root@\xa0\xa0A\xa0'compare@@|js}
         external sizeSet :
-          ('value t -> int -> unit, [ `Has_arity2 ]) function$ = "size"
+          ('value t -> int -> unit (a:2), [ `Has_arity2 ]) function$ = "size"
         ;;{js|BS:6.0.1\x84\x95\xa6\xbe\0\0\0\x15\0\0\0\t\0\0\0\x1a\0\0\0\x19\xb0\xa0\xa0A\x91@\xa0\xa0A\x04\x03@E\x97\xa0$size@|js}
         ;;[|(({js|use sizeGet instead or use {abstract = light} explicitly|js})
             [@ocaml.deprecated ])|]
-        external size : ('value t -> int, [ `Has_arity1 ]) function$ = ""
+        external size :
+          ('value t -> int (a:1), [ `Has_arity1 ]) function$ = ""
         ;;{js|BS:6.0.1\x84\x95\xa6\xbe\0\0\0\x10\0\0\0\x07\0\0\0\x14\0\0\0\x13\xb0\xa0\xa0A\x91@@A\x98\xa0$size@|js}
-        external sizeGet : ('value t -> int, [ `Has_arity1 ]) function$ = ""
+        external sizeGet :
+          ('value t -> int (a:1), [ `Has_arity1 ]) function$ = ""
         ;;{js|BS:6.0.1\x84\x95\xa6\xbe\0\0\0\x10\0\0\0\x07\0\0\0\x14\0\0\0\x13\xb0\xa0\xa0A\x91@@A\x98\xa0$size@|js}
         external rootSet :
-          ('value t -> 'value node option -> unit, [ `Has_arity2 ]) function$
-            = "root"
+          ('value t -> 'value node option -> unit (a:2), [ `Has_arity2 ])
+            function$ = "root"
         ;;{js|BS:6.0.1\x84\x95\xa6\xbe\0\0\0\x15\0\0\0\t\0\0\0\x1a\0\0\0\x19\xb0\xa0\xa0A\x91@\xa0\xa0A\x04\x03@E\x97\xa0$root@|js}
         ;;[|(({js|use rootGet instead or use {abstract = light} explicitly|js})
             [@ocaml.deprecated ])|]
         external root :
-          ('value t -> 'value node option, [ `Has_arity1 ]) function$ = ""
+          ('value t -> 'value node option (a:1), [ `Has_arity1 ]) function$ =
+            ""
         ;;{js|BS:6.0.1\x84\x95\xa6\xbe\0\0\0\x10\0\0\0\x07\0\0\0\x14\0\0\0\x13\xb0\xa0\xa0A\x91@@A\x98\xa0$root@|js}
         external rootGet :
-          ('value t -> 'value node option, [ `Has_arity1 ]) function$ = ""
+          ('value t -> 'value node option (a:1), [ `Has_arity1 ]) function$ =
+            ""
         ;;{js|BS:6.0.1\x84\x95\xa6\xbe\0\0\0\x10\0\0\0\x07\0\0\0\x14\0\0\0\x13\xb0\xa0\xa0A\x91@@A\x98\xa0$root@|js}
         ;;[|(({js|use compareGet instead or use {abstract = light} explicitly|js})
             [@ocaml.deprecated ])|]
         external compare :
-          ('value t -> [ [%rescript.typehole ]] Js.Internal.fn,
+          ('value t -> [ [%rescript.typehole ]] Js.Internal.fn (a:1),
             [ `Has_arity1 ]) function$
         ;;(({js|Arity_2('value, 'value)], int) =
             ""

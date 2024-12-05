@@ -128,7 +128,7 @@ let extractParameters ~signature ~typeStrForParser ~labelPrefixLen =
       | {
        (* Gotcha: functions with multiple arugments are modelled as a series of single argument functions. *)
        Parsetree.ptyp_desc =
-         Ptyp_arrow (argumentLabel, argumentTypeExpr, nextFunctionExpr);
+         Ptyp_arrow (argumentLabel, argumentTypeExpr, nextFunctionExpr, _);
        ptyp_loc;
       } ->
         let startOffset =
