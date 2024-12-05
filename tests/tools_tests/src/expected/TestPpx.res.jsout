@@ -16,6 +16,8 @@ let OptionalFields = {
   }
 };
 
+let Uncurried = {};
+
 let a = "A";
 
 let b = "B";
@@ -27,4 +29,5 @@ exports.b = b;
 exports.M = M;
 exports.vv = vv;
 exports.OptionalFields = OptionalFields;
+exports.Uncurried = Uncurried;
 /*  Not a pure module */
