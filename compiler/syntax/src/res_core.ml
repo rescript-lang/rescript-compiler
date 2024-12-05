@@ -155,17 +155,8 @@ end
 let jsx_attr = (Location.mknoloc "JSX", Parsetree.PStr [])
 let ternary_attr = (Location.mknoloc "res.ternary", Parsetree.PStr [])
 let if_let_attr = (Location.mknoloc "res.iflet", Parsetree.PStr [])
-let optional_attr = (Location.mknoloc "res.optional", Parsetree.PStr [])
 let make_await_attr loc = (Location.mkloc "res.await" loc, Parsetree.PStr [])
 let make_async_attr loc = (Location.mkloc "res.async" loc, Parsetree.PStr [])
-
-let make_expression_optional ~optional (e : Parsetree.expression) =
-  if optional then {e with pexp_attributes = optional_attr :: e.pexp_attributes}
-  else e
-let make_pattern_optional ~optional (p : Parsetree.pattern) =
-  if optional then {p with ppat_attributes = optional_attr :: p.ppat_attributes}
-  else p
-
 let suppress_fragile_match_warning_attr =
   ( Location.mknoloc "warning",
     Parsetree.PStr
@@ -215,7 +206,7 @@ type labelled_parameter =
 
 type record_pattern_item =
   | PatUnderscore
-  | PatField of (Ast_helper.lid * Parsetree.pattern)
+  | PatField of (Ast_helper.lid * Parsetree.pattern * bool (* optional *))
 
 type context = OrdinaryExpr | TernaryTrueBranchExpr | WhenExpr
 
@@ -1255,18 +1246,19 @@ and parse_optional_label p =
  *)
 and parse_record_pattern_row_field ~attrs p =
   let label = parse_value_path p in
-  let pattern =
+  let pattern, optional =
     match p.Parser.token with
     | Colon ->
       Parser.next p;
       let optional = parse_optional_label p in
       let pat = parse_pattern p in
-      make_pattern_optional ~optional pat
+      (pat, optional)
     | _ ->
-      Ast_helper.Pat.var ~loc:label.loc ~attrs
-        (Location.mkloc (Longident.last label.txt) label.loc)
+      ( Ast_helper.Pat.var ~loc:label.loc ~attrs
+          (Location.mkloc (Longident.last label.txt) label.loc),
+        false )
   in
-  (label, pattern)
+  (label, pattern, optional)
 
 (* TODO: there are better representations than PatField|Underscore ? *)
 and parse_record_pattern_row p =
@@ -1281,8 +1273,8 @@ and parse_record_pattern_row p =
     Parser.next p;
     match p.token with
     | Uident _ | Lident _ ->
-      let lid, pat = parse_record_pattern_row_field ~attrs p in
-      Some (false, PatField (lid, make_pattern_optional ~optional:true pat))
+      let lid, pat, _ = parse_record_pattern_row_field ~attrs p in
+      Some (false, PatField (lid, pat, true))
     | _ -> None)
   | Underscore ->
     Parser.next p;
@@ -1309,7 +1301,7 @@ and parse_record_pattern ~attrs p =
         match field with
         | PatField field ->
           (if has_spread then
-             let _, pattern = field in
+             let _, pattern, _ = field in
              Parser.err ~start_pos:pattern.Parsetree.ppat_loc.loc_start p
                (Diagnostics.message ErrorMessages.record_pattern_spread));
           (field :: fields, flag)
@@ -1409,7 +1401,7 @@ and parse_dict_pattern_row p =
     Parser.expect Colon p;
     let optional = parse_optional_label p in
     let pat = parse_pattern p in
-    Some (fieldName, make_pattern_optional ~optional pat)
+    Some (fieldName, pat, optional)
   | _ -> None
 
 and parse_dict_pattern ~start_pos ~attrs (p : Parser.t) =
@@ -2894,7 +2886,8 @@ and parse_braced_or_record_expr p =
       let field_expr = parse_expr p in
       Parser.optional p Comma |> ignore;
       let expr =
-        parse_record_expr_with_string_keys ~start_pos (field, field_expr) p
+        parse_record_expr_with_string_keys ~start_pos (field, field_expr, false)
+          p
       in
       Parser.expect Rbrace p;
       expr
@@ -2963,7 +2956,9 @@ and parse_braced_or_record_expr p =
           | _ -> value_or_constructor
         in
         let expr =
-          parse_record_expr ~start_pos [(path_ident, value_or_constructor)] p
+          parse_record_expr ~start_pos
+            [(path_ident, value_or_constructor, false)]
+            p
         in
         Parser.expect Rbrace p;
         expr
@@ -2971,16 +2966,15 @@ and parse_braced_or_record_expr p =
         Parser.next p;
         let optional = parse_optional_label p in
         let field_expr = parse_expr p in
-        let field_expr = make_expression_optional ~optional field_expr in
         match p.token with
         | Rbrace ->
           Parser.next p;
           let loc = mk_loc start_pos p.prev_end_pos in
-          Ast_helper.Exp.record ~loc [(path_ident, field_expr)] None
+          Ast_helper.Exp.record ~loc [(path_ident, field_expr, optional)] None
         | _ ->
           Parser.expect Comma p;
           let expr =
-            parse_record_expr ~start_pos [(path_ident, field_expr)] p
+            parse_record_expr ~start_pos [(path_ident, field_expr, optional)] p
           in
           Parser.expect Rbrace p;
           expr)
@@ -2989,14 +2983,18 @@ and parse_braced_or_record_expr p =
         if p.prev_end_pos.pos_lnum < p.start_pos.pos_lnum then (
           Parser.expect Comma p;
           let expr =
-            parse_record_expr ~start_pos [(path_ident, value_or_constructor)] p
+            parse_record_expr ~start_pos
+              [(path_ident, value_or_constructor, false)]
+              p
           in
           Parser.expect Rbrace p;
           expr)
         else (
           Parser.expect Colon p;
           let expr =
-            parse_record_expr ~start_pos [(path_ident, value_or_constructor)] p
+            parse_record_expr ~start_pos
+              [(path_ident, value_or_constructor, false)]
+              p
           in
           Parser.expect Rbrace p;
           expr)
@@ -3121,8 +3119,8 @@ and parse_record_expr_row_with_string_key p =
     | Colon ->
       Parser.next p;
       let field_expr = parse_expr p in
-      Some (field, field_expr)
-    | _ -> Some (field, Ast_helper.Exp.ident ~loc:field.loc field))
+      Some (field, field_expr, false)
+    | _ -> Some (field, Ast_helper.Exp.ident ~loc:field.loc field, false))
   | _ -> None
 
 and parse_record_expr_row p =
@@ -3143,8 +3141,7 @@ and parse_record_expr_row p =
       Parser.next p;
       let optional = parse_optional_label p in
       let field_expr = parse_expr p in
-      let field_expr = make_expression_optional ~optional field_expr in
-      Some (field, field_expr)
+      Some (field, field_expr, optional)
     | _ ->
       let value = Ast_helper.Exp.ident ~loc:field.loc ~attrs field in
       let value =
@@ -3152,7 +3149,7 @@ and parse_record_expr_row p =
         | Uident _ -> remove_module_name_from_punned_field_value value
         | _ -> value
       in
-      Some (field, value))
+      Some (field, value, false))
   | Question -> (
     Parser.next p;
     match p.Parser.token with
@@ -3165,7 +3162,7 @@ and parse_record_expr_row p =
         | Uident _ -> remove_module_name_from_punned_field_value value
         | _ -> value
       in
-      Some (field, make_expression_optional ~optional:true value)
+      Some (field, value, true)
     | _ -> None)
   | _ -> None
 
@@ -3201,7 +3198,7 @@ and parse_record_expr ~start_pos ?(spread = None) rows p =
     parse_comma_delimited_region ~grammar:Grammar.RecordRows ~closing:Rbrace
       ~f:parse_record_expr_row p
   in
-  let rows = List.concat [rows; exprs] in
+  let rows = rows @ exprs in
   let () =
     match rows with
     | [] ->

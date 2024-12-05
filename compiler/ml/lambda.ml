@@ -84,9 +84,9 @@ let find_name (attr : Parsetree.attribute) =
     Some s
   | _ -> None
 
-let blk_record (fields : (label * _) array) mut =
+let blk_record (fields : (label * _ * _) array) mut =
   let all_labels_info =
-    Ext_array.map fields (fun (lbl, _) ->
+    Ext_array.map fields (fun (lbl, _, _) ->
         ( Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name,
           lbl.lbl_optional ))
   in
@@ -95,7 +95,7 @@ let blk_record (fields : (label * _) array) mut =
 let blk_record_ext fields mutable_flag =
   let all_labels_info =
     Array.map
-      (fun ((lbl : label), _) ->
+      (fun ((lbl : label), _, _) ->
         Ext_list.find_def lbl.Types.lbl_attributes find_name lbl.lbl_name)
       fields
   in
@@ -104,7 +104,7 @@ let blk_record_ext fields mutable_flag =
 let blk_record_inlined fields name num_nonconst ~tag ~attrs mutable_flag =
   let fields =
     Array.map
-      (fun ((lbl : label), _) ->
+      (fun ((lbl : label), _, _) ->
         ( Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name,
           lbl.lbl_optional ))
       fields

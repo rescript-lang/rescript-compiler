@@ -947,7 +947,8 @@ module Compile = struct
          |> List.map
               (fun
                 ( _desc,
-                  (recordLabelDefinition : Typedtree.record_label_definition) )
+                  (recordLabelDefinition : Typedtree.record_label_definition),
+                  _ )
               ->
                 match recordLabelDefinition with
                 | Kept _typeExpr -> None

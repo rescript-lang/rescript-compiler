@@ -183,7 +183,8 @@ and pattern_desc =
     (* `A             (None)
        `A P           (Some P)
     *)
-  | Ppat_record of (Longident.t loc * pattern) list * closed_flag
+  | Ppat_record of
+      (Longident.t loc * pattern * bool (* optional *)) list * closed_flag
     (* { l1=P1; ...; ln=Pn }     (flag = Closed)
        { l1=P1; ...; ln=Pn; _}   (flag = Open)
 
@@ -260,7 +261,9 @@ and expression_desc =
     (* `A             (None)
        `A E           (Some E)
     *)
-  | Pexp_record of (Longident.t loc * expression) list * expression option
+  | Pexp_record of
+      (Longident.t loc * expression * bool (* optional *)) list
+      * expression option
     (* { l1=P1; ...; ln=Pn }     (None)
        { E0 with l1=P1; ...; ln=Pn }   (Some E0)
 

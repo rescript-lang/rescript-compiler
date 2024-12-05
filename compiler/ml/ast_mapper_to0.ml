@@ -300,7 +300,13 @@ module E = struct
       variant ~loc ~attrs lab (map_opt (sub.expr sub) eo)
     | Pexp_record (l, eo) ->
       record ~loc ~attrs
-        (List.map (map_tuple (map_loc sub) (sub.expr sub)) l)
+        (Ext_list.map l (fun (lid, e, optional) ->
+             let lid1 = map_loc sub lid in
+             let e1 = sub.expr sub e in
+             let attr =
+               Parsetree0.add_optional_attr ~optional e1.pexp_attributes
+             in
+             (lid1, {e1 with pexp_attributes = attr})))
         (map_opt (sub.expr sub) eo)
     | Pexp_field (e, lid) ->
       field ~loc ~attrs (sub.expr sub e) (map_loc sub lid)
@@ -367,7 +373,13 @@ module P = struct
     | Ppat_variant (l, p) -> variant ~loc ~attrs l (map_opt (sub.pat sub) p)
     | Ppat_record (lpl, cf) ->
       record ~loc ~attrs
-        (List.map (map_tuple (map_loc sub) (sub.pat sub)) lpl)
+        (Ext_list.map lpl (fun (lid, p, optional) ->
+             let lid1 = map_loc sub lid in
+             let p1 = sub.pat sub p in
+             let attr =
+               Parsetree0.add_optional_attr ~optional p1.ppat_attributes
+             in
+             (lid1, {p1 with ppat_attributes = attr})))
         cf
     | Ppat_array pl -> array ~loc ~attrs (List.map (sub.pat sub) pl)
     | Ppat_or (p1, p2) -> or_ ~loc ~attrs (sub.pat sub p1) (sub.pat sub p2)

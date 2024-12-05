@@ -185,7 +185,7 @@ let rec add_pattern bv pat =
     add_opt add_pattern bv op
   | Ppat_record (pl, _) ->
     List.iter
-      (fun (lbl, p) ->
+      (fun (lbl, p, _) ->
         add bv lbl;
         add_pattern bv p)
       pl
@@ -238,7 +238,7 @@ let rec add_expr bv exp =
   | Pexp_variant (_, opte) -> add_opt add_expr bv opte
   | Pexp_record (lblel, opte) ->
     List.iter
-      (fun (lbl, e) ->
+      (fun (lbl, e, _) ->
         add bv lbl;
         add_expr bv e)
       lblel;

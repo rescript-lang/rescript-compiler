@@ -157,7 +157,7 @@ let rec pattern_variables : Typedtree.pattern -> Ident.t list =
   | Tpat_variant (_, Some pat, _) -> pattern_variables pat
   | Tpat_variant (_, None, _) -> []
   | Tpat_record (fields, _) ->
-    List.concat (List.map (fun (_, _, p) -> pattern_variables p) fields)
+    List.concat (List.map (fun (_, _, p, _) -> pattern_variables p) fields)
   | Tpat_array pats -> List.concat (List.map pattern_variables pats)
   | Tpat_or (l, r, _) -> pattern_variables l @ pattern_variables r
   | Tpat_lazy p -> pattern_variables p
@@ -264,8 +264,8 @@ let rec expression : Env.env -> Typedtree.expression -> Use.t =
       | Record_regular | Record_inlined _ | Record_extension -> Use.guard
     in
     let field env = function
-      | _, Kept _ -> Use.empty
-      | _, Overridden (_, e) -> expression env e
+      | _, Kept _, _ -> Use.empty
+      | _, Overridden (_, e), _ -> expression env e
     in
     Use.join (use (array field env es)) (option expression env eo)
   | Texp_ifthenelse (cond, ifso, ifnot) ->
@@ -458,7 +458,7 @@ let check_recursive_bindings valbinds =
   Ext_list.iter valbinds (fun {vb_expr} ->
       match vb_expr.exp_desc with
       | Texp_record
-          {fields = [|(_, Overridden (_, {exp_desc = Texp_function _}))|]}
+          {fields = [|(_, Overridden (_, {exp_desc = Texp_function _}), _)|]}
       | Texp_function _ ->
         ()
       (*TODO: add uncurried function too*)

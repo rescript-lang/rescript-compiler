@@ -637,8 +637,8 @@ and label_decl i ppf {pld_name; pld_mutable; pld_type; pld_loc; pld_attributes}
   line (i + 1) ppf "%a" fmt_string_loc pld_name;
   core_type (i + 1) ppf pld_type
 
-and longident_x_pattern i ppf (li, p) =
-  line i ppf "%a\n" fmt_longident_loc li;
+and longident_x_pattern i ppf (li, p, opt) =
+  line i ppf "%a%s\n" fmt_longident_loc li (if opt then "?" else "");
   pattern (i + 1) ppf p
 
 and case i ppf {pc_lhs; pc_guard; pc_rhs} =
@@ -661,8 +661,8 @@ and string_x_expression i ppf (s, e) =
   line i ppf "<override> %a\n" fmt_string_loc s;
   expression (i + 1) ppf e
 
-and longident_x_expression i ppf (li, e) =
-  line i ppf "%a\n" fmt_longident_loc li;
+and longident_x_expression i ppf (li, e, opt) =
+  line i ppf "%a%s\n" fmt_longident_loc li (if opt then "?" else "");
   expression (i + 1) ppf e
 
 and label_x_expression i ppf (l, e) =

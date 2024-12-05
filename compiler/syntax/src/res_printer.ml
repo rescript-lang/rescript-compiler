@@ -538,10 +538,6 @@ let print_constant ?(template_literal = false) c =
     in
     Doc.text ("'" ^ str ^ "'")
 
-let print_optional_label attrs =
-  if Res_parsetree_viewer.has_optional_attribute attrs then Doc.text "?"
-  else Doc.nil
-
 module State = struct
   let custom_layout_threshold = 2
 
@@ -2568,15 +2564,16 @@ and print_pattern_record_row ~state row cmt_tbl =
   match row with
   (* punned {x}*)
   | ( ({Location.txt = Longident.Lident ident} as longident),
-      {Parsetree.ppat_desc = Ppat_var {txt; _}; ppat_attributes} )
+      {Parsetree.ppat_desc = Ppat_var {txt; _}; ppat_attributes},
+      opt )
     when ident = txt ->
     Doc.concat
       [
-        print_optional_label ppat_attributes;
+        (if opt then Doc.text "?" else Doc.nil);
         print_attributes ~state ppat_attributes cmt_tbl;
         print_lident_path longident cmt_tbl;
       ]
-  | longident, pattern ->
+  | longident, pattern, opt ->
     let loc_for_comments =
       {longident.loc with loc_end = pattern.Parsetree.ppat_loc.loc_end}
     in
@@ -2585,7 +2582,7 @@ and print_pattern_record_row ~state row cmt_tbl =
       let doc =
         if Parens.pattern_record_row_rhs pattern then add_parens doc else doc
       in
-      Doc.concat [print_optional_label pattern.ppat_attributes; doc]
+      if opt then Doc.concat [Doc.text "?"; doc] else doc
     in
     let doc =
       Doc.group
@@ -2601,8 +2598,8 @@ and print_pattern_record_row ~state row cmt_tbl =
     print_comments doc cmt_tbl loc_for_comments
 
 and print_pattern_dict_row ~state
-    ((longident, pattern) : Longident.t Location.loc * Parsetree.pattern)
-    cmt_tbl =
+    ((longident, pattern, opt) :
+      Longident.t Location.loc * Parsetree.pattern * bool) cmt_tbl =
   let loc_for_comments =
     {longident.loc with loc_end = pattern.ppat_loc.loc_end}
   in
@@ -2611,7 +2608,7 @@ and print_pattern_dict_row ~state
     let doc =
       if Parens.pattern_record_row_rhs pattern then add_parens doc else doc
     in
-    Doc.concat [print_optional_label pattern.ppat_attributes; doc]
+    if opt then Doc.concat [Doc.text "?"; doc] else doc
   in
   let lbl_doc =
     Doc.concat [Doc.text "\""; print_longident longident.txt; Doc.text "\""]
@@ -3155,7 +3152,8 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
                       Doc.join
                         ~sep:(Doc.concat [Doc.text ","; Doc.line])
                         (List.map
-                           (fun row -> print_bs_object_row ~state row cmt_tbl)
+                           (fun (loc, e, _opt) ->
+                             print_bs_object_row ~state (loc, e) cmt_tbl)
                            rows);
                     ]);
                Doc.trailing_comma;
@@ -5457,7 +5455,8 @@ and print_direction_flag flag =
   | Asttypes.Downto -> Doc.text " downto "
   | Asttypes.Upto -> Doc.text " to "
 
-and print_expression_record_row ~state (lbl, expr) cmt_tbl punning_allowed =
+and print_expression_record_row ~state (lbl, expr, optional) cmt_tbl
+    punning_allowed =
   let cmt_loc = {lbl.loc with loc_end = expr.pexp_loc.loc_end} in
   let doc =
     Doc.group
@@ -5468,7 +5467,7 @@ and print_expression_record_row ~state (lbl, expr) cmt_tbl punning_allowed =
         Doc.concat
           [
             print_attributes ~state expr.pexp_attributes cmt_tbl;
-            print_optional_label expr.pexp_attributes;
+            (if optional then Doc.text "?" else Doc.nil);
             print_lident_path lbl cmt_tbl;
           ]
       | _ ->
@@ -5476,9 +5475,9 @@ and print_expression_record_row ~state (lbl, expr) cmt_tbl punning_allowed =
           [
             print_lident_path lbl cmt_tbl;
             Doc.text ": ";
-            print_optional_label expr.pexp_attributes;
+            (if optional then Doc.text "?" else Doc.nil);
             (let doc = print_expression_with_comments ~state expr cmt_tbl in
-             match Parens.expr_record_row_rhs expr with
+             match Parens.expr_record_row_rhs ~optional expr with
              | Parens.Parenthesized -> add_parens doc
              | Braced braces -> print_braces doc expr braces
              | Nothing -> doc);

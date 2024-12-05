@@ -63,17 +63,17 @@ val find_name : Parsetree.attribute -> Asttypes.label option
 val tag_of_tag_info : tag_info -> int
 val mutable_flag_of_tag_info : tag_info -> mutable_flag
 val blk_record :
-  (Types.label_description * Typedtree.record_label_definition) array ->
+  (Types.label_description * Typedtree.record_label_definition * bool) array ->
   mutable_flag ->
   tag_info
 
 val blk_record_ext :
-  (Types.label_description * Typedtree.record_label_definition) array ->
+  (Types.label_description * Typedtree.record_label_definition * bool) array ->
   mutable_flag ->
   tag_info
 
 val blk_record_inlined :
-  (Types.label_description * Typedtree.record_label_definition) array ->
+  (Types.label_description * Typedtree.record_label_definition * bool) array ->
   string ->
   int ->
   tag:int ->

@@ -83,7 +83,8 @@ and pattern_desc =
             See {!Types.row_desc} for an explanation of the last parameter.
          *)
   | Tpat_record of
-      (Longident.t loc * label_description * pattern) list * closed_flag
+      (Longident.t loc * label_description * pattern * bool (* optional *)) list
+      * closed_flag
       (** { l1=P1; ...; ln=Pn }     (flag = Closed)
             { l1=P1; ...; ln=Pn; _}   (flag = Open)
 
@@ -180,7 +181,11 @@ and expression_desc =
          *)
   | Texp_variant of label * expression option
   | Texp_record of {
-      fields: (Types.label_description * record_label_definition) array;
+      fields:
+        (Types.label_description
+        * record_label_definition
+        * bool (* optional *))
+        array;
       representation: Types.record_representation;
       extended_expression: expression option;
     }

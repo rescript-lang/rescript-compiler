@@ -1,5 +1,5 @@
 let someDict = Primitive_dict.make [|("one", {js|one|js})|]
-let (({ one = ((one)[@res.optional ]);_})[@res.dictPattern ]) = someDict
+let (({ one?;_})[@res.dictPattern ]) = someDict
 let foo =
   ((Function$
       (fun () ->
@@ -29,9 +29,9 @@ let decodeUser =
                   {
                     name;
                     age =
-                      (((match ageJson with
+                      ?((match ageJson with
                          | Number age -> Some age
-                         | _ -> None))[@res.optional ])
+                         | _ -> None))
                   }
             | _ -> (Js.log {js|Not an object.|js}; None))
          [@res.braces ]) : user option)))

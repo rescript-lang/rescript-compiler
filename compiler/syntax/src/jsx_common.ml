@@ -45,8 +45,6 @@ let raise_error_multiple_component ~loc =
     "Only one component definition is allowed for each module. Move to a \
      submodule or other file if necessary."
 
-let optional_attr = ({txt = "res.optional"; loc = Location.none}, PStr [])
-
 let extract_uncurried typ =
   if Ast_uncurried.core_type_is_uncurried_fun typ then
     let _arity, t = Ast_uncurried.core_type_extract_uncurried_fun typ in
