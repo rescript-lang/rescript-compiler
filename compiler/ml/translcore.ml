@@ -24,7 +24,7 @@ open Typedtree
 open Typeopt
 open Lambda
 
-type error = Unknown_builtin_primitive of string | Unreachable_reached
+type error = Unknown_builtin_primitive of string
 
 exception Error of Location.t * error
 
@@ -986,8 +986,6 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
        optimize the translation just as Lazy.lazy_from_val would
        do *)
     Lprim (Pmakeblock Blk_lazy_general, [transl_exp e], e.exp_loc)
-  | Texp_object () -> assert false
-  | Texp_unreachable -> raise (Error (e.exp_loc, Unreachable_reached))
 
 and transl_list expr_list = List.map transl_exp expr_list
 
@@ -999,11 +997,7 @@ and transl_guard guard rhs =
 
 and transl_case {c_lhs; c_guard; c_rhs} = (c_lhs, transl_guard c_guard c_rhs)
 
-and transl_cases cases =
-  let cases =
-    Ext_list.filter cases (fun c -> c.c_rhs.exp_desc <> Texp_unreachable)
-  in
-  List.map transl_case cases
+and transl_cases cases = List.map transl_case cases
 
 and transl_case_try {c_lhs; c_guard; c_rhs} =
   match c_lhs.pat_desc with
@@ -1014,11 +1008,7 @@ and transl_case_try {c_lhs; c_guard; c_rhs} =
       (fun () -> Hashtbl.remove try_ids id)
   | _ -> (c_lhs, transl_guard c_guard c_rhs)
 
-and transl_cases_try cases =
-  let cases =
-    Ext_list.filter cases (fun c -> c.c_rhs.exp_desc <> Texp_unreachable)
-  in
-  List.map transl_case_try cases
+and transl_cases_try cases = List.map transl_case_try cases
 
 and transl_apply ?(inlined = Default_inline)
     ?(uncurried_partial_application = None) lam sargs loc =
@@ -1343,7 +1333,6 @@ open Format
 let report_error ppf = function
   | Unknown_builtin_primitive prim_name ->
     fprintf ppf "Unknown builtin primitive \"%s\"" prim_name
-  | Unreachable_reached -> fprintf ppf "Unreachable expression was reached"
 
 let () =
   Location.register_error_of_exn (function

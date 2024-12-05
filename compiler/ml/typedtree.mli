@@ -218,9 +218,7 @@ and expression_desc =
   | Texp_letexception of extension_constructor * expression
   | Texp_assert of expression
   | Texp_lazy of expression
-  | Texp_object of unit
   | Texp_pack of module_expr
-  | Texp_unreachable
   | Texp_extension_constructor of Longident.t loc * Path.t
 
 and meth = Tmeth_name of string
@@ -420,7 +418,6 @@ and core_type_desc =
   | Ttyp_tuple of core_type list
   | Ttyp_constr of Path.t * Longident.t loc * core_type list
   | Ttyp_object of object_field list * closed_flag
-  | Ttyp_class of unit (* dummy AST node *)
   | Ttyp_alias of core_type * string
   | Ttyp_variant of row_field list * closed_flag * label list option
   | Ttyp_poly of string list * core_type
@@ -474,6 +471,7 @@ and label_declaration = {
   ld_id: Ident.t;
   ld_name: string loc;
   ld_mutable: mutable_flag;
+  ld_optional: bool;
   ld_type: core_type;
   ld_loc: Location.t;
   ld_attributes: attributes;

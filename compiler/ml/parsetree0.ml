@@ -95,6 +95,7 @@ and core_type_desc =
     (* < l1:T1; ...; ln:Tn >     (flag = Closed)
        < l1:T1; ...; ln:Tn; .. > (flag = Open)
     *)
+  | Ptyp_class of unit (* dummy AST node *)
   | Ptyp_alias of core_type * string (* T as 'a *)
   | Ptyp_variant of row_field list * closed_flag * label list option
     (* [ `A|`B ]         (flag = Closed; labels = None)
@@ -300,6 +301,7 @@ and expression_desc =
 
        Can only be used as the expression under Cfk_concrete
        for methods (not values). *)
+  | Pexp_object of unit (* dummy AST node *)
   | Pexp_newtype of string loc * expression (* fun (type t) -> E *)
   | Pexp_pack of module_expr
     (* (module ME)
@@ -310,8 +312,8 @@ and expression_desc =
     (* M.(E)
        let open M in E
        let! open M in E *)
-  | Pexp_extension of extension
-(* [%id] *)
+  | Pexp_extension of extension (* [%id] *)
+  | Pexp_unreachable
 (* . *)
 
 and case = {
@@ -368,7 +370,6 @@ and type_kind =
 and label_declaration = {
   pld_name: string loc;
   pld_mutable: mutable_flag;
-  pld_optional: bool;
   pld_type: core_type;
   pld_loc: Location.t;
   pld_attributes: attributes; (* l : T [@id1] [@id2] *)
@@ -595,3 +596,17 @@ and module_binding = {
   pmb_loc: Location.t;
 }
 (* X = ME *)
+
+let optional_attr = (Location.mknoloc "res.optional", Parsetree.PStr [])
+let optional_attr0 = (Location.mknoloc "res.optional", PStr [])
+
+let add_optional_attr ~optional attrs =
+  if optional then optional_attr0 :: attrs else attrs
+
+let get_optional_attr attrs_ =
+  let remove_optional_attr attrs =
+    List.filter (fun a -> a <> optional_attr) attrs
+  in
+  let attrs = remove_optional_attr attrs_ in
+  let optional = List.length attrs <> List.length attrs_ in
+  (optional, attrs)

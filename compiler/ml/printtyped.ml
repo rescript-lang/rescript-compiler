@@ -179,7 +179,6 @@ let rec core_type i ppf x =
           line i ppf "OTinherit\n";
           core_type (i + 1) ppf ct)
       l
-  | Ttyp_class () -> ()
   | Ttyp_alias (ct, s) ->
     line i ppf "Ttyp_alias \"%s\"\n" s;
     core_type i ppf ct
@@ -373,11 +372,9 @@ and expression i ppf x =
   | Texp_lazy e ->
     line i ppf "Texp_lazy";
     expression i ppf e
-  | Texp_object () -> ()
   | Texp_pack me ->
     line i ppf "Texp_pack";
     module_expr i ppf me
-  | Texp_unreachable -> line i ppf "Texp_unreachable"
   | Texp_extension_constructor (li, _) ->
     line i ppf "Texp_extension_constructor %a" fmt_longident li
 

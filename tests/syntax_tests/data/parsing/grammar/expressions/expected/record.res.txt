@@ -41,12 +41,12 @@ type nonrec tt = {
   y: string [@ns.opttinal ]}
 type nonrec ttt = {
   x: int ;
-  y: string [@res.optional ]}
+  y?: string }
 type nonrec multipleWithAttrs = {
   x: int ;
-  y: string [@res.optional ][@attr ]}
+  y?: string [@attr ]}
 type nonrec singleWithAttrs = {
-  y: string [@res.optional ][@attr ]}
+  y?: string [@attr ]}
 type nonrec inlineWithAttrs =
   | A of {
   value: string [@as {js|VALUE|js}]} 

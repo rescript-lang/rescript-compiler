@@ -210,9 +210,7 @@ let expr sub {exp_extra; exp_desc; exp_env; _} =
     sub.expr sub exp
   | Texp_assert exp -> sub.expr sub exp
   | Texp_lazy exp -> sub.expr sub exp
-  | Texp_object _ -> ()
   | Texp_pack mexpr -> sub.module_expr sub mexpr
-  | Texp_unreachable -> ()
   | Texp_extension_constructor _ -> ()
 
 let package_type sub {pack_fields; _} =
@@ -303,7 +301,6 @@ let typ sub {ctyp_desc; ctyp_env; _} =
   | Ttyp_tuple list -> List.iter (sub.typ sub) list
   | Ttyp_constr (_, _, list) -> List.iter (sub.typ sub) list
   | Ttyp_object (list, _) -> List.iter (sub.object_field sub) list
-  | Ttyp_class () -> ()
   | Ttyp_alias (ct, _) -> sub.typ sub ct
   | Ttyp_variant (list, _, _) -> List.iter (sub.row_field sub) list
   | Ttyp_poly (_, ct) -> sub.typ sub ct

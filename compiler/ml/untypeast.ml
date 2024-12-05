@@ -199,8 +199,8 @@ let constructor_declaration sub cd =
 let label_declaration sub ld =
   let loc = sub.location sub ld.ld_loc in
   let attrs = sub.attributes sub ld.ld_attributes in
-  Type.field ~loc ~attrs ~mut:ld.ld_mutable (map_loc sub ld.ld_name)
-    (sub.typ sub ld.ld_type)
+  Type.field ~loc ~attrs ~mut:ld.ld_mutable ~optional:ld.ld_optional
+    (map_loc sub ld.ld_name) (sub.typ sub ld.ld_type)
 
 let type_extension sub tyext =
   let attrs = sub.attributes sub tyext.tyext_attributes in
@@ -394,9 +394,7 @@ let expression sub exp =
       Pexp_letexception (sub.extension_constructor sub ext, sub.expr sub exp)
     | Texp_assert exp -> Pexp_assert (sub.expr sub exp)
     | Texp_lazy exp -> Pexp_lazy (sub.expr sub exp)
-    | Texp_object () -> assert false
     | Texp_pack mexpr -> Pexp_pack (sub.module_expr sub mexpr)
-    | Texp_unreachable -> Pexp_unreachable
     | Texp_extension_constructor (lid, _) ->
       Pexp_extension
         ( {txt = "ocaml.extension_constructor"; loc},
@@ -519,7 +517,6 @@ let core_type sub ct =
       Ptyp_constr (map_loc sub lid, List.map (sub.typ sub) list)
     | Ttyp_object (list, o) ->
       Ptyp_object (List.map (sub.object_field sub) list, o)
-    | Ttyp_class () -> Ptyp_class ()
     | Ttyp_alias (ct, s) -> Ptyp_alias (sub.typ sub ct, s)
     | Ttyp_variant (list, bool, labels) ->
       Ptyp_variant (List.map (sub.row_field sub) list, bool, labels)

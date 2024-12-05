@@ -209,6 +209,10 @@ let mutable_flag f = function
   | Immutable -> ()
   | Mutable -> pp f "mutable@;"
 
+let optional_flag f = function
+  | false -> ()
+  | true -> pp f "?"
+
 (* trailing space added *)
 let rec_flag f rf =
   match rf with
@@ -321,7 +325,6 @@ and core_type1 ctxt f x =
         in
         pp f "@[<hov2><@ %a%a@ > @]" (list core_field_type ~sep:";") l
           field_var o (* Cf #7200 *)
-    | Ptyp_class () -> ()
     | Ptyp_package (lid, cstrs) ->
         let aux f (s, ct) =
           pp f "type %a@ =@ %a" longident_loc s (core_type ctxt) ct  in
@@ -662,14 +665,11 @@ and expression ctxt f x =
     | Pexp_variant (l,Some eo) ->
         pp f "@[<2>`%s@;%a@]" l (simple_expr ctxt) eo
     | Pexp_extension e -> extension ctxt f e
-    | Pexp_unreachable -> pp f "."
     | _ -> expression1 ctxt f x
 
 and expression1 ctxt f x =
   if x.pexp_attributes <> [] then expression ctxt f x
-  else match x.pexp_desc with
-    | Pexp_object () -> assert false
-    | _ -> expression2 ctxt f x
+  else expression2 ctxt f x
 (* used in [Pexp_apply] *)
 
 and expression2 ctxt f x =
@@ -1141,9 +1141,10 @@ and type_def_list ctxt f (rf, l) =
 
 and record_declaration ctxt f lbls =
   let type_record_field f pld =
-    pp f "@[<2>%a%s:@;%a@;%a@]"
+    pp f "@[<2>%a%s%a:@;%a@;%a@]"
       mutable_flag pld.pld_mutable
       pld.pld_name.txt
+      optional_flag pld.pld_optional
       (core_type ctxt) pld.pld_type
       (attributes ctxt) pld.pld_attributes
   in

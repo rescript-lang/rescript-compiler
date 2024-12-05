@@ -150,7 +150,6 @@ let rec core_type i ppf x =
           line i ppf "Oinherit\n";
           core_type (i + 1) ppf ct)
       l
-  | Ptyp_class () -> ()
   | Ptyp_alias (ct, s) ->
     line i ppf "Ptyp_alias \"%s\"\n" s;
     core_type i ppf ct
@@ -335,7 +334,6 @@ and expression i ppf x =
     line i ppf "Pexp_poly\n";
     expression i ppf e;
     option i core_type ppf cto
-  | Pexp_object () -> ()
   | Pexp_newtype (s, e) ->
     line i ppf "Pexp_newtype \"%s\"\n" s.txt;
     expression i ppf e
@@ -348,7 +346,6 @@ and expression i ppf x =
   | Pexp_extension (s, arg) ->
     line i ppf "Pexp_extension \"%s\"\n" s.txt;
     payload i ppf arg
-  | Pexp_unreachable -> line i ppf "Pexp_unreachable"
 
 and value_description i ppf x =
   line i ppf "value_description %a %a\n" fmt_string_loc x.pval_name fmt_location

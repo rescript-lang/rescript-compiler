@@ -183,9 +183,7 @@ let iter_expression f e =
     | Pexp_letmodule (_, me, e) ->
       expr e;
       module_expr me
-    | Pexp_object _ -> assert false
     | Pexp_pack me -> module_expr me
-    | Pexp_unreachable -> ()
   and case {pc_lhs = _; pc_guard; pc_rhs} =
     may expr pc_guard;
     expr pc_rhs
@@ -1752,14 +1750,9 @@ let check_partial ?(lev = get_current_level ()) env expected_ty loc cases =
 
 let check_unused ?(lev = get_current_level ()) env expected_ty cases =
   Parmatch.check_unused
-    (fun refute constrs labels spat ->
-      match
-        partial_pred ~lev ~mode:Split_or ~explode:5 env expected_ty constrs
-          labels spat
-      with
-      | Some pat when refute ->
-        raise (Error (spat.ppat_loc, env, Unrefuted_pattern pat))
-      | r -> r)
+    (fun constrs labels spat ->
+      partial_pred ~lev ~mode:Split_or ~explode:5 env expected_ty constrs labels
+        spat)
     cases
 
 let add_pattern_variables ?check ?check_as env =
@@ -1853,7 +1846,6 @@ let rec is_nonexpansive exp =
   | Texp_new _ -> assert false
   (* Note: nonexpansive only means no _observable_ side effects *)
   | Texp_lazy e -> is_nonexpansive e
-  | Texp_object () -> assert false
   | Texp_letmodule (_, _, mexp, e) ->
     is_nonexpansive_mod mexp && is_nonexpansive e
   | Texp_pack mexp -> is_nonexpansive_mod mexp
@@ -3156,7 +3148,6 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
         exp_attributes = sexp.pexp_attributes;
         exp_env = env;
       }
-  | Pexp_object _ -> assert false
   | Pexp_poly (sbody, sty) ->
     let ty, cty =
       match sty with
@@ -3302,16 +3293,6 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
     | _ -> raise (Error (loc, env, Invalid_extension_constructor_payload)))
   | Pexp_extension ext ->
     raise (Error_forward (Builtin_attributes.error_of_extension ext))
-  | Pexp_unreachable ->
-    re
-      {
-        exp_desc = Texp_unreachable;
-        exp_loc = loc;
-        exp_extra = [];
-        exp_type = instance env ty_expected;
-        exp_attributes = sexp.pexp_attributes;
-        exp_env = env;
-      }
 
 and type_function ?in_function loc attrs env ty_expected l caselist =
   let loc_fun, ty_fun =
@@ -4017,7 +3998,6 @@ and type_cases ?root_type_clash_context ?in_function env ty_arg ty_res
   in
   let needs_exhaust_check =
     match caselist with
-    | [{pc_rhs = {pexp_desc = Pexp_unreachable}}] -> true
     | [{pc_lhs}] when is_var pc_lhs -> false
     | _ -> true
   in

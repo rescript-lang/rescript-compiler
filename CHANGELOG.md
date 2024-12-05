@@ -16,6 +16,11 @@
 #### :bug: Bug fix
 - Fix bug where a ref assignment is moved ouside a conditional. https://github.com/rescript-lang/rescript/pull/7176
 
+#### :house: Internal
+- Use latest compiler for tests. https://github.com/rescript-lang/rescript/pull/7186
+- Added infra to modernise AST: theres' Parsetree, Parsetree0 (legacy), and conversion functions to keep compatibility with PPX. https://github.com/rescript-lang/rescript/pull/7185
+- Ast cleanup: remove exp object and exp unreachable. https://github.com/rescript-lang/rescript/pull/7189
+
 # 12.0.0-alpha.5
 
 #### :rocket: New Feature

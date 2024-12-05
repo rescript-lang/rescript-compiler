@@ -202,7 +202,6 @@ module Exp : sig
   val open_ :
     ?loc:loc -> ?attrs:attrs -> override_flag -> lid -> expression -> expression
   val extension : ?loc:loc -> ?attrs:attrs -> extension -> expression
-  val unreachable : ?loc:loc -> ?attrs:attrs -> unit -> expression
 
   val case : pattern -> ?guard:expression -> expression -> case
 end
@@ -242,6 +241,7 @@ module Type : sig
     ?loc:loc ->
     ?attrs:attrs ->
     ?mut:mutable_flag ->
+    ?optional:bool ->
     str ->
     core_type ->
     label_declaration

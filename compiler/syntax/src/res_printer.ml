@@ -1578,7 +1578,7 @@ and print_label_declaration ~state (ld : Parsetree.label_declaration) cmt_tbl =
     in
     (print_comments doc cmt_tbl ld.pld_name.loc, is_dot)
   in
-  let optional = print_optional_label ld.pld_attributes in
+  let optional = if ld.pld_optional then Doc.text "?" else Doc.nil in
   Doc.group
     (Doc.concat
        [
@@ -1766,7 +1766,6 @@ and print_typ_expr ~(state : State.t) (typ_expr : Parsetree.core_type) cmt_tbl =
     | Ptyp_package package_type ->
       print_package_type ~state ~print_module_keyword_and_parens:true
         package_type cmt_tbl
-    | Ptyp_class _ -> Doc.text "classes are not supported in types"
     | Ptyp_variant (row_fields, closed_flag, labels_opt) ->
       let force_break =
         typ_expr.ptyp_loc.Location.loc_start.pos_lnum
@@ -3191,7 +3190,6 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
       else if ParsetreeViewer.is_binary_expression e then
         print_binary_expression ~state e cmt_tbl
       else print_pexp_apply ~state e cmt_tbl
-    | Pexp_unreachable -> Doc.dot
     | Pexp_field (expr, longident_loc) ->
       let lhs =
         let doc = print_expression_with_comments ~state expr cmt_tbl in
@@ -3421,7 +3419,6 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
     | Pexp_setinstvar _ -> Doc.text "Pexp_setinstvar not implemented in printer"
     | Pexp_override _ -> Doc.text "Pexp_override not implemented in printer"
     | Pexp_poly _ -> Doc.text "Pexp_poly not implemented in printer"
-    | Pexp_object _ -> Doc.text "Pexp_object not implemented in printer"
   in
   let expr_with_await =
     if ParsetreeViewer.has_await_attribute e.pexp_attributes then

@@ -702,7 +702,6 @@ module SexpAst = struct
       | Pexp_assert expr -> Sexp.list [Sexp.atom "Pexp_assert"; expression expr]
       | Pexp_lazy expr -> Sexp.list [Sexp.atom "Pexp_lazy"; expression expr]
       | Pexp_poly _ -> Sexp.list [Sexp.atom "Pexp_poly"]
-      | Pexp_object _ -> Sexp.list [Sexp.atom "Pexp_object"]
       | Pexp_newtype (lbl, expr) ->
         Sexp.list
           [Sexp.atom "Pexp_newtype"; string lbl.Asttypes.txt; expression expr]
@@ -718,7 +717,6 @@ module SexpAst = struct
           ]
       | Pexp_extension ext ->
         Sexp.list [Sexp.atom "Pexp_extension"; extension ext]
-      | Pexp_unreachable -> Sexp.atom "Pexp_unreachable"
     in
     Sexp.list [Sexp.atom "expression"; desc]
 
@@ -875,7 +873,6 @@ module SexpAst = struct
             closed_flag flag;
             Sexp.list (map_empty ~f:object_field fields);
           ]
-      | Ptyp_class () -> assert false
       | Ptyp_variant (fields, flag, opt_labels) ->
         Sexp.list
           [

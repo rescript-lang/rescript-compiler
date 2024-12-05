@@ -296,9 +296,7 @@ end = struct
       iter_expression exp
     | Texp_assert exp -> iter_expression exp
     | Texp_lazy exp -> iter_expression exp
-    | Texp_object () -> ()
     | Texp_pack mexpr -> iter_module_expr mexpr
-    | Texp_unreachable -> ()
     | Texp_extension_constructor _ -> ());
     Iter.leave_expression exp
 
@@ -391,7 +389,6 @@ end = struct
     | Ttyp_tuple list -> List.iter iter_core_type list
     | Ttyp_constr (_path, _, list) -> List.iter iter_core_type list
     | Ttyp_object (list, _o) -> List.iter iter_object_field list
-    | Ttyp_class () -> ()
     | Ttyp_alias (ct, _s) -> iter_core_type ct
     | Ttyp_variant (list, _bool, _labels) -> List.iter iter_row_field list
     | Ttyp_poly (_list, ct) -> iter_core_type ct

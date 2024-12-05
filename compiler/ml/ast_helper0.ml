@@ -16,7 +16,7 @@
 (** Helpers to produce Parsetree fragments *)
 
 open Asttypes
-open Parsetree
+open Parsetree0
 
 type lid = Longident.t loc
 type str = string loc
@@ -90,6 +90,7 @@ module Typ = struct
         | Ptyp_constr (longident, lst) ->
           Ptyp_constr (longident, List.map loop lst)
         | Ptyp_object (lst, o) -> Ptyp_object (List.map loop_object_field lst, o)
+        | Ptyp_class () -> assert false
         | Ptyp_alias (core_type, string) ->
           check_variable var_names t.ptyp_loc string;
           Ptyp_alias (loop core_type, string)
@@ -319,12 +320,10 @@ module Type = struct
       pcd_attributes = attrs;
     }
 
-  let field ?(loc = !default_loc) ?(attrs = []) ?(mut = Immutable)
-      ?(optional = false) name typ =
+  let field ?(loc = !default_loc) ?(attrs = []) ?(mut = Immutable) name typ =
     {
       pld_name = name;
       pld_mutable = mut;
-      pld_optional = optional;
       pld_type = typ;
       pld_loc = loc;
       pld_attributes = attrs;

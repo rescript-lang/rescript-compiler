@@ -104,7 +104,6 @@ module T = struct
       iter_loc sub lid;
       List.iter (sub.typ sub) tl
     | Ptyp_object (ol, _o) -> List.iter (object_field sub) ol
-    | Ptyp_class () -> ()
     | Ptyp_alias (t, _) -> sub.typ sub t
     | Ptyp_variant (rl, _b, _ll) -> List.iter (row_field sub) rl
     | Ptyp_poly (_, t) -> sub.typ sub t
@@ -353,14 +352,12 @@ module E = struct
     | Pexp_poly (e, t) ->
       sub.expr sub e;
       iter_opt (sub.typ sub) t
-    | Pexp_object () -> ()
     | Pexp_newtype (_s, e) -> sub.expr sub e
     | Pexp_pack me -> sub.module_expr sub me
     | Pexp_open (_ovf, lid, e) ->
       iter_loc sub lid;
       sub.expr sub e
     | Pexp_extension x -> sub.extension sub x
-    | Pexp_unreachable -> ()
 end
 
 module P = struct

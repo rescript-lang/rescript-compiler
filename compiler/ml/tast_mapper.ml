@@ -250,9 +250,7 @@ let expr sub x =
       Texp_letexception (sub.extension_constructor sub cd, sub.expr sub exp)
     | Texp_assert exp -> Texp_assert (sub.expr sub exp)
     | Texp_lazy exp -> Texp_lazy (sub.expr sub exp)
-    | Texp_object () -> Texp_object ()
     | Texp_pack mexpr -> Texp_pack (sub.module_expr sub mexpr)
-    | Texp_unreachable -> Texp_unreachable
     | Texp_extension_constructor _ as e -> e
   in
   {x with exp_extra; exp_desc; exp_env}
@@ -370,7 +368,6 @@ let typ sub x =
       Ttyp_constr (path, lid, List.map (sub.typ sub) list)
     | Ttyp_object (list, closed) ->
       Ttyp_object (List.map (sub.object_field sub) list, closed)
-    | Ttyp_class () -> Ttyp_class ()
     | Ttyp_alias (ct, s) -> Ttyp_alias (sub.typ sub ct, s)
     | Ttyp_variant (list, closed, labels) ->
       Ttyp_variant (List.map (sub.row_field sub) list, closed, labels)

@@ -118,7 +118,6 @@ let rec add_type bv ty =
         | Otag (_, _, t) -> add_type bv t
         | Oinherit t -> add_type bv t)
       fl
-  | Ptyp_class () -> ()
   | Ptyp_alias (t, _) -> add_type bv t
   | Ptyp_variant (fl, _, _) ->
     List.iter
@@ -285,7 +284,6 @@ let rec add_expr bv exp =
   | Pexp_poly (e, t) ->
     add_expr bv e;
     add_opt add_type bv t
-  | Pexp_object () -> ()
   | Pexp_newtype (_, e) -> add_expr bv e
   | Pexp_pack m -> add_module bv m
   | Pexp_open (_ovf, m, e) ->
@@ -298,7 +296,6 @@ let rec add_expr bv exp =
     | Pstr_eval ({pexp_desc = Pexp_construct (c, None)}, _) -> add bv c
     | _ -> handle_extension e)
   | Pexp_extension e -> handle_extension e
-  | Pexp_unreachable -> ()
 
 and add_cases bv cases = List.iter (add_case bv) cases
 

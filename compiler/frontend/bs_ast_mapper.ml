@@ -107,7 +107,6 @@ module T = struct
       constr ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tl)
     | Ptyp_object (l, o) ->
       object_ ~loc ~attrs (List.map (object_field sub) l) o
-    | Ptyp_class () -> assert false
     | Ptyp_alias (t, s) -> alias ~loc ~attrs (sub.typ sub t) s
     | Ptyp_variant (rl, b, ll) ->
       variant ~loc ~attrs (List.map (row_field sub) rl) b ll
@@ -371,14 +370,12 @@ module E = struct
     | Pexp_lazy e -> lazy_ ~loc ~attrs (sub.expr sub e)
     | Pexp_poly (e, t) ->
       poly ~loc ~attrs (sub.expr sub e) (map_opt (sub.typ sub) t)
-    | Pexp_object () -> assert false
     | Pexp_newtype (s, e) ->
       newtype ~loc ~attrs (map_loc sub s) (sub.expr sub e)
     | Pexp_pack me -> pack ~loc ~attrs (sub.module_expr sub me)
     | Pexp_open (ovf, lid, e) ->
       open_ ~loc ~attrs ovf (map_loc sub lid) (sub.expr sub e)
     | Pexp_extension x -> extension ~loc ~attrs (sub.extension sub x)
-    | Pexp_unreachable -> unreachable ~loc ~attrs ()
 end
 
 module P = struct
@@ -503,9 +500,17 @@ let default_mapper =
           ~loc:(this.location this pcd_loc)
           ~attrs:(this.attributes this pcd_attributes));
     label_declaration =
-      (fun this {pld_name; pld_type; pld_loc; pld_mutable; pld_attributes} ->
+      (fun this
+           {
+             pld_name;
+             pld_type;
+             pld_loc;
+             pld_mutable;
+             pld_optional;
+             pld_attributes;
+           } ->
         Type.field (map_loc this pld_name) (this.typ this pld_type)
-          ~mut:pld_mutable
+          ~mut:pld_mutable ~optional:pld_optional
           ~loc:(this.location this pld_loc)
           ~attrs:(this.attributes this pld_attributes));
     cases = (fun this l -> List.map (this.case this) l);
