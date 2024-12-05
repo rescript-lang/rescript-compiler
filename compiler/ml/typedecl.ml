@@ -635,7 +635,7 @@ let transl_declaration ~type_record_as_object env sdecl id =
           Type_record
             ( lbls',
               if unbox then Record_unboxed false
-              else if optional then Record_optional_labels
+              else if optional then Record_regular
               else Record_regular ),
           sdecl )
       | None ->

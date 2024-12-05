@@ -284,7 +284,6 @@ and record_representation =
       attrs: Parsetree.attributes;
     }
   | Record_extension (* Inlined record under extension *)
-  | Record_optional_labels
 
 and label_declaration = {
   ld_id: Ident.t;

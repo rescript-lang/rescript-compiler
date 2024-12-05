@@ -949,7 +949,7 @@ module Label = NameChoice (struct
         lbl with
         lbl_name = name;
         lbl_pos = Array.length lbl.lbl_all;
-        lbl_repres = Record_optional_labels;
+        lbl_repres = Record_regular;
       }
     in
     let lbl_all_list = Array.to_list lbl.lbl_all @ [l] in
@@ -2651,7 +2651,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
                    } ));
         ([||], representation)
       | [], _ ->
-        if fields = [] && repr_opt <> None then ([||], Record_optional_labels)
+        if fields = [] && repr_opt <> None then ([||], Record_regular)
         else raise (Error (loc, env, Empty_record_literal))
     in
     let labels_missing = ref [] in
