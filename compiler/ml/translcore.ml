@@ -1206,11 +1206,7 @@ and transl_record loc env fields repres opt_init_expr =
           match repres with
           | Record_float_unused -> assert false
           | Record_regular ->
-            Lconst
-              (Const_block
-                 ( Lambda.blk_record fields mut
-                     (if optional then Record_optional else Record_regular),
-                   cl ))
+            Lconst (Const_block (Lambda.blk_record fields mut, cl))
           | Record_inlined {tag; name; num_nonconsts; attrs} ->
             Lconst
               (Const_block
@@ -1226,12 +1222,7 @@ and transl_record loc env fields repres opt_init_expr =
         with Not_constant -> (
           match repres with
           | Record_regular ->
-            Lprim
-              ( Pmakeblock
-                  (Lambda.blk_record fields mut
-                     (if optional then Record_optional else Record_regular)),
-                ll,
-                loc )
+            Lprim (Pmakeblock (Lambda.blk_record fields mut), ll, loc)
           | Record_float_unused -> assert false
           | Record_inlined {tag; name; num_nonconsts; attrs} ->
             Lprim
