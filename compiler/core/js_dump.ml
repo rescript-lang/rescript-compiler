@@ -796,11 +796,6 @@ and expression_desc cxt ~(level : int) f x : cxt =
       let tails =
         Ext_list.combine_array p.fields el (fun (i, opt) -> (Js_op.Lit i, opt))
       in
-      (* let is_optional (pname : Js_op.property_name) =
-           match pname with
-           | Lit n -> Ext_list.mem_string p.optional_labels n
-           | Symbol_name -> false
-         in *)
       let tag_name =
         match Ast_untagged_variants.process_tag_name p.attrs with
         | None -> L.tag
