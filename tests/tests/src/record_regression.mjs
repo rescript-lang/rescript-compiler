@@ -172,24 +172,36 @@ function inlinedRecord(ir) {
   let x1 = ir.x1;
   let x0 = ir.x0;
   if (x1 !== undefined) {
-    if (x1 === "x1") {
-      let x2 = ir.x2;
-      if (x2 !== undefined) {
-        return [
-          x0,
-          "x1",
-          x2,
-          ir.x3
-        ];
-      }
-      
+    switch (x1) {
+      case "x1" :
+        let x2 = ir.x2;
+        if (x2 !== undefined) {
+          return [
+            x0,
+            "x1",
+            x2,
+            ir.x3
+          ];
+        }
+        break;
+      case "xx1" :
+        let x2$1 = ir.x2;
+        if (x2$1 !== undefined) {
+          return [
+            x0,
+            "xx1",
+            x2$1,
+            ir.x3
+          ];
+        }
+        break;
     }
-    let x2$1 = ir.x2;
-    if (x2$1 !== undefined) {
+    let x2$2 = ir.x2;
+    if (x2$2 !== undefined) {
       return [
         x0,
         x1,
-        x2$1,
+        x2$2,
         ir.x3
       ];
     } else {
@@ -201,12 +213,12 @@ function inlinedRecord(ir) {
       ];
     }
   }
-  let x2$2 = ir.x2;
-  if (x2$2 !== undefined) {
+  let x2$3 = ir.x2;
+  if (x2$3 !== undefined) {
     return [
       x0,
       "n/a",
-      x2$2,
+      x2$3,
       ir.x3
     ];
   } else {
