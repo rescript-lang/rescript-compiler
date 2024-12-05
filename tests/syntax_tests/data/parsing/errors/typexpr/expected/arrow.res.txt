@@ -34,14 +34,15 @@
   Did you forget a `:` here? It signals the start of a type
 
 external add_nat :
-  (nat -> int, [ `Has_arity1 ]) function$ = "add_nat_bytecode"
+  (nat -> int (a:1), [ `Has_arity1 ]) function$ = "add_nat_bytecode"
 module Error2 =
   struct
     type nonrec observation =
       {
       observed: int ;
       onStep:
-        (currentValue:((unit)[@res.namedArgLoc ]) -> [%rescript.typehole ],
+        (currentValue:((unit)[@res.namedArgLoc ]) ->
+           [%rescript.typehole ] (a:1),
           [ `Has_arity1 ]) function$
         }
   end

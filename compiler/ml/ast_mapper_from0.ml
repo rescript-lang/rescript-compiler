@@ -101,8 +101,20 @@ module T = struct
     | Ptyp_arrow (lab, t1, t2) ->
       arrow ~loc ~attrs lab (sub.typ sub t1) (sub.typ sub t2)
     | Ptyp_tuple tyl -> tuple ~loc ~attrs (List.map (sub.typ sub) tyl)
-    | Ptyp_constr (lid, tl) ->
-      constr ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tl)
+    | Ptyp_constr (lid, tl) -> (
+      let typ0 =
+        constr ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tl)
+      in
+      match typ0.ptyp_desc with
+      | Ptyp_constr
+          (lid, [({ptyp_desc = Ptyp_arrow (lbl, t1, t2, _)} as fun_t); t_arity])
+        when lid.txt = Lident "function$" ->
+        let arity = Ast_uncurried.arity_from_type t_arity in
+        let fun_t =
+          {fun_t with ptyp_desc = Ptyp_arrow (lbl, t1, t2, Some arity)}
+        in
+        {typ0 with ptyp_desc = Ptyp_constr (lid, [fun_t; t_arity])}
+      | _ -> typ0)
     | Ptyp_object (l, o) ->
       object_ ~loc ~attrs (List.map (object_field sub) l) o
     | Ptyp_class () -> assert false

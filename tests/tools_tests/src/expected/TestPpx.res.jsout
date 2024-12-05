@@ -32,6 +32,8 @@ let Arity = {
   n: n
 };
 
+let Uncurried = {};
+
 let a = "A";
 
 let b = "B";
@@ -44,4 +46,5 @@ exports.M = M;
 exports.vv = vv;
 exports.OptionalFields = OptionalFields;
 exports.Arity = Arity;
+exports.Uncurried = Uncurried;
 /*  Not a pure module */
