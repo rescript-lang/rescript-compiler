@@ -2,9 +2,11 @@
 
 import * as Fs from "fs";
 import * as Os from "os";
+import * as Exn from "rescript/lib/es6/Exn.js";
 import * as List from "rescript/lib/es6/List.js";
 import * as Path from "path";
 import * as $$Array from "rescript/lib/es6/Array.js";
+import * as $$Error from "rescript/lib/es6/Error.js";
 import * as Belt_List from "rescript/lib/es6/Belt_List.js";
 import * as Nodeutil from "node:util";
 import * as Belt_Array from "rescript/lib/es6/Belt_Array.js";
@@ -12,6 +14,7 @@ import * as Pervasives from "rescript/lib/es6/Pervasives.js";
 import * as Child_process from "child_process";
 import * as Primitive_option from "rescript/lib/es6/Primitive_option.js";
 import * as Promises from "node:fs/promises";
+import * as Primitive_exceptions from "rescript/lib/es6/Primitive_exceptions.js";
 import * as RescriptTools_Docgen from "rescript/lib/es6/RescriptTools_Docgen.js";
 
 let Path$1 = {};
@@ -115,7 +118,9 @@ async function compileTest(id, code) {
 async function runtimeTests(code) {
   let match = await run("node", [
     "-e",
-    code
+    code,
+    "--input-type",
+    "commonjs"
   ], {
     cwd: process.cwd(),
     timeout: 2000
@@ -170,7 +175,24 @@ function extractDocFromFile(file) {
     "doc",
     file
   ]);
-  return RescriptTools_Docgen.decodeFromJson(JSON.parse(spawn.stdout.toString()));
+  let output = spawn.stdout.toString();
+  try {
+    return RescriptTools_Docgen.decodeFromJson(JSON.parse(output));
+  } catch (raw_exn) {
+    let exn = Primitive_exceptions.internalToException(raw_exn);
+    if (exn.RE_EXN_ID === Exn.$$Error) {
+      return $$Error.panic("Failed to generate docstrings from " + file);
+    }
+    throw {
+      RE_EXN_ID: "Assert_failure",
+      _1: [
+        "DocTest.res",
+        212,
+        9
+      ],
+      Error: new Error()
+    };
+  }
 }
 
 function getExamples(param) {
@@ -303,11 +325,28 @@ function getCodeBlocks(example) {
 }
 
 async function main() {
-  let modules = Fs.readdirSync("runtime").filter(f => {
-    if (f.endsWith(".resi")) {
-      return !f.startsWith("Belt");
+  let files = Fs.readdirSync("runtime");
+  let modules = $$Array.reduce(files.filter(f => {
+    if (!f.startsWith("Belt") && !f.startsWith("Js")) {
+      return !f.startsWith("RescriptTools");
     } else {
       return false;
+    }
+  }).filter(f => {
+    if (f.endsWith(".res")) {
+      return true;
+    } else {
+      return f.endsWith(".resi");
+    }
+  }), [], (acc, cur) => {
+    let isInterface = cur.endsWith(".resi");
+    let resi = Path.join("runtime", cur + "i");
+    if (!isInterface && Fs.existsSync(resi)) {
+      return acc.concat([cur + "i"]);
+    } else if (acc.includes(cur)) {
+      return acc;
+    } else {
+      return acc.concat([cur]);
     }
   }).map(f => getExamples(extractDocFromFile(Path.join("runtime", f)))).flat();
   let results = await Promise.all(modules.map(async example => {

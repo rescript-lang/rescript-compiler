@@ -155,7 +155,7 @@ let compileTest = async (~id, ~code) => {
 let runtimeTests = async code => {
   let {stdout, stderr, code: exitCode} = await SpawnAsync.run(
     ~command="node",
-    ~args=["-e", code],
+    ~args=["-e", code, "--input-type", "commonjs"],
     ~options={
       cwd: Process.cwd(),
       timeout: 2000,
@@ -201,10 +201,16 @@ let extractDocFromFile = file => {
   let toolsBin = Path.join([Process.cwd(), "cli", "rescript-tools"])
   let spawn = ChildProcess.spawnSync(toolsBin, ["doc", file])
 
-  spawn.stdout
-  ->Buffer.toString
-  ->JSON.parseExn
-  ->Docgen.decodeFromJson
+  let output = spawn.stdout->Buffer.toString
+
+  try {
+    output
+    ->JSON.parseExn
+    ->Docgen.decodeFromJson
+  } catch {
+  | Exn.Error(_) => Error.panic(`Failed to generate docstrings from ${file}`)
+  | _ => assert(false)
+  }
 }
 
 let getExamples = ({items}: Docgen.doc) => {
@@ -289,9 +295,30 @@ let getCodeBlocks = example => {
 }
 
 let main = async () => {
+  let files = Fs.readdirSync("runtime")
+
   let modules =
-    Fs.readdirSync("runtime")
-    ->Array.filter(f => f->String.endsWith(".resi") && !(f->String.startsWith("Belt")))
+    files
+    // Ignore Belt, Js modules and RescriptTools for now
+    ->Array.filter(f =>
+      !String.startsWith(f, "Belt") &&
+      !String.startsWith(f, "Js") &&
+      !String.startsWith(f, "RescriptTools")
+    )
+    ->Array.filter(f => f->String.endsWith(".res") || f->String.endsWith(".resi"))
+    ->Array.reduce([], (acc, cur) => {
+      let isInterface = cur->String.endsWith(".resi")
+
+      let resi = Path.join2("runtime", cur ++ "i")
+
+      // If .resi files exists append to array
+      if !isInterface && Fs.existsSync(resi) {
+        Array.concat(acc, [cur ++ "i"])
+      } else {
+        let a = !Array.includes(acc, cur) ? Array.concat(acc, [cur]) : acc
+        a
+      }
+    })
     ->Array.map(f => extractDocFromFile(Path.join(["runtime", f]))->getExamples)
     ->Array.flat
 
