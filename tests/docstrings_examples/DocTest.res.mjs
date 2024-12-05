@@ -130,18 +130,20 @@ async function runtimeTests(code) {
   let stdout = match.stdout;
   let std;
   let exit = 0;
-  if (exitCode == null) {
-    exit = 1;
-  } else if (exitCode === 0.0 && stderr.length > 0) {
-    std = {
-      TAG: "Ok",
-      _0: stderr
-    };
-  } else if (exitCode === 0.0) {
-    std = {
-      TAG: "Ok",
-      _0: stdout
-    };
+  if (exitCode !== null) {
+    if (exitCode === 0.0 && stderr.length > 0) {
+      std = {
+        TAG: "Ok",
+        _0: stderr
+      };
+    } else if (exitCode === 0.0) {
+      std = {
+        TAG: "Ok",
+        _0: stdout
+      };
+    } else {
+      exit = 1;
+    }
   } else {
     exit = 1;
   }

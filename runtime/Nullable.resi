@@ -147,11 +147,10 @@ switch Nullable.getExn(%raw("null")) {
 | _ => assert(false)
 }
 
-// TODO(aspeddro): This example dont pass
-// switch Nullable.getExn(%raw("undefined")) {
-// | exception Invalid_argument(_) => assert(true)
-// | _ => assert(false)
-// }
+switch Nullable.getExn(%raw("undefined")) {
+| exception Invalid_argument(_) => assert(true)
+| _ => assert(false)
+}
 ```
 
 ## Exceptions
