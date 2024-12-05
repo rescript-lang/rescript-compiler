@@ -19,8 +19,6 @@ open Asttypes
 
 type loc_kind = Loc_FILE | Loc_LINE | Loc_MODULE | Loc_LOC | Loc_POS
 
-type record_repr = Record_regular | Record_optional
-
 type tag_info =
   | Blk_constructor of {
       name: string;
@@ -39,9 +37,8 @@ type tag_info =
   | Blk_tuple
   | Blk_poly_var of string
   | Blk_record of {
-      fields: string array;
+      fields: (string * bool (* optional *)) array;
       mutable_flag: mutable_flag;
-      record_repr: record_repr;
     }
   | Blk_module of string list
   | Blk_module_export of Ident.t list
@@ -68,7 +65,6 @@ val mutable_flag_of_tag_info : tag_info -> mutable_flag
 val blk_record :
   (Types.label_description * Typedtree.record_label_definition) array ->
   mutable_flag ->
-  record_repr ->
   tag_info
 
 val blk_record_ext :
