@@ -156,7 +156,6 @@ and record_representation =
       attrs: Parsetree.attributes;
     }
   | Record_extension (* Inlined record under extension *)
-  | Record_optional_labels
 
 and label_declaration = {
   ld_id: Ident.t;
@@ -310,10 +309,6 @@ let same_record_representation x y =
   match x with
   | Record_regular -> y = Record_regular
   | Record_float_unused -> y = Record_float_unused
-  | Record_optional_labels -> (
-    match y with
-    | Record_optional_labels -> true
-    | _ -> false)
   | Record_inlined {tag; name; num_nonconsts} -> (
     match y with
     | Record_inlined y ->
