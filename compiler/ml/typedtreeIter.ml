@@ -199,7 +199,7 @@ end = struct
       | None -> ()
       | Some pat -> iter_pattern pat)
     | Tpat_record (list, _closed) ->
-      List.iter (fun (_, _, pat) -> iter_pattern pat) list
+      List.iter (fun (_, _, pat, _) -> iter_pattern pat) list
     | Tpat_array list -> List.iter iter_pattern list
     | Tpat_or (p1, p2, _) ->
       iter_pattern p1;
@@ -255,8 +255,8 @@ end = struct
     | Texp_record {fields; extended_expression; _} -> (
       Array.iter
         (function
-          | _, Kept _ -> ()
-          | _, Overridden (_, exp) -> iter_expression exp)
+          | _, Kept _, _ -> ()
+          | _, Overridden (_, exp), _ -> iter_expression exp)
         fields;
       match extended_expression with
       | None -> ()

@@ -637,8 +637,10 @@ let signatureHelp ~path ~pos ~currentFile ~debug ~allowForConstructorPayloads =
                   fields
                   |> List.find_map
                        (fun
-                         (({loc; txt}, expr) :
-                           Longident.t Location.loc * Parsetree.expression)
+                         (({loc; txt}, expr, _) :
+                           Longident.t Location.loc
+                           * Parsetree.expression
+                           * bool)
                        ->
                          if
                            posBeforeCursor >= Pos.ofLexing loc.loc_start
@@ -679,8 +681,8 @@ let signatureHelp ~path ~pos ~currentFile ~debug ~allowForConstructorPayloads =
                   fields
                   |> List.find_map
                        (fun
-                         (({loc; txt}, pat) :
-                           Longident.t Location.loc * Parsetree.pattern)
+                         (({loc; txt}, pat, _) :
+                           Longident.t Location.loc * Parsetree.pattern * bool)
                        ->
                          if
                            posBeforeCursor >= Pos.ofLexing loc.loc_start

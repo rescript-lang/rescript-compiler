@@ -15,13 +15,13 @@ let expr expr =
     | {pexp_desc = Pexp_constraint _} -> Parenthesized
     | _ -> Nothing)
 
-let expr_record_row_rhs e =
+let expr_record_row_rhs ~optional e =
   let kind = expr e in
   match kind with
-  | Nothing when Res_parsetree_viewer.has_optional_attribute e.pexp_attributes
-    -> (
+  | Nothing when optional -> (
     match e.pexp_desc with
     | Pexp_ifthenelse _ | Pexp_fun _ -> Parenthesized
+    | _ when ParsetreeViewer.is_binary_expression e -> Parenthesized
     | _ -> kind)
   | _ -> kind
 

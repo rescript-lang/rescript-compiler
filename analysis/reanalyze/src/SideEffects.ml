@@ -75,7 +75,8 @@ and exprOptNoSideEffects eo =
   | None -> true
   | Some e -> e |> exprNoSideEffects
 
-and fieldNoSideEffects ((_ld, rld) : _ * Typedtree.record_label_definition) =
+and fieldNoSideEffects
+    ((_ld, rld, _) : _ * Typedtree.record_label_definition * _) =
   match rld with
   | Kept _typeExpr -> true
   | Overridden (_lid, e) -> e |> exprNoSideEffects

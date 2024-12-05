@@ -57,7 +57,9 @@ let to_method_callback loc (self : Bs_ast_mapper.mapper) label
         ( Nolabel,
           Exp.constraint_ ~loc
             (Exp.record ~loc
-               [({loc; txt = Ast_literal.Lid.hidden_field arity_s}, body)]
+               [
+                 ({loc; txt = Ast_literal.Lid.hidden_field arity_s}, body, false);
+               ]
                None)
             (Typ.constr ~loc
                {

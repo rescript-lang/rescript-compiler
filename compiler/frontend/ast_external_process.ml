@@ -266,8 +266,8 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
               fields
               |> List.iter
                    (fun
-                     ((l, exp) :
-                       Longident.t Location.loc * Parsetree.expression)
+                     ((l, exp, _) :
+                       Longident.t Location.loc * Parsetree.expression * bool)
                    ->
                      match (l, exp.pexp_desc) with
                      | ( {txt = Lident "from"; _},
@@ -293,8 +293,10 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                   with_fields
                   |> List.filter_map
                        (fun
-                         ((l, exp) :
-                           Longident.t Location.loc * Parsetree.expression)
+                         ((l, exp, _) :
+                           Longident.t Location.loc
+                           * Parsetree.expression
+                           * bool)
                        ->
                          match exp.pexp_desc with
                          | Pexp_constant (Pconst_string (s, _)) -> (

@@ -232,9 +232,9 @@ let filter_parsing_attrs attrs =
       | ( {
             Location.txt =
               ( "res.arity" | "res.braces" | "ns.braces" | "res.iflet"
-              | "res.namedArgLoc" | "res.optional" | "res.ternary" | "res.async"
-              | "res.await" | "res.template" | "res.taggedTemplate"
-              | "res.patVariantSpread" | "res.dictPattern" );
+              | "res.namedArgLoc" | "res.ternary" | "res.async" | "res.await"
+              | "res.template" | "res.taggedTemplate" | "res.patVariantSpread"
+              | "res.dictPattern" );
           },
           _ ) ->
         false
@@ -375,12 +375,6 @@ let is_if_let_expr expr =
     when has_if_let_attribute attrs ->
     true
   | _ -> false
-
-let rec has_optional_attribute attrs =
-  match attrs with
-  | [] -> false
-  | ({Location.txt = "ns.optional" | "res.optional"}, _) :: _ -> true
-  | _ :: attrs -> has_optional_attribute attrs
 
 let has_attributes attrs =
   List.exists

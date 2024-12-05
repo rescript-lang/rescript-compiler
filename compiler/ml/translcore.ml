@@ -1143,7 +1143,8 @@ and transl_let rec_flag pat_expr_list body =
 
 and transl_record loc env fields repres opt_init_expr =
   match (opt_init_expr, repres, fields) with
-  | None, Record_unboxed _, [|({lbl_name; lbl_loc}, Overridden (_, expr))|] ->
+  | None, Record_unboxed _, [|({lbl_name; lbl_loc}, Overridden (_, expr), _)|]
+    ->
     (* ReScript uncurried encoding *)
     let loc = lbl_loc in
     let lambda = transl_exp expr in
@@ -1158,7 +1159,9 @@ and transl_record loc env fields repres opt_init_expr =
     else lambda
   | _ -> (
     let size = Array.length fields in
-    let optional = Ext_array.exists fields (fun (ld, _) -> ld.lbl_optional) in
+    let optional =
+      Ext_array.exists fields (fun (ld, _, _) -> ld.lbl_optional)
+    in
     (* Determine if there are "enough" fields (only relevant if this is a
        functional-style record update *)
     let no_init =
@@ -1177,7 +1180,7 @@ and transl_record loc env fields repres opt_init_expr =
       let init_id = Ident.create "init" in
       let lv =
         Array.mapi
-          (fun i (lbl, definition) ->
+          (fun i (lbl, definition, _) ->
             match definition with
             | Kept _ ->
               let access =
@@ -1195,7 +1198,7 @@ and transl_record loc env fields repres opt_init_expr =
       in
       let ll = Array.to_list lv in
       let mut =
-        if Array.exists (fun (lbl, _) -> lbl.lbl_mut = Mutable) fields then
+        if Array.exists (fun (lbl, _, _) -> lbl.lbl_mut = Mutable) fields then
           Mutable
         else Immutable
       in
@@ -1237,7 +1240,7 @@ and transl_record loc env fields repres opt_init_expr =
             | _ -> assert false)
           | Record_extension ->
             let path =
-              let label, _ = fields.(0) in
+              let label, _, _ = fields.(0) in
               match label.lbl_res.desc with
               | Tconstr (p, _, _) -> p
               | _ -> assert false
@@ -1254,7 +1257,7 @@ and transl_record loc env fields repres opt_init_expr =
       (* Take a shallow copy of the init record, then mutate the fields
          of the copy *)
       let copy_id = Ident.create "newrecord" in
-      let update_field cont (lbl, definition) =
+      let update_field cont (lbl, definition, _opt) =
         match definition with
         | Kept _type -> cont
         | Overridden (_lid, expr) ->

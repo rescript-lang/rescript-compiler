@@ -104,7 +104,7 @@ let rec printPattern pattern ~pos ~indentation =
     ^ addIndentation (indentation + 1)
     ^ "fields:\n"
     ^ (fields
-      |> List.map (fun ((Location.{txt} as loc), pat) ->
+      |> List.map (fun ((Location.{txt} as loc), pat, _) ->
              addIndentation (indentation + 2)
              ^ (loc |> printLocDenominatorLoc ~pos)
              ^ (Utils.flattenLongIdent txt |> ident |> str)
@@ -245,7 +245,7 @@ and printExprItem expr ~pos ~indentation =
     ^ addIndentation (indentation + 1)
     ^ "fields:\n"
     ^ (fields
-      |> List.map (fun ((Location.{txt} as loc), expr) ->
+      |> List.map (fun ((Location.{txt} as loc), expr, _) ->
              addIndentation (indentation + 2)
              ^ (loc |> printLocDenominatorLoc ~pos)
              ^ (Utils.flattenLongIdent txt |> ident |> str)

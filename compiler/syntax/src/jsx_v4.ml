@@ -31,8 +31,6 @@ let get_label str =
   | Optional str | Labelled str -> str
   | Nolabel -> ""
 
-let optional_attrs = [Jsx_common.optional_attr]
-
 let constant_string ~loc str =
   Ast_helper.Exp.constant ~loc (Pconst_string (str, None))
 
@@ -192,13 +190,14 @@ let record_from_props ~loc ~remove_key call_arguments =
   let rec remove_last_position_unit_aux props acc =
     match props with
     | [] -> acc
-    | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})] ->
+    | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}, _)]
+      ->
       acc
-    | (Nolabel, {pexp_loc}) :: _rest ->
+    | (Nolabel, {pexp_loc}, _) :: _rest ->
       Jsx_common.raise_error ~loc:pexp_loc
         "JSX: found non-labelled argument before the last position"
-    | ((Labelled txt, {pexp_loc}) as prop) :: rest
-    | ((Optional txt, {pexp_loc}) as prop) :: rest ->
+    | ((Labelled txt, {pexp_loc}, _) as prop) :: rest
+    | ((Optional txt, {pexp_loc}, _) as prop) :: rest ->
       if txt = spread_props_label then
         match acc with
         | [] -> remove_last_position_unit_aux rest (prop :: acc)
@@ -211,25 +210,23 @@ let record_from_props ~loc ~remove_key call_arguments =
   let props, props_to_spread =
     remove_last_position_unit_aux call_arguments []
     |> List.rev
-    |> List.partition (fun (label, _) -> label <> labelled "_spreadProps")
+    |> List.partition (fun (label, _, _) -> label <> labelled "_spreadProps")
   in
   let props =
     if remove_key then
-      props |> List.filter (fun (arg_label, _) -> "key" <> get_label arg_label)
+      props
+      |> List.filter (fun (arg_label, _, _) -> "key" <> get_label arg_label)
     else props
   in
 
-  let process_prop (arg_label, ({pexp_loc} as pexpr)) =
+  let process_prop (arg_label, ({pexp_loc} as pexpr), optional) =
     (* In case filed label is "key" only then change expression to option *)
     let id = get_label arg_label in
-    if is_optional arg_label then
-      ( {txt = Lident id; loc = pexp_loc},
-        {pexpr with pexp_attributes = optional_attrs} )
-    else ({txt = Lident id; loc = pexp_loc}, pexpr)
+    ({txt = Lident id; loc = pexp_loc}, pexpr, optional || is_optional arg_label)
   in
   let fields = props |> List.map process_prop in
   let spread_fields =
-    props_to_spread |> List.map (fun (_, expression) -> expression)
+    props_to_spread |> List.map (fun (_, expression, _) -> expression)
   in
   match (fields, spread_fields) with
   | [], [spread_props] | [], spread_props :: _ -> spread_props
@@ -390,14 +387,14 @@ let transform_uppercase_call3 ~config module_path mapper jsx_expr_loc
   let recursively_transformed_args_for_make =
     args_for_make
     |> List.map (fun (label, expression) ->
-           (label, mapper.expr mapper expression))
+           (label, mapper.expr mapper expression, false))
   in
   let children_arg = ref None in
   let args =
     recursively_transformed_args_for_make
     @
     match children_expr with
-    | Exact children -> [(labelled "children", children)]
+    | Exact children -> [(labelled "children", children, false)]
     | ListLiteral {pexp_desc = Pexp_array list} when list = [] -> []
     | ListLiteral expression -> (
       (* this is a hack to support react components that introspect into their children *)
@@ -409,13 +406,14 @@ let transform_uppercase_call3 ~config module_path mapper jsx_expr_loc
             Exp.apply
               (Exp.ident
                  {txt = module_access_name config "array"; loc = Location.none})
-              [(Nolabel, expression)] );
+              [(Nolabel, expression)],
+            false );
         ]
       | _ ->
         [
           ( labelled "children",
-            Exp.ident {loc = Location.none; txt = Ldot (Lident "React", "null")}
-          );
+            Exp.ident {loc = Location.none; txt = Ldot (Lident "React", "null")},
+            false );
         ])
   in
 
@@ -440,7 +438,9 @@ let transform_uppercase_call3 ~config module_path mapper jsx_expr_loc
     if is_empty_record record then empty_record ~loc:jsx_expr_loc else record
   in
   let key_prop =
-    args |> List.filter (fun (arg_label, _) -> "key" = get_label arg_label)
+    args
+    |> List.filter_map (fun (arg_label, e, _opt) ->
+           if "key" = get_label arg_label then Some (arg_label, e) else None)
   in
   let make_i_d =
     Exp.ident ~loc:call_expr_loc
@@ -522,7 +522,7 @@ let transform_lowercase_call3 ~config mapper jsx_expr_loc call_expr_loc attrs
     let recursively_transformed_args_for_make =
       args_for_make
       |> List.map (fun (label, expression) ->
-             (label, mapper.expr mapper expression))
+             (label, mapper.expr mapper expression, false))
     in
     let children_arg = ref None in
     let args =
@@ -532,13 +532,14 @@ let transform_lowercase_call3 ~config mapper jsx_expr_loc call_expr_loc attrs
       | Exact children ->
         [
           ( labelled "children",
-            Exp.apply ~attrs:optional_attrs
+            Exp.apply
               (Exp.ident
                  {
                    txt = Ldot (element_binding, "someElement");
                    loc = Location.none;
                  })
-              [(Nolabel, children)] );
+              [(Nolabel, children)],
+            true );
         ]
       | ListLiteral {pexp_desc = Pexp_array list} when list = [] -> []
       | ListLiteral expression ->
@@ -549,7 +550,8 @@ let transform_lowercase_call3 ~config mapper jsx_expr_loc call_expr_loc attrs
             Exp.apply
               (Exp.ident
                  {txt = module_access_name config "array"; loc = Location.none})
-              [(Nolabel, expression)] );
+              [(Nolabel, expression)],
+            false );
         ]
     in
     let is_empty_record {pexp_desc} =
@@ -562,7 +564,9 @@ let transform_lowercase_call3 ~config mapper jsx_expr_loc call_expr_loc attrs
       if is_empty_record record then empty_record ~loc:jsx_expr_loc else record
     in
     let key_prop =
-      args |> List.filter (fun (arg_label, _) -> "key" = get_label arg_label)
+      args
+      |> List.filter_map (fun (arg_label, e, _opt) ->
+             if "key" = get_label arg_label then Some (arg_label, e) else None)
     in
     let jsx_expr, key_and_unit =
       match (!children_arg, key_prop) with
@@ -614,7 +618,8 @@ let transform_lowercase_call3 ~config mapper jsx_expr_loc call_expr_loc attrs
         ]
       | non_empty_props ->
         let props_record =
-          record_from_props ~loc:Location.none ~remove_key:false non_empty_props
+          record_from_props ~loc:Location.none ~remove_key:false
+            (non_empty_props |> List.map (fun (l, e) -> (l, e, false)))
         in
         [
           (* "div" *)
@@ -1072,10 +1077,9 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
             (( {loc = ppat_loc; txt = Lident (get_label arg_label)},
                {
                  pattern_with_safe_label with
-                 ppat_attributes =
-                   (if is_optional arg_label then optional_attrs else [])
-                   @ pattern.ppat_attributes;
-               } )
+                 ppat_attributes = pattern.ppat_attributes;
+               },
+               is_optional arg_label )
             :: patterns_with_label)
             patterns_with_nolabel expr
         else
@@ -1086,10 +1090,8 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
             ->
             returned_expression patterns_with_label
               (( {loc = ppat_loc; txt = Lident txt},
-                 {
-                   pattern with
-                   ppat_attributes = optional_attrs @ pattern.ppat_attributes;
-                 } )
+                 {pattern with ppat_attributes = pattern.ppat_attributes},
+                 true )
               :: patterns_with_nolabel)
               expr
           | _ ->
@@ -1108,7 +1110,7 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
     (* (ref) => expr *)
     let expression =
       List.fold_left
-        (fun expr (_, pattern) ->
+        (fun expr (_, pattern, _opt) ->
           let pattern =
             match pattern.ppat_desc with
             | Ppat_var {txt} when txt = "ref" ->
@@ -1437,7 +1439,9 @@ let expr ~config mapper expression =
       in
       let children_expr = transform_children_if_list ~mapper list_items in
       let record_of_children children =
-        Exp.record [(Location.mknoloc (Lident "children"), children)] None
+        Exp.record
+          [(Location.mknoloc (Lident "children"), children, false)]
+          None
       in
       let apply_jsx_array expr =
         Exp.apply
