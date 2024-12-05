@@ -2046,6 +2046,7 @@ and mcomp_record_description type_pairs env =
       if
         Ident.name l1.ld_id = Ident.name l2.ld_id
         && l1.ld_mutable = l2.ld_mutable
+        && l1.ld_optional = l2.ld_optional
       then iter xs ys
       else raise (Unify [])
     | [], [] -> ()

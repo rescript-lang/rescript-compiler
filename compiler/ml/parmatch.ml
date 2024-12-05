@@ -526,19 +526,24 @@ let all_record_args lbls =
     in
     List.iter
       (fun ((id, lbl, pat) as x) ->
+        let lbl_is_optional () =
+          match lbl.lbl_repres with
+          | Record_inlined _ -> false
+          | _ -> lbl.lbl_optional
+        in
         let x =
           match pat.pat_desc with
           | Tpat_construct
               ( {txt = Longident.Ldot (Longident.Lident "*predef*", "Some")},
                 _,
                 [({pat_desc = Tpat_constant _} as c)] )
-            when lbl.lbl_optional ->
+            when lbl_is_optional () ->
             (id, lbl, c)
           | Tpat_construct
               ( {txt = Longident.Ldot (Longident.Lident "*predef*", "Some")},
                 _,
                 [({pat_desc = Tpat_construct (_, cd, _)} as pat_construct)] )
-            when lbl.lbl_optional -> (
+            when lbl_is_optional () -> (
             let cdecl =
               Ast_untagged_variants
               .constructor_declaration_from_constructor_description
