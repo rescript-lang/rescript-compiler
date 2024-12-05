@@ -15,6 +15,7 @@
 
 #### :bug: Bug fix
 - Fix bug where a ref assignment is moved ouside a conditional. https://github.com/rescript-lang/rescript/pull/7176
+- Fix nullable to opt conversion. https://github.com/rescript-lang/rescript/pull/7193
 
 #### :house: Internal
 - Use latest compiler for tests. https://github.com/rescript-lang/rescript/pull/7186
