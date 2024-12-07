@@ -396,15 +396,16 @@ and simple_pattern ctxt (f:Format.formatter) (x:pattern) : unit =
     | Ppat_type li ->
         pp f "#%a" longident_loc li
     | Ppat_record (l, closed) ->
-        let longident_x_pattern f (li, p) =
+        let longident_x_pattern f (li, p, opt) =
+          let opt_str = if opt then "?" else "" in
           match (li,p) with
           | ({txt=Lident s;_ },
              {ppat_desc=Ppat_var {txt;_};
               ppat_attributes=[]; _})
             when s = txt ->
-              pp f "@[<2>%a@]"  longident_loc li
+              pp f "@[<2>%a%s@]"  longident_loc li opt_str
           | _ ->
-              pp f "@[<2>%a@;=@;%a@]" longident_loc li (pattern1 ctxt) p
+              pp f "@[<2>%a%s@;=@;%a@]" longident_loc li opt_str (pattern1 ctxt) p
         in
         begin match closed with
         | Closed ->
@@ -712,13 +713,14 @@ and simple_expr ctxt f x =
           (core_type ctxt) ct
     | Pexp_variant (l, None) -> pp f "`%s" l
     | Pexp_record (l, eo) ->
-        let longident_x_expression f ( li, e) =
+        let longident_x_expression f ( li, e, opt) =
+          let opt_str = if opt then "?" else "" in
           match e with
           |  {pexp_desc=Pexp_ident {txt;_};
               pexp_attributes=[]; _} when li.txt = txt ->
-              pp f "@[<hov2>%a@]" longident_loc li
+              pp f "@[<hov2>%a%s@]" longident_loc li opt_str
           | _ ->
-              pp f "@[<hov2>%a@;=@;%a@]" longident_loc li (simple_expr ctxt) e
+              pp f "@[<hov2>%a@;=@;%s%a@]" longident_loc li opt_str (simple_expr ctxt) e
         in
         pp f "@[<hv0>@[<hv2>{@;%a%a@]@;}@]"(* "@[<hov2>{%a%a}@]" *)
           (option ~last:" with@;" (simple_expr ctxt)) eo

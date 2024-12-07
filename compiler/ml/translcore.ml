@@ -923,7 +923,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
     let targ = transl_exp arg in
     match lbl.lbl_repres with
     | Record_float_unused -> assert false
-    | Record_regular | Record_optional_labels _ ->
+    | Record_regular ->
       Lprim (Pfield (lbl.lbl_pos, Lambda.fld_record lbl), [targ], e.exp_loc)
     | Record_inlined _ ->
       Lprim
@@ -938,8 +938,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
     let access =
       match lbl.lbl_repres with
       | Record_float_unused -> assert false
-      | Record_regular | Record_optional_labels _ ->
-        Psetfield (lbl.lbl_pos, Lambda.fld_record_set lbl)
+      | Record_regular -> Psetfield (lbl.lbl_pos, Lambda.fld_record_set lbl)
       | Record_inlined _ ->
         Psetfield (lbl.lbl_pos, Lambda.fld_record_inline_set lbl)
       | Record_unboxed _ -> assert false
@@ -1144,7 +1143,8 @@ and transl_let rec_flag pat_expr_list body =
 
 and transl_record loc env fields repres opt_init_expr =
   match (opt_init_expr, repres, fields) with
-  | None, Record_unboxed _, [|({lbl_name; lbl_loc}, Overridden (_, expr))|] ->
+  | None, Record_unboxed _, [|({lbl_name; lbl_loc}, Overridden (_, expr), _)|]
+    ->
     (* ReScript uncurried encoding *)
     let loc = lbl_loc in
     let lambda = transl_exp expr in
@@ -1159,6 +1159,9 @@ and transl_record loc env fields repres opt_init_expr =
     else lambda
   | _ -> (
     let size = Array.length fields in
+    let optional =
+      Ext_array.exists fields (fun (ld, _, _) -> ld.lbl_optional)
+    in
     (* Determine if there are "enough" fields (only relevant if this is a
        functional-style record update *)
     let no_init =
@@ -1167,12 +1170,7 @@ and transl_record loc env fields repres opt_init_expr =
       | _ -> false
     in
     if
-      no_init
-      || size < 20
-         &&
-         match repres with
-         | Record_optional_labels _ -> false
-         | _ -> true
+      no_init || (size < 20 && not optional)
       (* TODO: More strategies
          3 + 2 * List.length lbl_expr_list >= size (density)
       *)
@@ -1182,14 +1180,13 @@ and transl_record loc env fields repres opt_init_expr =
       let init_id = Ident.create "init" in
       let lv =
         Array.mapi
-          (fun i (lbl, definition) ->
+          (fun i (lbl, definition, _) ->
             match definition with
             | Kept _ ->
               let access =
                 match repres with
                 | Record_float_unused -> assert false
-                | Record_regular | Record_optional_labels _ ->
-                  Pfield (i, Lambda.fld_record lbl)
+                | Record_regular -> Pfield (i, Lambda.fld_record lbl)
                 | Record_inlined _ -> Pfield (i, Lambda.fld_record_inline lbl)
                 | Record_unboxed _ -> assert false
                 | Record_extension ->
@@ -1201,7 +1198,7 @@ and transl_record loc env fields repres opt_init_expr =
       in
       let ll = Array.to_list lv in
       let mut =
-        if Array.exists (fun (lbl, _) -> lbl.lbl_mut = Mutable) fields then
+        if Array.exists (fun (lbl, _, _) -> lbl.lbl_mut = Mutable) fields then
           Mutable
         else Immutable
       in
@@ -1212,16 +1209,12 @@ and transl_record loc env fields repres opt_init_expr =
           match repres with
           | Record_float_unused -> assert false
           | Record_regular ->
-            Lconst
-              (Const_block (Lambda.blk_record fields mut Record_regular, cl))
-          | Record_optional_labels _ ->
-            Lconst
-              (Const_block (Lambda.blk_record fields mut Record_optional, cl))
-          | Record_inlined {tag; name; num_nonconsts; optional_labels; attrs} ->
+            Lconst (Const_block (Lambda.blk_record fields mut, cl))
+          | Record_inlined {tag; name; num_nonconsts; attrs} ->
             Lconst
               (Const_block
-                 ( Lambda.blk_record_inlined fields name num_nonconsts
-                     optional_labels ~tag ~attrs mut,
+                 ( Lambda.blk_record_inlined fields name num_nonconsts ~tag
+                     ~attrs mut,
                    cl ))
           | Record_unboxed _ ->
             Lconst
@@ -1232,19 +1225,13 @@ and transl_record loc env fields repres opt_init_expr =
         with Not_constant -> (
           match repres with
           | Record_regular ->
-            Lprim
-              (Pmakeblock (Lambda.blk_record fields mut Record_regular), ll, loc)
-          | Record_optional_labels _ ->
-            Lprim
-              ( Pmakeblock (Lambda.blk_record fields mut Record_optional),
-                ll,
-                loc )
+            Lprim (Pmakeblock (Lambda.blk_record fields mut), ll, loc)
           | Record_float_unused -> assert false
-          | Record_inlined {tag; name; num_nonconsts; optional_labels; attrs} ->
+          | Record_inlined {tag; name; num_nonconsts; attrs} ->
             Lprim
               ( Pmakeblock
-                  (Lambda.blk_record_inlined fields name num_nonconsts
-                     optional_labels ~tag ~attrs mut),
+                  (Lambda.blk_record_inlined fields name num_nonconsts ~tag
+                     ~attrs mut),
                 ll,
                 loc )
           | Record_unboxed _ -> (
@@ -1253,7 +1240,7 @@ and transl_record loc env fields repres opt_init_expr =
             | _ -> assert false)
           | Record_extension ->
             let path =
-              let label, _ = fields.(0) in
+              let label, _, _ = fields.(0) in
               match label.lbl_res.desc with
               | Tconstr (p, _, _) -> p
               | _ -> assert false
@@ -1270,14 +1257,14 @@ and transl_record loc env fields repres opt_init_expr =
       (* Take a shallow copy of the init record, then mutate the fields
          of the copy *)
       let copy_id = Ident.create "newrecord" in
-      let update_field cont (lbl, definition) =
+      let update_field cont (lbl, definition, _opt) =
         match definition with
         | Kept _type -> cont
         | Overridden (_lid, expr) ->
           let upd =
             match repres with
             | Record_float_unused -> assert false
-            | Record_regular | Record_optional_labels _ ->
+            | Record_regular ->
               Psetfield (lbl.lbl_pos, Lambda.fld_record_set lbl)
             | Record_inlined _ ->
               Psetfield (lbl.lbl_pos, Lambda.fld_record_inline_set lbl)

@@ -128,13 +128,6 @@ let constructor_descrs ty_path decl cstrs =
             describe_constructors idx_const (idx_nonconst + 1) rem )
       in
       let cstr_name = Ident.name cd_id in
-      let optional_labels =
-        match cd_args with
-        | Cstr_tuple _ -> []
-        | Cstr_record lbls ->
-          Ext_list.filter_map lbls (fun {ld_id; ld_optional} ->
-              if ld_optional then Some ld_id.name else None)
-      in
       let existentials, cstr_args, cstr_inlined =
         let representation =
           if decl.type_unboxed.unboxed then Record_unboxed true
@@ -144,7 +137,6 @@ let constructor_descrs ty_path decl cstrs =
                 tag = idx_nonconst;
                 name = cstr_name;
                 num_nonconsts = !num_nonconsts;
-                optional_labels;
                 attrs = cd_attributes;
               }
         in
@@ -232,6 +224,7 @@ let dummy_label =
     lbl_res = none;
     lbl_arg = none;
     lbl_mut = Immutable;
+    lbl_optional = false;
     lbl_pos = -1;
     lbl_all = [||];
     lbl_repres = Record_regular;
@@ -251,6 +244,7 @@ let label_descrs ty_res lbls repres priv =
           lbl_res = ty_res;
           lbl_arg = l.ld_type;
           lbl_mut = l.ld_mutable;
+          lbl_optional = l.ld_optional;
           lbl_pos = num;
           lbl_all = all_labels;
           lbl_repres = repres;

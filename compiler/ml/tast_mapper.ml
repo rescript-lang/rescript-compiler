@@ -59,6 +59,7 @@ type mapper = {
 let id x = x
 let tuple2 f1 f2 (x, y) = (f1 x, f2 y)
 let tuple3 f1 f2 f3 (x, y, z) = (f1 x, f2 y, f3 z)
+let tuple4 f1 f2 f3 f4 (x, y, z, w) = (f1 x, f2 y, f3 z, f4 w)
 let opt f = function
   | None -> None
   | Some x -> Some (f x)
@@ -173,7 +174,7 @@ let pat sub x =
       Tpat_construct (loc, cd, List.map (sub.pat sub) l)
     | Tpat_variant (l, po, rd) -> Tpat_variant (l, opt (sub.pat sub) po, rd)
     | Tpat_record (l, closed) ->
-      Tpat_record (List.map (tuple3 id id (sub.pat sub)) l, closed)
+      Tpat_record (List.map (tuple4 id id (sub.pat sub) id) l, closed)
     | Tpat_array l -> Tpat_array (List.map (sub.pat sub) l)
     | Tpat_or (p1, p2, rd) -> Tpat_or (sub.pat sub p1, sub.pat sub p2, rd)
     | Tpat_alias (p, id, s) -> Tpat_alias (sub.pat sub p, id, s)
@@ -215,9 +216,9 @@ let expr sub x =
       let fields =
         Array.map
           (function
-            | label, Kept t -> (label, Kept t)
-            | label, Overridden (lid, exp) ->
-              (label, Overridden (lid, sub.expr sub exp)))
+            | label, Kept t, o -> (label, Kept t, o)
+            | label, Overridden (lid, exp), o ->
+              (label, Overridden (lid, sub.expr sub exp), o))
           fields
       in
       Texp_record

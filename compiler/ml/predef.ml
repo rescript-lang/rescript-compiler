@@ -316,7 +316,7 @@ let common_initial_env add_type add_extension empty_env =
                 ld_type = newgenty (Tconstr (path_option, [tvar], ref Mnil));
               };
             ],
-            Record_optional_labels [Ident.name ident_dict_magic_field_name] );
+            Record_regular );
     }
   and decl_uncurried =
     let tvar1, tvar2 = (newgenvar (), newgenvar ()) in

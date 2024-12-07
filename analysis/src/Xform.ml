@@ -78,10 +78,10 @@ module IfThenElse = struct
       | None -> None
       | Some patList -> Some (mkPat (Ppat_tuple patList)))
     | Pexp_record (items, None) -> (
-      let itemToPat (x, e) =
+      let itemToPat (x, e, o) =
         match expToPat e with
         | None -> None
-        | Some p -> Some (x, p)
+        | Some p -> Some (x, p, o)
       in
       match listToPat ~itemToPat items with
       | None -> None

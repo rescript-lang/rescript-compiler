@@ -473,7 +473,7 @@ let completionWithParser1 ~currentFile ~debug ~offset ~path ~posCursor
         ?contextPath p
     | Ppat_record (fields, _) ->
       fields
-      |> List.iter (fun (fname, p) ->
+      |> List.iter (fun (fname, p, _) ->
              match fname with
              | {Location.txt = Longident.Lident fname} ->
                scopePattern
@@ -879,7 +879,8 @@ let completionWithParser1 ~currentFile ~debug ~offset ~path ~posCursor
                  Pstr_eval
                    ( {
                        pexp_desc =
-                         Pexp_record (({txt = Lident "from"}, fromExpr) :: _, _);
+                         Pexp_record
+                           (({txt = Lident "from"}, fromExpr, _) :: _, _);
                      },
                      _ );
              };

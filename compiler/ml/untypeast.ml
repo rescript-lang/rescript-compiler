@@ -261,7 +261,8 @@ let pattern sub pat =
       | Tpat_record (list, closed) ->
         Ppat_record
           ( List.map
-              (fun (lid, _, pat) -> (map_loc sub lid, sub.pat sub pat))
+              (fun (lid, _, pat, opt) ->
+                (map_loc sub lid, sub.pat sub pat, opt))
               list,
             closed )
       | Tpat_array list -> Ppat_array (List.map (sub.pat sub) list)
@@ -361,8 +362,8 @@ let expression sub exp =
       let list =
         Array.fold_left
           (fun l -> function
-            | _, Kept _ -> l
-            | _, Overridden (lid, exp) -> (lid, sub.expr sub exp) :: l)
+            | _, Kept _, _ -> l
+            | _, Overridden (lid, exp), opt -> (lid, sub.expr sub exp, opt) :: l)
           [] fields
       in
       Pexp_record (list, map_opt (sub.expr sub) extended_expression)

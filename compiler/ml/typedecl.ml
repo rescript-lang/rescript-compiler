@@ -630,16 +630,12 @@ let transl_declaration ~type_record_as_object env sdecl id =
       match lbls_opt with
       | Some (lbls, lbls') ->
         check_duplicates sdecl.ptype_loc lbls StringSet.empty;
-        let optional_labels =
-          Ext_list.filter_map lbls (fun lbl ->
-              if lbl.ld_optional then Some lbl.ld_name.txt else None)
-        in
+        let optional = Ext_list.exists lbls (fun lbl -> lbl.ld_optional) in
         ( Ttype_record lbls,
           Type_record
             ( lbls',
               if unbox then Record_unboxed false
-              else if optional_labels <> [] then
-                Record_optional_labels optional_labels
+              else if optional then Record_regular
               else Record_regular ),
           sdecl )
       | None ->

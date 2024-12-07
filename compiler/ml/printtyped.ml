@@ -130,8 +130,6 @@ let record_representation i ppf =
   function
   | Record_regular -> line i ppf "Record_regular\n"
   | Record_float_unused -> assert false
-  | Record_optional_labels lbls ->
-    line i ppf "Record_optional_labels %s\n" (lbls |> String.concat ", ")
   | Record_unboxed b -> line i ppf "Record_unboxed %b\n" b
   | Record_inlined {tag = i} -> line i ppf "Record_inlined %d\n" i
   | Record_extension -> line i ppf "Record_extension\n"
@@ -636,8 +634,8 @@ and label_decl i ppf
   line (i + 1) ppf "%a" fmt_ident ld_id;
   core_type (i + 1) ppf ld_type
 
-and longident_x_pattern i ppf (li, _, p) =
-  line i ppf "%a\n" fmt_longident li;
+and longident_x_pattern i ppf (li, _, p, opt) =
+  line i ppf "%a%s\n" fmt_longident li (if opt then "?" else "");
   pattern (i + 1) ppf p
 
 and case i ppf {c_lhs; c_guard; c_rhs} =
@@ -657,10 +655,10 @@ and value_binding i ppf x =
   expression (i + 1) ppf x.vb_expr
 
 and record_field i ppf = function
-  | _, Overridden (li, e) ->
-    line i ppf "%a\n" fmt_longident li;
+  | _, Overridden (li, e), opt ->
+    line i ppf "%a%s\n" fmt_longident li (if opt then "?" else "");
     expression (i + 1) ppf e
-  | _, Kept _ -> line i ppf "<kept>"
+  | _, Kept _, _ -> line i ppf "<kept>"
 
 and label_x_expression i ppf (l, e) =
   line i ppf "<arg>\n";

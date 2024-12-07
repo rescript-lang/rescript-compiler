@@ -99,7 +99,11 @@ module Pat : sig
   val construct : ?loc:loc -> ?attrs:attrs -> lid -> pattern option -> pattern
   val variant : ?loc:loc -> ?attrs:attrs -> label -> pattern option -> pattern
   val record :
-    ?loc:loc -> ?attrs:attrs -> (lid * pattern) list -> closed_flag -> pattern
+    ?loc:loc ->
+    ?attrs:attrs ->
+    (lid * pattern * bool) list ->
+    closed_flag ->
+    pattern
   val array : ?loc:loc -> ?attrs:attrs -> pattern list -> pattern
   val or_ : ?loc:loc -> ?attrs:attrs -> pattern -> pattern -> pattern
   val constraint_ : ?loc:loc -> ?attrs:attrs -> pattern -> core_type -> pattern
@@ -150,7 +154,7 @@ module Exp : sig
   val record :
     ?loc:loc ->
     ?attrs:attrs ->
-    (lid * expression) list ->
+    (lid * expression * bool) list ->
     expression option ->
     expression
   val field : ?loc:loc -> ?attrs:attrs -> expression -> lid -> expression

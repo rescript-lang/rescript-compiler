@@ -154,7 +154,7 @@ let iter_expression f e =
     | Pexp_construct (_, eo) | Pexp_variant (_, eo) -> may expr eo
     | Pexp_record (iel, eo) ->
       may expr eo;
-      List.iter (fun (_, e) -> expr e) iel
+      List.iter (fun (_, e, _) -> expr e) iel
     | Pexp_open (_, _, e)
     | Pexp_newtype (_, e)
     | Pexp_poly (e, _)
@@ -297,27 +297,15 @@ let extract_concrete_variant env ty =
   | p0, p, {type_kind = Type_open} -> (p0, p, [])
   | _ -> raise Not_found
 
-let has_optional_labels ld =
-  match ld.lbl_repres with
-  | Record_optional_labels _ -> true
-  | Record_inlined {optional_labels} -> optional_labels <> []
-  | _ -> false
+let label_is_optional ld = ld.lbl_optional
 
-let label_is_optional ld =
-  match ld.lbl_repres with
-  | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
-  | Record_inlined {optional_labels} ->
-    Ext_list.mem_string optional_labels ld.lbl_name
-  | _ -> false
-
-let check_optional_attr env ld attrs loc =
+let check_optional_attr env ld optional loc =
   let check_redundant () =
     if not (label_is_optional ld) then
       raise (Error (loc, env, Field_not_optional (ld.lbl_name, ld.lbl_res)));
     true
   in
-  Ext_list.exists attrs (fun ({txt}, _) ->
-      txt = "res.optional" && check_redundant ())
+  optional && check_redundant ()
 
 (* unification inside type_pat*)
 let unify_pat_types loc env ty ty' =
@@ -504,11 +492,11 @@ let rec build_as_type env p =
            row_closed = false;
          })
   | Tpat_record (lpl, _) ->
-    let lbl = snd3 (List.hd lpl) in
+    let lbl = snd4 (List.hd lpl) in
     if lbl.lbl_private = Private then p.pat_type
     else
       let ty = newvar () in
-      let ppl = List.map (fun (_, l, p) -> (l.lbl_pos, p)) lpl in
+      let ppl = List.map (fun (_, l, p, _) -> (l.lbl_pos, p)) lpl in
       let do_label lbl =
         let _, ty_arg, ty_res = instance_label false lbl in
         unify_pat env {p with pat_type = ty} ty_res;
@@ -960,7 +948,7 @@ module Label = NameChoice (struct
         lbl with
         lbl_name = name;
         lbl_pos = Array.length lbl.lbl_all;
-        lbl_repres = Record_optional_labels [name];
+        lbl_repres = Record_regular;
       }
     in
     let lbl_all_list = Array.to_list lbl.lbl_all @ [l] in
@@ -981,7 +969,8 @@ let disambiguate_label_by_ids closed ids labels =
   in
   let mandatory_labels_are_present num_ids lbl =
     (* check that all mandatory labels are present *)
-    if has_optional_labels lbl then (
+    let has_optional_labels = Ext_array.exists lbl.lbl_all label_is_optional in
+    if has_optional_labels then (
       let mandatory_lbls = ref 0 in
       Ext_array.iter lbl.lbl_all (fun l ->
           if not (label_is_optional l) then incr mandatory_lbls);
@@ -999,7 +988,7 @@ let disambiguate_label_by_ids closed ids labels =
 
 (* Only issue warnings once per record constructor/pattern *)
 let disambiguate_lid_a_list loc closed env opath lid_a_list =
-  let ids = List.map (fun (lid, _) -> Longident.last lid.txt) lid_a_list in
+  let ids = List.map (fun (lid, _, _) -> Longident.last lid.txt) lid_a_list in
   let w_amb = ref [] in
   let warn loc msg =
     let open Warnings in
@@ -1030,12 +1019,12 @@ let disambiguate_lid_a_list loc closed env opath lid_a_list =
     (* will fail later *)
   in
   let lbl_a_list =
-    List.map (fun (lid, a) -> (lid, process_label lid, a)) lid_a_list
+    List.map (fun (lid, a, opt) -> (lid, process_label lid, a, opt)) lid_a_list
   in
   (match List.rev !w_amb with
   | (_, types) :: _ as amb ->
     let paths =
-      List.map (fun (_, lbl, _) -> Label.get_type_path lbl) lbl_a_list
+      List.map (fun (_, lbl, _, _) -> Label.get_type_path lbl) lbl_a_list
     in
     let path = List.hd paths in
     if List.for_all (compare_type_path env path) (List.tl paths) then
@@ -1051,7 +1040,7 @@ let disambiguate_lid_a_list loc closed env opath lid_a_list =
 
 let rec find_record_qual = function
   | [] -> None
-  | ({txt = Longident.Ldot (modname, _)}, _) :: _ -> Some modname
+  | ({txt = Longident.Ldot (modname, _)}, _, _) :: _ -> Some modname
   | _ :: rest -> find_record_qual rest
 
 let map_fold_cont f xs k =
@@ -1064,14 +1053,14 @@ let map_fold_cont f xs k =
 let type_label_a_list ?labels loc closed env type_lbl_a opath lid_a_list k =
   let lbl_a_list =
     match (lid_a_list, labels) with
-    | ({txt = Longident.Lident s}, _) :: _, Some labels
+    | ({txt = Longident.Lident s}, _, _) :: _, Some labels
       when Hashtbl.mem labels s ->
       (* Special case for rebuilt syntax trees *)
       List.map
         (function
-          | lid, a -> (
+          | lid, a, opt -> (
             match lid.txt with
-            | Longident.Lident s -> (lid, Hashtbl.find labels s, a)
+            | Longident.Lident s -> (lid, Hashtbl.find labels s, a, opt)
             | _ -> assert false))
         lid_a_list
     | _ ->
@@ -1080,10 +1069,10 @@ let type_label_a_list ?labels loc closed env type_lbl_a opath lid_a_list k =
         | None -> lid_a_list
         | Some modname ->
           List.map
-            (fun ((lid, a) as lid_a) ->
+            (fun ((lid, a, opt) as lid_a) ->
               match lid.txt with
               | Longident.Lident s ->
-                ({lid with txt = Longident.Ldot (modname, s)}, a)
+                ({lid with txt = Longident.Ldot (modname, s)}, a, opt)
               | _ -> lid_a)
             lid_a_list
       in
@@ -1092,7 +1081,7 @@ let type_label_a_list ?labels loc closed env type_lbl_a opath lid_a_list k =
   (* Invariant: records are sorted in the typed tree *)
   let lbl_a_list =
     List.sort
-      (fun (_, lbl1, _) (_, lbl2, _) -> compare lbl1.lbl_pos lbl2.lbl_pos)
+      (fun (_, lbl1, _, _) (_, lbl2, _, _) -> compare lbl1.lbl_pos lbl2.lbl_pos)
       lbl_a_list
   in
   map_fold_cont type_lbl_a lbl_a_list k
@@ -1104,10 +1093,10 @@ let check_recordpat_labels ~get_jsx_component_error_info loc lbl_pat_list closed
     =
   match lbl_pat_list with
   | [] -> () (* should not happen *)
-  | ((l : Longident.t loc), label1, _) :: _ ->
+  | ((l : Longident.t loc), label1, _, _) :: _ ->
     let all = label1.lbl_all in
     let defined = Array.make (Array.length all) false in
-    let check_defined (_, label, _) =
+    let check_defined (_, label, _, _) =
       if defined.(label.lbl_pos) then
         raise
           (Error
@@ -1500,9 +1489,9 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env sp
       get_jsx_component_error_info ~extract_concrete_typedecl opath !env
         record_ty
     in
-    let process_optional_label (ld, pat) =
+    let process_optional_label (ld, pat, optional) =
       let exp_optional_attr =
-        check_optional_attr !env ld pat.ppat_attributes pat.ppat_loc
+        check_optional_attr !env ld optional pat.ppat_loc
       in
       let is_from_pamatch =
         match pat.ppat_desc with
@@ -1516,8 +1505,8 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env sp
         Ast_helper.Pat.construct ~loc:pat.ppat_loc lid (Some pat)
       else pat
     in
-    let type_label_pat (label_lid, label, sarg) k =
-      let sarg = process_optional_label (label, sarg) in
+    let type_label_pat (label_lid, label, sarg, opt) k =
+      let sarg = process_optional_label (label, sarg, opt) in
       begin_def ();
       let vars, ty_arg, ty_res = instance_label false label in
       if vars = [] then end_def ();
@@ -1537,7 +1526,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env sp
             if List.exists instantiated vars then
               raise
                 (Error (label_lid.loc, !env, Polymorphic_label label_lid.txt)));
-          k (label_lid, label, arg))
+          k (label_lid, label, arg, opt))
     in
     let k' k lbl_pat_list =
       check_recordpat_labels ~get_jsx_component_error_info loc lbl_pat_list
@@ -1832,7 +1821,7 @@ let rec is_nonexpansive exp =
   | Texp_variant (_, arg) -> is_nonexpansive_opt arg
   | Texp_record {fields; extended_expression} ->
     Array.for_all
-      (fun (lbl, definition) ->
+      (fun (lbl, definition, _) ->
         match definition with
         | Overridden (_, exp) -> lbl.lbl_mut = Immutable && is_nonexpansive exp
         | Kept _ -> true)
@@ -2097,7 +2086,7 @@ let iter_ppat f p =
   | Ppat_constraint (p, _)
   | Ppat_lazy p ->
     f p
-  | Ppat_record (args, _flag) -> List.iter (fun (_, p) -> f p) args
+  | Ppat_record (args, _flag) -> List.iter (fun (_, p, _) -> f p) args
 
 let contains_polymorphic_variant p =
   let rec loop p =
@@ -2177,7 +2166,7 @@ let duplicate_ident_types caselist env =
 (* note: check_duplicates would better be implemented in
          type_label_a_list directly *)
 let rec check_duplicates ~get_jsx_component_error_info loc env = function
-  | (_, lbl1, _) :: ((l : Longident.t loc), lbl2, _) :: _
+  | (_, lbl1, _, _) :: ((l : Longident.t loc), lbl2, _, _) :: _
     when lbl1.lbl_pos = lbl2.lbl_pos ->
     raise
       (Error
@@ -2299,15 +2288,13 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
     unify_exp ?type_clash_context env (re exp) (instance env ty_expected);
     exp
   in
-  let process_optional_label (id, ld, e) =
-    let exp_optional_attr =
-      check_optional_attr env ld e.pexp_attributes e.pexp_loc
-    in
+  let process_optional_label (id, ld, e, opt) =
+    let exp_optional_attr = check_optional_attr env ld opt e.pexp_loc in
     if label_is_optional ld && not exp_optional_attr then
       let lid = mknoloc Longident.(Ldot (Lident "*predef*", "Some")) in
       let e = Ast_helper.Exp.construct ~loc:e.pexp_loc lid (Some e) in
-      (id, ld, e)
-    else (id, ld, e)
+      (id, ld, e, opt)
+    else (id, ld, e, opt)
   in
   match sexp.pexp_desc with
   | Pexp_ident lid ->
@@ -2640,20 +2627,13 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
     check_duplicates ~get_jsx_component_error_info loc env lbl_exp_list;
     let label_descriptions, representation =
       match (lbl_exp_list, repr_opt) with
-      | ( (_, {lbl_all = label_descriptions; lbl_repres = representation}, _)
+      | ( (_, {lbl_all = label_descriptions; lbl_repres = representation}, _, _)
           :: _,
           _ ) ->
         (label_descriptions, representation)
       | [], Some representation when lid_sexp_list = [] ->
-        let optional_labels =
-          match representation with
-          | Record_optional_labels optional_labels -> optional_labels
-          | Record_inlined {optional_labels} -> optional_labels
-          | _ -> []
-        in
         let filter_missing (ld : Types.label_declaration) =
-          let name = Ident.name ld.ld_id in
-          if List.mem name optional_labels then None else Some name
+          if ld.ld_optional then None else Some (Ident.name ld.ld_id)
         in
         let labels_missing = fields |> List.filter_map filter_missing in
         if labels_missing <> [] then
@@ -2668,18 +2648,20 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
                    } ));
         ([||], representation)
       | [], _ ->
-        if fields = [] && repr_opt <> None then ([||], Record_optional_labels [])
+        if fields = [] && repr_opt <> None then ([||], Record_regular)
         else raise (Error (loc, env, Empty_record_literal))
     in
     let labels_missing = ref [] in
     let label_definitions =
       let matching_label lbl =
-        List.find (fun (_, lbl', _) -> lbl'.lbl_pos = lbl.lbl_pos) lbl_exp_list
+        List.find
+          (fun (_, lbl', _, _) -> lbl'.lbl_pos = lbl.lbl_pos)
+          lbl_exp_list
       in
       Array.map
         (fun lbl ->
           match matching_label lbl with
-          | lid, _lbl, lbl_exp -> Overridden (lid, lbl_exp)
+          | lid, _lbl, lbl_exp, _ -> Overridden (lid, lbl_exp)
           | exception Not_found ->
             if not (label_is_optional lbl) then
               labels_missing := lbl.lbl_name :: !labels_missing;
@@ -2699,7 +2681,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
                } ));
     let fields =
       Array.map2
-        (fun descr def -> (descr, def))
+        (fun descr def -> (descr, def, false))
         label_descriptions label_definitions
     in
     re
@@ -2753,16 +2735,18 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
     unify_exp_types loc env ty_record (instance env ty_expected);
     check_duplicates ~get_jsx_component_error_info loc env lbl_exp_list;
     let opt_exp, label_definitions =
-      let _lid, lbl, _lbl_exp = List.hd lbl_exp_list in
+      let _lid, lbl, _lbl_exp, _opt = List.hd lbl_exp_list in
       let matching_label lbl =
-        List.find (fun (_, lbl', _) -> lbl'.lbl_pos = lbl.lbl_pos) lbl_exp_list
+        List.find
+          (fun (_, lbl', _, _) -> lbl'.lbl_pos = lbl.lbl_pos)
+          lbl_exp_list
       in
       let ty_exp = instance env exp.exp_type in
       let unify_kept lbl =
         let _, ty_arg1, ty_res1 = instance_label false lbl in
         unify_exp_types exp.exp_loc env ty_exp ty_res1;
         match matching_label lbl with
-        | lid, _lbl, lbl_exp ->
+        | lid, _lbl, lbl_exp, _ ->
           (* do not connect result types for overridden labels *)
           Overridden (lid, lbl_exp)
         | exception Not_found ->
@@ -2777,7 +2761,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
     let num_fields =
       match lbl_exp_list with
       | [] -> assert false
-      | (_, lbl, _) :: _ -> Array.length lbl.lbl_all
+      | (_, lbl, _, _) :: _ -> Array.length lbl.lbl_all
     in
     let opt_exp =
       if List.length lid_sexp_list = num_fields then (
@@ -2786,12 +2770,12 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
       else opt_exp
     in
     let label_descriptions, representation =
-      let _, {lbl_all; lbl_repres}, _ = List.hd lbl_exp_list in
+      let _, {lbl_all; lbl_repres}, _, _ = List.hd lbl_exp_list in
       (lbl_all, lbl_repres)
     in
     let fields =
       Array.map2
-        (fun descr def -> (descr, def))
+        (fun descr def -> (descr, def, false))
         label_descriptions label_definitions
     in
     re
@@ -2820,9 +2804,9 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
   | Pexp_setfield (srecord, lid, snewval) ->
     let record, label, opath = type_label_access env srecord lid in
     let ty_record = if opath = None then newvar () else record.exp_type in
-    let label_loc, label, newval =
+    let label_loc, label, newval, _ =
       type_label_exp ~type_clash_context:SetRecordField false env loc ty_record
-        (lid, label, snewval)
+        (lid, label, snewval, false)
     in
     unify_exp env record ty_record;
     if label.lbl_mut = Immutable then
@@ -3371,7 +3355,7 @@ and type_label_access env srecord lid =
    These formats are used by functions in modules Printf, Format, and Scanf.
    (Handling of * modifiers contributed by Thorsten Ohl.) *)
 and type_label_exp ?type_clash_context create env loc ty_expected
-    (lid, label, sarg) =
+    (lid, label, sarg, opt) =
   (* Here also ty_expected may be at generic_level *)
   begin_def ();
   let separate = Env.has_local_constraints env in
@@ -3420,7 +3404,7 @@ and type_label_exp ?type_clash_context create env loc ty_expected
       | Error (_, _, Less_general _) as e -> raise e
       | _ -> raise exn (* In case of failure return the first error *))
   in
-  (lid, label, {arg with exp_type = instance env arg.exp_type})
+  (lid, label, {arg with exp_type = instance env arg.exp_type}, opt)
 
 and type_argument ?type_clash_context ?recarg env sarg ty_expected' ty_expected
     =
