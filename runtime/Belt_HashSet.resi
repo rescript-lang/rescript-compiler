@@ -62,7 +62,7 @@ would not mix.
 
 ## Examples
 
-```rescript
+```
 let s0: Belt.HashSet.t<int, I0.identity>
 let s1: Belt.HashSet.t<int, I1.identity>
 ```

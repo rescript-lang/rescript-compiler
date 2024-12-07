@@ -134,7 +134,7 @@ let compileTest = async (~id, ~code) => {
 
   let () = await Fs.writeFile(tempFileName ++ ".res", code)
 
-  let args = [tempFileName ++ ".res", "-w", "-3-109"]
+  let args = [tempFileName ++ ".res", "-w", "-3-109-44"]
 
   let {stderr, stdout} = await SpawnAsync.run(~command=bscBin, ~args)
 
@@ -299,12 +299,8 @@ let main = async () => {
 
   let modules =
     files
-    // Ignore Belt, Js modules and RescriptTools for now
-    ->Array.filter(f =>
-      !String.startsWith(f, "Belt") &&
-      !String.startsWith(f, "Js") &&
-      !String.startsWith(f, "RescriptTools")
-    )
+    // Ignore Js modules and RescriptTools for now
+    ->Array.filter(f => !String.startsWith(f, "Js") && !String.startsWith(f, "RescriptTools"))
     ->Array.filter(f => f->String.endsWith(".res") || f->String.endsWith(".resi"))
     ->Array.reduce([], (acc, cur) => {
       let isInterface = cur->String.endsWith(".resi")

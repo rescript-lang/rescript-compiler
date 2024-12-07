@@ -10,7 +10,7 @@ Path MyList.m
     "kind": 12,
     "tags": [],
     "detail": "(t<'a>, 'a => 'b) => t<'b>",
-    "documentation": {"kind": "markdown", "value": "\nEquivalent to:\n\n```res\nmap(someList, f)->reverse\n```\n\n## Examples\n\n```rescript\nlist{3, 4, 5}->Belt.List.mapReverse(x => x * x) /* list{25, 16, 9} */\n```\n"}
+    "documentation": {"kind": "markdown", "value": "\nEquivalent to `Belt.List.map(someList, f)->Belt.List.reverse`\n\n## Examples\n\n```rescript\nlist{3, 4, 5}\n->Belt.List.mapReverse(x => x * x)\n->assert_eq(list{25, 16, 9})\n```\n"}
   }, {
     "label": "makeBy",
     "kind": 12,
@@ -2340,13 +2340,13 @@ Path Belt.Int.t
     "kind": 12,
     "tags": [],
     "detail": "int => string",
-    "documentation": {"kind": "markdown", "value": "\nConverts a given `int` to a `string`. Uses the JavaScript `String` constructor under the hood.\n\n## Examples\n\n```rescript\nJs.log(Belt.Int.toString(1) === \"1\") /* true */\n```\n"}
+    "documentation": {"kind": "markdown", "value": "\nConverts a given `int` to a `string`. Uses the JavaScript `String` constructor under the hood.\n\n## Examples\n\n```rescript\nBelt.Int.toString(1)->assert_eq(\"1\")\n```\n"}
   }, {
     "label": "Belt.Int.toFloat",
     "kind": 12,
     "tags": [],
     "detail": "int => float",
-    "documentation": {"kind": "markdown", "value": "\nConverts a given `int` to a `float`.\n\n## Examples\n\n```rescript\nJs.log(Belt.Int.toFloat(1) === 1.0) /* true */\n```\n"}
+    "documentation": {"kind": "markdown", "value": "\nConverts a given `int` to a `float`.\n\n## Examples\n\n```rescript\nBelt.Int.toFloat(1)->assert_eq(1.0)\n```\n"}
   }]
 
 Complete src/Completion.res 423:19
@@ -2389,7 +2389,7 @@ Path Belt.Result.g
     "kind": 12,
     "tags": [],
     "detail": "t<'a, 'b> => 'a",
-    "documentation": {"kind": "markdown", "value": "\n`getExn(res)`: when `res` is `Ok(n)`, returns `n` when `res` is `Error(m)`, raise an exception\n\n## Examples\n\n```rescript\nBelt.Result.getExn(Belt.Result.Ok(42)) == 42\n\nBelt.Result.getExn(Belt.Result.Error(\"Invalid data\")) /* raises exception */\n```\n"}
+    "documentation": {"kind": "markdown", "value": "\n`getExn(res)`: when `res` is `Ok(n)`, returns `n` when `res` is `Error(m)`, raise an exception\n\n## Examples\n\n```rescript\nBelt.Result.Ok(42)\n->Belt.Result.getExn\n->assert_eq(42)\n\n\nswitch Belt.Result.getExn(Belt.Result.Error(\"Invalid data\")) { // raise a exception\n| exception _ => assert(true)\n| _ => assert(false)\n}\n```\n"}
   }, {
     "label": "Belt.Result.getWithDefault",
     "kind": 12,
@@ -2473,7 +2473,7 @@ Path Belt.Int.toS
     "kind": 12,
     "tags": [],
     "detail": "int => string",
-    "documentation": {"kind": "markdown", "value": "\nConverts a given `int` to a `string`. Uses the JavaScript `String` constructor under the hood.\n\n## Examples\n\n```rescript\nJs.log(Belt.Int.toString(1) === \"1\") /* true */\n```\n"}
+    "documentation": {"kind": "markdown", "value": "\nConverts a given `int` to a `string`. Uses the JavaScript `String` constructor under the hood.\n\n## Examples\n\n```rescript\nBelt.Int.toString(1)->assert_eq(\"1\")\n```\n"}
   }]
 
 Complete src/Completion.res 463:30

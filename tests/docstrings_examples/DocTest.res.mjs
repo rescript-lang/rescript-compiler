@@ -98,7 +98,7 @@ async function compileTest(id, code) {
   let args = [
     tempFileName + ".res",
     "-w",
-    "-3-109"
+    "-3-109-44"
   ];
   let match = await run(bscBin, args, undefined);
   let stderr = match.stderr;
@@ -329,10 +329,10 @@ function getCodeBlocks(example) {
 async function main() {
   let files = Fs.readdirSync("runtime");
   let modules = $$Array.reduce(files.filter(f => {
-    if (!f.startsWith("Belt") && !f.startsWith("Js")) {
-      return !f.startsWith("RescriptTools");
-    } else {
+    if (f.startsWith("Js")) {
       return false;
+    } else {
+      return !f.startsWith("RescriptTools");
     }
   }).filter(f => {
     if (f.endsWith(".res")) {
