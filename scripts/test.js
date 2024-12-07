@@ -128,19 +128,23 @@ async function runTests() {
   }
 
   if (runtimeDocstrings) {
-    console.log("Running runtime docstrings tests");
-    cp.execSync(`${rescript_exe} build`, {
-      cwd: path.join(__dirname, "..", "tests/docstrings_examples"),
-      stdio: [0, 1, 2],
-    });
-    // Ignore some tests not supported by node v18
-    cp.execSync(
-      `node ${path.join("tests", "docstrings_examples", "DocTest.res.mjs")} --ignore-runtime-tests "Array.toReversed, Array.toSorted, Promise.withResolvers, Set.union, Set.isSupersetOf, Set.isSubsetOf, Set.isDisjointFrom, Set.intersection, Set.symmetricDifference, Set.difference"`,
-      {
-        cwd: path.join(__dirname, ".."),
+    if (process.platform === "win32") {
+      console.log("Skipping docstrings tests on Windows");
+    } else {
+      console.log("Running runtime docstrings tests");
+      cp.execSync(`${rescript_exe} build`, {
+        cwd: path.join(__dirname, "..", "tests/docstrings_examples"),
         stdio: [0, 1, 2],
-      },
-    );
+      });
+      // Ignore some tests not supported by node v18
+      cp.execSync(
+        `node ${path.join("tests", "docstrings_examples", "DocTest.res.mjs")} --ignore-runtime-tests "Array.toReversed, Array.toSorted, Promise.withResolvers, Set.union, Set.isSupersetOf, Set.isSubsetOf, Set.isDisjointFrom, Set.intersection, Set.symmetricDifference, Set.difference"`,
+        {
+          cwd: path.join(__dirname, ".."),
+          stdio: [0, 1, 2],
+        },
+      );
+    }
   }
 }
 
