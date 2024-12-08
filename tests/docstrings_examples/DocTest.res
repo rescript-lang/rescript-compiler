@@ -36,6 +36,7 @@ module Node = {
     external spawn: (string, array<string>, ~options: options=?) => spawnReturns = "spawn"
 
     @send external on: (readable, string, Buffer.t => unit) => unit = "on"
+    @send external onFromSpawn: (spawnReturns, string, Js.Null.t<float> => unit) => unit = "on"
     @send
     external once: (spawnReturns, string, (Js.Null.t<float>, Js.Null.t<string>) => unit) => unit =
       "once"
@@ -98,7 +99,7 @@ module SpawnAsync = {
       spawn.stderr->ChildProcess.on("data", data => {
         Array.push(stderr, data)
       })
-      spawn->ChildProcess.once("close", (code, _signal) => {
+      spawn->ChildProcess.onFromSpawn("close", (code) => {
         resolve({stdout, stderr, code})
       })
     })

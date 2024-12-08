@@ -72,7 +72,7 @@ async function run(command, args, options) {
     spawn.stderr.on("data", data => {
       stderr.push(data);
     });
-    spawn.once("close", (code, _signal) => resolve({
+    spawn.on("close", code => resolve({
       stdout: stdout,
       stderr: stderr,
       code: code
@@ -186,7 +186,7 @@ function extractDocFromFile(file) {
       RE_EXN_ID: "Assert_failure",
       _1: [
         "DocTest.res",
-        198,
+        199,
         9
       ],
       Error: new Error()
