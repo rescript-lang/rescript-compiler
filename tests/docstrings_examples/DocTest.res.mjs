@@ -9,6 +9,7 @@ import * as $$Array from "rescript/lib/es6/Array.js";
 import * as $$Error from "rescript/lib/es6/Error.js";
 import * as Belt_List from "rescript/lib/es6/Belt_List.js";
 import * as Nodeutil from "node:util";
+import * as Belt_Array from "rescript/lib/es6/Belt_Array.js";
 import * as Pervasives from "rescript/lib/es6/Pervasives.js";
 import * as Child_process from "child_process";
 import * as Primitive_option from "rescript/lib/es6/Primitive_option.js";
@@ -322,7 +323,7 @@ function getCodeBlocks(example) {
       continue;
     };
   };
-  return List.toArray(loop(List.fromArray($$Array.reduce(example.docstrings, [], (acc, docstring) => acc.concat(docstring.split("\n")))), /* [] */0)).join("\n");
+  return Belt_Array.reverse(List.toArray(loop(List.fromArray($$Array.reduce(example.docstrings, [], (acc, docstring) => acc.concat(docstring.split("\n")))), /* [] */0))).join("\n\n");
 }
 
 async function main() {
@@ -350,8 +351,8 @@ async function main() {
       return acc.concat([cur]);
     }
   }).map(f => getExamples(extractDocFromFile(Path.join("runtime", f)))).flat();
-  let results = await Promise.all(modules.map(async example => {
-    let id = example.id.replaceAll(".", "_");
+  let compilationResults = await Promise.all(modules.map(async example => {
+    let id = example.id.replaceAll(".", "__");
     let rescriptCode = getCodeBlocks(example);
     let jsCode = await compileTest(id, rescriptCode);
     return [
@@ -362,27 +363,27 @@ async function main() {
       ]
     ];
   }));
-  let match = $$Array.reduce(results, [
+  let match = $$Array.reduce(compilationResults, [
     [],
     []
   ], (acc, param) => {
     let rhs = acc[1];
     let lhs = acc[0];
     let match = param[1];
-    let compiled = match[1];
+    let jsCode = match[1];
     let example = param[0];
-    if (compiled.TAG === "Ok") {
+    if (jsCode.TAG === "Ok") {
       lhs.push([
         example,
         match[0],
-        compiled._0
+        jsCode._0
       ]);
     } else {
       rhs.push([
         example,
         {
-          TAG: "ReScript",
-          error: compiled._0
+          TAG: "ReScriptError",
+          _0: jsCode._0
         }
       ]);
     }
@@ -391,30 +392,29 @@ async function main() {
       rhs
     ];
   });
-  let exampleErrors = await Promise.all(match[0].filter(param => !ignoreRuntimeTests.includes(param[0].id)).map(async param => {
-    let errors = param[2];
-    let nodeTests = await runtimeTests(errors);
+  let runtimeErrors = $$Array.filterMap(await Promise.all(match[0].filter(param => !ignoreRuntimeTests.includes(param[0].id)).map(async param => {
+    let jsCode = param[2];
+    let nodeTests = await runtimeTests(jsCode);
     if (nodeTests.TAG === "Ok") {
       return;
     } else {
       return [
         param[0],
         {
-          TAG: "Runtime",
+          TAG: "RuntimeError",
           rescript: param[1],
-          js: errors,
+          js: jsCode,
           error: nodeTests._0
         }
       ];
     }
-  }));
-  let exampleErrors$1 = $$Array.filterMap(exampleErrors, i => {
+  })), i => {
     if (i !== undefined) {
       return i;
     }
     
   });
-  let allErros = exampleErrors$1.concat(match[1]);
+  let allErros = runtimeErrors.concat(match[1]);
   allErros.forEach(param => {
     let errors = param[1];
     let example = param[0];
@@ -422,8 +422,8 @@ async function main() {
     let other = example.kind;
     let kind = other === "moduleAlias" ? "module alias" : other;
     let a;
-    if (errors.TAG === "ReScript") {
-      let err = errors.error.split("\n").filter((param, i) => i !== 2).join("\n");
+    if (errors.TAG === "ReScriptError") {
+      let err = errors._0.split("\n").filter((param, i) => i !== 2).join("\n");
       a = "\x1B[1;31merror\x1B[0m: failed to compile examples from " + kind + " " + cyan(example.id) + "\n" + err;
     } else {
       let indent = " ".repeat(2);
