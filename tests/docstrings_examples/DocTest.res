@@ -99,7 +99,7 @@ module SpawnAsync = {
       spawn.stderr->ChildProcess.on("data", data => {
         Array.push(stderr, data)
       })
-      spawn->ChildProcess.onFromSpawn("close", (code) => {
+      spawn->ChildProcess.onFromSpawn("close", code => {
         resolve({stdout, stderr, code})
       })
     })
