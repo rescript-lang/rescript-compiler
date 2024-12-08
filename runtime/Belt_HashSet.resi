@@ -60,7 +60,7 @@ value should be the same.
 Here the compiler would infer `s0` and `s1` having different type so that it
 would not mix.
 
-## Examples
+Signatures:
 
 ```
 let s0: Belt.HashSet.t<int, I0.identity>

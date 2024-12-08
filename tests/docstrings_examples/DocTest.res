@@ -292,6 +292,7 @@ let getCodeBlocks = example => {
   ->List.fromArray
   ->loop(list{})
   ->List.toArray
+  ->Array.join("\n")
 }
 
 let main = async () => {
@@ -302,6 +303,7 @@ let main = async () => {
     // Ignore Js modules and RescriptTools for now
     ->Array.filter(f => !String.startsWith(f, "Js") && !String.startsWith(f, "RescriptTools"))
     ->Array.filter(f => f->String.endsWith(".res") || f->String.endsWith(".resi"))
+    // ->Array.filter(f => f == "Belt_HashMap.resi")
     ->Array.reduce([], (acc, cur) => {
       let isInterface = cur->String.endsWith(".resi")
 
@@ -322,51 +324,66 @@ let main = async () => {
     await modules
     ->Array.map(async example => {
       let id = example.id->String.replaceAll(".", "_")
-      let codes = example->getCodeBlocks
-      let results =
-        await codes
-        ->Array.mapWithIndex(async (code, int) => {
-          let id = `${id}_${Int.toString(int)}`
-          (code, await compileTest(~id, ~code))
-        })
-        ->Promise.all
-      (example, results)
+      let rescriptCode = example->getCodeBlocks
+      let jsCode = await compileTest(~id, ~code=rescriptCode)
+      // let id = `${id}_${Int.toString(int)}`
+      // let results =
+      //   await [codes]
+      //   ->Array.mapWithIndex(async (code, int) => {
+      //     let id = `${id}_${Int.toString(int)}`
+      //     (code, await compileTest(~id, ~code))
+      //   })
+      //   ->Promise.all
+      (example, (rescriptCode, jsCode))
     })
     ->Promise.all
 
-  let examples = results->Array.map(((example, results)) => {
-    let (compiled, errors) = results->Array.reduce(([], []), (acc, (resCode, result)) => {
-      let (oks, errors) = acc
-      switch result {
-      | Ok(jsCode) => ([...oks, (resCode, jsCode)], errors)
-      | Error(output) => (oks, [...errors, ReScript({error: output})])
-      }
-    })
-    (example, (compiled, errors))
+  // let examples = results->Array.map(((example, result)) => {
+  //   let (compiled, errors) = results->Array.reduce(([], []), (acc, (resCode, result)) => {
+  //     let (oks, errors) = acc
+  //     switch result {
+  //     | Ok(jsCode) => ([...oks, (resCode, jsCode)], errors)
+  //     | Error(output) => (oks, [...errors, ReScript({error: output})])
+  //     }
+  //   })
+  //   (example, (compiled, errors))
+  // })
+
+  let (compiled, notCompiled) = results->Array.reduce(([], []), (
+    acc,
+    (example, (rescriptCode, compiled)),
+  ) => {
+    let (lhs, rhs) = acc
+    switch compiled {
+    | Ok(jsCode) => lhs->Array.push((example, rescriptCode, jsCode))
+    | Error(err) => rhs->Array.push((example, ReScript({error: err})))
+    }
+    (lhs, rhs)
   })
 
   let exampleErrors =
-    await examples
-    ->Array.filter((({id}, _)) => !Array.includes(ignoreRuntimeTests, id))
-    ->Array.map(async ((example, (compiled, errors))) => {
-      let nodeTests =
-        await compiled
-        ->Array.map(async ((res, js)) => (res, js, await runtimeTests(js)))
-        ->Promise.all
-
-      let runtimeErrors = nodeTests->Belt.Array.keepMap(((res, js, output)) =>
-        switch output {
-        | Ok(_) => None
-        | Error(error) => Some(Runtime({rescript: res, js, error}))
-        }
-      )
-
-      (example, Array.concat(runtimeErrors, errors))
+    await compiled
+    ->Array.filter((({id}, _, _)) => !Array.includes(ignoreRuntimeTests, id))
+    ->Array.map(async ((example, compiled, errors)) => {
+      let nodeTests = await errors->runtimeTests
+      switch nodeTests {
+      | Ok(_) => None
+      | Error(err) => Some(example, Runtime({rescript: compiled, js: errors, error: err}))
+      }
     })
     ->Promise.all
 
+  let exampleErrors = exampleErrors->Array.filterMap(i =>
+    switch i {
+    | Some(i) => Some(i)
+    | None => None
+    }
+  )
+
+  let allErros = Array.concat(exampleErrors, notCompiled)
+
   // Print Errors
-  let () = exampleErrors->Array.forEach(((example, errors)) => {
+  let () = allErros->Array.forEach(((example, errors)) => {
     let red = s => `\x1B[1;31m${s}\x1B[0m`
     let cyan = s => `\x1b[36m${s}\x1b[0m`
     let kind = switch example.kind {
@@ -374,21 +391,21 @@ let main = async () => {
     | other => other
     }
 
-    let errorMessage = errors->Array.map(err =>
-      switch err {
-      | ReScript({error}) =>
-        let err =
-          error
-          ->String.split("\n")
-          ->Array.filterWithIndex((_, i) => i !== 2)
-          ->Array.join("\n")
+    // let errorMessage = errors->Array.map(err =>
+    let a = switch errors {
+    | ReScript({error}) =>
+      let err =
+        error
+        ->String.split("\n")
+        ->Array.filterWithIndex((_, i) => i !== 2)
+        ->Array.join("\n")
 
-        `${"error"->red}: failed to compile examples from ${kind} ${example.id->cyan}
+      `${"error"->red}: failed to compile examples from ${kind} ${example.id->cyan}
 ${err}`
-      | Runtime({rescript, js, error}) =>
-        let indent = String.repeat(" ", 2)
+    | Runtime({rescript, js, error}) =>
+      let indent = String.repeat(" ", 2)
 
-        `${"runtime error"->red}: failed to run examples from ${kind} ${example.id->cyan}
+      `${"runtime error"->red}: failed to run examples from ${kind} ${example.id->cyan}
 
 ${indent}${"ReScript"->cyan}
 
@@ -402,13 +419,13 @@ ${indent}${"stacktrace"->red}
 
 ${error->indentOutputCode}
 `
-      }
-    )
+    }
 
-    errorMessage->Array.forEach(e => Process.stderrWrite(e))
+    Process.stderrWrite(a)
+    // errorMessage->Array.forEach(e => Process.stderrWrite(e))
   })
 
-  let someError = exampleErrors->Array.some(((_, err)) => Array.length(err) > 0)
+  let someError = allErros->Array.length > 0
 
   someError ? 1 : 0
 }

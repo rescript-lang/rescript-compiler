@@ -58,11 +58,10 @@ We can add elements to the collection:
 ## Examples
 
 ```rescript
-// TODO(aspeddro): doctests should unique for all examples in one docstrins
-// let () = {
-//   Belt.HashMap.set(s0, 0, 3)
-//   Belt.HashMap.set(s1, 1, "3")
-// }
+let () = {
+  Belt.HashMap.set(s0, 0, 3)
+  Belt.HashMap.set(s1, 1, "3")
+}
 ```
 
 Since this is an mutable data strucure, `s1` will contain two pairs.
@@ -290,6 +289,12 @@ Belt.HashMap.set(s0, 2, "value2")
 s0
 ->Belt.HashMap.reduce("", (acc, _, value) => acc ++ (", " ++ value))
 ->assert_eq(", value1, value2")
+```
+
+## More Examples
+
+```rescript
+Console.log("lol")
 ```
 */
 let reduce: (t<'key, 'value, 'id>, 'c, ('c, 'key, 'value) => 'c) => 'c
