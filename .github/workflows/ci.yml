@@ -317,6 +317,13 @@ jobs:
       - name: Debug
         run: ulimit -a
 
+      - name: Increase max user processes
+        if: runner.os == 'macOS'
+        run: ulimit -u 62080
+
+      - name: Debug
+        run: ulimit -a
+
       - name: Run tests
         run: node scripts/test.js -all
 
