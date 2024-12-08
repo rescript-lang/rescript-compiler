@@ -2,11 +2,6 @@ module Node = {
   module Path = {
     @module("path") external join2: (string, string) => string = "join"
     @module("path") @variadic external join: array<string> => string = "join"
-    @module("path") external dirname: string => string = "dirname"
-  }
-
-  module URL = {
-    @module("url") external fileURLToPath: string => string = "fileURLToPath"
   }
 
   module Process = {
@@ -19,14 +14,9 @@ module Node = {
   }
 
   module Fs = {
-    @module("fs") external readFileSync: string => string = "readFileSync"
-    @module("fs") external writeFileSync: (string, string) => unit = "writeFileSync"
-    @module("fs") external mkdirSync: string => option<string> = "mkdirSync"
     @module("fs") external existsSync: string => bool = "existsSync"
     @module("fs") external readdirSync: string => array<string> = "readdirSync"
     @module("node:fs/promises") external writeFile: (string, string) => promise<unit> = "writeFile"
-    @module("node:fs/promises") external unlink: string => promise<unit> = "unlink"
-    @module("node:fs/promises") external lstat: string => promise<'a> = "lstat"
   }
 
   module Buffer = {
@@ -35,10 +25,6 @@ module Node = {
   }
 
   module ChildProcess = {
-    type execSyncOpts = {stdio?: string, cwd?: string}
-    @module("child_process")
-    external execFileSync: (string, array<string>, execSyncOpts) => Buffer.t = "execFileSync"
-
     type spawnSyncReturns = {stdout: Buffer.t}
     @module("child_process")
     external spawnSync: (string, array<string>) => spawnSyncReturns = "spawnSync"

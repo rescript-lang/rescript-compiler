@@ -19,8 +19,6 @@ import * as RescriptTools_Docgen from "rescript/lib/es6/RescriptTools_Docgen.js"
 
 let Path$1 = {};
 
-let URL = {};
-
 let Process = {};
 
 let Fs$1 = {};
@@ -35,7 +33,6 @@ let Util = {};
 
 let Node = {
   Path: Path$1,
-  URL: URL,
   Process: Process,
   Fs: Fs$1,
   Buffer: Buffer,
@@ -189,7 +186,7 @@ function extractDocFromFile(file) {
       RE_EXN_ID: "Assert_failure",
       _1: [
         "DocTest.res",
-        212,
+        198,
         9
       ],
       Error: new Error()
