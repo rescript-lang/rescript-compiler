@@ -314,9 +314,8 @@ jobs:
       - name: Version Check
         run: ./scripts/prebuilt.js
 
-      - name: Increase file descriptor limit
-        if: runner.os == 'macOS'
-        run: ulimit -n 4096
+      - name: Debug
+        run: ulimit -a
 
       - name: Run tests
         run: node scripts/test.js -all
