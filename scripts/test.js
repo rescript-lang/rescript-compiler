@@ -128,8 +128,8 @@ async function runTests() {
   }
 
   if (runtimeDocstrings) {
-    if (process.platform === "win32") {
-      console.log("Skipping docstrings tests on Windows");
+    if (process.platform !== "linux") {
+      console.log(`Skipping docstrings tests on ${process.platform}`);
     } else {
       console.log("Running runtime docstrings tests");
       cp.execSync(`${rescript_exe} build`, {
