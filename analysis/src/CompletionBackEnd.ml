@@ -898,7 +898,7 @@ and getCompletionsForContextPath ~debug ~full ~opens ~rawOpens ~pos ~env ~exact
         | [] -> tRet
         | (label, tArg) :: rest ->
           let restType = reconstructFunctionType rest tRet in
-          {typ with desc = Tarrow (label, tArg, restType, Cok)}
+          {typ with desc = Tarrow (label, tArg, restType, Cok, None)}
       in
       let rec processApply args labels =
         match (args, labels) with
